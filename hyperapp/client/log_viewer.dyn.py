@@ -34,8 +34,8 @@ def _value_repr(value):
 class Session:
 
     @classmethod
-    def from_session_id(cls, types, ref_registry, session_id):
-        reader = JsonFileLogStorageReader(types, ref_registry, session_id)
+    def from_session_id(cls, types, mosaic, session_id):
+        reader = JsonFileLogStorageReader(types, mosaic, session_id)
         return cls(session_id, reader)
 
     def __init__(self, session_id, reader):
@@ -68,9 +68,9 @@ class Session:
 
 class SessionCache:
 
-    def __init__(self, types, ref_registry):
+    def __init__(self, types, mosaic):
         self._types = types
-        self._ref_registry = ref_registry
+        self._mosaic = mosaic
         self._session_id_list = json_storage_session_list()
         self._session_id_to_session = {}
 
@@ -82,7 +82,7 @@ class SessionCache:
         try:
             return self._session_id_to_session[session_id]
         except KeyError:
-            session = Session.from_session_id(self._types, self._ref_registry, session_id)
+            session = Session.from_session_id(self._types, self._mosaic, session_id)
             self._session_id_to_session[session_id] = session
             return session
 
@@ -90,13 +90,13 @@ class SessionCache:
 class SessionLogs(TreeObject):
 
     @classmethod
-    def from_state(cls, state, ref_registry, session_cache):
+    def from_state(cls, state, mosaic, session_cache):
         session = session_cache.get_session(state.session_id)
-        return cls(ref_registry, session)
+        return cls(mosaic, session)
 
-    def __init__(self, ref_registry, session):
+    def __init__(self, mosaic, session):
         super().__init__()
-        self._ref_registry = ref_registry
+        self._mosaic = mosaic
         self._session = session
 
     @property
@@ -198,8 +198,8 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
-        self._session_cache = SessionCache(services.types, services.ref_registry)
-        services.object_registry.register_actor(htypes.log_viewer.log_viewer, SessionLogs.from_state, services.ref_registry, self._session_cache)
+        self._session_cache = SessionCache(services.types, services.mosaic)
+        services.object_registry.register_actor(htypes.log_viewer.log_viewer, SessionLogs.from_state, services.mosaic, self._session_cache)
         services.object_registry.register_actor(htypes.log_viewer.log_record, LogRecord.from_state, services.ref_resolver, services.types, self._session_cache)
 
     @command('open_last_session')

@@ -11,13 +11,13 @@ log = logging.getLogger(__name__)
 
 class Unbundler(object):
 
-    def __init__(self, ref_registry, route_registry):
-        self._ref_registry = ref_registry
+    def __init__(self, mosaic, route_registry):
+        self._mosaic = mosaic
         self._route_registry = route_registry
 
     def register_bundle(self, bundle):
         for capsule in bundle.capsule_list:
-            self._ref_registry.register_capsule(capsule)
+            self._mosaic.register_capsule(capsule)
         # for route in bundle.route_list:
         #     if route.transport_ref == LOCAL_TRANSPORT_REF:
         #         continue  # must be handled by transport
@@ -30,4 +30,4 @@ class ThisModule(Module):
         super().__init__(module_name)
         # route_registry = services.route_registry
         route_registry = None
-        services.unbundler = Unbundler(services.ref_registry, route_registry)
+        services.unbundler = Unbundler(services.mosaic, route_registry)

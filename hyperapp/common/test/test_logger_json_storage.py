@@ -7,7 +7,7 @@ from hyperapp.common.util import flatten
 from hyperapp.common.htypes import tInt, tString, meta_ref_t, t_ref, t_field_meta, t_record_meta, ref_t, register_builtin_types
 from hyperapp.common.ref_resolver import RefResolver
 from hyperapp.common.type_system import TypeSystem
-from hyperapp.common.ref_registry import RefRegistry
+from hyperapp.common.mosaic import Mosaic
 from hyperapp.common.logger import RecordKind, LogRecord
 from hyperapp.common.logger_json_storage import _RecordsJsonEncoder, _RecordsJsonDecoder
 from hyperapp.common import cdr_coders  # register codec
@@ -26,8 +26,8 @@ def type_system(ref_resolver):
 
 
 @pytest.fixture
-def ref_registry(ref_resolver, type_system):
-    registry = RefRegistry(type_system)
+def mosaic(ref_resolver, type_system):
+    registry = Mosaic(type_system)
     ref_resolver.add_source(registry)
     register_builtin_types(registry, type_system)
     return registry
@@ -39,17 +39,17 @@ def encoder(ref_resolver, type_system):
 
 
 @pytest.fixture
-def decoder(type_system, ref_registry):
-    return _RecordsJsonDecoder(type_system, ref_registry)
+def decoder(type_system, mosaic):
+    return _RecordsJsonDecoder(type_system, mosaic)
 
 
 @pytest.fixture
-def types(type_system, ref_registry):
-    primitive_params = type_system.register_type(ref_registry, meta_ref_t('primitive_params', t_record_meta([
+def types(type_system, mosaic):
+    primitive_params = type_system.register_type(mosaic, meta_ref_t('primitive_params', t_record_meta([
         t_field_meta('num', t_ref(type_system.reverse_resolve(tInt))),
         t_field_meta('name', t_ref(type_system.reverse_resolve(tString))),
         ]))).t
-    ref_params = type_system.register_type(ref_registry, meta_ref_t('primitive_params', t_record_meta([
+    ref_params = type_system.register_type(mosaic, meta_ref_t('primitive_params', t_record_meta([
         t_field_meta('test_ref', t_ref(type_system.reverse_resolve(ref_t))),
         ]))).t
     return SimpleNamespace(

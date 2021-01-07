@@ -53,7 +53,7 @@ class Endpoint:
 
 def test_send_subprocess_parcel(services):
     master_identity = services.generate_rsa_identity(fast=True)
-    master_peer_ref = services.ref_registry.distil(master_identity.peer.piece)
+    master_peer_ref = services.mosaic.distil(master_identity.peer.piece)
 
     request_queue = queue.Queue()
     services.endpoint_registry.register(master_identity, Endpoint(request_queue))
@@ -102,7 +102,7 @@ def test_send_subprocess_parcel(services):
 def test_subprocess_transport_echo(services):
     master_identity = services.generate_rsa_identity(fast=True)
 
-    master_peer_ref = services.ref_registry.distil(master_identity.peer.piece)
+    master_peer_ref = services.mosaic.distil(master_identity.peer.piece)
 
     request_queue = queue.Queue()
     services.endpoint_registry.register(master_identity, Endpoint(request_queue))

@@ -54,7 +54,7 @@ class NavigatorLayout(GlobalLayout):
             path,
             command_hub,
             view_opener,
-            ref_registry,
+            mosaic,
             async_ref_resolver,
             object_registry,
             object_layout_registry,
@@ -63,7 +63,7 @@ class NavigatorLayout(GlobalLayout):
             params_editor,
             ):
         self = cls(
-            ref_registry,
+            mosaic,
             async_ref_resolver,
             object_registry,
             object_layout_registry,
@@ -79,7 +79,7 @@ class NavigatorLayout(GlobalLayout):
 
     def __init__(
             self,
-            ref_registry,
+            mosaic,
             async_ref_resolver,
             object_registry,
             object_layout_registry,
@@ -91,7 +91,7 @@ class NavigatorLayout(GlobalLayout):
             view_opener,
             ):
         super().__init__(path)
-        self._ref_registry = ref_registry
+        self._mosaic = mosaic
         self._async_ref_resolver = async_ref_resolver
         self._object_registry = object_registry
         self._object_layout_registry = object_layout_registry
@@ -113,7 +113,7 @@ class NavigatorLayout(GlobalLayout):
 
     @property
     def data(self):
-        piece_ref = self._ref_registry.distil(self._current_object.data)
+        piece_ref = self._mosaic.distil(self._current_object.data)
         return htypes.navigator.navigator(piece_ref)
 
     async def create_view(self):
@@ -189,14 +189,14 @@ class NavigatorLayout(GlobalLayout):
 
     @command('open_layout_editor')
     async def _open_layout_editor(self):
-        object_type_ref = self._ref_registry.distil(self._current_object.type)
+        object_type_ref = self._mosaic.distil(self._current_object.type)
         piece = htypes.layout_editor.object_layout_editor(object_type_ref, origin_object_type_ref=None, origin_command_id=None)
         await self._open_piece(piece)
 
     @command('commands')
     async def _open_commands(self):
-        piece_ref = self._ref_registry.distil(self._current_object.data)
-        layout_handle_ref = self._ref_registry.distil(self._current_layout_handle.data)
+        piece_ref = self._mosaic.distil(self._current_object.data)
+        layout_handle_ref = self._mosaic.distil(self._current_layout_handle.data)
         piece = htypes.command_list.command_list(piece_ref, layout_handle_ref)
         await self._open_piece(piece)
 
@@ -208,7 +208,7 @@ class ThisModule(ClientModule):
         services.view_registry.register_actor(
             htypes.navigator.navigator,
             NavigatorLayout.from_data,
-            services.ref_registry,
+            services.mosaic,
             services.async_ref_resolver,
             services.object_registry,
             services.object_layout_registry,

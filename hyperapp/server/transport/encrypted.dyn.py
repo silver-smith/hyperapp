@@ -18,7 +18,7 @@ class ThisModule(Module):
         address = encrypted_transport_types.address(
             public_key_der=self._identity.public_key.to_der(),
             base_transport_ref=services.tcp_transport_ref)
-        services.encrypted_transport_ref = services.ref_registry.distil(address)
+        services.encrypted_transport_ref = services.mosaic.distil(address)
 
     @staticmethod
     def _produce_identity():

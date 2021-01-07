@@ -59,7 +59,7 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
-        self._ref_registry = services.ref_registry
+        self._mosaic = services.mosaic
         self._ref_collector_factory = services.ref_collector_factory
         self._unbundler = services.unbundler
         self._route_a9n_registry = services.route_a9n_registry
@@ -118,8 +118,8 @@ class ThisModule(Module):
             self._on_failure(f"Error processing parcel from subprocess {process.name!r}: {x}")
 
     def _process_parcel(self, connection, parcel):
-        sender_ref = self._ref_registry.distil(parcel.sender.piece)
-        child_route = SubprocessRoute(self._ref_registry, self._ref_collector_factory, connection)
+        sender_ref = self._mosaic.distil(parcel.sender.piece)
+        child_route = SubprocessRoute(self._mosaic, self._ref_collector_factory, connection)
         self._route_a9n_registry.associate(sender_ref, child_route)
         self._transport.send_parcel(parcel)
 

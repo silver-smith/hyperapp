@@ -7,8 +7,8 @@ from . import htypes
 
 class Method:
 
-    def __init__(self, ref_registry, my_identity, my_peer_ref, peer, iface_ref, object_id, method_name, command):
-        self._ref_registry = ref_registry
+    def __init__(self, mosaic, my_identity, my_peer_ref, peer, iface_ref, object_id, method_name, command):
+        self._mosaic = mosaic
         self._my_identity = my_identity
         self._my_peer_ref = my_peer_ref
         self._method_name = method_name
@@ -20,7 +20,7 @@ class Method:
 
     def __call__(self, *args, **kw):
         # params = self._command.params_t(*args, **kw)
-        # params_ref = self._ref_registry.distil(params)
+        # params_ref = self._mosaic.distil(params)
         # request_id = str(uuid.uuid4())
         # request = htypes.rpc.request(
         #     sender_peer_ref=self._my_peer_ref,
@@ -35,8 +35,8 @@ class Method:
 
 class Proxy:
 
-    def __init__(self, ref_registry, my_identity, my_peer_ref, peer, iface, iface_ref, object_id):
-        self._ref_registry = ref_registry
+    def __init__(self, mosaic, my_identity, my_peer_ref, peer, iface, iface_ref, object_id):
+        self._mosaic = mosaic
         self._my_identity = my_identity
         self._my_peer_ref = my_peer_ref
         self._peer = peer
@@ -44,7 +44,7 @@ class Proxy:
         self._object_id = object_id
         for name, command in iface.items():
             method = Method(
-                self._ref_registry, self._my_identity, self._my_peer_ref, self._peer, self._iface_ref, self._object_id, name, command)
+                self._mosaic, self._my_identity, self._my_peer_ref, self._peer, self._iface_ref, self._object_id, name, command)
             setattr(self, name, method)
 
 
@@ -52,13 +52,13 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
-        self._ref_registry = services.ref_registry
+        self._mosaic = services.mosaic
         self._types = services.types
         self._peer_registry = services.peer_registry
         services.rpc_proxy = self.rpc_proxy_factory
 
     def rpc_proxy_factory(self, my_identity, rpc_service):
-        my_peer_ref = self._ref_registry.distil(my_identity.peer.piece)
+        my_peer_ref = self._mosaic.distil(my_identity.peer.piece)
         peer = self._peer_registry.invite(rpc_service.peer_ref)
         iface = self._types.resolve(rpc_service.iface_ref)
-        return Proxy(self._ref_registry, my_identity, my_peer_ref, peer, iface, rpc_service.iface_ref, rpc_service.object_id)
+        return Proxy(self._mosaic, my_identity, my_peer_ref, peer, iface, rpc_service.iface_ref, rpc_service.object_id)

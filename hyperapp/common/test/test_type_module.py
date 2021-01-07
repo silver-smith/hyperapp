@@ -18,7 +18,7 @@ from hyperapp.common.htypes import (
     )
 from hyperapp.common import cdr_coders  # register codec
 from hyperapp.common.local_type_module import LocalTypeModuleRegistry
-from hyperapp.common.ref_registry import RefRegistry
+from hyperapp.common.mosaic import Mosaic
 from hyperapp.common.ref_resolver import RefResolver
 from hyperapp.common.type_module_loader import TypeModuleLoader
 from hyperapp.common.type_system import TypeSystem
@@ -39,23 +39,23 @@ def types(ref_resolver):
 
 
 @pytest.fixture
-def ref_registry(ref_resolver, types):
-    registry = RefRegistry(types)
+def mosaic(ref_resolver, types):
+    registry = Mosaic(types)
     ref_resolver.add_source(registry)
     register_builtin_types(registry, types)
     return registry
 
 
-def test_type_module_loader(types, ref_registry):
+def test_type_module_loader(types, mosaic):
     local_type_module_registry = LocalTypeModuleRegistry()
-    loader = TypeModuleLoader(types, ref_registry, local_type_module_registry)
+    loader = TypeModuleLoader(types, mosaic, local_type_module_registry)
     loader.load_type_module(TEST_MODULES_DIR / 'type_module_1.types')
     loader.load_type_module(TEST_MODULES_DIR / 'type_module_2.types')
 
 
-def test_types(ref_resolver, types, ref_registry):
+def test_types(ref_resolver, types, mosaic):
     local_type_module_registry = LocalTypeModuleRegistry()
-    loader = TypeModuleLoader(types, ref_registry, local_type_module_registry)
+    loader = TypeModuleLoader(types, mosaic, local_type_module_registry)
     loader.load_type_module(TEST_MODULES_DIR / 'type_module_1.types')
     loader.load_type_module(TEST_MODULES_DIR / 'type_module_2.types')
 

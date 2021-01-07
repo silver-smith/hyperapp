@@ -18,17 +18,17 @@ Item = namedtuple('Item', 'id code_id kind path layout')
 class CommandList(SimpleListObject):
 
     @classmethod
-    async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, object_layout_association, layout_handle_from_ref, layout_handle_from_object_type):
+    async def from_state(cls, state, mosaic, async_ref_resolver, object_registry, object_layout_association, layout_handle_from_ref, layout_handle_from_object_type):
         piece = await async_ref_resolver.summon(state.piece_ref)
         object = await object_registry.animate(piece)
         layout_handle = await layout_handle_from_ref(state.layout_handle_ref)
-        self = cls(ref_registry, object_layout_association, layout_handle_from_object_type, object, layout_handle)
+        self = cls(mosaic, object_layout_association, layout_handle_from_object_type, object, layout_handle)
         await self._async_init(async_ref_resolver)
         return self
 
-    def __init__(self, ref_registry, object_layout_association, layout_handle_from_object_type, object, layout_handle):
+    def __init__(self, mosaic, object_layout_association, layout_handle_from_object_type, object, layout_handle):
         super().__init__()
-        self._ref_registry = ref_registry
+        self._mosaic = mosaic
         self._object_layout_association = object_layout_association
         self._layout_handle_from_object_type = layout_handle_from_object_type
         self._object = object
@@ -61,8 +61,8 @@ class CommandList(SimpleListObject):
 
     @property
     def data(self):
-        piece_ref = self._ref_registry.distil(self._object.data)
-        layout_handle_ref = self._ref_registry.distil(self._layout_handle.data)
+        piece_ref = self._mosaic.distil(self._object.data)
+        layout_handle_ref = self._mosaic.distil(self._layout_handle.data)
         return htypes.command_list.command_list(piece_ref, layout_handle_ref)
 
     @property
@@ -133,19 +133,19 @@ class CommandList(SimpleListObject):
             if object_type is None:
                 # Associating layout to dynamic-object-type command is forbidden. Even if we can run command to get it.
                 return None
-        object_type_ref = self._ref_registry.distil(object_type)
-        origin_object_type_ref = self._ref_registry.distil(self._layout_handle.object_type)
+        object_type_ref = self._mosaic.distil(object_type)
+        origin_object_type_ref = self._mosaic.distil(self._layout_handle.object_type)
         return htypes.layout_editor.object_layout_editor(object_type_ref, origin_object_type_ref, command_id)
 
     @object_command('add', kind='element')
     async def _add_command(self, path):
-        piece_ref = self._ref_registry.distil(self._object.data)
-        layout_ref = self._ref_registry.distil(self._layout.data)
+        piece_ref = self._mosaic.distil(self._object.data)
+        layout_ref = self._mosaic.distil(self._layout.data)
         chooser = htypes.code_command_chooser.code_command_chooser(piece_ref, layout_ref)
-        chooser_ref = self._ref_registry.distil(chooser)
+        chooser_ref = self._mosaic.distil(chooser)
         code_command_id_field = htypes.params_editor.field('code_command_id', chooser_ref)
         return htypes.params_editor.params_editor(
-            target_piece_ref=self._ref_registry.distil(self.data),
+            target_piece_ref=self._mosaic.distil(self.data),
             target_command_id=self._add_command_impl.id,
             bound_arguments=[],
             fields=[code_command_id_field],
@@ -185,7 +185,7 @@ class ThisModule(ClientModule):
         services.object_registry.register_actor(
             htypes.command_list.command_list,
             CommandList.from_state,
-            services.ref_registry,
+            services.mosaic,
             services.async_ref_resolver,
             services.object_registry,
             services.object_layout_association,

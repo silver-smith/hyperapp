@@ -68,15 +68,15 @@ class MasterDetailsView(QtWidgets.QSplitter, Composite):
 class MasterDetailsLayout(ObjectLayout):
 
     @classmethod
-    async def from_data(cls, state, path, object, layout_watcher, ref_registry, object_registry, object_layout_registry, object_layout_producer):
+    async def from_data(cls, state, path, object, layout_watcher, mosaic, object_registry, object_layout_registry, object_layout_producer):
         return cls(
-            ref_registry, object_registry, object_layout_registry, object_layout_producer,
+            mosaic, object_registry, object_layout_registry, object_layout_producer,
             state.master_layout_ref, state.command_id, object, path, layout_watcher)
 
-    def __init__(self, ref_registry, object_registry, object_layout_registry, object_layout_producer,
+    def __init__(self, mosaic, object_registry, object_layout_registry, object_layout_producer,
                  master_layout_ref, command_id, object, path, layout_watcher):
         super().__init__(path)
-        self._ref_registry = ref_registry
+        self._mosaic = mosaic
         self._object_registry = object_registry
         self._object_layout_registry = object_layout_registry
         self._object_layout_producer = object_layout_producer
@@ -115,8 +115,8 @@ class MasterDetailsLayout(ObjectLayout):
     @command('replace')
     async def _replace_view(self, path, view: LayoutRecMakerField):
         resource_key = self._object.hashable_resource_key
-        self._object_layout_overrides[resource_key] = self._ref_registry.distil(self.data)  # todo
-        piece_ref = self._ref_registry.distil(self._piece)
+        self._object_layout_overrides[resource_key] = self._mosaic.distil(self.data)  # todo
+        piece_ref = self._mosaic.distil(self._piece)
         return htypes.layout_editor.object_layout_editor(piece_ref)
 
 
@@ -124,14 +124,14 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
-        self._ref_registry = services.ref_registry
+        self._mosaic = services.mosaic
         self._default_object_layouts = services.default_object_layouts
         # object_type_ids = [*ListObject.type.ids, *TreeObject.type.ids]
         # services.available_object_layouts.register('master_details', object_type_ids, self._make_master_detail_layout_rec)
         # services.object_layout_registry.register_actor(
         #     htypes.master_details.master_details_layout,
         #     MasterDetailsLayout.from_data,
-        #     services.ref_registry,
+        #     services.mosaic,
         #     services.object_registry,
         #     services.object_layout_registry,
         #     services.object_layout_producer,
@@ -144,7 +144,7 @@ class ThisModule(ClientModule):
         except StopIteration:
             raise RuntimeError(f"At least one default category is expected for {object} categoriees: {object.category_list}.")
         master_layout_rec = await rec.layout_rec_maker(object)
-        master_layout_ref = self._ref_registry.distil(master_layout_rec)
+        master_layout_ref = self._mosaic.distil(master_layout_rec)
         return htypes.master_details.master_details_layout(
             master_layout_ref=master_layout_ref,
             command_id='open',

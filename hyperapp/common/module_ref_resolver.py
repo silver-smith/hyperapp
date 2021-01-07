@@ -5,8 +5,8 @@ from .code_module import builtin_module_t
 
 class ModuleRefResolver:
 
-    def __init__(self, ref_registry):
-        self._ref_registry = ref_registry
+    def __init__(self, mosaic):
+        self._mosaic = mosaic
         self._builtin_module_name_to_ref = {}
 
     def get_module_ref(self, globals):
@@ -19,6 +19,6 @@ class ModuleRefResolver:
             return self._builtin_module_name_to_ref[module_name]
         except KeyError:
             pass
-        module_ref = self._ref_registry.distil(builtin_module_t(module_name))
+        module_ref = self._mosaic.distil(builtin_module_t(module_name))
         self._builtin_module_name_to_ref[module_name] = module_ref
         return module_ref

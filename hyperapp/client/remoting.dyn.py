@@ -20,9 +20,9 @@ PendingRequest = namedtuple('PendingRequest', 'iface command future')
 
 class Remoting(object):
 
-    def __init__(self, types, ref_registry, async_route_resolver, endpoint_registry, service_registry, transport_registry):
+    def __init__(self, types, mosaic, async_route_resolver, endpoint_registry, service_registry, transport_registry):
         self._types = types
-        self._ref_registry = ref_registry
+        self._mosaic = mosaic
         self._async_route_resolver = async_route_resolver
         self._service_registry = service_registry
         self._transport_registry = transport_registry
@@ -49,7 +49,7 @@ class Remoting(object):
             request_id=request_id,
             params=EncodableEmbedded(command.request, params),
             )
-        request_ref = self._ref_registry.distil(rpc_request)
+        request_ref = self._mosaic.distil(rpc_request)
         pprint(rpc_request, title='Outcoming RPC %s %s:' % (command.request_type, ref_repr(request_ref)))
         pprint(params, title='params:')
         transport.send(request_ref)
@@ -140,7 +140,7 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         services.remoting = remoting = Remoting(
             services.types,
-            services.ref_registry,
+            services.mosaic,
             services.async_route_resolver,
             services.endpoint_registry,
             services.service_registry,

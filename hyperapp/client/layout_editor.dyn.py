@@ -159,19 +159,19 @@ class ObjectLayoutEditor(LayoutEditor):
     @classmethod
     async def from_state(
             cls, state,
-            ref_registry, async_ref_resolver, object_registry, object_layout_registry, object_layout_association, create_layout_handle):
+            mosaic, async_ref_resolver, object_registry, object_layout_registry, object_layout_association, create_layout_handle):
         object_type = await async_ref_resolver.summon(state.object_type_ref)
         origin_object_type = await async_ref_resolver.summon_opt(state.origin_object_type_ref)
         handle = await create_layout_handle(object_type, origin_object_type, state.origin_command_id)
-        self = cls(ref_registry, object_layout_registry, object_layout_association, object_type, origin_object_type, state.origin_command_id, handle)
+        self = cls(mosaic, object_layout_registry, object_layout_association, object_type, origin_object_type, state.origin_command_id, handle)
         await self._async_init(handle.layout)
         return self
 
     def __init__(self,
-                 ref_registry, object_layout_registry, object_layout_association,
+                 mosaic, object_layout_registry, object_layout_association,
                  object_type, origin_object_type, origin_command_id, layout_handle):
         super().__init__(layout_handle.watcher)
-        self._ref_registry = ref_registry
+        self._mosaic = mosaic
         self._object_layout_registry = object_layout_registry
         self._object_layout_association = object_layout_association
         self._object_type = object_type
@@ -188,8 +188,8 @@ class ObjectLayoutEditor(LayoutEditor):
 
     @property
     def data(self):
-        object_type_ref = self._ref_registry.distil(self._object_type)
-        origin_object_type_ref = self._ref_registry.distil_opt(self._origin_object_type)
+        object_type_ref = self._mosaic.distil(self._object_type)
+        origin_object_type_ref = self._mosaic.distil_opt(self._origin_object_type)
         return htypes.layout_editor.object_layout_editor(object_type_ref, origin_object_type_ref, self._origin_command_id)
 
     def get_command_list(self):
@@ -212,12 +212,12 @@ class ObjectLayoutEditor(LayoutEditor):
 
     @object_command('replace', kind='element')
     async def _replace_view(self, path):
-        object_type_ref = self._ref_registry.distil(self._object_type)
+        object_type_ref = self._mosaic.distil(self._object_type)
         chooser = htypes.view_chooser.view_chooser(object_type_ref)
-        chooser_ref = self._ref_registry.distil(chooser)
+        chooser_ref = self._mosaic.distil(chooser)
         layout_data_maker_field = htypes.params_editor.field('layout_data_maker', chooser_ref)
         return htypes.params_editor.params_editor(
-            target_piece_ref=self._ref_registry.distil(self.data),
+            target_piece_ref=self._mosaic.distil(self.data),
             target_command_id=self._replace_impl.id,
             bound_arguments=[],
             fields=[layout_data_maker_field],
@@ -240,7 +240,7 @@ class ThisModule(ClientModule):
         services.object_registry.register_actor(
             htypes.layout_editor.object_layout_editor,
             ObjectLayoutEditor.from_state,
-            services.ref_registry,
+            services.mosaic,
             services.async_ref_resolver,
             services.object_registry,
             services.object_layout_registry,

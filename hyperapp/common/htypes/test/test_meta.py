@@ -37,7 +37,7 @@ from hyperapp.common.htypes import (
     register_builtin_types,
     )
 from hyperapp.common import cdr_coders  # register codec
-from hyperapp.common.ref_registry import RefRegistry
+from hyperapp.common.mosaic import Mosaic
 from hyperapp.common.ref_resolver import RefResolver
 from hyperapp.common.type_system import TypeSystem
 
@@ -55,32 +55,32 @@ def types(ref_resolver):
 
 
 @pytest.fixture
-def ref_registry(ref_resolver, types):
-    registry = RefRegistry(types)
+def mosaic(ref_resolver, types):
+    registry = Mosaic(types)
     ref_resolver.add_source(registry)
     register_builtin_types(registry, types)
     return registry
 
 
 @pytest.fixture
-def builtin_ref(ref_registry):
+def builtin_ref(mosaic):
 
     def make(name):
-        ref = ref_registry.distil(builtin_ref_t(name))
+        ref = mosaic.distil(builtin_ref_t(name))
         return t_ref(ref)
 
     return make
 
 
 @pytest.fixture
-def type_ref(ref_registry):
+def type_ref(mosaic):
 
     def make(name, meta_type):
         rec = meta_ref_t(
             name=name,
             type=meta_type,
             )
-        return ref_registry.distil(rec)
+        return mosaic.distil(rec)
 
     return make
 

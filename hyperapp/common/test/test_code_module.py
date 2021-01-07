@@ -4,7 +4,7 @@ import pytest
 from hyperapp.common.htypes import register_builtin_types
 from hyperapp.common.local_type_module import LocalTypeModuleRegistry
 from hyperapp.common.code_module import code_module_t
-from hyperapp.common.ref_registry import RefRegistry
+from hyperapp.common.mosaic import Mosaic
 from hyperapp.common.ref_resolver import RefResolver
 from hyperapp.common.type_module_loader import TypeModuleLoader
 from hyperapp.common.type_system import TypeSystem
@@ -28,8 +28,8 @@ def types(ref_resolver):
 
 
 @pytest.fixture
-def ref_registry(ref_resolver, types):
-    registry = RefRegistry(types)
+def mosaic(ref_resolver, types):
+    registry = Mosaic(types)
     ref_resolver.add_source(registry)
     register_builtin_types(registry, types)
     register_code_module_types(registry, types)
@@ -47,13 +47,13 @@ def local_code_module_registry():
 
 
 @pytest.fixture
-def type_module_loader(types, ref_registry, local_type_module_registry):
-    return TypeModuleLoader(types, ref_registry, local_type_module_registry)
+def type_module_loader(types, mosaic, local_type_module_registry):
+    return TypeModuleLoader(types, mosaic, local_type_module_registry)
 
 
 @pytest.fixture
-def code_module_loader(ref_registry, local_type_module_registry, local_code_module_registry):
-    return CodeModuleLoader(ref_registry, local_type_module_registry, local_code_module_registry)
+def code_module_loader(mosaic, local_type_module_registry, local_code_module_registry):
+    return CodeModuleLoader(mosaic, local_type_module_registry, local_code_module_registry)
 
 
 def test_code_module_load(type_module_loader, code_module_loader):
@@ -72,21 +72,21 @@ def code_module_importer(ref_resolver, types):
     return importer
 
 
-def test_code_module_import(ref_registry, type_module_loader, code_module_loader, code_module_importer):
+def test_code_module_import(mosaic, type_module_loader, code_module_loader, code_module_importer):
     type_module_loader.load_type_module(TEST_MODULES_DIR / 'type_module_1.types')
     type_module_loader.load_type_module(TEST_MODULES_DIR / 'type_module_2.types')
     code_module = code_module_loader.load_code_module(TEST_MODULES_DIR / 'code_module_1')
-    code_module_ref = ref_registry.distil(code_module)
+    code_module_ref = mosaic.distil(code_module)
     code_module_importer.import_code_module(code_module_ref)
 
 
-def test_code_module_import_from_code_module(ref_registry, type_module_loader, code_module_loader, code_module_importer):
+def test_code_module_import_from_code_module(mosaic, type_module_loader, code_module_loader, code_module_importer):
     type_module_loader.load_type_module(TEST_MODULES_DIR / 'type_module_1.types')
     type_module_loader.load_type_module(TEST_MODULES_DIR / 'type_module_2.types')
     code_module_1 = code_module_loader.load_code_module(TEST_MODULES_DIR / 'code_module_1')
     code_module_2 = code_module_loader.load_code_module(TEST_MODULES_DIR / 'code_module_2')
-    code_module_1_ref = ref_registry.distil(code_module_1)
-    code_module_2_ref = ref_registry.distil(code_module_2)
+    code_module_1_ref = mosaic.distil(code_module_1)
+    code_module_2_ref = mosaic.distil(code_module_2)
 
     code_module_importer.import_code_module(code_module_1_ref)
     code_module_importer.import_code_module(code_module_2_ref)

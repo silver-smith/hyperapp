@@ -357,12 +357,12 @@ class TreeView(View, QtWidgets.QTreeView, TreeObserver):
 class TreeViewLayout(MultiItemObjectLayout):
 
     @classmethod
-    async def from_data(cls, state, path, layout_watcher, ref_registry, async_ref_resolver, resource_resolver):
+    async def from_data(cls, state, path, layout_watcher, mosaic, async_ref_resolver, resource_resolver):
         object_type = await async_ref_resolver.summon(state.object_type_ref)
-        return cls(ref_registry, path, object_type, state.command_list, resource_resolver)
+        return cls(mosaic, path, object_type, state.command_list, resource_resolver)
 
-    def __init__(self, ref_registry, path, object_type, command_list_data, resource_resolver):
-        super().__init__(ref_registry, path, object_type, command_list_data, resource_resolver)
+    def __init__(self, mosaic, path, object_type, command_list_data, resource_resolver):
+        super().__init__(mosaic, path, object_type, command_list_data, resource_resolver)
 
     @property
     def data(self):
@@ -379,7 +379,7 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
-        self._ref_registry = services.ref_registry
+        self._mosaic = services.mosaic
         self._types = services.types
         self._resource_resolver = services.resource_resolver
         self._params_editor = services.params_editor
@@ -387,12 +387,12 @@ class ThisModule(ClientModule):
         services.available_object_layouts.register('tree', [TreeObject.type._t], self._make_tree_layout_data)
         services.default_object_layouts.register('tree', [TreeObject.type._t], self._make_tree_layout_data)
         services.object_layout_registry.register_actor(
-            htypes.tree_view.tree_layout, TreeViewLayout.from_data, services.ref_registry, services.async_ref_resolver, services.resource_resolver)
+            htypes.tree_view.tree_layout, TreeViewLayout.from_data, services.mosaic, services.async_ref_resolver, services.resource_resolver)
 
     def _tree_view_factory(self, columns, object, current_path):
         return TreeView(columns, object, current_path)
 
     async def _make_tree_layout_data(self, object_type):
-        object_type_ref = self._ref_registry.distil(object_type)
+        object_type_ref = self._mosaic.distil(object_type)
         command_list = MultiItemObjectLayout.make_default_command_list(object_type)
         return htypes.tree_view.tree_layout(object_type_ref, command_list)

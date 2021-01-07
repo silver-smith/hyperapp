@@ -26,16 +26,16 @@ class CodeCommandChooser(SimpleListObject, Chooser):
         )
 
     @classmethod
-    async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, object_layout_registry):
+    async def from_state(cls, state, mosaic, async_ref_resolver, object_registry, object_layout_registry):
         piece = await async_ref_resolver.summon(state.piece_ref)
         object = await object_registry.animate(piece)
         layout_watcher = LayoutWatcher()  # todo: use global category/command -> watcher+layout handle registry
         layout = await object_layout_registry.invite(state.layout_ref, ['root'], layout_watcher)
-        return cls(ref_registry, object, layout)
+        return cls(mosaic, object, layout)
 
-    def __init__(self, ref_registry, object, layout):
+    def __init__(self, mosaic, object, layout):
         super().__init__()
-        self._ref_registry = ref_registry
+        self._mosaic = mosaic
         self._object = object
         self._layout = layout
 
@@ -45,8 +45,8 @@ class CodeCommandChooser(SimpleListObject, Chooser):
 
     @property
     def data(self):
-        piece_ref = self._ref_registry.distil(self._object.data)
-        layout_ref = self._ref_registry.distil(self._layout.data)
+        piece_ref = self._mosaic.distil(self._object.data)
+        layout_ref = self._mosaic.distil(self._layout.data)
         return htypes.code_command_chooser.code_command_chooser(piece_ref, layout_ref)
 
     @property
@@ -84,7 +84,7 @@ class ThisModule(ClientModule):
         services.object_registry.register_actor(
             htypes.code_command_chooser.code_command_chooser,
             CodeCommandChooser.from_state,
-            services.ref_registry,
+            services.mosaic,
             services.async_ref_resolver,
             services.object_registry,
             services.object_layout_registry,

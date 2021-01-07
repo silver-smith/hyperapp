@@ -72,14 +72,14 @@ class RecordView(QtWidgets.QWidget):
 
 class RecordViewLayout(ObjectLayout):
 
-    async def from_data(state, path, layout_watcher, ref_registry, async_ref_resolver, object_layout_registry):
+    async def from_data(state, path, layout_watcher, mosaic, async_ref_resolver, object_layout_registry):
         object_type = await async_ref_resolver.summon(state.object_type_ref)
-        self = RecordViewLayout(ref_registry, path, object_type, state.command_list)
+        self = RecordViewLayout(mosaic, path, object_type, state.command_list)
         await self._async_init(layout_watcher, async_ref_resolver, object_layout_registry, state.field_layout_list)
         return self
 
-    def __init__(self, ref_registry, path, object_type, command_list_data):
-        super().__init__(ref_registry, path, object_type, command_list_data)
+    def __init__(self, mosaic, path, object_type, command_list_data):
+        super().__init__(mosaic, path, object_type, command_list_data)
         self._field_layout_dict = {}
 
     async def _async_init(self, layout_watcher, async_ref_resolver, object_layout_registry, field_layout_list):
@@ -98,7 +98,7 @@ class RecordViewLayout(ObjectLayout):
     def data(self):
         field_layout_list = []
         for field_id, layout in self._field_layout_dict.items():
-            layout_ref = self._ref_registry.distil(layout.data)
+            layout_ref = self._mosaic.distil(layout.data)
             field_layout_list.append(htypes.record_view.record_layout_field(field_id, layout_ref))
         return htypes.record_view.record_layout(self._object_type_ref, self._command_list_data, field_layout_list)
 
@@ -127,22 +127,22 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
-        self._ref_registry = services.ref_registry
+        self._mosaic = services.mosaic
         self._async_ref_resolver = services.async_ref_resolver
         self._layout_handle_from_object_type = services.layout_handle_from_object_type
         services.available_object_layouts.register('record', [RecordObject.type._t], self._make_record_layout_data)
         services.default_object_layouts.register('record', [RecordObject.type._t], self._make_record_layout_data)
         services.object_layout_registry.register_actor(
             htypes.record_view.record_layout, RecordViewLayout.from_data,
-            services.ref_registry, services.async_ref_resolver, services.object_layout_registry)
+            services.mosaic, services.async_ref_resolver, services.object_layout_registry)
 
     async def _make_record_layout_data(self, object_type):
-        object_type_ref = self._ref_registry.distil(object_type)
+        object_type_ref = self._mosaic.distil(object_type)
         command_list = ObjectLayout.make_default_command_list(object_type)
         field_layout_list = []
         for field in object_type.field_type_list:
             field_object_type = await self._async_ref_resolver.summon(field.object_type_ref)
             layout_handle = await self._layout_handle_from_object_type(field_object_type)
-            layout_ref = self._ref_registry.distil(layout_handle.layout.data)
+            layout_ref = self._mosaic.distil(layout_handle.layout.data)
             field_layout_list.append(htypes.record_view.record_layout_field(field.id, layout_ref))
         return htypes.record_view.record_layout(object_type_ref, command_list, field_layout_list)

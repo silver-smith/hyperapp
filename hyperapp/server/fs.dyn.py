@@ -25,7 +25,7 @@ class ThisModule(Module):
     def _init_fs_service(self, services):
         iface_type_ref = services.types.reverse_resolve(htypes.fs.fs_service_iface)
         service = htypes.hyper_ref.service(FS_SERVICE_ID, iface_type_ref)
-        service_ref = services.ref_registry.distil(service)
+        service_ref = services.mosaic.distil(service)
         services.service_registry.register(service_ref, FsService)
 
         fs = htypes.fs.fs(
@@ -34,5 +34,5 @@ class ThisModule(Module):
             path=['usr', 'share'],
             current_file_name='dpkg',
             )
-        fs_ref = services.ref_registry.distil(fs)
+        fs_ref = services.mosaic.distil(fs)
         services.management_ref_list.add_ref('fs', fs_ref)

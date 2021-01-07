@@ -71,7 +71,7 @@ class TcpClient(object):
     def __init__(
             self,
             types,
-            ref_registry,
+            mosaic,
             route_resolver,
             ref_collector_factory,
             unbundler,
@@ -83,7 +83,7 @@ class TcpClient(object):
             on_failure,
             ):
         self._types = types
-        self._ref_registry = ref_registry
+        self._mosaic = mosaic
         self._route_resolver = route_resolver
         self._ref_collector_factory = ref_collector_factory
         self._unbundler = unbundler
@@ -111,7 +111,7 @@ class TcpClient(object):
 
     def start(self):
         address = htypes.tcp_transport.incoming_connection_address(connection_id=self._connection_id)
-        self._my_address_ref = self._ref_registry.distil(address)
+        self._my_address_ref = self._mosaic.distil(address)
         self._log('Incoming connection address: %s', address)
         self._route_resolver.add_source(self._my_route_registry)
         self._thread.start()
@@ -178,7 +178,7 @@ class TcpServer(object):
     def __init__(
             self,
             types,
-            ref_registry,
+            mosaic,
             route_resolver,
             ref_collector_factory,
             unbundler,
@@ -188,7 +188,7 @@ class TcpServer(object):
             on_failure,
             ):
         self._types = types
-        self._ref_registry = ref_registry
+        self._mosaic = mosaic
         self._route_resolver = route_resolver
         self._ref_collector_factory = ref_collector_factory
         self._unbundler = unbundler
@@ -206,7 +206,7 @@ class TcpServer(object):
         self._socket.bind(self._bind_address)
         self._sock_address = self._socket.getsockname()
         address = htypes.tcp_transport.address(self._sock_address[0], self._sock_address[1])
-        tcp_transport_ref = self._ref_registry.distil(address)
+        tcp_transport_ref = self._mosaic.distil(address)
         local_transport_ref_set.add(tcp_transport_ref)
 
     def start(self):
@@ -258,7 +258,7 @@ class TcpServer(object):
                 outcoming_queue = Queue()
                 client = TcpClient(
                     self._types,
-                    self._ref_registry,
+                    self._mosaic,
                     self._route_resolver,
                     self._ref_collector_factory,
                     self._unbundler,
@@ -304,7 +304,7 @@ class ThisModule(Module):
             bind_address = DEFAULT_BIND_ADDRESS
         self.server = server = TcpServer(
             services.types,
-            services.ref_registry,
+            services.mosaic,
             services.route_resolver,
             services.ref_collector_factory,
             services.unbundler,

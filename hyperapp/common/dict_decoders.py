@@ -37,8 +37,8 @@ class DictDecodableEmbedded(DecodableEmbedded):
 
 class DictDecoder(metaclass=abc.ABCMeta):
 
-    def __init__(self, ref_registry=None, types=None):
-        self._ref_registry = ref_registry
+    def __init__(self, mosaic=None, types=None):
+        self._mosaic = mosaic
         self._types = types
 
     def decode_dict(self, t, value, path='root'):
@@ -92,7 +92,7 @@ class DictDecoder(metaclass=abc.ABCMeta):
 
     @dispatch.register(TRecord)
     def decode_record(self, t, value, path):
-        if t is ref_t and self._ref_registry:
+        if t is ref_t and self._mosaic:
             return self._decode_ref(value, path)
         return self._decode_record_impl(t, value, path)
 
@@ -150,7 +150,7 @@ class DictDecoder(metaclass=abc.ABCMeta):
         type_ref = ref_t(hash_algorithm, hash)
         t = self._types.resolve(type_ref)
         value = self.dispatch(t, value['value'], join_path(path, 'value'))
-        ref = self._ref_registry.distil(value, t)
+        ref = self._mosaic.distil(value, t)
         return ref
 
 

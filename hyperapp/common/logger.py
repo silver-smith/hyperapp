@@ -141,9 +141,9 @@ class _Logger:
         else:
             return cls.instance
 
-    def __init__(self, types, ref_registry, module_ref_resolver, storage):
+    def __init__(self, types, mosaic, module_ref_resolver, storage):
         self._types = types
-        self._ref_registry = ref_registry
+        self._mosaic = mosaic
         self._module_ref_resolver = module_ref_resolver
         self._storage = storage
         self._context_counter = 0
@@ -169,7 +169,7 @@ class _Logger:
             fields.append(t_field_meta(name, t_ref(type_ref)))
         type_name = entry_name.replace('.', '_')
         type_rec = meta_ref_t(type_name, t_record_meta(fields))
-        params_t = self._types.register_type(self._ref_registry, type_rec).t
+        params_t = self._types.register_type(self._mosaic, type_rec).t
         self._params_t_cache[key] = params_t
         return params_t
 
@@ -251,8 +251,8 @@ class _Logger:
         _log.log(level, '  logger (context=%r pending=%r) ' + format, self._context, self._pending_record.get(), *args)
 
 
-def init_logger(types, ref_registry, module_ref_resolver, storage):
-    _Logger.instance = logger = _Logger(types, ref_registry, module_ref_resolver, storage)
+def init_logger(types, mosaic, module_ref_resolver, storage):
+    _Logger.instance = logger = _Logger(types, mosaic, module_ref_resolver, storage)
     return logger
 
 

@@ -28,7 +28,7 @@ class ThisModule(Module):
             for ref_cdr in master_peer_ref_cdr_list
             ]
 
-        master_process_route = SubprocessRoute(services.ref_registry, services.ref_collector_factory, services.master_process_connection)
+        master_process_route = SubprocessRoute(services.mosaic, services.ref_collector_factory, services.master_process_connection)
         for peer_ref in master_peer_ref_list:
             services.route_a9n_registry.associate(peer_ref, master_process_route)
 

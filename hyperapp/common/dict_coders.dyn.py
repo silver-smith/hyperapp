@@ -12,5 +12,5 @@ class ThisModule(Module):
         packet_coders.register(
             'yaml',
             YamlEncoder(services.types),
-            YamlDecoder(services.ref_registry, services.types),
+            YamlDecoder(services.mosaic, services.types),
             )

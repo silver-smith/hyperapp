@@ -7,7 +7,7 @@ from .htypes import register_builtin_types
 from .ref import ref_repr
 from .local_type_module import LocalTypeModuleRegistry
 from .code_module import code_module_t
-from .ref_registry import RefRegistry
+from .mosaic import Mosaic
 from .ref_resolver import RefResolver
 from .module_ref_resolver import ModuleRefResolver
 from .type_module_loader import TypeModuleLoader
@@ -38,15 +38,15 @@ class Services(object):
         log.info("Init services.")
         self.ref_resolver = RefResolver()
         self.types = TypeSystem(self.ref_resolver)
-        self.ref_registry = RefRegistry(self.types)
-        self.module_ref_resolver = ModuleRefResolver(self.ref_registry)
-        self.ref_resolver.add_source(self.ref_registry)
-        register_builtin_types(self.ref_registry, self.types)
-        register_code_module_types(self.ref_registry, self.types)
+        self.mosaic = Mosaic(self.types)
+        self.module_ref_resolver = ModuleRefResolver(self.mosaic)
+        self.ref_resolver.add_source(self.mosaic)
+        register_builtin_types(self.mosaic, self.types)
+        register_code_module_types(self.mosaic, self.types)
         self.local_type_module_registry = LocalTypeModuleRegistry()
         self.local_code_module_registry = LocalCodeModuleRegistry()
-        self.type_module_loader = TypeModuleLoader(self.types, self.ref_registry, self.local_type_module_registry)
-        self.code_module_loader = CodeModuleLoader(self.ref_registry, self.local_type_module_registry, self.local_code_module_registry)
+        self.type_module_loader = TypeModuleLoader(self.types, self.mosaic, self.local_type_module_registry)
+        self.code_module_loader = CodeModuleLoader(self.mosaic, self.local_type_module_registry, self.local_code_module_registry)
         self.module_registry = ModuleRegistry()
         self.code_module_importer = CodeModuleImporter(self.types)
         self.code_module_importer.register_meta_hook()
@@ -95,7 +95,7 @@ class Services(object):
             parts = module_name.split('.')
             file_path = self.hyperapp_dir.joinpath(*parts)
             code_module = self.code_module_loader.load_code_module(file_path, module_name)
-            code_module_ref = self.ref_registry.distil(code_module)
+            code_module_ref = self.mosaic.distil(code_module)
             log.info("Import module %s (%s) with file path %s", module_name, ref_repr(code_module_ref), file_path)
             module = self.code_module_importer.import_code_module(code_module_ref)
             self.name2module[module_name] = module

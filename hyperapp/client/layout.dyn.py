@@ -82,9 +82,9 @@ class ObjectLayout(Layout):
 
     _Command = namedtuple('ObjectLayout_Command', 'id code_id layout_ref')
 
-    def __init__(self, ref_registry, path, object_type, command_list_data):
+    def __init__(self, mosaic, path, object_type, command_list_data):
         super().__init__(path)
-        self._ref_registry = ref_registry
+        self._mosaic = mosaic
         self._object_type = object_type
         self._command_list = [
             self._Command(command.id, command.code_id, command.layout_ref)
@@ -144,7 +144,7 @@ class ObjectLayout(Layout):
 
     @property
     def _object_type_ref(self):
-        return self._ref_registry.distil(self._object_type)
+        return self._mosaic.distil(self._object_type)
 
     @property
     def _command_list_data(self):
@@ -172,8 +172,8 @@ class AbstractMultiItemObjectLayout(ObjectLayout):
         def current_changed(self, current_item_key):
             self._command_hub.update(only_kind='element')
 
-    def __init__(self, ref_registry, path, object_type, command_list_data):
-        super().__init__(ref_registry, path, object_type, command_list_data)
+    def __init__(self, mosaic, path, object_type, command_list_data):
+        super().__init__(mosaic, path, object_type, command_list_data)
         self._current_item_observer = None
 
     def get_current_commands(self, object, view):
@@ -210,8 +210,8 @@ class AbstractMultiItemObjectLayout(ObjectLayout):
 
 class MultiItemObjectLayout(AbstractMultiItemObjectLayout, metaclass=abc.ABCMeta):
 
-    def __init__(self, ref_registry, path, object_type, command_list_data, resource_resolver):
-        super().__init__(ref_registry, path, object_type, command_list_data)
+    def __init__(self, mosaic, path, object_type, command_list_data, resource_resolver):
+        super().__init__(mosaic, path, object_type, command_list_data)
         self._resource_resolver = resource_resolver
 
     async def create_view(self, command_hub, object):

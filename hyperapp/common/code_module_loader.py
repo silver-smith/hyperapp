@@ -8,8 +8,8 @@ DYN_MODULE_SUFFIX = '.dyn.py'
 
 class CodeModuleLoader(object):
 
-    def __init__(self, ref_registry, local_type_module_registry, local_code_module_registry):
-        self._ref_registry = ref_registry
+    def __init__(self, mosaic, local_type_module_registry, local_code_module_registry):
+        self._mosaic = mosaic
         self._local_type_module_registry = local_type_module_registry
         self._local_code_module_registry = local_code_module_registry
 
@@ -42,6 +42,6 @@ class CodeModuleLoader(object):
                     module_name, import_module_name))
             code_import_list.append(code_import_t(import_module_name, import_module_ref))
         code_module = code_module_t(module_name, type_import_list, code_import_list, source, str(source_path))
-        code_module_ref = self._ref_registry.distil(code_module)
+        code_module_ref = self._mosaic.distil(code_module)
         self._local_code_module_registry.register(module_name, code_module_ref)
         return code_module

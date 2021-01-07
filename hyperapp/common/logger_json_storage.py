@@ -62,9 +62,9 @@ class _RecordsJsonEncoder:
 
 class _RecordsJsonDecoder:
 
-    def __init__(self, types, ref_registry):
+    def __init__(self, types, mosaic):
         self._types = types
-        self._ref_registry = ref_registry
+        self._mosaic = mosaic
         self._dict_decoder = DictDecoder()
 
     def decode_line(self, line):
@@ -79,7 +79,7 @@ class _RecordsJsonDecoder:
 
     def _process_type(self, d):
         type_capsule = self._dict_decoder.decode_dict(capsule_t, d['type_capsule'])
-        self._ref_registry.register_capsule(type_capsule)
+        self._mosaic.register_capsule(type_capsule)
 
     def _process_record(self, d):
         decoder = self._dict_decoder
@@ -116,9 +116,9 @@ class _JsonFileLogStorage:
 
 class JsonFileLogStorageReader:
 
-    def __init__(self, types, ref_registry, session):
+    def __init__(self, types, mosaic, session):
         self.session = session
-        self._decoder = _RecordsJsonDecoder(types, ref_registry)
+        self._decoder = _RecordsJsonDecoder(types, mosaic)
 
     def enumerate_entries(self):
         with JSON_LOGS_DIR.joinpath(self.session).with_suffix('.json').open() as f:

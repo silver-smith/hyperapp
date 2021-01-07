@@ -20,7 +20,7 @@ class TcpProtocol(asyncio.Protocol):
             event_loop,
             ref_resolver,
             types,
-            ref_registry,
+            mosaic,
             endpoint_registry,
             ref_collector_factory,
             unbundler,
@@ -29,7 +29,7 @@ class TcpProtocol(asyncio.Protocol):
             ):
         self._ref_resolver = ref_resolver
         self._types = types
-        self._ref_registry = ref_registry
+        self._mosaic = mosaic
         self._endpoint_registry = endpoint_registry
         self._ref_collector_factory = ref_collector_factory
         self._unbundler = unbundler
@@ -94,7 +94,7 @@ class ThisModule(ClientModule):
             self._resolve_address,
             services.ref_resolver,
             services.types,
-            services.ref_registry,
+            services.mosaic,
             services.endpoint_registry,
             services.ref_collector_factory,
             services.unbundler,
@@ -106,7 +106,7 @@ class ThisModule(ClientModule):
             address,
             ref_resolver,
             types,
-            ref_registry,
+            mosaic,
             endpoint_registry,
             ref_collector_factory,
             unbundler,
@@ -124,7 +124,7 @@ class ThisModule(ClientModule):
                 self._event_loop,
                 ref_resolver,
                 types,
-                ref_registry,
+                mosaic,
                 endpoint_registry,
                 ref_collector_factory,
                 unbundler,

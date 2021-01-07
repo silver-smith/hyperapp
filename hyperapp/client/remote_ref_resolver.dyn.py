@@ -10,17 +10,17 @@ log = logging.getLogger(__name__)
 class RemoteRefResolver(AsyncRefSource):
 
     @classmethod
-    async def from_ref(cls, service_ref, ref_registry, proxy_factory):
+    async def from_ref(cls, service_ref, mosaic, proxy_factory):
         proxy = await proxy_factory.from_ref(service_ref)
-        return cls(ref_registry, proxy)
+        return cls(mosaic, proxy)
 
-    def __init__(self, ref_registry, proxy):
-        self._ref_registry = ref_registry
+    def __init__(self, mosaic, proxy):
+        self._mosaic = mosaic
         self._proxy = proxy
 
     async def resolve_ref(self, ref):
         result = await self._proxy.resolve_ref(ref)
-        self._ref_registry.register_capsule(result.capsule)  # cache it locally
+        self._mosaic.register_capsule(result.capsule)  # cache it locally
         return result.capsule
 
 
@@ -31,7 +31,7 @@ class ThisModule(ClientModule):
 
     async def async_init(self, services):
         service_ref = self._load_ref_resolver_ref(services.unbundler)
-        remote_ref_resolver = await RemoteRefResolver.from_ref(service_ref, services.ref_registry, services.proxy_factory)
+        remote_ref_resolver = await RemoteRefResolver.from_ref(service_ref, services.mosaic, services.proxy_factory)
         services.async_ref_resolver.add_async_source(remote_ref_resolver)
 
     def _load_ref_resolver_ref(self, unbundler):

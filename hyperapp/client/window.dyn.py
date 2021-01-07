@@ -23,14 +23,14 @@ DUP_OFFSET = QtCore.QPoint(150, 50)
 class WindowLayout(GlobalLayout):
 
     @classmethod
-    async def from_data(cls, state, path, on_close, command_hub, ref_registry, view_registry):
-        self = cls(ref_registry, path, on_close, command_hub, state.pos, state.size)
+    async def from_data(cls, state, path, on_close, command_hub, mosaic, view_registry):
+        self = cls(mosaic, path, on_close, command_hub, state.pos, state.size)
         await self._async_init(view_registry, state)
         return self
 
-    def __init__(self, ref_registry, path, on_close, command_hub, pos, size):
+    def __init__(self, mosaic, path, on_close, command_hub, pos, size):
         super().__init__(path)
-        self._ref_registry = ref_registry
+        self._mosaic = mosaic
         self._command_hub = command_hub
         self._on_close = on_close
         self._view_opener = None
@@ -53,9 +53,9 @@ class WindowLayout(GlobalLayout):
         else:
             size, pos = self._size, self._pos
         return htypes.window.window(
-            menu_bar_ref=self._ref_registry.distil(self._menu_bar_layout.data),
-            command_pane_ref=self._ref_registry.distil(self._command_pane_layout.data),
-            central_view_ref=self._ref_registry.distil(self._central_view_layout.data),
+            menu_bar_ref=self._mosaic.distil(self._menu_bar_layout.data),
+            command_pane_ref=self._mosaic.distil(self._command_pane_layout.data),
+            central_view_ref=self._mosaic.distil(self._central_view_layout.data),
             size=size,
             pos=pos,
             )
@@ -161,4 +161,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
-        services.view_registry.register_actor(htypes.window.window, WindowLayout.from_data, services.ref_registry, services.view_registry)
+        services.view_registry.register_actor(htypes.window.window, WindowLayout.from_data, services.mosaic, services.view_registry)

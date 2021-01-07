@@ -35,13 +35,13 @@ class BlogObserver(object, metaclass=abc.ABCMeta):
 class BlogObject(ListObject, BlogObserver):
 
     @classmethod
-    async def from_piece(cls, state, ref_registry, blog_service_factory):
+    async def from_piece(cls, state, mosaic, blog_service_factory):
         blog_service = await blog_service_factory(state.blog_service_ref)
-        return cls(ref_registry, blog_service, state.blog_id)
+        return cls(mosaic, blog_service, state.blog_id)
 
-    def __init__(self, ref_registry, blog_service, blog_id):
+    def __init__(self, mosaic, blog_service, blog_id):
         ListObject.__init__(self)
-        self._ref_registry = ref_registry
+        self._mosaic = mosaic
         self._blog_service = blog_service
         self._blog_id = blog_id
         log.debug('Created %r', self)
@@ -197,13 +197,13 @@ class BlogArticle(RecordObject):
 class ArticleRefListObject(ListObject):
 
     @classmethod
-    async def from_piece(cls, state, blog_service_factory, ref_registry, async_ref_resolver):
+    async def from_piece(cls, state, blog_service_factory, mosaic, async_ref_resolver):
         blog_service = await blog_service_factory(state.blog_service_ref)
-        return cls(ref_registry, async_ref_resolver, blog_service, state.blog_id, state.article_id)
+        return cls(mosaic, async_ref_resolver, blog_service, state.blog_id, state.article_id)
 
-    def __init__(self, ref_registry, async_ref_resolver, blog_service, blog_id, article_id):
+    def __init__(self, mosaic, async_ref_resolver, blog_service, blog_id, article_id):
         ListObject.__init__(self)
-        self._ref_registry = ref_registry
+        self._mosaic = mosaic
         self._async_ref_resolver = async_ref_resolver
         self._blog_service = blog_service
         self._blog_id = blog_id
@@ -252,7 +252,7 @@ class ArticleRefListObject(ListObject):
     @command('add')
     async def command_add(self):
         current_piece = htypes.blog.blog_article_ref_list(self._blog_service.ref, self._blog_id, self._article_id, selected_ref_id=None)
-        current_piece_ref = self._ref_registry.distil(current_piece)
+        current_piece_ref = self._mosaic.distil(current_piece)
         return htypes.blog.blog_article_ref_selector(
             self._blog_service.ref,
             self._blog_id,
@@ -280,15 +280,15 @@ class ArticleRefListObject(ListObject):
 class RefSelector(RecordObject):
 
     @classmethod
-    async def from_piece(cls, piece, blog_service_factory, ref_registry, async_ref_resolver, object_registry):
+    async def from_piece(cls, piece, blog_service_factory, mosaic, async_ref_resolver, object_registry):
         blog_service = await blog_service_factory(piece.blog_service_ref)
         current_piece = await async_ref_resolver.summon(piece.current_piece_ref)
         current_object = await object_registry.animate(current_piece)
-        return cls(ref_registry, blog_service, piece.blog_id, piece.article_id, piece.ref_id, piece.current_piece_ref, current_piece, current_object)
+        return cls(mosaic, blog_service, piece.blog_id, piece.article_id, piece.ref_id, piece.current_piece_ref, current_piece, current_object)
 
-    def __init__(self, ref_registry, blog_service, blog_id, article_id, ref_id, current_piece_ref, current_piece, current_object):
+    def __init__(self, mosaic, blog_service, blog_id, article_id, ref_id, current_piece_ref, current_piece, current_object):
         super().__init__()
-        self._ref_registry = ref_registry
+        self._mosaic = mosaic
         self._blog_service = blog_service
         self._blog_id = blog_id
         self._article_id = article_id
@@ -322,7 +322,7 @@ class RefSelector(RecordObject):
         piece = await fn_coro
         if piece is None:
             return piece
-        piece_ref = self._ref_registry.distil(piece)
+        piece_ref = self._mosaic.distil(piece)
         return htypes.blog.blog_article_ref_selector(
             self._blog_service.ref,
             self._blog_id,
@@ -362,13 +362,13 @@ class BlogNotification(object):
 class BlogService(object):
 
     @classmethod
-    async def from_data(cls, types, ref_registry, service_registry, proxy_factory, service_ref):
+    async def from_data(cls, types, mosaic, service_registry, proxy_factory, service_ref):
         proxy = await proxy_factory.from_ref(service_ref)
-        return cls(types, ref_registry, service_registry, proxy)
+        return cls(types, mosaic, service_registry, proxy)
 
-    def __init__(self, types, ref_registry, service_registry, proxy):
+    def __init__(self, types, mosaic, service_registry, proxy):
         self._types = types
-        self._ref_registry = ref_registry
+        self._mosaic = mosaic
         self._service_registry = service_registry
         self._proxy = proxy
         self._items_cache = {}  # (blog_id, article_id) -> blog_item, already fetched items
@@ -397,7 +397,7 @@ class BlogService(object):
         service_id = str(uuid.uuid4())
         iface_type_ref = self._types.reverse_resolve(htypes.blog.blog_notification_iface)
         service = htypes.hyper_ref.service(service_id, iface_type_ref)
-        service_ref = self._ref_registry.distil(service)
+        service_ref = self._mosaic.distil(service)
         self._service_registry.register(service_ref, self._notification.get_self)
         await self._proxy.subscribe([blog_id], service_ref)
 
@@ -464,30 +464,30 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         self._types = services.types
-        self._ref_registry = services.ref_registry
+        self._mosaic = services.mosaic
         self._async_ref_resolver = services.async_ref_resolver
         self._service_registry = services.service_registry
         self._proxy_factory = services.proxy_factory
         services.blog_service_factory = self._blog_service_factory
         services.object_registry.register_actor(
-            htypes.blog.blog, BlogObject.from_piece, services.ref_registry, self._blog_service_factory)
+            htypes.blog.blog, BlogObject.from_piece, services.mosaic, self._blog_service_factory)
         services.object_registry.register_actor(
             htypes.blog.blog_article, BlogArticle.from_piece, services.object_registry, self._blog_service_factory)
         services.object_registry.register_actor(
             htypes.blog.blog_article_ref_list,
             ArticleRefListObject.from_piece,
             self._blog_service_factory,
-            services.ref_registry,
+            services.mosaic,
             services.async_ref_resolver,
             )
         services.object_registry.register_actor(
             htypes.blog.blog_article_ref_selector,
             RefSelector.from_piece,
             self._blog_service_factory,
-            services.ref_registry,
+            services.mosaic,
             services.async_ref_resolver,
             services.object_registry,
             )
 
     async def _blog_service_factory(self, blog_service_ref):
-        return (await BlogService.from_data(self._types, self._ref_registry, self._service_registry, self._proxy_factory, blog_service_ref))
+        return (await BlogService.from_data(self._types, self._mosaic, self._service_registry, self._proxy_factory, blog_service_ref))

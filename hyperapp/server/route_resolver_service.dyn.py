@@ -26,7 +26,7 @@ class ThisModule(Module):
         super().__init__(module_name)
         iface_type_ref = services.types.reverse_resolve(htypes.hyper_ref.route_resolver)
         service = htypes.hyper_ref.service(ROUTE_RESOLVER_SERVICE_ID, iface_type_ref)
-        service_ref = services.ref_registry.distil(service)
+        service_ref = services.mosaic.distil(service)
         services.service_registry.register(service_ref, RouteResolverService, services.route_resolver)
         ref_collector = services.ref_collector_factory()
         bundle = ref_collector.make_bundle([service_ref])

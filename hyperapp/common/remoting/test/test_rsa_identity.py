@@ -43,7 +43,7 @@ def test_rsa_parcel(services):
     sender_identity = services.generate_rsa_identity(fast=True)
     receiver_identity = services.generate_rsa_identity(fast=True)
 
-    test_ref = services.ref_registry.distil(receiver_identity.peer.piece)
+    test_ref = services.mosaic.distil(receiver_identity.peer.piece)
 
     bundle_1 = bundle_t(roots=(test_ref,), capsule_list=(), route_list=())
     parcel_1 = receiver_identity.peer.make_parcel(bundle_1, sender_identity)

@@ -16,9 +16,9 @@ STATE_FILE_PATH = Path('~/.local/share/hyperapp/client/state.json').expanduser()
 
 class ApplicationStateStorage(object):
 
-    def __init__(self, types, ref_registry, ref_collector_factory, unbundler):
+    def __init__(self, types, mosaic, ref_collector_factory, unbundler):
         self._types = types
-        self._ref_registry = ref_registry
+        self._mosaic = mosaic
         self._ref_collector_factory = ref_collector_factory
         self._unbundler = unbundler
 
@@ -27,7 +27,7 @@ class ApplicationStateStorage(object):
         return htypes.application_state.application_state
         
     def save_state(self, state):
-        state_ref = self._ref_registry.distil(state, htypes.application_state.application_state)
+        state_ref = self._mosaic.distil(state, htypes.application_state.application_state)
         ref_collector = self._ref_collector_factory()
         bundle = ref_collector.make_bundle([state_ref])
         save_bundle_to_file(bundle, STATE_FILE_PATH)
@@ -49,4 +49,4 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         services.application_state_storage = ApplicationStateStorage(
-            services.types, services.ref_registry, services.ref_collector_factory, services.unbundler)
+            services.types, services.mosaic, services.ref_collector_factory, services.unbundler)

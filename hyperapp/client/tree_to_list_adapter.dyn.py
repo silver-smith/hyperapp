@@ -23,12 +23,12 @@ class _Observer(TreeObserver):
 class TreeToListAdapter(ListObject):
 
     @classmethod
-    async def from_state(cls, state, ref_registry, object_registry):
+    async def from_state(cls, state, mosaic, object_registry):
         tree_object = await object_registry.invite(state.base_ref)
-        return cls(ref_registry, tree_object, state.path)
+        return cls(mosaic, tree_object, state.path)
 
-    def __init__(self, ref_registry, tree_object, path):
-        self._ref_registry = ref_registry
+    def __init__(self, mosaic, tree_object, path):
+        self._mosaic = mosaic
         self._tree_object = tree_object
         self._path = list(path)  # accept tuples as well
         super().__init__()
@@ -65,7 +65,7 @@ class TreeToListAdapter(ListObject):
 
     @property
     def _tree_object_ref(self):
-        return self._ref_registry.distil(self._tree_object.data)
+        return self._mosaic.distil(self._tree_object.data)
 
     def _process_tree_fetch_results(self, path, item_list):
         if list(path) != self._path:  # path may also be tuple
@@ -96,26 +96,26 @@ class TreeToListLayout(AbstractMultiItemObjectLayout):
         return htypes.list_object.list_object_type(tuple((*base_object_type.command_list, *adapter_command_list)))
 
     @classmethod
-    async def from_data(cls, state, path, layout_watcher, ref_registry, async_ref_resolver, object_layout_registry, default_object_layouts):
+    async def from_data(cls, state, path, layout_watcher, mosaic, async_ref_resolver, object_layout_registry, default_object_layouts):
         base_object_type = await async_ref_resolver.summon(state.object_type_ref)
         adapter_object_type = cls.adapter_object_type(base_object_type)
         base_list_layout = await default_object_layouts.construct_default_layout(
             adapter_object_type, layout_watcher, object_layout_registry, path=[*path, 'base'])
-        return cls(ref_registry, path, adapter_object_type, state.command_list, base_list_layout, base_object_type)
+        return cls(mosaic, path, adapter_object_type, state.command_list, base_list_layout, base_object_type)
 
-    def __init__(self, ref_registry, path, adapter_object_type, command_list_data, base_list_layout, base_object_type):
-        super().__init__(ref_registry, path, adapter_object_type, command_list_data)
+    def __init__(self, mosaic, path, adapter_object_type, command_list_data, base_list_layout, base_object_type):
+        super().__init__(mosaic, path, adapter_object_type, command_list_data)
         self._base_object_type = base_object_type
         self._base_list_layout = base_list_layout
         self._object_to_adapter = weakref.WeakKeyDictionary()
 
     @property
     def data(self):
-        base_object_type_ref = self._ref_registry.distil(self._base_object_type)
+        base_object_type_ref = self._mosaic.distil(self._base_object_type)
         return htypes.tree_to_list_adapter.tree_to_list_adapter_layout(base_object_type_ref, self._command_list_data)
 
     async def create_view(self, command_hub, object):
-        adapter = TreeToListAdapter(self._ref_registry, object, path=[])
+        adapter = TreeToListAdapter(self._mosaic, object, path=[])
         self._object_to_adapter[object] = adapter
         return (await self._base_list_layout.create_view(command_hub, adapter))
 
@@ -157,16 +157,16 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
-        self._ref_registry = services.ref_registry
+        self._mosaic = services.mosaic
         services.object_registry.register_actor(
-            htypes.tree_to_list_adapter.tree_to_list_adapter, TreeToListAdapter.from_state, services.ref_registry, services.object_registry)
+            htypes.tree_to_list_adapter.tree_to_list_adapter, TreeToListAdapter.from_state, services.mosaic, services.object_registry)
         services.available_object_layouts.register('as_list', [TreeObject.type._t], self._make_layout_data)
         services.object_layout_registry.register_actor(
             htypes.tree_to_list_adapter.tree_to_list_adapter_layout, TreeToListLayout.from_data,
-            services.ref_registry, services.async_ref_resolver, services.object_layout_registry, services.default_object_layouts)
+            services.mosaic, services.async_ref_resolver, services.object_layout_registry, services.default_object_layouts)
 
     async def _make_layout_data(self, object_type):
-        object_type_ref = self._ref_registry.distil(object_type)
+        object_type_ref = self._mosaic.distil(object_type)
         adapter_object_type = TreeToListLayout.adapter_object_type(object_type)
         command_list = TreeToListLayout.make_default_command_list(adapter_object_type)
         return htypes.tree_to_list_adapter.tree_to_list_adapter_layout(object_type_ref, command_list)

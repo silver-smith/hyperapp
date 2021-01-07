@@ -56,14 +56,14 @@ class ThisModule(Module):
     def _init_dynamic_ref_list_service(self, services):
         iface_type_ref = services.types.reverse_resolve(htypes.ref_list.ref_list_service)
         service = htypes.hyper_ref.service(DYNAMIC_REF_LIST_SERVICE_ID, iface_type_ref)
-        service_ref = services.ref_registry.distil(service)
+        service_ref = services.mosaic.distil(service)
         services.service_registry.register(service_ref, self._resolve_dynamic_ref_list_service)
 
         dynamic_ref_list = htypes.ref_list.dynamic_ref_list(
             ref_list_service=service_ref,
             ref_list_id=SERVER_MANAGEMENT_REF_LIST_ID,
             )
-        dynamic_ref_list_ref = services.ref_registry.distil(dynamic_ref_list)
+        dynamic_ref_list_ref = services.mosaic.distil(dynamic_ref_list)
 
         ref_collector = services.ref_collector_factory()
         bundle = ref_collector.make_bundle([dynamic_ref_list_ref])

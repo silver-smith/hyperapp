@@ -6,7 +6,7 @@ import pytest
 
 from hyperapp.common.htypes import register_builtin_types
 from hyperapp.common.code_module import register_code_module_types
-from hyperapp.common.ref_registry import RefRegistry
+from hyperapp.common.mosaic import Mosaic
 from hyperapp.common.ref_resolver import RefResolver
 from hyperapp.common.type_system import TypeSystem
 from hyperapp.common.module_ref_resolver import ModuleRefResolver
@@ -42,8 +42,8 @@ def types(ref_resolver):
 
 
 @pytest.fixture
-def ref_registry(ref_resolver, types):
-    registry = RefRegistry(types)
+def mosaic(ref_resolver, types):
+    registry = Mosaic(types)
     ref_resolver.add_source(registry)
     register_builtin_types(registry, types)
     register_code_module_types(registry, types)
@@ -51,8 +51,8 @@ def ref_registry(ref_resolver, types):
 
 
 @pytest.fixture
-def module_ref_resolver(ref_registry):
-    return ModuleRefResolver(ref_registry)
+def module_ref_resolver(mosaic):
+    return ModuleRefResolver(mosaic)
 
 
 @pytest.fixture
@@ -61,12 +61,12 @@ def this_module_ref(module_ref_resolver):
 
 
 @pytest.fixture
-def init(types, ref_registry, module_ref_resolver):
+def init(types, mosaic, module_ref_resolver):
 
     @contextmanager
     def inited():
         storage = StubStorage()
-        logger = init_logger(types, ref_registry, module_ref_resolver, storage)
+        logger = init_logger(types, mosaic, module_ref_resolver, storage)
         logger.init_asyncio_task_factory()
         yield storage
         close_logger()

@@ -19,7 +19,7 @@ class _ParamChooserCallback(ChooserCallback):
 class ParamsEditor(RecordObject):
 
     @classmethod
-    async def from_data(cls, state, ref_registry, async_ref_resolver, object_registry):
+    async def from_data(cls, state, mosaic, async_ref_resolver, object_registry):
         target_piece = await async_ref_resolver.summon(state.target_piece_ref)
         target_object = await object_registry.animate(target_piece)
         bound_arguments = {
@@ -30,13 +30,13 @@ class ParamsEditor(RecordObject):
             name: await async_ref_resolver.summon(piece_ref)
             for name, piece_ref in state.fields
             }
-        self = cls(ref_registry, target_piece, target_object, state.target_command_id, bound_arguments)
+        self = cls(mosaic, target_piece, target_object, state.target_command_id, bound_arguments)
         await self.async_init(object_registry, fields_pieces)
         return self
 
-    def __init__(self, ref_registry, target_piece, target_object, target_command_id, bound_arguments):
+    def __init__(self, mosaic, target_piece, target_object, target_command_id, bound_arguments):
         super().__init__()
-        self._ref_registry = ref_registry
+        self._mosaic = mosaic
         self._target_piece = target_piece
         self._target_object = target_object
         self._target_command_id = target_command_id
@@ -68,7 +68,7 @@ class ParamsEditor(RecordObject):
             field_type_list=tuple(
                 htypes.record_object.record_type_field(
                     id=field_id,
-                    object_type_ref=self._ref_registry.distil(field_object.type),
+                    object_type_ref=self._mosaic.distil(field_object.type),
                     )
                 for field_id, field_object in self.fields.items()
                 ),
@@ -81,16 +81,16 @@ class ParamsEditor(RecordObject):
     @property
     def data(self):
         return htypes.params_editor.params_editor(
-            target_piece_ref=self._ref_registry.distil(self._target_piece),
+            target_piece_ref=self._mosaic.distil(self._target_piece),
             target_command_id=self._target_command_id,
             bound_arguments=[
                 htypes.params_editor.bound_argument(
-                    name, self._ref_registry.distil(value))
+                    name, self._mosaic.distil(value))
                 for name, value in self._bound_arguments.items()
                 ],
             fields=[
                 htypes.params_editor.field(
-                    name, self._ref_registry.distil(field_object.data))
+                    name, self._mosaic.distil(field_object.data))
                 for name, field_object in self.fields.items()
                 ],
             )
@@ -125,4 +125,4 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         services.object_registry.register_actor(
             htypes.params_editor.params_editor, ParamsEditor.from_data,
-            services.ref_registry, services.async_ref_resolver, services.object_registry)
+            services.mosaic, services.async_ref_resolver, services.object_registry)

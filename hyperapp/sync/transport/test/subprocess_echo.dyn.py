@@ -5,13 +5,13 @@ from hyperapp.common.module import Module
 
 class Endpoint:
 
-    def __init__(self, ref_registry, transport, my_identity):
-        self._ref_registry = ref_registry
+    def __init__(self, mosaic, transport, my_identity):
+        self._mosaic = mosaic
         self._transport = transport
         self._my_identity = my_identity
 
     def process(self, request):
-        my_peer_ref = self._ref_registry.distil(request.receiver_identity.peer.piece)
+        my_peer_ref = self._mosaic.distil(request.receiver_identity.peer.piece)
         self._transport.send(request.sender, self._my_identity, [*request.ref_list, my_peer_ref])
 
 
@@ -26,9 +26,9 @@ class ThisModule(Module):
         master_peer = services.peer_registry.invite(master_peer_ref)
 
         my_identity = services.generate_rsa_identity(fast=True)
-        my_peer_ref = services.ref_registry.distil(my_identity.peer.piece)
+        my_peer_ref = services.mosaic.distil(my_identity.peer.piece)
 
-        endpoint = Endpoint(services.ref_registry, services.transport, my_identity)
+        endpoint = Endpoint(services.mosaic, services.transport, my_identity)
         services.endpoint_registry.register(my_identity, endpoint)
 
         ref_collector = services.ref_collector_factory()

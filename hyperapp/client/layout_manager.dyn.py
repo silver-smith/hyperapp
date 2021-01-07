@@ -42,14 +42,14 @@ class RootLayout(GlobalLayout):
             self._on_close(self.id)
 
     @classmethod
-    async def from_data(cls, state, path, ref_registry, view_registry, layout_watcher):
-        self = cls(ref_registry, view_registry, layout_watcher, path)
+    async def from_data(cls, state, path, mosaic, view_registry, layout_watcher):
+        self = cls(mosaic, view_registry, layout_watcher, path)
         await self._async_init(state.window_ref_list)
         return self
 
-    def __init__(self, ref_registry, view_registry, layout_watcher, path):
+    def __init__(self, mosaic, view_registry, layout_watcher, path):
         super().__init__(path)
-        self._ref_registry = ref_registry
+        self._mosaic = mosaic
         self._view_registry = view_registry
         self._layout_watcher = layout_watcher
         self._window_list = None
@@ -64,7 +64,7 @@ class RootLayout(GlobalLayout):
     @property
     def data(self):
         window_ref_list = [
-            self._ref_registry.distil(rec.layout.data)
+            self._mosaic.distil(rec.layout.data)
             for rec in self._window_rec_list
             ]
         return htypes.root_layout.root_layout(window_ref_list)
@@ -140,7 +140,7 @@ class RootLayout(GlobalLayout):
 
     async def _duplicate_window_impl(self, idx, rec):
         new_idx = idx + 1
-        ref = self._ref_registry.distil(rec.layout.data)
+        ref = self._mosaic.distil(rec.layout.data)
         new_rec = await self._create_and_insert_rec(idx, ref)
         return (new_idx, new_rec)
 
@@ -185,4 +185,4 @@ class ThisModule(ClientModule):
             services.view_registry,
             )
         services.view_registry.register_actor(
-            htypes.root_layout.root_layout, RootLayout.from_data, services.ref_registry, services.view_registry, services.layout_watcher)
+            htypes.root_layout.root_layout, RootLayout.from_data, services.mosaic, services.view_registry, services.layout_watcher)

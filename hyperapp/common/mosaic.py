@@ -10,7 +10,7 @@ from .visual_rep import pprint
 log = logging.getLogger(__name__)
 
 
-class RefRegistry:
+class Mosaic:
 
     def __init__(self, types):
         self._types = types

@@ -10,12 +10,12 @@ from .htypes.hyper_ref import route_rec
 
 class EndpointRegistry(object):
 
-    def __init__(self, ref_registry):
-        self._ref_registry = ref_registry
+    def __init__(self, mosaic):
+        self._mosaic = mosaic
         self._endpoint_set = set()
 
     def register_endpoint(self, endpoint):
-        endpoint_ref = self._ref_registry.distil(endpoint)
+        endpoint_ref = self._mosaic.distil(endpoint)
         self.register_endpoint_ref(endpoint_ref)
         return endpoint_ref
 
@@ -42,5 +42,5 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
-        services.endpoint_registry = endpoint_registry = EndpointRegistry(services.ref_registry)
+        services.endpoint_registry = endpoint_registry = EndpointRegistry(services.mosaic)
         services.route_resolver.add_source(LocalRouteSource(endpoint_registry))

@@ -15,14 +15,14 @@ Item = namedtuple('Item', 'category layout')
 class CategoryList(SimpleListObject):
 
     @classmethod
-    async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, object_layout_association, object_layout_producer):
+    async def from_state(cls, state, mosaic, async_ref_resolver, object_registry, object_layout_association, object_layout_producer):
         piece = await async_ref_resolver.summon(state.piece_ref)
         object = await object_registry.animate(piece)
-        return cls(ref_registry, async_ref_resolver, object_layout_association, object_layout_producer, object)
+        return cls(mosaic, async_ref_resolver, object_layout_association, object_layout_producer, object)
 
-    def __init__(self, ref_registry, async_ref_resolver, object_layout_association, object_layout_producer, object):
+    def __init__(self, mosaic, async_ref_resolver, object_layout_association, object_layout_producer, object):
         super().__init__()
-        self._ref_registry = ref_registry
+        self._mosaic = mosaic
         self._async_ref_resolver = async_ref_resolver
         self._object_layout_association = object_layout_association
         self._object_layout_producer = object_layout_producer
@@ -52,7 +52,7 @@ class CategoryList(SimpleListObject):
 
     @property
     def _piece_ref(self):
-        return self._ref_registry.distil(self._object.data)
+        return self._mosaic.distil(self._object.data)
 
     async def _category_to_layout(self, category):
         layout_ref = self._object_layout_association.get(category)
@@ -65,7 +65,7 @@ class CategoryList(SimpleListObject):
         if layout_ref:
             return layout_ref
         layout = await self._object_layout_producer.produce_layout(self._object, layout_watcher=None)
-        return self._ref_registry.distil(layout.data)
+        return self._mosaic.distil(layout.data)
 
 
 class ThisModule(ClientModule):
@@ -75,7 +75,7 @@ class ThisModule(ClientModule):
         # services.object_registry.register_actor(
         #     htypes.category_list.category_list,
         #     CategoryList.from_state,
-        #     services.ref_registry,
+        #     services.mosaic,
         #     services.async_ref_resolver,
         #     services.object_registry,
         #     services.object_layout_association,

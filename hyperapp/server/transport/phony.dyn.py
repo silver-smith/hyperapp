@@ -95,9 +95,9 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
         # queues are expected to be created by test
-        phony_client_address_ref = services.ref_registry.distil(
+        phony_client_address_ref = services.mosaic.distil(
             htypes.phony_transport.client_address())
-        phony_server_address_ref = services.ref_registry.distil(
+        phony_server_address_ref = services.mosaic.distil(
             htypes.phony_transport.server_address())
         self._server = PhonyServer(
             services.failed,

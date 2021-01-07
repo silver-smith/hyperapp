@@ -10,8 +10,8 @@ log = logging.getLogger(__name__)
 class RemoteFsService(object):
 
     @classmethod
-    async def from_data(cls, service, ref_registry, proxy_factory):
-        service_ref = ref_registry.distil(service)  # making duplicate/overwrite
+    async def from_data(cls, service, mosaic, proxy_factory):
+        service_ref = mosaic.distil(service)  # making duplicate/overwrite
         proxy = await proxy_factory.from_ref(service_ref)
         return cls(proxy)
 
@@ -32,4 +32,4 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         services.fs_service_registry.register_actor(
-            htypes.hyper_ref.service, RemoteFsService.from_data, services.ref_registry, services.proxy_factory)
+            htypes.hyper_ref.service, RemoteFsService.from_data, services.mosaic, services.proxy_factory)

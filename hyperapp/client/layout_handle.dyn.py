@@ -65,10 +65,10 @@ class LayoutWatcher:
 class LayoutHandle:
 
     def __init__(
-            self, ref_registry, object_layout_registry, object_layout_association,
+            self, mosaic, object_layout_registry, object_layout_association,
             handle_by_type, handle_by_command, layout_from_object_type,
             watcher, object_type, origin_object_type, origin_command_id, layout):
-        self._ref_registry = ref_registry
+        self._mosaic = mosaic
         self._object_layout_registry = object_layout_registry
         self._object_layout_association = object_layout_association
         self._handle_by_type = handle_by_type
@@ -83,9 +83,9 @@ class LayoutHandle:
 
     @property
     def data(self):
-        object_type_ref = self._ref_registry.distil(self._object_type)
+        object_type_ref = self._mosaic.distil(self._object_type)
         if self._origin_object_type:
-            origin_object_type_ref = self._ref_registry.distil(self._object_type)
+            origin_object_type_ref = self._mosaic.distil(self._object_type)
         else:
             origin_object_type_ref = None
         return htypes.layout.layout_handle(object_type_ref, origin_object_type_ref, self._origin_command_id)
@@ -108,7 +108,7 @@ class LayoutHandle:
         if not layout:
             layout = await self._layout_from_object_type(object_type, watcher)
         handle = LayoutHandle(
-            self._ref_registry, self._object_layout_registry, self._object_layout_association,
+            self._mosaic, self._object_layout_registry, self._object_layout_association,
             self._handle_by_type, self._handle_by_command, self._layout_from_object_type,
             watcher, object_type, self._object_type, command_id, layout)
         self._handle_by_type[object_type] = handle
@@ -135,7 +135,7 @@ class ThisModule(ClientModule):
         services.layout_handle_from_data = self.layout_handle_from_data
         services.layout_handle_from_ref = self.layout_handle_from_ref
 
-        self._ref_registry = services.ref_registry
+        self._mosaic = services.mosaic
         self._async_ref_resolver = services.async_ref_resolver
         self._object_layout_registry = services.object_layout_registry
         self._object_layout_registry = services.object_layout_registry
@@ -168,7 +168,7 @@ class ThisModule(ClientModule):
         if not layout:
             layout = await self._layout_from_object_type(object_type, watcher)
         handle = LayoutHandle(
-            self._ref_registry, self._object_layout_registry, self._object_layout_association,
+            self._mosaic, self._object_layout_registry, self._object_layout_association,
             self._handle_by_type, self._handle_by_command, self._layout_from_object_type,
             watcher, object_type, origin_object_type, origin_command_id, layout)
         self._handle_by_type[object_type] = handle
