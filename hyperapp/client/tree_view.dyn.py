@@ -393,6 +393,6 @@ class ThisModule(ClientModule):
         return TreeView(columns, object, current_path)
 
     async def _make_tree_layout_data(self, object_type):
-        object_type_ref = self._mosaic.distil(object_type)
+        object_type_ref = self._mosaic.put(object_type)
         command_list = MultiItemObjectLayout.make_default_command_list(object_type)
         return htypes.tree_view.tree_layout(object_type_ref, command_list)

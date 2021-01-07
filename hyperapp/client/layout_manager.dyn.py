@@ -64,7 +64,7 @@ class RootLayout(GlobalLayout):
     @property
     def data(self):
         window_ref_list = [
-            self._mosaic.distil(rec.layout.data)
+            self._mosaic.put(rec.layout.data)
             for rec in self._window_rec_list
             ]
         return htypes.root_layout.root_layout(window_ref_list)
@@ -140,7 +140,7 @@ class RootLayout(GlobalLayout):
 
     async def _duplicate_window_impl(self, idx, rec):
         new_idx = idx + 1
-        ref = self._mosaic.distil(rec.layout.data)
+        ref = self._mosaic.put(rec.layout.data)
         new_rec = await self._create_and_insert_rec(idx, ref)
         return (new_idx, new_rec)
 

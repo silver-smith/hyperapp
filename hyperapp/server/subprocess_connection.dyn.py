@@ -18,7 +18,7 @@ class SubprocessRoute:
         self._connection = connection
 
     def send(self, parcel):
-        parcel_ref = self._mosaic.distil(parcel.piece)
+        parcel_ref = self._mosaic.put(parcel.piece)
         ref_collector = self._ref_collector_factory()
         parcel_bundle = ref_collector.make_bundle([parcel_ref])
         bundle_cdr = packet_coders.encode('cdr', parcel_bundle)

@@ -52,7 +52,7 @@ class CategoryList(SimpleListObject):
 
     @property
     def _piece_ref(self):
-        return self._mosaic.distil(self._object.data)
+        return self._mosaic.put(self._object.data)
 
     async def _category_to_layout(self, category):
         layout_ref = self._object_layout_association.get(category)
@@ -65,7 +65,7 @@ class CategoryList(SimpleListObject):
         if layout_ref:
             return layout_ref
         layout = await self._object_layout_producer.produce_layout(self._object, layout_watcher=None)
-        return self._mosaic.distil(layout.data)
+        return self._mosaic.put(layout.data)
 
 
 class ThisModule(ClientModule):

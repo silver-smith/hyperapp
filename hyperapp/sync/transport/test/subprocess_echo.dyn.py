@@ -11,7 +11,7 @@ class Endpoint:
         self._my_identity = my_identity
 
     def process(self, request):
-        my_peer_ref = self._mosaic.distil(request.receiver_identity.peer.piece)
+        my_peer_ref = self._mosaic.put(request.receiver_identity.peer.piece)
         self._transport.send(request.sender, self._my_identity, [*request.ref_list, my_peer_ref])
 
 
@@ -26,7 +26,7 @@ class ThisModule(Module):
         master_peer = services.peer_registry.invite(master_peer_ref)
 
         my_identity = services.generate_rsa_identity(fast=True)
-        my_peer_ref = services.mosaic.distil(my_identity.peer.piece)
+        my_peer_ref = services.mosaic.put(my_identity.peer.piece)
 
         endpoint = Endpoint(services.mosaic, services.transport, my_identity)
         services.endpoint_registry.register(my_identity, endpoint)

@@ -188,8 +188,8 @@ class ObjectLayoutEditor(LayoutEditor):
 
     @property
     def data(self):
-        object_type_ref = self._mosaic.distil(self._object_type)
-        origin_object_type_ref = self._mosaic.distil_opt(self._origin_object_type)
+        object_type_ref = self._mosaic.put(self._object_type)
+        origin_object_type_ref = self._mosaic.put_opt(self._origin_object_type)
         return htypes.layout_editor.object_layout_editor(object_type_ref, origin_object_type_ref, self._origin_command_id)
 
     def get_command_list(self):
@@ -212,12 +212,12 @@ class ObjectLayoutEditor(LayoutEditor):
 
     @object_command('replace', kind='element')
     async def _replace_view(self, path):
-        object_type_ref = self._mosaic.distil(self._object_type)
+        object_type_ref = self._mosaic.put(self._object_type)
         chooser = htypes.view_chooser.view_chooser(object_type_ref)
-        chooser_ref = self._mosaic.distil(chooser)
+        chooser_ref = self._mosaic.put(chooser)
         layout_data_maker_field = htypes.params_editor.field('layout_data_maker', chooser_ref)
         return htypes.params_editor.params_editor(
-            target_piece_ref=self._mosaic.distil(self.data),
+            target_piece_ref=self._mosaic.put(self.data),
             target_command_id=self._replace_impl.id,
             bound_arguments=[],
             fields=[layout_data_maker_field],

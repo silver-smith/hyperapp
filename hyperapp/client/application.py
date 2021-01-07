@@ -43,7 +43,7 @@ class Application(AsyncApplication, Commander):
 
     def get_current_state(self):
         root_layout = self._layout_manager.root_layout.data
-        root_layout_ref = self._mosaic.distil(root_layout)
+        root_layout_ref = self._mosaic.put(root_layout)
         return self._state_storage.state_t(
             root_layout_ref=root_layout_ref,
             )

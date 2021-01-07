@@ -115,8 +115,8 @@ class MasterDetailsLayout(ObjectLayout):
     @command('replace')
     async def _replace_view(self, path, view: LayoutRecMakerField):
         resource_key = self._object.hashable_resource_key
-        self._object_layout_overrides[resource_key] = self._mosaic.distil(self.data)  # todo
-        piece_ref = self._mosaic.distil(self._piece)
+        self._object_layout_overrides[resource_key] = self._mosaic.put(self.data)  # todo
+        piece_ref = self._mosaic.put(self._piece)
         return htypes.layout_editor.object_layout_editor(piece_ref)
 
 
@@ -144,7 +144,7 @@ class ThisModule(ClientModule):
         except StopIteration:
             raise RuntimeError(f"At least one default category is expected for {object} categoriees: {object.category_list}.")
         master_layout_rec = await rec.layout_rec_maker(object)
-        master_layout_ref = self._mosaic.distil(master_layout_rec)
+        master_layout_ref = self._mosaic.put(master_layout_rec)
         return htypes.master_details.master_details_layout(
             master_layout_ref=master_layout_ref,
             command_id='open',

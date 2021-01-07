@@ -61,8 +61,8 @@ class CommandList(SimpleListObject):
 
     @property
     def data(self):
-        piece_ref = self._mosaic.distil(self._object.data)
-        layout_handle_ref = self._mosaic.distil(self._layout_handle.data)
+        piece_ref = self._mosaic.put(self._object.data)
+        layout_handle_ref = self._mosaic.put(self._layout_handle.data)
         return htypes.command_list.command_list(piece_ref, layout_handle_ref)
 
     @property
@@ -133,19 +133,19 @@ class CommandList(SimpleListObject):
             if object_type is None:
                 # Associating layout to dynamic-object-type command is forbidden. Even if we can run command to get it.
                 return None
-        object_type_ref = self._mosaic.distil(object_type)
-        origin_object_type_ref = self._mosaic.distil(self._layout_handle.object_type)
+        object_type_ref = self._mosaic.put(object_type)
+        origin_object_type_ref = self._mosaic.put(self._layout_handle.object_type)
         return htypes.layout_editor.object_layout_editor(object_type_ref, origin_object_type_ref, command_id)
 
     @object_command('add', kind='element')
     async def _add_command(self, path):
-        piece_ref = self._mosaic.distil(self._object.data)
-        layout_ref = self._mosaic.distil(self._layout.data)
+        piece_ref = self._mosaic.put(self._object.data)
+        layout_ref = self._mosaic.put(self._layout.data)
         chooser = htypes.code_command_chooser.code_command_chooser(piece_ref, layout_ref)
-        chooser_ref = self._mosaic.distil(chooser)
+        chooser_ref = self._mosaic.put(chooser)
         code_command_id_field = htypes.params_editor.field('code_command_id', chooser_ref)
         return htypes.params_editor.params_editor(
-            target_piece_ref=self._mosaic.distil(self.data),
+            target_piece_ref=self._mosaic.put(self.data),
             target_command_id=self._add_command_impl.id,
             bound_arguments=[],
             fields=[code_command_id_field],

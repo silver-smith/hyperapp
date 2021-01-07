@@ -28,7 +28,7 @@ class Mosaic:
         # pprint(self._types.decode_capsule(capsule).value, indent=1, logger=log.debug)
         return ref
 
-    def distil(self, piece, t=None):
+    def put(self, piece, t=None):
         t = t or deduce_value_type(piece)
         log.debug('Registering ref for piece %s', t.name)
         capsule = self._types.make_capsule(piece, t)
@@ -36,10 +36,10 @@ class Mosaic:
         log.debug('  -> registered ref %s for piece %s', ref_repr(ref), t.name)
         return ref
 
-    def distil_opt(self, piece, t=None):
+    def put_opt(self, piece, t=None):
         if piece is None:
             return None
-        return self.distil(piece, t)
+        return self.put(piece, t)
 
     def resolve_ref(self, ref):
         return self._registry.get(ref)

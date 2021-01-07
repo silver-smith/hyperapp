@@ -109,13 +109,13 @@ class TypeSystem(object):
     def register_builtin_type(self, mosaic, t):
         assert t not in self._type2ref, repr(t)
         type_rec = builtin_ref_t(t.name)
-        type_ref = mosaic.distil(type_rec)
+        type_ref = mosaic.put(type_rec)
         self._register_type(type_ref, t)
         self._builtin_name_to_type[t.name] = t
         _log.debug("Registered builtin type %s: %s", t, ref_repr(type_ref))
 
     def register_type(self, mosaic, type_rec):
-        type_ref = mosaic.distil(type_rec)
+        type_ref = mosaic.put(type_rec)
         t = self.resolve(type_ref)
         self._register_type(type_ref, t)
         _log.debug("Registered type: %s -> %s", ref_repr(type_ref), t)

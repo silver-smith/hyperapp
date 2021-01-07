@@ -95,7 +95,7 @@ class Services(object):
             parts = module_name.split('.')
             file_path = self.hyperapp_dir.joinpath(*parts)
             code_module = self.code_module_loader.load_code_module(file_path, module_name)
-            code_module_ref = self.mosaic.distil(code_module)
+            code_module_ref = self.mosaic.put(code_module)
             log.info("Import module %s (%s) with file path %s", module_name, ref_repr(code_module_ref), file_path)
             module = self.code_module_importer.import_code_module(code_module_ref)
             self.name2module[module_name] = module

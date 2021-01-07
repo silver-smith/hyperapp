@@ -126,14 +126,14 @@ class ThisModule(ClientModule):
         sample_article_type = htypes.tree_view_sample.tree_view_sample_article_type(
             command_list=(),
             field_type_list=(
-                htypes.record_object.record_type_field('title', services.mosaic.distil(LineObject.type)),
-                htypes.record_object.record_type_field('text', services.mosaic.distil(TextObject.type)),
+                htypes.record_object.record_type_field('title', services.mosaic.put(LineObject.type)),
+                htypes.record_object.record_type_field('text', services.mosaic.put(TextObject.type)),
                 ),
             )
         sample_tree_type = htypes.tree_view_sample.tree_view_sample_object_type(
             command_list=(
-                htypes.object_type.object_command('open', services.mosaic.distil(TextObject.type)),
-                htypes.object_type.object_command('edit', services.mosaic.distil(sample_article_type)),
+                htypes.object_type.object_command('open', services.mosaic.put(TextObject.type)),
+                htypes.object_type.object_command('edit', services.mosaic.put(sample_article_type)),
                 ),
             )
         SampleTree.type = sample_tree_type

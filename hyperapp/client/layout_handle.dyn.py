@@ -83,9 +83,9 @@ class LayoutHandle:
 
     @property
     def data(self):
-        object_type_ref = self._mosaic.distil(self._object_type)
+        object_type_ref = self._mosaic.put(self._object_type)
         if self._origin_object_type:
-            origin_object_type_ref = self._mosaic.distil(self._object_type)
+            origin_object_type_ref = self._mosaic.put(self._object_type)
         else:
             origin_object_type_ref = None
         return htypes.layout.layout_handle(object_type_ref, origin_object_type_ref, self._origin_command_id)

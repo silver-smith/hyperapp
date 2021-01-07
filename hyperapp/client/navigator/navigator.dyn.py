@@ -113,7 +113,7 @@ class NavigatorLayout(GlobalLayout):
 
     @property
     def data(self):
-        piece_ref = self._mosaic.distil(self._current_object.data)
+        piece_ref = self._mosaic.put(self._current_object.data)
         return htypes.navigator.navigator(piece_ref)
 
     async def create_view(self):
@@ -189,14 +189,14 @@ class NavigatorLayout(GlobalLayout):
 
     @command('open_layout_editor')
     async def _open_layout_editor(self):
-        object_type_ref = self._mosaic.distil(self._current_object.type)
+        object_type_ref = self._mosaic.put(self._current_object.type)
         piece = htypes.layout_editor.object_layout_editor(object_type_ref, origin_object_type_ref=None, origin_command_id=None)
         await self._open_piece(piece)
 
     @command('commands')
     async def _open_commands(self):
-        piece_ref = self._mosaic.distil(self._current_object.data)
-        layout_handle_ref = self._mosaic.distil(self._current_layout_handle.data)
+        piece_ref = self._mosaic.put(self._current_object.data)
+        layout_handle_ref = self._mosaic.put(self._current_layout_handle.data)
         piece = htypes.command_list.command_list(piece_ref, layout_handle_ref)
         await self._open_piece(piece)
 

@@ -20,7 +20,7 @@ class Method:
 
     def __call__(self, *args, **kw):
         # params = self._command.params_t(*args, **kw)
-        # params_ref = self._mosaic.distil(params)
+        # params_ref = self._mosaic.put(params)
         # request_id = str(uuid.uuid4())
         # request = htypes.rpc.request(
         #     sender_peer_ref=self._my_peer_ref,
@@ -58,7 +58,7 @@ class ThisModule(Module):
         services.rpc_proxy = self.rpc_proxy_factory
 
     def rpc_proxy_factory(self, my_identity, rpc_service):
-        my_peer_ref = self._mosaic.distil(my_identity.peer.piece)
+        my_peer_ref = self._mosaic.put(my_identity.peer.piece)
         peer = self._peer_registry.invite(rpc_service.peer_ref)
         iface = self._types.resolve(rpc_service.iface_ref)
         return Proxy(self._mosaic, my_identity, my_peer_ref, peer, iface, rpc_service.iface_ref, rpc_service.object_id)

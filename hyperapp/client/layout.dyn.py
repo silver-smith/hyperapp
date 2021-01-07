@@ -144,7 +144,7 @@ class ObjectLayout(Layout):
 
     @property
     def _object_type_ref(self):
-        return self._mosaic.distil(self._object_type)
+        return self._mosaic.put(self._object_type)
 
     @property
     def _command_list_data(self):

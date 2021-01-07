@@ -45,7 +45,7 @@ def code_module_list():
 
 def test_echo(services, htypes):
     master_identity = services.generate_rsa_identity(fast=True)
-    master_peer_ref = services.mosaic.distil(master_identity.peer.piece)
+    master_peer_ref = services.mosaic.put(master_identity.peer.piece)
 
     test_echo_iface_ref = services.types.reverse_resolve(htypes.test_rpc.test_echo_iface)
     master_service = htypes.rpc.endpoint(
@@ -53,7 +53,7 @@ def test_echo(services, htypes):
         iface_ref=test_echo_iface_ref,
         object_id='run_test',
         )
-    master_service_ref = services.mosaic.distil(master_service)
+    master_service_ref = services.mosaic.put(master_service)
 
     ref_collector = services.ref_collector_factory()
     master_service_bundle = ref_collector.make_bundle([master_service_ref])

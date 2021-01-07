@@ -124,6 +124,6 @@ class ThisModule(ClientModule):
             htypes.text.text_edit_layout, TextViewLayout.from_data, services.mosaic, services.async_ref_resolver)
 
     async def _make_text_layout_data(self, object_type):
-        object_type_ref = self._mosaic.distil(object_type)
+        object_type_ref = self._mosaic.put(object_type)
         command_list = ObjectLayout.make_default_command_list(object_type)
         return htypes.text.text_edit_layout(object_type_ref, command_list, editable=False)

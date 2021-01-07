@@ -252,7 +252,7 @@ class ArticleRefListObject(ListObject):
     @command('add')
     async def command_add(self):
         current_piece = htypes.blog.blog_article_ref_list(self._blog_service.ref, self._blog_id, self._article_id, selected_ref_id=None)
-        current_piece_ref = self._mosaic.distil(current_piece)
+        current_piece_ref = self._mosaic.put(current_piece)
         return htypes.blog.blog_article_ref_selector(
             self._blog_service.ref,
             self._blog_id,
@@ -322,7 +322,7 @@ class RefSelector(RecordObject):
         piece = await fn_coro
         if piece is None:
             return piece
-        piece_ref = self._mosaic.distil(piece)
+        piece_ref = self._mosaic.put(piece)
         return htypes.blog.blog_article_ref_selector(
             self._blog_service.ref,
             self._blog_id,
@@ -397,7 +397,7 @@ class BlogService(object):
         service_id = str(uuid.uuid4())
         iface_type_ref = self._types.reverse_resolve(htypes.blog.blog_notification_iface)
         service = htypes.hyper_ref.service(service_id, iface_type_ref)
-        service_ref = self._mosaic.distil(service)
+        service_ref = self._mosaic.put(service)
         self._service_registry.register(service_ref, self._notification.get_self)
         await self._proxy.subscribe([blog_id], service_ref)
 

@@ -49,7 +49,7 @@ class Remoting(object):
             request_id=request_id,
             params=EncodableEmbedded(command.request, params),
             )
-        request_ref = self._mosaic.distil(rpc_request)
+        request_ref = self._mosaic.put(rpc_request)
         pprint(rpc_request, title='Outcoming RPC %s %s:' % (command.request_type, ref_repr(request_ref)))
         pprint(params, title='params:')
         transport.send(request_ref)

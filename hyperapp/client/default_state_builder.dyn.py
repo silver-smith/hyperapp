@@ -11,20 +11,20 @@ class ThisModule(ClientModule):
 
     def _build_default_state(self):
         piece = htypes.text.text("Welcome to hyperapp")
-        piece_ref = self._mosaic.distil(piece)
+        piece_ref = self._mosaic.put(piece)
         navigator = htypes.navigator.navigator(piece_ref)
-        navigator_ref = self._mosaic.distil(navigator)
+        navigator_ref = self._mosaic.put(navigator)
         tab_view = htypes.tab_view.tab_view([navigator_ref], 0)
-        tab_view_ref = self._mosaic.distil(tab_view)
+        tab_view_ref = self._mosaic.put(tab_view)
         menu_bar = htypes.menu_bar.menu_bar()
-        menu_bar_ref = self._mosaic.distil(menu_bar)
+        menu_bar_ref = self._mosaic.put(menu_bar)
         command_pane = htypes.command_pane.command_pane()
-        command_pane_ref = self._mosaic.distil(command_pane)
+        command_pane_ref = self._mosaic.put(command_pane)
         window = htypes.window.window(
             menu_bar_ref=menu_bar_ref,
             command_pane_ref=command_pane_ref,
             central_view_ref=tab_view_ref,
             size=htypes.window.size(1000, 800),
             pos=htypes.window.pos(500, 100))
-        window_ref = self._mosaic.distil(window)
+        window_ref = self._mosaic.put(window)
         return htypes.root_layout.root_layout([window_ref])

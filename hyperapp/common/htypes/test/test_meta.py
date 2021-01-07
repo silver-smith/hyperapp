@@ -66,7 +66,7 @@ def mosaic(ref_resolver, types):
 def builtin_ref(mosaic):
 
     def make(name):
-        ref = mosaic.distil(builtin_ref_t(name))
+        ref = mosaic.put(builtin_ref_t(name))
         return t_ref(ref)
 
     return make
@@ -80,7 +80,7 @@ def type_ref(mosaic):
             name=name,
             type=meta_type,
             )
-        return mosaic.distil(rec)
+        return mosaic.put(rec)
 
     return make
 

@@ -22,8 +22,8 @@ class ObjectLayoutAssociationRepository:
 
     def associate_type(self, object_type, layout):
         _log.info("Associate object type %s with layout %s", object_type, layout.data)
-        object_type_ref = self._mosaic.distil(object_type)
-        layout_ref = self._mosaic.distil(layout.data)
+        object_type_ref = self._mosaic.put(object_type)
+        layout_ref = self._mosaic.put(layout.data)
         record = htypes.object_layout_association.type_repository_record(object_type_ref, layout_ref)
         data = packet_coders.encode('yaml', record)
         path = self._type_file_path(object_type)
@@ -32,8 +32,8 @@ class ObjectLayoutAssociationRepository:
 
     def associate_command(self, origin_object_type, command_id, layout):
         _log.info("Associate object command %s/%s with layout %s", origin_object_type, command_id, layout.data)
-        origin_object_type_ref = self._mosaic.distil(origin_object_type)
-        layout_ref = self._mosaic.distil(layout.data)
+        origin_object_type_ref = self._mosaic.put(origin_object_type)
+        layout_ref = self._mosaic.put(layout.data)
         record = htypes.object_layout_association.command_repository_record(origin_object_type_ref, command_id, layout_ref)
         data = packet_coders.encode('yaml', record)
         path = self._command_file_path(origin_object_type, command_id)
@@ -65,12 +65,12 @@ class ObjectLayoutAssociationRepository:
         return layout
 
     def _type_file_path(self, object_type):
-        object_type_ref = self._mosaic.distil(object_type)
+        object_type_ref = self._mosaic.put(object_type)
         hash_hex = codecs.encode(object_type_ref.hash[:4], 'hex').decode()
         return self._dir / f'{object_type._t.name}-{object_type_ref.hash_algorithm}:{hash_hex}.yaml'
 
     def _command_file_path(self, origin_object_type, command_id):
-        origin_object_type_ref = self._mosaic.distil(origin_object_type)
+        origin_object_type_ref = self._mosaic.put(origin_object_type)
         hash_hex = codecs.encode(origin_object_type_ref.hash[:4], 'hex').decode()
         return self._dir / f'{origin_object_type._t.name}-{command_id}-{origin_object_type_ref.hash_algorithm}:{hash_hex}.yaml'
 

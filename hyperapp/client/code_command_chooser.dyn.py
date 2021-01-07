@@ -45,8 +45,8 @@ class CodeCommandChooser(SimpleListObject, Chooser):
 
     @property
     def data(self):
-        piece_ref = self._mosaic.distil(self._object.data)
-        layout_ref = self._mosaic.distil(self._layout.data)
+        piece_ref = self._mosaic.put(self._object.data)
+        layout_ref = self._mosaic.put(self._layout.data)
         return htypes.code_command_chooser.code_command_chooser(piece_ref, layout_ref)
 
     @property

@@ -15,7 +15,7 @@ class EndpointRegistry(object):
         self._endpoint_set = set()
 
     def register_endpoint(self, endpoint):
-        endpoint_ref = self._mosaic.distil(endpoint)
+        endpoint_ref = self._mosaic.put(endpoint)
         self.register_endpoint_ref(endpoint_ref)
         return endpoint_ref
 

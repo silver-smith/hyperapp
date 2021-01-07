@@ -16,7 +16,7 @@ class ThisModule(Module):
         master_service = services.types.resolve_ref(master_service_ref).value
 
         my_identity = services.generate_rsa_identity(fast=True)
-        my_peer_ref = services.mosaic.distil(my_identity.peer.piece)
+        my_peer_ref = services.mosaic.put(my_identity.peer.piece)
 
         echo_iface_ref = services.types.reverse_resolve(htypes.echo.echo_iface)
         echo_service = htypes.rpc.endpoint(
@@ -24,7 +24,7 @@ class ThisModule(Module):
             iface_ref=echo_iface_ref,
             object_id='echo',
             )
-        echo_service_ref = services.mosaic.distil(echo_service)
+        echo_service_ref = services.mosaic.put(echo_service)
 
         proxy = services.rpc_proxy(my_identity, master_service)
         proxy.run(echo_service_ref)

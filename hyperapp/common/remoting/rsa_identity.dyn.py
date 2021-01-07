@@ -173,7 +173,7 @@ class RsaParcel:
 
     @property
     def piece(self):
-        signature_ref = self._mosaic.distil(self._signature.piece)
+        signature_ref = self._mosaic.put(self._signature.piece)
         return htypes.rsa_identity.rsa_parcel(
             receiver_public_key_pem=self._receiver.public_key_pem,
             encrypted_fernet_key=self._encrypted_fernet_key,

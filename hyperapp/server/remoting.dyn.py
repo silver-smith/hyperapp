@@ -52,7 +52,7 @@ class Remoting(object):
         self._transport_registry = transport_registry
         self._service_registry = service_registry
         my_endpoint = htypes.hyper_ref.endpoint(service_id=str(uuid.uuid4()))
-        self._my_endpoint_ref = self._mosaic.distil(my_endpoint)
+        self._my_endpoint_ref = self._mosaic.put(my_endpoint)
         # todo: may be create server endpoint registry and register my endpoint there
 
     def send_request(self, service_ref, iface, command, params):
@@ -73,7 +73,7 @@ class Remoting(object):
             request_id=request_id,
             params=EncodableEmbedded(command.request, params),
             )
-        request_ref = self._mosaic.distil(rpc_request)
+        request_ref = self._mosaic.put(rpc_request)
         pprint(rpc_request, title='Outgoing RPC %s %s:' % (command.request_type, ref_repr(request_ref)))
         pprint(params, title='params:')
         transport.send(request_ref)
@@ -111,7 +111,7 @@ class Remoting(object):
             return (None, None)
         assert isinstance(response, Response), repr(response)
         rpc_response = response.make_rpc_response(command, rpc_request.request_id)
-        rpc_response_ref = self._mosaic.distil(rpc_response)
+        rpc_response_ref = self._mosaic.put(rpc_response)
         pprint(rpc_response, title='Outgoing RPC Response %s:' % ref_repr(rpc_response_ref))
         response.log_result_or_error(command)
         return (rpc_response_ref, rpc_response)

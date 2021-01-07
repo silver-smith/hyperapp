@@ -118,7 +118,7 @@ class ThisModule(Module):
             self._on_failure(f"Error processing parcel from subprocess {process.name!r}: {x}")
 
     def _process_parcel(self, connection, parcel):
-        sender_ref = self._mosaic.distil(parcel.sender.piece)
+        sender_ref = self._mosaic.put(parcel.sender.piece)
         child_route = SubprocessRoute(self._mosaic, self._ref_collector_factory, connection)
         self._route_a9n_registry.associate(sender_ref, child_route)
         self._transport.send_parcel(parcel)

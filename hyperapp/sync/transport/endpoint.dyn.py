@@ -28,7 +28,7 @@ class EndpointRegistry:
         self._route_a9n_registry = route_a9n_registry
 
     def register(self, identity, endpoint):
-        peer_ref = self._mosaic.distil(identity.peer.piece)
+        peer_ref = self._mosaic.put(identity.peer.piece)
         route = LocalRoute(self._unbundler, identity, endpoint)
         self._route_a9n_registry.associate(peer_ref, route)
 

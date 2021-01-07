@@ -76,7 +76,7 @@ def test_code_module_import(mosaic, type_module_loader, code_module_loader, code
     type_module_loader.load_type_module(TEST_MODULES_DIR / 'type_module_1.types')
     type_module_loader.load_type_module(TEST_MODULES_DIR / 'type_module_2.types')
     code_module = code_module_loader.load_code_module(TEST_MODULES_DIR / 'code_module_1')
-    code_module_ref = mosaic.distil(code_module)
+    code_module_ref = mosaic.put(code_module)
     code_module_importer.import_code_module(code_module_ref)
 
 
@@ -85,8 +85,8 @@ def test_code_module_import_from_code_module(mosaic, type_module_loader, code_mo
     type_module_loader.load_type_module(TEST_MODULES_DIR / 'type_module_2.types')
     code_module_1 = code_module_loader.load_code_module(TEST_MODULES_DIR / 'code_module_1')
     code_module_2 = code_module_loader.load_code_module(TEST_MODULES_DIR / 'code_module_2')
-    code_module_1_ref = mosaic.distil(code_module_1)
-    code_module_2_ref = mosaic.distil(code_module_2)
+    code_module_1_ref = mosaic.put(code_module_1)
+    code_module_2_ref = mosaic.put(code_module_2)
 
     code_module_importer.import_code_module(code_module_1_ref)
     code_module_importer.import_code_module(code_module_2_ref)

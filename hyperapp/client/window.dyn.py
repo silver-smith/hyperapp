@@ -53,9 +53,9 @@ class WindowLayout(GlobalLayout):
         else:
             size, pos = self._size, self._pos
         return htypes.window.window(
-            menu_bar_ref=self._mosaic.distil(self._menu_bar_layout.data),
-            command_pane_ref=self._mosaic.distil(self._command_pane_layout.data),
-            central_view_ref=self._mosaic.distil(self._central_view_layout.data),
+            menu_bar_ref=self._mosaic.put(self._menu_bar_layout.data),
+            command_pane_ref=self._mosaic.put(self._command_pane_layout.data),
+            central_view_ref=self._mosaic.put(self._central_view_layout.data),
             size=size,
             pos=pos,
             )
