@@ -169,7 +169,7 @@ class _Logger:
             fields.append(t_field_meta(name, t_ref(type_ref)))
         type_name = entry_name.replace('.', '_')
         type_rec = meta_ref_t(type_name, t_record_meta(fields))
-        params_t = self._types.register_type(self._mosaic, type_rec).t
+        params_t = self._types.register_type(type_rec).t
         self._params_t_cache[key] = params_t
         return params_t
 

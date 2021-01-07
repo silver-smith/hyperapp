@@ -21,16 +21,17 @@ def web():
 
 
 @pytest.fixture
-def type_system(web):
-    return TypeSystem(web)
+def type_system():
+    return TypeSystem()
 
 
 @pytest.fixture
 def mosaic(web, type_system):
-    registry = Mosaic(type_system)
-    web.add_source(registry)
-    register_builtin_types(registry, type_system)
-    return registry
+    mosaic = Mosaic(type_system)
+    type_system.init_mosaic(mosaic)
+    web.add_source(mosaic)
+    register_builtin_types(type_system)
+    return mosaic
 
 
 @pytest.fixture
@@ -44,12 +45,12 @@ def decoder(type_system, mosaic):
 
 
 @pytest.fixture
-def types(type_system, mosaic):
-    primitive_params = type_system.register_type(mosaic, meta_ref_t('primitive_params', t_record_meta([
+def types(type_system):
+    primitive_params = type_system.register_type(meta_ref_t('primitive_params', t_record_meta([
         t_field_meta('num', t_ref(type_system.reverse_resolve(tInt))),
         t_field_meta('name', t_ref(type_system.reverse_resolve(tString))),
         ]))).t
-    ref_params = type_system.register_type(mosaic, meta_ref_t('primitive_params', t_record_meta([
+    ref_params = type_system.register_type(meta_ref_t('primitive_params', t_record_meta([
         t_field_meta('test_ref', t_ref(type_system.reverse_resolve(ref_t))),
         ]))).t
     return SimpleNamespace(

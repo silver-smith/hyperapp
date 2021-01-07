@@ -50,16 +50,17 @@ def web():
 
 
 @pytest.fixture
-def types(web):
-    return TypeSystem(web)
+def types():
+    return TypeSystem()
 
 
 @pytest.fixture
 def mosaic(web, types):
-    registry = Mosaic(types)
-    web.add_source(registry)
-    register_builtin_types(registry, types)
-    return registry
+    mosaic = Mosaic(types)
+    types.init_mosaic(mosaic)
+    web.add_source(mosaic)
+    register_builtin_types(types)
+    return mosaic
 
 
 @pytest.fixture

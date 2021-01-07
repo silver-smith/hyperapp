@@ -43,15 +43,19 @@ _RegisteredType = namedtuple('_RegisteredType', 't ref')
 
 class TypeSystem(object):
 
-    def __init__(self, web):
-        self._web = web
-        self._type_code_registry = CodeRegistry('type', web, self)
+    def __init__(self):
+        self._mosaic = None
+        self._type_code_registry = None
         self._type_web = _TypeWeb(self)
         self._meta_type_registry = make_meta_type_registry()
         self._ref2type_cache = {}  # we should resolve same ref to same instance, not a duplicate
         self._type2ref = {}  # reverse registry
         self._builtin_name_to_type = {}
         self._add_phony_refs()
+
+    def init_mosaic(self, mosaic):
+        self._mosaic = mosaic
+        self._type_code_registry = CodeRegistry('type', mosaic, self)
         self._type_code_registry.register_actor(builtin_ref_t, self._resolve_builtin_ref)
         self._type_code_registry.register_actor(meta_ref_t, self._resolve_meta_ref)
 
@@ -106,16 +110,16 @@ class TypeSystem(object):
         assert type_ref == capsule.type_ref
         return packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
 
-    def register_builtin_type(self, mosaic, t):
+    def register_builtin_type(self, t):
         assert t not in self._type2ref, repr(t)
         type_rec = builtin_ref_t(t.name)
-        type_ref = mosaic.put(type_rec)
+        type_ref = self._mosaic.put(type_rec)
         self._register_type(type_ref, t)
         self._builtin_name_to_type[t.name] = t
         _log.debug("Registered builtin type %s: %s", t, ref_repr(type_ref))
 
-    def register_type(self, mosaic, type_rec):
-        type_ref = mosaic.put(type_rec)
+    def register_type(self, type_rec):
+        type_ref = self._mosaic.put(type_rec)
         t = self.resolve(type_ref)
         self._register_type(type_ref, t)
         _log.debug("Registered type: %s -> %s", ref_repr(type_ref), t)
@@ -134,6 +138,6 @@ class TypeSystem(object):
         return self.reverse_resolve(t)
 
     def resolve_ref(self, ref, expected_type=None) -> _DecodedCapsule:
-        capsule = self._web.pull(ref)
+        capsule = self._mosaic.get(ref)
         assert capsule is not None, 'Unknown ref: %s' % ref_repr(ref)
         return self.decode_capsule(capsule, expected_type)

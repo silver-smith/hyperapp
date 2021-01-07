@@ -55,7 +55,7 @@ _code_module_type_list = [
     ]
 
 
-def register_code_module_types(mosaic, types):
+def register_code_module_types(types):
     for t in _code_module_type_list:
-        types.register_builtin_type(mosaic, t)
+        types.register_builtin_type(t)
     builtin_type_names.update(t.name for t in _code_module_type_list)
