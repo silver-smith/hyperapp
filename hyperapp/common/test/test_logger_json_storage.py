@@ -4,7 +4,7 @@ from types import SimpleNamespace
 import pytest
 
 from hyperapp.common.util import flatten
-from hyperapp.common.htypes import tInt, tString, meta_ref_t, t_ref, t_field_meta, t_record_meta, ref_t, register_builtin_types
+from hyperapp.common.htypes import tInt, tString, field_t, record_t, ref_t, register_builtin_types
 from hyperapp.common.web import Web
 from hyperapp.common.type_system import TypeSystem
 from hyperapp.common.mosaic import Mosaic

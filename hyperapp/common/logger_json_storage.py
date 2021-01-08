@@ -5,7 +5,7 @@ from pathlib import Path
 
 from dateutil.tz import tzlocal
 
-from .htypes import meta_ref_t, t_ref, t_field_meta, t_record_meta, ref_t, capsule_t
+from .htypes import field_t, record_t, ref_t, capsule_t
 from .htypes.deduce_value_type import DeduceTypeError, deduce_value_type
 from .dict_encoders import DictEncoder
 from .dict_decoders import DictDecoder
