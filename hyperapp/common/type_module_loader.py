@@ -36,6 +36,7 @@ class _NameToRefMapper(Mapper):
 
     def _map_ref(self, ref):
         value = self._types.resolve_ref(ref).value
+        log.debug("Ref %s is resolved to %r", ref_repr(ref), value)
         return self.map(value)
 
 

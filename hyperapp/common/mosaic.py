@@ -29,10 +29,10 @@ class Mosaic:
 
     def put(self, piece, t=None):
         t = t or deduce_value_type(piece)
-        log.debug('Registering ref for piece %s', t.name)
+        log.debug('Registering piece %s: %s', t.name, piece)
         capsule = self._types.make_capsule(piece, t)
         ref = self.register_capsule(capsule)
-        log.debug('  -> registered ref %s for piece %s', ref_repr(ref), t.name)
+        log.debug('  -> %s', ref_repr(ref))
         return ref
 
     def put_opt(self, piece, t=None):
