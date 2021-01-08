@@ -9,11 +9,6 @@ pytest_plugins = ['hyperapp.common.test.services']
 @pytest.fixture
 def type_module_list():
     return [
-        'error',
-        'hyper_ref',
-        'resource',
-        'module',
-        'packet',
         ]
 
 
@@ -36,11 +31,6 @@ def test_subprocess(services):
     subprocess = services.subprocess(
         'subprocess',
         type_module_list=[
-            'error',
-            'hyper_ref',
-            'resource',
-            'module',
-            'packet',
             ],
         code_module_list=[
             'common.visitor',
@@ -61,11 +51,6 @@ def test_import_failure(services):
     subprocess = services.subprocess(
         'subprocess',
         type_module_list=[
-            'error',
-            'hyper_ref',
-            'resource',
-            'module',
-            'packet',
             ],
         code_module_list=[
             'common.visitor',
@@ -83,11 +68,6 @@ def test_module_init_failure(services):
     subprocess = services.subprocess(
         'subprocess',
         type_module_list=[
-            'error',
-            'hyper_ref',
-            'resource',
-            'module',
-            'packet',
             ],
         code_module_list=[
             'common.visitor',
