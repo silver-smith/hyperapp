@@ -2,7 +2,7 @@ import logging
 
 from ..util import is_dict_inst
 from .htypes import join_path, Type, tString, TList
-from .record import odict_all_match, TRecord
+from .record import dict_all_match, TRecord
 
 log = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ class TClass(TRecord):
         assert isinstance(other, TClass), repr(other)
         return (other.hierarchy.hierarchy_id == self.hierarchy.hierarchy_id
                 and other.id == self.id
-                and odict_all_match(other.fields, self.fields))
+                and dict_all_match(other.fields, self.fields))
 
 
 class THierarchy(Type):

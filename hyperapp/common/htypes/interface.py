@@ -12,7 +12,7 @@ from .htypes import (
     TOptional,
     TList,
     )
-from .record import odict_all_match, TRecord
+from .record import dict_all_match, TRecord
 from .builtins import tIfaceId, tPath, tUrl
 from .namespace import TypeNamespace
 
@@ -45,8 +45,8 @@ class IfaceCommand(TypeNamespace):
         return (self._full_name == other._full_name and
                 self.request_type == other.request_type and
                 self.command_id == other.command_id and
-                odict_all_match(self.params_fields, other.params_fields) and
-                odict_all_match(self.result_fields, other.result_fields))
+                dict_all_match(self.params_fields, other.params_fields) and
+                dict_all_match(self.result_fields, other.result_fields))
 
     @property
     def full_name(self):

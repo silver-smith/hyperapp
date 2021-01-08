@@ -6,7 +6,7 @@ from ..util import is_dict_inst
 from .htypes import Type
 
 
-def odict_all_match(x_fields, y_fields):
+def dict_all_match(x_fields, y_fields):
     return all(
         x_name == y_name and x_type.match(y_type)
         for (x_name, x_type), (y_name, y_type)
@@ -164,7 +164,7 @@ class TRecord(Type):
 
     def match(self, other):
         return (isinstance(other, TRecord)
-                and odict_all_match(other.fields, self.fields))
+                and dict_all_match(other.fields, self.fields))
 
     def __subclasscheck__(self, cls):
         ## print('__subclasscheck__', self, cls)
