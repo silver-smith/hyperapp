@@ -6,6 +6,9 @@ from ..util import is_dict_inst
 from .htypes import Type
 
 
+CHECK_FIELD_TYPES = True
+
+
 def dict_all_match(x_fields, y_fields):
     return all(
         x_name == y_name and x_type.match(y_type)
@@ -182,4 +185,13 @@ class TRecord(Type):
         return issubclass(getattr(rec, '_t', None), self)
 
     def instantiate(self, *args, **kw):
+        if CHECK_FIELD_TYPES:
+            self._check_field_types(*args, **kw)
         return self._named_tuple(*args, _t=self, **kw)
+
+    def _check_field_types(self, *args, **kw):
+        for (name, t), value in zip(self.fields.items(), args):
+            assert isinstance(value, t), f"{name}: expected {t}, but got: {value}"
+        for name, value in kw.items():
+            t = self.fields[name]
+            assert isinstance(value, t), f"{name}: expected {t}, but got: {value}"
