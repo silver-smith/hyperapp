@@ -16,8 +16,9 @@ log = logging.getLogger(__name__)
 
 class _NameToRefMapper(Mapper):
 
-    def __init__(self, types, local_name_dict):
+    def __init__(self, types, mosaic, local_name_dict):
         self._types = types
+        self._mosaic = mosaic
         self._local_name_dict = local_name_dict
 
     def map_record(self, t, value):
@@ -35,9 +36,10 @@ class _NameToRefMapper(Mapper):
         return ref
 
     def _map_ref(self, ref):
-        value = self._types.resolve_ref(ref).value
-        log.debug("Ref %s is resolved to %r", ref_repr(ref), value)
-        return self.map(value)
+        piece = self._types.resolve_ref(ref).value
+        log.debug("Ref %s is resolved to %r", ref_repr(ref), piece)
+        mapped_piece = self.map(piece)
+        return self._mosaic.put(mapped_piece)
 
 
 class TypeModuleLoader(object):
@@ -70,7 +72,7 @@ class TypeModuleLoader(object):
                     f"Type module {module_name!r} wants name {import_.name!r} from module {import_.module_name!r},"
                     f" but module {import_.module_name!r} does not have it")
         local_type_module = LocalTypeModule()
-        mapper = _NameToRefMapper(self._types, local_name_dict)
+        mapper = _NameToRefMapper(self._types, self._mosaic, local_name_dict)
         for typedef in module_source.typedefs:
             type_piece = mapper.map(typedef.type)
             type_ref = self._mosaic.put(type_piece)
