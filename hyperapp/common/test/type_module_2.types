@@ -8,6 +8,10 @@ record_3 = record(record_2):
   datetime_field: datetime
 
 
+ref_opt = ref opt
+ref_list_opt = ref list opt
+
+
 record_with_ref = record:
   ref_field: ref
 

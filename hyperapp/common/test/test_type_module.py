@@ -85,6 +85,9 @@ def test_types(types, mosaic, local_type_module_registry, htypes):
     assert htypes.type_module_2.record_3.match(
         TRecord('record_1', {'int_field': tInt, 'string_field': tString, 'datetime_field': tDateTime}))
 
+    assert htypes.type_module_2.ref_opt.match(TOptional(ref_t))
+    assert htypes.type_module_2.ref_list_opt.match(TOptional(TList(ref_t)))
+
     assert htypes.type_module_2.record_with_ref.match(TRecord('record_with_ref', {'ref_field': ref_t}))
     assert htypes.type_module_2.record_with_opt_ref.match(TRecord('record_with_opt_ref', {'opt_ref_field': TOptional(ref_t)}))
 
