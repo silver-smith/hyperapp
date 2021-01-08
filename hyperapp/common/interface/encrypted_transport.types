@@ -1,5 +1,0 @@
-
-
-address = record:
-    public_key_der: binary
-    base_transport_ref: ref
