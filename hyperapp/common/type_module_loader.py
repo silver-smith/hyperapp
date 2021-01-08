@@ -47,6 +47,7 @@ class TypeModuleLoader(object):
         self._local_type_module_registry = local_type_module_registry
 
     def load_type_module(self, path, name=None):
+        log.info("Load type module %r: %s", name, path)
         name = name or path.stem
         source = load_type_module_source(self._mosaic, path, name)
         local_type_module = self._map_names_to_refs(name, source)
