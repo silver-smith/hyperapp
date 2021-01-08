@@ -1,11 +1,16 @@
-from type_module_1 import object, some_bool_list, text_object, test_iface_a
+from type_module_1 import some_bool_list, record_2
 
 
 some_bool_list_opt = some_bool_list opt
 
-text_object_2 = object class text_object_2(text_object):
-  additional_field: int
 
-test_iface_b = interface iface_b(test_iface_a):
-  commands:
-    keep_alive ()
+record_3 = record(record_2):
+  datetime_field: datetime
+
+
+# text_object_2 = object class text_object_2(text_object):
+#   additional_field: int
+
+# test_iface_b = interface iface_b(test_iface_a):
+#   commands:
+#     keep_alive ()

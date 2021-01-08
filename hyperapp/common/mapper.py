@@ -15,6 +15,9 @@ class Mapper(object):
         t = t or deduce_value_type(value)
         return self.dispatch(t, value)
 
+    def map_record(self, t, value):
+        return value
+
     def map_hierarchy_obj(self, tclass, value):
         return value
 
@@ -40,7 +43,8 @@ class Mapper(object):
     @dispatch.register(TRecord)
     def process_record(self, t, value):
         fields = self.map_record_fields(t, value)
-        return t(**fields)
+        result = t(**fields)
+        return self.map_record(t, result)
             
     @dispatch.register(THierarchy)
     def process_hierarchy_obj(self, t, value):

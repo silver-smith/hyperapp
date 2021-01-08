@@ -6,16 +6,16 @@ import ply.lex as lex
 import ply.yacc as yacc
 
 from .htypes import (
-    t_named,
-    t_field_meta,
-    t_optional_meta,
-    t_list_meta,
-    t_record_meta,
-    t_hierarchy_meta,
-    t_exception_hierarchy_meta,
-    t_hierarchy_class_meta,
-    t_command_meta,
-    t_interface_meta,
+    name_t,
+    field_t,
+    optional_t,
+    list_t,
+    record_t,
+    # t_hierarchy_meta,
+    # t_exception_hierarchy_meta,
+    # t_hierarchy_class_meta,
+    # t_command_meta,
+    # t_interface_meta,
     builtin_type_names,
     )
 from .local_type_module import (
@@ -158,7 +158,8 @@ def p_typedef_list_2(p):
 
 def p_typedef(p):
     'typedef : NAME EQUAL typedef_rhs'
-    p[0] = type_def_t(name=p[1], type=p[3])
+    t = p.parser.mosaic.put(p[3])
+    p[0] = type_def_t(name=p[1], type=t)
     p.parser.known_name_set.add(p[1])
 
 def p_typedef_rhs_1(p):
@@ -186,19 +187,19 @@ def p_record_def_1(p):
     'record_def : RECORD record_base_name_def'
     base_name = p[2]
     if base_name:
-        base = t_named(base_name)
+        base = name_t(base_name)
     else:
         base = None
-    p[0] = t_record_meta([], base)
+    p[0] = record_t(base, [])
 
 def p_record_def_2(p):
     'record_def : RECORD record_base_name_def COLON BLOCK_BEGIN field_list BLOCK_END'
     base_name = p[2]
     if base_name:
-        base = t_named(base_name)
+        base = p.parser.mosaic.put(name_t(base_name))
     else:
         base = None
-    p[0] = t_record_meta(p[5], base)
+    p[0] = record_t(base, p[5])
 
 def p_record_base_name_def_1(p):
     'record_base_name_def : empty'
@@ -368,7 +369,8 @@ def p_field_list_2(p):
 
 def p_field_def(p):
     'field_def : NAME COLON type_expr'
-    p[0] = t_field_meta(p[1], p[3])
+    t = p.parser.mosaic.put(p[3])
+    p[0] = field_t(p[1], t)
 
 
 def p_type_expr_1(p):
@@ -376,15 +378,17 @@ def p_type_expr_1(p):
     name = p[1]
     if not name in p.parser.known_name_set:
         unknown_name_error(p, 1, name)
-    p[0] = t_named(name)
+    p[0] = name_t(name)
 
 def p_type_expr_2(p):
     'type_expr : type_expr OPT'
-    p[0] = t_optional_meta(p[1])
+    base_t = p.parser.mosaic.put(p[1])
+    p[0] = optional_t(base_t)
 
 def p_type_expr_3(p):
     'type_expr : type_expr LIST'
-    p[0] = t_list_meta(p[1])
+    element_t = p.parser.mosaic.put(p[1])
+    p[0] = list_t(element_t)
 
 
 def p_empty(p):
@@ -458,8 +462,9 @@ class Lexer(object):
         return tok
 
 
-def parse_type_module_source(fname, module_name, contents, debug=False):
+def parse_type_module_source(mosaic, fname, module_name, contents, debug=False):
     parser = yacc.yacc(debug=debug)
+    parser.mosaic = mosaic
     parser.module_name = module_name
     parser.fname = fname
     parser.lines = contents.splitlines()
@@ -475,6 +480,6 @@ def parse_type_module_source(fname, module_name, contents, debug=False):
         raise RuntimeError('Failed to parse {}:\n{}\n{}'.format(fname, parser.error_line, parser.error))
     return module
  
-def load_type_module_source(fpath, module_name, debug=False):
+def load_type_module_source(mosaic, fpath, module_name, debug=False):
     contents = fpath.read_text()
-    return parse_type_module_source(fpath, module_name, contents, debug)
+    return parse_type_module_source(mosaic, fpath, module_name, contents, debug)

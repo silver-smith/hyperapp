@@ -4,26 +4,25 @@ from .htypes import (
     tString,
     TRecord,
     TList,
-    tMetaType,
     ref_t,
     )
 
 
-type_import_t = TRecord('type_import', OrderedDict([
-    ('module_name', tString),
-    ('name', tString),
-    ]))
+type_import_t = TRecord('type_import', {
+    'module_name': tString,
+    'name': tString,
+    })
 
-type_def_t = TRecord('typedef', OrderedDict([
-    ('name', tString),
-    ('type', tMetaType),
-    ]))
+type_def_t = TRecord('typedef', {
+    'name': tString,
+    'type': ref_t,
+    })
 
-type_module_t = TRecord('type_module', OrderedDict([
-    ('module_name', tString),
-    ('import_list', TList(type_import_t)),
-    ('typedefs', TList(type_def_t)),
-    ]))
+type_module_t = TRecord('type_module', {
+    'module_name': tString,
+    'import_list': TList(type_import_t),
+    'typedefs': TList(type_def_t),
+    })
 
 
 class LocalTypeModule(object):

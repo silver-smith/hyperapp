@@ -1,6 +1,6 @@
 import datetime
 
-from ..util import is_list_inst
+from ..util import is_iterable_inst
 
 
 class TypeError(Exception): pass
@@ -109,7 +109,7 @@ class TList(Type):
         return isinstance(other, TList) and other.element_t.match(self.element_t)
 
     def __instancecheck__(self, value):
-        return is_list_inst(value, self.element_t)
+        return is_iterable_inst(value, self.element_t)
 
 
 class TIndexedList(TList):

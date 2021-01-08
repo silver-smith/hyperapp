@@ -43,6 +43,7 @@ class TypeSystem(object):
     def init_mosaic(self, mosaic):
         self._mosaic = mosaic
         self._type_code_registry = CodeRegistry('type', mosaic, self)
+        self._type_code_registry.register_actor(ref_t, self._ref_from_piece)
         self._type_code_registry.register_actor(builtin_t, self._builtin_from_piece)
         # Register builtin_t with phony ref - can not be registered as usual because of dependency loop.
         builtin_ref = phony_ref('BUILTIN_REF')
@@ -51,6 +52,9 @@ class TypeSystem(object):
         #
         register_builtin_meta_types(self)
         register_meta_types(self._type_code_registry)
+
+    def _ref_from_piece(self, piece, type_code_registry, name):
+        return self.resolve(piece)
 
     def _builtin_from_piece(self, piece, type_code_registry, name):
         return self._builtin_name_to_type[piece.name]  # must be registered using register_builtin_type

@@ -21,6 +21,12 @@ builtin_t = TRecord('builtin_t', {
     })
 
 
+# Produced by type module parsed, removed by loader.
+name_t = TRecord('name_t', {
+    'name': tString,
+    })
+
+
 name_wrapped_t = TRecord('name_wrapped_t', {
     'name': tString,
     'type': ref_t,
@@ -162,6 +168,7 @@ def record_from_piece(rec, type_code_registry, name):
 
 
 def register_builtin_meta_types(types):
+    types.register_builtin_type(name_t)
     types.register_builtin_type(name_wrapped_t)
     types.register_builtin_type(optional_t)
     types.register_builtin_type(list_t)
@@ -170,6 +177,7 @@ def register_builtin_meta_types(types):
 
 
 def register_meta_types(type_code_registry):
+    # name_t does not produce a type, it is removed by type module loader.
     type_code_registry.register_actor(name_wrapped_t, name_wrapped_from_piece)
     type_code_registry.register_actor(optional_t, optional_from_piece)
     type_code_registry.register_actor(list_t, list_from_piece)
