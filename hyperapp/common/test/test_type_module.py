@@ -64,6 +64,12 @@ def test_types(types, mosaic, local_type_module_registry, htypes):
     loader.load_type_module(TEST_MODULES_DIR / 'type_module_2.types')
 
     assert htypes.type_module_1.some_int is tInt
+
+    assert htypes.type_module_1.some_string_opt.match(TOptional(tString))
+    assert htypes.type_module_1.some_bool_list.match(TList(tBool))
+    assert htypes.type_module_1.some_bool_list_opt_1.match(TOptional(TList(tBool)))
+    assert htypes.type_module_1.some_bool_list_opt_2.match(TOptional(TList(tBool)))
+
     assert htypes.type_module_1.record_1.match(TRecord('record_1', {'int_field': tInt}))
 
     assert htypes.type_module_1.some_int is tInt
@@ -82,6 +88,7 @@ def test_types(types, mosaic, local_type_module_registry, htypes):
 
     some_bool_list_opt = htypes.type_module_2.some_bool_list_opt
     assert some_bool_list_opt.match(TOptional(TList(tBool)))
+
     assert htypes.type_module_2.record_3.match(
         TRecord('record_1', {'int_field': tInt, 'string_field': tString, 'datetime_field': tDateTime}))
 
