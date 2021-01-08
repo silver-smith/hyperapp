@@ -8,8 +8,8 @@ from hyperapp.common.util import is_list_inst
 from hyperapp.common.ref import ref_repr
 from hyperapp.common.web import RefResolveFailure
 from hyperapp.common.module import Module
+
 from .visitor import Visitor
-from . import htypes
 
 log = logging.getLogger(__name__)
 
@@ -73,8 +73,6 @@ class RefCollector(Visitor):
         self._collected_ref_set = set()
         self._collect_refs_from_object(t, object)
         # can't move following to _collect_refs_from_object because not all objects has refs to them, but for endpoint it's required
-        if issubclass(t, htypes.hyper_ref.endpoint):
-            self._handle_endpoint_ref(ref)
         self._collected_ref_set.add(capsule.type_ref)
         self._collected_type_ref_set.add(capsule.type_ref)
         log.info('Collected %d refs from %s %s: %s', len(self._collected_ref_set), t, ref_repr(ref),
@@ -83,33 +81,10 @@ class RefCollector(Visitor):
 
     def _collect_refs_from_object(self, t, object):
         self.visit(t, object)
-        if t is htypes.hyper_ref.rpc_message:
-            self._handle_rpc_message(object)
 
     def visit_record(self, t, value):
         if t == ref_t:
             self._collected_ref_set.add(value)
-
-    def _handle_endpoint_ref(self, endpoint_ref):
-        pass  # todo
-        # route_rec_set = self._route_resolver.resolve(endpoint_ref)
-        # for route_rec in route_rec_set:
-        #     self._collected_route_set.add(route_t(
-        #         endpoint_ref=endpoint_ref,
-        #         transport_ref=route_rec.transport_ref,
-        #         available_at=route_rec.available_at,
-        #         ))
-        #     self._collected_ref_set.add(route_rec.transport_ref)
-
-    def _handle_rpc_message(self, rpc_message):
-        if isinstance(rpc_message, htypes.hyper_ref.rpc_request):
-            self._handle_rpc_request(rpc_message)
-
-    def _handle_rpc_request(self, rpc_request):
-        iface = self._types.resolve(rpc_request.iface_type_ref)
-        command = iface[rpc_request.command_id]
-        params = rpc_request.params.decode(command.request)
-        self._collect_refs_from_object(command.request, params)
 
 
 class ThisModule(Module):
