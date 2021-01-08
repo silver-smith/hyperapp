@@ -14,6 +14,7 @@ from hyperapp.common.htypes import (
     TClass,
     NotificationCmd,
     Interface,
+    ref_t,
     register_builtin_types,
     )
 from hyperapp.common import cdr_coders  # register codec
@@ -83,6 +84,9 @@ def test_types(types, mosaic, local_type_module_registry, htypes):
     assert some_bool_list_opt.match(TOptional(TList(tBool)))
     assert htypes.type_module_2.record_3.match(
         TRecord('record_1', {'int_field': tInt, 'string_field': tString, 'datetime_field': tDateTime}))
+
+    assert htypes.type_module_2.record_with_ref.match(TRecord('record_with_ref', {'ref_field': ref_t}))
+    assert htypes.type_module_2.record_with_opt_ref.match(TRecord('record_with_opt_ref', {'opt_ref_field': TOptional(ref_t)}))
 
     # iface_a = resolve_1('test_iface_a')
     # iface_b = resolve_2('test_iface_b')

@@ -8,6 +8,13 @@ record_3 = record(record_2):
   datetime_field: datetime
 
 
+record_with_ref = record:
+  ref_field: ref
+
+record_with_opt_ref = record:
+  opt_ref_field: ref opt
+
+
 # text_object_2 = object class text_object_2(text_object):
 #   additional_field: int
 
