@@ -18,5 +18,6 @@ record_with_ref = record:
 record_with_opt_ref = record:
   opt_ref_field: ref opt
 
+
 iface_c = interface(iface_b):
   keep_alive ()
