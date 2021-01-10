@@ -12,7 +12,6 @@ from .htypes import (
     TOptional,
     TRecord,
     TList,
-    TIndexedList,
     )
 from .htypes.packet_coders import DecodeError
 
@@ -121,15 +120,5 @@ class CdrDecoder(object):
             raise DecodeError('List size is too large: %d' % size)
         for idx in range(size):
             elt = self.dispatch(t.element_t, join_path(path, '#%d' % idx))
-            elements.append(elt)
-        return tuple(elements)
-
-    @dispatch.register(TIndexedList)
-    def decode_indexed_list(self, t, path):
-        size = self.read_int(path)
-        elements = []
-        for idx in range(size):
-            elt = self.dispatch(t.element_t, join_path(path, '#%d' % idx))
-            setattr(elt, 'idx', idx)
             elements.append(elt)
         return tuple(elements)

@@ -15,7 +15,6 @@ from .htypes import (
     TOptional,
     TRecord,
     TList,
-    TIndexedList,
     ref_t,
     )
 from .htypes.packet_coders import DecodeError
@@ -96,16 +95,6 @@ class DictDecoder(metaclass=abc.ABCMeta):
         self.expect_type(path, isinstance(value, list), value, 'list')
         return tuple(self.dispatch(t.element_t, elt, join_path(path, '#%d' % idx))
                      for idx, elt in enumerate(value))
-
-    @dispatch.register(TIndexedList)
-    def decode_indexed_list(self, t, value, path):
-        self.expect_type(path, isinstance(value, list), value, 'list')
-        decoded_elts = []
-        for idx, elt in enumerate(value):
-            decoded_elt = self.dispatch(t.element_t, elt, join_path(path, '#%d' % idx))
-            setattr(decoded_elt, 'idx', idx)
-            decoded_elts.append(decoded_elt)
-        return tuple(decoded_elts)
 
     def decode_record_fields(self, fields, value, path):
         decoded_fields = {}

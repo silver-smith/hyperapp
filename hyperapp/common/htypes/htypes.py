@@ -110,7 +110,3 @@ class TList(Type):
 
     def __instancecheck__(self, value):
         return is_iterable_inst(value, self.element_t)
-
-
-class TIndexedList(TList):
-    pass
