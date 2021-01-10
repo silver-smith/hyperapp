@@ -3,7 +3,6 @@ import logging
 from hyperapp.common.util import encode_path
 from hyperapp.common.ref import ref_repr
 from hyperapp.common.module import Module
-from . import htypes
 
 log = logging.getLogger(__name__)
 

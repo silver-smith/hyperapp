@@ -1,5 +1,1 @@
-import:
-  types:
-    resource:
-      - command_resource
-      - column_resource
+# empty
