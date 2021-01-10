@@ -3,7 +3,6 @@ from hyperapp.common.htypes import (
     TPrimitive,
     TOptional,
     TRecord,
-    TEmbedded,
     TList,
     )
 
@@ -41,10 +40,6 @@ class Visitor(object):
             self.dispatch(field_type, field_val)
             fields[field_name] = field_val
             
-    @dispatch.register(TEmbedded)
-    def process_embedded(self, t, value):
-        pass
-
     @dispatch.register(TList)
     def process_list(self, t, value):
         for elt in value:

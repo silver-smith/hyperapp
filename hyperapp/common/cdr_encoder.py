@@ -11,8 +11,6 @@ from .htypes import (
     TOptional,
     TRecord,
     TList,
-    EncodableEmbedded,
-    TEmbedded,
     )
 
 
@@ -81,9 +79,3 @@ class CdrEncoder(object):
         self.write_int(len(value))
         for elt in value:
             self.dispatch(t.element_t, elt)
-
-    @dispatch.register(TEmbedded)
-    def encode_embedded(self, t, value):
-        assert isinstance(value, EncodableEmbedded), repr(value)
-        data = CdrEncoder().encode(value.value, value.type)
-        self.dispatch(tBinary, data)

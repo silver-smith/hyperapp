@@ -2,7 +2,6 @@ from .htypes import *
 from .record import *
 from .builtins import *
 from .namespace import *
-from .embedded import *
 from .hyper_ref import *
 from .meta_type import *
 from .interface import *

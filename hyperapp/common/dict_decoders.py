@@ -16,8 +16,6 @@ from .htypes import (
     TRecord,
     TList,
     TIndexedList,
-    DecodableEmbedded,
-    TEmbedded,
     ref_t,
     )
 from .htypes.packet_coders import DecodeError
@@ -25,12 +23,6 @@ from .htypes.packet_coders import DecodeError
 
 def join_path(*args):
     return '.'.join([_f for _f in args if _f])
-
-
-class DictDecodableEmbedded(DecodableEmbedded):
-
-    def decode(self, t):
-        return DictDecoder().decode_dict(t, self.data, path='embedded')
 
 
 class DictDecoder(metaclass=abc.ABCMeta):
@@ -114,10 +106,6 @@ class DictDecoder(metaclass=abc.ABCMeta):
             setattr(decoded_elt, 'idx', idx)
             decoded_elts.append(decoded_elt)
         return tuple(decoded_elts)
-
-    @dispatch.register(TEmbedded)
-    def decode_embedded(self, t, value, path):
-        return DictDecodableEmbedded(value)
 
     def decode_record_fields(self, fields, value, path):
         decoded_fields = {}

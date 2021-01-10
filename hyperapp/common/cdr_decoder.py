@@ -13,8 +13,6 @@ from .htypes import (
     TRecord,
     TList,
     TIndexedList,
-    DecodableEmbedded,
-    TEmbedded,
     )
 from .htypes.packet_coders import DecodeError
 
@@ -24,12 +22,6 @@ MAX_SANE_LIST_SIZE = 1 << 60
 
 def join_path(*args):
     return '.'.join([_f for _f in args if _f])
-
-
-class CdrDecodableEmbedded(DecodableEmbedded):
-
-    def decode(self, t):
-        return CdrDecoder().decode(t, self.data, path='embedded')
 
 
 class CdrDecoder(object):
@@ -141,8 +133,3 @@ class CdrDecoder(object):
             setattr(elt, 'idx', idx)
             elements.append(elt)
         return tuple(elements)
-
-    @dispatch.register(TEmbedded)
-    def decode_embedded(self, t, path):
-        data = self.dispatch(tBinary, path)
-        return CdrDecodableEmbedded(data)

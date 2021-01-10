@@ -7,9 +7,6 @@ from .htypes import (
     tDateTime,
     )
 from .meta_type import list_mt
-from .embedded import (
-    tEmbedded,
-    )
 from .builtins import (
     tServerRoutes,
     tIfaceId,
@@ -35,7 +32,6 @@ _builtin_type_list = [
     tInt,
     tBool,
     tDateTime,
-    tEmbedded,
     tServerRoutes,
     tIfaceId,
     tPath,

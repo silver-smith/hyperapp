@@ -12,7 +12,6 @@ from .htypes import (
     TOptional,
     TRecord,
     TList,
-    TEmbedded,
     Interface,
     tPath,
     #tCommand,
@@ -115,10 +114,6 @@ class VisualRepEncoder(object):
     def encode_record_fields(self, fields, value):
         return [self.dispatch(field_type, field_name, getattr(value, field_name))
                 for field_name, field_type in fields.items()]
-
-    @dispatch.register(TEmbedded)
-    def encode_embedded(self, t, name, value):
-        return VisualRep(t.name, name, '<%s>' % self._make_name(t, 'embedded'))
 
     def encode_path(self, t, name, obj):
         return VisualRep(t.name, name, encode_path(obj))

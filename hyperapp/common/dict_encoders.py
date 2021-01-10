@@ -14,8 +14,6 @@ from .htypes import (
     TOptional,
     TRecord,
     TList,
-    EncodableEmbedded,
-    TEmbedded,
     Interface,
     ref_t,
     )
@@ -71,11 +69,6 @@ class DictEncoder(metaclass=abc.ABCMeta):
     @dispatch.register(TList)
     def encode_list(self, t, value):
         return [self.dispatch(t.element_t, elt) for elt in value]
-
-    @dispatch.register(TEmbedded)
-    def encode_embedded(self, t, value):
-        assert isinstance(value, EncodableEmbedded), repr(value)
-        return self.dispatch(value.type, value.value)
 
     def _encode_ref(self, ref):
         decoded_capsule = self._types.resolve_ref(ref)
