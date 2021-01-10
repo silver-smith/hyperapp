@@ -98,34 +98,30 @@ notification_mt = TRecord('notification_mt', {
     'param_fields': TList(field_mt),
     })
 
-method_field_mt = TRecord('field_mt', {
-    'name': tString,
-    'method': ref_t,
-    })
-
 interface_mt = TRecord('interface_mt', {
     'base': TOptional(ref_t),
-    'method_list': TList(method_field_mt),
+    'method_list': TList(ref_t),
     })
 
 
 def request_from_piece(piece, type_code_registry, name):
+    # name here is interface name.
     param_field_dict = _field_dict_from_piece_list(piece.param_fields, type_code_registry)
     response_field_dict = _field_dict_from_piece_list(piece.response_fields, type_code_registry)
-    params_record_t = TRecord(f'{name}_params', param_field_dict)
-    response_record_t = TRecord(f'{name}_response', response_field_dict)
+    params_record_t = TRecord(f'{name}_{piece.method_name}_params', param_field_dict)
+    response_record_t = TRecord(f'{name}_{piece.method_name}_response', response_field_dict)
     return Request(piece.method_name, params_record_t, response_record_t)
 
 
 def notification_from_piece(piece, type_code_registry, name):
     param_field_dict = _field_dict_from_piece_list(piece.param_fields, type_code_registry)
-    params_record_t = TRecord(f'{name}_params', param_field_dict)
+    params_record_t = TRecord(f'{name}_{piece.method_name}_params', param_field_dict)
     return Notification(piece.method_name, params_record_t)
 
 
-def _method_iter_from_field_list(method_field_list, type_code_registry, name):
-    for field in method_field_list:
-        yield type_code_registry.invite(field.method, type_code_registry, f'{name}_{field.name}')
+def _method_iter_from_field_list(method_ref_list, type_code_registry, name):
+    for method_ref in method_ref_list:
+        yield type_code_registry.invite(method_ref, type_code_registry, name)
 
 
 def interface_from_piece(piece, type_code_registry, name):

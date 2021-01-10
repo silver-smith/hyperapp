@@ -26,7 +26,6 @@ from hyperapp.common.htypes import (
     record_mt,
     request_mt,
     notification_mt,
-    method_field_mt,
     interface_mt,
     register_builtin_types,
     )
@@ -158,12 +157,12 @@ def test_interface(types, mosaic):
     piece = interface_mt(
         base=None,
         method_list=[
-            method_field_mt('request_1', mosaic.put(request_1)),
-            method_field_mt('notification_1', mosaic.put(notification_1)),
-            method_field_mt('request_2', mosaic.put(request_2)),
-            method_field_mt('notification_2', mosaic.put(notification_2)),
-            method_field_mt('request_3', mosaic.put(request_3)),
-            method_field_mt('notification_3', mosaic.put(notification_3)),
+            mosaic.put(request_1),
+            mosaic.put(notification_1),
+            mosaic.put(request_2),
+            mosaic.put(notification_2),
+            mosaic.put(request_3),
+            mosaic.put(notification_3),
             ],
         )
 
@@ -240,7 +239,7 @@ def test_based_interface(types, mosaic):
     base_interface_mt = interface_mt(
         base=None,
         method_list=[
-            method_field_mt('request_1', mosaic.put(request_1)),
+            mosaic.put(request_1),
             ],
         )
     base_name = 'test_base_interface'
@@ -249,7 +248,7 @@ def test_based_interface(types, mosaic):
     piece = interface_mt(
         base=mosaic.put(named_base_interface_mt),
         method_list=[
-            method_field_mt('notification_1', mosaic.put(notification_1)),
+            mosaic.put(notification_1),
             ],
         )
 
