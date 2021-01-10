@@ -1,4 +1,4 @@
-from type_module_1 import some_bool_list, record_2, test_iface_b
+from type_module_1 import some_bool_list, record_2, iface_b
 
 
 some_bool_list_opt = some_bool_list opt
@@ -18,5 +18,5 @@ record_with_ref = record:
 record_with_opt_ref = record:
   opt_ref_field: ref opt
 
-test_iface_c = interface iface_c(test_iface_b):
+iface_c = interface(iface_b):
   keep_alive ()

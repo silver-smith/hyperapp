@@ -14,8 +14,8 @@ record_2 = record(record_1):
   string_field: string
 
 
-test_iface_a = interface iface_a:
-  submit (key: int, size: int) -> ()
+iface_a = interface:
+  submit (name: string list, size: int) -> ()
 
-test_iface_b = interface iface_b(test_iface_a):
-  params () -> (created_at: datetime, id: int)
+iface_b = interface(iface_a):
+  update () -> (created_at: datetime, id: int opt)

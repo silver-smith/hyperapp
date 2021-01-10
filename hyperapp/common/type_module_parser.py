@@ -13,7 +13,6 @@ from .htypes import (
     record_mt,
     request_mt,
     notification_mt,
-    method_field_mt,
     interface_mt,
     builtin_type_names,
     )
@@ -209,13 +208,16 @@ def p_field_def(p):
 
 
 def p_interface_def(p):
-    'interface_def : INTERFACE NAME interface_parent_def COLON BLOCK_BEGIN interface_method_list BLOCK_END'
-    p[0] = t_interface_meta(p[6], p[3])
+    'interface_def : INTERFACE interface_parent_def COLON BLOCK_BEGIN interface_method_list BLOCK_END'
+    p[0] = interface_mt(
+        base=p[2],
+        method_list=p[5],
+        )
 
 
 def p_interface_parent_def_1(p):
     'interface_parent_def : LPAR NAME RPAR'
-    p[0] = t_named(p[2])
+    p[0] = p.parser.mosaic.put(name_mt(p[2]))
 
 def p_interface_parent_def_2(p):
     'interface_parent_def : empty'
@@ -224,20 +226,22 @@ def p_interface_parent_def_2(p):
 
 def p_interface_method_list_1(p):
     'interface_method_list : interface_method_list STMT_SEP interface_method'
-    p[0] = p[1] + [p[3]]
+    method_ref = p.parser.mosaic.put(p[3])
+    p[0] = p[1] + [method_ref]
 
 def p_interface_method_list_2(p):
     'interface_method_list : interface_method'
-    p[0] = [p[1]]
+    method_ref = p.parser.mosaic.put(p[1])
+    p[0] = [method_ref]
 
 
 def p_interface_method_request(p):
     'interface_method : NAME LPAR method_field_list RPAR ARROW LPAR method_field_list RPAR'
-    p[0] = t_command_meta('request', p[1], p[3], p[7])
+    p[0] = request_mt(p[1], p[3], p[7])
 
 def p_interface_method_notification(p):
     'interface_method : NAME LPAR method_field_list RPAR'
-    p[0] = t_command_meta('notification', p[1], p[3])
+    p[0] = notification_mt(p[1], p[3])
 
 
 def p_method_field_list_1(p):

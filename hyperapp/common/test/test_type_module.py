@@ -11,7 +11,8 @@ from hyperapp.common.htypes import (
     TOptional,
     TRecord,
     TList,
-    NotificationCmd,
+    Request,
+    Notification,
     Interface,
     ref_t,
     register_builtin_types,
@@ -64,33 +65,66 @@ def test_types(types, mosaic, local_type_module_registry, htypes):
 
     assert htypes.type_module_1.some_int is tInt
 
-    assert htypes.type_module_1.some_string_opt.match(TOptional(tString))
-    assert htypes.type_module_1.some_bool_list.match(TList(tBool))
-    assert htypes.type_module_1.some_bool_list_opt_1.match(TOptional(TList(tBool)))
-    assert htypes.type_module_1.some_bool_list_opt_2.match(TOptional(TList(tBool)))
+    assert htypes.type_module_1.some_string_opt == TOptional(tString)
+    assert htypes.type_module_1.some_bool_list == TList(tBool)
+    assert htypes.type_module_1.some_bool_list_opt_1 == TOptional(TList(tBool))
+    assert htypes.type_module_1.some_bool_list_opt_2 == TOptional(TList(tBool))
 
-    assert htypes.type_module_1.record_1.match(TRecord('record_1', {'int_field': tInt}))
+    assert htypes.type_module_1.record_1 == TRecord('record_1', {'int_field': tInt})
 
     assert htypes.type_module_1.some_int is tInt
 
-    assert htypes.type_module_1.record_1.match(TRecord('record_1', {'int_field': tInt}))
-    assert htypes.type_module_1.record_2.match(TRecord('record_1', {'int_field': tInt, 'string_field': tString}))
+    assert htypes.type_module_1.record_1 == TRecord('record_1', {'int_field': tInt})
+    assert htypes.type_module_1.record_2 == TRecord('record_1', {'int_field': tInt, 'string_field': tString})
 
     some_bool_list_opt = htypes.type_module_2.some_bool_list_opt
-    assert some_bool_list_opt.match(TOptional(TList(tBool)))
+    assert some_bool_list_opt == TOptional(TList(tBool))
 
-    assert htypes.type_module_2.record_3.match(
-        TRecord('record_1', {'int_field': tInt, 'string_field': tString, 'datetime_field': tDateTime}))
+    assert (htypes.type_module_2.record_3 ==
+            TRecord('record_1', {'int_field': tInt, 'string_field': tString, 'datetime_field': tDateTime}))
 
-    assert htypes.type_module_2.ref_opt.match(TOptional(ref_t))
-    assert htypes.type_module_2.ref_list_opt.match(TOptional(TList(ref_t)))
+    assert htypes.type_module_2.ref_opt == TOptional(ref_t)
+    assert htypes.type_module_2.ref_list_opt == TOptional(TList(ref_t))
 
-    assert htypes.type_module_2.record_with_ref.match(TRecord('record_with_ref', {'ref_field': ref_t}))
-    assert htypes.type_module_2.record_with_opt_ref.match(TRecord('record_with_opt_ref', {'opt_ref_field': TOptional(ref_t)}))
+    assert htypes.type_module_2.record_with_ref == TRecord('record_with_ref', {'ref_field': ref_t})
+    assert htypes.type_module_2.record_with_opt_ref == TRecord('record_with_opt_ref', {'opt_ref_field': TOptional(ref_t)})
 
-    # iface_a = resolve_1('test_iface_a')
-    # iface_b = resolve_2('test_iface_b')
-    # assert iface_b.base is iface_a
-    # assert iface_b.match(Interface(['iface_b'], base=iface_a, commands=[
-    #     NotificationCmd(['test_iface_b', 'keep_alive'], 'keep_alive'),
-    #     ]))
+    assert htypes.type_module_1.iface_a == Interface(
+        name='iface_a',
+        method_list=[
+            Request(
+                method_name='submit',
+                params_record_t=TRecord('iface_a_request_1_params', {
+                    'name': TList(tString),
+                    'size': tInt,
+                }),
+                response_record_t=TRecord('iface_a_request_1_response'),
+                ),
+            ],
+        )
+
+    assert htypes.type_module_1.iface_b == Interface(
+        name='iface_b',
+        base=htypes.type_module_1.iface_a,
+        method_list=[
+            Request(
+                method_name='update',
+                params_record_t=TRecord('iface_b_update_params'),
+                response_record_t=TRecord('iface_b_update_response', {
+                    'created_at': tDateTime,
+                    'id': TOptional(tInt),
+                    }),
+                ),
+            ],
+        )
+
+    assert htypes.type_module_2.iface_c == Interface(
+        name='iface_c',
+        base=htypes.type_module_1.iface_b,
+        method_list=[
+            Notification(
+                method_name='keep_alive',
+                params_record_t=TRecord('iface_c_keep_alive_params'),
+                ),
+            ],
+        )
