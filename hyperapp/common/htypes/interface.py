@@ -34,3 +34,7 @@ class Interface(Type):
                 or isinstance(rhs, Interface)
                 and rhs._base == self._base
                 and rhs._method_dict == self._method_dict)
+
+    @property
+    def methods(self):
+        return self._method_dict

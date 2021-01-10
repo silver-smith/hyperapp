@@ -42,7 +42,7 @@ class Proxy:
         self._peer = peer
         self._iface_ref = iface_ref
         self._object_id = object_id
-        for name, command in iface.items():
+        for name, command in iface.methods.items():
             method = Method(
                 self._mosaic, self._my_identity, self._my_peer_ref, self._peer, self._iface_ref, self._object_id, name, command)
             setattr(self, name, method)
