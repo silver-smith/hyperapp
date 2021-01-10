@@ -20,12 +20,12 @@ from hyperapp.common.htypes import (
     RequestCmd,
     NotificationCmd,
     Interface,
-    builtin_t,
-    name_wrapped_t,
-    optional_t,
-    list_t,
-    field_t,
-    record_t,
+    builtin_mt,
+    name_wrapped_mt,
+    optional_mt,
+    list_mt,
+    field_mt,
+    record_mt,
     register_builtin_types,
     )
 from hyperapp.common import cdr_coders  # register codec
@@ -56,38 +56,38 @@ def mosaic(web, types):
 
 
 def test_optional(types, mosaic):
-    base_ref = mosaic.put(builtin_t('string'))
-    piece = optional_t(base_ref)
+    base_ref = mosaic.put(builtin_mt('string'))
+    piece = optional_mt(base_ref)
     t = types.resolve(mosaic.put(piece))
     assert t.match(TOptional(tString))
     assert t.base_t is tString
 
 
 def test_list(types, mosaic):
-    element_ref = mosaic.put(builtin_t('int'))
-    piece = list_t(element_ref)
+    element_ref = mosaic.put(builtin_mt('int'))
+    piece = list_mt(element_ref)
     t = types.resolve(mosaic.put(piece))
     assert t.match(TList(tInt))
 
 
 def test_list_opt(types, mosaic):
-    base_ref = mosaic.put(builtin_t('datetime'))
-    element_ref = mosaic.put(optional_t(base_ref))
-    piece = list_t(element_ref)
+    base_ref = mosaic.put(builtin_mt('datetime'))
+    element_ref = mosaic.put(optional_mt(base_ref))
+    piece = list_mt(element_ref)
     t = types.resolve(mosaic.put(piece))
     assert t.match(TList(TOptional(tDateTime)))
 
 
 def test_record(types, mosaic):
-    string_list_t = list_t(mosaic.put(builtin_t('string')))
-    bool_opt_t = optional_t(mosaic.put(builtin_t('bool')))
-    piece = record_t(None, [
-        field_t('int_field', mosaic.put(builtin_t('int'))),
-        field_t('string_list_field', mosaic.put(string_list_t)),
-        field_t('bool_optional_field', mosaic.put(bool_opt_t)),
+    string_list_mt = list_mt(mosaic.put(builtin_mt('string')))
+    bool_opt_t = optional_mt(mosaic.put(builtin_mt('bool')))
+    piece = record_mt(None, [
+        field_mt('int_field', mosaic.put(builtin_mt('int'))),
+        field_mt('string_list_field', mosaic.put(string_list_mt)),
+        field_mt('bool_optional_field', mosaic.put(bool_opt_t)),
         ])
     name = 'some_test_record'
-    named_piece = name_wrapped_t(name, mosaic.put(piece))
+    named_piece = name_wrapped_mt(name, mosaic.put(piece))
     t = types.resolve(mosaic.put(named_piece))
     assert t.match(TRecord(name, {
         'int_field': tInt,
@@ -97,16 +97,16 @@ def test_record(types, mosaic):
 
 
 def test_based_record(types, mosaic):
-    base_piece = record_t(None, [
-        field_t('int_field', mosaic.put(builtin_t('int'))),
+    base_piece = record_mt(None, [
+        field_mt('int_field', mosaic.put(builtin_mt('int'))),
         ])
-    named_base_piece = name_wrapped_t('some_base_record', mosaic.put(base_piece))
+    named_base_piece = name_wrapped_mt('some_base_record', mosaic.put(base_piece))
     named_base_ref = mosaic.put(named_base_piece)
-    piece = record_t(named_base_ref, [
-        field_t('string_field', mosaic.put(builtin_t('string'))),
+    piece = record_mt(named_base_ref, [
+        field_mt('string_field', mosaic.put(builtin_mt('string'))),
         ])
     name = 'some_test_record'
-    named_piece = name_wrapped_t(name, mosaic.put(piece))
+    named_piece = name_wrapped_mt(name, mosaic.put(piece))
     t = types.resolve(mosaic.put(named_piece))
     assert t.match(TRecord(name, {
         'int_field': tInt,

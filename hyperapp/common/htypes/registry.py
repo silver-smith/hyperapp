@@ -6,7 +6,7 @@ from .htypes import (
     tBool,
     tDateTime,
     )
-from .meta_type import list_t
+from .meta_type import list_mt
 from .embedded import (
     tEmbedded,
     )
@@ -58,6 +58,6 @@ def register_builtin_types(types):
     # Register list of builtin types
     for element_t in _builtin_type_list:
         element_ref = types.reverse_resolve(element_t)
-        piece = list_t(element_ref)
+        piece = list_mt(element_ref)
         t = types.register_type(piece).t
         primitive_list_types[element_t] = t

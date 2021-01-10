@@ -6,11 +6,11 @@ import ply.lex as lex
 import ply.yacc as yacc
 
 from .htypes import (
-    name_t,
-    field_t,
-    optional_t,
-    list_t,
-    record_t,
+    name_mt,
+    field_mt,
+    optional_mt,
+    list_mt,
+    record_mt,
     # t_hierarchy_meta,
     # t_exception_hierarchy_meta,
     # t_hierarchy_class_meta,
@@ -187,20 +187,20 @@ def p_record_def_1(p):
     'record_def : RECORD record_base_name_def'
     base_name = p[2]
     if base_name:
-        base_mt = name_t(base_name)
+        base_mt = name_mt(base_name)
         base_ref = p.parser.mosaic.put(base_mt)
     else:
         base_ref = None
-    p[0] = record_t(base_ref, [])
+    p[0] = record_mt(base_ref, [])
 
 def p_record_def_2(p):
     'record_def : RECORD record_base_name_def COLON BLOCK_BEGIN field_list BLOCK_END'
     base_name = p[2]
     if base_name:
-        base = p.parser.mosaic.put(name_t(base_name))
+        base = p.parser.mosaic.put(name_mt(base_name))
     else:
         base = None
-    p[0] = record_t(base, p[5])
+    p[0] = record_mt(base, p[5])
 
 def p_record_base_name_def_1(p):
     'record_base_name_def : empty'
@@ -371,7 +371,7 @@ def p_field_list_2(p):
 def p_field_def(p):
     'field_def : NAME COLON type_expr'
     t = p.parser.mosaic.put(p[3])
-    p[0] = field_t(p[1], t)
+    p[0] = field_mt(p[1], t)
 
 
 def p_type_expr_1(p):
@@ -379,17 +379,17 @@ def p_type_expr_1(p):
     name = p[1]
     if not name in p.parser.known_name_set:
         unknown_name_error(p, 1, name)
-    p[0] = name_t(name)
+    p[0] = name_mt(name)
 
 def p_type_expr_2(p):
     'type_expr : type_expr OPT'
     base_t = p.parser.mosaic.put(p[1])
-    p[0] = optional_t(base_t)
+    p[0] = optional_mt(base_t)
 
 def p_type_expr_3(p):
     'type_expr : type_expr LIST'
     element_t = p.parser.mosaic.put(p[1])
-    p[0] = list_t(element_t)
+    p[0] = list_mt(element_t)
 
 
 def p_empty(p):

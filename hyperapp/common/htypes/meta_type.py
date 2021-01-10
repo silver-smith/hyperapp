@@ -16,18 +16,18 @@ from .hyper_ref import ref_t
 from .interface import IfaceCommand, Interface
 
 
-builtin_t = TRecord('builtin_t', {
+builtin_mt = TRecord('builtin_mt', {
     'name': tString,
     })
 
 
 # Produced by type module parsed, removed by loader.
-name_t = TRecord('name_t', {
+name_mt = TRecord('name_mt', {
     'name': tString,
     })
 
 
-name_wrapped_t = TRecord('name_wrapped_t', {
+name_wrapped_mt = TRecord('name_wrapped_mt', {
     'name': tString,
     'type': ref_t,
     })
@@ -37,7 +37,7 @@ def name_wrapped_from_piece(rec, type_code_registry, name):
     return type_code_registry.invite(rec.type, type_code_registry, rec.name)
 
 
-optional_t = TRecord('optional_t', {
+optional_mt = TRecord('optional_mt', {
     'base': ref_t,
     })
 
@@ -47,7 +47,7 @@ def optional_from_piece(rec, type_code_registry, name):
     return TOptional(base_t)
 
 
-list_t = TRecord('list_t', {
+list_mt = TRecord('list_mt', {
     'element': ref_t,
     })
 
@@ -57,14 +57,14 @@ def list_from_piece(rec, type_code_registry, name):
     return TList(element_t)
 
 
-field_t = TRecord('field_t', {
+field_mt = TRecord('field_mt', {
     'name': tString,
     'type': ref_t,
     })
 
-record_t = TRecord('record_t', {
+record_mt = TRecord('record_mt', {
     'base': TOptional(ref_t),
-    'fields': TList(field_t),
+    'fields': TList(field_mt),
     })
 
 
@@ -168,17 +168,17 @@ def record_from_piece(rec, type_code_registry, name):
 
 
 def register_builtin_meta_types(types):
-    types.register_builtin_type(name_t)
-    types.register_builtin_type(name_wrapped_t)
-    types.register_builtin_type(optional_t)
-    types.register_builtin_type(list_t)
-    types.register_builtin_type(field_t)
-    types.register_builtin_type(record_t)
+    types.register_builtin_type(name_mt)
+    types.register_builtin_type(name_wrapped_mt)
+    types.register_builtin_type(optional_mt)
+    types.register_builtin_type(list_mt)
+    types.register_builtin_type(field_mt)
+    types.register_builtin_type(record_mt)
 
 
 def register_meta_types(type_code_registry):
-    # name_t does not produce a type, it is removed by type module loader.
-    type_code_registry.register_actor(name_wrapped_t, name_wrapped_from_piece)
-    type_code_registry.register_actor(optional_t, optional_from_piece)
-    type_code_registry.register_actor(list_t, list_from_piece)
-    type_code_registry.register_actor(record_t, record_from_piece)
+    # name_mt does not produce a type, it is removed by type module loader.
+    type_code_registry.register_actor(name_wrapped_mt, name_wrapped_from_piece)
+    type_code_registry.register_actor(optional_mt, optional_from_piece)
+    type_code_registry.register_actor(list_mt, list_from_piece)
+    type_code_registry.register_actor(record_mt, record_from_piece)

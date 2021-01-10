@@ -2,8 +2,8 @@ import logging
 
 from .htypes import (
     ref_t,
-    name_t,
-    name_wrapped_t,
+    name_mt,
+    name_wrapped_mt,
     )
 from .ref import ref_repr
 from .visual_rep import pprint
@@ -22,7 +22,7 @@ class _NameToRefMapper(Mapper):
         self._local_name_dict = local_name_dict
 
     def map_record(self, t, value):
-        if t is name_t:
+        if t is name_mt:
             return self._resolve_name(value)
         if t is ref_t:
             return self._map_ref(value)
@@ -76,7 +76,7 @@ class TypeModuleLoader(object):
         for typedef in module_source.typedefs:
             type_piece = mapper.map(typedef.type)
             type_ref = self._mosaic.put(type_piece)
-            named = name_wrapped_t(typedef.name, type_ref)
+            named = name_wrapped_mt(typedef.name, type_ref)
             ref = self._mosaic.put(named)
             local_type_module.register(typedef.name, ref)
             local_name_dict[typedef.name] = ref

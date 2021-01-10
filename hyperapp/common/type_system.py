@@ -4,7 +4,7 @@ import logging
 from .htypes import (
     Type,
     ref_t,
-    builtin_t,
+    builtin_mt,
     capsule_t,
     register_builtin_meta_types,
     register_meta_types,
@@ -44,11 +44,11 @@ class TypeSystem(object):
         self._mosaic = mosaic
         self._type_code_registry = CodeRegistry('type', mosaic, self)
         self._type_code_registry.register_actor(ref_t, self._ref_from_piece)
-        self._type_code_registry.register_actor(builtin_t, self._builtin_from_piece)
-        # Register builtin_t with phony ref - can not be registered as usual because of dependency loop.
+        self._type_code_registry.register_actor(builtin_mt, self._builtin_from_piece)
+        # Register builtin_mt with phony ref - can not be registered as usual because of dependency loop.
         builtin_ref = phony_ref('BUILTIN_REF')
-        self._type2ref[builtin_t] = builtin_ref
-        self._ref2type_cache[builtin_ref] = builtin_t
+        self._type2ref[builtin_mt] = builtin_ref
+        self._ref2type_cache[builtin_ref] = builtin_mt
         #
         register_builtin_meta_types(self)
         register_meta_types(self._type_code_registry)
@@ -100,7 +100,7 @@ class TypeSystem(object):
 
     def register_builtin_type(self, t):
         assert t not in self._type2ref, repr(t)
-        piece = builtin_t(t.name)
+        piece = builtin_mt(t.name)
         type_ref = self._mosaic.put(piece)
         self._type2ref[t] = type_ref
         self._ref2type_cache[type_ref] = t
