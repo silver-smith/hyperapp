@@ -18,8 +18,6 @@ from .htypes import (
     TIndexedList,
     DecodableEmbedded,
     TEmbedded,
-    THierarchy,
-    TClass,
     ref_t,
     )
 from .htypes.packet_coders import DecodeError
@@ -120,19 +118,6 @@ class DictDecoder(metaclass=abc.ABCMeta):
     @dispatch.register(TEmbedded)
     def decode_embedded(self, t, value, path):
         return DictDecodableEmbedded(value)
-
-    @dispatch.register(THierarchy)
-    def decode_hierarchy_obj(self, t, value, path):
-        self.expect_type(path, isinstance(value, dict), value, 'hierarchy object (dict)')
-        self.expect(path, '_class_id' in value, '_class_id field is missing')
-        id = self.dispatch(tString, value['_class_id'], join_path(path, '_class_id'))
-        tclass = t.resolve(id)
-        fields = self.decode_record_fields(tclass.fields, value, path)
-        return tclass(**fields)
-
-    @dispatch.register(TClass)
-    def decode_tclass_obj(self, t, value, path):
-        return self.decode_hierarchy_obj(t.hierarchy, value, path)
 
     def decode_record_fields(self, fields, value, path):
         decoded_fields = {}

@@ -13,8 +13,6 @@ from .htypes import (
     TList,
     EncodableEmbedded,
     TEmbedded,
-    THierarchy,
-    TClass,
     )
 
 
@@ -89,14 +87,3 @@ class CdrEncoder(object):
         assert isinstance(value, EncodableEmbedded), repr(value)
         data = CdrEncoder().encode(value.value, value.type)
         self.dispatch(tBinary, data)
-
-    @dispatch.register(THierarchy)
-    def encode_hierarchy_obj(self, t, value):
-        tclass = t.get_object_class(value)
-        self.write_unicode(tclass.id)
-        self.encode_record(tclass, value)
-
-    @dispatch.register(TClass)
-    def encode_tclass_obj(self, t, value):
-        assert isinstance(value, t), repr((t, value))
-        self.encode_hierarchy_obj(t.hierarchy, value)

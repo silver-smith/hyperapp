@@ -11,7 +11,6 @@ from hyperapp.common.htypes import (
     TOptional,
     TRecord,
     TList,
-    TClass,
     NotificationCmd,
     Interface,
     ref_t,
@@ -76,15 +75,6 @@ def test_types(types, mosaic, local_type_module_registry, htypes):
 
     assert htypes.type_module_1.record_1.match(TRecord('record_1', {'int_field': tInt}))
     assert htypes.type_module_1.record_2.match(TRecord('record_1', {'int_field': tInt, 'string_field': tString}))
-
-    # object_t = resolve_1('object')
-    # simple_class = resolve_1('simple_class')
-
-    # assert simple_class.hierarchy is object_t
-    # assert simple_class.match(TClass(object_t, 'simple_2'))
-
-    # assert resolve_1('text_object').match(
-    #     TClass(object_t, 'text_2', base=simple_class, fields=OrderedDict([('text', tString)])))
 
     some_bool_list_opt = htypes.type_module_2.some_bool_list_opt
     assert some_bool_list_opt.match(TOptional(TList(tBool)))

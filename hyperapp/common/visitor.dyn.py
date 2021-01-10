@@ -4,8 +4,6 @@ from hyperapp.common.htypes import (
     TOptional,
     TRecord,
     TEmbedded,
-    THierarchy,
-    TClass,
     TList,
     )
 
@@ -19,9 +17,6 @@ class Visitor(object):
         pass
 
     def visit_record(self, t, value):
-        pass
-
-    def visit_hierarchy_obj(self, t, tclass, value):
         pass
 
     @method_dispatch
@@ -49,19 +44,6 @@ class Visitor(object):
     @dispatch.register(TEmbedded)
     def process_embedded(self, t, value):
         pass
-            
-    @dispatch.register(THierarchy)
-    def process_hierarchy_obj(self, t, value):
-        tclass = t.get_object_class(value)
-        self.visit_hierarchy_obj(t, tclass, value)
-        self.process_record(tclass, value)
-
-    @dispatch.register(TClass)
-    def process_tclass_obj(self, t, value):
-        self.process_hierarchy_obj(t.hierarchy, value)
-
-    def process_field(self, field, value):
-        self.dispatch(field.type, getattr(value, field.name))
 
     @dispatch.register(TList)
     def process_list(self, t, value):

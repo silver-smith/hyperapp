@@ -87,46 +87,6 @@ def record_from_piece(rec, type_code_registry, name):
     return TRecord(name, field_dict, base=base_t)
 
 
-# tHierarchyMeta = tMetaType.register(
-#     'hierarchy', base=tRootMetaType, fields=OrderedDict([
-#         ('hierarchy_id', tString),
-#         ]))
-
-# tExceptionHierarchyMeta = tMetaType.register('exception_hierarchy', base=tHierarchyMeta)
-
-# tHierarchyClassMeta = tMetaType.register('hierarchy_class', base=tRootMetaType, fields=OrderedDict([
-#     ('hierarchy', tMetaType),  # tNamed is expected
-#     ('class_id', tString),
-#     ('base', TOptional(tMetaType)),  # tRecordMeta is expected
-#     ('fields', TList(tFieldMeta)),
-#     ]))
-
-# def t_hierarchy_meta(hierarchy_id):
-#     return tHierarchyMeta(tHierarchyMeta.id, hierarchy_id)
-
-# def t_exception_hierarchy_meta(hierarchy_id):
-#     return tExceptionHierarchyMeta(tExceptionHierarchyMeta.id, hierarchy_id)
-
-# def t_hierarchy_class_meta(hierarchy, class_id, fields, base=None):
-#     return tHierarchyClassMeta(tHierarchyClassMeta.id, hierarchy, class_id, base, fields)
-
-# def hierarchy_from_data(meta_type_registry, type_web, rec, name):
-#     return THierarchy(rec.hierarchy_id, name)
-
-# def exception_hierarchy_from_data(meta_type_registry, type_web, rec, name):
-#     return TExceptionHierarchy(rec.hierarchy_id, name)
-
-# def hierarchy_class_from_data(meta_type_registry, type_web, rec, name):
-#     hierarchy = meta_type_registry.resolve(type_web, rec.hierarchy, name)
-#     assert isinstance(hierarchy, THierarchy), repr(hierarchy)
-#     if rec.base is not None:
-#         base = meta_type_registry.resolve(type_web, rec.base, name)
-#     else:
-#         base = None
-#     fields = field_odict_from_data(meta_type_registry, type_web, rec.fields)
-#     return hierarchy.register(rec.class_id, base=base, fields=fields)
-
-
 # tIfaceCommandMeta = TRecord('iface_command', OrderedDict([
 #     ('request_type', tString),
 #     ('command_id', tString),

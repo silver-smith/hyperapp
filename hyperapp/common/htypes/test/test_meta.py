@@ -15,8 +15,6 @@ from hyperapp.common.htypes import (
     TOptional,
     TRecord,
     TList,
-    TClass,
-    THierarchy,
     RequestCmd,
     NotificationCmd,
     Interface,
@@ -112,28 +110,6 @@ def test_based_record(types, mosaic):
         'int_field': tInt,
         'string_field': tString,
         }))
-
-
-def test_hierarchy(builtin_ref, type_ref, resolve):
-    hierarchy_data = t_hierarchy_meta('test_hierarchy')
-    hierarchy_ref = t_ref(type_ref('some_hierarchy', hierarchy_data))
-
-    class_a_data = t_hierarchy_class_meta(hierarchy_ref, 'class_a', fields=[
-        t_field_meta('field_a_1', builtin_ref('string')),
-        ])
-    class_a_ref = t_ref(type_ref('some_class_a', class_a_data))
-    class_b_data = t_hierarchy_class_meta(hierarchy_ref, 'class_b', base=class_a_ref, fields=[
-        t_field_meta('field_b_1', t_list_meta(builtin_ref('int'))),
-        ])
-    hierarchy = resolve('some_hierarchy', hierarchy_data)
-    assert THierarchy('test_hierarchy').match(hierarchy)
-    class_a = resolve('some_class_a', class_a_data)
-    class_b = resolve('some_class_b', class_b_data)
-    assert class_a.match(TClass(hierarchy, 'class_a', OrderedDict([('field_a_1', tString)])))
-    assert class_b.match(TClass(hierarchy, 'class_b', OrderedDict([
-        ('field_a_1', tString),
-        ('field_b_1', TList(tInt)),
-        ])))
 
 
 def test_interface(builtin_ref, resolve):

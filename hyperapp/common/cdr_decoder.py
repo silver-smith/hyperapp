@@ -15,8 +15,6 @@ from .htypes import (
     TIndexedList,
     DecodableEmbedded,
     TEmbedded,
-    THierarchy,
-    TClass,
     )
 from .htypes.packet_coders import DecodeError
 
@@ -148,14 +146,3 @@ class CdrDecoder(object):
     def decode_embedded(self, t, path):
         data = self.dispatch(tBinary, path)
         return CdrDecodableEmbedded(data)
-        
-    @dispatch.register(THierarchy)
-    def decode_hierarchy_obj(self, t, path):
-        class_id = self.read_unicode(path)
-        tclass = t.resolve(class_id)
-        fields = self.decode_record_fields(tclass.fields, path)
-        return tclass(**fields)
-
-    @dispatch.register(TClass)
-    def decode_tclass_obj(self, t, path):
-        return self.decode_hierarchy_obj(t.hierarchy, path)

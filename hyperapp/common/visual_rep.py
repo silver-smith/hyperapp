@@ -13,8 +13,6 @@ from .htypes import (
     TRecord,
     TList,
     TEmbedded,
-    THierarchy,
-    TClass,
     Interface,
     tPath,
     #tCommand,
@@ -121,17 +119,6 @@ class VisualRepEncoder(object):
     @dispatch.register(TEmbedded)
     def encode_embedded(self, t, name, value):
         return VisualRep(t.name, name, '<%s>' % self._make_name(t, 'embedded'))
-
-    @dispatch.register(THierarchy)
-    def encode_hierarchy_obj(self, t, name, value):
-        tclass = t.get_object_class(value)
-        children = self.encode_record_fields(tclass.fields, value)
-        return VisualRep(t.name, name, "{}:{}".format(t.hierarchy_id, tclass.id), children)
-
-    @dispatch.register(TClass)
-    def encode_tclass_obj(self, t, value):
-        assert isinstance(value, t), repr((t, value))
-        return self.encode_hierarchy_obj(t.hierarchy, value)
 
     def encode_path(self, t, name, obj):
         return VisualRep(t.name, name, encode_path(obj))

@@ -16,8 +16,6 @@ from .htypes import (
     TList,
     EncodableEmbedded,
     TEmbedded,
-    THierarchy,
-    TClass,
     Interface,
     ref_t,
     )
@@ -78,17 +76,6 @@ class DictEncoder(metaclass=abc.ABCMeta):
     def encode_embedded(self, t, value):
         assert isinstance(value, EncodableEmbedded), repr(value)
         return self.dispatch(value.type, value.value)
-
-    @dispatch.register(THierarchy)
-    def encode_hierarchy_obj(self, t, value):
-        tclass = t.get_object_class(value)
-        return dict(self.encode_record(tclass, value),
-                    _class_id=self.dispatch(tString, tclass.id))
-
-    @dispatch.register(TClass)
-    def encode_tclass_obj(self, t, value):
-        assert isinstance(value, t), repr((t, value))
-        return self.encode_hierarchy_obj(t.hierarchy, value)
 
     def _encode_ref(self, ref):
         decoded_capsule = self._types.resolve_ref(ref)

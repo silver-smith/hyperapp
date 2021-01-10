@@ -11,9 +11,6 @@ from .htypes import (
     optional_mt,
     list_mt,
     record_mt,
-    # t_hierarchy_meta,
-    # t_exception_hierarchy_meta,
-    # t_hierarchy_class_meta,
     # t_command_meta,
     # t_interface_meta,
     builtin_type_names,
@@ -35,9 +32,6 @@ keywords = [
     'opt',
     'list',
     'record',
-    'hierarchy',
-    'exception_hierarchy',
-    'class',
     'interface',
     'list_interface',
     'commands',
@@ -162,23 +156,15 @@ def p_typedef(p):
     p[0] = type_def_t(name=p[1], type=t)
     p.parser.known_name_set.add(p[1])
 
-def p_typedef_rhs_1(p):
+def p_typedef_rhs_expr(p):
     'typedef_rhs : type_expr'
     p[0] = p[1]
 
-def p_typedef_rhs_2(p):
+def p_typedef_rhs_record(p):
     'typedef_rhs : record_def'
     p[0] = p[1]
 
-def p_typedef_rhs_3(p):
-    'typedef_rhs : class_def'
-    p[0] = p[1]
-
-def p_typedef_rhs_4(p):
-    'typedef_rhs : hierarchy_def'
-    p[0] = p[1]
-
-def p_typedef_rhs_5(p):
+def p_typedef_rhs_interface(p):
     'typedef_rhs : interface_def'
     p[0] = p[1]
 
@@ -209,44 +195,6 @@ def p_record_base_name_def_1(p):
 def p_record_base_name_def_2(p):
     'record_base_name_def : LPAR NAME RPAR'
     p[0] = p[2]
-
-
-def p_hierarchy_def_1(p):
-    'hierarchy_def : HIERARCHY NAME'
-    p[0] = t_hierarchy_meta(p[2])
-
-def p_hierarchy_def_2(p):
-    'hierarchy_def : EXCEPTION_HIERARCHY NAME'
-    p[0] = t_exception_hierarchy_meta(p[2])
-
-
-def p_class_def(p):
-    'class_def : NAME CLASS NAME class_base_def class_fields_def'
-    hierarchy = t_named(p[1])
-    base_name = p[4]
-    if base_name:
-        base = t_named(base_name)
-    else:
-        base = None
-    p[0] = t_hierarchy_class_meta(hierarchy, p[3], p[5], base)
-    #p.parser.provided_class_list.append(tProvidedClass(p[1], p[3]))
-
-def p_class_base_def_1(p):
-    'class_base_def : LPAR NAME RPAR'
-    p[0] = p[2]
-
-def p_class_base_def_2(p):
-    'class_base_def : empty'
-    p[0] = None
-
-
-def p_class_fields_def_1(p):
-    'class_fields_def : COLON BLOCK_BEGIN field_list BLOCK_END'
-    p[0] = p[3]
-    
-def p_class_fields_def_2(p):
-    'class_fields_def : empty'
-    p[0] = []
 
 
 def p_interface_def_1(p):

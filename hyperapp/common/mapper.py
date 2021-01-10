@@ -3,7 +3,6 @@ from .htypes import (
     TPrimitive,
     TOptional,
     TRecord,
-    THierarchy,
     TList,
     )
 from .htypes.deduce_value_type import deduce_value_type
@@ -16,9 +15,6 @@ class Mapper(object):
         return self.dispatch(t, value)
 
     def map_record(self, t, value):
-        return value
-
-    def map_hierarchy_obj(self, tclass, value):
         return value
 
     @method_dispatch
@@ -46,13 +42,6 @@ class Mapper(object):
         result = t(**fields)
         return self.map_record(t, result)
             
-    @dispatch.register(THierarchy)
-    def process_hierarchy_obj(self, t, value):
-        tclass = t.get_object_class(value)
-        fields = self.map_record_fields(tclass, value)
-        mapped_obj = tclass(**fields)
-        return self.map_hierarchy_obj(tclass, mapped_obj)
-
     def map_record_fields(self, t, value):
         mapped_fields = {}
         for field_name, field_type in t.fields.items():
