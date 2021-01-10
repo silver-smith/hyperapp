@@ -68,15 +68,6 @@ record_mt = TRecord('record_mt', {
     })
 
 
-def t_field_meta(name, type):
-    return tFieldMeta(name, type)
-
-
-def t_record_meta(base, fields):
-    assert base is None or isinstance(base, tMetaType), repr(base)
-    return tRecordMeta(tRecordMeta.id, base, fields)
-
-
 def field_from_piece(rec, type_code_registry):
     t = type_code_registry.invite(rec.type, type_code_registry, None)
     return (rec.name, t)
