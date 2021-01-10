@@ -15,8 +15,8 @@ from hyperapp.common.htypes import (
     TOptional,
     TRecord,
     TList,
-    RequestCmd,
-    NotificationCmd,
+    Request,
+    Notification,
     Interface,
     builtin_mt,
     name_wrapped_mt,
@@ -24,6 +24,10 @@ from hyperapp.common.htypes import (
     list_mt,
     field_mt,
     record_mt,
+    request_mt,
+    notification_mt,
+    method_field_mt,
+    interface_mt,
     register_builtin_types,
     )
 from hyperapp.common import cdr_coders  # register codec
@@ -112,30 +116,106 @@ def test_based_record(types, mosaic):
         })
 
 
-# def test_interface(builtin_ref, resolve):
-#     iface_data = t_interface_meta([
-#         t_command_meta('request', 'request_one',
-#                        [t_field_meta('req_param1', builtin_ref('string'))],
-#                        [t_field_meta('req_result1', t_list_meta(builtin_ref('int')))]),
-#         t_command_meta('notification', 'notification_one',
-#                        [t_field_meta('noti_param1', t_optional_meta(builtin_ref('bool'))),
-#                         t_field_meta('noti_param2', builtin_ref('datetime'))]),
-#         t_command_meta('request', 'request_open', [],
-#                        [t_field_meta('result', t_optional_meta(builtin_ref('int')))]),
-#         ])
-#     t = resolve('test_iface', iface_data)
-#     assert t.match(Interface(['test_iface'],
-#         commands=[
-#             RequestCmd(['test_iface', 'request_one'], 'request_one',
-#                        OrderedDict([('req_param1', tString)]),
-#                        OrderedDict([('req_result1', TList(tInt))])),
-#             NotificationCmd(['test_iface', 'notification_one'], 'notification_one',
-#                             OrderedDict([('noti_param1', TOptional(tBool)),
-#                                          ('noti_param2', tDateTime)])),
-#             RequestCmd(['test_iface', 'request_open'], 'request_open',
-#                        OrderedDict(),
-#                        OrderedDict([('result', TOptional(tInt))])),
-#         ]))
+def test_interface(types, mosaic):
+    int_list_mt = list_mt(mosaic.put(builtin_mt('int')))
+    bool_opt_mt = optional_mt(mosaic.put(builtin_mt('bool')))
+    request_1 = request_mt(
+        method_name='request_1',
+        param_fields=[
+            field_mt('request_1_str_param', mosaic.put(builtin_mt('string'))),
+            field_mt('request_1_int_list_param', mosaic.put(int_list_mt)),
+            ],
+        response_fields=[
+            field_mt('request_1_int_response', mosaic.put(builtin_mt('int'))),
+            field_mt('request_1_bool_opt_response', mosaic.put(bool_opt_mt)),
+            ],
+        )
+    notification_1 = notification_mt(
+        method_name='notification_1',
+        param_fields=[
+            field_mt('notification_1_datetime_param', mosaic.put(builtin_mt('datetime'))),
+            field_mt('notification_1_bool_opt_param', mosaic.put(bool_opt_mt)),
+            ],
+        )
+    request_2 = request_mt(
+        method_name='request_2',
+        param_fields=[
+            field_mt('request_2_datetime_param', mosaic.put(builtin_mt('datetime'))),
+        ],
+        response_fields=[
+            field_mt('request_2_str_response', mosaic.put(builtin_mt('string'))),
+        ],
+        )
+    notification_2 = notification_mt(
+        method_name='notification_2',
+        param_fields=[
+            field_mt('notification_2_int_list_param', mosaic.put(int_list_mt)),
+        ],
+        )
+    request_3 = request_mt('request_3', param_fields=[], response_fields=[])
+    notification_3 = notification_mt('notification_3', param_fields=[])
+
+    piece = interface_mt(
+        base=None,
+        method_list=[
+            method_field_mt('request_1', mosaic.put(request_1)),
+            method_field_mt('notification_1', mosaic.put(notification_1)),
+            method_field_mt('request_2', mosaic.put(request_2)),
+            method_field_mt('notification_2', mosaic.put(notification_2)),
+            method_field_mt('request_3', mosaic.put(request_3)),
+            method_field_mt('notification_3', mosaic.put(notification_3)),
+            ],
+        )
+
+    name = 'test_iface'
+    named_piece = name_wrapped_mt(name, mosaic.put(piece))
+    t = types.resolve(mosaic.put(named_piece))
+
+    assert t == Interface(name,
+        method_list=[
+            Request(
+                method_name='request_1',
+                params_record_t=TRecord(f'{name}_request_1_params', {
+                    'request_1_str_param': tString,
+                    'request_1_int_list_param': TList(tInt),
+                }),
+                response_record_t=TRecord(f'{name}_request_1_response', {
+                    'request_1_int_response': tInt,
+                    'request_1_bool_opt_response': TOptional(tBool),
+                }),
+            ),
+            Notification(
+                method_name='notification_1',
+                params_record_t=TRecord(f'{name}_notification_1_params', {
+                    'notification_1_datetime_param': tDateTime,
+                    'notification_1_bool_opt_param': TOptional(tBool),
+                    }),
+                ),
+            Request(
+                method_name='request_2',
+                params_record_t=TRecord(f'{name}_request_2_params', {
+                    'request_2_datetime_param': tDateTime,
+                    }),
+                response_record_t=TRecord(f'{name}_request_2_response', {
+                    'request_2_str_response': tString,
+                    }),
+                ),
+            Notification(
+                method_name='notification_2',
+                params_record_t=TRecord(f'{name}_notification_2_params', {
+                    'notification_2_int_list_param': TList(tInt),
+                    }),
+                ),
+            Request(
+                method_name='request_3',
+                params_record_t=TRecord(f'{name}_request_3_params'),
+                response_record_t=TRecord(f'{name}_request_3_response'),
+                ),
+            Notification(
+                method_name='notification_3',
+                params_record_t=TRecord(f'{name}_notification_3_params'),
+                ),
+        ])
 
 
 # def test_based_interface(builtin_ref, type_ref, resolve):

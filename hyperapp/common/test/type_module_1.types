@@ -14,14 +14,8 @@ record_2 = record(record_1):
   string_field: string
 
 
-# params_form_iface = interface test_list_params_2:
-#   diff_type: string
-#   contents:
-#     contents_1: string
-#     contents_2: int
-#   commands:
-#     submit (key: int, size: int) -> (handle: handle opt)
-# 
-# test_iface_a = interface iface_a:
-#   commands:
-#     params () -> (handle: handle opt)
+test_iface_a = interface iface_a:
+  submit (key: int, size: int) -> ()
+
+test_iface_b = interface iface_b(test_iface_a):
+  params () -> (created_at: datetime, id: int)

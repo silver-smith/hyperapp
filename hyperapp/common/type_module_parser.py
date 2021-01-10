@@ -11,8 +11,10 @@ from .htypes import (
     optional_mt,
     list_mt,
     record_mt,
-    # t_command_meta,
-    # t_interface_meta,
+    request_mt,
+    notification_mt,
+    method_field_mt,
+    interface_mt,
     builtin_type_names,
     )
 from .local_type_module import (
@@ -33,11 +35,6 @@ keywords = [
     'list',
     'record',
     'interface',
-    'list_interface',
-    'commands',
-    'columns',
-    'contents',
-    'diff_type',
     ]
 
 STMT_SEP = 'STMT_SEP'  # NEWLINEs converted to this one
@@ -197,17 +194,23 @@ def p_record_base_name_def_2(p):
     p[0] = p[2]
 
 
-def p_interface_def_1(p):
-    'interface_def : INTERFACE NAME interface_parent_def COLON BLOCK_BEGIN interface_command_defs BLOCK_END'
+def p_field_list_1(p):
+    'field_list : field_list STMT_SEP field_def'
+    p[0] = p[1] + [p[3]]
+
+def p_field_list_2(p):
+    'field_list : field_def'
+    p[0] = [p[1]]
+
+def p_field_def(p):
+    'field_def : NAME COLON type_expr'
+    ref = p.parser.mosaic.put(p[3])
+    p[0] = field_mt(p[1], ref)
+
+
+def p_interface_def(p):
+    'interface_def : INTERFACE NAME interface_parent_def COLON BLOCK_BEGIN interface_method_list BLOCK_END'
     p[0] = t_interface_meta(p[6], p[3])
-
-def p_interface_def_2(p):
-    'interface_def : INTERFACE NAME interface_parent_def COLON BLOCK_BEGIN interface_contents_defs STMT_SEP interface_command_defs BLOCK_END'
-    p[0] = t_interface_meta(p[8], p[3])
-
-def p_interface_def_3(p):
-    'interface_def : INTERFACE NAME interface_parent_def COLON BLOCK_BEGIN interface_diff_type_def STMT_SEP interface_contents_defs STMT_SEP interface_command_defs BLOCK_END'
-    p[0] = t_interface_meta(p[10], p[3])
 
 
 def p_interface_parent_def_1(p):
@@ -219,107 +222,35 @@ def p_interface_parent_def_2(p):
     p[0] = None
 
 
-def p_list_interface_def_1(p):
-    'interface_def : LIST_INTERFACE NAME COLON BLOCK_BEGIN interface_columns_defs STMT_SEP interface_command_defs BLOCK_END'
-    #p[0] = t_list_interface_meta(p[2], None, p[7], p[5])
-
-def p_list_interface_def_2(p):
-    'interface_def : LIST_INTERFACE NAME COLON BLOCK_BEGIN interface_columns_defs BLOCK_END'
-    p[0] = t_list_interface_meta(p[2], None, [], p[5])
-
-
-def p_interface_diff_type_def(p):
-    'interface_diff_type_def : DIFF_TYPE COLON type_expr'
-    p[0] = p[3]
-
-
-def p_interface_contents_defs(p):
-    'interface_contents_defs : CONTENTS COLON BLOCK_BEGIN contents_field_list BLOCK_END'
-    p[0] = p[4]
-
-def p_contents_field_list_1(p):
-    'contents_field_list : contents_field_list STMT_SEP contents_field'
+def p_interface_method_list_1(p):
+    'interface_method_list : interface_method_list STMT_SEP interface_method'
     p[0] = p[1] + [p[3]]
 
-def p_contents_field_list_2(p):
-    'contents_field_list : contents_field'
+def p_interface_method_list_2(p):
+    'interface_method_list : interface_method'
     p[0] = [p[1]]
 
-def p_contents_field(p):
-    'contents_field : NAME COLON type_expr'
-    p[0] = t_field_meta(p[1], p[3])
 
-
-def p_interface_command_defs(p):
-    'interface_command_defs : COMMANDS COLON BLOCK_BEGIN interface_command_list BLOCK_END'
-    p[0] = p[4]
-
-def p_interface_command_list_1(p):
-    'interface_command_list : interface_command_list STMT_SEP interface_command'
-    p[0] = p[1] + [p[3]]
-
-def p_interface_command_list_3(p):
-    'interface_command_list : interface_command'
-    p[0] = [p[1]]
-
-def p_interface_command_request(p):
-    'interface_command : NAME LPAR command_field_list RPAR ARROW LPAR command_field_list RPAR'
+def p_interface_method_request(p):
+    'interface_method : NAME LPAR method_field_list RPAR ARROW LPAR method_field_list RPAR'
     p[0] = t_command_meta('request', p[1], p[3], p[7])
 
-def p_interface_command_notification(p):
-    'interface_command : NAME LPAR command_field_list RPAR'
+def p_interface_method_notification(p):
+    'interface_method : NAME LPAR method_field_list RPAR'
     p[0] = t_command_meta('notification', p[1], p[3])
 
-def p_command_field_list_1(p):
-    'command_field_list : command_field_list COMMA command_field'
+
+def p_method_field_list_1(p):
+    'method_field_list : method_field_list COMMA field_def'
     p[0] = p[1] + [p[3]]
 
-def p_command_field_list_2(p):
-    'command_field_list : command_field'
+def p_method_field_list_2(p):
+    'method_field_list : field_def'
     p[0] = [p[1]]
 
-def p_command_field_list_3(p):
-    'command_field_list : empty'
+def p_method_field_list_3(p):
+    'method_field_list : empty'
     p[0] = []
-
-def p_command_field(p):
-    'command_field : NAME COLON type_expr'
-    p[0] = t_field_meta(p[1], p[3])
-
-
-def p_interface_columns_defs(p):
-    'interface_columns_defs : COLUMNS COLON BLOCK_BEGIN columns_defs BLOCK_END'
-    p[0] = p[4]
-
-def p_columns_defs_1(p):
-    'columns_defs : columns_defs STMT_SEP column_def'
-    p[0] = p[1] + [p[3]]
-
-def p_columns_defs_2(p):
-    'columns_defs : column_def'
-    p[0] = [p[1]]
-
-def p_column_def_1(p):
-    'column_def : NAME COLON type_expr'
-    #p[0] = t_column_meta(p[1], p[3], is_key=False)
-
-def p_column_def_2(p):
-    'column_def : AT NAME COLON type_expr'
-    #p[0] = t_column_meta(p[2], p[4], is_key=True)
-
-
-def p_field_list_1(p):
-    'field_list : field_list STMT_SEP field_def'
-    p[0] = p[1] + [p[3]]
-
-def p_field_list_2(p):
-    'field_list : field_def'
-    p[0] = [p[1]]
-
-def p_field_def(p):
-    'field_def : NAME COLON type_expr'
-    t = p.parser.mosaic.put(p[3])
-    p[0] = field_mt(p[1], t)
 
 
 def p_type_expr_1(p):

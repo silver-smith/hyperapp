@@ -13,7 +13,7 @@ from .htypes import (
     )
 from .record import TRecord
 from .hyper_ref import ref_t
-from .interface import IfaceCommand, Interface
+from .interface import Request, Notification, Interface
 
 
 builtin_mt = TRecord('builtin_mt', {
@@ -68,13 +68,13 @@ record_mt = TRecord('record_mt', {
     })
 
 
-def field_from_piece(rec, type_code_registry):
+def _field_from_piece(rec, type_code_registry):
     t = type_code_registry.invite(rec.type, type_code_registry, None)
     return (rec.name, t)
 
 
-def field_dict_from_piece_list(field_list, type_code_registry):
-    return dict(field_from_piece(field, type_code_registry) for field in field_list)
+def _field_dict_from_piece_list(field_list, type_code_registry):
+    return dict(_field_from_piece(field, type_code_registry) for field in field_list)
 
 
 def record_from_piece(rec, type_code_registry, name):
@@ -83,39 +83,59 @@ def record_from_piece(rec, type_code_registry, name):
         assert isinstance(base_t, TRecord), f"Record base is not a record: {base_t}"
     else:
         base_t = None
-    field_dict = field_dict_from_piece_list(rec.fields, type_code_registry)
+    field_dict = _field_dict_from_piece_list(rec.fields, type_code_registry)
     return TRecord(name, field_dict, base=base_t)
 
 
-# tIfaceCommandMeta = TRecord('iface_command', OrderedDict([
-#     ('request_type', tString),
-#     ('command_id', tString),
-#     ('params_fields', TList(tFieldMeta)),
-#     ('result_fields', TList(tFieldMeta)),
-#     ]))
+request_mt = TRecord('request_mt', {
+    'method_name': tString,
+    'param_fields': TList(field_mt),
+    'response_fields': TList(field_mt),
+    })
 
-# tInterfaceMeta = tMetaType.register('interface', base=tRootMetaType, fields=OrderedDict([
-#     ('base', TOptional(tMetaType)),
-#     ('commands', TList(tIfaceCommandMeta)),
-#     ]))
+notification_mt = TRecord('notification_mt', {
+    'method_name': tString,
+    'param_fields': TList(field_mt),
+    })
+
+method_field_mt = TRecord('field_mt', {
+    'name': tString,
+    'method': ref_t,
+    })
+
+interface_mt = TRecord('interface_mt', {
+    'base': TOptional(ref_t),
+    'method_list': TList(method_field_mt),
+    })
 
 
-# def t_command_meta(request_type, command_id, params_fields, result_fields=None):
-#     assert request_type in [IfaceCommand.rt_request, IfaceCommand.rt_notification], repr(request_type)
-#     return tIfaceCommandMeta(request_type, command_id, params_fields, result_fields or [])
+def request_from_piece(piece, type_code_registry, name):
+    param_field_dict = _field_dict_from_piece_list(piece.param_fields, type_code_registry)
+    response_field_dict = _field_dict_from_piece_list(piece.response_fields, type_code_registry)
+    params_record_t = TRecord(f'{name}_params', param_field_dict)
+    response_record_t = TRecord(f'{name}_response', response_field_dict)
+    return Request(piece.method_name, params_record_t, response_record_t)
 
-# def t_interface_meta(commands, base=None):
-#     return tInterfaceMeta(tInterfaceMeta.id, base, commands)
 
-# def command_from_data(meta_type_registry, type_web, rec, name):
-#     params_fields = field_odict_from_data(meta_type_registry, type_web, rec.params_fields)
-#     result_fields = field_odict_from_data(meta_type_registry, type_web, rec.result_fields)
-#     return IfaceCommand([name, rec.command_id], rec.request_type, rec.command_id, params_fields, result_fields)
+def notification_from_piece(piece, type_code_registry, name):
+    param_field_dict = _field_dict_from_piece_list(piece.param_fields, type_code_registry)
+    params_record_t = TRecord(f'{name}_params', param_field_dict)
+    return Notification(piece.method_name, params_record_t)
 
-# def interface_from_data(meta_type_registry, type_web, rec, name):
-#     base_iface = type_web.resolve(rec.base) if rec.base else None
-#     commands = [command_from_data(meta_type_registry, type_web, command, name) for command in rec.commands]
-#     return Interface(name, base_iface, commands)
+
+def _method_iter_from_field_list(method_field_list, type_code_registry, name):
+    for field in method_field_list:
+        yield type_code_registry.invite(field.method, type_code_registry, f'{name}_{field.name}')
+
+
+def interface_from_piece(piece, type_code_registry, name):
+    if piece.base is not None:
+        base_t = type_code_registry.invite(piece.base, type_code_registry, None)
+        assert isinstance(base_t, Interface), f"Interface base is not a Interface: {base_t}"
+    else:
+        base_t = None
+    method_list = list(_method_iter_from_field_list(piece.method_list, type_code_registry, name))
+    return Interface(name, base_t, method_list)
 
 
 def register_builtin_meta_types(types):
@@ -125,6 +145,9 @@ def register_builtin_meta_types(types):
     types.register_builtin_type(list_mt)
     types.register_builtin_type(field_mt)
     types.register_builtin_type(record_mt)
+    types.register_builtin_type(request_mt)
+    types.register_builtin_type(notification_mt)
+    types.register_builtin_type(interface_mt)
 
 
 def register_meta_types(type_code_registry):
@@ -133,3 +156,6 @@ def register_meta_types(type_code_registry):
     type_code_registry.register_actor(optional_mt, optional_from_piece)
     type_code_registry.register_actor(list_mt, list_from_piece)
     type_code_registry.register_actor(record_mt, record_from_piece)
+    type_code_registry.register_actor(request_mt, request_from_piece)
+    type_code_registry.register_actor(notification_mt, notification_from_piece)
+    type_code_registry.register_actor(interface_mt, interface_from_piece)
