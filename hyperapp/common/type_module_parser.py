@@ -187,10 +187,11 @@ def p_record_def_1(p):
     'record_def : RECORD record_base_name_def'
     base_name = p[2]
     if base_name:
-        base = name_t(base_name)
+        base_mt = name_t(base_name)
+        base_ref = p.parser.mosaic.put(base_mt)
     else:
-        base = None
-    p[0] = record_t(base, [])
+        base_ref = None
+    p[0] = record_t(base_ref, [])
 
 def p_record_def_2(p):
     'record_def : RECORD record_base_name_def COLON BLOCK_BEGIN field_list BLOCK_END'
