@@ -9,12 +9,6 @@ from .htypes import Type
 CHECK_FIELD_TYPES = True
 
 
-def dict_all_match(x_fields, y_fields):
-    return all(
-        x_name == y_name and x_type.match(y_type)
-        for (x_name, x_type), (y_name, y_type)
-        in zip(x_fields.items(), y_fields.items()))
-
 # This is copied and adjusted namedtuple implementation from collections module.
 
 # We want record instances have '_t' member, excluded from _asdict() results.
@@ -165,9 +159,11 @@ class TRecord(Type):
         else:
             return 'TRecord<%d: %s>' % (id(self), ', '.join("%r: %r" % (name, t) for name, t in self.fields.items()))
 
-    def match(self, other):
-        return (isinstance(other, TRecord)
-                and dict_all_match(other.fields, self.fields))
+    def __hash__(self):
+        return id(self)
+
+    def __eq__(self, rhs):
+        return rhs is self or isinstance(rhs, TRecord) and rhs.fields == self.fields
 
     def __subclasscheck__(self, cls):
         ## print('__subclasscheck__', self, cls)

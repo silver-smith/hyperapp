@@ -57,7 +57,7 @@ def test_optional(types, mosaic):
     base_ref = mosaic.put(builtin_mt('string'))
     piece = optional_mt(base_ref)
     t = types.resolve(mosaic.put(piece))
-    assert t.match(TOptional(tString))
+    assert t == TOptional(tString)
     assert t.base_t is tString
 
 
@@ -65,7 +65,7 @@ def test_list(types, mosaic):
     element_ref = mosaic.put(builtin_mt('int'))
     piece = list_mt(element_ref)
     t = types.resolve(mosaic.put(piece))
-    assert t.match(TList(tInt))
+    assert t == TList(tInt)
 
 
 def test_list_opt(types, mosaic):
@@ -73,25 +73,25 @@ def test_list_opt(types, mosaic):
     element_ref = mosaic.put(optional_mt(base_ref))
     piece = list_mt(element_ref)
     t = types.resolve(mosaic.put(piece))
-    assert t.match(TList(TOptional(tDateTime)))
+    assert t == TList(TOptional(tDateTime))
 
 
 def test_record(types, mosaic):
     string_list_mt = list_mt(mosaic.put(builtin_mt('string')))
-    bool_opt_t = optional_mt(mosaic.put(builtin_mt('bool')))
+    bool_opt_mt = optional_mt(mosaic.put(builtin_mt('bool')))
     piece = record_mt(None, [
         field_mt('int_field', mosaic.put(builtin_mt('int'))),
         field_mt('string_list_field', mosaic.put(string_list_mt)),
-        field_mt('bool_optional_field', mosaic.put(bool_opt_t)),
+        field_mt('bool_optional_field', mosaic.put(bool_opt_mt)),
         ])
     name = 'some_test_record'
     named_piece = name_wrapped_mt(name, mosaic.put(piece))
     t = types.resolve(mosaic.put(named_piece))
-    assert t.match(TRecord(name, {
+    assert t == TRecord(name, {
         'int_field': tInt,
         'string_list_field': TList(tString),
         'bool_optional_field': TOptional(tBool),
-        }))
+        })
 
 
 def test_based_record(types, mosaic):
@@ -106,10 +106,10 @@ def test_based_record(types, mosaic):
     name = 'some_test_record'
     named_piece = name_wrapped_mt(name, mosaic.put(piece))
     t = types.resolve(mosaic.put(named_piece))
-    assert t.match(TRecord(name, {
+    assert t == TRecord(name, {
         'int_field': tInt,
         'string_field': tString,
-        }))
+        })
 
 
 # def test_interface(builtin_ref, resolve):

@@ -9,11 +9,8 @@ class TypeError(Exception): pass
 def join_path(*args):
     return '.'.join([_f for _f in args if _f])
 
-def list_all_match(x_list, y_list):
-    return all(x.match(y) for x, y in zip(x_list, y_list))
 
-
-class Type(object):
+class Type:
 
     def __init__(self, name):
         assert name is None or type(name) is str, repr(name)
@@ -35,8 +32,11 @@ class TPrimitive(Type):
     def __repr__(self):
         return 'TPrimitive<%s>' % self.get_type().__name__
 
-    def match(self, other):
-        return isinstance(other, TPrimitive) and other.type_name == self.type_name
+    def __hash__(self):
+        return id(self)
+
+    def __eq__(self, rhs):
+        return rhs is self or isinstance(rhs, TPrimitive) and rhs.type_name == self.type_name
 
     def __instancecheck__(self, value):
         return isinstance(value, self.get_type())
@@ -88,8 +88,11 @@ class TOptional(Type):
     def __repr__(self):
         return 'TOptional<%r>' % self.base_t
 
-    def match(self, other):
-        return isinstance(other, TOptional) and other.base_t.match(self.base_t)
+    def __hash__(self):
+        return id(self)
+
+    def __eq__(self, rhs):
+        return rhs is self or isinstance(rhs, TOptional) and rhs.base_t == self.base_t
 
     def __instancecheck__(self, value):
         return value is None or isinstance(value, self.base_t)
@@ -105,8 +108,11 @@ class TList(Type):
     def __repr__(self):
         return 'TList<%r>' % self.element_t
 
-    def match(self, other):
-        return isinstance(other, TList) and other.element_t.match(self.element_t)
+    def __hash__(self):
+        return id(self)
+
+    def __eq__(self, rhs):
+        return rhs is self or isinstance(rhs, TList) and rhs.element_t == self.element_t
 
     def __instancecheck__(self, value):
         return is_iterable_inst(value, self.element_t)
