@@ -167,7 +167,7 @@ def test_interface(types, mosaic):
             ],
         )
 
-    name = 'test_iface'
+    name = 'test_interface'
     named_piece = name_wrapped_mt(name, mosaic.put(piece))
     t = types.resolve(mosaic.put(named_piece))
 
@@ -218,24 +218,66 @@ def test_interface(types, mosaic):
         ])
 
 
-# def test_based_interface(builtin_ref, type_ref, resolve):
-#     iface_a_data = t_interface_meta([
-#         t_command_meta('request', 'request_one',
-#                        [t_field_meta('req_param1', builtin_ref('string'))],
-#                        [t_field_meta('req_result1', t_list_meta(builtin_ref('int')))]),
-#         ])
-#     iface_a_ref = t_ref(type_ref('iface_a', iface_a_data))
+def test_based_interface(types, mosaic):
+    int_list_mt = list_mt(mosaic.put(builtin_mt('int')))
+    bool_opt_mt = optional_mt(mosaic.put(builtin_mt('bool')))
+    request_1 = request_mt(
+        method_name='request_1',
+        param_fields=[
+            field_mt('request_1_datetime_param', mosaic.put(builtin_mt('datetime'))),
+        ],
+        response_fields=[
+            field_mt('request_1_str_response', mosaic.put(builtin_mt('string'))),
+        ],
+        )
+    notification_1 = notification_mt(
+        method_name='notification_1',
+        param_fields=[
+            field_mt('notification_1_int_list_param', mosaic.put(int_list_mt)),
+        ],
+        )
 
-#     iface_b_data = t_interface_meta(base=iface_a_ref, commands=[
-#         t_command_meta('notification', 'notification_one',
-#                        [t_field_meta('noti_param1', t_optional_meta(builtin_ref('bool'))),
-#                         t_field_meta('noti_param2', builtin_ref('datetime'))]),
-#         ])
+    base_interface_mt = interface_mt(
+        base=None,
+        method_list=[
+            method_field_mt('request_1', mosaic.put(request_1)),
+            ],
+        )
+    base_name = 'test_base_interface'
+    named_base_interface_mt = name_wrapped_mt(base_name, mosaic.put(base_interface_mt))
 
-#     iface_a = resolve('iface_a', iface_a_data)
-#     iface_b = resolve('iface_b', iface_b_data)
-#     assert iface_b.match(Interface(['iface_b'], base=iface_a, commands=[
-#         NotificationCmd(['iface_b', 'notification_one'], 'notification_one',
-#                         OrderedDict([('noti_param1', TOptional(tBool)),
-#                                      ('noti_param2', tDateTime)])),
-#         ]))
+    piece = interface_mt(
+        base=mosaic.put(named_base_interface_mt),
+        method_list=[
+            method_field_mt('notification_1', mosaic.put(notification_1)),
+            ],
+        )
+
+    name = 'test_interface'
+    named_piece = name_wrapped_mt(name, mosaic.put(piece))
+    t = types.resolve(mosaic.put(named_piece))
+
+    base_interface_t = Interface(base_name,
+        method_list=[
+            Request(
+                method_name='request_1',
+                params_record_t=TRecord(f'{name}_request_1_params', {
+                    'request_1_datetime_param': tDateTime,
+                    }),
+                response_record_t=TRecord(f'{name}_request_1_response', {
+                    'request_1_str_response': tString,
+                    }),
+                ),
+            ])
+
+    assert t == Interface(
+        name=name,
+        base=base_interface_t,
+        method_list=[
+            Notification(
+                method_name='notification_1',
+                params_record_t=TRecord(f'{name}_notification_1_params', {
+                    'notification_1_int_list_param': TList(tInt),
+                    }),
+                ),
+        ])

@@ -32,5 +32,5 @@ class Interface(Type):
     def __eq__(self, rhs):
         return (rhs is self
                 or isinstance(rhs, Interface)
-                and (self._base is rhs._base is None or rhs._base.match(self._base))
+                and rhs._base == self._base
                 and rhs._method_dict == self._method_dict)
