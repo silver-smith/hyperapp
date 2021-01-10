@@ -153,11 +153,12 @@ class TRecord(Type):
         self.base = base
         self._named_tuple = _namedtuple(name, [name for name in self.fields], verbose)
 
+    def __str__(self):
+        return f'TRecord({self.name!r})'
+
     def __repr__(self):
-        if self.name:
-            return self.name
-        else:
-            return 'TRecord<%d: %s>' % (id(self), ', '.join("%r: %r" % (name, t) for name, t in self.fields.items()))
+        fields = ', '.join("%r: %r" % (name, t) for name, t in self.fields.items())
+        return f'TRecord({self.name!r}: {fields}>'
 
     def __hash__(self):
         return id(self)
