@@ -34,10 +34,11 @@ class Transport:
         if not route_list:
             raise RuntimeError(f"No route for peer {ref_repr(receiver_peer_ref)}")
         route, *_ = route_list
-        log.info("Sending parcel %s by route %s", parcel, route)
+        log.info("Send parcel %s by route %s", parcel, route)
         route.send(parcel)
 
     def send(self, receiver, sender_identity, ref_list):
+        log.info("Send ref list %s to %s from %s", [ref_repr(ref) for ref in ref_list], receiver, sender_identity)
         ref_collector = self._ref_collector_factory()
         bundle = ref_collector.make_bundle(ref_list)
         parcel = receiver.make_parcel(bundle, sender_identity)
