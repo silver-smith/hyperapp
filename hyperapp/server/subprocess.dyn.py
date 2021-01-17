@@ -44,6 +44,7 @@ class Process:
         self._connection.send((ConnectionEvent.STOP.value, None))
         self._stopped_event.wait()  # Process should send 'stopped' signal.
         self._mp_process.join()
+        log.info("Subprocess %r is joined (exception is %s).", self.name, self._exception)
         if self._exception is not None:
             log.error("Exception in subprocess %r: %s", self.name, self._exception)
             log_traceback(self._traceback_entries)
@@ -80,9 +81,11 @@ class ThisModule(Module):
         self._thread.start()
 
     def stop(self):
+        log.info("Subprocess recv thread: stopping.")
         self._stop_flag = True
         self._signal_connection_in.send(None)
         self._thread.join()
+        log.info("Subprocess recv thread: stopped.")
 
     def _recv_thread_main(self):
         log.info("Subprocess recv thread is started.")
@@ -102,7 +105,12 @@ class ThisModule(Module):
                 self._recv_bundle(process, connection)
 
     def _recv_bundle(self, process, connection):
-        event, payload = connection.recv()
+        try:
+            event, payload = connection.recv()
+        except ConnectionResetError as x:
+            log.exception("Subprocess is exited")
+            self._subprocess_is_stopped_now(process, connection)
+            return
         log.debug("Subprocess recv thread: received %s from %s: %s", event, process.name, payload)
         if event != ConnectionEvent.PARCEL.value:
             self._process_stop_event(process, connection, event, payload)
@@ -124,11 +132,14 @@ class ThisModule(Module):
         self._transport.send_parcel(parcel)
 
     def _process_stop_event(self, process, connection, event, payload):
-        del self._connection_to_process[connection]
         if event == ConnectionEvent.EXCEPTION.value:
             exception, traceback_entries = payload
         else:
             exception = traceback_entries = None
+        self._subprocess_is_stopped_now(process, connection, exception, traceback_entries)
+
+    def _subprocess_is_stopped_now(self, process, connection, exception=None, traceback_entries=None):
+        del self._connection_to_process[connection]
         process.signal_is_stopped_now(exception, traceback_entries)
 
     def subprocess(self, process_name, type_module_list, code_module_list, config=None):
