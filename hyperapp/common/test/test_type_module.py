@@ -128,3 +128,9 @@ def test_types(types, mosaic, local_type_module_registry, htypes):
                 ),
             ],
         )
+
+    # Types should be registered:
+    types.reverse_resolve(htypes.type_module_1.iface_a)
+    types.reverse_resolve(htypes.type_module_1.iface_a.methods['submit'].params_record_t)
+    types.reverse_resolve(htypes.type_module_1.iface_a.methods['submit'].response_record_t)
+    types.reverse_resolve(htypes.type_module_2.iface_c.methods['keep_alive'].params_record_t)

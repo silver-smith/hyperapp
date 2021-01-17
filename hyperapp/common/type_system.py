@@ -51,7 +51,7 @@ class TypeSystem(object):
         self._ref2type_cache[builtin_ref] = builtin_mt
         #
         register_builtin_meta_types(self)
-        register_meta_types(self._type_code_registry)
+        register_meta_types(self._mosaic, self, self._type_code_registry)
 
     def _ref_from_piece(self, piece, type_code_registry, name):
         return self._resolve(piece, name)

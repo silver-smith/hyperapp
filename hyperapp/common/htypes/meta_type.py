@@ -104,18 +104,24 @@ interface_mt = TRecord('interface_mt', {
     })
 
 
-def request_from_piece(piece, type_code_registry, name):
+def request_from_piece(piece, type_code_registry, name, mosaic, types):
     # name here is interface name.
-    param_field_dict = _field_dict_from_piece_list(piece.param_fields, type_code_registry)
-    response_field_dict = _field_dict_from_piece_list(piece.response_fields, type_code_registry)
-    params_record_t = TRecord(f'{name}_{piece.method_name}_params', param_field_dict)
-    response_record_t = TRecord(f'{name}_{piece.method_name}_response', response_field_dict)
+    params_ref = mosaic.put(record_mt(None, piece.param_fields))
+    named_params_ref = mosaic.put(name_wrapped_mt(f'{name}_{piece.method_name}_params', params_ref))
+    params_record_t = types.resolve(named_params_ref)
+
+    response_ref = mosaic.put(record_mt(None, piece.response_fields))
+    named_response_ref = mosaic.put(name_wrapped_mt(f'{name}_{piece.method_name}_response', response_ref))
+    response_record_t = types.resolve(named_response_ref)
+
     return Request(piece.method_name, params_record_t, response_record_t)
 
 
-def notification_from_piece(piece, type_code_registry, name):
-    param_field_dict = _field_dict_from_piece_list(piece.param_fields, type_code_registry)
-    params_record_t = TRecord(f'{name}_{piece.method_name}_params', param_field_dict)
+def notification_from_piece(piece, type_code_registry, name, mosaic, types):
+    params_ref = mosaic.put(record_mt(None, piece.param_fields))
+    named_params_ref = mosaic.put(name_wrapped_mt(f'{name}_{piece.method_name}_params', params_ref))
+    params_record_t = types.resolve(named_params_ref)
+
     return Notification(piece.method_name, params_record_t)
 
 
@@ -146,12 +152,12 @@ def register_builtin_meta_types(types):
     types.register_builtin_type(interface_mt)
 
 
-def register_meta_types(type_code_registry):
+def register_meta_types(mosaic, types, type_code_registry):
     # name_mt does not produce a type, it is removed by type module loader.
     type_code_registry.register_actor(name_wrapped_mt, name_wrapped_from_piece)
     type_code_registry.register_actor(optional_mt, optional_from_piece)
     type_code_registry.register_actor(list_mt, list_from_piece)
     type_code_registry.register_actor(record_mt, record_from_piece)
-    type_code_registry.register_actor(request_mt, request_from_piece)
-    type_code_registry.register_actor(notification_mt, notification_from_piece)
+    type_code_registry.register_actor(request_mt, request_from_piece, mosaic, types)
+    type_code_registry.register_actor(notification_mt, notification_from_piece, mosaic, types)
     type_code_registry.register_actor(interface_mt, interface_from_piece)
