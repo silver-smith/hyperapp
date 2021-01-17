@@ -1,36 +1,9 @@
 import uuid
+from functools import partial
 
 from hyperapp.common.module import Module
 
 from . import htypes
-
-
-class Method:
-
-    def __init__(self, mosaic, my_identity, my_peer_ref, peer, iface_ref, object_id, method_name, command):
-        self._mosaic = mosaic
-        self._my_identity = my_identity
-        self._my_peer_ref = my_peer_ref
-        self._method_name = method_name
-        self._peer = peer
-        self._iface_ref = iface_ref
-        self._object_id = object_id
-        self._method_name = method_name
-        self._command = command
-
-    def __call__(self, *args, **kw):
-        # params = self._command.params_t(*args, **kw)
-        # params_ref = self._mosaic.put(params)
-        # request_id = str(uuid.uuid4())
-        # request = htypes.rpc.request(
-        #     sender_peer_ref=self._my_peer_ref,
-        #     iface_ref=self._iface_ref,
-        #     object_id=self._object_id,
-        #     request_id=request_id,
-        #     method_name=self._method_name,
-        #     params_ref=params_ref,
-        #     )
-        raise NotImplementedError('todo')
 
 
 class Proxy:
@@ -42,10 +15,23 @@ class Proxy:
         self._peer = peer
         self._iface_ref = iface_ref
         self._object_id = object_id
-        for name, command in iface.methods.items():
-            method = Method(
-                self._mosaic, self._my_identity, self._my_peer_ref, self._peer, self._iface_ref, self._object_id, name, command)
+        for name, method in iface.methods.items():
+            method = partial(self._run_request, name, method)
             setattr(self, name, method)
+
+    def _run_request(self, method_name, request, *args, **kw):
+        params = request.params_record_t(*args, **kw)
+        params_ref = self._mosaic.put(params)
+        request_id = str(uuid.uuid4())
+        request = htypes.rpc.request(
+            sender_peer_ref=self._my_peer_ref,
+            iface_ref=self._iface_ref,
+            object_id=self._object_id,
+            request_id=request_id,
+            method_name=method_name,
+            params_ref=params_ref,
+            )
+        raise NotImplementedError('todo')
 
 
 class ThisModule(Module):
