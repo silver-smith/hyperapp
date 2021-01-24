@@ -20,8 +20,8 @@ class Proxy:
             method = partial(self._run_request, name, method)
             setattr(self, name, method)
 
-    def _run_request(self, method_name, request, *args, **kw):
-        params = request.params_record_t(*args, **kw)
+    def _run_request(self, method_name, method, *args, **kw):
+        params = method.params_record_t(*args, **kw)
         params_ref = self._mosaic.put(params)
         request_id = str(uuid.uuid4())
         request = htypes.rpc.request(
