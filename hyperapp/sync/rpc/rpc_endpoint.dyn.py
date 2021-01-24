@@ -7,7 +7,7 @@ from hyperapp.common.module import Module
 from . import htypes
 
 
-RpcRequest = namedtuple('RpcRequest', 'sender')
+RpcRequest = namedtuple('RpcRequest', 'receiver_identity sender')
 
 
 class RpcEndpoint:
@@ -23,15 +23,15 @@ class RpcEndpoint:
         self._servant_by_id[object_id] = servant
 
     def process(self, request):
-        self._message_registry.invite(request.ref_list[0])
+        self._message_registry.invite(request.ref_list[0], request)
 
-    def _handle_request(self, request):
+    def _handle_request(self, request, transport_request):
         sender = self._peer_registry.invite(request.sender_peer_ref)
         servant = self._servant_by_id[request.object_id]
         params = self._types.resolve_ref(request.params_ref).value
         method = getattr(servant, request.method_name)
         result = method(
-            RpcRequest(sender),
+            RpcRequest(transport_request.receiver_identity, sender),
             **params._asdict(),
             )
         # todo: send response with result or exception
