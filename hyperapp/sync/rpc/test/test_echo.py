@@ -39,7 +39,7 @@ def code_module_list():
         ]
 
 
-def test_echo(services, htypes, code):
+def test_echo(services, htypes):
     master_identity = services.generate_rsa_identity(fast=True)
     master_peer_ref = services.mosaic.put(master_identity.peer.piece)
 
@@ -51,7 +51,7 @@ def test_echo(services, htypes, code):
         )
     master_service_ref = services.mosaic.put(master_service)
 
-    rpc_endpoint = code.rpc_endpoint.RpcEndpoint()
+    rpc_endpoint = services.rpc_endpoint_factory()
     services.endpoint_registry.register(master_identity, rpc_endpoint)
 
     ref_collector = services.ref_collector_factory()

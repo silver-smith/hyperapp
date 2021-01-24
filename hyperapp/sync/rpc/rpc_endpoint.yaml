@@ -1,1 +1,6 @@
-# empty
+import:
+  types:
+    rpc:
+    - request
+    - response
+    - error_response
