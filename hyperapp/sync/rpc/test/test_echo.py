@@ -33,12 +33,13 @@ def code_module_list():
         'server.async_stop',
         'sync.transport.transport',
         'sync.transport.endpoint',
+        'sync.rpc.rpc_endpoint',
         'server.subprocess_connection',
         'server.subprocess',
         ]
 
 
-def test_echo(services, htypes):
+def test_echo(services, htypes, code):
     master_identity = services.generate_rsa_identity(fast=True)
     master_peer_ref = services.mosaic.put(master_identity.peer.piece)
 
@@ -49,6 +50,9 @@ def test_echo(services, htypes):
         object_id='run_test',
         )
     master_service_ref = services.mosaic.put(master_service)
+
+    rpc_endpoint = code.rpc_endpoint.RpcEndpoint()
+    services.endpoint_registry.register(master_identity, rpc_endpoint)
 
     ref_collector = services.ref_collector_factory()
     master_service_bundle = ref_collector.make_bundle([master_service_ref])

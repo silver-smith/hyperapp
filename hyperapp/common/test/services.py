@@ -1,4 +1,5 @@
 import logging
+from types import SimpleNamespace
 
 import pytest
 
@@ -34,3 +35,11 @@ def services(type_module_list, code_module_list):
 @pytest.fixture
 def htypes(services):
     return HyperTypesNamespace(services.types, services.local_type_module_registry)
+
+
+@pytest.fixture
+def code(services):
+    return SimpleNamespace(**{
+        name.split('.')[-1]: module  # sync.rpc.rpc_endpoint -> rpc_endpoint
+        for name, module in services.name2module.items()
+        })
