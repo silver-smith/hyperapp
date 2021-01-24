@@ -96,9 +96,11 @@ def test_echo(services, htypes):
             'common.remoting.rsa_identity',
             'server.async_stop',
             'sync.transport.transport',
+            'sync.transport.endpoint',
             'server.subprocess_connection',
             'server.subprocess_child',
             'sync.rpc.rpc_proxy',
+            'sync.rpc.rpc_endpoint',
             'sync.rpc.test.echo_service',
             ],
         config = {
