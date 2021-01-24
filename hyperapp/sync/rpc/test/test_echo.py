@@ -41,8 +41,8 @@ def code_module_list():
 
 class Servant:
 
-    def run(self, echo_service_ref):
-        assert 0, echo_service_ref
+    def run(self, request, echo_service_ref):
+        assert 0, (request, echo_service_ref)
 
 
 def test_echo(services, htypes):
