@@ -75,7 +75,7 @@ class RefCollector(Visitor):
         # can't move following to _collect_refs_from_object because not all objects has refs to them, but for endpoint it's required
         self._collected_ref_set.add(capsule.type_ref)
         self._collected_type_ref_set.add(capsule.type_ref)
-        log.info('Collected %d refs from %s %s: %s', len(self._collected_ref_set), t, ref_repr(ref),
+        log.debug('Collected %d refs from %s %s: %s', len(self._collected_ref_set), t, ref_repr(ref),
                  ', '.join(map(ref_repr, self._collected_ref_set)))
         return self._collected_ref_set
 

@@ -24,6 +24,6 @@ class Web(object):
         for source in self._sources:
             capsule = source.pull(ref)
             if capsule:
-                _log.info('Ref %s is resolved to capsule, type %s', ref_repr(ref), ref_repr(capsule.type_ref))
+                _log.debug('Ref %s is resolved to capsule, type %s', ref_repr(ref), ref_repr(capsule.type_ref))
                 return capsule
         raise RefResolveFailure(ref)
