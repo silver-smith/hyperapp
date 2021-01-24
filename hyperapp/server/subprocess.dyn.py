@@ -123,7 +123,7 @@ class ThisModule(Module):
             self._process_parcel(connection, parcel)
         except Exception as x:
             log.exception("Error processing parcel from subprocess %r", process.name)
-            self._on_failure(f"Error processing parcel from subprocess {process.name!r}: {x}")
+            self._on_failure(f"Error processing parcel from subprocess {process.name!r}: {x}", x)
 
     def _process_parcel(self, connection, parcel):
         sender_ref = self._mosaic.put(parcel.sender.piece)

@@ -29,7 +29,7 @@ def services(type_module_list, code_module_list):
     services.stop()
     for reason in services.get_failure_reason_list():
         log.error("Services failure reason: %s", reason)
-    assert not services.is_failed()
+    services.check_failures()
 
 
 @pytest.fixture
