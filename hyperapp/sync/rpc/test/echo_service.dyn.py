@@ -46,5 +46,5 @@ class ThisModule(Module):
             )
         echo_service_ref = services.mosaic.put(echo_service)
 
-        proxy = services.rpc_proxy(my_identity, master_service)
+        proxy = services.rpc_proxy(my_identity, rpc_endpoint, master_service)
         proxy.run(echo_service_ref)
