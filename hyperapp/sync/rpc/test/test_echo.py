@@ -69,7 +69,7 @@ def test_echo(services, htypes):
     master_service_ref = services.mosaic.put(master_service)
 
     echo_response_queue = queue.Queue()
-    rpc_endpoint = services.rpc_endpoint_factory()
+    rpc_endpoint = services.rpc_endpoint()
     servant = Servant(echo_response_queue, services.types, services.rpc_proxy)
     rpc_endpoint.register_servant(object_id, servant)
     services.endpoint_registry.register(master_identity, rpc_endpoint)

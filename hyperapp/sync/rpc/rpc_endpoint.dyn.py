@@ -41,4 +41,4 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
-        services.rpc_endpoint_factory = partial(RpcEndpoint, services.web, services.types, services.peer_registry)
+        services.rpc_endpoint = partial(RpcEndpoint, services.web, services.types, services.peer_registry)
