@@ -39,19 +39,27 @@ def code_module_list():
         ]
 
 
+class Servant:
+
+    def run(self, echo_service_ref):
+        assert 0, echo_service_ref
+
+
 def test_echo(services, htypes):
     master_identity = services.generate_rsa_identity(fast=True)
     master_peer_ref = services.mosaic.put(master_identity.peer.piece)
 
+    object_id = 'run_test'
     test_echo_iface_ref = services.types.reverse_resolve(htypes.test_rpc.test_echo_iface)
     master_service = htypes.rpc.endpoint(
         peer_ref=master_peer_ref,
         iface_ref=test_echo_iface_ref,
-        object_id='run_test',
+        object_id=object_id,
         )
     master_service_ref = services.mosaic.put(master_service)
 
     rpc_endpoint = services.rpc_endpoint_factory()
+    rpc_endpoint.register_servant(object_id, Servant())
     services.endpoint_registry.register(master_identity, rpc_endpoint)
 
     ref_collector = services.ref_collector_factory()

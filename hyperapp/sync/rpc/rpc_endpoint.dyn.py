@@ -9,14 +9,23 @@ from . import htypes
 class RpcEndpoint:
 
     def __init__(self, web, types):
+        self._types = types
+        self._servant_by_id = {}
         self._message_registry = registry = CodeRegistry('rpc_message', web, types)
         registry.register_actor(htypes.rpc.request, self._handle_request)
+
+    def register_servant(self, object_id, servant):
+        self._servant_by_id[object_id] = servant
 
     def process(self, request):
         self._message_registry.invite(request.ref_list[0])
 
     def _handle_request(self, request):
-        raise NotImplementedError('todo')
+        servant = self._servant_by_id[request.object_id]
+        params = self._types.resolve_ref(request.params_ref).value
+        method = getattr(servant, request.method_name)
+        result = method(**params._asdict())
+        # todo: send response with result or exception
 
 
 class ThisModule(Module):
