@@ -32,14 +32,15 @@ class RpcEndpoint:
     def register_servant(self, object_id, servant):
         self._servant_by_id[object_id] = servant
 
-    def wait_for_response(self, request_id):
-        log.info("Wait for rpc response: %s", request_id)
+    def wait_for_response(self, request_id, timeout_sec=10):
+        log.info("Wait for rpc response (timeout %s): %s", timeout_sec, request_id)
         with self._response_lock:
             while True:
                 try:
                     return self._result_by_request_id.pop(request_id)
                 except KeyError:
-                    self._response_available.wait()
+                    if not self._response_available.wait(timeout_sec):
+                        raise RuntimeError(f"Timed out waiting for response (timeout {timeout_sec} seconds)")
 
     def process(self, request):
         log.info("Received rpc message: %s", request)

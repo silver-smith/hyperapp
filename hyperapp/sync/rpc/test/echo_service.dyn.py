@@ -65,5 +65,8 @@ class ThisModule(Module):
 
     def _run(self, proxy, echo_service_ref):
         log.info("echo_service thread is started")
-        proxy.run(echo_service_ref)
+        try:
+            proxy.run(echo_service_ref)
+        except Exception as x:
+            log.exception("echo_service thread is failed")
         log.info("echo_service thread is finished")

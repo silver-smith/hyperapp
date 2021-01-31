@@ -112,7 +112,7 @@ def test_echo(services, htypes):
         )
     with subprocess:
         log.info("Waiting for echo response.")
-        response = echo_response_queue.get(timeout=20)
+        response = echo_response_queue.get(timeout=10)
         log.info("Got echo response: %s.", response)
         assert response.response == 'Hello to you too'
     log.info("Subprocess is finished.")
