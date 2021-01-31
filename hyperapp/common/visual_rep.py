@@ -24,7 +24,6 @@ from .method_dispatch import method_dispatch
 from .util import encode_path, encode_route
 from .htypes.deduce_value_type import deduce_value_type
 from .ref import ref_repr, make_ref
-from .identity import PublicKey
 from hyperapp.common.type_repr import type_repr_registry
 
 log = logging.getLogger(__name__)
