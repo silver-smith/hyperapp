@@ -158,7 +158,7 @@ class TRecord(Type):
 
     def __repr__(self):
         fields = ', '.join("%r: %r" % (name, t) for name, t in self.fields.items())
-        return f'TRecord({self.name!r}: {fields}>'
+        return f"<TRecord({self.name!r}: {fields or ('(no fields)')})>"
 
     def __hash__(self):
         return id(self)
