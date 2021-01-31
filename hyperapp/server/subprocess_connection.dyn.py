@@ -1,6 +1,10 @@
+import logging
 from enum import Enum
 
+from hyperapp.common.ref import ref_repr
 from hyperapp.common.htypes.packet_coders import packet_coders
+
+log = logging.getLogger(__name__)
 
 
 # Note: copy shared with subprocess_mp_main.py
@@ -23,3 +27,4 @@ class SubprocessRoute:
         parcel_bundle = ref_collector.make_bundle([parcel_ref])
         bundle_cdr = packet_coders.encode('cdr', parcel_bundle)
         self._connection.send((ConnectionEvent.PARCEL.value, bundle_cdr))
+        log.info("Subprocess: parcel is sent: %s", ref_repr(parcel_ref))
