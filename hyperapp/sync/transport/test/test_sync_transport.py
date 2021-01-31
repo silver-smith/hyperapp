@@ -28,12 +28,12 @@ def code_module_list():
         'common.unbundler',
         'common.remoting.identity',
         'common.remoting.rsa_identity',
-        'server.work_dir',
+        'sync.work_dir',
         'sync.async_stop',
         'sync.transport.transport',
         'sync.transport.endpoint',
-        'server.subprocess_connection',
-        'server.subprocess',
+        'sync.subprocess_connection',
+        'sync.subprocess',
         ]
 
 
@@ -72,13 +72,13 @@ def test_send_subprocess_parcel(services):
             'common.remoting.rsa_identity',
             'sync.async_stop',
             'sync.transport.transport',
-            'server.subprocess_connection',
-            'server.subprocess_child',
+            'sync.subprocess_connection',
+            'sync.subprocess_child',
             'sync.transport.test.send_subprocess_parcel',
             ],
         config = {
             'sync.transport.test.send_subprocess_parcel': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
-            'server.subprocess_child': {'master_peer_ref_cdr_list': master_peer_ref_cdr_list},
+            'sync.subprocess_child': {'master_peer_ref_cdr_list': master_peer_ref_cdr_list},
             },
         )
     with subprocess:
@@ -117,13 +117,13 @@ def test_subprocess_transport_echo(services):
             'sync.async_stop',
             'sync.transport.transport',
             'sync.transport.endpoint',
-            'server.subprocess_connection',
-            'server.subprocess_child',
+            'sync.subprocess_connection',
+            'sync.subprocess_child',
             'sync.transport.test.subprocess_echo',
             ],
         config = {
             'sync.transport.test.subprocess_echo': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
-            'server.subprocess_child': {'master_peer_ref_cdr_list': master_peer_ref_cdr_list},
+            'sync.subprocess_child': {'master_peer_ref_cdr_list': master_peer_ref_cdr_list},
             },
         )
     with subprocess:

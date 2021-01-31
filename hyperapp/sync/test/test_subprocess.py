@@ -19,11 +19,11 @@ def code_module_list():
         'common.ref_collector',
         'common.unbundler',
         'common.remoting.identity',
-        'server.work_dir',
+        'sync.work_dir',
         'sync.async_stop',
         'sync.transport.transport',
-        'server.subprocess_connection',
-        'server.subprocess',
+        'sync.subprocess_connection',
+        'sync.subprocess',
         ]
 
 
@@ -39,8 +39,8 @@ def test_subprocess(services):
             'common.unbundler',
             'sync.async_stop',
             'sync.transport.transport',
-            'server.subprocess_connection',
-            'server.subprocess_child',
+            'sync.subprocess_connection',
+            'sync.subprocess_child',
             ],
         )
     with subprocess:
@@ -55,7 +55,7 @@ def test_import_failure(services):
         code_module_list=[
             'common.visitor',
             'common.ref_collector',
-            'test.import_failure',
+            'sync.test.import_failure',
             ],
         )
     with pytest.raises(AssertionError) as excinfo:
@@ -72,7 +72,7 @@ def test_module_init_failure(services):
         code_module_list=[
             'common.visitor',
             'common.ref_collector',
-            'test.module_init_failure',
+            'sync.test.module_init_failure',
             ],
         )
     with pytest.raises(AssertionError) as excinfo:

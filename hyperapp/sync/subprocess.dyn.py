@@ -145,7 +145,7 @@ class ThisModule(Module):
 
     def subprocess(self, process_name, type_module_list, code_module_list, config=None):
         # todo: add subprocess_mp_main.py to module data.
-        source_dir = Path.cwd() / 'hyperapp' / 'server'
+        source_dir = Path.cwd() / 'hyperapp' / 'sync'
         subprocess_mp_main = source_dir / 'subprocess_mp_main.py'
         sys.path.append(str(source_dir))
         module = __import__('subprocess_mp_main', level=0)

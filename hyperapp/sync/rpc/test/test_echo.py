@@ -30,14 +30,14 @@ def code_module_list():
         'common.unbundler',
         'common.remoting.identity',
         'common.remoting.rsa_identity',
-        'server.work_dir',
+        'sync.work_dir',
         'sync.async_stop',
         'sync.transport.transport',
         'sync.transport.endpoint',
         'sync.rpc.rpc_proxy',
         'sync.rpc.rpc_endpoint',
-        'server.subprocess_connection',
-        'server.subprocess',
+        'sync.subprocess_connection',
+        'sync.subprocess',
         ]
 
 
@@ -99,15 +99,15 @@ def test_echo(services, htypes):
             'sync.async_stop',
             'sync.transport.transport',
             'sync.transport.endpoint',
-            'server.subprocess_connection',
-            'server.subprocess_child',
+            'sync.subprocess_connection',
+            'sync.subprocess_child',
             'sync.rpc.rpc_proxy',
             'sync.rpc.rpc_endpoint',
             'sync.rpc.test.echo_service',
             ],
         config = {
             'sync.rpc.test.echo_service': {'master_service_bundle_cdr': master_service_bundle_cdr},
-            'server.subprocess_child': {'master_peer_ref_cdr_list': master_peer_ref_cdr_list},
+            'sync.subprocess_child': {'master_peer_ref_cdr_list': master_peer_ref_cdr_list},
             },
         )
     with subprocess:
