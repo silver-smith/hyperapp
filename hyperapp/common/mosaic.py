@@ -19,7 +19,7 @@ class Mosaic:
     def register_capsule(self, capsule):
         assert isinstance(capsule, capsule_t), repr(capsule)
         ref = make_ref(capsule)
-        log.info('Registering ref %s for capsule of type %s', ref_repr(ref), ref_repr(capsule.type_ref))
+        log.debug('Registering ref %s for capsule of type %s', ref_repr(ref), ref_repr(capsule.type_ref))
         existing_capsule = self._registry.get(ref)
         if existing_capsule:
             log.debug('  (already exists)')
@@ -32,7 +32,7 @@ class Mosaic:
         log.debug('Registering piece %s: %s', t.name, piece)
         capsule = self._types.make_capsule(piece, t)
         ref = self.register_capsule(capsule)
-        log.debug('  -> %s', ref_repr(ref))
+        log.info('Registered piece %s: %s', ref_repr(ref), piece)
         return ref
 
     def put_opt(self, piece, t=None):

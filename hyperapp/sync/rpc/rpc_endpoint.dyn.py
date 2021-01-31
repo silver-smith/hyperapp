@@ -53,11 +53,13 @@ class RpcEndpoint:
         iface_method = iface.methods[request.method_name]
         servant = self._servant_by_id[request.object_id]
         params = self._types.resolve_ref(request.params_ref).value
+        log.info("Call rpc servant: %s(%s)", request.method_name, params)
         method = getattr(servant, request.method_name)
         result = method(
             RpcRequest(transport_request.receiver_identity, sender),
             **params._asdict(),
             )
+        log.info("Rpc servant call result: %s", result)
         response_record_t = iface_method.response_record_t
         if not isinstance(result, tuple):
             if not response_record_t.fields:

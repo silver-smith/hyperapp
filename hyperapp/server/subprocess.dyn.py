@@ -78,14 +78,15 @@ class ThisModule(Module):
         services.subprocess = self.subprocess
 
     def start(self):
+        log.info("Start subprocess recv thread")
         self._thread.start()
 
     def stop(self):
-        log.info("Subprocess recv thread: stopping.")
+        log.info("Stop subprocess recv thread")
         self._stop_flag = True
         self._signal_connection_in.send(None)
         self._thread.join()
-        log.info("Subprocess recv thread: stopped.")
+        log.info("Subprocess recv thread is stopped")
 
     def _recv_thread_main(self):
         log.info("Subprocess recv thread is started.")
@@ -111,7 +112,7 @@ class ThisModule(Module):
             log.exception("Subprocess is exited")
             self._subprocess_is_stopped_now(process, connection)
             return
-        log.debug("Subprocess recv thread: received %s from %s: %s", event, process.name, payload)
+        log.info("Subprocess recv thread: received %s from %s: %s", event, process.name, payload)
         if event != ConnectionEvent.PARCEL.value:
             self._process_stop_event(process, connection, event, payload)
             return

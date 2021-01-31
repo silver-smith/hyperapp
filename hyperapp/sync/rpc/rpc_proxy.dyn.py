@@ -26,6 +26,7 @@ class Proxy:
 
     def _run_request(self, method_name, method, *args, **kw):
         params = method.params_record_t(*args, **kw)
+        log.info("Rpc proxy call: %s(%s)", method_name, params)
         params_ref = self._mosaic.put(params)
         request_id = str(uuid.uuid4())
         request = htypes.rpc.request(
@@ -39,7 +40,9 @@ class Proxy:
         request_ref = self._mosaic.put(request)
         log.info("Send rpc request: %s", request)
         self._transport.send(self._peer, self._my_identity, [request_ref])
-        return self._rpc_endpoint.wait_for_response(request_id)
+        result = self._rpc_endpoint.wait_for_response(request_id)
+        log.info("Rpc proxy: got result: %s", result)
+        return result
 
 
 class ThisModule(Module):

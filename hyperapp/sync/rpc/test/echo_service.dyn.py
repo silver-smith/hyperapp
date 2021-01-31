@@ -61,4 +61,6 @@ class ThisModule(Module):
         self._thread.join()
 
     def _run(self, proxy, echo_service_ref):
+        log.info("echo_service thread is started")
         proxy.run(echo_service_ref)
+        log.info("echo_service thread is finished")

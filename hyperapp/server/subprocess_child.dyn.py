@@ -67,7 +67,7 @@ class ThisModule(Module):
 
     def _recv_bundle(self):
         event, payload = self._master_process_connection.recv()
-        log.debug("Subprocess recv thread: received %s: %s", event, payload)
+        log.info("Subprocess recv thread: received %s: %s", event, payload)
         if event != ConnectionEvent.PARCEL.value:
             self._process_stop_event()
             return
