@@ -40,7 +40,7 @@ class Process:
         self._mp_process.start()
 
     def __exit__(self, exc, value, tb):
-        log.info("Exit subprocess %r", self.name)
+        log.info("Exit subprocess %r: send stop event", self.name)
         self._connection.send((ConnectionEvent.STOP.value, None))
         self._stopped_event.wait()  # Process should send 'stopped' signal.
         self._mp_process.join()
