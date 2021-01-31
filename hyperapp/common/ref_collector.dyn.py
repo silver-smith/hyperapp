@@ -45,6 +45,8 @@ class RefCollector(Visitor):
         for i in range(RECURSION_LIMIT):
             new_ref_set = set()
             for ref in ref_set:
+                if ref.hash_algorithm == 'phony':
+                    continue
                 try:
                     capsule = self._web.pull(ref)
                 except RefResolveFailure:
