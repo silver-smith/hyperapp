@@ -1,4 +1,5 @@
 import logging
+import threading
 
 from hyperapp.common.htypes import bundle_t
 from hyperapp.common.htypes.packet_coders import packet_coders
@@ -47,4 +48,17 @@ class ThisModule(Module):
         echo_service_ref = services.mosaic.put(echo_service)
 
         proxy = services.rpc_proxy(my_identity, rpc_endpoint, master_service)
+
+        self._thread = threading.Thread(target=self._run, args=[proxy, echo_service_ref])
+
+        services.on_start.append(self.start)
+        services.on_stop.append(self.stop)
+
+    def start(self):
+        self._thread.start()
+
+    def stop(self):
+        self._thread.join()
+
+    def _run(self, proxy, echo_service_ref):
         proxy.run(echo_service_ref)
