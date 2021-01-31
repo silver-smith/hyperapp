@@ -30,7 +30,7 @@ class EndpointRegistry:
     def register(self, identity, endpoint):
         peer_ref = self._mosaic.put(identity.peer.piece)
         route = LocalRoute(self._unbundler, identity, endpoint)
-        self._route_table.associate(peer_ref, route)
+        self._route_table.add_route(peer_ref, route)
 
 
 class ThisModule(Module):

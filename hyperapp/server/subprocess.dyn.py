@@ -128,7 +128,7 @@ class ThisModule(Module):
     def _process_parcel(self, connection, parcel):
         sender_ref = self._mosaic.put(parcel.sender.piece)
         child_route = SubprocessRoute(self._mosaic, self._ref_collector_factory, connection)
-        self._route_table.associate(sender_ref, child_route)
+        self._route_table.add_route(sender_ref, child_route)
         self._transport.send_parcel(parcel)
 
     def _process_stop_event(self, process, connection, event, payload):

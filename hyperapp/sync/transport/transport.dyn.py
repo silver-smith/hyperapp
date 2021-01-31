@@ -13,7 +13,7 @@ class RouteTable:
     def __init__(self):
         self._peer2route = defaultdict(list)  # ref -> route list
 
-    def associate(self, peer_ref, route):
+    def add_route(self, peer_ref, route):
         self._peer2route[peer_ref].append(route)
 
     def peer_route_list(self, peer_ref):
