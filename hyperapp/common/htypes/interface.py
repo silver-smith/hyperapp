@@ -37,4 +37,7 @@ class Interface(Type):
 
     @property
     def methods(self):
-        return self._method_dict
+        if self._base:
+            return {**self._base._method_dict, **self._method_dict}
+        else:
+            return self._method_dict
