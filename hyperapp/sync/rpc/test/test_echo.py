@@ -110,10 +110,9 @@ def test_echo(services, htypes):
             'server.subprocess_child': {'master_peer_ref_cdr_list': master_peer_ref_cdr_list},
             },
         )
-    with pytest.raises(NotImplementedError) as excinfo:
-        with subprocess:
-            log.info("Waiting for echo response.")
-            response = echo_response_queue.get(timeout=20)
-            log.info("Got echo response: %s.", response)
-        log.info("Subprocess is finished.")
-    assert str(excinfo.value) == 'todo'
+    with subprocess:
+        log.info("Waiting for echo response.")
+        response = echo_response_queue.get(timeout=20)
+        log.info("Got echo response: %s.", response)
+        assert response.response == 'Hello to you too'
+    log.info("Subprocess is finished.")
