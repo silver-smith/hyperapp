@@ -1,7 +1,0 @@
-import:
-  types:
-    hyper_ref:
-      - service
-      - route_resolver
-  code:
-    - common.local_server_paths

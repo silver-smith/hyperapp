@@ -1,6 +1,4 @@
 *.pyc
-*.endpoint
-*.pem
 TAGS
 parser.out
 parsetab.py
