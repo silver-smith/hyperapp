@@ -164,7 +164,10 @@ class TRecord(Type):
         return id(self)
 
     def __eq__(self, rhs):
-        return rhs is self or isinstance(rhs, TRecord) and rhs.fields == self.fields
+        return (rhs is self
+                or (isinstance(rhs, TRecord)
+                    and rhs._name == self._name
+                    and rhs.fields == self.fields))
 
     def __subclasscheck__(self, cls):
         ## print('__subclasscheck__', self, cls)

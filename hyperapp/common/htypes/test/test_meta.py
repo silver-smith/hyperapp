@@ -260,10 +260,10 @@ def test_based_interface(types, mosaic):
         method_list=[
             Request(
                 method_name='request_1',
-                params_record_t=TRecord(f'{name}_request_1_params', {
+                params_record_t=TRecord(f'{base_name}_request_1_params', {
                     'request_1_datetime_param': tDateTime,
                     }),
-                response_record_t=TRecord(f'{name}_request_1_response', {
+                response_record_t=TRecord(f'{base_name}_request_1_response', {
                     'request_1_str_response': tString,
                     }),
                 ),

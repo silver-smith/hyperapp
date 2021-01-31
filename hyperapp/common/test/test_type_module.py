@@ -75,13 +75,13 @@ def test_types(types, mosaic, local_type_module_registry, htypes):
     assert htypes.type_module_1.some_int is tInt
 
     assert htypes.type_module_1.record_1 == TRecord('record_1', {'int_field': tInt})
-    assert htypes.type_module_1.record_2 == TRecord('record_1', {'int_field': tInt, 'string_field': tString})
+    assert htypes.type_module_1.record_2 == TRecord('record_2', {'int_field': tInt, 'string_field': tString})
 
     some_bool_list_opt = htypes.type_module_2.some_bool_list_opt
     assert some_bool_list_opt == TOptional(TList(tBool))
 
     assert (htypes.type_module_2.record_3 ==
-            TRecord('record_1', {'int_field': tInt, 'string_field': tString, 'datetime_field': tDateTime}))
+            TRecord('record_3', {'int_field': tInt, 'string_field': tString, 'datetime_field': tDateTime}))
 
     assert htypes.type_module_2.ref_opt == TOptional(ref_t)
     assert htypes.type_module_2.ref_list_opt == TOptional(TList(ref_t))
@@ -94,11 +94,11 @@ def test_types(types, mosaic, local_type_module_registry, htypes):
         method_list=[
             Request(
                 method_name='submit',
-                params_record_t=TRecord('iface_a_request_1_params', {
+                params_record_t=TRecord('iface_a_submit_params', {
                     'name': TList(tString),
                     'size': tInt,
                 }),
-                response_record_t=TRecord('iface_a_request_1_response'),
+                response_record_t=TRecord('iface_a_submit_response'),
                 ),
             ],
         )
