@@ -1,6 +1,0 @@
-import:
-  types:
-    hyper_ref:
-      - route_rec
-  code:
-    - common.route_resolver

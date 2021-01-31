@@ -1,7 +1,6 @@
 import os
 import logging
 from ..common.visual_rep import pprint
-from ..common.url import UrlWithRoutes
 from ..common import cdr_coders
 from .commander import Commander
 from .command import command

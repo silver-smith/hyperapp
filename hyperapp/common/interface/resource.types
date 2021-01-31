@@ -1,0 +1,31 @@
+
+
+resource_rec = record:
+    key: resource_key
+    locale: string
+    resource_ref: ref
+
+resource_rec_list = resource_rec list
+
+
+command_resource = record:
+    is_default: bool
+    text: string opt
+    description: string opt
+    shortcut_list: string list
+
+column_resource = record:
+    is_visible: bool
+    text: string opt
+    description: string opt
+
+layout_command = record:
+    command_id: string
+    layout_ref: ref opt
+
+layout = record:
+    view_ref: ref opt
+    layout_commands: layout_command list
+
+error_message_resource = record:
+    message: string
