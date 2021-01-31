@@ -55,10 +55,13 @@ class ThisModule(Module):
         services.on_stop.append(self.stop)
 
     def start(self):
+        log.info("Start echo_services thread")
         self._thread.start()
 
     def stop(self):
+        log.info("Stop echo_services thread")
         self._thread.join()
+        log.info("echo_services thread is stopped")
 
     def _run(self, proxy, echo_service_ref):
         log.info("echo_service thread is started")

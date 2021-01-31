@@ -78,25 +78,25 @@ class ThisModule(Module):
         services.subprocess = self.subprocess
 
     def start(self):
-        log.info("Start subprocess recv thread")
+        log.info("Start subprocess parent recv thread")
         self._thread.start()
 
     def stop(self):
-        log.info("Stop subprocess recv thread")
+        log.info("Stop subprocess parent recv thread")
         self._stop_flag = True
         self._signal_connection_in.send(None)
         self._thread.join()
-        log.info("Subprocess recv thread is stopped")
+        log.info("Subprocess parent recv thread is stopped")
 
     def _recv_thread_main(self):
-        log.info("Subprocess recv thread is started.")
+        log.info("Subprocess parent recv thread is started.")
         try:
             while not self._stop_flag or len(self._connection_to_process) > 1:
                 self._receive_and_process_bundle()
         except Exception as x:
             log.exception("Subprocess recv thread is failed:")
-            self._on_failure("Subprocess recv thread is failed: %r" % x)
-        log.info("Subprocess recv thread is finished.")
+            self._on_failure("Subprocess parent recv thread is failed: %r" % x)
+        log.info("Subprocess parent recv thread is finished.")
 
     def _receive_and_process_bundle(self):
         ready_connections = multiprocessing.connection.wait(self._connection_to_process.keys())

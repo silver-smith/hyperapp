@@ -50,14 +50,14 @@ class ThisModule(Module):
         log.info("Subprocess child recv thread is stopped.")
 
     def _recv_thread_main(self):
-        log.info("Subprocess recv thread is started.")
+        log.info("Subprocess child recv thread is started.")
         try:
             while not self._stop_flag:
                 self._receive_and_process_bundle()
         except Exception as x:
-            log.exception("Subprocess recv thread is failed:")
+            log.exception("Subprocess child recv thread is failed:")
             self._on_failure("Subprocess recv thread is failed: %r" % x)
-        log.info("Subprocess recv thread is finished.")
+        log.info("Subprocess child recv thread is finished.")
 
     def _receive_and_process_bundle(self):
         ready_connections = multiprocessing.connection.wait([self._signal_connection_out, self._master_process_connection])
