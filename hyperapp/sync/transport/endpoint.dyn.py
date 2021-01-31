@@ -22,20 +22,20 @@ class LocalRoute:
 
 class EndpointRegistry:
 
-    def __init__(self, mosaic, unbundler, route_a9n_registry):
+    def __init__(self, mosaic, unbundler, route_table):
         self._mosaic = mosaic
         self._unbundler = unbundler
-        self._route_a9n_registry = route_a9n_registry
+        self._route_table = route_table
 
     def register(self, identity, endpoint):
         peer_ref = self._mosaic.put(identity.peer.piece)
         route = LocalRoute(self._unbundler, identity, endpoint)
-        self._route_a9n_registry.associate(peer_ref, route)
+        self._route_table.associate(peer_ref, route)
 
 
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
-        services.endpoint_registry = EndpointRegistry(services.mosaic, services.unbundler, services.route_a9n_registry)
+        services.endpoint_registry = EndpointRegistry(services.mosaic, services.unbundler, services.route_table)
 

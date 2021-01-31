@@ -8,7 +8,7 @@ from hyperapp.common.module import Module
 log = logging.getLogger(__name__)
 
 
-class RouteAssociationRegistry:
+class RouteTable:
 
     def __init__(self):
         self._peer2route = defaultdict(list)  # ref -> route list
@@ -22,15 +22,15 @@ class RouteAssociationRegistry:
 
 class Transport:
 
-    def __init__(self, mosaic, ref_collector_factory, route_registry, route_a9n_registry):
+    def __init__(self, mosaic, ref_collector_factory, route_registry, route_table):
         self._mosaic = mosaic
         self._ref_collector_factory = ref_collector_factory
         self._route_registry = route_registry
-        self._route_a9n_registry = route_a9n_registry
+        self._route_table = route_table
 
     def send_parcel(self, parcel):
         receiver_peer_ref = self._mosaic.put(parcel.receiver.piece)
-        route_list = self._route_a9n_registry.peer_route_list(receiver_peer_ref)
+        route_list = self._route_table.peer_route_list(receiver_peer_ref)
         if not route_list:
             raise RuntimeError(f"No route for peer {ref_repr(receiver_peer_ref)}")
         route, *_ = route_list
@@ -50,6 +50,6 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
         services.route_registry = CodeRegistry('route', services.web, services.types)  # Unused for now.
-        services.route_a9n_registry = RouteAssociationRegistry()
+        services.route_table = RouteTable()
         services.transport = Transport(
-            services.mosaic, services.ref_collector_factory, services.route_registry, services.route_a9n_registry)
+            services.mosaic, services.ref_collector_factory, services.route_registry, services.route_table)

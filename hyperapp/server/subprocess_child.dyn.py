@@ -30,7 +30,7 @@ class ThisModule(Module):
 
         master_process_route = SubprocessRoute(services.mosaic, services.ref_collector_factory, services.master_process_connection)
         for peer_ref in master_peer_ref_list:
-            services.route_a9n_registry.associate(peer_ref, master_process_route)
+            services.route_table.associate(peer_ref, master_process_route)
 
         self._stop_flag = False
         self._signal_connection_out, self._signal_connection_in = multiprocessing.Pipe()
