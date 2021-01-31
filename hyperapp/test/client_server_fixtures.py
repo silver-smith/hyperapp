@@ -32,7 +32,7 @@ common_server_code_module_list = [
     'common.ref_collector',
     'common.unbundler',
     'common.tcp_packet',
-    'server.async_stop',
+    'sync.async_stop',
     'server.transport.registry',
     'server.request',
     'server.remoting',
