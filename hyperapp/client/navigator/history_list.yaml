@@ -1,8 +1,0 @@
-import:
-  types:
-    navigator:
-      - item
-      - history_list
-  code:
-    - client.column
-    - client.list_object

@@ -21,7 +21,6 @@ class Application(AsyncApplication, Commander):
         self._layout_manager = self.services.layout_manager
         self._default_state_builder = self.services.default_state_builder
         self._module_command_registry = self.services.module_command_registry
-        self._remoting = self.services.remoting
         self._resource_resolver = self.services.resource_resolver
         self._windows = []
         self._state_storage = self.services.application_state_storage

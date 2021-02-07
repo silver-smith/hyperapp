@@ -1,9 +1,0 @@
-module:client.category_list:CategoryList:
-  columns:
-    category:
-      text: Category
-  commands:
-    open:
-      text: Open
-      description: Open Layout editor for selected category
-      is_default: true

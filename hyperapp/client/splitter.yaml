@@ -1,6 +1,0 @@
-import:
-  types:
-    splitter:
-      - splitter_handle
-  code:
-    - client.view

@@ -3,4 +3,4 @@ import:
     application_state:
       - application_state
   code:
-    - common.local_server_paths
+    - common.file_bundle

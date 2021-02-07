@@ -28,3 +28,6 @@ fs_dir_chunk = record:
     eof: bool
 
 fs_path = string list
+
+
+local_fs_service = record

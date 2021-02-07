@@ -1,7 +1,0 @@
-NarrowerObject:
-  commands:
-    wider:
-      text: Wider
-      description: Cancel narrowing
-      shortcuts:
-      - Escape

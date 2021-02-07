@@ -1,7 +1,5 @@
 import:
   types:
-    core:
-    - string_list_handle
     fs:
     - fs
   code:

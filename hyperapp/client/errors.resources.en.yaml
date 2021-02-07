@@ -1,2 +1,0 @@
-error_messages:
-  common_client_error: 'Client error: {error.message}'
