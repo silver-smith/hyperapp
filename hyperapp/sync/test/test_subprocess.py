@@ -18,7 +18,7 @@ def code_module_list():
         'common.visitor',
         'common.ref_collector',
         'common.unbundler',
-        'common.remoting.identity',
+        'transport.identity',
         'sync.work_dir',
         'sync.async_stop',
         'sync.transport.transport',
@@ -35,8 +35,8 @@ def test_subprocess(services):
         code_module_list=[
             'common.visitor',
             'common.ref_collector',
-            'common.remoting.identity',
             'common.unbundler',
+            'transport.identity',
             'sync.async_stop',
             'sync.transport.transport',
             'sync.subprocess_connection',

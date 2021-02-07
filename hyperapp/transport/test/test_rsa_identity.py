@@ -18,8 +18,8 @@ def type_module_list():
 def code_module_list():
     return [
         'sync.async_stop',
-        'common.remoting.identity',
-        'common.remoting.rsa_identity',
+        'transport.identity',
+        'transport.rsa_identity',
         ]
 
 
