@@ -89,6 +89,12 @@ def test_types(types, mosaic, local_type_module_registry, htypes):
     assert htypes.type_module_2.record_with_ref == TRecord('record_with_ref', {'ref_field': ref_t})
     assert htypes.type_module_2.record_with_opt_ref == TRecord('record_with_opt_ref', {'opt_ref_field': TOptional(ref_t)})
 
+
+    assert htypes.type_module_1.empty_record_1.name == 'empty_record_1'
+    assert htypes.type_module_2.empty_record_2.name == 'empty_record_2'
+    assert htypes.type_module_1.empty_record_1 != htypes.type_module_2.empty_record_2
+
+
     assert htypes.type_module_1.iface_a == Interface(
         name='iface_a',
         method_list=[

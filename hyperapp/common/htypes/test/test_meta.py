@@ -115,6 +115,20 @@ def test_based_record(types, mosaic):
         })
 
 
+def test_empty_record(types, mosaic):
+    piece = record_mt(None, [])
+
+    name_1 = 'record_1'
+    named_piece_1 = name_wrapped_mt(name_1, mosaic.put(piece))
+    t_1 = types.resolve(mosaic.put(named_piece_1))
+    assert t_1 == TRecord(name_1, {})
+
+    name_2 = 'record_2'
+    named_piece_2 = name_wrapped_mt(name_2, mosaic.put(piece))
+    t_2 = types.resolve(mosaic.put(named_piece_2))
+    assert t_2 == TRecord(name_2, {})
+
+
 def test_interface(types, mosaic):
     int_list_mt = list_mt(mosaic.put(builtin_mt('int')))
     bool_opt_mt = optional_mt(mosaic.put(builtin_mt('bool')))
