@@ -74,8 +74,7 @@ class TypeModuleLoader(object):
         local_type_module = LocalTypeModule()
         mapper = _NameToRefMapper(self._types, self._mosaic, local_name_dict)
         for typedef in module_source.typedefs:
-            type_piece = mapper.map(typedef.type)
-            type_ref = self._mosaic.put(type_piece)
+            type_ref = mapper.map(typedef.type)
             named = name_wrapped_mt(typedef.name, type_ref)
             ref = self._mosaic.put(named)
             local_type_module.register(typedef.name, ref)
