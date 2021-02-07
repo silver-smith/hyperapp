@@ -152,6 +152,7 @@ class TRecord(Type):
             self.fields = {**base.fields, **self.fields}
         self.base = base
         self._named_tuple = _namedtuple(name, [name for name in self.fields], verbose)
+        self._eq_key = tuple([self._name, *self.fields])
 
     def __str__(self):
         return f'TRecord({self.name!r})'
@@ -161,13 +162,11 @@ class TRecord(Type):
         return f"<TRecord({self.name!r}: {fields or ('(no fields)')})>"
 
     def __hash__(self):
-        return id(self)
+        return hash(self._eq_key)
 
     def __eq__(self, rhs):
         return (rhs is self
-                or (isinstance(rhs, TRecord)
-                    and rhs._name == self._name
-                    and rhs.fields == self.fields))
+                or (isinstance(rhs, TRecord) and rhs._eq_key == self._eq_key))
 
     def __subclasscheck__(self, cls):
         ## print('__subclasscheck__', self, cls)
