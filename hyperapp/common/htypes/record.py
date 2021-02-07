@@ -1,12 +1,23 @@
+import codecs
+import sys
 from collections import OrderedDict
 from keyword import iskeyword
-import sys
 
 from ..util import is_dict_inst
-from .htypes import Type
+from .htypes import Type, tString, tBinary
 
 
 CHECK_FIELD_TYPES = True
+
+
+def ref_repr(ref):
+    if ref is None:
+        return 'none'
+    if ref.hash_algorithm == 'phony':
+        return '%s:%s' % (ref.hash_algorithm, ref.hash.decode())
+    else:
+        hash_hex = codecs.encode(ref.hash[:4], 'hex').decode()
+        return '%s:%s' % (ref.hash_algorithm, hash_hex)
 
 
 # This is copied and adjusted namedtuple implementation from collections module.
@@ -18,6 +29,9 @@ _class_template = """\
 from builtins import property as _property, tuple as _tuple
 from operator import itemgetter as _itemgetter
 from collections import OrderedDict
+
+from hyperapp.common.htypes.record import ref_repr
+
 
 class {typename}(tuple):
     '{typename}({arg_list})'
@@ -47,7 +61,7 @@ class {typename}(tuple):
 
     def __repr__(self):
         'Return a nicely formatted representation string'
-        return self.__class__.__name__ + '({repr_fmt})' % self[:-1]
+        return {repr_fmt}
 
     def __iter__(self):
         return iter(({attr_list}))
@@ -69,7 +83,7 @@ _field_template = '''\
     {name} = _property(_itemgetter({index:d}), doc='Alias for field number {index:d}')
 '''
 
-def _namedtuple(typename, field_names, verbose=False, rename=False):
+def _namedtuple(typename, field_names, verbose=False, rename=False, repr_fmt=None):
 
     # Validate the field names.  At the user's option, either generate an error
     # message or automatically replace the field name with a valid name.
@@ -113,8 +127,7 @@ def _namedtuple(typename, field_names, verbose=False, rename=False):
         arg_list = arg_list,
         arg_list_with_comma = arg_list + ',' if arg_list else '',
         attr_list = ', '.join('self.{}'.format(name) for name in field_names),
-        repr_fmt = ', '.join(_repr_template.format(name=name)
-                             for name in field_names),
+        repr_fmt = repr_fmt,
         field_defs = '\n'.join(_field_template.format(index=index, name=name)
                                for index, name in enumerate(field_names + ['_t']))
     )
@@ -151,7 +164,8 @@ class TRecord(Type):
         if base:
             self.fields = {**base.fields, **self.fields}
         self.base = base
-        self._named_tuple = _namedtuple(name, [name for name in self.fields], verbose)
+        self._named_tuple = _namedtuple(
+            name, [name for name in self.fields], verbose, repr_fmt=self._repr_fmt())
         self._eq_key = tuple([self._name, *self.fields])
 
     def __str__(self):
@@ -160,6 +174,13 @@ class TRecord(Type):
     def __repr__(self):
         fields = ', '.join("%r: %r" % (name, t) for name, t in self.fields.items())
         return f"<TRecord({self.name!r}: {fields or ('(no fields)')})>"
+
+    def _repr_fmt(self):
+        fields_format = ', '.join(
+            _repr_template.format(name=name)
+            for name in self.fields
+            )
+        return f'self.__class__.__name__ + "({fields_format})" % self[:-1]'
 
     def __hash__(self):
         return hash(self._eq_key)
@@ -194,3 +215,17 @@ class TRecord(Type):
         for name, value in kw.items():
             t = self.fields[name]
             assert isinstance(value, t), f"{name}: expected {t}, but got: {value}"
+
+
+class TRef(TRecord):
+
+    def _repr_fmt(self):
+        return 'f"ref({ref_repr(self)})"'
+
+
+hash_t = tBinary
+
+ref_t = TRef('ref', OrderedDict([
+    ('hash_algorithm', tString),
+    ('hash', hash_t),
+    ]))

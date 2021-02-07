@@ -3,7 +3,7 @@ import codecs
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 
-from .htypes import ref_t, capsule_t, bundle_t
+from .htypes import ref_t, capsule_t, bundle_t, ref_repr
 from .htypes.packet_coders import packet_coders
 
 
@@ -19,15 +19,6 @@ def phony_ref(ref_id):
 # special case indicating packets must be sent to the peer from which this route is received
 LOCAL_TRANSPORT_REF = phony_ref('LOCAL_TRANSPORT')
 
-
-def ref_repr(ref):
-    if ref is None:
-        return 'none'
-    if ref.hash_algorithm == 'phony':
-        return '%s:%s' % (ref.hash_algorithm, ref.hash.decode())
-    else:
-        hash_hex = codecs.encode(ref.hash[:4], 'hex').decode()
-        return '%s:%s' % (ref.hash_algorithm, hash_hex)
 
 def ref_list_repr(ref_list):
     ref_list = list(ref_list)  # add iterable support

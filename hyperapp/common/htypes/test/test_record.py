@@ -2,6 +2,7 @@ from hyperapp.common.htypes import (
     tString,
     tInt,
     TRecord,
+    ref_t,
     )
 
 
@@ -37,3 +38,17 @@ def test_instantiate_empty():
 
     rec_2 = t()
     assert rec_1 == rec_2
+
+
+def test_ref_repr():
+    t = TRecord('test', {
+        'field_1': tString,
+        'field_2': tInt,
+        })
+    assert repr(t('abc', 123)) == "test(field_1='abc', field_2=123)"
+
+    empty_t = TRecord('empty')
+    assert repr(empty_t()) == "empty()"
+
+    ref = ref_t('test_algorithm', b'3U')
+    assert repr(ref) == 'ref(test_algorithm:3355)'

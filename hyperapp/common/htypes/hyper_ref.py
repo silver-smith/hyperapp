@@ -1,14 +1,7 @@
 from collections import OrderedDict
 from .htypes import tString, tBinary, tDateTime, TList
-from .record import TRecord
+from .record import TRecord, ref_t
 
-
-hash_t = tBinary
-
-ref_t = TRecord('ref', OrderedDict([
-    ('hash_algorithm', tString),
-    ('hash', hash_t),
-    ]))
 
 capsule_t = TRecord('capsule', OrderedDict([
     ('type_ref', ref_t),
