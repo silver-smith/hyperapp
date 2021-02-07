@@ -22,7 +22,7 @@ class CodeRegistry:
 
     def register_actor(self, t, factory, *args, **kw):
         _log.info('Register %s: %s -> %s(*%r, **%r)', self._produce_name, t, factory, args, kw)
-        assert t not in self._registry, repr(t)  # duplicate
+        assert t not in self._registry, f"Duplicate {self._produce_name}: {t!r}"
         self._registry[t] = self._Rec(factory, args, kw)
 
     async def invite(self, ref, *args, **kw):

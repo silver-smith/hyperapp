@@ -23,7 +23,7 @@ class CodeRegistry:
     def register_actor(self, t, factory, *args, **kw):
         assert not inspect.iscoroutinefunction(factory), f"Use client CodeRegistry for async factories: {factory!r}"
         _log.info('Register %s: %s -> %s(*%r, **%r)', self._produce_name, t, factory, args, kw)
-        assert t not in self._registry, repr(t)  # duplicate
+        assert t not in self._registry, f"Duplicate {self._produce_name}: {t!r}"
         self._registry[t] = self._Rec(factory, args, kw)
 
     def invite(self, ref, *args, **kw):
