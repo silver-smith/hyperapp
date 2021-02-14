@@ -9,6 +9,7 @@ pytest_plugins = ['hyperapp.common.test.services']
 @pytest.fixture
 def type_module_list():
     return [
+        'transport',
         ]
 
 
@@ -31,6 +32,7 @@ def test_subprocess(services):
     subprocess = services.subprocess(
         'subprocess',
         type_module_list=[
+            'transport',
             ],
         code_module_list=[
             'common.visitor',

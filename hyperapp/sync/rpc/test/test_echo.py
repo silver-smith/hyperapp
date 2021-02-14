@@ -16,6 +16,7 @@ pytest_plugins = ['hyperapp.common.test.services']
 def type_module_list():
     return [
         'rsa_identity',
+        'transport',
         'rpc',
         'test_rpc',
         'echo',
@@ -86,6 +87,7 @@ def test_echo(services, htypes):
         'subprocess',
         type_module_list=[
             'rsa_identity',
+            'transport',
             'rpc',
             'test_rpc',
             'echo',

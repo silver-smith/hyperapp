@@ -1,2 +1,3 @@
 
-phony_route = record
+phony_route = record:
+  id: int

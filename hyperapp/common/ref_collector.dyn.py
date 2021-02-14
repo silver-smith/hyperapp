@@ -74,7 +74,7 @@ class RefCollector(Visitor):
         log.debug('Collecting refs from %r:', object)
         self._collected_ref_set = set()
         self._collect_refs_from_object(t, object)
-        self._collect_aux_refs(t, ref, object)
+        self._collect_aux_refs(ref, t, object)
         # can't move following to _collect_refs_from_object because not all objects has refs to them, but for endpoint it's required
         self._collected_ref_set.add(capsule.type_ref)
         self._collected_type_ref_set.add(capsule.type_ref)
@@ -89,9 +89,9 @@ class RefCollector(Visitor):
         if t == ref_t:
             self._collected_ref_set.add(value)
 
-    def _collect_aux_refs(self, t, ref, object):
+    def _collect_aux_refs(self, ref, t, object):
         for hook in self._aux_ref_collector_hooks:
-            self._collected_aux_set |= set(hook(t, ref, object) or [])
+            self._collected_aux_set |= set(hook(ref, t, object) or [])
 
 
 class ThisModule(Module):

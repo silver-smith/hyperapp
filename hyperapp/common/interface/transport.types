@@ -1,0 +1,4 @@
+
+route_association = record:
+  peer_ref: ref
+  route_ref: ref
