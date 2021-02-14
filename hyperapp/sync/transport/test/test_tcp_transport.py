@@ -4,6 +4,7 @@ import pytest
 
 from hyperapp.common import cdr_coders  # self-registering
 
+log = logging.getLogger(__name__)
 
 pytest_plugins = ['hyperapp.common.test.services']
 
@@ -12,6 +13,7 @@ pytest_plugins = ['hyperapp.common.test.services']
 def type_module_list():
     return [
         'rsa_identity',
+        'tcp_transport',
         ]
 
 
@@ -31,5 +33,7 @@ def code_module_list():
         ]
 
 
-def test_tcp_tranrport(services):
-    pass
+def test_tcp_transport(services):
+    server = services.tcp_server(('localhost', 0))
+    route = server.route
+    log.info("Route: %r", route)
