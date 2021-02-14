@@ -90,7 +90,7 @@ class Services(object):
     def _load_code_module_list(self, module_name_list, config):
         for module_name in module_name_list:
             if config:
-                module_config = config.get(module_name)
+                module_config = config.get(module_name, {})
             else:
                 module_config = {}
             parts = module_name.split('.')
