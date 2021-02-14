@@ -20,6 +20,9 @@ class CodeRegistry:
         self._types = types
         self._registry = {}  # t -> _Rec
 
+    def type_registered(self, t):
+        return t in self._registry
+
     def register_actor(self, t, factory, *args, **kw):
         assert not inspect.iscoroutinefunction(factory), f"Use client CodeRegistry for async factories: {factory!r}"
         _log.info('Register %s: %s -> %s(*%r, **%r)', self._produce_name, t, factory, args, kw)

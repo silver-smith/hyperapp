@@ -16,7 +16,6 @@ from .builtins import (
 from .hyper_ref import (
     ref_t,
     capsule_t,
-    route_t,
     bundle_t,
     resource_path_t,
     resource_key_t,
@@ -38,7 +37,6 @@ _builtin_type_list = [
     tUrl,
     ref_t,
     capsule_t,
-    route_t,
     bundle_t,
     resource_path_t,
     resource_key_t,

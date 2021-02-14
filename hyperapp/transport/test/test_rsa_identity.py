@@ -45,7 +45,7 @@ def test_rsa_parcel(services):
 
     test_ref = services.mosaic.put(receiver_identity.peer.piece)
 
-    bundle_1 = bundle_t(roots=(test_ref,), capsule_list=(), route_list=())
+    bundle_1 = bundle_t(roots=(test_ref,), aux_roots=(), capsule_list=())
     parcel_1 = receiver_identity.peer.make_parcel(bundle_1, sender_identity)
 
     parcel_2 = services.parcel_registry.animate(parcel_1.piece)

@@ -3,7 +3,7 @@ import logging
 
 from dateutil.tz import tzlocal
 
-from hyperapp.common.htypes import ref_t, route_t, bundle_t
+from hyperapp.common.htypes import ref_t, bundle_t
 from hyperapp.common.util import is_list_inst
 from hyperapp.common.ref import ref_repr
 from hyperapp.common.web import RefResolveFailure
@@ -18,13 +18,13 @@ RECURSION_LIMIT = 100
 
 class RefCollector(Visitor):
 
-    def __init__(self, web, types, route_resolver):
+    def __init__(self, web, types, aux_ref_collector_hooks):
         self._web = web
         self._types = types
-        self._route_resolver = route_resolver
+        self._aux_ref_collector_hooks = aux_ref_collector_hooks
         self._collected_ref_set = None
         self._collected_type_ref_set = None
-        self._collected_route_set = set()
+        self._collected_aux_set = set()
 
     def make_bundle(self, ref_list):
         assert is_list_inst(ref_list, ref_t), repr(ref_list)
@@ -32,8 +32,8 @@ class RefCollector(Visitor):
         capsule_list = self._collect_capsule_list(ref_list)
         return bundle_t(
             roots=ref_list,
+            aux_roots=list(self._collected_aux_set),
             capsule_list=capsule_list,
-            route_list=list(self._collected_route_set),
             )
 
     def _collect_capsule_list(self, ref_list):
@@ -74,6 +74,7 @@ class RefCollector(Visitor):
         log.debug('Collecting refs from %r:', object)
         self._collected_ref_set = set()
         self._collect_refs_from_object(t, object)
+        self._collect_aux_refs(t, ref, object)
         # can't move following to _collect_refs_from_object because not all objects has refs to them, but for endpoint it's required
         self._collected_ref_set.add(capsule.type_ref)
         self._collected_type_ref_set.add(capsule.type_ref)
@@ -88,6 +89,10 @@ class RefCollector(Visitor):
         if t == ref_t:
             self._collected_ref_set.add(value)
 
+    def _collect_aux_refs(self, t, ref, object):
+        for hook in self._aux_ref_collector_hooks:
+            self._collected_aux_set |= set(hook(t, ref, object) or [])
+
 
 class ThisModule(Module):
 
@@ -95,9 +100,9 @@ class ThisModule(Module):
         super().__init__(module_name)
         self._web = services.web
         self._types = services.types
-        # self._route_resolver = services.route_resolver
-        self._route_resolver = None
-        services.ref_collector_factory = self._ref_collector_factory
+        self._aux_ref_collector_hooks = []
+        services.aux_ref_collector_hooks = self._aux_ref_collector_hooks
+        services.ref_collector_factory = self.ref_collector_factory
 
-    def _ref_collector_factory(self):
-        return RefCollector(self._web, self._types, self._route_resolver)
+    def ref_collector_factory(self):
+        return RefCollector(self._web, self._types, self._aux_ref_collector_hooks)

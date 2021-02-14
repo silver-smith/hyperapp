@@ -49,7 +49,16 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
+        self._mosaic = services.mosaic
+        self._peer_registry = services.peer_registry
+        self._route_table = RouteTable()
         services.route_registry = CodeRegistry('route', services.web, services.types)  # Unused for now.
-        services.route_table = RouteTable()
+        services.route_table = self._route_table
         services.transport = Transport(
             services.mosaic, services.ref_collector_factory, services.route_registry, services.route_table)
+        services.aux_ref_collector_hooks.append(self.route_collector_hook)
+
+    def route_collector_hook(self, t, ref, value):
+        if self._peer_registry.type_registered(t):
+            for route in self._route_table.peer_route_list(ref):
+                yield self._mosaic.put(route.piece)

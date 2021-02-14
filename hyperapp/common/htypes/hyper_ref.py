@@ -9,16 +9,10 @@ capsule_t = TRecord('capsule', OrderedDict([
     ('encoded_object', tBinary),
     ]))
 
-route_t = TRecord('route', OrderedDict([
-    ('endpoint_ref', ref_t),
-    ('transport_ref', ref_t),
-    ('available_at', tDateTime),
-    ]))
-
 bundle_t = TRecord('bundle', OrderedDict([
     ('roots', TList(ref_t)),
+    ('aux_roots', TList(ref_t)),
     ('capsule_list', TList(capsule_t)),
-    ('route_list', TList(route_t)),
     ]))
 
 

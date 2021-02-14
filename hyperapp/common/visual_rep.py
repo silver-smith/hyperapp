@@ -17,7 +17,6 @@ from .htypes import (
     #tCommand,
     tServerRoutes,
     ref_t,
-    route_t,
     capsule_t,
     )
 from .method_dispatch import method_dispatch
