@@ -77,6 +77,12 @@ def test_route_ref_collected(services, htypes, phony_route_t):
     route_association_ref = services.mosaic.put(route_association)
     assert bundle.aux_roots == [route_association_ref]
 
+    bundled_ref_list = [
+        services.mosaic.register_capsule(capsule)
+        for capsule in bundle.capsule_list
+        ]
+    assert persistable_route_ref in bundled_ref_list  # Should also be bundled.
+
 
 def test_unbundled_route_registered(services, htypes, phony_route_t):
     services.route_registry.register_actor(phony_route_t, PersistableRoute.from_piece, phony_route_t)
