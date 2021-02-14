@@ -27,22 +27,32 @@ def code_module_list():
         ]
 
 
-class PhonyRoute:
+class PersistableRoute:
 
     def __init__(self, piece):
         self.piece = piece
+
+
+class NonPersistableRoute:
+
+    @property
+    def piece(self):
+        return None
 
 
 def test_route_ref_collected(services, htypes):
     identity = services.generate_rsa_identity(fast=True)
     peer_ref = services.mosaic.put(identity.peer.piece)
 
-    route_piece = htypes.phony_route.phony_route()
-    route = PhonyRoute(route_piece)
-    route_ref = services.mosaic.put(route_piece)
+    persistable_route_piece = htypes.phony_route.phony_route()
+    persistable_route = PersistableRoute(persistable_route_piece)
+    persistable_route_ref = services.mosaic.put(persistable_route_piece)
+    services.route_table.add_route(peer_ref, persistable_route)
 
-    services.route_table.add_route(peer_ref, route)
+    non_persistable_route = NonPersistableRoute()
+    services.route_table.add_route(peer_ref, non_persistable_route)
+
     ref_collector = services.ref_collector_factory()
     bundle = ref_collector.make_bundle([peer_ref])
 
-    assert route_ref in bundle.aux_roots
+    assert bundle.aux_roots == [persistable_route_ref]

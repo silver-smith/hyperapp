@@ -61,4 +61,6 @@ class ThisModule(Module):
     def route_collector_hook(self, t, ref, value):
         if self._peer_registry.type_registered(t):
             for route in self._route_table.peer_route_list(ref):
-                yield self._mosaic.put(route.piece)
+                piece = route.piece
+                if piece is not None:
+                    yield self._mosaic.put(piece)

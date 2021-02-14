@@ -18,6 +18,10 @@ class LocalRoute:
         self._identity = identity
         self._endpoint = endpoint
 
+    @property
+    def piece(self):
+        return None
+
     def send(self, parcel):
         bundle = self._identity.decrypt_parcel(parcel)
         self._unbundler.register_bundle(bundle)

@@ -21,6 +21,10 @@ class SubprocessRoute:
         self._ref_collector_factory = ref_collector_factory
         self._connection = connection
 
+    @property
+    def piece(self):
+        return None
+
     def send(self, parcel):
         parcel_ref = self._mosaic.put(parcel.piece)
         ref_collector = self._ref_collector_factory()
