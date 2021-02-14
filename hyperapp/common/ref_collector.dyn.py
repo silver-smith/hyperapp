@@ -62,7 +62,7 @@ class RefCollector(Visitor):
                 break
             ref_set = new_ref_set
         else:
-            assert False, 'Reached recursion limit %d while resolving refs' % RECURSION_LIMIT
+            raise RuntimeError(f"Reached recursion limit {RECURSION_LIMIT} while resolving refs")
         if missing_ref_count:
             log.warning('Failed to resolve %d refs', missing_ref_count)
         # types should come first, or receiver won't be able to decode
