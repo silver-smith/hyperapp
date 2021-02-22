@@ -6,7 +6,6 @@ from dateutil.tz import tzlocal
 from hyperapp.common.htypes import ref_t, bundle_t
 from hyperapp.common.util import is_list_inst
 from hyperapp.common.ref import ref_repr
-from hyperapp.common.web import RefResolveFailure
 from hyperapp.common.module import Module
 
 from .visitor import Visitor
@@ -18,8 +17,8 @@ RECURSION_LIMIT = 100
 
 class RefCollector(Visitor):
 
-    def __init__(self, web, types, aux_ref_collector_hooks):
-        self._web = web
+    def __init__(self, mosaic, types, aux_ref_collector_hooks):
+        self._mosaic = mosaic
         self._types = types
         self._aux_ref_collector_hooks = aux_ref_collector_hooks
         self._collected_ref_set = None
@@ -47,9 +46,8 @@ class RefCollector(Visitor):
             for ref in ref_set:
                 if ref.hash_algorithm == 'phony':
                     continue
-                try:
-                    capsule = self._web.pull(ref)
-                except RefResolveFailure:
+                capsule = self._mosaic.get(ref)
+                if capsule is None:
                     log.warning('Ref %s is failed to be resolved', ref_repr(ref))
                     missing_ref_count += 1
                     continue
@@ -98,11 +96,11 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
-        self._web = services.web
+        self._mosaic = services.mosaic
         self._types = services.types
         self._aux_ref_collector_hooks = []
         services.aux_ref_collector_hooks = self._aux_ref_collector_hooks
         services.ref_collector_factory = self.ref_collector_factory
 
     def ref_collector_factory(self):
-        return RefCollector(self._web, self._types, self._aux_ref_collector_hooks)
+        return RefCollector(self._mosaic, self._types, self._aux_ref_collector_hooks)
