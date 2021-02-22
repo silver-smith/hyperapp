@@ -47,7 +47,7 @@ class Endpoint:
         self._request_queue.put(request)
 
 
-def test_tcp_transport(services):
+def test_tcp_send(services):
     master_identity = services.generate_rsa_identity(fast=True)
     master_peer_ref = services.mosaic.put(master_identity.peer.piece)
 
@@ -82,10 +82,10 @@ def test_tcp_transport(services):
             'sync.subprocess_connection',
             'sync.subprocess_child',
             'sync.transport.tcp',
-            'sync.transport.test.send_subprocess_parcel',
+            'sync.transport.test.send',
             ],
         config = {
-            'sync.transport.test.send_subprocess_parcel': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
+            'sync.transport.test.send': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
             },
         )
     with subprocess:

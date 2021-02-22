@@ -75,10 +75,10 @@ def test_send_subprocess_parcel(services):
             'sync.transport.transport',
             'sync.subprocess_connection',
             'sync.subprocess_child',
-            'sync.transport.test.send_subprocess_parcel',
+            'sync.transport.test.send',
             ],
         config = {
-            'sync.transport.test.send_subprocess_parcel': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
+            'sync.transport.test.send': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
             'sync.subprocess_child': {'master_peer_ref_cdr_list': master_peer_ref_cdr_list},
             },
         )
@@ -121,10 +121,10 @@ def test_subprocess_transport_echo(services):
             'sync.transport.endpoint',
             'sync.subprocess_connection',
             'sync.subprocess_child',
-            'sync.transport.test.subprocess_echo',
+            'sync.transport.test.echo',
             ],
         config = {
-            'sync.transport.test.subprocess_echo': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
+            'sync.transport.test.echo': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
             'sync.subprocess_child': {'master_peer_ref_cdr_list': master_peer_ref_cdr_list},
             },
         )
