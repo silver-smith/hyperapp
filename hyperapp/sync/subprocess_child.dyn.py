@@ -56,7 +56,7 @@ class ThisModule(Module):
                 self._receive_and_process_bundle()
         except Exception as x:
             log.exception("Subprocess child recv thread is failed:")
-            self._on_failure("Subprocess recv thread is failed: %r" % x)
+            self._on_failure(f"Subprocess recv thread is failed: {x}", x)
         log.info("Subprocess child recv thread is finished.")
 
     def _receive_and_process_bundle(self):
