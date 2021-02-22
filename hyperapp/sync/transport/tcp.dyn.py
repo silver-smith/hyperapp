@@ -2,6 +2,7 @@ import logging
 import selectors
 import socket
 import struct
+import threading
 
 from hyperapp.common.htypes import bundle_t
 from hyperapp.common.htypes.packet_coders import packet_coders
@@ -133,9 +134,14 @@ class ThisModule(Module):
         super().__init__(module_name)
         self._mosaic = services.mosaic
         self._ref_collector_factory = services.ref_collector_factory
+        self._on_failure = services.failed
+        self._stop_flag = False
         self._selector = selectors.DefaultSelector()
         self._address_to_client = {}
+        self._thread = threading.Thread(target=self._selector_thread_main)
         services.route_registry.register_actor(htypes.tcp_transport.route, Route.from_piece, self._client_factory)
+        services.on_start.append(self.start)
+        services.on_stop.append(self.stop)
         services.tcp_server = self.server_factory
 
     def server_factory(self, bind_address):
@@ -149,3 +155,26 @@ class ThisModule(Module):
             client = Client(self._mosaic, self._ref_collector_factory, self._selector, address)
             self._address_to_client[address] = client
         return client
+
+    def start(self):
+        log.info("Start TCP selector thread.")
+        self._thread.start()
+
+    def stop(self):
+        log.info("Stop TCP selector thread.")
+        self._stop_flag = True
+        self._thread.join()
+        log.info("TCP selector thread is stopped.")
+
+    def _selector_thread_main(self):
+        log.info("TCP selector thread is started.")
+        try:
+            while not self._stop_flag:
+                event_list = self._selector.select(timeout=0.5)
+                for key, mask in event_list:
+                    handler = key.data
+                    handler(key.fileobj, mask)
+        except Exception as x:
+            log.exception("TCP selector thread is failed:")
+            self._on_failure(f"TCP selector thread is failed: {x}", x)
+        log.info("TCP selector thread is finished.")
