@@ -40,6 +40,7 @@ class RefCollector(Visitor):
         capsule_set = set()
         type_capsule_set = set()
         missing_ref_count = 0
+        processed_ref_set = set()
         ref_set = set(ref_list)
         for i in range(RECURSION_LIMIT):
             new_ref_set = set()
@@ -58,9 +59,10 @@ class RefCollector(Visitor):
                 self._collected_type_ref_set.add(capsule.type_ref)
                 new_ref_set.add(capsule.type_ref)
                 new_ref_set |= self._collect_refs_from_capsule(ref, capsule)
-            if not new_ref_set:
+                processed_ref_set.add(ref)
+            ref_set = new_ref_set - processed_ref_set
+            if not ref_set:
                 break
-            ref_set = new_ref_set
         else:
             raise RuntimeError(f"Reached recursion limit {RECURSION_LIMIT} while resolving refs")
         if missing_ref_count:
