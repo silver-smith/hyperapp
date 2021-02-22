@@ -52,17 +52,18 @@ def encode_tcp_packet(bundle, encoding):
 
 class Server:
 
-    def __init__(self, selector):
+    def __init__(self, selector, connection_factory):
         self._selector = selector
-        self._socket = socket.socket()
+        self._connection_factory = connection_factory
+        self._listen_socket = socket.socket()
         self._actual_address = None
 
     def start(self, bind_address):
-        self._socket.bind(bind_address)
-        self._socket.listen(100)
-        self._socket.setblocking(False)
-        self._selector.register(self._socket, selectors.EVENT_READ, self._on_accept)
-        self._actual_address = self._socket.getsockname()
+        self._listen_socket.bind(bind_address)
+        self._listen_socket.listen(100)
+        self._listen_socket.setblocking(False)
+        self._selector.register(self._listen_socket, selectors.EVENT_READ, self._on_accept)
+        self._actual_address = self._listen_socket.getsockname()
         log.info("Listening on %s", address_to_str(self._actual_address))
 
     @property
@@ -72,18 +73,19 @@ class Server:
     def _on_accept(self, listen_sock, mask):
         sock, address = listen_sock.accept()
         log.info("Accepted connection from %s", address_to_str(address))
-        raise NotImplementedError('todo')
+        sock.setblocking(False)
+        connection = self._connection_factory(address, sock)
+        self._selector.register(sock, selectors.EVENT_READ, connection.on_read)
 
 
-class Client:
+class Connection:
 
-    def __init__(self, mosaic, ref_collector_factory, selector, address):
+    def __init__(self, mosaic, ref_collector_factory, selector, address, sock):
         self._mosaic = mosaic
         self._ref_collector_factory = ref_collector_factory
         self._selector = selector
         self._address = address
-        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._socket.connect(address)
+        self._socket = sock
 
     def __repr__(self):
         return f"TCP:{address_to_str(self._address)}"
@@ -101,6 +103,9 @@ class Client:
                 raise RuntimeError(f"{self}: remote end closed connection")
             ofs += sent_size
         log.info("%s: parcel is sent: %s", self, ref_repr(parcel_ref))
+
+    def on_read(self, sock, mask):
+        raise NotImplementedError('todo')
 
 
 class Route:
@@ -145,16 +150,22 @@ class ThisModule(Module):
         services.tcp_server = self.server_factory
 
     def server_factory(self, bind_address):
-        server = Server(self._selector)
+        server = Server(self._selector, self._connection_factory)
         server.start(bind_address)
         return server
 
     def _client_factory(self, address):
         client = self._address_to_client.get(address)
         if not client:
-            client = Client(self._mosaic, self._ref_collector_factory, self._selector, address)
+            sock = socket.socket()
+            sock.connect(address)
+            client = self._connection_factory(address, sock)
             self._address_to_client[address] = client
         return client
+
+    def _connection_factory(self, address, sock):
+        sock.setblocking(False)
+        return Connection(self._mosaic, self._ref_collector_factory, self._selector, address, sock)
 
     def start(self):
         log.info("Start TCP selector thread.")
