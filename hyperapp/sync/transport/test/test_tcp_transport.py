@@ -88,12 +88,9 @@ def test_tcp_transport(services):
             'sync.transport.test.send_subprocess_parcel': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
             },
         )
-    try:
-        with subprocess:
-            log.info("Waiting for request.")
-            request = request_queue.get(timeout=5)
-            log.info("Got request.")
-            assert request.receiver_identity.piece == master_identity.piece
-        log.info("Subprocess is finished.")
-    finally:
-        log.info("Subprocess is exited.")
+    with subprocess:
+        log.info("Waiting for request.")
+        request = request_queue.get(timeout=10)
+        log.info("Got request: %s", request)
+        assert request.receiver_identity.piece == master_identity.piece
+

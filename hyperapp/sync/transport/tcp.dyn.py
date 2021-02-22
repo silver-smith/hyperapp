@@ -80,15 +80,23 @@ class Server:
 
 class Connection:
 
-    def __init__(self, mosaic, ref_collector_factory, selector, address, sock):
+    def __init__(self, mosaic, ref_collector_factory, unbundler, parcel_registry, transport, selector, address, sock):
         self._mosaic = mosaic
         self._ref_collector_factory = ref_collector_factory
+        self._unbundler = unbundler
+        self._parcel_registry = parcel_registry
+        self._transport = transport
         self._selector = selector
         self._address = address
         self._socket = sock
+        self._buffer = b''
 
     def __repr__(self):
         return f"TCP:{address_to_str(self._address)}"
+
+    @property
+    def closed(self):
+        return self._socket is None
 
     def send(self, parcel):
         parcel_ref = self._mosaic.put(parcel.piece)
@@ -105,7 +113,25 @@ class Connection:
         log.info("%s: parcel is sent: %s", self, ref_repr(parcel_ref))
 
     def on_read(self, sock, mask):
-        raise NotImplementedError('todo')
+        data = sock.recv(1024**2)
+        if data == b'':
+            log.info("%s: remote end closed connection", self)
+            self._selector.unregister(sock)
+            self._socket = None
+        self._buffer += data
+        self._process_buffer()
+
+    def _process_buffer(self):
+        while has_full_tcp_packet(self._buffer):
+            bundle, packet_size = decode_tcp_packet(self._buffer)
+            self._buffer = self._buffer[packet_size:]
+            self._process_bundle(bundle)
+
+    def _process_bundle(self, bundle):
+        self._unbundler.register_bundle(bundle)
+        piece_ref = bundle.roots[0]
+        parcel = self._parcel_registry.invite(piece_ref)
+        self._transport.send_parcel(parcel)
 
 
 class Route:
@@ -139,6 +165,9 @@ class ThisModule(Module):
         super().__init__(module_name)
         self._mosaic = services.mosaic
         self._ref_collector_factory = services.ref_collector_factory
+        self._unbundler = services.unbundler
+        self._parcel_registry = services.parcel_registry
+        self._transport = services.transport
         self._on_failure = services.failed
         self._stop_flag = False
         self._selector = selectors.DefaultSelector()
@@ -165,7 +194,16 @@ class ThisModule(Module):
 
     def _connection_factory(self, address, sock):
         sock.setblocking(False)
-        return Connection(self._mosaic, self._ref_collector_factory, self._selector, address, sock)
+        return Connection(
+            self._mosaic,
+            self._ref_collector_factory,
+            self._unbundler,
+            self._parcel_registry,
+            self._transport,
+            self._selector,
+            address,
+            sock,
+            )
 
     def start(self):
         log.info("Start TCP selector thread.")
@@ -185,6 +223,10 @@ class ThisModule(Module):
                 for key, mask in event_list:
                     handler = key.data
                     handler(key.fileobj, mask)
+                for address, client in self._address_to_client.items():
+                    if client.closed:
+                        log.debug("Remove client %s from cache", client)
+                        del self._address_to_client[address]
         except Exception as x:
             log.exception("TCP selector thread is failed:")
             self._on_failure(f"TCP selector thread is failed: {x}", x)
