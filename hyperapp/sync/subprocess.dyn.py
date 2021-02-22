@@ -41,8 +41,9 @@ class Process:
 
     def __exit__(self, exc, value, tb):
         log.info("Exit subprocess %r: send stop event", self.name)
-        self._connection.send((ConnectionEvent.STOP.value, None))
-        self._stopped_event.wait()  # Process should send 'stopped' signal.
+        if not self._stopped_event.is_set():
+            self._connection.send((ConnectionEvent.STOP.value, None))
+            self._stopped_event.wait()  # Process should send 'stopped' signal.
         self._mp_process.join()
         log.info("Subprocess %r is joined (exception is %s).", self.name, self._exception)
         if self._exception is not None:
@@ -112,7 +113,7 @@ class ThisModule(Module):
             log.exception("Subprocess is exited")
             self._subprocess_is_stopped_now(process, connection)
             return
-        log.info("Subprocess recv thread: received %s from %s: %s", event, process.name, payload)
+        log.info("Subprocess recv thread: received %r from %r: %s", event, process.name, payload)
         if event != ConnectionEvent.PARCEL.value:
             self._process_stop_event(process, connection, event, payload)
             return

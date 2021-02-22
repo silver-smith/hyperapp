@@ -1,3 +1,5 @@
+import time
+
 import pytest
 
 from hyperapp.common import cdr_coders  # self-registering
@@ -66,7 +68,8 @@ def test_import_failure(services):
     assert str(excinfo.value) == 'Test import failure'
 
 
-def test_module_init_failure(services):
+@pytest.mark.parametrize('sleep_sec', [0, 1])
+def test_module_init_failure(services, sleep_sec):
     subprocess = services.subprocess(
         'subprocess',
         type_module_list=[
@@ -79,5 +82,5 @@ def test_module_init_failure(services):
         )
     with pytest.raises(AssertionError) as excinfo:
         with subprocess:
-            pass
+            time.sleep(sleep_sec)
     assert str(excinfo.value) == 'Test module init failure'
