@@ -39,7 +39,7 @@ class Route:
 
     @classmethod
     def from_piece(cls, piece):
-        return cls((piece.route.host, piece.route.port))
+        return cls((piece.host, piece.port))
 
     def __init__(self, address):
         self._address = address
