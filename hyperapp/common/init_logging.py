@@ -4,7 +4,6 @@ import logging.handlers
 import os
 from pathlib import Path
 import multiprocessing
-import threading
 
 import yaml
 
