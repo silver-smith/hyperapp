@@ -26,6 +26,7 @@ def services(type_module_list, code_module_list):
     services.init_modules(type_module_list, code_module_list)
     services.start()
     yield services
+    log.info("Stopping services")
     services.stop()
     for reason in services.get_failure_reason_list():
         log.error("Services failure reason: %s", reason)
