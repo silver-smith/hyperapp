@@ -55,6 +55,8 @@ class RefCollector(Visitor):
                     type_capsule_set.add(capsule)
                 else:
                     capsule_set.add(capsule)
+                self._collected_type_ref_set.add(capsule.type_ref)
+                new_ref_set.add(capsule.type_ref)
                 new_ref_set |= self._collect_refs_from_capsule(ref, capsule)
             if not new_ref_set:
                 break
@@ -73,9 +75,6 @@ class RefCollector(Visitor):
         self._collected_ref_set = set()
         self._collect_refs_from_object(t, object)
         self._collect_aux_refs(ref, t, object)
-        # can't move following to _collect_refs_from_object because not all objects has refs to them, but for endpoint it's required
-        self._collected_ref_set.add(capsule.type_ref)
-        self._collected_type_ref_set.add(capsule.type_ref)
         log.debug('Collected %d refs from %s %s: %s', len(self._collected_ref_set), t, ref_repr(ref),
                  ', '.join(map(ref_repr, self._collected_ref_set)))
         return self._collected_ref_set
