@@ -53,8 +53,7 @@ def test_send_subprocess_parcel(services):
     request_queue = queue.Queue()
     services.endpoint_registry.register(master_identity, Endpoint(request_queue))
 
-    ref_collector = services.ref_collector_factory()
-    master_peer_bundle = ref_collector.make_bundle([master_peer_ref])
+    master_peer_bundle = services.ref_collector([master_peer_ref]).bundle
     master_peer_bundle_cdr = packet_coders.encode('cdr', master_peer_bundle)
 
     master_peer_ref_cdr_list = [packet_coders.encode('cdr', master_peer_ref)]
@@ -98,8 +97,7 @@ def test_subprocess_transport_echo(services):
     request_queue = queue.Queue()
     services.endpoint_registry.register(master_identity, Endpoint(request_queue))
 
-    ref_collector = services.ref_collector_factory()
-    master_peer_bundle = ref_collector.make_bundle([master_peer_ref])
+    master_peer_bundle = services.ref_collector([master_peer_ref]).bundle
     master_peer_bundle_cdr = packet_coders.encode('cdr', master_peer_bundle)
 
     master_peer_ref_cdr_list = [packet_coders.encode('cdr', master_peer_ref)]

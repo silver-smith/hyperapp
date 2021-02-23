@@ -77,8 +77,7 @@ def test_echo(services, htypes):
     servant = Servant(echo_response_queue, services.types, services.rpc_proxy, rpc_endpoint)
     rpc_endpoint.register_servant(object_id, servant)
 
-    ref_collector = services.ref_collector_factory()
-    master_service_bundle = ref_collector.make_bundle([master_service_ref])
+    master_service_bundle = services.ref_collector([master_service_ref]).bundle
     master_service_bundle_cdr = packet_coders.encode('cdr', master_service_bundle)
 
     master_peer_ref_cdr_list = [packet_coders.encode('cdr', master_peer_ref)]

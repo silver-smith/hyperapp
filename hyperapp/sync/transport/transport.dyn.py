@@ -24,9 +24,9 @@ class RouteTable:
 
 class Transport:
 
-    def __init__(self, mosaic, ref_collector_factory, route_registry, route_table):
+    def __init__(self, mosaic, ref_collector, route_registry, route_table):
         self._mosaic = mosaic
-        self._ref_collector_factory = ref_collector_factory
+        self._ref_collector = ref_collector
         self._route_registry = route_registry
         self._route_table = route_table
 
@@ -41,8 +41,7 @@ class Transport:
 
     def send(self, receiver, sender_identity, ref_list):
         log.info("Send ref list %s to %s from %s", [ref_repr(ref) for ref in ref_list], receiver, sender_identity)
-        ref_collector = self._ref_collector_factory()
-        bundle = ref_collector.make_bundle(ref_list)
+        bundle = self._ref_collector(ref_list).bundle
         parcel = receiver.make_parcel(bundle, sender_identity)
         self.send_parcel(parcel)
 
@@ -58,7 +57,7 @@ class ThisModule(Module):
         services.route_registry = self._route_registry
         services.route_table = self._route_table
         services.transport = Transport(
-            services.mosaic, services.ref_collector_factory, services.route_registry, services.route_table)
+            services.mosaic, services.ref_collector, services.route_registry, services.route_table)
         services.aux_ref_collector_hooks.append(self.route_collector_hook)
         services.aux_ref_unbundler_hooks.append(self.route_unbundler_hook)
 

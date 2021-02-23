@@ -1,3 +1,4 @@
+from collections import namedtuple
 from datetime import datetime
 import logging
 
@@ -15,6 +16,9 @@ log = logging.getLogger(__name__)
 RECURSION_LIMIT = 100
 
 
+_RefsAndBundle = namedtuple('_RefsAndBundle', 'ref_set bundle')
+
+
 class RefCollector(Visitor):
 
     def __init__(self, mosaic, types, aux_ref_collector_hooks):
@@ -25,15 +29,16 @@ class RefCollector(Visitor):
         self._collected_type_ref_set = None
         self._collected_aux_set = set()
 
-    def make_bundle(self, ref_list):
+    def collect(self, ref_list):
         assert is_list_inst(ref_list, ref_t), repr(ref_list)
         log.info('Making bundle from refs: %s', [ref_repr(ref) for ref in ref_list])
-        capsule_list = self._collect_capsule_list(ref_list)
-        return bundle_t(
+        ref_set, capsule_list = self._collect_capsule_list(ref_list)
+        bundle = bundle_t(
             roots=ref_list,
             aux_roots=list(self._collected_aux_set),
             capsule_list=capsule_list,
             )
+        return _RefsAndBundle(ref_set, bundle)
 
     def _collect_capsule_list(self, ref_list):
         self._collected_type_ref_set = set()
@@ -68,7 +73,7 @@ class RefCollector(Visitor):
         if missing_ref_count:
             log.warning('Failed to resolve %d refs', missing_ref_count)
         # types should come first, or receiver won't be able to decode
-        return list(type_capsule_set) + list(capsule_set)
+        return (processed_ref_set, list(type_capsule_set) + list(capsule_set))
 
     def _collect_refs_from_capsule(self, ref, capsule):
         t = self._types.resolve(capsule.type_ref)
@@ -103,7 +108,8 @@ class ThisModule(Module):
         self._types = services.types
         self._aux_ref_collector_hooks = []
         services.aux_ref_collector_hooks = self._aux_ref_collector_hooks
-        services.ref_collector_factory = self.ref_collector_factory
+        services.ref_collector = self.ref_collector
 
-    def ref_collector_factory(self):
-        return RefCollector(self._mosaic, self._types, self._aux_ref_collector_hooks)
+    def ref_collector(self, ref_list):
+        collector = RefCollector(self._mosaic, self._types, self._aux_ref_collector_hooks)
+        return collector.collect(ref_list)

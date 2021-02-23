@@ -62,7 +62,7 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
         self._mosaic = services.mosaic
-        self._ref_collector_factory = services.ref_collector_factory
+        self._ref_collector = services.ref_collector
         self._unbundler = services.unbundler
         self._route_table = services.route_table
         self._parcel_registry = services.parcel_registry
@@ -129,7 +129,7 @@ class ThisModule(Module):
 
     def _process_parcel(self, connection, parcel):
         sender_ref = self._mosaic.put(parcel.sender.piece)
-        child_route = SubprocessRoute(self._mosaic, self._ref_collector_factory, connection)
+        child_route = SubprocessRoute(self._mosaic, self._ref_collector, connection)
         self._route_table.add_route(sender_ref, child_route)
         self._transport.send_parcel(parcel)
 

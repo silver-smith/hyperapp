@@ -70,8 +70,7 @@ def test_route_ref_collected(services, htypes, phony_route_t):
     non_persistable_route = NonPersistableRoute()
     services.route_table.add_route(peer_ref, non_persistable_route)
 
-    ref_collector = services.ref_collector_factory()
-    bundle = ref_collector.make_bundle([peer_ref])
+    bundle = services.ref_collector([peer_ref]).bundle
 
     route_association = htypes.transport.route_association(peer_ref, persistable_route_ref)
     route_association_ref = services.mosaic.put(route_association)
