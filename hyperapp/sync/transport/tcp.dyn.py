@@ -105,16 +105,16 @@ class Connection:
         ofs = 0
         while ofs < len(data):
             sent_size = self._socket.send(data[ofs:])
-            log.debug("%s: sent %d bytes", self, sent_size)
+            log.debug("%s: Sent %d bytes", self, sent_size)
             if sent_size == 0:
                 raise RuntimeError(f"{self}: remote end closed connection")
             ofs += sent_size
-        log.info("%s: parcel is sent: %s", self, ref_repr(parcel_ref))
+        log.info("%s: Parcel is sent: %s", self, ref_repr(parcel_ref))
 
     def on_read(self, sock, mask):
         data = sock.recv(1024**2)
         if data == b'':
-            log.info("%s: remote end closed connection", self)
+            log.info("%s: Remote end closed connection", self)
             self._selector.unregister(sock)
             self._socket = None
         self._buffer += data
