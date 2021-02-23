@@ -140,7 +140,7 @@ def test_tcp_echo(services):
     with subprocess:
         log.info("Waiting for first request.")
         request_1 = request_queue.get()
-        log.info("Got first request.")
+        log.info("Got first request: %s", request_1)
         assert request_1.receiver_identity.piece == master_identity.piece
 
         child_peer = services.peer_registry.invite(request_1.ref_list[0])
@@ -148,7 +148,7 @@ def test_tcp_echo(services):
 
         log.info("Waiting for second request.")
         request_2 = request_queue.get()
-        log.info("Got second request.")
+        log.info("Got second request: %s", request_2)
         assert request_2.receiver_identity.piece == master_identity.piece
         assert request_2.sender.piece == child_peer.piece
 
