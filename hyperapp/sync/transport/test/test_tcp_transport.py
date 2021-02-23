@@ -61,8 +61,6 @@ def test_tcp_send(services):
     master_peer_bundle = services.ref_collector([master_peer_ref]).bundle
     master_peer_bundle_cdr = packet_coders.encode('cdr', master_peer_bundle)
 
-    master_peer_ref_cdr_list = [packet_coders.encode('cdr', master_peer_ref)]
-
     subprocess = services.subprocess(
         'subprocess',
         type_module_list=[
@@ -83,7 +81,7 @@ def test_tcp_send(services):
             'sync.transport.tcp',
             'sync.transport.test.send',
             ],
-        config = {
+        config={
             'sync.transport.test.send': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
             },
         )
@@ -108,8 +106,6 @@ def test_tcp_echo(services):
     master_peer_bundle = services.ref_collector([master_peer_ref]).bundle
     master_peer_bundle_cdr = packet_coders.encode('cdr', master_peer_bundle)
 
-    master_peer_ref_cdr_list = [packet_coders.encode('cdr', master_peer_ref)]
-
     subprocess = services.subprocess(
         'subprocess',
         type_module_list=[
@@ -131,7 +127,7 @@ def test_tcp_echo(services):
             'sync.transport.tcp',
             'sync.transport.test.echo',
             ],
-        config = {
+        config={
             'sync.transport.test.echo': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
             },
         )
