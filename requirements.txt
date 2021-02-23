@@ -1,13 +1,14 @@
-pony==0.7.4  # first version compatible with python3.7
+pony==0.7.14  # first version compatible with python3.7
 python-dateutil==2.8.0
 PyYAML>=3.12  # under debian requires: libyaml-dev, libpython3-dev
 cryptography>=1.0.2  # under debian requires: libffi-dev:amd64 libssl-dev:amd64
-pytest==4.0.2
-pytest-asyncio==0.9.0
+pytest==6.2.2
+pytest-asyncio==0.14.0
 aiomock
 ply
-pyside2==5.14.2.2
+pyside2==5.15.2
 qasync==0.13.0
+attrs==20.3.0  # fix pytest requirement
 
 # installing pyside using pip has following package requirements:
 # apt-get install build-essential git cmake libqt4-dev libphonon-dev python2.7-dev libxml2-dev libxslt1-dev qtmobility-dev
