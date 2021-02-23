@@ -31,8 +31,4 @@ class ThisModule(Module):
         endpoint = Endpoint(services.mosaic, services.transport, my_identity)
         services.endpoint_registry.register(my_identity, endpoint)
 
-        ref_collector = services.ref_collector_factory()
-        bundle = ref_collector.make_bundle([my_peer_ref])
-        parcel = master_peer.make_parcel(bundle, my_identity)
-
-        services.transport.send_parcel(parcel)
+        services.transport.send(master_peer, my_identity, [my_peer_ref])
