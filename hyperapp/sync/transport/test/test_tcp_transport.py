@@ -44,6 +44,7 @@ class Endpoint:
         self._request_queue = request_queue
 
     def process(self, request):
+        log.info("Test endpoint: process request %s", request)
         self._request_queue.put(request)
 
 

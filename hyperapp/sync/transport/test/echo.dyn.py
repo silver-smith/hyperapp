@@ -1,6 +1,10 @@
+import logging
+
 from hyperapp.common.htypes import bundle_t
 from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common.module import Module
+
+log = logging.getLogger(__name__)
 
 
 class Endpoint:
@@ -11,6 +15,7 @@ class Endpoint:
         self._my_identity = my_identity
 
     def process(self, request):
+        log.info("Echo endpoint: process request %s", request)
         my_peer_ref = self._mosaic.put(request.receiver_identity.peer.piece)
         self._transport.send(request.sender, self._my_identity, [*request.ref_list, my_peer_ref])
 
