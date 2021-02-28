@@ -213,13 +213,14 @@ class ThisModule(Module):
         return server
 
     def _client_factory(self, address):
-        client = self._address_to_client.get(address)
-        if not client:
+        connection = self._address_to_client.get(address)
+        if not connection:
             sock = socket.socket()
             sock.connect(address)
-            client = self._connection_factory(address, sock)
-            self._address_to_client[address] = client
-        return client
+            connection = self._connection_factory(address, sock)
+            self._address_to_client[address] = connection
+            self._selector.register(sock, selectors.EVENT_READ, connection.on_read)
+        return connection
 
     def _connection_factory(self, address, sock):
         sock.setblocking(False)
