@@ -13,6 +13,10 @@ fi
 FILTER="$DIR/scripts/log-sort.py"
 
 cd $DIR
+
+export PYTHONPATH=$PYTHONPATH:$DIR
+
 set -x
-#PYTHONPATH=$PYTHONPATH:$DIR $venv/bin/pytest --ignore dynamic_modules "${ARGS[@]}" | "$FILTER"
-PYTHONPATH=$PYTHONPATH:$DIR $venv/bin/pytest --ignore dynamic_modules "${ARGS[@]}"
+
+#$venv/bin/pytest --ignore dynamic_modules "${ARGS[@]}" | "$FILTER"
+time $venv/bin/pytest --ignore dynamic_modules "${ARGS[@]}"
