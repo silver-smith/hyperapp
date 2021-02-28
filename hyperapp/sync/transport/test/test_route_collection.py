@@ -25,7 +25,7 @@ def code_module_list():
         'transport.identity',
         'transport.rsa_identity',
         'sync.async_stop',
-        'sync.transport.transport',
+        'transport.route_table',
         ]
 
 
