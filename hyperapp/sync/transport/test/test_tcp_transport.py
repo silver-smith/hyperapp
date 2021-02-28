@@ -88,7 +88,7 @@ def test_tcp_send(services):
         )
     with subprocess:
         log.info("Waiting for request.")
-        request = request_queue.get(timeout=10)
+        request = request_queue.get(timeout=20)
         log.info("Got request: %s", request)
         assert request.receiver_identity.piece == master_identity.piece
 
@@ -134,7 +134,7 @@ def test_tcp_echo(services):
         )
     with subprocess:
         log.info("Waiting for first request.")
-        request_1 = request_queue.get(timeout=10)
+        request_1 = request_queue.get(timeout=20)
         log.info("Got first request: %s", request_1)
         assert request_1.receiver_identity.piece == master_identity.piece
 
@@ -142,7 +142,7 @@ def test_tcp_echo(services):
         services.transport.send(child_peer, master_identity, [master_peer_ref])
 
         log.info("Waiting for second request.")
-        request_2 = request_queue.get(timeout=10)
+        request_2 = request_queue.get(timeout=20)
         log.info("Got second request: %s", request_2)
         assert request_2.receiver_identity.piece == master_identity.piece
         assert request_2.sender.piece == child_peer.piece
