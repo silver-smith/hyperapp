@@ -80,16 +80,19 @@ class Server:
 
 class Connection:
 
-    def __init__(self, mosaic, ref_collector, unbundler, parcel_registry, transport, selector, address, sock):
+    def __init__(self, mosaic, ref_collector, unbundler, parcel_registry,
+                 route_table, transport, selector, address, sock):
         self._mosaic = mosaic
         self._ref_collector = ref_collector
         self._unbundler = unbundler
         self._parcel_registry = parcel_registry
+        self._route_table = route_table
         self._transport = transport
         self._selector = selector
         self._address = address
         self._socket = sock
         self._buffer = b''
+        self._this_route = IncomingConnectionRoute(self)
 
     def __repr__(self):
         return f"TCP:{address_to_str(self._address)}"
@@ -127,9 +130,14 @@ class Connection:
             self._process_bundle(bundle)
 
     def _process_bundle(self, bundle):
+        parcel_ref = bundle.roots[0]
+        log.info("%s: Received bundle: parcel: %s", self, ref_repr(parcel_ref))
         self._unbundler.register_bundle(bundle)
-        piece_ref = bundle.roots[0]
-        parcel = self._parcel_registry.invite(piece_ref)
+        parcel = self._parcel_registry.invite(parcel_ref)
+        sender_ref = self._mosaic.put(parcel.sender.piece)
+        # Add route first - it may be used during parcel processing.
+        log.info("%s will be routed via %s", ref_repr(sender_ref), self)
+        self._route_table.add_route(sender_ref, self._this_route)
         self._transport.send_parcel(parcel)
 
 
@@ -158,6 +166,21 @@ class Route:
         client.send(parcel)
 
 
+class IncomingConnectionRoute:
+
+    def __init__(self, connection):
+        self._connection = connection
+
+    @property
+    def piece(self):
+        return None  # Not persistable.
+
+    def send(self, parcel):
+        if self._connection.closed:
+            raise RuntimeError(f"Can not send {parcel} back to {self._connection}: it is already closed")
+        self._connection.send(parcel)
+
+
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
@@ -166,6 +189,7 @@ class ThisModule(Module):
         self._ref_collector = services.ref_collector
         self._unbundler = services.unbundler
         self._parcel_registry = services.parcel_registry
+        self._route_table = services.route_table
         self._transport = services.transport
         self._on_failure = services.failed
         self._stop_flag = False
@@ -198,6 +222,7 @@ class ThisModule(Module):
             self._ref_collector,
             self._unbundler,
             self._parcel_registry,
+            self._route_table,
             self._transport,
             self._selector,
             address,
