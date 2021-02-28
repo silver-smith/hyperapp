@@ -63,7 +63,7 @@ class Services(object):
             log.info('Already stopped.')
             return
         log.info('Stopping modules...')
-        for stop in self.on_stop:
+        for stop in reversed(self.on_stop):
             stop()
         log.info('Stopping modules: done')
         self.on_stopped()

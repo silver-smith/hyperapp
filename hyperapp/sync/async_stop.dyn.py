@@ -16,6 +16,7 @@ class ThisModule(Module):
         self._services_stop = services.stop
         self._failure_reason_list = []
         self._thread_pool = concurrent.futures.ThreadPoolExecutor(max_workers=3)
+        services.on_stop.append(self.on_stop)
         services.failed = self.failed
         services.is_failed = self.is_failed
         services.check_failures = self.check_failures
@@ -31,7 +32,12 @@ class ThisModule(Module):
     def is_failed(self):
         return self._failure_reason_list != []
 
+    def on_stop(self):
+        self.check_failures()
+
     def check_failures(self):
+        for reason in self.get_failure_reason_list():
+            log.error("Services failure reason: %s", reason)
         for reason in self._failure_reason_list:
             if reason.exception:
                 raise reason.exception
