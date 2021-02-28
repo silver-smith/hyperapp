@@ -24,7 +24,6 @@ def code_module_list():
         'common.unbundler',
         'transport.identity',
         'transport.rsa_identity',
-        'sync.async_stop',
         'transport.route_table',
         ]
 
