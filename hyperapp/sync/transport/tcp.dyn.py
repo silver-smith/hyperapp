@@ -115,13 +115,19 @@ class Connection:
         log.info("%s: Parcel is sent: %s", self, ref_repr(parcel_ref))
 
     def on_read(self, sock, mask):
-        data = sock.recv(1024**2)
-        if data == b'':
-            log.info("%s: Remote end closed connection", self)
-            self._selector.unregister(sock)
-            self._socket = None
-        self._buffer += data
-        self._process_buffer()
+        try:
+            data = sock.recv(1024**2)
+        except ConnectionResetError as x:
+            log.warning("%s: Remote end reset connection: %s", self, x)
+        else:
+            if data == b'':
+                log.info("%s: Remote end closed connection", self)
+            else:
+                self._buffer += data
+                self._process_buffer()
+                return
+        self._selector.unregister(sock)
+        self._socket = None
 
     def _process_buffer(self):
         while has_full_tcp_packet(self._buffer):
