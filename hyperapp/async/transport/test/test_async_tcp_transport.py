@@ -31,6 +31,7 @@ def code_module_list():
         'transport.route_table',
         'sync.work_dir',
         'sync.async_stop',
+        'sync.transport.route_table',
         'sync.transport.transport',
         'sync.transport.endpoint',
         'sync.subprocess_connection',
@@ -78,19 +79,22 @@ def test_tcp_send(services):
             'transport.rsa_identity',
             'transport.route_table',
             'sync.async_stop',
+            'sync.transport.route_table',
             'sync.transport.transport',
             'sync.subprocess_connection',
             'sync.subprocess_child',
             'sync.transport.tcp',
-            # 'sync.transport.test.send',
             'async.event_loop',
+            'async.transport.route_table',
+            'async.transport.transport',
+            'async.transport.test.send',
             ],
         config={
-            'sync.transport.test.send': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
+            'async.transport.test.send': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
             },
         )
     with subprocess:
         log.info("Waiting for request.")
-        request = request_queue.get(timeout=20)
+        request = request_queue.get(timeout=5)
         log.info("Got request: %s", request)
         assert request.receiver_identity.piece == master_identity.piece

@@ -34,5 +34,5 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
-        services.transport = Transport(
-            services.mosaic, services.ref_collector, services.route_registry, services.route_table)
+        services.async_transport = Transport(
+            services.mosaic, services.ref_collector, services.async_route_registry, services.async_route_table)
