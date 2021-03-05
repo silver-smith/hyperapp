@@ -11,6 +11,8 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
+        self._services = services
+        self._module_registry = services.module_registry
         self._event_loop = asyncio.new_event_loop()
         self._stop_event = asyncio.Event(loop=self._event_loop)
         services.event_loop = self._event_loop
@@ -71,5 +73,11 @@ class ThisModule(Module):
 
     async def _async_main(self):
         log.info("Async main started.")
+        await self._async_init_modules()
+        log.info("Async modules inited.")
         await self._stop_event.wait()
         log.info("Async main finished.")
+
+    async def _async_init_modules(self):
+        for method in self._module_registry.enum_modules_method('async_init'):
+            await method(self._services)
