@@ -30,7 +30,7 @@ def subprocess_main(process_name, connection, type_module_list, code_module_list
             subprocess_main_safe(connection, type_module_list, code_module_list, config)
             connection.send((ConnectionEvent.STOP.value, None))
         except Exception as x:
-            log.error("Exception in subprocess: %s", x)
+            log.error("Exception in subprocess: %r", x)
             traceback_entries = traceback.format_tb(x.__traceback__)
             log_traceback(traceback_entries)
             # Traceback is not pickleable, convert it to string list.

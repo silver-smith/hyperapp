@@ -47,7 +47,7 @@ class Process:
         self._mp_process.join()
         log.info("Subprocess %r is joined (exception is %s).", self.name, self._exception)
         if self._exception is not None:
-            log.error("Exception in subprocess %r: %s", self.name, self._exception)
+            log.error("Exception in subprocess %r: %r", self.name, self._exception)
             log_traceback(self._traceback_entries)
             raise self._exception
 
