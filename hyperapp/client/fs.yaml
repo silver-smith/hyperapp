@@ -3,6 +3,6 @@ import:
     fs:
     - fs
   code:
-  - client.code_registry
+  - async.code_registry
   - client.column
   - client.tree_object
