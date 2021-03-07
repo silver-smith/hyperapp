@@ -37,4 +37,4 @@ class ModuleRegistry(object):
         for module in self._module_list:
             method = getattr(module, method_name, None)
             if method:
-                yield method
+                yield (module, method)

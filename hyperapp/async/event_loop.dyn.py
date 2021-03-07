@@ -79,5 +79,6 @@ class ThisModule(Module):
         log.info("Async main finished.")
 
     async def _async_init_modules(self):
-        for method in self._module_registry.enum_modules_method('async_init'):
+        for module, method in self._module_registry.enum_modules_method('async_init'):
+            log.info("Async init module %r:", module.name)
             await method(self._services)
