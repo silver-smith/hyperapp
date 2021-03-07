@@ -13,12 +13,15 @@ log = logging.getLogger(__name__)
 
 class Connection:
 
-    def __init__(self, mosaic, ref_collector, unbundler, parcel_registry, transport, address, reader, writer):
+    def __init__(self, mosaic, ref_collector, unbundler, parcel_registry, route_table, transport,
+                 client_factory, address, reader, writer):
         self._mosaic = mosaic
         self._ref_collector = ref_collector
         self._unbundler = unbundler
         self._parcel_registry = parcel_registry
+        self._route_table = route_table
         self._transport = transport
+        self._client_factory = client_factory
         self._address = address
         self._reader = reader
         self._writer = writer
@@ -55,8 +58,9 @@ class Connection:
         parcel = self._parcel_registry.invite(parcel_ref)
         sender_ref = self._mosaic.put(parcel.sender.piece)
         # Add route first - it may be used during parcel processing.
-        # log.info("%s will be routed via %s", ref_repr(sender_ref), self)
-        # self._route_table.add_route(sender_ref, self._this_route)
+        log.info("%s will be routed via %s", ref_repr(sender_ref), self)
+        this_route = Route(self._address, self._client_factory)
+        self._route_table.add_route(sender_ref, this_route)
         await self._transport.send_parcel(parcel)
 
 
@@ -94,6 +98,7 @@ class ThisModule(Module):
         self._ref_collector = services.ref_collector
         self._unbundler = services.unbundler
         self._parcel_registry = services.parcel_registry
+        self._route_table = services.async_route_table
         self._transport = services.async_transport
         self._address_to_client = {}  # (host, port) -> Connection
         self._connect_lock = asyncio.Lock()
@@ -111,8 +116,8 @@ class ThisModule(Module):
             host, port = address
             reader, writer = await asyncio.open_connection(host, port)
             connection = Connection(
-                self._mosaic, self._ref_collector, self._unbundler, self._parcel_registry, self._transport,
-                address, reader, writer)
+                self._mosaic, self._ref_collector, self._unbundler, self._parcel_registry, self._route_table, self._transport,
+                self._client_factory, address, reader, writer)
             self._address_to_client[address] = connection
             log.debug('Async tcp: connection for %s is established', address_to_str(address))
             return connection
