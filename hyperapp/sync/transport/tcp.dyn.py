@@ -162,7 +162,7 @@ class ThisModule(Module):
         self._on_failure = services.failed
         self._stop_flag = False
         self._selector = selectors.DefaultSelector()
-        self._address_to_client = {}
+        self._address_to_client = {}  # (host, port) -> Connection
         self._thread = threading.Thread(target=self._selector_thread_main)
         services.route_registry.register_actor(htypes.tcp_transport.route, Route.from_piece, self._client_factory)
         services.on_start.append(self.start)

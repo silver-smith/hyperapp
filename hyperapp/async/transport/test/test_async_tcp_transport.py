@@ -29,6 +29,7 @@ def code_module_list():
         'transport.identity',
         'transport.rsa_identity',
         'transport.route_table',
+        'transport.tcp',
         'sync.work_dir',
         'sync.async_stop',
         'sync.transport.route_table',
@@ -78,6 +79,7 @@ def test_tcp_send(services):
             'transport.identity',
             'transport.rsa_identity',
             'transport.route_table',
+            'transport.tcp',
             'sync.async_stop',
             'sync.transport.route_table',
             'sync.transport.transport',
@@ -87,6 +89,7 @@ def test_tcp_send(services):
             'async.event_loop',
             'async.transport.route_table',
             'async.transport.transport',
+            'async.transport.tcp',
             'async.transport.test.send',
             ],
         config={
