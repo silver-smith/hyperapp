@@ -133,5 +133,5 @@ class ClientServices(ClientServicesBase):
         self.local_code_module_registry.register('client.application', phony_ref('application'))
 
     async def async_init(self):
-        for method in self.module_registry.enum_modules_method('async_init'):
+        for module, method in self.module_registry.enum_modules_method('async_init'):
             await method(self)
