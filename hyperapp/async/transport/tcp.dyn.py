@@ -48,6 +48,8 @@ class Connection:
                     bundle, packet_size = decode_tcp_packet(buffer)
                     buffer = buffer[packet_size:]
                     await self._process_bundle(bundle)
+        except asyncio.CancelledError:
+            log.info("%s: Receive task is stopped", self)
         except Exception as x:
             log.exception("%s: Receive task is failed:", self)
 
