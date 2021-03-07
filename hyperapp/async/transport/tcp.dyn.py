@@ -80,7 +80,7 @@ class Route:
 
     async def send(self, parcel):
         if not self._client_factory:
-            raise RuntimeError(f"Can not send parcel using TCP to myself")
+            raise RuntimeError("Can not send parcel using TCP to myself")
         client = await self._client_factory(self._address)
         await client.send(parcel)
 

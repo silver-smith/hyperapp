@@ -129,7 +129,7 @@ class Route:
 
     def send(self, parcel):
         if not self._client_factory:
-            raise RuntimeError(f"Can not send parcel using TCP to myself")
+            raise RuntimeError("Can not send parcel using TCP to myself")
         client = self._client_factory(self._address)
         client.send(parcel)
 
