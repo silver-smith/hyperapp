@@ -17,7 +17,10 @@ class CodeModuleLoader(object):
         module_name = module_name or file_path.stem
         info_path = file_path.with_suffix('.yaml')
         source_path = file_path.with_suffix(DYN_MODULE_SUFFIX)
-        info = yaml.safe_load(info_path.read_text()) or {}
+        try:
+            info = yaml.safe_load(info_path.read_text()) or {}
+        except FileNotFoundError:
+            raise RuntimeError(f"Code module yaml file is missing: {info_path}")
         source = source_path.read_text()
         type_import_list = []
         for type_module_name, import_name_list in info.get('import', {}).get('types', {}).items():
