@@ -17,7 +17,7 @@ class Endpoint:
     async def process(self, request):
         log.info("Echo endpoint: process request %s", request)
         my_peer_ref = self._mosaic.put(request.receiver_identity.peer.piece)
-        self._transport.send(request.sender, self._my_identity, [*request.ref_list, my_peer_ref])
+        await self._transport.send(request.sender, self._my_identity, [*request.ref_list, my_peer_ref])
 
 
 class ThisModule(Module):
@@ -33,7 +33,7 @@ class ThisModule(Module):
         self._my_identity = services.generate_rsa_identity(fast=True)
         self._my_peer_ref = services.mosaic.put(self._my_identity.peer.piece)
 
-        endpoint = Endpoint(services.mosaic, services.transport, self._my_identity)
+        endpoint = Endpoint(services.mosaic, services.async_transport, self._my_identity)
         services.async_endpoint_registry.register(self._my_identity, endpoint)
 
     async def async_init(self, services):
