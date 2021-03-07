@@ -1,4 +1,6 @@
 import:
+  code:
+    - transport.tcp
   types:
     tcp_transport:
       - route
