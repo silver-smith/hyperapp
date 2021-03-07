@@ -169,7 +169,7 @@ class ThisModule(Module):
         services.on_stop.append(self.stop)
         services.tcp_server = self.server_factory
 
-    def server_factory(self, bind_address):
+    def server_factory(self, bind_address=('localhost', 0)):
         server = Server(self._selector, self._connection_factory)
         server.start(bind_address)
         return server

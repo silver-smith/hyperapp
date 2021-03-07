@@ -58,7 +58,7 @@ def test_tcp_send(services):
     request_queue = queue.Queue()
     services.endpoint_registry.register(master_identity, Endpoint(request_queue))
 
-    server = services.tcp_server(('localhost', 0))
+    server = services.tcp_server()
     log.info("Tcp route: %r", server.route)
     services.route_table.add_route(master_peer_ref, server.route)
 
