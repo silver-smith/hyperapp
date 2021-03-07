@@ -13,19 +13,16 @@ log = logging.getLogger(__name__)
 
 class Connection:
 
-    def __init__(
-            self,
-            mosaic,
-            ref_collector,
-            address,
-            reader,
-            writer,
-            ):
+    def __init__(self, mosaic, ref_collector, unbundler, parcel_registry, transport, address, reader, writer):
         self._mosaic = mosaic
         self._ref_collector = ref_collector
+        self._unbundler = unbundler
+        self._parcel_registry = parcel_registry
+        self._transport = transport
         self._address = address
         self._reader = reader
         self._writer = writer
+        self._receive_task = asyncio.create_task(self.receive())
 
     def __repr__(self):
         return f"TCP:{address_to_str(self._address)}"
@@ -36,6 +33,31 @@ class Connection:
         data = encode_tcp_packet(bundle)
         self._writer.write(data)
         log.info("%s: Parcel is sent: %s", self, ref_repr(parcel_ref))
+
+    async def receive(self):
+        log.info("%s: Receive task started", self)
+        try:
+            buffer = b''
+            while True:
+                data = await self._reader.read(1024**2)
+                buffer += data
+                while has_full_tcp_packet(buffer):
+                    bundle, packet_size = decode_tcp_packet(buffer)
+                    buffer = buffer[packet_size:]
+                    await self._process_bundle(bundle)
+        except Exception as x:
+            log.exception("%s: Receive task is failed:", self)
+
+    async def _process_bundle(self, bundle):
+        parcel_ref = bundle.roots[0]
+        log.info("%s: Received bundle: parcel: %s", self, ref_repr(parcel_ref))
+        self._unbundler.register_bundle(bundle)
+        parcel = self._parcel_registry.invite(parcel_ref)
+        sender_ref = self._mosaic.put(parcel.sender.piece)
+        # Add route first - it may be used during parcel processing.
+        # log.info("%s will be routed via %s", ref_repr(sender_ref), self)
+        # self._route_table.add_route(sender_ref, self._this_route)
+        await self._transport.send_parcel(parcel)
 
 
 class Route:
@@ -70,6 +92,9 @@ class ThisModule(Module):
         self._event_loop = services.event_loop
         self._mosaic = services.mosaic
         self._ref_collector = services.ref_collector
+        self._unbundler = services.unbundler
+        self._parcel_registry = services.parcel_registry
+        self._transport = services.async_transport
         self._address_to_client = {}  # (host, port) -> Connection
         self._connect_lock = asyncio.Lock()
         services.async_route_registry.register_actor(htypes.tcp_transport.route, Route.from_piece, self._client_factory)
@@ -86,12 +111,8 @@ class ThisModule(Module):
             host, port = address
             reader, writer = await asyncio.open_connection(host, port)
             connection = Connection(
-                self._mosaic,
-                self._ref_collector,
-                address,
-                reader,
-                writer,
-                )
+                self._mosaic, self._ref_collector, self._unbundler, self._parcel_registry, self._transport,
+                address, reader, writer)
             self._address_to_client[address] = connection
             log.debug('Async tcp: connection for %s is established', address_to_str(address))
             return connection

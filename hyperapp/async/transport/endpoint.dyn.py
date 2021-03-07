@@ -47,4 +47,4 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
-        services.endpoint_registry = EndpointRegistry(services.mosaic, services.unbundler, services.route_table)
+        services.async_endpoint_registry = EndpointRegistry(services.mosaic, services.unbundler, services.route_table)
