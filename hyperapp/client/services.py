@@ -121,10 +121,8 @@ class ClientServices(ClientServicesBase):
 
     def __init__(self, event_loop):
         super().__init__(event_loop)
-        self._hyperapp_client_dir = self.hyperapp_dir / 'client'
-        self.client_resources_dir = self._hyperapp_client_dir
+        self.client_resources_dir = self.hyperapp_dir / 'client'
         self.init_services()
-        self.client_module_dir = self._hyperapp_client_dir
         self.init_modules(type_module_list, code_module_list)
         # enable application resources to work; todo: move application commands to dynamic module
         self.local_code_module_registry.register('client.application', phony_ref('application'))
