@@ -110,7 +110,7 @@ def test_async_echo(services, htypes):
             'sync.async_stop',
             'sync.transport.route_table',
             'sync.transport.transport',
-            'sync.transport.tcp',
+            'sync.transport.tcp',  # Provide tcp route for sync route table
             'sync.transport.endpoint',
             'sync.subprocess_connection',
             'sync.subprocess_child',

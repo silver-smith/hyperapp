@@ -85,7 +85,7 @@ def test_tcp_send(services):
             'sync.transport.transport',
             'sync.subprocess_connection',
             'sync.subprocess_child',
-            'sync.transport.tcp',
+            'sync.transport.tcp',  # Provide tcp route for sync route table
             'async.event_loop',
             'async.transport.route_table',
             'async.transport.transport',
@@ -137,7 +137,7 @@ def test_tcp_echo(services):
             'sync.transport.transport',
             'sync.subprocess_connection',
             'sync.subprocess_child',
-            'sync.transport.tcp',
+            'sync.transport.tcp',  # Provide tcp route for sync route table
             'async.event_loop',
             'async.transport.route_table',
             'async.transport.transport',
