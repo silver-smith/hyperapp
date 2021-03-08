@@ -1,15 +1,6 @@
-import os.path
-from pathlib import Path
-
 from ..common.htypes.packet_coders import packet_coders
 from ..common.ref import phony_ref
 from ..common.services import Services
-
-
-CACHE_DIR = os.path.expanduser('~/.cache/hyperapp/client')
-CACHE_CONTENTS_ENCODING = 'json'
-CACHE_FILE_EXT = '.json'
-TYPE_MODULE_EXT = '.types'
 
 
 type_module_list = [
