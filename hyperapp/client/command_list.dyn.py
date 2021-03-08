@@ -2,9 +2,9 @@ import itertools
 from collections import namedtuple
 
 from hyperapp.common.util import single
-from hyperapp.client.command import command
 
 from . import htypes
+from .command import command
 from .column import Column
 from .object_command import command as object_command
 from .layout_handle import LayoutWatcher

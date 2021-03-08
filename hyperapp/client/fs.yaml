@@ -4,6 +4,7 @@ import:
     - fs
   code:
   - async.code_registry
+  - async.ui.command
   - client.column
   - client.tree_object
   - async.ui.module

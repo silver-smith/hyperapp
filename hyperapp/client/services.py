@@ -67,6 +67,7 @@ code_module_list = [
     'async.ui.qt.util',
     'async.ui.qt.qt_keys',
     'client.view',
+    'async.ui.command',
     'client.composite',
     'client.column',
     'client.list_object',

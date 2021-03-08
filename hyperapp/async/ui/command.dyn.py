@@ -2,8 +2,8 @@ import logging
 import sys
 import weakref
 
-from ..common.htypes import resource_key_t
-from .commander import resource_key_of_class_method, BoundCommand, UnboundCommand
+from hyperapp.common.htypes import resource_key_t
+from hyperapp.client.commander import resource_key_of_class_method, BoundCommand, UnboundCommand
 
 log = logging.getLogger(__name__)
 

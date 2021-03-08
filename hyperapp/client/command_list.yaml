@@ -13,6 +13,7 @@ import:
       - field
       - params_editor
   code:
+    - async.ui.command
     - client.column
     - client.command_hub
     - client.object_command

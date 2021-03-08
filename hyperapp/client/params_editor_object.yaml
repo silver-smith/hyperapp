@@ -10,6 +10,7 @@ import:
       - field
       - params_editor
   code:
+    - async.ui.command
     - client.record_object
     - client.chooser
     - async.ui.module

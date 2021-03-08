@@ -1,6 +1,5 @@
-from hyperapp.client.command import command
-
 from . import htypes
+from .command import command
 from .record_object import RecordObject
 from .chooser import ChooserCallback, Chooser
 from .module import ClientModule

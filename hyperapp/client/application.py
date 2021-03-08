@@ -3,7 +3,6 @@ import logging
 from ..common.visual_rep import pprint
 from ..common import cdr_coders
 from .commander import Commander
-from .command import command
 from .services import ClientServices
 from .async_application import AsyncApplication
 

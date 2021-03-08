@@ -5,10 +5,9 @@ from collections import namedtuple
 from functools import partial
 
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
-from hyperapp.client.command import command
-
 from . import htypes
 from .view import View
+from .command import command
 from .layout import GlobalLayout
 from .layout_command import LayoutCommand
 from .module import ClientModule

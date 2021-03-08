@@ -2,10 +2,10 @@ from collections import namedtuple
 import logging
 
 from hyperapp.common.htypes import tInt, tString, resource_key_t
-from hyperapp.client.command import command
 
 from . import htypes
 from .code_registry import CodeRegistry
+from .command import command
 from .column import Column
 from .tree_object import TreeObject
 from .module import ClientModule

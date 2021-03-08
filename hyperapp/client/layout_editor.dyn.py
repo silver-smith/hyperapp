@@ -2,11 +2,10 @@ import asyncio
 import logging
 from collections import namedtuple
 
-from hyperapp.client.command import command
-
 from . import htypes
 from .object_command import command as object_command
 from .layout_handle import InsertVisualItemDiff, RemoveVisualItemDiff, UpdateVisualItemDiff, LayoutWatcher
+from .command import command
 from .command_hub import CommandHub
 from .column import Column
 from .tree_object import InsertItemDiff, RemoveItemDiff, UpdateItemDiff, TreeObject
