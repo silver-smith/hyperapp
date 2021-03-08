@@ -14,13 +14,13 @@ class ThisModule(Module):
         self._services = services
         self._module_registry = services.module_registry
         self._event_loop = asyncio.new_event_loop()
-        self._stop_event = asyncio.Event(loop=self._event_loop)
+        asyncio.set_event_loop(self._event_loop)  # Should be set before any asyncio objects created.
+        self._stop_event = asyncio.Event()
         services.event_loop = self._event_loop
         services.async_stop_event = self._stop_event
         self._thread = threading.Thread(target=self._event_loop_main)
         services.on_start.append(self.start)
         services.on_stop.append(self.stop)
-        asyncio.set_event_loop(self._event_loop)
 
     def start(self):
         self._thread.start()
