@@ -7,8 +7,8 @@ from typing import Dict, List
 
 from hyperapp.common.htypes import resource_key_t, hashable_resource_key
 from hyperapp.common.ref import phony_ref
-from hyperapp.client.weak_key_dictionary_with_callback import WeakKeyDictionaryWithCallback
 
+from .weak_key_dictionary_with_callback import WeakKeyDictionaryWithCallback
 from .commander import Commander
 
 log = logging.getLogger(__name__)

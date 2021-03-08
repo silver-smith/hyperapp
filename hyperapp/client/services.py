@@ -58,6 +58,7 @@ code_module_list = [
     'common.resource_resolver',
     'common.resource_loader',
     'common.fs_service_impl',
+    'common.weak_key_dictionary_with_callback',
     'async.ui.commander',
     'async.ui.module',
     'client.module_command_registry',
