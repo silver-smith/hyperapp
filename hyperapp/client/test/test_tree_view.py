@@ -33,7 +33,7 @@ code_module_list = [
     'common.resource_registry',
     'common.resource_resolver',
     'client.module_command_registry',
-    'client.async_web',
+    'async.async_web',
     'async.code_registry',
     'client.object_registry',
     'client.view_registry',

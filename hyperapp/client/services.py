@@ -60,7 +60,7 @@ code_module_list = [
     'common.resource_loader',
     'common.fs_service_impl',
     'client.module_command_registry',
-    'client.async_web',
+    'async.async_web',
     'async.code_registry',
     'client.object_registry',
     'client.view',
