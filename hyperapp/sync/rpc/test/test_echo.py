@@ -37,10 +37,10 @@ def code_module_list():
         'sync.transport.route_table',
         'sync.transport.transport',
         'sync.transport.endpoint',
-        'sync.rpc.rpc_proxy',
-        'sync.rpc.rpc_endpoint',
         'sync.subprocess_connection',
         'sync.subprocess',
+        'sync.rpc.rpc_proxy',
+        'sync.rpc.rpc_endpoint',
         ]
 
 
@@ -59,7 +59,7 @@ class Servant:
         self._echo_response_queue.put(response)
 
 
-def test_echo(services, htypes):
+def test_sync_echo(services, htypes):
     master_identity = services.generate_rsa_identity(fast=True)
     master_peer_ref = services.mosaic.put(master_identity.peer.piece)
 
