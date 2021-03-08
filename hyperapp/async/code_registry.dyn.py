@@ -4,7 +4,8 @@ from collections import namedtuple
 from hyperapp.common.htypes import ref_t
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.common.visual_rep import pprint
-from hyperapp.client.async_registry import run_awaitable_factory
+
+from .async_registry import run_awaitable_factory
 
 _log = logging.getLogger(__name__)
 

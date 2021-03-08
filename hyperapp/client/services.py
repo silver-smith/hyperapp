@@ -61,6 +61,7 @@ code_module_list = [
     'common.fs_service_impl',
     'client.module_command_registry',
     'async.async_web',
+    'async.async_registry',
     'async.code_registry',
     'client.object_registry',
     'client.view',
