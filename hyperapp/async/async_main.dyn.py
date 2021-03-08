@@ -34,7 +34,6 @@ class ThisModule(Module):
         loop = self._event_loop
         try:
             try:
-                loop.set_debug(True)
                 loop.run_until_complete(self._async_main())
             finally:
                 try:
