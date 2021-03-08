@@ -1,5 +1,6 @@
 from hyperapp.common.module import Module
-from hyperapp.client.commander import Commander
+
+from .commander import Commander
 
 
 class ClientModule(Module, Commander):

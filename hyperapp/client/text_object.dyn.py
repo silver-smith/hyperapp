@@ -1,8 +1,7 @@
 import logging
 
-from hyperapp.client.object import Object
-
 from . import htypes
+from .object import Object
 from .module import ClientModule
 
 _log = logging.getLogger(__name__)

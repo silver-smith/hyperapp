@@ -3,4 +3,5 @@ import:
     layout:
       - layout_handle
   code:
+    - async.ui.commander
     - async.ui.module

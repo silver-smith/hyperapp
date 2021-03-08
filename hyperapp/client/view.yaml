@@ -1,5 +1,7 @@
 import:
   code:
+    - async.ui.commander
+    - async.ui.object
     - async.ui.qt.util
     - async.ui.qt.qt_keys
     - async.ui.module

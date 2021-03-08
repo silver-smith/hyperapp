@@ -3,9 +3,8 @@ import weakref
 from dataclasses import dataclass
 from typing import List
 
-from hyperapp.client.commander import BoundCommand
-
 from . import htypes
+from .commander import BoundCommand
 from .module import ClientModule
 
 _log = logging.getLogger(__name__)

@@ -32,6 +32,8 @@ type_module_list = [
 code_module_list = [
     'common.resource_registry',
     'common.resource_resolver',
+    'async.ui.commander',
+    'async.ui.object',
     'async.ui.module',
     'client.module_command_registry',
     'async.async_web',

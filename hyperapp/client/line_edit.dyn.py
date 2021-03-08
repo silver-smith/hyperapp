@@ -4,9 +4,8 @@ import logging
 from enum import Enum
 from PySide2 import QtCore, QtWidgets
 
-from hyperapp.client.object import Object
-
 from . import htypes
+from .object import Object
 from .layout_handle import UpdateVisualItemDiff
 from .layout import ObjectLayout
 from .view import View

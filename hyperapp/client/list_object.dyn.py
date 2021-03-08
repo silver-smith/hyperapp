@@ -5,14 +5,14 @@ from functools import total_ordering
 
 from hyperapp.common.util import is_list_inst
 from hyperapp.common.htypes import Type, tString
-from hyperapp.client.object import ObjectObserver, Object
 
 from . import htypes
+from .object import ObjectObserver, Object
 
 log = logging.getLogger(__name__)
 
 
-class ListDiff(object):
+class ListDiff:
 
     @classmethod
     def add_one(cls, element):

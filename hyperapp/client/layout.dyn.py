@@ -2,9 +2,8 @@ import abc
 import logging
 from collections import namedtuple
 
-from hyperapp.client.commander import Commander
-
 from . import htypes
+from .commander import Commander
 from .items_view import map_columns_to_view
 from .layout_command import LayoutCommand
 from .layout_handle import VisualItem

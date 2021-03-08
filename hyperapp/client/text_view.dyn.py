@@ -4,9 +4,8 @@ import re
 
 from PySide2 import QtCore, QtWidgets
 
-from hyperapp.client.object import ObjectObserver
-
 from . import htypes
+from .object import ObjectObserver
 from .layout import ObjectLayout
 from .view import View
 from .text_object import TextObject

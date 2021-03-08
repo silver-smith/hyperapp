@@ -15,6 +15,7 @@ import:
       - text
   code:
     - client.object_command
+    - async.ui.object
     - client.column
     - client.list_object
     - client.line_edit

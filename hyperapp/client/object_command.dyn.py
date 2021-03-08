@@ -2,8 +2,7 @@ import inspect
 import logging
 import weakref
 
-from hyperapp.client.commander import resource_key_of_class_method, UnboundCommand
-
+from .commander import resource_key_of_class_method, UnboundCommand
 from .module import ClientModule
 
 _log = logging.getLogger(__name__)

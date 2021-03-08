@@ -5,6 +5,7 @@ import:
       - line
       - line_edit_layout
   code:
+    - async.ui.object
     - client.layout_handle
     - client.layout
     - client.view

@@ -3,6 +3,7 @@ import:
     text:
       - text_edit_layout
   code:
+    - async.ui.object
     - client.layout
     - client.view
     - client.text_object

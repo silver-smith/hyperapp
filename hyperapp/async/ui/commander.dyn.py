@@ -4,9 +4,9 @@ import weakref
 import abc
 import sys
 
-from ..common.util import is_list_inst
-from ..common.htypes import resource_key_t
-from ..common.ref import phony_ref
+from hyperapp.common.util import is_list_inst
+from hyperapp.common.htypes import resource_key_t
+from hyperapp.common.ref import phony_ref
 
 _log = logging.getLogger(__name__)
 

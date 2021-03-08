@@ -5,9 +5,9 @@ from dataclasses import dataclass
 
 from hyperapp.common.util import single
 from hyperapp.common.htypes import Type, tString
-from hyperapp.client.object import ObjectObserver, Object
 
 from . import htypes
+from .object import ObjectObserver, Object
 from .column import Column
 from .module import ClientModule
 

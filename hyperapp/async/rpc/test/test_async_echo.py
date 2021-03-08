@@ -115,6 +115,7 @@ def test_async_echo(services, htypes):
             'sync.subprocess_connection',
             'sync.subprocess_child',
             'async.event_loop',
+            'async.ui.commander',
             'async.ui.module',
             'async.async_web',
             'async.async_registry',

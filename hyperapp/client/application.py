@@ -2,18 +2,18 @@ import os
 import logging
 from ..common.visual_rep import pprint
 from ..common import cdr_coders
-from .commander import Commander
 from .services import ClientServices
 from .async_application import AsyncApplication
 
 log = logging.getLogger(__name__)
 
 
-class Application(AsyncApplication, Commander):
+#class Application(AsyncApplication, Commander):
+class Application(AsyncApplication):
 
     def __init__(self, sys_argv):
         AsyncApplication.__init__(self, sys_argv)
-        Commander.__init__(self, commands_kind='view')
+        # Commander.__init__(self, commands_kind='view')
         self.services = ClientServices(self.event_loop)
         self._mosaic = self.services.mosaic
         self._async_web = self.services.async_web

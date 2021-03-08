@@ -3,4 +3,5 @@ import:
     list_object:
       - list_object_type
   code:
+    - async.ui.object
     - client.column

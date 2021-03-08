@@ -3,10 +3,10 @@ from collections import namedtuple
 import logging
 
 from hyperapp.common.htypes import tInt, resource_key_t
-from hyperapp.client.object import ObjectType
 
 from . import htypes
 from .object_command import command
+from .object import ObjectType
 from .column import Column
 from .tree_object import AppendItemDiff, InsertItemDiff, RemoveItemDiff, UpdateItemDiff, TreeObject
 from .line_edit import LineObject

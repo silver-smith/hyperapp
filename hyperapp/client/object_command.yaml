@@ -1,4 +1,5 @@
 import:
   code:
+    - async.ui.commander
     - async.ui.module
 

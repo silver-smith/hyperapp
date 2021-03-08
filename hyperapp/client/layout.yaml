@@ -3,6 +3,7 @@ import:
     layout:
       - command
   code:
+    - async.ui.commander
     - client.layout_command
     - client.layout_handle
     - client.items_view

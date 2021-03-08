@@ -1,13 +1,27 @@
 from unittest.mock import Mock, MagicMock, patch
-from hyperapp.client.object import ObjectObserver, Object
+
+import pytest
+
+from hyperapp.common import cdr_coders  # register codec
 
 
-def test_object_observers():
-    observer_1 = ObjectObserver()
-    observer_2 = ObjectObserver()
+pytest_plugins = ['hyperapp.common.test.services']
+
+
+@pytest.fixture
+def code_module_list():
+    return [
+        'async.ui.commander',
+        'async.ui.object',
+        ]
+
+
+def test_object_observers(code):
+    observer_1 = code.object.ObjectObserver()
+    observer_2 = code.object.ObjectObserver()
     observer_1.object_changed = MagicMock()
     observer_2.object_changed = MagicMock()
-    object = Object()
+    object = code.object.Object()
     object.observers_arrived = MagicMock()
     object.observers_gone = MagicMock()
     object.subscribe(observer_1, 1, key=11)

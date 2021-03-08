@@ -2,3 +2,5 @@ import:
   types:
     record_object:
       - record_object_type
+  code:
+    - async.ui.object
