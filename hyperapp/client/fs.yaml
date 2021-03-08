@@ -6,3 +6,4 @@ import:
   - async.code_registry
   - client.column
   - client.tree_object
+  - async.ui.module

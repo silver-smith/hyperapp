@@ -2,10 +2,9 @@ import logging
 import weakref
 from collections import defaultdict, namedtuple
 
-from hyperapp.client.module import ClientModule
-
 from .async_registry import run_awaitable_factory
 from .code_registry import CodeRegistry
+from .module import ClientModule
 
 _log = logging.getLogger(__name__)
 

@@ -6,12 +6,12 @@ from PySide2 import QtCore, QtWidgets
 
 from hyperapp.client.command import command
 from hyperapp.client.object import Object
-from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .layout_handle import UpdateVisualItemDiff
 from .layout import ObjectLayout
 from .view import View
+from .module import ClientModule
 
 log = logging.getLogger(__name__)
 

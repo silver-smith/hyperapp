@@ -2,13 +2,12 @@
 
 import weakref
 
-from hyperapp.client.module import ClientModule
-
 from . import htypes
 from .object_command import command
 from .layout import AbstractMultiItemObjectLayout
 from .list_object import ListObject
 from .tree_object import TreeObserver, TreeObject
+from .module import ClientModule
 
 
 class _Observer(TreeObserver):

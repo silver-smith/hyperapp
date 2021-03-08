@@ -1,7 +1,6 @@
-from hyperapp.client.module import ClientModule
-
 from . import htypes
 from .object_command import command
+from .module import ClientModule
 
 
 class ThisModule(ClientModule):

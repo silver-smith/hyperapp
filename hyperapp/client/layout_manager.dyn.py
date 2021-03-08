@@ -10,13 +10,13 @@ from hyperapp.common.htypes import resource_key_t
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.common.ref import ref_repr
 from hyperapp.client.util import make_async_action
-from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .object_command import command
 from .layout_handle import InsertVisualItemDiff, RemoveVisualItemDiff, LayoutWatcher
 from .layout import GlobalLayout
 from .command_hub import CommandHub
+from .module import ClientModule
 
 _log = logging.getLogger(__name__)
 

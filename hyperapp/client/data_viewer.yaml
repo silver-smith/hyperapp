@@ -5,3 +5,4 @@ import:
   code:
     - client.column
     - client.tree_object
+    - async.ui.module

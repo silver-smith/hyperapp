@@ -1,13 +1,12 @@
 from collections import namedtuple
 
-from hyperapp.client.module import ClientModule
-
 from . import htypes
 from .object_command import command
 from .chooser import Chooser
 from .column import Column
 from .layout_handle import LayoutWatcher
 from .simple_list_object import SimpleListObject
+from .module import ClientModule
 
 
 class CommandIdField:

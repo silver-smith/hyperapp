@@ -5,12 +5,12 @@ import re
 from PySide2 import QtCore, QtWidgets
 
 from hyperapp.client.object import ObjectObserver
-from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .layout import ObjectLayout
 from .view import View
 from .text_object import TextObject
+from .module import ClientModule
 
 log = logging.getLogger(__name__)
 

@@ -7,3 +7,4 @@ import:
     - client.layout
     - client.view
     - client.items_view
+    - async.ui.module

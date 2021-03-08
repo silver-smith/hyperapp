@@ -6,3 +6,4 @@ import:
   code:
     - client.layout
     - client.record_object
+    - async.ui.module

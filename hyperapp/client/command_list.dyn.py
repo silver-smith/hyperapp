@@ -3,13 +3,13 @@ from collections import namedtuple
 
 from hyperapp.common.util import single
 from hyperapp.client.command import command
-from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .column import Column
 from .object_command import command as object_command
 from .layout_handle import LayoutWatcher
 from .simple_list_object import SimpleListObject
+from .module import ClientModule
 
 
 Item = namedtuple('Item', 'id code_id kind path layout')

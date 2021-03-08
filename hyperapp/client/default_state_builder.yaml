@@ -16,3 +16,5 @@ import:
     - window
     root_layout:
     - root_layout
+  code:
+  - async.ui.module

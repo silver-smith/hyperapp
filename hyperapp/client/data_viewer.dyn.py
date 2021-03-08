@@ -2,10 +2,11 @@ from collections import namedtuple
 
 from hyperapp.common.ref import ref_repr
 from hyperapp.common.visual_rep import VisualRepEncoder
-from hyperapp.client.module import ClientModule
+
 from . import htypes
 from .column import Column
 from .tree_object import TreeObject
+from .module import ClientModule
 
 
 ValueItem = namedtuple('ValueItem', 'idx t name value')

@@ -11,3 +11,4 @@ import:
     - client.layout
     - client.layout_handle
     - client.view_chooser
+    - async.ui.module

@@ -3,3 +3,5 @@ import:
     object_layout_association:
       - type_repository_record
       - command_repository_record
+  code:
+    - async.ui.module

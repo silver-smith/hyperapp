@@ -12,3 +12,4 @@ import:
     - client.layout
     - client.tree_object
     - client.list_object
+    - async.ui.module

@@ -1,7 +1,7 @@
 import logging
 from collections import namedtuple
 
-from hyperapp.client.module import ClientModule
+from .module import ClientModule
 
 _log = logging.getLogger(__name__)
 

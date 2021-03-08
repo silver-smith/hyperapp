@@ -2,7 +2,8 @@ import logging
 import abc
 
 from hyperapp.common.htypes.packet_coders import packet_coders
-from hyperapp.client.module import ClientModule
+
+from .module import ClientModule
 
 log = logging.getLogger(__name__)
 

@@ -10,3 +10,4 @@ import:
     - client.view
     - client.layout
     - client.layout_command
+    - async.ui.module

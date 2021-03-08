@@ -9,3 +9,4 @@ import:
   code:
     - client.object_command
     - common.fs_service_impl
+    - async.ui.module

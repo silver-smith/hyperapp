@@ -4,7 +4,6 @@ import logging
 
 from hyperapp.common.htypes import tInt, resource_key_t
 from hyperapp.client.object import ObjectType
-from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .object_command import command
@@ -13,6 +12,7 @@ from .list_object import ListObject
 from .line_edit import LineObject
 from .text_object import TextObject
 from .record_object import RecordObject
+from .module import ClientModule
 
 log = logging.getLogger(__name__)
 

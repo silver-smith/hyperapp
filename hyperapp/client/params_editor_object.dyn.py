@@ -1,9 +1,9 @@
 from hyperapp.client.command import command
-from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .record_object import RecordObject
 from .chooser import ChooserCallback, Chooser
+from .module import ClientModule
 
 
 class _ParamChooserCallback(ChooserCallback):

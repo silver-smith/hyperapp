@@ -6,10 +6,9 @@ import weakref
 
 from PySide2 import QtCore, QtWidgets
 
-from hyperapp.client.module import ClientModule
-
 from . import htypes
 from .layout import GlobalLayout
+from .module import ClientModule
 
 log = logging.getLogger(__name__)
 

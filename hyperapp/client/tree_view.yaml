@@ -6,3 +6,4 @@ import:
     - client.tree_object
     - client.layout
     - client.view
+    - async.ui.module

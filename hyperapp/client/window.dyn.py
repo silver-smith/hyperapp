@@ -5,12 +5,12 @@ from PySide2 import QtCore, QtWidgets
 from hyperapp.common.util import is_list_inst
 from hyperapp.client.util import DEBUG_FOCUS, call_after
 from hyperapp.client.command import command
-from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .view import View
 from .layout import GlobalLayout
 from .tab_view import TabView
+from .module import ClientModule
 
 log = logging.getLogger(__name__)
 

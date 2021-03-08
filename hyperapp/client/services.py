@@ -59,6 +59,7 @@ code_module_list = [
     'common.resource_resolver',
     'common.resource_loader',
     'common.fs_service_impl',
+    'async.ui.module',
     'client.module_command_registry',
     'async.async_web',
     'async.async_registry',

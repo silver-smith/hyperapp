@@ -1,6 +1,5 @@
-from hyperapp.client.module import ClientModule
-
 from .code_registry import CodeRegistry
+from .module import ClientModule
 
 
 class ThisModule(ClientModule):

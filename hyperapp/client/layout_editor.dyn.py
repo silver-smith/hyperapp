@@ -3,7 +3,6 @@ import logging
 from collections import namedtuple
 
 from hyperapp.client.command import command
-from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .object_command import command as object_command
@@ -11,6 +10,7 @@ from .layout_handle import InsertVisualItemDiff, RemoveVisualItemDiff, UpdateVis
 from .command_hub import CommandHub
 from .column import Column
 from .tree_object import InsertItemDiff, RemoveItemDiff, UpdateItemDiff, TreeObject
+from .module import ClientModule
 
 _log = logging.getLogger(__name__)
 

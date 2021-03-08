@@ -4,10 +4,10 @@ from pathlib import Path
 import logging
 
 from hyperapp.common.htypes.packet_coders import DecodeError, packet_coders
-from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .file_bundle import save_bundle_to_file, load_bundle_from_file
+from .module import ClientModule
 
 log = logging.getLogger(__name__)
 

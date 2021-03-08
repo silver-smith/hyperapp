@@ -20,3 +20,4 @@ import:
     - client.line_edit
     - client.text_object
     - client.record_object
+    - async.ui.module

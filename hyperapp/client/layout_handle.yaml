@@ -2,3 +2,5 @@ import:
   types:
     layout:
       - layout_handle
+  code:
+    - async.ui.module

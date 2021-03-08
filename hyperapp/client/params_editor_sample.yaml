@@ -9,3 +9,4 @@ import:
     - client.column
     - client.simple_list_object
     - client.view_chooser
+    - async.ui.module

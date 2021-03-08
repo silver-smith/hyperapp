@@ -6,3 +6,4 @@ import:
       - tree_to_list_adapter
   code:
     - client.object_command
+    - async.ui.module

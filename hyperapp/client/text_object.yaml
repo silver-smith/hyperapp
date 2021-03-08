@@ -4,3 +4,5 @@ import:
       - text_object_type
       - text
       - wiki_text
+  code:
+    - async.ui.module

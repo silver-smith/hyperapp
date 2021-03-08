@@ -2,11 +2,10 @@ from functools import partial
 
 from PySide2 import QtCore, QtWidgets
 
-from hyperapp.client.module import ClientModule
-
 from . import htypes
 from .layout import ObjectLayout
 from .record_object import RecordObject
+from .module import ClientModule
 
 
 class RecordView(QtWidgets.QWidget):

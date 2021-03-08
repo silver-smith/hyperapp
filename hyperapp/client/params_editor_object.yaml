@@ -12,3 +12,4 @@ import:
   code:
     - client.record_object
     - client.chooser
+    - async.ui.module

@@ -6,3 +6,5 @@ import:
     - params_editor
     line:
     - line
+  code:
+    - async.ui.module

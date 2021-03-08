@@ -4,8 +4,6 @@ import logging
 
 from PySide2 import QtCore, QtWidgets
 
-from hyperapp.client.module import ClientModule
-
 from . import htypes
 from .object_command import command
 from .composite import Composite
@@ -13,6 +11,7 @@ from .layout import ObjectLayout
 from .list_object import ListObject
 from .tree_object import TreeObject
 from .view_chooser import LayoutRecMakerField
+from .module import ClientModule
 
 _log = logging.getLogger(__name__)
 

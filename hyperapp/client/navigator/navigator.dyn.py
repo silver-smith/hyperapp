@@ -6,12 +6,12 @@ from functools import partial
 
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.client.command import command
-from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .view import View
 from .layout import GlobalLayout
 from .layout_command import LayoutCommand
+from .module import ClientModule
 
 _log = logging.getLogger(__name__)
 

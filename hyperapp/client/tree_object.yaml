@@ -4,3 +4,4 @@ import:
       - tree_object_type
   code:
     - client.column
+    - async.ui.module

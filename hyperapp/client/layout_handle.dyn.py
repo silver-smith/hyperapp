@@ -4,9 +4,9 @@ from dataclasses import dataclass
 from typing import List
 
 from hyperapp.client.commander import BoundCommand
-from hyperapp.client.module import ClientModule
 
 from . import htypes
+from .module import ClientModule
 
 _log = logging.getLogger(__name__)
 

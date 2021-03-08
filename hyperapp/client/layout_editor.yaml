@@ -18,3 +18,4 @@ import:
     - client.command_hub
     - client.column
     - client.tree_object
+    - async.ui.module

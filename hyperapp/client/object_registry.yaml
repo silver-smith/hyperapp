@@ -1,3 +1,4 @@
 import:
   code:
     - async.code_registry
+    - async.ui.module

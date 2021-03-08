@@ -8,3 +8,4 @@ import:
   - client.view
   - client.layout
   - client.tab_view
+  - async.ui.module

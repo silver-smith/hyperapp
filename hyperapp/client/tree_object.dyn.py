@@ -6,10 +6,10 @@ from dataclasses import dataclass
 from hyperapp.common.util import single
 from hyperapp.common.htypes import Type, tString
 from hyperapp.client.object import ObjectObserver, Object
-from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .column import Column
+from .module import ClientModule
 
 log = logging.getLogger(__name__)
 

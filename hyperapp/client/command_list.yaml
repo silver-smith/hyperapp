@@ -18,3 +18,4 @@ import:
     - client.object_command
     - client.layout_handle
     - client.simple_list_object
+    - async.ui.module

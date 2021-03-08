@@ -1,11 +1,10 @@
 import logging
 import os.path
 
-from hyperapp.client.module import ClientModule
-
 from . import htypes
 from .object_command import command
 from .fs_service_impl import FsServiceImpl
+from .module import ClientModule
 
 log = logging.getLogger(__name__)
 

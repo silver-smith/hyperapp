@@ -6,9 +6,10 @@ from PySide2 import QtCore, QtWidgets
 
 from hyperapp.client.qt_keys import print_key_event
 from hyperapp.client.util import DEBUG_FOCUS, focused_index
-from hyperapp.client.module import ClientModule
 from hyperapp.client.object import ObjectObserver
 from hyperapp.client.commander import Command, Commander
+
+from .module import ClientModule
 
 log = logging.getLogger(__name__)
 

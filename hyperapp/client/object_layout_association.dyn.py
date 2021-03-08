@@ -3,9 +3,9 @@ import logging
 from pathlib import Path
 
 from hyperapp.common.htypes.packet_coders import packet_coders
-from hyperapp.client.module import ClientModule
 
 from . import htypes
+from .module import ClientModule
 
 _log = logging.getLogger(__name__)
 

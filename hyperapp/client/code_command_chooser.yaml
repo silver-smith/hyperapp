@@ -11,3 +11,4 @@ import:
     - client.column
     - client.layout_handle
     - client.simple_list_object
+    - async.ui.module

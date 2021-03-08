@@ -1,5 +1,5 @@
-from ..common.module import Module
-from .commander import Commander
+from hyperapp.common.module import Module
+from hyperapp.client.commander import Commander
 
 
 class ClientModule(Module, Commander):

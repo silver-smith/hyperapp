@@ -2,3 +2,4 @@ import:
   code:
     - async.async_registry
     - async.code_registry
+    - async.ui.module

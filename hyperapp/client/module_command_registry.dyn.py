@@ -1,5 +1,6 @@
 from hyperapp.common.util import flatten
-from hyperapp.client.module import ClientModule
+
+from .module import ClientModule
 
 
 class ModuleCommandRegistry:

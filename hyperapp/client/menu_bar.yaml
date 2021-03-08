@@ -4,3 +4,4 @@ import:
     - menu_bar
   code:
   - client.layout
+  - async.ui.module
