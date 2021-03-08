@@ -4,7 +4,6 @@ from pathlib import Path
 from ..common.htypes.packet_coders import packet_coders
 from ..common.ref import phony_ref
 from ..common.services import Services
-from ..common.module import ModuleRegistry
 
 
 CACHE_DIR = os.path.expanduser('~/.cache/hyperapp/client')
