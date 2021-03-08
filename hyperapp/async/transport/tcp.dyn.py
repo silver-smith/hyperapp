@@ -95,7 +95,6 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
-        self._event_loop = services.event_loop
         self._mosaic = services.mosaic
         self._ref_collector = services.ref_collector
         self._unbundler = services.unbundler
