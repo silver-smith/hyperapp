@@ -40,6 +40,7 @@ code_module_list = [
     'client.object_registry',
     'client.view_registry',
     'client.object_layout_association',
+    'async.ui.qt.util',
     'async.ui.qt.qt_keys',
     'client.view',
     'client.items_view',

@@ -4,10 +4,10 @@ import logging
 import weakref
 from PySide2 import QtCore, QtWidgets
 
-from hyperapp.client.util import DEBUG_FOCUS, focused_index
 from hyperapp.client.object import ObjectObserver
 from hyperapp.client.commander import Command, Commander
 
+from .util import DEBUG_FOCUS, focused_index
 from .qt_keys import print_key_event
 from .module import ClientModule
 

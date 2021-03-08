@@ -10,11 +10,11 @@ from functools import partial
 from PySide2 import QtCore, QtGui, QtWidgets
 
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
-from hyperapp.client.util import uni2str, key_match, key_match_any, make_async_action
 
 from . import htypes
 from .list_object import ListObserver, ListObject
 from .layout import MultiItemObjectLayout
+from .util import uni2str, key_match, key_match_any, make_async_action
 from .view import View
 from .module import ClientModule
 

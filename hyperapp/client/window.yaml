@@ -5,6 +5,7 @@ import:
     - pos
     - size
   code:
+  - async.ui.qt.util
   - client.view
   - client.layout
   - client.tab_view

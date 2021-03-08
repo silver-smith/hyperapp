@@ -1,12 +1,14 @@
-import logging
 import asyncio
-from io import StringIO
+import logging
 import pickle
 import weakref
 from datetime import datetime
+from io import StringIO
+
 from dateutil.tz import tzutc
 from PySide2 import QtCore, QtWidgets
-from ..common.util import is_iterable_inst
+
+from hyperapp.common.util import is_iterable_inst
 
 log = logging.getLogger(__name__)
 

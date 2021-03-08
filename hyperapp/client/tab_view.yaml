@@ -7,6 +7,7 @@ import:
     navigator:
     - navigator
   code:
+    - async.ui.qt.util
     - client.view
     - client.layout
     - client.layout_handle

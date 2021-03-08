@@ -5,6 +5,7 @@ import:
   code:
     - client.list_object
     - client.layout
+    - async.ui.qt.util
     - client.view
     - client.items_view
     - async.ui.module
