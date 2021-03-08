@@ -20,6 +20,7 @@ class ThisModule(Module):
         self._thread = threading.Thread(target=self._event_loop_main)
         services.on_start.append(self.start)
         services.on_stop.append(self.stop)
+        asyncio.set_event_loop(self._event_loop)
 
     def start(self):
         self._thread.start()
@@ -35,7 +36,6 @@ class ThisModule(Module):
         loop = self._event_loop
         try:
             try:
-                asyncio.set_event_loop(loop)
                 loop.set_debug(True)
                 loop.run_until_complete(self._async_main())
             finally:
