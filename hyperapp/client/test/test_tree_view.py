@@ -77,8 +77,6 @@ Item = namedtuple('Item', 'name column_1 column_2')
 def event_loop(application):
     loop = application.event_loop
     yield loop
-    asyncio.set_event_loop(None)
-    loop.close()
     # Strange, 2 lines above are not enough to clear event loop.
     # Possibly, that is related to pytest_asyncio specifics.
     # This hack helps:
