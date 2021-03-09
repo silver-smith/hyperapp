@@ -17,67 +17,9 @@ DEBUG_FOCUS = False
 DEBUG_EVENTS = False
 
 
-class Thread(QtCore.QThread):
-
-    # we must keep refs to running threads
-    _threads = set()
-
-    def __init__(self, target, tearDowns):
-        QtCore.QThread.__init__(self)
-        self._target    = target     # (fn, args, kw) tuple
-        self._tearDowns = tearDowns  # (fn, args, kw) tuple list
-        self._threads.add(self)
-
-    def run(self):
-        fn, args, kw = self._target
-        try:
-            fn(*args, **kw)
-        finally:
-            for fn, args, kw in self._tearDowns:
-                fn(*args, **kw)
-            invoke_in_main_thread(self._threads.remove, self)
-
-
-def start_thread(fn, *args, **kw):
-    thread = Thread((fn, args, kw), [])
-    thread.start(QtCore.QThread.LowPriority)
-
-
-# invoke_in_main_thread from:    
-# http://stackoverflow.com/questions/10991991/pyside-easier-way-of-updating-gui-from-another-thread
-
-class InvokeEvent(QtCore.QEvent):
-    EVENT_TYPE = QtCore.QEvent.Type(QtCore.QEvent.registerEventType())
-
-    def __init__(self, fn, *args, **kwargs):
-        QtCore.QEvent.__init__(self, InvokeEvent.EVENT_TYPE)
-        self.fn = fn
-        self.args = args
-        self.kwargs = kwargs
-
-
-class Invoker(QtCore.QObject):
-    def event(self, event):
-        event.fn(*event.args, **event.kwargs)
-        return True
-
-
-_invoker = Invoker()
-
-def invoke_in_main_thread(fn, *args, **kwargs):
-    QtCore.QCoreApplication.postEvent(_invoker,
-        InvokeEvent(fn, *args, **kwargs))
-
 def call_after(fn, *args, **kw):
     ## print 'call_after', fn, args, kw
     QtCore.QTimer.singleShot(0, lambda: fn(*args, **kw))
-
-def call_after_2(fn, *args, **kw):
-    call_after(call_after, fn, *args, **kw)
-
-def call_in_future(time_ms, fn, *args, **kw):
-    ## print 'call_in_future', time_ms, fn, args, kw
-    QtCore.QTimer.singleShot(time_ms, lambda: fn(*args, **kw))
 
 def uni2str(v):
     if isinstance(v, str):
