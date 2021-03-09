@@ -7,7 +7,7 @@ pytest-asyncio==0.9.0
 aiomock
 ply
 pyside2==5.14.2.2
-asyncqt==0.7.0
+qasync==0.13.0
 
 # installing pyside using pip has following package requirements:
 # apt-get install build-essential git cmake libqt4-dev libphonon-dev python2.7-dev libxml2-dev libxslt1-dev qtmobility-dev

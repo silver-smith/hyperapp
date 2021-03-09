@@ -4,7 +4,7 @@ import asyncio
 import logging
 import traceback
 
-from asyncqt import QEventLoop
+from qasync import QEventLoop
 from PySide2 import QtCore, QtWidgets
 
 _log = logging.getLogger(__name__)
