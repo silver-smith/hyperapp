@@ -12,6 +12,14 @@ _log = logging.getLogger(__name__)
 _context = contextvars.ContextVar('test_context', default=None)
 
 
+@pytest.fixture
+def event_loop():
+    loop = asyncio.new_event_loop()
+    yield loop
+    asyncio.set_event_loop(None)
+    loop.close()
+
+
 @pytest.mark.asyncio
 async def test_async_context():
 

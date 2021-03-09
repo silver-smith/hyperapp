@@ -3,7 +3,9 @@ import pytest
 from hyperapp.client.async_application import AsyncApplication
 
 
-# required to exist when creating gui objects
-@pytest.fixture(scope='session')
+# Required to exist when creating gui objects.
+@pytest.fixture
 def application():
-    return AsyncApplication()
+    app = AsyncApplication()
+    yield app
+    app.shutdown()

@@ -1,5 +1,6 @@
-from collections import namedtuple
+import asyncio
 import logging
+from collections import namedtuple
 from pathlib import Path
 
 import pytest
@@ -72,9 +73,16 @@ class TreeViewTestServices(ClientServicesBase):
 Item = namedtuple('Item', 'name column_1 column_2')
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture
 def event_loop(application):
-    return application.event_loop
+    loop = application.event_loop
+    yield loop
+    asyncio.set_event_loop(None)
+    loop.close()
+    # Strange, 2 lines above are not enough to clear event loop.
+    # Possibly, that is related to pytest_asyncio specifics.
+    # This hack helps:
+    asyncio._set_running_loop(None)
 
 
 @pytest.fixture
