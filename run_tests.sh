@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 DIR=$(dirname $0)
-venv=${VENV:-$HOME/venv}
+venv=${VENV:-$HOME/.venv-hyperapp-3.9.2}
 
 if [ "$1" == "full" ]; then
 	shift
