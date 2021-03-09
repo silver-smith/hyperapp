@@ -7,14 +7,31 @@ from hyperapp.common.module import Module
 log = logging.getLogger(__name__)
 
 
+class AsyncStopEvent:
+
+    def __init__(self):
+        self._event = None
+
+    def init(self, event):
+        self._event = event
+
+    async def wait(self):
+        await self._event.wait()
+
+    def set(self):
+        self._event.set()
+
+
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
         self._services = services
         self._module_registry = services.module_registry
-        self._event_loop = services.event_loop
-        self._stop_event = asyncio.Event()
+        self._event_loop_ctr = services.event_loop_ctr
+        self._event_loop_dtr = services.event_loop_dtr
+        self._event_loop = None
+        self._stop_event = AsyncStopEvent()
         self._thread = threading.Thread(target=self._event_loop_main)
         services.on_start.append(self.start)
         services.on_stop.append(self.stop)
@@ -29,9 +46,14 @@ class ThisModule(Module):
         self._thread.join()
         log.info("Async loop thread is stopped.")
 
+    # Copy of 'run' and '_cancel_all_tasks' functions from asyncio/runners.py
     def _event_loop_main(self):
         log.info("Async thread started.")
-        loop = self._event_loop
+        loop = self._event_loop_ctr()
+        loop.set_debug(True)
+        asyncio.set_event_loop(loop)  # Should be set before any asyncio objects created.
+        self._event_loop = loop
+        self._stop_event.init(asyncio.Event())
         try:
             try:
                 loop.run_until_complete(self._async_main())
@@ -43,6 +65,7 @@ class ThisModule(Module):
                 finally:
                     asyncio.set_event_loop(None)
                     loop.close()
+                    self._event_loop_dtr()
                     log.info("Async thread finished.")
         except Exception as x:
             log.exception("Async thread failed.")
