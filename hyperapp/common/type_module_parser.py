@@ -14,6 +14,7 @@ from .htypes import (
     request_mt,
     notification_mt,
     interface_mt,
+    list_service_mt,
     builtin_type_names,
     )
 from .local_type_module import (
@@ -34,6 +35,7 @@ keywords = [
     'list',
     'record',
     'interface',
+    'list_service',
     ]
 
 STMT_SEP = 'STMT_SEP'  # NEWLINEs converted to this one
@@ -164,6 +166,10 @@ def p_typedef_rhs_interface(p):
     'typedef_rhs : interface_def'
     p[0] = p[1]
 
+def p_typedef_rhs_list_service(p):
+    'typedef_rhs : list_service_def'
+    p[0] = p[1]
+
 
 def p_record_def_1(p):
     'record_def : RECORD record_base_name_def'
@@ -255,6 +261,11 @@ def p_method_field_list_2(p):
 def p_method_field_list_3(p):
     'method_field_list : empty'
     p[0] = []
+
+
+def p_list_service_def(p):
+    'list_service_def : LIST_SERVICE COLON BLOCK_BEGIN field_list BLOCK_END'
+    p[0] = list_service_mt(fields=p[4])
 
 
 def p_type_expr_1(p):

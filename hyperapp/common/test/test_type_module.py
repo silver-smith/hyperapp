@@ -14,6 +14,7 @@ from hyperapp.common.htypes import (
     Request,
     Notification,
     Interface,
+    ListService,
     ref_t,
     register_builtin_types,
     )
@@ -140,3 +141,17 @@ def test_types(types, mosaic, local_type_module_registry, htypes):
     types.reverse_resolve(htypes.type_module_1.iface_a.methods['submit'].params_record_t)
     types.reverse_resolve(htypes.type_module_1.iface_a.methods['submit'].response_record_t)
     types.reverse_resolve(htypes.type_module_2.iface_c.methods['keep_alive'].params_record_t)
+
+
+def test_list_service(types, mosaic, local_type_module_registry, htypes):
+    loader = TypeModuleLoader(types, mosaic, local_type_module_registry)
+    loader.load_type_module(TEST_MODULES_DIR / 'list_service.types')
+
+    assert htypes.list_service.test_list_service == ListService(
+        name='test_list_service',
+        field_dict={
+            'datetime_field': tDateTime,
+            'string_list_field': TList(tString),
+            'int_opt_field': TOptional(tInt),
+            },
+        )
