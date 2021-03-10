@@ -15,22 +15,22 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
 
+        self._async_rpc_endpoint = services.async_rpc_endpoint
+
         master_service_bundle = packet_coders.decode('cdr', config['master_service_bundle_cdr'], bundle_t)
         services.unbundler.register_bundle(master_service_bundle)
         master_service_ref = master_service_bundle.roots[0]
-        master_service = services.types.resolve_ref(master_service_ref).value
+        self._master_service = services.types.resolve_ref(master_service_ref).value
 
-        my_identity = services.generate_rsa_identity(fast=True)
-        my_peer_ref = services.mosaic.put(my_identity.peer.piece)
-
-        rpc_endpoint = services.async_rpc_endpoint()
-        services.async_endpoint_registry.register(my_identity, rpc_endpoint)
-
-        self._master_proxy = services.async_rpc_proxy(my_identity, rpc_endpoint, master_service)
+        self._my_identity = services.generate_rsa_identity(fast=True)
 
     async def async_init(self, services):
         log.info("List service service async run:")
         try:
+            rpc_endpoint = self._async_rpc_endpoint()
+            services.async_endpoint_registry.register(self._my_identity, rpc_endpoint)
+            self._master_proxy = services.async_rpc_proxy(self._my_identity, rpc_endpoint, self._master_service)
+
             rows = await self._master_proxy.get()
             log.info("Returned rows: %s", rows)
         except Exception as x:
