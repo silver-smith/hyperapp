@@ -1,0 +1,6 @@
+import:
+  types:
+    rpc:
+      - endpoint
+    test_list_service:
+      - test_list_service
