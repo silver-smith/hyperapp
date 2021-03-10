@@ -146,9 +146,16 @@ list_service_mt = TRecord('list_service_mt', {
     })
 
 
-def list_service_from_piece(piece, type_code_registry, name):
+def list_service_from_piece(piece, type_code_registry, name, mosaic, types):
     field_dict = _field_dict_from_piece_list(piece.fields, type_code_registry)
-    return ListService(name, field_dict)
+    row_ref = mosaic.put(record_mt(None, piece.fields))
+    named_row_ref = mosaic.put(name_wrapped_mt(f'{name}_row', row_ref))
+    rows_field = field_mt('rows', named_row_ref)
+    get_method_ref = mosaic.put(request_mt('get', [], [rows_field]))
+    interface_ref = mosaic.put(interface_mt(None, [get_method_ref]))
+    named_interface_ref = mosaic.put(name_wrapped_mt(f'{name}_interface', interface_ref))
+    interface = types.resolve(named_interface_ref)
+    return ListService(name, field_dict, interface)
 
 
 def register_builtin_meta_types(types):
@@ -173,4 +180,4 @@ def register_meta_types(mosaic, types, type_code_registry):
     type_code_registry.register_actor(request_mt, request_from_piece, mosaic, types)
     type_code_registry.register_actor(notification_mt, notification_from_piece, mosaic, types)
     type_code_registry.register_actor(interface_mt, interface_from_piece)
-    type_code_registry.register_actor(list_service_mt, list_service_from_piece)
+    type_code_registry.register_actor(list_service_mt, list_service_from_piece, mosaic, types)
