@@ -32,10 +32,12 @@ class ThisModule(Module):
         self._event_loop_dtr = services.event_loop_dtr
         self._event_loop = None
         self._stop_event = AsyncStopEvent()
+        self._sync_stop_signal = threading.Event()
         self._thread = threading.Thread(target=self._event_loop_main)
         services.on_start.append(self.start)
         services.on_stop.append(self.stop)
         services.async_stop_event = self._stop_event
+        services.sync_stop_signal = self._sync_stop_signal
 
     def start(self):
         self._thread.start()
@@ -96,6 +98,7 @@ class ThisModule(Module):
         await self._async_init_modules()
         log.info("Async modules inited.")
         await self._stop_event.wait()
+        self._sync_stop_signal.set()
         log.info("Async main finished.")
 
     async def _async_init_modules(self):
