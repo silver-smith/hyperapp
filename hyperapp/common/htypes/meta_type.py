@@ -14,6 +14,7 @@ from .htypes import (
 from .record import TRecord
 from .hyper_ref import ref_t
 from .interface import Request, Notification, Interface
+from .list_service import ListService
 
 
 builtin_mt = TRecord('builtin_mt', {
@@ -140,6 +141,16 @@ def interface_from_piece(piece, type_code_registry, name):
     return Interface(name, base_t, method_list)
 
 
+list_service_mt = TRecord('list_service_mt', {
+    'fields': TList(field_mt),
+    })
+
+
+def list_service_from_piece(piece, type_code_registry, name):
+    field_dict = _field_dict_from_piece_list(piece.fields, type_code_registry)
+    return ListService(name, field_dict)
+
+
 def register_builtin_meta_types(types):
     types.register_builtin_type(name_mt)
     types.register_builtin_type(name_wrapped_mt)
@@ -150,6 +161,7 @@ def register_builtin_meta_types(types):
     types.register_builtin_type(request_mt)
     types.register_builtin_type(notification_mt)
     types.register_builtin_type(interface_mt)
+    types.register_builtin_type(list_service_mt)
 
 
 def register_meta_types(mosaic, types, type_code_registry):
@@ -161,3 +173,4 @@ def register_meta_types(mosaic, types, type_code_registry):
     type_code_registry.register_actor(request_mt, request_from_piece, mosaic, types)
     type_code_registry.register_actor(notification_mt, notification_from_piece, mosaic, types)
     type_code_registry.register_actor(interface_mt, interface_from_piece)
+    type_code_registry.register_actor(list_service_mt, list_service_from_piece)
