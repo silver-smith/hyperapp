@@ -23,8 +23,6 @@ class ThisModule(Module):
         my_identity = services.generate_rsa_identity(fast=True)
         my_peer_ref = services.mosaic.put(my_identity.peer.piece)
 
-        iface_ref = services.types.reverse_resolve(htypes.test_list_service.test_list_service.interface)
-
         rpc_endpoint = services.async_rpc_endpoint()
         services.async_endpoint_registry.register(my_identity, rpc_endpoint)
 

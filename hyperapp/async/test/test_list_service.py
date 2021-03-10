@@ -96,7 +96,6 @@ def test_async_echo(services, htypes):
             'transport',
             'tcp_transport',
             'rpc',
-            'test_list_service',
             ],
         code_module_list=[
             'common.visitor',
