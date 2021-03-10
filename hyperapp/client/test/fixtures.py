@@ -1,6 +1,6 @@
 import pytest
 
-from hyperapp.client.async_application import AsyncApplication
+# from hyperapp.client.async_application import AsyncApplication
 
 
 # Required to exist when creating gui objects.

@@ -7,7 +7,7 @@ import pytest
 
 from hyperapp.common.htypes import tInt, resource_key_t
 from hyperapp.common.ref import phony_ref
-from hyperapp.client.services import ClientServicesBase
+from hyperapp.common.services import Services
 from hyperapp.client.test.utils import wait_for_all_tasks_to_complete
 from hyperapp.common import cdr_coders  # self-registering
 
@@ -62,14 +62,6 @@ code_module_list = [
     ]
 
 
-class TreeViewTestServices(ClientServicesBase):
-
-    def __init__(self, event_loop):
-        super().__init__(event_loop)
-        self.init_services()
-        self.init_modules(type_module_list, code_module_list)
-
-
 Item = namedtuple('Item', 'name column_1 column_2')
 
 
@@ -85,7 +77,9 @@ def event_loop(application):
 
 @pytest.fixture
 def services(event_loop):
-    services = TreeViewTestServices(event_loop)
+    services = Services()
+    services.init_services()
+    services.init_modules(type_module_list, code_module_list)
     services.start()
     yield services
     services.stop()
