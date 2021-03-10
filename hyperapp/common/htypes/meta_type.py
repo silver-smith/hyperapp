@@ -154,8 +154,9 @@ def list_service_from_piece(piece, type_code_registry, name, mosaic, types):
     get_method_ref = mosaic.put(request_mt('get', [], [rows_field]))
     interface_ref = mosaic.put(interface_mt(None, [get_method_ref]))
     named_interface_ref = mosaic.put(name_wrapped_mt(f'{name}_interface', interface_ref))
+    row_t = types.resolve(named_row_ref)
     interface = types.resolve(named_interface_ref)
-    return ListService(name, field_dict, interface)
+    return ListService(name, field_dict, row_t, interface)
 
 
 def register_builtin_meta_types(types):

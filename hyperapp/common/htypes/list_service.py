@@ -5,10 +5,11 @@ from .interface import Interface, Request
 
 class ListService(Type):
 
-    def __init__(self, name, field_dict, interface):
+    def __init__(self, name, field_dict, row_t=None, interface=None):
         super().__init__(name)
         self._field_dict = field_dict
-        self._interface = interface
+        self.row_t = row_t
+        self.interface = interface
 
     def __str__(self):
         return f'ListService({self.name})'
@@ -28,7 +29,3 @@ class ListService(Type):
     @property
     def fields(self):
         return self._field_dict
-
-    @property
-    def interface(self):
-        return self._interface

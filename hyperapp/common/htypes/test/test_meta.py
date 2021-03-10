@@ -313,4 +313,4 @@ def test_list_service(types, mosaic):
         'datetime_field': tDateTime,
         'int_list_field': TList(tInt),
         'bool_opt_field': TOptional(tBool),
-        }, interface=None)
+        })

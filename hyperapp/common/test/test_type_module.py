@@ -155,13 +155,15 @@ def test_list_service(types, mosaic, local_type_module_registry, htypes):
     assert htypes.list_service.test_list_service == ListService(
         name='test_list_service',
         field_dict=field_dict,
-        interface=None,
         )
     # Types should be registered:
     types.reverse_resolve(htypes.list_service.test_list_service.interface)
+    types.reverse_resolve(htypes.list_service.test_list_service.row_t)
     [method] = htypes.list_service.test_list_service.interface.methods.values()
     types.reverse_resolve(method.params_record_t)
     types.reverse_resolve(method.response_record_t)
+
+    assert htypes.list_service.test_list_service.row_t == TRecord('test_list_service_row', field_dict)
 
     assert htypes.list_service.test_list_service.interface == Interface(
         name='test_list_service_interface',
