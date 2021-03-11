@@ -128,7 +128,7 @@ class RootLayout(GlobalLayout):
 
     @command('quit')
     def _quit(self, rec_id):
-        QtWidgets.QApplication.quit()
+        self._async_stop_event.set()
 
     @command('duplicate_window')
     async def _duplicate_window(self, rec_id):
