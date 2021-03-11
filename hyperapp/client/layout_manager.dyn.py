@@ -42,13 +42,14 @@ class RootLayout(GlobalLayout):
             self._on_close(self.id)
 
     @classmethod
-    async def from_data(cls, state, path, mosaic, view_registry, layout_watcher):
-        self = cls(mosaic, view_registry, layout_watcher, path)
+    async def from_data(cls, state, path, async_stop_event, mosaic, view_registry, layout_watcher):
+        self = cls(async_stop_event, mosaic, view_registry, layout_watcher, path)
         await self._async_init(state.window_ref_list)
         return self
 
-    def __init__(self, mosaic, view_registry, layout_watcher, path):
+    def __init__(self, async_stop_event, mosaic, view_registry, layout_watcher, path):
         super().__init__(path)
+        self._async_stop_event = async_stop_event
         self._mosaic = mosaic
         self._view_registry = view_registry
         self._layout_watcher = layout_watcher
@@ -118,7 +119,7 @@ class RootLayout(GlobalLayout):
 
     def _on_window_closed(self, rec_id):
         if len(self._window_rec_list) == 1:
-            return  # closing last window means exit
+            self._async_stop_event.set()  # Closing last window means exit.
         idx, rec = self._find_rec(rec_id)
         del self._window_list[idx]
         del self._window_rec_list[idx]
@@ -185,4 +186,5 @@ class ThisModule(ClientModule):
             services.view_registry,
             )
         services.view_registry.register_actor(
-            htypes.root_layout.root_layout, RootLayout.from_data, services.mosaic, services.view_registry, services.layout_watcher)
+            htypes.root_layout.root_layout, RootLayout.from_data, services.async_stop_event,
+            services.mosaic, services.view_registry, services.layout_watcher)
