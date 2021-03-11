@@ -119,7 +119,9 @@ class RootLayout(GlobalLayout):
 
     def _on_window_closed(self, rec_id):
         if len(self._window_rec_list) == 1:
-            self._async_stop_event.set()  # Closing last window means exit.
+            # Closing last window means exit.
+            self._async_stop_event.set()
+            return  # Do not remove last window from list - we will need to store it to state.
         idx, rec = self._find_rec(rec_id)
         del self._window_list[idx]
         del self._window_rec_list[idx]
