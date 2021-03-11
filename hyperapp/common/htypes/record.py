@@ -59,6 +59,9 @@ class {typename}(tuple):
             raise ValueError('Got unexpected field names: %r' % list(kwds))
         return result
 
+    def __str__(self):
+        return {str_fmt}
+
     def __repr__(self):
         'Return a nicely formatted representation string'
         return {repr_fmt}
@@ -83,7 +86,7 @@ _field_template = '''\
     {name} = _property(_itemgetter({index:d}), doc='Alias for field number {index:d}')
 '''
 
-def _namedtuple(typename, field_names, verbose=False, rename=False, repr_fmt=None):
+def _namedtuple(typename, field_names, verbose=False, rename=False, str_fmt=None, repr_fmt=None):
 
     # Validate the field names.  At the user's option, either generate an error
     # message or automatically replace the field name with a valid name.
@@ -127,6 +130,7 @@ def _namedtuple(typename, field_names, verbose=False, rename=False, repr_fmt=Non
         arg_list = arg_list,
         arg_list_with_comma = arg_list + ',' if arg_list else '',
         attr_list = ', '.join('self.{}'.format(name) for name in field_names),
+        str_fmt = str_fmt,
         repr_fmt = repr_fmt,
         field_defs = '\n'.join(_field_template.format(index=index, name=name)
                                for index, name in enumerate(field_names + ['_t']))
@@ -165,7 +169,7 @@ class TRecord(Type):
             self.fields = {**base.fields, **self.fields}
         self.base = base
         self._named_tuple = _namedtuple(
-            name, [name for name in self.fields], verbose, repr_fmt=self._repr_fmt())
+            name, [name for name in self.fields], verbose, str_fmt=self._str_fmt(), repr_fmt=self._repr_fmt())
         self._eq_key = tuple([self._name, *self.fields])
 
     def __str__(self):
@@ -174,6 +178,9 @@ class TRecord(Type):
     def __repr__(self):
         fields = ', '.join("%r: %r" % (name, t) for name, t in self.fields.items())
         return f"<TRecord({self.name!r}: {fields or ('(no fields)')})>"
+
+    def _str_fmt(self):
+        return self._repr_fmt()
 
     def _repr_fmt(self):
         fields_format = ', '.join(
@@ -221,6 +228,9 @@ class TRef(TRecord):
 
     def _repr_fmt(self):
         return 'f"ref({ref_repr(self)})"'
+
+    def _str_fmt(self):
+        return 'f"{ref_repr(self)}"'
 
 
 hash_t = tBinary
