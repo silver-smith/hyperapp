@@ -14,75 +14,69 @@ from hyperapp.common import cdr_coders  # self-registering
 log = logging.getLogger(__name__)
 
 
-pytest_plugins = ['hyperapp.client.test.fixtures']
-
-HYPERAPP_DIR = Path(__file__).parent.parent.parent.resolve()
+pytest_plugins = ['hyperapp.common.test.services']
 
 
-type_module_list = [
-    'layout',
-    'object_type',
-    'object_layout_association',
-    'tree_object',
-    'line',
-    'record_object',
-    'tree_view',
-    'params_editor',
-    ]
+@pytest.fixture
+def type_module_list():
+    return [
+        'layout',
+        'object_type',
+        'object_layout_association',
+        'tree_object',
+        'line',
+        'record_object',
+        'tree_view',
+        'params_editor',
+        ]
 
-code_module_list = [
-    'common.resource_registry',
-    'common.resource_resolver',
-    'common.weak_key_dictionary_with_callback',
-    'async.ui.commander',
-    'async.ui.object',
-    'async.ui.module',
-    'client.module_command_registry',
-    'async.async_web',
-    'async.async_registry',
-    'async.code_registry',
-    'client.object_registry',
-    'client.view_registry',
-    'client.object_layout_association',
-    'async.ui.qt.util',
-    'async.ui.qt.qt_keys',
-    'client.view',
-    'client.items_view',
-    'client.layout_handle',
-    'client.layout_command',
-    'client.self_command',
-    'client.layout',
-    'client.record_object',
-    'client.chooser',
-    'client.params_editor',
-    'client.items_view',
-    'client.column',
-    'client.tree_object',
-    'client.tree_view',
-    ]
+@pytest.fixture
+def code_module_list():
+    return  [
+        'common.resource_registry',
+        'common.resource_resolver',
+        'common.weak_key_dictionary_with_callback',
+        'async.ui.commander',
+        'async.ui.object',
+        'async.ui.module',
+        'client.module_command_registry',
+        'async.async_web',
+        'async.async_registry',
+        'async.code_registry',
+        'client.object_registry',
+        'client.view_registry',
+        'client.object_layout_association',
+        'async.ui.qt.util',
+        'async.ui.qt.qt_keys',
+        'async.ui.qt.application',
+        'client.view',
+        'client.items_view',
+        'client.layout_handle',
+        'client.layout_command',
+        'client.self_command',
+        'client.layout',
+        'client.record_object',
+        'client.chooser',
+        'client.params_editor',
+        'client.items_view',
+        'client.column',
+        'client.tree_object',
+        'client.tree_view',
+        ]
 
 
 Item = namedtuple('Item', 'name column_1 column_2')
 
 
 @pytest.fixture
-def event_loop(application):
-    loop = application.event_loop
+def event_loop(services):
+    loop = services.event_loop_ctr()
     yield loop
-    # Strange, 2 lines above are not enough to clear event loop.
+    services.event_loop_dtr()
+    # Next pytest_asyncio test fails complaining event loop is running.
     # Possibly, that is related to pytest_asyncio specifics.
     # This hack helps:
     asyncio._set_running_loop(None)
-
-
-@pytest.fixture
-def services(event_loop):
-    services = Services()
-    services.init_services()
-    services.init_modules(type_module_list, code_module_list)
-    services.start()
-    yield services
-    services.stop()
 
 
 @pytest.fixture
