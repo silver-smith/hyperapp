@@ -5,7 +5,7 @@ cryptography>=1.0.2  # under debian requires: libffi-dev:amd64 libssl-dev:amd64
 pytest==6.2.2
 pytest-asyncio==0.14.0
 aiomock
-ply
+ply==3.11
 pyside2==5.15.2
 qasync==0.13.0
 attrs==20.3.0  # fix pytest requirement
