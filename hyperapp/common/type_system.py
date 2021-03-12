@@ -55,7 +55,3 @@ class TypeSystem(object):
         t = self.resolve(type_ref)
         _log.debug("Registered type: %s -> %s", ref_repr(type_ref), t)
         return _RegisteredType(t, type_ref)
-
-    def get_builtin_type_ref(self, name):
-        t = self._builtin_name_to_type[name]
-        return self.reverse_resolve(t)
