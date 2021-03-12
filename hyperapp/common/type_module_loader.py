@@ -16,9 +16,10 @@ log = logging.getLogger(__name__)
 
 class _NameToRefMapper(Mapper):
 
-    def __init__(self, types, mosaic, local_name_dict):
-        self._types = types
+    def __init__(self, builtin_types, mosaic, types, local_name_dict):
+        self._builtin_types = builtin_types
         self._mosaic = mosaic
+        self._types = types
         self._local_name_dict = local_name_dict
 
     def map_record(self, t, value):
@@ -31,7 +32,8 @@ class _NameToRefMapper(Mapper):
     def _resolve_name(self, rec):
         ref = self._local_name_dict.get(rec.name)
         if not ref:
-            ref = self._types.get_builtin_type_ref(rec.name)
+            t = self._builtin_types.resolve(rec.name)
+            ref = self._types.reverse_resolve(t)
         piece = self._mosaic.resolve_ref(ref).value
         log.debug("Name %r is resolved to %s %r", rec.name, ref, piece)
         return piece
@@ -46,15 +48,16 @@ class _NameToRefMapper(Mapper):
 
 class TypeModuleLoader(object):
 
-    def __init__(self, types, mosaic, local_type_module_registry):
-        self._types = types
+    def __init__(self, builtin_types, mosaic, types, local_type_module_registry):
+        self._builtin_types = builtin_types
         self._mosaic = mosaic
+        self._types = types
         self._local_type_module_registry = local_type_module_registry
 
     def load_type_module(self, path, name=None):
         log.info("Load type module %r: %s", name, path)
         name = name or path.stem
-        source = load_type_module_source(self._mosaic, path, name)
+        source = load_type_module_source(self._builtin_types, self._mosaic, path, name)
         local_type_module = self._map_names_to_refs(name, source)
         self._local_type_module_registry.register(name, local_type_module)
 
@@ -74,7 +77,7 @@ class TypeModuleLoader(object):
                     f"Type module {module_name!r} wants name {import_.name!r} from module {import_.module_name!r},"
                     f" but module {import_.module_name!r} does not have it")
         local_type_module = LocalTypeModule()
-        mapper = _NameToRefMapper(self._types, self._mosaic, local_name_dict)
+        mapper = _NameToRefMapper(self._builtin_types, self._mosaic, self._types, local_name_dict)
         for typedef in module_source.typedefs:
             log.debug('Type module loader %r: mapping %r %s:', module_name, typedef.name, typedef.type)
             type_ref = mapper.map(typedef.type)

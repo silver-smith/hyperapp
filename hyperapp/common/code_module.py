@@ -5,7 +5,6 @@ from .htypes import (
     TRecord,
     TList,
     ref_t,
-    builtin_type_names,
     )
 
 
@@ -55,7 +54,6 @@ _code_module_type_list = [
     ]
 
 
-def register_code_module_types(types):
+def register_code_module_types(builtin_types, mosaic, types):
     for t in _code_module_type_list:
-        types.register_builtin_type(t)
-    builtin_type_names.update(t.name for t in _code_module_type_list)
+        builtin_types.register(mosaic, types, t)

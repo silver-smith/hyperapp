@@ -6,7 +6,6 @@ from .htypes import (
     tBool,
     tDateTime,
     )
-from .meta_type import list_mt
 from .hyper_ref import (
     ref_t,
     capsule_t,
@@ -14,8 +13,10 @@ from .hyper_ref import (
     resource_path_t,
     resource_key_t,
     )
-from .deduce_value_type import primitive_list_types
+from .meta_type import list_mt
 
+
+primitive_list_types = {}  # primitive t -> list t
 
 _builtin_type_list = [
     # core
@@ -33,12 +34,9 @@ _builtin_type_list = [
     ]
 
 
-builtin_type_names = set(t.name for t in _builtin_type_list)
-
-
-def register_builtin_types(types):
+def register_builtin_types(builtin_types, mosaic, types):
     for t in _builtin_type_list:
-        types.register_builtin_type(t)
+        type_ref = builtin_types.register(mosaic, types, t)
     # Register list of builtin types
     for element_t in _builtin_type_list:
         element_ref = types.reverse_resolve(element_t)

@@ -2,6 +2,7 @@ import datetime
 
 from .htypes import tString, tBinary, tInt, tBool, tDateTime, TList
 from .record import TRecord
+from .builtins import primitive_list_types
 
 
 class DeduceTypeError(RuntimeError):
@@ -15,8 +16,6 @@ _primitive_types = {
     bool: tBool,
     datetime.datetime: tDateTime,
     }
-
-primitive_list_types = {}  # primitive t -> list t
 
 
 def deduce_value_type(value):

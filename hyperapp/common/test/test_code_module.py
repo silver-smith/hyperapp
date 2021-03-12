@@ -1,7 +1,7 @@
 from pathlib import Path
 import pytest
 
-from hyperapp.common.htypes import register_builtin_types
+from hyperapp.common.htypes import BuiltinTypeRegistry, register_builtin_types
 from hyperapp.common.local_type_module import LocalTypeModuleRegistry
 from hyperapp.common.code_module import code_module_t
 from hyperapp.common.mosaic import Mosaic
@@ -23,17 +23,22 @@ def web():
 
 
 @pytest.fixture
+def builtin_types():
+    return BuiltinTypeRegistry()
+
+
+@pytest.fixture
 def types():
     return TypeSystem()
 
 
 @pytest.fixture
-def mosaic(web, types):
+def mosaic(web, builtin_types, types):
     mosaic = Mosaic(types)
-    types.init_mosaic(mosaic)
+    types.init(builtin_types, mosaic)
     web.add_source(mosaic)
-    register_builtin_types(types)
-    register_code_module_types(types)
+    register_builtin_types(builtin_types, mosaic, types)
+    register_code_module_types(builtin_types, mosaic, types)
     return mosaic
 
 
@@ -48,8 +53,8 @@ def local_code_module_registry():
 
 
 @pytest.fixture
-def type_module_loader(types, mosaic, local_type_module_registry):
-    return TypeModuleLoader(types, mosaic, local_type_module_registry)
+def type_module_loader(builtin_types, mosaic, types, local_type_module_registry):
+    return TypeModuleLoader(builtin_types, mosaic, types, local_type_module_registry)
 
 
 @pytest.fixture

@@ -3,7 +3,7 @@ import sys
 from types import SimpleNamespace
 import logging
 
-from .htypes import register_builtin_types
+from .htypes import BuiltinTypeRegistry, register_builtin_types
 from .ref import ref_repr
 from .local_type_module import LocalTypeModuleRegistry
 from .code_module import code_module_t
@@ -37,16 +37,17 @@ class Services(object):
     def init_services(self):
         log.info("Init services.")
         self.web = Web()
+        self.builtin_types = BuiltinTypeRegistry()
         self.types = TypeSystem()
         self.mosaic = Mosaic(self.types)
-        self.types.init_mosaic(self.mosaic)
+        self.types.init(self.builtin_types, self.mosaic)
         self.module_ref_resolver = ModuleRefResolver(self.mosaic)
         self.web.add_source(self.mosaic)
-        register_builtin_types(self.types)
-        register_code_module_types(self.types)
+        register_builtin_types(self.builtin_types, self.mosaic, self.types)
+        register_code_module_types(self.builtin_types, self.mosaic, self.types)
         self.local_type_module_registry = LocalTypeModuleRegistry()
         self.local_code_module_registry = LocalCodeModuleRegistry()
-        self.type_module_loader = TypeModuleLoader(self.types, self.mosaic, self.local_type_module_registry)
+        self.type_module_loader = TypeModuleLoader(self.builtin_types, self.mosaic, self.types, self.local_type_module_registry)
         self.code_module_loader = CodeModuleLoader(self.mosaic, self.local_type_module_registry, self.local_code_module_registry)
         self.module_registry = ModuleRegistry()
         self.code_module_importer = CodeModuleImporter(self.mosaic, self.types)

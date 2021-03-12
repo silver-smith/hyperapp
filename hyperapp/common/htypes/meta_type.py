@@ -159,17 +159,17 @@ def list_service_from_piece(piece, type_code_registry, name, mosaic, types):
     return ListService(name, field_dict, row_t, interface)
 
 
-def register_builtin_meta_types(types):
-    types.register_builtin_type(name_mt)
-    types.register_builtin_type(name_wrapped_mt)
-    types.register_builtin_type(optional_mt)
-    types.register_builtin_type(list_mt)
-    types.register_builtin_type(field_mt)
-    types.register_builtin_type(record_mt)
-    types.register_builtin_type(request_mt)
-    types.register_builtin_type(notification_mt)
-    types.register_builtin_type(interface_mt)
-    types.register_builtin_type(list_service_mt)
+def register_builtin_meta_types(builtin_types, mosaic, types):
+    builtin_types.register(mosaic, types, name_mt)
+    builtin_types.register(mosaic, types, name_wrapped_mt)
+    builtin_types.register(mosaic, types, optional_mt)
+    builtin_types.register(mosaic, types, list_mt)
+    builtin_types.register(mosaic, types, field_mt)
+    builtin_types.register(mosaic, types, record_mt)
+    builtin_types.register(mosaic, types, request_mt)
+    builtin_types.register(mosaic, types, notification_mt)
+    builtin_types.register(mosaic, types, interface_mt)
+    builtin_types.register(mosaic, types, list_service_mt)
 
 
 def register_meta_types(mosaic, types, type_code_registry):

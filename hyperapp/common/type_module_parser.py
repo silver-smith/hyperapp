@@ -15,7 +15,6 @@ from .htypes import (
     notification_mt,
     interface_mt,
     list_service_mt,
-    builtin_type_names,
     )
 from .local_type_module import (
     type_import_t,
@@ -357,13 +356,13 @@ class Lexer(object):
         return tok
 
 
-def parse_type_module_source(mosaic, fname, module_name, contents, debug=False):
+def parse_type_module_source(builtin_types, mosaic, fname, module_name, contents, debug=False):
     parser = yacc.yacc(debug=debug)
     parser.mosaic = mosaic
     parser.module_name = module_name
     parser.fname = fname
     parser.lines = contents.splitlines()
-    parser.known_name_set = builtin_type_names
+    parser.known_name_set = set(builtin_types.items())
     parser.error_line = None
     parser.error = None
     #parser.provided_class_list = []
@@ -374,7 +373,8 @@ def parse_type_module_source(mosaic, fname, module_name, contents, debug=False):
     if not module:
         raise RuntimeError('Failed to parse {}:\n{}\n{}'.format(fname, parser.error_line, parser.error))
     return module
+
  
-def load_type_module_source(mosaic, fpath, module_name, debug=False):
+def load_type_module_source(builtin_types, mosaic, fpath, module_name, debug=False):
     contents = fpath.read_text()
-    return parse_type_module_source(mosaic, fpath, module_name, contents, debug)
+    return parse_type_module_source(builtin_types, mosaic, fpath, module_name, contents, debug)

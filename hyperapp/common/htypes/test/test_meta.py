@@ -5,6 +5,7 @@ import logging
 import pytest
 
 from hyperapp.common.htypes import (
+    BuiltinTypeRegistry,
     TPrimitive,
     tNone,
     tString,
@@ -45,16 +46,21 @@ def web():
 
 
 @pytest.fixture
+def builtin_types():
+    return BuiltinTypeRegistry()
+
+
+@pytest.fixture
 def types():
     return TypeSystem()
 
 
 @pytest.fixture
-def mosaic(web, types):
+def mosaic(web, builtin_types, types):
     mosaic = Mosaic(types)
-    types.init_mosaic(mosaic)
+    types.init(builtin_types, mosaic)
     web.add_source(mosaic)
-    register_builtin_types(types)
+    register_builtin_types(builtin_types, mosaic, types)
     return mosaic
 
 
