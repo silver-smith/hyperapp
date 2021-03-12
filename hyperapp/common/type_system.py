@@ -2,15 +2,11 @@ from collections import namedtuple
 import logging
 
 from .htypes import (
-    Type,
-    ref_t,
     builtin_mt,
-    capsule_t,
     register_builtin_meta_types,
     register_meta_types,
     )
-from .ref import _DecodedCapsule, decode_capsule, phony_ref, ref_repr
-from .visual_rep import pprint
+from .ref import phony_ref, ref_repr
 from .code_registry import CodeRegistry
 
 _log = logging.getLogger(__name__)
@@ -75,8 +71,3 @@ class TypeSystem(object):
     def get_builtin_type_ref(self, name):
         t = self._builtin_name_to_type[name]
         return self.reverse_resolve(t)
-
-    def resolve_ref(self, ref, expected_type=None) -> _DecodedCapsule:
-        capsule = self._mosaic.get(ref)
-        assert capsule is not None, 'Unknown ref: %s' % ref_repr(ref)
-        return decode_capsule(self, capsule, expected_type)

@@ -22,8 +22,8 @@ from .htypes.deduce_value_type import deduce_value_type
 
 class DictEncoder(metaclass=abc.ABCMeta):
 
-    def __init__(self, types=None):
-        self._types = types
+    def __init__(self, mosaic=None):
+        self._mosaic = mosaic
 
     def encode(self, value, t=None):
         t = t or deduce_value_type(value)
@@ -58,7 +58,8 @@ class DictEncoder(metaclass=abc.ABCMeta):
 
     @dispatch.register(TRecord)
     def encode_record(self, t, value):
-        if t is ref_t and self._types:
+        if t is ref_t and self._mosaic:
+            # Mosaic is defined for yaml encoder - to embed ref value.
             return self._encode_ref(value)
         fields = {}
         for field_name, field_type in t.fields.items():
@@ -71,7 +72,7 @@ class DictEncoder(metaclass=abc.ABCMeta):
         return [self.dispatch(t.element_t, elt) for elt in value]
 
     def _encode_ref(self, ref):
-        decoded_capsule = self._types.resolve_ref(ref)
+        decoded_capsule = self._mosaic.resolve_ref(ref)
         value = self.dispatch(decoded_capsule.t, decoded_capsule.value)
         type_ref = decoded_capsule.type_ref
         hash_str = codecs.encode(type_ref.hash, "hex").decode('ascii')

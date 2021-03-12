@@ -49,14 +49,14 @@ def code_module_list():
 
 class Servant:
 
-    def __init__(self, echo_response_queue, types, rpc_proxy, rpc_endpoint):
+    def __init__(self, echo_response_queue, mosaic, rpc_proxy, rpc_endpoint):
         self._echo_response_queue = echo_response_queue
-        self._types = types
+        self._mosaic = mosaic
         self._rpc_proxy = rpc_proxy
         self._rpc_endpoint = rpc_endpoint
 
     def run(self, request, echo_service_ref):
-        echo_service = self._types.resolve_ref(echo_service_ref).value
+        echo_service = self._mosaic.resolve_ref(echo_service_ref).value
         echo = self._rpc_proxy(request.receiver_identity, self._rpc_endpoint, echo_service)
         response = echo.echo('Hello')
         self._echo_response_queue.put(response)
@@ -79,7 +79,7 @@ def test_async_echo(services, htypes):
     services.endpoint_registry.register(master_identity, rpc_endpoint)
 
     echo_response_queue = queue.Queue()
-    servant = Servant(echo_response_queue, services.types, services.rpc_proxy, rpc_endpoint)
+    servant = Servant(echo_response_queue, services.mosaic, services.rpc_proxy, rpc_endpoint)
     rpc_endpoint.register_servant(object_id, servant)
 
     server = services.tcp_server()

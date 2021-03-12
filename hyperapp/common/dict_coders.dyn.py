@@ -11,6 +11,6 @@ class ThisModule(Module):
         packet_coders.register('json', JsonEncoder(), JsonDecoder())
         packet_coders.register(
             'yaml',
-            YamlEncoder(services.types),
+            YamlEncoder(services.mosaic),
             YamlDecoder(services.mosaic, services.types),
             )

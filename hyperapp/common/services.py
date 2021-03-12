@@ -49,7 +49,7 @@ class Services(object):
         self.type_module_loader = TypeModuleLoader(self.types, self.mosaic, self.local_type_module_registry)
         self.code_module_loader = CodeModuleLoader(self.mosaic, self.local_type_module_registry, self.local_code_module_registry)
         self.module_registry = ModuleRegistry()
-        self.code_module_importer = CodeModuleImporter(self.types)
+        self.code_module_importer = CodeModuleImporter(self.mosaic, self.types)
         self.code_module_importer.register_meta_hook()
 
     def start(self):

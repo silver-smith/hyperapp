@@ -67,8 +67,8 @@ def test_code_module_load(type_module_loader, code_module_loader):
 
 
 @pytest.fixture
-def code_module_importer(web, types):
-    importer = CodeModuleImporter(types)
+def code_module_importer(web, mosaic, types):
+    importer = CodeModuleImporter(mosaic, types)
     importer.register_meta_hook()
     return importer
 

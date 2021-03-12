@@ -25,7 +25,7 @@ class ThisModule(Module):
         master_service_bundle = packet_coders.decode('cdr', config['master_service_bundle_cdr'], bundle_t)
         services.unbundler.register_bundle(master_service_bundle)
         master_service_ref = master_service_bundle.roots[0]
-        master_service = services.types.resolve_ref(master_service_ref).value
+        master_service = services.mosaic.resolve_ref(master_service_ref).value
 
         my_identity = services.generate_rsa_identity(fast=True)
         my_peer_ref = services.mosaic.put(my_identity.peer.piece)

@@ -53,7 +53,7 @@ class RpcEndpoint:
         iface = self._types.resolve(request.iface_ref)
         iface_method = iface.methods[request.method_name]
         servant = self._servant_by_id[request.object_id]
-        params = self._types.resolve_ref(request.params_ref).value
+        params = self._mosaic.resolve_ref(request.params_ref).value
         log.info("Call rpc servant: %s(%s)", request.method_name, params)
         method = getattr(servant, request.method_name)
         result = method(
@@ -80,7 +80,7 @@ class RpcEndpoint:
 
     def _handle_response(self, response, transport_request):
         log.info("Process rpc response: %s", response)
-        result = self._types.resolve_ref(response.result_ref).value
+        result = self._mosaic.resolve_ref(response.result_ref).value
         with self._response_lock:
             self._result_by_request_id[response.request_id] = result
             self._response_available.notify_all()

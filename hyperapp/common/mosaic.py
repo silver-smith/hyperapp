@@ -4,7 +4,7 @@ import logging
 
 from .htypes import capsule_t
 from .htypes.deduce_value_type import deduce_value_type
-from .ref import ref_repr, make_capsule, make_ref
+from .ref import DecodedCapsule, decode_capsule, ref_repr, make_capsule, make_ref
 from .visual_rep import pprint
 
 log = logging.getLogger(__name__)
@@ -46,3 +46,8 @@ class Mosaic:
     # Alias for web source.
     def pull(self, ref):
         return self.get(ref)
+
+    def resolve_ref(self, ref, expected_type=None) -> DecodedCapsule:
+        capsule = self.get(ref)
+        assert capsule is not None, f"Unknown ref: {ref}"
+        return decode_capsule(self._types, capsule, expected_type)

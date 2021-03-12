@@ -29,8 +29,8 @@ def _load_visual_rep(t, value):
 class DataViewer(TreeObject):
 
     @classmethod
-    def from_state(cls, state, types):
-        dc = types.resolve_ref(state.data_ref)
+    def from_state(cls, state, mosaic):
+        dc = mosaic.resolve_ref(state.data_ref)
         return cls(state.data_ref, dc.t, dc.value)
 
     def __init__(self, data_ref, t, value):
@@ -73,4 +73,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
-        services.object_registry.register_actor(htypes.data_viewer.data_viewer, DataViewer.from_state, services.types)
+        services.object_registry.register_actor(htypes.data_viewer.data_viewer, DataViewer.from_state, services.mosaic)

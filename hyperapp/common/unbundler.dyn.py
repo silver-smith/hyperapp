@@ -10,8 +10,7 @@ log = logging.getLogger(__name__)
 
 class Unbundler(object):
 
-    def __init__(self, types, mosaic, aux_ref_unbundler_hooks):
-        self._types = types
+    def __init__(self, mosaic, aux_ref_unbundler_hooks):
         self._mosaic = mosaic
         self._aux_ref_unbundler_hooks = aux_ref_unbundler_hooks
 
@@ -19,7 +18,7 @@ class Unbundler(object):
         for capsule in bundle.capsule_list:
             self._mosaic.register_capsule(capsule)
         for aux_ref in bundle.aux_roots:
-            decoded_capsule = self._types.resolve_ref(aux_ref)
+            decoded_capsule = self._mosaic.resolve_ref(aux_ref)
             for hook in self._aux_ref_unbundler_hooks:
                 hook(aux_ref, decoded_capsule.t, decoded_capsule.value)
 
@@ -30,4 +29,4 @@ class ThisModule(Module):
         super().__init__(module_name)
         self._aux_ref_unbundler_hooks = []
         services.aux_ref_unbundler_hooks = self._aux_ref_unbundler_hooks
-        services.unbundler = Unbundler(services.types, services.mosaic, self._aux_ref_unbundler_hooks)
+        services.unbundler = Unbundler(services.mosaic, self._aux_ref_unbundler_hooks)

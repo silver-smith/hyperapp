@@ -32,12 +32,12 @@ class _NameToRefMapper(Mapper):
         ref = self._local_name_dict.get(rec.name)
         if not ref:
             ref = self._types.get_builtin_type_ref(rec.name)
-        piece = self._types.resolve_ref(ref).value
+        piece = self._mosaic.resolve_ref(ref).value
         log.debug("Name %r is resolved to %s %r", rec.name, ref, piece)
         return piece
 
     def _map_ref(self, ref):
-        piece = self._types.resolve_ref(ref).value
+        piece = self._mosaic.resolve_ref(ref).value
         log.debug("Ref %s is resolved to %r", ref, piece)
         mapped_piece = self.map(piece)
         log.debug("Ref %s %s is mapped to %r", ref, piece, mapped_piece)

@@ -91,7 +91,8 @@ class CodeModuleImporter(object):
 
     ROOT_PACKAGE = 'hyperapp.dynamic'
 
-    def __init__(self, types):
+    def __init__(self, mosaic, types):
+        self._mosaic = mosaic
         self._types = types
         self._fullname_to_loader = {self.ROOT_PACKAGE: _EmptyLoader()}
 
@@ -106,7 +107,7 @@ class CodeModuleImporter(object):
         return '{}.{}'.format(cls.ROOT_PACKAGE, _ref_to_name(code_module_ref))
 
     def import_code_module(self, code_module_ref):
-        code_module = self._types.resolve_ref(code_module_ref, code_module_t).value
+        code_module = self._mosaic.resolve_ref(code_module_ref, code_module_t).value
         log.info('Import code module %s: %s', ref_repr(code_module_ref), code_module.module_name)
         module_name = self._code_module_ref_to_fullname(code_module_ref)
         fullname_to_loader = {}

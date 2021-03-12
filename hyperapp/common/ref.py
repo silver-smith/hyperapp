@@ -13,7 +13,7 @@ DEFAULT_HASH_ALGORITHM = 'sha512'
 DEFAULT_CAPSULE_ENCODING = 'cdr'
 
 
-_DecodedCapsule = namedtuple('_DecodedCapsule', 'type_ref t value')
+DecodedCapsule = namedtuple('_DecodedCapsule', 'type_ref t value')
 
 
 class UnexpectedTypeError(RuntimeError):
@@ -51,4 +51,4 @@ def decode_capsule(types, capsule, expected_type=None):
     if expected_type and t is not expected_type:
         raise UnexpectedTypeError(expected_type, t)
     value = packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
-    return _DecodedCapsule(capsule.type_ref, t, value)
+    return DecodedCapsule(capsule.type_ref, t, value)
