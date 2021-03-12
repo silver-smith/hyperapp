@@ -13,9 +13,6 @@ from .htypes import (
     TRecord,
     TList,
     Interface,
-    tPath,
-    #tCommand,
-    tServerRoutes,
     ref_t,
     capsule_t,
     )
@@ -98,8 +95,6 @@ class VisualRepEncoder(object):
 
     @dispatch.register(TList)
     def encode_list(self, t, name, value):
-        if t is tPath:
-            return self.encode_path(t, name, value)
         children = [self.dispatch(t.element_t, str(idx), elt)
                     for idx, elt in enumerate(value)]
         return VisualRep(t.name or "{} list".format(t.element_t.name), name, _value_repr(t, value), children)
@@ -112,9 +107,6 @@ class VisualRepEncoder(object):
     def encode_record_fields(self, fields, value):
         return [self.dispatch(field_type, field_name, getattr(value, field_name))
                 for field_name, field_type in fields.items()]
-
-    def encode_path(self, t, name, obj):
-        return VisualRep(t.name, name, encode_path(obj))
 
 
 def pprint(value, t=None, indent=0, title=None, logger=log.info):

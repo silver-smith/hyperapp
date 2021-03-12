@@ -7,12 +7,6 @@ from .htypes import (
     tDateTime,
     )
 from .meta_type import list_mt
-from .builtins import (
-    tServerRoutes,
-    tIfaceId,
-    tPath,
-    tUrl,
-    )
 from .hyper_ref import (
     ref_t,
     capsule_t,
@@ -31,10 +25,6 @@ _builtin_type_list = [
     tInt,
     tBool,
     tDateTime,
-    tServerRoutes,
-    tIfaceId,
-    tPath,
-    tUrl,
     ref_t,
     capsule_t,
     bundle_t,
