@@ -3,7 +3,6 @@
 
 import logging
 
-from hyperapp.common.ref import LOCAL_TRANSPORT_REF
 from hyperapp.common.module import Module
 
 log = logging.getLogger(__name__)
