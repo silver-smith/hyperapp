@@ -1,7 +1,6 @@
 from pathlib import Path
 import pytest
 
-from hyperapp.common.htypes import BuiltinTypeRegistry, register_builtin_types
 from hyperapp.common.local_type_module import LocalTypeModuleRegistry
 from hyperapp.common.code_module import code_module_t
 from hyperapp.common.mosaic import Mosaic
@@ -14,32 +13,11 @@ from hyperapp.common.code_module_importer import CodeModuleImporter
 from hyperapp.common import cdr_coders  # register codec
 from hyperapp.common.visual_rep import pprint
 
+
+pytest_plugins = ['hyperapp.common.htypes.test.fixtures']
+
+
 TEST_MODULES_DIR = Path(__file__).parent.resolve()
-
-
-@pytest.fixture
-def web():
-    return Web()
-
-
-@pytest.fixture
-def builtin_types():
-    return BuiltinTypeRegistry()
-
-
-@pytest.fixture
-def types():
-    return TypeSystem()
-
-
-@pytest.fixture
-def mosaic(web, builtin_types, types):
-    mosaic = Mosaic(types)
-    types.init(builtin_types, mosaic)
-    web.add_source(mosaic)
-    register_builtin_types(builtin_types, mosaic, types)
-    register_code_module_types(builtin_types, mosaic, types)
-    return mosaic
 
 
 @pytest.fixture

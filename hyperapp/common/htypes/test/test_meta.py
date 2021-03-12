@@ -5,7 +5,6 @@ import logging
 import pytest
 
 from hyperapp.common.htypes import (
-    BuiltinTypeRegistry,
     TPrimitive,
     tNone,
     tString,
@@ -30,38 +29,13 @@ from hyperapp.common.htypes import (
     notification_mt,
     interface_mt,
     list_service_mt,
-    register_builtin_types,
     )
 from hyperapp.common import cdr_coders  # register codec
-from hyperapp.common.mosaic import Mosaic
-from hyperapp.common.web import Web
-from hyperapp.common.type_system import TypeSystem
 
 log = logging.getLogger(__name__)
 
 
-@pytest.fixture
-def web():
-    return Web()
-
-
-@pytest.fixture
-def builtin_types():
-    return BuiltinTypeRegistry()
-
-
-@pytest.fixture
-def types():
-    return TypeSystem()
-
-
-@pytest.fixture
-def mosaic(web, builtin_types, types):
-    mosaic = Mosaic(types)
-    types.init(builtin_types, mosaic)
-    web.add_source(mosaic)
-    register_builtin_types(builtin_types, mosaic, types)
-    return mosaic
+pytest_plugins = ['hyperapp.common.htypes.test.fixtures']
 
 
 def test_optional(types, mosaic):

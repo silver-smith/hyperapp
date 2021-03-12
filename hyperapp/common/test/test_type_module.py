@@ -4,7 +4,6 @@ from pathlib import Path
 import pytest
 
 from hyperapp.common.htypes import (
-    BuiltinTypeRegistry,
     tInt,
     tString,
     tBool,
@@ -17,36 +16,17 @@ from hyperapp.common.htypes import (
     Interface,
     ListService,
     ref_t,
-    register_builtin_types,
     )
 from hyperapp.common import cdr_coders  # register codec
 from hyperapp.common.local_type_module import LocalTypeModuleRegistry
-from hyperapp.common.mosaic import Mosaic
-from hyperapp.common.web import Web
 from hyperapp.common.type_module_loader import TypeModuleLoader
-from hyperapp.common.type_system import TypeSystem
 from hyperapp.common.test.hyper_types_namespace import HyperTypesNamespace
 
 
+pytest_plugins = ['hyperapp.common.htypes.test.fixtures']
+
+
 TEST_MODULES_DIR = Path(__file__).parent.resolve()
-
-
-@pytest.fixture
-def builtin_types():
-    return BuiltinTypeRegistry()
-
-
-@pytest.fixture
-def types():
-    return TypeSystem()
-
-
-@pytest.fixture
-def mosaic(builtin_types, types):
-    mosaic = Mosaic(types)
-    types.init(builtin_types, mosaic)
-    register_builtin_types(builtin_types, mosaic, types)
-    return mosaic
 
 
 @pytest.fixture
