@@ -4,7 +4,7 @@ from collections import namedtuple
 
 from .htypes import ref_t
 from .htypes.deduce_value_type import deduce_value_type
-from .visual_rep import pprint
+from .ref import decode_capsule
 
 _log = logging.getLogger(__name__)
 
@@ -32,7 +32,7 @@ class CodeRegistry:
     def invite(self, ref, *args, **kw):
         assert isinstance(ref, ref_t), repr(ref)
         capsule = self._web.pull(ref)
-        decoded_capsule = self._types.decode_capsule(capsule)
+        decoded_capsule = decode_capsule(self._types, capsule)
         return self._animate(decoded_capsule.t, decoded_capsule.value, args, kw)
 
     def animate(self, piece, *args, **kw):
@@ -40,7 +40,6 @@ class CodeRegistry:
         return self._animate(t, piece, args, kw)
 
     def _animate(self, t, piece, args, kw):
-        # pprint(piece, t=t, logger=_log.info, title=f"Producing {self._produce_name} for {piece} of type {t}")
         rec = self._registry.get(t)
         if not rec:
             raise RuntimeError(f"No code is registered for {self._produce_name}: {t} {piece}")

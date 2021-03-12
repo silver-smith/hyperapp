@@ -1,14 +1,25 @@
+from collections import namedtuple
 import codecs
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 
-from .htypes import ref_t, capsule_t, ref_repr
+from .htypes import Type, ref_t, capsule_t, ref_repr
+from .htypes.deduce_value_type import deduce_value_type
 from .htypes.packet_coders import packet_coders
 
 
 DEFAULT_HASH_ALGORITHM = 'sha512'
-BUNDLE_ENCODING = 'json'
+DEFAULT_CAPSULE_ENCODING = 'cdr'
+
+
+_DecodedCapsule = namedtuple('_DecodedCapsule', 'type_ref t value')
+
+
+class UnexpectedTypeError(RuntimeError):
+
+    def __init__(self, expected_type, actual_type):
+        super().__init__("Capsule has unexpected type: expected is %r, actual is %r", expected_type, actual_type)
 
 
 def phony_ref(ref_id):
@@ -23,3 +34,21 @@ def make_ref(capsule):
     digest.update(encoded_capsule)
     hash = digest.finalize()
     return ref_t(DEFAULT_HASH_ALGORITHM, hash)
+
+
+def make_capsule(types, object, t=None):
+    t = t or deduce_value_type(object)
+    assert isinstance(t, Type), repr(t)
+    assert isinstance(object, t), repr((t, object))
+    encoding = DEFAULT_CAPSULE_ENCODING
+    encoded_object = packet_coders.encode(encoding, object, t)
+    type_ref = types.reverse_resolve(t)
+    return capsule_t(type_ref, encoding, encoded_object)
+
+
+def decode_capsule(types, capsule, expected_type=None):
+    t = types.resolve(capsule.type_ref)
+    if expected_type and t is not expected_type:
+        raise UnexpectedTypeError(expected_type, t)
+    value = packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
+    return _DecodedCapsule(capsule.type_ref, t, value)

@@ -9,25 +9,13 @@ from .htypes import (
     register_builtin_meta_types,
     register_meta_types,
     )
-from .htypes.deduce_value_type import deduce_value_type
-from .htypes.packet_coders import packet_coders
-from .ref import phony_ref, ref_repr
+from .ref import _DecodedCapsule, decode_capsule, phony_ref, ref_repr
 from .visual_rep import pprint
 from .code_registry import CodeRegistry
 
 _log = logging.getLogger(__name__)
 
 
-DEFAULT_CAPSULE_ENCODING = 'cdr'
-
-
-class UnexpectedTypeError(RuntimeError):
-
-    def __init__(self, expected_type, actual_type):
-        super().__init__("Capsule has unexpected type: expected is %r, actual is %r", expected_type, actual_type)
-
-
-_DecodedCapsule = namedtuple('_DecodedCapsule', 'type_ref t value')
 _RegisteredType = namedtuple('_RegisteredType', 't ref')
 
 
@@ -69,23 +57,6 @@ class TypeSystem(object):
     def reverse_resolve(self, t):
         return self._type2ref[t]
 
-    def make_capsule(self, object, t=None):
-        t = t or deduce_value_type(object)
-        assert isinstance(t, Type), repr(t)
-        assert isinstance(object, t), repr((t, object))
-        encoding = DEFAULT_CAPSULE_ENCODING
-        encoded_object = packet_coders.encode(encoding, object, t)
-        type_ref = self.reverse_resolve(t)
-        # pprint(object, t=t, title='Making capsule of type %s/%s' % (ref_repr(type_ref), t))
-        return capsule_t(type_ref, encoding, encoded_object)
-
-    def decode_capsule(self, capsule, expected_type=None):
-        t = self.resolve(capsule.type_ref)
-        if expected_type and t is not expected_type:
-            raise UnexpectedTypeError(expected_type, t)
-        value = packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
-        return _DecodedCapsule(capsule.type_ref, t, value)
-
     def register_builtin_type(self, t):
         assert t not in self._type2ref, repr(t)
         piece = builtin_mt(t.name)
@@ -108,4 +79,4 @@ class TypeSystem(object):
     def resolve_ref(self, ref, expected_type=None) -> _DecodedCapsule:
         capsule = self._mosaic.get(ref)
         assert capsule is not None, 'Unknown ref: %s' % ref_repr(ref)
-        return self.decode_capsule(capsule, expected_type)
+        return decode_capsule(self, capsule, expected_type)

@@ -6,7 +6,7 @@ from dateutil.tz import tzlocal
 
 from hyperapp.common.htypes import ref_t, bundle_t
 from hyperapp.common.util import is_list_inst
-from hyperapp.common.ref import ref_repr
+from hyperapp.common.ref import decode_capsule, ref_repr
 from hyperapp.common.module import Module
 
 from .visitor import Visitor
@@ -76,7 +76,7 @@ class RefCollector(Visitor):
         return (processed_ref_set, list(type_capsule_set) + list(capsule_set))
 
     def _collect_refs_from_capsule(self, ref, capsule):
-        dc = self._types.decode_capsule(capsule)
+        dc = decode_capsule(self._types, capsule)
         log.debug('Collecting refs from %r:', dc.value)
         self._collected_ref_set = set()
         self._collect_refs_from_object(dc.t, dc.value)

@@ -3,6 +3,7 @@ from collections import namedtuple
 
 from hyperapp.common.htypes import ref_t
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
+from hyperapp.common.ref import decode_capsule
 from hyperapp.common.visual_rep import pprint
 
 from .async_registry import run_awaitable_factory
@@ -29,7 +30,7 @@ class CodeRegistry:
     async def invite(self, ref, *args, **kw):
         assert isinstance(ref, ref_t), repr(ref)
         capsule = await self._async_web.pull(ref)
-        decoded_capsule = self._types.decode_capsule(capsule)
+        decoded_capsule = decode_capsule(self._types, capsule)
         return (await self._animate(decoded_capsule.t, decoded_capsule.value, args, kw))
 
     async def animate(self, piece, *args, **kw):

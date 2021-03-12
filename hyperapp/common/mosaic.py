@@ -4,7 +4,7 @@ import logging
 
 from .htypes import capsule_t
 from .htypes.deduce_value_type import deduce_value_type
-from .ref import ref_repr, make_ref
+from .ref import ref_repr, make_capsule, make_ref
 from .visual_rep import pprint
 
 log = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ class Mosaic:
     def put(self, piece, t=None):
         t = t or deduce_value_type(piece)
         log.debug('Registering piece %r: %s', t.name, piece)
-        capsule = self._types.make_capsule(piece, t)
+        capsule = make_capsule(self._types, piece, t)
         ref = self.register_capsule(capsule)
         log.info('Registered piece %s: %s', ref_repr(ref), piece)
         return ref
