@@ -6,7 +6,7 @@ from .htypes import (
     register_builtin_meta_types,
     register_meta_types,
     )
-from .ref import phony_ref, ref_repr
+from .ref import ref_repr
 from .code_registry import CodeRegistry
 
 _log = logging.getLogger(__name__)
@@ -26,12 +26,8 @@ class TypeSystem(object):
     def init(self, builtin_types, mosaic):
         self._mosaic = mosaic
         self._type_code_registry = CodeRegistry('type', mosaic, self)
-        # Register builtin_mt with phony ref - can not be registered as usual because of dependency loop.
-        builtin_ref = phony_ref('BUILTIN_REF')
-        self._type2ref[builtin_mt] = builtin_ref
-        self._ref2type_cache[builtin_ref] = builtin_mt
-        #
-        builtin_types.register_builtin_mt(self._type_code_registry)
+
+        builtin_types.register_builtin_mt(self, self._type_code_registry)
         register_builtin_meta_types(builtin_types, mosaic, self)
         register_meta_types(self._mosaic, self, self._type_code_registry)
 

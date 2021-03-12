@@ -22,10 +22,6 @@ class UnexpectedTypeError(RuntimeError):
         super().__init__("Capsule has unexpected type: expected is %r, actual is %r", expected_type, actual_type)
 
 
-def phony_ref(ref_id):
-    return ref_t('phony', ref_id.encode())
-
-
 def make_ref(capsule):
     assert isinstance(capsule, capsule_t)
     # use same encoding for capsule as for object

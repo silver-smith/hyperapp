@@ -6,7 +6,6 @@ from pathlib import Path
 import pytest
 
 from hyperapp.common.htypes import tInt, resource_key_t
-from hyperapp.common.ref import phony_ref
 from hyperapp.common.services import Services
 from hyperapp.client.test.utils import wait_for_all_tasks_to_complete
 from hyperapp.common import cdr_coders  # self-registering
