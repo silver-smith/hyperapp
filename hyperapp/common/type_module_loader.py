@@ -32,13 +32,15 @@ class _NameToRefMapper(Mapper):
         ref = self._local_name_dict.get(rec.name)
         if not ref:
             ref = self._types.get_builtin_type_ref(rec.name)
-        log.debug("Name %r is resolved to %s", rec.name, ref_repr(ref))
-        return ref
+        piece = self._types.resolve_ref(ref).value
+        log.debug("Name %r is resolved to %s %r", rec.name, ref, piece)
+        return piece
 
     def _map_ref(self, ref):
         piece = self._types.resolve_ref(ref).value
-        log.debug("Ref %s is resolved to %r", ref_repr(ref), piece)
+        log.debug("Ref %s is resolved to %r", ref, piece)
         mapped_piece = self.map(piece)
+        log.debug("Ref %s %s is mapped to %r", ref, piece, mapped_piece)
         return self._mosaic.put(mapped_piece)
 
 
@@ -74,11 +76,11 @@ class TypeModuleLoader(object):
         local_type_module = LocalTypeModule()
         mapper = _NameToRefMapper(self._types, self._mosaic, local_name_dict)
         for typedef in module_source.typedefs:
+            log.debug('Type module loader %r: mapping %r %s:', module_name, typedef.name, typedef.type)
             type_ref = mapper.map(typedef.type)
             named = name_wrapped_mt(typedef.name, type_ref)
             ref = self._mosaic.put(named)
             local_type_module.register(typedef.name, ref)
             local_name_dict[typedef.name] = ref
-            log.debug('Type module loader %r: %r is mapped to %s:', module_name, typedef.name, ref_repr(ref))
-            # pprint(rec)
+            log.debug('Type module loader %r: %r is mapped to %s', module_name, typedef.name, ref)
         return local_type_module
