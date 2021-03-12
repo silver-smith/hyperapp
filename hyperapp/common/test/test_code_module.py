@@ -3,10 +3,7 @@ import pytest
 
 from hyperapp.common.local_type_module import LocalTypeModuleRegistry
 from hyperapp.common.code_module import code_module_t
-from hyperapp.common.mosaic import Mosaic
-from hyperapp.common.web import Web
 from hyperapp.common.type_module_loader import TypeModuleLoader
-from hyperapp.common.type_system import TypeSystem
 from hyperapp.common.code_module import LocalCodeModuleRegistry, register_code_module_types
 from hyperapp.common.code_module_loader import CodeModuleLoader
 from hyperapp.common.code_module_importer import CodeModuleImporter
