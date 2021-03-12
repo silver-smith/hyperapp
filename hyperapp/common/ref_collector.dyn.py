@@ -76,13 +76,12 @@ class RefCollector(Visitor):
         return (processed_ref_set, list(type_capsule_set) + list(capsule_set))
 
     def _collect_refs_from_capsule(self, ref, capsule):
-        t = self._types.resolve(capsule.type_ref)
-        object = self._types.decode_object(t, capsule)
-        log.debug('Collecting refs from %r:', object)
+        dc = self._types.decode_capsule(capsule)
+        log.debug('Collecting refs from %r:', dc.value)
         self._collected_ref_set = set()
-        self._collect_refs_from_object(t, object)
-        self._collect_aux_refs(ref, t, object)
-        log.debug('Collected %d refs from %s %s: %s', len(self._collected_ref_set), t, ref_repr(ref),
+        self._collect_refs_from_object(dc.t, dc.value)
+        self._collect_aux_refs(ref, dc.t, dc.value)
+        log.debug('Collected %d refs from %s %s: %s', len(self._collected_ref_set), dc.t, ref,
                  ', '.join(map(ref_repr, self._collected_ref_set)))
         return self._collected_ref_set
 

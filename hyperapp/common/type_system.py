@@ -86,11 +86,6 @@ class TypeSystem(object):
         value = packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
         return _DecodedCapsule(capsule.type_ref, t, value)
 
-    def decode_object(self, t, capsule):
-        type_ref = self.reverse_resolve(t)
-        assert type_ref == capsule.type_ref
-        return packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
-
     def register_builtin_type(self, t):
         assert t not in self._type2ref, repr(t)
         piece = builtin_mt(t.name)
