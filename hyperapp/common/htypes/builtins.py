@@ -1,3 +1,5 @@
+import logging
+
 from .htypes import (
     tNone,
     tString,
@@ -14,6 +16,8 @@ from .hyper_ref import (
     resource_key_t,
     )
 from .meta_type import list_mt
+
+log = logging.getLogger(__name__)
 
 
 primitive_list_types = {}  # primitive t -> list t
@@ -41,5 +45,7 @@ def register_builtin_types(builtin_types, mosaic, types):
     for element_t in _builtin_type_list:
         element_ref = types.reverse_resolve(element_t)
         piece = list_mt(element_ref)
-        t = types.register_type(piece).t
+        type_ref = mosaic.put(piece)
+        t = types.resolve(type_ref)
         primitive_list_types[element_t] = t
+        log.debug("Registered builtin list type: %s -> %s", type_ref, t)
