@@ -174,8 +174,8 @@ class TRecord(Type):
         return f'TRecord({self.name!r})'
 
     def __repr__(self):
-        fields = ', '.join("%r: %r" % (name, t) for name, t in self.fields.items())
-        return f"<TRecord({self.name!r}: {fields or ('(no fields)')})>"
+        fields = ', '.join("%s: %r" % (name, t) for name, t in self.fields.items())
+        return f"{self.name}({fields or ('(no fields)')})"
 
     def _str_fmt(self):
         return self._repr_fmt()

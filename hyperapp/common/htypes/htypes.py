@@ -32,7 +32,7 @@ class TPrimitive(Type):
         super().__init__(name or self.type_name)
 
     def __repr__(self):
-        return 'TPrimitive<%s>' % self.get_type().__name__
+        return '%s' % self.get_type().__name__
 
     def __hash__(self):
         return hash(self.type_name)
@@ -88,7 +88,7 @@ class TOptional(Type):
         self.base_t = base_t
 
     def __repr__(self):
-        return 'TOptional<%r>' % self.base_t
+        return '%r opt' % self.base_t
 
     def __hash__(self):
         return hash(('optional', self.base_t))
@@ -108,7 +108,7 @@ class TList(Type):
         self.element_t = element_t
 
     def __repr__(self):
-        return 'TList<%r>' % self.element_t
+        return '%r list' % self.element_t
 
     def __hash__(self):
         return hash(('list', self.element_t))
