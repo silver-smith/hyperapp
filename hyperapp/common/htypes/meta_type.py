@@ -69,22 +69,22 @@ record_mt = TRecord('record_mt', {
     })
 
 
-def _field_from_piece(rec, type_code_registry):
-    t = type_code_registry.invite(rec.type, type_code_registry, None)
+def _field_from_piece(rec, types):
+    t = types.resolve(rec.type)
     return (rec.name, t)
 
 
-def _field_dict_from_piece_list(field_list, type_code_registry):
-    return dict(_field_from_piece(field, type_code_registry) for field in field_list)
+def _field_dict_from_piece_list(field_list, types):
+    return dict(_field_from_piece(field, types) for field in field_list)
 
 
-def record_from_piece(rec, type_code_registry, name):
+def record_from_piece(rec, type_code_registry, name, types):
     if rec.base is not None:
         base_t = type_code_registry.invite(rec.base, type_code_registry, None)
         assert isinstance(base_t, TRecord), f"Record base is not a record: {base_t}"
     else:
         base_t = None
-    field_dict = _field_dict_from_piece_list(rec.fields, type_code_registry)
+    field_dict = _field_dict_from_piece_list(rec.fields, types)
     return TRecord(name, field_dict, base=base_t)
 
 
@@ -147,7 +147,7 @@ list_service_type_mt = TRecord('list_service_type_mt', {
 
 
 def list_service_type_from_piece(piece, type_code_registry, name, mosaic, types):
-    field_dict = _field_dict_from_piece_list(piece.fields, type_code_registry)
+    field_dict = _field_dict_from_piece_list(piece.fields, types)
     row_ref = mosaic.put(record_mt(None, piece.fields))
     named_row_ref = mosaic.put(name_wrapped_mt(f'{name}_row', row_ref))
     rows_field = field_mt('rows', named_row_ref)
@@ -177,7 +177,7 @@ def register_meta_types(mosaic, types, type_code_registry):
     type_code_registry.register_actor(name_wrapped_mt, name_wrapped_from_piece)
     type_code_registry.register_actor(optional_mt, optional_from_piece)
     type_code_registry.register_actor(list_mt, list_from_piece)
-    type_code_registry.register_actor(record_mt, record_from_piece)
+    type_code_registry.register_actor(record_mt, record_from_piece, types)
     type_code_registry.register_actor(request_mt, request_from_piece, mosaic, types)
     type_code_registry.register_actor(notification_mt, notification_from_piece, mosaic, types)
     type_code_registry.register_actor(interface_mt, interface_from_piece)
