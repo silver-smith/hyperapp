@@ -1,4 +1,3 @@
-from collections import OrderedDict
 import os.path
 from pathlib import Path
 import pytest

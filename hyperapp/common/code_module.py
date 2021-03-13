@@ -1,5 +1,3 @@
-from collections import OrderedDict
-
 from .htypes import (
     tString,
     TRecord,
@@ -8,28 +6,28 @@ from .htypes import (
     )
 
 
-type_import_t = TRecord('type_import', OrderedDict([
-    ('type_module_name', tString),
-    ('type_name', tString),
-    ('type_ref', ref_t),
-    ]))
+type_import_t = TRecord('type_import', {
+    'type_module_name': tString,
+    'type_name': tString,
+    'type_ref': ref_t,
+    })
 
-code_import_t = TRecord('code_import', OrderedDict([
-    ('import_name', tString),
-    ('code_module_ref', ref_t),
-    ]))
+code_import_t = TRecord('code_import', {
+    'import_name': tString,
+    'code_module_ref': ref_t,
+    })
 
-code_module_t = TRecord('code_module', OrderedDict([
-    ('module_name', tString),
-    ('type_import_list', TList(type_import_t)),
-    ('code_import_list', TList(code_import_t)),
-    ('source', tString),
-    ('file_path', tString),
-    ]))
+code_module_t = TRecord('code_module', {
+    'module_name': tString,
+    'type_import_list': TList(type_import_t),
+    'code_import_list': TList(code_import_t),
+    'source': tString,
+    'file_path': tString,
+    })
 
-builtin_module_t = TRecord('builtin_module', OrderedDict([
-    ('module_name', tString),  # full dotted name
-    ]))
+builtin_module_t = TRecord('builtin_module', {
+    'module_name': tString,  # full dotted name
+    })
 
 
 class LocalCodeModuleRegistry(object):

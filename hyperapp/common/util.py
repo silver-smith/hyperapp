@@ -1,4 +1,3 @@
-from collections import OrderedDict
 import functools
 import itertools
 from dateutil.tz import tzutc, tzlocal

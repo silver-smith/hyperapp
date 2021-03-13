@@ -1,5 +1,3 @@
-from collections import OrderedDict
-
 from .htypes import (
     tString,
     TRecord,

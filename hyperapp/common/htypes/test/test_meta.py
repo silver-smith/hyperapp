@@ -1,6 +1,5 @@
 # test types serialization
 
-from collections import OrderedDict
 import logging
 import pytest
 

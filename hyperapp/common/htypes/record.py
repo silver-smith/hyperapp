@@ -1,6 +1,5 @@
 import codecs
 import sys
-from collections import OrderedDict
 from keyword import iskeyword
 
 from ..util import is_dict_inst
@@ -28,7 +27,6 @@ def ref_repr(ref):
 _class_template = """\
 from builtins import property as _property, tuple as _tuple
 from operator import itemgetter as _itemgetter
-from collections import OrderedDict
 
 from hyperapp.common.htypes.record import ref_repr
 
@@ -70,7 +68,7 @@ class {typename}(tuple):
         return iter(({attr_list}))
 
     def _asdict(self):
-        'Return a new OrderedDict which maps field names to their values.'
+        'Return a new dict which maps field names to their values.'
         return dict(zip(self._fields, self[:-1]))
 
     def __getnewargs__(self):
@@ -235,7 +233,7 @@ class TRef(TRecord):
 
 hash_t = tBinary
 
-ref_t = TRef('ref', OrderedDict([
-    ('hash_algorithm', tString),
-    ('hash', hash_t),
-    ]))
+ref_t = TRef('ref', {
+    'hash_algorithm': tString,
+    'hash': hash_t,
+    })
