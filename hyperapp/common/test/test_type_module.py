@@ -38,14 +38,16 @@ def htypes(types, local_type_module_registry):
     return HyperTypesNamespace(types, local_type_module_registry)
 
 
-def test_type_module_loader(builtin_types, mosaic, types, local_type_module_registry):
-    loader = TypeModuleLoader(builtin_types, mosaic, types, local_type_module_registry)
+@pytest.fixture
+def loader(builtin_types, mosaic, types, local_type_module_registry):
+    return TypeModuleLoader(builtin_types, mosaic, types, local_type_module_registry)
+
+def test_type_module_loader(loader):
     loader.load_type_module(TEST_MODULES_DIR / 'type_module_1.types')
     loader.load_type_module(TEST_MODULES_DIR / 'type_module_2.types')
 
 
-def test_types(builtin_types, mosaic, types, local_type_module_registry, htypes):
-    loader = TypeModuleLoader(builtin_types, mosaic, types, local_type_module_registry)
+def test_types(types, htypes, loader):
     loader.load_type_module(TEST_MODULES_DIR / 'type_module_1.types')
     loader.load_type_module(TEST_MODULES_DIR / 'type_module_2.types')
 
@@ -128,8 +130,7 @@ def test_types(builtin_types, mosaic, types, local_type_module_registry, htypes)
     types.reverse_resolve(htypes.type_module_2.iface_c.methods['keep_alive'].params_record_t)
 
 
-def test_list_service(builtin_types, mosaic, types, local_type_module_registry, htypes):
-    loader = TypeModuleLoader(builtin_types, mosaic, types, local_type_module_registry)
+def test_list_service(types, htypes, loader):
     loader.load_type_module(TEST_MODULES_DIR / 'list_service.types')
 
     field_dict = {
@@ -163,3 +164,10 @@ def test_list_service(builtin_types, mosaic, types, local_type_module_registry, 
                 ),
             ],
         )
+
+
+def test_object_type(htypes, loader):
+    loader.load_type_module(TEST_MODULES_DIR / 'object_type.types')
+
+    command = htypes.object_type.object_command('choose', None)
+    type = htypes.object_type.object_type(command_list=(command,))
