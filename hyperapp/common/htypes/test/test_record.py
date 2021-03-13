@@ -1,6 +1,8 @@
 from hyperapp.common.htypes import (
     tString,
     tInt,
+    TOptional,
+    TList,
     TRecord,
     ref_t,
     )
@@ -61,3 +63,46 @@ def test_ref_str():
 def test_ref_repr():
     ref = ref_t('test_algorithm', b'3U')
     assert repr(ref) == 'ref(test_algorithm:3355)'
+
+
+def test_is_instance_primitives():
+    t = TRecord('test_record', {
+        'str_field': tString,
+        'int_field': tInt,
+        })
+    assert isinstance(t('abc', 123), t)
+
+
+def test_is_instance_ref_opt():
+    t = TRecord('test_record', {
+        'str_field': tString,
+        'ref_field': TOptional(ref_t),
+        })
+    assert isinstance(t('abc', None), t)
+
+
+def test_is_instance_list():
+    element_t = TRecord('test_element', {
+        'str_field': tString,
+        'ref_field': TOptional(ref_t),
+        })
+    t = TRecord('test_record', {
+        'element_list': TList(element_t),
+        })
+    element = element_t('abc', None)
+    value = t(element_list=(element,))
+    assert isinstance(value, t)
+
+
+def test_is_instance_base_list():
+    element_t = TRecord('test_element', {
+        'str_field': tString,
+        'ref_field': TOptional(ref_t),
+        })
+    base_t = TRecord('test_base', {
+        'element_list': TList(element_t),
+        })
+    t = TRecord('test_record', base=base_t)
+    element = element_t('abc', None)
+    value = t(element_list=(element,))
+    assert isinstance(value, t)
