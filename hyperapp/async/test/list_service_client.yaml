@@ -2,3 +2,6 @@ import:
   types:
     rpc:
       - endpoint
+  code:
+    - client.column
+    - client.simple_list_object

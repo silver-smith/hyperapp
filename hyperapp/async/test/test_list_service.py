@@ -74,6 +74,7 @@ def test_list_service(services, htypes):
         type_ref=type_ref,
         peer_ref=master_peer_ref,
         object_id=object_id,
+        key_field='key',
         )
     list_service_ref = services.mosaic.put(list_service)
 
@@ -98,11 +99,14 @@ def test_list_service(services, htypes):
             'transport',
             'tcp_transport',
             'rpc',
+            'object_type',
+            'list_object',
             ],
         code_module_list=[
             'common.visitor',
             'common.ref_collector',
             'common.unbundler',
+            'common.weak_key_dictionary_with_callback',
             'transport.identity',
             'transport.rsa_identity',
             'transport.route_table',
@@ -127,6 +131,11 @@ def test_list_service(services, htypes):
             'async.transport.tcp',
             'async.rpc.rpc_proxy',
             'async.rpc.rpc_endpoint',
+            'client.object_registry',
+            'async.ui.object',
+            'client.column',
+            'client.list_object',
+            'client.simple_list_object',
             'async.test.list_service_client',
             ],
         config = {

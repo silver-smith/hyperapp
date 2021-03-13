@@ -7,7 +7,7 @@ class ListServiceType(Type):
 
     def __init__(self, name, field_dict, row_t=None, interface=None):
         super().__init__(name)
-        self._field_dict = field_dict
+        self._field_dict = field_dict  # name -> t
         self.row_t = row_t
         self.interface = interface
 
@@ -35,6 +35,7 @@ list_service_t = TRecord('list_service', {
     'type_ref': ref_t,  # list service type
     'peer_ref': ref_t,
     'object_id': tString,
+    'key_field': tString,
     })
 
 
