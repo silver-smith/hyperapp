@@ -1,0 +1,6 @@
+element = record:
+  key: string
+
+
+container = record:
+  element_field: element

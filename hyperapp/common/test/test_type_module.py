@@ -166,11 +166,12 @@ def test_list_service(types, htypes, loader):
         )
 
 
-def test_object_type(htypes, loader):
-    loader.load_type_module(TEST_MODULES_DIR / 'object_type.types')
+def test_same_instance(htypes, loader):
+    loader.load_type_module(TEST_MODULES_DIR / 'same_instance.types')
 
     # Same types should resolve to same instances.
-    assert htypes.object_type.object_type.fields['command_list'].element_t is htypes.object_type.object_command
+    assert htypes.same_instance.container.fields['element_field'] == htypes.same_instance.element
+    assert htypes.same_instance.container.fields['element_field'] is htypes.same_instance.element
 
-    command = htypes.object_type.object_command('choose', None)
-    type = htypes.object_type.object_type(command_list=(command,))
+    element = htypes.same_instance.element('abcd')
+    type = htypes.same_instance.container(element_field=element)
