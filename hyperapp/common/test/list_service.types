@@ -1,6 +1,6 @@
 string_list_alias = string list
 
-test_list_service = list_service:
+test_list_service = list_service_type:
   datetime_field: datetime
   string_list_field: string_list_alias
   int_opt_field: int opt

@@ -14,7 +14,7 @@ from hyperapp.common.htypes import (
     Request,
     Notification,
     Interface,
-    ListService,
+    ListServiceType,
     ref_t,
     )
 from hyperapp.common import cdr_coders  # register codec
@@ -138,7 +138,7 @@ def test_list_service(builtin_types, mosaic, types, local_type_module_registry, 
         'string_list_field': TList(tString),
         'int_opt_field': TOptional(tInt),
         }
-    assert htypes.list_service.test_list_service == ListService(
+    assert htypes.list_service.test_list_service == ListServiceType(
         name='test_list_service',
         field_dict=field_dict,
         )

@@ -6,4 +6,4 @@ from .builtins import register_builtin_types
 from .hyper_ref import *
 from .meta_type import *
 from .interface import *
-from .list_service import ListService
+from .list_service_type import ListServiceType

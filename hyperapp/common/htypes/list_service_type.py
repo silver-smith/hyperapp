@@ -3,7 +3,7 @@ from .record import TRecord
 from .interface import Interface, Request
 
 
-class ListService(Type):
+class ListServiceType(Type):
 
     def __init__(self, name, field_dict, row_t=None, interface=None):
         super().__init__(name)
@@ -12,17 +12,17 @@ class ListService(Type):
         self.interface = interface
 
     def __str__(self):
-        return f'ListService({self.name})'
+        return f'ListServiceType({self.name})'
 
     def __repr__(self):
-        return f'<ListService {self.name!r} {self._field_dict}>'
+        return f'<ListServiceType {self.name!r} {self._field_dict}>'
 
     def __hash__(self):
         return id((self._name, self._field_dict))
 
     def __eq__(self, rhs):
         return (rhs is self
-                or isinstance(rhs, ListService)
+                or isinstance(rhs, ListServiceType)
                 and rhs._name == self._name
                 and rhs._field_dict == self._field_dict)
 
