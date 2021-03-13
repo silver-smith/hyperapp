@@ -2,8 +2,8 @@ import logging
 import abc
 
 from hyperapp.common.htypes.packet_coders import packet_coders
+from hyperapp.common.module import Module
 
-from .module import ClientModule
 
 log = logging.getLogger(__name__)
 
@@ -51,8 +51,8 @@ class AsyncWeb(object):
         return await self.summon(ref, expected_type)
 
 
-class ThisModule(ClientModule):
+class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name, services)
+        super().__init__(module_name)
         services.async_web = AsyncWeb(services.web, services.types)
