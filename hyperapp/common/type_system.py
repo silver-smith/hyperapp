@@ -33,7 +33,7 @@ class TypeSystem(object):
         t = self._type_code_registry.invite(type_ref, self._type_code_registry, None)  # name=None
         self._ref2type_cache[type_ref] = t
         self._type2ref[t] = type_ref
-        _log.debug('Resolve type %s -> %s', ref_repr(type_ref), t)
+        _log.debug('Resolve type %s -> %r', ref_repr(type_ref), t)
         return t
 
     def reverse_resolve(self, t):
