@@ -14,7 +14,7 @@ from .htypes import (
 from .record import TRecord
 from .hyper_ref import ref_t
 from .interface import Request, Notification, Interface
-from .list_service_type import ListServiceType
+from .list_service import ListServiceType
 
 
 builtin_mt = TRecord('builtin_mt', {

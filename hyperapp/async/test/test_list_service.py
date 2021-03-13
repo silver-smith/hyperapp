@@ -3,6 +3,7 @@ import threading
 
 import pytest
 
+from hyperapp.common.htypes import list_service_t
 from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common import cdr_coders  # self-registering
 
@@ -62,33 +63,33 @@ class Servant:
             ]
 
 
-def test_async_echo(services, htypes):
+def test_list_service(services, htypes):
     master_identity = services.generate_rsa_identity(fast=True)
     master_peer_ref = services.mosaic.put(master_identity.peer.piece)
 
-    list_service = htypes.test_list_service.test_list_service
-    iface_ref = services.types.reverse_resolve(list_service.interface)
+    list_service_type = htypes.test_list_service.test_list_service
+    type_ref = services.types.reverse_resolve(list_service_type)
     object_id = 'test_list_service_object'
-    master_service = htypes.rpc.endpoint(
+    list_service = list_service_t(
+        type_ref=type_ref,
         peer_ref=master_peer_ref,
-        iface_ref=iface_ref,
         object_id=object_id,
         )
-    master_service_ref = services.mosaic.put(master_service)
+    list_service_ref = services.mosaic.put(list_service)
 
     rpc_endpoint = services.rpc_endpoint()
     services.endpoint_registry.register(master_identity, rpc_endpoint)
 
     servent_called_event = threading.Event()
-    servant = Servant(list_service.row_t, servent_called_event)
+    servant = Servant(list_service_type.row_t, servent_called_event)
     rpc_endpoint.register_servant(object_id, servant)
 
     server = services.tcp_server()
     log.info("Tcp route: %r", server.route)
     services.route_table.add_route(master_peer_ref, server.route)
 
-    master_service_bundle = services.ref_collector([master_service_ref]).bundle
-    master_service_bundle_cdr = packet_coders.encode('cdr', master_service_bundle)
+    list_service_bundle = services.ref_collector([list_service_ref]).bundle
+    list_service_bundle_cdr = packet_coders.encode('cdr', list_service_bundle)
 
     subprocess = services.subprocess(
         'subprocess',
@@ -129,7 +130,7 @@ def test_async_echo(services, htypes):
             'async.test.list_service_client',
             ],
         config = {
-            'async.test.list_service_client': {'master_service_bundle_cdr': master_service_bundle_cdr},
+            'async.test.list_service_client': {'list_service_bundle_cdr': list_service_bundle_cdr},
             },
         )
     with subprocess:

@@ -1,5 +1,5 @@
-from .htypes import Type, TList
-from .record import TRecord
+from .htypes import Type, TList, tString
+from .record import TRecord, ref_t
 from .interface import Interface, Request
 
 
@@ -18,7 +18,7 @@ class ListServiceType(Type):
         return f'<ListServiceType {self.name!r} {self._field_dict}>'
 
     def __hash__(self):
-        return id((self._name, self._field_dict))
+        return hash((self._name, tuple(self._field_dict.items())))
 
     def __eq__(self, rhs):
         return (rhs is self
@@ -29,3 +29,14 @@ class ListServiceType(Type):
     @property
     def fields(self):
         return self._field_dict
+
+
+list_service_t = TRecord('list_service', {
+    'type_ref': ref_t,  # list service type
+    'peer_ref': ref_t,
+    'object_id': tString,
+    })
+
+
+def register_list_service_types(builtin_types, mosaic, types):
+    builtin_types.register(mosaic, types, list_service_t)

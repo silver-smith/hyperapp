@@ -3,7 +3,7 @@ import sys
 from types import SimpleNamespace
 import logging
 
-from .htypes import BuiltinTypeRegistry, register_builtin_types
+from .htypes import BuiltinTypeRegistry, register_builtin_types, register_list_service_types
 from .ref import ref_repr
 from .local_type_module import LocalTypeModuleRegistry
 from .code_module import code_module_t
@@ -44,6 +44,7 @@ class Services(object):
         self.module_ref_resolver = ModuleRefResolver(self.mosaic)
         self.web.add_source(self.mosaic)
         register_builtin_types(self.builtin_types, self.mosaic, self.types)
+        register_list_service_types(self.builtin_types, self.mosaic, self.types)
         register_code_module_types(self.builtin_types, self.mosaic, self.types)
         self.local_type_module_registry = LocalTypeModuleRegistry()
         self.local_code_module_registry = LocalCodeModuleRegistry()
