@@ -27,7 +27,7 @@ class Interface(Type):
         return f'<Interface {self.name!r} {self._method_dict}>'
 
     def __hash__(self):
-        return id(self)
+        return hash(('interface', self._base, tuple(self._method_dict.items())))
 
     def __eq__(self, rhs):
         return (rhs is self

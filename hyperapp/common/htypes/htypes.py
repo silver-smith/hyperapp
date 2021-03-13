@@ -26,6 +26,8 @@ class Type:
 
 class TPrimitive(Type):
 
+    # type, type_name - defined in children.
+
     def __init__(self, name=None):
         super().__init__(name or self.type_name)
 
@@ -33,7 +35,7 @@ class TPrimitive(Type):
         return 'TPrimitive<%s>' % self.get_type().__name__
 
     def __hash__(self):
-        return id(self)
+        return hash(self.type_name)
 
     def __eq__(self, rhs):
         return rhs is self or isinstance(rhs, TPrimitive) and rhs.type_name == self.type_name
@@ -89,7 +91,7 @@ class TOptional(Type):
         return 'TOptional<%r>' % self.base_t
 
     def __hash__(self):
-        return id(self)
+        return hash(('optional', self.base_t))
 
     def __eq__(self, rhs):
         return rhs is self or isinstance(rhs, TOptional) and rhs.base_t == self.base_t
@@ -109,7 +111,7 @@ class TList(Type):
         return 'TList<%r>' % self.element_t
 
     def __hash__(self):
-        return id(self)
+        return hash(('list', self.element_t))
 
     def __eq__(self, rhs):
         return rhs is self or isinstance(rhs, TList) and rhs.element_t == self.element_t
