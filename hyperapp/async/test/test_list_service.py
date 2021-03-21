@@ -35,7 +35,7 @@ def code_module_list():
         'transport.route_table',
         'transport.tcp',
         'sync.work_dir',
-        'sync.async_stop',
+        'sync.failure',
         'sync.transport.route_table',
         'sync.transport.transport',
         'sync.transport.endpoint',
@@ -111,7 +111,7 @@ def test_list_service(services, htypes):
             'transport.rsa_identity',
             'transport.route_table',
             'transport.tcp',
-            'sync.async_stop',
+            'sync.failure',
             'sync.transport.route_table',
             'sync.transport.transport',
             'sync.transport.tcp',  # Provide tcp route for sync route table

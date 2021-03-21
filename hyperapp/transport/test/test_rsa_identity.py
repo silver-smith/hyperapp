@@ -17,7 +17,7 @@ def type_module_list():
 @pytest.fixture
 def code_module_list():
     return [
-        'sync.async_stop',
+        'sync.failure',
         'transport.identity',
         'transport.rsa_identity',
         ]
