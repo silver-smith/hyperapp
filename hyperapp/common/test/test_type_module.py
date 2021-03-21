@@ -173,7 +173,7 @@ def test_same_instance(htypes, loader):
     # Same types should resolve to same instances.
     assert htypes.same_instance.container.fields['element_field'] == htypes.same_instance.element
     assert htypes.same_instance.container.fields['element_field'] is htypes.same_instance.element
-    # And be able to pass isinstance check on instantiation.
+    # To be able to pass isinstance check on instantiation.
     value = htypes.same_instance.container(element_field=element)
 
     assert htypes.same_instance.list_container.fields['element_field'].element_t is htypes.same_instance.element
