@@ -133,7 +133,7 @@ def main():
     services.init_modules(type_module_list, code_module_list)
     services.start()
     log.info("Client is started.")
-    services.sync_stop_signal.wait()
+    services.stop_signal.wait()
     log.info("Client is stopping.")
     services.stop()
 

@@ -28,7 +28,13 @@ def code_module_list(event_loop_module):
         ]
 
 
+@pytest.fixture
+def post_stop_checks():
+    def check(services):
+        assert services.test_stop_event.wait(timeout=1)
+    return check
+
+
 def test_event_loop(services):
     assert services.test_init_event.wait(timeout=1)
-    services.stop()
-    assert services.test_stop_event.wait(timeout=1)
+    services.stop_signal.set()

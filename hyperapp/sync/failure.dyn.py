@@ -1,4 +1,3 @@
-import concurrent.futures
 import logging
 from collections import namedtuple
 
@@ -13,9 +12,8 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
-        self._services_stop = services.stop
+        self._stop_signal = services.stop_signal
         self._failure_reason_list = []
-        self._thread_pool = concurrent.futures.ThreadPoolExecutor(max_workers=3)
         services.on_stop.append(self.on_stop)
         services.failed = self.failed
         services.is_failed = self.is_failed
@@ -26,8 +24,8 @@ class ThisModule(Module):
     def failed(self, reason, exception):
         log.error('Failed: %r (%s)', reason, exception)
         self._failure_reason_list.append(self._FailureReason(reason, exception))
-        log.debug('Scheduling server stop...')
-        self._thread_pool.submit(self._stop)
+        log.debug('Signaling server to stop...')
+        self._stop_signal.set()
 
     def is_failed(self):
         return self._failure_reason_list != []
@@ -49,8 +47,3 @@ class ThisModule(Module):
 
     def clear_failure_flag(self):
         self._failure_reason_list.clear()
-        
-    def _stop(self):
-        log.debug('Stopping thread pool...')
-        self._thread_pool.shutdown(wait=False)
-        self._services_stop()

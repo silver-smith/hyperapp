@@ -12,6 +12,7 @@ class AsyncStopEvent:
     def __init__(self):
         self._event = None
 
+    # Async event can be created only in event loop thread.
     def init(self, event):
         self._event = event
 
@@ -30,21 +31,20 @@ class ThisModule(Module):
         self._module_registry = services.module_registry
         self._event_loop_ctr = services.event_loop_ctr
         self._event_loop_dtr = services.event_loop_dtr
+        self._sync_stop_signal = services.stop_signal
         self._event_loop = None
-        self._stop_event = AsyncStopEvent()
-        self._sync_stop_signal = threading.Event()
+        self._async_stop_event = AsyncStopEvent()
         self._thread = threading.Thread(target=self._event_loop_main)
         services.on_start.append(self.start)
         services.on_stop.append(self.stop)
-        services.async_stop_event = self._stop_event
-        services.sync_stop_signal = self._sync_stop_signal
+        services.async_stop_event = self._async_stop_event
 
     def start(self):
         self._thread.start()
 
     def stop(self):
         log.info("Stop async loop thread.")
-        self._event_loop.call_soon_threadsafe(self._stop_event.set)
+        self._event_loop.call_soon_threadsafe(self._async_stop_event.set)
         self._thread.join()
         log.info("Async loop thread is stopped.")
 
@@ -55,7 +55,7 @@ class ThisModule(Module):
         loop.set_debug(True)
         asyncio.set_event_loop(loop)  # Should be set before any asyncio objects created.
         self._event_loop = loop
-        self._stop_event.init(asyncio.Event())
+        self._async_stop_event.init(asyncio.Event())
         try:
             try:
                 loop.run_until_complete(self._async_main())
@@ -98,7 +98,7 @@ class ThisModule(Module):
             log.info("Async main started.")
             await self._async_init_modules()
             log.info("Async modules inited.")
-            await self._stop_event.wait()
+            await self._async_stop_event.wait()
         finally:
             self._sync_stop_signal.set()
             log.info("Async main finished.")

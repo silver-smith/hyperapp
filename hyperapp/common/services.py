@@ -1,7 +1,8 @@
-from pathlib import Path
-import sys
-from types import SimpleNamespace
 import logging
+import sys
+import threading
+from pathlib import Path
+from types import SimpleNamespace
 
 from .htypes import BuiltinTypeRegistry, register_builtin_types, register_list_service_types
 from .ref import ref_repr
@@ -31,6 +32,7 @@ class Services(object):
         self.interface_dir = self.hyperapp_dir / 'common' / 'interface'
         self.on_start = []
         self.on_stop = []
+        self.stop_signal = threading.Event()
         self._is_stopped = False
         self.name2module = {}  # module name (x.y.z) -> imported module
 
@@ -61,19 +63,13 @@ class Services(object):
 
     def stop(self):
         log.info("Stop services.")
-        if self._is_stopped:
-            log.info('Already stopped.')
-            return
+        assert not self._is_stopped
         log.info('Stopping modules...')
         for stop in reversed(self.on_stop):
             stop()
         log.info('Stopping modules: done')
-        self.on_stopped()
         self._is_stopped = True
         log.info("Services are stopped.")
-
-    def on_stopped(self):
-        pass
 
     def init_modules(self, type_module_list, code_module_list, config=None):
         log.info("Init modules.")

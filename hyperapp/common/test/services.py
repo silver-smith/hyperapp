@@ -20,7 +20,14 @@ def code_module_list():
 
 
 @pytest.fixture
-def services(type_module_list, code_module_list):
+def post_stop_checks():
+    def do_nothing(services):
+        pass
+    return do_nothing
+
+
+@pytest.fixture
+def services(type_module_list, code_module_list, post_stop_checks):
     services = Services()
     services.init_services()
     services.init_modules(type_module_list, code_module_list)
@@ -28,6 +35,7 @@ def services(type_module_list, code_module_list):
     yield services
     log.info("Stopping services")
     services.stop()
+    post_stop_checks(services)
 
 
 @pytest.fixture
