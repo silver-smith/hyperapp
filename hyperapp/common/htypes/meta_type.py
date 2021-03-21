@@ -43,8 +43,8 @@ optional_mt = TRecord('optional_mt', {
     })
 
 
-def optional_from_piece(rec, type_code_registry, name):
-    base_t = type_code_registry.invite(rec.base, type_code_registry, None)
+def optional_from_piece(rec, type_code_registry, name, types):
+    base_t = types.resolve(rec.base)
     return TOptional(base_t)
 
 
@@ -175,7 +175,7 @@ def register_builtin_meta_types(builtin_types, mosaic, types):
 def register_meta_types(mosaic, types, type_code_registry):
     # name_mt does not produce a type, it is removed by type module loader.
     type_code_registry.register_actor(name_wrapped_mt, name_wrapped_from_piece)
-    type_code_registry.register_actor(optional_mt, optional_from_piece)
+    type_code_registry.register_actor(optional_mt, optional_from_piece, types)
     type_code_registry.register_actor(list_mt, list_from_piece, types)
     type_code_registry.register_actor(record_mt, record_from_piece, types)
     type_code_registry.register_actor(request_mt, request_from_piece, mosaic, types)

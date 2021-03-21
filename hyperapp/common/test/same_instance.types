@@ -7,3 +7,6 @@ container = record:
 
 list_container = record:
   element_field: element list
+
+opt_container = record:
+  element_field: element opt

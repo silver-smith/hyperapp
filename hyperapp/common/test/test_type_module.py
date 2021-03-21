@@ -178,3 +178,6 @@ def test_same_instance(htypes, loader):
 
     assert htypes.same_instance.list_container.fields['element_field'].element_t is htypes.same_instance.element
     type = htypes.same_instance.list_container(element_field=[element])
+
+    assert htypes.same_instance.opt_container.fields['element_field'].base_t is htypes.same_instance.element
+    type = htypes.same_instance.opt_container(element_field=element)
