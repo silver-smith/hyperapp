@@ -7,4 +7,4 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
-        services.work_dir = Path.home() / '.cache' / 'hyperapp' / 'server'
+        services.work_dir = Path.home() / '.cache/hyperapp/work'
