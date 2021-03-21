@@ -80,7 +80,7 @@ def _field_dict_from_piece_list(field_list, types):
 
 def record_from_piece(rec, type_code_registry, name, types):
     if rec.base is not None:
-        base_t = type_code_registry.invite(rec.base, type_code_registry, None)
+        base_t = types.resolve(rec.base)
         assert isinstance(base_t, TRecord), f"Record base is not a record: {base_t}"
     else:
         base_t = None

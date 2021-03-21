@@ -174,10 +174,14 @@ def test_same_instance(htypes, loader):
     assert htypes.same_instance.container.fields['element_field'] == htypes.same_instance.element
     assert htypes.same_instance.container.fields['element_field'] is htypes.same_instance.element
     # And be able to pass isinstance check on instantiation.
-    type = htypes.same_instance.container(element_field=element)
+    value = htypes.same_instance.container(element_field=element)
 
     assert htypes.same_instance.list_container.fields['element_field'].element_t is htypes.same_instance.element
-    type = htypes.same_instance.list_container(element_field=[element])
+    value = htypes.same_instance.list_container(element_field=[element])
 
     assert htypes.same_instance.opt_container.fields['element_field'].base_t is htypes.same_instance.element
-    type = htypes.same_instance.opt_container(element_field=element)
+    value = htypes.same_instance.opt_container(element_field=element)
+
+    assert htypes.same_instance.based_container.base is htypes.same_instance.container
+    value = htypes.same_instance.based_container(element_field=element)
+    assert isinstance(value, htypes.same_instance.container)

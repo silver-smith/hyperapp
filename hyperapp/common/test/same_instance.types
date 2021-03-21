@@ -10,3 +10,5 @@ list_container = record:
 
 opt_container = record:
   element_field: element opt
+
+based_container = record(container)
