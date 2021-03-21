@@ -1,20 +1,49 @@
+from functools import partial
+
 from hyperapp.common.htypes import bundle_t
 from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common.visual_rep import pprint
+from hyperapp.common.module import Module
 
 
-ENCODING = 'json'
+DEFAULT_ENCODING = 'json'
 
 
-def save_bytes_to_file(data, path):
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_bytes(data)
+class FileBundle:
 
-def save_bundle_to_file(bundle, path):
-    data = packet_coders.encode(ENCODING, bundle)
-    save_bytes_to_file(data, path)
+    def __init__(self, mosaic, ref_collector, unbundler, path, encoding=DEFAULT_ENCODING):
+        self._mosaic = mosaic
+        self._ref_collector = ref_collector
+        self._unbundler = unbundler
+        self.path = path
+        self._encoding = encoding
 
-def load_bundle_from_file(path):
-    bundle = packet_coders.decode(ENCODING, path.read_bytes(), bundle_t)
-    pprint(bundle, title='Bundle loaded from %s:' % path)
-    return bundle
+    def save_ref(self, ref):
+        bundle = self._ref_collector([ref]).bundle
+        data = packet_coders.encode(self._encoding, bundle)
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.path.write_bytes(data)
+
+    def load_ref(self):
+        bundle = packet_coders.decode(self._encoding, self.path.read_bytes(), bundle_t)
+        pprint(bundle, title='Bundle loaded from %s:' % self.path)
+        self._unbundler.register_bundle(bundle)
+        ref_count = len(bundle.roots)
+        if ref_count != 1:
+            raise RuntimeError(f"Bundle {self.path} has {ref_count} refs, but expected only one")
+        return bundle.roots[0]
+
+    def save_piece(self, piece):
+        ref = self._mosaic.put(piece)
+        self.save_ref(ref)
+
+    def load_piece(self):
+        ref = self.load_ref()
+        return self._mosaic.resolve_ref(ref).value
+
+
+class ThisModule(Module):
+
+    def __init__(self, module_name, services, config):
+        super().__init__(module_name)
+        services.file_bundle = partial(FileBundle, services.mosaic, services.ref_collector, services.unbundler)

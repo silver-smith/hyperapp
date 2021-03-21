@@ -2,5 +2,3 @@ import:
   types:
     application_state:
       - application_state
-  code:
-    - common.file_bundle
