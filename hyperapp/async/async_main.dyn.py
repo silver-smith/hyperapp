@@ -94,12 +94,14 @@ class ThisModule(Module):
                 })
 
     async def _async_main(self):
-        log.info("Async main started.")
-        await self._async_init_modules()
-        log.info("Async modules inited.")
-        await self._stop_event.wait()
-        self._sync_stop_signal.set()
-        log.info("Async main finished.")
+        try:
+            log.info("Async main started.")
+            await self._async_init_modules()
+            log.info("Async modules inited.")
+            await self._stop_event.wait()
+        finally:
+            self._sync_stop_signal.set()
+            log.info("Async main finished.")
 
     async def _async_init_modules(self):
         for module, method in self._module_registry.enum_modules_method('async_init'):
