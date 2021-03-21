@@ -4,3 +4,6 @@ element = record:
 
 container = record:
   element_field: element
+
+list_container = record:
+  element_field: element list
