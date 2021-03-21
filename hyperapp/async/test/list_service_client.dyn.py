@@ -42,7 +42,7 @@ class TestListService(SimpleListObject):
         return f"List service: {self._object_id}"
 
     @property
-    def data(self):
+    def piece(self):
         type_ref = self._types.reverse_resolve(self._service_type)
         return list_service_t(
             type_ref=type_ref,
