@@ -4,10 +4,10 @@ from pathlib import Path
 import logging
 
 from hyperapp.common.htypes.packet_coders import DecodeError, packet_coders
+from hyperapp.common.module import Module
 
 from . import htypes
 from .file_bundle import save_bundle_to_file, load_bundle_from_file
-from .module import ClientModule
 
 log = logging.getLogger(__name__)
 
@@ -43,9 +43,9 @@ class ApplicationStateStorage(object):
             return None
         
 
-class ThisModule(ClientModule):
+class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name, services)
+        super().__init__(module_name)
         services.application_state_storage = ApplicationStateStorage(
             services.mosaic, services.ref_collector, services.unbundler)

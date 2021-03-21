@@ -4,4 +4,3 @@ import:
       - application_state
   code:
     - common.file_bundle
-    - async.ui.module
