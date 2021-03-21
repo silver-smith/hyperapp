@@ -131,9 +131,9 @@ def _method_iter_from_field_list(method_ref_list, type_code_registry, name):
         yield type_code_registry.invite(method_ref, type_code_registry, name)
 
 
-def interface_from_piece(piece, type_code_registry, name):
+def interface_from_piece(piece, type_code_registry, name, types):
     if piece.base is not None:
-        base_t = type_code_registry.invite(piece.base, type_code_registry, None)
+        base_t = types.resolve(piece.base)
         assert isinstance(base_t, Interface), f"Interface base is not a Interface: {base_t}"
     else:
         base_t = None
@@ -180,5 +180,5 @@ def register_meta_types(mosaic, types, type_code_registry):
     type_code_registry.register_actor(record_mt, record_from_piece, types)
     type_code_registry.register_actor(request_mt, request_from_piece, mosaic, types)
     type_code_registry.register_actor(notification_mt, notification_from_piece, mosaic, types)
-    type_code_registry.register_actor(interface_mt, interface_from_piece)
+    type_code_registry.register_actor(interface_mt, interface_from_piece, types)
     type_code_registry.register_actor(list_service_type_mt, list_service_type_from_piece, mosaic, types)

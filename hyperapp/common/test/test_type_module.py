@@ -185,3 +185,5 @@ def test_same_instance(htypes, loader):
     assert htypes.same_instance.based_container.base is htypes.same_instance.container
     value = htypes.same_instance.based_container(element_field=element)
     assert isinstance(value, htypes.same_instance.container)
+
+    assert htypes.same_instance.derived_interface.base_t is htypes.same_instance.base_interface

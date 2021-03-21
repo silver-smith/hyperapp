@@ -17,7 +17,7 @@ class Interface(Type):
         assert base is None or isinstance(base, Interface), repr(base)
         assert is_list_inst(method_list or [], (Request, Notification)), repr(method_list)
         super().__init__(name)
-        self._base = base
+        self.base_t = base
         self._method_dict = {method.method_name: method for method in method_list}
 
     def __str__(self):
@@ -27,17 +27,17 @@ class Interface(Type):
         return f'<Interface {self.name!r} {self._method_dict}>'
 
     def __hash__(self):
-        return hash(('interface', self._base, tuple(self._method_dict.items())))
+        return hash(('interface', self.base_t, tuple(self._method_dict.items())))
 
     def __eq__(self, rhs):
         return (rhs is self
                 or isinstance(rhs, Interface)
-                and rhs._base == self._base
+                and rhs.base_t == self.base_t
                 and rhs._method_dict == self._method_dict)
 
     @property
     def methods(self):
-        if self._base:
-            return {**self._base._method_dict, **self._method_dict}
+        if self.base_t:
+            return {**self.base_t._method_dict, **self._method_dict}
         else:
             return self._method_dict

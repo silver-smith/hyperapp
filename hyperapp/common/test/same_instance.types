@@ -12,3 +12,10 @@ opt_container = record:
   element_field: element opt
 
 based_container = record(container)
+
+
+base_interface = interface:
+  some_method()
+
+derived_interface = interface(base_interface):
+  another_method()
