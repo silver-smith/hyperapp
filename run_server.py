@@ -16,6 +16,8 @@ type_module_list = [
     'transport',
     'tcp_transport',
     'rpc',
+    'object_type',
+    'list_object_type',
     ]
 
 code_module_list = [
@@ -25,6 +27,7 @@ code_module_list = [
     'common.unbundler',
     'common.file_bundle',
     'common.local_server',
+    'common.list_object',
     'transport.identity',
     'transport.rsa_identity',
     'transport.route_table',
@@ -39,6 +42,7 @@ code_module_list = [
     'server.identity',
     'server.tcp_server',
     'server.rpc_endpoint',
+    'server.sample_list',
     ]
 
 

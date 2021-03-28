@@ -1,0 +1,7 @@
+import:
+  types:
+    list_object_type:
+      - column
+      - list_ot
+  code:
+    - common.list_object
