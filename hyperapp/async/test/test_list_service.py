@@ -7,9 +7,6 @@ from hyperapp.common.htypes import (
     tInt,
     tString,
     TList,
-    field_mt,
-    record_mt,
-    name_wrapped_mt,
     list_service_t,
     )
 from hyperapp.common.htypes.packet_coders import packet_coders
@@ -39,6 +36,7 @@ def code_module_list():
         'common.visitor',
         'common.ref_collector',
         'common.unbundler',
+        'common.list_object',
         'transport.identity',
         'transport.rsa_identity',
         'transport.route_table',
@@ -72,18 +70,7 @@ class Servant:
             ]
 
 
-def list_row_t(mosaic, types, list_ot, name):
-    field_list = [
-        field_mt(column.id, column.type_ref)
-        for column in list_ot.column_list
-        ]
-    row_mt = record_mt(None, field_list)
-    row_ref = mosaic.put(row_mt)
-    named_row_ref = mosaic.put(name_wrapped_mt(f'{name}_row', row_ref))
-    return types.resolve(named_row_ref)
-
-
-def test_list_service(services, htypes):
+def test_list_service(services, htypes, code):
     master_identity = services.generate_rsa_identity(fast=True)
     master_peer_ref = services.mosaic.put(master_identity.peer.piece)
 
@@ -97,7 +84,7 @@ def test_list_service(services, htypes):
             ],
         )
     service_ot_ref = services.mosaic.put(service_ot)
-    row_t = list_row_t(services.mosaic, services.types, service_ot, 'test_list_service')
+    row_t = code.list_object.list_row_t(services.mosaic, services.types, service_ot, 'test_list_service')
 
     object_id = 'test_list_service_object'
     list_service = list_service_t(
@@ -138,6 +125,7 @@ def test_list_service(services, htypes):
             'common.ref_collector',
             'common.unbundler',
             'common.weak_key_dictionary_with_callback',
+            'common.list_object',
             'transport.identity',
             'transport.rsa_identity',
             'transport.route_table',
