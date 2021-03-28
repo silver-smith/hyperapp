@@ -47,7 +47,7 @@ code_module_list = [
 
 
 def main():
-    init_logging('client')
+    init_logging('server')
 
     parser = argparse.ArgumentParser(description='Hyperapp server')
     args = parser.parse_args()
