@@ -12,6 +12,9 @@ log = logging.getLogger(__name__)
 
 
 type_module_list = [
+    'rsa_identity',
+    'transport',
+    'tcp_transport',
     ]
 
 code_module_list = [
@@ -21,6 +24,17 @@ code_module_list = [
     'common.unbundler',
     'common.file_bundle',
     'common.local_server',
+    'transport.identity',
+    'transport.rsa_identity',
+    'transport.route_table',
+    'transport.tcp',
+    'sync.failure',
+    'sync.transport.route_table',
+    'sync.transport.transport',
+    'sync.transport.endpoint',
+    'sync.transport.tcp',
+    'server.identity',
+    'server.tcp_server',
     ]
 
 
