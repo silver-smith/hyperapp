@@ -61,7 +61,7 @@ class Servant:
         self._servent_called_event = servent_called_event
 
     def get(self, request):
-        log.info("Servent.get is called")
+        log.info("Servant.get is called")
         self._servent_called_event.set()
         return [
             self._row_t(1, ['first row', 'first value']),
