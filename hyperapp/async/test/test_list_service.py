@@ -80,7 +80,7 @@ def test_list_service(services, htypes, code):
         command_list=[],
         column_list=[
             htypes.list_object_type.column('key', int_t_ref),
-            htypes.list_object_type.column('key', string_list_t_ref),
+            htypes.list_object_type.column('value_list', string_list_t_ref),
             ],
         )
     service_ot_ref = services.mosaic.put(service_ot)
