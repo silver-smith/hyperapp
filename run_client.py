@@ -57,6 +57,8 @@ code_module_list = [
     'common.resource_loader',
     'common.fs_service_impl',
     'common.weak_key_dictionary_with_callback',
+    'common.file_bundle',
+    'common.local_server',
     'async.ui.commander',
     'async.ui.module',
     'async.async_web',
@@ -118,6 +120,7 @@ code_module_list = [
     'client.fs',
     'client.fs_local_service',
     'client.wiki_text_sample',
+    'client.local_server',
     ]
 
 
