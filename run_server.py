@@ -15,6 +15,7 @@ type_module_list = [
     'rsa_identity',
     'transport',
     'tcp_transport',
+    'rpc',
     ]
 
 code_module_list = [
@@ -33,8 +34,11 @@ code_module_list = [
     'sync.transport.transport',
     'sync.transport.endpoint',
     'sync.transport.tcp',
+    'sync.rpc.rpc_proxy',
+    'sync.rpc.rpc_endpoint',
     'server.identity',
     'server.tcp_server',
+    'server.rpc_endpoint',
     ]
 
 
