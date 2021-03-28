@@ -3,7 +3,15 @@ import threading
 
 import pytest
 
-from hyperapp.common.htypes import list_service_t
+from hyperapp.common.htypes import (
+    tInt,
+    tString,
+    TList,
+    field_mt,
+    record_mt,
+    name_wrapped_mt,
+    list_service_t,
+    )
 from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common import cdr_coders  # self-registering
 
@@ -20,7 +28,8 @@ def type_module_list():
         'transport',
         'tcp_transport',
         'rpc',
-        'test_list_service',
+        'object_type',
+        'list_object_type',
         ]
 
 
@@ -63,15 +72,36 @@ class Servant:
             ]
 
 
+def list_row_t(mosaic, types, list_ot, name):
+    field_list = [
+        field_mt(column.id, column.type_ref)
+        for column in list_ot.column_list
+        ]
+    row_mt = record_mt(None, field_list)
+    row_ref = mosaic.put(row_mt)
+    named_row_ref = mosaic.put(name_wrapped_mt(f'{name}_row', row_ref))
+    return types.resolve(named_row_ref)
+
+
 def test_list_service(services, htypes):
     master_identity = services.generate_rsa_identity(fast=True)
     master_peer_ref = services.mosaic.put(master_identity.peer.piece)
 
-    list_service_type = htypes.test_list_service.test_list_service
-    type_ref = services.types.reverse_resolve(list_service_type)
+    int_t_ref = services.types.reverse_resolve(tInt)
+    string_list_t_ref = services.types.reverse_resolve(TList(tString))
+    service_ot = htypes.list_object_type.list_ot(
+        command_list=[],
+        column_list=[
+            htypes.list_object_type.column('key', int_t_ref),
+            htypes.list_object_type.column('key', string_list_t_ref),
+            ],
+        )
+    service_ot_ref = services.mosaic.put(service_ot)
+    row_t = list_row_t(services.mosaic, services.types, service_ot, 'test_list_service')
+
     object_id = 'test_list_service_object'
     list_service = list_service_t(
-        type_ref=type_ref,
+        type_ref=service_ot_ref,
         peer_ref=master_peer_ref,
         object_id=object_id,
         key_field='key',
@@ -82,7 +112,7 @@ def test_list_service(services, htypes):
     services.endpoint_registry.register(master_identity, rpc_endpoint)
 
     servent_called_event = threading.Event()
-    servant = Servant(list_service_type.row_t, servent_called_event)
+    servant = Servant(row_t, servent_called_event)
     rpc_endpoint.register_servant(object_id, servant)
 
     server = services.tcp_server()
@@ -100,6 +130,7 @@ def test_list_service(services, htypes):
             'tcp_transport',
             'rpc',
             'object_type',
+            'list_object_type',
             'list_object',
             ],
         code_module_list=[

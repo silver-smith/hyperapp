@@ -1,0 +1,10 @@
+from object_type import object_type
+
+
+column = record:
+  id: string
+  type_ref: ref
+
+
+list_ot = record(object_type):
+  column_list: column list

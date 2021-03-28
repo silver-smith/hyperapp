@@ -1,5 +1,0 @@
-string_list_alias = string list
-
-test_list_service = list_service_type:
-  key: int
-  value_list: string_list_alias

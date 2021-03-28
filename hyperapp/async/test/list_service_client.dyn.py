@@ -2,7 +2,15 @@ import logging
 import threading
 from types import SimpleNamespace
 
-from hyperapp.common.htypes import bundle_t, list_service_t
+from hyperapp.common.htypes import (
+    field_mt,
+    record_mt,
+    request_mt,
+    interface_mt,
+    name_wrapped_mt,
+    bundle_t,
+    list_service_t,
+    )
 from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common.module import Module
 
@@ -13,25 +21,41 @@ from .simple_list_object import SimpleListObject
 log = logging.getLogger(__name__)
 
 
+def list_interface_ref(mosaic, list_ot, name):
+    field_list = [
+        field_mt(column.id, column.type_ref)
+        for column in list_ot.column_list
+        ]
+    row_mt = record_mt(None, field_list)
+    row_ref = mosaic.put(row_mt)
+    named_row_ref = mosaic.put(name_wrapped_mt(f'{name}_row', row_ref))
+
+    rows_field = field_mt('rows', named_row_ref)
+    get_method_ref = mosaic.put(request_mt('get', [], [rows_field]))
+    interface_ref = mosaic.put(interface_mt(None, [get_method_ref]))
+    named_interface_ref = mosaic.put(name_wrapped_mt(f'{name}_interface', interface_ref))
+    return named_interface_ref
+
+
 class TestListService(SimpleListObject):
 
     @classmethod
-    async def from_piece(cls, piece, my_identity, types, async_rpc_endpoint, async_rpc_proxy):
-        service_type = types.resolve(piece.type_ref)
-        iface_ref = types.reverse_resolve(service_type.interface)
+    async def from_piece(cls, piece, my_identity, mosaic, async_rpc_endpoint, async_rpc_proxy):
+        list_ot = mosaic.resolve_ref(piece.type_ref).value
+        interface_ref = list_interface_ref(mosaic, list_ot, 'test_list_service')
         service = htypes.rpc.endpoint(
             peer_ref=piece.peer_ref,
-            iface_ref=iface_ref,
+            iface_ref=interface_ref,
             object_id=piece.object_id,
             )
         rpc_endpoint = async_rpc_endpoint()
         proxy = async_rpc_proxy(my_identity, rpc_endpoint, service)
-        return cls(types, service_type, piece.peer_ref, piece.object_id, piece.key_field, proxy)
+        return cls(mosaic, list_ot, piece.peer_ref, piece.object_id, piece.key_field, proxy)
 
-    def __init__(self, types, service_type, peer_ref, object_id, key_field, proxy):
+    def __init__(self, mosaic, list_ot, peer_ref, object_id, key_field, proxy):
         super().__init__()
-        self._types = types
-        self._service_type = service_type
+        self._mosaic = mosaic
+        self._list_ot = list_ot
         self._peer_ref = peer_ref
         self._object_id = object_id
         self._key_field = key_field
@@ -43,9 +67,9 @@ class TestListService(SimpleListObject):
 
     @property
     def piece(self):
-        type_ref = self._types.reverse_resolve(self._service_type)
+        list_ot_ref = self._mosaic.put(self._list_ot)
         return list_service_t(
-            type_ref=type_ref,
+            type_ref=list_ot_ref,
             peer_ref=self._peer_ref,
             object_id=self._object_id,
             )
@@ -78,7 +102,7 @@ class ThisModule(Module):
 
         services.object_registry.register_actor(
             list_service_t, TestListService.from_piece,
-            services.types, services.async_rpc_endpoint, services.async_rpc_proxy)
+            services.mosaic, services.async_rpc_endpoint, services.async_rpc_proxy)
 
     async def async_init(self, services):
         log.info("List service async run:")
