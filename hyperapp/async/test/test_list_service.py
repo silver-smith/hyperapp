@@ -78,6 +78,7 @@ def test_list_service(services, htypes, code):
     string_list_t_ref = services.types.reverse_resolve(TList(tString))
     service_ot = htypes.list_object_type.list_ot(
         command_list=[],
+        key_column_id='key',
         column_list=[
             htypes.list_object_type.column('key', int_t_ref),
             htypes.list_object_type.column('value_list', string_list_t_ref),
