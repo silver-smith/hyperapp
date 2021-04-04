@@ -18,7 +18,7 @@ class Transport:
         route_list = self._route_table.peer_route_list(receiver_peer_ref)
         if not route_list:
             raise RuntimeError(f"No route for peer {receiver_peer_ref}")
-        route, *_ = route_list
+        route, *_ = [route for route in route_list if route.available]
         log.info("Send parcel %s by route %s (all routes: %s)", parcel, route, route_list)
         route.send(parcel)
 

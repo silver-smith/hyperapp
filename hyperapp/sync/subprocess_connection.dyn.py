@@ -25,6 +25,10 @@ class SubprocessRoute:
     def piece(self):
         return None
 
+    @property
+    def available(self):
+        return True
+
     def send(self, parcel):
         parcel_ref = self._mosaic.put(parcel.piece)
         parcel_bundle = self._ref_collector([parcel_ref]).bundle

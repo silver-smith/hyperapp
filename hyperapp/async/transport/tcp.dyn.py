@@ -87,6 +87,10 @@ class Route:
         host, port = self._address
         return htypes.tcp_transport.route(host, port)
 
+    @property
+    def available(self):
+        return self._client_factory is not None
+
     async def send(self, parcel):
         if not self._client_factory:
             raise RuntimeError("Can not send parcel using TCP to myself")

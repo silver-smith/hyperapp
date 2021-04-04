@@ -133,6 +133,10 @@ class Route:
         host, port = self._address
         return htypes.tcp_transport.route(host, port)
 
+    @property
+    def available(self):
+        return self._client_factory is not None
+
     def send(self, parcel):
         if not self._client_factory:
             raise RuntimeError("Can not send parcel using TCP to myself")
@@ -148,6 +152,10 @@ class IncomingConnectionRoute:
     @property
     def piece(self):
         return None  # Not persistable.
+
+    @property
+    def available(self):
+        return True
 
     def send(self, parcel):
         if self._connection.closed:
