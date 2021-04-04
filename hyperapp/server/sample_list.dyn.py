@@ -1,3 +1,5 @@
+import logging
+
 from hyperapp.common.htypes import (
     tInt,
     tString,
@@ -9,6 +11,8 @@ from hyperapp.common.module import Module
 from . import htypes
 from .list_object import list_row_t
 
+log = logging.getLogger(__name__)
+
 
 class Servant:
 
@@ -18,9 +22,9 @@ class Servant:
     def get(self, request):
         log.info("Servant.get is called")
         return [
-            self._row_t(1, ['first row']),
-            self._row_t(2, ['second row']),
-            self._row_t(3, ['third row']),
+            self._row_t(1, 'first row'),
+            self._row_t(2, 'second row'),
+            self._row_t(3, 'third row'),
             ]
 
 
