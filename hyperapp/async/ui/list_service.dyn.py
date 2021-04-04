@@ -50,6 +50,7 @@ class ListService(SimpleListObject):
             type_ref=list_ot_ref,
             peer_ref=self._peer_ref,
             object_id=self._object_id,
+            key_field=self._key_field,
             )
 
     @property
