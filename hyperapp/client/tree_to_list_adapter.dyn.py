@@ -39,7 +39,7 @@ class TreeToListAdapter(ListObject):
         return '%s:/%s' % (self._tree_object.title, '/'.join(str(item) for item in self._path))
 
     @property
-    def data(self):
+    def piece(self):
         return htypes.tree_to_list_adapter.tree_to_list_adapter(self._tree_object_ref, self._path)
 
     @property
@@ -64,7 +64,7 @@ class TreeToListAdapter(ListObject):
 
     @property
     def _tree_object_ref(self):
-        return self._mosaic.put(self._tree_object.data)
+        return self._mosaic.put(self._tree_object.piece)
 
     def _process_tree_fetch_results(self, path, item_list):
         if list(path) != self._path:  # path may also be tuple
@@ -109,7 +109,7 @@ class TreeToListLayout(AbstractMultiItemObjectLayout):
         self._object_to_adapter = weakref.WeakKeyDictionary()
 
     @property
-    def data(self):
+    def piece(self):
         base_object_type_ref = self._mosaic.put(self._base_object_type)
         return htypes.tree_to_list_adapter.tree_to_list_adapter_layout(base_object_type_ref, self._command_list_data)
 

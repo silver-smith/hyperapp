@@ -78,7 +78,7 @@ class ParamsEditor(RecordObject):
         return f"Parameters for {self._target_command_id}"
 
     @property
-    def data(self):
+    def piece(self):
         return htypes.params_editor.params_editor(
             target_piece_ref=self._mosaic.put(self._target_piece),
             target_command_id=self._target_command_id,
@@ -89,7 +89,7 @@ class ParamsEditor(RecordObject):
                 ],
             fields=[
                 htypes.params_editor.field(
-                    name, self._mosaic.put(field_object.data))
+                    name, self._mosaic.put(field_object.piece))
                 for name, field_object in self.fields.items()
                 ],
             )

@@ -143,7 +143,7 @@ class GlobalLayoutEditor(LayoutEditor):
         return "Global view layout"
 
     @property
-    def data(self):
+    def piece(self):
         return htypes.layout_editor.view_layout_editor()
 
     async def fetch_items(self, path):
@@ -186,7 +186,7 @@ class ObjectLayoutEditor(LayoutEditor):
             return f"Edit layout for type: {self._object_type._t.name}"
 
     @property
-    def data(self):
+    def piece(self):
         object_type_ref = self._mosaic.put(self._object_type)
         origin_object_type_ref = self._mosaic.put_opt(self._origin_object_type)
         return htypes.layout_editor.object_layout_editor(object_type_ref, origin_object_type_ref, self._origin_command_id)
@@ -216,7 +216,7 @@ class ObjectLayoutEditor(LayoutEditor):
         chooser_ref = self._mosaic.put(chooser)
         layout_data_maker_field = htypes.params_editor.field('layout_data_maker', chooser_ref)
         return htypes.params_editor.params_editor(
-            target_piece_ref=self._mosaic.put(self.data),
+            target_piece_ref=self._mosaic.put(self.piece),
             target_command_id=self._replace_impl.id,
             bound_arguments=[],
             fields=[layout_data_maker_field],
@@ -227,7 +227,7 @@ class ObjectLayoutEditor(LayoutEditor):
         layout_data = await layout_data_maker(self._object_type)
         layout = await self._object_layout_registry.animate(layout_data, ['root'], self._layout_handle.watcher)
         await self._layout_handle.set_layout(layout)
-        return self.data
+        return self.piece
 
 
 class ThisModule(ClientModule):

@@ -43,9 +43,9 @@ class CodeCommandChooser(SimpleListObject, Chooser):
         return f"Commands for: {self._object.title}"
 
     @property
-    def data(self):
-        piece_ref = self._mosaic.put(self._object.data)
-        layout_ref = self._mosaic.put(self._layout.data)
+    def piece(self):
+        piece_ref = self._mosaic.put(self._object.piece)
+        layout_ref = self._mosaic.put(self._layout.piece)
         return htypes.code_command_chooser.code_command_chooser(piece_ref, layout_ref)
 
     @property

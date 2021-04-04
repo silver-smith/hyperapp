@@ -19,7 +19,7 @@ class MenuBarLayout(GlobalLayout):
         self._command_hub = command_hub
 
     @property
-    def data(self):
+    def piece(self):
         return htypes.menu_bar.menu_bar()
 
     async def create_view(self):

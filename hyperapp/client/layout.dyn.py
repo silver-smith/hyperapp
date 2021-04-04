@@ -21,7 +21,7 @@ class Layout(Commander, metaclass=abc.ABCMeta):
 
     # todo: use abstractproperty
     @property
-    def data(self):
+    def piece(self):
         raise NotImplementedError(self.__class__)
 
     @abc.abstractmethod

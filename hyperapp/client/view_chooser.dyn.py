@@ -49,7 +49,7 @@ class ViewChooser(SimpleListObject, Chooser):
         return 'Choose view'
 
     @property
-    def data(self):
+    def piece(self):
         object_type_ref = self._mosaic.put(self._object_type)
         return htypes.view_chooser.view_chooser(object_type_ref)
 

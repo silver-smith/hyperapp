@@ -7,7 +7,7 @@ class SelfCommand:
         self.id = id
         self.kind = 'object'
         self.resource_key = None  # todo
-        self._piece = object.data
+        self._piece = object.piece
 
     def is_enabled(self):
         return True

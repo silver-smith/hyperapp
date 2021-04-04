@@ -44,7 +44,7 @@ class DataViewer(TreeObject):
         return "{} ({})".format(ref_repr(self._data_ref), self._t.name)
 
     @property
-    def data(self):
+    def piece(self):
         return htypes.data_viewer.data_viewer(self._data_ref)
 
     @property

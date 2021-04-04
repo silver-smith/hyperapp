@@ -21,9 +21,9 @@ class ObjectLayoutAssociationRepository:
         self._dir = dir
 
     def associate_type(self, object_type, layout):
-        _log.info("Associate object type %s with layout %s", object_type, layout.data)
+        _log.info("Associate object type %s with layout %s", object_type, layout.piece)
         object_type_ref = self._mosaic.put(object_type)
-        layout_ref = self._mosaic.put(layout.data)
+        layout_ref = self._mosaic.put(layout.piece)
         record = htypes.object_layout_association.type_repository_record(object_type_ref, layout_ref)
         data = packet_coders.encode('yaml', record)
         path = self._type_file_path(object_type)
@@ -31,9 +31,9 @@ class ObjectLayoutAssociationRepository:
         path.write_bytes(data)
 
     def associate_command(self, origin_object_type, command_id, layout):
-        _log.info("Associate object command %s/%s with layout %s", origin_object_type, command_id, layout.data)
+        _log.info("Associate object command %s/%s with layout %s", origin_object_type, command_id, layout.piece)
         origin_object_type_ref = self._mosaic.put(origin_object_type)
-        layout_ref = self._mosaic.put(layout.data)
+        layout_ref = self._mosaic.put(layout.piece)
         record = htypes.object_layout_association.command_repository_record(origin_object_type_ref, command_id, layout_ref)
         data = packet_coders.encode('yaml', record)
         path = self._command_file_path(origin_object_type, command_id)
@@ -49,7 +49,7 @@ class ObjectLayoutAssociationRepository:
         data = path.read_bytes()
         record = packet_coders.decode('yaml', data, htypes.object_layout_association.type_repository_record)
         layout = await self._object_layout_registry.invite(record.layout_ref, ['root'], layout_watcher)
-        _log.info("Resolve association of object type %s: found %s", object_type, layout.data)
+        _log.info("Resolve association of object type %s: found %s", object_type, layout.piece)
         return layout
 
     async def resolve_command(self, origin_object_type, command_id, layout_watcher):
@@ -61,7 +61,7 @@ class ObjectLayoutAssociationRepository:
         data = path.read_bytes()
         record = packet_coders.decode('yaml', data, htypes.object_layout_association.command_repository_record)
         layout = await self._object_layout_registry.invite(record.layout_ref, ['root'], layout_watcher)
-        _log.info("Resolve association of command %s/%s: found %s", origin_object_type, command_id, layout.data)
+        _log.info("Resolve association of command %s/%s: found %s", origin_object_type, command_id, layout.piece)
         return layout
 
     def _type_file_path(self, object_type):

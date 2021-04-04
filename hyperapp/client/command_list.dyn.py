@@ -60,9 +60,9 @@ class CommandList(SimpleListObject):
         return f"Commands for: {self._layout_handle.object_type._t.name}"
 
     @property
-    def data(self):
-        piece_ref = self._mosaic.put(self._object.data)
-        layout_handle_ref = self._mosaic.put(self._layout_handle.data)
+    def piece(self):
+        piece_ref = self._mosaic.put(self._object.piece)
+        layout_handle_ref = self._mosaic.put(self._layout_handle.piece)
         return htypes.command_list.command_list(piece_ref, layout_handle_ref)
 
     @property
@@ -139,13 +139,13 @@ class CommandList(SimpleListObject):
 
     @object_command('add', kind='element')
     async def _add_command(self, path):
-        piece_ref = self._mosaic.put(self._object.data)
-        layout_ref = self._mosaic.put(self._layout.data)
+        piece_ref = self._mosaic.put(self._object.piece)
+        layout_ref = self._mosaic.put(self._layout.piece)
         chooser = htypes.code_command_chooser.code_command_chooser(piece_ref, layout_ref)
         chooser_ref = self._mosaic.put(chooser)
         code_command_id_field = htypes.params_editor.field('code_command_id', chooser_ref)
         return htypes.params_editor.params_editor(
-            target_piece_ref=self._mosaic.put(self.data),
+            target_piece_ref=self._mosaic.put(self.piece),
             target_command_id=self._add_command_impl.id,
             bound_arguments=[],
             fields=[code_command_id_field],
@@ -157,7 +157,7 @@ class CommandList(SimpleListObject):
         command = self._layout.add_command(self._object, new_command_id, code_command_id)
         self._command_dict[command.id] = command
         self._object_layout_association.associate_type(self._layout_handle.object_type, self._layout)
-        return self.data
+        return self.piece
 
     def _make_command_id_unique(self, command_id):
         if command_id not in self._command_dict:

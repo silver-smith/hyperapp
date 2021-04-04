@@ -23,7 +23,7 @@ class ParamsEditorSample(SimpleListObject):
         return 'Param editor samples'
 
     @property
-    def data(self):
+    def piece(self):
         return htypes.params_editor_sample.params_editor_sample()
 
     @property

@@ -81,7 +81,7 @@ class LayoutHandle:
         self._watcher.subscribe(self)
 
     @property
-    def data(self):
+    def piece(self):
         object_type_ref = self._mosaic.put(self._object_type)
         if self._origin_object_type:
             origin_object_type_ref = self._mosaic.put(self._object_type)

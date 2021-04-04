@@ -39,7 +39,7 @@ class Object(Commander):
 
     # todo: use abstractproperty
     @property
-    def data(self):
+    def piece(self):
         raise NotImplementedError(self.__class__)
 
     @property

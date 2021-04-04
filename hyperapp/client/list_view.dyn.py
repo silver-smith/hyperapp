@@ -222,7 +222,7 @@ class ListViewLayout(MultiItemObjectLayout):
         super().__init__(mosaic, path, object_type, command_list_data, resource_resolver)
 
     @property
-    def data(self):
+    def piece(self):
         return htypes.list_view.list_layout(self._object_type_ref, self._command_list_data)
 
     async def visual_item(self):

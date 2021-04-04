@@ -21,7 +21,7 @@ class CommandPaneLayout(GlobalLayout):
         self._command_hub = command_hub
 
     @property
-    def data(self):
+    def piece(self):
         return htypes.command_pane.command_pane()
 
     async def create_view(self):

@@ -57,9 +57,9 @@ class TabLayout(GlobalLayout):
             ]
 
     @property
-    def data(self):
+    def piece(self):
         tab_ref_list = [
-            self._mosaic.put(tab.layout.data)
+            self._mosaic.put(tab.layout.piece)
             for tab in self._tab_list
             ]
         if self._widget:
@@ -154,7 +154,7 @@ class TabLayout(GlobalLayout):
     @command('duplicate_tab')
     async def _duplicate_tab(self, tab_idx):
         tab = self._tab_list[tab_idx]
-        tab_ref = self._mosaic.put(tab.layout.data)
+        tab_ref = self._mosaic.put(tab.layout.piece)
         await self._create_and_insert_tab(tab_idx, tab_ref)
 
     async def _create_and_insert_tab(self, tab_idx, tab_ref):
@@ -193,7 +193,7 @@ class TabLayout(GlobalLayout):
             RemoveVisualItemDiff([*self._path, tab.name])
             for tab in self._tab_list]
         old_count = len(self._tab_list)
-        new_tab = await self._create_tab(self._mosaic.put(self.data))
+        new_tab = await self._create_tab(self._mosaic.put(self.piece))
         self._tab_list = [new_tab]
         if self._widget:
             while self._widget.count() > 1:

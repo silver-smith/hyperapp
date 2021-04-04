@@ -94,10 +94,10 @@ class RecordViewLayout(ObjectLayout):
             self._field_layout_dict[field.id] = layout
 
     @property
-    def data(self):
+    def piece(self):
         field_layout_list = []
         for field_id, layout in self._field_layout_dict.items():
-            layout_ref = self._mosaic.put(layout.data)
+            layout_ref = self._mosaic.put(layout.piece)
             field_layout_list.append(htypes.record_view.record_layout_field(field_id, layout_ref))
         return htypes.record_view.record_layout(self._object_type_ref, self._command_list_data, field_layout_list)
 
@@ -142,6 +142,6 @@ class ThisModule(ClientModule):
         for field in object_type.field_type_list:
             field_object_type = await self._async_web.summon(field.object_type_ref)
             layout_handle = await self._layout_handle_from_object_type(field_object_type)
-            layout_ref = self._mosaic.put(layout_handle.layout.data)
+            layout_ref = self._mosaic.put(layout_handle.layout.piece)
             field_layout_list.append(htypes.record_view.record_layout_field(field.id, layout_ref))
         return htypes.record_view.record_layout(object_type_ref, command_list, field_layout_list)

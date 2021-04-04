@@ -44,7 +44,7 @@ class WindowLayout(GlobalLayout):
         self._central_view_layout = await view_registry.invite(state.central_view_ref, [*self._path, 'central_view'], self._command_hub, self._view_opener)
 
     @property
-    def data(self):
+    def piece(self):
         if self._widget:
             qsize = self._widget.size()
             size = htypes.window.size(qsize.width(), qsize.height())
@@ -53,9 +53,9 @@ class WindowLayout(GlobalLayout):
         else:
             size, pos = self._size, self._pos
         return htypes.window.window(
-            menu_bar_ref=self._mosaic.put(self._menu_bar_layout.data),
-            command_pane_ref=self._mosaic.put(self._command_pane_layout.data),
-            central_view_ref=self._mosaic.put(self._central_view_layout.data),
+            menu_bar_ref=self._mosaic.put(self._menu_bar_layout.piece),
+            command_pane_ref=self._mosaic.put(self._command_pane_layout.piece),
+            central_view_ref=self._mosaic.put(self._central_view_layout.piece),
             size=size,
             pos=pos,
             )

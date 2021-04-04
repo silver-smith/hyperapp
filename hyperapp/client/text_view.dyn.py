@@ -98,7 +98,7 @@ class TextViewLayout(ObjectLayout):
         self._editable = editable
 
     @property
-    def data(self):
+    def piece(self):
         return htypes.text.text_edit_layout(self._object_type_ref, self._command_list_data, self._editable)
 
     async def create_view(self, command_hub, object):

@@ -33,7 +33,7 @@ class FsTree(TreeObject):
         return '%s' % self._host
 
     @property
-    def data(self):
+    def piece(self):
         return htypes.fs.fs(
             fs_service_ref=self._fs_service.to_ref(),
             host=self._host,

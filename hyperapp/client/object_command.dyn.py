@@ -85,7 +85,7 @@ class BoundObjectCommand:
             signature = inspect.signature(self._class_method)
             bound_arguments = signature.bind_partial(object, *full_args, **full_kw)
             _log.info("BoundObjectCommand: run param editor: (%r) args=%r kw=%r", self, full_args, full_kw)
-            result = await this_module.params_editor(object.data, self, bound_arguments, full_args, full_kw)
+            result = await this_module.params_editor(object.piece, self, bound_arguments, full_args, full_kw)
         else:
             result = await self._run_impl(object, full_args, full_kw)
         _log.info("BoundObjectCommand: run result: %r", result)

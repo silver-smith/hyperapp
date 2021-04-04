@@ -24,7 +24,7 @@ class TextObject(Object):
         return 'Local text object'
 
     @property
-    def data(self):
+    def piece(self):
         return htypes.text.text(self._text)
 
     @property
@@ -63,7 +63,7 @@ class WikiTextObject(TextObject):
         return 'wiki text'
 
     @property
-    def data(self):
+    def piece(self):
         return htypes.text.wiki_text(self._text, self._ref_list)
 
     async def open_ref(self, id):

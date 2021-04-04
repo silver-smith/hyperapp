@@ -86,7 +86,7 @@ class MasterDetailsLayout(ObjectLayout):
         self._layout_watcher = layout_watcher
 
     @property
-    def data(self):
+    def piece(self):
         return htypes.master_details.master_details_layout(
             master_layout_ref=self._master_layout_ref,
             command_id=self._details_command_id,
@@ -114,7 +114,7 @@ class MasterDetailsLayout(ObjectLayout):
     @command('replace')
     async def _replace_view(self, path, view: LayoutRecMakerField):
         resource_key = self._object.hashable_resource_key
-        self._object_layout_overrides[resource_key] = self._mosaic.put(self.data)  # todo
+        self._object_layout_overrides[resource_key] = self._mosaic.put(self.piece)  # todo
         piece_ref = self._mosaic.put(self._piece)
         return htypes.layout_editor.object_layout_editor(piece_ref)
 

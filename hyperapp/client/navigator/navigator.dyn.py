@@ -111,8 +111,8 @@ class NavigatorLayout(GlobalLayout):
         self._history.append(_HistoryItem(object, None))
 
     @property
-    def data(self):
-        piece_ref = self._mosaic.put(self._current_object.data)
+    def piece(self):
+        piece_ref = self._mosaic.put(self._current_object.piece)
         return htypes.navigator.navigator(piece_ref)
 
     async def create_view(self):
@@ -120,7 +120,7 @@ class NavigatorLayout(GlobalLayout):
         return self._current_view
 
     async def visual_item(self):
-        piece = self._current_object.data
+        piece = self._current_object.piece
         return self.make_visual_item('Navigator', children=[
             self.make_visual_item(str(piece), name='current'),
             ])
@@ -194,8 +194,8 @@ class NavigatorLayout(GlobalLayout):
 
     @command('commands')
     async def _open_commands(self):
-        piece_ref = self._mosaic.put(self._current_object.data)
-        layout_handle_ref = self._mosaic.put(self._current_layout_handle.data)
+        piece_ref = self._mosaic.put(self._current_object.piece)
+        layout_handle_ref = self._mosaic.put(self._current_layout_handle.piece)
         piece = htypes.command_list.command_list(piece_ref, layout_handle_ref)
         await self._open_piece(piece)
 

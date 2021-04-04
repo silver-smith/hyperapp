@@ -31,7 +31,7 @@ class SampleTree(TreeObject):
         return 'Tree test'
 
     @property
-    def data(self):
+    def piece(self):
         return htypes.tree_view_sample.tree_view_sample_object()
 
     @property
@@ -114,7 +114,7 @@ class SampleArticle(RecordObject):
         return f"Sample list view article: {self._title}"
 
     @property
-    def data(self):
+    def piece(self):
         return htypes.tree_view_sample.tree_sample_article(self._title, self._text)
 
 
