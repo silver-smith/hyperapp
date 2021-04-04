@@ -3,7 +3,6 @@ import selectors
 import socket
 import threading
 
-from hyperapp.common.ref import ref_repr
 from hyperapp.common.module import Module
 
 from . import htypes
@@ -20,13 +19,16 @@ class Server:
         self._listen_socket = socket.socket()
         self._actual_address = None
 
+    def __repr__(self):
+        return f"<sync tcp Server:{address_to_str(self._actual_address)}>"
+
     def start(self, bind_address):
         self._listen_socket.bind(bind_address)
         self._listen_socket.listen(100)
         self._listen_socket.setblocking(False)
         self._selector.register(self._listen_socket, selectors.EVENT_READ, self._on_accept)
         self._actual_address = self._listen_socket.getsockname()
-        log.info("Listening on %s", address_to_str(self._actual_address))
+        log.info("%s: Listening.", self)
 
     @property
     def route(self):
@@ -34,7 +36,7 @@ class Server:
 
     def _on_accept(self, listen_sock, mask):
         sock, address = listen_sock.accept()
-        log.info("Accepted connection from %s", address_to_str(address))
+        log.info("%s: Accepted connection from %s", self, address_to_str(address))
         sock.setblocking(False)
         connection = self._connection_factory(address, sock)
         self._selector.register(sock, selectors.EVENT_READ, connection.on_read)
@@ -57,7 +59,7 @@ class Connection:
         self._this_route = IncomingConnectionRoute(self)
 
     def __repr__(self):
-        return f"TCP:{address_to_str(self._address)}"
+        return f"<sync tcp Connection from: {address_to_str(self._address)}>"
 
     @property
     def closed(self):
@@ -74,7 +76,7 @@ class Connection:
             if sent_size == 0:
                 raise RuntimeError(f"{self}: remote end closed connection")
             ofs += sent_size
-        log.info("%s: Parcel is sent: %s", self, ref_repr(parcel_ref))
+        log.info("%s: Parcel is sent: %s", self, parcel_ref)
 
     def on_read(self, sock, mask):
         try:
@@ -99,12 +101,12 @@ class Connection:
 
     def _process_bundle(self, bundle):
         parcel_ref = bundle.roots[0]
-        log.info("%s: Received bundle: parcel: %s", self, ref_repr(parcel_ref))
+        log.info("%s: Received bundle: parcel: %s", self, parcel_ref)
         self._unbundler.register_bundle(bundle)
         parcel = self._parcel_registry.invite(parcel_ref)
         sender_ref = self._mosaic.put(parcel.sender.piece)
         # Add route first - it may be used during parcel processing.
-        log.info("%s will be routed via %s", ref_repr(sender_ref), self)
+        log.info("%s will be routed via established connection from: %s", sender_ref, self)
         self._route_table.add_route(sender_ref, self._this_route)
         self._transport.send_parcel(parcel)
 
@@ -120,7 +122,11 @@ class Route:
         self._address = address
 
     def __repr__(self):
-        return f'tcp_route({address_to_str(self._address)})'
+        if self._client_factory:
+            suffix = ''
+        else:
+            suffix = '/local'
+        return f"<sync tcp Route:{address_to_str(self._address)}{suffix}>"
 
     @property
     def piece(self):

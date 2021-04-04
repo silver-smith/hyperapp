@@ -19,6 +19,9 @@ class LocalRoute:
         self._identity = identity
         self._endpoint = endpoint
 
+    def __repr__(self):
+        return f'<sync LocalRoute to: {self._endpoint}>'
+
     @property
     def piece(self):
         return None

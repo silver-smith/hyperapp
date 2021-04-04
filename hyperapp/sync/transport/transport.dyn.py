@@ -1,6 +1,5 @@
 import logging
 
-from hyperapp.common.ref import ref_repr
 from hyperapp.common.module import Module
 
 log = logging.getLogger(__name__)
@@ -18,13 +17,13 @@ class Transport:
         receiver_peer_ref = self._mosaic.put(parcel.receiver.piece)
         route_list = self._route_table.peer_route_list(receiver_peer_ref)
         if not route_list:
-            raise RuntimeError(f"No route for peer {ref_repr(receiver_peer_ref)}")
+            raise RuntimeError(f"No route for peer {receiver_peer_ref}")
         route, *_ = route_list
-        log.info("Send parcel %s by route %s", parcel, route)
+        log.info("Send parcel %s by route %s (all routes: %s)", parcel, route, route_list)
         route.send(parcel)
 
     def send(self, receiver, sender_identity, ref_list):
-        log.info("Send ref list %s to %s from %s", [ref_repr(ref) for ref in ref_list], receiver, sender_identity)
+        log.info("Send ref list %s to %s from %s", ref_list, receiver, sender_identity)
         bundle = self._ref_collector(ref_list).bundle
         parcel = receiver.make_parcel(bundle, sender_identity)
         self.send_parcel(parcel)

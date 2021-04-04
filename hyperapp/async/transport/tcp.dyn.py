@@ -2,7 +2,6 @@ import asyncio
 import logging
 from functools import partial
 
-from hyperapp.common.ref import ref_repr
 from hyperapp.common.module import Module
 
 from . import htypes
@@ -28,14 +27,14 @@ class Connection:
         self._receive_task = asyncio.create_task(self.receive())
 
     def __repr__(self):
-        return f"TCP:{address_to_str(self._address)}"
+        return f"<async tcp Connection from: {address_to_str(self._address)}>"
 
     async def send(self, parcel):
         parcel_ref = self._mosaic.put(parcel.piece)
         bundle = self._ref_collector([parcel_ref]).bundle
         data = encode_tcp_packet(bundle)
         self._writer.write(data)
-        log.info("%s: Parcel is sent: %s", self, ref_repr(parcel_ref))
+        log.info("%s: Parcel is sent: %s", self, parcel_ref)
 
     async def receive(self):
         log.info("%s: Receive task started", self)
@@ -55,12 +54,12 @@ class Connection:
 
     async def _process_bundle(self, bundle):
         parcel_ref = bundle.roots[0]
-        log.info("%s: Received bundle: parcel: %s", self, ref_repr(parcel_ref))
+        log.info("%s: Received bundle: parcel: %s", self, parcel_ref)
         self._unbundler.register_bundle(bundle)
         parcel = self._parcel_registry.invite(parcel_ref)
         sender_ref = self._mosaic.put(parcel.sender.piece)
         # Add route first - it may be used during parcel processing.
-        log.info("%s will be routed via %s", ref_repr(sender_ref), self)
+        log.info("%s will be routed via %s", sender_ref, self)
         this_route = Route(self._address, self._client_factory)
         self._route_table.add_route(sender_ref, this_route)
         await self._transport.send_parcel(parcel)
@@ -77,7 +76,11 @@ class Route:
         self._address = address
 
     def __repr__(self):
-        return f'tcp_route({address_to_str(self._address)})'
+        if self._client_factory:
+            suffix = ''
+        else:
+            suffix = '/local'
+        return f"<async tcp Route:{address_to_str(self._address)}{suffix}>"
 
     @property
     def piece(self):

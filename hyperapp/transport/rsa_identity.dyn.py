@@ -171,6 +171,9 @@ class RsaParcel:
         self._encrypted_bundle = encrypted_bundle
         self._signature = signature
 
+    def __repr__(self):
+        return '<RsaParsel>'
+
     @property
     def piece(self):
         signature_ref = self._mosaic.put(self._signature.piece)

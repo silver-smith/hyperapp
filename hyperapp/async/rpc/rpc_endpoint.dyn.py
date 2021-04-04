@@ -29,6 +29,9 @@ class RpcEndpoint:
         registry.register_actor(htypes.rpc.request, self._handle_request)
         registry.register_actor(htypes.rpc.response, self._handle_response)
 
+    def __repr__(self):
+        return '<async RpcEndpoint>'
+
     def register_servant(self, object_id, servant):
         self._servant_by_id[object_id] = servant
 
