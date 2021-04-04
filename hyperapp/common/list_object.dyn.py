@@ -1,4 +1,5 @@
 from hyperapp.common.htypes import (
+    list_mt,
     field_mt,
     record_mt,
     request_mt,
@@ -25,7 +26,8 @@ def list_row_t(mosaic, types, list_ot, name):
 
 def list_interface_ref(mosaic, list_ot, name):
     named_row_ref = list_row_ref(mosaic, list_ot, name)
-    rows_field = field_mt('rows', named_row_ref)
+    row_list_ref = mosaic.put(list_mt(named_row_ref))
+    rows_field = field_mt('rows', row_list_ref)
     get_method_ref = mosaic.put(request_mt('get', [], [rows_field]))
     interface_ref = mosaic.put(interface_mt(None, [get_method_ref]))
     named_interface_ref = mosaic.put(name_wrapped_mt(f'{name}_interface', interface_ref))
