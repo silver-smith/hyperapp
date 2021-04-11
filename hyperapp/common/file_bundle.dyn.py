@@ -2,7 +2,6 @@ from functools import partial
 
 from hyperapp.common.htypes import bundle_t
 from hyperapp.common.htypes.packet_coders import packet_coders
-from hyperapp.common.visual_rep import pprint
 from hyperapp.common.module import Module
 
 
@@ -26,7 +25,6 @@ class FileBundle:
 
     def load_ref(self):
         bundle = packet_coders.decode(self._encoding, self.path.read_bytes(), bundle_t)
-        pprint(bundle, title='Bundle loaded from %s:' % self.path)
         self._unbundler.register_bundle(bundle)
         ref_count = len(bundle.roots)
         if ref_count != 1:
