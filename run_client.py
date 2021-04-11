@@ -89,7 +89,6 @@ code_module_list = [
     'client.layout_manager',
     'client.default_state_builder',
     'client.application_state_storage',
-    'async.ui.application_state',
     'client.module_command_registry',
     'async.ui.qt.qt_keys',
     'async.ui.object',
@@ -143,6 +142,7 @@ code_module_list = [
     'async.rpc.rpc_endpoint',
     'client.rpc_endpoint',
     'client.list_service',
+    'async.ui.application_state',
     ]
 
 
