@@ -29,8 +29,8 @@ class ModuleRegistry(object):
         for phase_num in range(1, MAX_INIT_PHASE_COUNT + 1):
             for module in self._module_list:
                 method = getattr(module, 'init_phase_{}'.format(phase_num), None)
-                log.info('Run init phase %d for %r', phase_num, module)
                 if method:
+                    log.info('Run init phase %d for %r', phase_num, module)
                     method(services)
 
     def enum_modules_method(self, method_name):
