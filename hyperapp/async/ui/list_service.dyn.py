@@ -18,15 +18,14 @@ class ListService(SimpleListObject):
             object_id=piece.object_id,
             )
         proxy = async_rpc_proxy(identity, rpc_endpoint, service)
-        return cls(mosaic, types, list_ot, piece.peer_ref, piece.object_id, piece.key_field, proxy)
+        return cls(mosaic, types, list_ot, piece.peer_ref, piece.object_id, proxy)
 
-    def __init__(self, mosaic, types, list_ot, peer_ref, object_id, key_field, proxy):
+    def __init__(self, mosaic, types, list_ot, peer_ref, object_id, proxy):
         super().__init__()
         self._mosaic = mosaic
         self._list_ot = list_ot
         self._peer_ref = peer_ref
         self._object_id = object_id
-        self._key_field = key_field
         self._proxy = proxy
         self._columns = [
             Column(

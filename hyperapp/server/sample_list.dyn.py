@@ -53,7 +53,6 @@ class ThisModule(Module):
             type_ref=service_ot_ref,
             peer_ref=server_peer_ref,
             object_id=object_id,
-            key_field='key',
             )
 
         servant = Servant(row_t)

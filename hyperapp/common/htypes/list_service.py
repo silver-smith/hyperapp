@@ -35,7 +35,6 @@ list_service_t = TRecord('list_service', {
     'type_ref': ref_t,  # list service type
     'peer_ref': ref_t,
     'object_id': tString,
-    'key_field': tString,
     })
 
 
