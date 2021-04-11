@@ -1,4 +1,0 @@
-from object_type import object_type
-
-
-list_object_type = record(object_type)

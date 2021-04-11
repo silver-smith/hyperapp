@@ -92,7 +92,11 @@ class TreeToListLayout(AbstractMultiItemObjectLayout):
             htypes.object_type.object_command('enter', None),
             htypes.object_type.object_command('open_parent', None),
             ]
-        return htypes.list_object.list_object_type(tuple((*base_object_type.command_list, *adapter_command_list)))
+        return htypes.list_object_type.list_ot(
+            command_list=tuple((*base_object_type.command_list, *adapter_command_list)),
+            key_column_id='id',  # todo
+            column_list=(),
+            )
 
     @classmethod
     async def from_data(cls, state, path, layout_watcher, mosaic, async_web, object_layout_registry, default_object_layouts):

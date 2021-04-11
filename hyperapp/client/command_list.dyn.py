@@ -179,6 +179,8 @@ class ThisModule(ClientModule):
                 htypes.object_type.object_command('layout', None),
                 htypes.object_type.object_command('add', None),
                 ),
+            key_column_id='id',
+            column_list=(),  # todo
             )
         CommandList.type = command_list_type
 

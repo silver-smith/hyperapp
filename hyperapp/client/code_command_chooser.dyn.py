@@ -22,6 +22,8 @@ class CodeCommandChooser(SimpleListObject, Chooser):
         command_list=(
             htypes.object_type.object_command('choose', None),
             ),
+        key_column_id='id',
+        column_list=[],  # todo
         )
 
     @classmethod

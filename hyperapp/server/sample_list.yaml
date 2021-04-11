@@ -1,5 +1,7 @@
 import:
   types:
+    object_type:
+      - object_command
     list_object_type:
       - column
       - list_ot

@@ -1,7 +1,7 @@
 import:
   types:
-    list_object:
-      - list_object_type
+    list_object_type:
+      - list_ot
   code:
     - async.ui.object
     - client.column

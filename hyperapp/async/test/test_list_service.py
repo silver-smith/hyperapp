@@ -119,7 +119,6 @@ def test_list_service(services, htypes, code):
             'rpc',
             'object_type',
             'list_object_type',
-            'list_object',
             ],
         code_module_list=[
             'common.visitor',

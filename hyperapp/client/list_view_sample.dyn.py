@@ -128,6 +128,8 @@ class ThisModule(ClientModule):
                 htypes.object_type.object_command('open', services.mosaic.put(TextObject.type)),
                 htypes.object_type.object_command('edit', services.mosaic.put(sample_article_type)),
                 ),
+            key_column_id='idx',
+            column_list=(),  # todo
             )
         SampleList.type = sample_list_type
         SampleArticle.type = sample_article_type

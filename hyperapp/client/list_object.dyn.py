@@ -62,7 +62,7 @@ class ListObserver(ObjectObserver):
 
 class ListObject(Object, metaclass=abc.ABCMeta):
 
-    type = htypes.list_object.list_object_type(command_list=())
+    type = htypes.list_object_type.list_ot(command_list=(), key_column_id='id', column_list=())
 
     # return Column list
     @abc.abstractproperty

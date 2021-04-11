@@ -2,8 +2,8 @@ import:
   types:
     object_type:
       - object_command
-    list_object:
-      - list_object_type
+    list_object_type:
+      - list_ot
     tree_to_list_adapter:
       - tree_to_list_adapter
       - tree_to_list_adapter_layout
