@@ -140,6 +140,7 @@ code_module_list = [
     'async.transport.tcp',
     'async.rpc.rpc_proxy',
     'async.rpc.rpc_endpoint',
+    'client.rpc_endpoint',
     'async.ui.list_service',
     ]
 
