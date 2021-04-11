@@ -99,6 +99,7 @@ code_module_list = [
     'async.ui.command',
     'client.list_object',
     'client.simple_list_object',
+    'async.ui.list_service',
     'client.record_object',
     'client.chooser',
     'client.params_editor_object',
@@ -141,7 +142,7 @@ code_module_list = [
     'async.rpc.rpc_proxy',
     'async.rpc.rpc_endpoint',
     'client.rpc_endpoint',
-    'async.ui.list_service',
+    'client.list_service',
     ]
 
 

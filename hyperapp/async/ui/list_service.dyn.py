@@ -1,5 +1,4 @@
 from hyperapp.common.htypes import list_service_t
-from hyperapp.common.module import Module
 
 from . import htypes
 from .list_object import list_interface_ref
@@ -59,14 +58,3 @@ class ListService(SimpleListObject):
     async def get_all_items(self):
         row_list = await self._proxy.get()
         return [row for row in row_list]
-
-
-class ThisModule(Module):
-
-    def __init__(self, module_name, services, config):
-        super().__init__(module_name)
-
-    async def async_init(self, services):
-        services.object_registry.register_actor(
-            list_service_t, ListService.from_piece,
-            services.client_identity, services.mosaic, services.types, services.client_rpc_endpoint, services.async_rpc_proxy)

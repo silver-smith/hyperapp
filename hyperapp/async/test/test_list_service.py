@@ -156,6 +156,7 @@ def test_list_service(services, htypes, code):
             'client.column',
             'client.list_object',
             'client.simple_list_object',
+            'async.ui.list_service',
             'async.test.list_service_client',
             ],
         config = {
