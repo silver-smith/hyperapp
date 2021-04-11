@@ -1,3 +1,4 @@
+import abc
 import logging
 import sys
 import weakref
@@ -25,7 +26,7 @@ class ObjectObserver(object):
         pass
 
 
-class Object(Commander):
+class Object(Commander, metaclass=abc.ABCMeta):
 
     ObserverArgs = namedtuple('ObserverArgs', 'args kw')
 
@@ -34,13 +35,14 @@ class Object(Commander):
         self._init_observers()
 
     @property
+    @abc.abstractmethod
     def title(self):
-        raise NotImplementedError(self.__class__)
+        pass
 
-    # todo: use abstractproperty
     @property
+    @abc.abstractmethod
     def piece(self):
-        raise NotImplementedError(self.__class__)
+        pass
 
     @property
     def category_list(self):

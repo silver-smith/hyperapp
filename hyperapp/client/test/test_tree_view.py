@@ -84,6 +84,14 @@ def object(services):
     class StubObject(services.TreeObject):
 
         @property
+        def piece(self):
+            raise NotImplementedError()
+
+        @property
+        def title(self):
+            raise NotImplementedError()
+
+        @property
         def columns(self):
             return [
                 services.Column('name', is_key=True),

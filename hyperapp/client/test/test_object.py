@@ -18,11 +18,22 @@ def code_module_list():
 
 
 def test_object_observers(code):
+
+    class StubObject(code.object.Object):
+
+        @property
+        def piece(self):
+            raise NotImplementedError()
+
+        @property
+        def title(self):
+            raise NotImplementedError()
+
     observer_1 = code.object.ObjectObserver()
     observer_2 = code.object.ObjectObserver()
     observer_1.object_changed = MagicMock()
     observer_2.object_changed = MagicMock()
-    object = code.object.Object()
+    object = StubObject()
     object.observers_arrived = MagicMock()
     object.observers_gone = MagicMock()
     object.subscribe(observer_1, 1, key=11)
