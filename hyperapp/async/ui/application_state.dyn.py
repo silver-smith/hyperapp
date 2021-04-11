@@ -18,7 +18,8 @@ class ThisModule(Module):
 
     async def async_init(self, services):
         await self._load_state()
-        await self._stop_event.wait()
+
+    async def async_stop(self):
         self._save_state()
 
     async def _load_state(self):
