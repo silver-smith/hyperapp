@@ -1,8 +1,4 @@
-import logging
-
 from hyperapp.common.module import Module
-
-log = logging.getLogger(__name__)
 
 
 class ThisModule(Module):
