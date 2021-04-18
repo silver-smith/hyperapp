@@ -19,6 +19,8 @@ type_module_list = [
     'object_type',
     'list_object_type',
     'rpc_command',
+    'layout',
+    'text',
     ]
 
 code_module_list = [

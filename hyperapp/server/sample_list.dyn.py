@@ -17,7 +17,8 @@ log = logging.getLogger(__name__)
 
 class Servant:
 
-    def __init__(self, row_t):
+    def __init__(self, mosaic, row_t):
+        self._mosaic = mosaic
         self._row_t = row_t
 
     def get(self, request):
@@ -30,6 +31,9 @@ class Servant:
 
     def open(self, request, item_key):
         log.info("Servant.open(%r) is called", item_key)
+        text = "Opened item: {}".format(item_key)
+        piece = htypes.text.text(text)
+        return self._mosaic.put(piece)
 
 
 class ThisModule(Module):
@@ -70,7 +74,7 @@ class ThisModule(Module):
                 ],
             )
 
-        servant = Servant(row_t)
+        servant = Servant(services.mosaic, row_t)
         services.server_rpc_endpoint.register_servant(object_id, servant)
 
         services.local_server_ref.save_piece(list_service)
