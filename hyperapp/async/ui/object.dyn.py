@@ -1,6 +1,5 @@
 import abc
 import logging
-import sys
 import weakref
 from dataclasses import dataclass, field
 from collections import namedtuple
