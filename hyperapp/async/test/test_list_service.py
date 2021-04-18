@@ -126,6 +126,7 @@ def test_list_service(services, htypes, code):
             'common.unbundler',
             'common.weak_key_dictionary_with_callback',
             'common.list_object',
+            'common.resource_key',
             'transport.identity',
             'transport.rsa_identity',
             'transport.route_table',

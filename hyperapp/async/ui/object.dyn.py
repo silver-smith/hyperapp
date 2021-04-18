@@ -6,9 +6,8 @@ from dataclasses import dataclass, field
 from collections import namedtuple
 from typing import Dict, List
 
-from hyperapp.common.htypes import hashable_resource_key, phony_ref, resource_key_t
-
 from .weak_key_dictionary_with_callback import WeakKeyDictionaryWithCallback
+from .resource_key import module_resource_key
 from .commander import Commander
 
 log = logging.getLogger(__name__)
@@ -52,13 +51,7 @@ class Object(Commander, metaclass=abc.ABCMeta):
     def resource_key(cls, path=()):
         class_name = cls.__name__
         module_name = cls.__module__
-        module = sys.modules[module_name]
-        module_ref = module.__dict__.get('__module_ref__') or phony_ref(module_name.split('.')[-1])
-        return resource_key_t(module_ref, [class_name, *path])
-
-    @property
-    def hashable_resource_key(self):
-        return hashable_resource_key(self.resource_key())
+        return module_resource_key(module_name, [class_name, *path])
 
     async def run_command(self, command_id, *args, **kw):
         command = self.get_command(command_id)

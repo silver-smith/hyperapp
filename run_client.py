@@ -64,6 +64,7 @@ code_module_list = [
     'common.file_bundle',
     'common.local_server',
     'common.list_object',
+    'common.resource_key',
     'transport.identity',
     'transport.rsa_identity',
     'async.ui.commander',

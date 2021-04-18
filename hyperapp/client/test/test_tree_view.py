@@ -35,6 +35,7 @@ def code_module_list():
         'common.resource_registry',
         'common.resource_resolver',
         'common.weak_key_dictionary_with_callback',
+        'common.resource_key',
         'async.ui.commander',
         'async.ui.object',
         'async.ui.module',
