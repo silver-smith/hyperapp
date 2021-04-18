@@ -34,9 +34,12 @@ class ThisModule(Module):
     def _save_state(self):
         log.info("Save application state.")
         state = self._get_current_state()
-        self._state_storage.save_state(state)
+        if state is not None:
+            self._state_storage.save_state(state)
 
     def _get_current_state(self):
+        if not self._layout_manager.root_layout:
+            return None  # Services init failed before layout constructed.
         root_layout = self._layout_manager.root_layout.piece
         root_layout_ref = self._mosaic.put(root_layout)
         return self._state_storage.state_t(
