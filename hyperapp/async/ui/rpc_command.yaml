@@ -1,0 +1,8 @@
+import:
+  types:
+    rpc:
+      - endpoint
+    rpc_command:
+      - rpc_element_command
+  code:
+    - common.resource_key

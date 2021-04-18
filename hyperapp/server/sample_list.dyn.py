@@ -4,6 +4,7 @@ from hyperapp.common.htypes import (
     tInt,
     tString,
     TList,
+    service_command_t,
     list_service_t,
     )
 from hyperapp.common.module import Module
@@ -26,6 +27,9 @@ class Servant:
             self._row_t(2, 'second row'),
             self._row_t(3, 'third row'),
             ]
+
+    def open(self, request, item_key):
+        log.info("Servant.open(%r) is called", item_key)
 
 
 class ThisModule(Module):
@@ -51,11 +55,19 @@ class ThisModule(Module):
         row_t = list_row_t(services.mosaic, services.types, service_ot, 'test_list_service')
 
         object_id = 'test_list_service_object'
+        open_command = htypes.rpc_command.rpc_element_command(
+            key_type_ref=services.types.reverse_resolve(tInt),
+            method_name='open',
+            peer_ref=server_peer_ref,
+            object_id=object_id,
+            )
         list_service = list_service_t(
             type_ref=service_ot_ref,
             peer_ref=server_peer_ref,
             object_id=object_id,
-            command_list=[],
+            command_list=[
+                service_command_t('open', services.mosaic.put(open_command)),
+                ],
             )
 
         servant = Servant(row_t)

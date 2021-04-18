@@ -11,7 +11,7 @@ class ListService(SimpleListObject):
     @classmethod
     async def from_piece(cls, piece, identity, mosaic, types, command_registry, rpc_endpoint, async_rpc_proxy):
         list_ot = mosaic.resolve_ref(piece.type_ref).value
-        interface_ref = list_interface_ref(mosaic, list_ot, 'test_list_service')
+        interface_ref = list_interface_ref(mosaic, list_ot, 'test_list_service')  # todo: interface name
         service = htypes.rpc.endpoint(
             peer_ref=piece.peer_ref,
             iface_ref=interface_ref,
@@ -19,7 +19,7 @@ class ListService(SimpleListObject):
             )
         proxy = async_rpc_proxy(identity, rpc_endpoint, service)
         command_list = [
-            await command_registry.invite(rec.command_ref)
+            await command_registry.invite(rec.command_ref, rec.id)
             for rec in piece.command_list
             ]
         return cls(mosaic, types, list_ot, piece.peer_ref, piece.object_id, proxy, command_list)

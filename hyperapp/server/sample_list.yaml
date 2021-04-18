@@ -5,5 +5,7 @@ import:
     list_object_type:
       - column
       - list_ot
+    rpc_command:
+      - rpc_element_command
   code:
     - common.list_object

@@ -48,6 +48,7 @@ type_module_list = [
     'transport',
     'tcp_transport',
     'rpc',
+    'rpc_command',
     ]
 
 code_module_list = [
@@ -143,6 +144,7 @@ code_module_list = [
     'async.rpc.rpc_endpoint',
     'client.rpc_endpoint',
     'client.list_service',
+    'async.ui.rpc_command',
     'async.ui.application_state',
     ]
 
