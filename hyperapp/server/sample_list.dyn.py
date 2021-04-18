@@ -38,7 +38,9 @@ class ThisModule(Module):
         int_t_ref = services.types.reverse_resolve(tInt)
         string_t_ref = services.types.reverse_resolve(tString)
         service_ot = htypes.list_object_type.list_ot(
-            command_list=[],
+            command_list=[
+                htypes.object_type.object_command('open', None),
+                ],
             key_column_id='key',
             column_list=[
                 htypes.list_object_type.column('key', int_t_ref),
@@ -53,6 +55,7 @@ class ThisModule(Module):
             type_ref=service_ot_ref,
             peer_ref=server_peer_ref,
             object_id=object_id,
+            command_list=[],
             )
 
         servant = Servant(row_t)

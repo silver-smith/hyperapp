@@ -12,4 +12,5 @@ class ThisModule(Module):
     async def async_init(self, services):
         services.object_registry.register_actor(
             list_service_t, ListService.from_piece,
-            services.client_identity, services.mosaic, services.types, services.client_rpc_endpoint, services.async_rpc_proxy)
+            services.client_identity, services.mosaic, services.types, services.command_registry,
+            services.client_rpc_endpoint, services.async_rpc_proxy)

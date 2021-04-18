@@ -92,6 +92,7 @@ def test_list_service(services, htypes, code):
         type_ref=service_ot_ref,
         peer_ref=master_peer_ref,
         object_id=object_id,
+        command_list=[],
         )
     list_service_ref = services.mosaic.put(list_service)
 
@@ -151,6 +152,7 @@ def test_list_service(services, htypes, code):
             'async.rpc.rpc_endpoint',
             'client.object_registry',
             'async.ui.object',
+            'async.ui.command_registry',
             'client.column',
             'client.list_object',
             'client.simple_list_object',

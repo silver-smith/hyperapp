@@ -31,7 +31,7 @@ class ThisModule(Module):
 
         services.object_registry.register_actor(
             list_service_t, ListService.from_piece,
-            self._my_identity, services.mosaic, services.types, rpc_endpoint, services.async_rpc_proxy)
+            self._my_identity, services.mosaic, services.types, services.command_registry, rpc_endpoint, services.async_rpc_proxy)
 
         try:
             object = await self._object_registry.invite(self._list_service_ref)

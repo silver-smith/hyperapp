@@ -31,10 +31,16 @@ class ListServiceType(Type):
         return self._field_dict
 
 
+service_command_t = TRecord('service_command', {
+    'id': tString,
+    'command_ref': ref_t,
+    })
+
 list_service_t = TRecord('list_service', {
     'type_ref': ref_t,  # list service type
     'peer_ref': ref_t,
     'object_id': tString,
+    'command_list': TList(service_command_t),
     })
 
 

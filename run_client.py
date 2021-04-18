@@ -94,6 +94,7 @@ code_module_list = [
     'client.view',
     'client.composite',
     'client.column',
+    'async.ui.command_registry',
     'async.ui.command',
     'client.list_object',
     'client.simple_list_object',
