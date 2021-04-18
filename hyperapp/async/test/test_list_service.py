@@ -85,7 +85,7 @@ def test_list_service(services, htypes, code):
             ],
         )
     service_ot_ref = services.mosaic.put(service_ot)
-    row_t = code.list_object.list_row_t(services.mosaic, services.types, service_ot, 'test_list_service')
+    row_t = code.list_object.list_row_t(services.mosaic, services.types, service_ot)
 
     object_id = 'test_list_service_object'
     list_service = list_service_t(
