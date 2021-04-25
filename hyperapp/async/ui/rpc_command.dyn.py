@@ -71,8 +71,7 @@ class RpcElementCommand:
     async def run(self, item_key):
         method = getattr(self._proxy, self._method_name)
         response = await method(item_key)
-        if response.piece_ref:
-            return await self._web.pull(response.piece_ref)
+        return await self._web.summon_opt(response.piece_ref)
 
 
 class ThisModule(Module):
