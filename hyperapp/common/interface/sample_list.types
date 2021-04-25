@@ -1,0 +1,4 @@
+
+article = record:
+  title: string
+  text: string

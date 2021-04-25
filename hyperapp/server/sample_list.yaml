@@ -9,5 +9,7 @@ import:
       - rpc_element_command
     text:
       - text
+    sample_list:
+      - article
   code:
     - common.list_object

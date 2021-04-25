@@ -35,6 +35,14 @@ class Servant:
         piece = htypes.text.text(text)
         return self._mosaic.put(piece)
 
+    def edit(self, request, item_key):
+        log.info("Servant.edit(%r) is called", item_key)
+        piece = htypes.sample_list.article(
+            title=f"Article {item_key}",
+            text=f"Sample contents for:\n{item_key}",
+            )
+        return self._mosaic.put(piece)
+
 
 class ThisModule(Module):
 
@@ -48,6 +56,7 @@ class ThisModule(Module):
         service_ot = htypes.list_object_type.list_ot(
             command_list=[
                 htypes.object_type.object_command('open', None),
+                htypes.object_type.object_command('edit', None),
                 ],
             key_column_id='key',
             column_list=[
@@ -65,12 +74,19 @@ class ThisModule(Module):
             peer_ref=server_peer_ref,
             object_id=object_id,
             )
+        edit_command = htypes.rpc_command.rpc_element_command(
+            key_type_ref=services.types.reverse_resolve(tInt),
+            method_name='edit',
+            peer_ref=server_peer_ref,
+            object_id=object_id,
+            )
         list_service = list_service_t(
             type_ref=service_ot_ref,
             peer_ref=server_peer_ref,
             object_id=object_id,
             command_list=[
                 service_command_t('open', services.mosaic.put(open_command)),
+                service_command_t('edit', services.mosaic.put(edit_command)),
                 ],
             )
 

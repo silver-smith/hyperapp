@@ -21,6 +21,7 @@ type_module_list = [
     'rpc_command',
     'layout',
     'text',
+    'sample_list',
     ]
 
 code_module_list = [
