@@ -23,7 +23,7 @@ class Server:
         return f"<sync tcp Server:{address_to_str(self._actual_address)}>"
 
     def start(self, bind_address):
-        self._listen_socket.bind(bind_address)
+        self._listen_socket.bind(bind_address or ('localhost', 0))
         self._listen_socket.listen(100)
         self._listen_socket.setblocking(False)
         self._selector.register(self._listen_socket, selectors.EVENT_READ, self._on_accept)
@@ -183,7 +183,7 @@ class ThisModule(Module):
         services.on_stop.append(self.stop)
         services.tcp_server = self.server_factory
 
-    def server_factory(self, bind_address=('localhost', 0)):
+    def server_factory(self, bind_address=None):
         server = Server(self._selector, self._connection_factory)
         server.start(bind_address)
         return server

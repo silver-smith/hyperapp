@@ -48,6 +48,10 @@ code_module_list = [
     'server.sample_list',
     ]
 
+config = {
+    'server.tcp_server': {'bind_address': ('localhost', 8000)},
+    }
+
 
 def main():
     init_logging('server')
@@ -57,7 +61,7 @@ def main():
 
     services = Services()
     services.init_services()
-    services.init_modules(type_module_list, code_module_list)
+    services.init_modules(type_module_list, code_module_list, config)
     services.start()
     log.info("Server is started.")
     try:
