@@ -57,7 +57,7 @@ class RpcElementCommand:
         cls = self.__class__
         class_name = cls.__name__
         module_name = cls.__module__
-        return module_resource_key(module_name, [class_name, self.id])
+        return module_resource_key(module_name, [class_name, 'command', self.id])
 
     @property
     def piece(self):

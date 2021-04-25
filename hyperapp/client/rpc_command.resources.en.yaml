@@ -1,0 +1,6 @@
+module:async.ui.rpc_command:RpcElementCommand:
+  commands:
+    open:
+      text: Open
+      description: Open selected element
+      is_default: yes
