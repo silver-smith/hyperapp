@@ -18,6 +18,7 @@ class Server:
         self._connection_factory = connection_factory
         self._listen_socket = socket.socket()
         self._actual_address = None
+        self._listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
     def __repr__(self):
         return f"<sync tcp Server:{address_to_str(self._actual_address)}>"
