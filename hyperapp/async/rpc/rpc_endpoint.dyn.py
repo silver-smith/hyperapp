@@ -70,13 +70,13 @@ class RpcEndpoint:
         result = await method(rpc_request, **params._asdict())
         log.info("Rpc servant call result: %s", result)
         response_record_t = iface_method.response_record_t
-        if not isinstance(result, tuple):
-            if not response_record_t.fields:
-                if result is not None:
-                    raise RuntimeError(f"{iface.name}.{request.method_name} expected no response, but returned: {result!r}")
-                result = ()
-            elif len(response_record_t.fields) == 1:
-                result = (result,)  # Accept simple result.
+        if len(response_record_t.fields) == 0:
+            if result is not None:
+                raise RuntimeError(f"{iface.name}.{request.method_name} expected no response, but returned: {result!r}")
+            result = ()
+        elif len(response_record_t.fields) == 1:
+            result = (result,)  # Expect simple result.
+        # Else expect tuple or list response.
         result_record = response_record_t(*result)
         result_ref = self._mosaic.put(result_record)
         response = htypes.rpc.response(
