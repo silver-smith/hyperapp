@@ -75,7 +75,7 @@ class SampleList(ListObject):
     @command('open', kind='element')
     async def command_open(self, item_key):
         text = "Opened item {}".format(item_key)
-        return htypes.text.text(text)
+        return text
 
     @command('edit', kind='element')
     async def _edit(self, item_key):
@@ -90,7 +90,7 @@ class SampleArticle(RecordObject):
     @classmethod
     async def from_data(cls, state, object_registry):
         fields_pieces = {
-            'title': htypes.line.line(state.title),
+            'title': state.title,
             'text': htypes.text.text(state.text),
             }
         self = cls(state.title, state.text)

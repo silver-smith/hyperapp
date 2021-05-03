@@ -4,6 +4,8 @@ import logging
 from enum import Enum
 from PySide2 import QtCore, QtWidgets
 
+from hyperapp.common.htypes import tString
+
 from . import htypes
 from .object import Object
 from .layout_handle import UpdateVisualItemDiff
@@ -21,7 +23,7 @@ class LineObject(Object):
 
     @classmethod
     def from_state(cls, state):
-        return cls(state.line)
+        return cls(state)
 
     def __init__(self, line):
         self._line = line
@@ -33,7 +35,7 @@ class LineObject(Object):
 
     @property
     def piece(self):
-        return htypes.line.line(self.line)
+        return self.line
 
     def get_value(self):
         return self._line
@@ -138,7 +140,7 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         self._mosaic = services.mosaic
-        services.object_registry.register_actor(htypes.line.line, LineObject.from_state)
+        services.object_registry.register_actor(tString, LineObject.from_state)
         services.available_object_layouts.register('line', [LineObject.type._t], self._make_line_layout_data)
         services.default_object_layouts.register('line', [LineObject.type._t], self._make_line_layout_data)
         services.object_layout_registry.register_actor(

@@ -9,8 +9,6 @@ import:
       - tree_view_sample_article_type
       - tree_view_sample_object
       - tree_sample_article
-    line:
-      - line
     text:
       - text
   code:

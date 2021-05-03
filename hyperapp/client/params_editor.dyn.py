@@ -9,7 +9,7 @@ class ThisModule(ClientModule):
         self._mosaic = services.mosaic
         self._async_web = services.async_web
         self._field_types = services.field_types = {
-            str: htypes.line.line(''),
+            str: '',
             }
         services.params_editor = self._open_params_editor
 

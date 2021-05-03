@@ -9,8 +9,6 @@ import:
       - list_view_sample_article_type
       - list_view_sample_object
       - list_sample_article
-    line:
-      - line
     text:
       - text
   code:

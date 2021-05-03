@@ -97,7 +97,7 @@ class SampleArticle(RecordObject):
     @classmethod
     async def from_data(cls, state, object_registry):
         fields_pieces = {
-            'title': htypes.line.line(state.title),
+            'title': state.title,
             'text': htypes.text.text(state.text),
             }
         self = cls(state.title, state.text)

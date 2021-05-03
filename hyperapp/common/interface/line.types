@@ -4,9 +4,5 @@ from layout import layout
 
 line_object_type = record(object_type)
 
-
-line = record:
-  line: string
-
 line_edit_layout = record(layout):
   editable: bool

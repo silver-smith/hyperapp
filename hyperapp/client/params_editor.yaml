@@ -4,7 +4,5 @@ import:
     - bound_argument
     - field
     - params_editor
-    line:
-    - line
   code:
     - async.ui.module
