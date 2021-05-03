@@ -2,8 +2,6 @@ import:
   types:
     params_editor_sample:
       - params_editor_sample
-    text:
-      - text
   code:
     - client.object_command
     - client.column

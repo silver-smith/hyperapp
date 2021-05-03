@@ -8,7 +8,7 @@ from . import htypes
 from .object import ObjectObserver
 from .layout import ObjectLayout
 from .view import View
-from .text_object import TextObject
+from .string_object import StringObject
 from .module import ClientModule
 
 log = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ class TextView(View, QtWidgets.QTextBrowser):
         self.setOpenLinks(False)
         # self._view_opener = view_opener
         self.object = object
-        self.setHtml(self.text2html(object.text or ''))
+        self.setHtml(self.text2html(object.value or ''))
         self.anchorClicked.connect(self.on_anchor_clicked)
         self.object.subscribe(self)
 
@@ -117,8 +117,8 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         self._mosaic = services.mosaic
-        services.available_object_layouts.register('text', [TextObject.type._t], self._make_text_layout_data)
-        services.default_object_layouts.register('text', [TextObject.type._t], self._make_text_layout_data)
+        services.available_object_layouts.register('text', [StringObject.type._t, htypes.string.string_object_type], self._make_text_layout_data)
+        # services.default_object_layouts.register('text', [StringObject.type._t], self._make_text_layout_data)
         services.object_layout_registry.register_actor(
             htypes.text.text_edit_layout, TextViewLayout.from_data, services.mosaic, services.async_web)
 

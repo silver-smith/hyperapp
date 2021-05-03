@@ -9,14 +9,11 @@ import:
       - list_view_sample_article_type
       - list_view_sample_object
       - list_sample_article
-    text:
-      - text
   code:
     - client.object_command
     - async.ui.object
     - client.column
     - client.list_object
-    - client.line_edit
-    - client.text_object
+    - client.string_object
     - client.record_object
     - async.ui.module

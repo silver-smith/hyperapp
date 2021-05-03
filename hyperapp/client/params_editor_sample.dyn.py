@@ -52,12 +52,12 @@ class ParamsEditorSample(SimpleListObject):
     @command('test_single_simple_str', kind='element')
     def _test_single_simple_str(self, item_key, str_param: str):
         text = f"Opened item {item_key}: {str_param!r}"
-        return htypes.text.text(text)
+        return text
 
     @command('test_two_simple_str', kind='element')
     def _test_two_simple_str(self, item_key, str_param_1: str, str_param_2: str):
         text = f"Opened item {item_key}: {str_param_1!r},  {str_param_2!r}"
-        return htypes.text.text(text)
+        return text
 
 
 

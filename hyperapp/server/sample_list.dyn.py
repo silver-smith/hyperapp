@@ -32,7 +32,7 @@ class Servant:
     def open(self, request, item_key):
         log.info("Servant.open(%r) is called", item_key)
         text = "Opened item: {}".format(item_key)
-        piece = htypes.text.text(text)
+        piece = text
         return self._mosaic.put(piece)
 
     def edit(self, request, item_key):

@@ -1,10 +1,12 @@
 import:
   types:
+    string:
+      - string_object_type
     text:
       - text_edit_layout
   code:
     - async.ui.object
     - client.layout
     - client.view
-    - client.text_object
+    - client.string_object
     - async.ui.module

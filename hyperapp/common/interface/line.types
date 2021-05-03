@@ -1,8 +1,5 @@
-from object_type import object_type
 from layout import layout
 
-
-line_object_type = record(object_type)
 
 line_edit_layout = record(layout):
   editable: bool

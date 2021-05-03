@@ -4,8 +4,6 @@ import logging
 from enum import Enum
 from PySide2 import QtCore, QtWidgets
 
-from hyperapp.common.htypes import tString
-
 from . import htypes
 from .object import Object
 from .layout_handle import UpdateVisualItemDiff
@@ -17,51 +15,10 @@ from .module import ClientModule
 log = logging.getLogger(__name__)
 
 
-class LineObject(Object):
-
-    type = htypes.line.line_object_type(command_list=())
-
-    @classmethod
-    def from_state(cls, state):
-        return cls(state)
-
-    def __init__(self, line):
-        self._line = line
-        super().__init__()
-
-    @property
-    def title(self):
-        return 'Line'
-
-    @property
-    def piece(self):
-        return self.line
-
-    def get_value(self):
-        return self._line
-
-    @property
-    def line(self):
-        return self._line
-
-    @line.setter
-    def line(self, line):
-        self._line = line
-        self._notify_object_changed()
-
-    def line_changed(self, new_line, emitter_view=None):
-        log.debug('line_object.line_changed: %r', new_line)
-        self._line = new_line
-        self._notify_object_changed(emitter_view)
-
-    # def __del__(self):
-    #     log.info('~line_object %r', self)
-
-
 class LineEditView(View, QtWidgets.QLineEdit):
 
     def __init__(self, object, editable):
-        QtWidgets.QLineEdit.__init__(self, object.line)
+        QtWidgets.QLineEdit.__init__(self, object.value)
         View.__init__(self)
         self._object = object
         self._editable = editable
@@ -140,9 +97,8 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         self._mosaic = services.mosaic
-        services.object_registry.register_actor(tString, LineObject.from_state)
-        services.available_object_layouts.register('line', [LineObject.type._t], self._make_line_layout_data)
-        services.default_object_layouts.register('line', [LineObject.type._t], self._make_line_layout_data)
+        services.available_object_layouts.register('line', [htypes.string.string_object_type], self._make_line_layout_data)
+        services.default_object_layouts.register('line', [htypes.string.string_object_type], self._make_line_layout_data)
         services.object_layout_registry.register_actor(
             htypes.line.line_edit_layout, LineEditLayout.from_data, services.mosaic, services.async_web)
 

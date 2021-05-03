@@ -9,8 +9,7 @@ from .object_command import command
 from .object import ObjectType
 from .column import Column
 from .tree_object import AppendItemDiff, InsertItemDiff, RemoveItemDiff, UpdateItemDiff, TreeObject
-from .line_edit import LineObject
-from .text_object import TextObject
+from .string_object import StringObject
 from .record_object import RecordObject
 from .module import ClientModule
 
@@ -82,7 +81,7 @@ class SampleTree(TreeObject):
     @command('open', kind='element')
     async def command_open(self, item_path):
         text = "Opened item {}".format('/'.join(item_path))
-        return htypes.text.text(text)
+        return text
 
     @command('edit', kind='element')
     async def _edit(self, item_path):
@@ -98,7 +97,7 @@ class SampleArticle(RecordObject):
     async def from_data(cls, state, object_registry):
         fields_pieces = {
             'title': state.title,
-            'text': htypes.text.text(state.text),
+            'text': state.text,
             }
         self = cls(state.title, state.text)
         await self.async_init(object_registry, fields_pieces)
@@ -126,13 +125,13 @@ class ThisModule(ClientModule):
         sample_article_type = htypes.tree_view_sample.tree_view_sample_article_type(
             command_list=(),
             field_type_list=(
-                htypes.record_object.record_type_field('title', services.mosaic.put(LineObject.type)),
-                htypes.record_object.record_type_field('text', services.mosaic.put(TextObject.type)),
+                htypes.record_object.record_type_field('title', services.mosaic.put(StringObject.type)),
+                htypes.record_object.record_type_field('text', services.mosaic.put(StringObject.type)),
                 ),
             )
         sample_tree_type = htypes.tree_view_sample.tree_view_sample_object_type(
             command_list=(
-                htypes.object_type.object_command('open', services.mosaic.put(TextObject.type)),
+                htypes.object_type.object_command('open', services.mosaic.put(StringObject.type)),
                 htypes.object_type.object_command('edit', services.mosaic.put(sample_article_type)),
                 ),
             )

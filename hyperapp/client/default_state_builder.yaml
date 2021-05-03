@@ -1,7 +1,5 @@
 import:
   types:
-    text:
-    - text
     navigator:
     - navigator
     tab_view:

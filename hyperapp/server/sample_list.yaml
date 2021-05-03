@@ -7,8 +7,6 @@ import:
       - list_ot
     rpc_command:
       - rpc_element_command
-    text:
-      - text
     sample_list:
       - article
   code:

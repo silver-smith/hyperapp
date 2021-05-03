@@ -2,8 +2,5 @@ import:
   types:
     string:
       - string_object_type
-    text:
-      - wiki_text
   code:
     - async.ui.object
-    - async.ui.module

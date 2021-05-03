@@ -9,14 +9,11 @@ import:
       - tree_view_sample_article_type
       - tree_view_sample_object
       - tree_sample_article
-    text:
-      - text
   code:
     - client.object_command
     - async.ui.object
     - client.column
     - client.tree_object
-    - client.line_edit
-    - client.text_object
+    - client.string_object
     - client.record_object
     - async.ui.module

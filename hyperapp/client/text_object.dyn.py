@@ -7,25 +7,25 @@ from .module import ClientModule
 _log = logging.getLogger(__name__)
 
 
-class TextObject(Object):
-
-    type = htypes.text.text_object_type(command_list=())
+class WikiTextObject(Object):
 
     @classmethod
-    def from_state(cls, state):
-        return cls(state.text)
+    def from_state(cls, state, async_web):
+        return cls(async_web, state.text, state.ref_list)
 
-    def __init__(self, text):
+    def __init__(self, async_web, text, ref_list):
+        super().__init__()
         self._text = text
-        Object.__init__(self)
+        self._async_web = async_web
+        self._ref_list = ref_list
 
     @property
     def title(self):
-        return 'Local text object'
+        return 'Wiki text'
 
     @property
     def piece(self):
-        return htypes.text.text(self._text)
+        return htypes.text.wiki_text(self._text, self._ref_list)
 
     @property
     def text(self):
@@ -39,32 +39,6 @@ class TextObject(Object):
     def text_changed(self, new_text, emitter_view=None):
         self._text = new_text
         self._notify_object_changed(emitter_view)
-
-    async def open_ref(self, ref_id):
-        pass  # not implemented for local text
-
-    # def __del__(self):
-    #     _log.info('~text_object %r', self)
-
-
-class WikiTextObject(TextObject):
-
-    @classmethod
-    def from_state(cls, state, async_web):
-        return cls(async_web, state.text, state.ref_list)
-
-    def __init__(self, async_web, text, ref_list):
-        super().__init__(text)
-        self._async_web = async_web
-        self._ref_list = ref_list
-
-    @property
-    def title(self):
-        return 'wiki text'
-
-    @property
-    def piece(self):
-        return htypes.text.wiki_text(self._text, self._ref_list)
 
     async def open_ref(self, id):
         _log.info('Opening ref: %r', id)
@@ -80,5 +54,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
-        services.object_registry.register_actor(htypes.text.text, TextObject.from_state)
         services.object_registry.register_actor(htypes.text.wiki_text, WikiTextObject.from_state, services.async_web)

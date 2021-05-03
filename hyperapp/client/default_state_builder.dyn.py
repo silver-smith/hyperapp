@@ -10,7 +10,7 @@ class ThisModule(ClientModule):
         services.default_state_builder = self._build_default_state
 
     def _build_default_state(self):
-        piece = htypes.text.text("Welcome to hyperapp")
+        piece = "Welcome to hyperapp"
         piece_ref = self._mosaic.put(piece)
         navigator = htypes.navigator.navigator(piece_ref)
         navigator_ref = self._mosaic.put(navigator)

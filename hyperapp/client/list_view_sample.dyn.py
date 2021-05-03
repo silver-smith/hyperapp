@@ -9,8 +9,7 @@ from .object_command import command
 from .object import ObjectType
 from .column import Column
 from .list_object import ListObject
-from .line_edit import LineObject
-from .text_object import TextObject
+from .string_object import StringObject
 from .record_object import RecordObject
 from .module import ClientModule
 
@@ -91,7 +90,7 @@ class SampleArticle(RecordObject):
     async def from_data(cls, state, object_registry):
         fields_pieces = {
             'title': state.title,
-            'text': htypes.text.text(state.text),
+            'text': state.text,
             }
         self = cls(state.title, state.text)
         await self.async_init(object_registry, fields_pieces)
@@ -119,13 +118,13 @@ class ThisModule(ClientModule):
         sample_article_type = htypes.list_view_sample.list_view_sample_article_type(
             command_list=(),
             field_type_list=(
-                htypes.record_object.record_type_field('title', services.mosaic.put(LineObject.type)),
-                htypes.record_object.record_type_field('text', services.mosaic.put(TextObject.type)),
+                htypes.record_object.record_type_field('title', services.mosaic.put(StringObject.type)),
+                htypes.record_object.record_type_field('text', services.mosaic.put(StringObject.type)),
                 ),
             )
         sample_list_type = htypes.list_view_sample.list_view_sample_object_type(
             command_list=(
-                htypes.object_type.object_command('open', services.mosaic.put(TextObject.type)),
+                htypes.object_type.object_command('open', services.mosaic.put(StringObject.type)),
                 htypes.object_type.object_command('edit', services.mosaic.put(sample_article_type)),
                 ),
             key_column_id='idx',
