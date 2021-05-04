@@ -5,7 +5,6 @@ column = record:
   id: string
   type_ref: ref
 
-
 list_ot = record(object_type):
   key_column_id: string
   column_list: column list
