@@ -15,6 +15,7 @@ class ThisModule(Module):
         super().__init__(module_name)
 
         self._object_registry = services.object_registry
+        self._object_animator = services.object_animator
         self._async_rpc_endpoint = services.async_rpc_endpoint
 
         list_service_bundle = packet_coders.decode('cdr', config['list_service_bundle_cdr'], bundle_t)
@@ -34,7 +35,7 @@ class ThisModule(Module):
             self._my_identity, services.mosaic, services.types, services.command_registry, rpc_endpoint, services.async_rpc_proxy)
 
         try:
-            object = await self._object_registry.invite(self._list_service_ref)
+            object = await self._object_animator.invite(self._list_service_ref)
 
             rows = await object.get_all_items()
             log.info("Returned rows: %s", rows)

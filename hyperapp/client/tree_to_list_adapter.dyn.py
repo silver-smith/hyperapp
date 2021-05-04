@@ -22,8 +22,8 @@ class _Observer(TreeObserver):
 class TreeToListAdapter(ListObject):
 
     @classmethod
-    async def from_state(cls, state, mosaic, object_registry):
-        tree_object = await object_registry.invite(state.base_ref)
+    async def from_state(cls, state, mosaic, object_animator):
+        tree_object = await object_animator.invite(state.base_ref)
         return cls(mosaic, tree_object, state.path)
 
     def __init__(self, mosaic, tree_object, path):
@@ -162,7 +162,7 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         self._mosaic = services.mosaic
         services.object_registry.register_actor(
-            htypes.tree_to_list_adapter.tree_to_list_adapter, TreeToListAdapter.from_state, services.mosaic, services.object_registry)
+            htypes.tree_to_list_adapter.tree_to_list_adapter, TreeToListAdapter.from_state, services.mosaic, services.object_animator)
         services.available_object_layouts.register('as_list', [TreeObject.type._t], self._make_layout_data)
         services.object_layout_registry.register_actor(
             htypes.tree_to_list_adapter.tree_to_list_adapter_layout, TreeToListLayout.from_data,

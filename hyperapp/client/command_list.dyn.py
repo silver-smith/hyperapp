@@ -18,9 +18,9 @@ Item = namedtuple('Item', 'id code_id kind path layout')
 class CommandList(SimpleListObject):
 
     @classmethod
-    async def from_state(cls, state, mosaic, async_web, object_registry, object_layout_association, layout_handle_from_ref, layout_handle_from_object_type):
+    async def from_state(cls, state, mosaic, async_web, object_animator, object_layout_association, layout_handle_from_ref, layout_handle_from_object_type):
         piece = await async_web.summon(state.piece_ref)
-        object = await object_registry.animate(piece)
+        object = await object_animator.animate(piece)
         layout_handle = await layout_handle_from_ref(state.layout_handle_ref)
         self = cls(mosaic, object_layout_association, layout_handle_from_object_type, object, layout_handle)
         await self._async_init(async_web)
@@ -189,7 +189,7 @@ class ThisModule(ClientModule):
             CommandList.from_state,
             services.mosaic,
             services.async_web,
-            services.object_registry,
+            services.object_animator,
             services.object_layout_association,
             services.layout_handle_from_ref,
             services.layout_handle_from_object_type,

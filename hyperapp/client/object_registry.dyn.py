@@ -1,5 +1,6 @@
-from hyperapp.common.htypes import TRecord
+from hyperapp.common.htypes import TRecord, ref_t
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
+from hyperapp.common.ref import decode_capsule
 from hyperapp.common.module import Module
 
 from . import htypes
@@ -26,8 +27,10 @@ class RecordViewer(RecordObject):
 
 class ObjectAnimator:
 
-    def __init__(self, mosaic, object_registry):
+    def __init__(self, mosaic, types, async_web, object_registry):
         self._mosaic = mosaic
+        self._types = types
+        self._async_web = async_web
         self._object_registry = object_registry
 
     async def animate(self, piece):
@@ -36,6 +39,12 @@ class ObjectAnimator:
         except CodeRegistryKeyError:
             pass
         return await self._construct_object(piece)
+
+    async def invite(self, ref, *args, **kw):
+        assert isinstance(ref, ref_t), repr(ref)
+        capsule = await self._async_web.pull(ref)
+        decoded_capsule = decode_capsule(self._types, capsule)
+        return await self.animate(decoded_capsule.value)
 
     async def _construct_object(self, piece):
         t = deduce_value_type(piece)
@@ -63,4 +72,4 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
         services.object_registry = CodeRegistry('object', services.async_web, services.types)
-        services.object_animator = ObjectAnimator(services.mosaic, services.object_registry)
+        services.object_animator = ObjectAnimator(services.mosaic, services.types, services.async_web, services.object_registry)

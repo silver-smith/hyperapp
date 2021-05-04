@@ -27,9 +27,9 @@ class CodeCommandChooser(SimpleListObject, Chooser):
         )
 
     @classmethod
-    async def from_state(cls, state, mosaic, async_web, object_registry, object_layout_registry):
+    async def from_state(cls, state, mosaic, async_web, object_animator, object_layout_registry):
         piece = await async_web.summon(state.piece_ref)
-        object = await object_registry.animate(piece)
+        object = await object_animator.animate(piece)
         layout_watcher = LayoutWatcher()  # todo: use global category/command -> watcher+layout handle registry
         layout = await object_layout_registry.invite(state.layout_ref, ['root'], layout_watcher)
         return cls(mosaic, object, layout)
@@ -87,6 +87,6 @@ class ThisModule(ClientModule):
             CodeCommandChooser.from_state,
             services.mosaic,
             services.async_web,
-            services.object_registry,
+            services.object_animator,
             services.object_layout_registry,
             )

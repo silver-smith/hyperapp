@@ -119,6 +119,7 @@ def test_list_service(services, htypes, code):
             'rpc',
             'object_type',
             'list_object_type',
+            'record_object',
             ],
         code_module_list=[
             'common.visitor',
@@ -151,6 +152,8 @@ def test_list_service(services, htypes, code):
             'async.transport.tcp',
             'async.rpc.rpc_proxy',
             'async.rpc.rpc_endpoint',
+            'async.ui.object',
+            'client.record_object',
             'client.object_registry',
             'async.ui.object',
             'async.ui.command_registry',
