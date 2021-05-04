@@ -134,7 +134,7 @@ class ThisModule(ClientModule):
         SampleArticle.type = sample_article_type
 
         services.object_registry.register_actor(htypes.list_view_sample.list_view_sample_object, SampleList.from_data)
-        services.object_registry.register_actor(htypes.list_view_sample.list_sample_article, SampleArticle.from_data, services.object_registry)
+        # services.object_registry.register_actor(htypes.list_view_sample.list_sample_article, SampleArticle.from_data, services.object_registry)
 
     @command('open_list_view_sample')
     async def open_list_view_sample(self):

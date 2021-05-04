@@ -11,6 +11,10 @@ from .async_registry import run_awaitable_factory
 _log = logging.getLogger(__name__)
 
 
+class CodeRegistryKeyError(Exception):
+    pass
+
+
 class CodeRegistry:
 
     _Rec = namedtuple('_Rec', 'factory args kw')
@@ -41,7 +45,7 @@ class CodeRegistry:
         # pprint(piece, t=t, logger=_log.info, title=f"Producing {self._produce_name} for {piece} of type {t}")
         rec = self._registry.get(t)
         if not rec:
-            raise RuntimeError(f"No code is registered for {self._produce_name}: {t!r}; piece: {piece}")
+            raise CodeRegistryKeyError(f"No code is registered for {self._produce_name}: {t!r}; piece: {piece}")
         _log.debug('Producing %s for %s of type %s using %s(%s/%s, %s/%s)',
                    self._produce_name, piece, t, rec.factory, rec.args, args, rec.kw, kw)
         actor = await run_awaitable_factory(rec.factory, piece, *args, *rec.args, **kw, **rec.kw)

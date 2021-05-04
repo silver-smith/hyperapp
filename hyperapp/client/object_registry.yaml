@@ -1,3 +1,8 @@
 import:
+  types:
+    record_object:
+      - record_type_field
+      - record_object_type
   code:
     - async.code_registry
+    - client.record_object

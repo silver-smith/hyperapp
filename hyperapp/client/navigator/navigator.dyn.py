@@ -55,7 +55,7 @@ class NavigatorLayout(GlobalLayout):
             view_opener,
             mosaic,
             async_web,
-            object_registry,
+            object_animator,
             object_layout_registry,
             layout_handle_from_object_type,
             module_command_registry,
@@ -64,7 +64,7 @@ class NavigatorLayout(GlobalLayout):
         self = cls(
             mosaic,
             async_web,
-            object_registry,
+            object_animator,
             object_layout_registry,
             layout_handle_from_object_type,
             module_command_registry,
@@ -80,7 +80,7 @@ class NavigatorLayout(GlobalLayout):
             self,
             mosaic,
             async_web,
-            object_registry,
+            object_animator,
             object_layout_registry,
             layout_handle_from_object_type,
             module_command_registry,
@@ -92,7 +92,7 @@ class NavigatorLayout(GlobalLayout):
         super().__init__(path)
         self._mosaic = mosaic
         self._async_web = async_web
-        self._object_registry = object_registry
+        self._object_animator = object_animator
         self._object_layout_registry = object_layout_registry
         self._layout_handle_from_object_type = layout_handle_from_object_type
         self._module_command_registry = module_command_registry
@@ -106,7 +106,7 @@ class NavigatorLayout(GlobalLayout):
 
     async def _async_init(self, initial_piece_ref):
         piece = await self._async_web.summon(initial_piece_ref)
-        self._current_object = object = await self._object_registry.animate(piece)
+        self._current_object = object = await self._object_animator.animate(piece)
         self._current_layout_handle = await self._layout_handle_from_object_type(object.type)
         self._history.append(_HistoryItem(object, None))
 
@@ -153,7 +153,7 @@ class NavigatorLayout(GlobalLayout):
         self._history.append(_HistoryItem(self._current_object, layout_handle))
 
     async def _open_piece_impl(self, piece):
-        object = await self._object_registry.animate(piece)
+        object = await self._object_animator.animate(piece)
         layout_handle = await self._open_object(object)
         return layout_handle
 
@@ -209,7 +209,7 @@ class ThisModule(ClientModule):
             NavigatorLayout.from_data,
             services.mosaic,
             services.async_web,
-            services.object_registry,
+            services.object_animator,
             services.object_layout_registry,
             services.layout_handle_from_object_type,
             services.module_command_registry,
