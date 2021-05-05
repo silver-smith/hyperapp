@@ -60,7 +60,7 @@ class ObjectAnimator:
         object_type = htypes.record_object.record_object_type(
             command_list=(),
             field_type_list=tuple(
-                htypes.record_object.record_type_field(name, self._mosaic.put(field_object.type))
+                htypes.record_object.field(name, self._mosaic.put(field_object.type))
                 for name, field_object in fields.items()
                 ),
             )

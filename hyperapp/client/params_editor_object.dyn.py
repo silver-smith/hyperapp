@@ -65,7 +65,7 @@ class ParamsEditor(RecordObject):
         return htypes.params_editor.params_editor_type(
             command_list=command_list,
             field_type_list=tuple(
-                htypes.record_object.record_type_field(
+                htypes.record_object.field(
                     id=field_id,
                     object_type_ref=self._mosaic.put(field_object.type),
                     )

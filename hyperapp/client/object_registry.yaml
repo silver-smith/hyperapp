@@ -1,7 +1,7 @@
 import:
   types:
     record_object:
-      - record_type_field
+      - field
       - record_object_type
   code:
     - async.code_registry

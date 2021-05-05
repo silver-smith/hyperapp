@@ -3,7 +3,7 @@ import:
     object_type:
       - object_command
     record_object:
-      - record_type_field
+      - field
     tree_view_sample:
       - tree_view_sample_object_type
       - tree_view_sample_article_type

@@ -3,7 +3,7 @@ import:
     object_type:
       - object_command
     record_object:
-      - record_type_field
+      - field
     params_editor:
       - params_editor_type
       - bound_argument
