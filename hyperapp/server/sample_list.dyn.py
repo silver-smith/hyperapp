@@ -5,7 +5,7 @@ from hyperapp.common.htypes import (
     tString,
     TList,
     service_command_t,
-    list_service_t,
+    service_t,
     )
 from hyperapp.common.module import Module
 
@@ -80,7 +80,7 @@ class ThisModule(Module):
             peer_ref=server_peer_ref,
             object_id=object_id,
             )
-        list_service = list_service_t(
+        list_service = service_t(
             type_ref=service_ot_ref,
             peer_ref=server_peer_ref,
             object_id=object_id,

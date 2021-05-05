@@ -7,7 +7,7 @@ from hyperapp.common.htypes import (
     tInt,
     tString,
     TList,
-    list_service_t,
+    service_t,
     )
 from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common import cdr_coders  # self-registering
@@ -88,7 +88,7 @@ def test_list_service(services, htypes, code):
     row_t = code.list_object.list_row_t(services.mosaic, services.types, service_ot)
 
     object_id = 'test_list_service_object'
-    list_service = list_service_t(
+    list_service = service_t(
         type_ref=service_ot_ref,
         peer_ref=master_peer_ref,
         object_id=object_id,

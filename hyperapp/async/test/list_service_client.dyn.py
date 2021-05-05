@@ -1,6 +1,6 @@
 import logging
 
-from hyperapp.common.htypes import bundle_t, list_service_t
+from hyperapp.common.htypes import bundle_t, service_t
 from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common.module import Module
 
@@ -31,7 +31,7 @@ class ThisModule(Module):
         services.async_endpoint_registry.register(self._my_identity, rpc_endpoint)
 
         services.object_registry.register_actor(
-            list_service_t, ListService.from_piece,
+            service_t, ListService.from_piece,
             self._my_identity, services.mosaic, services.types, services.command_registry, rpc_endpoint, services.async_rpc_proxy)
 
         try:
