@@ -1,4 +1,4 @@
 from object_type import object_type
 
 
-string_object_type = record(object_type)
+string_ot = record(object_type)

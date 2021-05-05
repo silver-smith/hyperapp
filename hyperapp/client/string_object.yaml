@@ -1,6 +1,6 @@
 import:
   types:
     string:
-      - string_object_type
+      - string_ot
   code:
     - async.ui.object

@@ -117,7 +117,7 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         self._mosaic = services.mosaic
-        services.available_object_layouts.register('text', [StringObject.type._t, htypes.string.string_object_type], self._make_text_layout_data)
+        services.available_object_layouts.register('text', [StringObject.type._t, htypes.string.string_ot], self._make_text_layout_data)
         # services.default_object_layouts.register('text', [StringObject.type._t], self._make_text_layout_data)
         services.object_layout_registry.register_actor(
             htypes.text.text_edit_layout, TextViewLayout.from_data, services.mosaic, services.async_web)

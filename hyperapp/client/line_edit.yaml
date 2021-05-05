@@ -1,7 +1,7 @@
 import:
   types:
     string:
-      - string_object_type
+      - string_ot
     line:
       - line_edit_layout
   code:

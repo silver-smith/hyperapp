@@ -97,8 +97,8 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         self._mosaic = services.mosaic
-        services.available_object_layouts.register('line', [htypes.string.string_object_type], self._make_line_layout_data)
-        services.default_object_layouts.register('line', [htypes.string.string_object_type], self._make_line_layout_data)
+        services.available_object_layouts.register('line', [htypes.string.string_ot], self._make_line_layout_data)
+        services.default_object_layouts.register('line', [htypes.string.string_ot], self._make_line_layout_data)
         services.object_layout_registry.register_actor(
             htypes.line.line_edit_layout, LineEditLayout.from_data, services.mosaic, services.async_web)
 
