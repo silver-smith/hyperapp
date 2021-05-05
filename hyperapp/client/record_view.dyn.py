@@ -82,13 +82,7 @@ class RecordViewLayout(ObjectLayout):
         self._field_layout_dict = {}
 
     async def _async_init(self, layout_watcher, async_web, object_layout_registry, field_layout_list):
-        field_id_to_type_ref = {
-            field.id: field.object_type_ref
-            for field in self._object_type.field_type_list
-            }
         for idx, field in enumerate(field_layout_list):
-            field_object_type_ref = field_id_to_type_ref[field.id]
-            field_object_type = await async_web.summon(field_object_type_ref)
             path = [*self._path, idx]
             layout = await object_layout_registry.invite(field.layout_ref, path, layout_watcher)
             self._field_layout_dict[field.id] = layout
