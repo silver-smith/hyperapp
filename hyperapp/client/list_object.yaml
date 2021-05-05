@@ -1,6 +1,6 @@
 import:
   types:
-    list_object_type:
+    list_ot:
       - list_ot
   code:
     - async.ui.object

@@ -17,7 +17,7 @@ type_module_list = [
     'tcp_transport',
     'rpc',
     'object_type',
-    'list_object_type',
+    'list_ot',
     'rpc_command',
     'layout',
     'text',

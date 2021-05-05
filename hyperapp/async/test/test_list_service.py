@@ -26,7 +26,7 @@ def type_module_list():
         'tcp_transport',
         'rpc',
         'object_type',
-        'list_object_type',
+        'list_ot',
         ]
 
 
@@ -76,12 +76,12 @@ def test_list_service(services, htypes, code):
 
     int_t_ref = services.types.reverse_resolve(tInt)
     string_list_t_ref = services.types.reverse_resolve(TList(tString))
-    service_ot = htypes.list_object_type.list_ot(
+    service_ot = htypes.list_ot.list_ot(
         command_list=[],
         key_column_id='key',
         column_list=[
-            htypes.list_object_type.column('key', int_t_ref),
-            htypes.list_object_type.column('value_list', string_list_t_ref),
+            htypes.list_ot.column('key', int_t_ref),
+            htypes.list_ot.column('value_list', string_list_t_ref),
             ],
         )
     service_ot_ref = services.mosaic.put(service_ot)
@@ -118,7 +118,7 @@ def test_list_service(services, htypes, code):
             'tcp_transport',
             'rpc',
             'object_type',
-            'list_object_type',
+            'list_ot',
             'record_ot',
             ],
         code_module_list=[

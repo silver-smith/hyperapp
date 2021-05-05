@@ -1,4 +1,4 @@
-from list_object_type import list_ot
+from list_ot import list_ot
 
 
 code_command_chooser_type = record(list_ot)

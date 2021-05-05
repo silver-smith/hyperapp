@@ -26,7 +26,7 @@ type_module_list = [
     'object_layout_association',
     'string',
     'text',
-    'list_object_type',
+    'list_ot',
     'tree_object',
     'record_ot',
     'code_command_chooser',

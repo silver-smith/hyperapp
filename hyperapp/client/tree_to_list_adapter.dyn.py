@@ -92,7 +92,7 @@ class TreeToListLayout(AbstractMultiItemObjectLayout):
             htypes.object_type.object_command('enter', None),
             htypes.object_type.object_command('open_parent', None),
             ]
-        return htypes.list_object_type.list_ot(
+        return htypes.list_ot.list_ot(
             command_list=tuple((*base_object_type.command_list, *adapter_command_list)),
             key_column_id='id',  # todo
             column_list=(),

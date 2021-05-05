@@ -2,7 +2,7 @@ import:
   types:
     object_type:
       - object_command
-    list_object_type:
+    list_ot:
       - column
       - list_ot
     rpc_command:
