@@ -1,7 +1,7 @@
-from record_object import record_object_type
+from record_object import record_ot
 
 
-params_editor_type = record(record_object_type)
+params_editor_type = record(record_ot)
 
 
 bound_argument = record:

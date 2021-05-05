@@ -57,7 +57,7 @@ class ObjectAnimator:
             name: await self.animate(getattr(piece, name))
             for name in t.fields
             }
-        object_type = htypes.record_object.record_object_type(
+        object_type = htypes.record_object.record_ot(
             command_list=(),
             field_type_list=tuple(
                 htypes.record_object.field(name, self._mosaic.put(field_object.type))

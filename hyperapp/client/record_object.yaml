@@ -1,6 +1,6 @@
 import:
   types:
     record_object:
-      - record_object_type
+      - record_ot
   code:
     - async.ui.object

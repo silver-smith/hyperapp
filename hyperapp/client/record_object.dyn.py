@@ -6,7 +6,7 @@ from .object import Object
 
 class RecordObject(Object, metaclass=abc.ABCMeta):
 
-    type = htypes.record_object.record_object_type(command_list=(), field_type_list=())
+    type = htypes.record_object.record_ot(command_list=(), field_type_list=())
 
     def __init__(self, fields=None):
         super().__init__()

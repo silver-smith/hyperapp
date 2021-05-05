@@ -5,5 +5,5 @@ field = record:
   id: string
   object_type_ref: ref
 
-record_object_type = record(object_type):
+record_ot = record(object_type):
   field_type_list: field list
