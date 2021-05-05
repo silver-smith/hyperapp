@@ -1,7 +1,7 @@
 from list_ot import list_ot
 
 
-command_list_object_type = record(list_ot)
+command_list_ot = record(list_ot)
 
 command_list = record:
   piece_ref: ref
