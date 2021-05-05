@@ -13,7 +13,6 @@ from hyperapp.common.htypes import (
     Request,
     Notification,
     Interface,
-    ListServiceType,
     ref_t,
     )
 from hyperapp.common import cdr_coders  # register codec
@@ -128,42 +127,6 @@ def test_types(types, htypes, loader):
     types.reverse_resolve(htypes.type_module_1.iface_a.methods['submit'].params_record_t)
     types.reverse_resolve(htypes.type_module_1.iface_a.methods['submit'].response_record_t)
     types.reverse_resolve(htypes.type_module_2.iface_c.methods['keep_alive'].params_record_t)
-
-
-def test_list_service(types, htypes, loader):
-    loader.load_type_module(TEST_MODULES_DIR / 'list_service.types')
-
-    field_dict = {
-        'datetime_field': tDateTime,
-        'string_list_field': TList(tString),
-        'int_opt_field': TOptional(tInt),
-        }
-    assert htypes.list_service.test_list_service == ListServiceType(
-        name='test_list_service',
-        field_dict=field_dict,
-        )
-    # Types should be registered:
-    types.reverse_resolve(htypes.list_service.test_list_service.interface)
-    types.reverse_resolve(htypes.list_service.test_list_service.row_t)
-    [method] = htypes.list_service.test_list_service.interface.methods.values()
-    types.reverse_resolve(method.params_record_t)
-    types.reverse_resolve(method.response_record_t)
-
-    assert htypes.list_service.test_list_service.row_t == TRecord('test_list_service_row', field_dict)
-
-    assert htypes.list_service.test_list_service.interface == Interface(
-        name='test_list_service_interface',
-        base=None,
-        method_list=[
-            Request(
-                method_name='get',
-                params_record_t=TRecord('test_list_service_interface_get_params'),
-                response_record_t=TRecord('test_list_service_interface_get_response', {
-                    'rows': TRecord('test_list_service_row', field_dict),
-                    }),
-                ),
-            ],
-        )
 
 
 def test_same_instance(htypes, loader):

@@ -17,7 +17,6 @@ from hyperapp.common.htypes import (
     Request,
     Notification,
     Interface,
-    ListServiceType,
     builtin_mt,
     name_wrapped_mt,
     optional_mt,
@@ -27,7 +26,6 @@ from hyperapp.common.htypes import (
     request_mt,
     notification_mt,
     interface_mt,
-    list_service_type_mt,
     )
 from hyperapp.common import cdr_coders  # register codec
 
@@ -275,21 +273,3 @@ def test_based_interface(types, mosaic):
                     }),
                 ),
         ])
-
-
-def test_list_service(types, mosaic):
-    int_list_mt = list_mt(mosaic.put(builtin_mt('int')))
-    bool_opt_mt = optional_mt(mosaic.put(builtin_mt('bool')))
-    piece = list_service_type_mt(fields=[
-        field_mt('datetime_field', mosaic.put(builtin_mt('datetime'))),
-        field_mt('int_list_field', mosaic.put(int_list_mt)),
-        field_mt('bool_opt_field', mosaic.put(bool_opt_mt)),
-        ])
-    name = 'test_list_service'
-    named_piece = name_wrapped_mt(name, mosaic.put(piece))
-    t = types.resolve(mosaic.put(named_piece))
-    assert t == ListServiceType(name, field_dict={
-        'datetime_field': tDateTime,
-        'int_list_field': TList(tInt),
-        'bool_opt_field': TOptional(tBool),
-        })

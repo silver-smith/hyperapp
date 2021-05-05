@@ -3,34 +3,6 @@ from .record import TRecord, ref_t
 from .interface import Interface, Request
 
 
-class ListServiceType(Type):
-
-    def __init__(self, name, field_dict, row_t=None, interface=None):
-        super().__init__(name)
-        self._field_dict = field_dict  # name -> t
-        self.row_t = row_t
-        self.interface = interface
-
-    def __str__(self):
-        return f'ListServiceType({self.name})'
-
-    def __repr__(self):
-        return f'<ListServiceType {self.name!r} {self._field_dict}>'
-
-    def __hash__(self):
-        return hash((self._name, tuple(self._field_dict.items())))
-
-    def __eq__(self, rhs):
-        return (rhs is self
-                or isinstance(rhs, ListServiceType)
-                and rhs._name == self._name
-                and rhs._field_dict == self._field_dict)
-
-    @property
-    def fields(self):
-        return self._field_dict
-
-
 service_command_t = TRecord('service_command', {
     'id': tString,
     'command_ref': ref_t,
