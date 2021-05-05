@@ -1,6 +1,6 @@
 import:
   types:
-    record_object:
+    record_ot:
       - field
       - record_ot
   code:

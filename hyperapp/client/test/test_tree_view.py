@@ -24,7 +24,7 @@ def type_module_list():
         'object_layout_association',
         'tree_object',
         'line',
-        'record_object',
+        'record_ot',
         'tree_view',
         'params_editor',
         ]

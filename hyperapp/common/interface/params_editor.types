@@ -1,4 +1,4 @@
-from record_object import record_ot
+from record_ot import record_ot
 
 
 params_editor_type = record(record_ot)

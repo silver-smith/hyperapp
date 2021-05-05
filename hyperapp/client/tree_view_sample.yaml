@@ -2,7 +2,7 @@ import:
   types:
     object_type:
       - object_command
-    record_object:
+    record_ot:
       - field
     tree_view_sample:
       - tree_view_sample_object_type

@@ -125,8 +125,8 @@ class ThisModule(ClientModule):
         sample_article_type = htypes.tree_view_sample.tree_view_sample_article_type(
             command_list=(),
             field_type_list=(
-                htypes.record_object.field('title', services.mosaic.put(StringObject.type)),
-                htypes.record_object.field('text', services.mosaic.put(StringObject.type)),
+                htypes.record_ot.field('title', services.mosaic.put(StringObject.type)),
+                htypes.record_ot.field('text', services.mosaic.put(StringObject.type)),
                 ),
             )
         sample_tree_type = htypes.tree_view_sample.tree_view_sample_object_type(

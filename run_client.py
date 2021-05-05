@@ -28,7 +28,7 @@ type_module_list = [
     'text',
     'list_object_type',
     'tree_object',
-    'record_object',
+    'record_ot',
     'code_command_chooser',
     'command_list',
     'layout_editor',

@@ -2,7 +2,7 @@ import:
   types:
     object_type:
       - object_command
-    record_object:
+    record_ot:
       - field
     params_editor:
       - params_editor_type
