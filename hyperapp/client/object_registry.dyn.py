@@ -1,3 +1,5 @@
+import logging
+
 from hyperapp.common.htypes import TRecord, ref_t
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.common.ref import decode_capsule
@@ -6,6 +8,8 @@ from hyperapp.common.module import Module
 from . import htypes
 from .code_registry import CodeRegistry, CodeRegistryKeyError
 from .record_object import RecordObject
+
+log = logging.getLogger(__name__)
 
 
 class RecordViewer(RecordObject):
@@ -53,6 +57,7 @@ class ObjectAnimator:
         raise RuntimeError(f"No code is registered for object: {t!r}; piece: {piece}")
 
     async def _construct_record_object(self, t, piece):
+        log.info("Construct object for %s: %s", t, piece)
         fields = {
             name: await self.animate(getattr(piece, name))
             for name in t.fields
