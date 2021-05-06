@@ -6,4 +6,4 @@ from .builtins import register_builtin_types
 from .hyper_ref import *
 from .meta_type import *
 from .interface import *
-from .service import service_command_t, service_t, register_service_types
+from .service import service_command_t, service_t, list_service_t, record_field_t, record_service_t, register_service_types

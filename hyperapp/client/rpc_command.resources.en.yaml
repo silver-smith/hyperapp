@@ -4,6 +4,10 @@ module:async.ui.rpc_command:RpcElementCommand:
       text: Open
       description: Open selected element
       is_default: yes
+    view:
+      text: View
+      description: Open selected element article for viewing
+      shortcuts: [V]
     edit:
       text: Edit
       description: Open selected element article for editing
