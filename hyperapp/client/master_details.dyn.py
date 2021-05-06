@@ -122,7 +122,7 @@ class MasterDetailsLayout(ObjectLayout):
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name, services)
+        super().__init__(module_name, services, config)
         self._mosaic = services.mosaic
         self._default_object_layouts = services.default_object_layouts
         # object_type_ids = [*ListObject.type.ids, *TreeObject.type.ids]

@@ -159,7 +159,7 @@ class TreeToListLayout(AbstractMultiItemObjectLayout):
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name, services)
+        super().__init__(module_name, services, config)
         self._mosaic = services.mosaic
         services.object_registry.register_actor(
             htypes.tree_to_list_adapter.tree_to_list_adapter, TreeToListAdapter.from_state, services.mosaic, services.object_animator)

@@ -235,7 +235,7 @@ class ListViewLayout(MultiItemObjectLayout):
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name, services)
+        super().__init__(module_name, services, config)
         self._mosaic = services.mosaic
         services.available_object_layouts.register('list', [ListObject.type._t], self._make_list_layout_data)
         services.default_object_layouts.register('list', [ListObject.type._t], self._make_list_layout_data)

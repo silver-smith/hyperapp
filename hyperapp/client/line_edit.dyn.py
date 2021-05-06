@@ -95,7 +95,7 @@ class LineEditLayout(ObjectLayout):
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name, services)
+        super().__init__(module_name, services, config)
         self._mosaic = services.mosaic
         services.available_object_layouts.register('line', [htypes.string.string_ot], self._make_line_layout_data)
         services.default_object_layouts.register('line', [htypes.string.string_ot], self._make_line_layout_data)

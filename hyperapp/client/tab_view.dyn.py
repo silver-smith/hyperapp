@@ -247,7 +247,7 @@ class TabView(QtWidgets.QTabWidget, View):
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name, services)
+        super().__init__(module_name, services, config)
         self._mosaic = services.mosaic
         services.view_registry.register_actor(
             htypes.tab_view.tab_view, TabLayout.from_data, services.mosaic, services.view_registry, services.layout_watcher)

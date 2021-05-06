@@ -72,5 +72,5 @@ class DataViewer(TreeObject):
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name, services)
+        super().__init__(module_name, services, config)
         services.object_registry.register_actor(htypes.data_viewer.data_viewer, DataViewer.from_state, services.mosaic)

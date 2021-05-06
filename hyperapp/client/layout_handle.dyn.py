@@ -126,7 +126,7 @@ class LayoutHandle:
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name, services)
+        super().__init__(module_name, services, config)
 
         self._handle_by_type = {}  # object_type -> layout handle
         self._handle_by_command = {}  # object_type, command id -> layout handle

@@ -119,7 +119,7 @@ class RecordViewLayout(ObjectLayout):
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name, services)
+        super().__init__(module_name, services, config)
         self._mosaic = services.mosaic
         self._async_web = services.async_web
         self._layout_handle_from_object_type = services.layout_handle_from_object_type

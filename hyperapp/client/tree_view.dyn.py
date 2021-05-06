@@ -378,7 +378,7 @@ class TreeViewLayout(MultiItemObjectLayout):
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name, services)
+        super().__init__(module_name, services, config)
         self._mosaic = services.mosaic
         self._types = services.types
         self._resource_resolver = services.resource_resolver

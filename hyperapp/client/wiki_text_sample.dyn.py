@@ -6,7 +6,7 @@ from .module import ClientModule
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name, services)
+        super().__init__(module_name, services, config)
         ref_list = [
             htypes.text.wiki_ref(1, "Sample ref#1", services.mosaic.put("Referred text 1")),
             htypes.text.wiki_ref(2, "Sample ref#2", services.mosaic.put("Referred text 2")),

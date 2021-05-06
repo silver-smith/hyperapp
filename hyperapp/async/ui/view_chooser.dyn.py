@@ -77,7 +77,7 @@ class ViewChooser(SimpleListObject, Chooser):
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name, services)
+        super().__init__(module_name, services, config)
         services.object_registry.register_actor(
             htypes.view_chooser.view_chooser, ViewChooser.from_state,
             services.mosaic, services.async_web, services.available_object_layouts)

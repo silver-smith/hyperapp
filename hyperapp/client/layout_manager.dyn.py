@@ -182,7 +182,7 @@ class LayoutManager:
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name, services)
+        super().__init__(module_name, services, config)
         services.layout_watcher = LayoutWatcher()
         services.layout_manager = layout_manager = LayoutManager(
             services.view_registry,

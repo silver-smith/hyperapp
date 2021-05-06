@@ -203,7 +203,7 @@ class NavigatorLayout(GlobalLayout):
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name, services)
+        super().__init__(module_name, services, config)
         services.view_registry.register_actor(
             htypes.navigator.navigator,
             NavigatorLayout.from_data,

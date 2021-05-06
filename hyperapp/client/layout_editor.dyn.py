@@ -233,7 +233,7 @@ class ObjectLayoutEditor(LayoutEditor):
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name, services)
+        super().__init__(module_name, services, config)
         services.object_registry.register_actor(
             htypes.layout_editor.view_layout_editor, GlobalLayoutEditor.from_state, services.layout_manager, services.layout_watcher)
         services.object_registry.register_actor(

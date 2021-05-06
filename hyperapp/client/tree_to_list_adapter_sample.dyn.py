@@ -6,7 +6,7 @@ from .module import ClientModule
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name, services)
+        super().__init__(module_name, services, config)
         base = htypes.tree_view_sample.tree_view_sample_object()
         self._base_ref = services.mosaic.put(base)
 

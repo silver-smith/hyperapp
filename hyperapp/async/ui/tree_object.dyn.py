@@ -109,6 +109,6 @@ class TreeObject(Object, metaclass=abc.ABCMeta):
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name, services)
+        super().__init__(module_name, services, config)
         services.TreeObject = TreeObject
         services.Column = Column

@@ -78,6 +78,6 @@ class ObjectLayoutAssociationRepository:
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name, services)
+        super().__init__(module_name, services, config)
         services.object_layout_association = ObjectLayoutAssociationRepository(
             services.mosaic, services.object_layout_registry, ASSOCIATION_DIR)

@@ -121,7 +121,7 @@ class ParamsEditor(RecordObject):
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name, services)
+        super().__init__(module_name, services, config)
         services.object_registry.register_actor(
             htypes.params_editor.params_editor, ParamsEditor.from_data,
             services.mosaic, services.async_web, services.object_animator)

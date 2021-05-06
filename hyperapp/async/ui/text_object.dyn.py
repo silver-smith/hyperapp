@@ -53,5 +53,5 @@ class WikiTextObject(Object):
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name, services)
+        super().__init__(module_name, services, config)
         services.object_registry.register_actor(htypes.text.wiki_text, WikiTextObject.from_state, services.async_web)

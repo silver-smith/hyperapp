@@ -171,7 +171,7 @@ class CommandList(SimpleListObject):
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name, services)
+        super().__init__(module_name, services, config)
 
         command_list_type = htypes.command_list.command_list_ot(
             command_list=(
