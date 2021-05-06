@@ -1,0 +1,6 @@
+import:
+  types:
+    none_ot:
+      - none_ot
+  code:
+    - async.ui.object

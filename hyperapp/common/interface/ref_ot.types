@@ -1,0 +1,4 @@
+from object_type import object_type
+
+
+ref_ot = record(object_type)

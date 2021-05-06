@@ -23,7 +23,7 @@ class StringObject(Object):
 
     @property
     def piece(self):
-        return self.value
+        return self._value
 
     def get_value(self):
         return self._value
