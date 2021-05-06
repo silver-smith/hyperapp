@@ -1,4 +1,4 @@
-from hyperapp.common.htypes import service_command_t, service_t
+from hyperapp.common.htypes import service_command_t, list_service_t
 
 from . import htypes
 from .list_object import list_interface_ref
@@ -48,7 +48,7 @@ class ListService(SimpleListObject):
             service_command_t(command.id, self._mosaic.put(command.piece))
             for command in self._command_list
             ]
-        return service_t(
+        return list_service_t(
             type_ref=list_ot_ref,
             peer_ref=self._peer_ref,
             object_id=self._object_id,
