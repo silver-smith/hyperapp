@@ -1,4 +1,4 @@
-module:client.params_editor_object:ParamsEditor:
+module:async.ui.params_editor_object:ParamsEditor:
   commands:
     submit:
       text: Submit

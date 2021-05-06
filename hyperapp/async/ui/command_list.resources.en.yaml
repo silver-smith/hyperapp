@@ -1,4 +1,4 @@
-module:client.command_list:CommandList:
+module:async.ui.command_list:CommandList:
   columns:
     path:
       text: Path

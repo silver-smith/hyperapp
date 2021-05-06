@@ -11,6 +11,6 @@ import:
       - params_editor
   code:
     - async.ui.command
-    - client.record_object
-    - client.chooser
+    - async.ui.record_object
+    - async.ui.chooser
     - async.ui.module

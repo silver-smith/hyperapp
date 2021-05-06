@@ -147,7 +147,8 @@ class ThisModule(Module):
             services.local_code_module_registry,
             services.resource_registry,
             )
-        self._client_resources_dir = services.client_resources_dir
+        self._client_resources_dir_list = services.client_resources_dir_list
 
     def init_phase_2(self, services):
-        self._resource_loader.load_resources_from_dir(self._client_resources_dir)
+        for dir in self._client_resources_dir_list:
+            self._resource_loader.load_resources_from_dir(dir)

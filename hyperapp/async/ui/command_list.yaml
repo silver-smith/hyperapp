@@ -14,9 +14,9 @@ import:
       - params_editor
   code:
     - async.ui.command
-    - client.column
+    - async.ui.column
     - client.command_hub
-    - client.object_command
+    - async.ui.object_command
     - client.layout_handle
-    - client.simple_list_object
+    - async.ui.simple_list_object
     - async.ui.module

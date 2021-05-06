@@ -7,6 +7,6 @@ import:
     tree_to_list_adapter:
       - tree_to_list_adapter
   code:
-    - client.object_command
+    - async.ui.object_command
     - common.fs_service_impl
     - async.ui.module

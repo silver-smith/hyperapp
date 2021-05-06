@@ -1,4 +1,4 @@
-module:client.view_chooser:ViewChooser:
+module:async.ui.view_chooser:ViewChooser:
   columns:
     id:
       text: View

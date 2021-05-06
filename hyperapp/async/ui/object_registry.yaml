@@ -5,4 +5,4 @@ import:
       - record_ot
   code:
     - async.code_registry
-    - client.record_object
+    - async.ui.record_object

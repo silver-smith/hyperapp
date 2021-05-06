@@ -5,10 +5,10 @@ import:
     master_details:
       - master_details_layout
   code:
-    - client.object_command
+    - async.ui.object_command
     - client.composite
     - client.layout
-    - client.list_object
-    - client.tree_object
-    - client.view_chooser
+    - async.ui.list_object
+    - async.ui.tree_object
+    - async.ui.view_chooser
     - async.ui.module

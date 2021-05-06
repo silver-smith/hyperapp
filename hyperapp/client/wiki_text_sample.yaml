@@ -4,5 +4,5 @@ import:
       - wiki_ref
       - wiki_text
   code:
-    - client.object_command
+    - async.ui.object_command
     - async.ui.module

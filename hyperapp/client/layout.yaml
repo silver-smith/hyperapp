@@ -6,5 +6,5 @@ import:
     - async.ui.commander
     - client.layout_command
     - client.layout_handle
-    - client.items_view
+    - async.ui.items_view
     - client.self_command

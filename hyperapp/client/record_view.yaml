@@ -5,5 +5,5 @@ import:
       - record_layout
   code:
     - client.layout
-    - client.record_object
+    - async.ui.record_object
     - async.ui.module

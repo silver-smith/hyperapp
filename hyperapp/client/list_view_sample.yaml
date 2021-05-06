@@ -10,10 +10,10 @@ import:
       - list_view_sample_object
       - list_sample_article
   code:
-    - client.object_command
+    - async.ui.object_command
     - async.ui.object
-    - client.column
-    - client.list_object
-    - client.string_object
-    - client.record_object
+    - async.ui.column
+    - async.ui.list_object
+    - async.ui.string_object
+    - async.ui.record_object
     - async.ui.module

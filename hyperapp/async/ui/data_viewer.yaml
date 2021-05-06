@@ -3,6 +3,6 @@ import:
     data_viewer:
       - data_viewer
   code:
-    - client.column
-    - client.tree_object
+    - async.ui.column
+    - async.ui.tree_object
     - async.ui.module

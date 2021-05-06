@@ -3,8 +3,8 @@ import:
     params_editor_sample:
       - params_editor_sample
   code:
-    - client.object_command
-    - client.column
-    - client.simple_list_object
-    - client.view_chooser
+    - async.ui.object_command
+    - async.ui.column
+    - async.ui.simple_list_object
+    - async.ui.view_chooser
     - async.ui.module

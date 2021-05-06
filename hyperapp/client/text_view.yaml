@@ -8,5 +8,5 @@ import:
     - async.ui.object
     - client.layout
     - client.view
-    - client.string_object
+    - async.ui.string_object
     - async.ui.module

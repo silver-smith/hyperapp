@@ -4,5 +4,5 @@ import:
       - endpoint
   code:
     - common.list_object
-    - client.column
-    - client.simple_list_object
+    - async.ui.column
+    - async.ui.simple_list_object

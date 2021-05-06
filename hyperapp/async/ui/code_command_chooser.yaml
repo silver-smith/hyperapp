@@ -6,9 +6,9 @@ import:
       - code_command_chooser_type
       - code_command_chooser
   code:
-    - client.object_command
-    - client.chooser
-    - client.column
+    - async.ui.object_command
+    - async.ui.chooser
+    - async.ui.column
     - client.layout_handle
-    - client.simple_list_object
+    - async.ui.simple_list_object
     - async.ui.module

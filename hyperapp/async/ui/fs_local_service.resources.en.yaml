@@ -1,4 +1,4 @@
-module:client.fs_local_service:ThisModule:
+module:async.ui.fs_local_service:ThisModule:
   commands:
     open_local_fs:
       text: Open local file system

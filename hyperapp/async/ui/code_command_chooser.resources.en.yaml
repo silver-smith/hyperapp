@@ -1,4 +1,4 @@
-module:client.code_command_chooser:CodeCommandChooser:
+module:async.ui.code_command_chooser:CodeCommandChooser:
   columns:
     path:
       text: Path

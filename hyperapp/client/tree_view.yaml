@@ -4,7 +4,7 @@ import:
       - tree_layout
   code:
     - async.ui.qt.util
-    - client.tree_object
+    - async.ui.tree_object
     - client.layout
     - client.view
     - async.ui.module

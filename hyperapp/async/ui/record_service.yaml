@@ -4,4 +4,4 @@ import:
       - endpoint
   code:
     - common.record
-    - client.record_object
+    - async.ui.record_object

@@ -4,4 +4,4 @@ import:
       - list_ot
   code:
     - async.ui.object
-    - client.column
+    - async.ui.column

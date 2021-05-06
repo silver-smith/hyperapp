@@ -3,7 +3,7 @@ import:
     root_layout:
       - root_layout
   code:
-    - client.object_command
+    - async.ui.object_command
     - client.layout_handle
     - client.layout
     - client.command_hub

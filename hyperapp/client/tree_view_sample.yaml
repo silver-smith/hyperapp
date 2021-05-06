@@ -10,10 +10,10 @@ import:
       - tree_view_sample_object
       - tree_sample_article
   code:
-    - client.object_command
+    - async.ui.object_command
     - async.ui.object
-    - client.column
-    - client.tree_object
-    - client.string_object
-    - client.record_object
+    - async.ui.column
+    - async.ui.tree_object
+    - async.ui.string_object
+    - async.ui.record_object
     - async.ui.module
