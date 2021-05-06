@@ -1,0 +1,7 @@
+import:
+  types:
+    rpc:
+      - endpoint
+  code:
+    - common.record
+    - client.record_object

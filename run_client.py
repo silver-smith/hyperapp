@@ -68,6 +68,7 @@ code_module_list = [
     'common.file_bundle',
     'common.local_server',
     'common.list_object',
+    'common.record',
     'common.resource_key',
     'transport.identity',
     'transport.rsa_identity',
@@ -105,6 +106,7 @@ code_module_list = [
     'client.list_object',
     'client.simple_list_object',
     'async.ui.list_service',
+    'async.ui.record_service',
     'client.chooser',
     'client.params_editor_object',
     'client.tree_object',
@@ -150,6 +152,7 @@ code_module_list = [
     'async.rpc.rpc_endpoint',
     'client.rpc_endpoint',
     'client.list_service',
+    'client.record_service',
     'async.ui.rpc_command',
     'async.ui.application_state',
     ]
