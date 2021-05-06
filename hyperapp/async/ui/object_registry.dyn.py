@@ -75,6 +75,6 @@ class ObjectAnimator:
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name)
+        super().__init__(module_name, services, config)
         services.object_registry = CodeRegistry('object', services.async_web, services.types)
         services.object_animator = ObjectAnimator(services.mosaic, services.types, services.async_web, services.object_registry)

@@ -11,7 +11,7 @@ class ThisModule(Module):
     _FailureReason = namedtuple('_FailureReason', 'reason exception')
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name)
+        super().__init__(module_name, services, config)
         self._stop_signal = services.stop_signal
         self._failure_reason_list = []
         services.on_stop.append(self.on_stop)

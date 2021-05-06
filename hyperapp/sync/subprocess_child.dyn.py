@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name)
+        super().__init__(module_name, services, config)
         self._master_process_connection = services.master_process_connection
         self._subprocess_stop_event = services.subprocess_stop_event
         self._on_failure = services.failed

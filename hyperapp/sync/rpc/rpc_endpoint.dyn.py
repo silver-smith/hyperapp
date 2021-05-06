@@ -92,6 +92,6 @@ class RpcEndpoint:
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name)
+        super().__init__(module_name, services, config)
         services.rpc_endpoint = partial(
             RpcEndpoint, services.web, services.mosaic, services.types, services.peer_registry, services.transport)

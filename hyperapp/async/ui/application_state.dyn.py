@@ -8,7 +8,7 @@ log = logging.getLogger(__name__)
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name)
+        super().__init__(module_name, services, config)
         self._mosaic = services.mosaic
         self._stop_event = services.async_stop_event
         self._async_web = services.async_web

@@ -64,7 +64,7 @@ class EndpointRegistry:
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name)
+        super().__init__(module_name, services, config)
         self._thread_pool = ThreadPoolExecutor(max_workers=5, thread_name_prefix='Endpoint')
         services.on_stop.append(self.stop)
         services.endpoint_registry = EndpointRegistry(

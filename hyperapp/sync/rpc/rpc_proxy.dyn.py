@@ -48,7 +48,7 @@ class Proxy:
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name)
+        super().__init__(module_name, services, config)
         self._mosaic = services.mosaic
         self._types = services.types
         self._peer_registry = services.peer_registry

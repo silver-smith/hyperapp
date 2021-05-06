@@ -9,7 +9,7 @@ MAX_INIT_PHASE_COUNT = 3
 # base class for modules
 class Module(object):
 
-    def __init__(self, name):
+    def __init__(self, name, services, config):
         self.name = name
 
     def __repr__(self):

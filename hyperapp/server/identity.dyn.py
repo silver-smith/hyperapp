@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name)
+        super().__init__(module_name, services, config)
         services.server_identity = self._produce_identity(services)
 
     def _produce_identity(self, services):

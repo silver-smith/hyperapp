@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name)
+        super().__init__(module_name, services, config)
 
         master_peer_bundle = packet_coders.decode('cdr', config['master_peer_bundle_cdr'], bundle_t)
         services.unbundler.register_bundle(master_peer_bundle)

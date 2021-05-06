@@ -26,7 +26,7 @@ class Unbundler(object):
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name)
+        super().__init__(module_name, services, config)
         self._aux_ref_unbundler_hooks = []
         services.aux_ref_unbundler_hooks = self._aux_ref_unbundler_hooks
         services.unbundler = Unbundler(services.mosaic, self._aux_ref_unbundler_hooks)

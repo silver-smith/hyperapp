@@ -46,5 +46,5 @@ class StringObject(Object):
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name)
+        super().__init__(module_name, services, config)
         services.object_registry.register_actor(tString, StringObject.from_state)

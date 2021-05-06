@@ -37,6 +37,6 @@ class ApplicationStateStorage(object):
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name)
+        super().__init__(module_name, services, config)
         file_bundle = services.file_bundle(STATE_FILE_PATH)
         services.application_state_storage = ApplicationStateStorage(file_bundle)

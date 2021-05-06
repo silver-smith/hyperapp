@@ -20,7 +20,7 @@ class Echo:
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name)
+        super().__init__(module_name, services, config)
 
         self._async_rpc_endpoint = services.async_rpc_endpoint
         self._async_endpoint_registry = services.async_endpoint_registry

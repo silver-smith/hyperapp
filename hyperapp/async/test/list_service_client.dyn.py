@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name)
+        super().__init__(module_name, services, config)
 
         self._object_registry = services.object_registry
         self._object_animator = services.object_animator

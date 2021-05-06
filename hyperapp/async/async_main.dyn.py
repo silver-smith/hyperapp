@@ -26,7 +26,7 @@ class AsyncStopEvent:
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name)
+        super().__init__(module_name, services, config)
         self._services = services
         self._module_registry = services.module_registry
         self._event_loop_ctr = services.event_loop_ctr

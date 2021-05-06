@@ -24,5 +24,5 @@ class ResourceResolver:
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name)
+        super().__init__(module_name, services, config)
         services.resource_resolver = ResourceResolver(services.mosaic, services.resource_registry)

@@ -167,7 +167,7 @@ class IncomingConnectionRoute:
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
-        super().__init__(module_name)
+        super().__init__(module_name, services, config)
         self._mosaic = services.mosaic
         self._ref_collector = services.ref_collector
         self._unbundler = services.unbundler
