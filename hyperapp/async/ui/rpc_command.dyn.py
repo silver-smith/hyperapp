@@ -76,9 +76,6 @@ class RpcElementCommand:
 
 class ThisModule(Module):
 
-    def __init__(self, module_name, services, config):
-        super().__init__(module_name, services, config)
-
     async def async_init(self, services):
         services.command_registry.register_actor(
             htypes.rpc_command.rpc_element_command, RpcElementCommand.from_piece,
