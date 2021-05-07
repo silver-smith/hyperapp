@@ -2,6 +2,9 @@ import:
   types:
     rpc:
       - endpoint
+    service:
+      - command
+      - record_service
   code:
     - common.record
     - async.ui.record_object

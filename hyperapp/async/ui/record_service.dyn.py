@@ -1,5 +1,3 @@
-from hyperapp.common.htypes import record_field_t, record_service_t
-
 from . import htypes
 from .record import record_interface_ref
 from .record_object import RecordObject
@@ -46,10 +44,10 @@ class RecordService(RecordObject):
     def piece(self):
         object_type_ref = self._mosaic.put(self._object_type)
         command_list = [
-            service_command_t(command.id, self._mosaic.put(command.piece))
+            htypes.service.command(command.id, self._mosaic.put(command.piece))
             for command in self._command_list
             ]
-        return record_service_t(
+        return htypes.service.record_service(
             type_ref=object_type_ref,
             peer_ref=self._peer_ref,
             object_id=self._object_id,

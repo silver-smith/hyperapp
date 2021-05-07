@@ -7,7 +7,6 @@ from hyperapp.common.htypes import (
     tInt,
     tString,
     TList,
-    service_t,
     )
 from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common import cdr_coders  # self-registering
@@ -27,6 +26,7 @@ def type_module_list():
         'rpc',
         'object_type',
         'list_ot',
+        'service',
         ]
 
 
@@ -88,7 +88,7 @@ def test_list_service(services, htypes, code):
     row_t = code.list_object.list_row_t(services.mosaic, services.types, service_ot)
 
     object_id = 'test_list_service_object'
-    list_service = service_t(
+    list_service = htypes.service.list_service(
         type_ref=service_ot_ref,
         peer_ref=master_peer_ref,
         object_id=object_id,
@@ -120,6 +120,7 @@ def test_list_service(services, htypes, code):
             'object_type',
             'list_ot',
             'record_ot',
+            'service',
             ],
         code_module_list=[
             'common.visitor',

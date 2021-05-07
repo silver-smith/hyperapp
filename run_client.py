@@ -51,6 +51,7 @@ type_module_list = [
     'transport',
     'tcp_transport',
     'rpc',
+    'service',
     'rpc_command',
     ]
 

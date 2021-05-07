@@ -20,6 +20,7 @@ type_module_list = [
     'string',
     'list_ot',
     'record_ot',
+    'service',
     'rpc_command',
     'layout',
     'text',

@@ -1,3 +1,6 @@
 import:
+  types:
+    service:
+      - list_service
   code:
     - async.ui.list_service

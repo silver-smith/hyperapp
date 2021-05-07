@@ -1,0 +1,21 @@
+
+command = record:
+  id: string
+  command_ref: ref
+
+service = record:
+  type_ref: ref
+  peer_ref: ref
+  object_id: string
+  command_list: command list
+
+
+list_service = record(service)
+
+
+record_field = record:
+  id: string
+  type_ref: ref
+
+record_service = record(service):
+  field_list: record_field list

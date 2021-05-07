@@ -4,10 +4,6 @@ from hyperapp.common.htypes import (
     tInt,
     tString,
     TList,
-    service_command_t,
-    list_service_t,
-    record_field_t,
-    record_service_t,
     )
 from hyperapp.common.module import Module
 
@@ -108,14 +104,14 @@ class ThisModule(Module):
             peer_ref=server_peer_ref,
             object_id=list_object_id,
             )
-        list_service = list_service_t(
+        list_service = htypes.service.list_service(
             type_ref=services.mosaic.put(list_service_ot),
             peer_ref=server_peer_ref,
             object_id=list_object_id,
             command_list=[
-                service_command_t('open', services.mosaic.put(open_command)),
-                service_command_t('view', services.mosaic.put(view_command)),
-                service_command_t('edit', services.mosaic.put(edit_command)),
+                htypes.service.command('open', services.mosaic.put(open_command)),
+                htypes.service.command('view', services.mosaic.put(view_command)),
+                htypes.service.command('edit', services.mosaic.put(edit_command)),
                 ],
             )
 
@@ -129,10 +125,10 @@ class ThisModule(Module):
                 ],
             )
         record_field_list = [
-            record_field_t('title', string_t_ref),
-            record_field_t('text', string_t_ref),
+            htypes.service.record_field('title', string_t_ref),
+            htypes.service.record_field('text', string_t_ref),
             ]
-        record_service = record_service_t(
+        record_service = htypes.service.record_service(
             type_ref=services.mosaic.put(record_service_ot),
             peer_ref=server_peer_ref,
             object_id=record_object_id,

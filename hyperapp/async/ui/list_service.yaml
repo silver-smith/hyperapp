@@ -2,6 +2,9 @@ import:
   types:
     rpc:
       - endpoint
+    service:
+      - command
+      - list_service
   code:
     - common.list_object
     - async.ui.column

@@ -10,6 +10,11 @@ import:
     record_ot:
       - field
       - record_ot
+    service:
+      - command
+      - list_service
+      - record_field
+      - record_service
     rpc_command:
       - rpc_element_command
     sample_list:
