@@ -16,10 +16,10 @@ log = logging.getLogger(__name__)
 
 class ListServant:
 
-    def __init__(self, mosaic, row_t, record_service):
+    def __init__(self, mosaic, row_t, record_service_factory):
         self._mosaic = mosaic
         self._row_t = row_t
-        self._record_service = record_service
+        self._record_service_factory = record_service_factory
 
     def get(self, request):
         log.info("ListServant.get()")
@@ -45,7 +45,8 @@ class ListServant:
 
     def edit(self, request, item_key):
         log.info("ListServant.edit(%r)", item_key)
-        return self._mosaic.put(self._record_service)
+        service = self._record_service_factory(item_key)
+        return self._mosaic.put(service)
 
 
 class RecordServant:
@@ -133,22 +134,25 @@ class ThisModule(Module):
             htypes.service.record_field('title', string_t_ref),
             htypes.service.record_field('text', string_t_ref),
             ]
-        record_service = htypes.service.record_service(
-            type_ref=mosaic.put(record_service_ot),
-            peer_ref=server_peer_ref,
-            object_id=record_object_id,
-            param_type_list=[
-                htypes.service.param_type('article_id', int_t_ref),
-                ],
-            param_list=[
-                htypes.service.parameter('article_id', mosaic.put(12345)),
-                ],
-            command_list=[],
-            field_list=record_field_list,
-            )
+
+        def record_service_factory(article_id):
+            return htypes.service.record_service(
+                type_ref=mosaic.put(record_service_ot),
+                peer_ref=server_peer_ref,
+                object_id=record_object_id,
+                param_type_list=[
+                    htypes.service.param_type('article_id', int_t_ref),
+                    ],
+                param_list=[
+                    htypes.service.parameter('article_id', mosaic.put(article_id)),
+                    ],
+                command_list=[],
+                field_list=record_field_list,
+                )
+
         rec_t = record_t(mosaic, types, record_field_list)
 
-        list_servant = ListServant(mosaic, row_t, record_service)
+        list_servant = ListServant(mosaic, row_t, record_service_factory)
         services.server_rpc_endpoint.register_servant(list_object_id, list_servant)
         record_servant = RecordServant(rec_t)
         services.server_rpc_endpoint.register_servant(record_object_id, record_servant)
