@@ -50,6 +50,8 @@ class ListService(SimpleListObject):
             type_ref=list_ot_ref,
             peer_ref=self._peer_ref,
             object_id=self._object_id,
+            param_type_list=[],
+            param_list=[],
             command_list=command_list,
             )
 

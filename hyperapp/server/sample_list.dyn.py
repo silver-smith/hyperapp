@@ -53,11 +53,11 @@ class RecordServant:
     def __init__(self, rec_t):
         self._rec_t = rec_t
 
-    def get(self, request):
-        log.info("RecordServant.get()")
+    def get(self, request, article_id):
+        log.info("RecordServant.get(%s)", article_id)
         return self._rec_t(
-            title="Some title",
-            text="Some text\nwith second line",
+            title=f"Article {article_id}",
+            text=f"Some text for article {article_id}\nwith second line",
             )
 
 
@@ -66,10 +66,13 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        server_peer_ref = services.mosaic.put(services.server_identity.peer.piece)
+        mosaic = services.mosaic
+        types = services.types
 
-        int_t_ref = services.types.reverse_resolve(tInt)
-        string_t_ref = services.types.reverse_resolve(tString)
+        server_peer_ref = mosaic.put(services.server_identity.peer.piece)
+
+        int_t_ref = types.reverse_resolve(tInt)
+        string_t_ref = types.reverse_resolve(tString)
 
         list_service_ot = htypes.list_ot.list_ot(
             command_list=[
@@ -83,40 +86,42 @@ class ThisModule(Module):
                 htypes.list_ot.column('value', string_t_ref),
                 ],
             )
-        row_t = list_row_t(services.mosaic, services.types, list_service_ot)
+        row_t = list_row_t(mosaic, types, list_service_ot)
 
         list_object_id = 'test_list_service_object'
         open_command = htypes.rpc_command.rpc_element_command(
-            key_type_ref=services.types.reverse_resolve(tInt),
+            key_type_ref=int_t_ref,
             method_name='open',
             peer_ref=server_peer_ref,
             object_id=list_object_id,
             )
         edit_command = htypes.rpc_command.rpc_element_command(
-            key_type_ref=services.types.reverse_resolve(tInt),
+            key_type_ref=int_t_ref,
             method_name='edit',
             peer_ref=server_peer_ref,
             object_id=list_object_id,
             )
         view_command = htypes.rpc_command.rpc_element_command(
-            key_type_ref=services.types.reverse_resolve(tInt),
+            key_type_ref=int_t_ref,
             method_name='view',
             peer_ref=server_peer_ref,
             object_id=list_object_id,
             )
         list_service = htypes.service.list_service(
-            type_ref=services.mosaic.put(list_service_ot),
+            type_ref=mosaic.put(list_service_ot),
             peer_ref=server_peer_ref,
             object_id=list_object_id,
+            param_type_list=[],
+            param_list=[],
             command_list=[
-                htypes.service.command('open', services.mosaic.put(open_command)),
-                htypes.service.command('view', services.mosaic.put(view_command)),
-                htypes.service.command('edit', services.mosaic.put(edit_command)),
+                htypes.service.command('open', mosaic.put(open_command)),
+                htypes.service.command('view', mosaic.put(view_command)),
+                htypes.service.command('edit', mosaic.put(edit_command)),
                 ],
             )
 
         record_object_id = 'test_record_service_object'
-        string_ot_ref = services.mosaic.put(htypes.string.string_ot(command_list=[]))
+        string_ot_ref = mosaic.put(htypes.string.string_ot(command_list=[]))
         record_service_ot = htypes.record_ot.record_ot(
             command_list=[],
             field_type_list=[
@@ -129,15 +134,21 @@ class ThisModule(Module):
             htypes.service.record_field('text', string_t_ref),
             ]
         record_service = htypes.service.record_service(
-            type_ref=services.mosaic.put(record_service_ot),
+            type_ref=mosaic.put(record_service_ot),
             peer_ref=server_peer_ref,
             object_id=record_object_id,
+            param_type_list=[
+                htypes.service.param_type('article_id', int_t_ref),
+                ],
+            param_list=[
+                htypes.service.parameter('article_id', mosaic.put(12345)),
+                ],
             command_list=[],
             field_list=record_field_list,
             )
-        rec_t = record_t(services.mosaic, services.types, record_field_list)
+        rec_t = record_t(mosaic, types, record_field_list)
 
-        list_servant = ListServant(services.mosaic, row_t, record_service)
+        list_servant = ListServant(mosaic, row_t, record_service)
         services.server_rpc_endpoint.register_servant(list_object_id, list_servant)
         record_servant = RecordServant(rec_t)
         services.server_rpc_endpoint.register_servant(record_object_id, record_servant)

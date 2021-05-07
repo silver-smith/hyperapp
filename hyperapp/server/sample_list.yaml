@@ -11,6 +11,8 @@ import:
       - field
       - record_ot
     service:
+      - param_type
+      - parameter
       - command
       - list_service
       - record_field

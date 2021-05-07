@@ -92,6 +92,8 @@ def test_list_service(services, htypes, code):
         type_ref=service_ot_ref,
         peer_ref=master_peer_ref,
         object_id=object_id,
+        param_type_list=[],
+        param_list=[],
         command_list=[],
         )
     list_service_ref = services.mosaic.put(list_service)

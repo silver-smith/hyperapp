@@ -1,4 +1,12 @@
 
+param_type = record:
+  id: string
+  type_ref: ref
+
+parameter = record:
+  id: string
+  param_ref: ref
+
 command = record:
   id: string
   command_ref: ref
@@ -7,6 +15,8 @@ service = record:
   type_ref: ref
   peer_ref: ref
   object_id: string
+  param_type_list: param_type list
+  param_list: parameter list
   command_list: command list
 
 
