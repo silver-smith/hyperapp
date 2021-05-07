@@ -36,7 +36,7 @@ def code_module_list():
         'common.visitor',
         'common.ref_collector',
         'common.unbundler',
-        'common.list_object',
+        'common.list',
         'transport.identity',
         'transport.rsa_identity',
         'transport.route_table',
@@ -85,7 +85,7 @@ def test_list_service(services, htypes, code):
             ],
         )
     service_ot_ref = services.mosaic.put(service_ot)
-    row_t = code.list_object.list_row_t(services.mosaic, services.types, service_ot)
+    row_t = code.list.list_row_t(services.mosaic, services.types, service_ot)
 
     object_id = 'test_list_service_object'
     list_service = htypes.service.list_service(
@@ -129,7 +129,7 @@ def test_list_service(services, htypes, code):
             'common.ref_collector',
             'common.unbundler',
             'common.weak_key_dictionary_with_callback',
-            'common.list_object',
+            'common.list',
             'common.resource_key',
             'transport.identity',
             'transport.rsa_identity',

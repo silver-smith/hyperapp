@@ -22,5 +22,5 @@ import:
     sample_list:
       - article
   code:
-    - common.list_object
+    - common.list
     - common.record

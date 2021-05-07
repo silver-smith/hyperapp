@@ -34,7 +34,7 @@ code_module_list = [
     'common.unbundler',
     'common.file_bundle',
     'common.local_server',
-    'common.list_object',
+    'common.list',
     'common.record',
     'transport.identity',
     'transport.rsa_identity',

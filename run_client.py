@@ -68,7 +68,7 @@ code_module_list = [
     'common.weak_key_dictionary_with_callback',
     'common.file_bundle',
     'common.local_server',
-    'common.list_object',
+    'common.list',
     'common.record',
     'common.resource_key',
     'transport.identity',

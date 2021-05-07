@@ -1,5 +1,5 @@
 from . import htypes
-from .list_object import list_interface_ref
+from .list import list_interface_ref
 from .column import Column
 from .simple_list_object import SimpleListObject
 

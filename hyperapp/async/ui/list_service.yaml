@@ -6,6 +6,6 @@ import:
       - command
       - list_service
   code:
-    - common.list_object
+    - common.list
     - async.ui.column
     - async.ui.simple_list_object
