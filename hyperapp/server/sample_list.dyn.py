@@ -157,4 +157,4 @@ class ThisModule(Module):
         record_servant = RecordServant(rec_t)
         services.server_rpc_endpoint.register_servant(record_object_id, record_servant)
 
-        services.local_server_ref.save_piece(list_service)
+        services.server_ref_list.add_ref('samle_list', 'Sample list', mosaic.put(list_service))

@@ -50,6 +50,7 @@ code_module_list = [
     'server.identity',
     'server.tcp_server',
     'server.rpc_endpoint',
+    'server.server_ref_list',
     'server.sample_list',
     ]
 
