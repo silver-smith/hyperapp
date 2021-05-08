@@ -1,9 +1,7 @@
 
-host_id = string
-
 fs = record:
     fs_service_ref: ref
-    host: host_id
+    host: string
     path: string list
     current_file_name: string opt
 

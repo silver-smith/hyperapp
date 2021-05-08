@@ -12,7 +12,6 @@ from .hyper_ref import (
     ref_t,
     capsule_t,
     bundle_t,
-    resource_path_t,
     resource_key_t,
     )
 from .meta_type import list_mt
@@ -33,7 +32,6 @@ _builtin_type_list = [
     ref_t,
     capsule_t,
     bundle_t,
-    resource_path_t,
     resource_key_t,
     ]
 

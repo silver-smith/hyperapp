@@ -31,6 +31,7 @@ class TypeSystem(object):
             return t
         t = self._type_code_registry.invite(type_ref, self._type_code_registry, None)  # name=None
         self._ref2type_cache[type_ref] = t
+        assert t not in self._type2ref, (type_ref, self._type2ref[t], t, self._ref2type_cache[self._type2ref[t]])
         self._type2ref[t] = type_ref
         _log.debug('Resolve type %s -> (#%s) %r', type_ref, id(t), t)
         return t
