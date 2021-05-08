@@ -4,7 +4,7 @@ import logging
 
 from .htypes import capsule_t
 from .htypes.deduce_value_type import deduce_value_type
-from .ref import DecodedCapsule, decode_capsule, ref_repr, make_capsule, make_ref
+from .ref import DecodedCapsule, decode_capsule, make_capsule, make_ref
 from .visual_rep import pprint
 
 log = logging.getLogger(__name__)
@@ -19,7 +19,7 @@ class Mosaic:
     def register_capsule(self, capsule):
         assert isinstance(capsule, capsule_t), repr(capsule)
         ref = make_ref(capsule)
-        log.debug('Registering ref %s for capsule of type %s', ref_repr(ref), ref_repr(capsule.type_ref))
+        log.debug('Registering ref %s for capsule of type %s', ref, capsule.type_ref)
         existing_capsule = self._registry.get(ref)
         if existing_capsule:
             log.debug('  (already exists)')
@@ -32,7 +32,7 @@ class Mosaic:
         log.debug('Registering piece %r: %s', t.name, piece)
         capsule = make_capsule(self._types, piece, t)
         ref = self.register_capsule(capsule)
-        log.info('Registered piece %s: %s', ref_repr(ref), piece)
+        log.info('Registered piece %s (type: %s): %r', ref, capsule.type_ref, piece)
         return ref
 
     def put_opt(self, piece, t=None):
