@@ -168,7 +168,7 @@ class TRecord(Type):
         self.base = base
         self._named_tuple = _namedtuple(
             name, [name for name in self.fields], verbose, str_fmt=self._str_fmt(), repr_fmt=self._repr_fmt())
-        self._eq_key = tuple([self._name, *self.fields])
+        self._eq_key = (self._name, *self.fields)
 
     def __str__(self):
         return f'TRecord({self.name!r})'
