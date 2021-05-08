@@ -5,7 +5,6 @@ from .htypes import (
     register_builtin_meta_types,
     register_meta_types,
     )
-from .ref import ref_repr
 from .code_registry import CodeRegistry
 
 _log = logging.getLogger(__name__)
@@ -28,12 +27,12 @@ class TypeSystem(object):
     def resolve(self, type_ref):
         t = self._ref2type_cache.get(type_ref)
         if t:
-            _log.debug('Resolve type %s -> (cached) (#%s) %s', ref_repr(type_ref), id(t), t)
+            _log.debug('Resolve type %s -> (cached) (#%s) %r', type_ref, id(t), t)
             return t
         t = self._type_code_registry.invite(type_ref, self._type_code_registry, None)  # name=None
         self._ref2type_cache[type_ref] = t
         self._type2ref[t] = type_ref
-        _log.debug('Resolve type %s -> (#%s) %r', ref_repr(type_ref), id(t), t)
+        _log.debug('Resolve type %s -> (#%s) %r', type_ref, id(t), t)
         return t
 
     def reverse_resolve(self, t):
