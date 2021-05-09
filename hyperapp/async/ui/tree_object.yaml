@@ -1,7 +1,7 @@
 import:
   types:
     tree_ot:
-      - tree_object_type
+      - tree_ot
   code:
     - async.ui.object
     - async.ui.column
