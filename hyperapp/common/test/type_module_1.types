@@ -1,11 +1,3 @@
-some_int = int
-
-some_string_opt = string opt
-some_bool_list = bool list
-
-some_bool_list_opt_1 = some_bool_list opt
-some_bool_list_opt_2 = bool list opt
-
 
 record_1 = record:
   int_field: int

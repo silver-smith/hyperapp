@@ -1,15 +1,9 @@
-from type_module_1 import some_bool_list, record_2, iface_b
+from type_module_1 import record_2, iface_b
 
-
-some_bool_list_opt = some_bool_list opt
 
 
 record_3 = record(record_2):
   datetime_field: datetime
-
-
-ref_opt = ref opt
-ref_list_opt = ref list opt
 
 
 record_with_ref = record:

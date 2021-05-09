@@ -50,28 +50,14 @@ def test_types(types, htypes, loader):
     loader.load_type_module(TEST_MODULES_DIR / 'type_module_1.types')
     loader.load_type_module(TEST_MODULES_DIR / 'type_module_2.types')
 
-    assert htypes.type_module_1.some_int is tInt
-
-    assert htypes.type_module_1.some_string_opt == TOptional(tString)
-    assert htypes.type_module_1.some_bool_list == TList(tBool)
-    assert htypes.type_module_1.some_bool_list_opt_1 == TOptional(TList(tBool))
-    assert htypes.type_module_1.some_bool_list_opt_2 == TOptional(TList(tBool))
 
     assert htypes.type_module_1.record_1 == TRecord('record_1', {'int_field': tInt})
-
-    assert htypes.type_module_1.some_int is tInt
 
     assert htypes.type_module_1.record_1 == TRecord('record_1', {'int_field': tInt})
     assert htypes.type_module_1.record_2 == TRecord('record_2', {'int_field': tInt, 'string_field': tString})
 
-    some_bool_list_opt = htypes.type_module_2.some_bool_list_opt
-    assert some_bool_list_opt == TOptional(TList(tBool))
-
     assert (htypes.type_module_2.record_3 ==
             TRecord('record_3', {'int_field': tInt, 'string_field': tString, 'datetime_field': tDateTime}))
-
-    assert htypes.type_module_2.ref_opt == TOptional(ref_t)
-    assert htypes.type_module_2.ref_list_opt == TOptional(TList(ref_t))
 
     assert htypes.type_module_2.record_with_ref == TRecord('record_with_ref', {'ref_field': ref_t})
     assert htypes.type_module_2.record_with_opt_ref == TRecord('record_with_opt_ref', {'opt_ref_field': TOptional(ref_t)})
