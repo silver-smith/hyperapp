@@ -1,6 +1,6 @@
 import:
   types:
-    tree_object:
+    tree_ot:
       - tree_object_type
   code:
     - async.ui.object

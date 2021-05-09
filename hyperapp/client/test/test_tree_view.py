@@ -22,7 +22,7 @@ def type_module_list():
         'layout',
         'object_type',
         'object_layout_association',
-        'tree_object',
+        'tree_ot',
         'line',
         'record_ot',
         'tree_view',

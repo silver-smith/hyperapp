@@ -29,7 +29,7 @@ type_module_list = [
     'ref_ot',
     'text',
     'list_ot',
-    'tree_object',
+    'tree_ot',
     'record_ot',
     'code_command_chooser',
     'command_list',

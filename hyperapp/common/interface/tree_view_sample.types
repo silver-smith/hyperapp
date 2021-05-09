@@ -1,4 +1,4 @@
-from tree_object import tree_object_type
+from tree_ot import tree_object_type
 from record_ot import record_ot
 
 
