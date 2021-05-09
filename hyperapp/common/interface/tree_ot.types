@@ -1,4 +1,10 @@
 from object_type import object_type
 
 
-tree_ot = record(object_type)
+column = record:
+  id: string
+  type_ref: ref
+
+tree_ot = record(object_type):
+  key_column_id: string
+  column_list: column list

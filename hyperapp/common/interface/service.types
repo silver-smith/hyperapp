@@ -21,6 +21,7 @@ service = record:
 
 
 list_service = record(service)
+tree_service = record(service)
 
 
 record_field = record:

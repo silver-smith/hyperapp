@@ -1,0 +1,26 @@
+import:
+  types:
+    object_type:
+      - object_command
+    string:
+      - string_ot
+    tree_ot:
+      - column
+      - tree_ot
+    record_ot:
+      - field
+      - record_ot
+    service:
+      - param_type
+      - parameter
+      - command
+      - tree_service
+      - record_field
+      - record_service
+    rpc_command:
+      - rpc_element_command
+    sample_tree:
+      - article
+  code:
+    - common.tree
+    - common.record

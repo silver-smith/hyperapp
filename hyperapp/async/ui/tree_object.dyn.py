@@ -50,7 +50,7 @@ class UpdateItemDiff(Diff):
 
 class TreeObject(Object, metaclass=abc.ABCMeta):
 
-    type = htypes.tree_ot.tree_ot(command_list=())
+    type = htypes.tree_ot.tree_ot(command_list=(), key_column_id='id', column_list=())
 
     # return Column list
     @abc.abstractproperty

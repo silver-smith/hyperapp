@@ -134,6 +134,8 @@ class ThisModule(ClientModule):
                 htypes.object_type.object_command('open', services.mosaic.put(StringObject.type)),
                 htypes.object_type.object_command('edit', services.mosaic.put(sample_article_type)),
                 ),
+            key_column_id='name',
+            column_list=(),  # todo
             )
         SampleTree.type = sample_tree_type
         SampleArticle.type = sample_article_type

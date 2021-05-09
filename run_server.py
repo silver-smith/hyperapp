@@ -19,12 +19,14 @@ type_module_list = [
     'object_type',
     'string',
     'list_ot',
+    'tree_ot',
     'record_ot',
     'service',
     'rpc_command',
     'layout',
     'text',
     'sample_list',
+    'sample_tree',
     ]
 
 code_module_list = [
@@ -35,6 +37,7 @@ code_module_list = [
     'common.file_bundle',
     'common.local_server',
     'common.list',
+    'common.tree',
     'common.record',
     'transport.identity',
     'transport.rsa_identity',
@@ -52,6 +55,7 @@ code_module_list = [
     'server.rpc_endpoint',
     'server.server_ref_list',
     'server.sample_list',
+    'server.sample_tree',
     ]
 
 config = {
