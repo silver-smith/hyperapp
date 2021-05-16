@@ -93,7 +93,6 @@ def p_module_contents_1(p):
     p[0] = type_module_t(
         module_name=p.parser.module_name,
         import_list=p[1],
-        #provided_classes=p.parser.provided_class_list,
         typedefs=p[3],
         )
 
@@ -102,7 +101,6 @@ def p_module_contents_2(p):
     p[0] = type_module_t(
         module_name=p.parser.module_name,
         import_list=[],
-        #provided_classes=p.parser.provided_class_list,
         typedefs=p[1],
         )
 
