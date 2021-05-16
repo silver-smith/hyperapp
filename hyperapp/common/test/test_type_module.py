@@ -16,7 +16,6 @@ from hyperapp.common.htypes import (
     ref_t,
     )
 from hyperapp.common import cdr_coders  # register codec
-from hyperapp.common.local_type_module import LocalTypeModuleRegistry
 from hyperapp.common.type_module_loader import TypeModuleLoader
 from hyperapp.common.test.hyper_types_namespace import HyperTypesNamespace
 
@@ -28,27 +27,27 @@ TEST_MODULES_DIR = Path(__file__).parent.resolve()
 
 
 @pytest.fixture
-def local_type_module_registry():
-    return LocalTypeModuleRegistry()
+def loader(builtin_types, mosaic, types):
+    return TypeModuleLoader(builtin_types, mosaic, types)
 
 
 @pytest.fixture
-def htypes(types, local_type_module_registry):
-    return HyperTypesNamespace(types, local_type_module_registry)
+def htypes(types, loader):
+    return HyperTypesNamespace(types, loader.registry)
 
-
-@pytest.fixture
-def loader(builtin_types, mosaic, types, local_type_module_registry):
-    return TypeModuleLoader(builtin_types, mosaic, types, local_type_module_registry)
 
 def test_type_module_loader(loader):
-    loader.load_type_module(TEST_MODULES_DIR / 'type_module_1.types')
-    loader.load_type_module(TEST_MODULES_DIR / 'type_module_2.types')
+    loader.load_type_modules(TEST_MODULES_DIR / 'test_type_modules')
+
+
+def test_circular_type_dep(loader):
+    with pytest.raises(RuntimeError) as excinfo:
+        loader.load_type_modules(TEST_MODULES_DIR / 'circular_type_dep')
+    assert str(excinfo.value) == 'Circular type module dependency: module_1->module_2->module_3->module_1'
 
 
 def test_types(types, htypes, loader):
-    loader.load_type_module(TEST_MODULES_DIR / 'type_module_1.types')
-    loader.load_type_module(TEST_MODULES_DIR / 'type_module_2.types')
+    loader.load_type_modules(TEST_MODULES_DIR / 'test_type_modules')
 
 
     assert htypes.type_module_1.record_1 == TRecord('record_1', {'int_field': tInt})
@@ -116,7 +115,7 @@ def test_types(types, htypes, loader):
 
 
 def test_same_instance(htypes, loader):
-    loader.load_type_module(TEST_MODULES_DIR / 'same_instance.types')
+    loader.load_type_modules(TEST_MODULES_DIR / 'same_instance')
     element = htypes.same_instance.element('abcd')
 
     # Same types should resolve to same instances.

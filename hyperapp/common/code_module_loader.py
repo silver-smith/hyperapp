@@ -24,8 +24,10 @@ class CodeModuleLoader(object):
         source = source_path.read_text()
         type_import_list = []
         for type_module_name, import_name_list in info.get('import', {}).get('types', {}).items():
-            local_type_module = self._local_type_module_registry.resolve(type_module_name)
-            assert local_type_module, "%s: Unknown type module: %s" % (info_path, type_module_name)
+            try:
+                local_type_module = self._local_type_module_registry[type_module_name]
+            except KeyError:
+                raise RuntimeError(f"{info_path}: Unknown type module: {type_module_name}")
             for type_name in import_name_list:
                 try:
                     type_ref = local_type_module[type_name]

@@ -1,7 +1,6 @@
 from pathlib import Path
 import pytest
 
-from hyperapp.common.local_type_module import LocalTypeModuleRegistry
 from hyperapp.common.code_module import code_module_t
 from hyperapp.common.type_module_loader import TypeModuleLoader
 from hyperapp.common.code_module import LocalCodeModuleRegistry, register_code_module_types
@@ -18,18 +17,18 @@ TEST_MODULES_DIR = Path(__file__).parent.resolve()
 
 
 @pytest.fixture
-def local_type_module_registry():
-    return LocalTypeModuleRegistry()
-
-
-@pytest.fixture
 def local_code_module_registry():
     return LocalCodeModuleRegistry()
 
 
 @pytest.fixture
-def type_module_loader(builtin_types, mosaic, types, local_type_module_registry):
-    return TypeModuleLoader(builtin_types, mosaic, types, local_type_module_registry)
+def type_module_loader(builtin_types, mosaic, types):
+    return TypeModuleLoader(builtin_types, mosaic, types)
+
+
+@pytest.fixture
+def local_type_module_registry(type_module_loader):
+    return type_module_loader.registry
 
 
 @pytest.fixture
@@ -38,8 +37,7 @@ def code_module_loader(mosaic, local_type_module_registry, local_code_module_reg
 
 
 def test_code_module_load(type_module_loader, code_module_loader):
-    type_module_loader.load_type_module(TEST_MODULES_DIR / 'type_module_1.types')
-    type_module_loader.load_type_module(TEST_MODULES_DIR / 'type_module_2.types')
+    type_module_loader.load_type_modules(TEST_MODULES_DIR / 'test_type_modules')
 
     code_module = code_module_loader.load_code_module(TEST_MODULES_DIR / 'code_module_1')
     assert isinstance(code_module, code_module_t)
@@ -54,16 +52,14 @@ def code_module_importer(web, mosaic, types):
 
 
 def test_code_module_import(mosaic, type_module_loader, code_module_loader, code_module_importer):
-    type_module_loader.load_type_module(TEST_MODULES_DIR / 'type_module_1.types')
-    type_module_loader.load_type_module(TEST_MODULES_DIR / 'type_module_2.types')
+    type_module_loader.load_type_modules(TEST_MODULES_DIR / 'test_type_modules')
     code_module = code_module_loader.load_code_module(TEST_MODULES_DIR / 'code_module_1')
     code_module_ref = mosaic.put(code_module)
     code_module_importer.import_code_module(code_module_ref)
 
 
 def test_code_module_import_from_code_module(mosaic, type_module_loader, code_module_loader, code_module_importer):
-    type_module_loader.load_type_module(TEST_MODULES_DIR / 'type_module_1.types')
-    type_module_loader.load_type_module(TEST_MODULES_DIR / 'type_module_2.types')
+    type_module_loader.load_type_modules(TEST_MODULES_DIR / 'test_type_modules')
     code_module_1 = code_module_loader.load_code_module(TEST_MODULES_DIR / 'code_module_1')
     code_module_2 = code_module_loader.load_code_module(TEST_MODULES_DIR / 'code_module_2')
     code_module_1_ref = mosaic.put(code_module_1)
