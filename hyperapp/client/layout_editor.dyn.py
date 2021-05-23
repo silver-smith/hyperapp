@@ -36,6 +36,8 @@ class LayoutEditor(TreeObject):
                 htypes.object_type.object_command(command.command.id, result_object_type_ref=None)
                 for command in self._all_item_commands.values()
                 ),
+            key_column_id='name',
+            column_list=(),
             )
 
     @property
