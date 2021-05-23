@@ -70,6 +70,8 @@ class TypeModuleLoader(object):
     def _load_sources(self, root_dir):
         name_to_source = {}
         for path in root_dir.rglob('*.types'):
+            if 'test' in path.relative_to(root_dir).parts:
+                continue  # Skip test subdirectories.
             name = path.stem  # module name
             source = load_type_module_source(self._builtin_types, self._mosaic, path, name)
             name_to_source[name] = source
