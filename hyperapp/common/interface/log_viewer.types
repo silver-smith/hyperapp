@@ -1,7 +1,0 @@
-
-log_viewer = record:
-    session_id: string
-
-log_record = record:
-    session_id: string
-    item_path: int list
