@@ -30,22 +30,6 @@ builtin_module_t = TRecord('builtin_module', {
     })
 
 
-class LocalCodeModuleRegistry(object):
-
-    def __init__(self):
-        self._registry = {}  # module name -> ref_t
-
-    def register(self, code_module_name, code_module_ref):
-        assert isinstance(code_module_ref, ref_t), repr(code_module_ref)
-        self._registry[code_module_name] = code_module_ref
-
-    def resolve(self, name):
-        return self._registry.get(name)
-
-    def __getitem__(self, name):
-        return self._registry[name]
-
-
 _code_module_type_list = [
     code_module_t,
     builtin_module_t,

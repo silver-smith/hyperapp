@@ -3,4 +3,4 @@ import:
     type_module_2:
       - record_3
   code:
-    - code_module_1
+    - subdir.code_module_1
