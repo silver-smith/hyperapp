@@ -8,13 +8,6 @@ pytest_plugins = ['hyperapp.common.test.services']
 
 
 @pytest.fixture
-def type_module_list():
-    return [
-        'rsa_identity',
-        ]
-
-
-@pytest.fixture
 def code_module_list():
     return [
         'sync.failure',

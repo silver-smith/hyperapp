@@ -11,50 +11,6 @@ from hyperapp.common.services import Services
 log = logging.getLogger(__name__)
 
 
-type_module_list = [
-    'resource',
-    'fs',
-    'layout',
-    'tab_view',
-    'navigator',
-    'menu_bar',
-    'command_pane',
-    'window',
-    'root_layout',
-    'application_state',
-    'object_type',
-    'object_layout_association',
-    'none_ot',
-    'string',
-    'ref_ot',
-    'text',
-    'list_ot',
-    'tree_ot',
-    'record_ot',
-    'code_command_chooser',
-    'command_list',
-    'layout_editor',
-    'record_view',
-    'line',
-    'master_details',
-    'list_view',
-    'tree_view',
-    'tree_to_list_adapter',
-    'data_viewer',
-    'log_viewer',
-    'params_editor',
-    'list_view_sample',
-    'tree_view_sample',
-    'view_chooser',
-    'params_editor_sample',
-    'rsa_identity',
-    'transport',
-    'tcp_transport',
-    'rpc',
-    'service',
-    'rpc_command',
-    ]
-
 code_module_list = [
     'common.dict_coders',
     'common.visitor',
@@ -175,7 +131,7 @@ def main():
         services.hyperapp_dir / 'client',
         ]
     services.init_services()
-    services.init_modules(type_module_list, code_module_list)
+    services.init_modules(code_module_list)
     services.start()
     log.info("Client is started.")
     services.stop_signal.wait()

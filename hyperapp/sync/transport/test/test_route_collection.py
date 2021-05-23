@@ -8,15 +8,6 @@ pytest_plugins = ['hyperapp.common.test.services']
 
 
 @pytest.fixture
-def type_module_list():
-    return [
-        'rsa_identity',
-        'transport',
-        'phony_route',
-        ]
-
-
-@pytest.fixture
 def code_module_list():
     return [
         'common.visitor',

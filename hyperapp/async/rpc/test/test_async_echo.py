@@ -13,18 +13,6 @@ pytest_plugins = ['hyperapp.common.test.services']
 
 
 @pytest.fixture
-def type_module_list():
-    return [
-        'rsa_identity',
-        'transport',
-        'tcp_transport',
-        'rpc',
-        'test_rpc',
-        'echo',
-        ]
-
-
-@pytest.fixture
 def code_module_list():
     return [
         'common.visitor',
@@ -91,14 +79,6 @@ def test_async_echo(services, htypes):
 
     subprocess = services.subprocess(
         'subprocess',
-        type_module_list=[
-            'rsa_identity',
-            'transport',
-            'tcp_transport',
-            'rpc',
-            'test_rpc',
-            'echo',
-            ],
         code_module_list=[
             'common.visitor',
             'common.ref_collector',

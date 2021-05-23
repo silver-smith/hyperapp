@@ -144,7 +144,7 @@ class ThisModule(Module):
         del self._connection_to_process[connection]
         process.signal_is_stopped_now(exception, traceback_entries)
 
-    def subprocess(self, process_name, type_module_list, code_module_list, config=None):
+    def subprocess(self, process_name, code_module_list, config=None):
         # todo: add subprocess_mp_main.py to module data.
         source_dir = Path.cwd() / 'hyperapp' / 'sync'
         subprocess_mp_main = source_dir / 'subprocess_mp_main.py'
@@ -153,7 +153,7 @@ class ThisModule(Module):
         main_fn = module.subprocess_main
 
         parent_connection, child_connection = self._mp_context.Pipe()
-        args = [process_name, child_connection, type_module_list, code_module_list, config]
+        args = [process_name, child_connection, code_module_list, config]
         mp_process = self._mp_context.Process(target=main_fn, args=args)
         return Process(process_name, self, mp_process, parent_connection)
 

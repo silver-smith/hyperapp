@@ -143,7 +143,7 @@ class ThisModule(Module):
         self._resource_loader = ResourceLoader(
             services.mosaic,
             services.types,
-            services.local_type_module_registry,
+            services.type_module_loader.registry,
             services.local_code_module_registry,
             services.resource_registry,
             )

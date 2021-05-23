@@ -24,10 +24,10 @@ def log_traceback(traceback_entries):
             log.error("%s", line.rstrip())
 
 
-def subprocess_main(process_name, connection, type_module_list, code_module_list, config):
+def subprocess_main(process_name, connection, code_module_list, config):
     with logging_inited(process_name):
         try:
-            subprocess_main_safe(connection, type_module_list, code_module_list, config)
+            subprocess_main_safe(connection, code_module_list, config)
             connection.send((ConnectionEvent.STOP.value, None))
         except Exception as x:
             log.error("Exception in subprocess: %r", x)
@@ -54,12 +54,12 @@ def logging_inited(process_name):
         handler.close()
 
 
-def subprocess_main_safe(connection, type_module_list, code_module_list, config):
+def subprocess_main_safe(connection, code_module_list, config):
     services = Services()
     services.master_process_connection = connection
     services.subprocess_stop_event = threading.Event()
     services.init_services()
-    services.init_modules(type_module_list, code_module_list, config)
+    services.init_modules(code_module_list, config)
     services.start()
     log.info("Running, waiting for stop signal.")
     services.subprocess_stop_event.wait()

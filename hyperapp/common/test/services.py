@@ -10,11 +10,6 @@ log = logging.getLogger(__name__)
 
 
 @pytest.fixture
-def type_module_list():
-    return []
-
-
-@pytest.fixture
 def code_module_list():
     return []
 
@@ -27,10 +22,10 @@ def post_stop_checks():
 
 
 @pytest.fixture
-def services(type_module_list, code_module_list, post_stop_checks):
+def services(code_module_list, post_stop_checks):
     services = Services()
     services.init_services()
-    services.init_modules(type_module_list, code_module_list)
+    services.init_modules(code_module_list)
     services.start()
     yield services
     log.info("Stopping services")
@@ -40,7 +35,7 @@ def services(type_module_list, code_module_list, post_stop_checks):
 
 @pytest.fixture
 def htypes(services):
-    return HyperTypesNamespace(services.types, services.local_type_module_registry)
+    return HyperTypesNamespace(services.types, services.type_module_loader.registry)
 
 
 @pytest.fixture

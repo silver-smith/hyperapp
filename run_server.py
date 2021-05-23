@@ -11,24 +11,6 @@ from hyperapp.common.services import Services
 log = logging.getLogger(__name__)
 
 
-type_module_list = [
-    'rsa_identity',
-    'transport',
-    'tcp_transport',
-    'rpc',
-    'object_type',
-    'string',
-    'list_ot',
-    'tree_ot',
-    'record_ot',
-    'service',
-    'rpc_command',
-    'layout',
-    'text',
-    'sample_list',
-    'sample_tree',
-    ]
-
 code_module_list = [
     'common.dict_coders',
     'common.visitor',
@@ -71,7 +53,7 @@ def main():
 
     services = Services()
     services.init_services()
-    services.init_modules(type_module_list, code_module_list, config)
+    services.init_modules(code_module_list, config)
     services.start()
     log.info("Server is started.")
     try:

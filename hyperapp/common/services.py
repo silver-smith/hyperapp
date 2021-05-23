@@ -6,7 +6,6 @@ from types import SimpleNamespace
 
 from .htypes import BuiltinTypeRegistry, register_builtin_types
 from .ref import ref_repr
-from .local_type_module import LocalTypeModuleRegistry
 from .code_module import code_module_t
 from .mosaic import Mosaic
 from .web import Web
@@ -47,10 +46,9 @@ class Services(object):
         self.web.add_source(self.mosaic)
         register_builtin_types(self.builtin_types, self.mosaic, self.types)
         register_code_module_types(self.builtin_types, self.mosaic, self.types)
-        self.local_type_module_registry = LocalTypeModuleRegistry()
         self.local_code_module_registry = LocalCodeModuleRegistry()
-        self.type_module_loader = TypeModuleLoader(self.builtin_types, self.mosaic, self.types, self.local_type_module_registry)
-        self.code_module_loader = CodeModuleLoader(self.mosaic, self.local_type_module_registry, self.local_code_module_registry)
+        self.type_module_loader = TypeModuleLoader(self.builtin_types, self.mosaic, self.types)
+        self.code_module_loader = CodeModuleLoader(self.mosaic, self.type_module_loader.registry, self.local_code_module_registry)
         self.module_registry = ModuleRegistry()
         self.code_module_importer = CodeModuleImporter(self.mosaic, self.types)
         self.code_module_importer.register_meta_hook()
@@ -70,19 +68,14 @@ class Services(object):
         self._is_stopped = True
         log.info("Services are stopped.")
 
-    def init_modules(self, type_module_list, code_module_list, config=None):
+    def init_modules(self, code_module_list, config=None):
         log.info("Init modules.")
         try:
-            self._load_type_module_list(type_module_list)
+            self.type_module_loader.load_type_modules(self.interface_dir)
             self._load_code_module_list(code_module_list, config)
             self.module_registry.init_phases(self)
         finally:
             self.code_module_importer.unregister_meta_hook()
-        
-    def _load_type_module_list(self, module_name_list):
-        for module_name in module_name_list:
-            file_path = self.interface_dir.joinpath(module_name).with_suffix(TYPE_MODULE_EXT)
-            self.type_module_loader.load_type_module(file_path, module_name)
 
     def _load_code_module_list(self, module_name_list, config):
         for module_name in module_name_list:

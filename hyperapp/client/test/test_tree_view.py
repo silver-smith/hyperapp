@@ -17,19 +17,6 @@ pytest_plugins = ['hyperapp.common.test.services']
 
 
 @pytest.fixture
-def type_module_list():
-    return [
-        'layout',
-        'object_type',
-        'object_layout_association',
-        'tree_ot',
-        'line',
-        'record_ot',
-        'tree_view',
-        'params_editor',
-        ]
-
-@pytest.fixture
 def code_module_list():
     return  [
         'common.resource_registry',

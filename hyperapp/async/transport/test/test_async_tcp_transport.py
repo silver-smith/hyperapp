@@ -12,15 +12,6 @@ pytest_plugins = ['hyperapp.common.test.services']
 
 
 @pytest.fixture
-def type_module_list():
-    return [
-        'rsa_identity',
-        'transport',
-        'tcp_transport',
-        ]
-
-
-@pytest.fixture
 def code_module_list():
     return [
         'common.visitor',
@@ -67,11 +58,6 @@ def test_tcp_send(services):
 
     subprocess = services.subprocess(
         'subprocess',
-        type_module_list=[
-            'rsa_identity',
-            'transport',
-            'tcp_transport',
-            ],
         code_module_list=[
             'common.visitor',
             'common.ref_collector',
@@ -120,11 +106,6 @@ def test_tcp_echo(services):
 
     subprocess = services.subprocess(
         'subprocess',
-        type_module_list=[
-            'rsa_identity',
-            'transport',
-            'tcp_transport',
-            ],
         code_module_list=[
             'common.visitor',
             'common.ref_collector',
