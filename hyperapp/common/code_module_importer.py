@@ -6,7 +6,6 @@ import logging
 import sys
 from pathlib import Path
 
-from .ref import ref_repr
 from .code_module import code_module_t
 
 
@@ -46,7 +45,7 @@ class _CodeModuleLoader(_Finder):
         self._code_module = code_module
 
     def exec_module(self, module):
-        log.debug('Executing code module %r %s', ref_repr(self._code_module_ref), module)
+        log.debug('Executing code module %r %s', self._code_module_ref, module)
         # using compile allows associate file path with loaded module
         ast = compile(self._code_module.source, self._code_module.file_path, 'exec')
         module.__dict__['__module_source__'] = self._code_module.source
@@ -110,6 +109,11 @@ class CodeModuleImporter:
         self._fullname_to_loader = {self.ROOT_PACKAGE: _EmptyLoader()}
         self._meta_path_finder = _MetaPathFinder(self._fullname_to_loader)
         self._imported_module_ref_set = set()
+        self._registry = {}
+
+    @property
+    def registry(self):
+        return self._registry
 
     def register_meta_hook(self):
         sys.meta_path.append(self._meta_path_finder)
@@ -135,6 +139,7 @@ class CodeModuleImporter:
         # .* code module imports
         for code_import in code_module.code_import_list:
             if code_import.code_module_ref not in self._imported_module_ref_set:
+                lof.info("Code module %r require %r", code_module.module_name, code_import.code_module_ref)
                 self.import_code_module(code_import.code_module_ref)
             source_module_name = self._code_module_ref_to_fullname(code_import.code_module_ref)
             import_name = code_import.import_name.split('.')[-1]
@@ -147,9 +152,10 @@ class CodeModuleImporter:
                 pass
         self._fullname_to_loader.update(fullname_to_loader)
         # perform actual load
-        log.info('Import code module %s: %s', ref_repr(code_module_ref), code_module.module_name)
+        log.info('Import code module %s: %s', code_module_ref, code_module.module_name)
         module = importlib.import_module(module_name)
         self._imported_module_ref_set.add(code_module_ref)
+        self._registry[code_module_ref] = module
         return module
 
 

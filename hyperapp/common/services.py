@@ -12,7 +12,7 @@ from .web import Web
 from .module_ref_resolver import ModuleRefResolver
 from .type_module_loader import TypeModuleLoader
 from .type_system import TypeSystem
-from .code_module import LocalCodeModuleRegistry, register_code_module_types
+from .code_module import register_code_module_types
 from .code_module_loader import CodeModuleLoader
 from .code_module_importer import CodeModuleImporter
 from .module import ModuleRegistry
@@ -32,7 +32,6 @@ class Services(object):
         self.on_stop = []
         self.stop_signal = threading.Event()
         self._is_stopped = False
-        self.name2module = {}  # module name (x.y.z) -> imported module
 
     def init_services(self):
         log.info("Init services.")
@@ -45,12 +44,12 @@ class Services(object):
         self.web.add_source(self.mosaic)
         register_builtin_types(self.builtin_types, self.mosaic, self.types)
         register_code_module_types(self.builtin_types, self.mosaic, self.types)
-        self.local_code_module_registry = LocalCodeModuleRegistry()
         self.type_module_loader = TypeModuleLoader(self.builtin_types, self.mosaic, self.types)
-        self.code_module_loader = CodeModuleLoader(self.mosaic, self.type_module_loader.registry, self.local_code_module_registry)
+        self.code_module_loader = CodeModuleLoader(self.mosaic, self.type_module_loader.registry)
         self.module_registry = ModuleRegistry()
         self.code_module_importer = CodeModuleImporter(self.mosaic, self.types)
         self.code_module_importer.register_meta_hook()
+        self.local_code_module_registry = {}  # full code module name -> module
 
     def start(self):
         log.info("Start services.")
@@ -77,19 +76,21 @@ class Services(object):
             self.code_module_importer.unregister_meta_hook()
 
     def _load_code_module_list(self, module_name_list, config):
+        name_to_module_ref = self.code_module_loader.load_code_modules(self.hyperapp_dir)
         for module_name in module_name_list:
+            log.info("Require import module %r", module_name)
+            self.code_module_importer.import_code_module(name_to_module_ref[module_name])
+        for module_name, module_ref in name_to_module_ref.items():
+            try:
+                module = self.code_module_importer.registry[module_ref]
+            except KeyError:
+                continue  # Not imported - directly or indirectly required
             if config:
                 module_config = config.get(module_name, {})
             else:
                 module_config = {}
-            parts = module_name.split('.')
-            file_path = self.hyperapp_dir.joinpath(*parts)
-            code_module = self.code_module_loader.load_code_module(file_path, module_name)
-            code_module_ref = self.mosaic.put(code_module)
-            log.info("Import module %s (%s) with file path %s", module_name, ref_repr(code_module_ref), file_path)
-            module = self.code_module_importer.import_code_module(code_module_ref)
-            self.name2module[module_name] = module
-            self._init_module(code_module.module_name, module, module_config)
+            self._init_module(module_name, module, module_config)
+            self.local_code_module_registry[module_name] = module
 
     def _init_module(self, module_name, module, config):
         this_module_class = module.__dict__.get('ThisModule')

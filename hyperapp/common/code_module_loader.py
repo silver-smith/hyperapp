@@ -27,6 +27,10 @@ class CodeModuleLoader(object):
     def _load_modules_info(self, root_dir):
         name_to_info = {}
         for info_path in root_dir.rglob('*.yaml'):
+            if '.resources' in info_path.suffixes:
+                continue  # Skip resources.
+            if 'test' in info_path.relative_to(root_dir).parts:
+                continue  # Skip test subdirectories.
             module_name = '.'.join(info_path.with_suffix('').relative_to(root_dir).parts)
             raw_info = yaml.safe_load(info_path.read_text()) or {}
             imports = raw_info.get('import', {})
