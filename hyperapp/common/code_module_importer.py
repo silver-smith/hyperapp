@@ -18,7 +18,7 @@ def _ref_to_name(ref):
     return '%s_%s' % (ref.hash_algorithm, hash_hex)
 
 
-class _Finder(object):
+class _Finder:
 
     _is_package = False
 
@@ -87,7 +87,20 @@ class _CopyDictLoader(_Finder):
         module.__dict__.update(sys.modules[self._source_module_name].__dict__)
 
 
-class CodeModuleImporter(object):
+class _MetaPathFinder:
+
+    def __init__(self, fullname_to_loader):
+        self._fullname_to_loader = fullname_to_loader
+
+    # MetaPathFinder implementation
+    def find_spec(self, fullname, path, target=None):
+        log.debug('find_spec fullname=%r path=%r target=%r', fullname, path, target)
+        loader = self._fullname_to_loader.get(fullname)
+        if loader:
+            return loader.get_spec(fullname)
+
+
+class CodeModuleImporter:
 
     ROOT_PACKAGE = 'hyperapp.dynamic'
 
@@ -95,20 +108,17 @@ class CodeModuleImporter(object):
         self._mosaic = mosaic
         self._types = types
         self._fullname_to_loader = {self.ROOT_PACKAGE: _EmptyLoader()}
+        self._meta_path_finder = _MetaPathFinder(self._fullname_to_loader)
+        self._imported_module_ref_set = set()
 
     def register_meta_hook(self):
-        sys.meta_path.append(self)
+        sys.meta_path.append(self._meta_path_finder)
 
     def unregister_meta_hook(self):
-        sys.meta_path.remove(self)
-
-    @classmethod
-    def _code_module_ref_to_fullname(cls, code_module_ref):
-        return '{}.{}'.format(cls.ROOT_PACKAGE, _ref_to_name(code_module_ref))
+        sys.meta_path.remove(self._meta_path_finder)
 
     def import_code_module(self, code_module_ref):
         code_module = self._mosaic.resolve_ref(code_module_ref, code_module_t).value
-        log.info('Import code module %s: %s', ref_repr(code_module_ref), code_module.module_name)
         module_name = self._code_module_ref_to_fullname(code_module_ref)
         fullname_to_loader = {}
         # module itself
@@ -124,6 +134,8 @@ class CodeModuleImporter(object):
             fullname_to_loader[name] = _TypeModuleLoader(self._types, type_import_list)
         # .* code module imports
         for code_import in code_module.code_import_list:
+            if code_import.code_module_ref not in self._imported_module_ref_set:
+                self.import_code_module(code_import.code_module_ref)
             source_module_name = self._code_module_ref_to_fullname(code_import.code_module_ref)
             import_name = code_import.import_name.split('.')[-1]
             name = '{}.{}'.format(module_name, import_name)
@@ -135,11 +147,12 @@ class CodeModuleImporter(object):
                 pass
         self._fullname_to_loader.update(fullname_to_loader)
         # perform actual load
-        return importlib.import_module(module_name)
+        log.info('Import code module %s: %s', ref_repr(code_module_ref), code_module.module_name)
+        module = importlib.import_module(module_name)
+        self._imported_module_ref_set.add(code_module_ref)
+        return module
 
-    # MetaPathFinder implementation
-    def find_spec(self, fullname, path, target=None):
-        log.debug('find_spec fullname=%r path=%r target=%r', fullname, path, target)
-        loader = self._fullname_to_loader.get(fullname)
-        if loader:
-            return loader.get_spec(fullname)
+
+    @classmethod
+    def _code_module_ref_to_fullname(cls, code_module_ref):
+        return '{}.{}'.format(cls.ROOT_PACKAGE, _ref_to_name(code_module_ref))

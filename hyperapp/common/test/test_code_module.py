@@ -54,17 +54,11 @@ def code_module_importer(web, mosaic, types):
 
 def test_code_module_import(mosaic, type_module_loader, code_module_loader, code_module_importer):
     type_module_loader.load_type_modules(TEST_DIR / 'test_type_modules')
-    code_module = code_module_loader.load_code_module(TEST_DIR / 'code_module_1')
-    code_module_ref = mosaic.put(code_module)
-    code_module_importer.import_code_module(code_module_ref)
+    registry = code_module_loader.load_code_modules(TEST_DIR / 'test_code_modules')
+    code_module_importer.import_code_module(registry['subdir.code_module_1'])
 
 
 def test_code_module_import_from_code_module(mosaic, type_module_loader, code_module_loader, code_module_importer):
     type_module_loader.load_type_modules(TEST_DIR / 'test_type_modules')
-    code_module_1 = code_module_loader.load_code_module(TEST_DIR / 'code_module_1')
-    code_module_2 = code_module_loader.load_code_module(TEST_DIR / 'code_module_2')
-    code_module_1_ref = mosaic.put(code_module_1)
-    code_module_2_ref = mosaic.put(code_module_2)
-
-    code_module_importer.import_code_module(code_module_1_ref)
-    code_module_importer.import_code_module(code_module_2_ref)
+    registry = code_module_loader.load_code_modules(TEST_DIR / 'test_code_modules')
+    code_module_importer.import_code_module(registry['code_module_2'])
