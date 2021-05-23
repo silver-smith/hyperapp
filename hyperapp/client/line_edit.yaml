@@ -1,6 +1,6 @@
 import:
   types:
-    string:
+    string_ot:
       - string_ot
     line:
       - line_edit_layout

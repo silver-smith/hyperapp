@@ -7,7 +7,7 @@ from .object import Object
 
 class StringObject(Object):
 
-    type = htypes.string.string_ot(command_list=())
+    type = htypes.string_ot.string_ot(command_list=())
 
     @classmethod
     def from_state(cls, state):

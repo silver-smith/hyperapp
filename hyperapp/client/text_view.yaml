@@ -1,6 +1,6 @@
 import:
   types:
-    string:
+    string_ot:
       - string_ot
     text:
       - text_edit_layout

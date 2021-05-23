@@ -2,7 +2,7 @@ import:
   types:
     object_type:
       - object_command
-    string:
+    string_ot:
       - string_ot
     list_ot:
       - column
