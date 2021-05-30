@@ -137,9 +137,13 @@ class CodeModuleImporter:
             name = '{}.htypes.{}'.format(module_name, import_module_name)
             fullname_to_loader[name] = _TypeModuleLoader(self._types, type_import_list)
         # .* code module imports
+        for module_ref in code_module.require_code_module_list:
+            if module_ref not in self._imported_module_ref_set:
+                log.info("Code module %r require %r", code_module.module_name, module_ref)
+                self.import_code_module(module_ref)
         for code_import in code_module.code_import_list:
             if code_import.code_module_ref not in self._imported_module_ref_set:
-                log.info("Code module %r require %r", code_module.module_name, code_import.code_module_ref)
+                log.info("Code module %r imports %r", code_module.module_name, code_import.code_module_ref)
                 self.import_code_module(code_import.code_module_ref)
             source_module_name = self._code_module_ref_to_fullname(code_import.code_module_ref)
             import_name = code_import.import_name.split('.')[-1]

@@ -1,0 +1,2 @@
+require_code_modules:
+  - subdir.code_module_2
