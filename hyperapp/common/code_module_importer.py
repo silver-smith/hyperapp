@@ -139,7 +139,7 @@ class CodeModuleImporter:
         # .* code module imports
         for code_import in code_module.code_import_list:
             if code_import.code_module_ref not in self._imported_module_ref_set:
-                lof.info("Code module %r require %r", code_module.module_name, code_import.code_module_ref)
+                log.info("Code module %r require %r", code_module.module_name, code_import.code_module_ref)
                 self.import_code_module(code_import.code_module_ref)
             source_module_name = self._code_module_ref_to_fullname(code_import.code_module_ref)
             import_name = code_import.import_name.split('.')[-1]
