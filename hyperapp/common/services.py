@@ -6,7 +6,6 @@ from types import SimpleNamespace
 
 from .htypes import BuiltinTypeRegistry, register_builtin_types
 from .ref import ref_repr
-from .code_module import code_module_t
 from .mosaic import Mosaic
 from .web import Web
 from .module_ref_resolver import ModuleRefResolver
