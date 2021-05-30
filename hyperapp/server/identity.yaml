@@ -1,1 +1,3 @@
-# empty
+require_code_modules:
+  - common.file_bundle
+  - transport.rsa_identity

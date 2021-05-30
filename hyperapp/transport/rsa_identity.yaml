@@ -5,3 +5,5 @@ import:
       - rsa_peer
       - rsa_signature
       - rsa_parcel
+require_code_modules:
+  - transport.identity

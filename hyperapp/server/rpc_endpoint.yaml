@@ -1,1 +1,4 @@
-# empty
+require_code_modules:
+  - sync.transport.endpoint
+  - sync.rpc.rpc_endpoint
+  - server.identity

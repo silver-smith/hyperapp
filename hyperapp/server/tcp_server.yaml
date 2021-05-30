@@ -1,1 +1,2 @@
-# empty
+require_code_modules:
+  - sync.transport.tcp

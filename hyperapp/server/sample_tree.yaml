@@ -24,3 +24,7 @@ import:
   code:
     - common.tree
     - common.record
+require_code_modules:
+  - server.identity
+  - server.rpc_endpoint
+  - server.server_ref_list
