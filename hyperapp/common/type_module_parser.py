@@ -49,236 +49,242 @@ ENDMARKER = tok_name[token.ENDMARKER]
 COMMENT = tok_name[tokenize.COMMENT]
 
 
-ignored_tokens = [NL, COMMENT]
+class Grammar:
 
-token_types = [
-    tokenize.ENCODING,
-    token.ENDMARKER,
-    token.NAME,
-    token.EQUAL,
-    token.LPAR,
-    token.RPAR,
-    token.COLON,
-    token.COMMA,
-    token.AT,
-    ]
+    _token_types = [
+        tokenize.ENCODING,
+        token.ENDMARKER,
+        token.NAME,
+        token.EQUAL,
+        token.LPAR,
+        token.RPAR,
+        token.COLON,
+        token.COMMA,
+        token.AT,
+        ]
 
-EXACT_TOKEN_TYPES = {
-    '->':  ARROW,
-    }
-tokens = [tok_name[t] for t in token_types] + [
-    STMT_SEP,
-    BLOCK_BEGIN,
-    BLOCK_END,
-    ARROW,
-    ] + [keyword.upper() for keyword in keywords]
+    def __init__(self, keywords):
+        self.tokens = [tok_name[t] for t in self._token_types] + [
+            STMT_SEP,
+            BLOCK_BEGIN,
+            BLOCK_END,
+            ARROW,
+            ] + [keyword.upper() for keyword in keywords]
 
+    def _syntax_error(self, p, token_num, msg):
+        line_num = p.lineno(token_num)
+        p.parser.error_line = p.parser.lines[line_num - 1]
+        p.parser.error = '{}:{}: {}'.format(p.parser.fname, line_num, msg)
+        raise SyntaxError(msg)
 
-def syntax_error(p, token_num, msg):
-    line_num = p.lineno(token_num)
-    p.parser.error_line = p.parser.lines[line_num - 1]
-    p.parser.error = '{}:{}: {}'.format(p.parser.fname, line_num, msg)
-    raise SyntaxError(msg)
+    def _unknown_name_error(self, p, token_num, name):
+        self._syntax_error(p, token_num, 'Unknown name: %r' % name)
 
-def unknown_name_error(p, token_num, name):
-    syntax_error(p, token_num, 'Unknown name: %r' % name)
+    # grammar =======================================================================================
 
+    def p_module(self, p):
+        'module : ENCODING module_contents ENDMARKER'
+        p[0] = p[2]
 
-def p_module(p):
-    'module : ENCODING module_contents ENDMARKER'
-    p[0] = p[2]
+    def p_module_contents_1(self, p):
+        'module_contents : import_list STMT_SEP typedef_list'
+        p[0] = type_module_t(
+            module_name=p.parser.module_name,
+            import_list=p[1],
+            typedefs=p[3],
+            )
 
-def p_module_contents_1(p):
-    'module_contents : import_list STMT_SEP typedef_list'
-    p[0] = type_module_t(
-        module_name=p.parser.module_name,
-        import_list=p[1],
-        typedefs=p[3],
-        )
-
-def p_module_contents_2(p):
-    'module_contents : typedef_list_opt'
-    p[0] = type_module_t(
-        module_name=p.parser.module_name,
-        import_list=[],
-        typedefs=p[1],
-        )
+    def p_module_contents_2(self, p):
+        'module_contents : typedef_list_opt'
+        p[0] = type_module_t(
+            module_name=p.parser.module_name,
+            import_list=[],
+            typedefs=p[1],
+            )
 
 
-def p_import_list_1(p):
-    'import_list : import_list STMT_SEP import_def'
-    p[0] = p[1] + p[3]
+    def p_import_list_1(self, p):
+        'import_list : import_list STMT_SEP import_def'
+        p[0] = p[1] + p[3]
 
-def p_import_list_2(p):
-    'import_list : import_def'
-    p[0] = p[1]
-
-
-def p_import_def(p):
-    'import_def : FROM NAME IMPORT name_list'
-    p[0] = [type_import_t(p[2], name) for name in p[4]]
-    p.parser.known_name_set |= set(p[4])
-
-def p_name_list_1(p):
-    'name_list : NAME'
-    p[0] = [p[1]]
-
-def p_name_list_2(p):
-    'name_list : name_list COMMA NAME'
-    p[0] = p[1] + [p[3]]
+    def p_import_list_2(self, p):
+        'import_list : import_def'
+        p[0] = p[1]
 
 
-def p_typedef_list_opt_1(p):
-    'typedef_list_opt : empty'
-    p[0] = []
+    def p_import_def(self, p):
+        'import_def : FROM NAME IMPORT name_list'
+        p[0] = [type_import_t(p[2], name) for name in p[4]]
+        p.parser.known_name_set |= set(p[4])
 
-def p_typedef_list_opt_2(p):
-    'typedef_list_opt : typedef_list'
-    p[0] = p[1]
+    def p_name_list_1(self, p):
+        'name_list : NAME'
+        p[0] = [p[1]]
 
-def p_typedef_list_1(p):
-    'typedef_list : typedef_list STMT_SEP typedef'
-    p[0] = p[1] + [p[3]]
-
-def p_typedef_list_2(p):
-    'typedef_list : typedef'
-    p[0] = [p[1]]
-
-def p_typedef(p):
-    'typedef : NAME EQUAL typedef_rhs'
-    t = p.parser.mosaic.put(p[3])
-    p[0] = type_def_t(name=p[1], type=t)
-    p.parser.known_name_set.add(p[1])
-
-def p_typedef_rhs_expr(p):
-    'typedef_rhs : type_expr'
-    p[0] = p[1]
-
-def p_typedef_rhs_record(p):
-    'typedef_rhs : record_def'
-    p[0] = p[1]
-
-def p_typedef_rhs_interface(p):
-    'typedef_rhs : interface_def'
-    p[0] = p[1]
+    def p_name_list_2(self, p):
+        'name_list : name_list COMMA NAME'
+        p[0] = p[1] + [p[3]]
 
 
-def p_record_def_1(p):
-    'record_def : RECORD record_base_name_def'
-    base_name = p[2]
-    if base_name:
-        base_mt = name_mt(base_name)
-        base_ref = p.parser.mosaic.put(base_mt)
-    else:
-        base_ref = None
-    p[0] = record_mt(base_ref, [])
+    def p_typedef_list_opt_1(self, p):
+        'typedef_list_opt : empty'
+        p[0] = []
 
-def p_record_def_2(p):
-    'record_def : RECORD record_base_name_def COLON BLOCK_BEGIN field_list BLOCK_END'
-    base_name = p[2]
-    if base_name:
-        base = p.parser.mosaic.put(name_mt(base_name))
-    else:
-        base = None
-    p[0] = record_mt(base, p[5])
+    def p_typedef_list_opt_2(self, p):
+        'typedef_list_opt : typedef_list'
+        p[0] = p[1]
 
-def p_record_base_name_def_1(p):
-    'record_base_name_def : empty'
-    p[0] = None
+    def p_typedef_list_1(self, p):
+        'typedef_list : typedef_list STMT_SEP typedef'
+        p[0] = p[1] + [p[3]]
 
-def p_record_base_name_def_2(p):
-    'record_base_name_def : LPAR NAME RPAR'
-    p[0] = p[2]
+    def p_typedef_list_2(self, p):
+        'typedef_list : typedef'
+        p[0] = [p[1]]
 
+    def p_typedef(self, p):
+        'typedef : NAME EQUAL typedef_rhs'
+        t = p.parser.mosaic.put(p[3])
+        p[0] = type_def_t(name=p[1], type=t)
+        p.parser.known_name_set.add(p[1])
 
-def p_field_list_1(p):
-    'field_list : field_list STMT_SEP field_def'
-    p[0] = p[1] + [p[3]]
+    def p_typedef_rhs_expr(self, p):
+        'typedef_rhs : type_expr'
+        p[0] = p[1]
 
-def p_field_list_2(p):
-    'field_list : field_def'
-    p[0] = [p[1]]
+    def p_typedef_rhs_record(self, p):
+        'typedef_rhs : record_def'
+        p[0] = p[1]
 
-def p_field_def(p):
-    'field_def : NAME COLON type_expr'
-    ref = p.parser.mosaic.put(p[3])
-    p[0] = field_mt(p[1], ref)
+    def p_typedef_rhs_interface(self, p):
+        'typedef_rhs : interface_def'
+        p[0] = p[1]
 
 
-def p_interface_def(p):
-    'interface_def : INTERFACE interface_parent_def COLON BLOCK_BEGIN interface_method_list BLOCK_END'
-    p[0] = interface_mt(
-        base=p[2],
-        method_list=p[5],
-        )
+    def p_record_def_1(self, p):
+        'record_def : RECORD record_base_name_def'
+        base_name = p[2]
+        if base_name:
+            base_mt = name_mt(base_name)
+            base_ref = p.parser.mosaic.put(base_mt)
+        else:
+            base_ref = None
+        p[0] = record_mt(base_ref, [])
+
+    def p_record_def_2(self, p):
+        'record_def : RECORD record_base_name_def COLON BLOCK_BEGIN field_list BLOCK_END'
+        base_name = p[2]
+        if base_name:
+            base = p.parser.mosaic.put(name_mt(base_name))
+        else:
+            base = None
+        p[0] = record_mt(base, p[5])
+
+    def p_record_base_name_def_1(self, p):
+        'record_base_name_def : empty'
+        p[0] = None
+
+    def p_record_base_name_def_2(self, p):
+        'record_base_name_def : LPAR NAME RPAR'
+        p[0] = p[2]
 
 
-def p_interface_parent_def_1(p):
-    'interface_parent_def : LPAR NAME RPAR'
-    p[0] = p.parser.mosaic.put(name_mt(p[2]))
+    def p_field_list_1(self, p):
+        'field_list : field_list STMT_SEP field_def'
+        p[0] = p[1] + [p[3]]
 
-def p_interface_parent_def_2(p):
-    'interface_parent_def : empty'
-    p[0] = None
+    def p_field_list_2(self, p):
+        'field_list : field_def'
+        p[0] = [p[1]]
 
-
-def p_interface_method_list_1(p):
-    'interface_method_list : interface_method_list STMT_SEP interface_method'
-    method_ref = p.parser.mosaic.put(p[3])
-    p[0] = p[1] + [method_ref]
-
-def p_interface_method_list_2(p):
-    'interface_method_list : interface_method'
-    method_ref = p.parser.mosaic.put(p[1])
-    p[0] = [method_ref]
+    def p_field_def(self, p):
+        'field_def : NAME COLON type_expr'
+        ref = p.parser.mosaic.put(p[3])
+        p[0] = field_mt(p[1], ref)
 
 
-def p_interface_method_request(p):
-    'interface_method : NAME LPAR method_field_list RPAR ARROW LPAR method_field_list RPAR'
-    p[0] = request_mt(p[1], p[3], p[7])
-
-def p_interface_method_notification(p):
-    'interface_method : NAME LPAR method_field_list RPAR'
-    p[0] = notification_mt(p[1], p[3])
-
-
-def p_method_field_list_1(p):
-    'method_field_list : method_field_list COMMA field_def'
-    p[0] = p[1] + [p[3]]
-
-def p_method_field_list_2(p):
-    'method_field_list : field_def'
-    p[0] = [p[1]]
-
-def p_method_field_list_3(p):
-    'method_field_list : empty'
-    p[0] = []
+    def p_interface_def(self, p):
+        'interface_def : INTERFACE interface_parent_def COLON BLOCK_BEGIN interface_method_list BLOCK_END'
+        p[0] = interface_mt(
+            base=p[2],
+            method_list=p[5],
+            )
 
 
-def p_type_expr_1(p):
-    'type_expr : NAME'
-    name = p[1]
-    if not name in p.parser.known_name_set:
-        unknown_name_error(p, 1, name)
-    p[0] = name_mt(name)
+    def p_interface_parent_def_1(self, p):
+        'interface_parent_def : LPAR NAME RPAR'
+        p[0] = p.parser.mosaic.put(name_mt(p[2]))
 
-def p_type_expr_2(p):
-    'type_expr : type_expr OPT'
-    base_t = p.parser.mosaic.put(p[1])
-    p[0] = optional_mt(base_t)
-
-def p_type_expr_3(p):
-    'type_expr : type_expr LIST'
-    element_t = p.parser.mosaic.put(p[1])
-    p[0] = list_mt(element_t)
+    def p_interface_parent_def_2(self, p):
+        'interface_parent_def : empty'
+        p[0] = None
 
 
-def p_empty(p):
-    'empty :'
-    pass
+    def p_interface_method_list_1(self, p):
+        'interface_method_list : interface_method_list STMT_SEP interface_method'
+        method_ref = p.parser.mosaic.put(p[3])
+        p[0] = p[1] + [method_ref]
+
+    def p_interface_method_list_2(self, p):
+        'interface_method_list : interface_method'
+        method_ref = p.parser.mosaic.put(p[1])
+        p[0] = [method_ref]
 
 
-class Lexer(object):
+    def p_interface_method_request(self, p):
+        'interface_method : NAME LPAR method_field_list RPAR ARROW LPAR method_field_list RPAR'
+        p[0] = request_mt(p[1], p[3], p[7])
+
+    def p_interface_method_notification(self, p):
+        'interface_method : NAME LPAR method_field_list RPAR'
+        p[0] = notification_mt(p[1], p[3])
+
+
+    def p_method_field_list_1(self, p):
+        'method_field_list : method_field_list COMMA field_def'
+        p[0] = p[1] + [p[3]]
+
+    def p_method_field_list_2(self, p):
+        'method_field_list : field_def'
+        p[0] = [p[1]]
+
+    def p_method_field_list_3(self, p):
+        'method_field_list : empty'
+        p[0] = []
+
+
+    def p_type_expr_1(self, p):
+        'type_expr : NAME'
+        name = p[1]
+        if not name in p.parser.known_name_set:
+            self._unknown_name_error(p, 1, name)
+        p[0] = name_mt(name)
+
+    def p_type_expr_2(self, p):
+        'type_expr : type_expr OPT'
+        base_t = p.parser.mosaic.put(p[1])
+        p[0] = optional_mt(base_t)
+
+    def p_type_expr_3(self, p):
+        'type_expr : type_expr LIST'
+        element_t = p.parser.mosaic.put(p[1])
+        p[0] = list_mt(element_t)
+
+
+    def p_empty(self, p):
+        'empty :'
+        pass
+
+
+class Lexer:
+
+    _ignored_tokens = [NL, COMMENT]
+    _exact_token_types = {
+        '->':  ARROW,
+        }
+
+    def __init__(self, keywords):
+        self._keywords = keywords
 
     def input(self, input):
         self._tokenizer = tokenize.tokenize(BytesIO(input.encode('utf-8')).readline)
@@ -297,7 +303,7 @@ class Lexer(object):
             next = self._get_next_token()
             if tok.type == STMT_SEP and next and next.type == STMT_SEP:
                 continue  # merge separators
-            if not next or not next.type in ignored_tokens:
+            if not next or not next.type in self._ignored_tokens:
                 break
         if tok.type == STMT_SEP and next and next.type == ENDMARKER:
             tok, next = next, None  # remove STMT_SEP before ENDMARKER
@@ -329,9 +335,9 @@ class Lexer(object):
             t = BLOCK_END
         elif tinfo.type == token.NEWLINE:
             t = STMT_SEP
-        elif tinfo.type == token.OP and tinfo.string in EXACT_TOKEN_TYPES:
-            t = EXACT_TOKEN_TYPES[tinfo.string]
-        elif tinfo.string in keywords:
+        elif tinfo.type == token.OP and tinfo.string in self._exact_token_types:
+            t = self._exact_token_types[tinfo.string]
+        elif tinfo.string in self._keywords:
             t = tinfo.string.upper()
         else:
             t = tok_name[tinfo.exact_type]
@@ -345,7 +351,8 @@ class Lexer(object):
 
 
 def parse_type_module_source(builtin_types, mosaic, fname, module_name, contents, debug=False):
-    parser = yacc.yacc(debug=debug)
+    grammar = Grammar(keywords)
+    parser = yacc.yacc(debug=debug, module=grammar)
     parser.mosaic = mosaic
     parser.module_name = module_name
     parser.fname = fname
@@ -354,8 +361,9 @@ def parse_type_module_source(builtin_types, mosaic, fname, module_name, contents
     parser.error_line = None
     parser.error = None
     #parser.provided_class_list = []
+    lexer = Lexer(keywords)
     try:
-        module = parser.parse(contents, lexer=Lexer())
+        module = parser.parse(contents, lexer=lexer)
     except ParseError as x:
         raise RuntimeError('Failed to parse {}: {}'.format(fname, x))
     if not module:
