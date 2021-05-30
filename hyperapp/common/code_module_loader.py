@@ -45,6 +45,8 @@ class CodeModuleLoader(object):
         return name_to_info
 
     def _load_module(self, module_name, name_to_info, name_to_module_ref, dep_stack):
+        if module_name in dep_stack:
+            raise RuntimeError("Circular code module dependency: {}".format('->'.join([*dep_stack, module_name])))
         info = name_to_info[module_name]
         code_import_list = []
         for import_module_name in info.code_import_list:
@@ -54,7 +56,7 @@ class CodeModuleLoader(object):
             if not import_module_ref:
                 if import_module_name not in name_to_info:
                     raise RuntimeError(f"Code module {module_name!r} wants unknown code module {import_module_name!r}.")
-                import_module_ref = self._load_module(import_module_name, name_to_info, name_to_module_ref, dep_stack)
+                import_module_ref = self._load_module(import_module_name, name_to_info, name_to_module_ref, [*dep_stack, module_name])
             code_import_list.append(code_import_t(import_module_name, import_module_ref))
         require_code_module_list = []
         for require_module_name in info.require_code_module_list:
@@ -64,7 +66,7 @@ class CodeModuleLoader(object):
             if not module_ref:
                 if require_module_name not in name_to_info:
                     raise RuntimeError(f"Code module {module_name!r} requires unknown code module {require_module_name!r}.")
-                module_ref = self._load_module(require_module_name, name_to_info, name_to_module_ref, dep_stack)
+                module_ref = self._load_module(require_module_name, name_to_info, name_to_module_ref, [*dep_stack, module_name])
             require_code_module_list.append(module_ref)
         type_import_list = []
         for type_module_name, import_name_list in info.type_import_dict.items():
