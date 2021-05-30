@@ -1,1 +1,2 @@
-# empty
+require_code_modules:
+  - common.resource_registry

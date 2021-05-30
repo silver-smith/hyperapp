@@ -6,3 +6,5 @@ import:
   code:
     - async.code_registry
     - async.ui.record_object
+require_code_modules:
+  - async.async_web

@@ -5,3 +5,5 @@ import:
   code:
     - async.ui.commander
     - async.ui.module
+    - client.view_registry
+    - client.object_layout_association
