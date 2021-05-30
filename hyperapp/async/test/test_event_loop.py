@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from pathlib import Path
 
 import pytest
 
@@ -8,6 +9,11 @@ from hyperapp.common import cdr_coders  # self-registering
 log = logging.getLogger(__name__)
 
 pytest_plugins = ['hyperapp.common.test.services']
+
+
+@pytest.fixture
+def additional_code_module_dirs():
+    return [Path(__file__).parent]
 
 
 @pytest.fixture(params=['native', 'qt'])
@@ -24,7 +30,7 @@ def code_module_list(event_loop_module):
     return [
         event_loop_module,
         'async.async_main',
-        'async.test.module_async_init_close',
+        'module_async_init_close',
         ]
 
 

@@ -27,6 +27,7 @@ class Services(object):
 
     def __init__(self):
         self.hyperapp_dir = HYPERAPP_DIR / 'hyperapp'
+        self.code_module_dir_list = [self.hyperapp_dir]
         self.on_start = []
         self.on_stop = []
         self.stop_signal = threading.Event()
@@ -75,7 +76,7 @@ class Services(object):
             self.code_module_importer.unregister_meta_hook()
 
     def _load_code_module_list(self, module_name_list, config):
-        name_to_module_ref = self.code_module_loader.load_code_modules(self.hyperapp_dir)
+        name_to_module_ref = self.code_module_loader.load_code_modules(self.code_module_dir_list)
         for module_name in module_name_list:
             log.info("Require import module %r", module_name)
             self.code_module_importer.import_code_module(name_to_module_ref[module_name])

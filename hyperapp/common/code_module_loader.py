@@ -17,8 +17,10 @@ class CodeModuleLoader(object):
         self._mosaic = mosaic
         self._local_type_module_registry = local_type_module_registry
 
-    def load_code_modules(self, root_dir):
-        name_to_info = self._load_modules_info(root_dir)
+    def load_code_modules(self, root_dir_list):
+        name_to_info = {}
+        for root_dir in root_dir_list:
+            name_to_info.update(self._load_modules_info(root_dir))
         name_to_module_ref = {}
         for name in name_to_info:
             self._load_module(name, name_to_info, name_to_module_ref, [])
