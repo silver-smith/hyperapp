@@ -55,16 +55,16 @@ def code_module_importer(web, mosaic, types):
 def test_code_module_import(mosaic, type_module_loader, code_module_loader, code_module_importer):
     type_module_loader.load_type_modules(TEST_DIR / 'test_type_modules')
     registry = code_module_loader.load_code_modules([TEST_DIR / 'test_code_modules'])
-    code_module_importer.import_code_module(registry.by_requirement, registry.by_name['subdir.code_module_1'])
+    code_module_importer.import_code_module(registry.by_requirement, registry.by_name['subdir.code_module_1'], set())
 
 
 def test_code_module_import_from_code_module(mosaic, type_module_loader, code_module_loader, code_module_importer):
     type_module_loader.load_type_modules(TEST_DIR / 'test_type_modules')
     registry = code_module_loader.load_code_modules([TEST_DIR / 'test_code_modules'])
-    code_module_importer.import_code_module(registry.by_requirement, registry.by_name['code_module_2'])
+    code_module_importer.import_code_module(registry.by_requirement, registry.by_name['code_module_2'], set())
 
 
 def test_require_code_module(mosaic, code_module_loader, code_module_importer):
     registry = code_module_loader.load_code_modules([TEST_DIR / 'test_require_code_modules'])
-    code_module_importer.import_code_module(registry.by_requirement, registry.by_name['code_module_1'])
+    code_module_importer.import_code_module(registry.by_requirement, registry.by_name['code_module_1'], set())
     assert len(code_module_importer.registry) == 2  # Both modules should be imported

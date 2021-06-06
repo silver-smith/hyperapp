@@ -77,9 +77,14 @@ class Services(object):
 
     def _load_code_module_list(self, module_name_list, config):
         registry = self.code_module_loader.load_code_modules(self.code_module_dir_list)
+        preferred_modules = {
+            registry.by_name[module_name]
+            for module_name in module_name_list
+            }
         for module_name in module_name_list:
             log.info("Require import module %r", module_name)
-            self.code_module_importer.import_code_module(registry.by_requirement, registry.by_name[module_name])
+            self.code_module_importer.import_code_module(
+                registry.by_requirement, registry.by_name[module_name], preferred_modules)
         module_name_by_ref = {
             module_ref: module_name
             for module_name, module_ref in registry.by_name.items()

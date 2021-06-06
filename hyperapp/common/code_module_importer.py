@@ -121,7 +121,7 @@ class CodeModuleImporter:
     def unregister_meta_hook(self):
         sys.meta_path.remove(self._meta_path_finder)
 
-    def import_code_module(self, requirement_to_module_ref_set, code_module_ref):
+    def import_code_module(self, requirement_to_module_ref_set, code_module_ref, preferred_modules):
         code_module = self._mosaic.resolve_ref(code_module_ref, code_module_t).value
         module_name = self._code_module_ref_to_fullname(code_module_ref)
         fullname_to_loader = {}
@@ -140,15 +140,19 @@ class CodeModuleImporter:
             module_ref_set = requirement_to_module_ref_set[requirement]
             if not module_ref_set:
                 raise RuntimeError(f"Code module {code_module.module_name!r} requires {requirement!r}, but no module provides it")
-            [module_ref] = module_ref_set  # todo: resolve ambiguity.
+            if len(module_ref_set) > 1:
+                # When requirements is provided by several modules, preferred should be included in preferred_modules.
+                [module_ref] = module_ref_set & preferred_modules
+            else:
+                [module_ref] = module_ref_set
             if module_ref not in self._imported_module_ref_set:
                 log.info("Code module %s provides %r for %s", module_ref, requirement, code_module.module_name)
-                self.import_code_module(requirement_to_module_ref_set, module_ref)
+                self.import_code_module(requirement_to_module_ref_set, module_ref, preferred_modules)
         # .* code module imports
         for code_import in code_module.code_import_list:
             if code_import.code_module_ref not in self._imported_module_ref_set:
                 log.info("Code module %r imports %r", code_module.module_name, code_import.code_module_ref)
-                self.import_code_module(requirement_to_module_ref_set, code_import.code_module_ref)
+                self.import_code_module(requirement_to_module_ref_set, code_import.code_module_ref, preferred_modules)
             source_module_name = self._code_module_ref_to_fullname(code_import.code_module_ref)
             import_name = code_import.import_name.split('.')[-1]
             name = '{}.{}'.format(module_name, import_name)
