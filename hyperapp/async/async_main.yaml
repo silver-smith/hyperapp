@@ -1,1 +1,7 @@
-# empty
+requires:
+  - event_loop_ctr
+  - event_loop_dtr
+provides:
+  - on_start
+  - on_stop
+  - async_stop_event

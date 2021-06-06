@@ -1,1 +1,2 @@
-# empty
+provides:
+  - some_service

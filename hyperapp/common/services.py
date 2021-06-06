@@ -76,15 +76,17 @@ class Services(object):
             self.code_module_importer.unregister_meta_hook()
 
     def _load_code_module_list(self, module_name_list, config):
-        name_to_module_ref = self.code_module_loader.load_code_modules(self.code_module_dir_list)
+        registry = self.code_module_loader.load_code_modules(self.code_module_dir_list)
         for module_name in module_name_list:
             log.info("Require import module %r", module_name)
-            self.code_module_importer.import_code_module(name_to_module_ref[module_name])
-        for module_name, module_ref in name_to_module_ref.items():
-            try:
-                module = self.code_module_importer.registry[module_ref]
-            except KeyError:
-                continue  # Not imported - directly or indirectly required
+            self.code_module_importer.import_code_module(registry.by_requirement, registry.by_name[module_name])
+        module_name_by_ref = {
+            module_ref: module_name
+            for module_name, module_ref in registry.by_name.items()
+            }
+        # Should init modules in the same order as they were imported.
+        for module_ref, module in self.code_module_importer.registry.items():
+            module_name = module_name_by_ref[module_ref]
             if config:
                 module_config = config.get(module_name, {})
             else:

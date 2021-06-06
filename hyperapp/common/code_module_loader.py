@@ -1,4 +1,4 @@
-from collections import namedtuple
+from collections import defaultdict, namedtuple
 
 import yaml
 
@@ -8,10 +8,17 @@ from .code_module import type_import_t, code_import_t, code_module_t
 DYN_MODULE_SUFFIX = '.dyn.py'
 
 
-_ModuleInfo = namedtuple('_ModuleInfo', 'info_path source_path type_import_dict code_import_list require_code_module_list')
+_ModuleInfo = namedtuple('_ModuleInfo', 'info_path source_path type_import_dict code_import_list provides requires')
 
 
-class CodeModuleLoader(object):
+class Registry:
+
+    def __init__(self):
+        self.by_name = {}
+        self.by_requirement = defaultdict(set)
+
+
+class CodeModuleLoader:
 
     def __init__(self, mosaic, local_type_module_registry):
         self._mosaic = mosaic
@@ -21,10 +28,10 @@ class CodeModuleLoader(object):
         name_to_info = {}
         for root_dir in root_dir_list:
             name_to_info.update(self._load_modules_info(root_dir))
-        name_to_module_ref = {}
+        registry = Registry()
         for name in name_to_info:
-            self._load_module(name, name_to_info, name_to_module_ref, [])
-        return name_to_module_ref
+            self._load_module(name, name_to_info, registry, [])
+        return registry
 
     def _load_modules_info(self, root_dir):
         name_to_info = {}
@@ -41,12 +48,13 @@ class CodeModuleLoader(object):
                 source_path=info_path.with_suffix(DYN_MODULE_SUFFIX),
                 type_import_dict=imports.get('types', {}),
                 code_import_list=imports.get('code', []),
-                require_code_module_list=raw_info.get('require_code_modules', []),
+                provides=raw_info.get('provides', []),
+                requires=raw_info.get('requires', []),
                 )
             name_to_info[module_name] = info
         return name_to_info
 
-    def _load_module(self, module_name, name_to_info, name_to_module_ref, dep_stack):
+    def _load_module(self, module_name, name_to_info, registry, dep_stack):
         if module_name in dep_stack:
             raise RuntimeError("Circular code module dependency: {}".format('->'.join([*dep_stack, module_name])))
         info = name_to_info[module_name]
@@ -54,22 +62,12 @@ class CodeModuleLoader(object):
         for import_module_name in info.code_import_list:
             assert isinstance(import_module_name, str), (
                 '%s: string list is expected at import/code, but got: %r', info.info_path, import_module_name)
-            import_module_ref = name_to_module_ref.get(import_module_name)
+            import_module_ref = registry.by_name.get(import_module_name)
             if not import_module_ref:
                 if import_module_name not in name_to_info:
                     raise RuntimeError(f"Code module {module_name!r} wants unknown code module {import_module_name!r}.")
-                import_module_ref = self._load_module(import_module_name, name_to_info, name_to_module_ref, [*dep_stack, module_name])
+                import_module_ref = self._load_module(import_module_name, name_to_info, registry, [*dep_stack, module_name])
             code_import_list.append(code_import_t(import_module_name, import_module_ref))
-        require_code_module_list = []
-        for require_module_name in info.require_code_module_list:
-            assert isinstance(require_module_name, str), (
-                '%s: string list is expected at require_code_modules, but got: %r', info.info_path, require_module_name)
-            module_ref = name_to_module_ref.get(require_module_name)
-            if not module_ref:
-                if require_module_name not in name_to_info:
-                    raise RuntimeError(f"Code module {module_name!r} requires unknown code module {require_module_name!r}.")
-                module_ref = self._load_module(require_module_name, name_to_info, name_to_module_ref, [*dep_stack, module_name])
-            require_code_module_list.append(module_ref)
         type_import_list = []
         for type_module_name, import_name_list in info.type_import_dict.items():
             try:
@@ -89,10 +87,13 @@ class CodeModuleLoader(object):
             module_name=module_name,
             type_import_list=type_import_list,
             code_import_list=code_import_list,
-            require_code_module_list=require_code_module_list,
+            provides=info.provides,
+            requires=info.requires,
             source=source,
             file_path=str(info.source_path),
             )
         code_module_ref = self._mosaic.put(code_module)
-        name_to_module_ref[module_name] = code_module_ref
+        registry.by_name[module_name] = code_module_ref
+        for requirement in info.provides:
+            registry.by_requirement[requirement].add(code_module_ref)
         return code_module_ref

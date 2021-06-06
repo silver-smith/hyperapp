@@ -29,7 +29,6 @@ def event_loop_module(request):
 def code_module_list(event_loop_module):
     return [
         event_loop_module,
-        'async.async_main',
         'module_async_init_close',
         ]
 
