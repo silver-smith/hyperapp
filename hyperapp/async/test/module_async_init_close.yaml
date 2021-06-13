@@ -1,2 +1,2 @@
-requires:
+require:
   - async_stop_event

@@ -1,2 +1,2 @@
-requires:
+require:
   - some_service

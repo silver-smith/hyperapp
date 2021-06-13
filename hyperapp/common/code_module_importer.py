@@ -136,7 +136,7 @@ class CodeModuleImporter:
         for import_module_name, type_import_list in import_module_to_type_import_list.items():
             name = '{}.htypes.{}'.format(module_name, import_module_name)
             fullname_to_loader[name] = _TypeModuleLoader(self._types, type_import_list)
-        for requirement in code_module.requires:
+        for requirement in code_module.require:
             module_ref_set = requirement_to_module_ref_set[requirement]
             if not module_ref_set:
                 raise RuntimeError(f"Code module {code_module.module_name!r} requires {requirement!r}, but no module provides it")

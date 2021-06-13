@@ -8,7 +8,7 @@ from .code_module import type_import_t, code_import_t, code_module_t
 DYN_MODULE_SUFFIX = '.dyn.py'
 
 
-_ModuleInfo = namedtuple('_ModuleInfo', 'info_path source_path type_import_dict code_import_list provides requires')
+_ModuleInfo = namedtuple('_ModuleInfo', 'info_path source_path type_import_dict code_import_list provide require')
 
 
 class Registry:
@@ -48,8 +48,8 @@ class CodeModuleLoader:
                 source_path=info_path.with_suffix(DYN_MODULE_SUFFIX),
                 type_import_dict=imports.get('types', {}),
                 code_import_list=imports.get('code', []),
-                provides=raw_info.get('provides', []),
-                requires=raw_info.get('requires', []),
+                provide=raw_info.get('provide', []),
+                require=raw_info.get('require', []),
                 )
             name_to_info[module_name] = info
         return name_to_info
@@ -87,13 +87,13 @@ class CodeModuleLoader:
             module_name=module_name,
             type_import_list=type_import_list,
             code_import_list=code_import_list,
-            provides=info.provides,
-            requires=info.requires,
+            provide=info.provide,
+            require=info.require,
             source=source,
             file_path=str(info.source_path),
             )
         code_module_ref = self._mosaic.put(code_module)
         registry.by_name[module_name] = code_module_ref
-        for requirement in info.provides:
+        for requirement in info.provide:
             registry.by_requirement[requirement].add(code_module_ref)
         return code_module_ref

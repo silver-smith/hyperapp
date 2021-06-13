@@ -1,7 +1,7 @@
-requires:
+require:
   - event_loop_ctr
   - event_loop_dtr
-provides:
+provide:
   - on_start
   - on_stop
   - async_stop_event

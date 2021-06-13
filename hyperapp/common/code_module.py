@@ -21,8 +21,8 @@ code_module_t = TRecord('code_module', {
     'module_name': tString,
     'type_import_list': TList(type_import_t),
     'code_import_list': TList(code_import_t),
-    'provides': TList(tString),
-    'requires': TList(tString),
+    'provide': TList(tString),
+    'require': TList(tString),
     'source': tString,
     'file_path': tString,
     })

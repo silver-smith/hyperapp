@@ -1,2 +1,2 @@
-provides:
+provide:
   - some_service
