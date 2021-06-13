@@ -1,1 +1,6 @@
-# empty
+require:
+  - ref_collector
+  - async_route_registry
+  - async_route_table
+provide:
+  - async_transport

@@ -1,5 +1,6 @@
 import logging
 import queue
+from pathlib import Path
 
 import pytest
 
@@ -14,19 +15,10 @@ pytest_plugins = ['hyperapp.common.test.services']
 @pytest.fixture
 def code_module_list():
     return [
-        'common.visitor',
         'common.ref_collector',
-        'common.unbundler',
-        'transport.identity',
         'transport.rsa_identity',
-        'transport.route_table',
-        'transport.tcp',
-        'sync.work_dir',
-        'sync.failure',
         'sync.transport.route_table',
-        'sync.transport.transport',
         'sync.transport.endpoint',
-        'sync.subprocess_connection',
         'sync.subprocess',
         'sync.transport.tcp',
         ]
@@ -58,29 +50,15 @@ def test_tcp_send(services):
 
     subprocess = services.subprocess(
         'subprocess',
+        additional_code_module_dirs=[Path(__file__).parent],
         code_module_list=[
-            'common.visitor',
-            'common.ref_collector',
-            'common.unbundler',
-            'transport.identity',
-            'transport.rsa_identity',
-            'transport.route_table',
-            'transport.tcp',
-            'sync.failure',
-            'sync.transport.route_table',
-            'sync.transport.transport',
-            'sync.subprocess_connection',
-            'sync.subprocess_child',
-            'sync.transport.tcp',  # Provide tcp route for sync route table
             'async.event_loop',
             'async.async_main',
-            'async.transport.route_table',
-            'async.transport.transport',
             'async.transport.tcp',
-            'async.transport.test.send',
+            'send',
             ],
         config={
-            'async.transport.test.send': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
+            'send': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
             },
         )
     with subprocess:
@@ -106,30 +84,16 @@ def test_tcp_echo(services):
 
     subprocess = services.subprocess(
         'subprocess',
+        additional_code_module_dirs=[Path(__file__).parent],
         code_module_list=[
-            'common.visitor',
-            'common.ref_collector',
-            'common.unbundler',
-            'transport.identity',
-            'transport.rsa_identity',
-            'transport.route_table',
-            'transport.tcp',
-            'sync.failure',
-            'sync.transport.route_table',
-            'sync.transport.transport',
-            'sync.subprocess_connection',
-            'sync.subprocess_child',
-            'sync.transport.tcp',  # Provide tcp route for sync route table
+            'sync.transport.tcp',  # tcp_transport.route is required registered at sync route_registry.
             'async.event_loop',
             'async.async_main',
-            'async.transport.route_table',
-            'async.transport.transport',
-            'async.transport.endpoint',
             'async.transport.tcp',
-            'async.transport.test.echo',
+            'echo',
             ],
         config={
-            'async.transport.test.echo': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
+            'echo': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
             },
         )
     with subprocess:

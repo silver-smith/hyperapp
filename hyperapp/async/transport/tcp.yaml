@@ -4,3 +4,10 @@ import:
       - route
   code:
     - transport.tcp
+require:
+  - ref_collector
+  - unbundler
+  - parcel_registry
+  - async_route_table
+  - async_transport
+  - async_route_registry

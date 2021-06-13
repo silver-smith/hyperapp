@@ -1,1 +1,5 @@
-# empty
+require:
+  - unbundler
+  - peer_registry
+  - generate_rsa_identity
+  - async_transport

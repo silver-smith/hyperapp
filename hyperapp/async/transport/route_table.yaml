@@ -1,3 +1,10 @@
 import:
   code:
     - transport.route_table
+require:
+  - aux_ref_collector_hooks
+  - aux_ref_unbundler_hooks
+  - peer_registry
+provide:
+  - async_route_registry
+  - async_route_table
