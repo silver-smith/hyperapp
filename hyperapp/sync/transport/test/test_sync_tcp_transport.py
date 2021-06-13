@@ -1,5 +1,6 @@
 import logging
 import queue
+from pathlib import Path
 
 import pytest
 
@@ -14,19 +15,10 @@ pytest_plugins = ['hyperapp.common.test.services']
 @pytest.fixture
 def code_module_list():
     return [
-        'common.visitor',
         'common.ref_collector',
-        'common.unbundler',
-        'transport.identity',
         'transport.rsa_identity',
-        'transport.route_table',
-        'transport.tcp',
-        'sync.work_dir',
-        'sync.failure',
         'sync.transport.route_table',
-        'sync.transport.transport',
         'sync.transport.endpoint',
-        'sync.subprocess_connection',
         'sync.subprocess',
         'sync.transport.tcp',
         ]
@@ -58,24 +50,13 @@ def test_tcp_send(services):
 
     subprocess = services.subprocess(
         'subprocess',
+        additional_code_module_dirs=[Path(__file__).parent],
         code_module_list=[
-            'common.visitor',
-            'common.ref_collector',
-            'common.unbundler',
-            'transport.identity',
-            'transport.rsa_identity',
-            'transport.route_table',
-            'transport.tcp',
-            'sync.failure',
-            'sync.transport.route_table',
-            'sync.transport.transport',
-            'sync.subprocess_connection',
-            'sync.subprocess_child',
             'sync.transport.tcp',
-            'sync.transport.test.send',
+            'send',
             ],
         config={
-            'sync.transport.test.send': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
+            'send': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
             },
         )
     with subprocess:
@@ -101,25 +82,13 @@ def test_tcp_echo(services):
 
     subprocess = services.subprocess(
         'subprocess',
+        additional_code_module_dirs=[Path(__file__).parent],
         code_module_list=[
-            'common.visitor',
-            'common.ref_collector',
-            'common.unbundler',
-            'transport.identity',
-            'transport.rsa_identity',
-            'transport.route_table',
-            'transport.tcp',
-            'sync.failure',
-            'sync.transport.route_table',
-            'sync.transport.transport',
-            'sync.transport.endpoint',
-            'sync.subprocess_connection',
-            'sync.subprocess_child',
             'sync.transport.tcp',
-            'sync.transport.test.echo',
+            'echo',
             ],
         config={
-            'sync.transport.test.echo': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
+            'echo': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
             },
         )
     with subprocess:
