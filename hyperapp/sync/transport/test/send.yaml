@@ -1,1 +1,6 @@
-# empty
+require:
+  - unbundler
+  - peer_registry
+  - generate_rsa_identity
+  - transport
+  - subprocess_master_route

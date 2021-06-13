@@ -2,6 +2,8 @@ import:
   code:
     - transport.route_table
 require:
+  - aux_ref_collector_hooks
+  - aux_ref_unbundler_hooks
   - peer_registry
 provide:
   - route_registry

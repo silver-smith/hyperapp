@@ -1,1 +1,2 @@
-# empty
+provide:
+  - work_dir

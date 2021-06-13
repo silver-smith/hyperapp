@@ -1,3 +1,13 @@
 import:
   code:
     - sync.subprocess_connection
+require:
+  - ref_collector
+  - unbundler
+  - route_table
+  - parcel_registry
+  - service_failure
+  - transport
+  - work_dir
+provide:
+  - subprocess
