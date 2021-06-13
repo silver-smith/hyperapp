@@ -13,7 +13,7 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-        route_registry = CodeRegistry('route', services.web, services.types)
+        route_registry = CodeRegistry('sync_route', services.web, services.types)
         route_table = RouteTable()
         services.route_registry = route_registry
         services.route_table = route_table
