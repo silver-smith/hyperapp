@@ -1,5 +1,6 @@
 import queue
 import logging
+from pathlib import Path
 
 import pytest
 
@@ -15,21 +16,12 @@ pytest_plugins = ['hyperapp.common.test.services']
 @pytest.fixture
 def code_module_list():
     return [
-        'common.visitor',
         'common.ref_collector',
-        'common.unbundler',
-        'transport.identity',
         'transport.rsa_identity',
-        'transport.route_table',
-        'sync.work_dir',
-        'sync.failure',
-        'sync.transport.route_table',
-        'sync.transport.transport',
         'sync.transport.endpoint',
-        'sync.subprocess_connection',
-        'sync.subprocess',
         'sync.rpc.rpc_proxy',
         'sync.rpc.rpc_endpoint',
+        'sync.subprocess',
         ]
 
 
@@ -75,25 +67,12 @@ def test_sync_echo(services, htypes):
 
     subprocess = services.subprocess(
         'subprocess',
+        additional_code_module_dirs=[Path(__file__).parent],
         code_module_list=[
-            'common.visitor',
-            'common.ref_collector',
-            'common.unbundler',
-            'transport.identity',
-            'transport.rsa_identity',
-            'transport.route_table',
-            'sync.failure',
-            'sync.transport.route_table',
-            'sync.transport.transport',
-            'sync.transport.endpoint',
-            'sync.subprocess_connection',
-            'sync.subprocess_child',
-            'sync.rpc.rpc_proxy',
-            'sync.rpc.rpc_endpoint',
-            'sync.rpc.test.echo_service',
+            'echo_service',
             ],
         config = {
-            'sync.rpc.test.echo_service': {'master_service_bundle_cdr': master_service_bundle_cdr},
+            'echo_service': {'master_service_bundle_cdr': master_service_bundle_cdr},
             'sync.subprocess_child': {'master_peer_ref_cdr_list': master_peer_ref_cdr_list},
             },
         )

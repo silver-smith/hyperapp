@@ -2,3 +2,8 @@ import:
   types:
     rpc:
       - request
+require:
+  - peer_registry
+  - transport
+provide:
+  - rpc_proxy

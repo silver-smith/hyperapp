@@ -4,3 +4,9 @@ import:
       - endpoint
     echo:
       - echo_iface
+require:
+  - unbundler
+  - generate_rsa_identity
+  - rpc_endpoint
+  - endpoint_registry
+  - rpc_proxy
