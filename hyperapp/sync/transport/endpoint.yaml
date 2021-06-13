@@ -1,3 +1,6 @@
-require_code_modules:
-  - sync.failure
-  - sync.transport.route_table
+require:
+  - service_failure
+  - unbundler
+  - route_table
+provide:
+  - endpoint_registry

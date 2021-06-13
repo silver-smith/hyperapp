@@ -1,3 +1,6 @@
 import:
   code:
     - common.visitor
+provide:
+  - aux_ref_collector_hooks
+  - ref_collector

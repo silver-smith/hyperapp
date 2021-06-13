@@ -4,6 +4,8 @@ import:
     - request
     - response
     - error_response
-require_code_modules:
-  - transport.identity
-  - sync.transport.transport
+require:
+  - peer_registry
+  - transport
+provide:
+  - rpc_endpoint

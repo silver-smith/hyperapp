@@ -1,4 +1,6 @@
-require_code_modules:
-  - sync.transport.endpoint
-  - sync.rpc.rpc_endpoint
-  - server.identity
+require:
+  - rpc_endpoint
+  - server_identity
+  - endpoint_registry
+provide:
+  - server_rpc_endpoint

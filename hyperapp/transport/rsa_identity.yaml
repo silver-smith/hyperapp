@@ -5,5 +5,10 @@ import:
       - rsa_peer
       - rsa_signature
       - rsa_parcel
-require_code_modules:
-  - transport.identity
+require:
+  - identity_registry
+  - peer_registry
+  - signature_registry
+  - parcel_registry
+provide:
+  - generate_rsa_identity

@@ -12,5 +12,9 @@ import:
       - rpc_element_command
   code:
     - common.list
-require_code_modules:
-  - common.local_server
+require:
+  - server_identity
+  - server_rpc_endpoint
+  - local_server_ref
+provide:
+  - server_ref_list

@@ -1,1 +1,5 @@
-# empty
+provide:
+  - identity_registry
+  - peer_registry
+  - signature_registry
+  - parcel_registry

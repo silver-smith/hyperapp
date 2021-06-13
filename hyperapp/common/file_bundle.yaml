@@ -1,3 +1,5 @@
-require_code_modules:
-  - common.ref_collector
-  - common.unbundler
+require:
+  - ref_collector
+  - unbundler
+provide:
+  - file_bundle

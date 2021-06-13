@@ -1,5 +1,8 @@
 import:
   code:
     - transport.route_table
-require_code_modules:
-  - transport.identity
+require:
+  - peer_registry
+provide:
+  - route_registry
+  - route_table

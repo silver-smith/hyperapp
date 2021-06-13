@@ -1,1 +1,2 @@
-# empty
+provide:
+  - service_failure

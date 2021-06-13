@@ -4,3 +4,12 @@ import:
       - route
   code:
     - transport.tcp
+require:
+  - ref_collector
+  - unbundler
+  - parcel_registry
+  - route_table
+  - transport
+  - service_failure
+provide:
+  - tcp_server

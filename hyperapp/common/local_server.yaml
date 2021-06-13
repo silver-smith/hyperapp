@@ -1,1 +1,5 @@
-# empty
+require:
+  - file_bundle
+provide:
+  - local_server_ref
+  - local_server_ref

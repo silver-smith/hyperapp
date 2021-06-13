@@ -24,3 +24,7 @@ import:
   code:
     - common.list
     - common.record
+require:
+  - server_identity
+  - server_rpc_endpoint
+  - server_ref_list
