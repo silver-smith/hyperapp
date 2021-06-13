@@ -1,4 +1,5 @@
 import time
+from pathlib import Path
 
 import pytest
 
@@ -11,16 +12,6 @@ pytest_plugins = ['hyperapp.common.test.services']
 @pytest.fixture
 def code_module_list():
     return [
-        'common.visitor',
-        'common.ref_collector',
-        'common.unbundler',
-        'transport.identity',
-        'transport.route_table',
-        'sync.work_dir',
-        'sync.failure',
-        'sync.transport.route_table',
-        'sync.transport.transport',
-        'sync.subprocess_connection',
         'sync.subprocess',
         ]
 
@@ -28,18 +19,6 @@ def code_module_list():
 def test_subprocess(services):
     subprocess = services.subprocess(
         'subprocess',
-        code_module_list=[
-            'common.visitor',
-            'common.ref_collector',
-            'common.unbundler',
-            'transport.identity',
-            'transport.route_table',
-            'sync.failure',
-            'sync.transport.route_table',
-            'sync.transport.transport',
-            'sync.subprocess_connection',
-            'sync.subprocess_child',
-            ],
         )
     with subprocess:
         pass
@@ -48,10 +27,9 @@ def test_subprocess(services):
 def test_import_failure(services):
     subprocess = services.subprocess(
         'subprocess',
+        additional_code_module_dirs=[Path(__file__).parent],
         code_module_list=[
-            'common.visitor',
-            'common.ref_collector',
-            'sync.test.import_failure',
+            'import_failure',
             ],
         )
     with pytest.raises(AssertionError) as excinfo:
@@ -64,10 +42,9 @@ def test_import_failure(services):
 def test_module_init_failure(services, sleep_sec):
     subprocess = services.subprocess(
         'subprocess',
+        additional_code_module_dirs=[Path(__file__).parent],
         code_module_list=[
-            'common.visitor',
-            'common.ref_collector',
-            'sync.test.module_init_failure',
+            'module_init_failure',
             ],
         )
     with pytest.raises(AssertionError) as excinfo:
