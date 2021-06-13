@@ -1,2 +1,4 @@
-require_code_modules:
-  - common.resource_registry
+require:
+  - resource_registry
+provide:
+  - resource_resolver

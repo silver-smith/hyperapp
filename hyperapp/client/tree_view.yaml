@@ -8,6 +8,6 @@ import:
     - client.layout
     - client.view
     - async.ui.module
-require_code_modules:
-  - common.resource_resolver
-  - async.ui.params_editor
+require:
+  - resource_resolver
+  - params_editor

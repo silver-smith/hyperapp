@@ -6,3 +6,7 @@ import:
     - params_editor
   code:
     - async.ui.module
+require:
+  - async_web
+provide:
+  - params_editor

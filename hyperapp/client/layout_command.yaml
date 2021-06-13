@@ -1,6 +1,6 @@
 import:
   code:
     - async.ui.module
-require_code_modules:
-  - async.ui.object_registry
-  - client.layout_handle
+require:
+  - object_animator
+  - layout_handle_from_object_type
