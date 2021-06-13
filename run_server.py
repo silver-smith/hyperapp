@@ -20,7 +20,7 @@ code_module_list = [
     ]
 
 config = {
-    'server.tcp_server': {'bind_address': ('localhost', 8000)},
+    'server.tcp_server': {'bind_address': ('localhost', 8080)},
     }
 
 
