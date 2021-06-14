@@ -142,7 +142,10 @@ class CodeModuleImporter:
                 raise RuntimeError(f"Code module {code_module.module_name!r} requires {requirement!r}, but no module provides it")
             if len(module_ref_set) > 1:
                 # When requirements is provided by several modules, preferred should be included in preferred_modules.
-                [module_ref] = module_ref_set & preferred_modules
+                preferred_module_ref_set = module_ref_set & preferred_modules
+                if not preferred_module_ref_set:
+                    raise RuntimeError(f"Multiple modules provide {requirement!r}, but no preferred modules for it passed: {module_ref_set}")
+                [module_ref] = preferred_module_ref_set
             else:
                 [module_ref] = module_ref_set
             if module_ref not in self._imported_module_ref_set:
