@@ -43,7 +43,7 @@ class ResourceLoader(object):
         kind, base_path, *path = base_path.split(':')
         try:
             if kind == 'module':
-                return (self._local_code_module_registry[base_path], path)
+                return (self._local_code_module_registry[base_path].module_ref, path)
             if kind == 'type':
                 module_name, type_name = base_path.split('.')
                 return (self._local_type_module_registry[module_name][type_name], path)
