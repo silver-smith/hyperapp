@@ -5,3 +5,7 @@ import:
       - command_repository_record
   code:
     - async.ui.module
+require:
+  - object_layout_registry
+provide:
+  - object_layout_association

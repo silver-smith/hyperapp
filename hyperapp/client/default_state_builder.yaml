@@ -16,3 +16,5 @@ import:
     - root_layout
   code:
   - async.ui.module
+provide:
+  - default_state_builder

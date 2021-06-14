@@ -3,3 +3,11 @@ import:
     - async.async_registry
     - async.code_registry
     - async.ui.module
+require:
+  - async_web
+provide:
+  - available_view_registry
+  - view_registry
+  - available_object_layouts
+  - default_object_layouts
+  - object_layout_registry

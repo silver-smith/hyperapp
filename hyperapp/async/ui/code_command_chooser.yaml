@@ -12,3 +12,8 @@ import:
     - client.layout_handle
     - async.ui.simple_list_object
     - async.ui.module
+require:
+  - async_web
+  - object_registry
+  - object_animator
+  - object_layout_registry

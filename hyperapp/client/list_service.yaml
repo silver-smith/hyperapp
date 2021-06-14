@@ -4,3 +4,9 @@ import:
       - list_service
   code:
     - async.ui.list_service
+require:
+  - object_registry
+  - command_registry
+  - async_rpc_proxy
+  - client_identity
+  - client_rpc_endpoint

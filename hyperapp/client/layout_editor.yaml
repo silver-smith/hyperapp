@@ -20,3 +20,11 @@ import:
     - async.ui.column
     - async.ui.tree_object
     - async.ui.module
+require:
+  - async_web
+  - object_registry
+  - layout_manager
+  - layout_watcher
+  - object_layout_registry
+  - object_layout_association
+  - create_layout_handle

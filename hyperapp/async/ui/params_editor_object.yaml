@@ -14,3 +14,7 @@ import:
     - async.ui.record_object
     - async.ui.chooser
     - async.ui.module
+require:
+  - async_web
+  - object_registry
+  - object_animator

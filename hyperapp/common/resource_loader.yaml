@@ -5,3 +5,5 @@ import:
     - column_resource
     - layout_command
     - layout
+require:
+  - resource_registry

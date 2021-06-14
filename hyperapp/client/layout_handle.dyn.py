@@ -137,7 +137,6 @@ class ThisModule(ClientModule):
         self._mosaic = services.mosaic
         self._async_web = services.async_web
         self._object_layout_registry = services.object_layout_registry
-        self._object_layout_registry = services.object_layout_registry
         self._default_object_layouts = services.default_object_layouts
         self._object_layout_association = services.object_layout_association
 

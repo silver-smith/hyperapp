@@ -2,3 +2,7 @@ import:
   types:
     application_state:
       - application_state
+require:
+  - file_bundle
+provide:
+  - application_state_storage

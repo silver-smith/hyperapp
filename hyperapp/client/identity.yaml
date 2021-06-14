@@ -1,1 +1,4 @@
-# empty
+require:
+  - generate_rsa_identity
+provide:
+  - client_identity

@@ -11,3 +11,6 @@ import:
     - async.ui.column
     - async.ui.simple_list_object
     - async.ui.module
+require:
+  - async_web
+  - available_object_layouts

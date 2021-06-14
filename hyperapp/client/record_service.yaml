@@ -4,3 +4,11 @@ import:
       - record_service
   code:
     - async.ui.record_service
+require:
+  - async_web
+  - object_registry
+  - object_animator
+  - command_registry
+  - async_rpc_proxy
+  - client_identity
+  - client_rpc_endpoint

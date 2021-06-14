@@ -7,5 +7,11 @@ import:
     - async.ui.module
     - client.view_registry
     - client.object_layout_association
+require:
+  - async_web
+  - object_layout_registry
+  - default_object_layouts
+  - object_layout_association
 provide:
   - layout_handle_from_object_type
+  - create_layout_handle

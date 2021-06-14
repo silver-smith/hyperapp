@@ -9,3 +9,9 @@ import:
     - client.command_hub
     - async.ui.qt.util
     - async.ui.module
+require:
+  - view_registry
+  - async_stop_event
+provide:
+  - layout_watcher
+  - layout_manager

@@ -1,1 +1,6 @@
-# empty
+require:
+  - async_rpc_endpoint
+  - async_endpoint_registry
+  - client_identity
+provide:
+  - client_rpc_endpoint

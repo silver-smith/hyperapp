@@ -1,5 +1,6 @@
 require:
   - ref_collector
   - unbundler
+  - coder/json
 provide:
   - file_bundle

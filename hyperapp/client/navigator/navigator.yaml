@@ -12,3 +12,11 @@ import:
     - client.layout
     - client.layout_command
     - async.ui.module
+require:
+  - async_web
+  - object_animator
+  - view_registry
+  - object_layout_registry
+  - layout_handle_from_object_type
+  - module_command_registry
+  - params_editor
