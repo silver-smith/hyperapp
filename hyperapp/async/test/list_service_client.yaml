@@ -4,3 +4,12 @@ import:
       - list_service
   code:
     - async.ui.list_service
+require:
+  - unbundler
+  - object_registry
+  - object_animator
+  - generate_rsa_identity
+  - async_rpc_endpoint
+  - async_endpoint_registry
+  - async_rpc_proxy
+  - command_registry
