@@ -1,5 +1,6 @@
 import queue
 import logging
+from pathlib import Path
 
 import pytest
 
@@ -15,23 +16,13 @@ pytest_plugins = ['hyperapp.common.test.services']
 @pytest.fixture
 def code_module_list():
     return [
-        'common.visitor',
         'common.ref_collector',
-        'common.unbundler',
-        'transport.identity',
         'transport.rsa_identity',
-        'transport.route_table',
-        'transport.tcp',
-        'sync.work_dir',
-        'sync.failure',
-        'sync.transport.route_table',
-        'sync.transport.transport',
         'sync.transport.endpoint',
-        'sync.subprocess_connection',
-        'sync.subprocess',
         'sync.transport.tcp',
         'sync.rpc.rpc_proxy',
         'sync.rpc.rpc_endpoint',
+        'sync.subprocess',
         ]
 
 
@@ -79,38 +70,16 @@ def test_async_echo(services, htypes):
 
     subprocess = services.subprocess(
         'subprocess',
+        additional_code_module_dirs=[Path(__file__).parent],
         code_module_list=[
-            'common.visitor',
-            'common.ref_collector',
-            'common.unbundler',
-            'transport.identity',
-            'transport.rsa_identity',
-            'transport.route_table',
-            'transport.tcp',
-            'sync.failure',
-            'sync.transport.route_table',
-            'sync.transport.transport',
-            'sync.transport.tcp',  # Provide tcp route for sync route table
-            'sync.transport.endpoint',
-            'sync.subprocess_connection',
-            'sync.subprocess_child',
             'async.event_loop',
             'async.async_main',
-            'async.ui.commander',
-            'async.ui.module',
-            'async.async_web',
-            'async.async_registry',
-            'async.code_registry',
-            'async.transport.route_table',
-            'async.transport.transport',
-            'async.transport.endpoint',
+            'sync.transport.tcp',  # tcp_transport.route is required registered at sync route_registry.
             'async.transport.tcp',
-            'async.rpc.rpc_proxy',
-            'async.rpc.rpc_endpoint',
-            'async.rpc.test.echo_service',
+            'echo_service',
             ],
         config = {
-            'async.rpc.test.echo_service': {'master_service_bundle_cdr': master_service_bundle_cdr},
+            'echo_service': {'master_service_bundle_cdr': master_service_bundle_cdr},
             },
         )
     with subprocess:

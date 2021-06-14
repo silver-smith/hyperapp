@@ -6,3 +6,9 @@ import:
     - error_response
   code:
     - async.code_registry
+require:
+  - peer_registry
+  - async_web
+  - async_transport
+provide:
+  - async_rpc_endpoint
