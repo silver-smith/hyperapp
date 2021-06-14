@@ -42,10 +42,6 @@ class Object(Commander, metaclass=abc.ABCMeta):
     def piece(self):
         pass
 
-    @property
-    def category_list(self):
-        return []
-
     @classmethod
     def resource_key(cls, path=()):
         class_name = cls.__name__
