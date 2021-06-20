@@ -1,7 +1,7 @@
 import:
   types:
     list_view:
-      - list_layout
+      - list_view
   code:
     - async.ui.list_object
     - client.layout
@@ -9,3 +9,6 @@ import:
     - client.view
     - async.ui.items_view
     - async.ui.module
+require:
+  - lcs
+  - view_registry

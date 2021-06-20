@@ -15,6 +15,7 @@ import:
 require:
   - async_web
   - object_animator
+  - view_factory
   - view_registry
   - object_layout_registry
   - layout_handle_from_object_type

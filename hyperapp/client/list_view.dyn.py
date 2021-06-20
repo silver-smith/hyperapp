@@ -12,7 +12,7 @@ from PySide2 import QtCore, QtGui, QtWidgets
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 
 from . import htypes
-from .list_object import ListObserver, ListObject
+from .list_object import ListObserver, ListObject, list_dir
 from .layout import MultiItemObjectLayout
 from .util import uni2str, key_match, key_match_any, make_async_action
 from .view import View
@@ -132,6 +132,10 @@ class ListViewObserver(metaclass=abc.ABCMeta):
 
 class ListView(View, ListObserver, QtWidgets.QTableView):
 
+    @classmethod
+    async def from_piece(cls, piece, object):
+        return cls([], object)
+
     def __init__(self, columns, object, key=None):
         self._observers = weakref.WeakSet()
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
@@ -150,6 +154,10 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
         self.setSelectionMode(self.SingleSelection)
         self.activated.connect(self._on_activated)
         self._object.subscribe(self)
+
+    @property
+    def piece(self):
+        return htypes.list_view.list_view()
 
     # obsolete
     def get_state(self):
@@ -236,13 +244,5 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-        self._mosaic = services.mosaic
-        services.available_object_layouts.register('list', [ListObject.type._t], self._make_list_layout_data)
-        services.default_object_layouts.register('list', [ListObject.type._t], self._make_list_layout_data)
-        services.object_layout_registry.register_actor(
-            htypes.list_view.list_layout, ListViewLayout.from_data, services.mosaic, services.async_web, services.resource_resolver)
-
-    async def _make_list_layout_data(self, object_type):
-        object_type_ref = self._mosaic.put(object_type)
-        command_list = MultiItemObjectLayout.make_default_command_list(object_type)
-        return htypes.list_view.list_layout(object_type_ref, command_list)
+        services.lcs.register([list_dir], htypes.list_view.list_view())
+        services.view_registry.register_actor(htypes.list_view.list_view, ListView.from_piece)

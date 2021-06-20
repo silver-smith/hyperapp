@@ -1,0 +1,8 @@
+import:
+  code:
+    - async.ui.module
+require:
+  - lcs
+  - view_registry
+provide:
+  - view_factory

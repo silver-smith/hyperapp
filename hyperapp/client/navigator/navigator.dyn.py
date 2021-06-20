@@ -15,7 +15,7 @@ from .module import ClientModule
 _log = logging.getLogger(__name__)
 
 
-_HistoryItem = namedtuple('_HistoryItem', 'object layout_handle')
+_HistoryItem = namedtuple('_HistoryItem', 'piece view_state')
 
 
 class _History:
@@ -56,6 +56,7 @@ class NavigatorLayout(GlobalLayout):
             mosaic,
             async_web,
             object_animator,
+            view_factory,
             object_layout_registry,
             layout_handle_from_object_type,
             module_command_registry,
@@ -65,6 +66,7 @@ class NavigatorLayout(GlobalLayout):
             mosaic,
             async_web,
             object_animator,
+            view_factory,
             object_layout_registry,
             layout_handle_from_object_type,
             module_command_registry,
@@ -81,6 +83,7 @@ class NavigatorLayout(GlobalLayout):
             mosaic,
             async_web,
             object_animator,
+            view_factory,
             object_layout_registry,
             layout_handle_from_object_type,
             module_command_registry,
@@ -93,6 +96,7 @@ class NavigatorLayout(GlobalLayout):
         self._mosaic = mosaic
         self._async_web = async_web
         self._object_animator = object_animator
+        self._view_factory = view_factory
         self._object_layout_registry = object_layout_registry
         self._layout_handle_from_object_type = layout_handle_from_object_type
         self._module_command_registry = module_command_registry
@@ -107,8 +111,6 @@ class NavigatorLayout(GlobalLayout):
     async def _async_init(self, initial_piece_ref):
         piece = await self._async_web.summon(initial_piece_ref)
         self._current_object = object = await self._object_animator.animate(piece)
-        self._current_layout_handle = await self._layout_handle_from_object_type(object.type)
-        self._history.append(_HistoryItem(object, None))
 
     @property
     def piece(self):
@@ -116,7 +118,8 @@ class NavigatorLayout(GlobalLayout):
         return htypes.navigator.navigator(piece_ref)
 
     async def create_view(self):
-        self._current_view = await self._current_layout_handle.layout.create_view(self._command_hub, self._current_object)
+        self._current_view = await self._create_view(self._current_object)
+        self._history.append(_HistoryItem(self._current_object.piece, self._current_view.piece))
         return self._current_view
 
     async def visual_item(self):
@@ -126,23 +129,10 @@ class NavigatorLayout(GlobalLayout):
             ])
 
     def get_current_commands(self):
-        return [
-            *super().get_current_commands(),
-            *self._get_global_commands(),
-            *self._get_current_layout_commands(),
-            ]
+        return []
 
-    def _get_global_commands(self):
-        for command in self._module_command_registry.get_all_commands():
-            yield (LayoutCommand(command.id, command)
-                   .with_(wrapper=self._open_layout, layout_handle=self._current_layout_handle)
-                   )
-
-    def _get_current_layout_commands(self):
-        current_layout_commands = self._current_layout_handle.layout.get_current_commands(
-            self._current_object, self._current_view)
-        for command in current_layout_commands:
-            yield command.with_(wrapper=self._open_layout, layout_handle=self._current_layout_handle)
+    async def _create_view(self, object):
+        return await self._view_factory.create_view(object)
 
     async def _open_layout(self, resolved_piece):
         await self._open_layout_impl(resolved_piece.object, resolved_piece.layout_handle)
@@ -210,6 +200,7 @@ class ThisModule(ClientModule):
             services.mosaic,
             services.async_web,
             services.object_animator,
+            services.view_factory,
             services.object_layout_registry,
             services.layout_handle_from_object_type,
             services.module_command_registry,

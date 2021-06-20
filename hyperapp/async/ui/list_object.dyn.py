@@ -60,9 +60,17 @@ class ListObserver(ObjectObserver):
         pass
 
 
+list_dir = [__module_ref__]
+
+
 class ListObject(Object, metaclass=abc.ABCMeta):
 
-    type = htypes.list_ot.list_ot(command_list=(), key_column_id='id', column_list=())
+    @property
+    def dir_list(self):
+        return [
+            *super().dir_list,
+            list_dir,
+            ]
 
     # return Column list
     @abc.abstractproperty
