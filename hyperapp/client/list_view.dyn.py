@@ -13,6 +13,7 @@ from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 
 from . import htypes
 from .list_object import ListObserver, ListObject, list_dir
+from .items_view import map_columns_to_view
 from .layout import MultiItemObjectLayout
 from .util import uni2str, key_match, key_match_any, make_async_action
 from .view import View
@@ -133,8 +134,9 @@ class ListViewObserver(metaclass=abc.ABCMeta):
 class ListView(View, ListObserver, QtWidgets.QTableView):
 
     @classmethod
-    async def from_piece(cls, piece, object):
-        return cls([], object)
+    async def from_piece(cls, piece, object, lcs):
+        columns = list(map_columns_to_view(lcs, object))
+        return cls(columns, object)
 
     def __init__(self, columns, object, key=None):
         self._observers = weakref.WeakSet()
@@ -245,4 +247,4 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
         services.lcs.register([list_dir], htypes.list_view.list_view())
-        services.view_registry.register_actor(htypes.list_view.list_view, ListView.from_piece)
+        services.view_registry.register_actor(htypes.list_view.list_view, ListView.from_piece, services.lcs)
