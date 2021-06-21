@@ -115,24 +115,6 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        sample_article_type = htypes.list_view_sample.list_view_sample_article_type(
-            command_list=(),
-            field_type_list=(
-                htypes.record_ot.field('title', services.mosaic.put(StringObject.type)),
-                htypes.record_ot.field('text', services.mosaic.put(StringObject.type)),
-                ),
-            )
-        sample_list_type = htypes.list_view_sample.list_view_sample_object_type(
-            command_list=(
-                htypes.object_type.object_command('open', services.mosaic.put(StringObject.type)),
-                htypes.object_type.object_command('edit', services.mosaic.put(sample_article_type)),
-                ),
-            key_column_id='idx',
-            column_list=(),  # todo
-            )
-        SampleList.type = sample_list_type
-        SampleArticle.type = sample_article_type
-
         services.object_registry.register_actor(htypes.list_view_sample.list_view_sample_object, SampleList.from_data)
         # services.object_registry.register_actor(htypes.list_view_sample.list_sample_article, SampleArticle.from_data, services.object_registry)
 

@@ -12,3 +12,6 @@ wiki_text = record:
 
 text_edit_layout = record(layout):
   editable: bool
+
+
+text_view = record

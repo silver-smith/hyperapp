@@ -64,18 +64,16 @@ class ListObserver(ObjectObserver):
         pass
 
 
-list_dir = [__module_ref__]
-
-
 class ListObject(Object, metaclass=abc.ABCMeta):
 
     view_state_fields = ['current_key']
+    dir = [__module_ref__]
 
     @property
     def dir_list(self):
         return [
             *super().dir_list,
-            list_dir,
+            self.dir,
             ]
 
     # return Column list

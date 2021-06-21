@@ -12,7 +12,7 @@ from PySide2 import QtCore, QtGui, QtWidgets
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 
 from . import htypes
-from .list_object import State, ListObserver, ListObject, list_dir
+from .list_object import State, ListObserver, ListObject
 from .items_view import map_columns_to_view
 from .layout import MultiItemObjectLayout
 from .util import uni2str, key_match, key_match_any, make_async_action
@@ -246,5 +246,5 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-        services.lcs.register([list_dir], htypes.list_view.list_view())
+        services.lcs.register([ListObject.dir], htypes.list_view.list_view())
         services.view_registry.register_actor(htypes.list_view.list_view, ListView.from_piece, services.lcs)

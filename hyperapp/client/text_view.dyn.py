@@ -16,6 +16,10 @@ log = logging.getLogger(__name__)
 
 class TextView(View, QtWidgets.QTextBrowser):
 
+    @classmethod
+    async def from_piece(cls, piece, object, lcs):
+        return cls(object)
+
     def __init__(self, object):
         QtWidgets.QTextBrowser.__init__(self)
         View.__init__(self)
@@ -25,6 +29,10 @@ class TextView(View, QtWidgets.QTextBrowser):
         self.setHtml(self.text2html(object.value or ''))
         self.anchorClicked.connect(self.on_anchor_clicked)
         self.object.subscribe(self)
+
+    @property
+    def piece(self):
+        return htypes.text.text_view()
 
     @property
     def title(self):
@@ -116,13 +124,5 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-        self._mosaic = services.mosaic
-        services.available_object_layouts.register('text', [StringObject.type._t, htypes.string_ot.string_ot], self._make_text_layout_data)
-        # services.default_object_layouts.register('text', [StringObject.type._t], self._make_text_layout_data)
-        services.object_layout_registry.register_actor(
-            htypes.text.text_edit_layout, TextViewLayout.from_data, services.mosaic, services.async_web)
-
-    async def _make_text_layout_data(self, object_type):
-        object_type_ref = self._mosaic.put(object_type)
-        command_list = ObjectLayout.make_default_command_list(object_type)
-        return htypes.text.text_edit_layout(object_type_ref, command_list, editable=False)
+        services.lcs.register([StringObject.dir], htypes.text.text_view())
+        services.view_registry.register_actor(htypes.text.text_view, TextView.from_piece, services.lcs)

@@ -4,9 +4,12 @@ import:
       - string_ot
     text:
       - text_edit_layout
+      - text_view
   code:
     - async.ui.object
     - client.layout
     - client.view
     - async.ui.string_object
     - async.ui.module
+require:
+  - lcs

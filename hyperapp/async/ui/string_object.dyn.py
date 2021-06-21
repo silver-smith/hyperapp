@@ -7,7 +7,7 @@ from .object import Object
 
 class StringObject(Object):
 
-    type = htypes.string_ot.string_ot(command_list=())
+    dir = [__module_ref__]
 
     @classmethod
     def from_state(cls, state):
@@ -16,6 +16,13 @@ class StringObject(Object):
     def __init__(self, value):
         self._value = value
         super().__init__()
+
+    @property
+    def dir_list(self):
+        return [
+            *super().dir_list,
+            self.dir,
+            ]
 
     @property
     def title(self):
