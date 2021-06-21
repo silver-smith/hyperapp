@@ -8,7 +8,7 @@ from typing import Dict, List
 
 from .weak_key_dictionary_with_callback import WeakKeyDictionaryWithCallback
 from .resource_key import module_resource_key
-from .commander import Commander
+from .object_command import Command
 
 log = logging.getLogger(__name__)
 
@@ -25,13 +25,26 @@ class ObjectObserver(object):
         pass
 
 
-class Object(Commander, metaclass=abc.ABCMeta):
+class Object(metaclass=abc.ABCMeta):
+
+    view_state_fields = []
 
     ObserverArgs = namedtuple('ObserverArgs', 'args kw')
 
     def __init__(self):
-        Commander.__init__(self, commands_kind='object')
+        self._command_list = []
+        for name in dir(self):
+            attr = getattr(self, name)
+            if type(attr) is property:
+                continue
+            if not isinstance(attr, Command):
+                continue
+            self._command_list.append(attr)
         self._init_observers()
+
+    @property
+    def command_list(self):
+        return self._command_list
 
     @property
     @abc.abstractmethod

@@ -1,6 +1,7 @@
 import logging
 import abc
 import asyncio
+from collections import namedtuple
 from functools import total_ordering
 
 from hyperapp.common.util import is_list_inst
@@ -10,6 +11,9 @@ from . import htypes
 from .object import ObjectObserver, Object
 
 log = logging.getLogger(__name__)
+
+
+State = namedtuple('State', 'current_key')
 
 
 class ListDiff:
@@ -64,6 +68,8 @@ list_dir = [__module_ref__]
 
 
 class ListObject(Object, metaclass=abc.ABCMeta):
+
+    view_state_fields = ['current_key']
 
     @property
     def dir_list(self):

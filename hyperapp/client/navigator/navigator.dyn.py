@@ -9,13 +9,28 @@ from . import htypes
 from .view import View
 from .command import command
 from .layout import GlobalLayout
-from .layout_command import LayoutCommand
 from .module import ClientModule
 
 _log = logging.getLogger(__name__)
 
 
 _HistoryItem = namedtuple('_HistoryItem', 'piece view_state')
+
+
+class Command:
+
+    kind = 'object'
+    resource_key = None
+
+    def __init__(self, id, fn):
+        self.id = id
+        self._fn = fn
+
+    def is_enabled(self):
+        return True
+
+    async def run(self):
+        return await self._fn()
 
 
 class _History:
@@ -129,35 +144,28 @@ class NavigatorLayout(GlobalLayout):
             ])
 
     def get_current_commands(self):
-        return []
+        return [
+            Command(command.id, partial(self._run_command, command))
+            for command in self._current_object.command_list
+            ]
 
     async def _create_view(self, object):
         return await self._view_factory.create_view(object)
 
-    async def _open_layout(self, resolved_piece):
-        await self._open_layout_impl(resolved_piece.object, resolved_piece.layout_handle)
-        self._history.append(_HistoryItem(resolved_piece.object, resolved_piece.layout_handle))
+    async def _run_command(self, command):
+        view_state = self._current_view.state
+        _log.info("Run command: %s", command)
+        piece = await command.run(self._current_object, view_state)
+        _log.info("Run command %s result: %r", command, piece)
+        if piece is None:
+            return
+        await self._open_piece(piece)
 
     async def _open_piece(self, piece):
-        layout_handle = await self._open_piece_impl(piece)
-        self._history.append(_HistoryItem(self._current_object, layout_handle))
-
-    async def _open_piece_impl(self, piece):
-        object = await self._object_animator.animate(piece)
-        layout_handle = await self._open_object(object)
-        return layout_handle
-
-    async def _open_object(self, object):
-        layout_handle = await self._layout_handle_from_object_type(object.type)
-        await self._open_layout_impl(object, layout_handle)
-        return layout_handle
-
-    async def _open_layout_impl(self, object, layout_handle):
-        view = await layout_handle.layout.create_view(self._command_hub, object)
+        self._current_object = await self._object_animator.animate(piece)
+        self._current_view = await self._create_view(self._current_object)
+        self._history.append(_HistoryItem(self._current_object.piece, self._current_view.piece))
         self._view_opener.open(view)
-        self._current_object = object
-        self._current_layout_handle = layout_handle
-        self._current_view = view
         self._command_hub.update()
 
     @command('go_backward')

@@ -10,7 +10,6 @@ import:
     - client.view
     - async.ui.command
     - client.layout
-    - client.layout_command
     - async.ui.module
 require:
   - async_web

@@ -2,4 +2,4 @@ import:
   code:
     - common.weak_key_dictionary_with_callback
     - common.resource_key
-    - async.ui.commander
+    - async.ui.object_command
