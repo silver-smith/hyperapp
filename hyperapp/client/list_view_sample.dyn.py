@@ -5,13 +5,12 @@ import logging
 from hyperapp.common.htypes import tInt, resource_key_t
 
 from . import htypes
-from .object_command import command
 from .object import ObjectType
 from .column import Column
 from .list_object import ListObject
 from .string_object import StringObject
 from .record_object import RecordObject
-from .module import ClientModule
+from .module import ClientModule, command
 
 log = logging.getLogger(__name__)
 

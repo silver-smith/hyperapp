@@ -1,4 +1,2 @@
-import:
-  code:
-    - async.ui.commander
-
+provide:
+  - global_command_list

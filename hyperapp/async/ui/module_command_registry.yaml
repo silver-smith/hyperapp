@@ -1,5 +1,0 @@
-import:
-  code:
-    - async.ui.module
-provide:
-  - module_command_registry

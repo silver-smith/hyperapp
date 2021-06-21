@@ -19,12 +19,12 @@ _HistoryItem = namedtuple('_HistoryItem', 'piece view_state')
 
 class Command:
 
-    kind = 'object'
     resource_key = None
 
-    def __init__(self, id, fn):
+    def __init__(self, id, fn, kind):
         self.id = id
         self._fn = fn
+        self.kind = kind
 
     def is_enabled(self):
         return True
@@ -74,7 +74,7 @@ class NavigatorLayout(GlobalLayout):
             view_factory,
             object_layout_registry,
             layout_handle_from_object_type,
-            module_command_registry,
+            global_command_list,
             params_editor,
             ):
         self = cls(
@@ -84,7 +84,7 @@ class NavigatorLayout(GlobalLayout):
             view_factory,
             object_layout_registry,
             layout_handle_from_object_type,
-            module_command_registry,
+            global_command_list,
             params_editor,
             path,
             command_hub,
@@ -101,7 +101,7 @@ class NavigatorLayout(GlobalLayout):
             view_factory,
             object_layout_registry,
             layout_handle_from_object_type,
-            module_command_registry,
+            global_command_list,
             params_editor,
             path,
             command_hub,
@@ -114,7 +114,7 @@ class NavigatorLayout(GlobalLayout):
         self._view_factory = view_factory
         self._object_layout_registry = object_layout_registry
         self._layout_handle_from_object_type = layout_handle_from_object_type
-        self._module_command_registry = module_command_registry
+        self._global_command_list = global_command_list
         self._params_editor = params_editor
         self._command_hub = command_hub
         self._view_opener = view_opener
@@ -144,19 +144,36 @@ class NavigatorLayout(GlobalLayout):
             ])
 
     def get_current_commands(self):
-        return [
-            Command(command.id, partial(self._run_command, command))
+        object_commands = [
+            Command(command.id, partial(self._run_object_command, command), kind='object')
             for command in self._current_object.command_list
+            ]
+        global_commands = [
+            Command(command.id, partial(self._run_global_command, command), kind='global')
+            for command in self._global_command_list
+            ]
+        return [
+            *super().get_current_commands(),
+            *object_commands,
+            *global_commands,
             ]
 
     async def _create_view(self, object):
         return await self._view_factory.create_view(object)
 
-    async def _run_command(self, command):
+    async def _run_object_command(self, command):
         view_state = self._current_view.state
-        _log.info("Run command: %s", command)
+        _log.info("Run object command: %s with state", command, view_state)
         piece = await command.run(self._current_object, view_state)
-        _log.info("Run command %s result: %r", command, piece)
+        _log.info("Run object command %s result: %r", command, piece)
+        if piece is None:
+            return
+        await self._open_piece(piece)
+
+    async def _run_global_command(self, command):
+        _log.info("Run global command: %s", command)
+        piece = await command.run()
+        _log.info("Run global command %s result: %r", command, piece)
         if piece is None:
             return
         await self._open_piece(piece)
@@ -165,7 +182,7 @@ class NavigatorLayout(GlobalLayout):
         self._current_object = await self._object_animator.animate(piece)
         self._current_view = await self._create_view(self._current_object)
         self._history.append(_HistoryItem(self._current_object.piece, self._current_view.piece))
-        self._view_opener.open(view)
+        self._view_opener.open(self._current_view)
         self._command_hub.update()
 
     @command('go_backward')
@@ -211,6 +228,6 @@ class ThisModule(ClientModule):
             services.view_factory,
             services.object_layout_registry,
             services.layout_handle_from_object_type,
-            services.module_command_registry,
+            services.global_command_list,
             services.params_editor,
             )

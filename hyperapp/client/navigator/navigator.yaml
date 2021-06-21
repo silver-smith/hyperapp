@@ -18,5 +18,5 @@ require:
   - view_registry
   - object_layout_registry
   - layout_handle_from_object_type
-  - module_command_registry
   - params_editor
+  - global_command_list
