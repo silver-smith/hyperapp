@@ -163,7 +163,7 @@ class NavigatorLayout(GlobalLayout):
 
     async def _run_object_command(self, command):
         view_state = self._current_view.state
-        _log.info("Run object command: %s with state", command, view_state)
+        _log.info("Run object command: %s with state %s", command, view_state)
         piece = await command.run(self._current_object, view_state)
         _log.info("Run object command %s result: %r", command, piece)
         if piece is None:
@@ -179,9 +179,12 @@ class NavigatorLayout(GlobalLayout):
         await self._open_piece(piece)
 
     async def _open_piece(self, piece):
+        await self._open_piece_impl(piece)
+        self._history.append(_HistoryItem(self._current_object.piece, self._current_view.piece))
+
+    async def _open_piece_impl(self, piece):
         self._current_object = await self._object_animator.animate(piece)
         self._current_view = await self._create_view(self._current_object)
-        self._history.append(_HistoryItem(self._current_object.piece, self._current_view.piece))
         self._view_opener.open(self._current_view)
         self._command_hub.update()
 
@@ -191,7 +194,7 @@ class NavigatorLayout(GlobalLayout):
             item = self._history.move_backward()
         except IndexError:
             return
-        await self._open_object(item.object)
+        await self._open_piece_impl(item.piece)
 
     @command('go_forward')
     async def _go_forward(self):
@@ -199,7 +202,7 @@ class NavigatorLayout(GlobalLayout):
             item = self._history.move_forward()
         except IndexError:
             return
-        await self._open_object(item.object)
+        await self._open_piece_impl(item.piece)
 
     @command('open_layout_editor')
     async def _open_layout_editor(self):

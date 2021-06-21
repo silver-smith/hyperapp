@@ -4,7 +4,7 @@ from hyperapp.common.module import Module
 
 
 # decorator for module methods
-class command:
+class global_command:
 
     def __init__(self, id):
         self.id = id
