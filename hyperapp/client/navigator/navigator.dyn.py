@@ -71,6 +71,7 @@ class NavigatorLayout(GlobalLayout):
             mosaic,
             async_web,
             object_animator,
+            object_commands_factory,
             view_factory,
             object_layout_registry,
             layout_handle_from_object_type,
@@ -81,6 +82,7 @@ class NavigatorLayout(GlobalLayout):
             mosaic,
             async_web,
             object_animator,
+            object_commands_factory,
             view_factory,
             object_layout_registry,
             layout_handle_from_object_type,
@@ -98,6 +100,7 @@ class NavigatorLayout(GlobalLayout):
             mosaic,
             async_web,
             object_animator,
+            object_commands_factory,
             view_factory,
             object_layout_registry,
             layout_handle_from_object_type,
@@ -111,6 +114,7 @@ class NavigatorLayout(GlobalLayout):
         self._mosaic = mosaic
         self._async_web = async_web
         self._object_animator = object_animator
+        self._object_commands_factory = object_commands_factory
         self._view_factory = view_factory
         self._object_layout_registry = object_layout_registry
         self._layout_handle_from_object_type = layout_handle_from_object_type
@@ -146,7 +150,7 @@ class NavigatorLayout(GlobalLayout):
     def get_current_commands(self):
         object_commands = [
             Command(command.id, partial(self._run_object_command, command), kind='object')
-            for command in self._current_object.command_list
+            for command in self._object_commands_factory.get_object_command_list(self._current_object)
             ]
         global_commands = [
             Command(command.id, partial(self._run_global_command, command), kind='global')
@@ -228,6 +232,7 @@ class ThisModule(ClientModule):
             services.mosaic,
             services.async_web,
             services.object_animator,
+            services.object_commands_factory,
             services.view_factory,
             services.object_layout_registry,
             services.layout_handle_from_object_type,
