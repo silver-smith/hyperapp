@@ -147,19 +147,20 @@ class NavigatorLayout(GlobalLayout):
             self.make_visual_item(str(piece), name='current'),
             ])
 
-    def get_current_commands(self):
-        object_commands = [
+    async def get_current_commands(self):
+        object_command_list = await self._object_commands_factory.get_object_command_list(self._current_object)
+        object_view_command_list = [
             Command(command.id, partial(self._run_object_command, command), kind='object')
-            for command in self._object_commands_factory.get_object_command_list(self._current_object)
+            for command in object_command_list
             ]
-        global_commands = [
+        global_command_list = [
             Command(command.id, partial(self._run_global_command, command), kind='global')
             for command in self._global_command_list
             ]
         return [
-            *super().get_current_commands(),
-            *object_commands,
-            *global_commands,
+            *await super().get_current_commands(),
+            *object_view_command_list,
+            *global_command_list,
             ]
 
     async def _create_view(self, object):
@@ -190,7 +191,7 @@ class NavigatorLayout(GlobalLayout):
         self._current_object = await self._object_animator.animate(piece)
         self._current_view = await self._create_view(self._current_object)
         self._view_opener.open(self._current_view)
-        self._command_hub.update()
+        await self._command_hub.update()
 
     @command('go_backward')
     async def _go_backward(self):

@@ -20,9 +20,9 @@ class CommandHub:
     def unsubscribe(self, observer):
         self._observer_set.remove(observer)
 
-    def update(self, only_kind=None):
+    async def update(self, only_kind=None):
         _log.info("Update commands (only_kind=%s)", only_kind)
-        all_command_list = self._get_commands()
+        all_command_list = await self._get_commands()
         if only_kind:
             kind_list = [only_kind]
         else:

@@ -65,7 +65,7 @@ class WindowLayout(GlobalLayout):
         command_pane = await self._command_pane_layout.create_view()
         central_view = await self._central_view_layout.create_view()
         self._widget = Window(menu_bar, command_pane, central_view, self._on_close, self._size, self._pos)
-        self._command_hub.update()
+        await self._command_hub.update()
         return self._widget
 
     async def visual_item(self):
@@ -74,8 +74,8 @@ class WindowLayout(GlobalLayout):
         central_view = await self._central_view_layout.visual_item()
         return self.make_visual_item('Window', children=[menu_bar, command_pane, central_view])
 
-    def get_current_commands(self):
-        return self._get_current_commands_with_child(self._central_view_layout)
+    async def get_current_commands(self):
+        return await self._get_current_commands_with_child(self._central_view_layout)
 
     def collect_view_commands(self):
         return self._collect_view_commands_with_children(

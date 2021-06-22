@@ -1,4 +1,5 @@
 import abc
+import asyncio
 import logging
 from collections import namedtuple
 
@@ -66,14 +67,14 @@ class Layout(Commander, metaclass=abc.ABCMeta):
 
 class GlobalLayout(Layout):
 
-    def get_current_commands(self):
+    async def get_current_commands(self):
         return self.get_all_command_list()
 
-    def _get_current_commands_with_child(self, child):
+    async def _get_current_commands_with_child(self, child):
         # child commands should override and hide same commands from parents
         return self._merge_commands(
-            child.get_current_commands(),
-            GlobalLayout.get_current_commands(self),
+            await child.get_current_commands(),
+            await GlobalLayout.get_current_commands(self),
             )
 
 
@@ -98,7 +99,7 @@ class ObjectLayout(Layout):
     async def create_view(self, command_hub, object):
         pass
 
-    def get_current_commands(self, object, view):
+    async def get_current_commands(self, object, view):
         return self._get_object_commands(object)
 
     def _get_object_commands(self, object):
@@ -169,13 +170,13 @@ class AbstractMultiItemObjectLayout(ObjectLayout):
             self._command_hub = command_hub
 
         def current_changed(self, current_item_key):
-            self._command_hub.update(only_kind='element')
+            asyncio.create_task(self._command_hub.update(only_kind='element'))
 
     def __init__(self, mosaic, path, object_type, command_list_data):
         super().__init__(mosaic, path, object_type, command_list_data)
         self._current_item_observer = None
 
-    def get_current_commands(self, object, view):
+    async def get_current_commands(self, object, view):
         return self.get_item_commands(object, view.current_item_key)
 
     def get_item_commands(self, object, item_key):

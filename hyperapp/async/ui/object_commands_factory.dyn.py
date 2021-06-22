@@ -3,7 +3,7 @@ from hyperapp.common.module import Module
 
 class ObjectCommandsFactory:
 
-    def get_object_command_list(self, object):
+    async def get_object_command_list(self, object):
         return object.command_list
 
 

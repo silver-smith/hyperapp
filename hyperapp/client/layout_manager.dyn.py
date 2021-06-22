@@ -34,9 +34,10 @@ class RootLayout(GlobalLayout):
         async def _async_init(self, view_registry, path, ref):
             self.layout = await view_registry.invite(ref, [*path, self.id], self._window_closed, self._command_hub)
 
-        def get_current_commands(self):
+        async def get_current_commands(self):
+            layout_commands = await self.layout.get_current_commands()
             root_commands = [command.partial(self.id) for command in self._window_commands]
-            return [*self.layout.get_current_commands(), *root_commands]
+            return [*layout_commands, *root_commands]
 
         def _window_closed(self):
             self._on_close(self.id)

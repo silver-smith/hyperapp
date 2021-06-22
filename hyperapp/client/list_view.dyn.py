@@ -246,5 +246,5 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-        services.lcs.register([ListObject.dir], htypes.list_view.list_view())
+        services.lcs.set([ListObject.dir], htypes.list_view.list_view())
         services.view_registry.register_actor(htypes.list_view.list_view, ListView.from_piece, services.lcs)

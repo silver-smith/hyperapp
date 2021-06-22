@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import itertools
 from collections import namedtuple
@@ -82,7 +83,7 @@ class TabLayout(GlobalLayout):
                     for tab in self._tab_list]
         return self.make_visual_item('TabView', children=children)
 
-    def get_current_commands(self):
+    async def get_current_commands(self):
         if not self._widget:
             return []
         tab_idx = self._widget.currentIndex()
@@ -94,7 +95,7 @@ class TabLayout(GlobalLayout):
             for command in self.get_command_list()
             ]
         return self._merge_commands(
-            current_layout.get_current_commands(),
+            await current_layout.get_current_commands(),
             my_commands,
             )
 
@@ -126,7 +127,7 @@ class TabLayout(GlobalLayout):
 
     def _on_current_tab_changed(self, tab_idx):
         if tab_idx != -1:
-            self._command_hub.update()
+            asyncio.create_task(self._command_hub.update())
 
     def _find_tab(self, tab_name):
         for idx, tab in enumerate(self._tab_list):
@@ -166,7 +167,7 @@ class TabLayout(GlobalLayout):
         new_idx = tab_idx + 1
         if self._widget:
             self._widget.setCurrentIndex(new_idx)
-            self._command_hub.update()
+            await self._command_hub.update()
         item = await self._visual_item(tab)
         self._layout_watcher.distribute_diffs([InsertVisualItemDiff(self._path, new_idx, item)])
 

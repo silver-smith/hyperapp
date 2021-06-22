@@ -124,5 +124,5 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-        services.lcs.register([StringObject.dir], htypes.text.text_view())
+        services.lcs.set([StringObject.dir], htypes.text.text_view())
         services.view_registry.register_actor(htypes.text.text_view, TextView.from_piece, services.lcs)
