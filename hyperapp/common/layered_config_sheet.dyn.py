@@ -1,21 +1,32 @@
+from collections import defaultdict
+
 from .module import ClientModule
 
 
 class LCSheet:
 
     def __init__(self):
-        self._dir_to_piece = {}
+        self._dir_to_piece = defaultdict(list)
 
-    def register(self, dir_list, piece):
+    def add(self, dir_list, piece):
         for dir in dir_list:
-            self._dir_to_piece[tuple(dir)] = piece
+            self._dir_to_piece[tuple(dir)].append(piece)
 
-    def resolve(self, dir_list):
+    def set(self, dir_list, piece):
+        for dir in dir_list:
+            self._dir_to_piece[tuple(dir)] = [piece]
+
+    def iter(self, dir_list):
+        for dir in dir_list:
+            yield from self._dir_to_piece[tuple(dir)]
+
+    def get(self, dir_list):
         for dir in reversed(dir_list):
-            try:
-                return self._dir_to_piece[tuple(dir)]
-            except KeyError:
-                pass
+            piece_list = self._dir_to_piece[tuple(dir)]
+            if len(piece_list) > 1:
+                raise RuntimeError(f"More than one value is registered for {dir}")
+            if piece_list:
+                return piece_list[0]
         raise RuntimeError(f"No dir among {dir_list} is registered at LCS")
 
 
