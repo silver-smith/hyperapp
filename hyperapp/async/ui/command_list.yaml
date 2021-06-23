@@ -1,10 +1,10 @@
 import:
   types:
-    object_type:
-      - object_command
     command_list:
-      - command_list_ot
       - command_list
+      - command_list_command
+    command:
+      - object_commands_d
     layout_editor:
       - object_layout_editor
     code_command_chooser:
@@ -13,10 +13,14 @@ import:
       - field
       - params_editor
   code:
+    - async.ui.object
     - async.ui.command
     - async.ui.column
     - client.command_hub
     - async.ui.object_command
     - client.layout_handle
     - async.ui.simple_list_object
-    - async.ui.module
+require:
+  - lcs
+  - command_registry
+  - object_commands_factory

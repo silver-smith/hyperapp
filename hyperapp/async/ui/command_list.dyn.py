@@ -1,78 +1,58 @@
 import itertools
 from collections import namedtuple
 
+from hyperapp.common.module import Module
 from hyperapp.common.util import single
 
 from . import htypes
-from .command import command
 from .column import Column
-from .object_command import command as object_command
+from .object import Object
+from .object_command import Command, command
 from .layout_handle import LayoutWatcher
 from .simple_list_object import SimpleListObject
-from .module import ClientModule
 
 
-Item = namedtuple('Item', 'id code_id kind path layout')
+Item = namedtuple('Item', 'name')
 
 
 class CommandList(SimpleListObject):
 
     @classmethod
-    async def from_state(cls, state, mosaic, async_web, object_animator, object_layout_association, layout_handle_from_ref, layout_handle_from_object_type):
-        piece = await async_web.summon(state.piece_ref)
-        object = await object_animator.animate(piece)
-        layout_handle = await layout_handle_from_ref(state.layout_handle_ref)
-        self = cls(mosaic, object_layout_association, layout_handle_from_object_type, object, layout_handle)
-        await self._async_init(async_web)
+    async def from_state(cls, state, mosaic, async_web, object_animator, object_commands_factory):
+        object = await object_animator.invite(state.piece_ref)
+        self = cls(mosaic, object)
+        await self._async_init(object_commands_factory)
         return self
 
-    def __init__(self, mosaic, object_layout_association, layout_handle_from_object_type, object, layout_handle):
+    def __init__(self, mosaic, object):
         super().__init__()
         self._mosaic = mosaic
-        self._object_layout_association = object_layout_association
-        self._layout_handle_from_object_type = layout_handle_from_object_type
         self._object = object
-        self._layout_handle = layout_handle
-        self._command_dict = {
-            command.id: command
-            for command in self._layout.command_list
-            }
-        self._id_to_path_and_code_command = {
-            command.id: (path, command)
-            for path, command in self._layout.available_code_commands(self._object)
-            }
+        self._command_dict = None
 
-    async def _async_init(self, async_web):
-        self._command_object_types = {
-            command.id: await async_web.summon(command.result_object_type_ref)
-            for command in self._object.type.command_list
+    async def _async_init(self, object_commands_factory):
+        command_list = await object_commands_factory.get_object_command_list(self._object)
+        self._command_dict = {
+            command.name: command
+            for command in command_list
             }
         # todo: add/pass current item to command list constructor/data, use it here.
         # todo: add state to views; pass it to command list; use it here instead of item key.
         self._item_key = await self._object.first_item_key()
-        self._id_to_layout_command = {
-            command.id: command
-            for command in self._layout.get_item_commands(self._object, self._item_key)
-            }
 
     @property
     def title(self):
-        return f"Commands for: {self._layout_handle.object_type._t.name}"
+        return f"Commands for: {self._object.title}"
 
     @property
     def piece(self):
         piece_ref = self._mosaic.put(self._object.piece)
-        layout_handle_ref = self._mosaic.put(self._layout_handle.piece)
-        return htypes.command_list.command_list(piece_ref, layout_handle_ref)
+        return htypes.command_list.command_list(piece_ref)
 
     @property
     def columns(self):
         return [
-            Column('id', is_key=True),
-            Column('code_id'),
-            Column('kind'),
-            Column('path'),
-            Column('layout'),
+            Column('name', is_key=True),
             ]
 
     async def get_all_items(self):
@@ -86,26 +66,8 @@ class CommandList(SimpleListObject):
         return self._layout_handle.layout
 
     async def _make_item(self, command):
-        if command.code_id == 'self':
-            object_type = self._layout_handle.object_type
-            path = []
-            kind = 'object'
-        else:
-            object_type = self._command_object_types[command.code_id]
-            path, code_command = self._id_to_path_and_code_command[command.code_id]
-            kind = code_command.kind
-        if object_type is not None:
-            layout_handle = await self._command_handle(command, object_type)
-            item = await layout_handle.layout.visual_item()
-            layout_str = item.text
-        else:
-            layout_str = ''
         return Item(
-            id=command.id,
-            code_id=command.code_id,
-            kind=kind,
-            path='/'.join(path),
-            layout=layout_str,
+            name=command.name,
             )
 
     async def _command_handle(self, command, object_type):
@@ -122,7 +84,7 @@ class CommandList(SimpleListObject):
         command_id = item_key
         return (await self._run_command(command_id))
 
-    @object_command('layout', kind='element')
+    @command('layout', kind='element')
     async def _open_layout(self, item_key):
         command_id = item_key
         command = self._command_dict[command_id]
@@ -137,7 +99,7 @@ class CommandList(SimpleListObject):
         origin_object_type_ref = self._mosaic.put(self._layout_handle.object_type)
         return htypes.layout_editor.object_layout_editor(object_type_ref, origin_object_type_ref, command_id)
 
-    @object_command('add', kind='element')
+    @command('add', kind='element')
     async def _add_command(self, path):
         piece_ref = self._mosaic.put(self._object.piece)
         layout_ref = self._mosaic.put(self._layout.piece)
@@ -168,29 +130,23 @@ class CommandList(SimpleListObject):
                 return unique_id
 
 
-class ThisModule(ClientModule):
+class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-
-        command_list_type = htypes.command_list.command_list_ot(
-            command_list=(
-                htypes.object_type.object_command('run', None),
-                htypes.object_type.object_command('layout', None),
-                htypes.object_type.object_command('add', None),
-                ),
-            key_column_id='id',
-            column_list=(),  # todo
-            )
-        CommandList.type = command_list_type
-
+        self._mosaic = services.mosaic
         services.object_registry.register_actor(
             htypes.command_list.command_list,
             CommandList.from_state,
             services.mosaic,
             services.async_web,
             services.object_animator,
-            services.object_layout_association,
-            services.layout_handle_from_ref,
-            services.layout_handle_from_object_type,
+            services.object_commands_factory,
             )
+        command_list_cmd_ref = services.mosaic.put(htypes.command_list.command_list_command())
+        services.lcs.add([[*Object.dir_list[-1], htypes.command.object_commands_d]], command_list_cmd_ref)
+        services.command_registry.register_actor(htypes.command_list.command_list_command, Command.from_fn(self.command_list))
+
+    async def command_list(self, object):
+        piece_ref = self._mosaic.put(object.piece)
+        return htypes.command_list.command_list(piece_ref)
