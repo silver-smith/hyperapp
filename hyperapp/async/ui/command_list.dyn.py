@@ -22,17 +22,19 @@ Item = namedtuple('Item', 'name')
 class CommandList(SimpleListObject):
 
     @classmethod
-    async def from_state(cls, state, mosaic, async_web, object_animator, object_commands_factory):
+    async def from_state(cls, state, mosaic, async_web, lcs, object_animator, object_commands_factory):
         object = await object_animator.invite(state.piece_ref)
-        self = cls(mosaic, object)
+        self = cls(mosaic, lcs, object)
         await self._async_init(object_commands_factory)
         return self
 
-    def __init__(self, mosaic, object):
+    def __init__(self, mosaic, lcs, object):
         super().__init__()
         self._mosaic = mosaic
+        self._lcs = lcs
         self._object = object
         self._command_dict = None
+        self._command_shortcut_d_ref = mosaic.put(htypes.command.command_shortcut_d())
 
     async def _async_init(self, object_commands_factory):
         command_list = await object_commands_factory.get_object_command_list(self._object)
@@ -77,8 +79,12 @@ class CommandList(SimpleListObject):
     @command('set_key')
     async def set_key(self, current_key):
         log.info("Set key for %r", current_key)
+        command = self._command_dict[current_key]
+        command_ref = self._mosaic.put(command.piece)
         shortcut = run_input_key_dialog()
-        log.info("Shortcut: %r", shortcut)
+        if shortcut:
+            log.info("Shortcut: %r", shortcut)
+            self._lcs.set([[command_ref, self._command_shortcut_d_ref]], shortcut)
 
     async def _command_handle(self, command, object_type):
         return (await self._layout_handle.command_handle(command.id, object_type))
@@ -150,6 +156,7 @@ class ThisModule(Module):
             CommandList.from_state,
             services.mosaic,
             services.async_web,
+            services.lcs,
             services.object_animator,
             services.object_commands_factory,
             )

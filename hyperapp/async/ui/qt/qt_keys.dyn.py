@@ -480,7 +480,7 @@ class KeyInputDialog(QtWidgets.QDialog):
         super().keyPressEvent(event)
         text = key_event_to_str(event)
         self.input_line.setText(text)
-        if event.text() and event.key() != QtCore.Qt.Key_Escape:
+        if not is_modifier(event) and event.key() != QtCore.Qt.Key_Escape:
             self.key_result = key_event_to_str(event)
             # Let chosen key be shown for a while before closing.
             QtCore.QTimer.singleShot(200, self.close)

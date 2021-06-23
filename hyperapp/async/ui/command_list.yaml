@@ -5,6 +5,7 @@ import:
       - command_list_command
     command:
       - object_commands_d
+      - command_shortcut_d
     layout_editor:
       - object_layout_editor
     code_command_chooser:

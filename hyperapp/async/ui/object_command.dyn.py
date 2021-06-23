@@ -42,12 +42,13 @@ class Command:
             name = fn.__name__
 
         def from_piece(piece):
-            return cls(name, fn)
+            return cls(name, piece, fn)
 
         return from_piece
 
-    def __init__(self, name, fn):
+    def __init__(self, name, piece, fn):
         self.name = name
+        self.piece = piece
         self._fn = fn
 
     async def run(self, object, view_state):
