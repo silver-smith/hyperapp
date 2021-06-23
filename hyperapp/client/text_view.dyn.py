@@ -35,6 +35,10 @@ class TextView(View, QtWidgets.QTextBrowser):
         return htypes.text.text_view()
 
     @property
+    def state(self):
+        return None
+
+    @property
     def title(self):
         return self.object.title
 
