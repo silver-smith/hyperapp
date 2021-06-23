@@ -4,9 +4,6 @@ from PySide2 import QtCore, QtWidgets
 log = logging.getLogger(__name__)
 
 
-DEBUG_KEYS = False
-
-
 key2name = {
     QtCore.Qt.Key_Escape: 'Escape',
     QtCore.Qt.Key_Tab: 'Tab',
@@ -444,9 +441,3 @@ def modifiers2str(modifiers):
 
 def key_evt2str(evt):
     return modifiers2str(evt.modifiers()) + key2name[evt.key()]
-
-def print_key_event(evt, prefix):
-    if DEBUG_KEYS \
-        and evt.type() == QtCore.QEvent.Type.KeyPress \
-        and evt.key() not in [QtCore.Qt.Key_Shift, QtCore.Qt.Key_Control, QtCore.Qt.Key_Alt]:
-        log.info('%s %s', prefix, key_evt2str(evt))

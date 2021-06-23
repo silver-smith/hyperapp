@@ -7,7 +7,6 @@ from PySide2 import QtCore, QtWidgets
 from .commander import Command, Commander
 from .object import ObjectObserver
 from .util import DEBUG_FOCUS, focused_index
-from .qt_keys import print_key_event
 from .module import ClientModule
 
 log = logging.getLogger(__name__)
@@ -180,9 +179,6 @@ class View(ObjectObserver, Commander):
 
     def hide_current(self):
         self._parent().hide_current()
-
-    def print_key_event(self, evt, prefix):
-        print_key_event(evt, '%s %s %s' % (prefix, self._cls2name(self), hex(id(self))))
 
     def _cls2name(self, cls):
         return cls.__module__ + '.' + cls.__class__.__name__
