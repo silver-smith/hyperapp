@@ -34,14 +34,18 @@ class Object(metaclass=abc.ABCMeta):
 
     def __init__(self):
         self._command_list = []
+        self._init_commands()
+        self._init_observers()
+
+    def _init_commands(self):
+        cls = type(self)
         for name in dir(self):
+            if hasattr(cls, name) and type(getattr(cls, name)) is property:
+                continue  # Avoid to call properties as we are not yet fully constructed.
             attr = getattr(self, name)
-            if type(attr) is property:
-                continue
             if not isinstance(attr, BuiltinCommand):
                 continue
             self._command_list.append(attr)
-        self._init_observers()
 
     @property
     def command_list(self):
