@@ -4,17 +4,17 @@ import inspect
 # decorator for object methods
 class command:
 
-    def __init__(self, id, kind=None):
-        self.id = id
+    def __init__(self, name, kind=None):
+        self.name = name
 
     def __call__(self, class_method):
-        return Command(self.id, class_method)
+        return BuiltinCommand(self.name, class_method)
 
 
-class Command:
+class BuiltinCommand:
 
-    def __init__(self, id, class_method):
-        self.id = id
+    def __init__(self, name, class_method):
+        self.name = name
         self._class_method = class_method
         self._wanted_kw = {
             name for name
@@ -32,3 +32,23 @@ class Command:
         if missing_kw:
             raise RuntimeError(f"Method {self._class_method} wants arguments {missing_kw} but {view_state!r} does not provide them")
         return await self._class_method(object, **kw)
+
+
+class Command:
+
+    @classmethod
+    def from_fn(cls, fn, name=None):
+        if not name:
+            name = fn.__name__
+
+        def from_piece(piece):
+            return cls(name, fn)
+
+        return from_piece
+
+    def __init__(self, name, fn):
+        self.name = name
+        self._fn = fn
+
+    async def run(self, object, view_state):
+        return await self._fn(object)

@@ -1,2 +1,9 @@
+import:
+  types:
+    command:
+      - object_commands_d
+require:
+  - lcs
+  - command_registry
 provide:
   - object_commands_factory

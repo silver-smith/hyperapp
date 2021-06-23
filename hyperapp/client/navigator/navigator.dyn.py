@@ -150,7 +150,7 @@ class NavigatorLayout(GlobalLayout):
     async def get_current_commands(self):
         object_command_list = await self._object_commands_factory.get_object_command_list(self._current_object)
         object_view_command_list = [
-            Command(command.id, partial(self._run_object_command, command), kind='object')
+            Command(command.name, partial(self._run_object_command, command), kind='object')
             for command in object_command_list
             ]
         global_command_list = [
