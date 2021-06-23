@@ -1,4 +1,5 @@
 import itertools
+import logging
 from collections import namedtuple
 
 from hyperapp.common.module import Module
@@ -10,6 +11,9 @@ from .object import Object
 from .object_command import Command, command
 from .layout_handle import LayoutWatcher
 from .simple_list_object import SimpleListObject
+from .qt_keys import run_input_key_dialog
+
+log = logging.getLogger(__name__)
 
 
 Item = namedtuple('Item', 'name')
@@ -69,6 +73,12 @@ class CommandList(SimpleListObject):
         return Item(
             name=command.name,
             )
+
+    @command('set_key')
+    async def set_key(self, current_key):
+        log.info("Set key for %r", current_key)
+        shortcut = run_input_key_dialog()
+        log.info("Shortcut: %r", shortcut)
 
     async def _command_handle(self, command, object_type):
         return (await self._layout_handle.command_handle(command.id, object_type))

@@ -1,4 +1,5 @@
 import logging
+
 from PySide2 import QtCore, QtWidgets
 
 log = logging.getLogger(__name__)
@@ -424,7 +425,6 @@ key2name = {
     QtCore.Qt.Key_Cancel: 'Cancel',
     }
 
-
 key_modifiers = {
     QtCore.Qt.ShiftModifier: 'Shift',
     QtCore.Qt.ControlModifier: 'Ctrl',
@@ -432,12 +432,70 @@ key_modifiers = {
     QtCore.Qt.MetaModifier: 'Meta',
     }
 
-def modifiers2str(modifiers):
-    prefix = ''
-    for mod_id, mod_name in key_modifiers.items():
-        if modifiers & mod_id:
-            prefix += mod_name + '+'
-    return prefix
 
-def key_evt2str(evt):
-    return modifiers2str(evt.modifiers()) + key2name[evt.key()]
+def is_modifier(event):
+    return event.key() in [QtCore.Qt.Key_Shift, QtCore.Qt.Key_Control, QtCore.Qt.Key_Alt, QtCore.Qt.Key_Meta]
+
+
+def modifiers_to_str(modifiers):
+    name_list = [
+        name
+        for id, name in key_modifiers.items()
+        if modifiers & id
+        ]
+    return '+'.join(name_list)
+
+
+def key_event_to_str(event):
+    modifiers = modifiers_to_str(event.modifiers())
+    if is_modifier(event):
+        return modifiers
+    name = key2name.get(event.key())
+    if name is None:
+        name = event.text()
+    if modifiers:
+        return modifiers + '+' + name
+    else:
+        return name
+
+
+class KeyInputDialog(QtWidgets.QDialog):
+
+    def __init__(self):
+        super().__init__(
+            windowTitle="Shortcut input",
+            minimumWidth=300,
+            )
+        self.input_line = QtWidgets.QLineEdit(
+            readOnly=True,
+            )
+        layout = QtWidgets.QVBoxLayout()
+        layout.addWidget(QtWidgets.QLabel("Press a key:"))
+        layout.addWidget(self.input_line)
+        self.setLayout(layout)
+        self.key_result = None
+
+    def keyPressEvent(self, event):
+        log.debug("Key pressed: %s %s", event, key_event_to_str(event))
+        super().keyPressEvent(event)
+        text = key_event_to_str(event)
+        self.input_line.setText(text)
+        if event.text() and event.key() != QtCore.Qt.Key_Escape:
+            self.key_result = key_event_to_str(event)
+            # Let chosen key be shown for a while before closing.
+            QtCore.QTimer.singleShot(200, self.close)
+
+    def keyReleaseEvent(self, event):
+        log.debug("Key released: %s %s", event, key_event_to_str(event))
+        super().keyReleaseEvent(event)
+        if not self.key_result:
+            text = modifiers_to_str(event.modifiers())
+            if text:
+                text += '+'
+            self.input_line.setText(text)
+
+
+def run_input_key_dialog():
+    dialog = KeyInputDialog()
+    dialog.exec_()
+    return dialog.key_result
