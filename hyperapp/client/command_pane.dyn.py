@@ -15,9 +15,10 @@ log = logging.getLogger(__name__)
 
 class CommandPaneLayout(GlobalLayout):
 
-    def __init__(self, state, path, command_hub, view_opener, resource_resolver):
+    def __init__(self, state, path, command_hub, view_opener, mosaic, lcs):
         super().__init__(path)
-        self._resource_resolver = resource_resolver
+        self._mosaic = mosaic
+        self._lcs = lcs
         self._command_hub = command_hub
 
     @property
@@ -25,7 +26,7 @@ class CommandPaneLayout(GlobalLayout):
         return htypes.command_pane.command_pane()
 
     async def create_view(self):
-        return CommandPane(self._resource_resolver, self._command_hub)
+        return CommandPane(self._mosaic, self._lcs, self._command_hub)
 
     async def visual_item(self):
         return self.make_visual_item('CommandPane')
@@ -33,11 +34,11 @@ class CommandPaneLayout(GlobalLayout):
 
 class CommandPane(QtWidgets.QDockWidget):
 
-    def __init__(self, resource_resolver, command_hub):
+    def __init__(self, mosaic, lcs, command_hub):
         QtWidgets.QDockWidget.__init__(self, 'Commands')
         self.setFeatures(self.NoDockWidgetFeatures)
-        self._resource_resolver = resource_resolver
-        self._locale = 'en'
+        self._mosaic = mosaic
+        self._lcs = lcs
         self._layout = QtWidgets.QVBoxLayout(spacing=1)
         self._layout.setAlignment(QtCore.Qt.AlignTop)
         self._layout.setContentsMargins(2, 2, 2, 2)
@@ -46,6 +47,7 @@ class CommandPane(QtWidgets.QDockWidget):
         self.widget().setLayout(self._layout)
         self._dir_buttons = []
         self._element_buttons = []
+        self._command_shortcut_d_ref = mosaic.put(htypes.command.command_shortcut_d())
         command_hub.subscribe(self)
 
     # command hum observer method
@@ -63,7 +65,7 @@ class CommandPane(QtWidgets.QDockWidget):
         for command in command_list:
             if command.kind != 'object':
                 continue
-            button = self._make_button(command)
+            button = self._make_button(command, set_shortcuts=True)
             self._layout.insertWidget(idx, button)  # must be inserted before spacing
             self._dir_buttons.append(button)
             idx += 1
@@ -77,32 +79,21 @@ class CommandPane(QtWidgets.QDockWidget):
             self._layout.addWidget(button)
             self._element_buttons.append(button)
 
-    def _make_button(self, command, set_shortcuts=False):
-        if command.resource_key:
-            resource = self._resource_resolver.resolve(command.resource_key, self._locale)
-        else:
-            resource = None
-        if resource:
-            if resource.shortcut_list:
-                text = '%s (%s)' % (resource.text, resource.shortcut_list[0])
-            else:
-                text = resource.text
-            description = resource.description
-        else:
-            text = command.id
-            if command.resource_key:
-                description = '.'.join(command.resource_key.path)
-            else:
-                description = None
+    def _make_button(self, command, set_shortcuts):
+        text = command.id
+        command_ref = self._mosaic.put(command.piece)
+        shortcut = self._lcs.get_opt([[command_ref, self._command_shortcut_d_ref]])
+        is_default = False
+        if shortcut:
+            text += f" ({shortcut})"
         button = QtWidgets.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
-        button.setToolTip(description)
-        button.setEnabled(command.is_enabled())
+        # button.setToolTip(description)
+        # button.setEnabled(command.is_enabled())
         button.pressed.connect(lambda command=command: asyncio.ensure_future(command.run()))
-        if set_shortcuts and resource:
-            if resource.shortcut_list:
-                button.setShortcut(resource.shortcut_list[0])
-            if resource.is_default:
-                button.setShortcut('Return')
+        if set_shortcuts and shortcut:
+            button.setShortcut(shortcut)
+        if is_default:
+            button.setShortcut('Return')
         return button
 
     # def __del__(self):
@@ -114,4 +105,4 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
         services.view_registry.register_actor(
-            htypes.command_pane.command_pane, CommandPaneLayout, services.resource_resolver)
+            htypes.command_pane.command_pane, CommandPaneLayout, services.mosaic, services.lcs)

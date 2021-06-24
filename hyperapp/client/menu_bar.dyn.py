@@ -80,6 +80,7 @@ class MenuBar(QtWidgets.QMenuBar):
             # remove duplicates
             shortcut_list = [sc for sc in shortcut_list or [] if sc not in used_shortcut_set]
             used_shortcut_set |= set(shortcut_list)
+        shortcut_list = []
         action = make_async_action(menu, text, shortcut_list, command.run)
         action.setEnabled(command.is_enabled())
         return action

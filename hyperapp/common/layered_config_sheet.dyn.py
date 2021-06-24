@@ -34,6 +34,12 @@ class LCSheet:
                 return piece_list[0]
         raise KeyError(f"No dir among {dir_list} is registered at LCS")
 
+    def get_opt(self, dir_list):
+        try:
+            return self.get(dir_list)
+        except KeyError:
+            return None
+
 
 class ThisModule(ClientModule):
 
