@@ -1,3 +1,5 @@
+# todo: Do we really need to construct global and builtin commands from piece, command_registry?
+
 import inspect
 import weakref
 
