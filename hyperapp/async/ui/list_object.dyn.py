@@ -2,18 +2,15 @@ import logging
 import abc
 import asyncio
 from collections import namedtuple
-from functools import total_ordering
+from functools import cached_property, total_ordering
 
 from hyperapp.common.util import is_list_inst
-from hyperapp.common.htypes import Type, tString
+from hyperapp.common.htypes import Type, tInt, tString
 
 from . import htypes
 from .object import ObjectObserver, Object
 
 log = logging.getLogger(__name__)
-
-
-State = namedtuple('State', 'current_key')
 
 
 class ListDiff:
@@ -76,17 +73,30 @@ class ListObject(Object, metaclass=abc.ABCMeta):
             self.dir,
             ]
 
+    # todo: construct state from key column type on-the-fly.
+    @cached_property
+    def State(self):
+        if self._key_column.type is tInt:
+            return htypes.list_object.int_state
+        if self._key_column.type is tString:
+            return htypes.list_object.string_state
+        raise RuntimeError(f"{self.__class__.__name__}: Unsupported column type: {self._key_column.type}")
+        
     # return Column list
     @abc.abstractproperty
     def columns(self):
         pass
 
-    @property
-    def key_attribute(self):
+    @cached_property
+    def _key_column(self):
         for column in self.columns:
             if column.is_key:
-                return column.id
-        raise RuntimeError("No key column or key_attribute is defined by class {}".format(self.__class__.__name__))
+                return column
+        raise RuntimeError(f"No key column or key_attribute is defined by class {self.__class__.__name__}")
+
+    @property
+    def key_attribute(self):
+        return self._key_column.id
 
     class _Observer(ListObserver):
 

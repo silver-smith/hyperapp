@@ -1,7 +1,8 @@
 import:
   types:
-    list_ot:
-      - list_ot
+    list_object:
+      - int_state
+      - string_state
   code:
     - async.ui.object
     - async.ui.column

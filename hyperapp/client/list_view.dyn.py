@@ -12,7 +12,7 @@ from PySide2 import QtCore, QtGui, QtWidgets
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 
 from . import htypes
-from .list_object import State, ListObserver, ListObject
+from .list_object import ListObserver, ListObject
 from .items_view import map_columns_to_view
 from .layout import MultiItemObjectLayout
 from .util import uni2str, key_match, key_match_any, make_async_action
@@ -172,7 +172,7 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
 
     @property
     def state(self):
-        return State(current_key=self.current_item_key)
+        return self._object.State(current_key=self.current_item_key)
 
     def get_object(self):
         return self._object
