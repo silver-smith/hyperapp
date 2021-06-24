@@ -1,5 +1,6 @@
 
 command_list = record:
   piece_ref: ref
+  view_state_ref: ref
 
 command_list_command = record

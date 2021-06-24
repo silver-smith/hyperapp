@@ -46,6 +46,8 @@ class BuiltinCommand:
             for name in object.view_state_fields
             if name in self._wanted_params
             }
+        if 'view_state' in self._wanted_params:
+            kw['view_state'] = view_state
         missing_kw = self._wanted_params - set(kw)
         if missing_kw:
             raise RuntimeError(f"Method {self._class_method} wants arguments {missing_kw} but {view_state!r} does not provide them")
@@ -71,7 +73,7 @@ class Command:
         self._fn = fn
 
     async def run(self, object, view_state):
-        return await self._fn(object)
+        return await self._fn(object, view_state)
 
 
 class ThisModule(Module):
