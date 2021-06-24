@@ -33,6 +33,9 @@ class _Model(QtCore.QAbstractTableModel):
         self._object = object
         self._columns = columns
         self._key_attr = object.key_attribute
+        self._init_data()
+
+    def _init_data(self):
         self._fetch_pending = False  # has pending fetch request; do not issue more than one request at a time
         self._item_list = []
         self._eof = False
@@ -68,6 +71,12 @@ class _Model(QtCore.QAbstractTableModel):
 
     def fetchMore(self, parent):
         log.debug('_Model.fetchMore row=%d column=%r fetch pending=%s', parent.row(), parent.column(), self._fetch_pending)
+        self._fetch_more()
+
+    def update(self):
+        self.beginResetModel()
+        self._init_data()
+        self.endResetModel()
         self._fetch_more()
 
     # ListObserver methods ----------------------------------------------------------------------------------------------
@@ -182,6 +191,14 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
         current_key = self.current_item_key
         for observer in self._observers:
             observer.current_changed(current_key)
+
+    # ObjectObserver methods  -------------------------------------------------------------------------------------------
+
+    def object_changed(self):
+        log.debug('ListView.object_changed %s', self)
+        View.object_changed(self)
+        self._wanted_current_id = self.current_item_key  # will set it to current when rows are reloaded
+        self.model().update()
 
     # ListObserver methods ----------------------------------------------------------------------------------------------
 
