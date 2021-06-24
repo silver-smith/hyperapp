@@ -91,6 +91,7 @@ class CommandList(SimpleListObject):
         if shortcut:
             log.info("Shortcut: %r", shortcut)
             self._lcs.set([[command_ref, self._command_shortcut_d_ref]], shortcut)
+            self._notify_object_changed()
 
     async def _command_handle(self, command, object_type):
         return (await self._layout_handle.command_handle(command.id, object_type))

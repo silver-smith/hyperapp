@@ -7,7 +7,7 @@ import:
     command_list:
       - command_list
   code:
-    - client.view
+    - async.ui.qt.view
     - async.ui.command
     - client.layout
     - async.ui.module

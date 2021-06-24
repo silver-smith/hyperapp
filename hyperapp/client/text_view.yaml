@@ -8,7 +8,7 @@ import:
   code:
     - async.ui.object
     - client.layout
-    - client.view
+    - async.ui.qt.view
     - async.ui.string_object
     - async.ui.module
 require:

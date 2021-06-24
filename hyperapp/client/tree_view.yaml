@@ -6,7 +6,7 @@ import:
     - async.ui.qt.util
     - async.ui.tree_object
     - client.layout
-    - client.view
+    - async.ui.qt.view
     - async.ui.module
 require:
   - resource_resolver

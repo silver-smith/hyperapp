@@ -5,7 +5,7 @@ import:
   code:
     - async.ui.commander
     - async.ui.module
-    - client.view_registry
+    - async.ui.view_registry
     - client.object_layout_association
 require:
   - async_web

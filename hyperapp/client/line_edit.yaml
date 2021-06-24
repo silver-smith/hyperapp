@@ -8,6 +8,6 @@ import:
     - async.ui.object
     - client.layout_handle
     - client.layout
-    - client.view
+    - async.ui.qt.view
     - async.ui.command
     - async.ui.module

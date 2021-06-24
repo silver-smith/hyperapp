@@ -6,7 +6,7 @@ import:
     - async.ui.list_object
     - client.layout
     - async.ui.qt.util
-    - client.view
+    - async.ui.qt.view
     - async.ui.items_view
     - async.ui.module
 require:
