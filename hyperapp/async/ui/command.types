@@ -1,2 +1,7 @@
 object_commands_d = record
 command_shortcut_d = record
+
+
+builtin_command = record:
+  name: string
+  wanted_params: string list

@@ -9,14 +9,13 @@ from . import htypes
 from .column import Column
 from .object import Object
 from .object_command import Command, command
-from .layout_handle import LayoutWatcher
 from .simple_list_object import SimpleListObject
 from .qt_keys import run_input_key_dialog
 
 log = logging.getLogger(__name__)
 
 
-Item = namedtuple('Item', 'name')
+Item = namedtuple('Item', 'name shortcut')
 
 
 class CommandList(SimpleListObject):
@@ -59,6 +58,7 @@ class CommandList(SimpleListObject):
     def columns(self):
         return [
             Column('name', is_key=True),
+            Column('shortcut'),
             ]
 
     async def get_all_items(self):
@@ -72,11 +72,17 @@ class CommandList(SimpleListObject):
         return self._layout_handle.layout
 
     async def _make_item(self, command):
+        command_ref = self._mosaic.put(command.piece)
+        try:
+            shortcut = self._lcs.get([[command_ref, self._command_shortcut_d_ref]])
+        except KeyError:
+            shortcut = ''
         return Item(
             name=command.name,
+            shortcut=shortcut,
             )
 
-    @command('set_key')
+    @command
     async def set_key(self, current_key):
         log.info("Set key for %r", current_key)
         command = self._command_dict[current_key]
@@ -95,12 +101,12 @@ class CommandList(SimpleListObject):
         resolved_piece = await command.run()
         return resolved_piece
 
-    @command('run', kind='element')
+    @command
     async def _run(self, item_key):
         command_id = item_key
         return (await self._run_command(command_id))
 
-    @command('layout', kind='element')
+    @command
     async def _open_layout(self, item_key):
         command_id = item_key
         command = self._command_dict[command_id]
@@ -115,7 +121,7 @@ class CommandList(SimpleListObject):
         origin_object_type_ref = self._mosaic.put(self._layout_handle.object_type)
         return htypes.layout_editor.object_layout_editor(object_type_ref, origin_object_type_ref, command_id)
 
-    @command('add', kind='element')
+    @command
     async def _add_command(self, path):
         piece_ref = self._mosaic.put(self._object.piece)
         layout_ref = self._mosaic.put(self._layout.piece)
@@ -129,7 +135,7 @@ class CommandList(SimpleListObject):
             fields=[code_command_id_field],
             )
 
-    @command('_add_command_impl')
+    @command
     async def _add_command_impl(self, code_command_id):
         new_command_id = self._make_command_id_unique(code_command_id)
         command = self._layout.add_command(self._object, new_command_id, code_command_id)

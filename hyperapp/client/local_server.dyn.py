@@ -8,6 +8,6 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services, config)
         self._local_server_ref = services.local_server_ref
 
-    @command('open_local_server')
+    @command
     async def open_local_server(self):
         return self._local_server_ref.load_piece()

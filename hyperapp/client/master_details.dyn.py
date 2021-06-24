@@ -111,7 +111,7 @@ class MasterDetailsLayout(ObjectLayout):
         path = [*self._path, 'master']
         return (await self._object_layout_registry.invite(self._master_layout_ref, path, self._object, self._layout_watcher))
 
-    @command('replace')
+    @command
     async def _replace_view(self, path, view: LayoutRecMakerField):
         resource_key = self._object.resource_key
         self._object_layout_overrides[resource_key] = self._mosaic.put(self.piece)  # todo

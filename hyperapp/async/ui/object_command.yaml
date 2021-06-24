@@ -1,1 +1,6 @@
-# empty
+import:
+  types:
+    command:
+      - builtin_command
+require:
+  - command_registry

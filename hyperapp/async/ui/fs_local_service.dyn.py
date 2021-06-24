@@ -46,10 +46,10 @@ class ThisModule(ClientModule):
         self._local_fs = local_fs = htypes.fs.fs(fs_service_ref, LOCAL_HOST_NAME, home_path, current_file_name=None)
         self._local_fs_ref = mosaic.put(local_fs)
 
-    @command('open_local_fs')
+    @command
     async def open_local_fs(self):
         return self._local_fs
 
-    @command('open_local_fs_list')
+    @command
     async def open_local_fs_list(self):
         return htypes.tree_to_list_adapter.tree_to_list_adapter(self._local_fs_ref, self._local_fs.path)

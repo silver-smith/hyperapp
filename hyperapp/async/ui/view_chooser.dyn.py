@@ -68,7 +68,7 @@ class ViewChooser(SimpleListObject, Chooser):
     def get_value(self):
         return None
 
-    @command('choose', kind='element')
+    @command
     async def _choose(self, item_key):
         item = self._id_to_item[item_key]
         return (await self.chooser_call_callback(item.layout_data_maker))

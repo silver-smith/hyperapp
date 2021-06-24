@@ -32,7 +32,7 @@ class LCSheet:
                 raise RuntimeError(f"More than one value is registered for {dir}")
             if piece_list:
                 return piece_list[0]
-        raise RuntimeError(f"No dir among {dir_list} is registered at LCS")
+        raise KeyError(f"No dir among {dir_list} is registered at LCS")
 
 
 class ThisModule(ClientModule):

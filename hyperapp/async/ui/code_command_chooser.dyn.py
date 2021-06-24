@@ -72,7 +72,7 @@ class CodeCommandChooser(SimpleListObject, Chooser):
     def get_value(self):
         return None
 
-    @command('choose', kind='element')
+    @command
     async def _choose(self, item_key):
         command_id = item_key
         return (await self.chooser_call_callback(command_id))

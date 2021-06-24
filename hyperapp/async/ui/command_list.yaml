@@ -19,7 +19,6 @@ import:
     - async.ui.column
     - client.command_hub
     - async.ui.object_command
-    - client.layout_handle
     - async.ui.simple_list_object
     - async.ui.qt.qt_keys
 require:

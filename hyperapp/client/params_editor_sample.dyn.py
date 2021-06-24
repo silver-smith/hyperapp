@@ -49,12 +49,12 @@ class ParamsEditorSample(SimpleListObject):
         except KeyError:
             return []
 
-    @command('test_single_simple_str', kind='element')
+    @command
     def _test_single_simple_str(self, item_key, str_param: str):
         text = f"Opened item {item_key}: {str_param!r}"
         return text
 
-    @command('test_two_simple_str', kind='element')
+    @command
     def _test_two_simple_str(self, item_key, str_param_1: str, str_param_2: str):
         text = f"Opened item {item_key}: {str_param_1!r},  {str_param_2!r}"
         return text
@@ -67,6 +67,6 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services, config)
         services.object_registry.register_actor(htypes.params_editor_sample.params_editor_sample, ParamsEditorSample.from_state)
 
-    @command('open_params_editor_sample')
+    @command
     async def open_params_editor_sample(self):
         return htypes.params_editor_sample.params_editor_sample()

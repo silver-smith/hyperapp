@@ -78,12 +78,12 @@ class SampleTree(TreeObject):
         remove_path = list(path) + [self._key(5)]
         self._distribute_diff(remove_path, RemoveItemDiff())
 
-    @command('open', kind='element')
+    @command
     async def command_open(self, item_path):
         text = "Opened item {}".format('/'.join(item_path))
         return text
 
-    @command('edit', kind='element')
+    @command
     async def _edit(self, item_path):
         return htypes.tree_view_sample.tree_sample_article(
             title=f"Article {item_path}",
@@ -125,11 +125,11 @@ class ThisModule(ClientModule):
         services.object_registry.register_actor(htypes.tree_view_sample.tree_view_sample_object, SampleTree.from_data)
         services.object_registry.register_actor(htypes.tree_view_sample.tree_sample_article, SampleArticle.from_data, services.object_registry)
 
-    @command('open_tree_view_sample')
+    @command
     async def open_tree_view_sample(self):
         return htypes.tree_view_sample.tree_view_sample_object()
 
-    @command('open_tree_view_sample_article')
+    @command
     async def open_tree_view_sample_article(self):
         return htypes.tree_view_sample.tree_sample_article(
             title=f"Sample tree view article",

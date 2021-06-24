@@ -3,9 +3,8 @@ import logging
 from collections import namedtuple
 
 from . import htypes
-from .object_command import command as object_command
+from .object_command import command
 from .layout_handle import InsertVisualItemDiff, RemoveVisualItemDiff, UpdateVisualItemDiff, LayoutWatcher
-from .command import command
 from .command_hub import CommandHub
 from .column import Column
 from .tree_object import InsertItemDiff, RemoveItemDiff, UpdateItemDiff, TreeObject
@@ -211,8 +210,8 @@ class ObjectLayoutEditor(LayoutEditor):
         else:
             self._object_layout_association.associate_type(self._object_type, layout)
 
-    @object_command('replace', kind='element')
-    async def _replace_view(self, path):
+    @command
+    async def replace_view(self, path):
         object_type_ref = self._mosaic.put(self._object_type)
         chooser = htypes.view_chooser.view_chooser(object_type_ref)
         chooser_ref = self._mosaic.put(chooser)
@@ -224,8 +223,8 @@ class ObjectLayoutEditor(LayoutEditor):
             fields=[layout_data_maker_field],
             )
 
-    @command('_replace_impl')
-    async def _replace_impl(self, layout_data_maker):
+    @command
+    async def replace_impl(self, layout_data_maker):
         layout_data = await layout_data_maker(self._object_type)
         layout = await self._object_layout_registry.animate(layout_data, ['root'], self._layout_handle.watcher)
         await self._layout_handle.set_layout(layout)
@@ -249,6 +248,6 @@ class ThisModule(ClientModule):
             services.create_layout_handle,
             )
 
-    @object_command('open_view_layout')
+    @command
     async def open_view_layout(self):
         return htypes.layout_editor.view_layout_editor()

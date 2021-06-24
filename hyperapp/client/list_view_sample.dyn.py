@@ -71,13 +71,13 @@ class SampleList(ListObject):
             column_2=idx * 10,
             )
 
-    @command('open')
-    async def command_open(self, current_key):
+    @command
+    async def open(self, current_key):
         text = "Opened item {}".format(current_key)
         return text
 
-    @command('edit')
-    async def _edit(self, current_key):
+    @command
+    async def edit(self, current_key):
         return htypes.list_view_sample.list_sample_article(
             title=f"Article {current_key}",
             text=f"Sample contents for:\n{current_key}",

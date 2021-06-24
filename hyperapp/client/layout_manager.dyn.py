@@ -129,11 +129,11 @@ class RootLayout(GlobalLayout):
         self._layout_watcher.distribute_diffs([
             RemoveVisualItemDiff([*self._path, rec_id])])
 
-    @command('quit')
+    @command
     def _quit(self, rec_id):
         self._async_stop_event.set()
 
-    @command('duplicate_window')
+    @command
     async def _duplicate_window(self, rec_id):
         idx, rec = self._find_rec(rec_id)
         new_idx, new_rec = await self._duplicate_window_impl(idx, rec)

@@ -39,13 +39,14 @@ class Object(metaclass=abc.ABCMeta):
 
     def _init_commands(self):
         cls = type(self)
-        for name in dir(self):
-            if hasattr(cls, name) and type(getattr(cls, name)) is property:
-                continue  # Avoid to call properties as we are not yet fully constructed.
-            attr = getattr(self, name)
-            if not isinstance(attr, BuiltinCommand):
+        for name in dir(cls):
+            if name.startswith('__'):
                 continue
-            self._command_list.append(attr)
+            attr = getattr(cls, name)
+            if type(attr) is property:
+                continue  # Avoid to call properties as we are not yet fully constructed.
+            if getattr(attr, '__is_command__', False):
+                self._command_list.append(BuiltinCommand.from_class_method(attr))
 
     @property
     def command_list(self):

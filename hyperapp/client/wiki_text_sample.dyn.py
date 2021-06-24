@@ -17,6 +17,6 @@ class ThisModule(ClientModule):
             "And this is ref#[2].",
             ref_list)
 
-    @command('open_wiki_sample')
+    @command
     async def open_wiki_sample(self):
         return self._wiki_text

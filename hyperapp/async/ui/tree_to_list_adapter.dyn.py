@@ -73,11 +73,11 @@ class TreeToListAdapter(ListObject):
         self._distribute_eof()
 
     # todo: distinguish leaf items, do not open them
-    @command('enter', kind='element')
+    @command
     async def _enter(self, item_key):
         return htypes.tree_to_list_adapter.tree_to_list_adapter(self._tree_object_ref, self._path + [item_key])
 
-    @command('open_parent')
+    @command
     async def _open_parent(self):
         if not self._path:
             return
