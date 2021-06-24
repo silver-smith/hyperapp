@@ -15,25 +15,30 @@ class BuiltinCommand:
 
     @classmethod
     def from_class_method(cls, method):
+        module_ref = inspect.getmodule(method).__module_ref__
+        qual_name = method.__qualname__
         attr_name = method.__name__
         wanted_params = {
             name for name
             in inspect.signature(method).parameters
             if name != 'self'
             }
-        return cls(attr_name, wanted_params)
+        return cls(module_ref, qual_name, attr_name, wanted_params)
         
     @classmethod
     def from_piece(cls, piece):
-        return cls(piece.name, set(piece.wanted_params))
+        return cls(piece.module_ref, piece.qual_name, piece.name, set(piece.wanted_params))
 
-    def __init__(self, name, wanted_params):
+    def __init__(self, module_ref, qual_name, name, wanted_params):
+        self._module_ref = module_ref
+        self._qual_name = qual_name
         self.name = name
         self._wanted_params = wanted_params
 
     @property
     def piece(self):
-        return htypes.command.builtin_command(self.name, list(self._wanted_params))
+        return htypes.command.builtin_command(
+            self._module_ref, self._qual_name, self.name, list(self._wanted_params))
 
     async def run(self, object, view_state):
         kw = {

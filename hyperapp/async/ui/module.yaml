@@ -1,2 +1,6 @@
+import:
+  types:
+    command:
+      - global_command
 provide:
   - global_command_list

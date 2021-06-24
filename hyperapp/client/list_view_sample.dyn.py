@@ -11,7 +11,7 @@ from .column import Column
 from .list_object import ListObject
 from .string_object import StringObject
 from .record_object import RecordObject
-from .module import ClientModule, global_command
+from .module import ClientModule
 
 log = logging.getLogger(__name__)
 
@@ -118,6 +118,6 @@ class ThisModule(ClientModule):
         services.object_registry.register_actor(htypes.list_view_sample.list_view_sample_object, SampleList.from_data)
         # services.object_registry.register_actor(htypes.list_view_sample.list_sample_article, SampleArticle.from_data, services.object_registry)
 
-    @global_command('open_list_view_sample')
+    @command
     async def open_list_view_sample(self):
         return htypes.list_view_sample.list_view_sample_object()

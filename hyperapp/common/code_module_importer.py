@@ -111,6 +111,7 @@ class CodeModuleImporter:
         self._imported_module_ref_set = set()
         self._registry = {}
 
+    # module ref -> module
     @property
     def registry(self):
         return self._registry

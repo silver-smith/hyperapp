@@ -3,5 +3,11 @@ command_shortcut_d = record
 
 
 builtin_command = record:
+  module_ref: ref
+  qual_name: string
   name: string
   wanted_params: string list
+
+global_command = record:
+  module_ref: ref
+  name: string

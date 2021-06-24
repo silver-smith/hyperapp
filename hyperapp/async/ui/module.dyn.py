@@ -1,62 +1,60 @@
+import inspect
 import weakref
 
 from hyperapp.common.module import Module
 
-
-# decorator for module methods
-class global_command:
-
-    def __init__(self, id):
-        self.id = id
-
-    def __call__(self, method):
-        return UnboundCommand(self.id, method)
+from . import htypes
 
 
-class UnboundCommand:
+class GlobalCommand:
 
-    def __init__(self, id, method):
-        self.id = id
-        self._method = method
+    @classmethod
+    def from_class_method(cls, method):
+        module_ref = inspect.getmodule(method).__module_ref__
+        assert method.__qualname__.startswith('ThisModule.')  # Only ThisModule name is expected for client modules.
+        attr_name = method.__name__
+        return cls(module_ref, attr_name)
 
-    def bind(self, instance):
-        instance_wr = weakref.ref(instance)
-        return BoundCommand(self.id, self._method, instance_wr)
+    def __init__(self, module_ref, name):
+        self._module_ref = module_ref
+        self.name = name
 
-
-class BoundCommand:
-
-    def __init__(self, id, method, instance_wr):
-        self.id = id
-        self._method = method
-        self._instance_wr = instance_wr
+    @property
+    def piece(self):
+        return htypes.command.global_command(self._module_ref, self.name)
 
     def __repr__(self):
-        return f"Global:{self.id}@{self._instance_wr()}"
+        return f"Global:{self.name}@{self._module_ref}"
 
     async def run(self):
-        instance = self._instance_wr()
-        if instance is None:
-            return  # Instance already destroyed.
-        return await self._method(instance)
+        module = this_module.module_ref_to_module[self._module_ref]
+        method = getattr(module.this_module, self.name)
+        return await method()
 
 
 class ClientModule(Module):
 
     def __init__(self, name, services, config):
         super().__init__(name, services, config)
-        for name in dir(self):
-            attr = getattr(self, name)
+        self._init_commands()
+
+    def _init_commands(self):
+        cls = type(self)
+        for name in dir(cls):
+            if name.startswith('__'):
+                continue
+            attr = getattr(cls, name)
             if type(attr) is property:
-                continue
-            if not isinstance(attr, UnboundCommand):
-                continue
-            this_module.global_command_list.append(attr.bind(self))
+                continue  # Avoid to call properties as we are not yet fully constructed.
+            if getattr(attr, '__is_command__', False):
+                this_module.global_command_list.append(
+                    GlobalCommand.from_class_method(attr))
 
 
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
+        self.module_ref_to_module = services.code_module_importer.registry
         self.global_command_list = []
         services.global_command_list = self.global_command_list

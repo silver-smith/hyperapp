@@ -21,8 +21,9 @@ class Command:
 
     resource_key = None
 
-    def __init__(self, id, fn, kind):
+    def __init__(self, id, piece, fn, kind):
         self.id = id
+        self.piece = piece
         self._fn = fn
         self.kind = kind
 
@@ -150,11 +151,11 @@ class NavigatorLayout(GlobalLayout):
     async def get_current_commands(self):
         object_command_list = await self._object_commands_factory.get_object_command_list(self._current_object)
         object_view_command_list = [
-            Command(command.name, partial(self._run_object_command, command), kind='object')
+            Command(command.name, command.piece, partial(self._run_object_command, command), kind='object')
             for command in object_command_list
             ]
         global_command_list = [
-            Command(command.id, partial(self._run_global_command, command), kind='global')
+            Command(command.name, command.piece, partial(self._run_global_command, command), kind='global')
             for command in self._global_command_list
             ]
         return [
