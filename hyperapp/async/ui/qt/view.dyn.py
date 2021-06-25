@@ -148,6 +148,3 @@ class View(ObjectObserver, Commander):
 
     def _cls2name(self, cls):
         return cls.__module__ + '.' + cls.__class__.__name__
-
-    def pick_arg(self, kind):
-        return self._parent().pick_arg(kind)
