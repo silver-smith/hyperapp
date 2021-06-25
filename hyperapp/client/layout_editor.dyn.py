@@ -3,7 +3,7 @@ import logging
 from collections import namedtuple
 
 from . import htypes
-from .object_command import command
+from .command import command
 from .layout_handle import InsertVisualItemDiff, RemoveVisualItemDiff, UpdateVisualItemDiff, LayoutWatcher
 from .command_hub import CommandHub
 from .column import Column

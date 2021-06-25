@@ -1,7 +1,7 @@
 from collections import namedtuple
 
 from . import htypes
-from .object_command import command
+from .command import command
 from .chooser import Chooser
 from .column import Column
 from .simple_list_object import SimpleListObject

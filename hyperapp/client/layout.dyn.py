@@ -4,7 +4,7 @@ import logging
 from collections import namedtuple
 
 from . import htypes
-from .commander import Commander
+from .view_command import ViewCommander
 from .items_view import map_columns_to_view
 from .layout_command import LayoutCommand
 from .layout_handle import VisualItem
@@ -14,10 +14,10 @@ from .self_command import SelfCommand
 _log = logging.getLogger(__name__)
 
 
-class Layout(Commander, metaclass=abc.ABCMeta):
+class Layout(ViewCommander, metaclass=abc.ABCMeta):
 
     def __init__(self, path):
-        super().__init__(commands_kind='view')
+        super().__init__()
         self._path = path
 
     # todo: use abstractproperty
@@ -48,9 +48,9 @@ class Layout(Commander, metaclass=abc.ABCMeta):
         return VisualItem(name, text, children or [], current_commands, all_commands)
 
     def _merge_commands(self, primary_commands, secondary_commands):
-        primary_command_ids = set(command.id for command in primary_commands)
+        primary_command_ids = set(command.name for command in primary_commands)
         secondary_commands = [command for command in secondary_commands
-                              if command.id not in primary_command_ids]
+                              if command.name not in primary_command_ids]
         return [*primary_commands, *secondary_commands]
 
     def _collect_view_commands_with_children(self, child_layout_it):

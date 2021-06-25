@@ -13,7 +13,7 @@ import:
       - view_layout_editor
       - object_layout_editor
   code:
-    - async.ui.object_command
+    - async.ui.command
     - client.layout_handle
     - async.ui.command
     - client.command_hub

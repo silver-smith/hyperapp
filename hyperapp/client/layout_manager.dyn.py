@@ -11,7 +11,7 @@ from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.common.ref import ref_repr
 
 from . import htypes
-from .object_command import command
+from .command import command
 from .layout_handle import InsertVisualItemDiff, RemoveVisualItemDiff, LayoutWatcher
 from .layout import GlobalLayout
 from .command_hub import CommandHub
@@ -35,7 +35,8 @@ class RootLayout(GlobalLayout):
 
         async def get_current_commands(self):
             layout_commands = await self.layout.get_current_commands()
-            root_commands = [command.partial(self.id) for command in self._window_commands]
+            # root_commands = [command.partial(self.id) for command in self._window_commands]
+            root_commands = self._window_commands
             return [*layout_commands, *root_commands]
 
         async def update_commands(self):

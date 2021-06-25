@@ -11,3 +11,7 @@ builtin_command = record:
 global_command = record:
   module_ref: ref
   name: string
+
+view_command = record:
+  module_ref: ref
+  qual_name: string

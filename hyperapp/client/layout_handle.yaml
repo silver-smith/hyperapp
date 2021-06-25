@@ -3,7 +3,6 @@ import:
     layout:
       - layout_handle
   code:
-    - async.ui.commander
     - async.ui.module
     - async.ui.view_registry
     - client.object_layout_association

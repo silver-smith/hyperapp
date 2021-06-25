@@ -5,7 +5,7 @@ import logging
 from hyperapp.common.htypes import tInt, resource_key_t
 
 from . import htypes
-from .object_command import command
+from .command import command
 from .object import ObjectType
 from .column import Column
 from .tree_object import AppendItemDiff, InsertItemDiff, RemoveItemDiff, UpdateItemDiff, TreeObject

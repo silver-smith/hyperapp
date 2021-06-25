@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from typing import List
 
 from . import htypes
-from .commander import BoundCommand
 from .module import ClientModule
 
 _log = logging.getLogger(__name__)
@@ -15,8 +14,8 @@ class VisualItem:
     name: str
     text: str
     children: List['VisualItem'] = None
-    current_commands: List[BoundCommand] = None
-    all_commands: List[BoundCommand] = None
+    # current_commands: List[BoundCommand] = None
+    # all_commands: List[BoundCommand] = None
 
     def with_added_commands(self, commands_it):
         added_commands = list(commands_it)

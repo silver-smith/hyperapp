@@ -1,6 +1,6 @@
 import:
   code:
-    - async.ui.commander
+    - async.ui.view_command
     - async.ui.object
     - async.ui.qt.util
     - async.ui.qt.qt_keys

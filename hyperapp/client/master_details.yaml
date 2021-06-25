@@ -5,7 +5,7 @@ import:
     master_details:
       - master_details_layout
   code:
-    - async.ui.object_command
+    - async.ui.command
     - client.composite
     - client.layout
     - async.ui.list_object

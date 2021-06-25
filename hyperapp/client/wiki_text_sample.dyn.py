@@ -1,5 +1,5 @@
 from . import htypes
-from .object_command import command
+from .command import command
 from .module import ClientModule
 
 

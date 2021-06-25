@@ -5,7 +5,7 @@ import logging
 from PySide2 import QtCore, QtWidgets
 
 from . import htypes
-from .object_command import command
+from .command import command
 from .composite import Composite
 from .layout import ObjectLayout
 from .list_object import ListObject

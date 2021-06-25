@@ -11,8 +11,8 @@ class Composite(view.View):
         view.View.__init__(self, parent)
         self._children = children or []
 
-    def get_command_list(self, kinds=None):
-        command_list = super().get_command_list(kinds)
+    def get_command_list(self):
+        command_list = super().get_command_list()
         for child in self._children:
-            command_list += child.get_command_list(kinds)
+            command_list += child.get_command_list()
         return command_list

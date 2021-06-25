@@ -7,7 +7,8 @@ from hyperapp.common.util import single
 from . import htypes
 from .column import Column
 from .object import Object
-from .object_command import Command, command
+from .command import command
+from .object_command import Command
 from .simple_list_object import SimpleListObject
 from .qt_keys import run_input_key_dialog
 from .module import ClientModule

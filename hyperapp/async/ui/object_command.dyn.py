@@ -5,12 +5,6 @@ from hyperapp.common.module import Module
 from . import htypes
 
 
-# decorator for object methods
-def command(class_method):
-    class_method.__is_command__ = True
-    return class_method
-
-
 class BuiltinCommand:
 
     @classmethod

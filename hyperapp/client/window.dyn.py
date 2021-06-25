@@ -149,7 +149,7 @@ class Window(View, QtWidgets.QMainWindow):
         self._menu_bar.view_commands_changed(self, command_kinds)
         self._command_pane.view_commands_changed(self, command_kinds)
         
-    @command('duplicate_window')
+    @command
     async def duplicate_window(self):
         state = self.get_state()
         state.pos.x += DUP_OFFSET.x()

@@ -65,7 +65,7 @@ class MenuBar(QtWidgets.QMenuBar):
             menu.addAction(self._make_action(menu, command))
 
     def _make_action(self, menu, command, used_shortcut_set=None):
-        text = command.id
+        text = command.name
         command_ref = self._mosaic.put(command.piece)
         shortcut = self._lcs.get([command_ref, self._command_shortcut_d_ref])
 

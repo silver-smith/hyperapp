@@ -80,7 +80,7 @@ class CommandPane(QtWidgets.QDockWidget):
             self._element_buttons.append(button)
 
     def _make_button(self, command, set_shortcuts):
-        text = command.id
+        text = command.name
         command_ref = self._mosaic.put(command.piece)
         shortcut = self._lcs.get([command_ref, self._command_shortcut_d_ref])
         is_default = False

@@ -3,7 +3,7 @@
 import weakref
 
 from . import htypes
-from .object_command import command
+from .command import command
 from .layout import AbstractMultiItemObjectLayout
 from .list_object import ListObject
 from .tree_object import TreeObserver, TreeObject

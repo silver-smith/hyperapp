@@ -1,10 +1,8 @@
-# base class for Views
-
 import logging
 import weakref
 from PySide2 import QtCore, QtWidgets
 
-from .commander import Command, Commander
+from .view_command import ViewCommander
 from .object import ObjectObserver
 from .util import DEBUG_FOCUS, focused_index
 from .module import ClientModule
@@ -12,47 +10,13 @@ from .module import ClientModule
 log = logging.getLogger(__name__)
 
 
-class ViewCommand(Command):
-
-    @classmethod
-    def from_command(cls, cmd, view, *args):
-        return cls(cmd.id, cmd.kind, cmd.resource_key, cmd.enabled, cmd, weakref.ref(view), args)
-
-    def __init__(self, id, kind, resource_key, enabled, base_cmd, view_wr, args):
-        Command.__init__(self, id, kind, resource_key, enabled)
-        self._base_cmd = base_cmd
-        self._view_wr = view_wr  # weak ref to class instance
-        self._args = args
-
-    def __repr__(self):
-        return 'ViewCommand(%r (base=%r) -> %s/%r)' % (self.id, self._base_cmd, id(self._view_wr()), self._view_wr())
-
-    def get_view(self):
-        return self._view_wr()
-
-    async def run(self, *args, **kw):
-        view = self._view_wr()
-        if not view:
-            return
-        all_args = self._args + args
-        log.debug('ViewCommand.run: %r/%r, %r, (%s, %s), view=%r', self.id, self.kind, self._base_cmd, all_args, kw, id(view))
-        try:
-            handle = await self._base_cmd.run(*all_args, **kw)
-            ## assert handle is None or isinstance(handle, tHandle), repr(handle)  # command can return only handle
-        except Exception as x:
-            log.exception('Error running command %r:', self.id)
-            handle = get_handle_for_error(x)
-        if handle:
-            view.open(handle)
-
-
-class View(ObjectObserver, Commander):
+class View(ObjectObserver, ViewCommander):
 
     CmdPanelHandleCls = None  # registered by cmd_view
 
     def __init__(self, parent=None):
         ObjectObserver.__init__(self)
-        Commander.__init__(self, commands_kind='view')
+        ViewCommander.__init__(self)
         self._parent = weakref.ref(parent) if parent is not None else None
 
     def set_parent(self, parent):
@@ -78,12 +42,12 @@ class View(ObjectObserver, Commander):
         else:
             return self
 
-    def get_command_list(self, kinds=None):
-        commands = [ViewCommand.from_command(cmd, self) for cmd in Commander.get_command_list(self, kinds)]
+    def get_command_list(self):
+        command_list = ViewCommander.get_command_list(self)
         child = self.get_current_child()
         if child:
-            commands += child.get_command_list(kinds)
-        return commands
+            command_list += child.get_command_list()
+        return command_list
 
     def get_shortcut_ctx_widget(self, view):
         return view.get_widget()

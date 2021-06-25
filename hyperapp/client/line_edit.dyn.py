@@ -77,13 +77,13 @@ class LineEditLayout(ObjectLayout):
             all_commands=[self._set_read_only, self._set_editable],
             )
 
-    @command('set_editable', kind='element')
-    async def _set_editable(self, item_key):
+    @command
+    async def set_editable(self, item_key):
         self._editable = True
         await self._distribute_update()
 
-    @command('set_read_only', kind='element')
-    async def _set_read_only(self, item_key):
+    @command
+    async def set_read_only(self, item_key):
         self._editable = False
         await self._distribute_update()
 

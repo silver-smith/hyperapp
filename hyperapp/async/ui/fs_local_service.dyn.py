@@ -2,7 +2,7 @@ import logging
 import os.path
 
 from . import htypes
-from .object_command import command
+from .command import command
 from .fs_service_impl import FsServiceImpl
 from .module import ClientModule
 

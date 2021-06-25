@@ -21,8 +21,8 @@ class Command:
 
     resource_key = None
 
-    def __init__(self, id, piece, fn, kind):
-        self.id = id
+    def __init__(self, name, piece, fn, kind):
+        self.name = name
         self.piece = piece
         self._fn = fn
         self.kind = kind
@@ -194,24 +194,24 @@ class NavigatorLayout(GlobalLayout):
         self._view_opener.open(self._current_view)
         await self._command_hub.update()
 
-    @command('go_backward')
-    async def _go_backward(self):
+    @command
+    async def go_backward(self):
         try:
             item = self._history.move_backward()
         except IndexError:
             return
         await self._open_piece_impl(item.piece)
 
-    @command('go_forward')
-    async def _go_forward(self):
+    @command
+    async def go_forward(self):
         try:
             item = self._history.move_forward()
         except IndexError:
             return
         await self._open_piece_impl(item.piece)
 
-    @command('open_layout_editor')
-    async def _open_layout_editor(self):
+    @command
+    async def open_layout_editor(self):
         object_type_ref = self._mosaic.put(self._current_object.type)
         piece = htypes.layout_editor.object_layout_editor(object_type_ref, origin_object_type_ref=None, origin_command_id=None)
         await self._open_piece(piece)

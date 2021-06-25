@@ -90,10 +90,11 @@ class TabLayout(GlobalLayout):
         if tab_idx == -1:
             return []
         current_layout = self._tab_list[tab_idx].layout
-        my_commands = [
-            command.with_(params_subst=self._subst_params_for_current_tab)
-            for command in self.get_command_list()
-            ]
+        # my_commands = [
+        #     command.with_(params_subst=self._subst_params_for_current_tab)
+        #     for command in self.get_command_list()
+        #     ]
+        my_commands = self.get_command_list()
         return self._merge_commands(
             await current_layout.get_current_commands(),
             my_commands,
@@ -148,12 +149,12 @@ class TabLayout(GlobalLayout):
         if self._widget:
             self._widget.replace_tab(tab_idx, view)
 
-    @command('add_tab')
-    async def _add_tab(self, tab_idx, view_ref: LayoutRecMakerField):
+    @command
+    async def add_tab(self, tab_idx, view_ref: LayoutRecMakerField):
         await self._create_and_insert_tab(tab_idx, view_ref)
 
-    @command('duplicate_tab')
-    async def _duplicate_tab(self, tab_idx):
+    @command
+    async def duplicate_tab(self, tab_idx):
         tab = self._tab_list[tab_idx]
         tab_ref = self._mosaic.put(tab.layout.piece)
         await self._create_and_insert_tab(tab_idx, tab_ref)
@@ -171,16 +172,16 @@ class TabLayout(GlobalLayout):
         item = await self._visual_item(tab)
         self._layout_watcher.distribute_diffs([InsertVisualItemDiff(self._path, new_idx, item)])
 
-    @command('close_tab')
-    def _close_tab(self, tab_idx):
+    @command
+    def close_tab(self, tab_idx):
         tab = self._tab_list[tab_idx]
         del self._tab_list[tab_idx]
         if self._widget:
             self._widget.remove_tab(tab_idx)
         self._layout_watcher.distribute_diffs([RemoveVisualItemDiff([*self._path, tab.name])])
 
-    # @command('visual_add_nested_tabs', kind='element')
-    # async def _visual_add_nested_tabs(self, item_path):
+    # @command
+    # async def visual_add_nested_tabs(self, item_path):
     #     tab_idx, tab = self._find_tab(item_path[-1])
     #     new_idx = len(self._tab_list)
     #     tab_ref = this_module._new_tab_ref
@@ -188,8 +189,8 @@ class TabLayout(GlobalLayout):
     #     item = await self._visual_item(new_tab)
     #     return [InsertVisualItemDiff(self._path, new_idx, item)]
 
-    @command('wrap_with_tabs')
-    async def _wrap_with_tabs(self, tab_idx, tab):
+    @command
+    async def wrap_with_tabs(self, tab_idx, tab):
         remove_diff_list = [
             RemoveVisualItemDiff([*self._path, tab.name])
             for tab in self._tab_list]

@@ -3,7 +3,7 @@ from collections import namedtuple
 from hyperapp.common.ref import ref_repr
 
 from . import htypes
-from .object_command import command
+from .command import command
 from .column import Column
 from .simple_list_object import SimpleListObject
 from .module import ClientModule
