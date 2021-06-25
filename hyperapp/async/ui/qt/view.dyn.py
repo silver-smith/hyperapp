@@ -108,15 +108,6 @@ class View(ObjectObserver, Commander):
             ref_list += object.pick_current_refs()
         return ref_list
 
-    def get_url(self):
-        object = self.get_object()
-        if object:
-            return object.get_url()
-        child = self.get_current_child()
-        if child:
-            return child.get_url()
-        return None
-
     def get_object(self):
         return None
 
