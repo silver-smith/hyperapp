@@ -113,9 +113,6 @@ class View(ObjectObserver, Commander):
     def replace_view(self, mapper):
         return mapper(self.handle())
 
-    def get_global_commands(self):
-        return self._parent().get_global_commands()
-
     def view_changed(self, view=None):
         log.debug('-- View.view_changed self=%s/%r view=%r', id(self), self, view)
         if self._parent:
