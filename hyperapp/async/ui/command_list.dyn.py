@@ -2,7 +2,6 @@ import itertools
 import logging
 from collections import namedtuple
 
-from hyperapp.common.module import Module
 from hyperapp.common.util import single
 
 from . import htypes
@@ -11,6 +10,7 @@ from .object import Object
 from .object_command import Command, command
 from .simple_list_object import SimpleListObject
 from .qt_keys import run_input_key_dialog
+from .module import ClientModule
 
 log = logging.getLogger(__name__)
 
@@ -99,22 +99,52 @@ class ObjectCommandList(CommandList):
     def piece(self):
         piece_ref = self._mosaic.put(self._object.piece)
         view_state_ref = self._mosaic.put(self._view_state)
-        return htypes.command_list.command_list(piece_ref, view_state_ref)
+        return htypes.command_list.object_command_list(piece_ref, view_state_ref)
 
 
-class ThisModule(Module):
+class GlobalCommandList(CommandList):
+
+    @classmethod
+    async def from_piece(cls, piece, mosaic, async_web, lcs, global_command_list):
+        return cls(mosaic, lcs, global_command_list)
+
+    def __init__(self, mosaic, lcs, global_command_list):
+        super().__init__(mosaic, lcs)
+        self._command_by_name = {
+            command.name: command
+            for command in global_command_list
+            }
+
+    @property
+    def title(self):
+        return "Global commands"
+
+    @property
+    def piece(self):
+        return htypes.command_list.global_command_list()
+
+
+class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
         self._mosaic = services.mosaic
         services.object_registry.register_actor(
-            htypes.command_list.command_list,
+            htypes.command_list.object_command_list,
             ObjectCommandList.from_piece,
             services.mosaic,
             services.async_web,
             services.lcs,
             services.object_animator,
             services.object_commands_factory,
+            )
+        services.object_registry.register_actor(
+            htypes.command_list.global_command_list,
+            GlobalCommandList.from_piece,
+            services.mosaic,
+            services.async_web,
+            services.lcs,
+            services.global_command_list,
             )
         command_list_cmd_ref = services.mosaic.put(htypes.command_list.command_list_command())
         services.lcs.add([[*Object.dir_list[-1], htypes.command.object_commands_d]], command_list_cmd_ref)
@@ -123,4 +153,8 @@ class ThisModule(Module):
     async def command_list(self, object, view_state):
         piece_ref = self._mosaic.put(object.piece)
         view_state_ref = self._mosaic.put(view_state)
-        return htypes.command_list.command_list(piece_ref, view_state_ref)
+        return htypes.command_list.object_command_list(piece_ref, view_state_ref)
+
+    @command
+    async def global_commands(self):
+        return htypes.command_list.global_command_list()

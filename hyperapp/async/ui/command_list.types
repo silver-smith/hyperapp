@@ -1,6 +1,9 @@
 
-command_list = record:
+object_command_list = record:
   piece_ref: ref
   view_state_ref: ref
+
+global_command_list = record
+
 
 command_list_command = record

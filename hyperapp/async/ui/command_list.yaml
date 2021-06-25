@@ -1,7 +1,8 @@
 import:
   types:
     command_list:
-      - command_list
+      - object_command_list
+      - global_command_list
       - command_list_command
     command:
       - object_commands_d
@@ -21,7 +22,9 @@ import:
     - async.ui.object_command
     - async.ui.simple_list_object
     - async.ui.qt.qt_keys
+    - async.ui.module
 require:
   - lcs
   - command_registry
   - object_commands_factory
+  - global_command_list
