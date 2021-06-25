@@ -38,9 +38,9 @@ class Services(object):
 
     def init_services(self):
         log.info("Init services.")
-        self.web = Web()
         self.builtin_types = BuiltinTypeRegistry()
         self.types = TypeSystem()
+        self.web = Web(self.types)
         self.mosaic = Mosaic(self.types)
         self.types.init(self.builtin_types, self.mosaic)
         self.module_ref_resolver = ModuleRefResolver(self.mosaic)

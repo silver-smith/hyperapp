@@ -152,8 +152,8 @@ class ThisModule(ClientModule):
             services.global_command_list,
             services.layout_manager,
             )
-        command_list_cmd_ref = services.mosaic.put(htypes.command_list.command_list_command())
-        services.lcs.add([[*Object.dir_list[-1], htypes.command.object_commands_d]], command_list_cmd_ref)
+        object_commands_d_ref = services.mosaic.put(htypes.command.object_commands_d())
+        services.lcs.add([*Object.dir_list[-1], object_commands_d_ref], htypes.command_list.command_list_command())
         services.command_registry.register_actor(htypes.command_list.command_list_command, Command.from_fn(self.command_list))
 
     async def command_list(self, object, view_state):

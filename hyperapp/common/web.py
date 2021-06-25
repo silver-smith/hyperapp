@@ -1,5 +1,7 @@
 import logging
 
+from hyperapp.common.htypes.packet_coders import packet_coders
+
 _log = logging.getLogger(__name__)
 
 
@@ -11,7 +13,8 @@ class RefResolveFailure(Exception):
 
 class Web(object):
 
-    def __init__(self):
+    def __init__(self, types):
+        self._types = types
         self._sources = []
 
     def add_source(self, source):
@@ -25,3 +28,10 @@ class Web(object):
                 _log.debug('Ref %s is resolved to capsule, type %s', ref, capsule.type_ref)
                 return capsule
         raise RefResolveFailure(ref)
+
+    def summon(self, ref, expected_type=None):
+        capsule = self.pull(ref)
+        t = self._types.resolve(capsule.type_ref)
+        if expected_type:
+            assert t is expected_type, (t, expected_type)
+        return packet_coders.decode(capsule.encoding, capsule.encoded_object, t)

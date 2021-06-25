@@ -64,14 +64,10 @@ class ListObserver(ObjectObserver):
 class ListObject(Object, metaclass=abc.ABCMeta):
 
     view_state_fields = ['current_key']
-    dir = [__module_ref__]
-
-    @property
-    def dir_list(self):
-        return [
-            *super().dir_list,
-            self.dir,
-            ]
+    dir_list = [
+        *Object.dir_list,
+        [__module_ref__],
+        ]
 
     # todo: construct state from key column type on-the-fly.
     @cached_property

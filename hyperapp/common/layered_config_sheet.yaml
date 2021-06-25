@@ -1,5 +1,11 @@
 import:
+  types:
+    layered_config_sheet:
+      - lcs_record
+      - lcs_storage
   code:
     - async.ui.module
+require:
+  - file_bundle
 provide:
   - lcs

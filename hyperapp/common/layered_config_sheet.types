@@ -1,0 +1,7 @@
+
+lcs_record = record:
+  dir: ref list
+  value_ref: ref
+
+lcs_storage = record:
+  record_list: lcs_record list

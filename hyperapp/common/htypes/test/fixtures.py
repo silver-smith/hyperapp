@@ -8,11 +8,6 @@ from hyperapp.common.web import Web
 
 
 @pytest.fixture
-def web():
-    return Web()
-
-
-@pytest.fixture
 def builtin_types():
     return BuiltinTypeRegistry()
 
@@ -20,6 +15,11 @@ def builtin_types():
 @pytest.fixture
 def types():
     return TypeSystem()
+
+
+@pytest.fixture
+def web(types):
+    return Web(types)
 
 
 @pytest.fixture
