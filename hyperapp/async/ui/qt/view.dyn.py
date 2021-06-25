@@ -85,9 +85,6 @@ class View(ObjectObserver, Commander):
             commands += child.get_command_list(kinds)
         return commands
 
-    def get_object_command_list(self, object, kinds=None):
-        return object.get_command_list(kinds)
-
     def get_shortcut_ctx_widget(self, view):
         return view.get_widget()
 
