@@ -20,39 +20,12 @@ Item = namedtuple('Item', 'name shortcut')
 
 class CommandList(SimpleListObject):
 
-    @classmethod
-    async def from_piece(cls, piece, mosaic, async_web, lcs, object_animator, object_commands_factory):
-        object = await object_animator.invite(piece.piece_ref)
-        view_state = await async_web.summon(piece.view_state_ref)
-        self = cls(mosaic, lcs, object, view_state)
-        await self._async_init(object_commands_factory)
-        return self
-
-    def __init__(self, mosaic, lcs, object, view_state):
+    def __init__(self, mosaic, lcs):
         super().__init__()
         self._mosaic = mosaic
         self._lcs = lcs
-        self._object = object
-        self._view_state = view_state
         self._command_by_name = None
         self._command_shortcut_d_ref = mosaic.put(htypes.command.command_shortcut_d())
-
-    async def _async_init(self, object_commands_factory):
-        command_list = await object_commands_factory.get_object_command_list(self._object)
-        self._command_by_name = {
-            command.name: command
-            for command in command_list
-            }
-
-    @property
-    def title(self):
-        return f"Commands for: {self._object.title}"
-
-    @property
-    def piece(self):
-        piece_ref = self._mosaic.put(self._object.piece)
-        view_state_ref = self._mosaic.put(self._view_state)
-        return htypes.command_list.command_list(piece_ref, view_state_ref)
 
     @property
     def columns(self):
@@ -66,10 +39,6 @@ class CommandList(SimpleListObject):
             await self._make_item(command)
             for command in self._command_by_name.values()
             ]
-
-    @property
-    def _layout(self):
-        return self._layout_handle.layout
 
     async def _make_item(self, command):
         command_ref = self._mosaic.put(command.piece)
@@ -100,6 +69,39 @@ class CommandList(SimpleListObject):
         return await command.run(self._object, self._view_state)
 
 
+class ObjectCommandList(CommandList):
+
+    @classmethod
+    async def from_piece(cls, piece, mosaic, async_web, lcs, object_animator, object_commands_factory):
+        object = await object_animator.invite(piece.piece_ref)
+        view_state = await async_web.summon(piece.view_state_ref)
+        self = cls(mosaic, lcs, object, view_state)
+        await self._async_init(object_commands_factory)
+        return self
+
+    def __init__(self, mosaic, lcs, object, view_state):
+        super().__init__(mosaic, lcs)
+        self._object = object
+        self._view_state = view_state
+
+    async def _async_init(self, object_commands_factory):
+        command_list = await object_commands_factory.get_object_command_list(self._object)
+        self._command_by_name = {
+            command.name: command
+            for command in command_list
+            }
+
+    @property
+    def title(self):
+        return f"Commands for: {self._object.title}"
+
+    @property
+    def piece(self):
+        piece_ref = self._mosaic.put(self._object.piece)
+        view_state_ref = self._mosaic.put(self._view_state)
+        return htypes.command_list.command_list(piece_ref, view_state_ref)
+
+
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
@@ -107,7 +109,7 @@ class ThisModule(Module):
         self._mosaic = services.mosaic
         services.object_registry.register_actor(
             htypes.command_list.command_list,
-            CommandList.from_piece,
+            ObjectCommandList.from_piece,
             services.mosaic,
             services.async_web,
             services.lcs,
