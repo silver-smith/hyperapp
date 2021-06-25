@@ -82,7 +82,7 @@ class CommandPane(QtWidgets.QDockWidget):
     def _make_button(self, command, set_shortcuts):
         text = command.id
         command_ref = self._mosaic.put(command.piece)
-        shortcut = self._lcs.get_opt([[command_ref, self._command_shortcut_d_ref]])
+        shortcut = self._lcs.get([command_ref, self._command_shortcut_d_ref])
         is_default = False
         if shortcut:
             text += f" ({shortcut})"

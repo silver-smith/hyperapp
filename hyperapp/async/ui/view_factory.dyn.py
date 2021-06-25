@@ -8,7 +8,7 @@ class ViewFactory:
         self._view_registry = view_registry
 
     async def create_view(self, object):
-        piece = self._lcs.get(object.dir_list)
+        piece = self._lcs.get_first(object.dir_list)
         return await self._view_registry.animate(piece, object)
 
 

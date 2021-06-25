@@ -42,13 +42,10 @@ class CommandList(SimpleListObject):
 
     async def _make_item(self, command):
         command_ref = self._mosaic.put(command.piece)
-        try:
-            shortcut = self._lcs.get([[command_ref, self._command_shortcut_d_ref]])
-        except KeyError:
-            shortcut = ''
+        shortcut = self._lcs.get([command_ref, self._command_shortcut_d_ref])
         return Item(
             name=command.name,
-            shortcut=shortcut,
+            shortcut=shortcut or '',
             )
 
     @command

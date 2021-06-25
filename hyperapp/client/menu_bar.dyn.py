@@ -67,7 +67,7 @@ class MenuBar(QtWidgets.QMenuBar):
     def _make_action(self, menu, command, used_shortcut_set=None):
         text = command.id
         command_ref = self._mosaic.put(command.piece)
-        shortcut = self._lcs.get_opt([[command_ref, self._command_shortcut_d_ref]])
+        shortcut = self._lcs.get([command_ref, self._command_shortcut_d_ref])
 
         if used_shortcut_set is not None:
             # remove duplicates
