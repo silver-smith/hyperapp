@@ -3,6 +3,7 @@ import:
     command_list:
       - object_command_list
       - global_command_list
+      - view_command_list
       - command_list_command
     command:
       - object_commands_d

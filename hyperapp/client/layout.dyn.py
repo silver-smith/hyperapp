@@ -35,7 +35,7 @@ class Layout(ViewCommander, metaclass=abc.ABCMeta):
 
     def collect_view_commands(self):
         return [(tuple(self._path), command)
-                for command in self.get_command_list({'view'})
+                for command in self.get_all_command_list()
                 ]
 
     def make_visual_item(self, text, name=None, children=None, commands=None, current_commands=None, all_commands=None):

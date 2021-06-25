@@ -4,6 +4,7 @@ object_command_list = record:
   view_state_ref: ref
 
 global_command_list = record
+view_command_list = record
 
 
 command_list_command = record

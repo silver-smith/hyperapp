@@ -130,6 +130,33 @@ class GlobalCommandList(CommandList):
         await self._layout_manager.root_layout.update_commands()
 
 
+class ViewCommandList(CommandList):
+
+    @classmethod
+    async def from_piece(cls, piece, mosaic, async_web, lcs, layout_manager):
+        return cls(mosaic, lcs, layout_manager)
+
+    def __init__(self, mosaic, lcs, layout_manager):
+        super().__init__(mosaic, lcs)
+        self._layout_manager = layout_manager
+        self._command_by_name = {
+            command.name: command
+            for (path, command) in layout_manager.root_layout.collect_view_commands()
+            }
+
+    @property
+    def title(self):
+        return "View commands"
+
+    @property
+    def piece(self):
+        return htypes.command_list.view_command_list()
+
+    async def update(self):
+        await super().update()
+        await self._layout_manager.root_layout.update_commands()
+
+
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
@@ -153,6 +180,14 @@ class ThisModule(ClientModule):
             services.global_command_list,
             services.layout_manager,
             )
+        services.object_registry.register_actor(
+            htypes.command_list.view_command_list,
+            ViewCommandList.from_piece,
+            services.mosaic,
+            services.async_web,
+            services.lcs,
+            services.layout_manager,
+            )
         object_commands_d_ref = services.mosaic.put(htypes.command.object_commands_d())
         services.lcs.add([*Object.dir_list[-1], object_commands_d_ref], htypes.command_list.command_list_command())
         services.command_registry.register_actor(htypes.command_list.command_list_command, Command.from_fn(self.command_list))
@@ -165,3 +200,7 @@ class ThisModule(ClientModule):
     @command
     async def global_commands(self):
         return htypes.command_list.global_command_list()
+
+    @command
+    async def view_commands(self):
+        return htypes.command_list.view_command_list()
