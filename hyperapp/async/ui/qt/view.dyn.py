@@ -98,16 +98,6 @@ class View(ObjectObserver, Commander):
             return object.title
         return 'Untitled'
 
-    def pick_current_refs(self):
-        ref_list = []
-        child = self.get_current_child()
-        if child:
-            ref_list += child.pick_current_refs()
-        object = self.get_object()
-        if object:
-            ref_list += object.pick_current_refs()
-        return ref_list
-
     def get_object(self):
         return None
 
