@@ -216,13 +216,6 @@ class NavigatorLayout(GlobalLayout):
         piece = htypes.layout_editor.object_layout_editor(object_type_ref, origin_object_type_ref=None, origin_command_id=None)
         await self._open_piece(piece)
 
-    @command('commands')
-    async def _open_commands(self):
-        piece_ref = self._mosaic.put(self._current_object.piece)
-        layout_handle_ref = self._mosaic.put(self._current_layout_handle.piece)
-        piece = htypes.command_list.command_list(piece_ref, layout_handle_ref)
-        await self._open_piece(piece)
-
 
 class ThisModule(ClientModule):
 
