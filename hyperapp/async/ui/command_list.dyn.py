@@ -59,7 +59,7 @@ class CommandList(SimpleListObject):
         shortcut = run_input_key_dialog()
         if shortcut:
             log.info("Shortcut: %r", shortcut)
-            self._lcs.set([[command_ref, self._command_shortcut_d_ref]], shortcut)
+            self._lcs.set([command_ref, self._command_shortcut_d_ref], shortcut)
             await self.update()
 
     @command
