@@ -154,7 +154,7 @@ class Window(View, QtWidgets.QMainWindow):
         state = self.get_state()
         state.pos.x += DUP_OFFSET.x()
         state.pos.y += DUP_OFFSET.y()
-        await self.from_state(state, self._app, self._module_command_registry, self._view_registry, self._resource_resolver)
+        await self.from_state(state, self._app, self._view_registry, self._resource_resolver)
 
 
 class ThisModule(ClientModule):
