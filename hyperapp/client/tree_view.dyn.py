@@ -10,7 +10,6 @@ from PySide2 import QtCore, QtWidgets
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 
 from . import htypes
-from .util import make_async_action
 from .tree_object import AppendItemDiff, InsertItemDiff, RemoveItemDiff, UpdateItemDiff, TreeObserver, TreeObject
 from .layout import MultiItemObjectLayout
 from .view import View

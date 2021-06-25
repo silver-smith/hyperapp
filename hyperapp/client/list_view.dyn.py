@@ -15,7 +15,7 @@ from . import htypes
 from .list_object import ListObserver, ListObject
 from .items_view import map_columns_to_view
 from .layout import MultiItemObjectLayout
-from .util import uni2str, key_match, key_match_any, make_async_action
+from .util import uni2str, key_match, key_match_any
 from .view import View
 from .module import ClientModule
 

@@ -56,27 +56,6 @@ def key_match_any(evt, keys):
             return True
     return False
 
-def make_async_action(widget, text, shortcut_list, fn, *args, **kw):
-    assert isinstance(text, str), repr(text)
-    assert shortcut_list is None or is_iterable_inst(shortcut_list, str), repr(shortcut_list)
-    assert callable(fn), repr(fn)
-    def run():
-        log.info('async action run %r %r(%s, %s)', text, fn, args, kw)
-        asyncio.ensure_future(fn(*args, **kw))
-    return make_action(widget, text, shortcut_list, run)
-
-def make_action(widget, text, shortcut_list, fn, *args, **kw):
-    assert isinstance(text, str), repr(text)
-    assert shortcut_list is None or is_iterable_inst(shortcut_list, str), repr(shortcut_list)
-    assert callable(fn), repr(fn)
-    ## print '--- make_action', widget, text, shortcut_list, fn, args, kw
-    def run():
-        log.info('--- make_action/run widget=%r text=%r shortcut_list=%r fn=%r args=%r kw=%r', widget, text, shortcut_list, fn, args, kw)
-        return fn(*args, **kw)
-    action = QtWidgets.QAction(text, widget)
-    action.setShortcuts(shortcut_list or [])
-    action.triggered.connect(run)
-    return action
 
 def focused_index(parent, children, default=None):
     if parent:

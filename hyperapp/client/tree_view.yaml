@@ -3,7 +3,6 @@ import:
     tree_view:
       - tree_layout
   code:
-    - async.ui.qt.util
     - async.ui.tree_object
     - client.layout
     - async.ui.qt.view

@@ -7,7 +7,6 @@ import:
     - client.layout_handle
     - client.layout
     - client.command_hub
-    - async.ui.qt.util
     - async.ui.module
 require:
   - view_registry
