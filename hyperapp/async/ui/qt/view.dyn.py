@@ -83,10 +83,6 @@ class View(ObjectObserver, Commander):
         child = self.get_current_child()
         if child:
             commands += child.get_command_list(kinds)
-        object = self.get_object()
-        if object:
-            commands += [ViewCommand.from_command(cmd, self) for cmd in
-                         self.get_object_command_list(object, kinds)]
         return commands
 
     def get_object_command_list(self, object, kinds=None):
