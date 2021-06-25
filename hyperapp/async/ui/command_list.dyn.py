@@ -60,13 +60,16 @@ class CommandList(SimpleListObject):
         if shortcut:
             log.info("Shortcut: %r", shortcut)
             self._lcs.set([[command_ref, self._command_shortcut_d_ref]], shortcut)
-            self._notify_object_changed()
+            await self.update()
 
     @command
     async def run(self, current_key):
         command_name = current_key
         command = self._command_by_name[command_name]
         return await command.run(self._object, self._view_state)
+
+    async def update(self):
+        self._notify_object_changed()
 
 
 class ObjectCommandList(CommandList):
@@ -105,11 +108,12 @@ class ObjectCommandList(CommandList):
 class GlobalCommandList(CommandList):
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, async_web, lcs, global_command_list):
-        return cls(mosaic, lcs, global_command_list)
+    async def from_piece(cls, piece, mosaic, async_web, lcs, global_command_list, layout_manager):
+        return cls(mosaic, lcs, global_command_list, layout_manager)
 
-    def __init__(self, mosaic, lcs, global_command_list):
+    def __init__(self, mosaic, lcs, global_command_list, layout_manager):
         super().__init__(mosaic, lcs)
+        self._layout_manager = layout_manager
         self._command_by_name = {
             command.name: command
             for command in global_command_list
@@ -122,6 +126,10 @@ class GlobalCommandList(CommandList):
     @property
     def piece(self):
         return htypes.command_list.global_command_list()
+
+    async def update(self):
+        await super().update()
+        await self._layout_manager.root_layout.update_commands()
 
 
 class ThisModule(ClientModule):
@@ -145,6 +153,7 @@ class ThisModule(ClientModule):
             services.async_web,
             services.lcs,
             services.global_command_list,
+            services.layout_manager,
             )
         command_list_cmd_ref = services.mosaic.put(htypes.command_list.command_list_command())
         services.lcs.add([[*Object.dir_list[-1], htypes.command.object_commands_d]], command_list_cmd_ref)

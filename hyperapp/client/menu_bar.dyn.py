@@ -1,11 +1,12 @@
+import asyncio
 import logging
 import weakref
+from functools import partial
 
 from PySide2 import QtCore, QtWidgets
 
 from . import htypes
 from .layout import GlobalLayout
-from .util import make_action, make_async_action
 from .module import ClientModule
 
 log = logging.getLogger(__name__)
@@ -13,9 +14,10 @@ log = logging.getLogger(__name__)
 
 class MenuBarLayout(GlobalLayout):
 
-    def __init__(self, state, path, command_hub, view_opener, resource_resolver):
+    def __init__(self, state, path, command_hub, view_opener, mosaic, lcs):
         super().__init__(path)
-        self._resource_resolver = resource_resolver
+        self._mosaic = mosaic
+        self._lcs = lcs
         self._command_hub = command_hub
 
     @property
@@ -23,7 +25,7 @@ class MenuBarLayout(GlobalLayout):
         return htypes.menu_bar.menu_bar()
 
     async def create_view(self):
-        return MenuBar(self._resource_resolver, self._command_hub)
+        return MenuBar(self._mosaic, self._lcs, self._command_hub)
 
     async def visual_item(self):
         return self.make_visual_item('MenuBar')
@@ -31,11 +33,13 @@ class MenuBarLayout(GlobalLayout):
 
 class MenuBar(QtWidgets.QMenuBar):
 
-    def __init__(self, resource_resolver, command_hub):
+    def __init__(self, mosaic, lcs, command_hub):
         super().__init__()
-        self._resource_resolver = resource_resolver
+        self._mosaic = mosaic
+        self._lcs = lcs
         self._build()
         self._locale = 'en'
+        self._command_shortcut_d_ref = mosaic.put(htypes.command.command_shortcut_d())
         command_hub.subscribe(self)
 
     # command hub observer method
@@ -61,32 +65,25 @@ class MenuBar(QtWidgets.QMenuBar):
             menu.addAction(self._make_action(menu, command))
 
     def _make_action(self, menu, command, used_shortcut_set=None):
-        if command.resource_key:
-            resource = self._resource_resolver.resolve(command.resource_key, self._locale)
-        else:
-            resource = None
-        if resource:
-            shortcut_list = resource.shortcut_list
-            text = resource.text
-        else:
-            shortcut_list = None
-            if command.resource_key:
-                text = '.'.join(command.resource_key.path)
-            else:
-                text = command.id
-        if not command.is_enabled():
-            shortcut_list = None
+        text = command.id
+        command_ref = self._mosaic.put(command.piece)
+        shortcut = self._lcs.get_opt([[command_ref, self._command_shortcut_d_ref]])
+
         if used_shortcut_set is not None:
             # remove duplicates
-            shortcut_list = [sc for sc in shortcut_list or [] if sc not in used_shortcut_set]
-            used_shortcut_set |= set(shortcut_list)
-        shortcut_list = []
-        action = make_async_action(menu, text, shortcut_list, command.run)
-        action.setEnabled(command.is_enabled())
+            if shortcut in used_shortcut_set:
+                shortcut = None
+            else:
+                used_shortcut_set.add(shortcut)
+
+        action = QtWidgets.QAction(text, menu)
+        if shortcut:
+            action.setShortcut(shortcut)
+        action.triggered.connect(partial(self._run_command, command))
         return action
 
-    # def __del__(self):
-    #     log.info('~menu_bar')
+    def _run_command(self, command):
+        asyncio.create_task(command.run())
 
 
 class ThisModule(ClientModule):
@@ -94,4 +91,4 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
         services.view_registry.register_actor(
-            htypes.menu_bar.menu_bar, MenuBarLayout, services.resource_resolver)
+            htypes.menu_bar.menu_bar, MenuBarLayout, services.mosaic, services.lcs)

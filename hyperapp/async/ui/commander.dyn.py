@@ -82,6 +82,10 @@ class BoundCommand(Command):
         return (f"BoundCommand(id={self.id} kind={self.kind} inst={self._inst_wr}"
                 f" args={self._args} kw={self._kw} wrapper={self._wrapper})")
 
+    @property
+    def piece(self):
+        return 'todo'
+
     def get_view(self):
         return self._inst_wr()
 

@@ -15,7 +15,6 @@ from .object_command import command
 from .layout_handle import InsertVisualItemDiff, RemoveVisualItemDiff, LayoutWatcher
 from .layout import GlobalLayout
 from .command_hub import CommandHub
-from .util import make_async_action
 from .module import ClientModule
 
 _log = logging.getLogger(__name__)
@@ -38,6 +37,9 @@ class RootLayout(GlobalLayout):
             layout_commands = await self.layout.get_current_commands()
             root_commands = [command.partial(self.id) for command in self._window_commands]
             return [*layout_commands, *root_commands]
+
+        async def update_commands(self):
+            await self._command_hub.update()
 
         def _window_closed(self):
             self._on_close(self.id)
@@ -93,6 +95,10 @@ class RootLayout(GlobalLayout):
     def collect_view_commands(self):
         return self._collect_view_commands_with_children(
             rec.layout for rec in self._window_rec_list)
+
+    async def update_commands(self):
+        for rec in self._window_rec_list:
+            await rec.update_commands()
 
     async def _create_window_rec(self, ref):
         window_commands = self.get_command_list()

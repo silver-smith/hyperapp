@@ -28,3 +28,4 @@ require:
   - command_registry
   - object_commands_factory
   - global_command_list
+  - layout_manager

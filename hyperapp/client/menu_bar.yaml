@@ -1,10 +1,11 @@
 import:
   types:
+    command:
+      - command_shortcut_d
     menu_bar:
-    - menu_bar
+      - menu_bar
   code:
-  - client.layout
-  - async.ui.qt.util
-  - async.ui.module
+    - client.layout
+    - async.ui.module
 require:
-  - resource_resolver
+  - lcs
