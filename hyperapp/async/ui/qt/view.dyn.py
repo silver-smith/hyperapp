@@ -107,9 +107,6 @@ class View(ObjectObserver, Commander):
     def open(self, handle):
         self._parent().open(handle)
 
-    def hide_me(self):
-        self._parent().hide_current()
-
     def replace_view(self, mapper):
         return mapper(self.handle())
 
@@ -142,9 +139,6 @@ class View(ObjectObserver, Commander):
         if child:
             return child.get_widget_to_focus()
         return self.get_widget()
-
-    def hide_current(self):
-        self._parent().hide_current()
 
     def _cls2name(self, cls):
         return cls.__module__ + '.' + cls.__class__.__name__
