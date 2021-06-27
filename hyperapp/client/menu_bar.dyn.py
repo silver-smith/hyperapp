@@ -47,7 +47,9 @@ class MenuBar(QtWidgets.QMenuBar):
         if kind == 'global':
             self._update_menu(self._file_menu, command_list)
         if kind == 'object':
-            self._update_menu(self._dir_menu, command_list)
+            # Shortcuts for object commands are set by command pane.
+            # Do not set them here or qt they treat them as ambiguous overload.
+            self._update_menu(self._dir_menu, command_list, add_shortcut=False)
         if kind == 'view':
             self._update_menu(self._view_menu, command_list)
 
@@ -59,12 +61,12 @@ class MenuBar(QtWidgets.QMenuBar):
         self.addMenu(self._dir_menu)
         self.addMenu(self._view_menu)
 
-    def _update_menu(self, menu, command_list):
+    def _update_menu(self, menu, command_list, add_shortcut=True):
         menu.clear()
         for command in command_list:
-            menu.addAction(self._make_action(menu, command))
+            menu.addAction(self._make_action(menu, command, add_shortcut))
 
-    def _make_action(self, menu, command, used_shortcut_set=None):
+    def _make_action(self, menu, command, add_shortcut, used_shortcut_set=None):
         text = command.name
         command_ref = self._mosaic.put(command.piece)
         shortcut = self._plcs.get([command_ref, self._command_shortcut_d_ref])
@@ -77,7 +79,7 @@ class MenuBar(QtWidgets.QMenuBar):
                 used_shortcut_set.add(shortcut)
 
         action = QtWidgets.QAction(text, menu)
-        if shortcut:
+        if add_shortcut and shortcut:
             action.setShortcut(shortcut)
         action.triggered.connect(partial(self._run_command, command))
         return action
