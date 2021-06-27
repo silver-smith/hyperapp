@@ -17,8 +17,8 @@ class TreeService(TreeObject):
             )
         proxy = async_rpc_proxy(identity, rpc_endpoint, service)
         command_list = [
-            await command_registry.invite(rec.command_ref, rec.id)
-            for rec in piece.command_list
+            await command_registry.invite(ref)
+            for ref in piece.command_ref_list
             ]
         return cls(mosaic, types, tree_ot, piece.peer_ref, piece.object_id, proxy, command_list)
 
@@ -42,8 +42,8 @@ class TreeService(TreeObject):
     @property
     def piece(self):
         tree_ot_ref = self._mosaic.put(self._tree_ot)
-        command_list = [
-            htypes.service.command(command.id, self._mosaic.put(command.piece))
+        command_ref_list = [
+            self._mosaic.put(command.piece)
             for command in self._command_list
             ]
         return htypes.service.tree_service(
@@ -52,7 +52,7 @@ class TreeService(TreeObject):
             object_id=self._object_id,
             param_type_list=[],
             param_list=[],
-            command_list=command_list,
+            command_ref_list=command_ref_list,
             )
 
     @property
