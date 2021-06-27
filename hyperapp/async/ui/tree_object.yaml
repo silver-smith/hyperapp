@@ -1,8 +1,8 @@
 import:
   types:
-    tree_ot:
-      - tree_ot
+    tree_object:
+      - int_state
+      - string_state
   code:
     - async.ui.object
     - async.ui.column
-    - async.ui.module

@@ -2,14 +2,15 @@ import abc
 import asyncio
 import logging
 from dataclasses import dataclass
+from functools import cached_property
 
 from hyperapp.common.util import single
-from hyperapp.common.htypes import Type, tString
+from hyperapp.common.htypes import Type, tInt, tString
+from hyperapp.common.module import Module
 
 from . import htypes
 from .object import ObjectObserver, Object
 from .column import Column
-from .module import ClientModule
 
 log = logging.getLogger(__name__)
 
@@ -50,19 +51,36 @@ class UpdateItemDiff(Diff):
 
 class TreeObject(Object, metaclass=abc.ABCMeta):
 
-    type = htypes.tree_ot.tree_ot(command_list=(), key_column_id='id', column_list=())
+    view_state_fields = ['current_key']
+    dir_list = [
+        *Object.dir_list,
+        [__module_ref__],
+        ]
+
+    # todo: construct state from key column type on-the-fly.
+    @cached_property
+    def State(self):
+        if self._key_column.type is tInt:
+            return htypes.tree_object.int_state
+        if self._key_column.type is tString:
+            return htypes.tree_object.string_state
+        raise RuntimeError(f"{self.__class__.__name__}: Unsupported column type: {self._key_column.type}")
 
     # return Column list
     @abc.abstractproperty
     def columns(self):
         pass
 
-    @property
-    def key_attribute(self):
+    @cached_property
+    def _key_column(self):
         for column in self.columns:
             if column.is_key:
-                return column.id
-        raise RuntimeError("No key column or key_attribute is defined by class {}".format(self.__class__.__name__))
+                return column
+        raise RuntimeError(f"No key column or key_attribute is defined by class {self.__class__.__name__}")
+
+    @property
+    def key_attribute(self):
+        return self._key_column.id
 
     class _Observer(TreeObserver):
 
@@ -106,7 +124,7 @@ class TreeObject(Object, metaclass=abc.ABCMeta):
             observer.process_diff(path, diff)
 
 
-class ThisModule(ClientModule):
+class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)

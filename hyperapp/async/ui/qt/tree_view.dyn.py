@@ -8,12 +8,12 @@ from functools import partial
 from PySide2 import QtCore, QtWidgets
 
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
+from hyperapp.common.module import Module
 
 from . import htypes
 from .tree_object import AppendItemDiff, InsertItemDiff, RemoveItemDiff, UpdateItemDiff, TreeObserver, TreeObject
-from .layout import MultiItemObjectLayout
+from .items_view import map_columns_to_view
 from .view import View
-from .module import ClientModule
 
 log = logging.getLogger(__name__)
 
@@ -251,6 +251,11 @@ class TreeViewObserver(metaclass=abc.ABCMeta):
 
 class TreeView(View, QtWidgets.QTreeView, TreeObserver):
 
+    @classmethod
+    async def from_piece(cls, piece, object, lcs):
+        columns = list(map_columns_to_view(lcs, object))
+        return cls(columns, object)
+
     def __init__(self, columns, object, current_path=None):
         self._observers = weakref.WeakSet()
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
@@ -266,9 +271,13 @@ class TreeView(View, QtWidgets.QTreeView, TreeObserver):
         self.expanded.connect(self._on_expanded)
         self._object.subscribe(self)
 
-    # obsolete
-    def get_state(self):
-        return self._data_type('tree', self._object.get_state(), self._resource_key, self.current_item_key)
+    @property
+    def piece(self):
+        return htypes.tree_view.tree_view()
+
+    @property
+    def state(self):
+        return self._object.State(current_key=self.current_item_key)
 
     def get_object(self):
         return self._object
@@ -353,45 +362,9 @@ class TreeView(View, QtWidgets.QTreeView, TreeObserver):
     #     log.debug('~tree_view.TreeView self=%r', id(self))
 
 
-class TreeViewLayout(MultiItemObjectLayout):
-
-    @classmethod
-    async def from_data(cls, state, path, layout_watcher, mosaic, async_web, resource_resolver):
-        object_type = await async_web.summon(state.object_type_ref)
-        return cls(mosaic, path, object_type, state.command_list, resource_resolver)
-
-    def __init__(self, mosaic, path, object_type, command_list_data, resource_resolver):
-        super().__init__(mosaic, path, object_type, command_list_data, resource_resolver)
-
-    @property
-    def piece(self):
-        return htypes.tree_view.tree_layout(self._object_type_ref, self._command_list_data)
-
-    async def visual_item(self):
-        return self.make_visual_item('TreeView')
-
-    def _create_view_impl(self, object, columns):
-        return TreeView(columns, object)
-
-
-class ThisModule(ClientModule):
+class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-        self._mosaic = services.mosaic
-        self._types = services.types
-        self._resource_resolver = services.resource_resolver
-        self._params_editor = services.params_editor
-        services.tree_view_factory = self._tree_view_factory
-        services.available_object_layouts.register('tree', [TreeObject.type._t], self._make_tree_layout_data)
-        services.default_object_layouts.register('tree', [TreeObject.type._t], self._make_tree_layout_data)
-        services.object_layout_registry.register_actor(
-            htypes.tree_view.tree_layout, TreeViewLayout.from_data, services.mosaic, services.async_web, services.resource_resolver)
-
-    def _tree_view_factory(self, columns, object, current_path):
-        return TreeView(columns, object, current_path)
-
-    async def _make_tree_layout_data(self, object_type):
-        object_type_ref = self._mosaic.put(object_type)
-        command_list = MultiItemObjectLayout.make_default_command_list(object_type)
-        return htypes.tree_view.tree_layout(object_type_ref, command_list)
+        services.lcs.set(TreeObject.dir_list[-1], htypes.tree_view.tree_view())
+        services.view_registry.register_actor(htypes.tree_view.tree_view, TreeView.from_piece, services.lcs)

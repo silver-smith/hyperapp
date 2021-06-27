@@ -1,3 +1,2 @@
-from layout import layout
 
-tree_layout = record(layout)
+tree_view = record

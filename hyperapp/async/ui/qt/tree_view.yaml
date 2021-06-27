@@ -1,12 +1,11 @@
 import:
   types:
     tree_view:
-      - tree_layout
+      - tree_view
   code:
     - async.ui.tree_object
-    - client.layout
+    - async.ui.items_view
     - async.ui.qt.view
-    - async.ui.module
 require:
-  - resource_resolver
-  - params_editor
+  - lcs
+  - view_registry

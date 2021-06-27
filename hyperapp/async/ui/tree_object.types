@@ -1,0 +1,6 @@
+
+int_state = record:
+  current_key: int list
+
+string_state = record:
+  current_key: string list

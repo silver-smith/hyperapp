@@ -79,15 +79,15 @@ class SampleTree(TreeObject):
         self._distribute_diff(remove_path, RemoveItemDiff())
 
     @command
-    async def command_open(self, item_path):
-        text = "Opened item {}".format('/'.join(item_path))
+    async def open(self, current_key):
+        text = "Opened item {}".format('/'.join(current_key))
         return text
 
     @command
-    async def _edit(self, item_path):
+    async def edit(self, current_key):
         return htypes.tree_view_sample.tree_sample_article(
-            title=f"Article {item_path}",
-            text=f"Sample contents for:\n{item_path}",
+            title=f"Article {current_key}",
+            text=f"Sample contents for:\n{current_key}",
             )
 
 

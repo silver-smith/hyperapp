@@ -163,7 +163,7 @@ class ThisModule(ClientModule):
         self._mosaic = services.mosaic
         services.object_registry.register_actor(
             htypes.tree_to_list_adapter.tree_to_list_adapter, TreeToListAdapter.from_state, services.mosaic, services.object_animator)
-        services.available_object_layouts.register('as_list', [TreeObject.type._t], self._make_layout_data)
+        # services.available_object_layouts.register('as_list', [TreeObject.type._t], self._make_layout_data)
         services.object_layout_registry.register_actor(
             htypes.tree_to_list_adapter.tree_to_list_adapter_layout, TreeToListLayout.from_data,
             services.mosaic, services.async_web, services.object_layout_registry, services.default_object_layouts)

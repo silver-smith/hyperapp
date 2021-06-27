@@ -75,7 +75,10 @@ class CommandList(SimpleListObject):
     async def run(self, current_key):
         command_name = current_key
         command = self._command_by_name[command_name]
-        return await command.run(self._object, self._view_state)
+        return await self._run(command)
+
+    async def _run(self, command):
+        return await command.run()
 
     async def update(self):
         self._notify_object_changed()
@@ -112,6 +115,9 @@ class ObjectCommandList(CommandList):
         piece_ref = self._mosaic.put(self._object.piece)
         view_state_ref = self._mosaic.put(self._view_state)
         return htypes.command_list.object_command_list(piece_ref, view_state_ref)
+
+    async def _run(self, command):
+        return await command.run(self._object, self._view_state)
 
 
 class GlobalCommandList(CommandList):
