@@ -1,3 +1,4 @@
+import asyncio
 import itertools
 import logging
 from collections import namedtuple
@@ -134,14 +135,20 @@ class ViewCommandList(CommandList):
 
     @classmethod
     async def from_piece(cls, piece, mosaic, async_web, plcs, layout_manager):
-        return cls(mosaic, plcs, layout_manager)
+        self = cls(mosaic, plcs, layout_manager)
+        # When this object is current on client start, layout_manager is not yet fully constructed.
+        # Postpone it's usage until layout_manager.root_layout is set.
+        asyncio.get_event_loop().call_soon(self._post_init)
+        return self
 
     def __init__(self, mosaic, plcs, layout_manager):
         super().__init__(mosaic, plcs)
         self._layout_manager = layout_manager
+
+    def _post_init(self):
         self._command_by_name = {
             command.name: command
-            for (path, command) in layout_manager.root_layout.collect_view_commands()
+            for (path, command) in self._layout_manager.root_layout.collect_view_commands()
             }
 
     @property
