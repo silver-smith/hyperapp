@@ -18,6 +18,7 @@ log = logging.getLogger(__name__)
 
 
 Item = namedtuple('Item', 'name shortcut')
+ViewItem = namedtuple('Item', 'name path shortcut')
 
 
 class CommandList(SimpleListObject):
@@ -43,12 +44,15 @@ class CommandList(SimpleListObject):
             ]
 
     async def _make_item(self, command):
-        command_ref = self._mosaic.put(command.piece)
-        shortcut = self._plcs.get([command_ref, self._command_shortcut_d_ref])
+        shortcut = self._command_shortcut(command) or ''
         return Item(
             name=command.name,
             shortcut=shortcut or '',
             )
+
+    def _command_shortcut(self, command):
+        command_ref = self._mosaic.put(command.piece)
+        return self._plcs.get([command_ref, self._command_shortcut_d_ref])
 
     @command
     async def set_key(self, current_key):
@@ -150,11 +154,17 @@ class ViewCommandList(CommandList):
     def __init__(self, mosaic, plcs, layout_manager):
         super().__init__(mosaic, plcs)
         self._layout_manager = layout_manager
+        self._path_by_name = None
 
     def _post_init(self):
+        view_commands = self._layout_manager.root_layout.collect_view_commands()
         self._command_by_name = {
             command.name: command
-            for (path, command) in self._layout_manager.root_layout.collect_view_commands()
+            for (path, command) in view_commands
+            }
+        self._path_by_name = {
+            command.name: path
+            for (path, command) in view_commands
             }
 
     @property
@@ -164,6 +174,22 @@ class ViewCommandList(CommandList):
     @property
     def piece(self):
         return htypes.command_list.view_command_list()
+
+    @property
+    def columns(self):
+        return [
+            Column('name', is_key=True),
+            Column('path'),
+            Column('shortcut'),
+            ]
+
+    async def _make_item(self, command):
+        shortcut = self._command_shortcut(command) or ''
+        return ViewItem(
+            name=command.name,
+            path='/'.join(self._path_by_name[command.name]),
+            shortcut=shortcut or '',
+            )
 
     async def update(self):
         await super().update()
