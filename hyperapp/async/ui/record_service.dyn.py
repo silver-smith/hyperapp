@@ -16,8 +16,8 @@ class RecordService(RecordObject):
             )
         proxy = async_rpc_proxy(identity, rpc_endpoint, service)
         command_list = [
-            await command_registry.invite(rec.command_ref, rec.id)
-            for rec in piece.command_list
+            await command_registry.invite(ref)
+            for ref in piece.command_ref_list
             ]
         param_list = [
             await async_web.summon(param.param_ref)
