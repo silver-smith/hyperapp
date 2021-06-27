@@ -15,10 +15,10 @@ log = logging.getLogger(__name__)
 
 class CommandPaneLayout(GlobalLayout):
 
-    def __init__(self, state, path, command_hub, view_opener, mosaic, lcs):
+    def __init__(self, state, path, command_hub, view_opener, mosaic, plcs):
         super().__init__(path)
         self._mosaic = mosaic
-        self._lcs = lcs
+        self._plcs = plcs
         self._command_hub = command_hub
 
     @property
@@ -26,7 +26,7 @@ class CommandPaneLayout(GlobalLayout):
         return htypes.command_pane.command_pane()
 
     async def create_view(self):
-        return CommandPane(self._mosaic, self._lcs, self._command_hub)
+        return CommandPane(self._mosaic, self._plcs, self._command_hub)
 
     async def visual_item(self):
         return self.make_visual_item('CommandPane')
@@ -34,11 +34,11 @@ class CommandPaneLayout(GlobalLayout):
 
 class CommandPane(QtWidgets.QDockWidget):
 
-    def __init__(self, mosaic, lcs, command_hub):
+    def __init__(self, mosaic, plcs, command_hub):
         QtWidgets.QDockWidget.__init__(self, 'Commands')
         self.setFeatures(self.NoDockWidgetFeatures)
         self._mosaic = mosaic
-        self._lcs = lcs
+        self._plcs = plcs
         self._layout = QtWidgets.QVBoxLayout(spacing=1)
         self._layout.setAlignment(QtCore.Qt.AlignTop)
         self._layout.setContentsMargins(2, 2, 2, 2)
@@ -82,7 +82,7 @@ class CommandPane(QtWidgets.QDockWidget):
     def _make_button(self, command, set_shortcuts):
         text = command.name
         command_ref = self._mosaic.put(command.piece)
-        shortcut = self._lcs.get([command_ref, self._command_shortcut_d_ref])
+        shortcut = self._plcs.get([command_ref, self._command_shortcut_d_ref])
         is_default = False
         if shortcut:
             text += f" ({shortcut})"
@@ -105,4 +105,4 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
         services.view_registry.register_actor(
-            htypes.command_pane.command_pane, CommandPaneLayout, services.mosaic, services.lcs)
+            htypes.command_pane.command_pane, CommandPaneLayout, services.mosaic, services.plcs)

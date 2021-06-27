@@ -21,10 +21,10 @@ Item = namedtuple('Item', 'name shortcut')
 
 class CommandList(SimpleListObject):
 
-    def __init__(self, mosaic, lcs):
+    def __init__(self, mosaic, plcs):
         super().__init__()
         self._mosaic = mosaic
-        self._lcs = lcs
+        self._plcs = plcs
         self._command_by_name = None
         self._command_shortcut_d_ref = mosaic.put(htypes.command.command_shortcut_d())
 
@@ -43,7 +43,7 @@ class CommandList(SimpleListObject):
 
     async def _make_item(self, command):
         command_ref = self._mosaic.put(command.piece)
-        shortcut = self._lcs.get([command_ref, self._command_shortcut_d_ref])
+        shortcut = self._plcs.get([command_ref, self._command_shortcut_d_ref])
         return Item(
             name=command.name,
             shortcut=shortcut or '',
@@ -57,7 +57,7 @@ class CommandList(SimpleListObject):
         shortcut = run_input_key_dialog()
         if shortcut:
             log.info("Shortcut: %r", shortcut)
-            self._lcs.set([command_ref, self._command_shortcut_d_ref], shortcut)
+            self._plcs.set([command_ref, self._command_shortcut_d_ref], shortcut)
             await self.update()
 
     @command
@@ -73,15 +73,15 @@ class CommandList(SimpleListObject):
 class ObjectCommandList(CommandList):
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, async_web, lcs, object_animator, object_commands_factory):
+    async def from_piece(cls, piece, mosaic, async_web, plcs, object_animator, object_commands_factory):
         object = await object_animator.invite(piece.piece_ref)
         view_state = await async_web.summon(piece.view_state_ref)
-        self = cls(mosaic, lcs, object, view_state)
+        self = cls(mosaic, plcs, object, view_state)
         await self._async_init(object_commands_factory)
         return self
 
-    def __init__(self, mosaic, lcs, object, view_state):
-        super().__init__(mosaic, lcs)
+    def __init__(self, mosaic, plcs, object, view_state):
+        super().__init__(mosaic, plcs)
         self._object = object
         self._view_state = view_state
 
@@ -106,11 +106,11 @@ class ObjectCommandList(CommandList):
 class GlobalCommandList(CommandList):
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, async_web, lcs, global_command_list, layout_manager):
-        return cls(mosaic, lcs, global_command_list, layout_manager)
+    async def from_piece(cls, piece, mosaic, async_web, plcs, global_command_list, layout_manager):
+        return cls(mosaic, plcs, global_command_list, layout_manager)
 
-    def __init__(self, mosaic, lcs, global_command_list, layout_manager):
-        super().__init__(mosaic, lcs)
+    def __init__(self, mosaic, plcs, global_command_list, layout_manager):
+        super().__init__(mosaic, plcs)
         self._layout_manager = layout_manager
         self._command_by_name = {
             command.name: command
@@ -133,11 +133,11 @@ class GlobalCommandList(CommandList):
 class ViewCommandList(CommandList):
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, async_web, lcs, layout_manager):
-        return cls(mosaic, lcs, layout_manager)
+    async def from_piece(cls, piece, mosaic, async_web, plcs, layout_manager):
+        return cls(mosaic, plcs, layout_manager)
 
-    def __init__(self, mosaic, lcs, layout_manager):
-        super().__init__(mosaic, lcs)
+    def __init__(self, mosaic, plcs, layout_manager):
+        super().__init__(mosaic, plcs)
         self._layout_manager = layout_manager
         self._command_by_name = {
             command.name: command
@@ -167,7 +167,7 @@ class ThisModule(ClientModule):
             ObjectCommandList.from_piece,
             services.mosaic,
             services.async_web,
-            services.lcs,
+            services.plcs,
             services.object_animator,
             services.object_commands_factory,
             )
@@ -176,7 +176,7 @@ class ThisModule(ClientModule):
             GlobalCommandList.from_piece,
             services.mosaic,
             services.async_web,
-            services.lcs,
+            services.plcs,
             services.global_command_list,
             services.layout_manager,
             )
@@ -185,7 +185,7 @@ class ThisModule(ClientModule):
             ViewCommandList.from_piece,
             services.mosaic,
             services.async_web,
-            services.lcs,
+            services.plcs,
             services.layout_manager,
             )
         object_commands_d_ref = services.mosaic.put(htypes.command.object_commands_d())
