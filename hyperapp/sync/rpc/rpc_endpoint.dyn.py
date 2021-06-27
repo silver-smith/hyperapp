@@ -57,7 +57,7 @@ class RpcEndpoint:
         iface_method = iface.methods[request.method_name]
         servant = self._servant_by_id[request.object_id]
         params = self._mosaic.resolve_ref(request.params_ref).value
-        log.info("Call rpc servant: %s(%s)", request.method_name, params)
+        log.info("Call rpc servant: %s.%s(%s)", servant, request.method_name, params._asdict())
         method = getattr(servant, request.method_name)
         result = method(
             RpcRequest(transport_request.receiver_identity, sender),
