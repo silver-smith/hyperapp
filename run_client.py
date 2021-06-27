@@ -22,7 +22,7 @@ code_module_list = [
     'client.command_pane',
     'client.window',
     'client.navigator.navigator',
-    'client.record_view',
+    'async.ui.qt.record_view',
     'async.ui.data_viewer',
     'client.master_details',
     'async.ui.none_object',
