@@ -4,7 +4,6 @@ import:
       - list_view
   code:
     - async.ui.list_object
-    - client.layout
     - async.ui.qt.util
     - async.ui.qt.view
     - async.ui.items_view

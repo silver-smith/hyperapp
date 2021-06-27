@@ -14,7 +14,6 @@ from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from . import htypes
 from .list_object import ListObserver, ListObject
 from .items_view import map_columns_to_view
-from .layout import MultiItemObjectLayout
 from .util import uni2str, key_match, key_match_any
 from .view import View
 from .module import ClientModule
@@ -236,27 +235,6 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
 
     # def __del__(self):
     #     log.debug('~list_view.ListView self=%r', id(self))
-
-
-class ListViewLayout(MultiItemObjectLayout):
-
-    @classmethod
-    async def from_data(cls, state, path, layout_watcher, mosaic, async_web, resource_resolver):
-        object_type = await async_web.summon(state.object_type_ref)
-        return cls(mosaic, path, object_type, state.command_list, resource_resolver)
-
-    def __init__(self, mosaic, path, object_type, command_list_data, resource_resolver):
-        super().__init__(mosaic, path, object_type, command_list_data, resource_resolver)
-
-    @property
-    def piece(self):
-        return htypes.list_view.list_layout(self._object_type_ref, self._command_list_data)
-
-    async def visual_item(self):
-        return self.make_visual_item('ListView')
-
-    def _create_view_impl(self, object, columns):
-        return ListView(columns, object)
 
 
 class ThisModule(ClientModule):
