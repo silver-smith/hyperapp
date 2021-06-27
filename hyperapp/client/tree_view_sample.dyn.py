@@ -94,13 +94,13 @@ class SampleTree(TreeObject):
 class SampleArticle(RecordObject):
 
     @classmethod
-    async def from_data(cls, state, object_registry):
+    async def from_data(cls, state, object_animator):
         fields_pieces = {
             'title': state.title,
             'text': state.text,
             }
         self = cls(state.title, state.text)
-        await self.async_init(object_registry, fields_pieces)
+        await self.async_init(object_animator, fields_pieces)
         return self
 
     def __init__(self, title, text):
@@ -123,7 +123,7 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services, config)
 
         services.object_registry.register_actor(htypes.tree_view_sample.tree_view_sample_object, SampleTree.from_data)
-        services.object_registry.register_actor(htypes.tree_view_sample.tree_sample_article, SampleArticle.from_data, services.object_registry)
+        services.object_registry.register_actor(htypes.tree_view_sample.tree_sample_article, SampleArticle.from_data, services.object_animator)
 
     @command
     async def open_tree_view_sample(self):
