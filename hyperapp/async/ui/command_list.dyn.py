@@ -52,14 +52,20 @@ class CommandList(SimpleListObject):
 
     @command
     async def set_key(self, current_key):
-        log.info("Set key for %r", current_key)
-        command = self._command_by_name[current_key]
-        command_ref = self._mosaic.put(command.piece)
         shortcut = run_input_key_dialog()
         if shortcut:
-            log.info("Shortcut: %r", shortcut)
-            self._plcs.set([command_ref, self._command_shortcut_d_ref], shortcut)
-            await self.update()
+            await self._set_key(current_key, shortcut)
+
+    @command
+    async def set_key_escape(self, current_key):
+        await self._set_key(current_key, 'Escape')
+
+    async def _set_key(self, command_name, shortcut):
+        log.info("Set shortcut for command %s: %r", command_name, shortcut)
+        command = self._command_by_name[command_name]
+        command_ref = self._mosaic.put(command.piece)
+        self._plcs.set([command_ref, self._command_shortcut_d_ref], shortcut)
+        await self.update()
 
     @command
     async def run(self, current_key):
