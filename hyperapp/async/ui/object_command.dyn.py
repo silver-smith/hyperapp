@@ -44,7 +44,7 @@ class BuiltinCommand:
             kw['view_state'] = view_state
         missing_kw = self._wanted_params - set(kw)
         if missing_kw:
-            raise RuntimeError(f"Method {self._class_method} wants arguments {missing_kw} but {view_state!r} does not provide them")
+            raise RuntimeError(f"Method {self._qual_name} wants arguments {missing_kw} but {view_state!r} does not provide them")
         method = getattr(object, self.name)
         return await method(**kw)
 
