@@ -121,7 +121,7 @@ class ThisModule(Module):
                 ],
             )
 
-        record_object_id = 'test_record_service_object'
+        record_object_id = 'test_sample_list_record_service_object'
         string_ot_ref = mosaic.put(htypes.string_ot.string_ot(command_list=[]))
         record_service_ot = htypes.record_ot.record_ot(
             command_list=[],
@@ -146,7 +146,7 @@ class ThisModule(Module):
                 param_list=[
                     htypes.service.parameter('article_id', mosaic.put(article_id)),
                     ],
-                command_list=[],
+                command_ref_list=[],
                 field_list=record_field_list,
                 )
 

@@ -129,7 +129,7 @@ class ThisModule(Module):
                 ],
             )
 
-        record_object_id = 'test_record_service_object'
+        record_object_id = 'test_sample_tree_record_service_object'
         string_ot_ref = mosaic.put(htypes.string_ot.string_ot(command_list=[]))
         record_service_ot = htypes.record_ot.record_ot(
             command_list=[],
