@@ -2,31 +2,30 @@ from functools import partial
 
 from PySide2 import QtCore, QtWidgets
 
+from hyperapp.common.module import Module
+
 from . import htypes
-from .layout import ObjectLayout
 from .record_object import RecordObject
-from .module import ClientModule
 
 
 class RecordView(QtWidgets.QWidget):
 
     @classmethod
-    async def make(cls, command_hub, object, field_layout_dict):
+    async def from_piece(cls, piece, object, view_factory):
         view = cls(object)
-        await view._async_init(command_hub, field_layout_dict)
+        await view._async_init(view_factory)
         return view
 
     def __init__(self, object):
         super().__init__()
         self._object = object
 
-    async def _async_init(self, command_hub, field_layout_dict):
+    async def _async_init(self, view_factory):
         qt_layout = QtWidgets.QVBoxLayout()
         has_expandable_field = False
         self._field_view_dict = {}
-        for field_id, field_layout in field_layout_dict.items():
-            field_view = await self._construct_field_view(
-                command_hub, qt_layout, field_id, field_layout)
+        for field_id, field_object in self._object.fields.items():
+            field_view = await self._construct_field_view(view_factory, qt_layout, field_id, field_object)
             if field_view.sizePolicy().verticalPolicy() & QtWidgets.QSizePolicy.ExpandFlag:
                 has_expandable_field = True
             self._field_view_dict[field_id] = field_view
@@ -34,16 +33,22 @@ class RecordView(QtWidgets.QWidget):
             qt_layout.addStretch()
         self.setLayout(qt_layout)
 
-    async def _construct_field_view(
-            self, command_hub, qt_layout, field_id, field_layout):
-        field_object = self._object.fields[field_id]
-        view = await field_layout.create_view(command_hub, field_object)
+    async def _construct_field_view(self, view_factory, qt_layout, field_id, field_object):
+        view = await view_factory.create_view(field_object)
         label = QtWidgets.QLabel(field_id)
         label.setBuddy(view)
         qt_layout.addWidget(label)
         qt_layout.addWidget(view)
         qt_layout.addSpacing(10)
         return view
+
+    @property
+    def piece(self):
+        return htypes.record_view.record_view()
+
+    @property
+    def state(self):
+        return htypes.record_view.record_view_state()
 
     @property
     def title(self):
@@ -69,73 +74,9 @@ class RecordView(QtWidgets.QWidget):
         return self._field_view_dict[field_id]
 
 
-class RecordViewLayout(ObjectLayout):
-
-    async def from_data(state, path, layout_watcher, mosaic, async_web, object_layout_registry):
-        object_type = await async_web.summon(state.object_type_ref)
-        self = RecordViewLayout(mosaic, path, object_type, state.command_list)
-        await self._async_init(layout_watcher, async_web, object_layout_registry, state.field_layout_list)
-        return self
-
-    def __init__(self, mosaic, path, object_type, command_list_data):
-        super().__init__(mosaic, path, object_type, command_list_data)
-        self._field_layout_dict = {}
-
-    async def _async_init(self, layout_watcher, async_web, object_layout_registry, field_layout_list):
-        for idx, field in enumerate(field_layout_list):
-            path = [*self._path, idx]
-            layout = await object_layout_registry.invite(field.layout_ref, path, layout_watcher)
-            self._field_layout_dict[field.id] = layout
-
-    @property
-    def piece(self):
-        field_layout_list = []
-        for field_id, layout in self._field_layout_dict.items():
-            layout_ref = self._mosaic.put(layout.piece)
-            field_layout_list.append(htypes.record_view.record_layout_field(field_id, layout_ref))
-        return htypes.record_view.record_layout(self._object_type_ref, self._command_list_data, field_layout_list)
-
-    async def create_view(self, command_hub, object):
-        return (await RecordView.make(command_hub, object, self._field_layout_dict))
-
-    async def visual_item(self):
-        children = [
-            await layout.visual_item()
-            for layout in self._field_layout_dict.values()
-            ]
-        return self.make_visual_item('RecordView', children=children)
-
-    async def get_current_commands(self, object, view):
-        field_id = view.focused_field_id
-        focused_object = object.fields[field_id]
-        focused_layout = self._field_layout_dict[field_id]
-        focused_view = view.get_field_view(field_id)
-        return [
-            *await super().get_current_commands(object, view),
-            *await focused_layout.get_current_commands(focused_object, focused_view),
-            ]
-
-
-class ThisModule(ClientModule):
+class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-        self._mosaic = services.mosaic
-        self._async_web = services.async_web
-        self._layout_handle_from_object_type = services.layout_handle_from_object_type
-        services.available_object_layouts.register('record', [RecordObject.type._t], self._make_record_layout_data)
-        services.default_object_layouts.register('record', [RecordObject.type._t], self._make_record_layout_data)
-        services.object_layout_registry.register_actor(
-            htypes.record_view.record_layout, RecordViewLayout.from_data,
-            services.mosaic, services.async_web, services.object_layout_registry)
-
-    async def _make_record_layout_data(self, object_type):
-        object_type_ref = self._mosaic.put(object_type)
-        command_list = ObjectLayout.make_default_command_list(object_type)
-        field_layout_list = []
-        for field in object_type.field_type_list:
-            field_object_type = await self._async_web.summon(field.object_type_ref)
-            layout_handle = await self._layout_handle_from_object_type(field_object_type)
-            layout_ref = self._mosaic.put(layout_handle.layout.piece)
-            field_layout_list.append(htypes.record_view.record_layout_field(field.id, layout_ref))
-        return htypes.record_view.record_layout(object_type_ref, command_list, field_layout_list)
+        services.lcs.set(RecordObject.dir_list[-1], htypes.record_view.record_view())
+        services.view_registry.register_actor(htypes.record_view.record_view, RecordView.from_piece, services.view_factory)

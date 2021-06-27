@@ -1,9 +1,9 @@
 import:
   types:
     record_view:
-      - record_layout_field
-      - record_layout
+      - record_view
+      - record_view_state
   code:
-    - client.layout
     - async.ui.record_object
-    - async.ui.module
+require:
+  - view_factory

@@ -6,7 +6,10 @@ from .object import Object
 
 class RecordObject(Object, metaclass=abc.ABCMeta):
 
-    type = htypes.record_ot.record_ot(command_list=(), field_type_list=())
+    dir_list = [
+        *Object.dir_list,
+        [__module_ref__],
+        ]
 
     def __init__(self, fields=None):
         super().__init__()

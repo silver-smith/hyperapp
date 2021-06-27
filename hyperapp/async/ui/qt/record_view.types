@@ -1,9 +1,3 @@
-from layout import layout
 
-
-record_layout_field = record:
-  id: string
-  layout_ref: ref
-
-record_layout = record(layout):
-  field_layout_list: record_layout_field list
+record_view = record
+record_view_state = record
