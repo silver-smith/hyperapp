@@ -3,7 +3,6 @@ import:
     rpc:
       - endpoint
     service:
-      - command
       - tree_service
   code:
     - common.tree

@@ -3,7 +3,6 @@ import:
     rpc:
       - endpoint
     service:
-      - command
       - list_service
   code:
     - common.list

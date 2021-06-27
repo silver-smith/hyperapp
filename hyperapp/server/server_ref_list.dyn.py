@@ -86,8 +86,8 @@ class ThisModule(Module):
             object_id=object_id,
             param_type_list=[],
             param_list=[],
-            command_list=[
-                htypes.service.command('open', mosaic.put(open_command)),
+            command_ref_list=[
+                mosaic.put(open_command),
                 ],
             )
 

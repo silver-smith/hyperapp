@@ -13,7 +13,6 @@ import:
     service:
       - param_type
       - parameter
-      - command
       - list_service
       - record_field
       - record_service
