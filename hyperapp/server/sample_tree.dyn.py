@@ -154,7 +154,7 @@ class ThisModule(Module):
                 param_list=[
                     htypes.service.parameter('article_path', mosaic.put(path, int_list_t)),
                     ],
-                command_list=[],
+                command_ref_list=[],
                 field_list=record_field_list,
                 )
 
