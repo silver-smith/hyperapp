@@ -71,5 +71,5 @@ class TreeService(TreeObject):
         return self._column_list
 
     async def fetch_items(self, path):
-        item_list = await self._proxy.get(path)
-        self._distribute_fetch_results(path, item_list)
+        result = await self._proxy.get(path)
+        self._distribute_fetch_results(path, result.items)

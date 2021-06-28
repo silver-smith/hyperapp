@@ -71,5 +71,5 @@ class ListService(SimpleListObject):
         return self._column_list
 
     async def get_all_items(self):
-        row_list = await self._proxy.get()
-        return [row for row in row_list]
+        result = await self._proxy.get()
+        return [row for row in result.rows]
