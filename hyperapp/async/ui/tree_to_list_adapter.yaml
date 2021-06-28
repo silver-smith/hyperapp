@@ -1,15 +1,13 @@
 import:
   types:
-    object_type:
-      - object_command
-    list_ot:
-      - list_ot
+    view:
+      - available_view_d
     tree_to_list_adapter:
       - tree_to_list_adapter
-      - tree_to_list_adapter_layout
+      - tree_to_list_adapter_view
   code:
     - async.ui.command
-    - client.layout
     - async.ui.tree_object
     - async.ui.list_object
-    - async.ui.module
+require:
+  - view_factory

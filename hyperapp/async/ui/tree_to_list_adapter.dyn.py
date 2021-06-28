@@ -1,13 +1,16 @@
 # Provide list view interface to tree view object
 
+import logging
 import weakref
+
+from hyperapp.common.module import Module
 
 from . import htypes
 from .command import command
-from .layout import AbstractMultiItemObjectLayout
 from .list_object import ListObject
 from .tree_object import TreeObserver, TreeObject
-from .module import ClientModule
+
+log = logging.getLogger(__name__)
 
 
 class _Observer(TreeObserver):
@@ -27,20 +30,33 @@ class TreeToListAdapter(ListObject):
         return cls(mosaic, tree_object, state.path)
 
     def __init__(self, mosaic, tree_object, path):
+        super().__init__()
         self._mosaic = mosaic
         self._tree_object = tree_object
         self._path = list(path)  # accept tuples as well
-        super().__init__()
         self._observer = _Observer(self)
         self._tree_object.subscribe(self._observer)
 
+    dir_list = [
+        *ListObject.dir_list,
+        [__module_ref__],
+        ]
+
     @property
     def title(self):
-        return '%s:/%s' % (self._tree_object.title, '/'.join(str(item) for item in self._path))
+        path_str = '/'.join(str(item) for item in self._path)
+        return f"{self._tree_object.title}:/{path_str}"
 
     @property
     def piece(self):
         return htypes.tree_to_list_adapter.tree_to_list_adapter(self._tree_object_ref, self._path)
+
+    @property
+    def command_list(self):
+        return [
+            *self._tree_object.command_list(),
+            *super().command_list(),
+            ]
 
     @property
     def columns(self):
@@ -74,102 +90,25 @@ class TreeToListAdapter(ListObject):
 
     # todo: distinguish leaf items, do not open them
     @command
-    async def _enter(self, item_key):
+    async def enter(self, item_key):
         return htypes.tree_to_list_adapter.tree_to_list_adapter(self._tree_object_ref, self._path + [item_key])
 
     @command
-    async def _open_parent(self):
+    async def parent(self):
         if not self._path:
             return
         return htypes.tree_to_list_adapter.tree_to_list_adapter(self._tree_object_ref, self._path[:-1])
 
 
-class TreeToListLayout(AbstractMultiItemObjectLayout):
-
-    @staticmethod
-    def adapter_object_type(base_object_type):
-        adapter_command_list = [
-            htypes.object_type.object_command('enter', None),
-            htypes.object_type.object_command('open_parent', None),
-            ]
-        return htypes.list_ot.list_ot(
-            command_list=tuple((*base_object_type.command_list, *adapter_command_list)),
-            key_column_id='id',  # todo
-            column_list=(),
-            )
-
-    @classmethod
-    async def from_data(cls, state, path, layout_watcher, mosaic, async_web, object_layout_registry, default_object_layouts):
-        base_object_type = await async_web.summon(state.object_type_ref)
-        adapter_object_type = cls.adapter_object_type(base_object_type)
-        base_list_layout = await default_object_layouts.construct_default_layout(
-            adapter_object_type, layout_watcher, object_layout_registry, path=[*path, 'base'])
-        return cls(mosaic, path, adapter_object_type, state.command_list, base_list_layout, base_object_type)
-
-    def __init__(self, mosaic, path, adapter_object_type, command_list_data, base_list_layout, base_object_type):
-        super().__init__(mosaic, path, adapter_object_type, command_list_data)
-        self._base_object_type = base_object_type
-        self._base_list_layout = base_list_layout
-        self._object_to_adapter = weakref.WeakKeyDictionary()
-
-    @property
-    def piece(self):
-        base_object_type_ref = self._mosaic.put(self._base_object_type)
-        return htypes.tree_to_list_adapter.tree_to_list_adapter_layout(base_object_type_ref, self._command_list_data)
-
-    async def create_view(self, command_hub, object):
-        adapter = TreeToListAdapter(self._mosaic, object, path=[])
-        self._object_to_adapter[object] = adapter
-        return (await self._base_list_layout.create_view(command_hub, adapter))
-
-    async def visual_item(self):
-        base_item = await self._base_list_layout.visual_item()
-        return self.make_visual_item('TreeToListAdapter', children=[base_item])
-
-    def available_code_commands(self, object):
-        adapter = self._object_to_adapter[object]
-        return [*super().available_code_commands(object),
-                *self._base_list_layout.available_code_commands(adapter),
-                ]
-
-    def get_bound_item_commands(self, object, unbound_item_command_list, item_key):
-        adapter = self._object_to_adapter[object]
-        original_item_key = [*adapter.current_path, item_key]
-        adapter_command_ids = {
-            command.id for command in
-            adapter.get_item_command_list(item_key)
-            }
-        original_command_ids = {
-            command.id for command in
-            object.get_item_command_list(original_item_key)
-            }
-        adapter_commands = [
-            command.partial(item_key)
-            for command in unbound_item_command_list
-            if command.id in adapter_command_ids
-            ]
-        original_commands = [
-            command.partial(original_item_key)
-            for command in unbound_item_command_list
-            if command.id in original_command_ids
-            ]
-        return [*adapter_commands, *original_commands]
-
-
-class ThisModule(ClientModule):
+class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-        self._mosaic = services.mosaic
-        services.object_registry.register_actor(
-            htypes.tree_to_list_adapter.tree_to_list_adapter, TreeToListAdapter.from_state, services.mosaic, services.object_animator)
-        # services.available_object_layouts.register('as_list', [TreeObject.type._t], self._make_layout_data)
-        services.object_layout_registry.register_actor(
-            htypes.tree_to_list_adapter.tree_to_list_adapter_layout, TreeToListLayout.from_data,
-            services.mosaic, services.async_web, services.object_layout_registry, services.default_object_layouts)
+        available_view_d_ref = services.mosaic.put(htypes.view.available_view_d())
+        services.lcs.set([available_view_d_ref, *TreeObject.dir_list[-1]], htypes.tree_to_list_adapter.tree_to_list_adapter_view())
+        services.view_registry.register_actor(
+            htypes.tree_to_list_adapter.tree_to_list_adapter_view, self._open_adapter_view, services.mosaic, services.view_factory)
 
-    async def _make_layout_data(self, object_type):
-        object_type_ref = self._mosaic.put(object_type)
-        adapter_object_type = TreeToListLayout.adapter_object_type(object_type)
-        command_list = TreeToListLayout.make_default_command_list(adapter_object_type)
-        return htypes.tree_to_list_adapter.tree_to_list_adapter_layout(object_type_ref, command_list)
+    async def _open_adapter_view(self, piece, object, mosaic, view_factory):
+        adapter = TreeToListAdapter(mosaic, object, path=[])
+        return await view_factory.create_view(adapter)

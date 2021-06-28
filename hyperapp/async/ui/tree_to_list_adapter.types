@@ -1,8 +1,6 @@
-from layout import layout
-
 
 tree_to_list_adapter = record:
     base_ref: ref
     path: string list
 
-tree_to_list_adapter_layout = record(layout)
+tree_to_list_adapter_view = record
