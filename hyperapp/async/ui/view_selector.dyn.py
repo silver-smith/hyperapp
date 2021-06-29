@@ -44,7 +44,19 @@ class ViewSelector(SimpleListObject):
             ]
 
     async def get_all_items(self):
-        return []
+        return list(self._iter_items())
+
+    def _iter_items(self):
+        for dir in self._object.dir_list:
+            dir_str = '/'.join(str(element) for element in dir)
+            key = dir_str
+            piece = self._lcs.get(dir)
+            if piece is not None:
+                yield Item(f'{key}-default', dir_str, 'default', piece)
+            piece = self._lcs.get([htypes.view.available_view_d(), *dir])
+            if piece is not None:
+                yield Item(f'{key}-available', dir_str, 'available', piece)
+            yield Item(f'{key}-selected', dir_str, 'selected', '')
 
 
 class ThisModule(Module):
