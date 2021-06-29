@@ -104,7 +104,7 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-        services.lcs.set(
+        services.lcs.add(
             [htypes.view.available_view_d(), *TreeObject.dir_list[-1]],
             htypes.tree_to_list_adapter.tree_to_list_adapter_view(),
             )
