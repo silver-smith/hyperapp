@@ -1,9 +1,5 @@
-from tree_ot import tree_ot
-from record_ot import record_ot
 
-
-tree_view_sample_object_type = record(tree_ot)
-tree_view_sample_article_type = record(record_ot)
+tree_view_sample_d = record
 
 tree_view_sample_object = record
 

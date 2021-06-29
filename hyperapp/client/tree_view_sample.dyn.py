@@ -21,6 +21,11 @@ Item = namedtuple('Item', 'name column_1 column_2')
 
 class SampleTree(TreeObject):
 
+    dir_list = [
+        *TreeObject.dir_list,
+        [htypes.tree_view_sample.tree_view_sample_d()],
+        ]
+
     @classmethod
     def from_data(cls, state):
         return cls()
