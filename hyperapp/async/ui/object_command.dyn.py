@@ -32,7 +32,7 @@ class BuiltinCommand:
     @property
     def piece(self):
         return htypes.command.builtin_command(
-            self._module_ref, self._qual_name, self.name, list(self._wanted_params))
+            self._module_ref, self._qual_name, self.name, tuple(self._wanted_params))
 
     async def run(self, object, view_state):
         kw = {

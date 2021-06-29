@@ -35,9 +35,13 @@ class LCSheet:
             pass
         else:
             for rec in storage.record_list:
+                dir = [
+                    self._web.summon(ref)
+                    for ref in rec.dir
+                    ]
                 value = self._web.summon(rec.value_ref)
-                log.info("LCS: loaded %s -> %s", rec.dir, value)
-                record = self._add(rec.dir, value)
+                log.info("LCS: loaded %s -> %s", dir, value)
+                record = self._add(dir, value)
                 record.persist = True
 
     def _save(self):
@@ -45,9 +49,13 @@ class LCSheet:
         for dir, record in self._dir_to_record.items():
             if not record.persist:
                 continue
+            dir_refs = [
+                self._mosaic.put(element)
+                for element in dir
+                ]
             for value in record.value_list:
                 rec = htypes.layered_config_sheet.lcs_record(
-                    dir=dir,
+                    dir=dir_refs,
                     value_ref=self._mosaic.put(value),
                     )
                 rec_list.append(rec)

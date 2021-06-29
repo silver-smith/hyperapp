@@ -8,11 +8,10 @@ class ObjectCommandsFactory:
     def __init__(self, mosaic, lcs, command_registry):
         self._lcs = lcs
         self._command_registry = command_registry
-        self._object_commands_d_ref = mosaic.put(htypes.command.object_commands_d())
 
     async def get_object_command_list(self, object):
         command_piece_it = self._lcs.iter(
-            [[*dir, self._object_commands_d_ref] for dir in object.dir_list]
+            [[*dir, htypes.command.object_commands_d()] for dir in object.dir_list]
             )
         command_list = [
             await self._command_registry.animate(piece)

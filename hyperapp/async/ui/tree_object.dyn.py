@@ -54,7 +54,7 @@ class TreeObject(Object, metaclass=abc.ABCMeta):
     view_state_fields = ['current_key']
     dir_list = [
         *Object.dir_list,
-        [__module_ref__],
+        [htypes.tree_object.tree_object_d()],
         ]
 
     # todo: construct state from key column type on-the-fly.

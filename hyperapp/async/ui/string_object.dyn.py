@@ -9,7 +9,7 @@ class StringObject(Object):
 
     dir_list = [
         *Object.dir_list,
-        [__module_ref__],
+        [htypes.string_object.string_object_d()],
         ]
 
     @classmethod

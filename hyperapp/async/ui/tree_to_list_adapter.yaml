@@ -3,6 +3,7 @@ import:
     view:
       - available_view_d
     tree_to_list_adapter:
+      - tree_to_list_adapter_d
       - tree_to_list_adapter
       - tree_to_list_adapter_view
   code:

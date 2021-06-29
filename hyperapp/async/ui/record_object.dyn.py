@@ -8,7 +8,7 @@ class RecordObject(Object, metaclass=abc.ABCMeta):
 
     dir_list = [
         *Object.dir_list,
-        [__module_ref__],
+        [htypes.record_object.record_object_d()],
         ]
 
     def __init__(self, fields=None):

@@ -1,6 +1,7 @@
 import:
   types:
     list_object:
+      - list_object_d
       - int_state
       - string_state
   code:

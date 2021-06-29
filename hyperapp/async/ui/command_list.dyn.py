@@ -23,12 +23,10 @@ ViewItem = namedtuple('Item', 'name path shortcut')
 
 class CommandList(SimpleListObject):
 
-    def __init__(self, mosaic, lcs):
+    def __init__(self, lcs):
         super().__init__()
-        self._mosaic = mosaic
         self._lcs = lcs
         self._command_by_name = None
-        self._command_shortcut_d_ref = mosaic.put(htypes.command.command_shortcut_d())
 
     @property
     def columns(self):
@@ -51,8 +49,7 @@ class CommandList(SimpleListObject):
             )
 
     def _command_shortcut(self, command):
-        command_ref = self._mosaic.put(command.piece)
-        return self._lcs.get([command_ref, self._command_shortcut_d_ref])
+        return self._lcs.get([command.piece, htypes.command.command_shortcut_d()])
 
     @command
     async def set_key(self, current_key):
@@ -67,8 +64,7 @@ class CommandList(SimpleListObject):
     async def _set_key(self, command_name, shortcut):
         log.info("Set shortcut for command %s: %r", command_name, shortcut)
         command = self._command_by_name[command_name]
-        command_ref = self._mosaic.put(command.piece)
-        self._lcs.set([command_ref, self._command_shortcut_d_ref], shortcut, save=True)
+        self._lcs.set([command.piece, htypes.command.command_shortcut_d()], shortcut, save=True)
         await self.update()
 
     @command
@@ -95,7 +91,8 @@ class ObjectCommandList(CommandList):
         return self
 
     def __init__(self, mosaic, lcs, object, view_state):
-        super().__init__(mosaic, lcs)
+        super().__init__(lcs)
+        self._mosaic = mosaic
         self._object = object
         self._view_state = view_state
 
@@ -123,11 +120,11 @@ class ObjectCommandList(CommandList):
 class GlobalCommandList(CommandList):
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, async_web, lcs, global_command_list, layout_manager):
-        return cls(mosaic, lcs, global_command_list, layout_manager)
+    async def from_piece(cls, piece, async_web, lcs, global_command_list, layout_manager):
+        return cls(lcs, global_command_list, layout_manager)
 
-    def __init__(self, mosaic, lcs, global_command_list, layout_manager):
-        super().__init__(mosaic, lcs)
+    def __init__(self, lcs, global_command_list, layout_manager):
+        super().__init__(lcs)
         self._layout_manager = layout_manager
         self._command_by_name = {
             command.name: command
@@ -150,15 +147,15 @@ class GlobalCommandList(CommandList):
 class ViewCommandList(CommandList):
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, async_web, lcs, layout_manager):
-        self = cls(mosaic, lcs, layout_manager)
+    async def from_piece(cls, piece, async_web, lcs, layout_manager):
+        self = cls(lcs, layout_manager)
         # When this object is current on client start, layout_manager is not yet fully constructed.
         # Postpone it's usage until layout_manager.root_layout is set.
         asyncio.get_event_loop().call_soon(self._post_init)
         return self
 
-    def __init__(self, mosaic, lcs, layout_manager):
-        super().__init__(mosaic, lcs)
+    def __init__(self, lcs, layout_manager):
+        super().__init__(lcs)
         self._layout_manager = layout_manager
         self._path_by_name = None
 
@@ -219,7 +216,6 @@ class ThisModule(ClientModule):
         services.object_registry.register_actor(
             htypes.command_list.global_command_list,
             GlobalCommandList.from_piece,
-            services.mosaic,
             services.async_web,
             services.lcs,
             services.global_command_list,
@@ -228,13 +224,14 @@ class ThisModule(ClientModule):
         services.object_registry.register_actor(
             htypes.command_list.view_command_list,
             ViewCommandList.from_piece,
-            services.mosaic,
             services.async_web,
             services.lcs,
             services.layout_manager,
             )
-        object_commands_d_ref = services.mosaic.put(htypes.command.object_commands_d())
-        services.lcs.add([*Object.dir_list[-1], object_commands_d_ref], htypes.command_list.command_list_command())
+        services.lcs.add(
+            [*Object.dir_list[-1], htypes.command.object_commands_d()],
+            htypes.command_list.command_list_command(),
+            )
         services.command_registry.register_actor(htypes.command_list.command_list_command, Command.from_fn(self.command_list))
 
     async def command_list(self, object, view_state):

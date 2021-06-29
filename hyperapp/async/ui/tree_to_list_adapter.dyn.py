@@ -39,7 +39,7 @@ class TreeToListAdapter(ListObject):
 
     dir_list = [
         *ListObject.dir_list,
-        [__module_ref__],
+        [htypes.tree_to_list_adapter.tree_to_list_adapter_d()],
         ]
 
     @property
@@ -104,8 +104,10 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-        available_view_d_ref = services.mosaic.put(htypes.view.available_view_d())
-        services.lcs.set([available_view_d_ref, *TreeObject.dir_list[-1]], htypes.tree_to_list_adapter.tree_to_list_adapter_view())
+        services.lcs.set(
+            [htypes.view.available_view_d(), *TreeObject.dir_list[-1]],
+            htypes.tree_to_list_adapter.tree_to_list_adapter_view(),
+            )
         services.view_registry.register_actor(
             htypes.tree_to_list_adapter.tree_to_list_adapter_view, self._open_adapter_view, services.mosaic, services.view_factory)
 

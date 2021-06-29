@@ -15,9 +15,8 @@ log = logging.getLogger(__name__)
 
 class CommandPaneLayout(GlobalLayout):
 
-    def __init__(self, state, path, command_hub, view_opener, mosaic, lcs):
+    def __init__(self, state, path, command_hub, view_opener, lcs):
         super().__init__(path)
-        self._mosaic = mosaic
         self._lcs = lcs
         self._command_hub = command_hub
 
@@ -26,7 +25,7 @@ class CommandPaneLayout(GlobalLayout):
         return htypes.command_pane.command_pane()
 
     async def create_view(self):
-        return CommandPane(self._mosaic, self._lcs, self._command_hub)
+        return CommandPane(self._lcs, self._command_hub)
 
     async def visual_item(self):
         return self.make_visual_item('CommandPane')
@@ -34,10 +33,9 @@ class CommandPaneLayout(GlobalLayout):
 
 class CommandPane(QtWidgets.QDockWidget):
 
-    def __init__(self, mosaic, lcs, command_hub):
+    def __init__(self, lcs, command_hub):
         QtWidgets.QDockWidget.__init__(self, 'Commands')
         self.setFeatures(self.NoDockWidgetFeatures)
-        self._mosaic = mosaic
         self._lcs = lcs
         self._layout = QtWidgets.QVBoxLayout(spacing=1)
         self._layout.setAlignment(QtCore.Qt.AlignTop)
@@ -47,7 +45,6 @@ class CommandPane(QtWidgets.QDockWidget):
         self.widget().setLayout(self._layout)
         self._dir_buttons = []
         self._element_buttons = []
-        self._command_shortcut_d_ref = mosaic.put(htypes.command.command_shortcut_d())
         command_hub.subscribe(self)
 
     # command hum observer method
@@ -81,8 +78,7 @@ class CommandPane(QtWidgets.QDockWidget):
 
     def _make_button(self, command, set_shortcuts):
         text = command.name
-        command_ref = self._mosaic.put(command.piece)
-        shortcut = self._lcs.get([command_ref, self._command_shortcut_d_ref])
+        shortcut = self._lcs.get([command.piece, htypes.command.command_shortcut_d()])
         is_default = False
         if shortcut:
             text += f" ({shortcut})"
@@ -105,4 +101,4 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
         services.view_registry.register_actor(
-            htypes.command_pane.command_pane, CommandPaneLayout, services.mosaic, services.lcs)
+            htypes.command_pane.command_pane, CommandPaneLayout, services.lcs)

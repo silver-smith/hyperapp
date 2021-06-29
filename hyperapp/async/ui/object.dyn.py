@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from collections import namedtuple
 from typing import Dict, List
 
+from . import htypes
 from .weak_key_dictionary_with_callback import WeakKeyDictionaryWithCallback
 from .resource_key import module_resource_key
 from .object_command import BuiltinCommand
@@ -27,7 +28,7 @@ class ObjectObserver(object):
 
 class Object(metaclass=abc.ABCMeta):
 
-    dir_list = [[__module_ref__]]
+    dir_list = [[htypes.object.object_d()]]
     view_state_fields = []
 
     ObserverArgs = namedtuple('ObserverArgs', 'args kw')
