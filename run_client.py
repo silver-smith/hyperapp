@@ -47,6 +47,7 @@ code_module_list = [
     'client.record_service',
     'async.ui.rpc_command',
     'async.ui.application_state',
+    'async.ui.view_selector',
     ]
 
 

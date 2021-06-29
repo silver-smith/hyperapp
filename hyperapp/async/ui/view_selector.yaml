@@ -1,0 +1,12 @@
+import:
+  types:
+    view_selector:
+      - open_view_selector_command
+      - view_selector
+    command:
+      - object_commands_d
+  code:
+    - async.ui.object
+    - async.ui.object_command
+    - async.ui.column
+    - async.ui.simple_list_object
