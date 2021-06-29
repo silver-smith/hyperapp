@@ -1,9 +1,5 @@
-from list_ot import list_ot
-from record_ot import record_ot
 
-
-list_view_sample_object_type = record(list_ot)
-list_view_sample_article_type = record(record_ot)
+list_view_sample_d = record
 
 list_view_sample_object = record
 

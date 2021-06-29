@@ -21,6 +21,11 @@ Item = namedtuple('Item', 'idx column_1 column_2')
 
 class SampleList(ListObject):
 
+    dir_list = [
+        *ListObject.dir_list,
+        [htypes.list_view_sample.list_view_sample_d()],
+        ]
+
     @classmethod
     def from_data(cls, state):
         return cls()

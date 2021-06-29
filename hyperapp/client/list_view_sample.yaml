@@ -1,12 +1,7 @@
 import:
   types:
-    object_type:
-      - object_command
-    record_ot:
-      - field
     list_view_sample:
-      - list_view_sample_object_type
-      - list_view_sample_article_type
+      - list_view_sample_d
       - list_view_sample_object
       - list_sample_article
   code:
