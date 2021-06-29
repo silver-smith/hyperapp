@@ -8,4 +8,4 @@ import:
     - client.layout
     - async.ui.module
 require:
-  - plcs
+  - lcs

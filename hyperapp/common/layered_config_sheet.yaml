@@ -9,4 +9,3 @@ require:
   - file_bundle
 provide:
   - lcs
-  - plcs

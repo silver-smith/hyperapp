@@ -14,10 +14,10 @@ log = logging.getLogger(__name__)
 
 class MenuBarLayout(GlobalLayout):
 
-    def __init__(self, state, path, command_hub, view_opener, mosaic, plcs):
+    def __init__(self, state, path, command_hub, view_opener, mosaic, lcs):
         super().__init__(path)
         self._mosaic = mosaic
-        self._plcs = plcs
+        self._lcs = lcs
         self._command_hub = command_hub
 
     @property
@@ -25,7 +25,7 @@ class MenuBarLayout(GlobalLayout):
         return htypes.menu_bar.menu_bar()
 
     async def create_view(self):
-        return MenuBar(self._mosaic, self._plcs, self._command_hub)
+        return MenuBar(self._mosaic, self._lcs, self._command_hub)
 
     async def visual_item(self):
         return self.make_visual_item('MenuBar')
@@ -33,10 +33,10 @@ class MenuBarLayout(GlobalLayout):
 
 class MenuBar(QtWidgets.QMenuBar):
 
-    def __init__(self, mosaic, plcs, command_hub):
+    def __init__(self, mosaic, lcs, command_hub):
         super().__init__()
         self._mosaic = mosaic
-        self._plcs = plcs
+        self._lcs = lcs
         self._build()
         self._locale = 'en'
         self._command_shortcut_d_ref = mosaic.put(htypes.command.command_shortcut_d())
@@ -69,7 +69,7 @@ class MenuBar(QtWidgets.QMenuBar):
     def _make_action(self, menu, command, add_shortcut, used_shortcut_set=None):
         text = command.name
         command_ref = self._mosaic.put(command.piece)
-        shortcut = self._plcs.get([command_ref, self._command_shortcut_d_ref])
+        shortcut = self._lcs.get([command_ref, self._command_shortcut_d_ref])
 
         if used_shortcut_set is not None:
             # remove duplicates
@@ -93,4 +93,4 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
         services.view_registry.register_actor(
-            htypes.menu_bar.menu_bar, MenuBarLayout, services.mosaic, services.plcs)
+            htypes.menu_bar.menu_bar, MenuBarLayout, services.mosaic, services.lcs)
