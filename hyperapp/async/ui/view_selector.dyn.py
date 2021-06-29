@@ -1,15 +1,19 @@
+import logging
 from collections import namedtuple
 
 from hyperapp.common.module import Module
 
 from . import htypes
+from .command import command
 from .object import Object
 from .column import Column
 from .simple_list_object import SimpleListObject
 from .object_command import Command
 
+log = logging.getLogger(__name__)
 
-Item = namedtuple('Item', 'key dir type view')
+
+Item = namedtuple('Item', 'key dir dir_str type view')
 
 
 class ViewSelector(SimpleListObject):
@@ -24,6 +28,9 @@ class ViewSelector(SimpleListObject):
         self._mosaic = mosaic
         self._lcs = lcs
         self._object = object
+        self._item_list = []
+        self._available_key_to_dir = {}
+        self._populate()
 
     @property
     def piece(self):
@@ -38,13 +45,25 @@ class ViewSelector(SimpleListObject):
     def columns(self):
         return [
             Column('key', is_key=True),
-            Column('dir'),
+            Column('dir_str'),
             Column('type'),
             Column('view'),
             ]
 
     async def get_all_items(self):
-        return list(self._iter_items())
+        return self._item_list
+
+    def _populate(self):
+        self._item_list = list(self._iter_items())
+        self._available_key_to_dir = {
+            item.key: item.dir
+            for item in self._item_list
+            if item.type == 'available'
+            }
+
+    def update(self):
+        self._populate()
+        self._notify_object_changed()
 
     def _iter_items(self):
         for dir in self._object.dir_list:
@@ -52,11 +71,22 @@ class ViewSelector(SimpleListObject):
             key = dir_str
             piece = self._lcs.get(dir)
             if piece is not None:
-                yield Item(f'{key}-default', dir_str, 'default', piece)
+                yield Item(f'{key}-default', dir, dir_str, 'default', piece)
             piece = self._lcs.get([htypes.view.available_view_d(), *dir])
             if piece is not None:
-                yield Item(f'{key}-available', dir_str, 'available', piece)
-            yield Item(f'{key}-selected', dir_str, 'selected', '')
+                yield Item(f'{key}-available', dir, dir_str, 'available', piece)
+            yield Item(f'{key}-selected', dir, dir_str, 'selected', '')
+
+    @command
+    async def set_default(self, current_key):
+        dir = self._available_key_to_dir.get(current_key)
+        log.info("Available dir for %s: %r", current_key, dir)
+        if not dir:
+            return
+        piece = self._lcs.get([htypes.view.available_view_d(), *dir])
+        assert piece is not None
+        self._lcs.set(dir, piece, save=True)
+        self.update()
 
 
 class ThisModule(Module):
