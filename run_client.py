@@ -48,6 +48,7 @@ code_module_list = [
     'async.ui.rpc_command',
     'async.ui.application_state',
     'async.ui.view_selector',
+    'async.ui.record_field_list',
     ]
 
 

@@ -1,0 +1,7 @@
+
+open_record_field_list_command = record
+
+record_field_list_d = record
+
+record_field_list = record:
+  piece_ref: ref

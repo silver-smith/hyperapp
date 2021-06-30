@@ -1,0 +1,14 @@
+import:
+  types:
+    record_field_list:
+      - open_record_field_list_command
+      - record_field_list_d
+      - record_field_list
+    command:
+      - object_commands_d
+  code:
+    - async.ui.command
+    - async.ui.record_object
+    - async.ui.object_command
+    - async.ui.column
+    - async.ui.simple_list_object
