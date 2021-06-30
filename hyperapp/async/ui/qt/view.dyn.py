@@ -14,20 +14,15 @@ class View(ObjectObserver, ViewCommander):
 
     CmdPanelHandleCls = None  # registered by cmd_view
 
-    def __init__(self, parent=None):
+    def __init__(self):
         ObjectObserver.__init__(self)
         ViewCommander.__init__(self)
-        self._parent = weakref.ref(parent) if parent is not None else None
-
-    def set_parent(self, parent):
-        assert isinstance(parent, View), repr(parent)
-        self._parent = weakref.ref(parent)
 
     def get_state(self):
         raise NotImplementedError(self.__class__)
 
     def object_changed(self):
-        self.view_changed()
+        pass
 
     def get_widget(self):
         return self
@@ -49,33 +44,12 @@ class View(ObjectObserver, ViewCommander):
             command_list += child.get_command_list()
         return command_list
 
-    def get_shortcut_ctx_widget(self, view):
-        return view.get_widget()
-
     @property
     def title(self):
         view = self.get_current_child()
         if view:
             return view.title
         return 'Untitled'
-
-    def object_selected(self, obj):
-        return self._parent().object_selected(obj)
-
-    def open(self, handle):
-        self._parent().open(handle)
-
-    def replace_view(self, mapper):
-        return mapper(self.handle())
-
-    def view_changed(self, view=None):
-        log.debug('-- View.view_changed self=%s/%r view=%r', id(self), self, view)
-        if self._parent:
-            self._parent().view_changed(self)
-
-    def view_commands_changed(self, command_kinds):
-        if self._parent:
-            self._parent().view_commands_changed(command_kinds)
 
     def has_focus(self):
         return focused_index(None, [self]) == 0
@@ -97,6 +71,3 @@ class View(ObjectObserver, ViewCommander):
         if child:
             return child.get_widget_to_focus()
         return self.get_widget()
-
-    def _cls2name(self, cls):
-        return cls.__module__ + '.' + cls.__class__.__name__

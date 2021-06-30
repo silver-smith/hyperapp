@@ -122,28 +122,9 @@ class Window(View, QtWidgets.QMainWindow):
 
     def set_child(self, child):
         self._view = child
-        child.set_parent(self)
-        self.view_changed(self._view)
 
     def open(self, handle):
         self._view.open(handle)
-
-    def object_selected(self, obj):
-        return False
-
-    def view_changed(self, view):
-        assert view is self._view
-        w = self._view.get_widget()
-        if w is not self._child_widget:
-            if DEBUG_FOCUS: log.info('*** window.view_changed: replacing widget self=%r view=%r w=%r old-w=%r', self, view, w, self._child_widget)
-            if self._child_widget:
-                self._child_widget.deleteLater()
-            self.setCentralWidget(w)
-            self._child_widget = w
-        self.setWindowTitle(view.title)
-        self._menu_bar.view_changed(self)
-        self._command_pane.view_changed(self)
-        #self._filter_pane.view_changed(self)
 
     def view_commands_changed(self, command_kinds):
         self._menu_bar.view_commands_changed(self, command_kinds)

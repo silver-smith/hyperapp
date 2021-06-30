@@ -27,7 +27,6 @@ class MasterDetailsView(QtWidgets.QSplitter, Composite):
         self._master_view = master_view
         self._details_command_id = details_command_id
         self._want_sizes = sizes
-        master_view.set_parent(self)
         self.insertWidget(0, master_view)
         master_view.add_observer(self)
 
