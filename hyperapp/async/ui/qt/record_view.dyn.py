@@ -18,13 +18,13 @@ class RecordView(QtWidgets.QWidget):
 
     def __init__(self, object):
         super().__init__()
-        self._object = object
+        self.object = object
 
     async def _async_init(self, view_factory):
         qt_layout = QtWidgets.QVBoxLayout()
         has_expandable_field = False
         self._field_view_dict = {}
-        for field_id, field_object in self._object.fields.items():
+        for field_id, field_object in self.object.fields.items():
             field_view = await self._construct_field_view(view_factory, qt_layout, field_id, field_object)
             if field_view.sizePolicy().verticalPolicy() & QtWidgets.QSizePolicy.ExpandFlag:
                 has_expandable_field = True
@@ -52,7 +52,7 @@ class RecordView(QtWidgets.QWidget):
 
     @property
     def title(self):
-        return self._object.title
+        return self.object.title
 
     def get_widget(self):
         return self
@@ -68,7 +68,7 @@ class RecordView(QtWidgets.QWidget):
 
     @property
     def focused_field_id(self):
-        return list(self._object.fields)[0]  # todo
+        return list(self.object.fields)[0]  # todo
 
     def get_field_view(self, field_id):
         return self._field_view_dict[field_id]
