@@ -86,7 +86,10 @@ class LCSheet:
             yield from self._dir_to_record[tuple(dir)].value_list
 
     def get(self, dir):
-        piece_list = self._dir_to_record[tuple(dir)].value_list
+        try:
+            piece_list = self._dir_to_record[tuple(dir)].value_list
+        except TypeError as x:
+            raise RuntimeError(f"Type error {x}: {dir!r}")
         if len(piece_list) > 1:
             raise RuntimeError(f"More than one value is registered for {dir}")
         if piece_list:
