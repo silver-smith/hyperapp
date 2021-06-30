@@ -29,7 +29,7 @@ class ListService(SimpleListObject):
         self._peer_ref = peer_ref
         self._object_id = object_id
         self._proxy = proxy
-        self._command_list = command_list
+        self._rpc_command_list = command_list
         self._column_list = [
             Column(
                 id=column.id,
@@ -44,7 +44,7 @@ class ListService(SimpleListObject):
         list_ot_ref = self._mosaic.put(self._list_ot)
         command_ref_list = [
             self._mosaic.put(command.piece)
-            for command in self._command_list
+            for command in self._rpc_command_list
             ]
         return htypes.service.list_service(
             type_ref=list_ot_ref,
@@ -63,8 +63,9 @@ class ListService(SimpleListObject):
     def title(self):
         return f"List service: {self._object_id}"
 
-    def get_all_command_list(self):
-        return self._command_list
+    @property
+    def command_list(self):
+        return self._rpc_command_list
 
     @property
     def columns(self):
