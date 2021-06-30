@@ -1,38 +1,28 @@
 import inspect
 
-from hyperapp.common.module import Module
-
 from . import htypes
 
 
 class BuiltinCommand:
 
     @classmethod
-    def from_class_method(cls, method):
-        module_ref = inspect.getmodule(method).__module_ref__
-        qual_name = method.__qualname__
+    def from_class_method(cls, object, method):
         attr_name = method.__name__
         wanted_params = {
             name for name
             in inspect.signature(method).parameters
             if name != 'self'
             }
-        return cls(module_ref, qual_name, attr_name, wanted_params)
-        
-    @classmethod
-    def from_piece(cls, piece):
-        return cls(piece.module_ref, piece.qual_name, piece.name, set(piece.wanted_params))
+        return cls(object.dir_list[-1], attr_name, wanted_params)
 
-    def __init__(self, module_ref, qual_name, name, wanted_params):
-        self._module_ref = module_ref
-        self._qual_name = qual_name
+    def __init__(self, object_dir, name, wanted_params):
+        self._object_dir = object_dir
         self.name = name
         self._wanted_params = wanted_params
 
     @property
-    def piece(self):
-        return htypes.command.builtin_command(
-            self._module_ref, self._qual_name, self.name, tuple(self._wanted_params))
+    def dir(self):
+        return [*self._object_dir, htypes.command.builtin_object_command_d(self.name)]
 
     async def run(self, object, view_state):
         kw = {
@@ -52,26 +42,23 @@ class BuiltinCommand:
 class Command:
 
     @classmethod
-    def from_fn(cls, fn, name=None):
+    def from_fn(cls, module_name, fn, name=None):
         if not name:
             name = fn.__name__
 
         def from_piece(piece):
-            return cls(name, piece, fn)
+            return cls(module_name, name, fn)
 
         return from_piece
 
-    def __init__(self, name, piece, fn):
+    def __init__(self, module_name, name, fn):
+        self._module_name = module_name
         self.name = name
-        self.piece = piece
         self._fn = fn
+
+    @property
+    def dir(self):
+        return [htypes.command.context_object_command_d(self._module_name, self.name)]
 
     async def run(self, object, view_state):
         return await self._fn(object, view_state)
-
-
-class ThisModule(Module):
-
-    def __init__(self, module_name, services, config):
-        super().__init__(module_name, services, config)
-        services.command_registry.register_actor(htypes.command.builtin_command, BuiltinCommand.from_piece)

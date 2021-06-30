@@ -1,6 +1,7 @@
 import:
   types:
     command:
-      - global_command
+      - module_d
+      - global_command_d
 provide:
   - global_command_list

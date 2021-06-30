@@ -9,24 +9,23 @@ class ViewCommand:
 
     @classmethod
     def from_bound_method(cls, method):
-        module_ref = inspect.getmodule(method).__module_ref__
+        module_name = inspect.getmodule(method).this_module.name
         qual_name = method.__qualname__
         attr_name = method.__name__
-        return cls(module_ref, qual_name, attr_name, method)
+        return cls(module_name, qual_name, attr_name, method)
 
-    def __init__(self, module_ref, qual_name, name, method):
-        self._module_ref = module_ref
+    def __init__(self, module_name, qual_name, name, method):
+        self._module_name = module_name
         self._qual_name = qual_name
         self.name = name
         self._method = method
 
     def __repr__(self):
-        return f"ViewCommand({self._module_ref}/{self._qual_name})"
+        return f"ViewCommand({self._module_name}.{self._qual_name})"
 
     @property
-    def piece(self):
-        return htypes.command.view_command(
-            self._module_ref, self._qual_name)
+    def dir(self):
+        return [htypes.command.view_command_d(self._module_name, self._qual_name)]
 
     async def run(self):
         await self._method()

@@ -1,17 +1,19 @@
 object_commands_d = record
 command_shortcut_d = record
 
-
-builtin_command = record:
-  module_ref: ref
-  qual_name: string
-  name: string
-  wanted_params: string list
-
-global_command = record:
-  module_ref: ref
+builtin_object_command_d = record:
   name: string
 
-view_command = record:
-  module_ref: ref
+context_object_command_d = record:
+  module_name: string
+  name: string
+
+module_d = record:
+  module_name: string
+
+global_command_d = record:
+  name: string
+
+view_command_d = record:
+  module_name: string
   qual_name: string

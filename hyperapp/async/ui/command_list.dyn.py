@@ -49,7 +49,7 @@ class CommandList(SimpleListObject):
             )
 
     def _command_shortcut(self, command):
-        return self._lcs.get([command.piece, htypes.command.command_shortcut_d()])
+        return self._lcs.get([*command.dir, htypes.command.command_shortcut_d()])
 
     @command
     async def set_key(self, current_key):
@@ -64,7 +64,7 @@ class CommandList(SimpleListObject):
     async def _set_key(self, command_name, shortcut):
         log.info("Set shortcut for command %s: %r", command_name, shortcut)
         command = self._command_by_name[command_name]
-        self._lcs.set([command.piece, htypes.command.command_shortcut_d()], shortcut, save=True)
+        self._lcs.set([*command.dir, htypes.command.command_shortcut_d()], shortcut, save=True)
         await self.update()
 
     @command
@@ -232,7 +232,8 @@ class ThisModule(ClientModule):
             [*Object.dir_list[-1], htypes.command.object_commands_d()],
             htypes.command_list.command_list_command(),
             )
-        services.command_registry.register_actor(htypes.command_list.command_list_command, Command.from_fn(self.command_list))
+        services.command_registry.register_actor(
+            htypes.command_list.command_list_command, Command.from_fn(self.name, self.command_list))
 
     async def command_list(self, object, view_state):
         piece_ref = self._mosaic.put(object.piece)

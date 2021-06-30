@@ -47,7 +47,7 @@ class Object(metaclass=abc.ABCMeta):
             if type(attr) is property:
                 continue  # Avoid to call properties as we are not yet fully constructed.
             if getattr(attr, '__is_command__', False):
-                self._command_list.append(BuiltinCommand.from_class_method(attr))
+                self._command_list.append(BuiltinCommand.from_class_method(self, attr))
 
     @property
     def command_list(self):

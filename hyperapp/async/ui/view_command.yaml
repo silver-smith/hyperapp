@@ -1,4 +1,4 @@
 import:
   types:
     command:
-      - view_command
+      - view_command_d

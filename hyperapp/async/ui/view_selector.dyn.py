@@ -100,7 +100,8 @@ class ThisModule(Module):
             services.lcs,
             services.object_animator,
             )
-        services.command_registry.register_actor(htypes.view_selector.open_view_selector_command, Command.from_fn(self.view_selector))
+        services.command_registry.register_actor(
+            htypes.view_selector.open_view_selector_command, Command.from_fn(self.name, self.view_selector))
         services.lcs.add(
             [*Object.dir_list[-1], htypes.command.object_commands_d()],
             htypes.view_selector.open_view_selector_command(),
