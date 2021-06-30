@@ -5,7 +5,6 @@ import:
     layout_editor:
       - object_layout_editor
   code:
-    - async.ui.qt.view
     - async.ui.command
     - client.layout
     - async.ui.module
@@ -15,7 +14,4 @@ require:
   - object_commands_factory
   - view_factory
   - view_registry
-  - object_layout_registry
-  - layout_handle_from_object_type
-  - params_editor
   - global_command_list

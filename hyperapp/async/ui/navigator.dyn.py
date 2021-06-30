@@ -5,11 +5,11 @@ from collections import namedtuple
 from functools import partial
 
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
+from hyperapp.common.module import Module
+
 from . import htypes
-from .view import View
 from .command import command
 from .layout import GlobalLayout
-from .module import ClientModule
 
 _log = logging.getLogger(__name__)
 
@@ -69,53 +69,38 @@ class NavigatorLayout(GlobalLayout):
             object_animator,
             object_commands_factory,
             view_factory,
-            object_layout_registry,
-            layout_handle_from_object_type,
             global_command_list,
-            params_editor,
             ):
         self = cls(
             mosaic,
-            async_web,
             object_animator,
             object_commands_factory,
             view_factory,
-            object_layout_registry,
-            layout_handle_from_object_type,
             global_command_list,
-            params_editor,
             path,
             command_hub,
             view_opener,
             )
-        await self._async_init(state.current_piece_ref)
+        await self._async_init(async_web, state.current_piece_ref)
         return self
 
     def __init__(
             self,
             mosaic,
-            async_web,
             object_animator,
             object_commands_factory,
             view_factory,
-            object_layout_registry,
-            layout_handle_from_object_type,
             global_command_list,
-            params_editor,
             path,
             command_hub,
             view_opener,
             ):
         super().__init__(path)
         self._mosaic = mosaic
-        self._async_web = async_web
         self._object_animator = object_animator
         self._object_commands_factory = object_commands_factory
         self._view_factory = view_factory
-        self._object_layout_registry = object_layout_registry
-        self._layout_handle_from_object_type = layout_handle_from_object_type
         self._global_command_list = global_command_list
-        self._params_editor = params_editor
         self._command_hub = command_hub
         self._view_opener = view_opener
         self._history = _History()
@@ -123,8 +108,8 @@ class NavigatorLayout(GlobalLayout):
         self._current_layout_handle = None
         self._current_view = None
 
-    async def _async_init(self, initial_piece_ref):
-        piece = await self._async_web.summon(initial_piece_ref)
+    async def _async_init(self, async_web, initial_piece_ref):
+        piece = await async_web.summon(initial_piece_ref)
         self._current_object = object = await self._object_animator.animate(piece)
 
     @property
@@ -205,14 +190,8 @@ class NavigatorLayout(GlobalLayout):
             return
         await self._open_piece_impl(item.piece)
 
-    @command
-    async def open_layout_editor(self):
-        object_type_ref = self._mosaic.put(self._current_object.type)
-        piece = htypes.layout_editor.object_layout_editor(object_type_ref, origin_object_type_ref=None, origin_command_id=None)
-        await self._open_piece(piece)
 
-
-class ThisModule(ClientModule):
+class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
@@ -224,8 +203,5 @@ class ThisModule(ClientModule):
             services.object_animator,
             services.object_commands_factory,
             services.view_factory,
-            services.object_layout_registry,
-            services.layout_handle_from_object_type,
             services.global_command_list,
-            services.params_editor,
             )
