@@ -1,4 +1,9 @@
 
+rpc_element_command_d = record:
+  peer_ref: ref
+  object_id: string
+  method_name: string
+
 rpc_element_command = record:
   key_type_ref: ref
   method_name: string

@@ -53,6 +53,10 @@ class RpcElementCommand:
         return 'object'
 
     @property
+    def dir(self):
+        return [htypes.rpc_command.rpc_element_command_d(self._peer_ref, self._object_id, self._method_name)]
+
+    @property
     def piece(self):
         return htypes.rpc_command.rpc_element_command(
             key_type_ref=self._key_type_ref,

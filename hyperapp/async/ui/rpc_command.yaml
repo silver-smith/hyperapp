@@ -3,6 +3,7 @@ import:
     rpc:
       - endpoint
     rpc_command:
+      - rpc_element_command_d
       - rpc_element_command
   code:
     - common.resource_key
