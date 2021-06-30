@@ -20,7 +20,7 @@ code_module_list = [
     'client.menu_bar',
     'client.command_pane',
     'client.window',
-    'client.navigator.navigator',
+    'async.ui.navigator',
     'async.ui.qt.record_view',
     'async.ui.data_viewer',
     'client.master_details',
