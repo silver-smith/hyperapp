@@ -24,6 +24,11 @@ class _Observer(TreeObserver):
 
 class TreeToListAdapter(ListObject):
 
+    dir_list = [
+        *ListObject.dir_list,
+        [htypes.tree_to_list_adapter.tree_to_list_adapter_d()],
+        ]
+
     @classmethod
     async def from_state(cls, state, mosaic, object_animator):
         tree_object = await object_animator.invite(state.base_ref)
@@ -36,11 +41,6 @@ class TreeToListAdapter(ListObject):
         self._path = list(path)  # accept tuples as well
         self._observer = _Observer(self)
         self._tree_object.subscribe(self._observer)
-
-    dir_list = [
-        *ListObject.dir_list,
-        [htypes.tree_to_list_adapter.tree_to_list_adapter_d()],
-        ]
 
     @property
     def title(self):
