@@ -7,7 +7,6 @@ import:
       - text_view
   code:
     - async.ui.object
-    - client.layout
     - async.ui.qt.view
     - async.ui.string_object
     - async.ui.module

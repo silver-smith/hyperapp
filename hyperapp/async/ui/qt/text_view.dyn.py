@@ -6,7 +6,6 @@ from PySide2 import QtCore, QtWidgets
 
 from . import htypes
 from .object import ObjectObserver
-from .layout import ObjectLayout
 from .view import View
 from .string_object import StringObject
 from .module import ClientModule
@@ -96,32 +95,6 @@ class TextEditView(QtWidgets.QTextEdit, ObjectObserver):
 
     # def __del__(self):
     #     _log.info('~text_edit %r', self)
-
-
-class TextViewLayout(ObjectLayout):
-
-    @classmethod
-    async def from_data(cls, state, path, layout_watcher, mosaic, async_web):
-        object_type = await async_web.summon(state.object_type_ref)
-        return TextViewLayout(mosaic, path, object_type, state.command_list, state.editable)
-
-    def __init__(self, mosaic, path, object_type, command_list_data, editable):
-        super().__init__(mosaic, path, object_type, command_list_data)
-        self._editable = editable
-
-    @property
-    def piece(self):
-        return htypes.text.text_edit_layout(self._object_type_ref, self._command_list_data, self._editable)
-
-    async def create_view(self, command_hub, object):
-        return TextView(object)
-
-    async def visual_item(self):
-        if self._editable:
-            tag = 'editable'
-        else:
-            tag = 'read-only'
-        return self.make_visual_item(f'TextView/{tag}')
 
 
 class ThisModule(ClientModule):
