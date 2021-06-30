@@ -7,7 +7,6 @@ class RecordService(RecordObject):
 
     @classmethod
     async def from_piece(cls, piece, identity, mosaic, async_web, object_animator, command_registry, rpc_endpoint, async_rpc_proxy):
-        object_type = await async_web.summon(piece.type_ref)
         interface_ref = record_interface_ref(mosaic, piece)
         service = htypes.rpc.endpoint(
             peer_ref=piece.peer_ref,
@@ -29,24 +28,19 @@ class RecordService(RecordObject):
             name: getattr(record, name)
             for name in record._t.fields
             }
-        self = cls(piece, object_type, proxy, command_list)
+        self = cls(piece, proxy, command_list)
         await self.async_init(object_animator, fields)
         return self
 
-    def __init__(self, service, object_type, proxy, command_list):
+    def __init__(self, service, proxy, command_list):
         super().__init__()
         self._service = service
-        self._object_type = object_type
         self._proxy = proxy
         self._command_list = command_list
 
     @property
     def piece(self):
         return self._service
-
-    @property
-    def type(self):
-        return self._object_type
 
     @property
     def title(self):

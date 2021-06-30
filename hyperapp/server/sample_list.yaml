@@ -1,16 +1,9 @@
 import:
   types:
-    object_type:
-      - object_command
     string_ot:
       - string_ot
-    list_ot:
-      - column
-      - list_ot
-    record_ot:
-      - field
-      - record_ot
     service:
+      - column
       - param_type
       - parameter
       - list_service

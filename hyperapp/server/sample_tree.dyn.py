@@ -83,20 +83,6 @@ class ThisModule(Module):
         int_list_t = TList(tInt)
         int_list_t_ref = types.reverse_resolve(int_list_t)
 
-        tree_service_ot = htypes.tree_ot.tree_ot(
-            command_list=[
-                htypes.object_type.object_command('open', None),
-                htypes.object_type.object_command('view', None),
-                htypes.object_type.object_command('edit', None),
-                ],
-            key_column_id='key',
-            column_list=[
-                htypes.tree_ot.column('key', int_t_ref),
-                htypes.tree_ot.column('value', string_t_ref),
-                ],
-            )
-        item_t = tree_item_t(mosaic, types, tree_service_ot)
-
         tree_object_id = 'test_tree_service_object'
         open_command = htypes.rpc_command.rpc_element_command(
             key_type_ref=int_list_t_ref,
@@ -117,7 +103,6 @@ class ThisModule(Module):
             object_id=tree_object_id,
             )
         tree_service = htypes.service.tree_service(
-            type_ref=mosaic.put(tree_service_ot),
             peer_ref=server_peer_ref,
             object_id=tree_object_id,
             param_type_list=[],
@@ -127,17 +112,16 @@ class ThisModule(Module):
                 mosaic.put(view_command),
                 mosaic.put(edit_command),
                 ],
-            )
-
-        record_object_id = 'test_sample_tree_record_service_object'
-        string_ot_ref = mosaic.put(htypes.string_ot.string_ot(command_list=[]))
-        record_service_ot = htypes.record_ot.record_ot(
-            command_list=[],
-            field_type_list=[
-                htypes.record_ot.field('title', string_ot_ref),
-                htypes.record_ot.field('text', string_ot_ref),
+            key_column_id='key',
+            column_list=[
+                htypes.service.column('key', int_t_ref),
+                htypes.service.column('value', string_t_ref),
                 ],
             )
+
+        item_t = tree_item_t(mosaic, types, tree_service)
+
+        record_object_id = 'test_sample_tree_record_service_object'
         record_field_list = [
             htypes.service.record_field('title', string_t_ref),
             htypes.service.record_field('text', string_t_ref),
@@ -145,7 +129,6 @@ class ThisModule(Module):
 
         def record_service_factory(path):
             return htypes.service.record_service(
-                type_ref=mosaic.put(record_service_ot),
                 peer_ref=server_peer_ref,
                 object_id=record_object_id,
                 param_type_list=[

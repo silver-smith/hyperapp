@@ -1,11 +1,7 @@
 import:
   types:
-    object_type:
-      - object_command
-    list_ot:
-      - column
-      - list_ot
     service:
+      - column
       - list_service
     rpc_command:
       - rpc_element_command

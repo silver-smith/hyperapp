@@ -8,10 +8,10 @@ from hyperapp.common.htypes import (
     )
 
 
-def tree_item_ref(mosaic, tree_ot):
+def tree_item_ref(mosaic, column_list):
     field_list = [
         field_mt(column.id, column.type_ref)
-        for column in tree_ot.column_list
+        for column in column_list
         ]
     item_mt = record_mt(None, field_list)
     item_ref = mosaic.put(item_mt)
@@ -19,24 +19,24 @@ def tree_item_ref(mosaic, tree_ot):
     return named_item_ref
 
 
-def tree_item_t(mosaic, types, tree_ot):
-    named_item_ref = tree_item_ref(mosaic, tree_ot)
+def tree_item_t(mosaic, types, tree_service):
+    named_item_ref = tree_item_ref(mosaic, tree_service.column_list)
     return types.resolve(named_item_ref)
 
 
-def pick_key_column(tree_ot):
-    for column in tree_ot.column_list:
-        if column.id == tree_ot.key_column_id:
+def pick_key_column(tree_service):
+    for column in tree_service.column_list:
+        if column.id == tree_service.key_column_id:
             return column
-    raise RuntimeError(f"Key column {tree_ot.key_column_id} is missing from: {tree_ot.column_list}")
+    raise RuntimeError(f"Key column {tree_service.key_column_id} is missing from: {tree_service.column_list}")
 
 
-def tree_interface_ref(mosaic, tree_ot):
-    key_column = pick_key_column(tree_ot)
+def tree_interface_ref(mosaic, tree_service):
+    key_column = pick_key_column(tree_service)
     path_type_ref = mosaic.put(list_mt(key_column.type_ref))
     path_field = field_mt('path', path_type_ref)
     
-    named_item_ref = tree_item_ref(mosaic, tree_ot)
+    named_item_ref = tree_item_ref(mosaic, tree_service.column_list)
     item_list_ref = mosaic.put(list_mt(named_item_ref))
     items_field = field_mt('items', item_list_ref)
 

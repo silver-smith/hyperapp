@@ -55,27 +55,23 @@ def test_list_service(services, htypes, code):
 
     int_t_ref = services.types.reverse_resolve(tInt)
     string_list_t_ref = services.types.reverse_resolve(TList(tString))
-    service_ot = htypes.list_ot.list_ot(
-        command_list=[],
+
+    object_id = 'test_list_service_object'
+    list_service = htypes.service.list_service(
+        peer_ref=master_peer_ref,
+        object_id=object_id,
+        param_type_list=[],
+        param_list=[],
+        command_ref_list=[],
         key_column_id='key',
         column_list=[
             htypes.list_ot.column('key', int_t_ref),
             htypes.list_ot.column('value_list', string_list_t_ref),
             ],
         )
-    service_ot_ref = services.mosaic.put(service_ot)
-    row_t = code.list.list_row_t(services.mosaic, services.types, service_ot)
-
-    object_id = 'test_list_service_object'
-    list_service = htypes.service.list_service(
-        type_ref=service_ot_ref,
-        peer_ref=master_peer_ref,
-        object_id=object_id,
-        param_type_list=[],
-        param_list=[],
-        command_ref_list=[],
-        )
     list_service_ref = services.mosaic.put(list_service)
+
+    row_t = code.list.list_row_t(services.mosaic, services.types, list_service)
 
     rpc_endpoint = services.rpc_endpoint()
     services.endpoint_registry.register(master_identity, rpc_endpoint)

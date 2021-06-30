@@ -8,10 +8,10 @@ from hyperapp.common.htypes import (
     )
 
 
-def list_row_ref(mosaic, list_ot):
+def list_row_ref(mosaic, column_list):
     field_list = [
         field_mt(column.id, column.type_ref)
-        for column in list_ot.column_list
+        for column in column_list
         ]
     row_mt = record_mt(None, field_list)
     row_ref = mosaic.put(row_mt)
@@ -19,13 +19,13 @@ def list_row_ref(mosaic, list_ot):
     return named_row_ref
 
 
-def list_row_t(mosaic, types, list_ot):
-    named_row_ref = list_row_ref(mosaic, list_ot)
+def list_row_t(mosaic, types, list_service):
+    named_row_ref = list_row_ref(mosaic, list_service.column_list)
     return types.resolve(named_row_ref)
 
 
-def list_interface_ref(mosaic, list_ot):
-    named_row_ref = list_row_ref(mosaic, list_ot)
+def list_interface_ref(mosaic, list_service):
+    named_row_ref = list_row_ref(mosaic, list_service.column_list)
     row_list_ref = mosaic.put(list_mt(named_row_ref))
     rows_field = field_mt('rows', row_list_ref)
     get_method_ref = mosaic.put(request_mt('get', [], [rows_field]))

@@ -8,7 +8,6 @@ parameter = record:
   param_ref: ref
 
 service = record:
-  type_ref: ref
   peer_ref: ref
   object_id: string
   param_type_list: param_type list
@@ -16,8 +15,17 @@ service = record:
   command_ref_list: ref list
 
 
-list_service = record(service)
-tree_service = record(service)
+column = record:
+  id: string
+  type_ref: ref
+
+multi_item_service = record(service):
+  key_column_id: string
+  column_list: column list
+
+
+list_service = record(multi_item_service)
+tree_service = record(multi_item_service)
 
 
 record_field = record:

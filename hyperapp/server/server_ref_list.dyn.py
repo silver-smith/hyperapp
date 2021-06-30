@@ -60,19 +60,6 @@ class ThisModule(Module):
         ref_t_ref = types.reverse_resolve(ref_t)
         string_t_ref = types.reverse_resolve(tString)
 
-        list_service_ot = htypes.list_ot.list_ot(
-            command_list=[
-                htypes.object_type.object_command('open', None),
-                ],
-            key_column_id='id',
-            column_list=[
-                htypes.list_ot.column('id', string_t_ref),
-                htypes.list_ot.column('title', string_t_ref),
-                htypes.list_ot.column('ref', ref_t_ref),
-                ],
-            )
-        row_t = list_row_t(mosaic, types, list_service_ot)
-
         object_id = 'server_ref_list'
         open_command = htypes.rpc_command.rpc_element_command(
             key_type_ref=string_t_ref,
@@ -80,8 +67,7 @@ class ThisModule(Module):
             peer_ref=server_peer_ref,
             object_id=object_id,
             )
-        service = htypes.service.list_service(
-            type_ref=mosaic.put(list_service_ot),
+        list_service = htypes.service.list_service(
             peer_ref=server_peer_ref,
             object_id=object_id,
             param_type_list=[],
@@ -89,11 +75,19 @@ class ThisModule(Module):
             command_ref_list=[
                 mosaic.put(open_command),
                 ],
+            key_column_id='id',
+            column_list=[
+                htypes.service.column('id', string_t_ref),
+                htypes.service.column('title', string_t_ref),
+                htypes.service.column('ref', ref_t_ref),
+                ],
             )
+
+        row_t = list_row_t(mosaic, types, list_service)
 
         ref_list = RefList()
         servant = RefListServant(mosaic, row_t, ref_list)
         services.server_rpc_endpoint.register_servant(object_id, servant)
 
         services.server_ref_list = ref_list
-        services.local_server_ref.save_piece(service)
+        services.local_server_ref.save_piece(list_service)

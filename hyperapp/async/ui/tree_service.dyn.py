@@ -8,8 +8,7 @@ class TreeService(TreeObject):
 
     @classmethod
     async def from_piece(cls, piece, identity, mosaic, types, command_registry, rpc_endpoint, async_rpc_proxy):
-        tree_ot = mosaic.resolve_ref(piece.type_ref).value
-        interface_ref = tree_interface_ref(mosaic, tree_ot)
+        interface_ref = tree_interface_ref(mosaic, piece)
         service = htypes.rpc.endpoint(
             peer_ref=piece.peer_ref,
             iface_ref=interface_ref,
@@ -20,44 +19,45 @@ class TreeService(TreeObject):
             await command_registry.invite(ref)
             for ref in piece.command_ref_list
             ]
-        return cls(mosaic, types, tree_ot, piece.peer_ref, piece.object_id, proxy, command_list)
+        return cls(mosaic, types, piece.peer_ref, piece.object_id, piece.key_column_id, piece.column_list, proxy, command_list)
 
-    def __init__(self, mosaic, types, tree_ot, peer_ref, object_id, proxy, command_list):
+    def __init__(self, mosaic, types, peer_ref, object_id, key_column_id, column_list, proxy, command_list):
         super().__init__()
         self._mosaic = mosaic
-        self._tree_ot = tree_ot
+        self._types = types
         self._peer_ref = peer_ref
         self._object_id = object_id
         self._proxy = proxy
         self._rpc_command_list = command_list
+        self._key_column_id = key_column_id
         self._column_list = [
             Column(
                 id=column.id,
                 type=types.resolve(column.type_ref),
-                is_key=(column.id == tree_ot.key_column_id),
+                is_key=(column.id == key_column_id),
                 )
-            for column in tree_ot.column_list
+            for column in column_list
             ]
 
     @property
     def piece(self):
-        tree_ot_ref = self._mosaic.put(self._tree_ot)
         command_ref_list = [
             self._mosaic.put(command.piece)
             for command in self._rpc_command_list
             ]
+        column_list = [
+            htypes.service.column(column.id, self._types.reverse_resolve(column.type))
+            for column in self._column_list
+            ]
         return htypes.service.tree_service(
-            type_ref=tree_ot_ref,
             peer_ref=self._peer_ref,
             object_id=self._object_id,
             param_type_list=[],
             param_list=[],
             command_ref_list=command_ref_list,
+            key_column_id=self._key_column_id,
+            column_list=column_list,
             )
-
-    @property
-    def type(self):
-        return self._tree_ot
 
     @property
     def title(self):
