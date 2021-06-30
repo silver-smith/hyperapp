@@ -54,8 +54,8 @@ class TreeToListAdapter(ListObject):
     @property
     def command_list(self):
         return [
-            *self._tree_object.command_list(),
-            *super().command_list(),
+            *self._tree_object.command_list,
+            *super().command_list,
             ]
 
     @property
