@@ -57,13 +57,7 @@ class View(ObjectObserver, ViewCommander):
         view = self.get_current_child()
         if view:
             return view.title
-        object = self.get_object()
-        if object:
-            return object.title
         return 'Untitled'
-
-    def get_object(self):
-        return None
 
     def object_selected(self, obj):
         return self._parent().object_selected(obj)

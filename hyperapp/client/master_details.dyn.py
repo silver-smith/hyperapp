@@ -47,7 +47,7 @@ class MasterDetailsView(QtWidgets.QSplitter, Composite):
             w = self.widget(1)
             w.setParent(None)
             w.deleteLater()
-        master_object = self._master_view.get_object()
+        master_object = self._master_view.object
         try:
             details_command = master_object.get_command(self._details_command_id)
         except KeyError:

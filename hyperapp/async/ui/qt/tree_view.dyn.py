@@ -279,7 +279,8 @@ class TreeView(View, QtWidgets.QTreeView, TreeObserver):
     def state(self):
         return self._object.State(current_key=self.current_item_key)
 
-    def get_object(self):
+    @property
+    def object(self):
         return self._object
 
     def add_observer(self, observer):

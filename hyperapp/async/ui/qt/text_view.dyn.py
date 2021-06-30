@@ -41,9 +41,6 @@ class TextView(View, QtWidgets.QTextBrowser):
     def title(self):
         return self.object.title
 
-    def get_object(self):
-        return self.object
-
     def text2html(self, text):
         return re.sub(r'\[([^\]]+)\]', r'<a href="\1">\1</a>', text or '')
 
