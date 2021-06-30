@@ -78,7 +78,7 @@ class ViewSelector(SimpleListObject):
             yield Item(next(id_it), dir, dir_str, 'selected', piece if piece is not None else '')
 
     @command
-    async def set_default(self, current_key):
+    async def select(self, current_key):
         rec = self._id_to_available_rec.get(current_key)
         log.info("Available dir for %d: %r -> %r", current_key, rec.dir, rec.view)
         if not rec:
