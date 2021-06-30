@@ -1,4 +1,0 @@
-require:
-  - resource_registry
-provide:
-  - resource_resolver

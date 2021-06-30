@@ -19,8 +19,6 @@ _HistoryItem = namedtuple('_HistoryItem', 'piece view_state')
 
 class Command:
 
-    resource_key = None
-
     def __init__(self, name, dir, fn, kind):
         self.name = name
         self.dir = dir

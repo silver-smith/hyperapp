@@ -6,7 +6,6 @@ class SelfCommand:
     def __init__(self, id, object):
         self.id = id
         self.kind = 'object'
-        self.resource_key = None  # todo
         self._piece = object.piece
 
     def is_enabled(self):

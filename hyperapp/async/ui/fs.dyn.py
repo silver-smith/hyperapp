@@ -1,7 +1,7 @@
 from collections import namedtuple
 import logging
 
-from hyperapp.common.htypes import tInt, tString, resource_key_t
+from hyperapp.common.htypes import tInt, tString
 
 from . import htypes
 from .code_registry import CodeRegistry

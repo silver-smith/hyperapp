@@ -13,9 +13,3 @@ bundle_t = TRecord('bundle', {
     'aux_roots': TList(ref_t),
     'capsule_list': TList(capsule_t),
     })
-
-
-resource_key_t = TRecord('resource_key', {
-    'base_ref': ref_t,
-    'path': TList(tString),
-    })

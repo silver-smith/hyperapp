@@ -2,7 +2,7 @@ import asyncio
 from collections import namedtuple
 import logging
 
-from hyperapp.common.htypes import tInt, resource_key_t
+from hyperapp.common.htypes import tInt
 
 from . import htypes
 from .command import command

@@ -12,7 +12,6 @@ log = logging.getLogger(__name__)
 
 
 code_module_list = [
-    'common.resource_loader',
     'async.ui.qt.application',
     'async.ui.code_command_chooser',
     'async.ui.command_list',
@@ -59,11 +58,6 @@ def main():
     args = parser.parse_args()
 
     services = Services()
-    services.client_resources_dir_list = [
-        services.hyperapp_dir / 'async/ui',
-        services.hyperapp_dir / 'async/ui/qt',
-        services.hyperapp_dir / 'client',
-        ]
     services.init_services()
     services.init_modules(code_module_list)
     services.start()

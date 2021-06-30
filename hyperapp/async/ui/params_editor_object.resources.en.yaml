@@ -1,8 +1,0 @@
-module:async.ui.params_editor_object:ParamsEditor:
-  commands:
-    submit:
-      text: Submit
-      description: Run command with provided parameters
-      is_default: yes
-      shortcuts:
-        - Return

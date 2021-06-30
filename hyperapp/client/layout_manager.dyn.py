@@ -6,7 +6,6 @@ from functools import partial
 
 from PySide2 import QtCore, QtWidgets
 
-from hyperapp.common.htypes import resource_key_t
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.common.ref import ref_repr
 
@@ -112,13 +111,9 @@ class RootLayout(GlobalLayout):
         for command in self.get_all_command_list():
             if command.id == 'quit':
                 continue
-            resource_key = command.resource_key
-            path = [*resource_key.path[:-1], 'visual_' + resource_key.path[-1]]
-            resource_key = resource_key_t(resource_key.base_ref, path)
             yield (command
                    .with_(kind='element')
                    .with_(params_subst=self._subst_params_for_item)
-                   .with_(resource_key=resource_key)
                    )
 
     def _subst_params_for_item(self, item_path, *args, **kw):

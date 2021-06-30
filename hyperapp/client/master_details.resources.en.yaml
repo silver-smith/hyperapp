@@ -1,7 +1,0 @@
-module:client.master_details:MasterDetailsLayout:
-  commands:
-    replace:
-      text: Replace
-      description: Replace this layout with another one
-      shortcuts:
-      - Ctrl+R

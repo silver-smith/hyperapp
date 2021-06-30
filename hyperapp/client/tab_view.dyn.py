@@ -6,7 +6,6 @@ from collections import namedtuple
 from PySide2 import QtCore, QtWidgets
 
 from hyperapp.common.util import is_list_inst
-from hyperapp.common.htypes import resource_key_t
 
 from . import htypes
 from .util import DEBUG_FOCUS, call_after, key_match
@@ -110,14 +109,9 @@ class TabLayout(GlobalLayout):
             command
               .with_(kind='element')
               .with_(params_subst=self._subst_params_for_item)
-              .with_(resource_key=self._element_command_resource_key(command.resource_key))
             for command in self.get_all_command_list()
             ]
         return child.with_added_commands(commands)
-
-    def _element_command_resource_key(self, resource_key):
-        path = [*resource_key.path[:-1], 'visual_' + resource_key.path[-1]]
-        return resource_key_t(resource_key.base_ref, path)
 
     async def _create_tab(self, tab_ref):
         tab_id = next(self._tab_id_counter)

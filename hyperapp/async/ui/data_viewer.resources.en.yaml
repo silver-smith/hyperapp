@@ -1,8 +1,0 @@
-type:data_viewer.data_viewer:
-  columns:
-    name:
-      text: Name
-    t:
-      text: Type
-    value:
-      text: Value

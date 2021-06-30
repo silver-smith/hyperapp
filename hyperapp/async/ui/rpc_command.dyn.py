@@ -10,7 +10,6 @@ from hyperapp.common.htypes import (
 from hyperapp.common.module import Module
 
 from . import htypes
-from .resource_key import module_resource_key
 
 
 def element_command_interface_ref(mosaic, types, key_type_ref, method_name):

@@ -21,7 +21,6 @@ class LayoutCommand:
         self._layout_handle = layout_handle
         self._wrapper = wrapper
         self.kind = code_command.kind
-        self.resource_key = code_command.resource_key  # todo: use id
 
     def __repr__(self):
         return (

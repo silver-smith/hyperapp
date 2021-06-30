@@ -1,7 +1,0 @@
-module:client.local_server:ThisModule:
-  commands:
-    open_local_server:
-      text: Open local server
-      description: Retrieve ref from file and open local server
-      shortcuts:
-      - Alt+L

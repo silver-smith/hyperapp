@@ -8,7 +8,6 @@ from typing import Dict, List
 
 from . import htypes
 from .weak_key_dictionary_with_callback import WeakKeyDictionaryWithCallback
-from .resource_key import module_resource_key
 from .object_command import BuiltinCommand
 
 log = logging.getLogger(__name__)
@@ -62,12 +61,6 @@ class Object(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def piece(self):
         pass
-
-    @classmethod
-    def resource_key(cls, path=()):
-        class_name = cls.__name__
-        module_name = cls.__module__
-        return module_resource_key(module_name, [class_name, *path])
 
     async def run_command(self, command_id, *args, **kw):
         command = self.get_command(command_id)

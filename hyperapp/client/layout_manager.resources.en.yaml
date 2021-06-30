@@ -1,7 +1,0 @@
-module:client.layout_manager:RootLayout:
-  commands:
-    duplicate_window:
-      text: Duplicate window
-      description: Duplicate current window
-      shortcuts:
-      - Alt+W
