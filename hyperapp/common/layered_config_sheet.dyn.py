@@ -67,14 +67,14 @@ class LCSheet:
         return record
 
     def add(self, dir, piece, persist=False):
-        log.info("LCS: add/%s %s -> %s", 'persist' if persist else 'not persist', dir, piece)
+        log.info("LCS: add%s %s -> %s", '/persist' if persist else '', dir, piece)
         record = self._add(dir, piece)
         if persist:
             record.persist = True
             self._save()
 
     def set(self, dir, piece, persist=False):
-        log.info("LCS: set/%s %s -> %s", 'persist' if persist else 'not persist', dir, piece)
+        log.info("LCS: set%s %s -> %s", '/persist' if persist else '', dir, piece)
         record = self._dir_to_record[tuple(dir)]
         record.value_list = [piece]
         if persist:
