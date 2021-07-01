@@ -12,6 +12,10 @@ from .record_object import RecordObject
 log = logging.getLogger(__name__)
 
 
+class NotRegisteredError(RuntimeError):
+    pass
+
+
 class RecordViewer(RecordObject):
 
     def __init__(self, fields, object_type, piece, title):
@@ -53,8 +57,11 @@ class ObjectAnimator:
     async def _construct_object(self, piece):
         t = deduce_value_type(piece)
         if isinstance(t, TRecord):
-            return await self._construct_record_object(t, piece)
-        raise RuntimeError(f"No code is registered for object: {t!r}; piece: {piece}")
+            try:
+                return await self._construct_record_object(t, piece)
+            except NotRegisteredError as x:
+                raise NotRegisteredError(f"For record {piece}: {x}")
+        raise NotRegisteredError(f"No code is registered for object: {t!r}; piece: {piece}")
 
     async def _construct_record_object(self, t, piece):
         log.info("Construct object for %s: %s", t, piece)
