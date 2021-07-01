@@ -3,6 +3,7 @@ import logging
 import sys
 import weakref
 from dataclasses import dataclass, field
+from functools import cached_property
 from collections import namedtuple
 from typing import Dict, List
 
@@ -39,14 +40,14 @@ class Object(metaclass=abc.ABCMeta):
 
     def _init_commands(self):
         cls = type(self)
-        for name in dir(cls):
+        for name in dir(self):
             if name.startswith('__'):
                 continue
-            attr = getattr(cls, name)
-            if type(attr) is property:
+            if hasattr(cls, name) and type(getattr(cls, name)) in {property, cached_property}:
                 continue  # Avoid to call properties as we are not yet fully constructed.
+            attr = getattr(self, name)
             if getattr(attr, '__is_command__', False):
-                self._command_list.append(BuiltinCommand.from_class_method(self, attr))
+                self._command_list.append(BuiltinCommand.from_method(self, attr))
 
     @property
     def command_list(self):

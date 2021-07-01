@@ -6,17 +6,18 @@ from . import htypes
 class BuiltinCommand:
 
     @classmethod
-    def from_class_method(cls, object, method):
+    def from_method(cls, object, method):
         attr_name = method.__name__
         wanted_params = {
             name for name
             in inspect.signature(method).parameters
             if name != 'self'
             }
-        return cls(object.dir_list[-1], attr_name, wanted_params)
+        return cls(object.dir_list[-1], method, attr_name, wanted_params)
 
-    def __init__(self, object_dir, name, wanted_params):
+    def __init__(self, object_dir, method, name, wanted_params):
         self._object_dir = object_dir
+        self._method = method
         self.name = name
         self._wanted_params = wanted_params
 
@@ -34,9 +35,8 @@ class BuiltinCommand:
             kw['view_state'] = view_state
         missing_kw = self._wanted_params - set(kw)
         if missing_kw:
-            raise RuntimeError(f"Method {self._qual_name} wants arguments {missing_kw} but {view_state!r} does not provide them")
-        method = getattr(object, self.name)
-        return await method(**kw)
+            raise RuntimeError(f"Method {self.name!r} wants arguments {missing_kw} but {view_state!r} does not provide them")
+        return await self._method(**kw)
 
 
 class Command:
