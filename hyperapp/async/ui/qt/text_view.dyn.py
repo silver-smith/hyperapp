@@ -24,7 +24,7 @@ class TextView(View, QtWidgets.QTextBrowser):
         View.__init__(self)
         self.setOpenLinks(False)
         # self._view_opener = view_opener
-        self.object = object
+        self._object = object
         self.setHtml(self.text2html(object.value or ''))
         self.anchorClicked.connect(self.on_anchor_clicked)
         self.object.subscribe(self)
@@ -32,6 +32,10 @@ class TextView(View, QtWidgets.QTextBrowser):
     @property
     def piece(self):
         return htypes.text.text_view()
+
+    @property
+    def object(self):
+        return self._object
 
     @property
     def state(self):
