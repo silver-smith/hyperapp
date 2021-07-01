@@ -1,4 +1,8 @@
+import logging
+
 from .module import ClientModule
+
+log = logging.getLogger(__name__)
 
 
 class ViewFactory:
@@ -8,6 +12,7 @@ class ViewFactory:
         self._view_registry = view_registry
 
     async def create_view(self, object):
+        log.info("View factory: create view for object: %r", object)
         piece = self._lcs.get_first(object.dir_list)
         return await self._view_registry.animate(piece, object)
 
