@@ -30,9 +30,9 @@ class TreeToListAdapter(ListObject):
         ]
 
     @classmethod
-    async def from_state(cls, state, mosaic, object_animator):
-        tree_object = await object_animator.invite(state.base_ref)
-        return cls(mosaic, tree_object, state.path)
+    async def from_piece(cls, piece, mosaic, object_animator):
+        tree_object = await object_animator.invite(piece.base_ref)
+        return cls(mosaic, tree_object, piece.path)
 
     def __init__(self, mosaic, tree_object, path):
         super().__init__()
@@ -90,8 +90,8 @@ class TreeToListAdapter(ListObject):
 
     # todo: distinguish leaf items, do not open them
     @command
-    async def enter(self, item_key):
-        return htypes.tree_to_list_adapter.tree_to_list_adapter(self._tree_object_ref, self._path + [item_key])
+    async def enter(self, current_key):
+        return htypes.tree_to_list_adapter.tree_to_list_adapter(self._tree_object_ref, self._path + [current_key])
 
     @command
     async def parent(self):
@@ -104,6 +104,12 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
+        services.object_registry.register_actor(
+            htypes.tree_to_list_adapter.tree_to_list_adapter,
+            TreeToListAdapter.from_piece,
+            services.mosaic,
+            services.object_animator,
+            )
         services.lcs.add(
             [htypes.view.available_view_d(), *TreeObject.dir_list[-1]],
             htypes.tree_to_list_adapter.tree_to_list_adapter_view(),
