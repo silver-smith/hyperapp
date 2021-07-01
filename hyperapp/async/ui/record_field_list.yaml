@@ -6,6 +6,8 @@ import:
       - record_field_list
     command:
       - object_commands_d
+    available_view_list:
+      - available_view_list
   code:
     - async.ui.command
     - async.ui.record_object

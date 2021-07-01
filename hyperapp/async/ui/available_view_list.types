@@ -1,0 +1,5 @@
+
+available_view_list_d = record
+
+available_view_list = record:
+  piece_ref: ref

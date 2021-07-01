@@ -1,0 +1,10 @@
+import:
+  types:
+    available_view_list:
+      - available_view_list_d
+      - available_view_list
+    view:
+      - available_view_d
+  code:
+    - async.ui.column
+    - async.ui.simple_list_object
