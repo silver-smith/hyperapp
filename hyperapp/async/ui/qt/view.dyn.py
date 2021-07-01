@@ -21,6 +21,10 @@ class View(ObjectObserver, ViewCommander):
     def get_state(self):
         raise NotImplementedError(self.__class__)
 
+    @property
+    def object(self):
+        return None
+
     def object_changed(self):
         pass
 
@@ -49,6 +53,9 @@ class View(ObjectObserver, ViewCommander):
         view = self.get_current_child()
         if view:
             return view.title
+        object = self.object
+        if object:
+            return object.title
         return 'Untitled'
 
     def has_focus(self):
