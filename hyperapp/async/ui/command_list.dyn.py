@@ -64,7 +64,7 @@ class CommandList(SimpleListObject):
     async def _set_key(self, command_name, shortcut):
         log.info("Set shortcut for command %s: %r", command_name, shortcut)
         command = self._command_by_name[command_name]
-        self._lcs.set([*command.dir, htypes.command.command_shortcut_d()], shortcut, save=True)
+        self._lcs.set([*command.dir, htypes.command.command_shortcut_d()], shortcut, persist=True)
         await self.update()
 
     @command
