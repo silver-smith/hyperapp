@@ -21,6 +21,9 @@ class BuiltinCommand:
         self.name = name
         self._wanted_params = wanted_params
 
+    def __repr__(self):
+        return f"builtin-object-command:{self.name}/{self._method.__func__.__qualname__}"
+
     @property
     def dir(self):
         return [*self._object_dir, htypes.command.builtin_object_command_d(self.name)]
