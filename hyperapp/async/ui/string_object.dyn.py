@@ -22,7 +22,7 @@ class StringObject(Object):
 
     @property
     def title(self):
-        return 'String'
+        return f"String: {self._value!r}"
 
     @property
     def piece(self):
