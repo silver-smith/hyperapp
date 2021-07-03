@@ -60,7 +60,9 @@ class RecordFieldList(SimpleListObject):
     async def select(self, current_key):
         field = self._object.fields[current_key]
         piece_ref = self._mosaic.put(field.piece)
-        return htypes.available_view_list.available_view_list(piece_ref)
+        list = htypes.available_view_list.available_view_list(piece_ref)
+        list_ref = self._mosaic.put(list)
+        return htypes.selector.selector(list_ref)
 
 
 class ThisModule(Module):

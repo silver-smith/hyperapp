@@ -1,0 +1,11 @@
+
+selector_d = record
+
+
+object_method_callback = record:
+  object_piece_ref: ref
+  method: string
+
+
+selector = record:
+  list_ref: ref

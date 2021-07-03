@@ -1,0 +1,10 @@
+import:
+  types:
+    selector:
+      - selector_d
+      - selector
+  code:
+    - async.ui.command
+    - async.ui.object
+require:
+  - object_registry

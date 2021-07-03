@@ -8,6 +8,8 @@ import:
       - object_commands_d
     available_view_list:
       - available_view_list
+    selector:
+      - selector
   code:
     - async.ui.command
     - async.ui.record_object
