@@ -1,7 +1,0 @@
-from list_ot import list_ot
-
-
-view_chooser_type = record(list_ot)
-
-view_chooser = record:
-  object_type_ref: ref

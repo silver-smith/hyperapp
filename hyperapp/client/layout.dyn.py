@@ -1,17 +1,38 @@
 import abc
 import asyncio
 import logging
+import weakref
 from collections import namedtuple
+from dataclasses import dataclass
+from typing import List
 
 from . import htypes
 from .view_command import ViewCommander
 from .items_view import map_columns_to_view
-from .layout_command import LayoutCommand
-from .layout_handle import VisualItem
-from .self_command import SelfCommand
 
 
 _log = logging.getLogger(__name__)
+
+
+@dataclass
+class VisualItem:
+    name: str
+    text: str
+    children: List['VisualItem'] = None
+
+
+class LayoutWatcher:
+
+    def __init__(self):
+        self._observers = weakref.WeakSet()
+
+    def subscribe(self, observer):
+        self._observers.add(observer)
+
+    def distribute_diffs(self, diff_list):
+        _log.info("Distribute layout diffs %s to %s", diff_list, list(self._observers))
+        for observer in self._observers:
+            observer.process_layout_diffs(diff_list)
 
 
 class Layout(ViewCommander, metaclass=abc.ABCMeta):
@@ -76,151 +97,3 @@ class GlobalLayout(Layout):
             await child.get_current_commands(),
             await GlobalLayout.get_current_commands(self),
             )
-
-
-class ObjectLayout(Layout):
-
-    _Command = namedtuple('ObjectLayout_Command', 'id code_id layout_ref')
-
-    def __init__(self, mosaic, path, object_type, command_list_data):
-        super().__init__(path)
-        self._mosaic = mosaic
-        self._object_type = object_type
-        self._command_list = [
-            self._Command(command.id, command.code_id, command.layout_ref)
-            for command in command_list_data
-            ]
-
-    @property
-    def object_type(self):
-        return self._object_type
-
-    @abc.abstractmethod
-    async def create_view(self, command_hub, object):
-        pass
-
-    async def get_current_commands(self, object, view):
-        return self._get_object_commands(object)
-
-    def _get_object_commands(self, object):
-        id_to_code_command = self._id_to_code_command(object)
-        command_list = []
-        for command in self._command_list:
-            layout_command = self._make_layout_command(id_to_code_command, object, command)
-            command_list.append(layout_command)
-        return command_list
-
-    def get_item_commands(self, object, item_key):
-        return self._get_object_commands(object)
-
-    def available_code_commands(self, object):
-        return [
-            *super().collect_view_commands(),
-            *[(tuple(self._path), command) for command in object.get_all_command_list()],
-            ]
-
-    @property
-    def command_list(self):
-        return self._command_list
-
-    def add_command(self, object, id, code_id):
-        id_to_code_command = self._id_to_code_command(object)
-        command = self._Command(id, code_id, layout_ref=None)
-        self._command_list.append(command)
-        return self._make_layout_command(id_to_code_command, object, command)
-
-    def _make_layout_command(self, id_to_code_command, object, command):
-        if command.code_id == 'self':
-            code_command = SelfCommand(command.code_id, object)
-        else:
-            code_command = id_to_code_command[command.code_id]
-        return LayoutCommand(command.id, code_command, command.layout_ref, enabled=code_command.is_enabled())
-
-    def _id_to_code_command(self, object):
-        return {
-            command.id: command
-            for path, command in self.available_code_commands(object)
-            }
-
-    @property
-    def _object_type_ref(self):
-        return self._mosaic.put(self._object_type)
-
-    @property
-    def _command_list_data(self):
-        return [
-            htypes.layout.command(command.id, command.code_id, command.layout_ref)
-            for command in self._command_list
-            ]
-
-    @staticmethod
-    def make_default_command_list(object_type):
-        return [
-            htypes.layout.command(id=command.id, code_id=command.id, layout_ref=None)
-            for command in object_type.command_list
-            ]
-
-
-class AbstractMultiItemObjectLayout(ObjectLayout):
-
-    class _CurrentItemObserver:
-
-        def __init__(self, layout, command_hub):
-            self._layout = layout
-            self._command_hub = command_hub
-
-        def current_changed(self, current_item_key):
-            asyncio.create_task(self._command_hub.update(only_kind='element'))
-
-    def __init__(self, mosaic, path, object_type, command_list_data):
-        super().__init__(mosaic, path, object_type, command_list_data)
-        self._current_item_observer = None
-
-    async def get_current_commands(self, object, view):
-        return self.get_item_commands(object, view.current_item_key)
-
-    def get_item_commands(self, object, item_key):
-        all_command_list = self._get_object_commands(object)
-        non_item_command_list = [
-            command for command in all_command_list
-            if command.kind != 'element'
-            ]
-
-        if item_key is None:
-            return non_item_command_list
-
-        unbound_item_command_list = [
-            command for command in all_command_list
-            if command.kind == 'element'
-            ]
-        bound_item_command_list = self.get_bound_item_commands(object, unbound_item_command_list, item_key)
-        return [*non_item_command_list, *bound_item_command_list]
-
-    def get_bound_item_commands(self, object, unbound_item_command_list, item_key):
-        item_command_code_ids = {
-            command.id for command in
-            object.get_item_command_list(item_key)
-            }
-        return [
-            command.partial(item_key)  # bind to item key
-            for command in unbound_item_command_list
-            if command.code_command.id in item_command_code_ids
-            ]
-
-
-class MultiItemObjectLayout(AbstractMultiItemObjectLayout, metaclass=abc.ABCMeta):
-
-    def __init__(self, mosaic, path, object_type, command_list_data, resource_resolver):
-        super().__init__(mosaic, path, object_type, command_list_data)
-        self._resource_resolver = resource_resolver
-
-    async def create_view(self, command_hub, object):
-        columns = list(map_columns_to_view(self._resource_resolver, object))
-        view = self._create_view_impl(object, columns)
-        self._current_item_observer = observer = self._CurrentItemObserver(self, command_hub)
-        view.add_observer(observer)
-        return view
-
-    @abc.abstractmethod
-    def _create_view_impl(self, columns):
-        pass

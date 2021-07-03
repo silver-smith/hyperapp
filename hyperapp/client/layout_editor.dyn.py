@@ -4,7 +4,6 @@ from collections import namedtuple
 
 from . import htypes
 from .command import command
-from .layout_handle import InsertVisualItemDiff, RemoveVisualItemDiff, UpdateVisualItemDiff, LayoutWatcher
 from .command_hub import CommandHub
 from .column import Column
 from .tree_object import InsertItemDiff, RemoveItemDiff, UpdateItemDiff, TreeObject
@@ -27,17 +26,6 @@ class LayoutEditor(TreeObject):
     async def _async_init(self, layout):
         root = await self.get_root_item(layout)
         self._append_item([], root)
-
-    @property
-    def type(self):
-        return htypes.layout_editor.layout_editor_object_type(
-            command_list=tuple(
-                htypes.object_type.object_command(command.command.id, result_object_type_ref=None)
-                for command in self._all_item_commands.values()
-                ),
-            key_column_id='name',
-            column_list=(),
-            )
 
     @property
     def columns(self):
@@ -154,99 +142,12 @@ class GlobalLayoutEditor(LayoutEditor):
         await super().fetch_items(path)
 
 
-class ObjectLayoutEditor(LayoutEditor):
-
-    @classmethod
-    async def from_state(
-            cls, state,
-            mosaic, async_web, object_registry, object_layout_registry, object_layout_association, create_layout_handle):
-        object_type = await async_web.summon(state.object_type_ref)
-        origin_object_type = await async_web.summon_opt(state.origin_object_type_ref)
-        handle = await create_layout_handle(object_type, origin_object_type, state.origin_command_id)
-        self = cls(mosaic, object_layout_registry, object_layout_association, object_type, origin_object_type, state.origin_command_id, handle)
-        await self._async_init(handle.layout)
-        return self
-
-    def __init__(self,
-                 mosaic, object_layout_registry, object_layout_association,
-                 object_type, origin_object_type, origin_command_id, layout_handle):
-        super().__init__(layout_handle.watcher)
-        self._mosaic = mosaic
-        self._object_layout_registry = object_layout_registry
-        self._object_layout_association = object_layout_association
-        self._object_type = object_type
-        self._origin_object_type = origin_object_type
-        self._origin_command_id = origin_command_id
-        self._layout_handle = layout_handle
-
-    @property
-    def title(self):
-        if self._origin_object_type:
-            return f"Edit layout for: {self._origin_object_type._t.name}/{self._origin_command_id}"
-        else:
-            return f"Edit layout for type: {self._object_type._t.name}"
-
-    @property
-    def piece(self):
-        object_type_ref = self._mosaic.put(self._object_type)
-        origin_object_type_ref = self._mosaic.put_opt(self._origin_object_type)
-        return htypes.layout_editor.object_layout_editor(object_type_ref, origin_object_type_ref, self._origin_command_id)
-
-    def get_command_list(self):
-        return [command for command in super().get_command_list()
-                if command.id not in {'replace', '_replace_impl'}]
-
-    async def get_root_item(self, layout):
-        item = await self._layout_handle.layout.visual_item()
-        return item.with_added_commands([
-            self._replace_view,
-            ])
-
-    def process_layout_diffs(self, vdiff_list):
-        super().process_layout_diffs(vdiff_list)
-        layout = self._layout_handle.layout
-        if self._origin_object_type:
-            self._object_layout_association.associate_command(self._origin_object_type, self._origin_command_id, layout)
-        else:
-            self._object_layout_association.associate_type(self._object_type, layout)
-
-    @command
-    async def replace_view(self, path):
-        object_type_ref = self._mosaic.put(self._object_type)
-        chooser = htypes.view_chooser.view_chooser(object_type_ref)
-        chooser_ref = self._mosaic.put(chooser)
-        layout_data_maker_field = htypes.params_editor.field('layout_data_maker', chooser_ref)
-        return htypes.params_editor.params_editor(
-            target_piece_ref=self._mosaic.put(self.piece),
-            target_command_id=self._replace_impl.id,
-            bound_arguments=[],
-            fields=[layout_data_maker_field],
-            )
-
-    @command
-    async def replace_impl(self, layout_data_maker):
-        layout_data = await layout_data_maker(self._object_type)
-        layout = await self._object_layout_registry.animate(layout_data, ['root'], self._layout_handle.watcher)
-        await self._layout_handle.set_layout(layout)
-        return self.piece
-
-
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
         services.object_registry.register_actor(
             htypes.layout_editor.view_layout_editor, GlobalLayoutEditor.from_state, services.layout_manager, services.layout_watcher)
-        services.object_registry.register_actor(
-            htypes.layout_editor.object_layout_editor,
-            ObjectLayoutEditor.from_state,
-            services.mosaic,
-            services.async_web,
-            services.object_registry,
-            services.object_layout_registry,
-            services.object_layout_association,
-            services.create_layout_handle,
-            )
 
     @command
     async def open_view_layout(self):

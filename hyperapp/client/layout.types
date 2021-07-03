@@ -8,9 +8,3 @@ command = record:
 layout = record:
   object_type_ref: ref
   command_list: command list
-
-
-layout_handle = record:
-  object_type_ref: ref
-  origin_object_type_ref: ref opt
-  origin_command_id: string opt

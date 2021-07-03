@@ -7,8 +7,6 @@ from .object import Object
 
 class RefObject(Object):
 
-    type = htypes.ref_ot.ref_ot(command_list=())
-
     @classmethod
     def from_state(cls, state):
         return cls(state)

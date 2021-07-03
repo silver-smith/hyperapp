@@ -8,13 +8,6 @@ import:
     command:
       - object_commands_d
       - command_shortcut_d
-    layout_editor:
-      - object_layout_editor
-    code_command_chooser:
-      - code_command_chooser
-    params_editor:
-      - field
-      - params_editor
   code:
     - async.ui.object
     - async.ui.command
@@ -27,6 +20,7 @@ import:
 require:
   - lcs
   - command_registry
+  - object_registry
   - object_commands_factory
   - global_command_list
   - layout_manager

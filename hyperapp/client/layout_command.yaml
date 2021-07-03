@@ -1,6 +1,0 @@
-import:
-  code:
-    - async.ui.module
-require:
-  - object_animator
-  - layout_handle_from_object_type

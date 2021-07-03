@@ -10,5 +10,4 @@ import:
     - client.layout
     - async.ui.list_object
     - async.ui.tree_object
-    - async.ui.view_chooser
     - async.ui.module

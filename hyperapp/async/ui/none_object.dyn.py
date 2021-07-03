@@ -6,8 +6,6 @@ from .object import Object
 
 class NoneObject(Object):
 
-    type = htypes.none_ot.none_ot(command_list=())
-
     @classmethod
     def from_state(cls, state):
         return cls()

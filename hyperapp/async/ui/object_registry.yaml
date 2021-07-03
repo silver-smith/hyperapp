@@ -1,8 +1,4 @@
 import:
-  types:
-    record_ot:
-      - field
-      - record_ot
   code:
     - async.code_registry
     - async.ui.record_object

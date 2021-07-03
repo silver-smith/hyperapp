@@ -9,10 +9,8 @@ from hyperapp.common.util import is_list_inst
 
 from . import htypes
 from .util import DEBUG_FOCUS, call_after, key_match
-from .view_chooser import LayoutRecMakerField
 from .view import View
 from .command import command
-from .layout_handle import InsertVisualItemDiff, RemoveVisualItemDiff
 from .layout import GlobalLayout
 from .module import ClientModule
 
@@ -143,9 +141,9 @@ class TabLayout(GlobalLayout):
         if self._widget:
             self._widget.replace_tab(tab_idx, view)
 
-    @command
-    async def add_tab(self, tab_idx, view_ref: LayoutRecMakerField):
-        await self._create_and_insert_tab(tab_idx, view_ref)
+    # @command
+    # async def add_tab(self, tab_idx, view_ref: LayoutRecMakerField):
+    #     await self._create_and_insert_tab(tab_idx, view_ref)
 
     @command
     async def duplicate_tab(self, tab_idx):

@@ -105,7 +105,6 @@ class NavigatorLayout(GlobalLayout):
         self._view_opener = view_opener
         self._history = _History()
         self._current_object = None
-        self._current_layout_handle = None
         self._current_view = None
 
     async def _async_init(self, async_web, initial_piece_ref):

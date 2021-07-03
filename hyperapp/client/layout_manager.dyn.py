@@ -11,8 +11,7 @@ from hyperapp.common.ref import ref_repr
 
 from . import htypes
 from .command import command
-from .layout_handle import InsertVisualItemDiff, RemoveVisualItemDiff, LayoutWatcher
-from .layout import GlobalLayout
+from .layout import GlobalLayout, LayoutWatcher
 from .command_hub import CommandHub
 from .module import ClientModule
 

@@ -1,4 +1,0 @@
-from object_type import object_type
-
-
-none_ot = record(object_type)

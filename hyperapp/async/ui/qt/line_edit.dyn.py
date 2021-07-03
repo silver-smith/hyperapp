@@ -6,8 +6,6 @@ from PySide2 import QtCore, QtWidgets
 
 from . import htypes
 from .object import Object
-from .layout_handle import UpdateVisualItemDiff
-from .layout import ObjectLayout
 from .view import View
 from .command import command
 from .module import ClientModule
@@ -45,64 +43,17 @@ class LineEditView(View, QtWidgets.QLineEdit):
     #     log.info('~line_edit')
 
 
-class LineEditLayout(ObjectLayout):
-
-    @classmethod
-    async def from_data(cls, state, path, layout_watcher, mosaic, async_web):
-        object_type = await async_web.summon(state.object_type_ref)
-        return cls(mosaic, layout_watcher, path, object_type, state.command_list, state.editable)
-
-    def __init__(self, mosaic, layout_watcher, path, object_type, command_list_data, editable):
-        super().__init__(mosaic, path, object_type, command_list_data)
-        self._layout_watcher = layout_watcher
-        self._editable = editable
-
-    @property
-    def piece(self):
-        return htypes.line.line_edit_layout(self._object_type_ref, self._command_list_data, self._editable)
-
-    async def create_view(self, command_hub, object):
-        return LineEditView(object, self._editable)
-
-    async def visual_item(self):
-        if self._editable:
-            tag = 'editable'
-            current_command = self._set_read_only
-        else:
-            tag = 'read-only'
-            current_command = self._set_editable
-        return self.make_visual_item(
-            f'LineEdit/{tag}',
-            current_commands=[current_command],
-            all_commands=[self._set_read_only, self._set_editable],
-            )
-
-    @command
-    async def set_editable(self, item_key):
-        self._editable = True
-        await self._distribute_update()
-
-    @command
-    async def set_read_only(self, item_key):
-        self._editable = False
-        await self._distribute_update()
-
-    async def _distribute_update(self):
-        item = await self.visual_item()
-        self._layout_watcher.distribute_diffs([UpdateVisualItemDiff(self._path, item)])
-
-
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
         self._mosaic = services.mosaic
-        services.available_object_layouts.register('line', [htypes.string_ot.string_ot], self._make_line_layout_data)
-        services.default_object_layouts.register('line', [htypes.string_ot.string_ot], self._make_line_layout_data)
-        services.object_layout_registry.register_actor(
-            htypes.line.line_edit_layout, LineEditLayout.from_data, services.mosaic, services.async_web)
+        # services.available_object_layouts.register('line', [htypes.string_ot.string_ot], self._make_line_layout_data)
+        # services.default_object_layouts.register('line', [htypes.string_ot.string_ot], self._make_line_layout_data)
+    #     services.object_layout_registry.register_actor(
+    #         htypes.line.line_edit_layout, LineEditLayout.from_data, services.mosaic, services.async_web)
 
-    async def _make_line_layout_data(self, object_type):
-        object_type_ref = self._mosaic.put(object_type)
-        command_list = ObjectLayout.make_default_command_list(object_type)
-        return htypes.line.line_edit_layout(object_type_ref, command_list, editable=False)
+    # async def _make_line_layout_data(self, object_type):
+    #     object_type_ref = self._mosaic.put(object_type)
+    #     command_list = ObjectLayout.make_default_command_list(object_type)
+    #     return htypes.line.line_edit_layout(object_type_ref, command_list, editable=False)

@@ -1,13 +1,9 @@
 import:
   types:
-    string_ot:
-      - string_ot
     line:
       - line_edit_layout
   code:
     - async.ui.object
-    - client.layout_handle
-    - client.layout
     - async.ui.qt.view
     - async.ui.command
     - async.ui.module

@@ -1,8 +1,0 @@
-from list_ot import list_ot
-
-
-code_command_chooser_type = record(list_ot)
-
-code_command_chooser = record:
-  piece_ref: ref
-  layout_ref: ref

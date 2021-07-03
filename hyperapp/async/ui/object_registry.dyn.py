@@ -18,9 +18,8 @@ class NotRegisteredError(RuntimeError):
 
 class RecordViewer(RecordObject):
 
-    def __init__(self, fields, object_type, piece, title):
+    def __init__(self, fields, piece, title):
         super().__init__(fields)
-        self.type = object_type
         self._piece = piece
         self._title = title
 
@@ -35,8 +34,7 @@ class RecordViewer(RecordObject):
 
 class ObjectAnimator:
 
-    def __init__(self, mosaic, types, async_web, object_registry):
-        self._mosaic = mosaic
+    def __init__(self, types, async_web, object_registry):
         self._types = types
         self._async_web = async_web
         self._object_registry = object_registry
@@ -69,14 +67,7 @@ class ObjectAnimator:
             name: await self.animate(getattr(piece, name))
             for name in t.fields
             }
-        object_type = htypes.record_ot.record_ot(
-            command_list=(),
-            field_type_list=tuple(
-                htypes.record_ot.field(name, self._mosaic.put(field_object.type))
-                for name, field_object in fields.items()
-                ),
-            )
-        return RecordViewer(fields, object_type, piece, title=t.name)
+        return RecordViewer(fields, piece, title=t.name)
 
 
 class ThisModule(Module):
@@ -84,4 +75,4 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
         services.object_registry = CodeRegistry('object', services.async_web, services.types)
-        services.object_animator = ObjectAnimator(services.mosaic, services.types, services.async_web, services.object_registry)
+        services.object_animator = ObjectAnimator(services.types, services.async_web, services.object_registry)

@@ -13,7 +13,6 @@ log = logging.getLogger(__name__)
 
 code_module_list = [
     'async.ui.qt.application',
-    'async.ui.code_command_chooser',
     'async.ui.command_list',
     'client.layout_editor',
     'client.tab_view',
@@ -35,7 +34,6 @@ code_module_list = [
     'client.tree_view_sample',
     'async.ui.tree_to_list_adapter',
     'client.tree_to_list_adapter_sample',
-    'client.params_editor_sample',
     'async.ui.fs',
     'async.ui.fs_local_service',
     'client.wiki_text_sample',

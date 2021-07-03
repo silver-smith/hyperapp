@@ -4,7 +4,6 @@ import:
       - root_layout
   code:
     - async.ui.command
-    - client.layout_handle
     - client.layout
     - client.command_hub
     - async.ui.module

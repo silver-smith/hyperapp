@@ -4,7 +4,4 @@ import:
       - command
   code:
     - async.ui.view_command
-    - client.layout_command
-    - client.layout_handle
     - async.ui.items_view
-    - client.self_command

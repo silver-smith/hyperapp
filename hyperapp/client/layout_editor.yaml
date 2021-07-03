@@ -1,20 +1,8 @@
 import:
   types:
-    object_type:
-      - object_command
-    params_editor:
-      - bound_argument
-      - field
-      - params_editor
-    view_chooser:
-      - view_chooser
     layout_editor:
-      - layout_editor_object_type
       - view_layout_editor
-      - object_layout_editor
   code:
-    - async.ui.command
-    - client.layout_handle
     - async.ui.command
     - client.command_hub
     - async.ui.column
@@ -25,6 +13,3 @@ require:
   - object_registry
   - layout_manager
   - layout_watcher
-  - object_layout_registry
-  - object_layout_association
-  - create_layout_handle

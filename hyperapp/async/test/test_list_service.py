@@ -65,8 +65,8 @@ def test_list_service(services, htypes, code):
         command_ref_list=[],
         key_column_id='key',
         column_list=[
-            htypes.list_ot.column('key', int_t_ref),
-            htypes.list_ot.column('value_list', string_list_t_ref),
+            htypes.service.column('key', int_t_ref),
+            htypes.service.column('value_list', string_list_t_ref),
             ],
         )
     list_service_ref = services.mosaic.put(list_service)

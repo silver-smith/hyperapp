@@ -9,10 +9,7 @@ import:
     - async.ui.qt.view
     - async.ui.command
     - client.layout
-    - client.layout_handle
-    - async.ui.view_chooser
     - async.ui.module
 require:
   - view_registry
-  - available_view_registry
   - layout_watcher

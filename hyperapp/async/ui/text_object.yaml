@@ -1,7 +1,5 @@
 import:
   types:
-    string_ot:
-      - string_ot
     text:
       - wiki_text
   code:
