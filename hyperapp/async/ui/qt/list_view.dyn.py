@@ -10,13 +10,13 @@ from functools import partial
 from PySide2 import QtCore, QtGui, QtWidgets
 
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
+from hyperapp.common.module import Module
 
 from . import htypes
 from .list_object import ListObserver, ListObject
 from .items_view import map_columns_to_view
 from .util import uni2str, key_match, key_match_any
 from .view import View
-from .module import ClientModule
 
 log = logging.getLogger(__name__)
 
@@ -238,7 +238,7 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
     #     log.debug('~list_view.ListView self=%r', id(self))
 
 
-class ThisModule(ClientModule):
+class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)

@@ -7,7 +7,6 @@ import:
     - async.ui.qt.util
     - async.ui.qt.view
     - async.ui.items_view
-    - async.ui.module
 require:
   - lcs
   - view_registry
