@@ -96,31 +96,34 @@ class ListObject(Object, metaclass=abc.ABCMeta):
 
     class _Observer(ListObserver):
 
-        def __init__(self, object, item_future):
+        def __init__(self, object, key, item_future):
             self._object = object
+            self._key = key
             self._item_future = item_future
 
         def process_fetch_results(self, item_list, fetch_finished):
+            key_attr = self._object.key_attribute
+            for item in item_list:
+                if getattr(item, key_attr) == self._key:
+                    self._item_future.set_result(item)
+                    return
             if item_list:
-                self._item_future.set_result(item_list[0])
-            elif not fetch_finished:
-                asyncio.ensure_future(self._object.fetch_items(None))
+                from_key = getattr(item_list[-1], key_attr)
             else:
-                self._item_future.set_result(None)
+                from_key = None
+            if not fetch_finished:
+                asyncio.ensure_future(self._object.fetch_items(from_key))
 
         def process_eof(self):
-            self._item_future.set_result(None)
+            if not self._item_future.done():
+                self._item_future.set_result(None)
 
-    async def _load_first_item(self):
+    async def item_by_key(self, key):
         item_future = asyncio.Future()
-        observer = self._Observer(self, item_future)
+        observer = self._Observer(self, key, item_future)
         self.subscribe(observer)
         asyncio.ensure_future(self.fetch_items(None))
         return await item_future
-
-    async def first_item_key(self):
-        item = await self._load_first_item()
-        return getattr(item, self.key_attribute)
         
     @abc.abstractmethod
     async def fetch_items(self, from_key):

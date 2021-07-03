@@ -52,6 +52,8 @@ class Selector(Object):
     async def select(self, list_view_state_ref):
         list_state = self._web.summon(list_view_state_ref)
         log.info("Selector: select: %r", list_state.current_key)
+        item = await self._list.item_by_key(list_state.current_key)
+        log.info("Selector: selected item: %r", item)
 
 
 class ThisModule(Module):
