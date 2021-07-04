@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 class TextView(View, QtWidgets.QTextBrowser):
 
     @classmethod
-    async def from_piece(cls, piece, object, lcs):
+    async def from_piece(cls, piece, object):
         return cls(object)
 
     def __init__(self, object):
@@ -31,7 +31,7 @@ class TextView(View, QtWidgets.QTextBrowser):
 
     @property
     def piece(self):
-        return htypes.text.text_view()
+        return htypes.text_view.text_view()
 
     @property
     def object(self):
@@ -69,6 +69,10 @@ class TextView(View, QtWidgets.QTextBrowser):
 
 class TextEditView(QtWidgets.QTextEdit, ObjectObserver):
 
+    @classmethod
+    async def from_piece(cls, piece, object):
+        return cls(object)
+
     def __init__(self, object):
         super().__init__()
         self.object = object
@@ -94,13 +98,13 @@ class TextEditView(QtWidgets.QTextEdit, ObjectObserver):
             self.notify_on_text_changed = True
         View.object_changed(self)
 
-    # def __del__(self):
-    #     _log.info('~text_edit %r', self)
-
 
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-        services.lcs.set(StringObject.dir_list[-1], htypes.text.text_view())
-        services.view_registry.register_actor(htypes.text.text_view, TextView.from_piece, services.lcs)
+        services.lcs.set(StringObject.dir_list[-1], htypes.text_view.text_view())
+        services.lcs.add([htypes.view.available_view_d(), *StringObject.dir_list[-1]], htypes.text_view.text_view())
+        services.lcs.add([htypes.view.available_view_d(), *StringObject.dir_list[-1]], htypes.text_view.text_edit_view())
+        services.view_registry.register_actor(htypes.text_view.text_view, TextView.from_piece)
+        services.view_registry.register_actor(htypes.text_view.text_edit_view, TextEditView.from_piece)

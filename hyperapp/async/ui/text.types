@@ -9,9 +9,3 @@ wiki_ref = record:
 wiki_text = record:
   text: string
   ref_list: wiki_ref list
-
-text_edit_layout = record(layout):
-  editable: bool
-
-
-text_view = record

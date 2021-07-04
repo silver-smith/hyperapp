@@ -1,8 +1,10 @@
 import:
   types:
-    text:
-      - text_edit_layout
+    view:
+      - available_view_d
+    text_view:
       - text_view
+      - text_edit_view
   code:
     - async.ui.object
     - async.ui.qt.view
