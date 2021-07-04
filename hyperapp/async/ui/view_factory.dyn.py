@@ -11,9 +11,11 @@ class ViewFactory:
         self._lcs = lcs
         self._view_registry = view_registry
 
-    async def create_view(self, object):
-        log.info("View factory: create view for object: %r", object)
-        piece = self._lcs.get_first(object.dir_list)
+    async def create_view(self, object, dir_list=None):
+        if dir_list is None:
+            dir_list = object.dir_list
+        log.info("View factory: create view for object: %r; dirs: %s", object, dir_list)
+        piece = self._lcs.get_first(dir_list)
         return await self._view_registry.animate(piece, object)
 
 

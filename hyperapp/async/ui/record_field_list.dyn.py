@@ -13,7 +13,7 @@ from .object_command import Command
 log = logging.getLogger(__name__)
 
 
-Item = namedtuple('Item', 'name view')
+Item = namedtuple('Item', 'id view')
 
 
 class RecordFieldList(SimpleListObject):
@@ -47,30 +47,33 @@ class RecordFieldList(SimpleListObject):
     @property
     def columns(self):
         return [
-            Column('name', is_key=True),
+            Column('id', is_key=True),
             Column('view'),
             ]
 
     async def get_all_items(self):
-        return [
-            Item(name, self._lcs.get_first(field.dir_list))
-            for name, field in self._object.fields.items()
-            ]
+        return list(self._iter_items())
+
+    def _iter_items(self):
+        for field_id, field in self._object.fields.items():
+            dir_list = self._object.record_field_dir_list(field_id, field)
+            view_piece = self._lcs.get_first(dir_list)
+            yield Item(field_id, view_piece)
 
     @command
     async def select(self, current_key):
-        field_name = current_key
-        field = self._object.fields[field_name]
+        field_id = current_key
+        field = self._object.fields[field_id]
         piece_ref = self._mosaic.put(field.piece)
         list = htypes.available_view_list.available_view_list(piece_ref)
         list_ref = self._mosaic.put(list)
-        callback_ref = self._make_selector_callback_ref(self.set_view, field_name=field_name)
+        callback_ref = self._make_selector_callback_ref(self.set_view, field_id=field_id)
         return htypes.selector.selector(list_ref, callback_ref)
 
-    async def set_view(self, view_item, *, field_name):
-        log.info("Set view for %r: %r", field_name, view_item.view)
-        field = self._object.fields[field_name]
-        dir = field.dir_list[-1]  # todo: allow to select dir to set view for.
+    async def set_view(self, view_item, *, field_id):
+        log.info("Set view for %r: %r", field_id, view_item.view)
+        field = self._object.fields[field_id]
+        dir = self._object.record_field_dir(field_id, field)  # todo: allow to select dir to set view for.
         self._lcs.set(dir, view_item.view)
         return self.piece
 

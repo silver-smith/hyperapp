@@ -1,5 +1,7 @@
 import:
   types:
+    record_object:
+      - record_field_d
     record_field_list:
       - open_record_field_list_command
       - record_field_list_d

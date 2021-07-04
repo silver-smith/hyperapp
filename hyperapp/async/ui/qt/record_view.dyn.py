@@ -34,7 +34,8 @@ class RecordView(QtWidgets.QWidget):
         self.setLayout(layout)
 
     async def _construct_field_view(self, view_factory, layout, field_id, field_object):
-        view = await view_factory.create_view(field_object)
+        dir_list = self.object.record_field_dir_list(field_id, field_object)
+        view = await view_factory.create_view(field_object, dir_list)
         label = QtWidgets.QLabel(field_id)
         label.setBuddy(view)
         layout.addWidget(label)

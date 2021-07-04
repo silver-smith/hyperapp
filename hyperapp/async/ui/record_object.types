@@ -1,2 +1,5 @@
 
 record_object_d = record
+
+record_field_d = record:
+  field_id: string
