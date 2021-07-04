@@ -22,8 +22,8 @@ AvailableRec = namedtuple('AvailableRec', 'dir view')
 class ViewSelector(SimpleListObject):
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, lcs, object_animator):
-        object = await object_animator.invite(piece.piece_ref)
+    async def from_piece(cls, piece, mosaic, lcs, object_factory):
+        object = await object_factory.invite(piece.piece_ref)
         return cls(mosaic, lcs, object)
 
     def __init__(self, mosaic, lcs, object):
@@ -98,7 +98,7 @@ class ThisModule(Module):
             ViewSelector.from_piece,
             services.mosaic,
             services.lcs,
-            services.object_animator,
+            services.object_factory,
             )
         services.command_registry.register_actor(
             htypes.view_selector.open_view_selector_command, Command.from_fn(self.name, self.view_selector))

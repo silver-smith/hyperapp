@@ -83,8 +83,8 @@ class CommandList(SimpleListObject):
 class ObjectCommandList(CommandList):
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, async_web, lcs, object_animator, object_commands_factory):
-        object = await object_animator.invite(piece.piece_ref)
+    async def from_piece(cls, piece, mosaic, async_web, lcs, object_factory, object_commands_factory):
+        object = await object_factory.invite(piece.piece_ref)
         view_state = await async_web.summon(piece.view_state_ref)
         self = cls(mosaic, lcs, object, view_state)
         await self._async_init(object_commands_factory)
@@ -210,7 +210,7 @@ class ThisModule(ClientModule):
             services.mosaic,
             services.async_web,
             services.lcs,
-            services.object_animator,
+            services.object_factory,
             services.object_commands_factory,
             )
         services.object_registry.register_actor(

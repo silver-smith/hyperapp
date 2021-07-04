@@ -15,8 +15,8 @@ class RecordObject(Object, metaclass=abc.ABCMeta):
         super().__init__()
         self.fields = fields
 
-    async def async_init(self, object_animator, fields_pieces):
+    async def async_init(self, object_factory, fields_pieces):
         self.fields = {
-            name: await object_animator.animate(piece)
+            name: await object_factory.animate(piece)
             for name, piece in fields_pieces.items()
             }

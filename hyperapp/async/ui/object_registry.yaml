@@ -4,6 +4,6 @@ import:
     - async.ui.record_object
 provide:
   - object_registry
-  - object_animator
+  - object_factory
 require:
   - async_web

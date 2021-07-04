@@ -32,7 +32,7 @@ class RecordViewer(RecordObject):
         return self._piece
 
 
-class ObjectAnimator:
+class ObjectFactory:
 
     def __init__(self, types, async_web, object_registry):
         self._types = types
@@ -75,4 +75,4 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
         services.object_registry = CodeRegistry('object', services.async_web, services.types)
-        services.object_animator = ObjectAnimator(services.types, services.async_web, services.object_registry)
+        services.object_factory = ObjectFactory(services.types, services.async_web, services.object_registry)

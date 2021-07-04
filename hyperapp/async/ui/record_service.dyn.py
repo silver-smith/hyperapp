@@ -6,7 +6,7 @@ from .record_object import RecordObject
 class RecordService(RecordObject):
 
     @classmethod
-    async def from_piece(cls, piece, identity, mosaic, async_web, object_animator, command_registry, rpc_endpoint, async_rpc_proxy):
+    async def from_piece(cls, piece, identity, mosaic, async_web, object_factory, command_registry, rpc_endpoint, async_rpc_proxy):
         interface_ref = record_interface_ref(mosaic, piece)
         service = htypes.rpc.endpoint(
             peer_ref=piece.peer_ref,
@@ -29,7 +29,7 @@ class RecordService(RecordObject):
             for name in record._t.fields
             }
         self = cls(piece, proxy, command_list)
-        await self.async_init(object_animator, fields)
+        await self.async_init(object_factory, fields)
         return self
 
     def __init__(self, service, proxy, command_list):

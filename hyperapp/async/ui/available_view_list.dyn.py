@@ -23,8 +23,8 @@ class AvailableViewList(SimpleListObject):
         ]
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, lcs, object_animator):
-        object = await object_animator.invite(piece.piece_ref)
+    async def from_piece(cls, piece, mosaic, lcs, object_factory):
+        object = await object_factory.invite(piece.piece_ref)
         return cls(mosaic, lcs, object)
 
     def __init__(self, mosaic, lcs, object):
@@ -77,5 +77,5 @@ class ThisModule(Module):
             AvailableViewList.from_piece,
             services.mosaic,
             services.lcs,
-            services.object_animator,
+            services.object_factory,
             )

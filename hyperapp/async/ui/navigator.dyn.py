@@ -66,14 +66,14 @@ class NavigatorLayout(GlobalLayout):
             view_opener,
             mosaic,
             async_web,
-            object_animator,
+            object_factory,
             object_commands_factory,
             view_factory,
             global_command_list,
             ):
         self = cls(
             mosaic,
-            object_animator,
+            object_factory,
             object_commands_factory,
             view_factory,
             global_command_list,
@@ -87,7 +87,7 @@ class NavigatorLayout(GlobalLayout):
     def __init__(
             self,
             mosaic,
-            object_animator,
+            object_factory,
             object_commands_factory,
             view_factory,
             global_command_list,
@@ -97,7 +97,7 @@ class NavigatorLayout(GlobalLayout):
             ):
         super().__init__(path)
         self._mosaic = mosaic
-        self._object_animator = object_animator
+        self._object_factory = object_factory
         self._object_commands_factory = object_commands_factory
         self._view_factory = view_factory
         self._global_command_list = global_command_list
@@ -109,7 +109,7 @@ class NavigatorLayout(GlobalLayout):
 
     async def _async_init(self, async_web, initial_piece_ref):
         piece = await async_web.summon(initial_piece_ref)
-        self._current_object = object = await self._object_animator.animate(piece)
+        self._current_object = object = await self._object_factory.animate(piece)
 
     @property
     def piece(self):
@@ -168,7 +168,7 @@ class NavigatorLayout(GlobalLayout):
         self._history.append(_HistoryItem(self._current_object.piece, self._current_view.piece))
 
     async def _open_piece_impl(self, piece):
-        self._current_object = await self._object_animator.animate(piece)
+        self._current_object = await self._object_factory.animate(piece)
         self._current_view = await self._create_view(self._current_object)
         self._view_opener.open(self._current_view)
         await self._command_hub.update()
@@ -199,7 +199,7 @@ class ThisModule(Module):
             NavigatorLayout.from_data,
             services.mosaic,
             services.async_web,
-            services.object_animator,
+            services.object_factory,
             services.object_commands_factory,
             services.view_factory,
             services.global_command_list,

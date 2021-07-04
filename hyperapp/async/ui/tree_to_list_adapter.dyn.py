@@ -30,8 +30,8 @@ class TreeToListAdapter(ListObject):
         ]
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, object_animator):
-        tree_object = await object_animator.invite(piece.base_ref)
+    async def from_piece(cls, piece, mosaic, object_factory):
+        tree_object = await object_factory.invite(piece.base_ref)
         return cls(mosaic, tree_object, piece.path)
 
     def __init__(self, mosaic, tree_object, path):
@@ -108,7 +108,7 @@ class ThisModule(Module):
             htypes.tree_to_list_adapter.tree_to_list_adapter,
             TreeToListAdapter.from_piece,
             services.mosaic,
-            services.object_animator,
+            services.object_factory,
             )
         services.lcs.add(
             [htypes.view.available_view_d(), *TreeObject.dir_list[-1]],

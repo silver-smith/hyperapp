@@ -92,13 +92,13 @@ class SampleList(ListObject):
 class SampleArticle(RecordObject):
 
     @classmethod
-    async def from_data(cls, state, object_animator):
+    async def from_data(cls, state, object_factory):
         fields_pieces = {
             'title': state.title,
             'text': state.text,
             }
         self = cls(state.title, state.text)
-        await self.async_init(object_animator, fields_pieces)
+        await self.async_init(object_factory, fields_pieces)
         return self
 
     def __init__(self, title, text):
@@ -121,7 +121,7 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services, config)
 
         services.object_registry.register_actor(htypes.list_view_sample.list_view_sample_object, SampleList.from_data)
-        services.object_registry.register_actor(htypes.list_view_sample.list_sample_article, SampleArticle.from_data, services.object_animator)
+        services.object_registry.register_actor(htypes.list_view_sample.list_sample_article, SampleArticle.from_data, services.object_factory)
 
     @command
     async def open_list_view_sample(self):

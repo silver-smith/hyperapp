@@ -7,7 +7,7 @@ import:
 require:
   - async_web
   - object_registry
-  - object_animator
+  - object_factory
   - command_registry
   - async_rpc_proxy
   - client_identity

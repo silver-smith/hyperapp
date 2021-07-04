@@ -24,8 +24,8 @@ class RecordFieldList(SimpleListObject):
         ]
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, lcs, object_animator, make_selector_callback_ref):
-        object = await object_animator.invite(piece.piece_ref)
+    async def from_piece(cls, piece, mosaic, lcs, object_factory, make_selector_callback_ref):
+        object = await object_factory.invite(piece.piece_ref)
         return cls(mosaic, lcs, make_selector_callback_ref, object)
 
     def __init__(self, mosaic, lcs, make_selector_callback_ref, object):
@@ -86,7 +86,7 @@ class ThisModule(Module):
             RecordFieldList.from_piece,
             services.mosaic,
             services.lcs,
-            services.object_animator,
+            services.object_factory,
             services.make_selector_callback_ref,
             )
         services.command_registry.register_actor(

@@ -13,8 +13,8 @@ log = logging.getLogger(__name__)
 class ObjectMethodCallback:
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, async_web, object_animator):
-        object = await object_animator.invite(piece.object_ref)
+    async def from_piece(cls, piece, mosaic, async_web, object_factory):
+        object = await object_factory.invite(piece.object_ref)
         kw = {
             arg.name: await async_web.summon(arg.value_ref)
             for arg in piece.bound_arguments
@@ -50,8 +50,8 @@ class Selector(Object):
     view_state_fields = ['list_view_state_ref']
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, web, object_animator, callback_registry):
-        list = await object_animator.invite(piece.list_ref)
+    async def from_piece(cls, piece, mosaic, web, object_factory, callback_registry):
+        list = await object_factory.invite(piece.list_ref)
         callback = await callback_registry.invite(piece.callback_ref)
         return cls(mosaic, web, list, callback)
 
@@ -104,14 +104,14 @@ class ThisModule(Module):
             ObjectMethodCallback.from_piece,
             services.mosaic,
             services.async_web,
-            services.object_animator,
+            services.object_factory,
             )
         services.object_registry.register_actor(
             htypes.selector.selector,
             Selector.from_piece,
             services.mosaic,
             services.web,
-            services.object_animator,
+            services.object_factory,
             self._callback_registry,
             )
         services.make_selector_callback_ref = self.make_selector_callback_ref

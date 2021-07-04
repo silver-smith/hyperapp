@@ -7,7 +7,7 @@ import:
 require:
   - unbundler
   - object_registry
-  - object_animator
+  - object_factory
   - generate_rsa_identity
   - async_rpc_endpoint
   - async_endpoint_registry

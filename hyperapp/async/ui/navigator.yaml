@@ -10,7 +10,7 @@ import:
     - async.ui.module
 require:
   - async_web
-  - object_animator
+  - object_factory
   - object_commands_factory
   - view_factory
   - view_registry
