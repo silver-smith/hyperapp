@@ -9,6 +9,5 @@ import:
     - async.ui.object
     - async.ui.qt.view
     - async.ui.string_object
-    - async.ui.module
 require:
   - lcs

@@ -4,11 +4,12 @@ import re
 
 from PySide2 import QtCore, QtWidgets
 
+from hyperapp.common.module import Module
+
 from . import htypes
 from .object import ObjectObserver
 from .view import View
 from .string_object import StringObject
-from .module import ClientModule
 
 log = logging.getLogger(__name__)
 
@@ -67,44 +68,58 @@ class TextView(View, QtWidgets.QTextBrowser):
     #     log.info('~text_view %r', self)
 
 
-class TextEditView(QtWidgets.QTextEdit, ObjectObserver):
+class TextEditView(View, QtWidgets.QTextEdit, ObjectObserver):
 
     @classmethod
     async def from_piece(cls, piece, object):
         return cls(object)
 
     def __init__(self, object):
-        super().__init__()
-        self.object = object
+        QtWidgets.QTextEdit.__init__(self)
+        View.__init__(self)
+        ObjectObserver.__init__(self)
+        self._object = object
         self.notify_on_text_changed = True
-        self.setPlainText(object.text)
+        self.setPlainText(object.value)
         self.textChanged.connect(self._on_text_changed)
-        self.object.subscribe(self)
+        self._object.subscribe(self)
+
+    @property
+    def piece(self):
+        return htypes.text_view.text_view()
+
+    @property
+    def object(self):
+        return self._object
+
+    @property
+    def state(self):
+        return None
 
     @property
     def title(self):
-        return self.object.title
+        return self._object.title
 
     def _on_text_changed(self):
         if self.notify_on_text_changed:
-            self.object.text_changed(self.toPlainText(), emitter_view=self)
+            self._object.text_changed(self.toPlainText(), emitter_view=self)
 
     # todo: preserve cursor position
     def object_changed(self):
         self.notify_on_text_changed = False
         try:
-            self.setPlainText(self.object.text)
+            self.setPlainText(self._object.value)
         finally:
             self.notify_on_text_changed = True
         View.object_changed(self)
 
 
-class ThisModule(ClientModule):
+class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
         services.lcs.set(StringObject.dir_list[-1], htypes.text_view.text_view())
         services.lcs.add([htypes.view.available_view_d(), *StringObject.dir_list[-1]], htypes.text_view.text_view())
-        services.lcs.add([htypes.view.available_view_d(), *StringObject.dir_list[-1]], htypes.text_view.text_edit_view())
+        # services.lcs.add([htypes.view.available_view_d(), *StringObject.dir_list[-1]], htypes.text_view.text_edit_view())
         services.view_registry.register_actor(htypes.text_view.text_view, TextView.from_piece)
         services.view_registry.register_actor(htypes.text_view.text_edit_view, TextEditView.from_piece)
