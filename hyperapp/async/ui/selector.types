@@ -2,10 +2,16 @@
 selector_d = record
 
 
+bound_argument = record:
+  name: string
+  value_ref: ref
+
 object_method_callback = record:
-  object_piece_ref: ref
+  object_ref: ref
   method: string
+  bound_arguments: bound_argument list
 
 
 selector = record:
   list_ref: ref
+  callback_ref: ref

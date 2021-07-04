@@ -24,14 +24,15 @@ class RecordFieldList(SimpleListObject):
         ]
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, lcs, object_animator):
+    async def from_piece(cls, piece, mosaic, lcs, object_animator, make_selector_callback_ref):
         object = await object_animator.invite(piece.piece_ref)
-        return cls(mosaic, lcs, object)
+        return cls(mosaic, lcs, make_selector_callback_ref, object)
 
-    def __init__(self, mosaic, lcs, object):
+    def __init__(self, mosaic, lcs, make_selector_callback_ref, object):
         super().__init__()
         self._mosaic = mosaic
         self._lcs = lcs
+        self._make_selector_callback_ref = make_selector_callback_ref
         self._object = object
 
     @property
@@ -58,11 +59,16 @@ class RecordFieldList(SimpleListObject):
 
     @command
     async def select(self, current_key):
-        field = self._object.fields[current_key]
+        field_name = current_key
+        field = self._object.fields[field_name]
         piece_ref = self._mosaic.put(field.piece)
         list = htypes.available_view_list.available_view_list(piece_ref)
         list_ref = self._mosaic.put(list)
-        return htypes.selector.selector(list_ref)
+        callback_ref = self._make_selector_callback_ref(self.set_view, field_name=field_name)
+        return htypes.selector.selector(list_ref, callback_ref)
+
+    async def set_view(self, view_item, *, field_name):
+        log.info("Set view for %r: %r", field_name, view_item)
 
 
 class ThisModule(Module):
@@ -77,6 +83,7 @@ class ThisModule(Module):
             services.mosaic,
             services.lcs,
             services.object_animator,
+            services.make_selector_callback_ref,
             )
         services.command_registry.register_actor(
             htypes.record_field_list.open_record_field_list_command, Command.from_fn(self.name, self.record_field_list))

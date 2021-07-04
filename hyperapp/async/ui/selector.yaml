@@ -3,8 +3,14 @@ import:
     selector:
       - selector_d
       - selector
+      - bound_argument
+      - object_method_callback
   code:
     - async.ui.command
     - async.ui.object
+    - async.code_registry
 require:
+  - async_web
   - object_registry
+provide:
+  - make_selector_callback_ref
