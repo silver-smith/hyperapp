@@ -91,6 +91,11 @@ class SampleList(ListObject):
 
 class SampleArticle(RecordObject):
 
+    dir_list = [
+        *RecordObject.dir_list,
+        [htypes.list_view_sample.list_view_sample_article_d()],
+        ]
+
     @classmethod
     async def from_data(cls, state, object_factory):
         fields_pieces = {

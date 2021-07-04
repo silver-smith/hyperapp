@@ -1,5 +1,6 @@
 
 tree_view_sample_d = record
+tree_view_sample_article_d = record
 
 tree_view_sample_object = record
 

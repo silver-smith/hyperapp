@@ -2,6 +2,7 @@ import:
   types:
     list_view_sample:
       - list_view_sample_d
+      - list_view_sample_article_d
       - list_view_sample_object
       - list_sample_article
   code:

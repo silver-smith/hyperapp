@@ -1,5 +1,6 @@
 
 list_view_sample_d = record
+list_view_sample_article_d = record
 
 list_view_sample_object = record
 
