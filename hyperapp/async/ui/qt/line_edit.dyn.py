@@ -2,18 +2,24 @@
 
 import logging
 from enum import Enum
+
 from PySide2 import QtCore, QtWidgets
+
+from hyperapp.common.module import Module
 
 from . import htypes
 from .object import Object
 from .view import View
-from .command import command
-from .module import ClientModule
+from .string_object import StringObject
 
 log = logging.getLogger(__name__)
 
 
 class LineEditView(View, QtWidgets.QLineEdit):
+
+    @classmethod
+    async def from_piece(cls, piece, object):
+        return cls(object, piece.editable)
 
     def __init__(self, object, editable):
         QtWidgets.QLineEdit.__init__(self, object.value)
@@ -25,6 +31,18 @@ class LineEditView(View, QtWidgets.QLineEdit):
         self.textChanged.connect(self._on_line_changed)
         self._object.subscribe(self)
 
+    @property
+    def piece(self):
+        return htypes.line_edit.line_edit_view(self._editable)
+
+    @property
+    def object(self):
+        return self._object
+
+    @property
+    def state(self):
+        return None
+
     def _on_line_changed(self, line):
         log.debug('line_edit.on_line_changed: %r', line)
         if self._notify_on_line_changed:
@@ -34,26 +52,17 @@ class LineEditView(View, QtWidgets.QLineEdit):
     def object_changed(self):
         self._notify_on_line_changed = False
         try:
-            self.setText(self._object.line)
+            self.setText(self._object.value)
         finally:
             self._notify_on_line_changed = True
         View.object_changed(self)
 
-    # def __del__(self):
-    #     log.info('~line_edit')
 
-
-class ThisModule(ClientModule):
+class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-        self._mosaic = services.mosaic
-        # services.available_object_layouts.register('line', [htypes.string_ot.string_ot], self._make_line_layout_data)
-        # services.default_object_layouts.register('line', [htypes.string_ot.string_ot], self._make_line_layout_data)
-    #     services.object_layout_registry.register_actor(
-    #         htypes.line.line_edit_layout, LineEditLayout.from_data, services.mosaic, services.async_web)
 
-    # async def _make_line_layout_data(self, object_type):
-    #     object_type_ref = self._mosaic.put(object_type)
-    #     command_list = ObjectLayout.make_default_command_list(object_type)
-    #     return htypes.line.line_edit_layout(object_type_ref, command_list, editable=False)
+        services.lcs.add([htypes.view.available_view_d(), *StringObject.dir_list[-1]], htypes.line_edit.line_edit_view(editable=False))
+        services.lcs.add([htypes.view.available_view_d(), *StringObject.dir_list[-1]], htypes.line_edit.line_edit_view(editable=True))
+        services.view_registry.register_actor(htypes.line_edit.line_edit_view, LineEditView.from_piece)

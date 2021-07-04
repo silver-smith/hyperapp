@@ -1,9 +1,12 @@
 import:
   types:
-    line:
-      - line_edit_layout
+    view:
+      - available_view_d
+    line_edit:
+      - line_edit_view
   code:
     - async.ui.object
     - async.ui.qt.view
-    - async.ui.command
-    - async.ui.module
+    - async.ui.string_object
+require:
+  - lcs
