@@ -12,7 +12,7 @@ from .simple_list_object import SimpleListObject
 log = logging.getLogger(__name__)
 
 
-Item = namedtuple('Item', 'id dir view')
+Item = namedtuple('Item', 'id dir view view_str')
 
 
 class AvailableViewList(SimpleListObject):
@@ -47,7 +47,7 @@ class AvailableViewList(SimpleListObject):
         return [
             Column('id', type=tInt, is_key=True),
             Column('dir'),
-            Column('view'),
+            Column('view_str'),
             ]
 
     async def get_all_items(self):
@@ -59,10 +59,10 @@ class AvailableViewList(SimpleListObject):
             dir_str = '/'.join(str(element) for element in dir)
             none_available = True
             for piece in self._lcs.iter([[htypes.view.available_view_d(), *dir]]):
-                yield Item(next(id_it), dir_str, piece)
+                yield Item(next(id_it), dir_str, piece, str(piece))
                 none_available = False
             if none_available:
-                yield Item(next(id_it), dir_str, '(no views available)')
+                yield Item(next(id_it), dir_str, None, '(no views available)')
                 
                 
 

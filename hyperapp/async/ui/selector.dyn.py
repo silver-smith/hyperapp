@@ -89,7 +89,7 @@ class Selector(Object):
         log.info("Selector: select: %r", list_state.current_key)
         item = await self._list.item_by_key(list_state.current_key)
         log.info("Selector: selected item: %r", item)
-        await self._callback.run(item)
+        return await self._callback.run(item)
 
 
 class ThisModule(Module):

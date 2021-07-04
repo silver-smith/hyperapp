@@ -68,7 +68,11 @@ class RecordFieldList(SimpleListObject):
         return htypes.selector.selector(list_ref, callback_ref)
 
     async def set_view(self, view_item, *, field_name):
-        log.info("Set view for %r: %r", field_name, view_item)
+        log.info("Set view for %r: %r", field_name, view_item.view)
+        field = self._object.fields[field_name]
+        dir = field.dir_list[-1]  # todo: allow to select dir to set view for.
+        self._lcs.set(dir, view_item.view)
+        return self.piece
 
 
 class ThisModule(Module):
