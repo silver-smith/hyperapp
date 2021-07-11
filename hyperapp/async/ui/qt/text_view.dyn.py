@@ -118,7 +118,7 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-        services.lcs.set(StringObject.dir_list[-1], htypes.text_view.text_view())
+        services.lcs.set([htypes.view.view_d('default'), *StringObject.dir_list[-1]], htypes.text_view.text_view())
         services.lcs.add([htypes.view.view_d('available'), *StringObject.dir_list[-1]], htypes.text_view.text_view())
         # services.lcs.add([htypes.view.view_d('available'), *StringObject.dir_list[-1]], htypes.text_view.text_edit_view())
         services.view_registry.register_actor(htypes.text_view.text_view, TextView.from_piece)

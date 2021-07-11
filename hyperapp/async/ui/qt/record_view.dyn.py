@@ -79,5 +79,5 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-        services.lcs.set(RecordObject.dir_list[-1], htypes.record_view.record_view())
+        services.lcs.set([htypes.view.view_d('default'), *RecordObject.dir_list[-1]], htypes.record_view.record_view())
         services.view_registry.register_actor(htypes.record_view.record_view, RecordView.from_piece, services.view_factory)
