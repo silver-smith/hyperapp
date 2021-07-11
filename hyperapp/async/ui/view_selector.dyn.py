@@ -72,10 +72,17 @@ class ViewSelector(SimpleListObject):
         id_it = itertools.count()
         for dir in self._object.dir_list:
             dir_str = '/'.join(str(element) for element in dir)
-            for piece in self._lcs.iter([[htypes.view.available_view_d(), *dir]]):
-                yield Item(next(id_it), dir, dir_str, 'available', piece)
-            piece = self._lcs.get(dir)
-            yield Item(next(id_it), dir, dir_str, 'selected', piece if piece is not None else '')
+            for available_piece in self._lcs.iter([[htypes.view.view_d('available'), *dir]]):
+                yield Item(next(id_it), dir, dir_str, 'available', available_piece)
+            default_piece = self._lcs.get([htypes.view.view_d('default'), *dir])
+            if default_piece is not None:
+                yield Item(next(id_it), dir, dir_str, 'default', default_piece)
+            selected_piece = self._lcs.get([htypes.view.view_d('selected'), *dir])
+            if selected_piece is not None:
+                yield Item(next(id_it), dir, dir_str, 'selected', selected_piece)
+            if selected_piece is None and default_piece is None:
+                yield Item(next(id_it), dir, dir_str, '', '')
+                
 
     @command
     async def select(self, current_key):
@@ -83,7 +90,7 @@ class ViewSelector(SimpleListObject):
         log.info("Available dir for %d: %r -> %r", current_key, rec.dir, rec.view)
         if not rec:
             return
-        self._lcs.set(rec.dir, rec.view)
+        self._lcs.set([htypes.view.view_d('selected'), *rec.dir], rec.view, persist=True)
         self.update()
 
 

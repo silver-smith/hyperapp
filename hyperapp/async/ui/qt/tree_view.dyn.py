@@ -367,9 +367,9 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-        services.lcs.set(TreeObject.dir_list[-1], htypes.tree_view.tree_view())
+        services.lcs.set([htypes.view.view_d('default'), *TreeObject.dir_list[-1]], htypes.tree_view.tree_view())
         services.lcs.add(
-            [htypes.view.available_view_d(), *TreeObject.dir_list[-1]],
+            [htypes.view.view_d('available'), *TreeObject.dir_list[-1]],
             htypes.tree_view.tree_view(),
             )
         services.view_registry.register_actor(htypes.tree_view.tree_view, TreeView.from_piece, services.lcs)

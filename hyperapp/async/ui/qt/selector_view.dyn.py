@@ -46,6 +46,6 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-        services.lcs.set(Selector.dir_list[-1], htypes.selector_view.selector_view())
+        services.lcs.set([htypes.view.view_d('default'), *Selector.dir_list[-1]], htypes.selector_view.selector_view())
         services.view_registry.register_actor(
             htypes.selector_view.selector_view, SelectorView.from_piece, services.mosaic, services.view_factory)

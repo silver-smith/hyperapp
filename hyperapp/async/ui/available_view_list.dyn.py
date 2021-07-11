@@ -58,7 +58,7 @@ class AvailableViewList(SimpleListObject):
         for dir in self._object.dir_list:
             dir_str = '/'.join(str(element) for element in dir)
             none_available = True
-            for piece in self._lcs.iter([[htypes.view.available_view_d(), *dir]]):
+            for piece in self._lcs.iter([[htypes.view.view_d('available'), *dir]]):
                 yield Item(next(id_it), dir_str, piece, str(piece))
                 none_available = False
             if none_available:

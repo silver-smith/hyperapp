@@ -1,7 +1,7 @@
 import:
   types:
     view:
-      - available_view_d
+      - view_d
     text_view:
       - text_view
       - text_edit_view

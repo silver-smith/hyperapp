@@ -1,8 +1,15 @@
 import logging
 
+from . import htypes
 from .module import ClientModule
 
 log = logging.getLogger(__name__)
+
+
+def dir_seq(dir_list):
+    for dir in dir_list:
+        yield [htypes.view.view_d('selected'), *dir]
+        yield [htypes.view.view_d('default'), *dir]
 
 
 class ViewFactory:
@@ -15,7 +22,8 @@ class ViewFactory:
         if dir_list is None:
             dir_list = object.dir_list
         log.info("View factory: create view for object: %r; dirs: %s", object, dir_list)
-        piece = self._lcs.get_first(dir_list)
+        selected_and_default_dir_list = list(dir_seq(dir_list))
+        piece = self._lcs.get_first(selected_and_default_dir_list)
         return await self._view_registry.animate(piece, object)
 
 

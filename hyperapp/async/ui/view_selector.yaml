@@ -4,7 +4,7 @@ import:
       - open_view_selector_command
       - view_selector
     view:
-      - available_view_d
+      - view_d
     command:
       - object_commands_d
   code:

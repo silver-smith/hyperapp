@@ -1,7 +1,7 @@
 import:
   types:
     view:
-      - available_view_d
+      - view_d
     tree_view:
       - tree_view
   code:

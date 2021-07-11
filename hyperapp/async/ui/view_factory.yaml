@@ -1,4 +1,7 @@
 import:
+  types:
+    view:
+      - view_d
   code:
     - async.ui.module
 require:

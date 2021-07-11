@@ -111,7 +111,7 @@ class ThisModule(Module):
             services.object_factory,
             )
         services.lcs.add(
-            [htypes.view.available_view_d(), *TreeObject.dir_list[-1]],
+            [htypes.view.view_d('available'), *TreeObject.dir_list[-1]],
             htypes.tree_to_list_adapter.tree_to_list_adapter_view(),
             )
         services.view_registry.register_actor(

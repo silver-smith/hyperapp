@@ -63,6 +63,6 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        services.lcs.add([htypes.view.available_view_d(), *StringObject.dir_list[-1]], htypes.line_edit.line_edit_view(editable=False))
-        services.lcs.add([htypes.view.available_view_d(), *StringObject.dir_list[-1]], htypes.line_edit.line_edit_view(editable=True))
+        services.lcs.add([htypes.view.view_d('available'), *StringObject.dir_list[-1]], htypes.line_edit.line_edit_view(editable=False))
+        services.lcs.add([htypes.view.view_d('available'), *StringObject.dir_list[-1]], htypes.line_edit.line_edit_view(editable=True))
         services.view_registry.register_actor(htypes.line_edit.line_edit_view, LineEditView.from_piece)
