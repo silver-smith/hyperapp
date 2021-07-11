@@ -473,6 +473,8 @@ class KeyInputDialog(QtWidgets.QDialog):
         layout.addWidget(QtWidgets.QLabel("Press a key:"))
         layout.addWidget(self.input_line)
         self.setLayout(layout)
+        # Do not eat Delete (and some other?) keys:
+        self.input_line.setFocusPolicy(QtCore.Qt.NoFocus)
         self.key_result = None
 
     def keyPressEvent(self, event):
