@@ -13,7 +13,7 @@ from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.common.module import Module
 
 from . import htypes
-from .list_object import ListObserver, ListObject
+from .list_object import ListFetcher, ListObserver, ListObject
 from .items_view import map_columns_to_view
 from .util import uni2str, key_match, key_match_any
 from .view import View
@@ -24,7 +24,7 @@ log = logging.getLogger(__name__)
 ROW_HEIGHT_PADDING = 3  # same as default QTreeView padding
 
 
-class _Model(QtCore.QAbstractTableModel):
+class _Model(QtCore.QAbstractTableModel, ListFetcher):
 
     def __init__(self, view, columns, object):
         QtCore.QAbstractTableModel.__init__(self)
@@ -78,7 +78,7 @@ class _Model(QtCore.QAbstractTableModel):
         self.endResetModel()
         self._fetch_more()
 
-    # ListObserver methods ----------------------------------------------------------------------------------------------
+    # ListFetcher methods ----------------------------------------------------------------------------------------------=
 
     def process_fetch_results(self, item_list, fetch_finished):
         log.debug('fetched %d items (finished=%s): %s', len(item_list), fetch_finished, item_list)
@@ -116,7 +116,7 @@ class _Model(QtCore.QAbstractTableModel):
         else:
             from_key = None
         log.info('  requesting fetch from %r', from_key)
-        asyncio.ensure_future(self._object.fetch_items(from_key))
+        asyncio.ensure_future(self._object.fetch_items(from_key, self))
         self._fetch_pending = True
 
     def index2id(self, index):
@@ -199,14 +199,6 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
         View.object_changed(self)
         self._wanted_current_id = self.current_item_key  # will set it to current when rows are reloaded
         self.model().update()
-
-    # ListObserver methods ----------------------------------------------------------------------------------------------
-
-    def process_fetch_results(self, item_list, fetch_finished):
-        self.model().process_fetch_results(item_list, fetch_finished)
-
-    def process_eof(self):
-        self.model().process_eof()
 
     # -------------------------------------------------------------------------------------------------------------------
 

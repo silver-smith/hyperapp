@@ -46,7 +46,7 @@ class SampleList(ListObject):
             Column('column_2', type=tInt),
             ]
 
-    async def fetch_items(self, from_key):
+    async def fetch_items(self, from_key, fetcher):
         if from_key is None:
             from_idx = 0
         else:
@@ -57,7 +57,7 @@ class SampleList(ListObject):
             return
         log.info('  > distribute results')
         fetch_more = from_idx == 100
-        self._distribute_fetch_results(
+        fetcher.process_fetch_results(
             [self._item(from_idx + idx) for idx in range(10)],
             fetch_finished=not fetch_more)
         if fetch_more:
@@ -65,9 +65,9 @@ class SampleList(ListObject):
             # check async population works
             await asyncio.sleep(1)
             log.info('  > distributing more and eof')
-            self._distribute_fetch_results(
-                [self._item(from_idx + 10 + idx) for idx in range(5)])
-            self._distribute_eof()
+            fetcher.process_fetch_results(
+                [self._item(from_idx + 10 + idx) for idx in range(5)], fetch_finished=True)
+            fetcher.process_eof()
 
     def _item(self, idx):
         return Item(

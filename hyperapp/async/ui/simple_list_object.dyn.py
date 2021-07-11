@@ -9,7 +9,7 @@ class SimpleListObject(ListObject):
     async def get_all_items(self):
         pass
 
-    async def fetch_items(self, from_key):
+    async def fetch_items(self, from_key, fetcher):
         items = await self.get_all_items()
         if from_key is not None:
             key_attr = self.key_attribute
@@ -20,5 +20,5 @@ class SimpleListObject(ListObject):
                     break
             else:
                 assert f"{from_key!r} is not present in any of {items}"
-        self._distribute_fetch_results(items, fetch_finished=True)
-        self._distribute_eof()
+        fetcher.process_fetch_results(items, fetch_finished=True)
+        fetcher.process_eof()
