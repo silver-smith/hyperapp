@@ -63,8 +63,6 @@ class AvailableViewList(SimpleListObject):
                 none_available = False
             if none_available:
                 yield Item(next(id_it), dir_str, None, '(no views available)')
-                
-                
 
 
 class ThisModule(Module):
