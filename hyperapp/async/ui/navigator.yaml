@@ -1,5 +1,7 @@
 import:
   types:
+    view:
+      - command_source_d
     navigator:
       - navigator
     layout_editor:

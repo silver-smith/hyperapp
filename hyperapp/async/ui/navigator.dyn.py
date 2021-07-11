@@ -143,8 +143,16 @@ class NavigatorLayout(GlobalLayout):
             *global_command_list,
             ]
 
-    async def _create_view(self, object):
-        return await self._view_factory.create_view(object)
+    async def _create_view(self, object, command_dir=None):
+        dir_list = object.dir_list
+        if command_dir is not None:
+            command_dir_refs = tuple(
+                self._mosaic.put(piece)
+                for piece in command_dir
+                )
+            command_source_dir = [htypes.view.command_source_d(command_dir_refs), *dir_list[-1]]
+            dir_list = [*dir_list, command_source_dir]
+        return await self._view_factory.create_view(object, dir_list)
 
     async def _run_object_command(self, command):
         view_state = self._current_view.state
@@ -161,15 +169,15 @@ class NavigatorLayout(GlobalLayout):
         _log.info("Run global command %s result: %r", command, piece)
         if piece is None:
             return
-        await self._open_piece(piece)
+        await self._open_piece(piece, command.dir)
 
-    async def _open_piece(self, piece):
-        await self._open_piece_impl(piece)
+    async def _open_piece(self, piece, command_dir=None):
+        await self._open_piece_impl(piece, command_dir)
         self._history.append(_HistoryItem(self._current_object.piece, self._current_view.piece))
 
-    async def _open_piece_impl(self, piece):
+    async def _open_piece_impl(self, piece, command_dir=None):
         self._current_object = await self._object_factory.animate(piece)
-        self._current_view = await self._create_view(self._current_object)
+        self._current_view = await self._create_view(self._current_object, command_dir)
         self._view_opener.open(self._current_view)
         await self._command_hub.update()
 
