@@ -81,6 +81,13 @@ class LCSheet:
             record.persist = True
             self._save()
 
+    def remove(self, dir):
+        record = self._dir_to_record[tuple(dir)]
+        log.info("LCS: remove%s %s -> %s", '/persist' if record.persist else '', dir, record.value_list)
+        del self._dir_to_record[tuple(dir)]
+        if record.persist:
+            self._save()
+
     def iter(self, dir_list):
         for dir in dir_list:
             yield from self._dir_to_record[tuple(dir)].value_list

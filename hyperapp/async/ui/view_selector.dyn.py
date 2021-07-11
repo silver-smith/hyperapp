@@ -32,6 +32,7 @@ class ViewSelector(SimpleListObject):
         self._lcs = lcs
         self._object = object
         self._item_list = []
+        self._id_dir = {}
         self._id_to_available_rec = {}
         self._populate()
 
@@ -58,6 +59,10 @@ class ViewSelector(SimpleListObject):
 
     def _populate(self):
         self._item_list = list(self._iter_items())
+        self._id_to_dir = {
+            item.id: item.dir
+            for item in self._item_list
+            }
         self._id_to_available_rec = {
             item.id: AvailableRec(item.dir, item.view)
             for item in self._item_list
@@ -82,7 +87,6 @@ class ViewSelector(SimpleListObject):
                 yield Item(next(id_it), dir, dir_str, 'selected', selected_piece)
             if selected_piece is None and default_piece is None:
                 yield Item(next(id_it), dir, dir_str, '', '')
-                
 
     @command
     async def select(self, current_key):
@@ -91,6 +95,16 @@ class ViewSelector(SimpleListObject):
         if not rec:
             return
         self._lcs.set([htypes.view.view_d('selected'), *rec.dir], rec.view, persist=True)
+        self.update()
+
+    @command
+    async def remove(self, current_key):
+        dir = self._id_to_dir[current_key]
+        piece = self._lcs.get([htypes.view.view_d('selected'), *dir])
+        if piece is None:
+            log.info("Dir is not selected: %s", dir)
+            return
+        self._lcs.remove([htypes.view.view_d('selected'), *dir])
         self.update()
 
 
