@@ -12,7 +12,7 @@ class ThisModule(ClientModule):
     def _build_default_state(self):
         piece = "Welcome to hyperapp"
         piece_ref = self._mosaic.put(piece)
-        navigator = htypes.navigator.navigator(piece_ref)
+        navigator = htypes.navigator.navigator(piece_ref, origin_dir=[])
         navigator_ref = self._mosaic.put(navigator)
         tab_view = htypes.tab_view.tab_view([navigator_ref], 0)
         tab_view_ref = self._mosaic.put(tab_view)

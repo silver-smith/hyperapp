@@ -14,7 +14,7 @@ from .layout import GlobalLayout
 _log = logging.getLogger(__name__)
 
 
-_HistoryItem = namedtuple('_HistoryItem', 'piece view_state')
+_HistoryItem = namedtuple('_HistoryItem', 'piece origin_dir view_state')
 
 
 class Command:
@@ -81,7 +81,7 @@ class NavigatorLayout(GlobalLayout):
             command_hub,
             view_opener,
             )
-        await self._async_init(async_web, state.current_piece_ref)
+        await self._async_init(async_web, state.current_piece_ref, state.origin_dir)
         return self
 
     def __init__(
@@ -106,19 +106,28 @@ class NavigatorLayout(GlobalLayout):
         self._history = _History()
         self._current_object = None
         self._current_view = None
+        self._current_origin_dir = None
 
-    async def _async_init(self, async_web, initial_piece_ref):
+    async def _async_init(self, async_web, initial_piece_ref, origin_dir):
         piece = await async_web.summon(initial_piece_ref)
         self._current_object = object = await self._object_factory.animate(piece)
+        self._current_origin_dir = [
+            await async_web.summon(ref)
+            for ref in origin_dir
+            ]
 
     @property
     def piece(self):
         piece_ref = self._mosaic.put(self._current_object.piece)
-        return htypes.navigator.navigator(piece_ref)
+        origin_dir_refs = tuple(
+            self._mosaic.put(piece)
+            for piece in self._current_origin_dir
+            )
+        return htypes.navigator.navigator(piece_ref, origin_dir_refs)
 
     async def create_view(self):
-        self._current_view = await self._create_view(self._current_object)
-        self._history.append(_HistoryItem(self._current_object.piece, self._current_view.piece))
+        self._current_view = await self._create_view(self._current_object, self._current_origin_dir)
+        self._history.append(_HistoryItem(self._current_object.piece, self._current_origin_dir, self._current_view.piece))
         return self._current_view
 
     async def visual_item(self):
@@ -143,11 +152,13 @@ class NavigatorLayout(GlobalLayout):
             *global_command_list,
             ]
 
-    async def _create_view(self, object, command_dir=None):
+    async def _create_view(self, object, command_dir):
         dir_list = object.dir_list
-        if command_dir is not None:
-            dir_list = [*dir_list, self._origin_dir(object, command_dir)]
-        return await self._view_factory.create_view(object, dir_list)
+        origin_dir = self._origin_dir(object, command_dir)
+        dir_list = [*dir_list, origin_dir]
+        view = await self._view_factory.create_view(object, dir_list)
+        self._current_origin_dir = origin_dir
+        return view
 
     def _origin_dir(self, object, command_dir):
         command_dir_refs = tuple(
@@ -174,11 +185,11 @@ class NavigatorLayout(GlobalLayout):
             return
         await self._open_piece(piece, command.dir)
 
-    async def _open_piece(self, piece, command_dir=None):
+    async def _open_piece(self, piece, command_dir):
         await self._open_piece_impl(piece, command_dir)
-        self._history.append(_HistoryItem(self._current_object.piece, self._current_view.piece))
+        self._history.append(_HistoryItem(self._current_object.piece, self._current_origin_dir, self._current_view.piece))
 
-    async def _open_piece_impl(self, piece, command_dir=None):
+    async def _open_piece_impl(self, piece, command_dir):
         self._current_object = await self._object_factory.animate(piece)
         self._current_view = await self._create_view(self._current_object, command_dir)
         self._view_opener.open(self._current_view)
@@ -190,7 +201,7 @@ class NavigatorLayout(GlobalLayout):
             item = self._history.move_backward()
         except IndexError:
             return
-        await self._open_piece_impl(item.piece)
+        await self._open_piece_impl(item.piece, item.origin_dir)
 
     @command
     async def go_forward(self):
@@ -198,7 +209,7 @@ class NavigatorLayout(GlobalLayout):
             item = self._history.move_forward()
         except IndexError:
             return
-        await self._open_piece_impl(item.piece)
+        await self._open_piece_impl(item.piece, item.origin_dir)
 
 
 class ThisModule(Module):

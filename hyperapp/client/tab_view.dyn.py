@@ -250,7 +250,7 @@ class ThisModule(ClientModule):
     def _make_new_tab_ref(self):
         piece = "New tab"
         piece_ref = self._mosaic.put(piece)
-        navigator = htypes.navigator.navigator(piece_ref)
+        navigator = htypes.navigator.navigator(piece_ref, origin_dir=[])
         navigator_ref = self._mosaic.put(navigator)
         tab_view = htypes.tab_view.tab_view([navigator_ref], 0)
         return self._mosaic.put(tab_view)

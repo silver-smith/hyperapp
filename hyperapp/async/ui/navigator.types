@@ -1,3 +1,4 @@
 
 navigator = record:
   current_piece_ref: ref
+  origin_dir: ref list
