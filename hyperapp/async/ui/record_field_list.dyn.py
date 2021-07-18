@@ -24,14 +24,15 @@ class RecordFieldList(SimpleListObject):
         ]
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, lcs, object_factory, make_selector_callback_ref):
+    async def from_piece(cls, piece, mosaic, lcs, object_factory, view_factory, make_selector_callback_ref):
         object = await object_factory.invite(piece.piece_ref)
-        return cls(mosaic, lcs, make_selector_callback_ref, object)
+        return cls(mosaic, lcs, view_factory, make_selector_callback_ref, object)
 
-    def __init__(self, mosaic, lcs, make_selector_callback_ref, object):
+    def __init__(self, mosaic, lcs, view_factory, make_selector_callback_ref, object):
         super().__init__()
         self._mosaic = mosaic
         self._lcs = lcs
+        self._view_factory = view_factory
         self._make_selector_callback_ref = make_selector_callback_ref
         self._object = object
 
@@ -57,7 +58,7 @@ class RecordFieldList(SimpleListObject):
     def _iter_items(self):
         for field_id, field in self._object.fields.items():
             dir_list = self._object.record_field_dir_list(field_id, field)
-            view_piece = self._lcs.get_first(dir_list)
+            view_piece = self._view_factory.pick_view_piece(dir_list)
             yield Item(field_id, view_piece)
 
     @command
@@ -90,6 +91,7 @@ class ThisModule(Module):
             services.mosaic,
             services.lcs,
             services.object_factory,
+            services.view_factory,
             services.make_selector_callback_ref,
             )
         services.command_registry.register_actor(

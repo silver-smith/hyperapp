@@ -19,4 +19,5 @@ import:
     - async.ui.column
     - async.ui.simple_list_object
 require:
+  - view_factory
   - make_selector_callback_ref
