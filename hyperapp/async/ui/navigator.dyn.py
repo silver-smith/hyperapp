@@ -146,13 +146,15 @@ class NavigatorLayout(GlobalLayout):
     async def _create_view(self, object, command_dir=None):
         dir_list = object.dir_list
         if command_dir is not None:
-            command_dir_refs = tuple(
-                self._mosaic.put(piece)
-                for piece in command_dir
-                )
-            command_source_dir = [htypes.view.command_source_d(command_dir_refs), *dir_list[-1]]
-            dir_list = [*dir_list, command_source_dir]
+            dir_list = [*dir_list, self._origin_dir(object, command_dir)]
         return await self._view_factory.create_view(object, dir_list)
+
+    def _origin_dir(self, object, command_dir):
+        command_dir_refs = tuple(
+            self._mosaic.put(piece)
+            for piece in command_dir
+            )
+        return [htypes.view.command_source_d(command_dir_refs), *object.dir_list[-1]]
 
     async def _run_object_command(self, command):
         view_state = self._current_view.state
