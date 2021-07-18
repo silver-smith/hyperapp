@@ -3,13 +3,20 @@ import:
     view_selector:
       - open_view_selector_command
       - view_selector
+      - set_view_param_dir
     view:
       - view_d
     command:
       - object_commands_d
+    available_view_list:
+      - available_view_list
+    selector:
+      - selector
   code:
     - async.ui.command
     - async.ui.object
     - async.ui.object_command
     - async.ui.column
     - async.ui.simple_list_object
+require:
+  - make_selector_callback_ref

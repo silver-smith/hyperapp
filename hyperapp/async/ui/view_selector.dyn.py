@@ -22,23 +22,24 @@ AvailableRec = namedtuple('AvailableRec', 'dir view')
 class ViewSelector(SimpleListObject):
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, async_web, lcs, object_factory):
+    async def from_piece(cls, piece, mosaic, async_web, lcs, object_factory, make_selector_callback_ref):
         object = await object_factory.invite(piece.piece_ref)
         origin_dir = [
             await async_web.summon(ref)
             for ref in piece.origin_dir
             ]
-        return cls(mosaic, lcs, object, origin_dir)
+        return cls(mosaic, async_web, lcs, make_selector_callback_ref, object, origin_dir)
 
-    def __init__(self, mosaic, lcs, object, origin_dir):
+    def __init__(self, mosaic, async_web, lcs, make_selector_callback_ref, object, origin_dir):
         super().__init__()
         self._mosaic = mosaic
+        self._async_web = async_web
         self._lcs = lcs
+        self._make_selector_callback_ref = make_selector_callback_ref
         self._object = object
         self._origin_dir = origin_dir
-        self._item_list = []
-        self._id_dir = {}
-        self._id_to_available_rec = {}
+        self._item_list = None  # Set by _populate.
+        self._id_to_dir = None  # Set by _populate.
         self._populate()
 
     @property
@@ -72,11 +73,6 @@ class ViewSelector(SimpleListObject):
             item.id: item.dir
             for item in self._item_list
             }
-        self._id_to_available_rec = {
-            item.id: AvailableRec(item.dir, item.view)
-            for item in self._item_list
-            if item.type == 'available'
-            }
 
     def update(self):
         self._populate()
@@ -86,8 +82,6 @@ class ViewSelector(SimpleListObject):
         id_it = itertools.count()
         for dir in self._object.dir_list + [self._origin_dir]:
             dir_str = '/'.join(str(element) for element in dir)
-            for available_piece in self._lcs.iter([[htypes.view.view_d('available'), *dir]]):
-                yield Item(next(id_it), dir, dir_str, 'available', available_piece)
             default_piece = self._lcs.get([htypes.view.view_d('default'), *dir])
             if default_piece is not None:
                 yield Item(next(id_it), dir, dir_str, 'default', default_piece)
@@ -99,12 +93,25 @@ class ViewSelector(SimpleListObject):
 
     @command
     async def select(self, current_key):
-        rec = self._id_to_available_rec.get(current_key)
-        log.info("Available dir for %d: %r -> %r", current_key, rec.dir, rec.view)
-        if not rec:
-            return
-        self._lcs.set([htypes.view.view_d('selected'), *rec.dir], rec.view, persist=True)
+        dir = self._id_to_dir[current_key]
+        piece_ref = self._mosaic.put(self._object.piece)
+        list = htypes.available_view_list.available_view_list(piece_ref)
+        list_ref = self._mosaic.put(list)
+        dir_param = htypes.view_selector.set_view_param_dir(
+            dir=[self._mosaic.put(piece) for piece in dir]
+            )
+        callback_ref = self._make_selector_callback_ref(self.set_view, dir_param=dir_param)
+        return htypes.selector.selector(list_ref, callback_ref)
+
+    async def set_view(self, view_item, *, dir_param):
+        dir = [
+            await self._async_web.summon(ref)
+            for ref in dir_param.dir
+            ]
+        log.info("Set view for %r: %r", dir, view_item.view)
+        self._lcs.set([htypes.view.view_d('selected'), *dir], view_item.view, persist=True)
         self.update()
+        return self.piece
 
     @command
     async def remove(self, current_key):
@@ -130,6 +137,7 @@ class ThisModule(Module):
             services.async_web,
             services.lcs,
             services.object_factory,
+            services.make_selector_callback_ref,
             )
         services.command_registry.register_actor(
             htypes.view_selector.open_view_selector_command, Command.from_fn(self.name, self.view_selector))
