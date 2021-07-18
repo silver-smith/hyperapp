@@ -158,12 +158,13 @@ class NavigatorLayout(GlobalLayout):
 
     async def _run_object_command(self, command):
         view_state = self._current_view.state
-        _log.info("Run object command: %s with state %s", command, view_state)
-        piece = await command.run(self._current_view.object, view_state)
+        origin_dir = self._origin_dir(self._current_object, command.dir)
+        _log.info("Run object command: %s with state %s, origin %s", command, view_state, origin_dir)
+        piece = await command.run(self._current_view.object, view_state, origin_dir)
         _log.info("Run object command %s result: %r", command, piece)
         if piece is None:
             return
-        await self._open_piece(piece)
+        await self._open_piece(piece, command.dir)
 
     async def _run_global_command(self, command):
         _log.info("Run global command: %s", command)

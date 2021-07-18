@@ -28,7 +28,7 @@ class BuiltinCommand:
     def dir(self):
         return [*self._object_dir, htypes.command.builtin_object_command_d(self.name)]
 
-    async def run(self, object, view_state):
+    async def run(self, object, view_state, origin_dir):
         kw = {
             name: getattr(view_state, name)
             for name in object.view_state_fields
@@ -36,6 +36,8 @@ class BuiltinCommand:
             }
         if 'view_state' in self._wanted_params:
             kw['view_state'] = view_state
+        if 'origin_dir' in self._wanted_params:
+            kw['origin_dir'] = origin_dir
         missing_kw = self._wanted_params - set(kw)
         if missing_kw:
             raise RuntimeError(f"Method {self.name!r} wants arguments {missing_kw} but {view_state!r} does not provide them")
@@ -63,5 +65,5 @@ class Command:
     def dir(self):
         return [htypes.command.context_object_command_d(self._module_name, self.name)]
 
-    async def run(self, object, view_state):
-        return await self._fn(object, view_state)
+    async def run(self, object, view_state, origin_dir):
+        return await self._fn(object, view_state, origin_dir)

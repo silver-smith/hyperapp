@@ -99,6 +99,6 @@ class ThisModule(Module):
             htypes.record_field_list.open_record_field_list_command(),
             )
 
-    async def record_field_list(self, object, view_state):
+    async def record_field_list(self, object, view_state, origin_dir):
         piece_ref = self._mosaic.put(object.piece)
         return htypes.record_field_list.record_field_list(piece_ref)

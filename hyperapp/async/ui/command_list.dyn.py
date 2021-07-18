@@ -235,7 +235,7 @@ class ThisModule(ClientModule):
         services.command_registry.register_actor(
             htypes.command_list.command_list_command, Command.from_fn(self.name, self.command_list))
 
-    async def command_list(self, object, view_state):
+    async def command_list(self, object, view_state, origin_dir):
         piece_ref = self._mosaic.put(object.piece)
         view_state_ref = self._mosaic.put(view_state)
         return htypes.command_list.object_command_list(piece_ref, view_state_ref)

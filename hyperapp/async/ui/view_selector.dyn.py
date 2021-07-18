@@ -128,6 +128,6 @@ class ThisModule(Module):
             htypes.view_selector.open_view_selector_command(),
             )
 
-    async def view_selector(self, object, view_state):
+    async def view_selector(self, object, view_state, origin_dir):
         piece_ref = self._mosaic.put(object.piece)
         return htypes.view_selector.view_selector(piece_ref)
