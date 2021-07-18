@@ -22,15 +22,20 @@ AvailableRec = namedtuple('AvailableRec', 'dir view')
 class ViewSelector(SimpleListObject):
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, lcs, object_factory):
+    async def from_piece(cls, piece, mosaic, async_web, lcs, object_factory):
         object = await object_factory.invite(piece.piece_ref)
-        return cls(mosaic, lcs, object)
+        origin_dir = [
+            await async_web.summon(ref)
+            for ref in piece.origin_dir
+            ]
+        return cls(mosaic, lcs, object, origin_dir)
 
-    def __init__(self, mosaic, lcs, object):
+    def __init__(self, mosaic, lcs, object, origin_dir):
         super().__init__()
         self._mosaic = mosaic
         self._lcs = lcs
         self._object = object
+        self._origin_dir = origin_dir
         self._item_list = []
         self._id_dir = {}
         self._id_to_available_rec = {}
@@ -39,7 +44,11 @@ class ViewSelector(SimpleListObject):
     @property
     def piece(self):
         piece_ref = self._mosaic.put(self._object.piece)
-        return htypes.view_selector.view_selector(piece_ref)
+        origin_dir_refs = tuple(
+            self._mosaic.put(piece)
+            for piece in self._origin_dir
+            )
+        return htypes.view_selector.view_selector(piece_ref, origin_dir_refs)
 
     @property
     def title(self):
@@ -75,7 +84,7 @@ class ViewSelector(SimpleListObject):
 
     def _iter_items(self):
         id_it = itertools.count()
-        for dir in self._object.dir_list:
+        for dir in self._object.dir_list + [self._origin_dir]:
             dir_str = '/'.join(str(element) for element in dir)
             for available_piece in self._lcs.iter([[htypes.view.view_d('available'), *dir]]):
                 yield Item(next(id_it), dir, dir_str, 'available', available_piece)
@@ -118,6 +127,7 @@ class ThisModule(Module):
             htypes.view_selector.view_selector,
             ViewSelector.from_piece,
             services.mosaic,
+            services.async_web,
             services.lcs,
             services.object_factory,
             )
@@ -130,4 +140,8 @@ class ThisModule(Module):
 
     async def view_selector(self, object, view_state, origin_dir):
         piece_ref = self._mosaic.put(object.piece)
-        return htypes.view_selector.view_selector(piece_ref)
+        origin_dir_refs = tuple(
+            self._mosaic.put(piece)
+            for piece in origin_dir
+            )
+        return htypes.view_selector.view_selector(piece_ref, origin_dir_refs)
