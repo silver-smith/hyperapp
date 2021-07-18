@@ -8,8 +8,8 @@ log = logging.getLogger(__name__)
 
 def dir_seq(dir_list):
     for dir in dir_list:
-        yield [htypes.view.view_d('selected'), *dir]
         yield [htypes.view.view_d('default'), *dir]
+        yield [htypes.view.view_d('selected'), *dir]
 
 
 class ViewFactory:
