@@ -7,7 +7,7 @@ import:
       - record_field_list_d
       - record_field_list
     command:
-      - object_commands_d
+      - object_selector_commands_d
     available_view_list:
       - available_view_list
     selector:

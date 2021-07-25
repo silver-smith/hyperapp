@@ -97,10 +97,10 @@ class ThisModule(Module):
         services.command_registry.register_actor(
             htypes.record_field_list.open_record_field_list_command, Command.from_fn(self.name, self.record_field_list))
         services.lcs.add(
-            [*RecordObject.dir_list[-1], htypes.command.object_commands_d()],
+            [*RecordObject.dir_list[-1], htypes.command.object_selector_commands_d()],
             htypes.record_field_list.open_record_field_list_command(),
             )
 
     async def record_field_list(self, object, view_state, origin_dir):
-        piece_ref = self._mosaic.put(object.piece)
+        piece_ref = self._mosaic.put(object.target_object.piece)
         return htypes.record_field_list.record_field_list(piece_ref)

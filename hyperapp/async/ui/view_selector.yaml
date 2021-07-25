@@ -8,6 +8,7 @@ import:
       - view_d
     command:
       - object_commands_d
+      - object_selector_commands_d
     available_view_list:
       - available_view_list
     selector:
@@ -19,4 +20,8 @@ import:
     - async.ui.column
     - async.ui.simple_list_object
 require:
+  - async_web
+  - lcs
+  - command_registry
+  - object_factory
   - make_selector_callback_ref

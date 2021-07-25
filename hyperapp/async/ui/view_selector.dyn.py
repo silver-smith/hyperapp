@@ -22,13 +22,15 @@ AvailableRec = namedtuple('AvailableRec', 'dir view')
 class ViewSelector(SimpleListObject):
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, async_web, lcs, object_factory, make_selector_callback_ref):
+    async def from_piece(cls, piece, mosaic, async_web, lcs, command_registry, object_factory, make_selector_callback_ref):
         object = await object_factory.invite(piece.piece_ref)
         origin_dir = [
             await async_web.summon(ref)
             for ref in piece.origin_dir
             ]
-        return cls(mosaic, async_web, lcs, make_selector_callback_ref, object, origin_dir)
+        self = cls(mosaic, async_web, lcs, make_selector_callback_ref, object, origin_dir)
+        await self._async_init(command_registry)
+        return self
 
     def __init__(self, mosaic, async_web, lcs, make_selector_callback_ref, object, origin_dir):
         super().__init__()
@@ -40,7 +42,17 @@ class ViewSelector(SimpleListObject):
         self._origin_dir = origin_dir
         self._item_list = None  # Set by _populate.
         self._id_to_dir = None  # Set by _populate.
+        self._selector_command_list = None  # Set by _async_init
         self._populate()
+
+    async def _async_init(self, command_registry):
+        command_piece_it = self._lcs.iter(
+            [[*dir, htypes.command.object_selector_commands_d()] for dir in self._object.dir_list]
+            )
+        self._selector_command_list = [
+            await command_registry.animate(piece)
+            for piece in command_piece_it
+            ]
 
     @property
     def piece(self):
@@ -54,6 +66,13 @@ class ViewSelector(SimpleListObject):
     @property
     def title(self):
         return f"Select view for: {self._object.title}"
+
+    @property
+    def command_list(self):
+        return [
+            *super().command_list,
+            *self._selector_command_list,
+            ]
 
     @property
     def columns(self):
@@ -77,6 +96,13 @@ class ViewSelector(SimpleListObject):
     def update(self):
         self._populate()
         self._notify_object_changed()
+
+    @property
+    def target_object(self):
+        return self._object
+
+    def key_to_dir(self, key):
+        return self._id_to_dir[key]
 
     def _iter_items(self):
         id_it = itertools.count()
@@ -136,6 +162,7 @@ class ThisModule(Module):
             services.mosaic,
             services.async_web,
             services.lcs,
+            services.command_registry,
             services.object_factory,
             services.make_selector_callback_ref,
             )
