@@ -105,8 +105,8 @@ class NavigatorLayout(GlobalLayout):
         self._view_opener = view_opener
         self._history = _History()
         self._current_object = None
-        self._current_view = None
         self._current_origin_dir = None
+        self._current_view = None
 
     async def _async_init(self, async_web, initial_piece_ref, origin_dir):
         piece = await async_web.summon(initial_piece_ref)
@@ -126,9 +126,10 @@ class NavigatorLayout(GlobalLayout):
         return htypes.navigator.navigator(piece_ref, origin_dir_refs)
 
     async def create_view(self):
-        self._current_view = await self._create_view(self._current_object, self._current_origin_dir)
-        self._history.append(_HistoryItem(self._current_object.piece, self._current_origin_dir, self._current_view.piece))
-        return self._current_view
+        view = await self._create_view(self._current_object, self._current_origin_dir)
+        self._history.append(_HistoryItem(self._current_object.piece, self._current_origin_dir, view.piece))
+        self._current_view = view
+        return view
 
     async def visual_item(self):
         piece = self._current_object.piece
@@ -152,14 +153,6 @@ class NavigatorLayout(GlobalLayout):
             *global_command_list,
             ]
 
-    async def _create_view(self, object, command_dir):
-        dir_list = object.dir_list
-        origin_dir = self._origin_dir(object, command_dir)
-        dir_list = [*dir_list, origin_dir]
-        view = await self._view_factory.create_view(object, dir_list)
-        self._current_origin_dir = origin_dir
-        return view
-
     def _origin_dir(self, object, command_dir):
         command_dir_refs = tuple(
             self._mosaic.put(piece)
@@ -174,7 +167,7 @@ class NavigatorLayout(GlobalLayout):
         _log.info("Run object command %s result: %r", command, piece)
         if piece is None:
             return
-        await self._open_piece(piece, command.dir)
+        await self._open_piece_and_save_history(piece, command.dir)
 
     async def _run_global_command(self, command):
         _log.info("Run global command: %s", command)
@@ -182,17 +175,25 @@ class NavigatorLayout(GlobalLayout):
         _log.info("Run global command %s result: %r", command, piece)
         if piece is None:
             return
-        await self._open_piece(piece, command.dir)
+        await self._open_piece_and_save_history(piece, command.dir)
 
-    async def _open_piece(self, piece, command_dir):
-        await self._open_piece_impl(piece, command_dir)
+    async def _open_piece_and_save_history(self, piece, command_dir):
+        object = await self._object_factory.animate(piece)
+        origin_dir = self._origin_dir(object, command_dir)
+        await self._open_object(object, origin_dir)
         self._history.append(_HistoryItem(self._current_object.piece, self._current_origin_dir, self._current_view.piece))
 
-    async def _open_piece_impl(self, piece, command_dir):
-        self._current_object = await self._object_factory.animate(piece)
-        self._current_view = await self._create_view(self._current_object, command_dir)
+    async def _open_object(self, object, origin_dir):
+        view = await self._create_view(object, origin_dir)
+        self._current_object = object
+        self._current_origin_dir = origin_dir
+        self._current_view = view
         self._view_opener.open(self._current_view)
         await self._command_hub.update()
+
+    async def _create_view(self, object, origin_dir):
+        dir_list = [*object.dir_list, origin_dir]
+        return await self._view_factory.create_view(object, dir_list)
 
     @command
     async def go_backward(self):
@@ -200,7 +201,8 @@ class NavigatorLayout(GlobalLayout):
             item = self._history.move_backward()
         except IndexError:
             return
-        await self._open_piece_impl(item.piece, item.origin_dir)
+        object = await self._object_factory.animate(item.piece)
+        await self._open_object(object, item.origin_dir)
 
     @command
     async def go_forward(self):
@@ -208,7 +210,8 @@ class NavigatorLayout(GlobalLayout):
             item = self._history.move_forward()
         except IndexError:
             return
-        await self._open_piece_impl(item.piece, item.origin_dir)
+        object = await self._object_factory.animate(item.piece)
+        await self._open_object(object, item.origin_dir)
 
 
 class ThisModule(Module):
