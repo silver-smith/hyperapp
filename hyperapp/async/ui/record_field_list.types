@@ -5,4 +5,5 @@ record_field_list_d = record
 
 record_field_list = record:
   piece_ref: ref
-  dir: ref list
+  origin_dir: ref list
+  target_dir: ref list

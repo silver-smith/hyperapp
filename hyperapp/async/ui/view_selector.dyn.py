@@ -101,6 +101,10 @@ class ViewSelector(SimpleListObject):
     def target_object(self):
         return self._object
 
+    @property
+    def origin_dir(self):
+        return self._origin_dir
+
     def key_to_dir(self, key):
         return self._id_to_dir[key]
 
