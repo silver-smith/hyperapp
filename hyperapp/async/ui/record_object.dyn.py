@@ -13,12 +13,12 @@ class RecordObject(Object, metaclass=abc.ABCMeta):
 
     def __init__(self, fields=None):
         super().__init__()
-        self.fields = fields
+        self.fields = fields  # field id -> field object
 
     async def async_init(self, object_factory, fields_pieces):
         self.fields = {
-            name: await object_factory.animate(piece)
-            for name, piece in fields_pieces.items()
+            id: await object_factory.animate(piece)
+            for id, piece in fields_pieces.items()
             }
 
     @classmethod
