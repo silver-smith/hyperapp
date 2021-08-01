@@ -48,6 +48,9 @@ class CodeRegistry:
             raise CodeRegistryKeyError(f"No code is registered for {self._produce_name}: {t!r}; piece: {piece}")
         _log.debug('Producing %s for %s of type %s using %s(%s/%s, %s/%s)',
                    self._produce_name, piece, t, rec.factory, rec.args, args, rec.kw, kw)
-        actor = await run_awaitable_factory(rec.factory, piece, *args, *rec.args, **kw, **rec.kw)
+        try:
+            actor = await run_awaitable_factory(rec.factory, piece, *args, *rec.args, **kw, **rec.kw)
+        except Exception as x:
+            raise RuntimeError(f"{rec.factory}: {x}")
         _log.info('%s: %s of type %s is resolved to %s', self._produce_name, piece, t, actor)
         return actor
