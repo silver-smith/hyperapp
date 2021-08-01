@@ -106,6 +106,7 @@ class LCSheet:
     def get_first(self, dir_list):
         for dir in reversed(dir_list):
             value = self.get(dir)
+            log.debug("LCS get_first: %s -> %r", dir, value)
             if value is not None:
                 return value
         raise KeyError(f"No dir among {dir_list} is registered at LCS")
