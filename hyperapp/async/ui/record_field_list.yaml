@@ -1,5 +1,7 @@
 import:
   types:
+    view:
+      - view_d
     record_object:
       - record_field_d
     record_field_list:

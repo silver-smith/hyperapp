@@ -75,7 +75,7 @@ class RecordFieldList(SimpleListObject):
         log.info("Set view for %r: %r", field_id, view_item.view)
         field = self._object.fields[field_id]
         dir = self._object.record_field_dir(field_id, field)  # todo: allow to select dir to set view for.
-        self._lcs.set(dir, view_item.view)
+        self._lcs.set([htypes.view.view_d('selected'), *dir], view_item.view)
         return self.piece
 
 
