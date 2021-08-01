@@ -24,22 +24,31 @@ class RecordFieldList(SimpleListObject):
         ]
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, lcs, object_factory, view_factory, make_selector_callback_ref):
+    async def from_piece(cls, piece, mosaic, async_web, lcs, object_factory, view_factory, make_selector_callback_ref):
         object = await object_factory.invite(piece.piece_ref)
-        return cls(mosaic, lcs, view_factory, make_selector_callback_ref, object)
+        dir = [
+            await async_web.summon(ref)
+            for ref in piece.dir
+            ]
+        return cls(mosaic, lcs, view_factory, make_selector_callback_ref, object, dir)
 
-    def __init__(self, mosaic, lcs, view_factory, make_selector_callback_ref, object):
+    def __init__(self, mosaic, lcs, view_factory, make_selector_callback_ref, object, dir):
         super().__init__()
         self._mosaic = mosaic
         self._lcs = lcs
         self._view_factory = view_factory
         self._make_selector_callback_ref = make_selector_callback_ref
         self._object = object
+        self._dir = dir
 
     @property
     def piece(self):
         piece_ref = self._mosaic.put(self._object.piece)
-        return htypes.record_field_list.record_field_list(piece_ref)
+        dir_refs = tuple(
+            self._mosaic.put(piece)
+            for piece in self._dir
+            )
+        return htypes.record_field_list.record_field_list(piece_ref, dir_refs)
 
     @property
     def title(self):
@@ -74,7 +83,7 @@ class RecordFieldList(SimpleListObject):
     async def set_view(self, view_item, *, field_id):
         log.info("Set view for %r: %r", field_id, view_item.view)
         field = self._object.fields[field_id]
-        dir = self._object.record_field_dir(field_id, field)  # todo: allow to select dir to set view for.
+        dir = self._object.record_field_dir(self._dir, field_id, field)
         self._lcs.set([htypes.view.view_d('selected'), *dir], view_item.view)
         return self.piece
 
@@ -89,6 +98,7 @@ class ThisModule(Module):
             htypes.record_field_list.record_field_list,
             RecordFieldList.from_piece,
             services.mosaic,
+            services.async_web,
             services.lcs,
             services.object_factory,
             services.view_factory,
@@ -103,4 +113,9 @@ class ThisModule(Module):
 
     async def record_field_list(self, object, view_state, origin_dir):
         piece_ref = self._mosaic.put(object.target_object.piece)
-        return htypes.record_field_list.record_field_list(piece_ref)
+        dir = object.key_to_dir(view_state.current_key)
+        dir_refs = tuple(
+            self._mosaic.put(piece)
+            for piece in dir
+            )
+        return htypes.record_field_list.record_field_list(piece_ref, dir_refs)

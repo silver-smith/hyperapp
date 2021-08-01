@@ -22,14 +22,18 @@ class RecordObject(Object, metaclass=abc.ABCMeta):
             }
 
     @classmethod
-    def record_field_dir(cls, field_id, field_object):
-        return [*cls.dir_list[-1], htypes.record_object.record_field_d(field_id), *field_object.dir_list[-1]]
+    def record_field_dir(cls, record_dir, field_id, field_object):
+        return [*record_dir, htypes.record_object.record_field_d(field_id), *field_object.dir_list[-1]]
 
 
     @classmethod
     def record_field_dir_list(cls, field_id, field_object):
         # All dirs for object and one for us. todo: maybe, more than one for us.
+        record_dir_list = [
+            cls.record_field_dir(dir, field_id, field_object)
+            for dir in cls.dir_list
+            ]
         return [
             *field_object.dir_list,
-            cls.record_field_dir(field_id, field_object),
+            *record_dir_list,
             ]

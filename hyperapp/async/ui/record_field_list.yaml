@@ -21,5 +21,8 @@ import:
     - async.ui.column
     - async.ui.simple_list_object
 require:
+  - async_web
+  - lcs
+  - object_factory
   - view_factory
   - make_selector_callback_ref
