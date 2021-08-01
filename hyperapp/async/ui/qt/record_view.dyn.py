@@ -5,7 +5,7 @@ from PySide2 import QtCore, QtWidgets
 from hyperapp.common.module import Module
 
 from . import htypes
-from .record_object import RecordObject
+from .record_object import RecordObject, record_field_dir_list
 
 
 class RecordView(QtWidgets.QWidget):
@@ -34,7 +34,7 @@ class RecordView(QtWidgets.QWidget):
         self.setLayout(layout)
 
     async def _construct_field_view(self, view_factory, layout, field_id, field_object):
-        dir_list = self.object.record_field_dir_list(field_id, field_object)
+        dir_list = record_field_dir_list(self.object.dir_list, field_id, field_object)
         view = await view_factory.create_view(field_object, dir_list)
         label = QtWidgets.QLabel(field_id)
         label.setBuddy(view)

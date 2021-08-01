@@ -4,6 +4,22 @@ from . import htypes
 from .object import Object
 
 
+def record_field_dir(record_dir, field_id, field_object):
+    return [*record_dir, htypes.record_object.record_field_d(field_id), *field_object.dir_list[-1]]
+
+
+def record_field_dir_list(record_dir_list, field_id, field_object):
+    # All dirs for object and one for us. todo: maybe, more than one for us.
+    record_dir_list = [
+        record_field_dir(dir, field_id, field_object)
+        for dir in record_dir_list
+        ]
+    return [
+        *field_object.dir_list,
+        *record_dir_list,
+        ]
+
+
 class RecordObject(Object, metaclass=abc.ABCMeta):
 
     dir_list = [
@@ -20,20 +36,3 @@ class RecordObject(Object, metaclass=abc.ABCMeta):
             id: await object_factory.animate(piece)
             for id, piece in fields_pieces.items()
             }
-
-    @classmethod
-    def record_field_dir(cls, record_dir, field_id, field_object):
-        return [*record_dir, htypes.record_object.record_field_d(field_id), *field_object.dir_list[-1]]
-
-
-    @classmethod
-    def record_field_dir_list(cls, field_id, field_object):
-        # All dirs for object and one for us. todo: maybe, more than one for us.
-        record_dir_list = [
-            cls.record_field_dir(dir, field_id, field_object)
-            for dir in cls.dir_list
-            ]
-        return [
-            *field_object.dir_list,
-            *record_dir_list,
-            ]

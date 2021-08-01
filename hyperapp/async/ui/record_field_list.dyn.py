@@ -5,7 +5,7 @@ from hyperapp.common.module import Module
 
 from . import htypes
 from .command import command
-from .record_object import RecordObject
+from .record_object import RecordObject, record_field_dir, record_field_dir_list
 from .column import Column
 from .simple_list_object import SimpleListObject
 from .object_command import Command
@@ -74,8 +74,9 @@ class RecordFieldList(SimpleListObject):
         return list(self._iter_items())
 
     def _iter_items(self):
+        record_dir_list = [*self._object.dir_list, self._origin_dir]
         for field_id, field in self._object.fields.items():
-            dir_list = self._object.record_field_dir_list(field_id, field)
+            dir_list = record_field_dir_list(record_dir_list, field_id, field)
             view_piece = self._view_factory.pick_view_piece(dir_list)
             yield Item(field_id, view_piece)
 
@@ -92,7 +93,7 @@ class RecordFieldList(SimpleListObject):
     async def set_view(self, view_item, *, field_id):
         log.info("Set view for %r: %r", field_id, view_item.view)
         field = self._object.fields[field_id]
-        dir = self._object.record_field_dir(self._target_dir, field_id, field)
+        dir = record_field_dir(self._target_dir, field_id, field)
         self._lcs.set([htypes.view.view_d('selected'), *dir], view_item.view)
         return self.piece
 
