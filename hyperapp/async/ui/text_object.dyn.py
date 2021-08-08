@@ -34,11 +34,11 @@ class WikiTextObject(Object):
     @text.setter
     def text(self, text):
         self._text = text
-        self._notify_object_changed()
+        self.update()
 
     def text_changed(self, new_text, emitter_view=None):
         self._text = new_text
-        self._notify_object_changed(emitter_view)
+        self.update(emitter_view)
 
     async def open_ref(self, id):
         _log.info('Opening ref: %r', id)

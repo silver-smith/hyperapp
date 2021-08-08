@@ -112,9 +112,6 @@ class RecordFieldList(SimpleListObject):
         self._lcs.remove(selected_dir)
         self.update()
 
-    def update(self):
-        self._notify_object_changed()
-
 
 class ThisModule(Module):
 

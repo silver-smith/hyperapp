@@ -38,12 +38,12 @@ class StringObject(Object):
     @value.setter
     def value(self, value):
         self._value = value
-        self._notify_object_changed()
+        self.update()
 
     def value_changed(self, new_value, emitter_view=None):
         log.debug('string_object.value_changed: %r', new_value)
         self._value = new_value
-        self._notify_object_changed(emitter_view)
+        self.update(emitter_view)
 
 
 class ThisModule(Module):

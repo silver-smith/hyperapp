@@ -111,10 +111,10 @@ class Object(metaclass=abc.ABCMeta):
         except:
             log.exception('Error calling observers_gone:')
 
-    def _notify_object_changed(self, skip_observer=None):
-        log.debug('-- Object._notify_object_changed, self=%s/%s observers count=%s', id(self), self, len(self._observers))
+    def update(self, skip_observer=None):
+        log.debug('-- Object.update, self=%s/%s observers count=%s', id(self), self, len(self._observers))
         for observer, rec in self._observers.items():
-            log.debug('-- Object._notify_object_changed, observer=%s (*%s, **%s), skip=%r',
+            log.debug('-- Object.update, observer=%s (*%s, **%s), skip=%r',
                           id(observer), rec.args, rec.kw, observer is skip_observer)
             if observer is not skip_observer:
                 observer.object_changed(*rec.args, **rec.kw)

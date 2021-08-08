@@ -95,7 +95,7 @@ class ViewSelector(SimpleListObject):
 
     def update(self):
         self._populate()
-        self._notify_object_changed()
+        super().update()
 
     @property
     def target_object(self):

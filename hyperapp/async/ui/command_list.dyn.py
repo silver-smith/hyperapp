@@ -48,6 +48,9 @@ class CommandList(SimpleListObject):
             shortcut=shortcut or '',
             )
 
+    async def update(self):
+        super().update()
+
     def _command_shortcut(self, command):
         return self._lcs.get([*command.dir, htypes.command.command_shortcut_d()])
 
@@ -75,9 +78,6 @@ class CommandList(SimpleListObject):
 
     async def _run(self, command):
         return await command.run()
-
-    async def update(self):
-        self._notify_object_changed()
 
 
 class ObjectCommandList(CommandList):

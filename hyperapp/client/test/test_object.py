@@ -40,7 +40,7 @@ def test_object_observers(code):
     object.observers_arrived.reset_mock()
     object.subscribe(observer_2, 2, key=22)
     object.observers_arrived.assert_not_called()
-    object._notify_object_changed()
+    object.update()
     observer_1.object_changed.assert_called_once_with(1, key=11)
     observer_2.object_changed.assert_called_once_with(2, key=22)
     del observer_1
