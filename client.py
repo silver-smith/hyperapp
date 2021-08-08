@@ -49,6 +49,7 @@ code_module_list = [
     'async.ui.available_view_list',
     'async.ui.selector',
     'async.ui.qt.selector_view',
+    'async.ui.alt_command',
     ]
 
 

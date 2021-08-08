@@ -28,6 +28,10 @@ class BuiltinCommand:
     def dir(self):
         return [*self._object_dir, htypes.command.builtin_object_command_d(self.name)]
 
+    @property
+    def method_name(self):
+        return self.name
+
     async def run(self, object, view_state, origin_dir):
         kw = {
             name: getattr(view_state, name)

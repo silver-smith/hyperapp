@@ -53,6 +53,9 @@ class CommandList(SimpleListObject):
             shortcut=shortcut or '',
             )
 
+    def key_to_command(self, key):
+        return self._command_by_name[key]
+
     async def update(self):
         super().update()
 
@@ -96,18 +99,22 @@ class ObjectCommandList(CommandList):
     async def from_piece(cls, piece, mosaic, async_web, lcs, object_factory, object_commands_factory):
         object = await object_factory.invite(piece.piece_ref)
         view_state = await async_web.summon(piece.view_state_ref)
-        self = cls(mosaic, lcs, object, view_state)
-        await self._async_init(object_commands_factory)
+        self = cls(mosaic, lcs, object_commands_factory, object, view_state)
+        await self._async_init()
         return self
 
-    def __init__(self, mosaic, lcs, object, view_state):
+    def __init__(self, mosaic, lcs, object_commands_factory, object, view_state):
         super().__init__(lcs)
         self._mosaic = mosaic
+        self._object_commands_factory = object_commands_factory
         self._object = object
         self._view_state = view_state
 
-    async def _async_init(self, object_commands_factory):
-        command_list = await object_commands_factory.get_object_command_list(self._object)
+    async def _async_init(self):
+        await self._populate_commands()
+
+    async def _populate_commands(self):
+        command_list = await self._object_commands_factory.get_object_command_list(self._object)
         self._command_by_name = {
             command.name: command
             for command in command_list
@@ -122,6 +129,14 @@ class ObjectCommandList(CommandList):
         piece_ref = self._mosaic.put(self._object.piece)
         view_state_ref = self._mosaic.put(self._view_state)
         return htypes.command_list.object_command_list(piece_ref, view_state_ref)
+
+    @property
+    def target_object(self):
+        return self._object
+
+    async def update(self):
+        await self._populate_commands()
+        await super().update()
 
     async def _run(self, command):
         return await command.run(self._object, self._view_state)
