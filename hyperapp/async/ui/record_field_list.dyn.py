@@ -99,6 +99,22 @@ class RecordFieldList(SimpleListObject):
         self._lcs.set([htypes.view.view_d('selected'), *dir], view_item.view, persist=True)
         return self.piece
 
+    @command
+    async def remove(self, current_key):
+        field_id = current_key
+        field = self._object.fields[field_id]
+        dir = record_field_dir(self._target_dir, field_id, field)
+        selected_dir = [htypes.view.view_d('selected'), *dir]
+        view = self._lcs.get(selected_dir)
+        if view is None:
+            return  # Not set.
+        log.info("Remove view for %r: %r", field_id, view)
+        self._lcs.remove(selected_dir)
+        self.update()
+
+    def update(self):
+        self._notify_object_changed()
+
 
 class ThisModule(Module):
 
