@@ -23,6 +23,11 @@ ViewItem = namedtuple('Item', 'name path shortcut')
 
 class CommandList(SimpleListObject):
 
+    dir_list = [
+        *SimpleListObject.dir_list,
+        [htypes.command_list.command_list_d()],
+        ]
+
     def __init__(self, lcs):
         super().__init__()
         self._lcs = lcs
@@ -82,6 +87,11 @@ class CommandList(SimpleListObject):
 
 class ObjectCommandList(CommandList):
 
+    dir_list = [
+        *CommandList.dir_list,
+        [htypes.command_list.object_command_list_d()],
+        ]
+
     @classmethod
     async def from_piece(cls, piece, mosaic, async_web, lcs, object_factory, object_commands_factory):
         object = await object_factory.invite(piece.piece_ref)
@@ -119,6 +129,11 @@ class ObjectCommandList(CommandList):
 
 class GlobalCommandList(CommandList):
 
+    dir_list = [
+        *CommandList.dir_list,
+        [htypes.command_list.global_command_list_d()],
+        ]
+
     @classmethod
     async def from_piece(cls, piece, async_web, lcs, global_command_list, layout_manager):
         return cls(lcs, global_command_list, layout_manager)
@@ -145,6 +160,11 @@ class GlobalCommandList(CommandList):
 
 
 class ViewCommandList(CommandList):
+
+    dir_list = [
+        *CommandList.dir_list,
+        [htypes.command_list.view_command_list_d()],
+        ]
 
     @classmethod
     async def from_piece(cls, piece, async_web, lcs, layout_manager):
