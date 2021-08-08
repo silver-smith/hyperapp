@@ -71,7 +71,7 @@ class TextView(View, QtWidgets.QTextBrowser):
 class TextEditView(View, QtWidgets.QTextEdit, ObjectObserver):
 
     @classmethod
-    async def from_piece(cls, piece, object):
+    async def from_piece(cls, piece, object, add_dir_list):
         return cls(object)
 
     def __init__(self, object):
@@ -86,7 +86,7 @@ class TextEditView(View, QtWidgets.QTextEdit, ObjectObserver):
 
     @property
     def piece(self):
-        return htypes.text_view.text_view()
+        return htypes.text_view.text_edit_view()
 
     @property
     def object(self):
@@ -102,7 +102,7 @@ class TextEditView(View, QtWidgets.QTextEdit, ObjectObserver):
 
     def _on_text_changed(self):
         if self.notify_on_text_changed:
-            self._object.text_changed(self.toPlainText(), emitter_view=self)
+            self._object.value_changed(self.toPlainText(), emitter_view=self)
 
     # todo: preserve cursor position
     def object_changed(self):
@@ -120,6 +120,6 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
         services.lcs.set([htypes.view.view_d('default'), *StringObject.dir_list[-1]], htypes.text_view.text_view())
         services.lcs.add([htypes.view.view_d('available'), *StringObject.dir_list[-1]], htypes.text_view.text_view())
-        # services.lcs.add([htypes.view.view_d('available'), *StringObject.dir_list[-1]], htypes.text_view.text_edit_view())
+        services.lcs.add([htypes.view.view_d('available'), *StringObject.dir_list[-1]], htypes.text_view.text_edit_view())
         services.view_registry.register_actor(htypes.text_view.text_view, TextView.from_piece)
         services.view_registry.register_actor(htypes.text_view.text_edit_view, TextEditView.from_piece)
