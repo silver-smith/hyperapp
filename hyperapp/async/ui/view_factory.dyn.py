@@ -20,13 +20,18 @@ class ViewFactory:
 
     async def create_view(self, object, add_dir_list=None):
         log.info("View factory: create view for object: %r; dirs: %s + %s", object, object.dir_list, add_dir_list)
-        piece = self.pick_view_piece(object, add_dir_list)
+        _, piece = self.pick_view_piece(object, add_dir_list)
         return await self._view_registry.animate(piece, object, add_dir_list)
 
     def pick_view_piece(self, object, add_dir_list=None):
-        dir_list = list(dir_seq(
-            object.dir_list + (add_dir_list or [])))
-        return self._lcs.get_first(dir_list)
+        dir_list = object.dir_list + (add_dir_list or [])
+        dir_seq_list = list(dir_seq(dir_list))
+        for dir in reversed(dir_seq_list):
+            value = self._lcs.get(dir)
+            log.debug("View: %s -> %r", dir, value)
+            if value is not None:
+                return (dir, value)
+        raise KeyError(f"No view is registered for any of dirs: {dir_seq_list}")
 
 
 class ThisModule(ClientModule):

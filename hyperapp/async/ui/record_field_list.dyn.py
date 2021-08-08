@@ -13,7 +13,7 @@ from .object_command import Command
 log = logging.getLogger(__name__)
 
 
-Item = namedtuple('Item', 'id view')
+Item = namedtuple('Item', 'id dir view')
 
 
 class RecordFieldList(SimpleListObject):
@@ -67,6 +67,7 @@ class RecordFieldList(SimpleListObject):
     def columns(self):
         return [
             Column('id', is_key=True),
+            Column('dir'),
             Column('view'),
             ]
 
@@ -77,8 +78,9 @@ class RecordFieldList(SimpleListObject):
         record_dir_list = [*self._object.dir_list, self._origin_dir]
         for field_id, field in self._object.fields.items():
             add_dir_list = record_field_add_dir_list(record_dir_list, field_id, field)
-            view_piece = self._view_factory.pick_view_piece(field, add_dir_list)
-            yield Item(field_id, view_piece)
+            dir, view_piece = self._view_factory.pick_view_piece(field, add_dir_list)
+            dir_str = '/'.join(str(v) for v in dir)
+            yield Item(field_id, dir_str, view_piece)
 
     @command
     async def select(self, current_key):
