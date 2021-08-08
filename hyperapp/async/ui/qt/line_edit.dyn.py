@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 class LineEditView(View, QtWidgets.QLineEdit):
 
     @classmethod
-    async def from_piece(cls, piece, object):
+    async def from_piece(cls, piece, object, add_dir_list):
         return cls(object, piece.editable)
 
     def __init__(self, object, editable):

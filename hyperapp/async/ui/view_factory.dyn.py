@@ -18,16 +18,15 @@ class ViewFactory:
         self._lcs = lcs
         self._view_registry = view_registry
 
-    async def create_view(self, object, dir_list=None):
-        if dir_list is None:
-            dir_list = object.dir_list
-        log.info("View factory: create view for object: %r; dirs: %s", object, dir_list)
-        piece = self.pick_view_piece(dir_list)
-        return await self._view_registry.animate(piece, object)
+    async def create_view(self, object, add_dir_list=None):
+        log.info("View factory: create view for object: %r; dirs: %s + %s", object, object.dir_list, add_dir_list)
+        piece = self.pick_view_piece(object, add_dir_list)
+        return await self._view_registry.animate(piece, object, add_dir_list)
 
-    def pick_view_piece(self, dir_list):
-        selected_and_default_dir_list = list(dir_seq(dir_list))
-        return self._lcs.get_first(selected_and_default_dir_list)
+    def pick_view_piece(self, object, add_dir_list=None):
+        dir_list = list(dir_seq(
+            object.dir_list + (add_dir_list or [])))
+        return self._lcs.get_first(dir_list)
 
 
 class ThisModule(ClientModule):

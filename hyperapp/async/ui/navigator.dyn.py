@@ -192,8 +192,7 @@ class NavigatorLayout(GlobalLayout):
         await self._command_hub.update()
 
     async def _create_view(self, object, origin_dir):
-        dir_list = [*object.dir_list, origin_dir]
-        return await self._view_factory.create_view(object, dir_list)
+        return await self._view_factory.create_view(object, add_dir_list=[origin_dir])
 
     @command
     async def go_backward(self):

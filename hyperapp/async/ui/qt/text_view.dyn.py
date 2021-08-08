@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 class TextView(View, QtWidgets.QTextBrowser):
 
     @classmethod
-    async def from_piece(cls, piece, object):
+    async def from_piece(cls, piece, object, add_dir_list):
         return cls(object)
 
     def __init__(self, object):

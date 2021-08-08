@@ -252,7 +252,7 @@ class TreeViewObserver(metaclass=abc.ABCMeta):
 class TreeView(View, QtWidgets.QTreeView, TreeObserver):
 
     @classmethod
-    async def from_piece(cls, piece, object, lcs):
+    async def from_piece(cls, piece, object, add_dir_list, lcs):
         columns = list(map_columns_to_view(lcs, object))
         return cls(columns, object)
 

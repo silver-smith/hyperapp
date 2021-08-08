@@ -8,15 +8,10 @@ def record_field_dir(record_dir, field_id, field_object):
     return [*record_dir, htypes.record_object.record_field_d(field_id), *field_object.dir_list[-1]]
 
 
-def record_field_dir_list(record_dir_list, field_id, field_object):
-    # All dirs for object and one for us. todo: maybe, more than one for us.
-    record_dir_list = [
+def record_field_add_dir_list(record_dir_list, field_id, field_object):
+    return [
         record_field_dir(dir, field_id, field_object)
         for dir in record_dir_list
-        ]
-    return [
-        *field_object.dir_list,
-        *record_dir_list,
         ]
 
 

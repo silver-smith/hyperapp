@@ -5,7 +5,7 @@ from hyperapp.common.module import Module
 
 from . import htypes
 from .command import command
-from .record_object import RecordObject, record_field_dir, record_field_dir_list
+from .record_object import RecordObject, record_field_dir, record_field_add_dir_list
 from .column import Column
 from .simple_list_object import SimpleListObject
 from .object_command import Command
@@ -76,8 +76,8 @@ class RecordFieldList(SimpleListObject):
     def _iter_items(self):
         record_dir_list = [*self._object.dir_list, self._origin_dir]
         for field_id, field in self._object.fields.items():
-            dir_list = record_field_dir_list(record_dir_list, field_id, field)
-            view_piece = self._view_factory.pick_view_piece(dir_list)
+            add_dir_list = record_field_add_dir_list(record_dir_list, field_id, field)
+            view_piece = self._view_factory.pick_view_piece(field, add_dir_list)
             yield Item(field_id, view_piece)
 
     @command

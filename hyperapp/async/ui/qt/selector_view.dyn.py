@@ -10,7 +10,7 @@ from .selector import Selector
 class SelectorView(QtWidgets.QWidget, View):
 
     @classmethod
-    async def from_piece(cls, piece, object, mosaic, view_factory):
+    async def from_piece(cls, piece, object, add_dir_list, mosaic, view_factory):
         list_view = await view_factory.create_view(object.list_object)
         return cls(mosaic, object, list_view)
 

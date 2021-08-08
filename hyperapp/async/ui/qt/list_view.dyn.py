@@ -142,7 +142,7 @@ class ListViewObserver(metaclass=abc.ABCMeta):
 class ListView(View, ListObserver, QtWidgets.QTableView):
 
     @classmethod
-    async def from_piece(cls, piece, object, lcs):
+    async def from_piece(cls, piece, object, origin_dir, lcs):
         columns = list(map_columns_to_view(lcs, object))
         return cls(columns, object)
 
