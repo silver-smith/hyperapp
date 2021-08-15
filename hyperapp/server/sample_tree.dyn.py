@@ -35,22 +35,22 @@ class TreeServant:
             self._item_t(base + 5, 'fifth item'),
             ]
 
-    def open(self, request, item_key):
-        log.info("TreeServant.open(%r)", item_key)
+    def describe(self, request, item_key):
+        log.info("TreeServant.describe(%r)", item_key)
         text = "Opened item: {}".format(item_key)
         piece = text
         return self._mosaic.put(piece)
 
-    def view(self, request, item_key):
-        log.info("TreeServant.view(%r)", item_key)
+    def raw(self, request, item_key):
+        log.info("TreeServant.raw(%r)", item_key)
         piece = htypes.sample_tree.article(
             title=f"Article {item_key}",
             text=f"Sample contents for:\n{item_key}",
             )
         return self._mosaic.put(piece)
 
-    def edit(self, request, item_key):
-        log.info("TreeServant.edit(%r)", item_key)
+    def open(self, request, item_key):
+        log.info("TreeServant.open(%r)", item_key)
         service = self._article_service_factory(item_key)
         return self._mosaic.put(service)
 
@@ -84,21 +84,21 @@ class ThisModule(Module):
         int_list_t_ref = types.reverse_resolve(int_list_t)
 
         tree_object_id = 'test_tree_service_object'
+        describe_command = htypes.rpc_command.rpc_element_command(
+            key_type_ref=int_list_t_ref,
+            method_name='describe',
+            peer_ref=server_peer_ref,
+            object_id=tree_object_id,
+            )
         open_command = htypes.rpc_command.rpc_element_command(
             key_type_ref=int_list_t_ref,
             method_name='open',
             peer_ref=server_peer_ref,
             object_id=tree_object_id,
             )
-        edit_command = htypes.rpc_command.rpc_element_command(
+        raw_command = htypes.rpc_command.rpc_element_command(
             key_type_ref=int_list_t_ref,
-            method_name='edit',
-            peer_ref=server_peer_ref,
-            object_id=tree_object_id,
-            )
-        view_command = htypes.rpc_command.rpc_element_command(
-            key_type_ref=int_list_t_ref,
-            method_name='view',
+            method_name='raw',
             peer_ref=server_peer_ref,
             object_id=tree_object_id,
             )
@@ -109,9 +109,9 @@ class ThisModule(Module):
             param_type_list=[],
             param_list=[],
             command_ref_list=[
+                mosaic.put(describe_command),
+                mosaic.put(raw_command),
                 mosaic.put(open_command),
-                mosaic.put(view_command),
-                mosaic.put(edit_command),
                 ],
             key_column_id='key',
             column_list=[
