@@ -22,7 +22,7 @@ code_module_list = [
     'async.ui.navigator',
     'async.ui.qt.record_view',
     'async.ui.data_viewer',
-    'client.master_details',
+    'async.ui.qt.master_details',
     'async.ui.none_object',
     'async.ui.string_object',
     'async.ui.ref_object',
