@@ -5,6 +5,7 @@ import:
   code:
     - async.ui.list_service
 require:
+  - async_web
   - object_registry
   - command_registry
   - async_rpc_proxy

@@ -105,6 +105,7 @@ class ThisModule(Module):
         tree_service = htypes.service.tree_service(
             peer_ref=server_peer_ref,
             object_id=tree_object_id,
+            dir_list=[[mosaic.put(htypes.sample_tree.sample_tree_d())]],
             param_type_list=[],
             param_list=[],
             command_ref_list=[
@@ -131,6 +132,7 @@ class ThisModule(Module):
             return htypes.service.record_service(
                 peer_ref=server_peer_ref,
                 object_id=article_object_id,
+                dir_list=[[mosaic.put(htypes.sample_tree.sample_tree_article_d())]],
                 param_type_list=[
                     htypes.service.param_type('article_path', int_list_t_ref),
                     ],

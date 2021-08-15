@@ -4,3 +4,10 @@ import:
       - tree_service
   code:
     - async.ui.tree_service
+require:
+  - async_web
+  - object_registry
+  - command_registry
+  - async_rpc_proxy
+  - client_identity
+  - client_rpc_endpoint

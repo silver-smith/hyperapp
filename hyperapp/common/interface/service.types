@@ -10,6 +10,7 @@ parameter = record:
 service = record:
   peer_ref: ref
   object_id: string
+  dir_list: ref list list  # Additional to own service type (list/tree/record) dirs.
   param_type_list: param_type list
   param_list: parameter list
   command_ref_list: ref list

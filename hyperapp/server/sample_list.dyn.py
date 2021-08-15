@@ -97,6 +97,7 @@ class ThisModule(Module):
         list_service = htypes.service.list_service(
             peer_ref=server_peer_ref,
             object_id=list_object_id,
+            dir_list=[[mosaic.put(htypes.sample_list.sample_list_d())]],
             param_type_list=[],
             param_list=[],
             command_ref_list=[
@@ -123,6 +124,7 @@ class ThisModule(Module):
             return htypes.service.record_service(
                 peer_ref=server_peer_ref,
                 object_id=article_object_id,
+                dir_list=[[mosaic.put(htypes.sample_list.sample_list_article_d())]],
                 param_type_list=[
                     htypes.service.param_type('article_id', int_t_ref),
                     ],
