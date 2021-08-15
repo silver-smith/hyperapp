@@ -3,9 +3,6 @@ import logging
 from hyperapp.common.module import Module
 
 from . import htypes
-from .object_command import Command
-
-from . import htypes
 from .object_command import BuiltinCommand, Command
 
 log = logging.getLogger(__name__)

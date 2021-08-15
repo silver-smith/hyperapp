@@ -1,3 +1,5 @@
+clone_rpc_element_command_command = record
+
 
 rpc_element_command_d = record:
   peer_ref: ref
@@ -9,3 +11,17 @@ rpc_element_command = record:
   method_name: string
   peer_ref: ref
   object_id: string
+
+
+alt_rpc_element_command_d = record:
+  peer_ref: ref
+  object_id: string
+  method_name: string
+  name: string
+
+alt_rpc_element_command = record:
+  key_type_ref: ref
+  method_name: string
+  peer_ref: ref
+  object_id: string
+  name: string
