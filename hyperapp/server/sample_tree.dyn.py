@@ -16,10 +16,10 @@ log = logging.getLogger(__name__)
 
 class TreeServant:
 
-    def __init__(self, mosaic, item_t, record_service_factory):
+    def __init__(self, mosaic, item_t, article_service_factory):
         self._mosaic = mosaic
         self._item_t = item_t
-        self._record_service_factory = record_service_factory
+        self._article_service_factory = article_service_factory
 
     def get(self, request, path):
         log.info("TreeServant.get(%s)", path)
@@ -51,17 +51,17 @@ class TreeServant:
 
     def edit(self, request, item_key):
         log.info("TreeServant.edit(%r)", item_key)
-        service = self._record_service_factory(item_key)
+        service = self._article_service_factory(item_key)
         return self._mosaic.put(service)
 
 
-class RecordServant:
+class ArticleServant:
 
     def __init__(self, rec_t):
         self._rec_t = rec_t
 
     def get(self, request, article_path):
-        log.info("RecordServant.get(%s)", article_path)
+        log.info("ArticleServant.get(%s)", article_path)
         return self._rec_t(
             title=f"Article {article_path}",
             text=f"Some text for article {article_path}\nwith second line",
@@ -121,16 +121,16 @@ class ThisModule(Module):
 
         item_t = tree_item_t(mosaic, types, tree_service)
 
-        record_object_id = 'test_sample_tree_record_service_object'
-        record_field_list = [
+        article_object_id = 'test_sample_tree_article_service_object'
+        article_field_list = [
             htypes.service.record_field('title', string_t_ref),
             htypes.service.record_field('text', string_t_ref),
             ]
 
-        def record_service_factory(path):
+        def article_service_factory(path):
             return htypes.service.record_service(
                 peer_ref=server_peer_ref,
-                object_id=record_object_id,
+                object_id=article_object_id,
                 param_type_list=[
                     htypes.service.param_type('article_path', int_list_t_ref),
                     ],
@@ -138,14 +138,14 @@ class ThisModule(Module):
                     htypes.service.parameter('article_path', mosaic.put(path, int_list_t)),
                     ],
                 command_ref_list=[],
-                field_list=record_field_list,
+                field_list=article_field_list,
                 )
 
-        rec_t = record_t(mosaic, types, record_field_list)
+        rec_t = record_t(mosaic, types, article_field_list)
 
-        tree_servant = TreeServant(mosaic, item_t, record_service_factory)
+        tree_servant = TreeServant(mosaic, item_t, article_service_factory)
         services.server_rpc_endpoint.register_servant(tree_object_id, tree_servant)
-        record_servant = RecordServant(rec_t)
-        services.server_rpc_endpoint.register_servant(record_object_id, record_servant)
+        article_servant = ArticleServant(rec_t)
+        services.server_rpc_endpoint.register_servant(article_object_id, article_servant)
 
         services.server_ref_list.add_ref('samle_tree', 'Sample tree', mosaic.put(tree_service))

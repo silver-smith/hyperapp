@@ -16,10 +16,10 @@ log = logging.getLogger(__name__)
 
 class ListServant:
 
-    def __init__(self, mosaic, row_t, record_service_factory):
+    def __init__(self, mosaic, row_t, article_service_factory):
         self._mosaic = mosaic
         self._row_t = row_t
-        self._record_service_factory = record_service_factory
+        self._article_service_factory = article_service_factory
 
     def get(self, request):
         log.info("ListServant.get()")
@@ -45,17 +45,17 @@ class ListServant:
 
     def edit(self, request, item_key):
         log.info("ListServant.edit(%r)", item_key)
-        service = self._record_service_factory(item_key)
+        service = self._article_service_factory(item_key)
         return self._mosaic.put(service)
 
 
-class RecordServant:
+class ArticleServant:
 
     def __init__(self, rec_t):
         self._rec_t = rec_t
 
     def get(self, request, article_id):
-        log.info("RecordServant.get(%s)", article_id)
+        log.info("ArticleServant.get(%s)", article_id)
         return self._rec_t(
             title=f"Article {article_id}",
             text=f"Some text for article {article_id}\nwith second line",
@@ -113,16 +113,16 @@ class ThisModule(Module):
 
         row_t = list_row_t(mosaic, types, list_service)
 
-        record_object_id = 'test_sample_list_record_service_object'
-        record_field_list = [
+        article_object_id = 'test_sample_list_article_service_object'
+        article_field_list = [
             htypes.service.record_field('title', string_t_ref),
             htypes.service.record_field('text', string_t_ref),
             ]
 
-        def record_service_factory(article_id):
+        def article_service_factory(article_id):
             return htypes.service.record_service(
                 peer_ref=server_peer_ref,
-                object_id=record_object_id,
+                object_id=article_object_id,
                 param_type_list=[
                     htypes.service.param_type('article_id', int_t_ref),
                     ],
@@ -130,14 +130,14 @@ class ThisModule(Module):
                     htypes.service.parameter('article_id', mosaic.put(article_id)),
                     ],
                 command_ref_list=[],
-                field_list=record_field_list,
+                field_list=article_field_list,
                 )
 
-        rec_t = record_t(mosaic, types, record_field_list)
+        rec_t = record_t(mosaic, types, article_field_list)
 
-        list_servant = ListServant(mosaic, row_t, record_service_factory)
+        list_servant = ListServant(mosaic, row_t, article_service_factory)
         services.server_rpc_endpoint.register_servant(list_object_id, list_servant)
-        record_servant = RecordServant(rec_t)
-        services.server_rpc_endpoint.register_servant(record_object_id, record_servant)
+        article_servant = ArticleServant(rec_t)
+        services.server_rpc_endpoint.register_servant(article_object_id, article_servant)
 
         services.server_ref_list.add_ref('samle_list', 'Sample list', mosaic.put(list_service))
