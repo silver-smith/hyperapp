@@ -117,6 +117,6 @@ class ThisModule(Module):
         services.view_registry.register_actor(
             htypes.tree_to_list_adapter.tree_to_list_adapter_view, self._open_adapter_view, services.mosaic, services.view_factory)
 
-    async def _open_adapter_view(self, piece, object, mosaic, view_factory):
+    async def _open_adapter_view(self, piece, object, add_dir_list, mosaic, view_factory):
         adapter = TreeToListAdapter(mosaic, object, path=[])
         return await view_factory.create_view(adapter)
