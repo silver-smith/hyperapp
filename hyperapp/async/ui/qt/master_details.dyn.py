@@ -65,7 +65,14 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-        self._mosaic = services.mosaic
+
+        services.view_registry.register_actor(
+            htypes.master_details.master_details_view, self._open_master_details_view, services.mosaic, services.view_factory)
+        services.lcs.add(
+            [htypes.view.view_d('available'), *ListObject.dir_list[-1]],
+            htypes.master_details.master_details_view(open_command_id='open'),
+            )
+
         # self._default_object_layouts = services.default_object_layouts
         # object_type_ids = [*ListObject.type.ids, *TreeObject.type.ids]
         # services.available_object_layouts.register('master_details', object_type_ids, self._make_master_detail_layout_rec)
@@ -78,15 +85,17 @@ class ThisModule(ClientModule):
         #     services.object_layout_producer,
         #     )
 
-    async def _make_master_detail_layout_rec(self, object):
-        rec_it = self._default_object_layouts.resolve(object.category_list)
-        try:
-            rec = next(rec_it)
-        except StopIteration:
-            raise RuntimeError(f"At least one default category is expected for {object} categoriees: {object.category_list}.")
-        master_layout_rec = await rec.layout_rec_maker(object)
-        master_layout_ref = self._mosaic.put(master_layout_rec)
-        return htypes.master_details.master_details_layout(
-            master_layout_ref=master_layout_ref,
-            command_id='open',
-            )
+    async def _open_master_details_view(self, piece, object, add_dir_list, mosaic, view_factory):
+        assert 0, 'todo'
+
+        # rec_it = self._default_object_layouts.resolve(object.category_list)
+        # try:
+        #     rec = next(rec_it)
+        # except StopIteration:
+        #     raise RuntimeError(f"At least one default category is expected for {object} categoriees: {object.category_list}.")
+        # master_layout_rec = await rec.layout_rec_maker(object)
+        # master_layout_ref = self._mosaic.put(master_layout_rec)
+        # return htypes.master_details.master_details_layout(
+        #     master_layout_ref=master_layout_ref,
+        #     command_id='open',
+        #     )
