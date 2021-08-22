@@ -60,6 +60,7 @@ def test_list_service(services, htypes, code):
     list_service = htypes.service.list_service(
         peer_ref=master_peer_ref,
         object_id=object_id,
+        dir_list=[],
         param_type_list=[],
         param_list=[],
         command_ref_list=[],

@@ -5,6 +5,7 @@ import:
   code:
     - async.ui.list_service
 require:
+  - async_web
   - unbundler
   - object_registry
   - object_factory
