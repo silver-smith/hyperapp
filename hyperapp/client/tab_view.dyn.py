@@ -245,7 +245,7 @@ class ThisModule(ClientModule):
         self._mosaic = services.mosaic
         services.view_registry.register_actor(
             htypes.tab_view.tab_view, TabLayout.from_data, services.mosaic, services.view_registry, services.layout_watcher)
-        services.available_view_registry['tab_view'] = self._make_new_tab_ref()
+        # services.available_view_registry['tab_view'] = self._make_new_tab_ref()
 
     def _make_new_tab_ref(self):
         piece = "New tab"
