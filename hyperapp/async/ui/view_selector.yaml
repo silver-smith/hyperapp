@@ -24,4 +24,5 @@ require:
   - lcs
   - command_registry
   - object_factory
+  - view_factory_registry
   - make_selector_callback_ref

@@ -3,8 +3,9 @@ import:
     available_view_list:
       - available_view_list_d
       - available_view_list
-    view:
-      - view_d
   code:
     - async.ui.column
     - async.ui.simple_list_object
+require:
+  - view_factory_registry
+  - available_view_registry

@@ -1,0 +1,3 @@
+
+fixed_view_factory = record:
+  view_ref: ref

@@ -12,7 +12,7 @@ from .simple_list_object import SimpleListObject
 log = logging.getLogger(__name__)
 
 
-Item = namedtuple('Item', 'id dir view view_str')
+Item = namedtuple('Item', 'id dir_title type view view_title')
 
 
 class AvailableViewList(SimpleListObject):
@@ -23,15 +23,42 @@ class AvailableViewList(SimpleListObject):
         ]
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, lcs, object_factory):
+    async def from_piece(cls, piece, mosaic, web, object_factory, view_factory_registry, available_view_registry):
         object = await object_factory.invite(piece.piece_ref)
-        return cls(mosaic, lcs, object)
+        self = cls(mosaic, web, view_factory_registry, available_view_registry, object)
+        await self._async_init()
+        return self
 
-    def __init__(self, mosaic, lcs, object):
+    def __init__(self, mosaic, web, view_factory_registry, available_view_registry, object):
         super().__init__()
         self._mosaic = mosaic
-        self._lcs = lcs
+        self._web = web
+        self._view_factory_registry = view_factory_registry
+        self._available_view_registry = available_view_registry
         self._object = object
+        self._item_list = None
+
+    async def _async_init(self):
+        self._item_list = await self._collect_items()
+
+    async def _collect_items(self):
+        item_list = []
+        id_it = itertools.count()
+        for dir in self._object.dir_list:
+            dir_title = '/'.join(str(element) for element in dir)
+            got_some = False
+            for factory_piece in self._available_view_registry.list_dir(dir):
+                if self._available_view_registry.is_fixed_factory(factory_piece):
+                    type = 'fixed'
+                else:
+                    type = 'factory'
+                view_piece = await self._view_factory_registry.animate(factory_piece, self._object)
+                view_title = str(view_piece)
+                item_list.append(Item(next(id_it), dir_title, type, view_piece, view_title))
+                got_some = True
+            if not got_some:
+                item_list.append(Item(next(id_it), dir_title, None, None, '(no views available)'))
+        return item_list
 
     @property
     def piece(self):
@@ -46,23 +73,13 @@ class AvailableViewList(SimpleListObject):
     def columns(self):
         return [
             Column('id', type=tInt, is_key=True),
-            Column('dir'),
-            Column('view_str'),
+            Column('dir_title'),
+            Column('type'),
+            Column('view_title'),
             ]
 
     async def get_all_items(self):
-        return list(self._iter_items())
-
-    def _iter_items(self):
-        id_it = itertools.count()
-        for dir in self._object.dir_list:
-            dir_str = '/'.join(str(element) for element in dir)
-            none_available = True
-            for piece in self._lcs.iter([[htypes.view.view_d('available'), *dir]]):
-                yield Item(next(id_it), dir_str, piece, str(piece))
-                none_available = False
-            if none_available:
-                yield Item(next(id_it), dir_str, None, '(no views available)')
+        return self._item_list
 
 
 class ThisModule(Module):
@@ -74,6 +91,8 @@ class ThisModule(Module):
             htypes.available_view_list.available_view_list,
             AvailableViewList.from_piece,
             services.mosaic,
-            services.lcs,
+            services.web,
             services.object_factory,
+            services.view_factory_registry,
+            services.available_view_registry,
             )

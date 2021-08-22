@@ -22,21 +22,22 @@ AvailableRec = namedtuple('AvailableRec', 'dir view')
 class ViewSelector(SimpleListObject):
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, async_web, lcs, command_registry, object_factory, make_selector_callback_ref):
+    async def from_piece(cls, piece, mosaic, async_web, lcs, command_registry, object_factory, view_factory_registry, make_selector_callback_ref):
         object = await object_factory.invite(piece.piece_ref)
         origin_dir = [
             await async_web.summon(ref)
             for ref in piece.origin_dir
             ]
-        self = cls(mosaic, async_web, lcs, make_selector_callback_ref, object, origin_dir)
+        self = cls(mosaic, async_web, lcs, view_factory_registry, make_selector_callback_ref, object, origin_dir)
         await self._async_init(command_registry)
         return self
 
-    def __init__(self, mosaic, async_web, lcs, make_selector_callback_ref, object, origin_dir):
+    def __init__(self, mosaic, async_web, lcs, view_factory_registry, make_selector_callback_ref, object, origin_dir):
         super().__init__()
         self._mosaic = mosaic
         self._async_web = async_web
         self._lcs = lcs
+        self._view_factory_registry = view_factory_registry
         self._make_selector_callback_ref = make_selector_callback_ref
         self._object = object
         self._origin_dir = origin_dir
@@ -168,6 +169,7 @@ class ThisModule(Module):
             services.lcs,
             services.command_registry,
             services.object_factory,
+            services.view_factory_registry,
             services.make_selector_callback_ref,
             )
         services.command_registry.register_actor(

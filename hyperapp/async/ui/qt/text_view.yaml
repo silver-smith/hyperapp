@@ -11,3 +11,4 @@ import:
     - async.ui.string_object
 require:
   - lcs
+  - available_view_registry
