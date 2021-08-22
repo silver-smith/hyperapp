@@ -11,21 +11,21 @@ from .record_object import RecordObject, record_field_add_dir_list
 class RecordView(QtWidgets.QWidget):
 
     @classmethod
-    async def from_piece(cls, piece, object, add_dir_list, view_factory):
+    async def from_piece(cls, piece, object, add_dir_list, view_producer):
         view = cls(object)
-        await view._async_init(view_factory, add_dir_list)
+        await view._async_init(view_producer, add_dir_list)
         return view
 
     def __init__(self, object):
         super().__init__()
         self.object = object
 
-    async def _async_init(self, view_factory, add_dir_list):
+    async def _async_init(self, view_producer, add_dir_list):
         layout = QtWidgets.QVBoxLayout()
         has_expandable_field = False
         self._field_view_dict = {}
         for field_id, field_object in self.object.fields.items():
-            field_view = await self._construct_field_view(view_factory, layout, add_dir_list, field_id, field_object)
+            field_view = await self._construct_field_view(view_producer, layout, add_dir_list, field_id, field_object)
             if field_view.sizePolicy().verticalPolicy() & QtWidgets.QSizePolicy.ExpandFlag:
                 has_expandable_field = True
             self._field_view_dict[field_id] = field_view
@@ -33,9 +33,9 @@ class RecordView(QtWidgets.QWidget):
             layout.addStretch()
         self.setLayout(layout)
 
-    async def _construct_field_view(self, view_factory, layout, add_dir_list, field_id, field_object):
+    async def _construct_field_view(self, view_producer, layout, add_dir_list, field_id, field_object):
         field_add_dir_list = record_field_add_dir_list([*self.object.dir_list, *add_dir_list], field_id, field_object)
-        view = await view_factory.create_view(field_object, field_add_dir_list)
+        view = await view_producer.create_view(field_object, field_add_dir_list)
         label = QtWidgets.QLabel(field_id)
         label.setBuddy(view)
         layout.addWidget(label)
@@ -80,4 +80,4 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
         services.lcs.set([htypes.view.view_d('default'), *RecordObject.dir_list[-1]], htypes.record_view.record_view())
-        services.view_registry.register_actor(htypes.record_view.record_view, RecordView.from_piece, services.view_factory)
+        services.view_registry.register_actor(htypes.record_view.record_view, RecordView.from_piece, services.view_producer)

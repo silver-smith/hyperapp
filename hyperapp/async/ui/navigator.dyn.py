@@ -68,14 +68,14 @@ class NavigatorLayout(GlobalLayout):
             async_web,
             object_factory,
             object_commands_factory,
-            view_factory,
+            view_producer,
             global_command_list,
             ):
         self = cls(
             mosaic,
             object_factory,
             object_commands_factory,
-            view_factory,
+            view_producer,
             global_command_list,
             path,
             command_hub,
@@ -89,7 +89,7 @@ class NavigatorLayout(GlobalLayout):
             mosaic,
             object_factory,
             object_commands_factory,
-            view_factory,
+            view_producer,
             global_command_list,
             path,
             command_hub,
@@ -99,7 +99,7 @@ class NavigatorLayout(GlobalLayout):
         self._mosaic = mosaic
         self._object_factory = object_factory
         self._object_commands_factory = object_commands_factory
-        self._view_factory = view_factory
+        self._view_producer = view_producer
         self._global_command_list = global_command_list
         self._command_hub = command_hub
         self._view_opener = view_opener
@@ -192,7 +192,7 @@ class NavigatorLayout(GlobalLayout):
         await self._command_hub.update()
 
     async def _create_view(self, object, origin_dir):
-        return await self._view_factory.create_view(object, add_dir_list=[origin_dir])
+        return await self._view_producer.create_view(object, add_dir_list=[origin_dir])
 
     @command
     async def go_backward(self):
@@ -224,6 +224,6 @@ class ThisModule(Module):
             services.async_web,
             services.object_factory,
             services.object_commands_factory,
-            services.view_factory,
+            services.view_producer,
             services.global_command_list,
             )

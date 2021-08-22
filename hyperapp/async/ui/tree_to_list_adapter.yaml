@@ -12,4 +12,4 @@ import:
     - async.ui.list_object
 require:
   - object_registry
-  - view_factory
+  - view_producer

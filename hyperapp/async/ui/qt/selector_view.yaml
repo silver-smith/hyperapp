@@ -11,4 +11,4 @@ import:
 require:
   - lcs
   - view_registry
-  - view_factory
+  - view_producer

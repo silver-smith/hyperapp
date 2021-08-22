@@ -10,8 +10,8 @@ from .selector import Selector
 class SelectorView(QtWidgets.QWidget, View):
 
     @classmethod
-    async def from_piece(cls, piece, object, add_dir_list, mosaic, view_factory):
-        list_view = await view_factory.create_view(object.list_object)
+    async def from_piece(cls, piece, object, add_dir_list, mosaic, view_producer):
+        list_view = await view_producer.create_view(object.list_object)
         return cls(mosaic, object, list_view)
 
     def __init__(self, mosaic, selector, list_view):
@@ -48,4 +48,4 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
         services.lcs.set([htypes.view.view_d('default'), *Selector.dir_list[-1]], htypes.selector_view.selector_view())
         services.view_registry.register_actor(
-            htypes.selector_view.selector_view, SelectorView.from_piece, services.mosaic, services.view_factory)
+            htypes.selector_view.selector_view, SelectorView.from_piece, services.mosaic, services.view_producer)

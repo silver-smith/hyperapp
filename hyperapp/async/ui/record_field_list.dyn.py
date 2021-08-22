@@ -24,7 +24,7 @@ class RecordFieldList(SimpleListObject):
         ]
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, async_web, lcs, object_factory, view_factory, make_selector_callback_ref):
+    async def from_piece(cls, piece, mosaic, async_web, lcs, object_factory, view_producer, make_selector_callback_ref):
         object = await object_factory.invite(piece.piece_ref)
         origin_dir = [
             await async_web.summon(ref)
@@ -34,13 +34,13 @@ class RecordFieldList(SimpleListObject):
             await async_web.summon(ref)
             for ref in piece.target_dir
             ]
-        return cls(mosaic, lcs, view_factory, make_selector_callback_ref, object, origin_dir, target_dir)
+        return cls(mosaic, lcs, view_producer, make_selector_callback_ref, object, origin_dir, target_dir)
 
-    def __init__(self, mosaic, lcs, view_factory, make_selector_callback_ref, object, origin_dir, target_dir):
+    def __init__(self, mosaic, lcs, view_producer, make_selector_callback_ref, object, origin_dir, target_dir):
         super().__init__()
         self._mosaic = mosaic
         self._lcs = lcs
-        self._view_factory = view_factory
+        self._view_producer = view_producer
         self._make_selector_callback_ref = make_selector_callback_ref
         self._object = object
         self._origin_dir = origin_dir
@@ -78,7 +78,7 @@ class RecordFieldList(SimpleListObject):
         record_dir_list = [*self._object.dir_list, self._origin_dir]
         for field_id, field in self._object.fields.items():
             add_dir_list = record_field_add_dir_list(record_dir_list, field_id, field)
-            dir, view_piece = self._view_factory.pick_view_piece(field, add_dir_list)
+            dir, view_piece = self._view_producer.pick_view_piece(field, add_dir_list)
             dir_str = '/'.join(str(v) for v in dir)
             yield Item(field_id, dir_str, view_piece)
 
@@ -126,7 +126,7 @@ class ThisModule(Module):
             services.async_web,
             services.lcs,
             services.object_factory,
-            services.view_factory,
+            services.view_producer,
             services.make_selector_callback_ref,
             )
         services.command_registry.register_actor(

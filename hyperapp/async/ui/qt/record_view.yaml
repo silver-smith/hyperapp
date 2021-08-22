@@ -8,4 +8,4 @@ import:
   code:
     - async.ui.record_object
 require:
-  - view_factory
+  - view_producer

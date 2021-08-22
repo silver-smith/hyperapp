@@ -67,7 +67,7 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services, config)
 
         services.view_registry.register_actor(
-            htypes.master_details.master_details_view, self._open_master_details_view, services.mosaic, services.view_factory)
+            htypes.master_details.master_details_view, self._open_master_details_view, services.mosaic, services.view_producer)
         services.lcs.add(
             [htypes.view.view_d('available'), *ListObject.dir_list[-1]],
             htypes.master_details.master_details_view(open_command_id='open'),
@@ -85,7 +85,7 @@ class ThisModule(ClientModule):
         #     services.object_layout_producer,
         #     )
 
-    async def _open_master_details_view(self, piece, object, add_dir_list, mosaic, view_factory):
+    async def _open_master_details_view(self, piece, object, add_dir_list, mosaic, view_producer):
         assert 0, 'todo'
 
         # rec_it = self._default_object_layouts.resolve(object.category_list)

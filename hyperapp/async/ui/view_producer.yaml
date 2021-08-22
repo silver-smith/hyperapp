@@ -8,4 +8,4 @@ require:
   - lcs
   - view_registry
 provide:
-  - view_factory
+  - view_producer
