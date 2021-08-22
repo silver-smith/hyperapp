@@ -68,10 +68,14 @@ class ThisModule(ClientModule):
 
         services.view_registry.register_actor(
             htypes.master_details.master_details_view, self._open_master_details_view, services.mosaic, services.view_producer)
-        services.lcs.add(
-            [htypes.view.view_d('available'), *ListObject.dir_list[-1]],
-            htypes.master_details.master_details_view(open_command_id='open'),
+        services.view_factory_registry.register_actor(
+            htypes.master_details.master_details_view_factory,
+            self._master_details_view_factory,
+            services.object_commands_factory,
             )
+
+        services.available_view_registry.add_factory(
+            ListObject.dir_list[-1], htypes.master_details.master_details_view_factory())
 
         # self._default_object_layouts = services.default_object_layouts
         # object_type_ids = [*ListObject.type.ids, *TreeObject.type.ids]
@@ -84,6 +88,21 @@ class ThisModule(ClientModule):
         #     services.object_layout_registry,
         #     services.object_layout_producer,
         #     )
+
+    async def _master_details_view_factory(self, piece, object, object_commands_factory):
+        name_to_command = {
+            command.name: command
+            for command
+            in await object_commands_factory.get_object_command_list(object)
+            }
+        open_command = name_to_command.get('open')
+        if open_command:
+            command = open_command
+        elif name_to_command:
+            command = list(name_to_command.values())[0]
+        else:
+            return None
+        return htypes.master_details.master_details_view(open_command_id=command.name)
 
     async def _open_master_details_view(self, piece, object, add_dir_list, mosaic, view_producer):
         assert 0, 'todo'

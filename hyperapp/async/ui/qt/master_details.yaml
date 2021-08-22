@@ -5,6 +5,7 @@ import:
     layout_editor:
       - object_layout_editor
     master_details:
+      - master_details_view_factory
       - master_details_view
   code:
     - async.ui.command
@@ -13,3 +14,8 @@ import:
     - async.ui.list_object
     - async.ui.tree_object
     - async.ui.module
+require:
+  - object_commands_factory
+  - view_factory_registry
+  - view_registry
+  - available_view_registry
