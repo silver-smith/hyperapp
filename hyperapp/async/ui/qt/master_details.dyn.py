@@ -16,12 +16,19 @@ _log = logging.getLogger(__name__)
 
 class MasterDetailsView(QtWidgets.QSplitter, Composite):
 
-    def __init__(self, object_registry, object_layout_producer, command_hub, master_view, details_command_id, sizes=None):
+    @classmethod
+    async def from_piece(cls, piece, object, add_dir_list, mosaic, object_factory, object_commands_factory, view_registry, view_producer):
+        master_view = await view_registry.invite(piece.master_view_ref, object, [])
+        return cls(mosaic, object_factory, object_commands_factory, view_producer, object, master_view, piece.open_command_id)
+
+    def __init__(self, mosaic, object_factory, object_commands_factory, view_producer, master_object, master_view, details_command_id, sizes=None):
         QtWidgets.QSplitter.__init__(self, QtCore.Qt.Vertical)
         Composite.__init__(self, children=[master_view])
-        self._object_registry = object_registry
-        self._object_layout_producer = object_layout_producer
-        self._command_hub = command_hub
+        self._mosaic = mosaic
+        self._object_factory = object_factory
+        self._object_commands_factory = object_commands_factory
+        self._view_producer = view_producer
+        self._master_object = master_object
         self._master_view = master_view
         self._details_command_id = details_command_id
         self._want_sizes = sizes
@@ -32,6 +39,17 @@ class MasterDetailsView(QtWidgets.QSplitter, Composite):
         QtWidgets.QSplitter.setVisible(self, visible)
         if visible:
             self.widget(0).setFocus()
+
+    @property
+    def piece(self):
+        return htypes.master_details.master_details_view(
+            master_view_ref=self._mosaic.put(self._master_view.piece),
+            open_command_id=self._details_command_id,
+            )
+
+    @property
+    def object(self):
+        return self._master_object
 
     def get_current_child(self):
         return self._master_view
@@ -44,18 +62,19 @@ class MasterDetailsView(QtWidgets.QSplitter, Composite):
             w = self.widget(1)
             w.setParent(None)
             w.deleteLater()
-        master_object = self._master_view.object
         try:
-            details_command = master_object.get_command(self._details_command_id)
+            details_command = await self._object_commands_factory.command_by_name(self._master_object, self._details_command_id)
         except KeyError:
-            _log.warning("Master %s does not has command %r", master_object, self._details_command_id)
+            _log.warning("Master %s does not has command %r", self._master_object, self._details_command_id)
             return
-        _log.info('Run command to open details: %r', details_command.id)
-        resolved_piece = await details_command.run(current_key)
-        if not resolved_piece:
+        master_state = self._master_view.state
+        _log.info('Run command to open details: %r, state: %r', details_command.name, master_state)
+        details_piece = await details_command.run(self._master_object, master_state, origin_dir=None)
+        if details_piece is None:
             return
-        view = await resolved_piece.layout.create_view(self._command_hub)
-        self.insertWidget(1, view)
+        details_object = await self._object_factory.animate(details_piece)
+        details_view = await self._view_producer.create_view(details_object)
+        self.insertWidget(1, details_view)
         if self._want_sizes:
             self.setSizes(self._want_sizes)
             self._want_sizes = None
@@ -67,29 +86,30 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services, config)
 
         services.view_registry.register_actor(
-            htypes.master_details.master_details_view, self._open_master_details_view, services.mosaic, services.view_producer)
+            htypes.master_details.master_details_view,
+            MasterDetailsView.from_piece,
+            services.mosaic,
+            services.object_factory,
+            services.object_commands_factory,
+            services.view_registry,
+            services.view_producer,
+            )
         services.view_factory_registry.register_actor(
             htypes.master_details.master_details_view_factory,
             self._master_details_view_factory,
+            services.mosaic,
             services.object_commands_factory,
+            services.view_producer,
             )
 
         services.available_view_registry.add_factory(
             ListObject.dir_list[-1], htypes.master_details.master_details_view_factory())
 
-        # self._default_object_layouts = services.default_object_layouts
-        # object_type_ids = [*ListObject.type.ids, *TreeObject.type.ids]
-        # services.available_object_layouts.register('master_details', object_type_ids, self._make_master_detail_layout_rec)
-        # services.object_layout_registry.register_actor(
-        #     htypes.master_details.master_details_layout,
-        #     MasterDetailsLayout.from_data,
-        #     services.mosaic,
-        #     services.object_registry,
-        #     services.object_layout_registry,
-        #     services.object_layout_producer,
-        #     )
-
-    async def _master_details_view_factory(self, piece, object, object_commands_factory):
+    async def _master_details_view_factory(self, piece, object, mosaic, object_commands_factory, view_producer):
+        for dir, view_piece in view_producer.iter_matched_pieces(object):
+            if not isinstance(view_piece, htypes.master_details.master_details_view):
+                break
+        master_view_ref = mosaic.put(view_piece)
         name_to_command = {
             command.name: command
             for command
@@ -102,19 +122,7 @@ class ThisModule(ClientModule):
             command = list(name_to_command.values())[0]
         else:
             return None
-        return htypes.master_details.master_details_view(open_command_id=command.name)
-
-    async def _open_master_details_view(self, piece, object, add_dir_list, mosaic, view_producer):
-        assert 0, 'todo'
-
-        # rec_it = self._default_object_layouts.resolve(object.category_list)
-        # try:
-        #     rec = next(rec_it)
-        # except StopIteration:
-        #     raise RuntimeError(f"At least one default category is expected for {object} categoriees: {object.category_list}.")
-        # master_layout_rec = await rec.layout_rec_maker(object)
-        # master_layout_ref = self._mosaic.put(master_layout_rec)
-        # return htypes.master_details.master_details_layout(
-        #     master_layout_ref=master_layout_ref,
-        #     command_id='open',
-        #     )
+        return htypes.master_details.master_details_view(
+            master_view_ref=master_view_ref,
+            open_command_id=command.name,
+            )

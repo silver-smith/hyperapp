@@ -15,7 +15,9 @@ import:
     - async.ui.tree_object
     - async.ui.module
 require:
+  - object_factory
   - object_commands_factory
-  - view_factory_registry
   - view_registry
+  - view_producer
+  - view_factory_registry
   - available_view_registry

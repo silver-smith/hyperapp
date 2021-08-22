@@ -22,6 +22,12 @@ class ObjectCommandsFactory:
             *command_list,
             ]
 
+    async def command_by_name(self, object, name):
+        for command in await self.get_object_command_list(object):
+            if command.name == name:
+                return command
+        raise KeyError(name)
+
 
 class ThisModule(Module):
 
