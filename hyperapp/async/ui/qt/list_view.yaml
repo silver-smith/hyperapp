@@ -11,4 +11,5 @@ import:
     - async.ui.items_view
 require:
   - lcs
+  - available_view_registry
   - view_registry

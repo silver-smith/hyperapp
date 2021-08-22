@@ -235,4 +235,5 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
         services.lcs.set([htypes.view.view_d('default'), *ListObject.dir_list[-1]], htypes.list_view.list_view())
+        services.available_view_registry.add_view(ListObject.dir_list[-1], htypes.list_view.list_view())
         services.view_registry.register_actor(htypes.list_view.list_view, ListView.from_piece, services.lcs)
