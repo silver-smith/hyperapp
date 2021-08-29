@@ -1,0 +1,13 @@
+import:
+  types:
+    object:
+      - object_d
+    command:
+      - object_commands_d
+    view_config:
+      - open_view_config_command
+  code:
+    - async.ui.object_command
+require:
+  - lcs
+  - command_registry
