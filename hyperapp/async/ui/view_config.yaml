@@ -11,3 +11,5 @@ import:
 require:
   - lcs
   - command_registry
+provide:
+  - view_dir_to_config
