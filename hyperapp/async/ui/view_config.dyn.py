@@ -8,14 +8,14 @@ from .object_command import Command
 log = logging.getLogger(__name__)
 
 
-def open_view_config(object, view_dir_to_config):
+def open_view_config(object, view_state, origin_dir, view_dir_to_config):
     for dir in object.dir_list:
         try:
             config_editor_factory = view_dir_to_config[tuple(dir)]
         except KeyError:
             continue
         else:
-            return config_editor_factory(object)
+            return config_editor_factory(object, view_state, origin_dir)
     raise RuntimeError(f"No view config editor is registered for any of object {object} dirs: {object.dir_list}")
 
     

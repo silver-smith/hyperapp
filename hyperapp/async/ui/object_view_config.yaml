@@ -2,11 +2,15 @@ import:
   types:
     object:
       - object_d
+    command_list:
+      - object_command_list
     object_view_config:
       - object_view_config_d
       - object_view_config
   code:
+    - async.ui.command
     - async.ui.record_object
 require:
+  - async_web
   - object_factory
   - view_dir_to_config

@@ -3,3 +3,4 @@ object_view_config_d = record
 
 object_view_config = record:
   piece_ref: ref
+  view_state_ref: ref
