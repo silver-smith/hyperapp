@@ -60,25 +60,27 @@ class Command:
             if name != 'self'
             }
 
-        def from_piece(piece):
-            return cls(module_name, name, fn, wanted_params)
+        def from_piece(piece, *args, **kw):
+            return cls(module_name, name, fn, wanted_params, args, kw)
 
         return from_piece
 
-    def __init__(self, module_name, name, fn, wanted_params):
+    def __init__(self, module_name, name, fn, wanted_params, args, kw):
         self._module_name = module_name
         self.name = name
         self._fn = fn
         self._wanted_params = wanted_params
+        self._args = args
+        self._kw = kw
 
     @property
     def dir(self):
         return [htypes.command.context_object_command_d(self._module_name, self.name)]
 
     async def run(self, object, view_state, origin_dir):
-        kw = {}
+        kw = {**self._kw}
         if 'view_state' in self._wanted_params:
             kw['view_state'] = view_state
         if 'origin_dir' in self._wanted_params:
             kw['origin_dir'] = origin_dir
-        return await self._fn(object, **kw)
+        return await self._fn(object, *self._args, **kw)
