@@ -1,0 +1,6 @@
+import:
+  types:
+    object:
+      - object_d
+require:
+  - view_dir_to_config
