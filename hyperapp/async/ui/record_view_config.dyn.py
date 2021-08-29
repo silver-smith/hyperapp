@@ -42,10 +42,6 @@ class RecordViewConfig(ObjectViewConfig):
         return self
 
     @property
-    def title(self):
-        return f"View config for record: {self._object.title}"
-
-    @property
     def piece(self):
         return htypes.record_view_config.record_view_config(
             piece_ref=self._mosaic.put(self._object.piece),
