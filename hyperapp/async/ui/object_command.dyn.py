@@ -78,9 +78,9 @@ class Command:
         return [htypes.command.context_object_command_d(self._module_name, self.name)]
 
     async def run(self, object, view_state, origin_dir):
-        kw = {**self._kw}
+        args = ()
         if 'view_state' in self._wanted_params:
-            kw['view_state'] = view_state
+            args += (view_state,)
         if 'origin_dir' in self._wanted_params:
-            kw['origin_dir'] = origin_dir
-        return await self._fn(object, *self._args, **kw)
+            args += (origin_dir,)
+        return await self._fn(object, *args, *self._args)
