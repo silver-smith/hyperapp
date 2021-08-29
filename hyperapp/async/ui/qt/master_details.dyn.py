@@ -48,6 +48,10 @@ class MasterDetailsView(QtWidgets.QSplitter, Composite):
             )
 
     @property
+    def state(self):
+        return self._master_view.state
+
+    @property
     def object(self):
         return self._master_object
 
