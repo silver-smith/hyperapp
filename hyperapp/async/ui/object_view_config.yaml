@@ -2,5 +2,11 @@ import:
   types:
     object:
       - object_d
+    object_view_config:
+      - object_view_config_d
+      - object_view_config
+  code:
+    - async.ui.record_object
 require:
+  - object_factory
   - view_dir_to_config
