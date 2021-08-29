@@ -4,6 +4,8 @@ import:
       - object_d
     command_list:
       - object_command_list
+    view_selector:
+      - view_selector
     object_view_config:
       - object_view_config_d
       - object_view_config
@@ -13,4 +15,5 @@ import:
 require:
   - async_web
   - object_factory
+  - view_producer
   - view_dir_to_config
