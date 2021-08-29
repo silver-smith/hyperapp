@@ -21,16 +21,23 @@ class RecordViewConfig(ObjectViewConfig):
             for ref in piece.origin_dir
             ]
 
-        dir, view_piece = view_producer.pick_view_piece(object, [origin_dir])
+        target_dir, view_piece = view_producer.pick_view_piece(object, [origin_dir])
 
         fields_pieces = {
             'title': object.title,
-            'dir': '/'.join(str(p) for p in dir),
+            'dir': '/'.join(str(p) for p in target_dir),
             'view': str(view_piece),
             'commands': htypes.command_list.object_command_list(piece.piece_ref, piece.view_state_ref),
+            'fields': htypes.record_field_list.record_field_list(
+                piece.piece_ref, piece.origin_dir,
+                target_dir=[
+                    mosaic.put(piece)
+                    for p in target_dir
+                    ],
+                ),
             }
 
-        self = cls(mosaic, object, view_state, origin_dir)
+        self = cls(mosaic, object, view_state, origin_dir, target_dir)
         await self.async_init(object_factory, fields_pieces)
         return self
 
@@ -46,6 +53,20 @@ class RecordViewConfig(ObjectViewConfig):
             origin_dir=[
                 self._mosaic.put(piece)
                 for piece in self._origin_dir
+                ],
+            )
+
+    @command
+    async def object_field_list(self):
+        return htypes.record_field_list.record_field_list(
+            piece_ref=self._mosaic.put(self._object.piece),
+            origin_dir=[
+                self._mosaic.put(piece)
+                for piece in self._origin_dir
+                ],
+            target_dir=[
+                self._mosaic.put(piece)
+                for piece in self._target_dir
                 ],
             )
 

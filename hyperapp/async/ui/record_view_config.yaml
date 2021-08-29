@@ -4,10 +4,8 @@ import:
       - record_object_d
     command_list:
       - object_command_list
-    view_selector:
-      - view_selector
-    object_view_config:
-      - object_view_config
+    record_field_list:
+      - record_field_list
     record_view_config:
       - record_view_config_d
       - record_view_config
