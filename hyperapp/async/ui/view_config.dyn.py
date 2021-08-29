@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 
 
 def open_view_config(object, view_state, origin_dir, view_dir_to_config):
-    for dir in object.dir_list:
+    for dir in reversed(object.dir_list):
         try:
             config_editor_factory = view_dir_to_config[tuple(dir)]
         except KeyError:

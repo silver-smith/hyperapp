@@ -1,0 +1,21 @@
+import:
+  types:
+    record_object:
+      - record_object_d
+    command_list:
+      - object_command_list
+    view_selector:
+      - view_selector
+    object_view_config:
+      - object_view_config
+    record_view_config:
+      - record_view_config_d
+      - record_view_config
+  code:
+    - async.ui.command
+    - async.ui.object_view_config
+require:
+  - async_web
+  - object_factory
+  - view_producer
+  - view_dir_to_config
