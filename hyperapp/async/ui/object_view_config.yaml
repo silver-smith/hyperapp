@@ -14,6 +14,8 @@ import:
       - available_view_list
     view_selector:
       - view_selector
+    lcs_list:
+      - lcs_list
     object_view_config:
       - object_view_config_d
       - object_view_config

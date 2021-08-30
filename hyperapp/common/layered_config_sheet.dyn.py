@@ -88,8 +88,12 @@ class LCSheet:
         if record.persist:
             self._save()
 
-    def iter(self):
+    def iter(self, filter_dir=None):
+        filter_dir_set = set(filter_dir or [])
         for dir, record in self._dir_to_record.items():
+            dir_set = set(dir)
+            if not filter_dir_set <= dir_set:
+                continue
             yield (dir, record.value_list, record.persist)
 
     def iter_dir_list_values(self, dir_list):

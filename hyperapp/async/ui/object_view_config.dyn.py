@@ -133,6 +133,15 @@ class ObjectViewConfig(RecordObject):
                 ],
             )
 
+    @command
+    async def lcs_list(self):
+        return htypes.lcs_list.lcs_list(
+            filter_dir=[
+                self._mosaic.put(p)
+                for p in self._target_dir
+            ],
+            )
+
 
 class ThisModule(Module):
 

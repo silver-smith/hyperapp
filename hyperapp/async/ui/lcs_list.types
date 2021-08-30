@@ -1,3 +1,5 @@
 
 lcs_list_d = record
-lcs_list = record
+
+lcs_list = record:
+  filter_dir: ref list

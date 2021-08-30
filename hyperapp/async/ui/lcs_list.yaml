@@ -10,3 +10,4 @@ import:
     - async.ui.module
 require:
   - lcs
+  - async_web
