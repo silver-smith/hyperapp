@@ -47,7 +47,7 @@ class ViewSelector(SimpleListObject):
         self._populate()
 
     async def _async_init(self, command_registry):
-        command_piece_it = self._lcs.iter(
+        command_piece_it = self._lcs.iter_dir_list_values(
             [[*dir, htypes.command.object_selector_commands_d()] for dir in self._object.dir_list]
             )
         self._selector_command_list = [

@@ -10,7 +10,7 @@ class ObjectCommandsFactory:
         self._command_registry = command_registry
 
     async def get_object_command_list(self, object):
-        command_piece_it = self._lcs.iter(
+        command_piece_it = self._lcs.iter_dir_list_values(
             [[*dir, htypes.command.object_commands_d()] for dir in object.dir_list]
             )
         command_list = [
