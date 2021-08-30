@@ -49,6 +49,7 @@ code_module_list = [
     'async.ui.view_config',
     'async.ui.object_view_config',
     'async.ui.record_view_config',
+    'async.ui.dir_list',
     'async.ui.available_view_list',
     'async.ui.selector',
     'async.ui.qt.selector_view',

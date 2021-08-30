@@ -1,0 +1,10 @@
+import:
+  types:
+    dir_list:
+      - dir_list_d
+      - dir_list
+  code:
+    - async.ui.column
+    - async.ui.simple_list_object
+require:
+  - object_registry
