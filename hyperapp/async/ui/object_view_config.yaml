@@ -2,6 +2,8 @@ import:
   types:
     object:
       - object_d
+    view:
+      - view_d
     command_list:
       - object_command_list
     view_selector:

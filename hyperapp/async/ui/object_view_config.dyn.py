@@ -21,7 +21,11 @@ class ObjectViewConfig(RecordObject):
             for ref in piece.origin_dir
             ]
 
-        target_dir, view_piece = view_producer.pick_view_piece(object, [origin_dir])
+        dir, view_piece = view_producer.pick_view_piece(object, [origin_dir])
+        if htypes.view.view_d('selected') in dir:
+            target_dir = dir[1:]  # Remove leading view_d('selected').
+        else:
+            target_dir = object.dir_list[-1]
 
         fields_pieces = {
             'title': object.title,
