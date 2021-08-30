@@ -10,6 +10,8 @@ import:
       - dir_list
     selector:
       - selector
+    view_selector:
+      - view_selector
     object_view_config:
       - object_view_config_d
       - object_view_config

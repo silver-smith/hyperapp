@@ -17,7 +17,7 @@ class ObjectViewConfig(RecordObject):
         ]
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, lcs, async_web, object_factory, view_producer, make_selector_callback_ref):
+    async def from_piece(cls, piece, mosaic, lcs, async_web, object_factory, make_selector_callback_ref):
         object = await object_factory.invite(piece.piece_ref)
         view_state = await async_web.summon(piece.view_state_ref)
         origin_dir = [
@@ -108,6 +108,16 @@ class ObjectViewConfig(RecordObject):
             ]
         return htypes.object_view_config.object_view_config(**fields)
 
+    @command
+    async def object_view_selector(self):
+        return htypes.view_selector.view_selector(
+            piece_ref=self._mosaic.put(self._object.piece),
+            origin_dir=[
+                self._mosaic.put(piece)
+                for piece in self._origin_dir
+                ],
+            )
+
 
 class ThisModule(Module):
 
@@ -124,7 +134,6 @@ class ThisModule(Module):
             services.lcs,
             services.async_web,
             services.object_factory,
-            services.view_producer,
             services.make_selector_callback_ref,
             )
         services.view_dir_to_config[(htypes.object.object_d(),)] = self.config_editor_for_object
