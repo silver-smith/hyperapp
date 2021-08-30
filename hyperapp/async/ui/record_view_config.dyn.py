@@ -50,23 +50,34 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
 
         self._mosaic = services.mosaic
+        self._view_producer = services.view_producer
 
         services.object_registry.register_actor(
             htypes.record_view_config.record_view_config,
             RecordViewConfig.from_piece,
             services.mosaic,
+            services.lcs,
             services.async_web,
             services.object_factory,
-            services.view_producer,
+            services.make_selector_callback_ref,
             )
         services.view_dir_to_config[(htypes.record_object.record_object_d(),)] = self.config_editor_for_record_object
 
     async def config_editor_for_record_object(self, object, view_state, origin_dir):
+        dir, view_piece = self._view_producer.pick_view_piece(object, [origin_dir])
+        if htypes.view.view_d('selected') in dir:
+            target_dir = dir[1:]  # Remove leading view_d('selected').
+        else:
+            target_dir = object.dir_list[-1]
         return htypes.record_view_config.record_view_config(
             piece_ref=self._mosaic.put(object.piece),
             view_state_ref=self._mosaic.put(view_state),
             origin_dir=[
                 self._mosaic.put(piece)
                 for piece in origin_dir
+                ],
+            target_dir=[
+                self._mosaic.put(piece)
+                for piece in target_dir
                 ],
             )
