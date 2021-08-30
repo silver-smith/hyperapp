@@ -27,16 +27,20 @@ class ObjectViewConfig(RecordObject):
         else:
             target_dir = object.dir_list[-1]
 
-        fields_pieces = {
+        fields_pieces = cls.make_fields_pieces(mosaic, piece, object, target_dir, view_piece)
+
+        self = cls(mosaic, object, view_state, origin_dir, target_dir)
+        await self.async_init(object_factory, fields_pieces)
+        return self
+
+    @classmethod
+    def make_fields_pieces(cls, mosaic, piece, object, target_dir, view_piece):
+        return {
             'title': object.title,
             'dir': '/'.join(str(p) for p in target_dir),
             'view': str(view_piece),
             'commands': htypes.command_list.object_command_list(piece.piece_ref, piece.view_state_ref),
             }
-
-        self = cls(mosaic, object, view_state, origin_dir, target_dir)
-        await self.async_init(object_factory, fields_pieces)
-        return self
 
     def __init__(self, mosaic, object, view_state, origin_dir, target_dir):
         super().__init__()

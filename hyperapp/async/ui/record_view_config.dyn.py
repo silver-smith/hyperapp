@@ -13,33 +13,17 @@ class RecordViewConfig(ObjectViewConfig):
         ]
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, async_web, object_factory, view_producer):
-        object = await object_factory.invite(piece.piece_ref)
-        view_state = await async_web.summon(piece.view_state_ref)
-        origin_dir = [
-            await async_web.summon(ref)
-            for ref in piece.origin_dir
-            ]
-
-        target_dir, view_piece = view_producer.pick_view_piece(object, [origin_dir])
-
-        fields_pieces = {
-            'title': object.title,
-            'dir': '/'.join(str(p) for p in target_dir),
-            'view': str(view_piece),
-            'commands': htypes.command_list.object_command_list(piece.piece_ref, piece.view_state_ref),
+    def make_fields_pieces(cls, mosaic, piece, object, target_dir, view_piece):
+        return {
+            **super().make_fields_pieces(mosaic, piece, object, target_dir, view_piece),
             'fields': htypes.record_field_list.record_field_list(
                 piece.piece_ref, piece.origin_dir,
                 target_dir=[
-                    mosaic.put(piece)
+                    mosaic.put(p)
                     for p in target_dir
                     ],
                 ),
             }
-
-        self = cls(mosaic, object, view_state, origin_dir, target_dir)
-        await self.async_init(object_factory, fields_pieces)
-        return self
 
     @property
     def piece(self):
