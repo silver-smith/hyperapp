@@ -27,14 +27,7 @@ class RecordViewConfig(ObjectViewConfig):
 
     @property
     def piece(self):
-        return htypes.record_view_config.record_view_config(
-            piece_ref=self._mosaic.put(self._object.piece),
-            view_state_ref=self._mosaic.put(self._view_state),
-            origin_dir=[
-                self._mosaic.put(piece)
-                for piece in self._origin_dir
-                ],
-            )
+        return htypes.record_view_config.record_view_config(**self._piece_fields)
 
     @command
     async def object_field_list(self):

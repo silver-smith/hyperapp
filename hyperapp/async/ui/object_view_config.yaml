@@ -6,8 +6,10 @@ import:
       - view_d
     command_list:
       - object_command_list
-    view_selector:
-      - view_selector
+    dir_list:
+      - dir_list
+    selector:
+      - selector
     object_view_config:
       - object_view_config_d
       - object_view_config
@@ -15,7 +17,9 @@ import:
     - async.ui.command
     - async.ui.record_object
 require:
+  - lcs
   - async_web
   - object_factory
   - view_producer
   - view_dir_to_config
+  - make_selector_callback_ref

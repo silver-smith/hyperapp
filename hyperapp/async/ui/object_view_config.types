@@ -5,4 +5,4 @@ object_view_config = record:
   piece_ref: ref
   view_state_ref: ref
   origin_dir: ref list
-
+  target_dir: ref list
