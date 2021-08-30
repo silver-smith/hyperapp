@@ -33,7 +33,7 @@ class ObjectViewConfig(RecordObject):
 
         fields_pieces = cls.make_fields_pieces(mosaic, piece, object, target_dir, view_piece)
 
-        self = cls(mosaic, make_selector_callback_ref, object, view_state, origin_dir, target_dir)
+        self = cls(mosaic, lcs, make_selector_callback_ref, object, view_state, origin_dir, target_dir)
         await self.async_init(object_factory, fields_pieces)
         return self
 
@@ -46,9 +46,10 @@ class ObjectViewConfig(RecordObject):
             'commands': htypes.command_list.object_command_list(piece.piece_ref, piece.view_state_ref),
             }
 
-    def __init__(self, mosaic, make_selector_callback_ref, object, view_state, origin_dir, target_dir):
+    def __init__(self, mosaic, lcs, make_selector_callback_ref, object, view_state, origin_dir, target_dir):
         super().__init__()
         self._mosaic = mosaic
+        self._lcs = lcs
         self._make_selector_callback_ref = make_selector_callback_ref
         self._object = object
         self._view_state = view_state
@@ -107,6 +108,20 @@ class ObjectViewConfig(RecordObject):
             for piece in view_item.dir
             ]
         return htypes.object_view_config.object_view_config(**fields)
+
+    @command
+    async def select_view(self):
+        piece_ref = self._mosaic.put(self._object.piece)
+        list = htypes.available_view_list.available_view_list(piece_ref)
+        list_ref = self._mosaic.put(list)
+        callback_ref = self._make_selector_callback_ref(self.set_view)
+        return htypes.selector.selector(list_ref, callback_ref)
+
+    async def set_view(self, view_item):
+        log.info("Set view: %r", view_item.view)
+        self._lcs.set([htypes.view.view_d('selected'), *self._target_dir], view_item.view, persist=True)
+        self.update()
+        return self.piece
 
     @command
     async def object_view_selector(self):
