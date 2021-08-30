@@ -88,6 +88,10 @@ class LCSheet:
         if record.persist:
             self._save()
 
+    def iter(self):
+        for dir, record in self._dir_to_record.items():
+            yield (dir, record.value_list, record.persist)
+
     def iter_dir_list_values(self, dir_list):
         for dir in dir_list:
             yield from self._dir_to_record[tuple(dir)].value_list
