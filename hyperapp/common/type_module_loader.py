@@ -85,8 +85,14 @@ class TypeModuleLoader(object):
         except KeyError:
             pass
         log.info("Resolve type module: %s", name)
-        source = name_to_source[name]
-        local_name_dict = self._resolve_module_imports(name_to_source, name_to_module, source, [*dep_stack, name])
+        try:
+            source = name_to_source[name]
+        except KeyError:
+            raise RuntimeError(f"Attempt to import unknown type module: {name}")
+        try:
+            local_name_dict = self._resolve_module_imports(name_to_source, name_to_module, source, [*dep_stack, name])
+        except Exception as x:
+            raise RuntimeError(f"Error resolving type module {name}: {x}")
         local_type_module = self._map_module_names(name, source, local_name_dict)
         return local_type_module
 
