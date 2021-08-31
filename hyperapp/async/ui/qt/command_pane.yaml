@@ -4,7 +4,5 @@ import:
       - command_shortcut_d
     command_pane:
       - command_pane
-  code:
-    - async.ui.module
 require:
   - lcs

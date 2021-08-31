@@ -31,7 +31,7 @@ class RootView(View):
     async def create_window(state, mosaic, view_registry):
         command_hub = CommandHub()  # get_commands=self.get_current_commands
         menu_bar = await view_registry.invite(state.menu_bar_ref, command_hub)
-        command_pane = None  # await view_registry.invite(state.command_pane_ref, command_hub)
+        command_pane = await view_registry.invite(state.command_pane_ref, command_hub)
         central_view = await view_registry.invite(state.central_view_ref, command_hub)
         return Window(mosaic, menu_bar, command_pane, central_view, state.size, state.pos)
 
@@ -54,7 +54,7 @@ class Window(View, QtWidgets.QMainWindow):
         self._child_widget = None
         self.resize(size.w, size.h)
         self.move(pos.x, pos.y)
-        # self.addDockWidget(QtCore.Qt.RightDockWidgetArea, command_pane)
+        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, command_pane)
         self.setMenuWidget(menu_bar)
         self.setCentralWidget(central_view.qt_widget)
 
