@@ -5,6 +5,3 @@ require:
   - async_web
 provide:
   - view_registry
-  - available_object_layouts
-  - default_object_layouts
-  - object_layout_registry

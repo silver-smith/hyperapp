@@ -12,4 +12,3 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
         services.view_registry = CodeRegistry('view', services.async_web, services.types)
-        services.object_layout_registry = CodeRegistry('object_layout', services.async_web, services.types)
