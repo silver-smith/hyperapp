@@ -1,0 +1,4 @@
+
+state = record:
+  tab_view_ref_list: ref list
+  current_tab: int

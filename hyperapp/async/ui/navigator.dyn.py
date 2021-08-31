@@ -118,11 +118,7 @@ class Navigator:
         self._current_view = view
 
     @property
-    def widget(self):
-        return self._current_view
-
-    @property
-    def piece(self):
+    def state(self):
         piece_ref = self._mosaic.put(self._current_object.piece)
         origin_dir_refs = tuple(
             self._mosaic.put(piece)
@@ -130,12 +126,13 @@ class Navigator:
             )
         return htypes.navigator.navigator(piece_ref, origin_dir_refs)
 
+    @property
+    def qt_widget(self):
+        return self._current_view
 
-    async def visual_item(self):
-        piece = self._current_object.piece
-        return self.make_visual_item('Navigator', children=[
-            self.make_visual_item(str(piece), name='current'),
-            ])
+    @property
+    def title(self):
+        return self._current_object.title
 
     async def get_current_commands(self):
         object_command_list = await self._object_commands_factory.get_object_command_list(self._current_view.object)

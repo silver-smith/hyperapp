@@ -56,7 +56,7 @@ class Window(View, QtWidgets.QMainWindow):
         self.move(pos.x, pos.y)
         # self.addDockWidget(QtCore.Qt.RightDockWidgetArea, command_pane)
         # self.setMenuWidget(menu_bar)
-        self.setCentralWidget(central_view.widget)
+        self.setCentralWidget(central_view.qt_widget)
 
     # def closeEvent(self, event):
     #     super().closeEvent(event)

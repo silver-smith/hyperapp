@@ -1,14 +1,9 @@
 import:
   types:
     tab_view:
-    - tab_view
-    navigator:
-    - navigator
+    - state
   code:
-    - async.ui.qt.util
     - async.ui.qt.view
     - async.ui.command
-    - async.ui.module
 require:
   - view_registry
-  - layout_watcher

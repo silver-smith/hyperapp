@@ -29,7 +29,7 @@ class View(ObjectObserver, ViewCommander):
         pass
 
     @property
-    def widget(self):
+    def qt_widget(self):
         return self
 
     def get_current_child(self):
