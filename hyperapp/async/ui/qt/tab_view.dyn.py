@@ -39,10 +39,15 @@ class TabView(QtWidgets.QTabWidget, View):
         self._command_hub = command_hub
         self.tabBar().setFocusPolicy(QtCore.Qt.NoFocus)  # does not work...
         self.setElideMode(QtCore.Qt.ElideMiddle)
+        self._tab_view_list = children
         for view in children:
             self.addTab(view.qt_widget, view.title)
         self.setCurrentIndex(current_tab)
         self.currentChanged.connect(self._on_current_tab_changed)
+
+    def get_current_commands(self):
+        child = self._tab_view_list[self.currentIndex()]
+        return child.get_current_commands()
 
     def setVisible(self, visible):
         QtWidgets.QTabWidget.setVisible(self, visible)

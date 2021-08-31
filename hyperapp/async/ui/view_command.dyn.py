@@ -50,6 +50,3 @@ class ViewCommander:
 
     def get_command_list(self):
         return self._command_list
-
-    def get_all_command_list(self):
-        return self._command_list

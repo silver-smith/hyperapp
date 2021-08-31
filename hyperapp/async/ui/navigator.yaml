@@ -6,6 +6,7 @@ import:
       - navigator
   code:
     - async.ui.command
+    - async.ui.view_command
     - async.ui.module
 require:
   - async_web

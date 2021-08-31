@@ -9,6 +9,7 @@ from hyperapp.common.module import Module
 
 from . import htypes
 from .command import command
+from .view_command import ViewCommander
 
 _log = logging.getLogger(__name__)
 
@@ -54,7 +55,7 @@ class _History:
         return piece
 
 
-class Navigator:
+class Navigator(ViewCommander):
 
     @classmethod
     async def from_state(
@@ -145,7 +146,7 @@ class Navigator:
             for command in self._global_command_list
             ]
         return [
-            *await super().get_current_commands(),
+            *super().get_command_list(),
             *object_view_command_list,
             *global_command_list,
             ]

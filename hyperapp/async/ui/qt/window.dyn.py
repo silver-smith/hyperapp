@@ -29,11 +29,13 @@ class RootView(View):
 
     @staticmethod
     async def create_window(state, mosaic, view_registry):
-        command_hub = CommandHub()  # get_commands=self.get_current_commands
+        command_hub = CommandHub()
         menu_bar = await view_registry.invite(state.menu_bar_ref, command_hub)
         command_pane = await view_registry.invite(state.command_pane_ref, command_hub)
         central_view = await view_registry.invite(state.central_view_ref, command_hub)
-        return Window(mosaic, menu_bar, command_pane, central_view, state.size, state.pos)
+        window = Window(mosaic, menu_bar, command_pane, central_view, state.size, state.pos)
+        await window._async_init(command_hub)
+        return window
 
     def __init__(self, window_list):
         super().__init__()
@@ -57,6 +59,9 @@ class Window(View, QtWidgets.QMainWindow):
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, command_pane)
         self.setMenuWidget(menu_bar)
         self.setCentralWidget(central_view.qt_widget)
+
+    async def _async_init(self, command_hub):
+        await command_hub.init_get_commands(self.get_current_commands)
 
     # def closeEvent(self, event):
     #     super().closeEvent(event)
@@ -84,7 +89,10 @@ class Window(View, QtWidgets.QMainWindow):
     def view_commands_changed(self, command_kinds):
         self._menu_bar.view_commands_changed(self, command_kinds)
         self._command_pane.view_commands_changed(self, command_kinds)
-        
+
+    def get_current_commands(self):
+        return self.centralWidget().get_current_commands()
+
     @command
     async def duplicate_window(self):
         state = self.get_state()

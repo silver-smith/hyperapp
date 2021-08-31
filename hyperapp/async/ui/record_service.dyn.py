@@ -61,5 +61,5 @@ class RecordService(RecordObject):
     def dir_list(self):
         return super().dir_list + self._custom_dir_list
 
-    def get_all_command_list(self):
+    def get_command_list(self):
         return self._command_list

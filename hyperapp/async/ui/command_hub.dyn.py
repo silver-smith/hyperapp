@@ -7,12 +7,13 @@ _log = logging.getLogger(__name__)
 
 class CommandHub:
 
-    def __init__(self, get_commands=None):
-        self._get_commands = get_commands
+    def __init__(self):
         self._observer_set = weakref.WeakSet()
+        self._get_commands = None
 
-    def init_get_commands(self, get_commands):
+    async def init_get_commands(self, get_commands):
         self._get_commands = get_commands
+        await self.update()
 
     def subscribe(self, observer):
         self._observer_set.add(observer)
