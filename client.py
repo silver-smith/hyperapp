@@ -15,7 +15,7 @@ code_module_list = [
     'async.ui.qt.application',
     'async.ui.command_list',
     'async.ui.qt.tab_view',
-    'client.menu_bar',
+    'async.ui.qt.menu_bar',
     'client.command_pane',
     'async.ui.qt.window',
     'async.ui.navigator',

@@ -1,35 +1,21 @@
 import asyncio
 import logging
-import weakref
 from functools import partial
 
 from PySide2 import QtCore, QtWidgets
 
+from hyperapp.common.module import Module
+
 from . import htypes
-from .module import ClientModule
 
 log = logging.getLogger(__name__)
 
 
-class MenuBarLayout:
-
-    def __init__(self, state, path, command_hub, view_opener, lcs):
-        super().__init__(path)
-        self._lcs = lcs
-        self._command_hub = command_hub
-
-    @property
-    def piece(self):
-        return htypes.menu_bar.menu_bar()
-
-    async def create_view(self):
-        return MenuBar(self._lcs, self._command_hub)
-
-    async def visual_item(self):
-        return self.make_visual_item('MenuBar')
-
-
 class MenuBar(QtWidgets.QMenuBar):
+
+    @classmethod
+    async def from_state(cls, state, command_hub, lcs):
+        return cls(lcs, command_hub)
 
     def __init__(self, lcs, command_hub):
         super().__init__()
@@ -37,6 +23,10 @@ class MenuBar(QtWidgets.QMenuBar):
         self._build()
         self._locale = 'en'
         command_hub.subscribe(self)
+
+    @property
+    def state(self):
+        return htypes.menu_bar.menu_bar()
 
     # command hub observer method
     def commands_changed(self, kind, command_list):
@@ -83,9 +73,9 @@ class MenuBar(QtWidgets.QMenuBar):
         asyncio.create_task(command.run())
 
 
-class ThisModule(ClientModule):
+class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
         services.view_registry.register_actor(
-            htypes.menu_bar.menu_bar, MenuBarLayout, services.lcs)
+            htypes.menu_bar.menu_bar, MenuBar.from_state, services.lcs)

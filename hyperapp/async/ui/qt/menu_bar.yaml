@@ -4,8 +4,6 @@ import:
       - command_shortcut_d
     menu_bar:
       - menu_bar
-  code:
-    - async.ui.module
 require:
   - lcs
   - view_registry
