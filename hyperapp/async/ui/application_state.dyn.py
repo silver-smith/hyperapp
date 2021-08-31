@@ -12,9 +12,10 @@ class ThisModule(Module):
         self._mosaic = services.mosaic
         self._stop_event = services.async_stop_event
         self._async_web = services.async_web
-        self._layout_manager = services.layout_manager
         self._default_state_builder = services.default_state_builder
         self._state_storage = services.application_state_storage
+        self._view_registry = services.view_registry
+        self._root_view = None
 
     async def async_init(self, services):
         await self._load_state()
@@ -24,24 +25,13 @@ class ThisModule(Module):
 
     async def _load_state(self):
         log.info("Load application state.")
-        app_state = self._state_storage.load_state()
-        if app_state:
-            root_layout_state = await self._async_web.summon(app_state.root_layout_ref)
-        else:
-            root_layout_state = self._default_state_builder()
-        await self._layout_manager.create_layout_views(root_layout_state)
+        state = self._state_storage.load_state()
+        if state is None:
+            state = self._default_state_builder()
+        self._root_view = await self._view_registry.animate(state)
 
     def _save_state(self):
         log.info("Save application state.")
-        state = self._get_current_state()
-        if state is not None:
+        if self._root_view:  # Services init failed before layout constructed?
+            state = self._root_view.state
             self._state_storage.save_state(state)
-
-    def _get_current_state(self):
-        if not self._layout_manager.root_layout:
-            return None  # Services init failed before layout constructed.
-        root_layout = self._layout_manager.root_layout.piece
-        root_layout_ref = self._mosaic.put(root_layout)
-        return self._state_storage.state_t(
-            root_layout_ref=root_layout_ref,
-            )

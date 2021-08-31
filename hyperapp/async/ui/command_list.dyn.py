@@ -254,14 +254,14 @@ class ThisModule(ClientModule):
             services.async_web,
             services.lcs,
             services.global_command_list,
-            services.layout_manager,
+            None,  # services.layout_manager,
             )
         services.object_registry.register_actor(
             htypes.command_list.view_command_list,
             ViewCommandList.from_piece,
             services.async_web,
             services.lcs,
-            services.layout_manager,
+            None,  # services.layout_manager,
             )
         services.lcs.add(
             [*Object.dir_list[-1], htypes.command.object_commands_d()],

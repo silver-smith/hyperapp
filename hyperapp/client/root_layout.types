@@ -1,3 +1,0 @@
-
-root_layout = record:
-    window_ref_list: ref list

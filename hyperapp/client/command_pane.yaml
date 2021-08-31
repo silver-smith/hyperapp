@@ -5,7 +5,6 @@ import:
     command_pane:
       - command_pane
   code:
-    - client.layout
     - async.ui.module
 require:
   - lcs

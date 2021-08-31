@@ -1,7 +1,0 @@
-import:
-  types:
-    layout:
-      - command
-  code:
-    - async.ui.view_command
-    - async.ui.items_view

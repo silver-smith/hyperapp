@@ -14,11 +14,10 @@ log = logging.getLogger(__name__)
 code_module_list = [
     'async.ui.qt.application',
     'async.ui.command_list',
-    'client.layout_editor',
-    'client.tab_view',
+    # 'client.tab_view',
     'client.menu_bar',
     'client.command_pane',
-    'client.window',
+    'async.ui.qt.window',
     'async.ui.navigator',
     'async.ui.qt.record_view',
     'async.ui.data_viewer',

@@ -1,5 +1,3 @@
-from layout import layout
-
 
 wiki_ref = record:
   id: int

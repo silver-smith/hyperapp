@@ -9,7 +9,6 @@ from hyperapp.common.module import Module
 
 from . import htypes
 from .command import command
-from .layout import GlobalLayout
 
 _log = logging.getLogger(__name__)
 
@@ -55,15 +54,14 @@ class _History:
         return piece
 
 
-class NavigatorLayout(GlobalLayout):
+class Navigator:
 
     @classmethod
-    async def from_data(
+    async def from_state(
             cls,
             state,
-            path,
             command_hub,
-            view_opener,
+            # view_opener,
             mosaic,
             async_web,
             object_factory,
@@ -77,9 +75,9 @@ class NavigatorLayout(GlobalLayout):
             object_commands_factory,
             view_producer,
             global_command_list,
-            path,
+            # path,
             command_hub,
-            view_opener,
+            # view_opener,
             )
         await self._async_init(async_web, state.current_piece_ref, state.origin_dir)
         return self
@@ -91,18 +89,18 @@ class NavigatorLayout(GlobalLayout):
             object_commands_factory,
             view_producer,
             global_command_list,
-            path,
+            # path,
             command_hub,
-            view_opener,
+            # view_opener,
             ):
-        super().__init__(path)
+        super().__init__()
         self._mosaic = mosaic
         self._object_factory = object_factory
         self._object_commands_factory = object_commands_factory
         self._view_producer = view_producer
         self._global_command_list = global_command_list
         self._command_hub = command_hub
-        self._view_opener = view_opener
+        self._view_opener = None  # view_opener
         self._history = _History()
         self._current_object = None
         self._current_origin_dir = None
@@ -115,6 +113,13 @@ class NavigatorLayout(GlobalLayout):
             await async_web.summon(ref)
             for ref in origin_dir
             ]
+        view = await self._create_view(self._current_object, self._current_origin_dir)
+        self._history.append(_HistoryItem(self._current_object.piece, self._current_origin_dir, view.piece))
+        self._current_view = view
+
+    @property
+    def widget(self):
+        return self._current_view
 
     @property
     def piece(self):
@@ -125,11 +130,6 @@ class NavigatorLayout(GlobalLayout):
             )
         return htypes.navigator.navigator(piece_ref, origin_dir_refs)
 
-    async def create_view(self):
-        view = await self._create_view(self._current_object, self._current_origin_dir)
-        self._history.append(_HistoryItem(self._current_object.piece, self._current_origin_dir, view.piece))
-        self._current_view = view
-        return view
 
     async def visual_item(self):
         piece = self._current_object.piece
@@ -219,7 +219,7 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
         services.view_registry.register_actor(
             htypes.navigator.navigator,
-            NavigatorLayout.from_data,
+            Navigator.from_state,
             services.mosaic,
             services.async_web,
             services.object_factory,

@@ -5,7 +5,7 @@ import:
     menu_bar:
       - menu_bar
   code:
-    - client.layout
     - async.ui.module
 require:
   - lcs
+  - view_registry

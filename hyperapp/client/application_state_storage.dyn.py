@@ -6,8 +6,6 @@ import logging
 from hyperapp.common.htypes.packet_coders import DecodeError
 from hyperapp.common.module import Module
 
-from . import htypes
-
 log = logging.getLogger(__name__)
 
 
@@ -18,10 +16,6 @@ class ApplicationStateStorage(object):
 
     def __init__(self, file_bundle):
         self._file_bundle = file_bundle
-
-    @property
-    def state_t(self):
-        return htypes.application_state.application_state
         
     def save_state(self, state):
         self._file_bundle.save_piece(state)

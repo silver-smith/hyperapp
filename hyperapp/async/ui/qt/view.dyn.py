@@ -28,7 +28,8 @@ class View(ObjectObserver, ViewCommander):
     def object_changed(self):
         pass
 
-    def get_widget(self):
+    @property
+    def widget(self):
         return self
 
     def get_current_child(self):

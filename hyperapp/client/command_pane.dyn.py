@@ -7,13 +7,12 @@ import weakref
 from PySide2 import QtCore, QtWidgets
 
 from . import htypes
-from .layout import GlobalLayout
 from .module import ClientModule
 
 log = logging.getLogger(__name__)
 
 
-class CommandPaneLayout(GlobalLayout):
+class CommandPaneLayout:
 
     def __init__(self, state, path, command_hub, view_opener, lcs):
         super().__init__(path)

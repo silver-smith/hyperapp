@@ -4,11 +4,8 @@ import:
       - command_source_d
     navigator:
       - navigator
-    layout_editor:
-      - object_layout_editor
   code:
     - async.ui.command
-    - client.layout
     - async.ui.module
 require:
   - async_web

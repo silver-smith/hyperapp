@@ -1,6 +1,6 @@
 require:
   - async_web
   - async_stop_event
-  - layout_manager
   - default_state_builder
   - application_state_storage
+  - view_registry

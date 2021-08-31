@@ -2,15 +2,12 @@ import:
   types:
     view:
       - view_d
-    layout_editor:
-      - object_layout_editor
     master_details:
       - master_details_view_factory
       - master_details_view
   code:
     - async.ui.command
     - client.composite
-    - client.layout
     - async.ui.list_object
     - async.ui.tree_object
     - async.ui.module

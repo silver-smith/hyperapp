@@ -6,13 +6,12 @@ from functools import partial
 from PySide2 import QtCore, QtWidgets
 
 from . import htypes
-from .layout import GlobalLayout
 from .module import ClientModule
 
 log = logging.getLogger(__name__)
 
 
-class MenuBarLayout(GlobalLayout):
+class MenuBarLayout:
 
     def __init__(self, state, path, command_hub, view_opener, lcs):
         super().__init__(path)

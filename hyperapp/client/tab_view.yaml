@@ -8,7 +8,6 @@ import:
     - async.ui.qt.util
     - async.ui.qt.view
     - async.ui.command
-    - client.layout
     - async.ui.module
 require:
   - view_registry
