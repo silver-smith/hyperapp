@@ -49,6 +49,10 @@ class TabView(QtWidgets.QTabWidget, View):
         child = self._tab_view_list[self.currentIndex()]
         return child.get_current_commands()
 
+    def replace_qt_widget(self, view):
+        idx = self._tab_view_list.index(view)
+        self.replace_tab(idx, view)
+
     def setVisible(self, visible):
         QtWidgets.QTabWidget.setVisible(self, visible)
 
@@ -63,12 +67,12 @@ class TabView(QtWidgets.QTabWidget, View):
         old_widget = self.widget(tab_idx)
         self.removeTab(tab_idx)
         old_widget.deleteLater()
-        self.insertTab(tab_idx, view.get_widget(), view.title)
+        self.insertTab(tab_idx, view.qt_widget, view.title)
         self.setCurrentIndex(tab_idx)  # lost when old tab removed
         view.ensure_has_focus()
 
     def insert_tab(self, tab_idx, view):
-        self.insertTab(tab_idx, view.get_widget(), view.title)
+        self.insertTab(tab_idx, view.qt_widget, view.title)
         view.ensure_has_focus()
 
     def remove_tab(self, tab_idx):

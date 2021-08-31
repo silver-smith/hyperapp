@@ -62,7 +62,6 @@ class Navigator(ViewCommander):
             cls,
             state,
             command_hub,
-            # view_opener,
             mosaic,
             async_web,
             object_factory,
@@ -78,7 +77,6 @@ class Navigator(ViewCommander):
             global_command_list,
             # path,
             command_hub,
-            # view_opener,
             )
         await self._async_init(async_web, state.current_piece_ref, state.origin_dir)
         return self
@@ -92,7 +90,6 @@ class Navigator(ViewCommander):
             global_command_list,
             # path,
             command_hub,
-            # view_opener,
             ):
         super().__init__()
         self._mosaic = mosaic
@@ -101,7 +98,6 @@ class Navigator(ViewCommander):
         self._view_producer = view_producer
         self._global_command_list = global_command_list
         self._command_hub = command_hub
-        self._view_opener = None  # view_opener
         self._history = _History()
         self._current_object = None
         self._current_origin_dir = None
@@ -130,6 +126,9 @@ class Navigator(ViewCommander):
     @property
     def qt_widget(self):
         return self._current_view
+
+    def ensure_has_focus(self):
+        self._current_view.setFocus()
 
     @property
     def title(self):
@@ -185,8 +184,9 @@ class Navigator(ViewCommander):
         view = await self._create_view(object, origin_dir)
         self._current_object = object
         self._current_origin_dir = origin_dir
+        owner = self._current_view.parent().parent()
         self._current_view = view
-        self._view_opener.open(self._current_view)
+        owner.replace_qt_widget(self)
         await self._command_hub.update()
 
     async def _create_view(self, object, origin_dir):
