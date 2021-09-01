@@ -184,8 +184,8 @@ class ViewCommandList(CommandList):
     @classmethod
     async def from_piece(cls, piece, async_web, lcs, root_view):
         self = cls(lcs, root_view)
-        # When this object is current on client start, layout_manager is not yet fully constructed.
-        # Postpone it's usage until layout_manager.root_layout is set.
+        # When this object is currently open on client start, root view is not yet fully constructed.
+        # Postpone population until windows are created.
         asyncio.get_event_loop().call_soon(self._post_init)
         return self
 
