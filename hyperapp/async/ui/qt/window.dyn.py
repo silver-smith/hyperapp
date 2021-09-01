@@ -19,27 +19,33 @@ DUP_OFFSET = QtCore.QPoint(150, 50)
 class RootView(View):
 
     @classmethod
-    async def from_state(cls, state, mosaic, view_registry):
-        window_list = []
-        for window_state in state.window_list:
-            window = await cls.create_window(window_state, mosaic, view_registry)
-            window_list.append(window)
-            window.show()
-        return cls(window_list)
+    async def from_state(cls, state, mosaic, async_stop_event, view_registry):
+        self = cls(mosaic, async_stop_event, view_registry)
+        await self._async_init(state.window_list)
+        return self
 
-    @staticmethod
-    async def create_window(state, mosaic, view_registry):
+    def __init__(self, mosaic, async_stop_event, view_registry):
+        super().__init__()
+        self._mosaic = mosaic
+        self._async_stop_event = async_stop_event
+        self._view_registry = view_registry
+        self._window_list = None
+
+    async def _async_init(self, window_state_list):
+        self._window_list = []
+        for window_state in window_state_list:
+            window = await self._create_window(window_state)
+            self._window_list.append(window)
+            window.show()
+
+    async def _create_window(self, state):
         command_hub = CommandHub()
-        menu_bar = await view_registry.invite(state.menu_bar_ref, command_hub)
-        command_pane = await view_registry.invite(state.command_pane_ref, command_hub)
-        central_view = await view_registry.invite(state.central_view_ref, command_hub)
-        window = Window(mosaic, command_hub, menu_bar, command_pane, central_view, state.size, state.pos)
+        menu_bar = await self._view_registry.invite(state.menu_bar_ref, command_hub)
+        command_pane = await self._view_registry.invite(state.command_pane_ref, command_hub)
+        central_view = await self._view_registry.invite(state.central_view_ref, command_hub)
+        window = Window(self._mosaic, self._async_stop_event, self, command_hub, menu_bar, command_pane, central_view, state.size, state.pos)
         await window._async_init()
         return window
-
-    def __init__(self, window_list):
-        super().__init__()
-        self._window_list = window_list
 
     @property
     def state(self):
@@ -57,10 +63,12 @@ class RootView(View):
 
 class Window(View, QtWidgets.QMainWindow):
 
-    def __init__(self, mosaic, command_hub, menu_bar, command_pane, central_view, size, pos):
+    def __init__(self, mosaic, async_stop_event, root_view, command_hub, menu_bar, command_pane, central_view, size, pos):
         QtWidgets.QMainWindow.__init__(self)
         View.__init__(self)
         self._mosaic = mosaic
+        self._async_stop_event = async_stop_event
+        self._root_view = root_view
         self._command_hub = command_hub
         self._command_pane = command_pane
         self._child_widget = None
@@ -73,9 +81,13 @@ class Window(View, QtWidgets.QMainWindow):
     async def _async_init(self):
         await self._command_hub.init_get_commands(self.get_current_commands)
 
-    # def closeEvent(self, event):
-    #     super().closeEvent(event)
-    #     self._on_close()
+    def closeEvent(self, event):
+        super().closeEvent(event)
+        if len(self._root_view._window_list) == 1:
+            self._async_stop_event.set()
+            return  # Do not remove last window from list - we will need to store it to state.
+        idx = self._root_view._window_list.index(self)
+        del self._root_view._window_list[idx]
 
     @property
     def state(self):
@@ -124,5 +136,6 @@ class ThisModule(Module):
             htypes.window.state,
             RootView.from_state,
             services.mosaic,
+            services.async_stop_event,
             services.view_registry,
             )
