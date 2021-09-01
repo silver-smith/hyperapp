@@ -142,6 +142,10 @@ class Window(View, QtWidgets.QMainWindow):
             )
         await self._root_view._add_window(new_state)
 
+    @command
+    async def quit(self):
+        self._async_stop_event.set()
+
 
 class ThisModule(Module):
 
