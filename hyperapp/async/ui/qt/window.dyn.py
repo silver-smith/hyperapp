@@ -20,9 +20,7 @@ class RootView(View):
 
     @classmethod
     async def from_state(cls, state, mosaic, async_stop_event, view_registry):
-        self = cls(mosaic, async_stop_event, view_registry)
-        await self._async_init(state.window_list)
-        return self
+        return cls(mosaic, async_stop_event, view_registry)
 
     def __init__(self, mosaic, async_stop_event, view_registry):
         super().__init__()
@@ -31,9 +29,9 @@ class RootView(View):
         self._view_registry = view_registry
         self._window_list = None
 
-    async def _async_init(self, window_state_list):
+    async def open(self, state):
         self._window_list = []
-        for window_state in window_state_list:
+        for window_state in state.window_list:
             window = await self._create_window(window_state)
             self._window_list.append(window)
             window.show()
