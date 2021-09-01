@@ -49,7 +49,11 @@ class RootView(View):
 
     @property
     def state(self):
-        pass
+        return htypes.window.state(
+            window_list=[
+                window.state for window in self._window_list
+                ],
+            )
 
     def iter_view_commands(self):
         for idx, window in enumerate(self._window_list):

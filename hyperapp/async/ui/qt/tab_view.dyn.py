@@ -30,32 +30,43 @@ class TabView(QtWidgets.QTabWidget, View):
             await view_registry.invite(ref, command_hub)
             for ref in state.tab_view_ref_list
             ]
-        self = cls(command_hub, children, state.current_tab)
+        self = cls(mosaic, command_hub, children, state.current_tab)
         return self
 
-    def __init__(self, command_hub, children, current_tab):
+    def __init__(self, mosaic, command_hub, children, current_tab):
         QtWidgets.QTabWidget.__init__(self)
         View.__init__(self)
+        self._mosaic = mosaic
         self._command_hub = command_hub
         self.tabBar().setFocusPolicy(QtCore.Qt.NoFocus)  # does not work...
         self.setElideMode(QtCore.Qt.ElideMiddle)
-        self._tab_view_list = children
+        self._tab_list = children
         for view in children:
             self.addTab(view.qt_widget, view.title)
         self.setCurrentIndex(current_tab)
         self.currentChanged.connect(self._on_current_tab_changed)
 
+    @property
+    def state(self):
+        return htypes.tab_view.state(
+            tab_view_ref_list=[
+                self._mosaic.put(tab.state)
+                for tab in self._tab_list
+                ],
+            current_tab=self.currentIndex(),
+            )
+
     def iter_view_commands(self):
-        for idx, tab in enumerate(self._tab_view_list):
+        for idx, tab in enumerate(self._tab_list):
             for path, command in tab.iter_view_commands():
                 yield ([f"tab#{idx}", *path], command)
 
     async def get_current_commands(self):
-        child = self._tab_view_list[self.currentIndex()]
+        child = self._tab_list[self.currentIndex()]
         return await child.get_current_commands()
 
     def replace_qt_widget(self, view):
-        idx = self._tab_view_list.index(view)
+        idx = self._tab_list.index(view)
         self.replace_tab(idx, view)
 
     def setVisible(self, visible):
