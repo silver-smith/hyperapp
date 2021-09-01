@@ -47,9 +47,13 @@ class RootView(View):
 
     @property
     def state(self):
+        # Move active window to last position so it would be active after restart.
+        # There is no known ways to determine Z-order for other windows for qt.
+        active_window = next(w for w in self._window_list if w.isActiveWindow())
+        other_windows = [w for w in self._window_list if w is not active_window]
         return htypes.window.state(
             window_list=[
-                window.state for window in self._window_list
+                window.state for window in [*other_windows, active_window]
                 ],
             )
 
