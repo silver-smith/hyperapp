@@ -150,12 +150,12 @@ class GlobalCommandList(CommandList):
         ]
 
     @classmethod
-    async def from_piece(cls, piece, async_web, lcs, global_command_list, layout_manager):
-        return cls(lcs, global_command_list, layout_manager)
+    async def from_piece(cls, piece, async_web, lcs, global_command_list, root_view):
+        return cls(lcs, global_command_list, root_view)
 
-    def __init__(self, lcs, global_command_list, layout_manager):
+    def __init__(self, lcs, global_command_list, root_view):
         super().__init__(lcs)
-        self._layout_manager = layout_manager
+        self._root_view = root_view
         self._command_by_name = {
             command.name: command
             for command in global_command_list
@@ -171,7 +171,7 @@ class GlobalCommandList(CommandList):
 
     async def update(self):
         await super().update()
-        await self._layout_manager.root_layout.update_commands()
+        await self._root_view.root_layout.update_commands()
 
 
 class ViewCommandList(CommandList):
@@ -182,27 +182,27 @@ class ViewCommandList(CommandList):
         ]
 
     @classmethod
-    async def from_piece(cls, piece, async_web, lcs, layout_manager):
-        self = cls(lcs, layout_manager)
+    async def from_piece(cls, piece, async_web, lcs, root_view):
+        self = cls(lcs, root_view)
         # When this object is current on client start, layout_manager is not yet fully constructed.
         # Postpone it's usage until layout_manager.root_layout is set.
         asyncio.get_event_loop().call_soon(self._post_init)
         return self
 
-    def __init__(self, lcs, layout_manager):
+    def __init__(self, lcs, root_view):
         super().__init__(lcs)
-        self._layout_manager = layout_manager
+        self._root_view = root_view
         self._path_by_name = None
 
     def _post_init(self):
-        view_commands = self._layout_manager.root_layout.collect_view_commands()
+        command_list = list(self._root_view.iter_view_commands())
         self._command_by_name = {
             command.name: command
-            for (path, command) in view_commands
+            for (path, command) in command_list
             }
         self._path_by_name = {
             command.name: path
-            for (path, command) in view_commands
+            for (path, command) in command_list
             }
 
     @property
@@ -231,14 +231,17 @@ class ViewCommandList(CommandList):
 
     async def update(self):
         await super().update()
-        await self._layout_manager.root_layout.update_commands()
+        await self._root_view.root_layout.update_commands()
 
 
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
+
         self._mosaic = services.mosaic
+
+    async def async_init(self, services):
         services.object_registry.register_actor(
             htypes.command_list.object_command_list,
             ObjectCommandList.from_piece,
@@ -261,7 +264,7 @@ class ThisModule(ClientModule):
             ViewCommandList.from_piece,
             services.async_web,
             services.lcs,
-            None,  # services.layout_manager,
+            services.root_view,
             )
         services.lcs.add(
             [*Object.dir_list[-1], htypes.command.object_commands_d()],

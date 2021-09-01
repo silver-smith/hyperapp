@@ -27,3 +27,4 @@ require:
   - object_registry
   - object_commands_factory
   - global_command_list
+  - root_view

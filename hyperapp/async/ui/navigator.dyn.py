@@ -134,6 +134,10 @@ class Navigator(ViewCommander):
     def title(self):
         return self._current_object.title
 
+    def iter_view_commands(self):
+        for command in self.get_command_list():
+            yield (['navigator'], command)
+
     async def get_current_commands(self):
         object_command_list = await self._object_commands_factory.get_object_command_list(self._current_view.object)
         object_view_command_list = [
@@ -184,7 +188,7 @@ class Navigator(ViewCommander):
         view = await self._create_view(object, origin_dir)
         self._current_object = object
         self._current_origin_dir = origin_dir
-        owner = self._current_view.parent().parent()
+        owner = self._current_view.parent().parent()  # Assuming parent is tab view; todo: unhack.
         self._current_view = view
         owner.replace_qt_widget(self)
         await self._command_hub.update()

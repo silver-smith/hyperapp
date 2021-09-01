@@ -4,3 +4,5 @@ require:
   - default_state_builder
   - application_state_storage
   - view_registry
+provide:
+  - root_view

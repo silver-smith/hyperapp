@@ -45,6 +45,11 @@ class RootView(View):
     def state(self):
         pass
 
+    def iter_view_commands(self):
+        for idx, window in enumerate(self._window_list):
+            for path, command in window.iter_view_commands():
+                yield ([f"window#{idx}", *path], command)
+
 
 class Window(View, QtWidgets.QMainWindow):
 
@@ -78,20 +83,22 @@ class Window(View, QtWidgets.QMainWindow):
             )
 
     def get_current_child(self):
-        return self._view
-
-    def set_child(self, child):
-        self._view = child
-
-    def open(self, handle):
-        self._view.open(handle)
+        return self.centralWidget()
 
     def view_commands_changed(self, command_kinds):
         self._menu_bar.view_commands_changed(self, command_kinds)
         self._command_pane.view_commands_changed(self, command_kinds)
 
-    def get_current_commands(self):
-        return self.centralWidget().get_current_commands()
+    def iter_view_commands(self):
+        yield from self.centralWidget().iter_view_commands()
+        for command in self.get_command_list():
+            yield ([], command)
+
+    async def get_current_commands(self):
+        return [
+            *await self.centralWidget().get_current_commands(),
+            *self.get_command_list(),
+            ]
 
     @command
     async def duplicate_window(self):

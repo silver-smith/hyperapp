@@ -45,9 +45,14 @@ class TabView(QtWidgets.QTabWidget, View):
         self.setCurrentIndex(current_tab)
         self.currentChanged.connect(self._on_current_tab_changed)
 
-    def get_current_commands(self):
+    def iter_view_commands(self):
+        for idx, tab in enumerate(self._tab_view_list):
+            for path, command in tab.iter_view_commands():
+                yield ([f"tab#{idx}", *path], command)
+
+    async def get_current_commands(self):
         child = self._tab_view_list[self.currentIndex()]
-        return child.get_current_commands()
+        return await child.get_current_commands()
 
     def replace_qt_widget(self, view):
         idx = self._tab_view_list.index(view)

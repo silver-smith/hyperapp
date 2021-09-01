@@ -18,7 +18,8 @@ class ThisModule(Module):
         self._root_view = None
 
     async def async_init(self, services):
-        await self._load_state()
+        self._root_view = await self._load_state()
+        services.root_view = self._root_view
 
     async def async_stop(self):
         self._save_state()
@@ -28,7 +29,7 @@ class ThisModule(Module):
         state = self._state_storage.load_state()
         if state is None:
             state = self._default_state_builder()
-        self._root_view = await self._view_registry.animate(state)
+        return await self._view_registry.animate(state)
 
     def _save_state(self):
         log.info("Save application state.")
