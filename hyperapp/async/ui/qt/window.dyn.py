@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 
 
 # DEFAULT_SIZE = QtCore.QSize(800, 800)
-DUP_OFFSET = QtCore.QPoint(150, 50)
+DUP_OFFSET = htypes.window.pos(150, 50)
 
 
 class RootView(View):
@@ -61,6 +61,11 @@ class RootView(View):
     async def update_commands(self):
         for window in self._window_list:
             await window.update_commands()
+
+    async def _add_window(self, state):
+        window = await self._create_window(state)
+        self._window_list.append(window)
+        window.show()
 
 
 class Window(View, QtWidgets.QMainWindow):
@@ -124,10 +129,18 @@ class Window(View, QtWidgets.QMainWindow):
 
     @command
     async def duplicate_window(self):
-        state = self.get_state()
-        state.pos.x += DUP_OFFSET.x()
-        state.pos.y += DUP_OFFSET.y()
-        await self.from_state(state, self._app, self._view_registry)
+        my_state = self.state
+        new_state = htypes.window.window(
+            menu_bar_ref=my_state.menu_bar_ref,
+            command_pane_ref=my_state.command_pane_ref,
+            central_view_ref=my_state.central_view_ref,
+            size=my_state.size,
+            pos=htypes.window.pos(
+                x=my_state.pos.x + DUP_OFFSET.x,
+                y=my_state.pos.y + DUP_OFFSET.y,
+                ),
+            )
+        await self._root_view._add_window(new_state)
 
 
 class ThisModule(Module):
