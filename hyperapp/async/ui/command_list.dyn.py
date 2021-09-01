@@ -171,7 +171,7 @@ class GlobalCommandList(CommandList):
 
     async def update(self):
         await super().update()
-        await self._root_view.root_layout.update_commands()
+        await self._root_view.update_commands()
 
 
 class ViewCommandList(CommandList):
@@ -231,7 +231,7 @@ class ViewCommandList(CommandList):
 
     async def update(self):
         await super().update()
-        await self._root_view.root_layout.update_commands()
+        await self._root_view.update_commands()
 
 
 class ThisModule(ClientModule):
@@ -257,7 +257,7 @@ class ThisModule(ClientModule):
             services.async_web,
             services.lcs,
             services.global_command_list,
-            None,  # services.layout_manager,
+            services.root_view,
             )
         services.object_registry.register_actor(
             htypes.command_list.view_command_list,

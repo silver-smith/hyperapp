@@ -33,8 +33,8 @@ class RootView(View):
         menu_bar = await view_registry.invite(state.menu_bar_ref, command_hub)
         command_pane = await view_registry.invite(state.command_pane_ref, command_hub)
         central_view = await view_registry.invite(state.central_view_ref, command_hub)
-        window = Window(mosaic, menu_bar, command_pane, central_view, state.size, state.pos)
-        await window._async_init(command_hub)
+        window = Window(mosaic, command_hub, menu_bar, command_pane, central_view, state.size, state.pos)
+        await window._async_init()
         return window
 
     def __init__(self, window_list):
@@ -50,13 +50,18 @@ class RootView(View):
             for path, command in window.iter_view_commands():
                 yield ([f"window#{idx}", *path], command)
 
+    async def update_commands(self):
+        for window in self._window_list:
+            await window.update_commands()
+
 
 class Window(View, QtWidgets.QMainWindow):
 
-    def __init__(self, mosaic, menu_bar, command_pane, central_view, size, pos):
+    def __init__(self, mosaic, command_hub, menu_bar, command_pane, central_view, size, pos):
         QtWidgets.QMainWindow.__init__(self)
         View.__init__(self)
         self._mosaic = mosaic
+        self._command_hub = command_hub
         self._command_pane = command_pane
         self._child_widget = None
         self.resize(size.w, size.h)
@@ -65,8 +70,8 @@ class Window(View, QtWidgets.QMainWindow):
         self.setMenuWidget(menu_bar)
         self.setCentralWidget(central_view.qt_widget)
 
-    async def _async_init(self, command_hub):
-        await command_hub.init_get_commands(self.get_current_commands)
+    async def _async_init(self):
+        await self._command_hub.init_get_commands(self.get_current_commands)
 
     # def closeEvent(self, event):
     #     super().closeEvent(event)
@@ -99,6 +104,9 @@ class Window(View, QtWidgets.QMainWindow):
             *await self.centralWidget().get_current_commands(),
             *self.get_command_list(),
             ]
+
+    async def update_commands(self):
+        await self._command_hub.update()
 
     @command
     async def duplicate_window(self):
