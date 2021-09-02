@@ -61,6 +61,8 @@ class TabView(QtWidgets.QTabWidget, View):
         for idx, tab in enumerate(self._tab_list):
             for path, command in tab.iter_view_commands():
                 yield ([f"tab#{idx}", *path], command)
+        for command in self.get_command_list():
+            yield ([], command)
 
     async def get_current_commands(self):
         child = self._tab_list[self.currentIndex()]
@@ -82,6 +84,14 @@ class TabView(QtWidgets.QTabWidget, View):
     def _on_current_tab_changed(self, tab_idx):
         if tab_idx != -1:
             asyncio.create_task(self._command_hub.update())
+
+    @command
+    async def close_tab(self):
+        if len(self._tab_list) == 1:
+            return
+        idx = self.currentIndex()
+        self.remove_tab(idx)
+        await self._command_hub.update()
 
     @command
     async def duplicate_tab(self):
@@ -108,6 +118,7 @@ class TabView(QtWidgets.QTabWidget, View):
     def remove_tab(self, tab_idx):
         old_widget = self.widget(tab_idx)
         self.removeTab(tab_idx)
+        del self._tab_list[tab_idx]
         old_widget.deleteLater()
 
 
