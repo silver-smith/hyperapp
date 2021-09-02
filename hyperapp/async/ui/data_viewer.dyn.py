@@ -1,12 +1,12 @@
 from collections import namedtuple
 
-from hyperapp.common.ref import ref_repr
+from hyperapp.common.htypes import tInt
 from hyperapp.common.visual_rep import VisualRepEncoder
+from hyperapp.common.module import Module
 
 from . import htypes
 from .column import Column
 from .tree_object import TreeObject
-from .module import ClientModule
 
 
 ValueItem = namedtuple('ValueItem', 'idx t name value')
@@ -28,8 +28,13 @@ def _load_visual_rep(t, value):
 
 class DataViewer(TreeObject):
 
+    dir_list = [
+        *TreeObject.dir_list,
+        [htypes.data_viewer.data_viewer_d()],
+        ]
+
     @classmethod
-    def from_state(cls, state, mosaic):
+    def from_piece(cls, state, mosaic):
         dc = mosaic.resolve_ref(state.data_ref)
         return cls(state.data_ref, dc.t, dc.value)
 
@@ -40,12 +45,12 @@ class DataViewer(TreeObject):
         self._path2item_list = _load_visual_rep(t, value)
 
     @property
-    def title(self):
-        return "{} ({})".format(ref_repr(self._data_ref), self._t.name)
-
-    @property
     def piece(self):
         return htypes.data_viewer.data_viewer(self._data_ref)
+
+    @property
+    def title(self):
+        return f"{self._data_ref} ({self._t.name})"
 
     @property
     def columns(self):
@@ -59,6 +64,10 @@ class DataViewer(TreeObject):
     def key_attribute(self):
         return 'idx'
 
+    @property
+    def key_t(self):
+        return tInt
+
     async def fetch_items(self, path):
         path = tuple(path)
         item_list = self._path2item_list.get(path, [])
@@ -69,8 +78,9 @@ class DataViewer(TreeObject):
         self._distribute_fetch_results(path, item_list)
 
 
-class ThisModule(ClientModule):
+class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-        services.object_registry.register_actor(htypes.data_viewer.data_viewer, DataViewer.from_state, services.mosaic)
+
+        services.object_registry.register_actor(htypes.data_viewer.data_viewer, DataViewer.from_piece, services.mosaic)

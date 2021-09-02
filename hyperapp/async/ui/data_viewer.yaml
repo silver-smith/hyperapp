@@ -1,8 +1,10 @@
 import:
   types:
     data_viewer:
+      - data_viewer_d
       - data_viewer
   code:
     - async.ui.column
     - async.ui.tree_object
-    - async.ui.module
+require:
+  - object_registry
