@@ -1,5 +1,4 @@
 require:
-  - async_web
   - async_stop_event
   - default_state_builder
   - application_state_storage

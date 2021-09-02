@@ -11,6 +11,7 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
         self._state_storage = services.application_state_storage
+        self._async_stop_event = services.async_stop_event
         self._root_view = None
 
     async def async_init(self, services):
@@ -24,7 +25,11 @@ class ThisModule(Module):
         asyncio.get_event_loop().create_task(self._open(state))
 
     async def _open(self, state):
-        await self._root_view.open(state)
+        try:
+            await self._root_view.open(state)
+        except:
+            self._async_stop_event.set()
+            raise
 
     async def async_stop(self):
         if self._root_view:  # Services init failed before layout constructed?
