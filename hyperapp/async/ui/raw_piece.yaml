@@ -1,0 +1,16 @@
+import:
+  types:
+    object:
+      - object_d
+    command:
+      - object_commands_d
+    data_viewer:
+      - data_viewer
+    raw_piece:
+      - raw_piece_command
+  code:
+    - async.ui.object_command
+    - async.ui.module
+require:
+  - lcs
+  - command_registry
