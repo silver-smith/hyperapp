@@ -27,10 +27,11 @@ log = logging.getLogger(__name__)
 
 class VisualRep:
 
-    def __init__(self, t, name, value, children=None):
+    def __init__(self, t, value, name, text, children=None):
         self.t = t
-        self.name = name
         self.value = value
+        self.name = name
+        self.text = text
         self.children = children or []
 
     def pprint(self, logger, indent=0):
@@ -70,20 +71,20 @@ class VisualRepEncoder(object):
     @dispatch.register(TInt)
     @dispatch.register(TBool)
     def encode_primitive(self, t, name, value):
-        return VisualRep(t.name, name, _value_repr(t, value))
+        return VisualRep(t.name, value, name, _value_repr(t, value))
 
     @dispatch.register(TBinary)
     def encode_binary(self, t, name, value):
-        return VisualRep(t.name, name, 'binary, len=%d: %s' % (len(value), codecs.encode(value[:40], 'hex')))
+        return VisualRep(t.name, value, name, 'binary, len=%d: %s' % (len(value), codecs.encode(value[:40], 'hex')))
 
     @dispatch.register(TDateTime)
     def encode_datetime(self, t, name, value):
-        return VisualRep(t.name, name, value.isoformat())
+        return VisualRep(t.name, value, name, value.isoformat())
 
     @dispatch.register(TOptional)
     def encode_optional(self, t, name, value):
         if value is None:
-            return VisualRep(t.name or "{} opt".format(t.base_t.name), name, value)
+            return VisualRep(t.name or "{} opt".format(t.base_t.name), value, name, value)
         return self.dispatch(t.base_t, name, value)
 
     @staticmethod
@@ -97,12 +98,12 @@ class VisualRepEncoder(object):
     def encode_list(self, t, name, value):
         children = [self.dispatch(t.element_t, str(idx), elt)
                     for idx, elt in enumerate(value)]
-        return VisualRep(t.name or "{} list".format(t.element_t.name), name, _value_repr(t, value), children)
+        return VisualRep(t.name or "{} list".format(t.element_t.name), value, name, _value_repr(t, value), children)
 
     @dispatch.register(TRecord)
     def encode_record(self, t, name, value):
         children = self.encode_record_fields(t.fields, value)
-        return VisualRep(t.name, name, _value_repr(t, value), children)
+        return VisualRep(t.name, value, name, _value_repr(t, value), children)
 
     def encode_record_fields(self, fields, value):
         return [self.dispatch(field_type, field_name, getattr(value, field_name))
