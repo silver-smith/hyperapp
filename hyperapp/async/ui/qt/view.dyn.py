@@ -42,13 +42,6 @@ class View(ObjectObserver, ViewCommander):
         else:
             return self
 
-    def get_command_list(self):
-        command_list = ViewCommander.get_command_list(self)
-        child = self.get_current_child()
-        if child:
-            command_list += child.get_command_list()
-        return command_list
-
     @property
     def title(self):
         view = self.get_current_child()
