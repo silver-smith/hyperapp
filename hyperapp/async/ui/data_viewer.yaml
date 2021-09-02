@@ -4,6 +4,7 @@ import:
       - data_viewer_d
       - data_viewer
   code:
+    - async.ui.command
     - async.ui.column
     - async.ui.tree_object
 require:

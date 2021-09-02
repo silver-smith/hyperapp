@@ -1,23 +1,24 @@
-from collections import namedtuple
+from collections import defaultdict, namedtuple
 
-from hyperapp.common.htypes import tInt
+from hyperapp.common.htypes import tInt, ref_t
 from hyperapp.common.visual_rep import VisualRepEncoder
 from hyperapp.common.module import Module
 
 from . import htypes
+from .command import command
 from .column import Column
 from .tree_object import TreeObject
 
 
-ValueItem = namedtuple('ValueItem', 'idx t name value')
+ValueItem = namedtuple('ValueItem', 'idx t value name text')
 
 
 def _load_visual_rep(t, value):
-    path2item_list = {}
+    path2item_list = defaultdict(list)
 
     def add_rep(path, idx, rep):
-        item = ValueItem(idx, rep.t, rep.name, rep.value)
-        path2item_list.setdefault(path, []).append(item)
+        item = ValueItem(idx, rep.t, rep.value, rep.name, rep.text)
+        path2item_list[path].append(item)
         for i, child in enumerate(rep.children):
             add_rep(path + (idx,), i, child)
 
@@ -57,7 +58,7 @@ class DataViewer(TreeObject):
         return [
             Column('name'),
             Column('t'),
-            Column('value'),
+            Column('text'),
             ]
 
     @property
@@ -76,6 +77,14 @@ class DataViewer(TreeObject):
             if p not in self._path2item_list:
                 self._distribute_fetch_results(p, [])
         self._distribute_fetch_results(path, item_list)
+
+    @command
+    async def open_ref(self, current_key):
+        item_list = self._path2item_list[tuple(current_key[:-1])]
+        item = item_list[current_key[-1]]
+        if not isinstance(item.value, ref_t):
+            return None
+        return htypes.data_viewer.data_viewer(item.value)
 
 
 class ThisModule(Module):
