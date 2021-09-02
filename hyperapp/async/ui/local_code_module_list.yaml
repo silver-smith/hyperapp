@@ -1,0 +1,14 @@
+import:
+  types:
+    data_viewer:
+      - data_viewer
+    local_code_module_list:
+      - local_code_module_list_d
+      - local_code_module_list
+  code:
+    - async.ui.command
+    - async.ui.column
+    - async.ui.simple_list_object
+    - async.ui.module
+require:
+  - async_web

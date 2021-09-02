@@ -55,6 +55,7 @@ code_module_list = [
     'async.ui.alt_command',
     'async.ui.lcs_list',
     'async.ui.raw_piece',
+    'async.ui.local_code_module_list',
     ]
 
 
