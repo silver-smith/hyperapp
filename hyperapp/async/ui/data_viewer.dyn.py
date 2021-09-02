@@ -13,20 +13,6 @@ from .tree_object import TreeObject
 ValueItem = namedtuple('ValueItem', 'idx t value name text')
 
 
-def _load_visual_rep(t, value):
-    path2item_list = defaultdict(list)
-
-    def add_rep(path, idx, rep):
-        item = ValueItem(idx, rep.t, rep.value, rep.name, rep.text)
-        path2item_list[path].append(item)
-        for i, child in enumerate(rep.children):
-            add_rep(path + (idx,), i, child)
-
-    rep = VisualRepEncoder().encode(t, value)
-    add_rep((), 0, rep)
-    return path2item_list
-
-
 class DataViewer(TreeObject):
 
     dir_list = [
@@ -35,15 +21,34 @@ class DataViewer(TreeObject):
         ]
 
     @classmethod
-    def from_piece(cls, state, mosaic):
+    async def from_piece(cls, state, mosaic, async_web):
         dc = mosaic.resolve_ref(state.data_ref)
-        return cls(state.data_ref, dc.t, dc.value)
+        self = cls(state.data_ref, dc.t)
+        await self._async_init(async_web, dc.t, dc.value)
+        return self
 
-    def __init__(self, data_ref, t, value):
+    def __init__(self, data_ref, t):
         super().__init__()
         self._data_ref = data_ref
         self._t = t
-        self._path2item_list = _load_visual_rep(t, value)
+        self._path2item_list = None
+
+    async def _async_init(self, async_web, t, value):
+        self._path2item_list = defaultdict(list)
+
+        async def add_rep(path, idx, rep):
+            if isinstance(rep.value, ref_t):
+                target = await async_web.summon(rep.value)
+                text = f"{rep.text}: {target}"
+            else:
+                text = rep.text
+            item = ValueItem(idx, rep.t, rep.value, rep.name, text)
+            self._path2item_list[path].append(item)
+            for i, child in enumerate(rep.children):
+                await add_rep(path + (idx,), i, child)
+
+        rep = VisualRepEncoder().encode(t, value)
+        await add_rep((), 0, rep)
 
     @property
     def piece(self):
@@ -92,4 +97,9 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        services.object_registry.register_actor(htypes.data_viewer.data_viewer, DataViewer.from_piece, services.mosaic)
+        services.object_registry.register_actor(
+            htypes.data_viewer.data_viewer,
+            DataViewer.from_piece,
+            services.mosaic,
+            services.async_web,
+            )
