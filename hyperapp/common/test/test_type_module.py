@@ -16,7 +16,7 @@ from hyperapp.common.htypes import (
     ref_t,
     )
 from hyperapp.common import cdr_coders  # register codec
-from hyperapp.common.type_module_loader import TypeModuleLoader
+from hyperapp.common.type_module_loader import CircularDepError, TypeModuleLoader
 from hyperapp.common.test.hyper_types_namespace import HyperTypesNamespace
 
 
@@ -41,7 +41,7 @@ def test_type_module_loader(loader):
 
 
 def test_circular_type_dep(loader):
-    with pytest.raises(RuntimeError) as excinfo:
+    with pytest.raises(CircularDepError) as excinfo:
         loader.load_type_modules(TEST_MODULES_DIR / 'circular_type_dep')
     assert str(excinfo.value) == 'Circular type module dependency: module_1->module_2->module_3->module_1'
 

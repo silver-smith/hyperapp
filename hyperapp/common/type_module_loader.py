@@ -14,6 +14,10 @@ from .mapper import Mapper
 log = logging.getLogger(__name__)
 
 
+class CircularDepError(RuntimeError):
+    pass
+
+
 class _NameToRefMapper(Mapper):
 
     def __init__(self, builtin_types, mosaic, types, local_name_dict):
@@ -79,7 +83,7 @@ class TypeModuleLoader(object):
 
     def _resolve_module(self, name_to_source, name_to_module, name, dep_stack):
         if name in dep_stack:
-            raise RuntimeError("Circular type module dependency: {}".format('->'.join([*dep_stack, name])))
+            raise CircularDepError("Circular type module dependency: {}".format('->'.join([*dep_stack, name])))
         try:
             return name_to_module[name]  # Already mapped?
         except KeyError:
@@ -91,6 +95,8 @@ class TypeModuleLoader(object):
             raise RuntimeError(f"Attempt to import unknown type module: {name}")
         try:
             local_name_dict = self._resolve_module_imports(name_to_source, name_to_module, source, [*dep_stack, name])
+        except CircularDepError:
+            raise
         except Exception as x:
             raise RuntimeError(f"Error resolving type module {name}: {x}")
         local_type_module = self._map_module_names(name, source, local_name_dict)
