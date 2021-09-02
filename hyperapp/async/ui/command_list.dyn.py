@@ -1,9 +1,6 @@
 import asyncio
-import itertools
 import logging
 from collections import namedtuple
-
-from hyperapp.common.util import single
 
 from . import htypes
 from .column import Column
