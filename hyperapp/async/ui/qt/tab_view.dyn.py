@@ -73,7 +73,7 @@ class TabView(QtWidgets.QTabWidget, View):
 
     def replace_qt_widget(self, view):
         idx = self._tab_list.index(view)
-        self.replace_tab(idx, view)
+        self.update_tab(idx, view)
 
     def setVisible(self, visible):
         QtWidgets.QTabWidget.setVisible(self, visible)
@@ -101,7 +101,7 @@ class TabView(QtWidgets.QTabWidget, View):
         self.insert_tab(idx + 1, view)
         await self._command_hub.update()
 
-    def replace_tab(self, tab_idx, view):
+    def update_tab(self, tab_idx, view):
         old_widget = self.widget(tab_idx)
         self.removeTab(tab_idx)
         old_widget.deleteLater()
