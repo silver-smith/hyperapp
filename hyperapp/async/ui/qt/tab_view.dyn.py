@@ -30,13 +30,14 @@ class TabView(QtWidgets.QTabWidget, View):
             await view_registry.invite(ref, command_hub)
             for ref in state.tab_view_ref_list
             ]
-        self = cls(mosaic, command_hub, children, state.current_tab)
+        self = cls(mosaic, view_registry, command_hub, children, state.current_tab)
         return self
 
-    def __init__(self, mosaic, command_hub, children, current_tab):
+    def __init__(self, mosaic, view_registry, command_hub, children, current_tab):
         QtWidgets.QTabWidget.__init__(self)
         View.__init__(self)
         self._mosaic = mosaic
+        self._view_registry = view_registry
         self._command_hub = command_hub
         self.tabBar().setFocusPolicy(QtCore.Qt.NoFocus)  # does not work...
         self.setElideMode(QtCore.Qt.ElideMiddle)
@@ -79,6 +80,14 @@ class TabView(QtWidgets.QTabWidget, View):
         if tab_idx != -1:
             asyncio.create_task(self._command_hub.update())
 
+    @command
+    async def duplicate_tab(self):
+        idx = self.currentIndex()
+        state = self._tab_list[idx].state
+        view = await self._view_registry.animate(state, self._command_hub)
+        self.insert_tab(idx + 1, view)
+        await self._command_hub.update()
+
     def replace_tab(self, tab_idx, view):
         old_widget = self.widget(tab_idx)
         self.removeTab(tab_idx)
@@ -89,6 +98,8 @@ class TabView(QtWidgets.QTabWidget, View):
 
     def insert_tab(self, tab_idx, view):
         self.insertTab(tab_idx, view.qt_widget, view.title)
+        self._tab_list.insert(tab_idx, view)
+        self.setCurrentIndex(tab_idx)
         view.ensure_has_focus()
 
     def remove_tab(self, tab_idx):
