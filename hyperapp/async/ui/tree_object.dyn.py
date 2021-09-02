@@ -60,11 +60,11 @@ class TreeObject(Object, metaclass=abc.ABCMeta):
     # todo: construct state from key column type on-the-fly.
     @cached_property
     def State(self):
-        if self._key_column.type is tInt:
+        if self.key_t is tInt:
             return htypes.tree_object.int_state
-        if self._key_column.type is tString:
+        if self.key_t is tString:
             return htypes.tree_object.string_state
-        raise RuntimeError(f"{self.__class__.__name__}: Unsupported column type: {self._key_column.type}")
+        raise RuntimeError(f"{self.__class__.__name__}: Unsupported column type: {self._key_t}")
 
     # return Column list
     @abc.abstractproperty
@@ -81,6 +81,10 @@ class TreeObject(Object, metaclass=abc.ABCMeta):
     @property
     def key_attribute(self):
         return self._key_column.id
+
+    @property
+    def key_t(self):
+        return self._key_column.type
 
     class _Observer(TreeObserver):
 
