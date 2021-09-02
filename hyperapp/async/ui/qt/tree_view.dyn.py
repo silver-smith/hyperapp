@@ -318,6 +318,9 @@ class TreeView(View, QtWidgets.QTreeView, TreeObserver):
         self._process_wanted_current()
         # only after some nodes are expanded we can resize columns:
         self._resize_columns_to_contents()
+        first_row = self.model().first_row_index()
+        if first_row and not self.isExpanded(first_row):
+            self.expand(first_row)
 
     def _resize_columns_to_contents(self):
         for idx in range(len(self.model().columns)):
