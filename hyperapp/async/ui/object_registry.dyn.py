@@ -18,6 +18,11 @@ class NotRegisteredError(RuntimeError):
 
 class RecordViewer(RecordObject):
 
+    dir_list = [
+        *RecordObject.dir_list,
+        [htypes.object_registry.raw_record_view_d()],
+        ]
+
     def __init__(self, fields, piece, title):
         super().__init__(fields)
         self._piece = piece
