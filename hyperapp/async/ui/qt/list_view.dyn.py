@@ -171,7 +171,16 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
 
     @property
     def state(self):
-        return self._object.State(current_key=self.current_item_key)
+        current_key = self.current_item_key
+        if current_key is None:
+            return None  # Happens when widget is not visible.
+        return self._object.State(current_key=current_key)
+
+    @state.setter
+    def state(self, state):
+        if not isinstance(state, self._object.State):
+            return  # Happens when another view is configured for an object.
+        self._wanted_current_id = state.current_key  # Will set it to current when rows are loaded.
 
     @property
     def object(self):
@@ -218,9 +227,10 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
                 index = self.model().createIndex(0, 0)
             else:
                 return
-        self.setCurrentIndex(index)
-        self.scrollTo(index)
-        self._wanted_current_id = None
+        if index is not None:  # Already fetched wanted index?
+            self.setCurrentIndex(index)
+            self.scrollTo(index)
+            self._wanted_current_id = None
 
     def _on_activated(self, index):
         if self._default_command:
