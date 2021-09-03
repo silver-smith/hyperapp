@@ -9,7 +9,7 @@ def default_state_builder(mosaic):
     piece = "Welcome to hyperapp"
     piece_ref = mosaic.put(piece)
 
-    navigator = htypes.navigator.navigator(piece_ref, origin_dir=[])
+    navigator = htypes.navigator.navigator(piece_ref, origin_dir=[], view_state_ref=None)
     navigator_ref = mosaic.put(navigator)
 
     tab_view = htypes.tab_view.state([navigator_ref], 0)

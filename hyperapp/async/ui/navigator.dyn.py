@@ -74,7 +74,7 @@ class Navigator(ViewCommander):
             # path,
             command_hub,
             )
-        await self._async_init(async_web, state.current_piece_ref, state.origin_dir)
+        await self._async_init(async_web, state.current_piece_ref, state.origin_dir, state.view_state_ref)
         return self
 
     def __init__(
@@ -99,7 +99,7 @@ class Navigator(ViewCommander):
         self._current_origin_dir = None
         self._current_view = None
 
-    async def _async_init(self, async_web, initial_piece_ref, origin_dir):
+    async def _async_init(self, async_web, initial_piece_ref, origin_dir, view_state_ref):
         piece = await async_web.summon(initial_piece_ref)
         self._current_object = object = await self._object_factory.animate(piece)
         self._current_origin_dir = [
@@ -107,6 +107,8 @@ class Navigator(ViewCommander):
             for ref in origin_dir
             ]
         view = await self._create_view(self._current_object, self._current_origin_dir)
+        if view_state_ref is not None:
+            view.state = await async_web.summon(view_state_ref)
         self._current_view = view
 
     @property
@@ -116,7 +118,12 @@ class Navigator(ViewCommander):
             self._mosaic.put(piece)
             for piece in self._current_origin_dir
             )
-        return htypes.navigator.navigator(piece_ref, origin_dir_refs)
+        view_state = self._current_view.state
+        if view_state is not None:
+            view_state_ref = self._mosaic.put(view_state)
+        else:
+            view_state_ref = None
+        return htypes.navigator.navigator(piece_ref, origin_dir_refs, view_state_ref)
 
     @property
     def qt_widget(self):
