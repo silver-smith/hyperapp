@@ -32,27 +32,23 @@ class Command:
 class _History:
 
     def __init__(self):
-        self._backward_piece_list = []  # last element is current piece
-        self._forward_piece_list = []
+        self._backward_piece_list = []  # _HistoryItem list
+        self._forward_piece_list = []  # _HistoryItem list
 
-    @property
-    def current_piece(self):
-        return self._backward_piece_list[-1]
-
-    def append(self, piece):
-        self._backward_piece_list.append(piece)
+    def append(self, item):
+        self._backward_piece_list.append(item)
         self._forward_piece_list.clear()
 
-    def move_backward(self):
+    def move_backward(self, current_item):
         # Move current piece to forward list and return previous one
-        current_piece = self._backward_piece_list.pop()
-        self._forward_piece_list.append(current_piece)
-        return self._backward_piece_list[-1]
+        prev_item = self._backward_piece_list.pop()
+        self._forward_piece_list.append(current_item)
+        return prev_item
 
-    def move_forward(self):
-        piece = self._forward_piece_list.pop()
-        self._backward_piece_list.append(piece)
-        return piece
+    def move_forward(self, current_item):
+        next_item = self._forward_piece_list.pop()
+        self._backward_piece_list.append(current_item)
+        return next_item
 
 
 class Navigator(ViewCommander):
@@ -111,7 +107,6 @@ class Navigator(ViewCommander):
             for ref in origin_dir
             ]
         view = await self._create_view(self._current_object, self._current_origin_dir)
-        self._history.append(_HistoryItem(self._current_object.piece, self._current_origin_dir, view.piece))
         self._current_view = view
 
     @property
@@ -168,7 +163,7 @@ class Navigator(ViewCommander):
         _log.info("Run object command %s result: %r", command, piece)
         if piece is None:
             return
-        await self._open_piece_and_save_history(piece, command.dir)
+        await self._save_history_and_open_piece(piece, command.dir)
 
     async def _run_global_command(self, command):
         _log.info("Run global command: %s", command)
@@ -176,16 +171,20 @@ class Navigator(ViewCommander):
         _log.info("Run global command %s result: %r", command, piece)
         if piece is None:
             return
-        await self._open_piece_and_save_history(piece, command.dir)
+        await self._save_history_and_open_piece(piece, command.dir)
 
-    async def _open_piece_and_save_history(self, piece, command_dir):
+    async def _save_history_and_open_piece(self, piece, command_dir):
         object = await self._object_factory.animate(piece)
         origin_dir = self._origin_dir(object, command_dir)
+        self._history.append(self._current_history_item)
         await self._open_object(object, origin_dir)
-        self._history.append(_HistoryItem(self._current_object.piece, self._current_origin_dir, self._current_view.piece))
 
-    async def _open_object(self, object, origin_dir):
-        view = await self._create_view(object, origin_dir)
+    @property
+    def _current_history_item(self):
+        return _HistoryItem(self._current_object.piece, self._current_origin_dir, self._current_view.state)
+
+    async def _open_object(self, object, origin_dir, view_state=None):
+        view = await self._create_view(object, origin_dir, view_state)
         self._current_object = object
         self._current_origin_dir = origin_dir
         owner = self._current_view.parent().parent()  # Assuming parent is tab view; todo: unhack.
@@ -193,26 +192,29 @@ class Navigator(ViewCommander):
         owner.replace_qt_widget(self)
         await self._command_hub.update()
 
-    async def _create_view(self, object, origin_dir):
-        return await self._view_producer.create_view(object, add_dir_list=[origin_dir])
+    async def _create_view(self, object, origin_dir, view_state=None):
+        view = await self._view_producer.create_view(object, add_dir_list=[origin_dir])
+        if view_state is not None:
+            view.state = view_state
+        return view
 
     @command
     async def go_backward(self):
         try:
-            item = self._history.move_backward()
+            item = self._history.move_backward(self._current_history_item)
         except IndexError:
             return
         object = await self._object_factory.animate(item.piece)
-        await self._open_object(object, item.origin_dir)
+        await self._open_object(object, item.origin_dir, item.view_state)
 
     @command
     async def go_forward(self):
         try:
-            item = self._history.move_forward()
+            item = self._history.move_forward(self._current_history_item)
         except IndexError:
             return
         object = await self._object_factory.animate(item.piece)
-        await self._open_object(object, item.origin_dir)
+        await self._open_object(object, item.origin_dir, item.view_state)
 
 
 class ThisModule(Module):
