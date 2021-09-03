@@ -51,6 +51,10 @@ class RecordView(QtWidgets.QWidget):
     def state(self):
         return htypes.record_view.record_view_state()
 
+    @state.setter
+    def state(self, state):
+        pass
+
     @property
     def title(self):
         return self.object.title
