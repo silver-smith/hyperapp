@@ -2,7 +2,9 @@ import logging
 import abc
 import asyncio
 from collections import namedtuple
+from dataclasses import dataclass
 from functools import cached_property, total_ordering
+from typing import List
 
 from hyperapp.common.util import is_list_inst
 from hyperapp.common.htypes import Type, tInt, tString
@@ -13,40 +15,29 @@ from .ui_object import ObjectObserver, Object
 log = logging.getLogger(__name__)
 
 
+@dataclass
 class ListDiff:
+    remove_keys: List[object]
+    items: List[object]
 
     @classmethod
-    def add_one(cls, element):
-        return cls([], [element])
+    def add_one(cls, item):
+        return cls([], [item])
 
     @classmethod
-    def add_many(cls, elements):
-        return cls([], elements)
+    def add_many(cls, item_list):
+        return cls([], item_list)
 
     @classmethod
-    def replace(cls, key, element):
-        return cls([key], [element])
+    def replace(cls, key, item):
+        return cls([key], [item])
 
     @classmethod
     def delete(cls, key):
         return cls([key], [])
 
-    @classmethod
-    def from_data(cls, iface, rec):
-        return cls(rec.remove_keys, [Element.from_data(iface, element) for element in rec.elements])
-
-    def __init__(self, remove_keys, elements):
-        assert isinstance(remove_keys, list), repr(remove_keys)
-        assert is_list_inst(elements, Element), repr(elements)
-        self.remove_keys = remove_keys
-        self.elements = elements
-
     def __repr__(self):
-        return 'ListDiff(-%r+%r)' % (self.remove_keys, self.elements)
-
-    def to_data(self, iface):
-        assert isinstance(iface, ListInterface), repr(iface)
-        return iface.Diff(self.remove_keys, [element.to_data(iface) for element in self.elements])
+        return 'ListDiff(-%r+%r)' % (self.remove_keys, self.items)
 
 
 class ListObserver(ObjectObserver):
@@ -135,3 +126,8 @@ class ListObject(Object, metaclass=abc.ABCMeta):
 
     def get_item_command_list(self, item_key):
         return self.get_command_list(kinds=['element'])  # by default all items have same commands
+
+    def _distribute_diff(self, diff):
+        for observer in self._observers:
+            log.debug('  Calling process_diff on %s/%s: %s', id(observer), observer, diff)
+            observer.process_diff(diff)

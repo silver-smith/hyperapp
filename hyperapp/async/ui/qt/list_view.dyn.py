@@ -4,6 +4,7 @@ import sys
 import logging
 import bisect
 import weakref
+from bisect import bisect_left
 from collections import namedtuple
 from functools import partial
 
@@ -91,7 +92,7 @@ class _Model(QtCore.QAbstractTableModel, ListFetcher):
         self.endInsertRows()
         view = self._view_wr()
         if view:
-            view._on_data_changed()
+            view._on_data_fetched()
         if fetch_finished:
             self._fetch_pending = False
         if fetch_finished and not self._eof and view and view._wanted_current_id is not None:
@@ -103,6 +104,21 @@ class _Model(QtCore.QAbstractTableModel, ListFetcher):
         self._eof = True
 
     # own methods  ------------------------------------------------------------------------------------------------------
+
+    def process_diff(self, diff):
+        log.debug("Process diff: %s", diff)
+        assert not diff.remove_keys  # todo
+        current_keys = [getattr(item, self._key_attr) for item in self._item_list]
+        for item in diff.items:
+            key = getattr(item, self._key_attr)
+            idx = bisect_left(current_keys, key)
+            self.beginInsertRows(QtCore.QModelIndex(), idx, idx + 1)
+            self._item_list.insert(idx, item)
+            self._id2index[key] = self.createIndex(idx, 0)
+            self.endInsertRows()
+        view = self._view_wr()
+        if view:
+            view._on_data_changed()
 
     def has_rows(self):
         return bool(self._item_list)
@@ -209,6 +225,11 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
         self._wanted_current_id = self.current_item_key  # will set it to current when rows are reloaded
         self.model().update()
 
+    # ListObserver methods  ---------------------------------------------------------------------------------------------
+
+    def process_diff(self, diff):
+        self.model().process_diff(diff)
+
     # -------------------------------------------------------------------------------------------------------------------
 
     @property
@@ -216,6 +237,9 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
         return self.model().index2id(self.currentIndex())
 
     def _on_data_changed(self):
+        self.resizeColumnsToContents()
+
+    def _on_data_fetched(self):
         self.resizeColumnsToContents()
         if self._wanted_current_id is not None:
             index = self.model().id2index(self._wanted_current_id)

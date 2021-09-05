@@ -8,7 +8,7 @@ from . import htypes
 from .command import command
 from .ui_object import ObjectType
 from .column import Column
-from .list_object import ListObject
+from .list_object import ListDiff, ListObject
 from .string_object import StringObject
 from .record_object import RecordObject
 from .module import ClientModule
@@ -68,13 +68,18 @@ class SampleList(ListObject):
             fetcher.process_fetch_results(
                 [self._item(from_idx + 10 + idx) for idx in range(5)], fetch_finished=True)
             fetcher.process_eof()
+            asyncio.get_event_loop().create_task(self._send_diffs(from_idx + 15))
 
-    def _item(self, idx):
+    def _item(self, idx, suffix=''):
         return Item(
             idx=idx,
-            column_1='column 1 for #{}'.format(idx),
+            column_1=f"Column 1 for #{idx}{suffix}",
             column_2=idx * 10,
             )
+
+    async def _send_diffs(self, idx):
+        await asyncio.sleep(0.5)
+        self._distribute_diff(ListDiff.add_one(self._item(idx, " (added)")))
 
     @command
     async def open(self, current_key):
