@@ -1,6 +1,7 @@
 from collections import defaultdict, namedtuple
 
 from hyperapp.common.htypes import tInt, ref_t
+from hyperapp.common.web import RefResolveFailure
 from hyperapp.common.visual_rep import VisualRepEncoder
 from hyperapp.common.module import Module
 
@@ -21,34 +22,36 @@ class DataViewer(TreeObject):
         ]
 
     @classmethod
-    async def from_piece(cls, state, mosaic, async_web):
+    async def from_piece(cls, state, mosaic, web):
         dc = mosaic.resolve_ref(state.data_ref)
-        self = cls(state.data_ref, dc.t)
-        await self._async_init(async_web, dc.t, dc.value)
-        return self
+        return cls(web, state.data_ref, dc.t, dc.value)
 
-    def __init__(self, data_ref, t):
+    def __init__(self, web, data_ref, t, value):
         super().__init__()
         self._data_ref = data_ref
         self._t = t
         self._path2item_list = None
+        self._populate(web, value)
 
-    async def _async_init(self, async_web, t, value):
+    def _populate(self, web, value):
         self._path2item_list = defaultdict(list)
 
-        async def add_rep(path, idx, rep):
+        def add_rep(path, idx, rep):
             if isinstance(rep.value, ref_t):
-                target = await async_web.summon(rep.value)
-                text = f"{rep.text}: {target}"
+                try:
+                    target = web.summon(rep.value)
+                    text = f"{rep.text} -> {target}"
+                except RefResolveFailure:
+                    text = f"{rep.text} -> [no local capsule]"
             else:
                 text = rep.text
             item = ValueItem(idx, rep.t, rep.value, rep.name, text)
             self._path2item_list[path].append(item)
             for i, child in enumerate(rep.children):
-                await add_rep(path + (idx,), i, child)
+                add_rep(path + (idx,), i, child)
 
-        rep = VisualRepEncoder().encode(t, value)
-        await add_rep((), 0, rep)
+        rep = VisualRepEncoder().encode(self._t, value)
+        add_rep((), 0, rep)
 
     @property
     def piece(self):
@@ -101,5 +104,5 @@ class ThisModule(Module):
             htypes.data_viewer.data_viewer,
             DataViewer.from_piece,
             services.mosaic,
-            services.async_web,
+            services.web,
             )

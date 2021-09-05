@@ -8,5 +8,4 @@ import:
     - async.ui.column
     - async.ui.tree_object
 require:
-  - async_web
   - object_registry
