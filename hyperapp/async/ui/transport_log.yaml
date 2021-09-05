@@ -1,0 +1,12 @@
+import:
+  types:
+    transport_log:
+      - transport_log_d
+      - transport_log
+  code:
+    - async.ui.command
+    - async.ui.column
+    - async.ui.simple_list_object
+    - async.ui.module
+require:
+  - transport_log_callback_registry
