@@ -7,7 +7,7 @@ from hyperapp.common.module import Module
 
 from . import htypes
 from .command import command
-from .object import Object
+from .ui_object import Object
 from .column import Column
 from .simple_list_object import SimpleListObject
 from .object_command import Command

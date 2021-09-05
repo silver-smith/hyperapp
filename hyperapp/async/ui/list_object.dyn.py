@@ -8,7 +8,7 @@ from hyperapp.common.util import is_list_inst
 from hyperapp.common.htypes import Type, tInt, tString
 
 from . import htypes
-from .object import ObjectObserver, Object
+from .ui_object import ObjectObserver, Object
 
 log = logging.getLogger(__name__)
 

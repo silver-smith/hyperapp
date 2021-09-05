@@ -9,7 +9,7 @@ from hyperapp.common.htypes import Type, tInt, tString
 from hyperapp.common.module import Module
 
 from . import htypes
-from .object import ObjectObserver, Object
+from .ui_object import ObjectObserver, Object
 from .column import Column
 
 log = logging.getLogger(__name__)

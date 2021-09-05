@@ -2,7 +2,7 @@ from hyperapp.common.htypes import ref_t
 from hyperapp.common.module import Module
 
 from . import htypes
-from .object import Object
+from .ui_object import Object
 
 
 class RefObject(Object):

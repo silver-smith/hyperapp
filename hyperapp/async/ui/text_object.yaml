@@ -3,5 +3,5 @@ import:
     text:
       - wiki_text
   code:
-    - async.ui.object
+    - async.ui.ui_object
     - async.ui.module

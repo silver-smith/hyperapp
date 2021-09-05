@@ -3,7 +3,7 @@ import weakref
 from PySide2 import QtCore, QtWidgets
 
 from .view_command import ViewCommander
-from .object import ObjectObserver
+from .ui_object import ObjectObserver
 from .util import DEBUG_FOCUS, focused_index
 from .module import ClientModule
 

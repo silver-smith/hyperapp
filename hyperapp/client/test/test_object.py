@@ -12,7 +12,7 @@ pytest_plugins = ['hyperapp.common.test.services']
 def code_module_list():
     return [
         'common.weak_key_dictionary_with_callback',
-        'async.ui.object',
+        'async.ui.ui_object',
         ]
 
 

@@ -1,7 +1,7 @@
 import logging
 
 from . import htypes
-from .object import Object
+from .ui_object import Object
 from .module import ClientModule
 
 _log = logging.getLogger(__name__)

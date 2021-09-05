@@ -7,7 +7,7 @@ import:
       - list_sample_article
   code:
     - async.ui.command
-    - async.ui.object
+    - async.ui.ui_object
     - async.ui.column
     - async.ui.list_object
     - async.ui.string_object

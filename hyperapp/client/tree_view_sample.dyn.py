@@ -6,7 +6,7 @@ from hyperapp.common.htypes import tInt
 
 from . import htypes
 from .command import command
-from .object import ObjectType
+from .ui_object import ObjectType
 from .column import Column
 from .tree_object import AppendItemDiff, InsertItemDiff, RemoveItemDiff, UpdateItemDiff, TreeObject
 from .string_object import StringObject

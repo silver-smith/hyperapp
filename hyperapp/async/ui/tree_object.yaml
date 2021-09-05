@@ -5,5 +5,5 @@ import:
       - int_state
       - string_state
   code:
-    - async.ui.object
+    - async.ui.ui_object
     - async.ui.column

@@ -5,7 +5,7 @@ import:
     line_edit:
       - line_edit_view
   code:
-    - async.ui.object
+    - async.ui.ui_object
     - async.ui.qt.view
     - async.ui.string_object
 require:

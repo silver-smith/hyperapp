@@ -4,4 +4,4 @@ import:
       - record_object_d
       - record_field_d
   code:
-    - async.ui.object
+    - async.ui.ui_object

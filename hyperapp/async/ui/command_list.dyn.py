@@ -4,7 +4,7 @@ from collections import namedtuple
 
 from . import htypes
 from .column import Column
-from .object import Object
+from .ui_object import Object
 from .command import command
 from .object_command import Command
 from .simple_list_object import SimpleListObject

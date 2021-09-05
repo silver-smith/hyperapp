@@ -4,7 +4,7 @@ from hyperapp.common.module import Module
 
 from . import htypes
 from .command import command
-from .object import Object
+from .ui_object import Object
 from .code_registry import CodeRegistry
 
 log = logging.getLogger(__name__)

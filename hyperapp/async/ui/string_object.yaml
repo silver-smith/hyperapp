@@ -3,4 +3,4 @@ import:
     string_object:
       - string_object_d
   code:
-    - async.ui.object
+    - async.ui.ui_object

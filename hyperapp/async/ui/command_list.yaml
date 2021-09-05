@@ -13,7 +13,7 @@ import:
       - object_commands_d
       - command_shortcut_d
   code:
-    - async.ui.object
+    - async.ui.ui_object
     - async.ui.command
     - async.ui.column
     - async.ui.command_hub

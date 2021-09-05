@@ -4,7 +4,7 @@ from hyperapp.common.htypes import tString
 from hyperapp.common.module import Module
 
 from . import htypes
-from .object import Object
+from .ui_object import Object
 
 log = logging.getLogger(__name__)
 

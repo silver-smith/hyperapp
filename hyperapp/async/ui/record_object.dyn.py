@@ -1,7 +1,7 @@
 import abc
 
 from . import htypes
-from .object import Object
+from .ui_object import Object
 
 
 def record_field_dir(record_dir, field_id, field_object):

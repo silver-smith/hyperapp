@@ -8,7 +8,7 @@ from PySide2 import QtCore, QtWidgets
 from hyperapp.common.module import Module
 
 from . import htypes
-from .object import Object
+from .ui_object import Object
 from .view import View
 from .string_object import StringObject
 
