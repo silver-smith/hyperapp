@@ -2,8 +2,6 @@ from collections import namedtuple
 from datetime import datetime
 import logging
 
-from dateutil.tz import tzlocal
-
 from hyperapp.common.htypes import ref_t, bundle_t
 from hyperapp.common.util import is_list_inst
 from hyperapp.common.ref import decode_capsule, ref_repr
