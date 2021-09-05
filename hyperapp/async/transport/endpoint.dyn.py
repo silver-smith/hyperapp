@@ -12,6 +12,24 @@ log = logging.getLogger(__name__)
 Request = namedtuple('Request', 'receiver_identity sender ref_list')
 
 
+class TransportLogCallbackRegistry:
+
+    def __init__(self):
+        self._weak_method_list = []
+
+    def add(self, fn):
+        self._weak_method_list.append(weakref.WeakMethod(fn, self._ref_removed))
+
+    def _ref_removed(self, ref):
+        self._weak_method_list.remove(ref)
+
+    def __iter__(self):
+        for ref in self._weak_method_list:
+            fn = ref()
+            if fn is not None:
+                yield fn
+
+
 class LocalRoute:
 
     def __init__(self, unbundler, transport_log_callback_registry, identity, endpoint):
@@ -59,7 +77,7 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-        services.transport_log_callback_registry = weakref.WeakSet()
+        services.transport_log_callback_registry = TransportLogCallbackRegistry()
         services.async_endpoint_registry = EndpointRegistry(
             services.mosaic,
             services.unbundler,

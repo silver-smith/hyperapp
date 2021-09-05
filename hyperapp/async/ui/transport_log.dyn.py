@@ -1,8 +1,12 @@
 from collections import namedtuple
+from datetime import datetime
+
+from dateutil.tz import tzlocal
 
 from . import htypes
 from .command import command
 from .column import Column
+from .list_object import ListDiff
 from .simple_list_object import SimpleListObject
 from .module import ClientModule
 
@@ -45,7 +49,11 @@ class TransportLog(SimpleListObject):
         return []
 
     def _on_request(self, request):
-        pass
+        item = Item(
+            at=datetime.now(tzlocal()),
+            roots=request.ref_list,
+            )
+        self._distribute_diff(ListDiff.add_one(item))
 
     # @command
     # async def open(self, current_key):
