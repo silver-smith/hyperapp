@@ -49,9 +49,13 @@ class TransportLog(SimpleListObject):
         return []
 
     def _on_request(self, request):
+        roots = ', '.join(
+            str(self._web.summon(ref))
+            for ref in request.ref_list
+            )
         item = Item(
             at=datetime.now(tzlocal()),
-            roots=request.ref_list,
+            roots=roots,
             )
         self._distribute_diff(ListDiff.add_one(item))
 
