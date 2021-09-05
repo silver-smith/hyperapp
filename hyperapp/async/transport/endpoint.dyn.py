@@ -18,7 +18,6 @@ class LocalRoute:
         self._identity = identity
         self._endpoint = endpoint
 
-
     def __repr__(self):
         return f'<async LocalRoute to: {self._endpoint}>'
 
