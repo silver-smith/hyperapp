@@ -8,7 +8,7 @@ _log = logging.getLogger(__name__)
 class RefResolveFailure(Exception):
 
     def __init__(self, ref):
-        super().__init__(f"Failed to resolve ref {ref}")
+        super().__init__(f"Failed to resolve ref: {ref}")
 
 
 class Web(object):
