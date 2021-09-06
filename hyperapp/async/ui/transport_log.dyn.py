@@ -1,4 +1,5 @@
 import itertools
+import weakref
 from collections import namedtuple
 from datetime import datetime
 
@@ -14,6 +15,8 @@ from .simple_list_object import SimpleListObject
 from .module import ClientModule
 
 
+MESSAGE_LIMIT = 10
+
 Item = namedtuple('Item', 'id at direction refs')
 
 
@@ -25,15 +28,18 @@ class TransportLog(SimpleListObject):
         ]
 
     @classmethod
-    async def from_piece(cls, piece, web, transport_log_callback_registry):
-        return cls(web, transport_log_callback_registry)
+    async def from_piece(cls, piece, item_list, id_to_ref_list):
+        self = this_module._transport_log_object_wr()
+        if self:
+            return self
+        self = cls(item_list, id_to_ref_list)
+        this_module._transport_log_object_wr = weakref.ref(self)
+        return self
         
-    def __init__(self, web, transport_log_callback_registry):
+    def __init__(self, item_list, id_to_ref_list):
         super().__init__()
-        self._web = web
-        self._id_counter = itertools.count()
-        self._id_to_ref_list = {}
-        transport_log_callback_registry.add(self._on_request)
+        self._item_list = item_list
+        self._id_to_ref_list = id_to_ref_list
 
     @property
     def piece(self):
@@ -53,7 +59,37 @@ class TransportLog(SimpleListObject):
             ]
 
     async def get_all_items(self):
-        return []
+        return self._item_list
+
+    @command
+    async def open(self, current_key):
+        ref_list = self._id_to_ref_list[current_key]
+        [first_ref, *rest] = ref_list
+        assert not rest  # todo: open when there is more than one root in single request.
+        return htypes.data_viewer.data_viewer(first_ref)
+
+
+class ThisModule(ClientModule):
+
+    class _Phony:
+        pass
+
+    def __init__(self, module_name, services, config):
+        super().__init__(module_name, services, config)
+
+        self._web = services.web
+        self._item_list = []
+        self._id_to_ref_list = {}
+        self._id_counter = itertools.count()
+        self._transport_log_object_wr = weakref.ref(self._Phony())  # Create dead ref to avoid checking _wr for None.
+
+        services.object_registry.register_actor(
+            htypes.transport_log.transport_log,
+            TransportLog.from_piece,
+            self._item_list,
+            self._id_to_ref_list,
+            )
+        services.transport_log_callback_registry.add(self._on_request)
 
     def _on_request(self, direction, ref_list):
         refs_str = ', '.join(
@@ -66,28 +102,13 @@ class TransportLog(SimpleListObject):
             direction=direction,
             refs=refs_str,
             )
+        self._item_list.append(item)
+        if len(self._item_list) > MESSAGE_LIMIT:
+            self._item_list = self._item_list[-MESSAGE_LIMIT:]
         self._id_to_ref_list[item.id] = ref_list
-        self._distribute_diff(ListDiff.add_one(item))
-
-    @command
-    async def open(self, current_key):
-        ref_list = self._id_to_ref_list[current_key]
-        [first_ref, *rest] = ref_list
-        assert not rest  # todo: open when there is more than one root in single request.
-        return htypes.data_viewer.data_viewer(first_ref)
-
-
-class ThisModule(ClientModule):
-
-    def __init__(self, module_name, services, config):
-        super().__init__(module_name, services, config)
-
-        services.object_registry.register_actor(
-            htypes.transport_log.transport_log,
-            TransportLog.from_piece,
-            services.web,
-            services.transport_log_callback_registry,
-            )
+        object = self._transport_log_object_wr()
+        if object:
+            object._distribute_diff(ListDiff.add_one(item))
 
     @command
     async def transport_log(self):
