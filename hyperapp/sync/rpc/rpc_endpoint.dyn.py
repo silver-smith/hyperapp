@@ -11,6 +11,10 @@ from . import htypes
 log = logging.getLogger(__name__)
 
 
+class TimeoutWaitingForResponse(Exception):
+    pass
+
+
 RpcRequest = namedtuple('RpcRequest', 'receiver_identity sender')
 
 
@@ -43,7 +47,7 @@ class RpcEndpoint:
                     return self._result_by_request_id.pop(request_id)
                 except KeyError:
                     if not self._response_available.wait(timeout_sec):
-                        raise RuntimeError(f"Timed out waiting for response (timeout {timeout_sec} seconds)")
+                        raise TimeoutWaitingForResponse(f"Timed out waiting for response (timeout {timeout_sec} seconds)")
 
     def process(self, request):
         log.info("Received rpc message: %s", request)
