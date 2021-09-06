@@ -1,7 +1,10 @@
+import itertools
 from collections import namedtuple
 from datetime import datetime
 
 from dateutil.tz import tzlocal
+
+from hyperapp.common.htypes import tInt
 
 from . import htypes
 from .command import command
@@ -11,7 +14,7 @@ from .simple_list_object import SimpleListObject
 from .module import ClientModule
 
 
-Item = namedtuple('Item', 'at roots')
+Item = namedtuple('Item', 'id at roots')
 
 
 class TransportLog(SimpleListObject):
@@ -28,6 +31,8 @@ class TransportLog(SimpleListObject):
     def __init__(self, web, transport_log_callback_registry):
         super().__init__()
         self._web = web
+        self._id_counter = itertools.count()
+        self._id_to_ref_list = {}
         transport_log_callback_registry.add(self._on_request)
 
     @property
@@ -41,7 +46,8 @@ class TransportLog(SimpleListObject):
     @property
     def columns(self):
         return [
-            Column('at', is_key=True),
+            Column('id', type=tInt, is_key=True),
+            Column('at'),
             Column('roots'),
             ]
 
@@ -54,15 +60,19 @@ class TransportLog(SimpleListObject):
             for ref in request.ref_list
             )
         item = Item(
+            id=next(self._id_counter),
             at=datetime.now(tzlocal()),
             roots=roots,
             )
+        self._id_to_ref_list[item.id] = request.ref_list
         self._distribute_diff(ListDiff.add_one(item))
 
-    # @command
-    # async def open(self, current_key):
-    #     item = self._name_to_item[current_key]
-    #     return htypes.data_viewer.data_viewer(item.module_ref)
+    @command
+    async def open(self, current_key):
+        ref_list = self._id_to_ref_list[current_key]
+        [first_ref, *rest] = ref_list
+        assert not rest  # todo: open when there is more than one root in single request.
+        return htypes.data_viewer.data_viewer(first_ref)
 
 
 class ThisModule(ClientModule):

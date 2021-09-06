@@ -1,5 +1,7 @@
 import:
   types:
+    data_viewer:
+      - data_viewer
     transport_log:
       - transport_log_d
       - transport_log
