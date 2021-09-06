@@ -6,6 +6,7 @@ from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common.module import Module
 
 from . import htypes
+from .rpc_endpoint import TimeoutWaitingForResponse
 
 log = logging.getLogger(__name__)
 
@@ -67,6 +68,8 @@ class ThisModule(Module):
         log.info("echo_service thread is started")
         try:
             proxy.run(echo_service_ref)
+        except TimeoutWaitingForResponse as x:
+            log.info("Timed out waiting for 'run' response - this is expected, because master is already shutting down subprocess: %s", x)
         except Exception as x:
             log.exception("echo_service thread is failed")
         log.info("echo_service thread is finished")

@@ -4,6 +4,8 @@ import:
       - endpoint
     echo:
       - echo_iface
+  code:
+    - sync.rpc.rpc_endpoint
 require:
   - unbundler
   - generate_rsa_identity
