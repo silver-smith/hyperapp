@@ -4,3 +4,5 @@ require:
   - async_route_table
 provide:
   - async_transport
+require:
+  - transport_log_callback_registry

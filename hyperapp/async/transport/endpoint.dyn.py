@@ -23,11 +23,11 @@ class TransportLogCallbackRegistry:
     def _ref_removed(self, ref):
         self._weak_method_list.remove(ref)
 
-    def __iter__(self):
+    def log_transaction(self, direction, ref_list):
         for ref in self._weak_method_list:
             fn = ref()
             if fn is not None:
-                yield fn
+                fn(direction, ref_list)
 
 
 class LocalRoute:
@@ -53,8 +53,7 @@ class LocalRoute:
         bundle = self._identity.decrypt_parcel(parcel)
         self._unbundler.register_bundle(bundle)
         request = Request(self._identity, parcel.sender, bundle.roots)
-        for fn in self._transport_log_callback_registry:
-            fn(request)
+        self._transport_log_callback_registry.log_transaction('in', bundle.roots)
         await self._endpoint.process(request)
 
 

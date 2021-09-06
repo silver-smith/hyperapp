@@ -14,7 +14,7 @@ from .simple_list_object import SimpleListObject
 from .module import ClientModule
 
 
-Item = namedtuple('Item', 'id at roots')
+Item = namedtuple('Item', 'id at direction refs')
 
 
 class TransportLog(SimpleListObject):
@@ -48,23 +48,25 @@ class TransportLog(SimpleListObject):
         return [
             Column('id', type=tInt, is_key=True),
             Column('at'),
-            Column('roots'),
+            Column('direction'),
+            Column('refs'),
             ]
 
     async def get_all_items(self):
         return []
 
-    def _on_request(self, request):
-        roots = ', '.join(
+    def _on_request(self, direction, ref_list):
+        refs_str = ', '.join(
             str(self._web.summon(ref))
-            for ref in request.ref_list
+            for ref in ref_list
             )
         item = Item(
             id=next(self._id_counter),
             at=datetime.now(tzlocal()),
-            roots=roots,
+            direction=direction,
+            refs=refs_str,
             )
-        self._id_to_ref_list[item.id] = request.ref_list
+        self._id_to_ref_list[item.id] = ref_list
         self._distribute_diff(ListDiff.add_one(item))
 
     @command
