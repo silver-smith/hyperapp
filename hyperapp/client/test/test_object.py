@@ -18,7 +18,7 @@ def code_module_list():
 
 def test_object_observers(code):
 
-    class StubObject(code.object.Object):
+    class StubObject(code.ui_object.Object):
 
         @property
         def piece(self):
@@ -28,8 +28,8 @@ def test_object_observers(code):
         def title(self):
             raise NotImplementedError()
 
-    observer_1 = code.object.ObjectObserver()
-    observer_2 = code.object.ObjectObserver()
+    observer_1 = code.ui_object.ObjectObserver()
+    observer_2 = code.ui_object.ObjectObserver()
     observer_1.object_changed = MagicMock()
     observer_2.object_changed = MagicMock()
     object = StubObject()
