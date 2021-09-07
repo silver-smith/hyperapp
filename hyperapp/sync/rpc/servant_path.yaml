@@ -1,0 +1,8 @@
+import:
+  types:
+    servant_path:
+      - registry_name
+      - get_attribute
+provide:
+  - servant_path
+  - servant_path_from_data

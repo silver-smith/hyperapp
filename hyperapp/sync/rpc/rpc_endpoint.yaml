@@ -7,5 +7,6 @@ import:
 require:
   - peer_registry
   - transport
+  - servant_path_from_data
 provide:
   - rpc_endpoint

@@ -1,7 +1,5 @@
 import:
   types:
-    rpc:
-      - endpoint
     service:
       - column
       - tree_service

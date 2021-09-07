@@ -1,7 +1,5 @@
 import:
   types:
-    rpc:
-      - endpoint
     service:
       - record_service
   code:

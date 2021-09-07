@@ -1,0 +1,8 @@
+import:
+  types:
+    rpc:
+      - request
+require:
+  - transport
+provide:
+  - rpc_call

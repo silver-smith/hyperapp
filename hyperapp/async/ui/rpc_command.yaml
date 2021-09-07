@@ -4,8 +4,6 @@ import:
       - object_command_list_d
     command:
       - object_commands_d
-    rpc:
-      - endpoint
     rpc_command:
       - clone_rpc_element_command_command
       - rpc_element_command_d

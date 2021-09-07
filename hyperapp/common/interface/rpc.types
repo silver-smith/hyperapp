@@ -1,17 +1,9 @@
 
-endpoint = record:
-  peer_ref: ref
-  iface_ref: ref
-  object_id: string
-
-
 request = record:
-  sender_peer_ref: ref
-  iface_ref: ref
-  object_id: string
   request_id: string
-  method_name: string
-  params_ref: ref
+  servant_path: ref list
+  params: ref list
+  sender_peer_ref: ref
 
 response = record:
   request_id: string

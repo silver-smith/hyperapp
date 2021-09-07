@@ -1,14 +1,12 @@
 import:
-  types:
-    rpc:
-      - endpoint
-    echo:
-      - echo_iface
   code:
     - sync.rpc.rpc_endpoint
 require:
   - unbundler
   - generate_rsa_identity
+  - peer_registry
   - rpc_endpoint
   - endpoint_registry
-  - rpc_proxy
+  - rpc_call
+  - servant_path
+  - servant_path_from_data
