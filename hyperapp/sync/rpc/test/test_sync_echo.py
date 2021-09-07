@@ -19,9 +19,9 @@ def code_module_list():
         'common.ref_collector',
         'transport.rsa_identity',
         'sync.transport.endpoint',
+        'rpc.servant_path',
         'sync.rpc.rpc_call',
         'sync.rpc.rpc_endpoint',
-        'sync.rpc.servant_path',
         'sync.subprocess',
         ]
 

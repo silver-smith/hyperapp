@@ -27,34 +27,28 @@ class ThisModule(Module):
 
         master_service_bundle = packet_coders.decode('cdr', config['master_service_bundle_cdr'], bundle_t)
         services.unbundler.register_bundle(master_service_bundle)
-        master_service_ref = master_service_bundle.roots[0]
-        self._master_service = services.mosaic.resolve_ref(master_service_ref).value
+        master_peer_ref, *master_servant_path_refs = master_service_bundle.roots
+
+        self._master_peer = services.peer_registry.invite(master_peer_ref)
+        self._master_servant_path = services.servant_path_from_data(master_servant_path_refs)
 
         self._my_identity = services.generate_rsa_identity(fast=True)
-        my_peer_ref = services.mosaic.put(self._my_identity.peer.piece)
-
-        echo_iface_ref = services.types.reverse_resolve(htypes.echo.echo_iface)
-
-        self._echo_object_id = 'echo'
-
-        echo_service = htypes.rpc.endpoint(
-            peer_ref=my_peer_ref,
-            iface_ref=echo_iface_ref,
-            object_id=self._echo_object_id,
-            )
-        self._echo_service_ref = services.mosaic.put(echo_service)
+        self._my_peer_ref = services.mosaic.put(self._my_identity.peer.piece)
 
     async def async_init(self, services):
         log.info("Echo service async run:")
         try:
+            echo_servant_name = 'echo'
+            echo_servant_path = services.servant_path().registry_name(echo_servant_name).get_attr('echo')
+
             rpc_endpoint = self._async_rpc_endpoint()
             self._async_endpoint_registry.register(self._my_identity, rpc_endpoint)
-            master_proxy = services.async_rpc_proxy(self._my_identity, rpc_endpoint, self._master_service)
+            rpc_call = services.async_rpc_call(rpc_endpoint, self._master_peer, self._master_servant_path, self._my_identity)
 
             servant = Echo()
-            rpc_endpoint.register_servant(self._echo_object_id, servant)
+            rpc_endpoint.register_servant(echo_servant_name, servant)
 
-            await master_proxy.run(self._echo_service_ref)
+            await rpc_call(self._my_peer_ref, echo_servant_path.as_data(services.mosaic))
         except Exception as x:
             log.exception("Echo service async run is failed:")
         log.info("Echo service async run: done.")

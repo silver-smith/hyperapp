@@ -1,12 +1,9 @@
-import:
-  types:
-    rpc:
-      - endpoint
-    echo:
-      - echo_iface
 require:
   - unbundler
   - generate_rsa_identity
+  - peer_registry
   - async_rpc_endpoint
   - async_endpoint_registry
-  - async_rpc_proxy
+  - async_rpc_call
+  - servant_path
+  - servant_path_from_data

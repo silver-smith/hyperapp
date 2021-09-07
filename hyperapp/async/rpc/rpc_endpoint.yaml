@@ -10,5 +10,6 @@ require:
   - peer_registry
   - async_web
   - async_transport
+  - servant_path_from_data
 provide:
   - async_rpc_endpoint

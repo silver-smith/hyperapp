@@ -17,11 +17,12 @@ RpcRequest = namedtuple('RpcRequest', 'receiver_identity sender')
 
 class RpcEndpoint:
 
-    def __init__(self, async_web, mosaic, types, peer_registry, transport):
+    def __init__(self, async_web, mosaic, types, peer_registry, transport, servant_path_from_data):
         self._mosaic = mosaic
         self._types = types
         self._peer_registry = peer_registry
         self._transport = transport
+        self._servant_path_from_data = servant_path_from_data
         self._servant_by_id = {}
         self._result_by_request_id = {}
         self._response_available = asyncio.Condition()
@@ -32,8 +33,11 @@ class RpcEndpoint:
     def __repr__(self):
         return '<async RpcEndpoint>'
 
-    def register_servant(self, object_id, servant):
-        self._servant_by_id[object_id] = servant
+    def register_servant(self, name, servant):
+        self._servant_by_id[name] = servant
+
+    def get_servant(self, name):
+        return self._servant_by_id[name]
 
     async def wait_for_response(self, request_id, timeout_sec=20):
         log.info("Wait for rpc response (timeout %s): %s", timeout_sec, request_id)
@@ -60,25 +64,18 @@ class RpcEndpoint:
         log.info("Process rpc request: %s", request)
         receiver_identity = transport_request.receiver_identity
         sender = self._peer_registry.invite(request.sender_peer_ref)
-        iface = self._types.resolve(request.iface_ref)
-        iface_method = iface.methods[request.method_name]
-        servant = self._servant_by_id[request.object_id]
-        params = self._mosaic.resolve_ref(request.params_ref).value
-        log.info("Call rpc servant: %s(%s)", request.method_name, params)
-        method = getattr(servant, request.method_name)
+        servant_path = self._servant_path_from_data(request.servant_path)
+        params = [
+            self._mosaic.resolve_ref(ref).value
+            for ref in request.params
+            ]
+        servant_fn = servant_path.resolve(self)
+
+        log.info("Call rpc servant: %s (%s)", servant_fn, params)
         rpc_request = RpcRequest(transport_request.receiver_identity, sender)
-        result = await method(rpc_request, **params._asdict())
-        log.info("Rpc servant call result: %s", result)
-        response_record_t = iface_method.response_record_t
-        if len(response_record_t.fields) == 0:
-            if result is not None:
-                raise RuntimeError(f"{iface.name}.{request.method_name} expected no response, but returned: {result!r}")
-            result = ()
-        elif len(response_record_t.fields) == 1:
-            result = (result,)  # Expect simple result.
-        # Else expect tuple or list response.
-        result_record = response_record_t(*result)
-        result_ref = self._mosaic.put(result_record)
+        result = await servant_fn(rpc_request, *params)
+        log.info("Rpc servant %s call result: %s", servant_fn, result)
+        result_ref = self._mosaic.put(result)
         response = htypes.rpc.response(
             request_id=request.request_id,
             result_ref=result_ref,
@@ -98,5 +95,13 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
+        # Should be called under event loop for condition constructor to work.
         services.async_rpc_endpoint = partial(
-            RpcEndpoint, services.async_web, services.mosaic, services.types, services.peer_registry, services.async_transport)
+            RpcEndpoint,
+            services.async_web,
+            services.mosaic,
+            services.types,
+            services.peer_registry,
+            services.async_transport,
+            services.servant_path_from_data,
+            )
