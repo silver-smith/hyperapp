@@ -2,6 +2,7 @@ import struct
 import dateutil.parser
 from .method_dispatch import method_dispatch
 from .htypes import (
+    TNone,
     TString,
     TBinary,
     tBinary,
@@ -71,6 +72,10 @@ class CdrDecoder(object):
         size = self.read_int(path)
         data = self.read(size, path)
         return data.decode('utf-8')
+
+    @dispatch.register(TNone)
+    def decode_none(self, t, path):
+        return None
 
     @dispatch.register(TBinary)
     def decode_binary(self, t, path):

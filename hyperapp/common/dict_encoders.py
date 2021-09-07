@@ -5,6 +5,7 @@ import json
 import yaml
 from .method_dispatch import method_dispatch
 from .htypes import (
+    TNone,
     TString,
     TBinary,
     TInt,
@@ -35,6 +36,10 @@ class DictEncoder(metaclass=abc.ABCMeta):
     @method_dispatch
     def dispatch(self, t, value):
         assert False, repr((t, value))  # Unknown type
+
+    @dispatch.register(TNone)
+    def encode_primitive(self, t, value):
+        return None
 
     @dispatch.register(TString)
     @dispatch.register(TInt)

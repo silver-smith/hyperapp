@@ -1,6 +1,6 @@
 import datetime
 
-from .htypes import tString, tBinary, tInt, tBool, tDateTime, TList
+from .htypes import tNone, tString, tBinary, tInt, tBool, tDateTime, TList
 from .record import TRecord
 from .builtins import primitive_list_types
 
@@ -10,6 +10,7 @@ class DeduceTypeError(RuntimeError):
 
 
 _primitive_types = {
+    type(None): tNone,
     str: tString,
     bytes: tBinary,
     int: tInt,

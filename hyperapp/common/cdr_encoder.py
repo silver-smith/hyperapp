@@ -1,6 +1,7 @@
 import struct
 from .method_dispatch import method_dispatch
 from .htypes import (
+    TNone,
     TString,
     TBinary,
     tBinary,
@@ -41,6 +42,10 @@ class CdrEncoder(object):
             value = value.encode('utf-8')
         self.write_int(len(value))
         self.data += value
+
+    @dispatch.register(TNone)
+    def encode_none(self, t, value):
+        pass
 
     @dispatch.register(TInt)
     def encode_int(self, t, value):

@@ -6,6 +6,7 @@ import yaml
 import dateutil.parser
 from .method_dispatch import method_dispatch
 from .htypes import (
+    TNone,
     TString,
     TBinary,
     TInt,
@@ -47,6 +48,11 @@ class DictDecoder(metaclass=abc.ABCMeta):
     @method_dispatch
     def dispatch(self, t, value, path):
         assert False, repr((t, path, value))  # Unknown type
+
+    @dispatch.register(TNone)
+    def decode_none(self, t, value, path):
+        self.expect_type(path, value is None, value, 'none')
+        return None
 
     @dispatch.register(TString)
     def decode_string(self, t, value, path):
