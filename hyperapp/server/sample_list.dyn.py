@@ -16,17 +16,16 @@ log = logging.getLogger(__name__)
 
 class ListServant:
 
-    def __init__(self, mosaic, row_t, article_service_factory):
+    def __init__(self, mosaic, article_service_factory):
         self._mosaic = mosaic
-        self._row_t = row_t
         self._article_service_factory = article_service_factory
 
-    def get(self, request):
-        log.info("ListServant.get()")
+    def list(self, request):
+        log.info("ListServant.list()")
         return [
-            self._row_t(1, 'first row'),
-            self._row_t(2, 'second row'),
-            self._row_t(3, 'third row'),
+            htypes.sample_list.row(1, 'first row'),
+            htypes.sample_list.row(2, 'second row'),
+            htypes.sample_list.row(3, 'third row'),
             ]
 
     def describe(self, request, item_key):
@@ -75,44 +74,39 @@ class ThisModule(Module):
         int_t_ref = types.reverse_resolve(tInt)
         string_t_ref = types.reverse_resolve(tString)
 
-        list_object_id = 'test_list_service_object'
+        list_servant_name = 'test_list_service_object'
+        list_servant_path = services.servant_path().registry_name(list_servant_name)
+
         describe_command = htypes.rpc_command.rpc_element_command(
-            key_type_ref=int_t_ref,
-            method_name='describe',
             peer_ref=server_peer_ref,
-            object_id=list_object_id,
+            servant_path=list_servant_path.get_attr('describe').as_data(services.mosaic),
+            name='describe',
+            key_type_ref=int_t_ref,
             )
         raw_command = htypes.rpc_command.rpc_element_command(
-            key_type_ref=int_t_ref,
-            method_name='raw',
             peer_ref=server_peer_ref,
-            object_id=list_object_id,
+            servant_path=list_servant_path.get_attr('raw').as_data(services.mosaic),
+            name='raw',
+            key_type_ref=int_t_ref,
             )
         open_command = htypes.rpc_command.rpc_element_command(
-            key_type_ref=int_t_ref,
-            method_name='open',
             peer_ref=server_peer_ref,
-            object_id=list_object_id,
+            servant_path=list_servant_path.get_attr('open').as_data(services.mosaic),
+            name='open',
+            key_type_ref=int_t_ref,
             )
         list_service = htypes.service.list_service(
             peer_ref=server_peer_ref,
-            object_id=list_object_id,
+            servant_path=list_servant_path.get_attr('list').as_data(services.mosaic),
             dir_list=[[mosaic.put(htypes.sample_list.sample_list_d())]],
-            param_type_list=[],
-            param_list=[],
             command_ref_list=[
                 mosaic.put(describe_command),
                 mosaic.put(raw_command),
                 mosaic.put(open_command),
                 ],
             key_column_id='key',
-            column_list=[
-                htypes.service.column('key', int_t_ref),
-                htypes.service.column('value', string_t_ref),
-                ],
+            column_list=row_t_to_column_list(services.types, htypes.sample_list.row),
             )
-
-        row_t = list_row_t(mosaic, types, list_service)
 
         article_object_id = 'test_sample_list_article_service_object'
         article_field_list = [
@@ -135,11 +129,11 @@ class ThisModule(Module):
                 field_list=article_field_list,
                 )
 
-        rec_t = record_t(mosaic, types, article_field_list)
+        # rec_t = record_t(mosaic, types, article_field_list)
 
-        list_servant = ListServant(mosaic, row_t, article_service_factory)
-        services.server_rpc_endpoint.register_servant(list_object_id, list_servant)
-        article_servant = ArticleServant(rec_t)
-        services.server_rpc_endpoint.register_servant(article_object_id, article_servant)
+        list_servant = ListServant(mosaic, article_service_factory)
+        services.server_rpc_endpoint.register_servant(list_servant_name, list_servant)
+        # article_servant = ArticleServant(rec_t)
+        # services.server_rpc_endpoint.register_servant(article_object_id, article_servant)
 
         services.server_ref_list.add_ref('samle_list', 'Sample list', mosaic.put(list_service))

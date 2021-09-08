@@ -12,6 +12,7 @@ import:
     sample_list:
       - sample_list_d
       - sample_list_article_d
+      - row
       - article
   code:
     - common.list

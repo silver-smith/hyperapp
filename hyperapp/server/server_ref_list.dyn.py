@@ -60,17 +60,17 @@ class ThisModule(Module):
         string_t_ref = types.reverse_resolve(tString)
 
         servant_name = 'server_ref_list'
-        servant_path = services.servant_path().registry_name(servant_name).get_attr('get')
+        servant_path = services.servant_path().registry_name(servant_name)
 
         open_command = htypes.rpc_command.rpc_element_command(
             peer_ref=server_peer_ref,
-            servant_path=servant_path.as_data(services.mosaic),
+            servant_path=servant_path.get_attr('open').as_data(services.mosaic),
             name='open',
             key_type_ref=string_t_ref,
             )
         list_service = htypes.service.list_service(
             peer_ref=server_peer_ref,
-            servant_path=servant_path.as_data(services.mosaic),
+            servant_path=servant_path.get_attr('get').as_data(services.mosaic),
             dir_list=[],
             command_ref_list=[
                 mosaic.put(open_command),

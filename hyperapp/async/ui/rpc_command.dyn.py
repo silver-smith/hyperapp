@@ -71,9 +71,8 @@ class RpcElementCommand:
             )
 
     async def run(self, object, view_state, origin_dir):
-        method = getattr(self._proxy, self._method_name)
-        response = await method(view_state.current_key)
-        return await self._async_web.summon_opt(response.piece_ref)
+        piece_ref = await self._rpc_call(view_state.current_key)
+        return await self._async_web.summon_opt(piece_ref)
 
 
 class AltRpcElementCommand(RpcElementCommand):
