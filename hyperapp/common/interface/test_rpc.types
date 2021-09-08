@@ -1,3 +1,0 @@
-
-test_echo_iface = interface:
-  run (echo_service_ref: ref) -> ()
