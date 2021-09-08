@@ -8,6 +8,9 @@ from hyperapp.common.htypes import (
     tInt,
     tString,
     TList,
+    field_mt,
+    record_mt,
+    name_wrapped_mt,
     )
 from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common import cdr_coders  # self-registering
@@ -27,6 +30,7 @@ def code_module_list():
         'sync.transport.route_table',
         'sync.transport.endpoint',
         'sync.transport.tcp',
+        'rpc.servant_path',
         'sync.rpc.rpc_proxy',
         'sync.rpc.rpc_endpoint',
         'sync.subprocess',
@@ -49,37 +53,46 @@ class Servant:
             ]
 
 
-def test_list_service(services, htypes, code):
+@pytest.fixture
+def row_t(services):
+    int_t_ref = services.types.reverse_resolve(tInt)
+    string_list_t_ref = services.types.reverse_resolve(TList(tString))
+    field_list = [
+        field_mt('key', int_t_ref),
+        field_mt('value_list', string_list_t_ref),
+        ]
+    row_mt = record_mt(None, field_list)
+    row_ref = services.mosaic.put(row_mt)
+    named_row_ref = services.mosaic.put(name_wrapped_mt('list_service_row', row_ref))
+    return services.types.resolve(named_row_ref)
+
+
+def test_list_service(services, htypes, code, row_t):
     master_identity = services.generate_rsa_identity(fast=True)
     master_peer_ref = services.mosaic.put(master_identity.peer.piece)
 
     int_t_ref = services.types.reverse_resolve(tInt)
     string_list_t_ref = services.types.reverse_resolve(TList(tString))
 
-    object_id = 'test_list_service_object'
+    list_servant_name = 'test_list_service_object'
+    list_servant_path = services.servant_path().registry_name(list_servant_name).get_attr('get')
+
     list_service = htypes.service.list_service(
         peer_ref=master_peer_ref,
-        object_id=object_id,
+        servant_path=list_servant_path.as_data(services.mosaic),
         dir_list=[],
-        param_type_list=[],
-        param_list=[],
         command_ref_list=[],
         key_column_id='key',
-        column_list=[
-            htypes.service.column('key', int_t_ref),
-            htypes.service.column('value_list', string_list_t_ref),
-            ],
+        column_list=code.list.row_t_to_column_list(services.types, row_t),
         )
     list_service_ref = services.mosaic.put(list_service)
-
-    row_t = code.list.list_row_t(services.mosaic, services.types, list_service)
 
     rpc_endpoint = services.rpc_endpoint()
     services.endpoint_registry.register(master_identity, rpc_endpoint)
 
     servent_called_event = threading.Event()
     servant = Servant(row_t, servent_called_event)
-    rpc_endpoint.register_servant(object_id, servant)
+    rpc_endpoint.register_servant(list_servant_name, servant)
 
     server = services.tcp_server()
     log.info("Tcp route: %r", server.route)

@@ -3,6 +3,7 @@ import threading
 from collections import namedtuple
 from functools import partial
 
+from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 from hyperapp.common.code_registry import CodeRegistry
 from hyperapp.common.module import Module
 
@@ -71,7 +72,8 @@ class RpcEndpoint:
         rpc_request = RpcRequest(transport_request.receiver_identity, sender)
         result = servant_fn(rpc_request, *params)
         log.info("Rpc servant %s call result: %s", servant_fn, result)
-        result_ref = self._mosaic.put(result)
+        result_t = deduce_complex_value_type(self._mosaic, self._types, result)
+        result_ref = self._mosaic.put(result, result_t)
         response = htypes.rpc.response(
             request_id=request.request_id,
             result_ref=result_ref,

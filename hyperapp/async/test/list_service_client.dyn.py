@@ -32,8 +32,18 @@ class ThisModule(Module):
         services.async_endpoint_registry.register(self._my_identity, rpc_endpoint)
 
         services.object_registry.register_actor(
-            htypes.service.list_service, ListService.from_piece,
-            self._my_identity, services.mosaic, services.types, services.async_web, services.command_registry, rpc_endpoint, services.async_rpc_proxy)
+            htypes.service.list_service,
+            ListService.from_piece,
+            services.mosaic,
+            services.types,
+            services.async_web,
+            services.command_registry,
+            services.peer_registry,
+            self._my_identity,
+            rpc_endpoint,
+            services.servant_path_from_data,
+            services.async_rpc_call,
+            )
 
         try:
             object = await self._object_factory.invite(self._list_service_ref)

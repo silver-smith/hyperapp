@@ -1,1 +1,4 @@
-# empty
+import:
+  types:
+    service:
+      - column

@@ -4,6 +4,5 @@ import:
       - column
       - list_service
   code:
-    - common.list
     - async.ui.column
     - async.ui.simple_list_object
