@@ -15,8 +15,9 @@ code_module_list = [
     'common.dict_coders',  # Load json coders.
     'transport.rsa_identity',
     'server.tcp_server',
-    'server.sample_list',
-    'server.sample_tree',
+    'server.server_ref_list',
+    # 'server.sample_list',
+    # 'server.sample_tree',
     ]
 
 config = {

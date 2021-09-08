@@ -15,6 +15,8 @@ import:
 require:
   - lcs
   - async_web
+  - peer_registry
+  - servant_path_from_data
+  - async_rpc_call
   - client_rpc_endpoint
-  - async_rpc_proxy
   - client_identity

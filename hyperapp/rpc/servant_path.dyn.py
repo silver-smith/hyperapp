@@ -22,7 +22,7 @@ class RegistryName:
     def piece(self):
         return htypes.servant_path.registry_name(self._name)
 
-    def __repr__(self):
+    def __str__(self):
         return f"RegistryName({self._name})"
 
     def resolve(self, rpc_endpoint):
@@ -42,7 +42,7 @@ class GetAttribute:
     def piece(self):
         return htypes.servant_path.get_attribute(self._attr_name)
 
-    def __repr__(self):
+    def __str__(self):
         return f"GetAttribute({self._attr_name})"
 
     def resolve(self, servant):
@@ -61,6 +61,9 @@ class ServantPath:
     def __init__(self, path=None):
         self._path = path or []
 
+    def __str__(self):
+        return '/'.join(str(element) for element in self._path)
+
     def registry_name(self, name):
         return ServantPath([*self._path, RegistryName(name)])
 
@@ -68,10 +71,10 @@ class ServantPath:
         return ServantPath([*self._path, GetAttribute(attr_name)])
 
     def as_data(self, mosaic):
-        return [
+        return tuple(
             mosaic.put(element.piece)
             for element in self._path
-            ]
+            )
 
     def resolve(self, rpc_endpoint):
         value = rpc_endpoint

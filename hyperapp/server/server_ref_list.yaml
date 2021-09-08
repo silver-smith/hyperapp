@@ -5,9 +5,12 @@ import:
       - list_service
     rpc_command:
       - rpc_element_command
+    server_ref_list:
+      - row
   code:
     - common.list
 require:
+  - servant_path
   - server_identity
   - server_rpc_endpoint
   - local_server_ref

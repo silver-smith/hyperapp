@@ -30,27 +30,25 @@ def element_command_interface_ref(mosaic, types, key_type_ref, method_name):
 class RpcElementCommand:
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, types, web, rpc_endpoint, async_rpc_proxy, identity):
-        interface_ref = element_command_interface_ref(mosaic, types, piece.key_type_ref, piece.method_name)
-        service = htypes.rpc.endpoint(
-            peer_ref=piece.peer_ref,
-            iface_ref=interface_ref,
-            object_id=piece.object_id,
-            )
-        proxy = async_rpc_proxy(identity, rpc_endpoint, service)
-        return cls(web, piece.key_type_ref, piece.method_name, piece.peer_ref, piece.object_id, proxy)
+    async def from_piece(cls, piece, mosaic, types, async_web, peer_registry, servant_path_from_data, async_rpc_call, rpc_endpoint, identity):
+        peer = peer_registry.invite(piece.peer_ref)
+        servant_path = servant_path_from_data(piece.servant_path)
+        rpc_call = async_rpc_call(rpc_endpoint, peer, servant_path, identity)
 
-    def __init__(self, web, key_type_ref, method_name, peer_ref, object_id, proxy):
-        self._web = web
+        return cls(mosaic, async_web, peer, servant_path, rpc_call, piece.name, piece.key_type_ref)
+
+    def __init__(self, mosaic, async_web, peer, servant_path, rpc_call, name, key_type_ref):
+        self._mosaic = mosaic
+        self._async_web = async_web
+        self._peer = peer
+        self._servant_path = servant_path
+        self._rpc_call = rpc_call
+        self._name = name
         self._key_type_ref = key_type_ref
-        self._method_name = method_name
-        self._peer_ref = peer_ref
-        self._object_id = object_id
-        self._proxy = proxy
 
     @property
     def name(self):
-        return self._method_name
+        return self._name
 
     @property
     def kind(self):
@@ -58,27 +56,30 @@ class RpcElementCommand:
 
     @property
     def dir(self):
-        return [htypes.rpc_command.rpc_element_command_d(self._peer_ref, self._object_id, self._method_name)]
+        return [htypes.rpc_command.rpc_element_command_d(
+            peer_ref=self._mosaic.put(self._peer.piece),
+            servant_path=self._servant_path.as_data(self._mosaic),
+            )]
 
     @property
     def piece(self):
         return htypes.rpc_command.rpc_element_command(
+            peer_ref=self._mosaic.put(self._peer.piece),
+            servant_path=self._servant_path.as_data(self._mosaic),
+            name=self._name,
             key_type_ref=self._key_type_ref,
-            method_name=self._method_name,
-            peer_ref=self._peer_ref,
-            object_id=self._object_id,
             )
 
     async def run(self, object, view_state, origin_dir):
         method = getattr(self._proxy, self._method_name)
         response = await method(view_state.current_key)
-        return await self._web.summon_opt(response.piece_ref)
+        return await self._async_web.summon_opt(response.piece_ref)
 
 
 class AltRpcElementCommand(RpcElementCommand):
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, types, web, rpc_endpoint, async_rpc_proxy, identity):
+    async def from_piece(cls, piece, mosaic, types, async_web, rpc_endpoint, async_rpc_proxy, identity):
         interface_ref = element_command_interface_ref(mosaic, types, piece.key_type_ref, piece.method_name)
         service = htypes.rpc.endpoint(
             peer_ref=piece.peer_ref,
@@ -86,10 +87,10 @@ class AltRpcElementCommand(RpcElementCommand):
             object_id=piece.object_id,
             )
         proxy = async_rpc_proxy(identity, rpc_endpoint, service)
-        return cls(web, piece.key_type_ref, piece.method_name, piece.peer_ref, piece.object_id, proxy, piece.name)
+        return cls(async_web, piece.key_type_ref, piece.method_name, piece.peer_ref, piece.object_id, proxy, piece.name)
 
-    def __init__(self, web, key_type_ref, method_name, peer_ref, object_id, proxy, name):
-        super().__init__(web, key_type_ref, method_name, peer_ref, object_id, proxy)
+    def __init__(self, async_web, key_type_ref, method_name, peer_ref, object_id, proxy, name):
+        super().__init__(async_web, key_type_ref, method_name, peer_ref, object_id, proxy)
         self._name = name
 
     @property
@@ -128,13 +129,29 @@ class ThisModule(Module):
     # Required client_rpc_endpoint registered at services only by async_init.
     async def async_init(self, services):
         services.command_registry.register_actor(
-            htypes.rpc_command.rpc_element_command, RpcElementCommand.from_piece,
-            services.mosaic, services.types, services.async_web,
-            services.client_rpc_endpoint, services.async_rpc_proxy, services.client_identity)
+            htypes.rpc_command.rpc_element_command,
+            RpcElementCommand.from_piece,
+            services.mosaic,
+            services.types,
+            services.async_web,
+            services.peer_registry,
+            services.servant_path_from_data,
+            services.async_rpc_call,
+            services.client_rpc_endpoint,
+            services.client_identity,
+            )
         services.command_registry.register_actor(
-            htypes.rpc_command.alt_rpc_element_command, AltRpcElementCommand.from_piece,
-            services.mosaic, services.types, services.async_web,
-            services.client_rpc_endpoint, services.async_rpc_proxy, services.client_identity)
+            htypes.rpc_command.alt_rpc_element_command,
+            AltRpcElementCommand.from_piece,
+            services.mosaic,
+            services.types,
+            services.async_web,
+            services.peer_registry,
+            services.servant_path_from_data,
+            services.async_rpc_call,
+            services.client_rpc_endpoint,
+            services.client_identity,
+            )
 
     async def clone_rpc_element_command(self, object, view_state, origin_dir):
         command = object.key_to_command(view_state.current_key)

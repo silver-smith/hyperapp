@@ -5,7 +5,7 @@ from hyperapp.common.htypes import tString, ref_t
 from hyperapp.common.module import Module
 
 from . import htypes
-from .list import list_row_t
+from .list import row_t_to_column_list
 
 log = logging.getLogger(__name__)
 
@@ -30,15 +30,14 @@ class RefList:
 
 class RefListServant:
 
-    def __init__(self, mosaic, row_t, ref_list):
+    def __init__(self, mosaic, ref_list):
         self._mosaic = mosaic
-        self._row_t = row_t
         self._ref_list = ref_list
 
     def get(self, request):
         log.info("RefListServant.get()")
         return [
-            self._row_t(id, item.title, item.ref)
+            htypes.server_ref_list.row(id, item.title, item.ref)
             for id, item in self._ref_list.items()
             ]
 
@@ -60,35 +59,30 @@ class ThisModule(Module):
         ref_t_ref = types.reverse_resolve(ref_t)
         string_t_ref = types.reverse_resolve(tString)
 
-        object_id = 'server_ref_list'
+        servant_name = 'server_ref_list'
+        servant_path = services.servant_path().registry_name(servant_name).get_attr('get')
+
         open_command = htypes.rpc_command.rpc_element_command(
-            key_type_ref=string_t_ref,
-            method_name='open',
             peer_ref=server_peer_ref,
-            object_id=object_id,
+            servant_path=servant_path.as_data(services.mosaic),
+            name='open',
+            key_type_ref=string_t_ref,
             )
         list_service = htypes.service.list_service(
             peer_ref=server_peer_ref,
-            object_id=object_id,
+            servant_path=servant_path.as_data(services.mosaic),
             dir_list=[],
-            param_type_list=[],
-            param_list=[],
             command_ref_list=[
                 mosaic.put(open_command),
                 ],
             key_column_id='id',
-            column_list=[
-                htypes.service.column('id', string_t_ref),
-                htypes.service.column('title', string_t_ref),
-                htypes.service.column('ref', ref_t_ref),
-                ],
+            column_list=row_t_to_column_list(services.types, htypes.server_ref_list.row),
             )
 
-        row_t = list_row_t(mosaic, types, list_service)
 
         ref_list = RefList()
-        servant = RefListServant(mosaic, row_t, ref_list)
-        services.server_rpc_endpoint.register_servant(object_id, servant)
+        servant = RefListServant(mosaic, ref_list)
+        services.server_rpc_endpoint.register_servant(servant_name, servant)
 
         services.server_ref_list = ref_list
         services.local_server_ref.save_piece(list_service)

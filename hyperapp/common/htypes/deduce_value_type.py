@@ -42,7 +42,10 @@ def deduce_value_type(value):
 
 
 def _deduce_list_type(mosaic, types, value):
-    element_t = deduce_complex_value_type(mosaic, types, value[0])
+    if value:
+        element_t = deduce_complex_value_type(mosaic, types, value[0])
+    else:
+        element_t = tNone  # Does not matter for an empty list.
     t = TList(element_t)
     try:
         _ = types.reverse_resolve(t)

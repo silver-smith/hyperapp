@@ -8,7 +8,7 @@ from hyperapp.common.htypes import (
 from hyperapp.common.module import Module
 
 from . import htypes
-from .list import list_row_t
+from .list import row_t_to_column_list
 from .record import record_t
 
 log = logging.getLogger(__name__)

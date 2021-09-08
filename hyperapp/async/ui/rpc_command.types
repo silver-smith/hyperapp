@@ -3,14 +3,13 @@ clone_rpc_element_command_command = record
 
 rpc_element_command_d = record:
   peer_ref: ref
-  object_id: string
-  method_name: string
+  servant_path: ref list
 
 rpc_element_command = record:
-  key_type_ref: ref
-  method_name: string
   peer_ref: ref
-  object_id: string
+  servant_path: ref list
+  name: string
+  key_type_ref: ref
 
 
 alt_rpc_element_command_d = record:

@@ -1,0 +1,5 @@
+
+row = record:
+  id: string
+  title: string
+  ref: ref
