@@ -10,8 +10,7 @@ log = logging.getLogger(__name__)
 
 class TreeServant:
 
-    def __init__(self, mosaic, article_service_factory):
-        self._mosaic = mosaic
+    def __init__(self, article_service_factory):
         self._article_service_factory = article_service_factory
 
     def get_items(self, request, path):
@@ -30,22 +29,18 @@ class TreeServant:
 
     def describe(self, request, item_key):
         log.info("TreeServant.describe(%r)", item_key)
-        text = "Opened item: {}".format(item_key)
-        piece = text
-        return self._mosaic.put(piece)
+        return "Opened item: {}".format(item_key)
 
     def raw(self, request, item_key):
         log.info("TreeServant.raw(%r)", item_key)
-        piece = htypes.sample_tree.article(
+        return htypes.sample_tree.article(
             title=f"Article {item_key}",
             text=f"Sample contents for:\n{item_key}",
             )
-        return self._mosaic.put(piece)
 
     def open(self, request, item_key):
         log.info("TreeServant.open(%r)", item_key)
-        service = self._article_service_factory(item_key)
-        return self._mosaic.put(service)
+        return self._article_service_factory(item_key)
 
 
 class ArticleServant:
@@ -109,7 +104,7 @@ class ThisModule(Module):
                 command_ref_list=[],
                 )
 
-        tree_servant = TreeServant(mosaic, article_service_factory)
+        tree_servant = TreeServant(article_service_factory)
         services.server_rpc_endpoint.register_servant(tree_servant_name, tree_servant)
         article_servant = ArticleServant()
         services.server_rpc_endpoint.register_servant(article_servant_name, article_servant)

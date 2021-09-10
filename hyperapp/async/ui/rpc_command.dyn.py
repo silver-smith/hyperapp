@@ -20,16 +20,15 @@ log = logging.getLogger(__name__)
 class RpcElementCommand:
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, types, async_web, peer_registry, servant_path_from_data, async_rpc_call, rpc_endpoint, identity):
+    async def from_piece(cls, piece, mosaic, types, peer_registry, servant_path_from_data, async_rpc_call, rpc_endpoint, identity):
         peer = peer_registry.invite(piece.peer_ref)
         servant_path = servant_path_from_data(piece.servant_path)
         rpc_call = async_rpc_call(rpc_endpoint, peer, servant_path, identity)
 
-        return cls(mosaic, async_web, peer, servant_path, rpc_call, piece.name)
+        return cls(mosaic, peer, servant_path, rpc_call, piece.name)
 
-    def __init__(self, mosaic, async_web, peer, servant_path, rpc_call, name):
+    def __init__(self, mosaic, peer, servant_path, rpc_call, name):
         self._mosaic = mosaic
-        self._async_web = async_web
         self._peer = peer
         self._servant_path = servant_path
         self._rpc_call = rpc_call
@@ -59,8 +58,8 @@ class RpcElementCommand:
             )
 
     async def run(self, object, view_state, origin_dir):
-        piece_ref = await self._rpc_call(view_state.current_key)
-        return await self._async_web.summon_opt(piece_ref)
+        piece = await self._rpc_call(view_state.current_key)
+        return piece
 
 
 class AltRpcElementCommand(RpcElementCommand):
@@ -120,7 +119,6 @@ class ThisModule(Module):
             RpcElementCommand.from_piece,
             services.mosaic,
             services.types,
-            services.async_web,
             services.peer_registry,
             services.servant_path_from_data,
             services.async_rpc_call,

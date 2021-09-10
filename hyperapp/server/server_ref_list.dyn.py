@@ -29,8 +29,8 @@ class RefList:
 
 class RefListServant:
 
-    def __init__(self, mosaic, ref_list):
-        self._mosaic = mosaic
+    def __init__(self, web, ref_list):
+        self._web = web
         self._ref_list = ref_list
 
     def get(self, request):
@@ -42,7 +42,8 @@ class RefListServant:
 
     def open(self, request, item_key):
         log.info("RefListServant.open(%r)", item_key)
-        return self._ref_list.get_ref(item_key)
+        ref = self._ref_list.get_ref(item_key)
+        return self._web.summon(ref)
 
 
 class ThisModule(Module):
@@ -59,12 +60,12 @@ class ThisModule(Module):
 
         open_command = htypes.rpc_command.rpc_element_command(
             peer_ref=server_peer_ref,
-            servant_path=servant_path.get_attr('open').as_data(services.mosaic),
+            servant_path=servant_path.get_attr('open').as_data(mosaic),
             name='open',
             )
         list_service = htypes.service.list_service(
             peer_ref=server_peer_ref,
-            servant_path=servant_path.get_attr('get').as_data(services.mosaic),
+            servant_path=servant_path.get_attr('get').as_data(mosaic),
             dir_list=[],
             command_ref_list=[
                 mosaic.put(open_command),
@@ -75,7 +76,7 @@ class ThisModule(Module):
 
 
         ref_list = RefList()
-        servant = RefListServant(mosaic, ref_list)
+        servant = RefListServant(services.web, ref_list)
         services.server_rpc_endpoint.register_servant(servant_name, servant)
 
         services.server_ref_list = ref_list
