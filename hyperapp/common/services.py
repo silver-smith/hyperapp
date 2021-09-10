@@ -79,7 +79,10 @@ class Services(object):
             self.code_module_importer.unregister_meta_hook()
 
     def _load_code_module_list(self, module_name_list, config):
+
         registry = self.code_module_loader.load_code_modules(self.code_module_dir_list)
+        self.available_code_modules = registry.by_name
+
         preferred_modules = {
             registry.by_name[module_name]
             for module_name in module_name_list
