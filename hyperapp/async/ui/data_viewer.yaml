@@ -9,3 +9,5 @@ import:
     - async.ui.tree_object
 require:
   - object_registry
+  - default_object_factory
+  - object_factory

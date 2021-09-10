@@ -1,4 +1,5 @@
 from collections import defaultdict, namedtuple
+from functools import partial
 
 from hyperapp.common.htypes import tInt, ref_t
 from hyperapp.common.web import RefResolveFailure
@@ -106,3 +107,10 @@ class ThisModule(Module):
             services.mosaic,
             services.web,
             )
+        services.default_object_factory.set(partial(self.default_object_factory, services.mosaic, services.object_factory))
+
+    @staticmethod
+    async def default_object_factory(mosaic, object_factory, piece):
+        piece_ref = mosaic.put(piece)
+        viewer_piece = htypes.data_viewer.data_viewer(piece_ref)
+        return await object_factory.animate(viewer_piece)

@@ -11,6 +11,7 @@ log = logging.getLogger(__name__)
 class Servant:
 
     def __init__(self, web, local_code_module_registry):
+        self._web = web
         self._local_code_module_registry = local_code_module_registry
         self._name_to_item = {}
         for module_name, rec in local_code_module_registry.items():
@@ -23,7 +24,7 @@ class Servant:
 
     def open(self, request, current_key):
         item = self._name_to_item[current_key]
-        return htypes.data_viewer.data_viewer(item.module_ref)
+        return self._web.summon(item.module_ref)
 
 
 class ThisModule(Module):
