@@ -4,3 +4,6 @@ registry_name = record:
 
 get_attribute = record:
   attr_name: string
+
+partial = record:
+  params: ref list

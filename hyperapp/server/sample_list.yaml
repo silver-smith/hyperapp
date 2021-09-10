@@ -5,7 +5,6 @@ import:
       - param_type
       - parameter
       - list_service
-      - record_field
       - record_service
     rpc_command:
       - rpc_element_command

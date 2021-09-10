@@ -9,6 +9,7 @@ require:
   - object_registry
   - object_factory
   - command_registry
-  - async_rpc_proxy
+  - async_rpc_call
+  - servant_path_from_data
   - client_identity
   - client_rpc_endpoint

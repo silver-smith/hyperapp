@@ -12,7 +12,10 @@ class ListService(SimpleListObject):
             ]
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, types, async_web, command_registry, peer_registry, identity, rpc_endpoint, servant_path_from_data, async_rpc_call):
+    async def from_piece(
+            cls, piece,
+            mosaic, types, async_web, command_registry, peer_registry,
+            identity, rpc_endpoint, servant_path_from_data, async_rpc_call):
         peer = peer_registry.invite(piece.peer_ref)
         servant_path = servant_path_from_data(piece.servant_path)
         rpc_call = async_rpc_call(rpc_endpoint, peer, servant_path, identity)
@@ -71,7 +74,7 @@ class ListService(SimpleListObject):
 
     @property
     def title(self):
-        return f"List service: {self._servant_path}"
+        return f"List service: {self._servant_path.title}"
 
     @property
     def dir_list(self):

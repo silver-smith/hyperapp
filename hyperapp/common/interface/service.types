@@ -26,10 +26,4 @@ multi_item_service = record(service):
 list_service = record(multi_item_service)
 tree_service = record(multi_item_service)
 
-
-record_field = record:
-  id: string
-  type_ref: ref
-
-record_service = record(service):
-  field_list: record_field list
+record_service = record(service)

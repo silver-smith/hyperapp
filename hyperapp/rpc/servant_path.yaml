@@ -3,6 +3,7 @@ import:
     servant_path:
       - registry_name
       - get_attribute
+      - partial
 provide:
   - servant_path
   - servant_path_from_data
