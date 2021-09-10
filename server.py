@@ -17,6 +17,7 @@ code_module_list = [
     'server.tcp_server',
     'server.sample_list',
     'server.sample_tree',
+    'server.module_list',
     ]
 
 config = {

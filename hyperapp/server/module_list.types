@@ -1,0 +1,7 @@
+
+module_list_d = record
+
+item = record:
+  module_name: string
+  module_ref: ref
+  path: string

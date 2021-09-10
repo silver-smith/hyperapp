@@ -216,10 +216,10 @@ class TRecord(Type):
 
     def _check_field_types(self, *args, **kw):
         for (name, t), value in zip(self.fields.items(), args):
-            assert isinstance(value, t), f"{name}: expected {t}, but got: {value}"
+            assert isinstance(value, t), f"{name}: expected {t}, but got: {value!r}"
         for name, value in kw.items():
             t = self.fields[name]
-            assert isinstance(value, t), f"{name}: expected {t}, but got: {value}"
+            assert isinstance(value, t), f"{name}: expected {t}, but got: {value!r}"
 
 
 class TRef(TRecord):
