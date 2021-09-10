@@ -2,6 +2,10 @@
 sample_tree_d = record
 sample_tree_article_d = record
 
+item = record:
+  key: int
+  value: string
+
 article = record:
   title: string
   text: string

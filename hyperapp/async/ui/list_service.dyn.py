@@ -16,6 +16,7 @@ class ListService(SimpleListObject):
             cls, piece,
             mosaic, types, async_web, command_registry, peer_registry,
             identity, rpc_endpoint, servant_path_from_data, async_rpc_call):
+
         peer = peer_registry.invite(piece.peer_ref)
         servant_path = servant_path_from_data(piece.servant_path)
         rpc_call = async_rpc_call(rpc_endpoint, peer, servant_path, identity)

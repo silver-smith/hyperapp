@@ -9,7 +9,6 @@ rpc_element_command = record:
   peer_ref: ref
   servant_path: ref list
   name: string
-  key_type_ref: ref
 
 
 alt_rpc_element_command_d = record:

@@ -16,7 +16,7 @@ code_module_list = [
     'transport.rsa_identity',
     'server.tcp_server',
     'server.sample_list',
-    # 'server.sample_tree',
+    'server.sample_tree',
     ]
 
 config = {

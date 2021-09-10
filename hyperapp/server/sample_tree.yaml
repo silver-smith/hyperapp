@@ -11,10 +11,10 @@ import:
     sample_tree:
       - sample_tree_d
       - sample_tree_article_d
+      - item
       - article
   code:
-    - common.tree
-    - common.record
+    - common.item_column_list
 require_code_modules:
   - server.identity
   - server.rpc_endpoint

@@ -1,11 +1,10 @@
 import logging
 from collections import namedtuple
 
-from hyperapp.common.htypes import tString, ref_t
 from hyperapp.common.module import Module
 
 from . import htypes
-from .list import row_t_to_column_list
+from .item_column_list import item_t_to_column_list
 
 log = logging.getLogger(__name__)
 
@@ -52,12 +51,8 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
 
         mosaic = services.mosaic
-        types = services.types
 
         server_peer_ref = mosaic.put(services.server_identity.peer.piece)
-
-        ref_t_ref = types.reverse_resolve(ref_t)
-        string_t_ref = types.reverse_resolve(tString)
 
         servant_name = 'server_ref_list'
         servant_path = services.servant_path().registry_name(servant_name)
@@ -66,7 +61,6 @@ class ThisModule(Module):
             peer_ref=server_peer_ref,
             servant_path=servant_path.get_attr('open').as_data(services.mosaic),
             name='open',
-            key_type_ref=string_t_ref,
             )
         list_service = htypes.service.list_service(
             peer_ref=server_peer_ref,
@@ -76,7 +70,7 @@ class ThisModule(Module):
                 mosaic.put(open_command),
                 ],
             key_column_id='id',
-            column_list=row_t_to_column_list(services.types, htypes.server_ref_list.row),
+            column_list=item_t_to_column_list(services.types, htypes.server_ref_list.row),
             )
 
 

@@ -3,5 +3,4 @@ import:
     service:
       - record_service
   code:
-    - common.record
     - async.ui.record_object

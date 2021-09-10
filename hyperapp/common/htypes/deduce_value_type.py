@@ -35,8 +35,11 @@ def deduce_value_type(value):
     t = getattr(value, '_t', None)
     if isinstance(t, TRecord):
         return t
-    if isinstance(value, list):
-        element_t = deduce_value_type(value[0])
+    if isinstance(value, (list, tuple)):
+        if value:
+            element_t = deduce_value_type(value[0])
+        else:
+            element_t = tNone
         return primitive_list_types[element_t]  # Use deduce_complex_value_type for non-primitive-element lists.
     raise DeduceTypeError(f"Unable to deduce type for {value!r} (t: {t!r}). Use explicit type parameter.")
 
@@ -58,6 +61,6 @@ def _deduce_list_type(mosaic, types, value):
 
 
 def deduce_complex_value_type(mosaic, types, value):
-    if isinstance(value, list):
+    if isinstance(value, (list, tuple)) and not hasattr(value, '_t'):
         return _deduce_list_type(mosaic, types, value)
     return deduce_value_type(value)

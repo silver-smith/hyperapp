@@ -1,5 +1,4 @@
 from . import htypes
-from .record import record_interface_ref
 from .record_object import RecordObject
 
 

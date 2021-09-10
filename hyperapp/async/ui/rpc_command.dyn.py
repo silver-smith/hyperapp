@@ -17,16 +17,6 @@ from .object_command import Command
 log = logging.getLogger(__name__)
 
 
-def element_command_interface_ref(mosaic, types, key_type_ref, method_name):
-    item_key_field = field_mt('item_key', key_type_ref)
-    opt_ref_ref = optional_mt(types.reverse_resolve(ref_t))
-    piece_field = field_mt('piece_ref', mosaic.put(opt_ref_ref))
-    method_ref = mosaic.put(request_mt(method_name, [item_key_field], [piece_field]))
-    interface_ref = mosaic.put(interface_mt(None, [method_ref]))
-    named_interface_ref = mosaic.put(name_wrapped_mt(f'rpc_element_command_{method_name}_interface', interface_ref))
-    return named_interface_ref
-
-
 class RpcElementCommand:
 
     @classmethod
@@ -35,16 +25,15 @@ class RpcElementCommand:
         servant_path = servant_path_from_data(piece.servant_path)
         rpc_call = async_rpc_call(rpc_endpoint, peer, servant_path, identity)
 
-        return cls(mosaic, async_web, peer, servant_path, rpc_call, piece.name, piece.key_type_ref)
+        return cls(mosaic, async_web, peer, servant_path, rpc_call, piece.name)
 
-    def __init__(self, mosaic, async_web, peer, servant_path, rpc_call, name, key_type_ref):
+    def __init__(self, mosaic, async_web, peer, servant_path, rpc_call, name):
         self._mosaic = mosaic
         self._async_web = async_web
         self._peer = peer
         self._servant_path = servant_path
         self._rpc_call = rpc_call
         self._name = name
-        self._key_type_ref = key_type_ref
 
     @property
     def name(self):
@@ -67,7 +56,6 @@ class RpcElementCommand:
             peer_ref=self._mosaic.put(self._peer.piece),
             servant_path=self._servant_path.as_data(self._mosaic),
             name=self._name,
-            key_type_ref=self._key_type_ref,
             )
 
     async def run(self, object, view_state, origin_dir):

@@ -14,8 +14,7 @@ import:
       - row
       - article
   code:
-    - common.list
-    - common.record
+    - common.item_column_list
 require:
   - server_identity
   - server_rpc_endpoint

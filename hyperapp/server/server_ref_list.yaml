@@ -8,7 +8,7 @@ import:
     server_ref_list:
       - row
   code:
-    - common.list
+    - common.item_column_list
 require:
   - servant_path
   - server_identity

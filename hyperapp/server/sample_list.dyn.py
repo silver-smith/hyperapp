@@ -1,14 +1,9 @@
 import logging
 
-from hyperapp.common.htypes import (
-    tInt,
-    tString,
-    TList,
-    )
 from hyperapp.common.module import Module
 
 from . import htypes
-from .list import row_t_to_column_list
+from .item_column_list import item_t_to_column_list
 
 log = logging.getLogger(__name__)
 
@@ -63,33 +58,26 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
 
         mosaic = services.mosaic
-        types = services.types
 
         server_peer_ref = mosaic.put(services.server_identity.peer.piece)
 
-        int_t_ref = types.reverse_resolve(tInt)
-        string_t_ref = types.reverse_resolve(tString)
-
-        list_servant_name = 'test_list_service_servant'
+        list_servant_name = 'sample_list_servant'
         list_servant_path = services.servant_path().registry_name(list_servant_name)
 
         describe_command = htypes.rpc_command.rpc_element_command(
             peer_ref=server_peer_ref,
             servant_path=list_servant_path.get_attr('describe').as_data(services.mosaic),
             name='describe',
-            key_type_ref=int_t_ref,
             )
         raw_command = htypes.rpc_command.rpc_element_command(
             peer_ref=server_peer_ref,
             servant_path=list_servant_path.get_attr('raw').as_data(services.mosaic),
             name='raw',
-            key_type_ref=int_t_ref,
             )
         open_command = htypes.rpc_command.rpc_element_command(
             peer_ref=server_peer_ref,
             servant_path=list_servant_path.get_attr('open').as_data(services.mosaic),
             name='open',
-            key_type_ref=int_t_ref,
             )
         list_service = htypes.service.list_service(
             peer_ref=server_peer_ref,
@@ -101,10 +89,10 @@ class ThisModule(Module):
                 mosaic.put(open_command),
                 ],
             key_column_id='key',
-            column_list=row_t_to_column_list(services.types, htypes.sample_list.row),
+            column_list=item_t_to_column_list(services.types, htypes.sample_list.row),
             )
 
-        article_servant_name = 'test_sample_list_article_servant'
+        article_servant_name = 'sample_list_article_servant'
         article_servant_path = services.servant_path().registry_name(article_servant_name)
 
         def article_service_factory(article_id):

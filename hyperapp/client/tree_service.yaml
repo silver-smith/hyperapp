@@ -8,6 +8,8 @@ require:
   - async_web
   - object_registry
   - command_registry
-  - async_rpc_proxy
+  - peer_registry
+  - async_rpc_call
+  - servant_path_from_data
   - client_identity
   - client_rpc_endpoint
