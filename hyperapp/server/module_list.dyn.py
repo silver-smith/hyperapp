@@ -10,11 +10,11 @@ log = logging.getLogger(__name__)
 
 class Servant:
 
-    def __init__(self, web, local_code_module_registry):
+    def __init__(self, web, imported_code_modules):
         self._web = web
-        self._local_code_module_registry = local_code_module_registry
+        self._imported_code_modules = imported_code_modules
         self._name_to_item = {}
-        for module_name, rec in local_code_module_registry.items():
+        for module_name, rec in imported_code_modules.items():
             module = web.summon(rec.module_ref)
             self._name_to_item[module_name] = htypes.module_list.item(module_name, rec.module_ref, module.file_path)
 
@@ -55,7 +55,7 @@ class ThisModule(Module):
             column_list=item_t_to_column_list(services.types, htypes.module_list.item),
             )
 
-        servant = Servant(services.web, services.local_code_module_registry)
+        servant = Servant(services.web, services.imported_code_modules)
         services.server_rpc_endpoint.register_servant(servant_name, servant)
 
         services.server_ref_list.add_ref('module_list', 'Module list', mosaic.put(service))

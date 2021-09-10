@@ -52,7 +52,7 @@ class Services(object):
         self.module_registry = ModuleRegistry()
         self.code_module_importer = CodeModuleImporter(self.mosaic, self.types)
         self.code_module_importer.register_meta_hook()
-        self.local_code_module_registry = {}  # full code module name -> ModuleRec
+        self.imported_code_modules = {}  # full code module name -> ModuleRec
 
     def start(self):
         log.info("Start services.")
@@ -100,7 +100,7 @@ class Services(object):
             else:
                 module_config = {}
             self._init_module(module_name, module, module_config)
-            self.local_code_module_registry[module_name] = ModuleRec(module, module_ref)
+            self.imported_code_modules[module_name] = ModuleRec(module, module_ref)
 
     def _init_module(self, module_name, module, config):
         this_module_class = module.__dict__.get('ThisModule')

@@ -48,5 +48,5 @@ def htypes(services):
 def code(services):
     return SimpleNamespace(**{
         name.split('.')[-1]: rec.module  # sync.rpc.rpc_endpoint -> rpc_endpoint
-        for name, rec in services.local_code_module_registry.items()
+        for name, rec in services.imported_code_modules.items()
         })
