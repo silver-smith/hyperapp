@@ -14,8 +14,8 @@ _ModuleInfo = namedtuple('_ModuleInfo', 'info_path source_path type_import_dict 
 class Registry:
 
     def __init__(self):
-        self.by_name = {}
-        self.by_requirement = defaultdict(set)
+        self.by_name = {}  # str -> code_module_t ref
+        self.by_requirement = defaultdict(set)  # str -> code_module_t ref set
 
 
 class CodeModuleLoader:
