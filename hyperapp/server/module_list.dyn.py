@@ -11,17 +11,19 @@ log = logging.getLogger(__name__)
 class Servant:
 
     def __init__(self, web, local_code_module_registry):
-        self._web = web
         self._local_code_module_registry = local_code_module_registry
+        self._name_to_item = {}
+        for module_name, rec in local_code_module_registry.items():
+            module = web.summon(rec.module_ref)
+            self._name_to_item[module_name] = htypes.module_list.item(module_name, rec.module_ref, module.file_path)
 
     def list(self, request):
         log.info("Servant.list()")
-        item_list = []
-        for module_name, rec in self._local_code_module_registry.items():
-            module = self._web.summon(rec.module_ref)
-            item = htypes.module_list.item(module_name, rec.module_ref, module.file_path)
-            item_list.append(item)
-        return item_list
+        return list(self._name_to_item.values())
+
+    def open(self, request, current_key):
+        item = self._name_to_item[current_key]
+        return htypes.data_viewer.data_viewer(item.module_ref)
 
 
 class ThisModule(Module):
@@ -36,11 +38,18 @@ class ThisModule(Module):
         servant_name = 'module_list'
         servant_path = services.servant_path().registry_name(servant_name)
 
+        open_command = htypes.rpc_command.rpc_element_command(
+            peer_ref=server_peer_ref,
+            servant_path=servant_path.get_attr('open').as_data(services.mosaic),
+            name='open',
+            )
         service = htypes.service.list_service(
             peer_ref=server_peer_ref,
             servant_path=servant_path.get_attr('list').as_data(services.mosaic),
             dir_list=[[mosaic.put(htypes.module_list.module_list_d())]],
-            command_ref_list=[],
+            command_ref_list=[
+                mosaic.put(open_command),
+                ],
             key_column_id='module_name',
             column_list=item_t_to_column_list(services.types, htypes.module_list.item),
             )

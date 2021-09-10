@@ -3,6 +3,10 @@ import:
     service:
       - column
       - list_service
+    rpc_command:
+      - rpc_element_command
+    data_viewer:
+      - data_viewer
     module_list:
       - module_list_d
       - item
