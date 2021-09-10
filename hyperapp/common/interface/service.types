@@ -1,12 +1,4 @@
 
-param_type = record:
-  id: string
-  type_ref: ref
-
-parameter = record:
-  id: string
-  param_ref: ref
-
 service = record:
   peer_ref: ref
   servant_path: ref list

@@ -2,8 +2,6 @@ import:
   types:
     service:
       - column
-      - param_type
-      - parameter
       - tree_service
       - record_service
     rpc_command:
