@@ -47,9 +47,10 @@ class ThisModule(Module):
         servant_name = 'module_list'
         servant_path = services.servant_path().registry_name(servant_name)
 
-        open_command = htypes.rpc_command.rpc_element_command(
+        open_command = htypes.rpc_command.rpc_command(
             peer_ref=server_peer_ref,
             servant_path=servant_path.get_attr('open').as_data(services.mosaic),
+            state_attr_list=['current_key'],
             name='open',
             )
 

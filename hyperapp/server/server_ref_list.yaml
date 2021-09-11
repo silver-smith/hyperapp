@@ -3,7 +3,7 @@ import:
     service:
       - list_service
     rpc_command:
-      - rpc_element_command
+      - rpc_command
     server_ref_list:
       - row
   code:

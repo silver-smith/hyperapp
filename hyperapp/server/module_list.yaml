@@ -3,7 +3,7 @@ import:
     service:
       - list_service
     rpc_command:
-      - rpc_element_command
+      - rpc_command
     module_list:
       - module_list_d
       - item

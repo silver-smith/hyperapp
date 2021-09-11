@@ -4,7 +4,7 @@ import:
       - tree_service
       - record_service
     rpc_command:
-      - rpc_element_command
+      - rpc_command
     sample_tree:
       - sample_tree_d
       - sample_tree_article_d

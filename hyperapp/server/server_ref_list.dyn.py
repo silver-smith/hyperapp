@@ -40,9 +40,9 @@ class RefListServant:
             for id, item in self._ref_list.items()
             ]
 
-    def open(self, request, item_key):
-        log.info("RefListServant.open(%r)", item_key)
-        ref = self._ref_list.get_ref(item_key)
+    def open(self, request, current_key):
+        log.info("RefListServant.open(%r)", current_key)
+        ref = self._ref_list.get_ref(current_key)
         return self._web.summon(ref)
 
 
@@ -58,9 +58,10 @@ class ThisModule(Module):
         servant_name = 'server_ref_list'
         servant_path = services.servant_path().registry_name(servant_name)
 
-        open_command = htypes.rpc_command.rpc_element_command(
+        open_command = htypes.rpc_command.rpc_command(
             peer_ref=server_peer_ref,
             servant_path=servant_path.get_attr('open').as_data(mosaic),
+            state_attr_list=['current_key'],
             name='open',
             )
         list_service = htypes.service.list_service(

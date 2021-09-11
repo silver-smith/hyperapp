@@ -65,19 +65,22 @@ class ThisModule(Module):
         tree_servant_name = 'sample_tree_servant'
         tree_servant_path = services.servant_path().registry_name(tree_servant_name)
 
-        describe_command = htypes.rpc_command.rpc_element_command(
+        describe_command = htypes.rpc_command.rpc_command(
             peer_ref=server_peer_ref,
             servant_path=tree_servant_path.get_attr('describe').as_data(services.mosaic),
+            state_attr_list=['current_key'],
             name='describe',
             )
-        open_command = htypes.rpc_command.rpc_element_command(
+        open_command = htypes.rpc_command.rpc_command(
             peer_ref=server_peer_ref,
             servant_path=tree_servant_path.get_attr('open').as_data(services.mosaic),
+            state_attr_list=['current_key'],
             name='open',
             )
-        raw_command = htypes.rpc_command.rpc_element_command(
+        raw_command = htypes.rpc_command.rpc_command(
             peer_ref=server_peer_ref,
             servant_path=tree_servant_path.get_attr('raw').as_data(services.mosaic),
+            state_attr_list=['current_key'],
             name='raw',
             )
         tree_service = htypes.service.tree_service(

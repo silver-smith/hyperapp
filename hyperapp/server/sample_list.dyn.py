@@ -21,20 +21,20 @@ class ListServant:
             htypes.sample_list.row(3, 'third row'),
             ]
 
-    def describe(self, request, item_key):
-        log.info("ListServant.describe(%r)", item_key)
-        return "Opened item: {}".format(item_key)
+    def describe(self, request, current_key):
+        log.info("ListServant.describe(%r)", current_key)
+        return "Opened item: {}".format(current_key)
 
-    def raw(self, request, item_key):
-        log.info("ListServant.raw(%r)", item_key)
+    def raw(self, request, current_key):
+        log.info("ListServant.raw(%r)", current_key)
         return htypes.sample_list.article(
-            title=f"Article {item_key}",
-            text=f"Sample contents for:\n{item_key}",
+            title=f"Article {current_key}",
+            text=f"Sample contents for:\n{current_key}",
             )
 
-    def open(self, request, item_key):
-        log.info("ListServant.open(%r)", item_key)
-        return self._article_service_factory(item_key)
+    def open(self, request, current_key):
+        log.info("ListServant.open(%r)", current_key)
+        return self._article_service_factory(current_key)
 
 
 class ArticleServant:
@@ -59,19 +59,22 @@ class ThisModule(Module):
         list_servant_name = 'sample_list_servant'
         list_servant_path = services.servant_path().registry_name(list_servant_name)
 
-        describe_command = htypes.rpc_command.rpc_element_command(
+        describe_command = htypes.rpc_command.rpc_command(
             peer_ref=server_peer_ref,
             servant_path=list_servant_path.get_attr('describe').as_data(services.mosaic),
+            state_attr_list=['current_key'],
             name='describe',
             )
-        raw_command = htypes.rpc_command.rpc_element_command(
+        raw_command = htypes.rpc_command.rpc_command(
             peer_ref=server_peer_ref,
             servant_path=list_servant_path.get_attr('raw').as_data(services.mosaic),
+            state_attr_list=['current_key'],
             name='raw',
             )
-        open_command = htypes.rpc_command.rpc_element_command(
+        open_command = htypes.rpc_command.rpc_command(
             peer_ref=server_peer_ref,
             servant_path=list_servant_path.get_attr('open').as_data(services.mosaic),
+            state_attr_list=['current_key'],
             name='open',
             )
         list_service = htypes.service.list_service(

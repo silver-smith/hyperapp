@@ -4,7 +4,7 @@ import:
       - list_service
       - record_service
     rpc_command:
-      - rpc_element_command
+      - rpc_command
     sample_list:
       - sample_list_d
       - sample_list_article_d

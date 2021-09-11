@@ -5,11 +5,11 @@ import:
     command:
       - object_commands_d
     rpc_command:
-      - clone_rpc_element_command_command
-      - rpc_element_command_d
-      - rpc_element_command
-      - alt_rpc_element_command_d
-      - alt_rpc_element_command
+      - clone_rpc_command_command
+      - rpc_command_d
+      - rpc_command
+      - alt_rpc_command_d
+      - alt_rpc_command
   code:
     - async.ui.object_command
 require:

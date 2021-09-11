@@ -25,13 +25,14 @@ class RpcElementCommand:
         servant_path = servant_path_from_data(piece.servant_path)
         rpc_call = async_rpc_call(rpc_endpoint, peer, servant_path, identity)
 
-        return cls(mosaic, peer, servant_path, rpc_call, piece.name)
+        return cls(mosaic, peer, servant_path, rpc_call, piece.state_attr_list, piece.name)
 
-    def __init__(self, mosaic, peer, servant_path, rpc_call, name):
+    def __init__(self, mosaic, peer, servant_path, rpc_call, state_attr_list, name):
         self._mosaic = mosaic
         self._peer = peer
         self._servant_path = servant_path
         self._rpc_call = rpc_call
+        self._state_attr_list = state_attr_list
         self._name = name
 
     @property
@@ -44,21 +45,26 @@ class RpcElementCommand:
 
     @property
     def dir(self):
-        return [htypes.rpc_command.rpc_element_command_d(
+        return [htypes.rpc_command.rpc_command_d(
             peer_ref=self._mosaic.put(self._peer.piece),
             servant_path=self._servant_path.as_data(self._mosaic),
             )]
 
     @property
     def piece(self):
-        return htypes.rpc_command.rpc_element_command(
+        return htypes.rpc_command.rpc_command(
             peer_ref=self._mosaic.put(self._peer.piece),
             servant_path=self._servant_path.as_data(self._mosaic),
+            state_attr_list=self._state_attr_list,
             name=self._name,
             )
 
     async def run(self, object, view_state, origin_dir):
-        piece = await self._rpc_call(view_state.current_key)
+        args = [
+            getattr(view_state, attr)
+            for attr in self._state_attr_list
+            ]
+        piece = await self._rpc_call(*args)
         return piece
 
 
@@ -85,11 +91,11 @@ class AltRpcElementCommand(RpcElementCommand):
 
     @property
     def dir(self):
-        return [htypes.rpc_command.alt_rpc_element_command_d(self._peer_ref, self._object_id, self._method_name, self._name)]
+        return [htypes.rpc_command.alt_rpc_command_d(self._peer_ref, self._object_id, self._method_name, self._name)]
 
     @property
     def piece(self):
-        return htypes.rpc_command.alt_rpc_element_command(
+        return htypes.rpc_command.alt_rpc_command(
             key_type_ref=self._key_type_ref,
             method_name=self._method_name,
             peer_ref=self._peer_ref,
@@ -106,16 +112,16 @@ class ThisModule(Module):
         self._lcs = services.lcs
 
         services.command_registry.register_actor(
-            htypes.rpc_command.clone_rpc_element_command_command, Command.from_fn(self.name, self.clone_rpc_element_command))
+            htypes.rpc_command.clone_rpc_command_command, Command.from_fn(self.name, self.clone_rpc_command))
         services.lcs.add(
             [htypes.command_list.object_command_list_d(), htypes.command.object_commands_d()],
-            htypes.rpc_command.clone_rpc_element_command_command(),
+            htypes.rpc_command.clone_rpc_command_command(),
             )
 
     # Required client_rpc_endpoint registered at services only by async_init.
     async def async_init(self, services):
         services.command_registry.register_actor(
-            htypes.rpc_command.rpc_element_command,
+            htypes.rpc_command.rpc_command,
             RpcElementCommand.from_piece,
             services.mosaic,
             services.peer_registry,
@@ -125,7 +131,7 @@ class ThisModule(Module):
             services.client_identity,
             )
         services.command_registry.register_actor(
-            htypes.rpc_command.alt_rpc_element_command,
+            htypes.rpc_command.alt_rpc_command,
             AltRpcElementCommand.from_piece,
             services.mosaic,
             services.types,
@@ -137,11 +143,11 @@ class ThisModule(Module):
             services.client_identity,
             )
 
-    async def clone_rpc_element_command(self, object, view_state, origin_dir):
+    async def clone_rpc_command(self, object, view_state, origin_dir):
         command = object.key_to_command(view_state.current_key)
         log.info("Clone command: %s", command)
         command_piece = command.piece
-        alt_command = htypes.rpc_command.alt_rpc_element_command(
+        alt_command = htypes.rpc_command.alt_rpc_command(
             key_type_ref=command_piece.key_type_ref,
             method_name=command_piece.method_name,
             peer_ref=command_piece.peer_ref,
