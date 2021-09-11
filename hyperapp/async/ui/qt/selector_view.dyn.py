@@ -22,7 +22,7 @@ class SelectorView(QtWidgets.QWidget, View):
         self._list_view = list_view
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(QtWidgets.QLabel("Select:"))
-        layout.addWidget(list_view.get_widget())
+        layout.addWidget(list_view.qt_widget)
         self.setLayout(layout)
 
     @property
@@ -33,6 +33,11 @@ class SelectorView(QtWidgets.QWidget, View):
     def state(self):
         list_view_state_ref = self._mosaic.put(self._list_view.state)
         return htypes.selector_view.selector_view_state(list_view_state_ref)
+
+    @state.setter
+    def state(self, state):
+        list_view_state = self._mosaic.resolve_ref(state.list_view_state_ref).value
+        self._list_view.state = list_view_state
 
     @property
     def object(self):
