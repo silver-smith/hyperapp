@@ -10,7 +10,8 @@ log = logging.getLogger(__name__)
 
 class Servant:
 
-    def __init__(self, service, selector):
+    def __init__(self, web, service, selector):
+        self._web = web
         self._service = service
         self._selector = selector
         self._name_to_item = {}
@@ -20,6 +21,7 @@ class Servant:
 
     def open(self, request, current_key):
         item = self._name_to_item[current_key]
+        return self._web.summon(item.module_ref)
 
     def select_module(self, request):
         return self._selector
@@ -87,7 +89,7 @@ class ThisModule(Module):
             callback_ref=mosaic.put(rpc_callback),
             )
 
-        servant = Servant(service, selector)
+        servant = Servant(services.web, service, selector)
         services.server_rpc_endpoint.register_servant(servant_name, servant)
 
         services.server_ref_list.add_ref('htest_list', 'Test list', mosaic.put(service))
