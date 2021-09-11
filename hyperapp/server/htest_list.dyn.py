@@ -10,7 +10,8 @@ log = logging.getLogger(__name__)
 
 class Servant:
 
-    def __init__(self, selector):
+    def __init__(self, service, selector):
+        self._service = service
         self._selector = selector
         self._name_to_item = {}
 
@@ -23,8 +24,10 @@ class Servant:
     def select_module(self, request):
         return self._selector
 
-    def set_module(self, request, module_ref):
-        log.info("Set module: %s", module_ref)
+    def set_module(self, request, module_name, module_ref):
+        log.info("Set module: %r %s", module_name, module_ref)
+        self._name_to_item[module_name] = htypes.htest_list.item(module_name, module_ref)
+        return self._service
 
 
 class ThisModule(Module):
@@ -77,14 +80,14 @@ class ThisModule(Module):
         rpc_callback = htypes.rpc_callback.rpc_callback(
             peer_ref=server_peer_ref,
             servant_path=servant_path.get_attr('set_module').as_data(services.mosaic),
-            item_attr='module_ref',
+            item_attr_list=['module_name', 'module_ref'],
             )
         selector = htypes.selector.selector(
             list_ref=mosaic.put(module_list_service),
             callback_ref=mosaic.put(rpc_callback),
             )
 
-        servant = Servant(selector)
+        servant = Servant(service, selector)
         services.server_rpc_endpoint.register_servant(servant_name, servant)
 
         services.server_ref_list.add_ref('htest_list', 'Test list', mosaic.put(service))

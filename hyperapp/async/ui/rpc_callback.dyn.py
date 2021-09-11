@@ -15,26 +15,29 @@ class RpcCallback:
         servant_path = servant_path_from_data(piece.servant_path)
         rpc_call = async_rpc_call(rpc_endpoint, peer, servant_path, identity)
 
-        return cls(mosaic, peer, servant_path, rpc_call, piece.item_attr)
+        return cls(mosaic, peer, servant_path, rpc_call, piece.item_attr_list)
 
-    def __init__(self, mosaic, peer, servant_path, rpc_call, item_attr):
+    def __init__(self, mosaic, peer, servant_path, rpc_call, item_attr_list):
         self._mosaic = mosaic
         self._peer = peer
         self._servant_path = servant_path
         self._rpc_call = rpc_call
-        self._item_attr = item_attr
+        self._item_attr_list = item_attr_list
 
     @property
     def piece(self):
         return htypes.rpc_callback.rpc_callback(
             peer_ref=self._mosaic.put(self._peer.piece),
             servant_path=self._servant_path.as_data(self._mosaic),
-            item_attr=self._item_attr,
+            item_attr_list=self._item_attr_list,
             )
 
     async def run(self, item):
-        value = getattr(item, self._item_attr)
-        return await self._rpc_call(value)
+        args = [
+            getattr(item, attr)
+            for attr in self._item_attr_list
+            ]
+        return await self._rpc_call(*args)
 
 
 class ThisModule(Module):
