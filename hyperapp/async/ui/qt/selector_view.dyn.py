@@ -25,6 +25,11 @@ class SelectorView(QtWidgets.QWidget, View):
         layout.addWidget(list_view.qt_widget)
         self.setLayout(layout)
 
+    def setVisible(self, visible):
+        super().setVisible(visible)
+        if visible:
+            self._list_view.setFocus()
+
     @property
     def piece(self):
         return htypes.selector_view.selector_view()
