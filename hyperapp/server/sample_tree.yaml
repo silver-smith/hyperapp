@@ -1,7 +1,6 @@
 import:
   types:
     service:
-      - column
       - tree_service
       - record_service
     rpc_command:

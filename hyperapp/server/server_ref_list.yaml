@@ -1,7 +1,6 @@
 import:
   types:
     service:
-      - column
       - list_service
     rpc_command:
       - rpc_element_command
