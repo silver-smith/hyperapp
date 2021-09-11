@@ -1,0 +1,16 @@
+import:
+  types:
+    service:
+      - list_service
+    rpc_command:
+      - rpc_element_command
+    htest_list:
+      - htest_list_d
+      - item
+  code:
+    - common.item_column_list
+require:
+  - server_identity
+  - server_rpc_endpoint
+  - server_ref_list
+
