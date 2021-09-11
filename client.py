@@ -57,6 +57,7 @@ code_module_list = [
     'async.ui.raw_piece',
     'async.ui.local_code_module_list',
     'async.ui.transport_log',
+    'async.ui.rpc_callback',
     ]
 
 

@@ -96,6 +96,7 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
+
         self._mosaic = services.mosaic
 
         self._callback_registry = CodeRegistry('selector_callback', services.async_web, services.types)
@@ -114,6 +115,7 @@ class ThisModule(Module):
             services.object_factory,
             self._callback_registry,
             )
+        services.callback_registry = self._callback_registry
         services.make_selector_callback_ref = self.make_selector_callback_ref
 
     def make_selector_callback_ref(self, method, **kw):

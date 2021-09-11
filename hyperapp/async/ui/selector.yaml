@@ -13,4 +13,5 @@ require:
   - async_web
   - object_registry
 provide:
+  - callback_registry
   - make_selector_callback_ref

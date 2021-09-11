@@ -1,0 +1,5 @@
+
+rpc_callback = record:
+  peer_ref: ref
+  servant_path: ref list
+  item_attr: string  # Item attribute to pass to rpc callback.

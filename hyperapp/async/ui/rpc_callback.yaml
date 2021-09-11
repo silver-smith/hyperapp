@@ -1,0 +1,11 @@
+import:
+  types:
+    rpc_callback:
+      - rpc_callback
+require:
+  - async_web
+  - peer_registry
+  - servant_path_from_data
+  - async_rpc_call
+  - client_rpc_endpoint
+  - client_identity
