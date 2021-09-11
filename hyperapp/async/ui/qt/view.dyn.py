@@ -71,4 +71,4 @@ class View(ObjectObserver, ViewCommander):
         if DEBUG_FOCUS: log.info('  * view.get_widget_to_focus %r child=%r', self, child)
         if child:
             return child.get_widget_to_focus()
-        return self.get_widget()
+        return self.qt_widget
