@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 class RpcElementCommand:
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, types, peer_registry, servant_path_from_data, async_rpc_call, rpc_endpoint, identity):
+    async def from_piece(cls, piece, mosaic, peer_registry, servant_path_from_data, async_rpc_call, rpc_endpoint, identity):
         peer = peer_registry.invite(piece.peer_ref)
         servant_path = servant_path_from_data(piece.servant_path)
         rpc_call = async_rpc_call(rpc_endpoint, peer, servant_path, identity)
@@ -118,7 +118,6 @@ class ThisModule(Module):
             htypes.rpc_command.rpc_element_command,
             RpcElementCommand.from_piece,
             services.mosaic,
-            services.types,
             services.peer_registry,
             services.servant_path_from_data,
             services.async_rpc_call,
