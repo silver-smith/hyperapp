@@ -1,5 +1,5 @@
 import logging
-from functools import partial
+from functools import cached_property, partial
 
 from hyperapp.common.module import Module
 
@@ -13,15 +13,22 @@ class Servant:
 
     def __init__(self, web, available_code_modules, imported_code_modules):
         self._web = web
-        self._name_to_item = {}
-        for module_name, module_ref in available_code_modules.items():
-            module = web.summon(module_ref)
-            if module_name in imported_code_modules:
+        self._available_code_modules = available_code_modules
+        self._imported_code_modules = imported_code_modules
+
+    # Should be populated only after all modules are imported, otherwise not-yet imported modules are shown as available.
+    @cached_property
+    def _name_to_item(self):
+        name_to_item = {}
+        for module_name, module_ref in self._available_code_modules.items():
+            module = self._web.summon(module_ref)
+            if module_name in self._imported_code_modules:
                 status = 'imported'
             else:
                 status = 'available'
-            self._name_to_item[module_name] = htypes.module_list.item(
+            name_to_item[module_name] = htypes.module_list.item(
                 module_name, module_ref, module.file_path, status)
+        return name_to_item
 
     def list(self, status_filter, request):
         log.info("Servant.list(%s)", status_filter)
