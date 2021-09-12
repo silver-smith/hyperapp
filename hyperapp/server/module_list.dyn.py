@@ -1,4 +1,5 @@
 import logging
+from functools import partial
 
 from hyperapp.common.module import Module
 
@@ -54,14 +55,18 @@ class ThisModule(Module):
             name='open',
             )
 
-        def service(status_filter):
+        def service_factory(status_filter, with_open_command=True):
+            if with_open_command:
+                command_ref_list = [
+                    mosaic.put(open_command),
+                    ]
+            else:
+                command_ref_list = []
             return htypes.service.list_service(
                 peer_ref=server_peer_ref,
                 servant_path=servant_path.get_attr('list').partial(status_filter).as_data(services.mosaic),
                 dir_list=[[mosaic.put(htypes.module_list.module_list_d())]],
-                command_ref_list=[
-                    mosaic.put(open_command),
-                    ],
+                command_ref_list=command_ref_list,
                 key_column_id='module_name',
                 column_list=item_t_to_column_list(services.types, htypes.module_list.item),
                 )
@@ -69,6 +74,8 @@ class ThisModule(Module):
         servant = Servant(services.web, services.available_code_modules, services.imported_code_modules)
         services.server_rpc_endpoint.register_servant(servant_name, servant)
 
-        services.server_ref_list.add_ref('all_module_list', 'Module list', mosaic.put(service(['imported', 'available'])))
-        services.server_ref_list.add_ref('imported_module_list', 'Imported modules', mosaic.put(service(['imported'])))
-        services.server_ref_list.add_ref('available_module_list', 'Available modules', mosaic.put(service(['available'])))
+        services.server_ref_list.add_ref('all_module_list', 'Module list', mosaic.put(service_factory(['imported', 'available'])))
+        services.server_ref_list.add_ref('imported_module_list', 'Imported modules', mosaic.put(service_factory(['imported'])))
+        services.server_ref_list.add_ref('available_module_list', 'Available modules', mosaic.put(service_factory(['available'])))
+
+        services.module_list_service_factory = partial(service_factory, with_open_command=False)

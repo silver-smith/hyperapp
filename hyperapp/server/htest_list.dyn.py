@@ -8,12 +8,12 @@ from .item_column_list import item_t_to_column_list
 log = logging.getLogger(__name__)
 
 
-class Servant:
+class TestModuleList:
 
-    def __init__(self, web, service, selector):
+    def __init__(self, web, service, module_selector):
         self._web = web
         self._service = service
-        self._selector = selector
+        self._module_selector = module_selector
         self._name_to_item = {}
 
     def list(self, request):
@@ -24,7 +24,7 @@ class Servant:
         return self._web.summon(item.module_ref)
 
     def select_module(self, request):
-        return self._selector
+        return self._module_selector
 
     def set_module(self, request, module_name, module_ref):
         log.info("Set module: %r %s", module_name, module_ref)
@@ -68,28 +68,18 @@ class ThisModule(Module):
             column_list=item_t_to_column_list(services.types, htypes.htest_list.item),
             )
 
-        module_list_servant_name = 'module_list'
-        module_list_servant_path = services.servant_path().registry_name(module_list_servant_name)
-        module_list_service = htypes.service.list_service(
-            peer_ref=server_peer_ref,
-            servant_path=module_list_servant_path.get_attr('list').partial('available').as_data(services.mosaic),
-            dir_list=[[mosaic.put(htypes.module_list.module_list_d())]],
-            command_ref_list=[],
-            key_column_id='module_name',
-            column_list=item_t_to_column_list(services.types, htypes.module_list.item),
-            )
-
+        module_list_service = services.module_list_service_factory(['available'])
         rpc_callback = htypes.rpc_callback.rpc_callback(
             peer_ref=server_peer_ref,
             servant_path=servant_path.get_attr('set_module').as_data(services.mosaic),
             item_attr_list=['module_name', 'module_ref'],
             )
-        selector = htypes.selector.selector(
+        module_selector = htypes.selector.selector(
             list_ref=mosaic.put(module_list_service),
             callback_ref=mosaic.put(rpc_callback),
             )
 
-        servant = Servant(services.web, service, selector)
+        servant = TestModuleList(services.web, service, module_selector)
         services.server_rpc_endpoint.register_servant(servant_name, servant)
 
         services.server_ref_list.add_ref('htest_list', 'Test list', mosaic.put(service))

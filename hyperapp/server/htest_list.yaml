@@ -20,4 +20,4 @@ require:
   - server_identity
   - server_rpc_endpoint
   - server_ref_list
-
+  - module_list_service_factory
