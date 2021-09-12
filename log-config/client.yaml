@@ -5,12 +5,12 @@ formatters:
   simple:
     format: '%(asctime)-15s  %(message).200s'
   full:
-    format: '%(asctime)-15s %(filename)-30s %(lineno)4d %(levelname)-8s %(message).500s'
+    format: '%(asctime)-15s %(name)-44s %(levelname)-8s %(message).500s'
 
 handlers:
   console:
     class: logging.StreamHandler
-    level: DEBUG
+    level: INFO
     formatter: simple
     stream: ext://sys.stdout
   file:
@@ -19,12 +19,6 @@ handlers:
     filename: /tmp/client.log
     maxBytes: 1048576  # 1M
     backupCount: 5
-
-loggers:
-  hyperapp.common.web: {level: WARNING}
-  hyperapp.common.logger: {level: WARNING}
-  hyperapp.common.ref_collector: {level: INFO}
-  hyperapp.client.registry: {level: INFO}
 
 root:
   level: DEBUG
