@@ -13,10 +13,12 @@ import:
       - selector
     htest_list:
       - htest_list_d
-      - item
+      - test_module
+      - storage
   code:
     - common.item_column_list
 require:
+  - file_bundle
   - server_identity
   - server_rpc_endpoint
   - server_ref_list
