@@ -50,6 +50,10 @@ class TestModuleList:
         self._save()
         return self._service
 
+    def collect(self, request, current_key):
+        log.info("Collect tests: %s", current_key)
+        item = self._name_to_item[current_key]
+
 
 class ThisModule(Module):
 
@@ -75,6 +79,12 @@ class ThisModule(Module):
             state_attr_list=[],
             name='select_module',
             )
+        collect_command = htypes.rpc_command.rpc_command(
+            peer_ref=server_peer_ref,
+            servant_path=servant_path.get_attr('collect').as_data(services.mosaic),
+            state_attr_list=['current_key'],
+            name='collect',
+            )
         service = htypes.service.list_service(
             peer_ref=server_peer_ref,
             servant_path=servant_path.get_attr('list').as_data(services.mosaic),
@@ -82,6 +92,7 @@ class ThisModule(Module):
             command_ref_list=[
                 mosaic.put(open_command),
                 mosaic.put(select_module_command),
+                mosaic.put(collect_command),
                 ],
             key_column_id='module_name',
             column_list=item_t_to_column_list(services.types, htypes.htest_list.test_module),
