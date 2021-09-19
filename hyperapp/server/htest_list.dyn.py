@@ -11,8 +11,9 @@ log = logging.getLogger(__name__)
 
 class TestModuleList:
 
-    def __init__(self, web, service, module_selector, file):
+    def __init__(self, web, htest, service, module_selector, file):
         self._web = web
+        self._htest = htest
         self._service = service
         self._module_selector = module_selector
         self._file = file
@@ -51,8 +52,8 @@ class TestModuleList:
         return self._service
 
     def collect(self, request, current_key):
-        log.info("Collect tests: %s", current_key)
         item = self._name_to_item[current_key]
+        self._htest.collect_tests(item.module_name)
 
 
 class ThisModule(Module):
@@ -69,25 +70,25 @@ class ThisModule(Module):
 
         open_command = htypes.rpc_command.rpc_command(
             peer_ref=server_peer_ref,
-            servant_path=servant_path.get_attr('open').as_data(services.mosaic),
+            servant_path=servant_path.get_attr('open').as_data,
             state_attr_list=['current_key'],
             name='open',
             )
         select_module_command = htypes.rpc_command.rpc_command(
             peer_ref=server_peer_ref,
-            servant_path=servant_path.get_attr('select_module').as_data(services.mosaic),
+            servant_path=servant_path.get_attr('select_module').as_data,
             state_attr_list=[],
             name='select_module',
             )
         collect_command = htypes.rpc_command.rpc_command(
             peer_ref=server_peer_ref,
-            servant_path=servant_path.get_attr('collect').as_data(services.mosaic),
+            servant_path=servant_path.get_attr('collect').as_data,
             state_attr_list=['current_key'],
             name='collect',
             )
         service = htypes.service.list_service(
             peer_ref=server_peer_ref,
-            servant_path=servant_path.get_attr('list').as_data(services.mosaic),
+            servant_path=servant_path.get_attr('list').as_data,
             dir_list=[[mosaic.put(htypes.htest_list.htest_list_d())]],
             command_ref_list=[
                 mosaic.put(open_command),
@@ -101,7 +102,7 @@ class ThisModule(Module):
         module_list_service = services.module_list_service_factory(['available'])
         rpc_callback = htypes.rpc_callback.rpc_callback(
             peer_ref=server_peer_ref,
-            servant_path=servant_path.get_attr('set_module').as_data(services.mosaic),
+            servant_path=servant_path.get_attr('set_module').as_data,
             item_attr_list=['module_name', 'module_ref'],
             )
         module_selector = htypes.selector.selector(
@@ -110,7 +111,7 @@ class ThisModule(Module):
             )
 
         file = services.file_bundle(Path.home() / '.local/share/hyperapp/server/htest_list.json')
-        servant = TestModuleList(services.web, service, module_selector, file)
+        servant = TestModuleList(services.web, services.htest, service, module_selector, file)
         services.server_rpc_endpoint.register_servant(servant_name, servant)
 
         services.server_ref_list.add_ref('htest_list', 'Test list', mosaic.put(service))

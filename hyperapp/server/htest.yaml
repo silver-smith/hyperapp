@@ -1,0 +1,8 @@
+require:
+  - ref_collector
+  - subprocess
+  - servant_path
+  - server_identity
+  - server_rpc_endpoint
+provide:
+  - htest

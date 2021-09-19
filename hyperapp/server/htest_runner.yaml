@@ -1,0 +1,9 @@
+require:
+  - unbundler
+  - generate_rsa_identity
+  - peer_registry
+  - rpc_endpoint
+  - endpoint_registry
+  - rpc_call
+  - servant_path
+  - servant_path_from_data
