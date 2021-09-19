@@ -121,9 +121,10 @@ class ServantPath:
     def partial(self, *args):
         return self._with_element(Partial(self._mosaic, args))
 
-    def as_data(self, mosaic):
+    @property
+    def as_data(self):
         return tuple(
-            mosaic.put(element.piece)
+            self._mosaic.put(element.piece)
             for element in self._path
             )
 

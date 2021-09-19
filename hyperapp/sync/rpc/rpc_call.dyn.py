@@ -28,7 +28,7 @@ class ThisModule(Module):
             request_id = str(uuid.uuid4())
             request = htypes.rpc.request(
                 request_id=request_id,
-                servant_path=servant_path.as_data(mosaic),
+                servant_path=servant_path.as_data,
                 params=params,
                 sender_peer_ref=sender_peer_ref,
                 )

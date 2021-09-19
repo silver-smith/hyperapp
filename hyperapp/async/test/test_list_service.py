@@ -79,7 +79,7 @@ def test_list_service(services, htypes, code, row_t):
 
     list_service = htypes.service.list_service(
         peer_ref=master_peer_ref,
-        servant_path=list_servant_path.as_data(services.mosaic),
+        servant_path=list_servant_path.as_data,
         dir_list=[],
         command_ref_list=[],
         key_column_id='key',

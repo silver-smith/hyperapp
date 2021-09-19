@@ -47,14 +47,14 @@ class RpcElementCommand:
     def dir(self):
         return [htypes.rpc_command.rpc_command_d(
             peer_ref=self._mosaic.put(self._peer.piece),
-            servant_path=self._servant_path.as_data(self._mosaic),
+            servant_path=self._servant_path.as_data,
             )]
 
     @property
     def piece(self):
         return htypes.rpc_command.rpc_command(
             peer_ref=self._mosaic.put(self._peer.piece),
-            servant_path=self._servant_path.as_data(self._mosaic),
+            servant_path=self._servant_path.as_data,
             state_attr_list=self._state_attr_list,
             name=self._name,
             )

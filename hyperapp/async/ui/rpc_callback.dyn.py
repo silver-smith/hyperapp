@@ -28,7 +28,7 @@ class RpcCallback:
     def piece(self):
         return htypes.rpc_callback.rpc_callback(
             peer_ref=self._mosaic.put(self._peer.piece),
-            servant_path=self._servant_path.as_data(self._mosaic),
+            servant_path=self._servant_path.as_data,
             item_attr_list=self._item_attr_list,
             )
 

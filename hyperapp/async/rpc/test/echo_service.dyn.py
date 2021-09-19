@@ -48,7 +48,7 @@ class ThisModule(Module):
             servant = Echo()
             rpc_endpoint.register_servant(echo_servant_name, servant)
 
-            await rpc_call(self._my_peer_ref, echo_servant_path.as_data(services.mosaic))
+            await rpc_call(self._my_peer_ref, echo_servant_path.as_data)
         except Exception as x:
             log.exception("Echo service async run is failed:")
         log.info("Echo service async run: done.")

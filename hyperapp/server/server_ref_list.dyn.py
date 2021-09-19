@@ -60,13 +60,13 @@ class ThisModule(Module):
 
         open_command = htypes.rpc_command.rpc_command(
             peer_ref=server_peer_ref,
-            servant_path=servant_path.get_attr('open').as_data(mosaic),
+            servant_path=servant_path.get_attr('open').as_data,
             state_attr_list=['current_key'],
             name='open',
             )
         list_service = htypes.service.list_service(
             peer_ref=server_peer_ref,
-            servant_path=servant_path.get_attr('get').as_data(mosaic),
+            servant_path=servant_path.get_attr('get').as_data,
             dir_list=[],
             command_ref_list=[
                 mosaic.put(open_command),

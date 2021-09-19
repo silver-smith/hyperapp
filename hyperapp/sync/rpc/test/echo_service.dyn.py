@@ -61,7 +61,7 @@ class ThisModule(Module):
     def _run(self, mosaic, rpc_call, my_peer_ref, echo_servant_path):
         log.info("echo_service thread is started")
         try:
-            rpc_call(my_peer_ref, echo_servant_path.as_data(mosaic))
+            rpc_call(my_peer_ref, echo_servant_path.as_data)
         except TimeoutWaitingForResponse as x:
             log.info("Timed out waiting for 'run' response - this is expected, because master is already shutting down subprocess: %s", x)
         except Exception as x:

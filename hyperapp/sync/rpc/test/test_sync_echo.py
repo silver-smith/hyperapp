@@ -60,7 +60,7 @@ def test_sync_echo(services, htypes):
         rpc_endpoint, master_identity)
     rpc_endpoint.register_servant(servant_name, servant)
 
-    master_service_bundle = services.ref_collector([master_peer_ref, *servant_path.as_data(services.mosaic)]).bundle
+    master_service_bundle = services.ref_collector([master_peer_ref, *servant_path.as_data]).bundle
     master_service_bundle_cdr = packet_coders.encode('cdr', master_service_bundle)
 
     master_peer_ref_cdr_list = [packet_coders.encode('cdr', master_peer_ref)]

@@ -56,7 +56,7 @@ class RecordService(RecordObject):
             ]
         return htypes.service.record_service(
             peer_ref=self._mosaic.put(self._peer.piece),
-            servant_path=self._servant_path.as_data(self._mosaic),
+            servant_path=self._servant_path.as_data,
             dir_list=dir_list,
             command_ref_list=command_ref_list,
             )

@@ -57,7 +57,7 @@ class ThisModule(Module):
 
         open_command = htypes.rpc_command.rpc_command(
             peer_ref=server_peer_ref,
-            servant_path=servant_path.get_attr('open').as_data(services.mosaic),
+            servant_path=servant_path.get_attr('open').as_data,
             state_attr_list=['current_key'],
             name='open',
             )
@@ -71,7 +71,7 @@ class ThisModule(Module):
                 command_ref_list = []
             return htypes.service.list_service(
                 peer_ref=server_peer_ref,
-                servant_path=servant_path.get_attr('list').partial(status_filter).as_data(services.mosaic),
+                servant_path=servant_path.get_attr('list').partial(status_filter).as_data,
                 dir_list=[[mosaic.put(htypes.module_list.module_list_d())]],
                 command_ref_list=command_ref_list,
                 key_column_id='module_name',

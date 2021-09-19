@@ -67,25 +67,25 @@ class ThisModule(Module):
 
         describe_command = htypes.rpc_command.rpc_command(
             peer_ref=server_peer_ref,
-            servant_path=tree_servant_path.get_attr('describe').as_data(services.mosaic),
+            servant_path=tree_servant_path.get_attr('describe').as_data,
             state_attr_list=['current_key'],
             name='describe',
             )
         open_command = htypes.rpc_command.rpc_command(
             peer_ref=server_peer_ref,
-            servant_path=tree_servant_path.get_attr('open').as_data(services.mosaic),
+            servant_path=tree_servant_path.get_attr('open').as_data,
             state_attr_list=['current_key'],
             name='open',
             )
         raw_command = htypes.rpc_command.rpc_command(
             peer_ref=server_peer_ref,
-            servant_path=tree_servant_path.get_attr('raw').as_data(services.mosaic),
+            servant_path=tree_servant_path.get_attr('raw').as_data,
             state_attr_list=['current_key'],
             name='raw',
             )
         tree_service = htypes.service.tree_service(
             peer_ref=server_peer_ref,
-            servant_path=tree_servant_path.get_attr('get_items').as_data(services.mosaic),
+            servant_path=tree_servant_path.get_attr('get_items').as_data,
             dir_list=[[mosaic.put(htypes.sample_tree.sample_tree_d())]],
             command_ref_list=[
                 mosaic.put(describe_command),
@@ -102,7 +102,7 @@ class ThisModule(Module):
         def article_service_factory(path):
             return htypes.service.record_service(
                 peer_ref=server_peer_ref,
-                servant_path=article_servant_path.get_attr('get').partial(path).as_data(services.mosaic),
+                servant_path=article_servant_path.get_attr('get').partial(path).as_data,
                 dir_list=[[mosaic.put(htypes.sample_tree.sample_tree_article_d())]],
                 command_ref_list=[],
                 )
