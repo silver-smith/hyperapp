@@ -45,4 +45,5 @@ def main():
     services.stop()
 
 
-main()
+if __name__ == '__main__':
+    main()
