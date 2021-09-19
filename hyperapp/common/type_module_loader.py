@@ -88,7 +88,7 @@ class TypeModuleLoader(object):
             return name_to_module[name]  # Already mapped?
         except KeyError:
             pass
-        log.info("Resolve type module: %s", name)
+        log.debug("Resolve type module: %s", name)
         try:
             source = name_to_source[name]
         except KeyError:

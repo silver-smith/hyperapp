@@ -32,7 +32,7 @@ class Mosaic:
         log.debug('Registering piece %r: %s', t.name, piece)
         capsule = make_capsule(self._types, piece, t)
         ref = self.register_capsule(capsule)
-        log.info('Registered piece %s (type: %s): %r', ref, capsule.type_ref, piece)
+        log.debug('Registered piece %s (type: %s): %r', ref, capsule.type_ref, piece)
         return ref
 
     def put_opt(self, piece, t=None):
