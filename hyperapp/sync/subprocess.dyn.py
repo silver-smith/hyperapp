@@ -105,6 +105,8 @@ class ThisModule(Module):
             process = self._connection_to_process[connection]
             if process:
                 self._recv_bundle(process, connection)
+            else:
+                connection.recv()  # Clear signal connection
 
     def _recv_bundle(self, process, connection):
         try:
@@ -159,4 +161,4 @@ class ThisModule(Module):
 
     def subprocess_started(self, process, connection):
         self._connection_to_process[connection] = process
-        self._signal_connection_in.send(None)
+        self._signal_connection_in.send(None)  # Signal connections are changed.
