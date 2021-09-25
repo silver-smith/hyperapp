@@ -8,6 +8,12 @@ from hyperapp.common.module import Module
 log = logging.getLogger(__name__)
 
 
+class Runner:
+
+    def collect_tests(self, request, module_name):
+        log.info("Collect tests: %s", module_name)
+
+
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
@@ -26,9 +32,15 @@ class ThisModule(Module):
         rpc_endpoint = services.rpc_endpoint()
         services.endpoint_registry.register(my_identity, rpc_endpoint)
 
+        servant_name = 'htest_runner'
+        servant_path = services.servant_path().registry_name(servant_name)
+
+        servant = Runner()
+        rpc_endpoint.register_servant(servant_name, servant)
+
         rpc_call = services.rpc_call(rpc_endpoint, master_peer, signal_servant_path, my_identity)
 
-        self._thread = threading.Thread(target=self._run, args=[services.mosaic, rpc_call])
+        self._thread = threading.Thread(target=self._run, args=[services.mosaic, rpc_call, my_peer_ref, servant_path])
 
         services.on_start.append(self.start)
         services.on_stop.append(self.stop)
@@ -42,10 +54,10 @@ class ThisModule(Module):
         self._thread.join()
         log.info("Htest start signal thread is stopped")
 
-    def _run(self, mosaic, rpc_call):
+    def _run(self, mosaic, rpc_call, my_peer_ref, servant_path):
         log.info("Htest start signal thread is started")
         try:
-            rpc_call()
+            rpc_call(my_peer_ref, servant_path.as_data)
         except Exception as x:
             log.exception("Htest start signal thread is failed")
         log.info("Htest start signal thread is finished")

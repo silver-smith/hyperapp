@@ -46,12 +46,12 @@ class Htest:
             )
         with subprocess:
             log.info("Waiting for runner signal.")
-            runner = runner_signal_queue.get(timeout=10)
-            log.info("Got runner signal.")
+            runner_peer_ref, runner_servant_path = runner_signal_queue.get(timeout=20)
+            log.info("Got runner signal: peer=%s servant=%s", runner_peer_ref, runner_servant_path)
 
     @staticmethod
-    def _runner_is_ready(queue, request):
-        queue.put(None)
+    def _runner_is_ready(queue, request, runner_peer_ref, runner_servant_path):
+        queue.put((runner_peer_ref, runner_servant_path))
 
 
 class ThisModule(Module):
