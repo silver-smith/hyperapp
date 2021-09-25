@@ -75,26 +75,33 @@ class Services(object):
             self.type_module_loader.load_type_modules(self.hyperapp_dir)
             self._load_code_module_list(code_module_list, config)
             self.module_registry.init_phases(self)
-        finally:
+        except:
             self.code_module_importer.unregister_meta_hook()
+            raise
+
+    def unregister_import_meta_hook(self):
+        self.code_module_importer.unregister_meta_hook()
 
     def _load_code_module_list(self, module_name_list, config):
 
         registry = self.code_module_loader.load_code_modules(self.code_module_dir_list)
-        self.available_code_modules = registry.by_name
+        self.loaded_code_modules = registry
 
         preferred_modules = {
             registry.by_name[module_name]
             for module_name in module_name_list
             }
+
         for module_name in module_name_list:
             log.info("Require import module %r", module_name)
             self.code_module_importer.import_code_module(
                 registry.by_requirement, registry.by_name[module_name], preferred_modules)
+
         module_name_by_ref = {
             module_ref: module_name
             for module_name, module_ref in registry.by_name.items()
             }
+
         # Should init modules in the same order as they were imported.
         for module_ref, module in self.code_module_importer.registry.items():
             module_name = module_name_by_ref[module_ref]
@@ -112,3 +119,12 @@ class Services(object):
             this_module = this_module_class(module_name, self, config)
             module.__dict__['this_module'] = this_module
             self.module_registry.register(this_module)
+
+    def import_module(self, module_name, config=None):
+        module_ref = self.loaded_code_modules.by_name[module_name]
+        log.info("Import module %s %r", module_ref, module_name)
+        module = self.code_module_importer.import_code_module(
+            self.loaded_code_modules.by_requirement, module_ref, preferred_modules=set())
+        self._init_module(module_name, module, config or {})
+        self.imported_code_modules[module_name] = ModuleRec(module, module_ref)
+        return module

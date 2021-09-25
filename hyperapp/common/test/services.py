@@ -34,6 +34,7 @@ def services(additional_code_module_dirs, code_module_list, post_stop_checks):
     services.init_modules(code_module_list)
     services.start()
     yield services
+    services.unregister_import_meta_hook() # Call before stopping, as stopping may raise an exception.
     log.info("Stopping services")
     services.stop()
     post_stop_checks(services)
