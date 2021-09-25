@@ -16,7 +16,7 @@ class Runner:
     def collect_tests(self, request, module_name):
         log.info("Collect tests: %s", module_name)
         module = self._import_module(module_name)
-        return dir(module)
+        return [name for name in dir(module) if not name.startswith('_')]
 
 
 class ThisModule(Module):
