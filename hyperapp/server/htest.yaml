@@ -1,7 +1,10 @@
 require:
   - ref_collector
   - subprocess
+  - peer_registry
   - servant_path
+  - servant_path_from_data
+  - rpc_call
   - server_identity
   - server_rpc_endpoint
 provide:
