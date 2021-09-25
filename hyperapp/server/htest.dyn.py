@@ -59,8 +59,10 @@ class Htest:
 
             collect_call = self._rpc_call_factory(
                 self._rpc_endpoint, runner_peer, runner_servant_path.get_attr('collect_tests'), self._identity)
-            collect_result = collect_call(module_name)
-            log.info("Collect result: %s", collect_result)
+            test_list = collect_call(module_name)
+            log.info("Collected test list: %s", test_list)
+
+            return test_list
 
     @staticmethod
     def _runner_is_ready(queue, request, runner_peer_ref, runner_servant_path):

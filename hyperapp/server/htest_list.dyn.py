@@ -51,13 +51,16 @@ class TestModuleList:
 
     def set_module(self, request, module_name, module_ref):
         log.info("Set module: %r %s", module_name, module_ref)
-        self._name_to_item[module_name] = htypes.htest_list.test_module(module_name, module_ref)
+        self._name_to_item[module_name] = htypes.htest_list.test_module(module_name, module_ref, test_list=[])
         self._save()
         return self._service
 
     def collect(self, request, current_key):
         item = self._name_to_item[current_key]
-        self._htest.collect_tests(item.module_name)
+        test_list = self._htest.collect_tests(item.module_name)
+        self._name_to_item[current_key] = htypes.htest_list.test_module(
+            item.module_name, item.module_ref, test_list)
+        self._save()
 
 
 class ThisModule(Module):

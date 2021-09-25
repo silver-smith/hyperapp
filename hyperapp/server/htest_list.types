@@ -4,6 +4,7 @@ htest_list_d = record
 test_module = record:
   module_name: string
   module_ref: ref
+  test_list: string list
 
 storage = record:
   test_module_list: test_module list
