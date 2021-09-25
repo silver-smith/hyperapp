@@ -36,6 +36,10 @@ class RsaIdentity:
         self._mosaic = mosaic
         self._private_key = private_key
 
+    def __repr__(self):
+        pem_tail = self.peer.public_key_pem.splitlines()[-2][-10:].decode()
+        return f"<RsaIdentity {pem_tail}>"
+
     @property
     def piece(self):
         private_key_pem = self._private_key.private_bytes(
@@ -94,6 +98,10 @@ class RsaPeer:
     def __init__(self, mosaic, public_key: rsa.RSAPublicKey):
         self._mosaic = mosaic
         self._public_key = public_key
+
+    def __repr__(self):
+        pem_tail = self.public_key_pem.splitlines()[-2][-10:].decode()
+        return f"<RsaPeer {pem_tail}>"
 
     @property
     def piece(self):
