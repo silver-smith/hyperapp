@@ -42,6 +42,10 @@ class TestModuleList:
         item = self._name_to_item[current_key]
         return self._web.summon(item.module_ref)
 
+    def remove(self, request, current_key):
+        del self._name_to_item[current_key]
+        self._save()
+
     def select_module(self, request):
         return self._module_selector
 
@@ -74,6 +78,12 @@ class ThisModule(Module):
             state_attr_list=['current_key'],
             name='open',
             )
+        remove_command = htypes.rpc_command.rpc_command(
+            peer_ref=server_peer_ref,
+            servant_path=servant_path.get_attr('remove').as_data,
+            state_attr_list=['current_key'],
+            name='remove',
+            )
         select_module_command = htypes.rpc_command.rpc_command(
             peer_ref=server_peer_ref,
             servant_path=servant_path.get_attr('select_module').as_data,
@@ -92,6 +102,7 @@ class ThisModule(Module):
             dir_list=[[mosaic.put(htypes.htest_list.htest_list_d())]],
             command_ref_list=[
                 mosaic.put(open_command),
+                mosaic.put(remove_command),
                 mosaic.put(select_module_command),
                 mosaic.put(collect_command),
                 ],
