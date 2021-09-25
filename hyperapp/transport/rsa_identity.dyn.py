@@ -1,3 +1,5 @@
+from functools import cached_property
+
 from cryptography.fernet import Fernet
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -49,7 +51,7 @@ class RsaIdentity:
             )
         return htypes.rsa_identity.rsa_identity(private_key_pem)
 
-    @property
+    @cached_property
     def peer(self):
         return RsaPeer(self._mosaic, self._private_key.public_key())
 
@@ -107,7 +109,7 @@ class RsaPeer:
     def piece(self):
         return htypes.rsa_identity.rsa_peer(self.public_key_pem)
 
-    @property
+    @cached_property
     def public_key_pem(self):
         return self._public_key.public_bytes(
             encoding=serialization.Encoding.PEM,
