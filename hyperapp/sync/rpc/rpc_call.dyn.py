@@ -33,7 +33,7 @@ class ThisModule(Module):
                 sender_peer_ref=sender_peer_ref,
                 )
             request_ref = mosaic.put(request)
-            log.info("Rpc call: send rpc request: %s", request)
+            log.info("Rpc call: %s %s (%s): send rpc request: %s", receiver_peer, servant_path, args, request)
             transport.send(receiver_peer, sender_identity, [request_ref])
             result = rpc_endpoint.wait_for_response(request_id, timeout_sec)
             log.info("Rpc call: got result: %s", result)
