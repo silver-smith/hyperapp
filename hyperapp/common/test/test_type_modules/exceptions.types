@@ -1,0 +1,8 @@
+
+exception_1 = exception:
+  int_field: int
+
+exception_2 = exception(exception_1):
+  string_field: string
+
+empty_exception = exception

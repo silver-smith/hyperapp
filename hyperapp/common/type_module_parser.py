@@ -11,6 +11,7 @@ from .htypes import (
     optional_mt,
     list_mt,
     record_mt,
+    exception_mt,
     request_mt,
     notification_mt,
     interface_mt,
@@ -32,6 +33,7 @@ keywords = [
     'opt',
     'list',
     'record',
+    'exception',
     'interface',
     'list_service_type',
     ]
@@ -156,6 +158,10 @@ class Grammar:
         'typedef_rhs : record_def'
         p[0] = p[1]
 
+    def p_typedef_rhs_exception(self, p):
+        'typedef_rhs : exception_def'
+        p[0] = p[1]
+
     def p_typedef_rhs_interface(self, p):
         'typedef_rhs : interface_def'
         p[0] = p[1]
@@ -186,6 +192,34 @@ class Grammar:
 
     def p_record_base_name_def_2(self, p):
         'record_base_name_def : LPAR NAME RPAR'
+        p[0] = p[2]
+
+
+    def p_exception_def_1(self, p):
+        'exception_def : EXCEPTION exception_base_name_def'
+        base_name = p[2]
+        if base_name:
+            base_mt = name_mt(base_name)
+            base_ref = p.parser.mosaic.put(base_mt)
+        else:
+            base_ref = None
+        p[0] = exception_mt(base_ref, [])
+
+    def p_exception_def_2(self, p):
+        'exception_def : EXCEPTION exception_base_name_def COLON BLOCK_BEGIN field_list BLOCK_END'
+        base_name = p[2]
+        if base_name:
+            base = p.parser.mosaic.put(name_mt(base_name))
+        else:
+            base = None
+        p[0] = exception_mt(base, p[5])
+
+    def p_exception_base_name_def_1(self, p):
+        'exception_base_name_def : empty'
+        p[0] = None
+
+    def p_exception_base_name_def_2(self, p):
+        'exception_base_name_def : LPAR NAME RPAR'
         p[0] = p[2]
 
 
