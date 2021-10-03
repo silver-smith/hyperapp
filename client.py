@@ -39,6 +39,7 @@ code_module_list = [
     'client.local_server',
     'async.transport.tcp',
     'client.list_service',
+    'client.live_list_service',
     'client.tree_service',
     'client.record_service',
     'async.ui.rpc_command',

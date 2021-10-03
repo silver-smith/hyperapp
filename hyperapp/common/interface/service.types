@@ -19,3 +19,9 @@ list_service = record(multi_item_service)
 tree_service = record(multi_item_service)
 
 record_service = record(service)
+
+live_list_service = record(list_service)
+
+list_diff = record:
+  remove_key_list: ref list
+  item_list: ref list

@@ -16,6 +16,7 @@ code_module_list = [
     'transport.rsa_identity',
     'server.tcp_server',
     'server.sample_list',
+    'server.sample_live_list',
     'server.sample_tree',
     'server.module_list',
     'server.htest_list',
