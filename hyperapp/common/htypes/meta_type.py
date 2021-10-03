@@ -12,6 +12,7 @@ from .htypes import (
     TList,
     )
 from .record import TRecord
+from .exception import TException
 from .hyper_ref import ref_t
 from .interface import Request, Notification, Interface
 
@@ -67,6 +68,11 @@ record_mt = TRecord('record_mt', {
     'fields': TList(field_mt),
     })
 
+exception_mt = TRecord('exception_mt', {
+    'base': TOptional(ref_t),
+    'fields': TList(field_mt),
+    })
+
 
 def _field_from_piece(rec, types):
     t = types.resolve(rec.type)
@@ -85,6 +91,16 @@ def record_from_piece(rec, type_code_registry, name, types):
         base_t = None
     field_dict = _field_dict_from_piece_list(rec.fields, types)
     return TRecord(name, field_dict, base=base_t)
+
+
+def exception_from_piece(rec, type_code_registry, name, types):
+    if rec.base is not None:
+        base_t = types.resolve(rec.base)
+        assert isinstance(base_t, TException), f"Exception base is not an exception: {base_t}"
+    else:
+        base_t = None
+    field_dict = _field_dict_from_piece_list(rec.fields, types)
+    return TException(name, field_dict, base=base_t)
 
 
 request_mt = TRecord('request_mt', {
@@ -147,6 +163,7 @@ def register_builtin_meta_types(builtin_types, mosaic, types):
     builtin_types.register(mosaic, types, list_mt)
     builtin_types.register(mosaic, types, field_mt)
     builtin_types.register(mosaic, types, record_mt)
+    builtin_types.register(mosaic, types, exception_mt)
     builtin_types.register(mosaic, types, request_mt)
     builtin_types.register(mosaic, types, notification_mt)
     builtin_types.register(mosaic, types, interface_mt)
@@ -158,6 +175,7 @@ def register_meta_types(mosaic, types, type_code_registry):
     type_code_registry.register_actor(optional_mt, optional_from_piece, types)
     type_code_registry.register_actor(list_mt, list_from_piece, types)
     type_code_registry.register_actor(record_mt, record_from_piece, types)
+    type_code_registry.register_actor(exception_mt, exception_from_piece, types)
     type_code_registry.register_actor(request_mt, request_from_piece, mosaic, types)
     type_code_registry.register_actor(notification_mt, notification_from_piece, mosaic, types)
     type_code_registry.register_actor(interface_mt, interface_from_piece, types)
