@@ -3,6 +3,7 @@ import threading
 from collections import namedtuple
 from functools import partial
 
+from hyperapp.common.htypes import HException
 from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 from hyperapp.common.code_registry import CodeRegistry
 from hyperapp.common.module import Module
@@ -17,6 +18,24 @@ class TimeoutWaitingForResponse(Exception):
 
 
 RpcRequest = namedtuple('RpcRequest', 'receiver_identity sender')
+
+
+class SuccessResponse:
+
+    def __init__(self, result):
+        self._result = result
+
+    def get_result(self):
+        return self._result
+
+
+class ErrorResponse:
+
+    def __init__(self, exception):
+        self._exception = exception
+
+    def get_result(self):
+        raise self._exception
 
 
 class RpcEndpoint:
@@ -34,6 +53,7 @@ class RpcEndpoint:
         self._message_registry = registry = CodeRegistry('rpc_message', web, types)
         registry.register_actor(htypes.rpc.request, self._handle_request)
         registry.register_actor(htypes.rpc.response, self._handle_response)
+        registry.register_actor(htypes.rpc.error_response, self._handle_error_response)
 
     def __repr__(self):
         return '<sync RpcEndpoint>'
@@ -49,7 +69,8 @@ class RpcEndpoint:
         with self._response_lock:
             while True:
                 try:
-                    return self._result_by_request_id.pop(request_id)
+                    response = self._result_by_request_id.pop(request_id)
+                    return response.get_result()
                 except KeyError:
                     if not self._response_available.wait(timeout_sec):
                         raise TimeoutWaitingForResponse(f"Timed out waiting for response (timeout {timeout_sec} seconds)")
@@ -62,22 +83,37 @@ class RpcEndpoint:
         log.info("Process rpc request: %s", request)
         receiver_identity = transport_request.receiver_identity
         sender = self._peer_registry.invite(request.sender_peer_ref)
-        servant_path = self._servant_path_from_data(request.servant_path)
-        params = [
-            self._mosaic.resolve_ref(ref).value
-            for ref in request.params
-            ]
-        servant_fn = servant_path.resolve(self)
-        log.info("Call rpc servant: %s (%s)", servant_fn, params)
-        rpc_request = RpcRequest(transport_request.receiver_identity, sender)
-        result = servant_fn(rpc_request, *params)
-        log.info("Rpc servant %s call result: %s", servant_fn, result)
-        result_t = deduce_complex_value_type(self._mosaic, self._types, result)
-        result_ref = self._mosaic.put(result, result_t)
-        response = htypes.rpc.response(
-            request_id=request.request_id,
-            result_ref=result_ref,
-            )
+        servant_fn = "<unknown servant>"
+        try:
+            servant_path = self._servant_path_from_data(request.servant_path)
+            params = [
+                self._mosaic.resolve_ref(ref).value
+                for ref in request.params
+                ]
+            servant_fn = servant_path.resolve(self)
+            log.info("Call rpc servant: %s (%s)", servant_fn, params)
+            rpc_request = RpcRequest(transport_request.receiver_identity, sender)
+            result = servant_fn(rpc_request, *params)
+            log.info("Rpc servant %s call result: %s", servant_fn, result)
+            result_t = deduce_complex_value_type(self._mosaic, self._types, result)
+            result_ref = self._mosaic.put(result, result_t)
+            response = htypes.rpc.response(
+                request_id=request.request_id,
+                result_ref=result_ref,
+                )
+        except HException as x:
+            log.info("Rpc servant %s call h-typed error: %s", servant_fn, x)
+            response = htypes.rpc.error_response(
+                request_id=request.request_id,
+                exception_ref=self._mosaic.put(x),
+                )
+        except Exception as x:
+            exception = htypes.rpc.internal_error(str(x))
+            log.exception("Rpc servant %s call error: %s", servant_fn, exception)
+            response = htypes.rpc.error_response(
+                request_id=request.request_id,
+                exception_ref=self._mosaic.put(exception),
+                )
         response_ref = self._mosaic.put(response)
         self._transport.send(sender, receiver_identity, [response_ref])
 
@@ -85,7 +121,14 @@ class RpcEndpoint:
         log.info("Process rpc response: %s", response)
         result = self._mosaic.resolve_ref(response.result_ref).value
         with self._response_lock:
-            self._result_by_request_id[response.request_id] = result
+            self._result_by_request_id[response.request_id] = SuccessResponse(result)
+            self._response_available.notify_all()
+
+    def _handle_error_response(self, response, transport_request):
+        exception = self._mosaic.resolve_ref(response.exception_ref).value
+        log.info("Process rpc error response: %s", exception)
+        with self._response_lock:
+            self._result_by_request_id[response.request_id] = ErrorResponse(exception)
             self._response_available.notify_all()
 
 

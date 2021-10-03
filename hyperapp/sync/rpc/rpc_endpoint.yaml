@@ -4,6 +4,7 @@ import:
     - request
     - response
     - error_response
+    - internal_error
 require:
   - peer_registry
   - transport
