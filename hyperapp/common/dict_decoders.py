@@ -15,6 +15,7 @@ from .htypes import (
     tString,
     TOptional,
     TRecord,
+    TException,
     TList,
     ref_t,
     )
@@ -86,6 +87,7 @@ class DictDecoder(metaclass=abc.ABCMeta):
         return self.dispatch(t.base_t, value, path)
 
     @dispatch.register(TRecord)
+    @dispatch.register(TException)
     def decode_record(self, t, value, path):
         if t is ref_t and self._mosaic:
             return self._decode_ref(value, path)

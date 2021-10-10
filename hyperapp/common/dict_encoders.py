@@ -14,6 +14,7 @@ from .htypes import (
     tString,
     TOptional,
     TRecord,
+    TException,
     TList,
     Interface,
     ref_t,
@@ -62,6 +63,7 @@ class DictEncoder(metaclass=abc.ABCMeta):
         return self.dispatch(t.base_t, value)
 
     @dispatch.register(TRecord)
+    @dispatch.register(TException)
     def encode_record(self, t, value):
         if t is ref_t and self._mosaic:
             # Mosaic is defined for yaml encoder - to embed ref value.

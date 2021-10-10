@@ -11,6 +11,7 @@ from .htypes import (
     tString,
     TOptional,
     TRecord,
+    TException,
     TList,
     )
 
@@ -74,6 +75,7 @@ class CdrEncoder(object):
             self.dispatch(t.base_t, value)
 
     @dispatch.register(TRecord)
+    @dispatch.register(TException)
     def encode_record(self, t, value):
         ## print '*** encoding record', value, t, [field.name for field in t.fields]
         for field_name, field_type in t.fields.items():

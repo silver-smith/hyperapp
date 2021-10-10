@@ -12,6 +12,7 @@ from .htypes import (
     tString,
     TOptional,
     TRecord,
+    TException,
     TList,
     )
 from .htypes.packet_coders import DecodeError
@@ -106,6 +107,7 @@ class CdrDecoder(object):
             return None
 
     @dispatch.register(TRecord)
+    @dispatch.register(TException)
     def decode_record(self, t, path):
         fields = self.decode_record_fields(t.fields, path)
         return t(**fields)

@@ -3,6 +3,7 @@ from hyperapp.common.htypes import (
     TPrimitive,
     TOptional,
     TRecord,
+    TException,
     TList,
     )
 
@@ -32,6 +33,7 @@ class Visitor(object):
             self.dispatch(t.base_t, value)
 
     @dispatch.register(TRecord)
+    @dispatch.register(TException)
     def process_record(self, t, value):
         self.visit_record(t, value)
         fields = {}
