@@ -13,5 +13,5 @@ error_response = record:
   request_id: string
   exception_ref: ref
 
-internal_error = exception:
+server_error = exception:
   message: string

@@ -110,7 +110,7 @@ class RpcEndpoint:
                 exception_ref=self._mosaic.put(x),
                 )
         except Exception as x:
-            exception = htypes.rpc.internal_error(str(x))
+            exception = htypes.rpc.server_error(str(x))
             log.exception("Rpc servant %s call non-h-typed error: %s", servant_fn, exception)
             response = htypes.rpc.error_response(
                 request_id=request.request_id,

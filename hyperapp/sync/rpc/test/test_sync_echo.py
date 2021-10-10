@@ -99,7 +99,7 @@ def test_unexpected_error(htypes, echo_set_up):
         with pytest.raises(HException) as excinfo:
             result = rpc_call()
         log.info("Got exception: %s", excinfo)
-        assert str(excinfo.value) == "internal_error(message='Some unexpected error')"
+        assert str(excinfo.value) == "server_error(message='Some unexpected error')"
 
 
 def test_test_error(htypes, echo_set_up):
