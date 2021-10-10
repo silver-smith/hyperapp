@@ -107,8 +107,17 @@ class _Model(QtCore.QAbstractTableModel, ListFetcher):
 
     def process_diff(self, diff):
         log.debug("Process diff: %s", diff)
-        assert not diff.remove_keys  # todo
         current_keys = [getattr(item, self._key_attr) for item in self._item_list]
+        for key in diff.remove_keys:
+            try:
+                idx = current_keys.index(key)
+            except ValueError:
+                continue
+            self.beginRemoveRows(QtCore.QModelIndex(), idx, idx + 1)
+            del self._item_list[idx]
+            del self._id2index[key]
+            del current_keys[idx]
+            self.endRemoveRows()
         for item in diff.items:
             key = getattr(item, self._key_attr)
             idx = bisect_left(current_keys, key)
