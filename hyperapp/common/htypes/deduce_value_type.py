@@ -10,6 +10,7 @@ from .htypes import (
     TList,
     )
 from .record import TRecord
+from .exception import TException
 from .meta_type import list_mt
 from .builtins import primitive_list_types
 
@@ -33,7 +34,7 @@ def deduce_value_type(value):
     if t:
         return t
     t = getattr(value, '_t', None)
-    if isinstance(t, TRecord):
+    if isinstance(t, (TRecord, TException)):
         return t
     if isinstance(value, (list, tuple)):
         if value:
