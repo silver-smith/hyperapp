@@ -22,15 +22,15 @@ def post_stop_checks():
 
 
 @pytest.fixture
-def additional_code_module_dirs():
+def additional_module_dirs():
     return []
 
 
 @pytest.fixture
-def services(additional_code_module_dirs, code_module_list, post_stop_checks):
+def services(additional_module_dirs, code_module_list, post_stop_checks):
     services = Services()
     services.init_services()
-    services.code_module_dir_list += additional_code_module_dirs
+    services.module_dir_list += additional_module_dirs
     services.init_modules(code_module_list)
     services.start()
     yield services

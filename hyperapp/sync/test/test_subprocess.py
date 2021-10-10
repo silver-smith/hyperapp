@@ -27,7 +27,7 @@ def test_subprocess(services):
 def test_import_failure(services):
     subprocess = services.subprocess(
         'subprocess',
-        additional_code_module_dirs=[Path(__file__).parent],
+        additional_module_dirs=[Path(__file__).parent],
         code_module_list=[
             'import_failure',
             ],
@@ -42,7 +42,7 @@ def test_import_failure(services):
 def test_module_init_failure(services, sleep_sec):
     subprocess = services.subprocess(
         'subprocess',
-        additional_code_module_dirs=[Path(__file__).parent],
+        additional_module_dirs=[Path(__file__).parent],
         code_module_list=[
             'module_init_failure',
             ],

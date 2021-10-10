@@ -45,7 +45,7 @@ def test_send_subprocess_parcel(services):
 
     subprocess = services.subprocess(
         'subprocess',
-        additional_code_module_dirs=[Path(__file__).parent],
+        additional_module_dirs=[Path(__file__).parent],
         code_module_list=[
             'send',
             ],
@@ -77,7 +77,7 @@ def test_subprocess_transport_echo(services):
 
     subprocess = services.subprocess(
         'subprocess',
-        additional_code_module_dirs=[Path(__file__).parent],
+        additional_module_dirs=[Path(__file__).parent],
         code_module_list=[
             'echo',
             ],

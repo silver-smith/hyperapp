@@ -103,7 +103,7 @@ def test_list_service(services, htypes, code, row_t):
 
     subprocess = services.subprocess(
         'subprocess',
-        additional_code_module_dirs=[Path(__file__).parent],
+        additional_module_dirs=[Path(__file__).parent],
         code_module_list=[
             'async.event_loop',
             'async.async_main',

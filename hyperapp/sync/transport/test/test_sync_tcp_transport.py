@@ -50,7 +50,7 @@ def test_tcp_send(services):
 
     subprocess = services.subprocess(
         'subprocess',
-        additional_code_module_dirs=[Path(__file__).parent],
+        additional_module_dirs=[Path(__file__).parent],
         code_module_list=[
             'sync.transport.tcp',
             'send',
@@ -82,7 +82,7 @@ def test_tcp_echo(services):
 
     subprocess = services.subprocess(
         'subprocess',
-        additional_code_module_dirs=[Path(__file__).parent],
+        additional_module_dirs=[Path(__file__).parent],
         code_module_list=[
             'sync.transport.tcp',
             'echo',

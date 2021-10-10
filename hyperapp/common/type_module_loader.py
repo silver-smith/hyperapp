@@ -62,23 +62,24 @@ class TypeModuleLoader(object):
     def registry(self):
         return self._registry
 
-    def load_type_modules(self, root_dir):
-        log.info("Load type modules from: %s", root_dir)
-        name_to_source = self._load_sources(root_dir)
+    def load_type_modules(self, dir_list):
+        log.info("Load type modules from: %s", dir_list)
+        name_to_source = self._load_sources(dir_list)
         name_to_module = {}  # mapped/resolved module
         for name, source in sorted(name_to_source.items()):
             module = self._resolve_module(name_to_source, name_to_module, name, [])
             name_to_module[name] = module
         self._registry.update(name_to_module)
 
-    def _load_sources(self, root_dir):
+    def _load_sources(self, dir_list):
         name_to_source = {}
-        for path in root_dir.rglob('*.types'):
-            if 'test' in path.relative_to(root_dir).parts:
-                continue  # Skip test subdirectories.
-            name = path.stem  # module name
-            source = load_type_module_source(self._builtin_types, self._mosaic, path, name)
-            name_to_source[name] = source
+        for root_dir in dir_list:
+            for path in root_dir.rglob('*.types'):
+                if 'test' in path.relative_to(root_dir).parts:
+                    continue  # Skip test subdirectories.
+                name = path.stem  # module name
+                source = load_type_module_source(self._builtin_types, self._mosaic, path, name)
+                name_to_source[name] = source
         return name_to_source
 
     def _resolve_module(self, name_to_source, name_to_module, name, dep_stack):

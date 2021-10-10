@@ -38,17 +38,17 @@ def htypes(types, loader):
 
 
 def test_type_module_loader(loader):
-    loader.load_type_modules(TEST_MODULES_DIR / 'test_type_modules')
+    loader.load_type_modules([TEST_MODULES_DIR / 'test_type_modules'])
 
 
 def test_circular_type_dep(loader):
     with pytest.raises(CircularDepError) as excinfo:
-        loader.load_type_modules(TEST_MODULES_DIR / 'circular_type_dep')
+        loader.load_type_modules([TEST_MODULES_DIR / 'circular_type_dep'])
     assert str(excinfo.value) == 'Circular type module dependency: module_1->module_2->module_3->module_1'
 
 
 def test_types(types, htypes, loader):
-    loader.load_type_modules(TEST_MODULES_DIR / 'test_type_modules')
+    loader.load_type_modules([TEST_MODULES_DIR / 'test_type_modules'])
 
 
     assert htypes.type_module_1.record_1 == TRecord('record_1', {'int_field': tInt})
@@ -112,7 +112,7 @@ def test_types(types, htypes, loader):
 
 
 def test_same_instance(htypes, loader):
-    loader.load_type_modules(TEST_MODULES_DIR / 'same_instance')
+    loader.load_type_modules([TEST_MODULES_DIR / 'same_instance'])
     element = htypes.same_instance.element('abcd')
 
     # Same types should resolve to same instances.
@@ -135,7 +135,7 @@ def test_same_instance(htypes, loader):
 
 
 def test_exception_type(types, htypes, loader):
-    loader.load_type_modules(TEST_MODULES_DIR / 'test_type_modules')
+    loader.load_type_modules([TEST_MODULES_DIR / 'test_type_modules'])
 
     assert htypes.exceptions.exception_1 == TException('exception_1', {'int_field': tInt})
     assert htypes.exceptions.exception_2 == TException('exception_2', {'int_field': tInt, 'string_field': tString})

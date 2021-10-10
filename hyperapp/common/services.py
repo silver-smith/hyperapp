@@ -30,7 +30,7 @@ class Services(object):
 
     def __init__(self):
         self.hyperapp_dir = HYPERAPP_DIR / 'hyperapp'
-        self.code_module_dir_list = [self.hyperapp_dir]
+        self.module_dir_list = [self.hyperapp_dir]
         self.on_start = []
         self.on_stop = []
         self.stop_signal = threading.Event()
@@ -72,7 +72,7 @@ class Services(object):
     def init_modules(self, code_module_list, config=None):
         log.info("Init modules.")
         try:
-            self.type_module_loader.load_type_modules(self.hyperapp_dir)
+            self.type_module_loader.load_type_modules(self.module_dir_list)
             self._load_code_module_list(code_module_list, config)
             self.module_registry.init_phases(self)
         except:
@@ -84,7 +84,7 @@ class Services(object):
 
     def _load_code_module_list(self, module_name_list, config):
 
-        registry = self.code_module_loader.load_code_modules(self.code_module_dir_list)
+        registry = self.code_module_loader.load_code_modules(self.module_dir_list)
         self.loaded_code_modules = registry
 
         preferred_modules = {

@@ -67,7 +67,7 @@ def test_sync_echo(services, htypes):
 
     subprocess = services.subprocess(
         'subprocess',
-        additional_code_module_dirs=[Path(__file__).parent],
+        additional_module_dirs=[Path(__file__).parent],
         code_module_list=[
             'echo_service',
             ],

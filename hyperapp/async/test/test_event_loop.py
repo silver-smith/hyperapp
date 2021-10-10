@@ -12,7 +12,7 @@ pytest_plugins = ['hyperapp.common.test.services']
 
 
 @pytest.fixture
-def additional_code_module_dirs():
+def additional_module_dirs():
     return [Path(__file__).parent]
 
 

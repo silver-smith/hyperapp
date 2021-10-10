@@ -50,7 +50,7 @@ def test_tcp_send(services):
 
     subprocess = services.subprocess(
         'subprocess',
-        additional_code_module_dirs=[Path(__file__).parent],
+        additional_module_dirs=[Path(__file__).parent],
         code_module_list=[
             'async.event_loop',
             'async.async_main',
@@ -84,7 +84,7 @@ def test_tcp_echo(services):
 
     subprocess = services.subprocess(
         'subprocess',
-        additional_code_module_dirs=[Path(__file__).parent],
+        additional_module_dirs=[Path(__file__).parent],
         code_module_list=[
             'sync.transport.tcp',  # tcp_transport.route is required registered at sync route_registry.
             'async.event_loop',
