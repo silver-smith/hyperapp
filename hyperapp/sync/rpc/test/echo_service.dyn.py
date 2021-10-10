@@ -17,6 +17,14 @@ class Echo:
         log.info("Echo.echo: %s; request=%s", message, request)
         return f'{message} to you too'
 
+    def raise_unexpected_error(self, request):
+        log.info("Echo.make_unexpected_error: request=%s", request)
+        raise RuntimeError("Some unexpected error")
+
+    def raise_test_error(self, request):
+        log.info("Echo.raise_test_error: request=%s", request)
+        raise htypes.echo_service.test_error("Some error")
+
 
 class ThisModule(Module):
 
@@ -37,7 +45,7 @@ class ThisModule(Module):
         services.endpoint_registry.register(my_identity, rpc_endpoint)
 
         echo_servant_name = 'echo'
-        echo_servant_path = services.servant_path().registry_name(echo_servant_name).get_attr('echo')
+        echo_servant_path = services.servant_path().registry_name(echo_servant_name)
 
         servant = Echo()
         rpc_endpoint.register_servant(echo_servant_name, servant)

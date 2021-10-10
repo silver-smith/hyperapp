@@ -16,6 +16,14 @@ class Echo:
         log.info("Echo.echo: %s; request=%s", message, request)
         return f'{message} to you too'
 
+    async def raise_unexpected_error(self, request):
+        log.info("Echo.make_unexpected_error: request=%s", request)
+        raise RuntimeError("Some unexpected error")
+
+    async def raise_test_error(self, request):
+        log.info("Echo.raise_test_error: request=%s", request)
+        raise htypes.echo_service.test_error("Some error")
+
 
 class ThisModule(Module):
 
@@ -39,7 +47,7 @@ class ThisModule(Module):
         log.info("Echo service async run:")
         try:
             echo_servant_name = 'echo'
-            echo_servant_path = services.servant_path().registry_name(echo_servant_name).get_attr('echo')
+            echo_servant_path = services.servant_path().registry_name(echo_servant_name)
 
             rpc_endpoint = self._async_rpc_endpoint()
             self._async_endpoint_registry.register(self._my_identity, rpc_endpoint)

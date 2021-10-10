@@ -1,3 +1,7 @@
+import:
+  types:
+    echo_service:
+      - test_error
 require:
   - unbundler
   - generate_rsa_identity

@@ -1,4 +1,7 @@
 import:
+  types:
+    echo_service:
+      - test_error
   code:
     - sync.rpc.rpc_endpoint
 require:
