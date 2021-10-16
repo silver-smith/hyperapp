@@ -39,7 +39,7 @@ class TestModuleList:
                 }
 
     def _save(self):
-        storage = htypes.htest_list.storage(
+        storage = htypes.htest.storage(
             list(self._name_to_item.values()))
         self._file.save_piece(storage)
 
@@ -67,7 +67,7 @@ class TestModuleList:
 
     def set_module(self, request, module_name, module_ref):
         log.info("Set module: %r %s", module_name, module_ref)
-        self._name_to_item[module_name] = htypes.htest_list.test_module(module_name, module_ref, test_list=[])
+        self._name_to_item[module_name] = htypes.htest.test_module(module_name, module_ref, test_list=[])
         self._save()
         return self._service
 
@@ -75,7 +75,7 @@ class TestModuleList:
         log.info("Collect tests for module: %r", current_key)
         item = self._name_to_item[current_key]
         test_list = self._htest.collect_tests(item.module_name)
-        item = htypes.htest_list.test_module(item.module_name, item.module_ref, test_list)
+        item = htypes.htest.test_module(item.module_name, item.module_ref, test_list)
         self._name_to_item[current_key] = item
         diff = htypes.service.list_diff(
             remove_key_list=[self._mosaic.put(current_key)],
@@ -95,7 +95,7 @@ class ThisModule(Module):
 
         server_peer_ref = mosaic.put(services.server_identity.peer.piece)
 
-        servant_name = 'htest_list'
+        servant_name = 'htest_module_list'
         servant_path = services.servant_path().registry_name(servant_name)
 
         open_command = htypes.rpc_command.rpc_command(
@@ -125,7 +125,7 @@ class ThisModule(Module):
         service = htypes.service.live_list_service(
             peer_ref=server_peer_ref,
             servant_path=servant_path.get_attr('list').as_data,
-            dir_list=[[mosaic.put(htypes.htest_list.htest_list_d())]],
+            dir_list=[[mosaic.put(htypes.htest.htest_list_d())]],
             command_ref_list=[
                 mosaic.put(open_command),
                 mosaic.put(remove_command),
@@ -133,7 +133,7 @@ class ThisModule(Module):
                 mosaic.put(collect_command),
                 ],
             key_column_id='module_name',
-            column_list=item_t_to_column_list(services.types, htypes.htest_list.test_module),
+            column_list=item_t_to_column_list(services.types, htypes.htest.test_module),
             )
 
         module_list_service = services.module_list_service_factory(['available'])
@@ -163,4 +163,4 @@ class ThisModule(Module):
             )
         services.server_rpc_endpoint.register_servant(servant_name, servant)
 
-        services.server_ref_list.add_ref('htest_list', 'Test list', mosaic.put(service))
+        services.server_ref_list.add_ref('htest_module_list', 'Test module list', mosaic.put(service))

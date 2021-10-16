@@ -12,7 +12,7 @@ import:
       - item
     selector:
       - selector
-    htest_list:
+    htest:
       - htest_list_d
       - test_module
       - storage
