@@ -1,7 +1,8 @@
 import:
   types:
     service:
-      - list_service
+      - list_diff
+      - live_list_service
     rpc_command:
       - rpc_command
     rpc_callback:
@@ -19,6 +20,8 @@ import:
     - common.item_column_list
 require:
   - file_bundle
+  - servant_path_from_data
+  - rpc_call
   - server_identity
   - server_rpc_endpoint
   - server_ref_list
