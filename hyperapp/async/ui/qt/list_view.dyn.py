@@ -113,7 +113,7 @@ class _Model(QtCore.QAbstractTableModel, ListFetcher):
                 idx = current_keys.index(key)
             except ValueError:
                 continue
-            self.beginRemoveRows(QtCore.QModelIndex(), idx, idx + 1)
+            self.beginRemoveRows(QtCore.QModelIndex(), idx, idx)
             del self._item_list[idx]
             del self._id2index[key]
             del current_keys[idx]
@@ -121,7 +121,7 @@ class _Model(QtCore.QAbstractTableModel, ListFetcher):
         for item in diff.items:
             key = getattr(item, self._key_attr)
             idx = bisect_left(current_keys, key)
-            self.beginInsertRows(QtCore.QModelIndex(), idx, idx + 1)
+            self.beginInsertRows(QtCore.QModelIndex(), idx, idx)
             self._item_list.insert(idx, item)
             self._id2index[key] = self.createIndex(idx, 0)
             self.endInsertRows()
