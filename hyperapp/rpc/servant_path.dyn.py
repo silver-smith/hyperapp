@@ -86,7 +86,7 @@ class Partial:
         return f"Partial({self._param_list})"
 
     def resolve(self, fn):
-        return partial(fn, *self._param_list)
+        return fn(*self._param_list)
 
 
 class ServantPath:
