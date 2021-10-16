@@ -72,10 +72,17 @@ class TestModuleList:
         return self._service
 
     def collect(self, request, current_key):
+        log.info("Collect tests for module: %r", current_key)
         item = self._name_to_item[current_key]
         test_list = self._htest.collect_tests(item.module_name)
-        self._name_to_item[current_key] = htypes.htest_list.test_module(
-            item.module_name, item.module_ref, test_list)
+        item = htypes.htest_list.test_module(item.module_name, item.module_ref, test_list)
+        self._name_to_item[current_key] = item
+        diff = htypes.service.list_diff(
+            remove_key_list=[self._mosaic.put(current_key)],
+            item_list=[self._mosaic.put(item)],
+            )
+        log.info("Send diffs: %s", diff)
+        self._rpc_call(diff)
         self._save()
 
 
