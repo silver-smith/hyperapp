@@ -237,7 +237,12 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
     # ListObserver methods  ---------------------------------------------------------------------------------------------
 
     def process_diff(self, diff):
+        current_key = self.current_item_key
         self.model().process_diff(diff)
+        index = self.model().id2index(current_key)
+        if index is not None:
+            # Keep current key if it was updated (removed and added in single diff).
+            self.setCurrentIndex(index)
 
     # -------------------------------------------------------------------------------------------------------------------
 
