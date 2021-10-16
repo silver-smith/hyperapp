@@ -1,14 +1,63 @@
 import logging
 import queue
-from functools import partial
+from functools import cached_property, partial
+from pathlib import Path
 
 from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common.module import Module
 
+from . import htypes
+
 log = logging.getLogger(__name__)
 
 
-class Htest:
+class HTestList:
+
+    def __init__(self, file):
+        self._file = file
+        self._name_to_module = None  # module_name -> htest.test_module
+
+    @cached_property
+    def dict(self):
+        if self._name_to_module is None:
+            self._name_to_module = self._load()
+        return self._name_to_module
+
+    def add(self, module_name, module_ref):
+        log.info("Add module: %r %s", module_name, module_ref)
+        self.dict[module_name] = htypes.htest.test_module(module_name, module_ref, test_list=[])
+        self._save()
+
+    def remove(self, module_name):
+        log.info("Remove module %r", module_name)
+        del self.dict[module_name]
+        self._save()
+
+    def set_test_list(self, module_name, test_list):
+        old_item = self.dict[module_name]
+        new_item = htypes.htest.test_module(module_name, old_item.module_ref, test_list)
+        self.dict[module_name] = new_item
+        self._save()
+        return new_item
+
+    def _load(self):
+        try:
+            storage = self._file.load_piece()
+        except FileNotFoundError:
+            return {}
+        else:
+            return {
+                item.module_name: item
+                for item in storage.test_module_list
+                }
+
+    def _save(self):
+        storage = htypes.htest.storage(
+            list(self._name_to_module.values()))
+        self._file.save_piece(storage)
+
+
+class HTest:
 
     def __init__(self, mosaic, ref_collector, subprocess_factory, peer_registry,
                  servant_path_factory, servant_path_from_data, rpc_call_factory, identity, rpc_endpoint):
@@ -74,7 +123,7 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        services.htest = Htest(
+        services.htest = HTest(
             services.mosaic,
             services.ref_collector,
             services.subprocess,
@@ -85,3 +134,6 @@ class ThisModule(Module):
             services.server_identity,
             services.server_rpc_endpoint,
             )
+
+        file = services.file_bundle(Path.home() / '.local/share/hyperapp/server/htest_list.json')
+        services.htest_list = HTestList(file)

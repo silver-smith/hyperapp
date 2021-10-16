@@ -13,13 +13,11 @@ import:
     selector:
       - selector
     htest:
-      - htest_list_d
+      - htest_module_list_d
       - test_module
-      - storage
   code:
     - common.item_column_list
 require:
-  - file_bundle
   - servant_path_from_data
   - rpc_call
   - server_identity
@@ -27,3 +25,4 @@ require:
   - server_ref_list
   - module_list_service_factory
   - htest
+  - htest_list

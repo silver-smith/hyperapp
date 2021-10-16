@@ -1,10 +1,14 @@
 
+htest_module_list_d = record
 htest_list_d = record
 
 test_module = record:
   module_name: string
   module_ref: ref
   test_list: string list
+
+test = record:
+  name: string
 
 storage = record:
   test_module_list: test_module list

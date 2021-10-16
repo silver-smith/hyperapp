@@ -1,4 +1,10 @@
+import:
+  types:
+    htest:
+      - test_module
+      - storage
 require:
+  - file_bundle
   - ref_collector
   - subprocess
   - peer_registry
@@ -9,3 +15,4 @@ require:
   - server_rpc_endpoint
 provide:
   - htest
+  - htest_list
