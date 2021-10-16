@@ -1,8 +1,7 @@
 import:
   types:
     service:
-      - list_diff
-      - live_list_service
+      - list_service
     rpc_command:
       - rpc_command
     rpc_callback:
@@ -13,17 +12,16 @@ import:
     selector:
       - selector
     htest:
-      - htest_module_list_d
-      - test_module
+      - htest_list_d
+      - test
   code:
     - common.item_column_list
 require:
-  - servant_path_from_data
-  - rpc_call
   - server_identity
   - server_rpc_endpoint
   - server_ref_list
   - module_list_service_factory
   - htest
   - htest_list
+provide:
   - htest_list_service_factory

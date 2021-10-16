@@ -20,6 +20,7 @@ code_module_list = [
     'server.sample_tree',
     'server.module_list',
     'server.htest_module_list',
+    'server.htest_list',
     ]
 
 config = {
