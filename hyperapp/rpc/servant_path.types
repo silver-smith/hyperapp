@@ -7,3 +7,6 @@ get_attribute = record:
 
 partial = record:
   params: ref list
+
+parameterized = record:
+  params: ref list

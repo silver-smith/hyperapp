@@ -48,7 +48,7 @@ class ThisModule(Module):
             )
 
     def htest_list_service_factory(self, mosaic, types, servant_path_factory, module_name):
-        servant_path = servant_path_factory().registry_name(self._servant_name).partial(module_name)
+        servant_path = servant_path_factory().registry_name(self._servant_name).parameterized(module_name)
         run_command = htypes.rpc_command.rpc_command(
             peer_ref=self._server_peer_ref,
             servant_path=servant_path.get_attr('run').as_data,

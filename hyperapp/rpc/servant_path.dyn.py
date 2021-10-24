@@ -89,6 +89,38 @@ class Partial:
         return partial(fn, *self._param_list)
 
 
+class Parameterized:
+
+    @classmethod
+    def from_piece(cls, piece, mosaic, web):
+        param_list = [
+            web.summon(ref)
+            for ref in piece.params
+            ]
+        return cls(mosaic, param_list)
+
+    def __init__(self, mosaic, param_list):
+        self._mosaic = mosaic
+        self._param_list = param_list
+
+    @property
+    def piece(self):
+        return htypes.servant_path.parameterized([
+            self._mosaic.put(param)
+            for param in self._param_list
+            ])
+
+    @property
+    def title(self):
+        return ', '.join(str(p) for p in self._param_list)
+
+    def __str__(self):
+        return f"Parameterized({self._param_list})"
+
+    def resolve(self, fn):
+        return fn(*self._param_list)
+
+
 class ServantPath:
 
     @classmethod
@@ -121,6 +153,9 @@ class ServantPath:
     def partial(self, *args):
         return self._with_element(Partial(self._mosaic, args))
 
+    def parameterized(self, *args):
+        return self._with_element(Parameterized(self._mosaic, args))
+
     @property
     def as_data(self):
         return tuple(
@@ -145,6 +180,7 @@ class ThisModule(Module):
         registry.register_actor(htypes.servant_path.registry_name, RegistryName.from_piece)
         registry.register_actor(htypes.servant_path.get_attribute, GetAttribute.from_piece)
         registry.register_actor(htypes.servant_path.partial, Partial.from_piece, services.mosaic, services.web)
+        registry.register_actor(htypes.servant_path.parameterized, Parameterized.from_piece, services.mosaic, services.web)
 
         services.servant_path = partial(ServantPath, services.mosaic)
         services.servant_path_from_data = partial(ServantPath.from_data, services.mosaic, registry)
