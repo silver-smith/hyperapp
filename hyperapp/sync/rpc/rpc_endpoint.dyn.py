@@ -86,6 +86,7 @@ class RpcEndpoint:
         servant_fn = "<unknown servant>"
         try:
             servant_path = self._servant_path_from_data(request.servant_path)
+            log.info("Resolve rpc servant: %s", servant_path)
             params = [
                 self._mosaic.resolve_ref(ref).value
                 for ref in request.params
