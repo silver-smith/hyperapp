@@ -68,6 +68,17 @@ class TestModuleListServant:
         log.info("Send diffs: %s", diff)
         self._rpc_call(diff)
 
+    def globals(self, request, current_key):
+        log.info("Collect globals for module: %r", current_key)
+        global_list = self._htest.collect_globals(module_name=current_key)
+        new_item = self._htest_list.set_global_list(current_key, global_list)
+        diff = htypes.service.list_diff(
+            remove_key_list=[self._mosaic.put(current_key)],
+            item_list=[self._mosaic.put(new_item)],
+            )
+        log.info("Send diffs: %s", diff)
+        self._rpc_call(diff)
+
 
 class ThisModule(Module):
 
@@ -111,6 +122,12 @@ class ThisModule(Module):
             state_attr_list=['current_key'],
             name='collect',
             )
+        globals_command = htypes.rpc_command.rpc_command(
+            peer_ref=server_peer_ref,
+            servant_path=servant_path.get_attr('globals').as_data,
+            state_attr_list=['current_key'],
+            name='globals',
+            )
         service = htypes.service.live_list_service(
             peer_ref=server_peer_ref,
             servant_path=servant_path.get_attr('list').as_data,
@@ -121,6 +138,7 @@ class ThisModule(Module):
                 mosaic.put(remove_command),
                 mosaic.put(select_module_command),
                 mosaic.put(collect_command),
+                mosaic.put(globals_command),
                 ],
             key_column_id='module_name',
             column_list=item_t_to_column_list(services.types, htypes.htest.test_module),

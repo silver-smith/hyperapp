@@ -5,6 +5,8 @@ from hyperapp.common.htypes import bundle_t
 from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common.module import Module
 
+from . import htypes
+
 log = logging.getLogger(__name__)
 
 
@@ -17,6 +19,14 @@ class Runner:
         log.info("Collect tests: %s", module_name)
         module = self._import_module(module_name)
         return [name for name in dir(module) if name.startswith('test')]
+
+    def collect_globals(self, request, module_name):
+        log.info("Collect globals: %s", module_name)
+        module = self._import_module(module_name)
+        return [
+            htypes.htest.global_fn(name, [])
+            for name in dir(module)
+            ]
 
 
 class ThisModule(Module):

@@ -1,5 +1,6 @@
 import logging
 import queue
+from contextlib import contextmanager
 from functools import cached_property, partial
 from pathlib import Path
 
@@ -25,7 +26,7 @@ class HTestList:
 
     def add(self, module_name, module_ref):
         log.info("Add module: %r %s", module_name, module_ref)
-        self.dict[module_name] = htypes.htest.test_module(module_name, module_ref, test_list=[])
+        self.dict[module_name] = htypes.htest.test_module(module_name, module_ref, test_list=[], global_list=[])
         self._save()
 
     def remove(self, module_name):
@@ -35,7 +36,14 @@ class HTestList:
 
     def set_test_list(self, module_name, test_list):
         old_item = self.dict[module_name]
-        new_item = htypes.htest.test_module(module_name, old_item.module_ref, test_list)
+        new_item = htypes.htest.test_module(module_name, old_item.module_ref, test_list, old_item.global_list)
+        self.dict[module_name] = new_item
+        self._save()
+        return new_item
+
+    def set_global_list(self, module_name, global_list):
+        old_item = self.dict[module_name]
+        new_item = htypes.htest.test_module(module_name, old_item.module_ref, old_item.test_list, global_list)
         self.dict[module_name] = new_item
         self._save()
         return new_item
@@ -57,6 +65,20 @@ class HTestList:
         self._file.save_piece(storage)
 
 
+class RunnerProcess:
+
+    def __init__(self, rpc_call_factory, rpc_endpoint, identity, peer, servant_path):
+        self._rpc_call_factory = rpc_call_factory
+        self._rpc_endpoint = rpc_endpoint
+        self._identity = identity
+        self._peer = peer
+        self._servant_path = servant_path
+
+    def rpc_call(self, fn_name):
+        return self._rpc_call_factory(
+            self._rpc_endpoint, self._peer, self._servant_path.get_attr(fn_name), self._identity)
+
+
 class HTest:
 
     def __init__(self, mosaic, ref_collector, subprocess_factory, peer_registry,
@@ -73,7 +95,22 @@ class HTest:
 
     def collect_tests(self, module_name):
         log.info("Collect tests from: %s", module_name)
+        with self._subprocess_running() as process:
+            collect_call = process.rpc_call('collect_tests')
+            test_list = collect_call(module_name)
+            log.info("Collected test list: %s", test_list)
+            return test_list
 
+    def collect_globals(self, module_name):
+        log.info("Collect global from: %s", module_name)
+        with self._subprocess_running() as process:
+            collect_call = process.rpc_call('collect_globals')
+            global_list = collect_call(module_name)
+            log.info("Collected global list: %s", global_list)
+            return global_list
+
+    @contextmanager
+    def _subprocess_running(self):
         server_peer_ref = self._mosaic.put(self._identity.peer.piece)
         server_peer_ref_cdr_list = [packet_coders.encode('cdr', server_peer_ref)]
 
@@ -100,19 +137,12 @@ class HTest:
         with subprocess:
             log.info("Waiting for runner signal.")
             runner_peer_ref, runner_servant_path_refs = runner_signal_queue.get(timeout=20)
-
             runner_peer = self._peer_registry.invite(runner_peer_ref)
             runner_servant_path = self._servant_path_from_data(runner_servant_path_refs)
-
             log.info("Got runner signal: peer=%s servant=%s", runner_peer, runner_servant_path)
 
-            collect_call = self._rpc_call_factory(
-                self._rpc_endpoint, runner_peer, runner_servant_path.get_attr('collect_tests'), self._identity)
-            test_list = collect_call(module_name)
-            log.info("Collected test list: %s", test_list)
-
-            return test_list
-
+            yield RunnerProcess(self._rpc_call_factory, self._rpc_endpoint, self._identity, runner_peer, runner_servant_path)
+        
     @staticmethod
     def _runner_is_ready(queue, request, runner_peer_ref, runner_servant_path):
         queue.put((runner_peer_ref, runner_servant_path))

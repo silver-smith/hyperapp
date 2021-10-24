@@ -1,3 +1,7 @@
+import:
+  types:
+    htest:
+      - global_fn
 require:
   - unbundler
   - generate_rsa_identity
