@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 class TestModuleListServant:
 
     def __init__(self, mosaic, web, peer_registry, servant_path_from_data, rpc_call_factory, identity, rpc_endpoint,
-                 module_selector, htest, htest_list, htest_list_service_factory, service):
+                 module_selector, htest, htest_list, htest_list_service_factory, htest_global_list_service_factory, service):
         self._web = web
         self._mosaic = mosaic
         self._peer_registry = peer_registry
@@ -23,6 +23,7 @@ class TestModuleListServant:
         self._htest = htest
         self._htest_list = htest_list
         self._htest_list_service_factory = htest_list_service_factory
+        self._htest_global_list_service_factory = htest_global_list_service_factory
         self._service = service
         self._rpc_call = None
 
@@ -39,6 +40,9 @@ class TestModuleListServant:
 
     def open(self, request, current_key):
         return self._htest_list_service_factory(module_name=current_key)
+
+    def globals(self, request, current_key):
+        return self._htest_global_list_service_factory(module_name=current_key)
 
     def module(self, request, current_key):
         item = self._dict[current_key]
@@ -68,7 +72,7 @@ class TestModuleListServant:
         log.info("Send diffs: %s", diff)
         self._rpc_call(diff)
 
-    def globals(self, request, current_key):
+    def collect_globals(self, request, current_key):
         log.info("Collect globals for module: %r", current_key)
         global_list = self._htest.collect_globals(module_name=current_key)
         new_item = self._htest_list.set_global_list(current_key, global_list)
@@ -98,6 +102,12 @@ class ThisModule(Module):
             state_attr_list=['current_key'],
             name='open',
             )
+        globals_command = htypes.rpc_command.rpc_command(
+            peer_ref=server_peer_ref,
+            servant_path=servant_path.get_attr('globals').as_data,
+            state_attr_list=['current_key'],
+            name='globals',
+            )
         module_command = htypes.rpc_command.rpc_command(
             peer_ref=server_peer_ref,
             servant_path=servant_path.get_attr('module').as_data,
@@ -122,11 +132,11 @@ class ThisModule(Module):
             state_attr_list=['current_key'],
             name='collect',
             )
-        globals_command = htypes.rpc_command.rpc_command(
+        collect_globals_command = htypes.rpc_command.rpc_command(
             peer_ref=server_peer_ref,
-            servant_path=servant_path.get_attr('globals').as_data,
+            servant_path=servant_path.get_attr('collect_globals').as_data,
             state_attr_list=['current_key'],
-            name='globals',
+            name='collect_globals',
             )
         service = htypes.service.live_list_service(
             peer_ref=server_peer_ref,
@@ -134,11 +144,12 @@ class ThisModule(Module):
             dir_list=[[mosaic.put(htypes.htest.htest_module_list_d())]],
             command_ref_list=[
                 mosaic.put(open_command),
+                mosaic.put(globals_command),
                 mosaic.put(module_command),
                 mosaic.put(remove_command),
                 mosaic.put(select_module_command),
                 mosaic.put(collect_command),
-                mosaic.put(globals_command),
+                mosaic.put(collect_globals_command),
                 ],
             key_column_id='module_name',
             column_list=item_t_to_column_list(services.types, htypes.htest.test_module),
@@ -167,6 +178,7 @@ class ThisModule(Module):
             services.htest,
             services.htest_list,
             services.htest_list_service_factory,
+            services.htest_global_list_service_factory,
             service,
             )
         services.server_rpc_endpoint.register_servant(servant_name, servant)

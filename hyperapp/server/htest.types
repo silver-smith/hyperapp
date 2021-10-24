@@ -1,6 +1,7 @@
 
 htest_module_list_d = record
 htest_list_d = record
+htest_global_list_d = record
 
 
 global_fn = record:

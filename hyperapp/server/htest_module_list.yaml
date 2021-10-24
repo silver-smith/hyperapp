@@ -27,3 +27,4 @@ require:
   - htest
   - htest_list
   - htest_list_service_factory
+  - htest_global_list_service_factory
