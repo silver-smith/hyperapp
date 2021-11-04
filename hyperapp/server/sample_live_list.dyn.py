@@ -75,7 +75,7 @@ class ThisModule(Module):
 
         server_peer_ref = mosaic.put(services.server_identity.peer.piece)
 
-        list_servant_name = 'sample_list_servant'
+        list_servant_name = 'sample_live_list_servant'
         list_servant_path = services.servant_path().registry_name(list_servant_name)
 
         describe_command = htypes.rpc_command.rpc_command(
