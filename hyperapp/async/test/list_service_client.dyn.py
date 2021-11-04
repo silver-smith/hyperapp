@@ -42,7 +42,7 @@ class ThisModule(Module):
             self._my_identity,
             rpc_endpoint,
             services.servant_path_from_data,
-            services.async_rpc_call,
+            services.async_rpc_call_factory,
             )
 
         try:

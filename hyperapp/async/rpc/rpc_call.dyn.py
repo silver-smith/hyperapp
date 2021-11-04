@@ -14,7 +14,7 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        services.async_rpc_call = partial(self.rpc_call_factory, services.mosaic, services.async_transport)
+        services.async_rpc_call_factory = partial(self.rpc_call_factory, services.mosaic, services.async_transport)
 
     @staticmethod
     def rpc_call_factory(mosaic, async_transport, async_rpc_endpoint, receiver_peer, servant_path, sender_identity):

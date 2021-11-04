@@ -19,7 +19,7 @@ import:
     - common.item_column_list
 require:
   - servant_path_from_data
-  - rpc_call
+  - rpc_call_factory
   - server_identity
   - server_rpc_endpoint
   - server_ref_list

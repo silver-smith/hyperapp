@@ -108,7 +108,7 @@ class ThisModule(Module):
             services.mosaic,
             services.peer_registry,
             services.servant_path_from_data,
-            services.rpc_call,
+            services.rpc_call_factory,
             services.server_identity,
             services.server_rpc_endpoint,
             self._executor,

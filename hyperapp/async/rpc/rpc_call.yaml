@@ -5,4 +5,4 @@ import:
 require:
   - async_transport
 provide:
-  - async_rpc_call
+  - async_rpc_call_factory

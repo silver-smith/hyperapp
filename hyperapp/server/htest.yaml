@@ -10,7 +10,7 @@ require:
   - peer_registry
   - servant_path
   - servant_path_from_data
-  - rpc_call
+  - rpc_call_factory
   - server_identity
   - server_rpc_endpoint
 provide:

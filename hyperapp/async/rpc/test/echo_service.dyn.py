@@ -51,7 +51,7 @@ class ThisModule(Module):
 
             rpc_endpoint = self._async_rpc_endpoint_factory()
             self._async_endpoint_registry.register(self._my_identity, rpc_endpoint)
-            rpc_call = services.async_rpc_call(rpc_endpoint, self._master_peer, self._master_servant_path, self._my_identity)
+            rpc_call = services.async_rpc_call_factory(rpc_endpoint, self._master_peer, self._master_servant_path, self._my_identity)
 
             servant = Echo()
             rpc_endpoint.register_servant(echo_servant_name, servant)

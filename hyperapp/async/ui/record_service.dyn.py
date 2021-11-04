@@ -14,10 +14,10 @@ class RecordService(RecordObject):
     async def from_piece(
             cls, piece,
             mosaic, async_web, object_factory, command_registry, peer_registry,
-            identity, rpc_endpoint, servant_path_from_data, async_rpc_call):
+            identity, rpc_endpoint, servant_path_from_data, async_rpc_call_factory):
         peer = peer_registry.invite(piece.peer_ref)
         servant_path = servant_path_from_data(piece.servant_path)
-        rpc_call = async_rpc_call(rpc_endpoint, peer, servant_path, identity)
+        rpc_call = async_rpc_call_factory(rpc_endpoint, peer, servant_path, identity)
 
         dir_list = [
             await cls.summon_dir(async_web, dir)

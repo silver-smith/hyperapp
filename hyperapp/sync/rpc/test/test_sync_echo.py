@@ -56,7 +56,7 @@ def echo_set_up(services, htypes):
     servant = Servant(echo_servant_queue, services.peer_registry, services.servant_path_from_data)
     rpc_endpoint.register_servant(servant_name, servant)
 
-    rpc_call_factory = services.rpc_call
+    rpc_call_factory = services.rpc_call_factory
 
     master_service_bundle = services.ref_collector([master_peer_ref, *servant_path.as_data]).bundle
     master_service_bundle_cdr = packet_coders.encode('cdr', master_service_bundle)

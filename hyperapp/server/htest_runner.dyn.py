@@ -53,7 +53,7 @@ class ThisModule(Module):
         servant = Runner(services.import_module)
         rpc_endpoint.register_servant(servant_name, servant)
 
-        rpc_call = services.rpc_call(rpc_endpoint, master_peer, signal_servant_path, my_identity, timeout_sec=20)
+        rpc_call = services.rpc_call_factory(rpc_endpoint, master_peer, signal_servant_path, my_identity, timeout_sec=20)
 
         self._thread = threading.Thread(target=self._run, args=[services.mosaic, rpc_call, my_peer_ref, servant_path])
 

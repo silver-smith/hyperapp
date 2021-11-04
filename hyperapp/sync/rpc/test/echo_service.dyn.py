@@ -50,7 +50,7 @@ class ThisModule(Module):
         servant = Echo()
         rpc_endpoint.register_servant(echo_servant_name, servant)
 
-        rpc_call = services.rpc_call(rpc_endpoint, master_peer, master_servant_path, my_identity)
+        rpc_call = services.rpc_call_factory(rpc_endpoint, master_peer, master_servant_path, my_identity)
 
         self._thread = threading.Thread(target=self._run, args=[services.mosaic, rpc_call, my_peer_ref, echo_servant_path])
 

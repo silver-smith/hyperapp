@@ -61,7 +61,7 @@ def echo_set_up(services, htypes):
     log.info("Tcp route: %r", server.route)
     services.route_table.add_route(master_peer_ref, server.route)
 
-    rpc_call_factory = services.rpc_call
+    rpc_call_factory = services.rpc_call_factory
 
     master_service_bundle = services.ref_collector([master_peer_ref, *servant_path.as_data]).bundle
     master_service_bundle_cdr = packet_coders.encode('cdr', master_service_bundle)

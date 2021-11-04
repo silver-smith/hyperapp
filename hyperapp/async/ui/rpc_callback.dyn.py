@@ -10,10 +10,10 @@ log = logging.getLogger(__name__)
 class RpcCallback:
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, peer_registry, servant_path_from_data, async_rpc_call, rpc_endpoint, identity):
+    async def from_piece(cls, piece, mosaic, peer_registry, servant_path_from_data, async_rpc_call_factory, rpc_endpoint, identity):
         peer = peer_registry.invite(piece.peer_ref)
         servant_path = servant_path_from_data(piece.servant_path)
-        rpc_call = async_rpc_call(rpc_endpoint, peer, servant_path, identity)
+        rpc_call = async_rpc_call_factory(rpc_endpoint, peer, servant_path, identity)
 
         return cls(mosaic, peer, servant_path, rpc_call, piece.item_attr_list)
 
@@ -50,7 +50,7 @@ class ThisModule(Module):
             services.mosaic,
             services.peer_registry,
             services.servant_path_from_data,
-            services.async_rpc_call,
+            services.async_rpc_call_factory,
             services.client_rpc_endpoint,
             services.client_identity,
             )
