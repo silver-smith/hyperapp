@@ -15,7 +15,7 @@ class Registry:
 
     def __init__(self):
         self.by_name = {}  # str -> code_module_t ref
-        self.by_requirement = defaultdict(set)  # str -> code_module_t ref set
+        self.by_requirement = defaultdict(set)  # str -> code_module_t set
 
 
 class CodeModuleLoader:
@@ -83,15 +83,15 @@ class CodeModuleLoader:
         source = info.source_path.read_text()
         code_module = code_module_t(
             module_name=module_name,
-            type_import_list=type_import_list,
-            code_import_list=code_import_list,
-            provide=info.provide,
-            require=info.require,
+            type_import_list=tuple(type_import_list),
+            code_import_list=tuple(code_import_list),
+            provide=tuple(info.provide),
+            require=tuple(info.require),
             source=source,
             file_path=str(info.source_path),
             )
         code_module_ref = self._mosaic.put(code_module)
         registry.by_name[module_name] = code_module_ref
         for requirement in info.provide:
-            registry.by_requirement[requirement].add(code_module_ref)
+            registry.by_requirement[requirement].add(code_module)
         return code_module_ref
