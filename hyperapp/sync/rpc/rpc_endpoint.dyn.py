@@ -137,7 +137,7 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-        services.rpc_endpoint = partial(
+        services.rpc_endpoint_factory = partial(
             RpcEndpoint,
             services.web,
             services.mosaic,

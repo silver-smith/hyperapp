@@ -1,5 +1,5 @@
 require:
-  - rpc_endpoint
+  - rpc_endpoint_factory
   - server_identity
   - endpoint_registry
 provide:

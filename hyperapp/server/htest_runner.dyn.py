@@ -44,7 +44,7 @@ class ThisModule(Module):
         my_identity = services.generate_rsa_identity(fast=True)
         my_peer_ref = services.mosaic.put(my_identity.peer.piece)
 
-        rpc_endpoint = services.rpc_endpoint()
+        rpc_endpoint = services.rpc_endpoint_factory()
         services.endpoint_registry.register(my_identity, rpc_endpoint)
 
         servant_name = 'htest_runner'

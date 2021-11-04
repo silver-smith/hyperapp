@@ -13,4 +13,4 @@ require:
   - async_transport
   - servant_path_from_data
 provide:
-  - async_rpc_endpoint
+  - async_rpc_endpoint_factory

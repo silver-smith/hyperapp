@@ -87,7 +87,7 @@ def test_list_service(services, htypes, code, row_t):
         )
     list_service_ref = services.mosaic.put(list_service)
 
-    rpc_endpoint = services.rpc_endpoint()
+    rpc_endpoint = services.rpc_endpoint_factory()
     services.endpoint_registry.register(master_identity, rpc_endpoint)
 
     servent_called_event = threading.Event()

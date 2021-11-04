@@ -49,7 +49,7 @@ def echo_set_up(services, htypes):
     servant_name = 'run_test'
     servant_path = services.servant_path().registry_name(servant_name).get_attr('run')
 
-    rpc_endpoint = services.rpc_endpoint()
+    rpc_endpoint = services.rpc_endpoint_factory()
     services.endpoint_registry.register(master_identity, rpc_endpoint)
 
     echo_servant_queue = queue.Queue()

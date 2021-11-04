@@ -10,4 +10,4 @@ require:
   - transport
   - servant_path_from_data
 provide:
-  - rpc_endpoint
+  - rpc_endpoint_factory

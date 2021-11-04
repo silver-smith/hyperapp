@@ -8,7 +8,7 @@ require:
   - unbundler
   - generate_rsa_identity
   - peer_registry
-  - rpc_endpoint
+  - rpc_endpoint_factory
   - endpoint_registry
   - rpc_call
   - servant_path

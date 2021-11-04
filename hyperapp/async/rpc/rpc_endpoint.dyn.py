@@ -140,7 +140,7 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
         # Should be called under event loop for condition constructor to work.
-        services.async_rpc_endpoint = partial(
+        services.async_rpc_endpoint_factory = partial(
             RpcEndpoint,
             services.async_web,
             services.mosaic,

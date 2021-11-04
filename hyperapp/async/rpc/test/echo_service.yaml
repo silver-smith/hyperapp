@@ -6,7 +6,7 @@ require:
   - unbundler
   - generate_rsa_identity
   - peer_registry
-  - async_rpc_endpoint
+  - async_rpc_endpoint_factory
   - async_endpoint_registry
   - async_rpc_call
   - servant_path

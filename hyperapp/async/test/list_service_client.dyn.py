@@ -17,7 +17,7 @@ class ThisModule(Module):
 
         self._object_registry = services.object_registry
         self._object_factory = services.object_factory
-        self._async_rpc_endpoint = services.async_rpc_endpoint
+        self._async_rpc_endpoint_factory = services.async_rpc_endpoint_factory
 
         list_service_bundle = packet_coders.decode('cdr', config['list_service_bundle_cdr'], bundle_t)
         services.unbundler.register_bundle(list_service_bundle)
@@ -28,7 +28,7 @@ class ThisModule(Module):
     async def async_init(self, services):
         log.info("List service async run:")
 
-        rpc_endpoint = services.async_rpc_endpoint()
+        rpc_endpoint = services.async_rpc_endpoint_factory()
         services.async_endpoint_registry.register(self._my_identity, rpc_endpoint)
 
         services.object_registry.register_actor(
