@@ -129,3 +129,13 @@ def test_enum_method(web, type_module_loader, code_module_loader, module_registr
         break
     else:
         pytest.fail("some_method is not returned by enum_method")
+
+
+def test_init_phases(web, type_module_loader, code_module_loader, module_registry, services):
+    type_module_loader.load_type_modules([TEST_DIR / 'test_type_modules'])
+    local_modules = code_module_loader.load_code_modules([TEST_DIR / 'test_code_modules'])
+    module = web.summon(local_modules.by_name['module_init'])
+    config = {'module_init': {'value': 1}}
+    module_registry.import_module_list(services, [module], local_modules.by_requirement, config)
+    python_module = module_registry.get_python_module(module)
+    assert python_module.this_module.phased_value == 3
