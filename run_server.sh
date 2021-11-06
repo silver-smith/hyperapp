@@ -1,6 +1,6 @@
 #!/bin/bash -xe
 
-venv=${VENV:-$HOME/.venv-hyperapp-3.9.2}
+venv=${VENV:-$HOME/venv/hyperapp}
 
 source $venv/bin/activate
 
