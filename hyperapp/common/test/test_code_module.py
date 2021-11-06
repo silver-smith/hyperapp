@@ -47,6 +47,7 @@ def test_code_module_load(mosaic, type_module_loader, code_module_loader):
         'subdir.module_requirements_sub',
         'import_from_code_module_main',
         'subdir.import_from_code_module_sub',
+        'module_init',
         }
 
 
@@ -64,38 +65,53 @@ def module_registry(mosaic, web, types, python_importer):
     module_code_registry.register_actor(code_module_t, CodeModule.from_piece, types, web)
     return ModuleRegistry(mosaic, web, python_importer, module_code_registry)
 
- 
-def test_code_module_import(web, type_module_loader, code_module_loader, module_registry):
+
+@pytest.fixture
+def services():
+    return None
+
+
+def test_code_module_import(web, type_module_loader, code_module_loader, module_registry, services):
     type_module_loader.load_type_modules([TEST_DIR / 'test_type_modules'])
     local_modules = code_module_loader.load_code_modules([TEST_DIR / 'test_code_modules'])
     module = web.summon(local_modules.by_name['module'])
-    module_registry.import_module_list([module], local_modules.by_requirement)
+    module_registry.import_module_list(services, [module], local_modules.by_requirement, {})
     python_module = module_registry.get_python_module(module)
     assert python_module.value == "Value in module"
 
 
-def test_code_module_import_with_types(web, type_module_loader, code_module_loader, module_registry):
+def test_code_module_import_with_types(web, type_module_loader, code_module_loader, module_registry, services):
     type_module_loader.load_type_modules([TEST_DIR / 'test_type_modules'])
     local_modules = code_module_loader.load_code_modules([TEST_DIR / 'test_code_modules'])
     module = web.summon(local_modules.by_name['module_with_types'])
-    module_registry.import_module_list([module], local_modules.by_requirement)
+    module_registry.import_module_list(services, [module], local_modules.by_requirement, {})
     python_module = module_registry.get_python_module(module)
 
 
-def test_module_requirement(web, type_module_loader, code_module_loader, module_registry):
+def test_module_requirement(web, type_module_loader, code_module_loader, module_registry, services):
     type_module_loader.load_type_modules([TEST_DIR / 'test_type_modules'])
     local_modules = code_module_loader.load_code_modules([TEST_DIR / 'test_code_modules'])
     module_main = web.summon(local_modules.by_name['module_requirements_main'])
-    module_registry.import_module_list([module_main], local_modules.by_requirement)
+    module_registry.import_module_list(services, [module_main], local_modules.by_requirement, {})
     module_sub = web.summon(local_modules.by_name['subdir.module_requirements_sub'])
     assert module_registry.get_python_module(module_sub)  # Should be loaded too because it is required by module main.
 
 
-def test_code_module_import_from_code_module(web, type_module_loader, code_module_loader, module_registry):
+def test_code_module_import_from_code_module(web, type_module_loader, code_module_loader, module_registry, services):
     type_module_loader.load_type_modules([TEST_DIR / 'test_type_modules'])
     local_modules = code_module_loader.load_code_modules([TEST_DIR / 'test_code_modules'])
     module_main = web.summon(local_modules.by_name['import_from_code_module_main'])
-    module_registry.import_module_list([module_main], local_modules.by_requirement)
+    module_registry.import_module_list(services, [module_main], local_modules.by_requirement, {})
     module_sub = web.summon(local_modules.by_name['subdir.import_from_code_module_sub'])
     assert module_registry.get_python_module(module_sub)  # Should be loaded too because it is required by module main.
     module_registry.get_python_module(module_main).main_value == 'main:sub'
+
+ 
+def test_module_init(web, type_module_loader, code_module_loader, module_registry, services):
+    type_module_loader.load_type_modules([TEST_DIR / 'test_type_modules'])
+    local_modules = code_module_loader.load_code_modules([TEST_DIR / 'test_code_modules'])
+    module = web.summon(local_modules.by_name['module_init'])
+    config = {'module_init': {'value': 123}}
+    module_registry.import_module_list(services, [module], local_modules.by_requirement, config)
+    python_module = module_registry.get_python_module(module)
+    assert python_module.this_module.value == 123

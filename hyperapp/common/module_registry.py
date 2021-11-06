@@ -63,6 +63,9 @@ class CodeModule:
         self._code_module = code_module
 
     @property
+    def name(self):
+        return self._code_module.module_name
+    @property
     def module(self):
         return self._code_module
 
@@ -105,6 +108,13 @@ class CodeModule:
             **dict(self._get_code_sub_loader_dict(imported_module_dict)),
             }
 
+    def init_module(self, services, python_module, config):
+        this_module_class = python_module.__dict__.get('ThisModule')
+        if this_module_class:
+            log.info("Init module %s (%s) with config: %s", self.name, this_module_class, config)
+            this_module = this_module_class(self.name, services, config)
+            python_module.__dict__['this_module'] = this_module
+
     @cached_property
     def _code_import_list(self):
         return [
@@ -139,10 +149,11 @@ class ModuleRegistry:
         self._module_code_registry = module_code_registry
         self._imported_module_dict = {}  # code_module_t -> python module
 
-    def import_module_list(self, module_list, module_by_requirement):
+    def import_module_list(self, services, module_list, module_by_requirement, config_dict):
         module_code_list = self._resolve_requirements(module_list, module_by_requirement)
         for module_code in module_code_list:
-            self._import_module(module_code)
+            config = config_dict.get(module_code.name, {})
+            self._import_module(services, module_code, config)
 
     def get_python_module(self, module):
         return self._imported_module_dict[module]
@@ -168,13 +179,14 @@ class ModuleRegistry:
                 wanted_list.append(provider)
         return reversed(result_list)
             
-    def _import_module(self, module_code):
+    def _import_module(self, services, module_code, config):
         module_name = self._make_module_name(module_code.module)
         python_module = self._python_importer.import_module(
             module_name,
             module_code.root_loader,
             module_code.get_sub_loader_dict(self._imported_module_dict, module_name),
         )
+        module_code.init_module(services, python_module, config)
         self._imported_module_dict[module_code.module] = python_module
 
     def _make_module_name(self, module):
