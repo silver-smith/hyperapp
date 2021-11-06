@@ -183,6 +183,8 @@ class ModuleRegistry:
         result_list = []
         while wanted_list:
             module = wanted_list.pop(0)
+            if module in seen_set:
+                continue
             seen_set.add(module)
             module_code = self._module_code_registry.animate(module)
             result_list.append(module_code)
