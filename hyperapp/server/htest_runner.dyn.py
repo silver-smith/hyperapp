@@ -28,6 +28,11 @@ class Runner:
             for name in dir(module)
             ]
 
+    def _import_module(self, module_name):
+        module = self._local_modules.by_name[module_name]
+        self._module_registry.import_module_list(self._services, [module], self._local_modules.by_requirement, config_dict={})
+        return self._module_registry.get_python_module(module)
+
 
 class ThisModule(Module):
 

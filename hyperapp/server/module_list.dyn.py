@@ -11,18 +11,19 @@ log = logging.getLogger(__name__)
 
 class Servant:
 
-    def __init__(self, web, loaded_code_modules, imported_code_modules):
+    def __init__(self, web, local_modules, module_registry):
         self._web = web
-        self._loaded_code_modules = loaded_code_modules
-        self._imported_code_modules = imported_code_modules
+        self._local_modules = local_modules
+        self._module_registry = module_registry
 
     # Should be populated only after all modules are imported, otherwise not-yet imported modules are shown as available.
     @cached_property
     def _name_to_item(self):
         name_to_item = {}
-        for module_name, module_ref in self._loaded_code_modules.by_name.items():
+        imported_names = {rec.name for rec in self._module_registry.elements()}
+        for module_name, module_ref in self._local_modules.by_name.items():
             module = self._web.summon(module_ref)
-            if module_name in self._imported_code_modules:
+            if module_name in imported_names:
                 status = 'imported'
             else:
                 status = 'available'
@@ -78,7 +79,7 @@ class ThisModule(Module):
                 column_list=item_t_to_column_list(services.types, htypes.module_list.item),
                 )
 
-        servant = Servant(services.web, services.loaded_code_modules, services.imported_code_modules)
+        servant = Servant(services.web, services.local_modules, services.module_registry)
         services.server_rpc_endpoint.register_servant(servant_name, servant)
 
         services.server_ref_list.add_ref('all_module_list', 'Module list', mosaic.put(service_factory(['imported', 'available'])))

@@ -55,6 +55,5 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-        self.module_ref_to_module = services.code_module_importer.registry
         self.global_command_list = []
         services.global_command_list = self.global_command_list

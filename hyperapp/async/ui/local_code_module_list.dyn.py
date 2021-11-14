@@ -18,20 +18,20 @@ class LocalCodeModuleList(SimpleListObject):
         ]
 
     @classmethod
-    async def from_piece(cls, piece, imported_code_modules, async_web):
+    async def from_piece(cls, piece, module_registry, mosaic, async_web):
         self = cls()
-        await self._async_init(imported_code_modules, async_web)
+        await self._async_init(module_registry, mosaic, async_web)
         return self
         
     def __init__(self):
         super().__init__()
         self._name_to_item = None
 
-    async def _async_init(self, imported_code_modules, async_web):
+    async def _async_init(self, module_registry, mosaic, async_web):
         self._name_to_item = {}
-        for module_name, rec in imported_code_modules.items():
-            module = await async_web.summon(rec.module_ref)
-            self._name_to_item[module_name] = Item(module_name, rec.module_ref, module.file_path)
+        for rec in module_registry.elements():
+            module_ref = mosaic.put(rec.module)
+            self._name_to_item[rec.name] = Item(rec.name, module_ref, rec.module.file_path)
 
     @property
     def piece(self):
@@ -65,7 +65,8 @@ class ThisModule(ClientModule):
         services.object_registry.register_actor(
             htypes.local_code_module_list.local_code_module_list,
             LocalCodeModuleList.from_piece,
-            services.imported_code_modules,
+            services.module_registry,
+            services.mosaic,
             services.async_web,
             )
 

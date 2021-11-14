@@ -48,6 +48,6 @@ def htypes(services):
 @pytest.fixture
 def code(services):
     return SimpleNamespace(**{
-        name.split('.')[-1]: rec.module  # sync.rpc.rpc_endpoint -> rpc_endpoint
-        for name, rec in services.imported_code_modules.items()
+        rec.name.split('.')[-1]: rec.python_module  # sync.rpc.rpc_endpoint -> rpc_endpoint
+        for rec in services.module_registry.elements()
         })

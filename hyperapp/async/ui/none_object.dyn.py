@@ -1,6 +1,5 @@
 from hyperapp.common.module import Module
 
-from . import htypes
 from .ui_object import Object
 
 

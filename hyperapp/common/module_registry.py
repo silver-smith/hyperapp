@@ -152,7 +152,7 @@ class CodeModule:
 
 class ModuleRegistry:
 
-    _Rec = namedtuple('_Rec', 'name code_module python_module')
+    _Rec = namedtuple('_Rec', 'name module code_module python_module')
 
     def __init__(self, mosaic, web, python_importer, module_code_registry):
         self._mosaic = mosaic
@@ -176,6 +176,9 @@ class ModuleRegistry:
 
     def get_python_module(self, module):
         return self._registry[module].python_module
+
+    def elements(self):
+        return list(self._registry.values())
 
     def _resolve_requirements(self, module_list, module_by_requirement):
         permanent_marks = set()
@@ -229,7 +232,7 @@ class ModuleRegistry:
             module_code.get_sub_loader_dict(module_to_python_module, module_name),
         )
         module_code.init_module(services, python_module, config)
-        self._registry[module_code.module] = self._Rec(module_code.name, module_code, python_module)
+        self._registry[module_code.module] = self._Rec(module_code.name, module_code.module, module_code, python_module)
 
     def _make_module_name(self, module):
         module_ref = self._mosaic.put(module)
