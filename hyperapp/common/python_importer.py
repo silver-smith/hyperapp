@@ -65,6 +65,6 @@ class PythonImporter:
             except KeyError:
                 pass
         self._module_name_to_loader.update(module_name_to_loader)
-        log.info('Import python module: %s', module_name)
+        log.debug('Import python module: %s', module_name)
         module = importlib.import_module(module_name)
         return module

@@ -178,28 +178,43 @@ class ModuleRegistry:
         return self._registry[module].python_module
 
     def _resolve_requirements(self, module_list, module_by_requirement):
-        seen_set = set()
-        wanted_list = list(module_list)
+        permanent_marks = set()
+        temporary_marks = set()
+        dependency_stack = []
         result_list = []
-        while wanted_list:
-            module = wanted_list.pop(0)
-            if module in seen_set:
-                continue
-            seen_set.add(module)
+
+        def visit(module):
+            if module in permanent_marks:
+                return
+            if module in temporary_marks:
+                raise RuntimeError(f"Code module dependency cycle: %s", "->".join(dependency_stack))
+            temporary_marks.add(module)
+            dependency_stack.append(module.module_name)
             module_code = self._module_code_registry.animate(module)
+            for required_module in self._module_requirement_it(module_code, module_list, module_by_requirement):
+                visit(required_module)
+            dependency_stack.pop()
+            temporary_marks.remove(module)
+            permanent_marks.add(module)
             result_list.append(module_code)
-            wanted_list += module_code.used_module_list
-            for service in module_code.require_service_list:
-                provider_set = module_by_requirement[service]
-                if not provider_set:
-                    raise RuntimeError(f"Code module {module.module_name!r} requires {service!r}, but no module provides it")
-                if len(provider_set) > 1:
-                    # When requirements is provided by several modules, preferred should be included in module_list.
-                    provider_set &= set(module_list)
-                [provider] = provider_set  # Only one provider is expected now.
-                wanted_list.append(provider)
-        return reversed(result_list)
-            
+
+        for module in module_list:
+            visit(module)
+
+        return result_list
+
+    def _module_requirement_it(self, module_code, module_list, module_by_requirement):
+        yield from module_code.used_module_list
+        for service in module_code.require_service_list:
+            provider_set = module_by_requirement[service]
+            if not provider_set:
+                raise RuntimeError(f"Code module {module.module_name!r} requires {service!r}, but no module provides it")
+            if len(provider_set) > 1:
+                # When requirements is provided by several modules, preferred should be included in module_list.
+                provider_set &= set(module_list)
+            [provider] = provider_set  # Only one provider is expected now.
+            yield provider
+
     def _import_module(self, services, module_code, config):
         module_name = self._make_module_name(module_code.module)
         module_to_python_module = {
@@ -207,6 +222,7 @@ class ModuleRegistry:
             for module, rec
             in self._registry.items()
             }
+        log.info('Import code module %s: %s', module_code.name, module_name)
         python_module = self._python_importer.import_module(
             module_name,
             module_code.root_loader,
