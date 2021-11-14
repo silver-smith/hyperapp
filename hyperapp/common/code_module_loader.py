@@ -60,12 +60,13 @@ class CodeModuleLoader:
         for import_module_name in info.code_import_list:
             assert isinstance(import_module_name, str), (
                 '%s: string list is expected at import/code, but got: %r', info.info_path, import_module_name)
-            import_module_ref = registry.by_name.get(import_module_name)
-            if not import_module_ref:
+            imported_module = registry.by_name.get(import_module_name)
+            if not imported_module:
                 if import_module_name not in name_to_info:
                     raise RuntimeError(f"Code module {module_name!r} wants unknown code module {import_module_name!r}.")
-                import_module_ref = self._load_module(import_module_name, name_to_info, registry, [*dep_stack, module_name])
-            code_import_list.append(code_import_t(import_module_name, import_module_ref))
+                imported_module = self._load_module(import_module_name, name_to_info, registry, [*dep_stack, module_name])
+            imported_module_ref = self._mosaic.put(imported_module)
+            code_import_list.append(code_import_t(import_module_name, imported_module_ref))
         type_import_list = []
         for type_module_name, import_name_list in info.type_import_dict.items():
             try:
@@ -90,8 +91,7 @@ class CodeModuleLoader:
             source=source,
             file_path=str(info.source_path),
             )
-        code_module_ref = self._mosaic.put(code_module)
-        registry.by_name[module_name] = code_module_ref
+        registry.by_name[module_name] = code_module
         for requirement in info.provide:
             registry.by_requirement[requirement].add(code_module)
-        return code_module_ref
+        return code_module

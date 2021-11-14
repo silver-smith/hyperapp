@@ -11,7 +11,8 @@ log = logging.getLogger(__name__)
 
 class Servant:
 
-    def __init__(self, web, local_modules, module_registry):
+    def __init__(self, mosaic, web, local_modules, module_registry):
+        self._mosaic = mosaic
         self._web = web
         self._local_modules = local_modules
         self._module_registry = module_registry
@@ -21,8 +22,8 @@ class Servant:
     def _name_to_item(self):
         name_to_item = {}
         imported_names = {rec.name for rec in self._module_registry.elements()}
-        for module_name, module_ref in self._local_modules.by_name.items():
-            module = self._web.summon(module_ref)
+        for module_name, module in self._local_modules.by_name.items():
+            module_ref = self._mosaic.put(module)
             if module_name in imported_names:
                 status = 'imported'
             else:
@@ -79,7 +80,7 @@ class ThisModule(Module):
                 column_list=item_t_to_column_list(services.types, htypes.module_list.item),
                 )
 
-        servant = Servant(services.web, services.local_modules, services.module_registry)
+        servant = Servant(services.mosaic, services.web, services.local_modules, services.module_registry)
         services.server_rpc_endpoint.register_servant(servant_name, servant)
 
         services.server_ref_list.add_ref('all_module_list', 'Module list', mosaic.put(service_factory(['imported', 'available'])))

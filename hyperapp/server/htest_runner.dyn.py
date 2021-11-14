@@ -12,8 +12,10 @@ log = logging.getLogger(__name__)
 
 class Runner:
 
-    def __init__(self, import_module):
-        self._import_module = import_module
+    def __init__(self, services, local_modules, module_registry):
+        self._services = services
+        self._local_modules = local_modules
+        self._module_registry = module_registry
 
     def collect_tests(self, request, module_name):
         log.info("Collect tests: %s", module_name)
@@ -55,7 +57,7 @@ class ThisModule(Module):
         servant_name = 'htest_runner'
         servant_path = services.servant_path().registry_name(servant_name)
 
-        servant = Runner(services.import_module)
+        servant = Runner(services, services.local_modules, services.module_registry)
         rpc_endpoint.register_servant(servant_name, servant)
 
         rpc_call = services.rpc_call_factory(rpc_endpoint, master_peer, signal_servant_path, my_identity, timeout_sec=20)

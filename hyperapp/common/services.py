@@ -87,7 +87,7 @@ class Services(object):
         self.local_modules = local_modules
 
         module_list = [
-            self.web.summon(local_modules.by_name[name])
+            local_modules.by_name[name]
             for name in module_name_list
             ]
         self.module_registry.import_module_list(self, module_list, local_modules.by_requirement, config)
