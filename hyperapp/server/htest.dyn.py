@@ -109,6 +109,13 @@ class HTest:
             log.info("Collected global list: %s", global_list)
             return global_list
 
+    def run_global(self, module_name, global_name, param_service_list, additional_module_list):
+        log.info("Run global: %s.%s (%d additional modules)", module_name, global_name, len(additional_module_list))
+        with self._subprocess_running() as process:
+            call = process.rpc_call('run_global')
+            result = call(module_name, global_name, param_service_list, additional_module_list)
+            log.info("Run global result: %s", result)
+
     @contextmanager
     def _subprocess_running(self):
         server_peer_ref = self._mosaic.put(self._identity.peer.piece)

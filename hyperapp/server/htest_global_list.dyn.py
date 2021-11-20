@@ -11,8 +11,11 @@ log = logging.getLogger(__name__)
 
 class GlobalListServant:
 
-    def __init__(self, mosaic, htest_list, module_name):
+    def __init__(self, builtin_services, mosaic, local_modules, htest, htest_list, module_name):
+        self._builtin_services = builtin_services
         self._mosaic = mosaic
+        self._local_modules = local_modules
+        self._htest = htest
         self._htest_list = htest_list
         self._module_name = module_name
 
@@ -22,7 +25,20 @@ class GlobalListServant:
         return module.global_list
 
     def run(self, request, current_key):
-        log.info("Run global: %s/%s", self._module_name, current_key)
+        global_name = current_key
+        module = self._htest_list.dict[self._module_name]
+        [global_fn] = [gl for gl in module.global_list if gl.name == global_name]
+        param_service_list = []
+        additional_module_list = []
+        for param_name in global_fn.param_list:
+            param_service_list.append(param_name)
+            if param_name in self._builtin_services:
+                continue
+            provider_module_list = self._local_modules.by_requirement[param_name]
+            if len(provider_module_list) != 1:
+                raise RuntimeError(f"{param_name!r} provided by {len(provider_module_list)}, but expected exactly one ({provider_module_list})")
+            additional_module_list.append(list(provider_module_list)[0])
+        self._htest.run_global(self._module_name, global_name, param_service_list, additional_module_list)
 
 
 class ThisModule(Module):
@@ -34,7 +50,10 @@ class ThisModule(Module):
         self._servant_name = 'htest_global_list'
         services.server_rpc_endpoint.register_servant(self._servant_name, partial(
             self._htest_global_list_servant,
+            services.builtin_services,
             services.mosaic,
+            services.local_modules,
+            services.htest,
             services.htest_list,
             ))
         services.htest_global_list_service_factory = partial(
@@ -65,12 +84,18 @@ class ThisModule(Module):
 
     def _htest_global_list_servant(
             self,
+            builtin_services,
             mosaic,
+            local_modules,
+            htest,
             htest_list,
             module_name,
             ):
         return GlobalListServant(
+            builtin_services,
             mosaic,
+            local_modules,
+            htest,
             htest_list,
             module_name,
             )

@@ -43,9 +43,22 @@ class Runner:
             global_list.append(htypes.htest.global_fn(name, param_list))
         return global_list
 
-    def _import_module(self, module_name):
+    def run_global(self, request, module_name, global_name, param_service_list, additional_module_list):
+        log.info("Run global: %s.%s (additional: %s)", module_name, global_name, [m.module_name for m in additional_module_list])
+        module = self._import_module(module_name, additional_module_list)
+        fn = getattr(module, global_name)
+        kw = {
+            name: getattr(self._services, name)
+            for name in param_service_list
+            }
+        result = fn(**kw)
+        log.info("Run global %s.%s result: %r", module_name, global_name, result)
+        return repr(result)
+
+    def _import_module(self, module_name, additional_module_list=None):
         module = self._local_modules.by_name[module_name]
-        self._module_registry.import_module_list(self._services, [module], self._local_modules.by_requirement, config_dict={})
+        module_list = [module, *(additional_module_list or [])]
+        self._module_registry.import_module_list(self._services, module_list, self._local_modules.by_requirement, config_dict={})
         return self._module_registry.get_python_module(module)
 
 
