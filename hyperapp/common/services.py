@@ -28,6 +28,17 @@ HYPERAPP_DIR = Path(__file__).parent.joinpath('../..').resolve()
 
 class Services(object):
 
+    builtin_services = [
+        'builtin_services',
+        'mosaic',
+        'types',
+        'web',
+        'type_module_loader',
+        'code_module_loader',
+        'local_modules',
+        'module_registry',
+    ]
+
     def __init__(self):
         self.hyperapp_dir = HYPERAPP_DIR / 'hyperapp'
         self.module_dir_list = [self.hyperapp_dir]
