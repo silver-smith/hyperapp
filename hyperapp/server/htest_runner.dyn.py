@@ -26,22 +26,7 @@ class Runner:
     def collect_globals(self, request, module_name):
         log.info("Collect globals: %s", module_name)
         module = self._import_module(module_name)
-        global_list = []
-        for name in dir(module):
-            if name.startswith('_'):
-                continue
-            value = getattr(module, name)
-            if not callable(value):
-                continue
-            try:
-                signature = inspect.signature(value)
-            except ValueError as x:
-                if 'no signature found for builtin type' in str(x):
-                    continue
-                raise
-            param_list = list(signature.parameters.keys())
-            global_list.append(htypes.htest.global_fn(name, param_list))
-        return global_list
+        return list(self._iter_callables(module))
 
     def run_global(self, request, module_name, global_name, param_service_list, additional_module_list):
         log.info("Run global: %s.%s (additional: %s)", module_name, global_name, [m.module_name for m in additional_module_list])
@@ -51,9 +36,25 @@ class Runner:
             name: getattr(self._services, name)
             for name in param_service_list
             }
-        result = fn(**kw)
-        log.info("Run global %s.%s result: %r", module_name, global_name, result)
-        return repr(result)
+        object = fn(**kw)
+        log.info("Run global %s.%s result: %r", module_name, global_name, object)
+        return list(self._iter_callables(object))
+
+    def _iter_callables(self, object):
+        for name in dir(object):
+            if name.startswith('_'):
+                continue
+            value = getattr(object, name)
+            if not callable(value):
+                continue
+            try:
+                signature = inspect.signature(value)
+            except ValueError as x:
+                if 'no signature found for builtin type' in str(x):
+                    continue
+                raise
+            param_list = list(signature.parameters.keys())
+            yield htypes.htest.global_fn(name, param_list)
 
     def _import_module(self, module_name, additional_module_list=None):
         module = self._local_modules.by_name[module_name]
