@@ -2,6 +2,7 @@ import logging
 import uuid
 from functools import partial
 
+from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 from hyperapp.common.module import Module
 
 from . import htypes
@@ -14,15 +15,15 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        services.rpc_call_factory = partial(self.rpc_call_factory, services.mosaic, services.transport)
+        services.rpc_call_factory = partial(self.rpc_call_factory, services.mosaic, services.types, services.transport)
 
     @staticmethod
-    def rpc_call_factory(mosaic, transport, rpc_endpoint, receiver_peer, servant_path, sender_identity, timeout_sec=10):
+    def rpc_call_factory(mosaic, types, transport, rpc_endpoint, receiver_peer, servant_path, sender_identity, timeout_sec=10):
         sender_peer_ref = mosaic.put(sender_identity.peer.piece)
 
         def call(*args):
             params = [
-                mosaic.put(arg)
+                mosaic.put(arg, deduce_complex_value_type(mosaic, types, arg))
                 for arg in args
                 ]
             request_id = str(uuid.uuid4())
