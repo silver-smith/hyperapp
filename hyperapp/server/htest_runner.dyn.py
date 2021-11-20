@@ -1,3 +1,4 @@
+import inspect
 import logging
 import threading
 
@@ -25,10 +26,22 @@ class Runner:
     def collect_globals(self, request, module_name):
         log.info("Collect globals: %s", module_name)
         module = self._import_module(module_name)
-        return [
-            htypes.htest.global_fn(name, [])
-            for name in dir(module)
-            ]
+        global_list = []
+        for name in dir(module):
+            if name.startswith('_'):
+                continue
+            value = getattr(module, name)
+            if not callable(value):
+                continue
+            try:
+                signature = inspect.signature(value)
+            except ValueError as x:
+                if 'no signature found for builtin type' in str(x):
+                    continue
+                raise
+            param_list = list(signature.parameters.keys())
+            global_list.append(htypes.htest.global_fn(name, param_list))
+        return global_list
 
     def _import_module(self, module_name):
         module = self._local_modules.by_name[module_name]
