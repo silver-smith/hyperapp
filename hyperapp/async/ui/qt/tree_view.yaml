@@ -6,7 +6,6 @@ import:
       - tree_view
   code:
     - async.ui.tree_object
-    - async.ui.items_view
     - async.ui.qt.view
 require:
   - lcs

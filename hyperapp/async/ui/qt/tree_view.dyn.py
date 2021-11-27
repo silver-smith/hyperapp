@@ -12,7 +12,6 @@ from hyperapp.common.module import Module
 
 from . import htypes
 from .tree_object import AppendItemDiff, InsertItemDiff, RemoveItemDiff, UpdateItemDiff, TreeObserver, TreeObject
-from .items_view import map_columns_to_view
 from .view import View
 
 log = logging.getLogger(__name__)
@@ -20,11 +19,11 @@ log = logging.getLogger(__name__)
 
 class _Model(QtCore.QAbstractItemModel):
 
-    def __init__(self, view, columns, object):
+    def __init__(self, view, object):
         QtCore.QAbstractItemModel.__init__(self)
         self._view_wr = weakref.ref(view)
         self._object = object
-        self.columns = columns
+        self.columns = [object.key_attribute]  # attr name list
         self._key_attr = object.key_attribute
         self._path2item = {}
         self._path2children = {}
@@ -40,7 +39,7 @@ class _Model(QtCore.QAbstractItemModel):
 
     def headerData(self, section, orient, role):
         if role == QtCore.Qt.DisplayRole and orient == QtCore.Qt.Orientation.Horizontal:
-            return self.columns[section].title
+            return self.columns[section]
         return QtCore.QAbstractTableModel.headerData(self, section, orient, role)
 
     def index(self, row, column, parent):
@@ -82,13 +81,13 @@ class _Model(QtCore.QAbstractItemModel):
     def data(self, index, role):
         if role != QtCore.Qt.DisplayRole:
             return None
-        column = self.columns[index.column()]
+        attr_name = self.columns[index.column()]
         path = self._id2path.get(index.internalId())
         # log.debug('_Model.data id=%d, row=%d column=%r path=%s', index.internalId(), index.row(), index.column(), path)
         if path is None:
             return None
         item = self._path2item[path]
-        value = getattr(item, column.id)
+        value = getattr(item, attr_name)
         return str(value)
 
     def canFetchMore(self, parent):
@@ -128,11 +127,26 @@ class _Model(QtCore.QAbstractItemModel):
 
     # own methods  ------------------------------------------------------------------------------------------------------
 
+    def _update_columns(self, new_item_list):
+        seen_attrs = set()
+        for item in new_item_list:
+            seen_attrs |= set(
+                name for name in dir(item)
+                if not name.startswith('_') and not callable(getattr(item, name))
+            )
+        new_columns = list(seen_attrs - set(self.columns))
+        if not new_columns:
+            return
+        self.beginInsertColumns(QtCore.QModelIndex(), len(self.columns), len(self.columns) + len(new_columns) - 1)
+        self.columns += new_columns
+        self.endInsertColumns()
+
     def _append_items(self, path, item_list):
         log.debug("Append items at %s: %s", path, item_list)
         current_item_list = self._path2children.setdefault(path, [])
         if not item_list:
             return
+        self._update_columns(item_list)
         prev_item_count = len(current_item_list)
         current_item_list += item_list
         index = self.path2index(path) or QtCore.QModelIndex()
@@ -151,6 +165,7 @@ class _Model(QtCore.QAbstractItemModel):
             view._on_data_changed()
 
     def _insert_item(self, path, idx, item):
+        self._update_columns([item])
         item_list = self._path2children.setdefault(path, [])
         item_list.insert(idx, item)
         id = self._get_next_id()
@@ -189,6 +204,7 @@ class _Model(QtCore.QAbstractItemModel):
         self.endRemoveRows()
 
     def _update_item(self, path, item):
+        self._update_columns([item])
         if path not in self._path2item:
             log.warning("Item is missing at path %s; nothing to update", path)
             return
@@ -253,14 +269,13 @@ class TreeView(View, QtWidgets.QTreeView, TreeObserver):
 
     @classmethod
     async def from_piece(cls, piece, object, add_dir_list, lcs):
-        columns = list(map_columns_to_view(lcs, object))
-        return cls(columns, object)
+        return cls(object)
 
-    def __init__(self, columns, object, current_path=None):
+    def __init__(self, object, current_path=None):
         self._observers = weakref.WeakSet()
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
         QtWidgets.QTreeView.__init__(self)
-        self.setModel(_Model(self, columns, object))
+        self.setModel(_Model(self, object))
         View.__init__(self)
         TreeObserver.__init__(self)
         self.setSelectionMode(self.ContiguousSelection)

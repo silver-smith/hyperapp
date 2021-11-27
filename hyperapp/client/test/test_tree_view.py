@@ -22,7 +22,6 @@ def code_module_list():
         'common.layered_config_sheet',
         'async.ui.qt.application',  # Use Qt event loop.
         'async.ui.tree_object',
-        'async.ui.items_view',
         'async.ui.qt.tree_view',
         ]
 
@@ -73,10 +72,6 @@ def object(services):
 
 @pytest.mark.asyncio
 async def test_instantiate(event_loop, services, code, object):
-    columns = list(code.items_view.map_columns_to_view(services.lcs, object))
-    view = code.tree_view.TreeView(
-        columns=[column.to_view_column(column.id) for column in object.columns],
-        object=object,
-        )
+    view = code.tree_view.TreeView(object=object)
     #view.populate()
     await wait_for_all_tasks_to_complete(event_loop)
