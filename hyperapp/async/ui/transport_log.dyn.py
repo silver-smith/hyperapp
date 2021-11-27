@@ -9,7 +9,6 @@ from hyperapp.common.htypes import tInt
 
 from . import htypes
 from .command import command
-from .column import Column
 from .list_object import ListDiff
 from .simple_list_object import SimpleListObject
 from .module import ClientModule
@@ -50,13 +49,8 @@ class TransportLog(SimpleListObject):
         return f"Transport log"
 
     @property
-    def columns(self):
-        return [
-            Column('id', type=tInt, is_key=True),
-            Column('at'),
-            Column('direction'),
-            Column('refs'),
-            ]
+    def key_attribute(self):
+        return 'id'
 
     async def get_all_items(self):
         return self._item_list

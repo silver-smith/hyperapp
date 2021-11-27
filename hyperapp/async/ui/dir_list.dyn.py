@@ -3,7 +3,6 @@ from collections import namedtuple
 from hyperapp.common.module import Module
 
 from . import htypes
-from .column import Column
 from .simple_list_object import SimpleListObject
 
 
@@ -52,10 +51,8 @@ class DirList(SimpleListObject):
         return f"Dir list"
 
     @property
-    def columns(self):
-        return [
-            Column('dir_str', is_key=True),
-            ]
+    def key_attribute(self):
+        return 'dir_str'
 
     async def get_all_items(self):
         return [

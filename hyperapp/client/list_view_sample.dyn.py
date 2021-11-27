@@ -7,7 +7,6 @@ from hyperapp.common.htypes import tInt
 from . import htypes
 from .command import command
 from .ui_object import ObjectType
-from .column import Column
 from .list_object import ListDiff, ListObject
 from .string_object import StringObject
 from .record_object import RecordObject
@@ -39,12 +38,8 @@ class SampleList(ListObject):
         return htypes.list_view_sample.list_view_sample_object()
 
     @property
-    def columns(self):
-        return [
-            Column('idx', type=tInt, is_key=True),
-            Column('column_1'),
-            Column('column_2', type=tInt),
-            ]
+    def key_attribute(self):
+        return 'idx'
 
     async def fetch_items(self, from_key, fetcher):
         if from_key is None:

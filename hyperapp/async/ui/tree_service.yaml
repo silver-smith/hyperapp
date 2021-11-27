@@ -1,8 +1,6 @@
 import:
   types:
     service:
-      - column
       - tree_service
   code:
-    - async.ui.column
     - async.ui.tree_object

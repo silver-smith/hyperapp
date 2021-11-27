@@ -6,7 +6,6 @@ from hyperapp.common.module import Module
 from . import htypes
 from .command import command
 from .record_object import RecordObject, record_field_dir, record_field_add_dir_list
-from .column import Column
 from .simple_list_object import SimpleListObject
 from .object_command import Command
 
@@ -64,12 +63,8 @@ class RecordFieldList(SimpleListObject):
         return f"Fields for record: {self._object.title}"
 
     @property
-    def columns(self):
-        return [
-            Column('id', is_key=True),
-            Column('dir'),
-            Column('view'),
-            ]
+    def key_attribute(self):
+        return 'id'
 
     async def get_all_items(self):
         return list(self._iter_items())

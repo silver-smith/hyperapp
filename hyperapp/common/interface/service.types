@@ -6,13 +6,8 @@ service = record:
   command_ref_list: ref list
 
 
-column = record:
-  id: string
-  type_ref: ref
-
 multi_item_service = record(service):
-  key_column_id: string
-  column_list: column list
+  key_attribute: string
 
 
 list_service = record(multi_item_service)

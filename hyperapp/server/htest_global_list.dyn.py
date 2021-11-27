@@ -4,7 +4,6 @@ from functools import partial
 from hyperapp.common.module import Module
 
 from . import htypes
-from .item_column_list import item_t_to_column_list
 
 log = logging.getLogger(__name__)
 
@@ -78,8 +77,7 @@ class ThisModule(Module):
             command_ref_list=[
                 mosaic.put(run_command),
                 ],
-            key_column_id='name',
-            column_list=item_t_to_column_list(types, htypes.htest.global_fn),
+            key_attribute='name',
             )
 
     def _htest_global_list_servant(

@@ -7,8 +7,6 @@ import:
     htest:
       - htest_global_list_d
       - global_fn
-  code:
-    - common.item_column_list
 require:
   - server_identity
   - server_rpc_endpoint

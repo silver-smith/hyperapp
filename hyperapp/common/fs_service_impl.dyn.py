@@ -10,13 +10,13 @@ from . import htypes
 MIN_ROWS_RETURNED = 100
 
 
-def rows2fetched_chunk(key_column_id, all_rows, fetch_request, Chunk):
+def rows2fetched_chunk(key_attribute, all_rows, fetch_request, Chunk):
     sorted_rows = sorted(all_rows, key=attrgetter(fetch_request.sort_column_id))
     if fetch_request.from_key is None:
         idx = 0
     else:
         for idx, row in enumerate(sorted_rows):
-            if getattr(row, key_column_id) > fetch_request.from_key:
+            if getattr(row, key_attribute) > fetch_request.from_key:
                 break
         else:
             idx = len(sorted_rows)

@@ -8,7 +8,6 @@ from hyperapp.common.module import Module
 from . import htypes
 from .command import command
 from .ui_object import Object
-from .column import Column
 from .simple_list_object import SimpleListObject
 from .object_command import Command
 
@@ -76,13 +75,8 @@ class ViewSelector(SimpleListObject):
             ]
 
     @property
-    def columns(self):
-        return [
-            Column('id', type=tInt, is_key=True),
-            Column('dir_str'),
-            Column('type'),
-            Column('view'),
-            ]
+    def key_attribute(self):
+        return 'id'
 
     async def get_all_items(self):
         return self._item_list

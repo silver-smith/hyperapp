@@ -2,15 +2,11 @@ import abc
 import asyncio
 import logging
 from dataclasses import dataclass
-from functools import cached_property
 
-from hyperapp.common.util import single
-from hyperapp.common.htypes import Type, tInt, tString
 from hyperapp.common.module import Module
 
 from . import htypes
 from .ui_object import ObjectObserver, Object
-from .column import Column
 
 log = logging.getLogger(__name__)
 
@@ -57,34 +53,16 @@ class TreeObject(Object, metaclass=abc.ABCMeta):
         [htypes.tree_object.tree_object_d()],
         ]
 
-    # todo: construct state from key column type on-the-fly.
-    @cached_property
-    def State(self):
-        if self.key_t is tInt:
-            return htypes.tree_object.int_state
-        if self.key_t is tString:
-            return htypes.tree_object.string_state
-        raise RuntimeError(f"{self.__class__.__name__}: Unsupported column type: {self._key_t}")
+    def make_state(self, current_key):
+        if type(current_key[0]) is int:
+            return htypes.tree_object.int_state(current_key)
+        if type(current_key[0]) is str:
+            return htypes.tree_object.string_state(current_key)
+        raise RuntimeError(f"{self.__class__.__name__}: Unsupported key type: {type(current_key)}")
 
-    # return Column list
     @abc.abstractproperty
-    def columns(self):
-        pass
-
-    @cached_property
-    def _key_column(self):
-        for column in self.columns:
-            if column.is_key:
-                return column
-        raise RuntimeError(f"No key column or key_attribute is defined by class {self.__class__.__name__}")
-
-    @property
     def key_attribute(self):
-        return self._key_column.id
-
-    @property
-    def key_t(self):
-        return self._key_column.type
+        pass
 
     class _Observer(TreeObserver):
 
@@ -133,4 +111,3 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
         services.TreeObject = TreeObject
-        services.Column = Column

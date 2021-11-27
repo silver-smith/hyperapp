@@ -6,7 +6,6 @@ from hyperapp.common.htypes import tInt
 from hyperapp.common.module import Module
 
 from . import htypes
-from .column import Column
 from .simple_list_object import SimpleListObject
 
 log = logging.getLogger(__name__)
@@ -70,13 +69,8 @@ class AvailableViewList(SimpleListObject):
         return f"Available views for: {self._object.title}"
 
     @property
-    def columns(self):
-        return [
-            Column('id', type=tInt, is_key=True),
-            Column('dir_title'),
-            Column('type'),
-            Column('view_title'),
-            ]
+    def key_attribute(self):
+        return 'id'
 
     async def get_all_items(self):
         return self._item_list

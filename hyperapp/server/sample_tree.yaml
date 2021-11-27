@@ -10,8 +10,6 @@ import:
       - sample_tree_article_d
       - item
       - article
-  code:
-    - common.item_column_list
 require_code_modules:
   - server.identity
   - server.rpc_endpoint

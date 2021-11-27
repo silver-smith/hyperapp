@@ -6,4 +6,3 @@ import:
       - string_state
   code:
     - async.ui.ui_object
-    - async.ui.column

@@ -5,6 +5,5 @@ import:
   code:
   - async.code_registry
   - async.ui.command
-  - async.ui.column
   - async.ui.tree_object
   - async.ui.module

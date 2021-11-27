@@ -54,12 +54,8 @@ def object(services):
             raise NotImplementedError()
 
         @property
-        def columns(self):
-            return [
-                services.Column('name', is_key=True),
-                services.Column('column_1', type=tInt),
-                services.Column('column_2', type=tInt),
-                ]
+        def key_attribute(self):
+            return 'name'
 
         async def fetch_items(self, path):
             self._distribute_fetch_results(path, [

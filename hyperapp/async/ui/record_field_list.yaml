@@ -18,7 +18,6 @@ import:
     - async.ui.command
     - async.ui.record_object
     - async.ui.object_command
-    - async.ui.column
     - async.ui.simple_list_object
 require:
   - async_web

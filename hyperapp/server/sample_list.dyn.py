@@ -3,7 +3,6 @@ import logging
 from hyperapp.common.module import Module
 
 from . import htypes
-from .item_column_list import item_t_to_column_list
 
 log = logging.getLogger(__name__)
 
@@ -86,8 +85,7 @@ class ThisModule(Module):
                 mosaic.put(raw_command),
                 mosaic.put(open_command),
                 ],
-            key_column_id='key',
-            column_list=item_t_to_column_list(services.types, htypes.sample_list.row),
+            key_attribute='key',
             )
 
         article_servant_name = 'sample_list_article_servant'

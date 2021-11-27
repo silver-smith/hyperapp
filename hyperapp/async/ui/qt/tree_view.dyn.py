@@ -295,12 +295,12 @@ class TreeView(View, QtWidgets.QTreeView, TreeObserver):
         current_key = self.current_item_key
         if current_key is None:
             return None  # Happens when widget is not visible.
-        return self._object.State(current_key=self.current_item_key)
+        return self._object.make_state(current_key=self.current_item_key)
 
     @state.setter
     def state(self, state):
-        if not isinstance(state, self._object.State):
-            return  # Happens when another view is configured for an object.
+        if not state:
+            return
         self._wanted_current_path = state.current_key  # Will set it to current when rows are loaded.
 
     @property

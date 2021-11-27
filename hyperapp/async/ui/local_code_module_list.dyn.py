@@ -2,7 +2,6 @@ from collections import namedtuple
 
 from . import htypes
 from .command import command
-from .column import Column
 from .simple_list_object import SimpleListObject
 from .module import ClientModule
 
@@ -42,11 +41,8 @@ class LocalCodeModuleList(SimpleListObject):
         return f"Local code modules"
 
     @property
-    def columns(self):
-        return [
-            Column('module_name', is_key=True),
-            Column('file_path'),
-            ]
+    def key_attribute(self):
+        return 'module_name'
 
     async def get_all_items(self):
         return list(self._name_to_item.values())

@@ -7,7 +7,6 @@ from hyperapp.common.htypes import tInt
 from . import htypes
 from .command import command
 from .ui_object import ObjectType
-from .column import Column
 from .tree_object import AppendItemDiff, InsertItemDiff, RemoveItemDiff, UpdateItemDiff, TreeObject
 from .string_object import StringObject
 from .record_object import RecordObject
@@ -39,12 +38,8 @@ class SampleTree(TreeObject):
         return htypes.tree_view_sample.tree_view_sample_object()
 
     @property
-    def columns(self):
-        return [
-            Column('name', is_key=True),
-            Column('column_1'),
-            Column('column_2', type=tInt),
-            ]
+    def key_attribute(self):
+        return 'name'
 
     async def fetch_items(self, path):
         log.info('SampleTree.fetch_items(%s)', path)

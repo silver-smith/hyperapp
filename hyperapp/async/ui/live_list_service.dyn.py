@@ -2,7 +2,6 @@ import logging
 import uuid
 
 from . import htypes
-from .column import Column
 from .list_object import ListDiff
 from .simple_list_object import SimpleListObject
 
@@ -56,8 +55,7 @@ class LiveListService(SimpleListObject):
             rpc_call,
             dir_list,
             command_list,
-            piece.key_column_id,
-            piece.column_list,
+            piece.key_attribute,
             servant_name,
             )
         rpc_endpoint.register_servant(servant_name, self)
@@ -75,8 +73,7 @@ class LiveListService(SimpleListObject):
             rpc_call,
             custom_dir_list,
             command_list,
-            key_column_id,
-            column_list,
+            key_attribute,
             servant_name,
             ):
         super().__init__()
@@ -90,15 +87,7 @@ class LiveListService(SimpleListObject):
         self._rpc_call = rpc_call
         self._custom_dir_list = custom_dir_list
         self._rpc_command_list = command_list
-        self._key_column_id = key_column_id
-        self._column_list = [
-            Column(
-                id=column.id,
-                type=types.resolve(column.type_ref),
-                is_key=(column.id == key_column_id),
-                )
-            for column in column_list
-            ]
+        self._key_attribute = key_attribute
         self._servant_name = servant_name
 
     @property
@@ -111,17 +100,12 @@ class LiveListService(SimpleListObject):
             self._mosaic.put(command.piece)
             for command in self._rpc_command_list
             ]
-        column_list = [
-            htypes.service.column(column.id, self._types.reverse_resolve(column.type))
-            for column in self._column_list
-            ]
         return htypes.service.live_list_service(
             peer_ref=self._mosaic.put(self._peer.piece),
             servant_path=self._servant_path.as_data,
             dir_list=dir_list,
             command_ref_list=command_ref_list,
-            key_column_id=self._key_column_id,
-            column_list=column_list,
+            key_attribute=self._key_attribute,
             )
 
     @property
@@ -137,8 +121,8 @@ class LiveListService(SimpleListObject):
         return self._rpc_command_list
 
     @property
-    def columns(self):
-        return self._column_list
+    def key_attribute(self):
+        return self._key_attribute
 
     async def get_all_items(self):
         servant_path = self._servant_path_factory().registry_name(self._servant_name).get_attr('process_diff')

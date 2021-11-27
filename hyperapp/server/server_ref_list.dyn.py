@@ -4,7 +4,6 @@ from collections import namedtuple
 from hyperapp.common.module import Module
 
 from . import htypes
-from .item_column_list import item_t_to_column_list
 
 log = logging.getLogger(__name__)
 
@@ -71,8 +70,7 @@ class ThisModule(Module):
             command_ref_list=[
                 mosaic.put(open_command),
                 ],
-            key_column_id='id',
-            column_list=item_t_to_column_list(services.types, htypes.server_ref_list.row),
+            key_attribute='id',
             )
 
 

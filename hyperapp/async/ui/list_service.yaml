@@ -1,8 +1,6 @@
 import:
   types:
     service:
-      - column
       - list_service
   code:
-    - async.ui.column
     - async.ui.simple_list_object

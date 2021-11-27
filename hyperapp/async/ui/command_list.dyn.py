@@ -3,7 +3,6 @@ import logging
 from collections import namedtuple
 
 from . import htypes
-from .column import Column
 from .ui_object import Object
 from .command import command
 from .object_command import Command
@@ -31,11 +30,8 @@ class CommandList(SimpleListObject):
         self._command_by_name = None
 
     @property
-    def columns(self):
-        return [
-            Column('name', is_key=True),
-            Column('shortcut'),
-            ]
+    def key_attribute(self):
+        return 'name'
 
     async def get_all_items(self):
         return [
@@ -211,12 +207,8 @@ class ViewCommandList(CommandList):
         return htypes.command_list.view_command_list()
 
     @property
-    def columns(self):
-        return [
-            Column('name', is_key=True),
-            Column('path'),
-            Column('shortcut'),
-            ]
+    def key_attribute(self):
+        return 'name'
 
     async def _make_item(self, command):
         shortcut = self._command_shortcut(command) or ''

@@ -7,7 +7,6 @@ import:
       - transport_log
   code:
     - async.ui.command
-    - async.ui.column
     - async.ui.list_object
     - async.ui.simple_list_object
     - async.ui.module

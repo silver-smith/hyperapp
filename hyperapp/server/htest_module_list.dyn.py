@@ -3,7 +3,6 @@ import logging
 from hyperapp.common.module import Module
 
 from . import htypes
-from .item_column_list import item_t_to_column_list
 
 log = logging.getLogger(__name__)
 
@@ -151,8 +150,7 @@ class ThisModule(Module):
                 mosaic.put(collect_tests_command),
                 mosaic.put(collect_globals_command),
                 ],
-            key_column_id='module_name',
-            column_list=item_t_to_column_list(services.types, htypes.htest.test_module),
+            key_attribute='module_name',
             )
 
         module_list_service = services.module_list_service_factory(['available'])

@@ -25,7 +25,6 @@ pytest_plugins = ['hyperapp.common.test.services']
 def code_module_list():
     return [
         'common.ref_collector',
-        'common.item_column_list',
         'transport.rsa_identity',
         'sync.transport.route_table',
         'sync.transport.endpoint',
@@ -82,8 +81,7 @@ def test_list_service(services, htypes, code, row_t):
         servant_path=list_servant_path.as_data,
         dir_list=[],
         command_ref_list=[],
-        key_column_id='key',
-        column_list=code.item_column_list.item_t_to_column_list(services.types, row_t),
+        key_attribute='key',
         )
     list_service_ref = services.mosaic.put(list_service)
 

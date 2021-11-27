@@ -8,7 +8,6 @@ import:
   code:
     - async.ui.command
     - async.ui.ui_object
-    - async.ui.column
     - async.ui.tree_object
     - async.ui.string_object
     - async.ui.record_object

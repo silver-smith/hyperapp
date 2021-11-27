@@ -7,8 +7,6 @@ import:
     module_list:
       - module_list_d
       - item
-  code:
-    - common.item_column_list
 require:
   - server_identity
   - server_rpc_endpoint

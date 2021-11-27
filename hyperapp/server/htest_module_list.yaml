@@ -15,8 +15,6 @@ import:
     htest:
       - htest_module_list_d
       - test_module
-  code:
-    - common.item_column_list
 require:
   - servant_path_from_data
   - rpc_call_factory

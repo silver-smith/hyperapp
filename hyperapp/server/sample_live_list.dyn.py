@@ -6,7 +6,6 @@ from functools import partial
 from hyperapp.common.module import Module
 
 from . import htypes
-from .item_column_list import item_t_to_column_list
 
 log = logging.getLogger(__name__)
 
@@ -98,8 +97,7 @@ class ThisModule(Module):
                 mosaic.put(describe_command),
                 mosaic.put(raw_command),
                 ],
-            key_column_id='key',
-            column_list=item_t_to_column_list(services.types, htypes.sample_list.row),
+            key_attribute='key',
             )
 
         self._executor = ThreadPoolExecutor()

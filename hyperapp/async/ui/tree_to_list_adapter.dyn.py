@@ -59,10 +59,6 @@ class TreeToListAdapter(ListObject):
             ]
 
     @property
-    def columns(self):
-        return self._tree_object.columns
-
-    @property
     def key_attribute(self):
         return self._tree_object.key_attribute
 

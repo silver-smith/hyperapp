@@ -6,7 +6,6 @@ from hyperapp.common.htypes import tInt, tString
 from . import htypes
 from .code_registry import CodeRegistry
 from .command import command
-from .column import Column
 from .tree_object import TreeObject
 from .module import ClientModule
 
@@ -42,13 +41,8 @@ class FsTree(TreeObject):
             )
 
     @property
-    def columns(self):
-        return [
-            Column('key', is_key=True),
-            Column('ftype'),
-            Column('ftime', type=tInt),
-            Column('fsize', type=tInt),
-            ]
+    def key_attribute(self):
+        return 'key'
 
     async def fetch_items(self, path):
         from_key = None

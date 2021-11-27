@@ -4,7 +4,6 @@ from functools import cached_property, partial
 from hyperapp.common.module import Module
 
 from . import htypes
-from .item_column_list import item_t_to_column_list
 
 log = logging.getLogger(__name__)
 
@@ -76,8 +75,7 @@ class ThisModule(Module):
                 servant_path=servant_path.get_attr('list').partial(status_filter).as_data,
                 dir_list=[[mosaic.put(htypes.module_list.module_list_d())]],
                 command_ref_list=command_ref_list,
-                key_column_id='module_name',
-                column_list=item_t_to_column_list(services.types, htypes.module_list.item),
+                key_attribute='module_name',
                 )
 
         servant = Servant(services.mosaic, services.web, services.local_modules, services.module_registry)

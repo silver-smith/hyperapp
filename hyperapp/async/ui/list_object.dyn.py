@@ -1,13 +1,8 @@
 import logging
 import abc
 import asyncio
-from collections import namedtuple
 from dataclasses import dataclass
-from functools import cached_property, total_ordering
 from typing import List
-
-from hyperapp.common.util import is_list_inst
-from hyperapp.common.htypes import Type, tInt, tString
 
 from . import htypes
 from .ui_object import ObjectObserver, Object
@@ -65,30 +60,17 @@ class ListObject(Object, metaclass=abc.ABCMeta):
         [htypes.list_object.list_object_d()],
         ]
 
-    # todo: construct state from key column type on-the-fly.
-    @cached_property
-    def State(self):
-        if self._key_column.type is tInt:
-            return htypes.list_object.int_state
-        if self._key_column.type is tString:
-            return htypes.list_object.string_state
-        raise RuntimeError(f"{self.__class__.__name__}: Unsupported column type: {self._key_column.type}")
+    def make_state(self, current_key):
+        if type(current_key) is int:
+            return htypes.list_object.int_state(current_key)
+        if type(current_key) is str:
+            return htypes.list_object.string_state(current_key)
+        raise RuntimeError(f"{self.__class__.__name__}: Unsupported key type: {type(current_key)}")
         
-    # return Column list
+
     @abc.abstractproperty
-    def columns(self):
-        pass
-
-    @cached_property
-    def _key_column(self):
-        for column in self.columns:
-            if column.is_key:
-                return column
-        raise RuntimeError(f"No key column or key_attribute is defined by class {self.__class__.__name__}")
-
-    @property
     def key_attribute(self):
-        return self._key_column.id
+        pass
 
     class _Fetcher(ListFetcher):
 

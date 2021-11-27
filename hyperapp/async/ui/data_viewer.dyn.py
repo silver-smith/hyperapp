@@ -8,7 +8,6 @@ from hyperapp.common.module import Module
 
 from . import htypes
 from .command import command
-from .column import Column
 from .tree_object import TreeObject
 
 
@@ -63,20 +62,8 @@ class DataViewer(TreeObject):
         return f"{self._data_ref} ({self._t.name})"
 
     @property
-    def columns(self):
-        return [
-            Column('name'),
-            Column('t'),
-            Column('text'),
-            ]
-
-    @property
     def key_attribute(self):
         return 'idx'
-
-    @property
-    def key_t(self):
-        return tInt
 
     async def fetch_items(self, path):
         path = tuple(path)

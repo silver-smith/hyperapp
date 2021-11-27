@@ -9,8 +9,6 @@ import:
       - sample_live_list_d
       - row
       - article
-  code:
-    - common.item_column_list
 require:
   - peer_registry
   - servant_path_from_data
