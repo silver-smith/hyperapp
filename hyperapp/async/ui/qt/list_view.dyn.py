@@ -15,7 +15,6 @@ from hyperapp.common.module import Module
 
 from . import htypes
 from .list_object import ListFetcher, ListObserver, ListObject
-from .items_view import map_columns_to_view
 from .util import uni2str, key_match, key_match_any
 from .view import View
 
@@ -27,11 +26,11 @@ ROW_HEIGHT_PADDING = 3  # same as default QTreeView padding
 
 class _Model(QtCore.QAbstractTableModel, ListFetcher):
 
-    def __init__(self, view, columns, object):
+    def __init__(self, view, object):
         QtCore.QAbstractTableModel.__init__(self)
         self._view_wr = weakref.ref(view)
         self._object = object
-        self._columns = columns
+        self._columns = []  # attr name list
         self._key_attr = object.key_attribute
         self._init_data()
 
@@ -48,7 +47,7 @@ class _Model(QtCore.QAbstractTableModel, ListFetcher):
 
     def headerData(self, section, orient, role):
         if role == QtCore.Qt.DisplayRole and orient == QtCore.Qt.Orientation.Horizontal:
-            return self._columns[section].title
+            return self._columns[section]
         return QtCore.QAbstractTableModel.headerData(self, section, orient, role)
 
     def rowCount(self, parent):
@@ -57,9 +56,9 @@ class _Model(QtCore.QAbstractTableModel, ListFetcher):
     def data(self, index, role):
         if role != QtCore.Qt.DisplayRole:
             return None
-        column = self._columns[index.column()]
+        attr_name = self._columns[index.column()]
         item = self._item_list[index.row()]
-        value = getattr(item, column.id)
+        value = getattr(item, attr_name)
         if value is None:
             return ''
         else:
@@ -83,6 +82,7 @@ class _Model(QtCore.QAbstractTableModel, ListFetcher):
 
     def process_fetch_results(self, item_list, fetch_finished):
         log.debug('fetched %d items (finished=%s): %s', len(item_list), fetch_finished, item_list)
+        self._update_columns(item_list)
         prev_items_len = len(self._item_list)
         self.beginInsertRows(QtCore.QModelIndex(), len(self._item_list), prev_items_len + len(item_list) - 1)
         self._item_list += item_list
@@ -118,6 +118,7 @@ class _Model(QtCore.QAbstractTableModel, ListFetcher):
             del self._id2index[key]
             del current_keys[idx]
             self.endRemoveRows()
+        self._update_columns(diff.items)
         for item in diff.items:
             key = getattr(item, self._key_attr)
             idx = bisect_left(current_keys, key)
@@ -132,6 +133,20 @@ class _Model(QtCore.QAbstractTableModel, ListFetcher):
     def has_rows(self):
         return bool(self._item_list)
 
+    def _update_columns(self, new_item_list):
+        seen_attrs = set()
+        for item in new_item_list:
+            seen_attrs |= set(
+                name for name in dir(item)
+                if not name.startswith('_') and not callable(getattr(item, name))
+            )
+        new_columns = list(seen_attrs - set(self._columns))
+        if not new_columns:
+            return
+        self.beginInsertColumns(QtCore.QModelIndex(), len(self._columns), len(self._columns) + len(new_columns) - 1)
+        self._columns += new_columns
+        self.endInsertColumns()
+        
     def _fetch_more(self):
         assert not self._eof
         if self._fetch_pending:
@@ -168,14 +183,13 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
 
     @classmethod
     async def from_piece(cls, piece, object, origin_dir, lcs):
-        columns = list(map_columns_to_view(lcs, object))
-        return cls(columns, object)
+        return cls(object)
 
-    def __init__(self, columns, object, key=None):
+    def __init__(self, object, key=None):
         self._observers = weakref.WeakSet()
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
         QtWidgets.QTableView.__init__(self)
-        self.setModel(_Model(self, columns, object))
+        self.setModel(_Model(self, object))
         View.__init__(self)
         self._object = object
         self._wanted_current_id = key  # will set it to current when rows are loaded

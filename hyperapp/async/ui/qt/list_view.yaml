@@ -8,7 +8,6 @@ import:
     - async.ui.list_object
     - async.ui.qt.util
     - async.ui.qt.view
-    - async.ui.items_view
 require:
   - lcs
   - available_view_registry
