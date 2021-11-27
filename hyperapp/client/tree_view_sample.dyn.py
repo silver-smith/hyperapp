@@ -54,7 +54,7 @@ class SampleTree(TreeObject):
             self._item(path, idx) for idx in range(5)])
         # signal there are no children for these paths
         for idx in range(4):
-            self._distribute_fetch_results(list(path) + [self._key(idx * 2 + 1)], [])
+            self._distribute_fetch_results([*path, self._key(idx * 2 + 1)], [])
         # check async population works
         await asyncio.sleep(0.3)
         self._distribute_fetch_results(path, [
@@ -78,9 +78,9 @@ class SampleTree(TreeObject):
         await asyncio.sleep(0.3)
         self._distribute_diff(path, InsertItemDiff(7, self._item(path, 9)))
         await asyncio.sleep(0.3)
-        nested_path = list(path) + [self._key(9)]
+        nested_path = [*path, self._key(9)]
         self._distribute_diff(nested_path, AppendItemDiff(self._item(nested_path, 10)))
-        remove_path = list(path) + [self._key(5)]
+        remove_path = [*path, self._key(5)]
         self._distribute_diff(remove_path, RemoveItemDiff())
 
     @command
