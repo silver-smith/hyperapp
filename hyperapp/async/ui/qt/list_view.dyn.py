@@ -26,10 +26,11 @@ ROW_HEIGHT_PADDING = 3  # same as default QTreeView padding
 
 class _Model(QtCore.QAbstractTableModel, ListFetcher):
 
-    def __init__(self, view, object):
+    def __init__(self, view, object, config):
         QtCore.QAbstractTableModel.__init__(self)
         self._view_wr = weakref.ref(view)
         self._object = object
+        self._config = config  # LCSlice
         self._columns = []  # attr name list
         self._key_attr = object.key_attribute
         self._init_data()
@@ -140,13 +141,21 @@ class _Model(QtCore.QAbstractTableModel, ListFetcher):
                 name for name in dir(item)
                 if not name.startswith('_') and not callable(getattr(item, name))
             )
-        new_columns = list(seen_attrs - set(self._columns))
+        new_columns = [
+            name for name in
+            seen_attrs - set(self._columns)
+            if self._column_visibility(name) != False  # None (undefined) means visible.
+            ]
         if not new_columns:
             return
         self.beginInsertColumns(QtCore.QModelIndex(), len(self._columns), len(self._columns) + len(new_columns) - 1)
         self._columns += new_columns
         self.endInsertColumns()
-        
+
+    def _column_visibility(self, column_name):
+        dir = [htypes.column.column_d(column_name), htypes.column.column_visible_d()]
+        return self._config.get(dir)
+
     def _fetch_more(self):
         assert not self._eof
         if self._fetch_pending:
@@ -183,13 +192,14 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
 
     @classmethod
     async def from_piece(cls, piece, object, origin_dir, lcs):
-        return cls(object)
+        config = lcs.slice(object.dir_list[-1])
+        return cls(object, config)
 
-    def __init__(self, object, key=None):
+    def __init__(self, object, config, key=None):
         self._observers = weakref.WeakSet()
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
         QtWidgets.QTableView.__init__(self)
-        self.setModel(_Model(self, object))
+        self.setModel(_Model(self, object, config))
         View.__init__(self)
         self._object = object
         self._wanted_current_id = key  # will set it to current when rows are loaded

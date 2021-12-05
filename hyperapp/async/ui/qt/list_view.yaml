@@ -1,5 +1,8 @@
 import:
   types:
+    column:
+      - column_d
+      - column_visible_d
     view:
       - view_d
     list_view:
