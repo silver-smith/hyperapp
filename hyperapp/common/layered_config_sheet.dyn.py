@@ -17,15 +17,32 @@ lcs_path = Path('~/.local/share/hyperapp/client/lcs.cdr').expanduser()
 class Record:
     persist = False
     value_list: List = field(default_factory=list)
-    
 
-class LCSheet:
+
+class LCSlice:
+
+    def __init__(self, dir_to_record):
+        self._dir_to_record = dir_to_record
+
+    def get(self, dir):
+        try:
+            piece_list = self._dir_to_record[frozenset(dir)].value_list
+        except TypeError as x:
+            raise RuntimeError(f"Type error: {x}: {dir!r}")
+        if len(piece_list) > 1:
+            raise RuntimeError(f"More than one value is registered for {dir}")
+        if piece_list:
+            return piece_list[0]
+        return None
+
+
+class LCSheet(LCSlice):
 
     def __init__(self, mosaic, web, bundle):
+        super().__init__(defaultdict(Record))
         self._mosaic = mosaic
         self._web = web
         self._bundle = bundle
-        self._dir_to_record = defaultdict(Record)
         self._load()
 
     def _load(self):
@@ -62,7 +79,7 @@ class LCSheet:
         self._bundle.save_piece(htypes.layered_config_sheet.lcs_storage(rec_list))
 
     def _add(self, dir, piece):
-        record = self._dir_to_record[tuple(dir)]
+        record = self._dir_to_record[frozenset(dir)]
         record.value_list.append(piece)
         return record
 
@@ -75,16 +92,16 @@ class LCSheet:
 
     def set(self, dir, piece, persist=False):
         log.info("LCS: set%s %s -> %s", '/persist' if persist else '', dir, piece)
-        record = self._dir_to_record[tuple(dir)]
+        record = self._dir_to_record[frozenset(dir)]
         record.value_list = [piece]
         if persist:
             record.persist = True
             self._save()
 
     def remove(self, dir):
-        record = self._dir_to_record[tuple(dir)]
+        record = self._dir_to_record[frozenset(dir)]
         log.info("LCS: remove%s %s -> %s", '/persist' if record.persist else '', dir, record.value_list)
-        del self._dir_to_record[tuple(dir)]
+        del self._dir_to_record[frozenset(dir)]
         if record.persist:
             self._save()
 
@@ -98,18 +115,17 @@ class LCSheet:
 
     def iter_dir_list_values(self, dir_list):
         for dir in dir_list:
-            yield from self._dir_to_record[tuple(dir)].value_list
+            yield from self._dir_to_record[frozenset(dir)].value_list
 
-    def get(self, dir):
-        try:
-            piece_list = self._dir_to_record[tuple(dir)].value_list
-        except TypeError as x:
-            raise RuntimeError(f"Type error: {x}: {dir!r}")
-        if len(piece_list) > 1:
-            raise RuntimeError(f"More than one value is registered for {dir}")
-        if piece_list:
-            return piece_list[0]
-        return None
+    def slice(self, prefix_dir):
+        prefix_dir_set = set(prefix_dir)
+        dir_to_record = defaultdict(Record)
+        for dir, record in self._dir_to_record.items():
+            dir_set = set(dir)
+            if prefix_dir_set <= dir_set:
+                slice_dir = frozenset(dir_set - prefix_dir_set)
+                dir_to_record[slice_dir] = record
+        return LCSlice(dir_to_record)
 
 
 class ThisModule(ClientModule):
