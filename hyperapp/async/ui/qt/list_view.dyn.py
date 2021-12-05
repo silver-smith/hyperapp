@@ -31,7 +31,7 @@ class _Model(QtCore.QAbstractTableModel, ListFetcher):
         self._view_wr = weakref.ref(view)
         self._object = object
         self._config = config  # LCSlice
-        self._columns = []  # attr name list
+        self._columns = list(config.get([htypes.column.column_list_d()]) or [])  # attr name list
         self._key_attr = object.key_attribute
         self._init_data()
 
