@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 
 ITEM_FETCH_COUNT = 100
 
-Item = namedtuple('Item', 'name visible')
+Item = namedtuple('Item', 'name ordered visible')
 
 
 class _Fetcher(ListFetcher):
@@ -67,13 +67,18 @@ class ColumnList(SimpleListObject):
     @classmethod
     async def from_piece(cls, piece, mosaic, lcs, object_factory):
         object = await object_factory.invite(piece.piece_ref)
-        return cls(mosaic, lcs, object)
+        dir = [*object.dir_list[-1], htypes.column.column_list_d()]
+        ordered_columns = lcs.get(dir)
+        return cls(mosaic, lcs, object, ordered_columns)
 
-    def __init__(self, mosaic, lcs, object):
+    def __init__(self, mosaic, lcs, object, ordered_columns):
         super().__init__()
         self._mosaic = mosaic
         self._lcs = lcs
         self._object = object
+        self._ordered_columns = list(ordered_columns or [])
+        self._item_attrs = None  # Lazy-loaded object item attributes.
+        self._all_columns = []
 
     @property
     def title(self):
@@ -89,13 +94,22 @@ class ColumnList(SimpleListObject):
         return 'name'
 
     async def get_all_items(self):
-        columns_future = asyncio.Future()
-        fetcher = _Fetcher(self._object, columns_future)
-        asyncio.ensure_future(self._object.fetch_items(None, fetcher))
-        column_attr_list = await columns_future
+        if self._item_attrs is None:
+            columns_future = asyncio.Future()
+            fetcher = _Fetcher(self._object, columns_future)
+            asyncio.ensure_future(self._object.fetch_items(None, fetcher))
+            self._item_attrs = await columns_future
+            self._all_columns = self._ordered_columns + [
+                name for name in self._item_attrs
+                if name not in self._ordered_columns
+            ]
         return [
-            Item(name, visible=self._get_visibility(name))
-            for name in column_attr_list
+            Item(
+                name,
+                ordered=name in self._ordered_columns,
+                visible=self._get_visibility(name),
+                )
+            for name in self._all_columns
             ]
 
     @command
@@ -118,9 +132,37 @@ class ColumnList(SimpleListObject):
         self._lcs.remove(dir)
         self.update()
 
+    @command
+    async def move_up(self, current_key):
+        column_name = current_key
+        ordered_columns = self._all_columns
+        idx = ordered_columns.index(column_name)
+        if idx == 0:
+            return
+        del ordered_columns[idx]
+        ordered_columns.insert(idx - 1, column_name)
+        self._set_ordered_columns(ordered_columns)
+
+    @command
+    async def move_down(self, current_key):
+        column_name = current_key
+        ordered_columns = self._all_columns
+        idx = ordered_columns.index(column_name)
+        if idx == len(ordered_columns) - 1:
+            return
+        del ordered_columns[idx]
+        ordered_columns.insert(idx + 1, column_name)
+        self._set_ordered_columns(ordered_columns)
+
     def _get_visibility(self, column_name):
         dir = [*self._object.dir_list[-1], htypes.column.column_d(column_name), htypes.column.column_visible_d()]
         return self._lcs.get(dir)
+
+    def _set_ordered_columns(self, ordered_columns):
+        self._ordered_columns = ordered_columns
+        dir = [*self._object.dir_list[-1], htypes.column.column_list_d()]
+        self._lcs.set(dir, ordered_columns, persist=True)
+        self.update()
 
 
 class ThisModule(Module):
