@@ -1,0 +1,17 @@
+import:
+  types:
+    column_list:
+      - column_list_d
+      - column_list_command
+      - column_list
+    command:
+      - object_commands_d
+  code:
+    - async.ui.list_object
+    - async.ui.simple_list_object
+    - async.ui.object_command
+require:
+  - lcs
+  - object_factory
+  - object_registry
+  - command_registry

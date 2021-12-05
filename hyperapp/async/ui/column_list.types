@@ -1,0 +1,6 @@
+
+column_list_d = record
+column_list_command = record
+
+column_list = record:
+  piece_ref: ref

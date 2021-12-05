@@ -46,6 +46,7 @@ code_module_list = [
     'async.ui.application_state',
     'async.ui.view_selector',
     'async.ui.record_field_list',
+    'async.ui.column_list',
     'async.ui.view_config',
     'async.ui.object_view_config',
     'async.ui.record_view_config',
