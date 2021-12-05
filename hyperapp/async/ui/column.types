@@ -1,0 +1,5 @@
+
+column_d = record:
+  name: string
+
+column_visible_d = record

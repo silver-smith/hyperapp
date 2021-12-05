@@ -1,12 +1,16 @@
 import asyncio
+import logging
 from collections import namedtuple
 
 from hyperapp.common.module import Module
 
 from . import htypes
+from .command import command
 from .object_command import Command
 from .list_object import ListFetcher, ListObject
 from .simple_list_object import SimpleListObject
+
+log = logging.getLogger(__name__)
 
 
 ITEM_FETCH_COUNT = 100
@@ -50,7 +54,7 @@ class _Fetcher(ListFetcher):
                 name for name in dir(item)
                 if not name.startswith('_') and not callable(getattr(item, name))
             )
-        self._columns += list(seen_attrs - set(self._columns))
+        self._columns += list(sorted(seen_attrs - set(self._columns)))
 
 
 class ColumnList(SimpleListObject):
@@ -90,9 +94,33 @@ class ColumnList(SimpleListObject):
         asyncio.ensure_future(self._object.fetch_items(None, fetcher))
         column_attr_list = await columns_future
         return [
-            Item(name, visible=True)
+            Item(name, visible=self._get_visibility(name))
             for name in column_attr_list
             ]
+
+    @command
+    async def swith_visibility(self, current_key):
+        column_name = current_key
+        dir = [*self._object.dir_list[-1], htypes.column.column_d(column_name), htypes.column.column_visible_d()]
+        visible = self._get_visibility(column_name)
+        if visible is False:
+            visible = True
+        else:  # True or None (not defined yet)
+            visible = False
+        log.info("Set column visibility to %r for: %s", visible, dir)
+        self._lcs.set(dir, visible, persist=True)
+        self.update()
+
+    @command
+    async def clear_visibility(self, current_key):
+        column_name = current_key
+        dir = [*self._object.dir_list[-1], htypes.column.column_d(column_name), htypes.column.column_visible_d()]
+        self._lcs.remove(dir)
+        self.update()
+
+    def _get_visibility(self, column_name):
+        dir = [*self._object.dir_list[-1], htypes.column.column_d(column_name), htypes.column.column_visible_d()]
+        return self._lcs.get(dir)
 
 
 class ThisModule(Module):
