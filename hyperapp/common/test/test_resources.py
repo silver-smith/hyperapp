@@ -1,0 +1,31 @@
+import logging
+from pathlib import Path
+
+import pytest
+import yaml
+
+from hyperapp.common import cdr_coders  # self-registering
+
+log = logging.getLogger(__name__)
+
+
+pytest_plugins = ['hyperapp.common.test.services']
+
+TEST_DIR = Path(__file__).parent.resolve()
+
+
+@pytest.fixture
+def code_module_list():
+    return [
+        'common.resource_registry',
+        'common.resource.factory',
+        ]
+
+
+def test_resources(services):
+    resource_type_registry = services.resource_type_registry
+    resources = yaml.safe_load(TEST_DIR.joinpath('test_resources.resources.yaml').read_text())
+    for name, definition in resources.items():
+        from_dict = resource_type_registry[definition['type']]
+        resource = from_dict(definition)
+        log.info("Resource %r: %s", name, resource)
