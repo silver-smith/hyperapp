@@ -27,4 +27,7 @@ def code_module_list():
 def test_resources(services):
     resource_type_registry = services.resource_type_registry
     resources = yaml.safe_load(TEST_DIR.joinpath('test_resources.resources.yaml').read_text())
-    services.resource_registry.load_definitions(resources)
+    name_to_resource = services.resource_registry.load_definitions(resources)
+    factory = name_to_resource['sample_factory']
+    result = factory.value()
+    log.info("Factory call result: %r", result)

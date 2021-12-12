@@ -6,19 +6,30 @@ class FactoryResource:
     @classmethod
     def from_dict(cls, data, name_to_resource):
         object = name_to_resource[data['object']]
+        attr_name = data['attr_name']
         params = {
             name: name_to_resource[resource_name]
             for name, resource_name
             in data['params'].items()
             }
-        return cls(object, params)
+        return cls(object, attr_name, params)
 
-    def __init__(self, object, params):
+    def __init__(self, object, attr_name, params):
         self._object = object
+        self._attr_name = attr_name
         self._params = params
 
     def __repr__(self):
-        return f"<FactoryResource: {self._object}({self._params})>"
+        return f"<FactoryResource: {self._object}.{self._attr_name}({self._params})>"
+
+    def value(self):
+        kw = {
+            name: resource.value()
+            for name, resource
+            in self._params.items()
+            }
+        object = self._object.value()
+        return getattr(object, self._attr_name)(**kw)
 
 
 class ThisModule(Module):

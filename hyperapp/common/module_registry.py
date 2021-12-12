@@ -174,6 +174,9 @@ class ModuleRegistry:
             if method:
                 yield (rec.name, method)
 
+    def module_loaded(self, module):
+        return module in self._registry
+
     def get_python_module(self, module):
         return self._registry[module].python_module
 

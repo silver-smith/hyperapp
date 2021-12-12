@@ -2,6 +2,7 @@
 sample_factory:
   type: factory
   object: htest_sample
+  attr_name: sample_factory
   params:
     identity: server_identity
     rpc_call_factory: rpc_call_factory

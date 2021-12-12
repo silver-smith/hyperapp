@@ -18,6 +18,7 @@ class ResourceRegistry:
             resource = from_dict(definition, name_to_resource)
             name_to_resource[name] = resource
             log.info("Loaded resource %r: %s", name, resource)
+        return name_to_resource
 
 
 class ThisModule(Module):
