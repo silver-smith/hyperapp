@@ -1,10 +1,19 @@
 
-sample_factory:
+sample_servant_factory:
   type: factory
   object: htest_sample
-  attr_name: sample_factory
+  attr_name: sample_servant
   params:
     mosaic: mosaic
     web: web
-    identity: server_identity
+    peer_registry: peer_registry
     rpc_call_factory: rpc_call_factory
+
+sample_servant:
+  type: call
+  function: sample_servant_factory
+
+servant_list:
+  type: factory
+  object: sample_servant
+  attr_name: list

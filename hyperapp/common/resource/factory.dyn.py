@@ -1,3 +1,5 @@
+from functools import partial
+
 from hyperapp.common.module import Module
 
 
@@ -10,7 +12,7 @@ class FactoryResource:
         params = {
             name: name_to_resource[resource_name]
             for name, resource_name
-            in data['params'].items()
+            in data.get('params', {}).items()
             }
         return cls(object, attr_name, params)
 
@@ -29,7 +31,11 @@ class FactoryResource:
             in self._params.items()
             }
         object = self._object.value()
-        return getattr(object, self._attr_name)(**kw)
+        fn = getattr(object, self._attr_name)
+        if kw:
+            return partial(fn, **kw)
+        else:
+            return fn
 
 
 class ThisModule(Module):

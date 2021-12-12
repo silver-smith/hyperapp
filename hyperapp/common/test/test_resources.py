@@ -21,6 +21,7 @@ def code_module_list():
         'common.resource.legacy_module',
         'common.resource.legacy_service',
         'common.resource.factory',
+        'common.resource.call',
         ]
 
 
@@ -28,6 +29,6 @@ def test_resources(services):
     resource_type_registry = services.resource_type_registry
     resources = yaml.safe_load(TEST_DIR.joinpath('test_resources.resources.yaml').read_text())
     name_to_resource = services.resource_registry.load_definitions(resources)
-    factory = name_to_resource['sample_factory']
-    result = factory.value()
-    log.info("Factory call result: %r", result)
+    servant_list_resource = name_to_resource['servant_list']
+    servant_list = servant_list_resource.value()
+    log.info("Servant list: %r", servant_list)
