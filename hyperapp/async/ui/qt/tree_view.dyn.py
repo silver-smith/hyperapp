@@ -19,11 +19,15 @@ log = logging.getLogger(__name__)
 
 class _Model(QtCore.QAbstractItemModel):
 
-    def __init__(self, view, object):
+    def __init__(self, view, object, config):
         QtCore.QAbstractItemModel.__init__(self)
         self._view_wr = weakref.ref(view)
         self._object = object
-        self.columns = [object.key_attribute]  # attr name list
+        self._config = config  # LCSlice
+        self.columns = list(
+            config.get([htypes.column.column_list_d()])
+            or [object.key_attribute]
+            )  # attr name list
         self._key_attr = object.key_attribute
         self._path2item = {}
         self._path2children = {}
@@ -134,12 +138,20 @@ class _Model(QtCore.QAbstractItemModel):
                 name for name in dir(item)
                 if not name.startswith('_') and not callable(getattr(item, name))
             )
-        new_columns = list(seen_attrs - set(self.columns))
+        new_columns = [
+            name for name in
+            seen_attrs - set(self.columns)
+            if self._column_visibility(name) != False  # None (undefined) means visible.
+            ]
         if not new_columns:
             return
         self.beginInsertColumns(QtCore.QModelIndex(), len(self.columns), len(self.columns) + len(new_columns) - 1)
         self.columns += new_columns
         self.endInsertColumns()
+
+    def _column_visibility(self, column_name):
+        dir = [htypes.column.column_d(column_name), htypes.column.column_visible_d()]
+        return self._config.get(dir)
 
     def _append_items(self, path, item_list):
         log.debug("Append items at %s: %s", path, item_list)
@@ -269,13 +281,14 @@ class TreeView(View, QtWidgets.QTreeView, TreeObserver):
 
     @classmethod
     async def from_piece(cls, piece, object, add_dir_list, lcs):
-        return cls(object)
+        config = lcs.slice(object.dir_list[-1])
+        return cls(object, config)
 
-    def __init__(self, object, current_path=None):
+    def __init__(self, object, config, current_path=None):
         self._observers = weakref.WeakSet()
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
         QtWidgets.QTreeView.__init__(self)
-        self.setModel(_Model(self, object))
+        self.setModel(_Model(self, object, config))
         View.__init__(self)
         TreeObserver.__init__(self)
         self.setSelectionMode(self.ContiguousSelection)

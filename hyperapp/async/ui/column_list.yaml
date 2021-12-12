@@ -14,6 +14,7 @@ import:
     - async.ui.command
     - async.ui.object_command
     - async.ui.list_object
+    - async.ui.tree_object
     - async.ui.simple_list_object
 require:
   - lcs

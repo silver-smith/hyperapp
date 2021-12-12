@@ -8,6 +8,7 @@ from . import htypes
 from .command import command
 from .object_command import Command
 from .list_object import ListFetcher, ListObject
+from .tree_object import TreeObject
 from .simple_list_object import SimpleListObject
 
 log = logging.getLogger(__name__)
@@ -181,6 +182,10 @@ class ThisModule(Module):
             )
         services.lcs.add(
             [*ListObject.dir_list[-1], htypes.command.object_commands_d()],
+            htypes.column_list.column_list_command(),
+            )
+        services.lcs.add(
+            [*TreeObject.dir_list[-1], htypes.command.object_commands_d()],
             htypes.column_list.column_list_command(),
             )
         services.command_registry.register_actor(

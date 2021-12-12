@@ -68,6 +68,6 @@ def object(services):
 
 @pytest.mark.asyncio
 async def test_instantiate(event_loop, services, code, object):
-    view = code.tree_view.TreeView(object=object)
+    view = code.tree_view.TreeView(object, services.lcs)
     #view.populate()
     await wait_for_all_tasks_to_complete(event_loop)
