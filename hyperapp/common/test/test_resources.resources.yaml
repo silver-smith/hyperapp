@@ -4,5 +4,7 @@ sample_factory:
   object: htest_sample
   attr_name: sample_factory
   params:
+    mosaic: mosaic
+    web: web
     identity: server_identity
     rpc_call_factory: rpc_call_factory

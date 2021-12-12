@@ -30,8 +30,8 @@ class SampleServant:
         pass
 
 
-def sample_factory(identity, rpc_call_factory):
-    log.info("HTest_sample: sample_factory call: %s, %s", identity, rpc_call_factory)
+def sample_factory(mosaic, web, identity, rpc_call_factory):
+    log.info("HTest_sample: sample_factory call: %s, %s, %s, %s", mosaic, web, identity, rpc_call_factory)
 
 
 log.info("HTest_sample module is loaded")

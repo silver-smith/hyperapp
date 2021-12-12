@@ -5,6 +5,19 @@ from hyperapp.common.module import Module
 log = logging.getLogger(__name__)
 
 
+class BuiltinLegacyServiceResource:
+
+    def __init__(self, service_name, services):
+        self._service_name = service_name
+        self._services = services
+
+    def __repr__(self):
+        return f"<BuiltinLegacyService: {self._service_name}>"
+
+    def value(self):
+        return getattr(self._services, self._service_name)
+
+
 class LegacyServiceResource:
 
     def __init__(self, service_name, module_name, module_resource, services):
@@ -26,9 +39,14 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        self._register_services(services.builtin_resource_by_name, services.legacy_module_resources, services.local_modules, services)
+        self._register_services(
+            services.builtin_services, services.builtin_resource_by_name, services.legacy_module_resources, services.local_modules, services)
 
-    def _register_services(self, builtin_resource_by_name, legacy_module_resources, local_modules, services):
+    def _register_services(self, builtin_services, builtin_resource_by_name, legacy_module_resources, local_modules, services):
+        for service_name in builtin_services:
+            resource = BuiltinLegacyServiceResource(service_name, services)
+            builtin_resource_by_name[service_name] = resource
+            log.info("Builtin legacy service resource %s: %s", service_name, resource)
         for module_name, service_name_set in local_modules.module_provides.items():
             for service_name in service_name_set:
                 module_resource = legacy_module_resources[module_name]
