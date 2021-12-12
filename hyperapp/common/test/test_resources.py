@@ -18,6 +18,7 @@ TEST_DIR = Path(__file__).parent.resolve()
 def code_module_list():
     return [
         'common.resource_registry',
+        'common.resource.legacy_module',
         'common.resource.factory',
         ]
 
@@ -25,7 +26,4 @@ def code_module_list():
 def test_resources(services):
     resource_type_registry = services.resource_type_registry
     resources = yaml.safe_load(TEST_DIR.joinpath('test_resources.resources.yaml').read_text())
-    for name, definition in resources.items():
-        from_dict = resource_type_registry[definition['type']]
-        resource = from_dict(definition)
-        log.info("Resource %r: %s", name, resource)
+    services.resource_registry.load_definitions(resources)

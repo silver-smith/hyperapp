@@ -1,3 +1,8 @@
 
 sample_factory:
   type: factory
+  object: htest_sample
+  params:
+    - one
+    - two
+    - three

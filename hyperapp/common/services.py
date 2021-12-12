@@ -95,7 +95,7 @@ class Services(object):
 
     def _load_code_module_list(self, module_name_list, config):
         local_modules = self.code_module_loader.load_code_modules(self.module_dir_list)
-        self.local_modules = local_modules
+        self.local_modules = local_modules  # Registry (by_name: name -> code_module_t, by_requirement: name -> code_module_t set).
 
         module_list = [
             local_modules.by_name[name]
