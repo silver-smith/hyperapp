@@ -19,6 +19,7 @@ def code_module_list():
     return [
         'common.resource_registry',
         'common.resource.legacy_module',
+        'common.resource.legacy_service',
         'common.resource.factory',
         ]
 

@@ -6,7 +6,11 @@ class FactoryResource:
     @classmethod
     def from_dict(cls, data, name_to_resource):
         object = name_to_resource[data['object']]
-        params = data['params']
+        params = {
+            name: name_to_resource[resource_name]
+            for name, resource_name
+            in data['params'].items()
+            }
         return cls(object, params)
 
     def __init__(self, object, params):

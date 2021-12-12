@@ -3,6 +3,5 @@ sample_factory:
   type: factory
   object: htest_sample
   params:
-    - one
-    - two
-    - three
+    identity: server_identity
+    rpc_call_factory: rpc_call_factory

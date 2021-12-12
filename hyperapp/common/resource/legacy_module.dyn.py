@@ -24,5 +24,6 @@ class ThisModule(Module):
     def _register_modules(self, builtin_resource_by_name, local_modules, module_registry):
         for module_name, module in local_modules.by_name.items():
             name = module_name.split('.')[-1]
-            builtin_resource_by_name[name] = LegacyModuleResource(module_name)
-            log.info("Legacy module resource %s: %s", name, module_name)
+            resource = LegacyModuleResource(module_name)
+            builtin_resource_by_name[name] = resource
+            log.info("Legacy module resource %s: %s", name, resource)

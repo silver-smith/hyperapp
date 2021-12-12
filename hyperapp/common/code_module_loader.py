@@ -16,6 +16,7 @@ class Registry:
     def __init__(self):
         self.by_name = {}  # str -> code_module_t
         self.by_requirement = defaultdict(set)  # str -> code_module_t set
+        self.module_provides = defaultdict(set)  # module name -> provide set
 
 
 class CodeModuleLoader:
@@ -94,4 +95,5 @@ class CodeModuleLoader:
         registry.by_name[module_name] = code_module
         for requirement in info.provide:
             registry.by_requirement[requirement].add(code_module)
+            registry.module_provides[module_name].add(requirement)
         return code_module
