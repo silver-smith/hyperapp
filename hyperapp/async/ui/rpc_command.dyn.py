@@ -68,55 +68,10 @@ class RpcElementCommand:
         return piece
 
 
-class AltRpcElementCommand(RpcElementCommand):
-
-    @classmethod
-    async def from_piece(cls, piece, mosaic, types, async_web, rpc_endpoint, async_rpc_proxy, identity):
-        interface_ref = element_command_interface_ref(mosaic, types, piece.key_type_ref, piece.method_name)
-        service = htypes.rpc.endpoint(
-            peer_ref=piece.peer_ref,
-            iface_ref=interface_ref,
-            object_id=piece.object_id,
-            )
-        proxy = async_rpc_proxy(identity, rpc_endpoint, service)
-        return cls(async_web, piece.key_type_ref, piece.method_name, piece.peer_ref, piece.object_id, proxy, piece.name)
-
-    def __init__(self, async_web, key_type_ref, method_name, peer_ref, object_id, proxy, name):
-        super().__init__(async_web, key_type_ref, method_name, peer_ref, object_id, proxy)
-        self._name = name
-
-    @property
-    def name(self):
-        return self._name
-
-    @property
-    def dir(self):
-        return [htypes.rpc_command.alt_rpc_command_d(self._peer_ref, self._object_id, self._method_name, self._name)]
-
-    @property
-    def piece(self):
-        return htypes.rpc_command.alt_rpc_command(
-            key_type_ref=self._key_type_ref,
-            method_name=self._method_name,
-            peer_ref=self._peer_ref,
-            object_id=self._object_id,
-            name=self._name,
-            )
-
-
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-
-        self._lcs = services.lcs
-
-        services.command_registry.register_actor(
-            htypes.rpc_command.clone_rpc_command_command, Command.from_fn(self.name, self.clone_rpc_command))
-        services.lcs.add(
-            [htypes.command_list.object_command_list_d(), htypes.command.object_commands_d()],
-            htypes.rpc_command.clone_rpc_command_command(),
-            )
 
     # Required client_rpc_endpoint registered at services only by async_init.
     async def async_init(self, services):
@@ -130,34 +85,3 @@ class ThisModule(Module):
             services.client_rpc_endpoint,
             services.client_identity,
             )
-        services.command_registry.register_actor(
-            htypes.rpc_command.alt_rpc_command,
-            AltRpcElementCommand.from_piece,
-            services.mosaic,
-            services.types,
-            services.async_web,
-            services.peer_registry,
-            services.servant_path_from_data,
-            services.async_rpc_call_factory,
-            services.client_rpc_endpoint,
-            services.client_identity,
-            )
-
-    async def clone_rpc_command(self, object, view_state, origin_dir):
-        command = object.key_to_command(view_state.current_key)
-        log.info("Clone command: %s", command)
-        command_piece = command.piece
-        alt_command = htypes.rpc_command.alt_rpc_command(
-            key_type_ref=command_piece.key_type_ref,
-            method_name=command_piece.method_name,
-            peer_ref=command_piece.peer_ref,
-            object_id=command_piece.object_id,
-            name='alt_rpc_command',
-            )
-        dir = object.target_object.dir_list[-1]
-        self._lcs.add(
-            [*dir, htypes.command.object_commands_d()],
-            alt_command,
-            persist=True,
-            )
-        await object.update()

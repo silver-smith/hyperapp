@@ -10,17 +10,3 @@ rpc_command = record:
   servant_path: ref list
   state_attr_list: string list  # Attributes from view state to send to server.
   name: string
-
-
-alt_rpc_command_d = record:
-  peer_ref: ref
-  object_id: string
-  method_name: string
-  name: string
-
-alt_rpc_command = record:
-  key_type_ref: ref
-  method_name: string
-  peer_ref: ref
-  object_id: string
-  name: string
