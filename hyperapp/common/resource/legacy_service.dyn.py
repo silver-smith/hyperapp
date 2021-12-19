@@ -2,6 +2,8 @@ import logging
 
 from hyperapp.common.module import Module
 
+from . import htypes
+
 log = logging.getLogger(__name__)
 
 
@@ -40,16 +42,16 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
 
         self._register_services(
-            services.builtin_services, services.builtin_resource_by_name, services.legacy_module_resources, services.local_modules, services)
+            services.mosaic, services, services.builtin_services, services.builtin_resource_by_name, services.local_modules)
 
-    def _register_services(self, builtin_services, builtin_resource_by_name, legacy_module_resources, local_modules, services):
+    def _register_services(self, mosaic, services, builtin_services, builtin_resource_by_name, local_modules):
         for service_name in builtin_services:
-            resource = BuiltinLegacyServiceResource(service_name, services)
-            builtin_resource_by_name[service_name] = resource
-            log.info("Builtin legacy service resource %s: %s", service_name, resource)
+            piece = htypes.legacy_service.builtin_service(service_name)
+            builtin_resource_by_name[service_name] = mosaic.put(piece)
+            log.info("Builtin legacy service resource %s: %s", service_name, piece)
         for module_name, service_name_set in local_modules.module_provides.items():
             for service_name in service_name_set:
-                module_resource = legacy_module_resources[module_name]
-                resource = LegacyServiceResource(service_name, module_name, module_resource, services)
-                builtin_resource_by_name[service_name] = resource
-                log.info("Legacy service resource %s: %s", service_name, resource)
+                module_ref = builtin_resource_by_name[module_name]
+                piece = htypes.legacy_service.module_service(service_name, module_ref)
+                builtin_resource_by_name[service_name] = mosaic.put(piece)
+                log.info("Legacy service resource %s: %s", service_name, piece)

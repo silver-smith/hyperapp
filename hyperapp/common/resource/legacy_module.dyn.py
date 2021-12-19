@@ -28,16 +28,13 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        services.legacy_module_resources = {}  # module name -> LegacyModuleResource
+        services.legacy_module_resources = {}  # module name -> code_module_t
 
         self._register_modules(
-            services.legacy_module_resources, services.builtin_resource_by_name, services.local_modules, services.module_registry, services)
+            services.mosaic, services.legacy_module_resources, services.builtin_resource_by_name, services.local_modules)
 
-    def _register_modules(self, legacy_module_resources, builtin_resource_by_name, local_modules, module_registry, services):
+    def _register_modules(self, mosaic, legacy_module_resources, builtin_resource_by_name, local_modules):
         for module_name, module in local_modules.by_name.items():
-            name = module_name.split('.')[-1]
-            module = local_modules.by_name[module_name]
-            resource = LegacyModuleResource(module_name, module, module_registry, local_modules.by_requirement, services)
-            builtin_resource_by_name[name] = resource
-            legacy_module_resources[module_name] = resource
-            log.info("Legacy module resource %s: %s", name, resource)
+            builtin_resource_by_name[module_name] = mosaic.put(module)
+            legacy_module_resources[module_name] = module
+            log.info("Legacy module resource %s: %s", module_name, module)

@@ -1,0 +1,7 @@
+
+builtin_service = record:
+  name: string
+
+module_service = record:
+  name: string
+  module_ref: ref

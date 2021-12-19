@@ -1,0 +1,9 @@
+
+param = record:
+  name: string
+  value_ref: ref
+
+factory = record:
+  object_ref: ref
+  attr_name: string
+  params: param list

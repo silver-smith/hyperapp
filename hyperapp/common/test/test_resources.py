@@ -29,6 +29,5 @@ def test_resources(services):
     resource_type_registry = services.resource_type_registry
     resources = yaml.safe_load(TEST_DIR.joinpath('test_resources.resources.yaml').read_text())
     name_to_resource = services.resource_registry.load_definitions(resources)
-    servant_list_resource = name_to_resource['servant_list']
-    servant_list = servant_list_resource.value()
-    log.info("Servant list: %r", servant_list)
+    servant_list_ref = name_to_resource['servant_list']
+    log.info("Servant list: %r", services.mosaic.resolve_ref(servant_list_ref).value)

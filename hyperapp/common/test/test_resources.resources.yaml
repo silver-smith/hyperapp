@@ -1,7 +1,7 @@
 
 sample_servant_factory:
   type: factory
-  object: htest_sample
+  object: server.htest_sample
   attr_name: sample_servant
   params:
     mosaic: mosaic

@@ -2,40 +2,31 @@ from functools import partial
 
 from hyperapp.common.module import Module
 
+from . import htypes
 
-class FactoryResource:
 
-    @classmethod
-    def from_dict(cls, data, name_to_resource):
-        object = name_to_resource[data['object']]
-        attr_name = data['attr_name']
-        params = {
-            name: name_to_resource[resource_name]
-            for name, resource_name
-            in data.get('params', {}).items()
-            }
-        return cls(object, attr_name, params)
+def from_dict(data, name_to_piece_ref):
+    object_ref = name_to_piece_ref[data['object']]
+    attr_name = data['attr_name']
+    params = [
+        htypes.factory.param(name, name_to_piece_ref[resource_name])
+        for name, resource_name
+        in data.get('params', {}).items()
+        ]
+    return htypes.factory.factory(object_ref, attr_name, params)
 
-    def __init__(self, object, attr_name, params):
-        self._object = object
-        self._attr_name = attr_name
-        self._params = params
 
-    def __repr__(self):
-        return f"<FactoryResource: {self._object}.{self._attr_name}({self._params})>"
-
-    def value(self):
-        kw = {
-            name: resource.value()
-            for name, resource
-            in self._params.items()
-            }
-        object = self._object.value()
-        fn = getattr(object, self._attr_name)
-        if kw:
-            return partial(fn, **kw)
-        else:
-            return fn
+def python_object(piece, python_object_creg):
+    object = python_object_creg.invite(piece.object_ref)
+    kw = {
+        param.name: python_object_creg.invite(param.value_ref)
+        for param in piece.params
+        }
+    fn = getattr(object, piece.attr_name)
+    if kw:
+        return partial(fn, **kw)
+    else:
+        return fn
 
 
 class ThisModule(Module):
@@ -43,4 +34,5 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        services.resource_type_registry['factory'] = FactoryResource.from_dict
+        services.resource_type_registry['factory'] = from_dict
+        services.python_object_creg.register_actor(htypes.factory.factory, python_object, services.python_object_creg)

@@ -1,5 +1,6 @@
 import logging
 
+from hyperapp.common.code_registry import CodeRegistry
 from hyperapp.common.module import Module
 
 log = logging.getLogger(__name__)
@@ -7,18 +8,20 @@ log = logging.getLogger(__name__)
 
 class ResourceRegistry:
 
-    def __init__(self, resource_type_registry, builtin_resource_by_name):
+    def __init__(self, mosaic, resource_type_registry, builtin_resource_by_name):
+        self._mosaic = mosaic
         self._resource_type_registry = resource_type_registry
         self._builtin_resource_by_name = builtin_resource_by_name
 
     def load_definitions(self, resources):
-        name_to_resource = {**self._builtin_resource_by_name}
+        name_to_piece = {**self._builtin_resource_by_name}
         for name, definition in resources.items():
             from_dict = self._resource_type_registry[definition['type']]
-            resource = from_dict(definition, name_to_resource)
-            name_to_resource[name] = resource
-            log.info("Loaded resource %r: %s", name, resource)
-        return name_to_resource
+            piece = from_dict(definition, name_to_piece)
+            name_to_piece[name] = self._mosaic.put(piece)
+            log.info("Loaded resource %r: %s", name, piece)
+        return name_to_piece
+
 
 
 class ThisModule(Module):
@@ -28,4 +31,5 @@ class ThisModule(Module):
 
         services.resource_type_registry = {}  # resource name -> from_dict constructor.
         services.builtin_resource_by_name = {}
-        services.resource_registry = ResourceRegistry(services.resource_type_registry, services.builtin_resource_by_name)
+        services.resource_registry = ResourceRegistry(services.mosaic, services.resource_type_registry, services.builtin_resource_by_name)
+        services.python_object_creg = CodeRegistry('python_object', services.web, services.types)
