@@ -1,9 +1,0 @@
-import:
-  types:
-    rpc:
-      - request
-require:
-  - peer_registry
-  - async_transport
-provide:
-  - async_rpc_proxy

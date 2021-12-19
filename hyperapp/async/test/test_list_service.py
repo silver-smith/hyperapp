@@ -30,7 +30,6 @@ def code_module_list():
         'sync.transport.endpoint',
         'sync.transport.tcp',
         'rpc.servant_path',
-        'sync.rpc.rpc_proxy',
         'sync.rpc.rpc_endpoint',
         'sync.subprocess',
         ]
