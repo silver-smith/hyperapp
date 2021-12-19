@@ -37,6 +37,8 @@ class CodeModuleLoader:
     def _load_modules_info(self, root_dir):
         name_to_info = {}
         for info_path in root_dir.rglob('*.yaml'):
+            if info_path.name.endswith('.resources.yaml'):
+                continue  # Skip resources.
             if 'test' in info_path.relative_to(root_dir).parts:
                 continue  # Skip test subdirectories.
             module_name = '.'.join(info_path.with_suffix('').relative_to(root_dir).parts)
