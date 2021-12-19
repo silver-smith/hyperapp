@@ -1,7 +1,7 @@
 
 request = record:
   request_id: string
-  servant_path: ref list
+  servant_ref: ref
   params: ref list
   sender_peer_ref: ref
 

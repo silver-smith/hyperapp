@@ -1,1 +1,5 @@
-# empty
+provide:
+  - resource_type_registry
+  - builtin_resource_by_name
+  - resource_registry
+  - python_object_creg

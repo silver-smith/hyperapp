@@ -3,3 +3,8 @@ import:
     factory:
       - param
       - factory
+provide:
+  - resource.factory
+require:
+  - resource_type_registry
+  - python_object_creg

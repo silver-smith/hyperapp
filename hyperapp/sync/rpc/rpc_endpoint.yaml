@@ -8,6 +8,6 @@ import:
 require:
   - peer_registry
   - transport
-  - servant_path_from_data
+  - python_object_creg
 provide:
   - rpc_endpoint_factory

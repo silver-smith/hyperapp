@@ -18,7 +18,7 @@ class ThisModule(Module):
         services.rpc_call_factory = partial(self.rpc_call_factory, services.mosaic, services.types, services.transport)
 
     @staticmethod
-    def rpc_call_factory(mosaic, types, transport, rpc_endpoint, receiver_peer, servant_path, sender_identity, timeout_sec=10):
+    def rpc_call_factory(mosaic, types, transport, rpc_endpoint, receiver_peer, servant_ref, sender_identity, timeout_sec=10):
         sender_peer_ref = mosaic.put(sender_identity.peer.piece)
 
         def call(*args):
@@ -29,12 +29,12 @@ class ThisModule(Module):
             request_id = str(uuid.uuid4())
             request = htypes.rpc.request(
                 request_id=request_id,
-                servant_path=servant_path.as_data,
+                servant_ref=servant_ref,
                 params=params,
                 sender_peer_ref=sender_peer_ref,
                 )
             request_ref = mosaic.put(request)
-            log.info("Rpc call: %s %s (%s): send rpc request: %s", receiver_peer, servant_path, args, request)
+            log.info("Rpc call: %s %s (%s): send rpc request: %s", receiver_peer, servant_ref, args, request)
             transport.send(receiver_peer, sender_identity, [request_ref])
             result = rpc_endpoint.wait_for_response(request_id, timeout_sec)
             log.info("Rpc call: got result: %s", result)

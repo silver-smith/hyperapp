@@ -2,3 +2,8 @@ import:
   types:
     call:
       - call
+provide:
+  - resource.call
+require:
+  - resource_type_registry
+  - python_object_creg
