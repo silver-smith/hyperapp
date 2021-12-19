@@ -22,6 +22,7 @@ def code_module_list():
         'common.resource.legacy_service',
         'common.resource.factory',
         'common.resource.call',
+        'common.resource.list_service',
         ]
 
 
@@ -29,6 +30,10 @@ def test_resources(services):
     resource_type_registry = services.resource_type_registry
     resources = yaml.safe_load(TEST_DIR.joinpath('test_resources.resources.yaml').read_text())
     name_to_resource = services.resource_registry.load_definitions(resources)
+
     servant_list_ref = name_to_resource['servant_list']
     servant_list = services.python_object_creg.invite(servant_list_ref)
     log.info("Servant list: %r", servant_list)
+
+    list_service_ref = name_to_resource['sample_list_service']
+    log.info("List service: %r", services.mosaic.resolve_ref(list_service_ref).value)

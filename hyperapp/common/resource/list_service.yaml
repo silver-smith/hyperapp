@@ -1,0 +1,4 @@
+import:
+  types:
+    service:
+      - list_service

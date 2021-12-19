@@ -1,0 +1,29 @@
+from functools import partial
+
+from hyperapp.common.module import Module
+
+from . import htypes
+
+
+def from_dict(mosaic, python_object_creg, data, name_to_resource):
+    identity_ref = name_to_resource[data['identity']]
+    identity = python_object_creg.invite(identity_ref)
+    peer_ref = mosaic.put(identity.peer.piece)
+    servant_fn_ref = name_to_resource[data['servant']]
+    key_attribute = data['key_attribute']
+    return htypes.service.list_service(
+        peer_ref=peer_ref,
+        servant_fn_ref=servant_fn_ref,
+        dir_list=[],
+        command_ref_list=[],
+        key_attribute=key_attribute,
+        )
+
+
+class ThisModule(Module):
+
+    def __init__(self, module_name, services, config):
+        super().__init__(module_name, services, config)
+
+        services.resource_type_registry['list_service'] = partial(
+            from_dict, services.mosaic, services.python_object_creg)

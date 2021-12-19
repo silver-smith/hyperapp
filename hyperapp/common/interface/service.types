@@ -1,7 +1,7 @@
 
 service = record:
   peer_ref: ref
-  servant_path: ref list
+  servant_fn_ref: ref
   dir_list: ref list list  # Additional to own service type (list/tree/record) dirs.
   command_ref_list: ref list
 

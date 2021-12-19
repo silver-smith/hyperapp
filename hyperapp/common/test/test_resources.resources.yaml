@@ -17,3 +17,9 @@ servant_list:
   type: factory
   object: sample_servant
   attr_name: list
+
+sample_list_service:
+  type: list_service
+  identity: server_identity
+  servant: servant_list
+  key_attribute: id
