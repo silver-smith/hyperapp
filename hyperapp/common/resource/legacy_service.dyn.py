@@ -7,33 +7,13 @@ from . import htypes
 log = logging.getLogger(__name__)
 
 
-class BuiltinLegacyServiceResource:
-
-    def __init__(self, service_name, services):
-        self._service_name = service_name
-        self._services = services
-
-    def __repr__(self):
-        return f"<BuiltinLegacyService: {self._service_name}>"
-
-    def value(self):
-        return getattr(self._services, self._service_name)
+def builtin_service_python_object(piece, services):
+    return getattr(services, piece.name)
 
 
-class LegacyServiceResource:
-
-    def __init__(self, service_name, module_name, module_resource, services):
-        self._service_name = service_name
-        self._module_name = module_name  # Module providing this service.
-        self._module_resource = module_resource
-        self._services = services
-
-    def __repr__(self):
-        return f"<LegacyService: {self._service_name}@{self._module_name}>"
-
-    def value(self):
-        _ = self._module_resource.value()  # Ensure it is loaded.
-        return getattr(self._services, self._service_name)
+def module_service_python_object(piece, python_object_creg, services):
+    _ = python_object_creg.invite(piece.module_ref)  # Ensure it is loaded.
+    return getattr(services, piece.name)
 
 
 class ThisModule(Module):
@@ -43,6 +23,8 @@ class ThisModule(Module):
 
         self._register_services(
             services.mosaic, services, services.builtin_services, services.builtin_resource_by_name, services.local_modules)
+        services.python_object_creg.register_actor(htypes.legacy_service.builtin_service, builtin_service_python_object, services)
+        services.python_object_creg.register_actor(htypes.legacy_service.module_service, module_service_python_object, services.python_object_creg, services)
 
     def _register_services(self, mosaic, services, builtin_services, builtin_resource_by_name, local_modules):
         for service_name in builtin_services:
