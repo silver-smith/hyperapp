@@ -1,6 +1,10 @@
+import:
+  - legacy_module.echo_service
+
+
 echo_servant_factory:
   type: factory
-  object: echo_service
+  object: legacy_module.echo_service
   attr_name: Echo
 
 echo_servant:

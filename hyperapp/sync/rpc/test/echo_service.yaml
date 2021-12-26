@@ -11,6 +11,5 @@ require:
   - rpc_endpoint_factory
   - endpoint_registry
   - rpc_call_factory
-  - resource_registry
   - resource.factory
   - resource.call

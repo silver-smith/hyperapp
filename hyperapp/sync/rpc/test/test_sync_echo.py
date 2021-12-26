@@ -1,6 +1,5 @@
 import queue
 import logging
-import yaml
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -28,6 +27,7 @@ def code_module_list():
         'transport.rsa_identity',
         'sync.transport.endpoint',
         'common.resource.registry',
+        'common.resource.resource_module',
         'common.resource.legacy_module',
         'common.resource.factory',
         'common.resource.call',
@@ -62,9 +62,8 @@ def echo_set_up(services, htypes):
     services.python_object_creg.register_actor(htypes.echo_service.master_servant, lambda piece: servant.run)
     master_servant_ref = mosaic.put(htypes.echo_service.master_servant())
 
-    definitions = yaml.safe_load(Path(__file__).parent.joinpath('echo_service.resources.yaml').read_text())
-    resources = services.resource_registry.load_definitions(definitions)
-    echo_servant_ref = resources['echo_servant']
+    echo_servant = services.resource_module_registry['echo_service'].make('echo_servant')
+    echo_servant_ref = mosaic.put(echo_servant)
 
     rpc_call_factory = services.rpc_call_factory
 
