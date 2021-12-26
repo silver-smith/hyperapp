@@ -27,7 +27,7 @@ def code_module_list():
         'common.ref_collector',
         'transport.rsa_identity',
         'sync.transport.endpoint',
-        'common.resource_registry',
+        'common.resource.registry',
         'common.resource.legacy_module',
         'common.resource.factory',
         'common.resource.call',
@@ -82,7 +82,7 @@ def echo_set_up(services, htypes):
             'subprocess',
             additional_module_dirs=[Path(__file__).parent],
             code_module_list=[
-                'common.resource_registry',
+                'common.resource.registry',
                 'common.resource.legacy_module',
                 'echo_service',
                 ],
