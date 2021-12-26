@@ -25,8 +25,9 @@ class LegacyModuleResourceModule:
 def make_legacy_module_resource_modules(local_modules):
     name_to_module = defaultdict(LegacyModuleResourceModule)
     for name, code_module in local_modules.by_name.items():
-        module_name, var_name = name.rsplit('.', 1)
-        name_to_module[f'legacy_module.{module_name}'].add(var_name, code_module)
+        *module_name_parts, var_name = name.split('.')
+        module_name = '.'.join(['legacy_module', *module_name_parts])
+        name_to_module[module_name].add(var_name, code_module)
         log.info("Legacy module resource %s.%s: %s", module_name, var_name, code_module)
     return name_to_module
 
