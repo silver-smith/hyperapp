@@ -23,7 +23,6 @@ class ResourceRegistry:
         return name_to_piece
 
 
-
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
