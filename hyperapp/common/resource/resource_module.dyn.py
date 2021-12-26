@@ -26,7 +26,7 @@ class ResourceModule:
         try:
             definition = self._resources[var_name]
         except KeyError:
-            raise RuntimeError(f"{self._name}: Unknown resource: {var_name!r}")
+            raise RuntimeError(f"Resource module {self._name!r}: Unknown resource: {var_name!r}")
         factory = self._resource_type_registry[definition['type']]
         piece = factory(definition, self._resolve_name)
         log.info("%s: Loaded resource %r: %s", self._name, var_name, piece)
