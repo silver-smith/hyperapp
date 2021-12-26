@@ -68,6 +68,7 @@ class CodeModule:
     @property
     def name(self):
         return self._code_module.module_name
+
     @property
     def module(self):
         return self._code_module
@@ -214,7 +215,7 @@ class ModuleRegistry:
         for service in module_code.require_service_list:
             provider_set = module_by_requirement[service]
             if not provider_set:
-                raise RuntimeError(f"Code module {module.module_name!r} requires {service!r}, but no module provides it")
+                raise RuntimeError(f"Code module {module_code.module.module_name!r} requires {service!r}, but no module provides it")
             if len(provider_set) > 1:
                 # When requirements is provided by several modules, preferred should be included in module_list.
                 provider_set &= set(module_list)
