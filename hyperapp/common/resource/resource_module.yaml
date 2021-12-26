@@ -1,2 +1,4 @@
 require:
+  - resource_type_registry
+provide:
   - resource_module_registry

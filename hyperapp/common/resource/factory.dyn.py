@@ -5,11 +5,11 @@ from hyperapp.common.module import Module
 from . import htypes
 
 
-def from_dict(data, name_to_piece_ref):
-    object_ref = name_to_piece_ref[data['object']]
+def factory(data, resolve_name):
+    object_ref = resolve_name(data['object'])
     attr_name = data['attr_name']
     params = [
-        htypes.factory.param(name, name_to_piece_ref[resource_name])
+        htypes.factory.param(name, resolve_name(resource_name))
         for name, resource_name
         in data.get('params', {}).items()
         ]
@@ -34,5 +34,5 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        services.resource_type_registry['factory'] = from_dict
+        services.resource_type_registry['factory'] = factory
         services.python_object_creg.register_actor(htypes.factory.factory, python_object, services.python_object_creg)

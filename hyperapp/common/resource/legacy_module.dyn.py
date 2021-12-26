@@ -1,9 +1,34 @@
 import logging
+from collections import defaultdict
 
 from hyperapp.common.code_module import code_module_t
 from hyperapp.common.module import Module
 
 log = logging.getLogger(__name__)
+
+
+class LegacyModuleResourceModule:
+
+    def __init__(self):
+        self._name_to_piece = {}  # Full module name -> code_module_t ref
+
+    def add(self, name, code_module_ref):
+        self._name_to_piece[name] = code_module_ref
+
+    def __contains__(self, var_name):
+        return var_name in self._name_to_piece
+
+    def make(self, var_name):
+        return self._name_to_piece[var_name]
+
+
+def make_legacy_module_resource_modules(local_modules):
+    name_to_module = defaultdict(LegacyModuleResourceModule)
+    for name, code_module in local_modules.by_name.items():
+        module_name, var_name = name.rsplit('.', 1)
+        name_to_module[f'legacy_module.{module_name}'].add(var_name, code_module)
+        log.info("Legacy module resource %s.%s: %s", module_name, var_name, code_module)
+    return name_to_module
 
 
 def python_object(piece, module_registry, module_by_requirement, services):
@@ -17,12 +42,6 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        self._register_modules(
-            services.mosaic, services.builtin_resource_by_name, services.local_modules)
+        services.resource_module_registry.update(make_legacy_module_resource_modules(services.local_modules))
         services.python_object_creg.register_actor(
             code_module_t, python_object, services.module_registry, services.local_modules.by_requirement, services)
-
-    def _register_modules(self, mosaic, builtin_resource_by_name, local_modules):
-        for module_name, module in local_modules.by_name.items():
-            builtin_resource_by_name[module_name] = mosaic.put(module)
-            log.info("Legacy module resource %s: %s", module_name, module)

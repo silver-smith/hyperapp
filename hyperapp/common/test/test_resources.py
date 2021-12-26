@@ -23,17 +23,14 @@ def code_module_list():
         'common.resource.factory',
         'common.resource.call',
         'common.resource.list_service',
+        'common.resource.resource_module',
         ]
 
 
 def test_resources(services):
-    resource_type_registry = services.resource_type_registry
-    resources = yaml.safe_load(TEST_DIR.joinpath('test_resources.resources.yaml').read_text())
-    name_to_resource = services.resource_registry.load_definitions(resources)
-
-    servant_list_ref = name_to_resource['servant_list']
-    servant_list = services.python_object_creg.invite(servant_list_ref)
+    module = services.resource_module_registry['common.test.test_resources']
+    servant_list = module.make('servant_list')
     log.info("Servant list: %r", servant_list)
 
-    list_service_ref = name_to_resource['sample_list_service']
-    log.info("List service: %r", services.mosaic.resolve_ref(list_service_ref).value)
+    list_service = module.make('sample_list_service')
+    log.info("List service: %r", list_service)

@@ -1,13 +1,21 @@
+import:
+  - legacy_module.server.htest_sample
+  - legacy_service.mosaic
+  - legacy_service.web
+  - legacy_service.peer_registry
+  - legacy_service.rpc_call_factory
+  - legacy_service.server_identity
+
 
 sample_servant_factory:
   type: factory
-  object: server.htest_sample
+  object: legacy_module.server.htest_sample
   attr_name: sample_servant
   params:
-    mosaic: mosaic
-    web: web
-    peer_registry: peer_registry
-    rpc_call_factory: rpc_call_factory
+    mosaic: legacy_service.mosaic
+    web: legacy_service.web
+    peer_registry: legacy_service.peer_registry
+    rpc_call_factory: legacy_service.rpc_call_factory
 
 sample_servant:
   type: call
@@ -20,6 +28,6 @@ servant_list:
 
 sample_list_service:
   type: list_service
-  identity: server_identity
+  identity: legacy_service.server_identity
   servant: servant_list
   key_attribute: id
