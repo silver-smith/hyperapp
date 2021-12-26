@@ -1,6 +1,6 @@
 echo_servant_factory:
   type: factory
-  object: sync.rpc.test.echo_service
+  object: echo_service
   attr_name: Echo
 
 echo_servant:

@@ -38,10 +38,6 @@ class ThisModule(Module):
         services.unbundler.register_bundle(master_service_bundle)
         master_peer_ref, master_servant_ref = master_service_bundle.roots
 
-        definitions = yaml.safe_load(Path(__file__).parent.joinpath('echo_service.resources.yaml').read_text())
-        resources = services.resource_registry.load_definitions(definitions)
-        echo_servant_ref = resources['echo_servant']
-
         master_peer = services.peer_registry.invite(master_peer_ref)
 
         my_identity = services.generate_rsa_identity(fast=True)
@@ -52,7 +48,7 @@ class ThisModule(Module):
 
         rpc_call = services.rpc_call_factory(rpc_endpoint, master_peer, master_servant_ref, my_identity)
 
-        self._thread = threading.Thread(target=self._run, args=[services.mosaic, rpc_call, my_peer_ref, echo_servant_ref])
+        self._thread = threading.Thread(target=self._run, args=[services.mosaic, rpc_call, my_peer_ref])
 
         services.on_start.append(self.start)
         services.on_stop.append(self.stop)
@@ -66,10 +62,10 @@ class ThisModule(Module):
         self._thread.join()
         log.info("echo_services thread is stopped")
 
-    def _run(self, mosaic, rpc_call, my_peer_ref, echo_servant_ref):
+    def _run(self, mosaic, rpc_call, my_peer_ref):
         log.info("echo_service thread is started")
         try:
-            rpc_call(my_peer_ref, echo_servant_ref)
+            rpc_call(my_peer_ref)
         except TimeoutWaitingForResponse as x:
             log.info("Timed out waiting for 'run' response - this is expected, because master is already shutting down subprocess: %s", x)
         except Exception as x:

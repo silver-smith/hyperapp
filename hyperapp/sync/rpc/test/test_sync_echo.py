@@ -1,5 +1,6 @@
 import queue
 import logging
+import yaml
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -19,6 +20,7 @@ pytest_plugins = ['hyperapp.common.test.services']
 def additional_module_dirs():
     return [Path(__file__).parent]
 
+
 @pytest.fixture
 def code_module_list():
     return [
@@ -26,6 +28,9 @@ def code_module_list():
         'transport.rsa_identity',
         'sync.transport.endpoint',
         'common.resource_registry',
+        'common.resource.legacy_module',
+        'common.resource.factory',
+        'common.resource.call',
         'sync.rpc.rpc_call',
         'sync.rpc.rpc_endpoint',
         'sync.subprocess',
@@ -34,18 +39,17 @@ def code_module_list():
 
 class Servant:
 
-    def __init__(self, echo_servant_queue, peer_registry):
+    def __init__(self, echo_servant_queue):
         self._echo_servant_queue = echo_servant_queue
-        self._peer_registry = peer_registry
 
-    def run(self, request, echo_peer_ref, echo_servant_ref):
-        echo_peer = self._peer_registry.invite(echo_peer_ref)
-        self._echo_servant_queue.put((echo_peer, echo_servant_ref))
+    def run(self, request, echo_peer_ref):
+        self._echo_servant_queue.put(echo_peer_ref)
 
 
 @pytest.fixture
 def echo_set_up(services, htypes):
     mosaic = services.mosaic
+    peer_registry = services.peer_registry
 
     master_identity = services.generate_rsa_identity(fast=True)
     master_peer_ref = mosaic.put(master_identity.peer.piece)
@@ -54,9 +58,13 @@ def echo_set_up(services, htypes):
     services.endpoint_registry.register(master_identity, rpc_endpoint)
 
     echo_servant_queue = queue.Queue()
-    servant = Servant(echo_servant_queue, services.peer_registry)
+    servant = Servant(echo_servant_queue)
     services.python_object_creg.register_actor(htypes.echo_service.master_servant, lambda piece: servant.run)
     master_servant_ref = mosaic.put(htypes.echo_service.master_servant())
+
+    definitions = yaml.safe_load(Path(__file__).parent.joinpath('echo_service.resources.yaml').read_text())
+    resources = services.resource_registry.load_definitions(definitions)
+    echo_servant_ref = resources['echo_servant']
 
     rpc_call_factory = services.rpc_call_factory
 
@@ -67,10 +75,15 @@ def echo_set_up(services, htypes):
 
     @contextmanager
     def make_rpc_call(method_name):
+        servant_fn = htypes.factory.factory(echo_servant_ref, method_name, params=[])
+        servant_fn_ref = mosaic.put(servant_fn)
+
         subprocess = services.subprocess(
             'subprocess',
             additional_module_dirs=[Path(__file__).parent],
             code_module_list=[
+                'common.resource_registry',
+                'common.resource.legacy_module',
                 'echo_service',
                 ],
             config = {
@@ -80,10 +93,9 @@ def echo_set_up(services, htypes):
             )
         with subprocess:
             log.info("Waiting for echo response.")
-            echo_peer, echo_servant_ref = echo_servant_queue.get(timeout=20)
-            log.info("Got echo servant: %s %s.", echo_peer, echo_servant_ref)
-            factory = htypes.factory.factory(echo_servant_ref, method_name, params=[])
-            servant_fn_ref = mosaic.put(factory)
+            echo_peer_ref = echo_servant_queue.get(timeout=20)
+            echo_peer = peer_registry.invite(echo_peer_ref)
+            log.info("Got echo peer: %s.", echo_peer)
             rpc_call = rpc_call_factory(rpc_endpoint, echo_peer, servant_fn_ref, master_identity)
             yield rpc_call
         log.info("Subprocess is finished.")
