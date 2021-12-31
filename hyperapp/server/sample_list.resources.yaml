@@ -16,8 +16,35 @@ list_servant_list_method:
   object: list_servant
   attr_name: list
 
+list_servant_raw_method:
+  type: factory
+  object: list_servant
+  attr_name: raw
+
+list_servant_describe_method:
+  type: factory
+  object: list_servant
+  attr_name: describe
+
+raw_command:
+  type: rpc_command
+  identity: legacy_service.server_identity
+  servant: list_servant_raw_method
+  state_attributes: ['current_key']
+  name: raw
+
+describe_command:
+  type: rpc_command
+  identity: legacy_service.server_identity
+  servant: list_servant_describe_method
+  state_attributes: ['current_key']
+  name: describe
+
 sample_list_service:
   type: list_service
   identity: legacy_service.server_identity
   servant: list_servant_list_method
   key_attribute: key
+  commands:
+    - raw_command
+    - describe_command
