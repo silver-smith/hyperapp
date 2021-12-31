@@ -42,7 +42,6 @@ class RpcEndpoint:
         self._peer_registry = peer_registry
         self._transport = transport
         self._python_object_creg = python_object_creg
-        self._servant_by_id = {}
         self._result_by_request_id = {}
         self._response_available = asyncio.Condition()
         self._message_registry = registry = CodeRegistry('rpc_message', async_web, types)
@@ -52,12 +51,6 @@ class RpcEndpoint:
 
     def __repr__(self):
         return '<async RpcEndpoint>'
-
-    def register_servant(self, name, servant):
-        self._servant_by_id[name] = servant
-
-    def get_servant(self, name):
-        return self._servant_by_id[name]
 
     async def wait_for_response(self, request_id, timeout_sec=20):
         log.info("Wait for rpc response (timeout %s): %s", timeout_sec, request_id)

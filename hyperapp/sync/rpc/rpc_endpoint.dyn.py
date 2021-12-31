@@ -46,7 +46,6 @@ class RpcEndpoint:
         self._peer_registry = peer_registry
         self._transport = transport
         self._python_object_creg = python_object_creg
-        self._servant_by_id = {}
         self._result_by_request_id = {}
         self._response_lock = threading.Lock()
         self._response_available = threading.Condition(self._response_lock)
@@ -57,12 +56,6 @@ class RpcEndpoint:
 
     def __repr__(self):
         return '<sync RpcEndpoint>'
-
-    def register_servant(self, name, servant):
-        self._servant_by_id[name] = servant
-
-    def get_servant(self, name):
-        return self._servant_by_id[name]
 
     def wait_for_response(self, request_id, timeout_sec=10):
         log.info("Wait for rpc response (timeout %s): %s", timeout_sec, request_id)
