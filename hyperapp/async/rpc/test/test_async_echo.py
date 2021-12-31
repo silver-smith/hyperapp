@@ -16,13 +16,22 @@ pytest_plugins = ['hyperapp.common.test.services']
 
 
 @pytest.fixture
+def additional_module_dirs():
+    return [Path(__file__).parent]
+
+
+@pytest.fixture
 def code_module_list():
     return [
         'common.ref_collector',
         'transport.rsa_identity',
         'sync.transport.endpoint',
         'sync.transport.tcp',
-        'rpc.servant_path',
+        'common.resource.registry',
+        'common.resource.resource_module',
+        'common.resource.legacy_module',
+        'common.resource.factory',
+        'common.resource.call',
         'sync.rpc.rpc_call',
         'sync.rpc.rpc_endpoint',
         'sync.subprocess',
@@ -31,39 +40,38 @@ def code_module_list():
 
 class Servant:
 
-    def __init__(self, echo_servant_queue, peer_registry, servant_path_from_data):
+    def __init__(self, echo_servant_queue):
         self._echo_servant_queue = echo_servant_queue
-        self._peer_registry = peer_registry
-        self._servant_path_from_data = servant_path_from_data
 
-    def run(self, request, echo_peer_ref, echo_servant_path_refs):
-        echo_peer = self._peer_registry.invite(echo_peer_ref)
-        echo_servant_path = self._servant_path_from_data(echo_servant_path_refs)
-        self._echo_servant_queue.put((echo_peer, echo_servant_path))
+    def run(self, request, echo_peer_ref):
+        self._echo_servant_queue.put(echo_peer_ref)
 
 
 @pytest.fixture
 def echo_set_up(services, htypes):
-    master_identity = services.generate_rsa_identity(fast=True)
-    master_peer_ref = services.mosaic.put(master_identity.peer.piece)
+    mosaic = services.mosaic
+    peer_registry = services.peer_registry
+    rpc_call_factory = services.rpc_call_factory
 
-    servant_name = 'run_test'
-    servant_path = services.servant_path().registry_name(servant_name).get_attr('run')
+    master_identity = services.generate_rsa_identity(fast=True)
+    master_peer_ref = mosaic.put(master_identity.peer.piece)
 
     rpc_endpoint = services.rpc_endpoint_factory()
     services.endpoint_registry.register(master_identity, rpc_endpoint)
 
     echo_servant_queue = queue.Queue()
-    servant = Servant(echo_servant_queue, services.peer_registry, services.servant_path_from_data)
-    rpc_endpoint.register_servant(servant_name, servant)
+    servant = Servant(echo_servant_queue)
+    services.python_object_creg.register_actor(htypes.echo_service.master_servant, lambda piece: servant.run)
+    master_servant_ref = mosaic.put(htypes.echo_service.master_servant())
+
+    echo_servant = services.resource_module_registry['echo_service'].make('echo_servant')
+    echo_servant_ref = mosaic.put(echo_servant)
 
     server = services.tcp_server()
     log.info("Tcp route: %r", server.route)
     services.route_table.add_route(master_peer_ref, server.route)
 
-    rpc_call_factory = services.rpc_call_factory
-
-    master_service_bundle = services.ref_collector([master_peer_ref, *servant_path.as_data]).bundle
+    master_service_bundle = services.ref_collector([master_peer_ref, master_servant_ref]).bundle
     master_service_bundle_cdr = packet_coders.encode('cdr', master_service_bundle)
 
     subprocess = services.subprocess(
@@ -74,6 +82,8 @@ def echo_set_up(services, htypes):
             'async.async_main',
             'sync.transport.tcp',  # tcp_transport.route is required registered at sync route_registry.
             'async.transport.tcp',
+            'common.resource.registry',
+            'common.resource.legacy_module',
             'echo_service',
             ],
         config = {
@@ -83,11 +93,15 @@ def echo_set_up(services, htypes):
 
     @contextmanager
     def make_rpc_call(method_name):
+        servant_fn = htypes.factory.factory(echo_servant_ref, method_name, params=[])
+        servant_fn_ref = mosaic.put(servant_fn)
+
         with subprocess:
             log.info("Waiting for echo response.")
-            echo_peer, echo_servant_path = echo_servant_queue.get(timeout=20)
-            log.info("Got echo servant: %s %s.", echo_peer, echo_servant_path)
-            rpc_call = rpc_call_factory(rpc_endpoint, echo_peer, echo_servant_path.get_attr(method_name), master_identity)
+            echo_peer_ref = echo_servant_queue.get(timeout=20)
+            echo_peer = peer_registry.invite(echo_peer_ref)
+            log.info("Got echo peer: %s.", echo_peer)
+            rpc_call = rpc_call_factory(rpc_endpoint, echo_peer, servant_fn_ref, master_identity)
             yield rpc_call
         log.info("Subprocess is finished.")
 

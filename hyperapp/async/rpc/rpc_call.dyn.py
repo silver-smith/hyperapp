@@ -18,7 +18,7 @@ class ThisModule(Module):
         services.async_rpc_call_factory = partial(self.rpc_call_factory, services.mosaic, services.types, services.async_transport)
 
     @staticmethod
-    def rpc_call_factory(mosaic, types, async_transport, async_rpc_endpoint, receiver_peer, servant_path, sender_identity):
+    def rpc_call_factory(mosaic, types, async_transport, async_rpc_endpoint, receiver_peer, servant_ref, sender_identity):
         sender_peer_ref = mosaic.put(sender_identity.peer.piece)
 
         async def call(*args):
@@ -29,7 +29,7 @@ class ThisModule(Module):
             request_id = str(uuid.uuid4())
             request = htypes.rpc.request(
                 request_id=request_id,
-                servant_path=servant_path.as_data,
+                servant_ref=servant_ref,
                 params=params,
                 sender_peer_ref=sender_peer_ref,
                 )
