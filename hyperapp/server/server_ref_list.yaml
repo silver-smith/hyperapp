@@ -7,9 +7,6 @@ import:
     server_ref_list:
       - row
 require:
-  - servant_path
-  - server_identity
-  - server_rpc_endpoint
+  - resource_module_registry
   - local_server_ref
-provide:
-  - server_ref_list
+  - server_rpc_endpoint

@@ -50,33 +50,5 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        mosaic = services.mosaic
-
-        server_peer_ref = mosaic.put(services.server_identity.peer.piece)
-
-        servant_name = 'server_ref_list'
-        servant_path = services.servant_path().registry_name(servant_name)
-
-        open_command = htypes.rpc_command.rpc_command(
-            peer_ref=server_peer_ref,
-            servant_path=servant_path.get_attr('open').as_data,
-            state_attr_list=['current_key'],
-            name='open',
-            )
-        list_service = htypes.service.list_service(
-            peer_ref=server_peer_ref,
-            servant_path=servant_path.get_attr('get').as_data,
-            dir_list=[],
-            command_ref_list=[
-                mosaic.put(open_command),
-                ],
-            key_attribute='id',
-            )
-
-
-        ref_list = RefList()
-        servant = RefListServant(services.web, ref_list)
-        services.server_rpc_endpoint.register_servant(servant_name, servant)
-
-        services.server_ref_list = ref_list
-        services.local_server_ref.save_piece(list_service)
+        server_ref_list_service = services.resource_module_registry['server.server_ref_list'].make('server_ref_list_service')
+        services.local_server_ref.save_piece(server_ref_list_service)

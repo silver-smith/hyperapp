@@ -1,0 +1,36 @@
+import:
+  - legacy_module.server.server_ref_list
+  - legacy_service.web
+  - legacy_service.server_identity
+
+server_ref_list_factory:
+  type: factory
+  object: legacy_module.server.server_ref_list
+  attr_name: RefList
+
+server_ref_list:
+  type: call
+  function: server_ref_list_factory
+
+ref_list_servant_factory:
+  type: factory
+  object: legacy_module.server.server_ref_list
+  attr_name: RefListServant
+  params:
+    web: legacy_service.web
+    ref_list: server_ref_list
+
+ref_list_servant:
+  type: call
+  function: ref_list_servant_factory
+
+ref_list_servant_get_method:
+  type: factory
+  object: ref_list_servant
+  attr_name: get
+
+server_ref_list_service:
+  type: list_service
+  identity: legacy_service.server_identity
+  servant: ref_list_servant_get_method
+  key_attribute: id

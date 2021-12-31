@@ -13,14 +13,20 @@ log = logging.getLogger(__name__)
 
 code_module_list = [
     'common.dict_coders',  # Load json coders.
+    'common.resource.legacy_module',
+    'common.resource.legacy_service',
+    'common.resource.factory',
+    'common.resource.call',
+    'common.resource.list_service',
     'transport.rsa_identity',
     'server.tcp_server',
-    'server.sample_list',
-    'server.sample_live_list',
-    'server.sample_tree',
-    'server.module_list',
-    'server.htest_module_list',
-    'server.htest_list',
+    'server.server_ref_list',
+    # 'server.sample_list',
+    # 'server.sample_live_list',
+    # 'server.sample_tree',
+    # 'server.module_list',
+    # 'server.htest_module_list',
+    # 'server.htest_list',
     ]
 
 config = {
