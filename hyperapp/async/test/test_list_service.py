@@ -22,6 +22,11 @@ pytest_plugins = ['hyperapp.common.test.services']
 
 
 @pytest.fixture
+def additional_module_dirs():
+    return [Path(__file__).parent]
+
+
+@pytest.fixture
 def code_module_list():
     return [
         'common.ref_collector',
@@ -29,7 +34,6 @@ def code_module_list():
         'sync.transport.route_table',
         'sync.transport.endpoint',
         'sync.transport.tcp',
-        'rpc.servant_path',
         'sync.rpc.rpc_endpoint',
         'sync.subprocess',
         ]
@@ -51,45 +55,33 @@ class Servant:
             ]
 
 
-@pytest.fixture
-def row_t(services):
-    int_t_ref = services.types.reverse_resolve(tInt)
-    string_list_t_ref = services.types.reverse_resolve(TList(tString))
-    field_list = [
-        field_mt('key', int_t_ref),
-        field_mt('value_list', string_list_t_ref),
-        ]
-    row_mt = record_mt(None, field_list)
-    row_ref = services.mosaic.put(row_mt)
-    named_row_ref = services.mosaic.put(name_wrapped_mt('list_service_row', row_ref))
-    return services.types.resolve(named_row_ref)
+def test_list_service(services, htypes, code):
+    mosaic = services.mosaic
+    endpoint_registry = services.endpoint_registry
+    python_object_creg = services.python_object_creg
 
-
-def test_list_service(services, htypes, code, row_t):
     master_identity = services.generate_rsa_identity(fast=True)
-    master_peer_ref = services.mosaic.put(master_identity.peer.piece)
+    master_peer_ref = mosaic.put(master_identity.peer.piece)
 
     int_t_ref = services.types.reverse_resolve(tInt)
     string_list_t_ref = services.types.reverse_resolve(TList(tString))
 
-    list_servant_name = 'test_list_service_object'
-    list_servant_path = services.servant_path().registry_name(list_servant_name).get_attr('get')
+    servent_called_event = threading.Event()
+    servant = Servant(htypes.test_list_service.row_t, servent_called_event)
+    python_object_creg.register_actor(htypes.test_list_service.master_servant, lambda piece: servant.get)
+    servant_fn_ref = mosaic.put(htypes.test_list_service.master_servant())
 
     list_service = htypes.service.list_service(
         peer_ref=master_peer_ref,
-        servant_path=list_servant_path.as_data,
+        servant_fn_ref=servant_fn_ref,
         dir_list=[],
         command_ref_list=[],
         key_attribute='key',
         )
-    list_service_ref = services.mosaic.put(list_service)
+    list_service_ref = mosaic.put(list_service)
 
     rpc_endpoint = services.rpc_endpoint_factory()
-    services.endpoint_registry.register(master_identity, rpc_endpoint)
-
-    servent_called_event = threading.Event()
-    servant = Servant(row_t, servent_called_event)
-    rpc_endpoint.register_servant(list_servant_name, servant)
+    endpoint_registry.register(master_identity, rpc_endpoint)
 
     server = services.tcp_server()
     log.info("Tcp route: %r", server.route)

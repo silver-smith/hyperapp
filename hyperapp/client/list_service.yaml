@@ -10,6 +10,5 @@ require:
   - command_registry
   - peer_registry
   - async_rpc_call_factory
-  - servant_path_from_data
   - client_identity
   - client_rpc_endpoint

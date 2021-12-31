@@ -12,7 +12,6 @@ require:
   - command_registry
   - peer_registry
   - generate_rsa_identity
-  - servant_path_from_data
   - async_rpc_endpoint_factory
   - async_endpoint_registry
   - async_rpc_call_factory

@@ -41,7 +41,6 @@ class ThisModule(Module):
             services.peer_registry,
             self._my_identity,
             rpc_endpoint,
-            services.servant_path_from_data,
             services.async_rpc_call_factory,
             )
 

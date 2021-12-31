@@ -17,6 +17,5 @@ class ThisModule(Module):
             services.peer_registry,
             services.client_identity,
             services.client_rpc_endpoint,
-            services.servant_path_from_data,
             services.async_rpc_call_factory,
             )
