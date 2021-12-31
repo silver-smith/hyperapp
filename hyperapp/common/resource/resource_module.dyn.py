@@ -14,17 +14,17 @@ class ResourceModule:
         self._resource_module_registry = resource_module_registry
         self._name = name
         self._path = path
-        self._resources = None
+        self._definitions = None
         self._import_list = None
 
     def __contains__(self, var_name):
-        return var_name in self._resources
+        return var_name in self._definitions
 
     def make(self, var_name):
-        if self._resources is None:
+        if self._definitions is None:
             self._load()
         try:
-            definition = self._resources[var_name]
+            definition = self._definitions[var_name]
         except KeyError:
             raise RuntimeError(f"Resource module {self._name!r}: Unknown resource: {var_name!r}")
         factory = self._resource_type_registry[definition['type']]
@@ -53,7 +53,7 @@ class ResourceModule:
                 raise RuntimeError(f"{self._name}: Importing {var_name} from unknown module: {module_name}")
             if var_name not in module:
                 raise RuntimeError(f"{self._name}: Module {module_name} does not have {var_name!r}")
-        self._resources = {
+        self._definitions = {
             key: value for key, value in definitions.items()
             if key != 'import'
             }
