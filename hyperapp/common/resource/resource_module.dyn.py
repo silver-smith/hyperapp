@@ -67,6 +67,7 @@ def load_resource_modules(mosaic, resource_type_registry, dir_list):
         for path in root_dir.rglob(f'*{ext}'):
             rpath = str(path.relative_to(root_dir))
             name = rpath[:-len(ext)].replace('/', '.')
+            log.info("Resource module: %r", name)
             registry[name] = ResourceModule(mosaic, resource_type_registry, registry, name, path)
     return registry
 
