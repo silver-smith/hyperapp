@@ -1,3 +1,6 @@
+import:
+  code:
+    - common.cached_code_registry
 provide:
   - resource_type_registry
   - python_object_creg
