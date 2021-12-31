@@ -20,17 +20,16 @@ log = logging.getLogger(__name__)
 class RpcElementCommand:
 
     @classmethod
-    async def from_piece(cls, piece, mosaic, peer_registry, servant_path_from_data, async_rpc_call_factory, rpc_endpoint, identity):
+    async def from_piece(cls, piece, mosaic, peer_registry, async_rpc_call_factory, rpc_endpoint, identity):
         peer = peer_registry.invite(piece.peer_ref)
-        servant_path = servant_path_from_data(piece.servant_path)
-        rpc_call = async_rpc_call_factory(rpc_endpoint, peer, servant_path, identity)
+        rpc_call = async_rpc_call_factory(rpc_endpoint, peer, piece.servant_fn_ref, identity)
 
-        return cls(mosaic, peer, servant_path, rpc_call, piece.state_attr_list, piece.name)
+        return cls(mosaic, peer, piece.servant_fn_ref, rpc_call, piece.state_attr_list, piece.name)
 
-    def __init__(self, mosaic, peer, servant_path, rpc_call, state_attr_list, name):
+    def __init__(self, mosaic, peer, servant_fn_ref, rpc_call, state_attr_list, name):
         self._mosaic = mosaic
         self._peer = peer
-        self._servant_path = servant_path
+        self._servant_fn_ref = servant_fn_ref
         self._rpc_call = rpc_call
         self._state_attr_list = state_attr_list
         self._name = name
@@ -47,14 +46,14 @@ class RpcElementCommand:
     def dir(self):
         return [htypes.rpc_command.rpc_command_d(
             peer_ref=self._mosaic.put(self._peer.piece),
-            servant_path=self._servant_path.as_data,
+            servant_fn_ref=self._servant_fn_ref,
             )]
 
     @property
     def piece(self):
         return htypes.rpc_command.rpc_command(
             peer_ref=self._mosaic.put(self._peer.piece),
-            servant_path=self._servant_path.as_data,
+            servant_fn_ref=self._servant_fn_ref,
             state_attr_list=self._state_attr_list,
             name=self._name,
             )
@@ -80,7 +79,6 @@ class ThisModule(Module):
             RpcElementCommand.from_piece,
             services.mosaic,
             services.peer_registry,
-            services.servant_path_from_data,
             services.async_rpc_call_factory,
             services.client_rpc_endpoint,
             services.client_identity,

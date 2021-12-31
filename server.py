@@ -17,6 +17,7 @@ code_module_list = [
     'common.resource.legacy_service',
     'common.resource.factory',
     'common.resource.call',
+    'common.resource.rpc_command',
     'common.resource.list_service',
     'transport.rsa_identity',
     'server.tcp_server',

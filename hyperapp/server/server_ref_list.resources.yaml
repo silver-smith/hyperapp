@@ -29,8 +29,22 @@ ref_list_servant_get_method:
   object: ref_list_servant
   attr_name: get
 
+ref_list_servant_open_method:
+  type: factory
+  object: ref_list_servant
+  attr_name: open
+
+open_command:
+  type: rpc_command
+  identity: legacy_service.server_identity
+  servant: ref_list_servant_open_method
+  state_attributes: ['current_key']
+  name: open
+
 server_ref_list_service:
   type: list_service
   identity: legacy_service.server_identity
   servant: ref_list_servant_get_method
   key_attribute: id
+  commands:
+    - open_command

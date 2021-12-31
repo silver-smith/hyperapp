@@ -14,7 +14,6 @@ require:
   - lcs
   - async_web
   - peer_registry
-  - servant_path_from_data
   - async_rpc_call_factory
   - client_rpc_endpoint
   - client_identity
