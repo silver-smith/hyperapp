@@ -1,0 +1,23 @@
+import:
+  - legacy_module.server.sample_list
+  - legacy_service.server_identity
+
+list_servant_factory:
+  type: factory
+  object: legacy_module.server.sample_list
+  attr_name: ListServant
+
+list_servant:
+  type: call
+  function: list_servant_factory
+
+list_servant_list_method:
+  type: factory
+  object: list_servant
+  attr_name: list
+
+sample_list_service:
+  type: list_service
+  identity: legacy_service.server_identity
+  servant: list_servant_list_method
+  key_attribute: key

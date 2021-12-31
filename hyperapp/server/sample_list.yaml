@@ -11,6 +11,5 @@ import:
       - row
       - article
 require:
-  - server_identity
   - server_rpc_endpoint
-  - server_ref_list
+  - python_object_creg
