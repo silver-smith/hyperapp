@@ -172,6 +172,13 @@ class ColumnList(SimpleListObject):
         ordered_columns.insert(idx + 1, column_name)
         self._set_ordered_columns(ordered_columns)
 
+    @command
+    async def clear_ordering(self):
+        dir = [*self._object.dir_list[-1], htypes.column.column_list_d()]
+        self._lcs.remove(dir)
+        self._ordered_columns = []
+        self.update()
+
     def _get_visibility(self, column_name):
         dir = [*self._object.dir_list[-1], htypes.column.column_d(column_name), htypes.column.column_visible_d()]
         return self._lcs.get(dir)
