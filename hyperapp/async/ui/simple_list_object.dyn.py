@@ -15,9 +15,10 @@ class SimpleListObject(ListObject):
             key_attr = self.key_attribute
             idx = 0
             while idx < len(items):
-                if getattr(item[idx], key_attr) == from_key:
+                if getattr(items[idx], key_attr) == from_key:
                     items = items[idx + 1:]
                     break
+                idx += 1
             else:
                 assert f"{from_key!r} is not present in any of {items}"
         fetcher.process_fetch_results(items, fetch_finished=True)
