@@ -65,14 +65,14 @@ class DataViewer(TreeObject):
     def key_attribute(self):
         return 'idx'
 
-    async def fetch_items(self, path):
+    async def fetch_items(self, path, fetcher):
         path = tuple(path)
         item_list = self._path2item_list.get(path, [])
         for item in item_list:
             p = path + (item.idx,)
             if p not in self._path2item_list:
-                self._distribute_fetch_results(p, [])
-        self._distribute_fetch_results(path, item_list)
+                fetcher.process_fetch_results(p, [])
+        fetcher.process_fetch_results(path, item_list)
 
     @command
     async def open_ref(self, current_key):

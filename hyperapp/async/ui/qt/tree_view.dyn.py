@@ -11,13 +11,13 @@ from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.common.module import Module
 
 from . import htypes
-from .tree_object import AppendItemDiff, InsertItemDiff, RemoveItemDiff, UpdateItemDiff, TreeObserver, TreeObject
+from .tree_object import AppendItemDiff, InsertItemDiff, RemoveItemDiff, UpdateItemDiff, TreeObserver, TreeObject, TreeFetcher
 from .view import View
 
 log = logging.getLogger(__name__)
 
 
-class _Model(QtCore.QAbstractItemModel):
+class _Model(QtCore.QAbstractItemModel, TreeFetcher, TreeObserver):
 
     def __init__(self, view, object, config):
         QtCore.QAbstractItemModel.__init__(self)
@@ -106,7 +106,7 @@ class _Model(QtCore.QAbstractItemModel):
                   parent.internalId(), parent.row(), parent.column(), path, path in self._fetch_requested_for_path)
         self.request_fetch(path)
 
-    # TreeObserver methods  ---------------------------------------------------------------------------------------------
+    # TreeFetcher methods  ---------------------------------------------------------------------------------------------
 
     def process_fetch_results(self, path, item_list):
         log.debug('fetched %d items at %s: %s', len(item_list), path, item_list)
@@ -114,6 +114,8 @@ class _Model(QtCore.QAbstractItemModel):
         with suppress(KeyError):
             self._fetch_requested_for_path.remove(path or None)
         self._append_items(path, item_list)
+
+    # TreeObserver methods  ---------------------------------------------------------------------------------------------
 
     def process_diff(self, path, diff):
         log.debug("Process diff at %s: %s", path, diff)
@@ -237,7 +239,7 @@ class _Model(QtCore.QAbstractItemModel):
             return
         self._fetch_requested_for_path.add(path or None)
         log.info('  request fetch for %s', path)
-        asyncio.ensure_future(self._object.fetch_items(path or []))
+        asyncio.ensure_future(self._object.fetch_items(path or [], self))
 
     def index2path(self, index):
         if index.isValid():

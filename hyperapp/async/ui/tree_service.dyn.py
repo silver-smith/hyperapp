@@ -75,6 +75,6 @@ class TreeService(TreeObject):
     def key_attribute(self):
         return self._key_attribute
 
-    async def fetch_items(self, path):
+    async def fetch_items(self, path, fetcher):
         items = await self._rpc_call(path)
-        self._distribute_fetch_results(path, items)
+        fetcher.process_fetch_results(path, items)

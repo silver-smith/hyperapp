@@ -11,10 +11,14 @@ from .ui_object import ObjectObserver, Object
 log = logging.getLogger(__name__)
 
 
-class TreeObserver(ObjectObserver):
+class TreeFetcher:
 
+    @abc.abstractmethod
     def process_fetch_results(self, path, item_list):
         pass
+
+
+class TreeObserver(ObjectObserver):
 
     def process_diff(self, path, diff):
         pass
@@ -89,16 +93,11 @@ class TreeObject(Object, metaclass=abc.ABCMeta):
         return [getattr(item, self.key_attribute)]
 
     @abc.abstractmethod
-    async def fetch_items(self, path):
+    async def fetch_items(self, path, fetcher):
         pass
 
     def get_item_command_list(self, item_path):
         return self.get_command_list(kinds=['element'])  # by default all items have same commands
-
-    def _distribute_fetch_results(self, path, item_list):
-        for observer in self._observers:
-            log.debug('  Calling process_fetch_results for %s on %s/%s: %s', path, id(observer), observer, item_list)
-            observer.process_fetch_results(path, item_list)
 
     def _distribute_diff(self, path, diff):
         for observer in self._observers:

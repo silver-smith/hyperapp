@@ -44,15 +44,15 @@ class FsTree(TreeObject):
     def key_attribute(self):
         return 'key'
 
-    async def fetch_items(self, path):
+    async def fetch_items(self, path, fetcher):
         from_key = None
         while True:
             result = await self._fetch_items(path, from_key)
-            self._distribute_fetch_results(path, result.item_list)
+            fetcher.process_fetch_results(path, result.item_list)
             for item in result.item_list:
                 if item.ftype != 'dir':
                     # signal there are no children
-                    self._distribute_fetch_results(list(path) + [item.key], [])
+                    fetcher.process_fetch_results(list(path) + [item.key], [])
             if result.eof:
                 break
             from_key = result.item_list[-1].key

@@ -41,18 +41,18 @@ class SampleTree(TreeObject):
     def key_attribute(self):
         return 'name'
 
-    async def fetch_items(self, path):
+    async def fetch_items(self, path, fetcher):
         log.info('SampleTree.fetch_items(%s)', path)
         if path and path[-1] == self._key(8):
             return
-        self._distribute_fetch_results(path, [
+        fetcher.process_fetch_results(path, [
             self._item(path, idx) for idx in range(5)])
         # signal there are no children for these paths
         for idx in range(4):
-            self._distribute_fetch_results([*path, self._key(idx * 2 + 1)], [])
+            fetcher.process_fetch_results([*path, self._key(idx * 2 + 1)], [])
         # check async population works
         await asyncio.sleep(0.3)
-        self._distribute_fetch_results(path, [
+        fetcher.process_fetch_results(path, [
             self._item(path, 5 + idx) for idx in range(3)])
         asyncio.get_event_loop().create_task(self._send_diffs(path))
 
