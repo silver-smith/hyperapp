@@ -31,7 +31,12 @@ class _Model(QtCore.QAbstractTableModel, ListFetcher):
         self._view_wr = weakref.ref(view)
         self._object = object
         self._config = config  # LCSlice
-        self._columns = list(config.get([htypes.column.column_list_d()]) or [])  # attr name list
+        self._columns = [
+            column_name
+            for column_name
+            in config.get([htypes.column.column_list_d()]) or []
+            if self._column_visible(column_name)
+            ]  # attr name list
         self._key_attr = object.key_attribute
         self._init_data()
 
@@ -144,7 +149,7 @@ class _Model(QtCore.QAbstractTableModel, ListFetcher):
         new_columns = [
             name for name in
             seen_attrs - set(self._columns)
-            if self._column_visibility(name) != False  # None (undefined) means visible.
+            if self._column_visible(name)
             ]
         if not new_columns:
             return
@@ -152,9 +157,9 @@ class _Model(QtCore.QAbstractTableModel, ListFetcher):
         self._columns += new_columns
         self.endInsertColumns()
 
-    def _column_visibility(self, column_name):
+    def _column_visible(self, column_name):
         dir = [htypes.column.column_d(column_name), htypes.column.column_visible_d()]
-        return self._config.get(dir)
+        return self._config.get(dir) != False  # None (undefined) means visible.
 
     def _fetch_more(self):
         assert not self._eof
