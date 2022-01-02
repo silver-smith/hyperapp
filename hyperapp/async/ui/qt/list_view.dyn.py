@@ -148,7 +148,7 @@ class _Model(QtCore.QAbstractTableModel, ListFetcher):
             )
         new_columns = [
             name for name in
-            seen_attrs - set(self._columns)
+            sorted(seen_attrs - set(self._columns))
             if self._column_visible(name)
             ]
         if not new_columns:
