@@ -8,7 +8,7 @@ from . import htypes
 from .command import command
 from .object_command import Command
 from .list_object import ListFetcher, ListObject
-from .tree_object import TreeObject
+from .tree_object import TreeFetcher, TreeObject
 from .simple_list_object import SimpleListObject
 
 log = logging.getLogger(__name__)
@@ -19,13 +19,29 @@ ITEM_FETCH_COUNT = 100
 Item = namedtuple('Item', 'name ordered visible')
 
 
-class _Fetcher(ListFetcher):
+class _Fetcher:
 
     def __init__(self, object, columns_future):
         self._object = object
         self._columns_future = columns_future
         self._columns = []  # attr name list
         self._processed_item_count = 0
+
+    def _send_result(self):
+        if not self._columns_future.done():
+            self._columns_future.set_result(self._columns)
+
+    def _update_columns(self, new_item_list):
+        seen_attrs = set()
+        for item in new_item_list:
+            seen_attrs |= set(
+                name for name in dir(item)
+                if not name.startswith('_') and not callable(getattr(item, name))
+            )
+        self._columns += list(sorted(seen_attrs - set(self._columns)))
+
+
+class _ListFetcher(_Fetcher, ListFetcher):
 
     def process_fetch_results(self, item_list, fetch_finished):
         key_attr = self._object.key_attribute
@@ -44,18 +60,13 @@ class _Fetcher(ListFetcher):
     def process_eof(self):
         self._send_result()
 
-    def _send_result(self):
-        if not self._columns_future.done():
-            self._columns_future.set_result(self._columns)
 
-    def _update_columns(self, new_item_list):
-        seen_attrs = set()
-        for item in new_item_list:
-            seen_attrs |= set(
-                name for name in dir(item)
-                if not name.startswith('_') and not callable(getattr(item, name))
-            )
-        self._columns += list(sorted(seen_attrs - set(self._columns)))
+class _TreeFetcher(_Fetcher, TreeFetcher):
+
+    def process_fetch_results(self, path, item_list):
+        # Check only first level.
+        self._update_columns(item_list)
+        self._send_result()
 
 
 class ColumnList(SimpleListObject):
@@ -97,8 +108,14 @@ class ColumnList(SimpleListObject):
     async def get_all_items(self):
         if self._item_attrs is None:
             columns_future = asyncio.Future()
-            fetcher = _Fetcher(self._object, columns_future)
-            asyncio.ensure_future(self._object.fetch_items(None, fetcher))
+            if isinstance(self._object, ListObject):
+                fetcher = _ListFetcher(self._object, columns_future)
+                asyncio.ensure_future(self._object.fetch_items(None, fetcher))
+            elif isinstance(self._object, TreeObject):
+                fetcher = _TreeFetcher(self._object, columns_future)
+                asyncio.ensure_future(self._object.fetch_items([], fetcher))
+            else:
+                assert False
             self._item_attrs = await columns_future
             self._all_columns = self._ordered_columns + [
                 name for name in self._item_attrs
