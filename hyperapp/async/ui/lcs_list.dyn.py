@@ -6,7 +6,7 @@ from .simple_list_object import SimpleListObject
 from .module import ClientModule
 
 
-Item = namedtuple('Item', 'dir_str persist values')
+Item = namedtuple('Item', 'idx dir dir_str persist values')
 
 
 class LcsList(SimpleListObject):
@@ -29,6 +29,21 @@ class LcsList(SimpleListObject):
         self._mosaic = mosaic
         self._lcs = lcs
         self._filter_dir = filter_dir
+        self._items = None
+        self._populate()
+
+    def _populate(self):
+        self._items = {
+            idx: Item(
+                idx=idx,
+                dir=dir,
+                dir_str='/'.join(str(element) for element in dir),
+                persist=persist,
+                values=', '.join(str(v) for v in value_list),
+                )
+            for idx, (dir, value_list, persist)
+            in enumerate(self._lcs.iter(self._filter_dir))
+            }
 
     @property
     def piece(self):
@@ -51,18 +66,20 @@ class LcsList(SimpleListObject):
 
     @property
     def key_attribute(self):
-        return 'dir_str'
+        return 'idx'
 
     async def get_all_items(self):
-        return [
-            Item(
-                dir_str='/'.join(str(element) for element in dir),
-                persist=persist,
-                values=', '.join(str(v) for v in value_list),
-                )
-            for dir, value_list, persist
-            in self._lcs.iter(self._filter_dir)
-            ]
+        return list(self._items.values())
+
+    def update(self):
+        self._populate()
+        super().update()
+
+    @command
+    async def remove_element(self, current_key):
+        item = self._items[current_key]
+        self._lcs.remove(item.dir)
+        self.update()
 
 
 class ThisModule(ClientModule):
