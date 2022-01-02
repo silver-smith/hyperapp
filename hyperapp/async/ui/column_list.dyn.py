@@ -73,7 +73,7 @@ class ColumnList(SimpleListObject):
 
     dir_list = [
         *SimpleListObject.dir_list,
-        [htypes.column_list.column_list_d()],
+        [htypes.column_list.column_list_editor_d()],
         ]
 
     @classmethod

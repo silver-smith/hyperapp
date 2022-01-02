@@ -6,6 +6,7 @@ import:
       - column_list_d
     column_list:
       - column_list_d
+      - column_list_editor_d
       - column_list_command
       - column_list
     command:
