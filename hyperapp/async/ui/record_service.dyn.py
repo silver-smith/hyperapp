@@ -14,10 +14,10 @@ class RecordService(RecordObject):
     async def from_piece(
             cls, piece,
             mosaic, async_web, object_factory, command_registry, peer_registry,
-            identity, rpc_endpoint, servant_path_from_data, async_rpc_call_factory):
+            identity, rpc_endpoint, async_rpc_call_factory):
+
         peer = peer_registry.invite(piece.peer_ref)
-        servant_path = servant_path_from_data(piece.servant_path)
-        rpc_call = async_rpc_call_factory(rpc_endpoint, peer, servant_path, identity)
+        rpc_call = async_rpc_call_factory(rpc_endpoint, peer, piece.servant_fn_ref, identity)
 
         dir_list = [
             await cls.summon_dir(async_web, dir)
@@ -32,15 +32,15 @@ class RecordService(RecordObject):
             name: getattr(record, name)
             for name in record._t.fields
             }
-        self = cls(mosaic, peer, servant_path, dir_list, command_list)
+        self = cls(mosaic, peer, piece.servant_fn_ref, dir_list, command_list)
         await self.async_init(object_factory, fields_pieces)
         return self
 
-    def __init__(self, mosaic, peer, servant_path, custom_dir_list, command_list):
+    def __init__(self, mosaic, peer, servant_fn_ref, custom_dir_list, command_list):
         super().__init__()
         self._mosaic = mosaic
         self._peer = peer
-        self._servant_path = servant_path
+        self._servant_fn_ref = servant_fn_ref
         self._custom_dir_list = custom_dir_list
         self._rpc_command_list = command_list
 
@@ -56,14 +56,14 @@ class RecordService(RecordObject):
             ]
         return htypes.service.record_service(
             peer_ref=self._mosaic.put(self._peer.piece),
-            servant_path=self._servant_path.as_data,
+            servant_fn_ref=self._servant_fn_ref,
             dir_list=dir_list,
             command_ref_list=command_ref_list,
             )
 
     @property
     def title(self):
-        return f"Record service: {self._servant_path.title}"
+        return f"Record service: {self._servant_fn_ref}"
 
     @property
     def dir_list(self):
