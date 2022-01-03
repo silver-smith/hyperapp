@@ -32,14 +32,25 @@ class ListServant:
             text=f"Sample contents for:\n{current_key}",
             )
 
+    def open(self, request, current_key):
+        log.info("ListServant.open(%r)", current_key)
+        return htypes.sample_list.sample_article(article_id=current_key)
+
 
 class ArticleServant:
 
-    def get(self, article_id, request):
-        log.info("ArticleServant.get(%s)", article_id)
+    @classmethod
+    def from_piece(cls, piece):
+        return cls(piece.article_id)
+
+    def __init__(self, article_id):
+        self._article_id = article_id
+
+    def get(self, request):
+        log.info("ArticleServant(%s).get", self._article_id)
         return htypes.sample_list.article(
-            title=f"Article {article_id}",
-            text=f"Some text for article {article_id}\nwith second line",
+            title=f"Article {self._article_id}",
+            text=f"Some text for article {self._article_id}\nwith second line",
             )
 
 
@@ -50,20 +61,14 @@ class ThisModule(Module):
 
         mosaic = services.mosaic
 
-        # def article_service_factory(article_id):
-        #     return htypes.service.record_service(
-        #         peer_ref=server_peer_ref,
-        #         servant_path=article_servant_path.get_attr('get').partial(article_id).as_data,
-        #         dir_list=[[mosaic.put(htypes.sample_list.sample_list_article_d())]],
-        #         command_ref_list=[],
-        #         )
-
-        # article_servant = ArticleServant()
-        # services.server_rpc_endpoint.register_servant(article_servant_name, article_servant)
-
         services.python_object_creg.register_actor(htypes.sample_list.sample_list, ListServant.from_piece)
+        services.python_object_creg.register_actor(htypes.sample_list.sample_article, ArticleServant.from_piece)
 
         server_ref_list_piece = services.resource_module_registry['server.server_ref_list'].make('server_ref_list')
         server_ref_list = services.python_object_creg.animate(server_ref_list_piece)
         sample_list_service = services.resource_module_registry['server.sample_list'].make('sample_list_service')
         server_ref_list.add_ref('sample_list', 'Sample list', mosaic.put(sample_list_service))
+
+        services.piece_service_registry[htypes.sample_list.sample_article] = htypes.map_service.record_service(
+            command_ref_list=[],
+            )

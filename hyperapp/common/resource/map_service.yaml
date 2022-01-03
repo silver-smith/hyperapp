@@ -1,0 +1,15 @@
+import:
+  types:
+    service:
+      - record_service
+    attribute:
+      - attribute
+    map_service:
+      - map_service
+      - record_service
+provide:
+  - resource.map_service
+  - piece_service_registry
+require:
+  - resource_type_registry
+  - python_object_creg

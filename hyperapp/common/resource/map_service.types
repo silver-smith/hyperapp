@@ -1,0 +1,17 @@
+
+map_service = record:
+  fn_ref: ref
+
+
+service = record:
+  command_ref_list: ref list
+
+
+multi_item_service = record(service):
+  key_attribute: string
+
+
+list_service = record(multi_item_service)
+tree_service = record(multi_item_service)
+
+record_service = record(service)

@@ -21,6 +21,15 @@ list_servant_describe_method:
   object: list_servant
   attr_name: describe
 
+list_servant_open_method:
+  type: attribute
+  object: list_servant
+  attr_name: open
+
+list_servant_open_method_mapped:
+  type: map_service
+  function: list_servant_open_method
+
 raw_command:
   type: rpc_command
   identity: legacy_service.server_identity
@@ -35,6 +44,13 @@ describe_command:
   state_attributes: ['current_key']
   name: describe
 
+open_command:
+  type: rpc_command
+  identity: legacy_service.server_identity
+  servant: list_servant_open_method_mapped
+  state_attributes: ['current_key']
+  name: open
+
 sample_list_service:
   type: list_service
   identity: legacy_service.server_identity
@@ -43,3 +59,4 @@ sample_list_service:
   commands:
     - raw_command
     - describe_command
+    - open_command

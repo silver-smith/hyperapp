@@ -5,13 +5,18 @@ import:
       - record_service
     rpc_command:
       - rpc_command
+    map_service:
+      - record_service
     sample_list:
       - sample_list_d
       - sample_list_article_d
       - sample_list
+      - sample_article
       - row
       - article
 require:
   - server_rpc_endpoint
   - python_object_creg
   - resource.typed_piece
+  - resource.map_service
+  - piece_service_registry
