@@ -8,8 +8,10 @@ import:
     sample_list:
       - sample_list_d
       - sample_list_article_d
+      - sample_list
       - row
       - article
 require:
   - server_rpc_endpoint
   - python_object_creg
+  - resource.typed_piece

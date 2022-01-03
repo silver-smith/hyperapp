@@ -2,14 +2,9 @@ import:
   - legacy_module.server.sample_list
   - legacy_service.server_identity
 
-list_servant_factory:
-  type: attribute
-  object: legacy_module.server.sample_list
-  attr_name: ListServant
-
 list_servant:
-  type: call
-  function: list_servant_factory
+  type: typed_piece
+  piece_t: sample_list.sample_list
 
 list_servant_list_method:
   type: attribute

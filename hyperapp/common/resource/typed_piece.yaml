@@ -1,0 +1,4 @@
+provide:
+  - resource.typed_piece
+require:
+  - resource_type_registry

@@ -9,6 +9,10 @@ log = logging.getLogger(__name__)
 
 class ListServant:
 
+    @classmethod
+    def from_piece(cls, piece):
+        return cls()
+
     def list(self, request):
         log.info("ListServant.list()")
         return [
@@ -56,6 +60,8 @@ class ThisModule(Module):
 
         # article_servant = ArticleServant()
         # services.server_rpc_endpoint.register_servant(article_servant_name, article_servant)
+
+        services.python_object_creg.register_actor(htypes.sample_list.sample_list, ListServant.from_piece)
 
         server_ref_list_piece = services.resource_module_registry['server.server_ref_list'].make('server_ref_list')
         server_ref_list = services.python_object_creg.animate(server_ref_list_piece)
