@@ -1,10 +1,10 @@
 import:
   types:
-    factory:
+    partial:
       - param
-      - factory
+      - partial
 provide:
-  - resource.factory
+  - resource.partial
 require:
   - resource_type_registry
   - python_object_creg

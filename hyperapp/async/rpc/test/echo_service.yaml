@@ -9,5 +9,5 @@ require:
   - async_rpc_endpoint_factory
   - async_endpoint_registry
   - async_rpc_call_factory
-  - resource.factory
+  - resource.attribute
   - resource.call

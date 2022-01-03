@@ -6,11 +6,14 @@ import:
   - legacy_service.rpc_call_factory
   - legacy_service.server_identity
 
-
 sample_servant_factory:
-  type: factory
+  type: attribute
   object: legacy_module.server.htest_sample
   attr_name: sample_servant
+
+sample_servant_partial:
+  type: partial
+  function: sample_servant_factory
   params:
     mosaic: legacy_service.mosaic
     web: legacy_service.web
@@ -19,10 +22,10 @@ sample_servant_factory:
 
 sample_servant:
   type: call
-  function: sample_servant_factory
+  function: sample_servant_partial
 
 servant_list:
-  type: factory
+  type: attribute
   object: sample_servant
   attr_name: list
 

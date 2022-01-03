@@ -1,0 +1,9 @@
+import:
+  types:
+    attribute:
+      - attribute
+provide:
+  - resource.attribute
+require:
+  - resource_type_registry
+  - python_object_creg

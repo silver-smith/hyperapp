@@ -29,7 +29,7 @@ def code_module_list():
         'common.resource.registry',
         'common.resource.resource_module',
         'common.resource.legacy_module',
-        'common.resource.factory',
+        'common.resource.attribute',
         'common.resource.call',
         'sync.rpc.rpc_call',
         'sync.rpc.rpc_endpoint',
@@ -74,7 +74,7 @@ def echo_set_up(services, htypes):
 
     @contextmanager
     def make_rpc_call(method_name):
-        servant_fn = htypes.factory.factory(echo_servant_ref, method_name, params=[])
+        servant_fn = htypes.attribute.attribute(echo_servant_ref, method_name)
         servant_fn_ref = mosaic.put(servant_fn)
 
         subprocess = services.subprocess(

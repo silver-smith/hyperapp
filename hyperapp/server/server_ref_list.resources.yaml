@@ -4,7 +4,7 @@ import:
   - legacy_service.server_identity
 
 server_ref_list_factory:
-  type: factory
+  type: attribute
   object: legacy_module.server.server_ref_list
   attr_name: RefList
 
@@ -13,24 +13,28 @@ server_ref_list:
   function: server_ref_list_factory
 
 ref_list_servant_factory:
-  type: factory
+  type: attribute
   object: legacy_module.server.server_ref_list
   attr_name: RefListServant
+
+ref_list_servant_partial:
+  type: partial
+  function: ref_list_servant_factory
   params:
     web: legacy_service.web
     ref_list: server_ref_list
 
 ref_list_servant:
   type: call
-  function: ref_list_servant_factory
+  function: ref_list_servant_partial
 
 ref_list_servant_get_method:
-  type: factory
+  type: attribute
   object: ref_list_servant
   attr_name: get
 
 ref_list_servant_open_method:
-  type: factory
+  type: attribute
   object: ref_list_servant
   attr_name: open
 

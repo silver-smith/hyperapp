@@ -3,7 +3,7 @@ import:
   - legacy_service.server_identity
 
 list_servant_factory:
-  type: factory
+  type: attribute
   object: legacy_module.server.sample_list
   attr_name: ListServant
 
@@ -12,17 +12,17 @@ list_servant:
   function: list_servant_factory
 
 list_servant_list_method:
-  type: factory
+  type: attribute
   object: list_servant
   attr_name: list
 
 list_servant_raw_method:
-  type: factory
+  type: attribute
   object: list_servant
   attr_name: raw
 
 list_servant_describe_method:
-  type: factory
+  type: attribute
   object: list_servant
   attr_name: describe
 

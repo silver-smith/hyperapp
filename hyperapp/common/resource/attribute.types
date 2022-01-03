@@ -1,0 +1,4 @@
+
+attribute = record:
+  object_ref: ref
+  attr_name: string
