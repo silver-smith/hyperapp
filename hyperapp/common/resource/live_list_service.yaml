@@ -1,0 +1,6 @@
+import:
+  types:
+    service:
+      - live_list_service
+provide:
+  - resource.live_list_service

@@ -1,5 +1,7 @@
 import:
   types:
+    attribute:
+      - attribute
     service:
       - live_list_service
   code:

@@ -27,13 +27,10 @@ class LiveListService(SimpleListObject):
             peer_registry,
             identity,
             rpc_endpoint,
-            servant_path_factory,
-            servant_path_from_data,
             async_rpc_call_factory,
             ):
         peer = peer_registry.invite(piece.peer_ref)
-        servant_path = servant_path_from_data(piece.servant_path)
-        rpc_call = async_rpc_call_factory(rpc_endpoint, peer, servant_path, identity)
+        rpc_call = async_rpc_call_factory(rpc_endpoint, peer, piece.servant_fn_ref, identity)
 
         dir_list = [
             await cls.summon_dir(async_web, dir)
@@ -43,20 +40,17 @@ class LiveListService(SimpleListObject):
             await command_registry.invite(ref)
             for ref in piece.command_ref_list
             ]
-        servant_name = f'live_list_service_{uuid.uuid4()}'
         self = cls(
             mosaic,
             types,
             async_web,
-            servant_path_factory,
             identity,
             peer,
-            servant_path,
+            piece.servant_fn_ref,
             rpc_call,
             dir_list,
             command_list,
             piece.key_attribute,
-            servant_name,
             )
         rpc_endpoint.register_servant(servant_name, self)
         return self
@@ -66,29 +60,25 @@ class LiveListService(SimpleListObject):
             mosaic,
             types,
             async_web,
-            servant_path_factory,
             identity,
             peer,
-            servant_path,
+            servant_fn_ref,
             rpc_call,
             custom_dir_list,
             command_list,
             key_attribute,
-            servant_name,
             ):
         super().__init__()
         self._mosaic = mosaic
         self._types = types
         self._async_web = async_web
-        self._servant_path_factory = servant_path_factory
         self._identity = identity
         self._peer = peer
-        self._servant_path = servant_path
+        self._servant_fn_ref = servant_fn_ref
         self._rpc_call = rpc_call
         self._custom_dir_list = custom_dir_list
         self._rpc_command_list = command_list
         self._key_attribute = key_attribute
-        self._servant_name = servant_name
 
     @property
     def piece(self):
@@ -102,7 +92,7 @@ class LiveListService(SimpleListObject):
             ]
         return htypes.service.live_list_service(
             peer_ref=self._mosaic.put(self._peer.piece),
-            servant_path=self._servant_path.as_data,
+            servant_fn_ref=self._servant_fn_ref,
             dir_list=dir_list,
             command_ref_list=command_ref_list,
             key_attribute=self._key_attribute,
@@ -110,7 +100,7 @@ class LiveListService(SimpleListObject):
 
     @property
     def title(self):
-        return f"Live list service: {self._servant_path.title}"
+        return f"Live list service: {self._servant_fn_ref}"
 
     @property
     def dir_list(self):
@@ -125,9 +115,13 @@ class LiveListService(SimpleListObject):
         return self._key_attribute
 
     async def get_all_items(self):
-        servant_path = self._servant_path_factory().registry_name(self._servant_name).get_attr('process_diff')
+        diff_method_piece = htypes.attribute.attribute(
+            object_ref=self._mosaic.put(self.piece),
+            attr_name='process_diff',
+            )
+        servant_ref = self._mosaic.put(diff_method_piece)
         my_peer_ref = self._mosaic.put(self._identity.peer.piece)
-        return await self._rpc_call(my_peer_ref, servant_path.as_data)
+        return await self._rpc_call(my_peer_ref, servant_ref)
 
     async def process_diff(self, request, diff):
         remove_item_list = [

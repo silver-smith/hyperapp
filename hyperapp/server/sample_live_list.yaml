@@ -10,9 +10,12 @@ import:
       - row
       - article
 require:
-  - peer_registry
-  - servant_path_from_data
-  - rpc_call_factory
-  - server_identity
-  - server_rpc_endpoint
-  - server_ref_list
+  - python_object_creg
+  - piece_service_registry
+  - resource.legacy_module
+  - resource.legacy_service
+  - resource.attribute
+  - resource.partial
+  - resource.call
+  - resource.rpc_command
+  - resource.live_list_service

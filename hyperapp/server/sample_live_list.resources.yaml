@@ -1,0 +1,74 @@
+import:
+  - legacy_module.server.sample_live_list
+  - legacy_service.mosaic
+  - legacy_service.peer_registry
+  - legacy_service.rpc_call_factory
+  - legacy_service.server_identity
+  - legacy_service.server_rpc_endpoint
+
+executor_factory:
+  type: attribute
+  object: legacy_module.server.sample_live_list
+  attr_name: executor
+
+executor:
+  type: call
+  function: executor_factory
+
+list_servant_ctr:
+  type: attribute
+  object: legacy_module.server.sample_live_list
+  attr_name: ListServant
+
+list_servant_factory:
+  type: partial
+  function: list_servant_ctr
+  params:
+    mosaic: legacy_service.mosaic
+    peer_registry: legacy_service.peer_registry
+    rpc_call_factory: legacy_service.rpc_call_factory
+    identity: legacy_service.server_identity
+    rpc_endpoint: legacy_service.server_rpc_endpoint
+    executor: executor
+
+list_servant:
+  type: call
+  function: list_servant_factory
+
+list_servant_list_method:
+  type: attribute
+  object: list_servant
+  attr_name: list
+
+list_servant_raw_method:
+  type: attribute
+  object: list_servant
+  attr_name: raw
+
+list_servant_describe_method:
+  type: attribute
+  object: list_servant
+  attr_name: describe
+
+raw_command:
+  type: rpc_command
+  identity: legacy_service.server_identity
+  servant: list_servant_raw_method
+  state_attributes: ['current_key']
+  name: raw
+
+describe_command:
+  type: rpc_command
+  identity: legacy_service.server_identity
+  servant: list_servant_describe_method
+  state_attributes: ['current_key']
+  name: describe
+
+sample_list_service:
+  type: live_list_service
+  identity: legacy_service.server_identity
+  servant: list_servant_list_method
+  key_attribute: key
+  commands:
+    - raw_command
+    - describe_command

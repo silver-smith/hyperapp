@@ -12,20 +12,18 @@ log = logging.getLogger(__name__)
 
 class LiveListServant:
 
-    def __init__(self, mosaic, peer_registry, servant_path_from_data, rpc_call_factory, identity, rpc_endpoint, executor):
+    def __init__(self, mosaic, peer_registry, rpc_call_factory, identity, rpc_endpoint, executor):
         self._mosaic = mosaic
         self._peer_registry = peer_registry
-        self._servant_path_from_data = servant_path_from_data
         self._rpc_call_factory = rpc_call_factory
         self._identity = identity
         self._rpc_endpoint = rpc_endpoint
         self._executor = executor
 
-    def list(self, request, peer_ref, servant_path_data):
+    def list(self, request, peer_ref, servant_ref):
         peer = self._peer_registry.invite(peer_ref)
-        servant_path = self._servant_path_from_data(servant_path_data)
-        log.info("LiveListServant.list(%s, %s)", peer, servant_path)
-        self._executor.submit(partial(self._send_diffs, peer, servant_path))
+        log.info("LiveListServant.list(%s, %s)", peer, servant_ref)
+        self._executor.submit(partial(self._send_diffs, peer, servant_ref))
         return [
             htypes.sample_list.row(idx, f"Row #{idx}")
             for idx in range(20)
@@ -43,9 +41,9 @@ class LiveListServant:
             text=f"Sample contents for:\n{current_key}",
             )
 
-    def _send_diffs(self, peer, servant_path):
+    def _send_diffs(self, peer, servant_ref):
         try:
-            rpc_call = self._rpc_call_factory(self._rpc_endpoint, peer, servant_path, self._identity)
+            rpc_call = self._rpc_call_factory(self._rpc_endpoint, peer, servant_ref, self._identity)
             for idx in range(20):
                 if idx % 5 != 4:
                     continue
@@ -65,6 +63,10 @@ class LiveListServant:
             log.exception("Error sending diff:")
 
 
+def executor():
+    return ThreadPoolExecutor()
+
+
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
@@ -72,50 +74,17 @@ class ThisModule(Module):
 
         mosaic = services.mosaic
 
-        server_peer_ref = mosaic.put(services.server_identity.peer.piece)
+        server_ref_list_piece = services.resource_module_registry['server.server_ref_list'].make('server_ref_list')
+        server_ref_list = services.python_object_creg.animate(server_ref_list_piece)
+        sample_list_module = services.resource_module_registry['server.sample_live_list']
+        sample_list_service = sample_list_module.make('sample_list_service')
+        server_ref_list.add_ref('sample_live_list', 'Sample live list', mosaic.put(sample_list_service))
 
-        list_servant_name = 'sample_live_list_servant'
-        list_servant_path = services.servant_path().registry_name(list_servant_name)
-
-        describe_command = htypes.rpc_command.rpc_command(
-            peer_ref=server_peer_ref,
-            servant_path=list_servant_path.get_attr('describe').as_data,
-            state_attr_list=['current_key'],
-            name='describe',
-            )
-        raw_command = htypes.rpc_command.rpc_command(
-            peer_ref=server_peer_ref,
-            servant_path=list_servant_path.get_attr('raw').as_data,
-            state_attr_list=['current_key'],
-            name='raw',
-            )
-        list_service = htypes.service.live_list_service(
-            peer_ref=server_peer_ref,
-            servant_path=list_servant_path.get_attr('list').as_data,
-            dir_list=[[mosaic.put(htypes.sample_list.sample_live_list_d())]],
-            command_ref_list=[
-                mosaic.put(describe_command),
-                mosaic.put(raw_command),
-                ],
-            key_attribute='key',
-            )
-
-        self._executor = ThreadPoolExecutor()
-
-        list_servant = LiveListServant(
-            services.mosaic,
-            services.peer_registry,
-            services.servant_path_from_data,
-            services.rpc_call_factory,
-            services.server_identity,
-            services.server_rpc_endpoint,
-            self._executor,
-            )
-        services.server_rpc_endpoint.register_servant(list_servant_name, list_servant)
-
-        services.server_ref_list.add_ref('sample_live_list', 'Sample live list', mosaic.put(list_service))
+        self._python_object_creg = services.python_object_creg
+        self._executor_piece = sample_list_module.make('executor')
 
         services.on_stop.append(self.stop)
 
     def stop(self):
-        self._executor.shutdown()
+        executor = self._python_object_creg.animate(self._executor_piece)
+        executor.shutdown()
