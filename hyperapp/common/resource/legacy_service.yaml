@@ -5,3 +5,6 @@ import:
       - module_service
 provide:
   - resource.legacy_service
+require:
+  - resource_module_registry
+  - python_object_creg
