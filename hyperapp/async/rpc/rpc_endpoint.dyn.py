@@ -36,12 +36,12 @@ class ErrorResponse:
 
 class RpcEndpoint:
 
-    def __init__(self, async_web, mosaic, types, peer_registry, transport, python_object_creg):
+    def __init__(self, async_web, mosaic, types, peer_registry, transport, python_object_acreg):
         self._mosaic = mosaic
         self._types = types
         self._peer_registry = peer_registry
         self._transport = transport
-        self._python_object_creg = python_object_creg
+        self._python_object_acreg = python_object_acreg
         self._result_by_request_id = {}
         self._response_available = asyncio.Condition()
         self._message_registry = registry = CodeRegistry('rpc_message', async_web, types)
@@ -81,7 +81,7 @@ class RpcEndpoint:
         servant_fn = "<unknown servant>"
         try:
             log.debug("Resolve rpc servant: %s", request.servant_ref)
-            servant_fn = self._python_object_creg.invite(request.servant_ref)
+            servant_fn = await self._python_object_acreg.invite(request.servant_ref)
             params = [
                 self._mosaic.resolve_ref(ref).value
                 for ref in request.params
@@ -138,5 +138,5 @@ class ThisModule(Module):
             services.types,
             services.peer_registry,
             services.async_transport,
-            services.python_object_creg,
+            services.python_object_acreg,
             )

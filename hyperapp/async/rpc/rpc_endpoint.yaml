@@ -11,6 +11,6 @@ require:
   - peer_registry
   - async_web
   - async_transport
-  - python_object_creg
+  - python_object_acreg
 provide:
   - async_rpc_endpoint_factory

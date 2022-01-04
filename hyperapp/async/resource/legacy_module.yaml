@@ -1,0 +1,7 @@
+import:
+  code:
+    - common.resource.legacy_module
+provide:
+  - async.resource.legacy_module
+require:
+  - python_object_acreg
