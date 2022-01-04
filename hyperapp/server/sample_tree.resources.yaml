@@ -1,0 +1,67 @@
+import:
+  - legacy_module.server.sample_tree
+  - legacy_service.server_identity
+
+tree_servant_factory:
+  type: attribute
+  object: legacy_module.server.sample_tree
+  attr_name: TreeServant
+
+tree_servant:
+  type: call
+  function: tree_servant_factory
+
+tree_servant_get_items_method:
+  type: attribute
+  object: tree_servant
+  attr_name: get_items
+
+tree_servant_raw_method:
+  type: attribute
+  object: tree_servant
+  attr_name: raw
+
+tree_servant_describe_method:
+  type: attribute
+  object: tree_servant
+  attr_name: describe
+
+tree_servant_open_method:
+  type: attribute
+  object: tree_servant
+  attr_name: open
+
+tree_servant_open_method_mapped:
+  type: map_service
+  function: tree_servant_open_method
+
+raw_command:
+  type: rpc_command
+  identity: legacy_service.server_identity
+  servant: tree_servant_raw_method
+  state_attributes: ['current_key']
+  name: raw
+
+describe_command:
+  type: rpc_command
+  identity: legacy_service.server_identity
+  servant: tree_servant_describe_method
+  state_attributes: ['current_key']
+  name: describe
+
+open_command:
+  type: rpc_command
+  identity: legacy_service.server_identity
+  servant: tree_servant_open_method_mapped
+  state_attributes: ['current_key']
+  name: open
+
+sample_tree_service:
+  type: tree_service
+  identity: legacy_service.server_identity
+  servant: tree_servant_get_items_method
+  key_attribute: key
+  commands:
+    - raw_command
+    - describe_command
+    - open_command

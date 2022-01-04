@@ -9,9 +9,6 @@ log = logging.getLogger(__name__)
 
 class TreeServant:
 
-    def __init__(self, article_service_factory):
-        self._article_service_factory = article_service_factory
-
     def get_items(self, request, path):
         log.info("TreeServant.get_items(%s)", path)
         if path:
@@ -26,29 +23,36 @@ class TreeServant:
             htypes.sample_tree.item(base + 5, 'fifth item'),
             ]
 
-    def describe(self, request, item_key):
-        log.info("TreeServant.describe(%r)", item_key)
-        return "Opened item: {}".format(item_key)
+    def describe(self, request, current_key):
+        log.info("TreeServant.describe(%r)", current_key)
+        return "Opened item: {}".format(current_key)
 
-    def raw(self, request, item_key):
-        log.info("TreeServant.raw(%r)", item_key)
+    def raw(self, request, current_key):
+        log.info("TreeServant.raw(%r)", current_key)
         return htypes.sample_tree.article(
-            title=f"Article {item_key}",
-            text=f"Sample contents for:\n{item_key}",
+            title=f"Article {current_key}",
+            text=f"Sample contents for:\n{current_key}",
             )
 
-    def open(self, request, item_key):
-        log.info("TreeServant.open(%r)", item_key)
-        return self._article_service_factory(item_key)
+    def open(self, request, current_key):
+        log.info("TreeServant.open(%r)", current_key)
+        return htypes.sample_tree.sample_article(article_path=current_key)
 
 
 class ArticleServant:
 
-    def get(self, article_path, request):
-        log.info("ArticleServant.get(%s)", article_path)
+    @classmethod
+    def from_piece(cls, piece):
+        return cls(piece.article_path)
+
+    def __init__(self, article_path):
+        self._article_path = article_path
+
+    def get(self, request):
+        log.info("ArticleServant(%s).get", self._article_path)
         return htypes.sample_tree.article(
-            title=f"Article {article_path}",
-            text=f"Some text for article {article_path}\nwith second line",
+            title=f"Article {self._article_path}",
+            text=f"Some text for article {self._article_path}\nwith second line",
             )
 
 
@@ -59,55 +63,13 @@ class ThisModule(Module):
 
         mosaic = services.mosaic
 
-        server_peer_ref = mosaic.put(services.server_identity.peer.piece)
+        services.python_object_creg.register_actor(htypes.sample_tree.sample_article, ArticleServant.from_piece)
 
-        tree_servant_name = 'sample_tree_servant'
-        tree_servant_path = services.servant_path().registry_name(tree_servant_name)
+        server_ref_list_piece = services.resource_module_registry['server.server_ref_list'].make('server_ref_list')
+        server_ref_list = services.python_object_creg.animate(server_ref_list_piece)
+        sample_tree_service = services.resource_module_registry['server.sample_tree'].make('sample_tree_service')
+        server_ref_list.add_ref('sample_tree', 'Sample tree', mosaic.put(sample_tree_service))
 
-        describe_command = htypes.rpc_command.rpc_command(
-            peer_ref=server_peer_ref,
-            servant_path=tree_servant_path.get_attr('describe').as_data,
-            state_attr_list=['current_key'],
-            name='describe',
+        services.piece_service_registry[htypes.sample_tree.sample_article] = htypes.map_service.record_service(
+            command_ref_list=[],
             )
-        open_command = htypes.rpc_command.rpc_command(
-            peer_ref=server_peer_ref,
-            servant_path=tree_servant_path.get_attr('open').as_data,
-            state_attr_list=['current_key'],
-            name='open',
-            )
-        raw_command = htypes.rpc_command.rpc_command(
-            peer_ref=server_peer_ref,
-            servant_path=tree_servant_path.get_attr('raw').as_data,
-            state_attr_list=['current_key'],
-            name='raw',
-            )
-        tree_service = htypes.service.tree_service(
-            peer_ref=server_peer_ref,
-            servant_path=tree_servant_path.get_attr('get_items').as_data,
-            dir_list=[[mosaic.put(htypes.sample_tree.sample_tree_d())]],
-            command_ref_list=[
-                mosaic.put(describe_command),
-                mosaic.put(raw_command),
-                mosaic.put(open_command),
-                ],
-            key_attribute='key',
-            )
-
-        article_servant_name = 'sample_tree_article_servant'
-        article_servant_path = services.servant_path().registry_name(article_servant_name)
-
-        def article_service_factory(path):
-            return htypes.service.record_service(
-                peer_ref=server_peer_ref,
-                servant_path=article_servant_path.get_attr('get').partial(path).as_data,
-                dir_list=[[mosaic.put(htypes.sample_tree.sample_tree_article_d())]],
-                command_ref_list=[],
-                )
-
-        tree_servant = TreeServant(article_service_factory)
-        services.server_rpc_endpoint.register_servant(tree_servant_name, tree_servant)
-        article_servant = ArticleServant()
-        services.server_rpc_endpoint.register_servant(article_servant_name, article_servant)
-
-        services.server_ref_list.add_ref('samle_tree', 'Sample tree', mosaic.put(tree_service))
