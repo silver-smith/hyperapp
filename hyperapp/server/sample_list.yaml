@@ -15,7 +15,6 @@ import:
       - row
       - article
 require:
-  - server_rpc_endpoint
   - python_object_creg
   - resource.typed_piece
   - resource.map_service

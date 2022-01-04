@@ -1,5 +1,4 @@
 import:
-  - legacy_module.server.sample_list
   - legacy_service.server_identity
 
 list_servant:
