@@ -19,7 +19,7 @@ class ThisModule(Module):
             services.client_rpc_endpoint,
             services.async_rpc_call_factory,
             )
-        services.python_object_creg.register_actor(
+        services.python_object_acreg.register_actor(
             htypes.service.live_list_service,
             LiveListService.from_piece,
             services.mosaic,

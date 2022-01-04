@@ -12,4 +12,4 @@ require:
   - async_rpc_call_factory
   - client_identity
   - client_rpc_endpoint
-  - python_object_creg
+  - python_object_acreg

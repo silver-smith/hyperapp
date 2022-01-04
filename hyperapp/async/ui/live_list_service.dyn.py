@@ -40,7 +40,7 @@ class LiveListService(SimpleListObject):
             await command_registry.invite(ref)
             for ref in piece.command_ref_list
             ]
-        self = cls(
+        return cls(
             mosaic,
             types,
             async_web,
@@ -52,8 +52,6 @@ class LiveListService(SimpleListObject):
             command_list,
             piece.key_attribute,
             )
-        rpc_endpoint.register_servant(servant_name, self)
-        return self
 
     def __init__(
             self,

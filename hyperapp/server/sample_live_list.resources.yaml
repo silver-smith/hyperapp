@@ -18,7 +18,7 @@ executor:
 list_servant_ctr:
   type: attribute
   object: legacy_module.server.sample_live_list
-  attr_name: ListServant
+  attr_name: LiveListServant
 
 list_servant_factory:
   type: partial
