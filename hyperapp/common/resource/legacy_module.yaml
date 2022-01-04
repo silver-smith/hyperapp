@@ -1,2 +1,4 @@
+provide:
+  - resource.legacy_module
 require:
   - resource_module_registry

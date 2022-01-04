@@ -3,3 +3,5 @@ import:
     legacy_service:
       - builtin_service
       - module_service
+provide:
+  - resource.legacy_service
