@@ -1,4 +1,5 @@
 import logging
+import weakref
 import uuid
 
 from . import htypes
@@ -9,6 +10,8 @@ log = logging.getLogger(__name__)
 
 
 class LiveListService(SimpleListObject):
+
+    _piece_to_instance = weakref.WeakValueDictionary()
 
     @staticmethod
     async def summon_dir(async_web, dir):
@@ -29,6 +32,11 @@ class LiveListService(SimpleListObject):
             rpc_endpoint,
             async_rpc_call_factory,
             ):
+
+        try:
+            return cls._piece_to_instance[piece]
+        except KeyError:
+            pass
         peer = peer_registry.invite(piece.peer_ref)
         rpc_call = async_rpc_call_factory(rpc_endpoint, peer, piece.servant_fn_ref, identity)
 
@@ -40,7 +48,7 @@ class LiveListService(SimpleListObject):
             await command_registry.invite(ref)
             for ref in piece.command_ref_list
             ]
-        return cls(
+        self = cls(
             mosaic,
             types,
             async_web,
@@ -52,6 +60,8 @@ class LiveListService(SimpleListObject):
             command_list,
             piece.key_attribute,
             )
+        cls._piece_to_instance[piece] = self
+        return self
 
     def __init__(
             self,
