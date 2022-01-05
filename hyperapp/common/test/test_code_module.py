@@ -56,6 +56,7 @@ def python_importer():
     python_importer.register_meta_hook()
     yield python_importer
     python_importer.unregister_meta_hook()
+    python_importer.remove_modules()
 
 
 @pytest.fixture

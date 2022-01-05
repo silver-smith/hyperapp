@@ -224,6 +224,8 @@ class ModuleRegistry:
 
     def _import_module(self, services, module_code, config):
         module_name = self._make_module_name(module_code.module)
+        if self._python_importer.module_imported(module_name):
+            return
         module_to_python_module = {
             module: rec.python_module
             for module, rec

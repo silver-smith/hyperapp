@@ -78,6 +78,7 @@ class Services(object):
         for stop in reversed(self.on_stop):
             stop()
         log.info('Stopping modules: done')
+        self._python_importer.remove_modules()
         self._is_stopped = True
         log.info("Services are stopped.")
 

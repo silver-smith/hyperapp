@@ -46,12 +46,23 @@ class PythonImporter:
     def __init__(self):
         self._module_name_to_loader = {ROOT_PACKAGE: _EmptyLoader()}
         self._meta_path_finder = _MetaPathFinder(self._module_name_to_loader)
+        self._imported_modules = []
 
     def register_meta_hook(self):
         sys.meta_path.append(self._meta_path_finder)
 
     def unregister_meta_hook(self):
         sys.meta_path.remove(self._meta_path_finder)
+
+    def module_imported(self, module_name):
+        return module_name in sys.modules
+
+    def remove_modules(self):
+        for module_name in self._imported_modules:
+            try:
+                del sys.modules[module_name]
+            except KeyError:
+                pass  # It may be added to loader, but never actually imported by anyone.
 
     def import_module(self, module_name, root_loader, sub_loader_dict):
         module_name_to_loader = {module_name: root_loader}
@@ -67,4 +78,5 @@ class PythonImporter:
         self._module_name_to_loader.update(module_name_to_loader)
         log.debug('Import python module: %s', module_name)
         module = importlib.import_module(module_name)
+        self._imported_modules += module_name_to_loader
         return module
