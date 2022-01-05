@@ -4,7 +4,7 @@ venv=${VENV:-$HOME/venv/hyperapp}
 
 . $venv/bin/activate
 
-export LOG_CFG=client-file
+export LOG_CFG="${LOG_CFG-client-file}"
 
 rm /tmp/client*.log || true
 
