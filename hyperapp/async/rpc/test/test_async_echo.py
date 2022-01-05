@@ -82,8 +82,10 @@ def echo_set_up(services, htypes):
             'async.async_main',
             'sync.transport.tcp',  # tcp_transport.route is required registered at sync route_registry.
             'async.transport.tcp',
-            'common.resource.registry',
-            'common.resource.legacy_module',
+            'async.resource.registry',
+            'async.resource.legacy_module',
+            'async.resource.attribute',
+            'async.resource.call',
             'echo_service',
             ],
         config = {
