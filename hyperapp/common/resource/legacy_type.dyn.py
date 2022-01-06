@@ -1,0 +1,47 @@
+import logging
+from collections import defaultdict
+
+from hyperapp.common.module import Module
+
+from . import htypes
+
+log = logging.getLogger(__name__)
+
+
+class LegacyTypeResourceModule:
+
+    def __init__(self):
+        self._name_to_piece = {}
+
+    def __setitem__(self, name, type_piece):
+        self._name_to_piece[name] = type_piece
+
+    def __contains__(self, var_name):
+        return var_name in self._name_to_piece
+
+    def make(self, var_name):
+        return self._name_to_piece[var_name]
+
+
+def make_legacy_type_resource_module(type_module_loader):
+    name_to_module = defaultdict(LegacyTypeResourceModule)
+    for module_name, local_type_module in type_module_loader.registry.items():
+        for name, type_ref in local_type_module.items():
+            type_piece = htypes.legacy_type.type(type_ref)
+            name_to_module[f'legacy_type.{module_name}'][name] = type_piece
+            log.info("Legacy type resource %s.%s: %s", module_name, name, type_piece)
+    return name_to_module
+
+
+def python_object(piece, types):
+    return types.resolve(piece.type_ref)
+
+
+class ThisModule(Module):
+
+    def __init__(self, module_name, services, config):
+        super().__init__(module_name, services, config)
+
+        
+        services.resource_module_registry.update(make_legacy_type_resource_module(services.type_module_loader))
+        services.python_object_creg.register_actor(htypes.legacy_type.type, python_object, services.types)

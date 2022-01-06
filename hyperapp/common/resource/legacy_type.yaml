@@ -1,0 +1,9 @@
+import:
+  types:
+    legacy_type:
+      - type
+provide:
+  - resource.legacy_type
+require:
+  - resource_module_registry
+  - python_object_creg
