@@ -7,36 +7,38 @@ import:
   - legacy_service.server_identity
   - legacy_type.test_resources.test_d
 
-sample_servant_factory:
-  type: attribute
-  object: legacy_module.server.htest_sample
-  attr_name: sample_servant
+definitions:
 
-sample_servant_partial:
-  type: partial
-  function: sample_servant_factory
-  params:
-    mosaic: legacy_service.mosaic
-    web: legacy_service.web
-    peer_registry: legacy_service.peer_registry
-    rpc_call_factory: legacy_service.rpc_call_factory
+  sample_servant_factory:
+    type: attribute
+    object: legacy_module.server.htest_sample
+    attr_name: sample_servant
 
-sample_servant:
-  type: call
-  function: sample_servant_partial
+  sample_servant_partial:
+    type: partial
+    function: sample_servant_factory
+    params:
+      mosaic: legacy_service.mosaic
+      web: legacy_service.web
+      peer_registry: legacy_service.peer_registry
+      rpc_call_factory: legacy_service.rpc_call_factory
 
-servant_list:
-  type: attribute
-  object: sample_servant
-  attr_name: list
+  sample_servant:
+    type: call
+    function: sample_servant_partial
 
-test_d:
-  type: call
-  function: legacy_type.test_resources.test_d
+  servant_list:
+    type: attribute
+    object: sample_servant
+    attr_name: list
 
-sample_list_service:
-  type: list_service
-  identity: legacy_service.server_identity
-  servant: servant_list
-  dir: [test_d]
-  key_attribute: id
+  test_d:
+    type: call
+    function: legacy_type.test_resources.test_d
+
+  sample_list_service:
+    type: list_service
+    identity: legacy_service.server_identity
+    servant: servant_list
+    dir: [test_d]
+    key_attribute: id

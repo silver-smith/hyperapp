@@ -2,66 +2,68 @@ import:
   - legacy_service.server_identity
   - legacy_type.sample_list.sample_list_d
 
-list_servant:
-  type: typed_piece
-  piece_t: sample_list.sample_list
+definitions:
 
-list_servant_list_method:
-  type: attribute
-  object: list_servant
-  attr_name: list
+  list_servant:
+    type: typed_piece
+    piece_t: sample_list.sample_list
 
-list_servant_raw_method:
-  type: attribute
-  object: list_servant
-  attr_name: raw
+  list_servant_list_method:
+    type: attribute
+    object: list_servant
+    attr_name: list
 
-list_servant_describe_method:
-  type: attribute
-  object: list_servant
-  attr_name: describe
+  list_servant_raw_method:
+    type: attribute
+    object: list_servant
+    attr_name: raw
 
-list_servant_open_method:
-  type: attribute
-  object: list_servant
-  attr_name: open
+  list_servant_describe_method:
+    type: attribute
+    object: list_servant
+    attr_name: describe
 
-list_servant_open_method_mapped:
-  type: map_service
-  function: list_servant_open_method
+  list_servant_open_method:
+    type: attribute
+    object: list_servant
+    attr_name: open
 
-raw_command:
-  type: rpc_command
-  identity: legacy_service.server_identity
-  servant: list_servant_raw_method
-  state_attributes: ['current_key']
-  name: raw
+  list_servant_open_method_mapped:
+    type: map_service
+    function: list_servant_open_method
 
-describe_command:
-  type: rpc_command
-  identity: legacy_service.server_identity
-  servant: list_servant_describe_method
-  state_attributes: ['current_key']
-  name: describe
+  raw_command:
+    type: rpc_command
+    identity: legacy_service.server_identity
+    servant: list_servant_raw_method
+    state_attributes: ['current_key']
+    name: raw
 
-open_command:
-  type: rpc_command
-  identity: legacy_service.server_identity
-  servant: list_servant_open_method_mapped
-  state_attributes: ['current_key']
-  name: open
+  describe_command:
+    type: rpc_command
+    identity: legacy_service.server_identity
+    servant: list_servant_describe_method
+    state_attributes: ['current_key']
+    name: describe
 
-sample_list_d:
-  type: call
-  function: legacy_type.sample_list.sample_list_d
+  open_command:
+    type: rpc_command
+    identity: legacy_service.server_identity
+    servant: list_servant_open_method_mapped
+    state_attributes: ['current_key']
+    name: open
 
-sample_list_service:
-  type: list_service
-  identity: legacy_service.server_identity
-  servant: list_servant_list_method
-  dir: [sample_list_d]
-  key_attribute: key
-  commands:
-    - raw_command
-    - describe_command
-    - open_command
+  sample_list_d:
+    type: call
+    function: legacy_type.sample_list.sample_list_d
+
+  sample_list_service:
+    type: list_service
+    identity: legacy_service.server_identity
+    servant: list_servant_list_method
+    dir: [sample_list_d]
+    key_attribute: key
+    commands:
+      - raw_command
+      - describe_command
+      - open_command

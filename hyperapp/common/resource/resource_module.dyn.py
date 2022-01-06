@@ -43,8 +43,8 @@ class ResourceModule:
         
     def _load(self):
         log.info("Loading resource module %s: %s", self._name, self._path)
-        definitions = yaml.safe_load(self._path.read_text())
-        import_list = definitions.get('import', [])
+        contents = yaml.safe_load(self._path.read_text())
+        import_list = contents.get('import', [])
         for name in import_list:
             module_name, var_name = name.rsplit('.', 1)
             try:
@@ -53,10 +53,7 @@ class ResourceModule:
                 raise RuntimeError(f"{self._name}: Importing {var_name} from unknown module: {module_name}")
             if var_name not in module:
                 raise RuntimeError(f"{self._name}: Module {module_name} does not have {var_name!r}")
-        self._definitions = {
-            key: value for key, value in definitions.items()
-            if key != 'import'
-            }
+        self._definitions = contents.get('definitions', {})
         self._import_list = import_list
 
 
