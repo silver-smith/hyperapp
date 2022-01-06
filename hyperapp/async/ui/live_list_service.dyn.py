@@ -90,14 +90,14 @@ class LiveListService(SimpleListObject):
 
     @property
     def piece(self):
-        dir_list = [
-            [self._mosaic.put(ref) for ref in dir]
+        dir_list = tuple(
+            tuple(self._mosaic.put(ref) for ref in dir)
             for dir in self._custom_dir_list
-            ]
-        command_ref_list = [
+            )
+        command_ref_list = tuple(
             self._mosaic.put(command.piece)
             for command in self._rpc_command_list
-            ]
+            )
         return htypes.service.live_list_service(
             peer_ref=self._mosaic.put(self._peer.piece),
             servant_fn_ref=self._servant_fn_ref,
