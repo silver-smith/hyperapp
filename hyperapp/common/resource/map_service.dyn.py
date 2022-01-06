@@ -24,7 +24,7 @@ def map_piece_to_service(mosaic, request, piece, service):
         return htypes.service.record_service(
             peer_ref=peer_ref,
             servant_fn_ref=mosaic.put(get_fn),
-            dir_list=[],
+            dir_list=service.dir_list,
             command_ref_list=service.command_ref_list,
             )
     raise runtime_error(f"Unsupported service type for {piece}: {service}")

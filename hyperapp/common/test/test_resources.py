@@ -15,11 +15,17 @@ TEST_DIR = Path(__file__).parent.resolve()
 
 
 @pytest.fixture
+def additional_module_dirs():
+    return [Path(__file__).parent / 'test_resources']
+
+
+@pytest.fixture
 def code_module_list():
     return [
         'common.resource.registry',
         'common.resource.legacy_module',
         'common.resource.legacy_service',
+        'common.resource.legacy_type',
         'common.resource.attribute',
         'common.resource.partial',
         'common.resource.call',

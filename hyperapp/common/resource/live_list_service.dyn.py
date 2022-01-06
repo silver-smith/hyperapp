@@ -10,6 +10,10 @@ def factory(mosaic, python_object_creg, data, resolve_name):
     identity = python_object_creg.invite(identity_ref)
     peer_ref = mosaic.put(identity.peer.piece)
     servant_fn_ref = resolve_name(data['servant'])
+    dir = [
+        mosaic.put(d)
+        for d in data['dir']
+        ]
     command_ref_list = [
         resolve_name(command_name)
         for command_name
@@ -19,7 +23,7 @@ def factory(mosaic, python_object_creg, data, resolve_name):
     return htypes.service.live_list_service(
         peer_ref=peer_ref,
         servant_fn_ref=servant_fn_ref,
-        dir_list=[],
+        dir_list=[dir],
         command_ref_list=command_ref_list,
         key_attribute=key_attribute,
         )

@@ -1,5 +1,6 @@
 
 sample_list_d = record
+sample_live_list_d = record
 sample_list_article_d = record
 
 sample_live_list_d = record

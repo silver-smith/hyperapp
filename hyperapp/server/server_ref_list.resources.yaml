@@ -2,6 +2,7 @@ import:
   - legacy_module.server.server_ref_list
   - legacy_service.web
   - legacy_service.server_identity
+  - legacy_type.server_ref_list.server_ref_list_d
 
 server_ref_list_factory:
   type: attribute
@@ -45,10 +46,15 @@ open_command:
   state_attributes: ['current_key']
   name: open
 
+server_ref_list_d:
+  type: call
+  function: legacy_type.server_ref_list.server_ref_list_d
+
 server_ref_list_service:
   type: list_service
   identity: legacy_service.server_identity
   servant: ref_list_servant_get_method
+  dir: [server_ref_list_d]
   key_attribute: id
   commands:
     - open_command

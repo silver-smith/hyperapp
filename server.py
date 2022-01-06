@@ -15,6 +15,7 @@ code_module_list = [
     'common.dict_coders',  # Load json coders.
     'common.resource.legacy_module',
     'common.resource.legacy_service',
+    'common.resource.legacy_type',
     'common.resource.attribute',
     'common.resource.partial',
     'common.resource.call',

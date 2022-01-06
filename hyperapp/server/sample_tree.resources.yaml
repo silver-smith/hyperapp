@@ -1,6 +1,7 @@
 import:
   - legacy_module.server.sample_tree
   - legacy_service.server_identity
+  - legacy_type.sample_tree.sample_tree_d
 
 tree_servant_factory:
   type: attribute
@@ -56,10 +57,15 @@ open_command:
   state_attributes: ['current_key']
   name: open
 
+sample_tree_d:
+  type: call
+  function: legacy_type.sample_tree.sample_tree_d
+
 sample_tree_service:
   type: tree_service
   identity: legacy_service.server_identity
   servant: tree_servant_get_items_method
+  dir: [sample_tree_d]
   key_attribute: key
   commands:
     - raw_command

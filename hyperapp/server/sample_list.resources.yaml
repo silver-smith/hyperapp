@@ -1,5 +1,6 @@
 import:
   - legacy_service.server_identity
+  - legacy_type.sample_list.sample_list_d
 
 list_servant:
   type: typed_piece
@@ -50,10 +51,15 @@ open_command:
   state_attributes: ['current_key']
   name: open
 
+sample_list_d:
+  type: call
+  function: legacy_type.sample_list.sample_list_d
+
 sample_list_service:
   type: list_service
   identity: legacy_service.server_identity
   servant: list_servant_list_method
+  dir: [sample_list_d]
   key_attribute: key
   commands:
     - raw_command

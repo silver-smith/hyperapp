@@ -1,4 +1,6 @@
 
+server_ref_list_d = record
+
 row = record:
   id: string
   title: string

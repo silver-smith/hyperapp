@@ -70,5 +70,6 @@ class ThisModule(Module):
         server_ref_list.add_ref('sample_list', 'Sample list', mosaic.put(sample_list_service))
 
         services.piece_service_registry[htypes.sample_list.sample_article] = htypes.map_service.record_service(
+            dir_list=[[mosaic.put(htypes.sample_list.sample_list_article_d())]],
             command_ref_list=[],
             )

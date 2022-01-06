@@ -4,6 +4,7 @@ map_service = record:
 
 
 service = record:
+  dir_list: ref list list  # Additional to own service type (list/tree/record) dirs.
   command_ref_list: ref list
 
 
