@@ -15,6 +15,7 @@ class Servant:
         self._web = web
         self._local_modules = local_modules
         self._module_registry = module_registry
+        self._status_filter = ['available']
 
     # Should be populated only after all modules are imported, otherwise not-yet imported modules are shown as available.
     @cached_property
@@ -31,12 +32,12 @@ class Servant:
                 module_name, module_ref, module.file_path, status)
         return name_to_item
 
-    def list(self, status_filter, request):
-        log.info("Servant.list(%s)", status_filter)
+    def list(self, request):
+        log.info("Servant(%s).list", self._status_filter)
         return list(
             item for item
             in self._name_to_item.values()
-            if item.status in status_filter
+            if item.status in self._status_filter
             )
 
     def open(self, request, current_key):
@@ -51,38 +52,43 @@ class ThisModule(Module):
 
         mosaic = services.mosaic
 
-        server_peer_ref = mosaic.put(services.server_identity.peer.piece)
+        server_ref_list_piece = services.resource_module_registry['server.server_ref_list'].make('server_ref_list')
+        server_ref_list = services.python_object_creg.animate(server_ref_list_piece)
+        module_list_service = services.resource_module_registry['server.module_list'].make('module_list_service')
+        server_ref_list.add_ref('available_module_list', 'Available modules', mosaic.put(module_list_service))
 
-        servant_name = 'module_list'
-        servant_path = services.servant_path().registry_name(servant_name)
+        # server_peer_ref = mosaic.put(services.server_identity.peer.piece)
 
-        open_command = htypes.rpc_command.rpc_command(
-            peer_ref=server_peer_ref,
-            servant_path=servant_path.get_attr('open').as_data,
-            state_attr_list=['current_key'],
-            name='open',
-            )
+        # servant_name = 'module_list'
+        # servant_path = services.servant_path().registry_name(servant_name)
 
-        def service_factory(status_filter, with_open_command=True):
-            if with_open_command:
-                command_ref_list = [
-                    mosaic.put(open_command),
-                    ]
-            else:
-                command_ref_list = []
-            return htypes.service.list_service(
-                peer_ref=server_peer_ref,
-                servant_path=servant_path.get_attr('list').partial(status_filter).as_data,
-                dir_list=[[mosaic.put(htypes.module_list.module_list_d())]],
-                command_ref_list=command_ref_list,
-                key_attribute='module_name',
-                )
+        # open_command = htypes.rpc_command.rpc_command(
+        #     peer_ref=server_peer_ref,
+        #     servant_path=servant_path.get_attr('open').as_data,
+        #     state_attr_list=['current_key'],
+        #     name='open',
+        #     )
 
-        servant = Servant(services.mosaic, services.web, services.local_modules, services.module_registry)
-        services.server_rpc_endpoint.register_servant(servant_name, servant)
+        # def service_factory(status_filter, with_open_command=True):
+        #     if with_open_command:
+        #         command_ref_list = [
+        #             mosaic.put(open_command),
+        #             ]
+        #     else:
+        #         command_ref_list = []
+        #     return htypes.service.list_service(
+        #         peer_ref=server_peer_ref,
+        #         servant_path=servant_path.get_attr('list').partial(status_filter).as_data,
+        #         dir_list=[[mosaic.put(htypes.module_list.module_list_d())]],
+        #         command_ref_list=command_ref_list,
+        #         key_attribute='module_name',
+        #         )
 
-        services.server_ref_list.add_ref('all_module_list', 'Module list', mosaic.put(service_factory(['imported', 'available'])))
-        services.server_ref_list.add_ref('imported_module_list', 'Imported modules', mosaic.put(service_factory(['imported'])))
-        services.server_ref_list.add_ref('available_module_list', 'Available modules', mosaic.put(service_factory(['available'])))
+        # servant = Servant(services.mosaic, services.web, services.local_modules, services.module_registry)
+        # services.server_rpc_endpoint.register_servant(servant_name, servant)
 
-        services.module_list_service_factory = partial(service_factory, with_open_command=False)
+        # services.server_ref_list.add_ref('all_module_list', 'Module list', mosaic.put(service_factory(['imported', 'available'])))
+        # services.server_ref_list.add_ref('imported_module_list', 'Imported modules', mosaic.put(service_factory(['imported'])))
+        # services.server_ref_list.add_ref('available_module_list', 'Available modules', mosaic.put(service_factory(['available'])))
+
+        # services.module_list_service_factory = partial(service_factory, with_open_command=False)

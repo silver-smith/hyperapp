@@ -1,0 +1,44 @@
+import:
+  - legacy_module.server.module_list
+  - legacy_service.mosaic
+  - legacy_service.web
+  - legacy_service.local_modules
+  - legacy_service.module_registry
+  - legacy_service.server_identity
+  - legacy_type.module_list.module_list_d
+
+definitions:
+
+  servant_attribute:
+    type: attribute
+    object: legacy_module.server.module_list
+    attr_name: Servant
+
+  servant_factory:
+    type: partial
+    function: servant_attribute
+    params:
+      mosaic: legacy_service.mosaic
+      web: legacy_service.web
+      local_modules: legacy_service.local_modules
+      module_registry: legacy_service.module_registry
+
+  servant:
+    type: call
+    function: servant_factory
+
+  servant_list_method:
+    type: attribute
+    object: servant
+    attr_name: list
+
+  module_list_d:
+    type: call
+    function: legacy_type.module_list.module_list_d
+
+  module_list_service:
+    type: list_service
+    identity: legacy_service.server_identity
+    servant: servant_list_method
+    dir: [module_list_d]
+    key_attribute: module_name
