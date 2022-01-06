@@ -23,22 +23,126 @@ definitions:
       local_modules: legacy_service.local_modules
       module_registry: legacy_service.module_registry
 
-  servant:
-    type: call
-    function: servant_factory
+  all_filter:
+    type: value
+    value: ['imported', 'available']
 
-  servant_list_method:
+  available_filter:
+    type: value
+    value: ['available']
+
+  imported_filter:
+    type: value
+    value: ['imported']
+
+  available_servant_factory:
+    type: partial
+    function: servant_factory
+    params:
+      status_filter: available_filter
+
+  imported_servant_factory:
+    type: partial
+    function: servant_factory
+    params:
+      status_filter: imported_filter
+
+  all_servant_factory:
+    type: partial
+    function: servant_factory
+    params:
+      status_filter: all_filter
+
+  available_servant:
+    type: call
+    function: available_servant_factory
+
+  imported_servant:
+    type: call
+    function: imported_servant_factory
+
+  all_servant:
+    type: call
+    function: all_servant_factory
+
+  available_servant_list_method:
     type: attribute
-    object: servant
+    object: available_servant
     attr_name: list
+
+  imported_servant_list_method:
+    type: attribute
+    object: imported_servant
+    attr_name: list
+
+  all_servant_list_method:
+    type: attribute
+    object: all_servant
+    attr_name: list
+
+  available_servant_open_method:
+    type: attribute
+    object: available_servant
+    attr_name: open
+
+  imported_servant_open_method:
+    type: attribute
+    object: imported_servant
+    attr_name: open
+
+  all_servant_open_method:
+    type: attribute
+    object: all_servant
+    attr_name: open
+
+  available_open_command:
+    type: rpc_command
+    identity: legacy_service.server_identity
+    servant: available_servant_open_method
+    state_attributes: ['current_key']
+    name: open
+
+  imported_open_command:
+    type: rpc_command
+    identity: legacy_service.server_identity
+    servant: imported_servant_open_method
+    state_attributes: ['current_key']
+    name: open
+
+  all_open_command:
+    type: rpc_command
+    identity: legacy_service.server_identity
+    servant: all_servant_open_method
+    state_attributes: ['current_key']
+    name: open
 
   module_list_d:
     type: call
     function: legacy_type.module_list.module_list_d
 
-  module_list_service:
+  available_module_list_service:
     type: list_service
     identity: legacy_service.server_identity
-    servant: servant_list_method
+    servant: available_servant_list_method
     dir: [module_list_d]
     key_attribute: module_name
+    commands:
+      - available_open_command
+
+  imported_module_list_service:
+    type: list_service
+    identity: legacy_service.server_identity
+    servant: imported_servant_list_method
+    dir: [module_list_d]
+    key_attribute: module_name
+    commands:
+      - imported_open_command
+
+  all_module_list_service:
+    type: list_service
+    identity: legacy_service.server_identity
+    servant: all_servant_list_method
+    dir: [module_list_d]
+    key_attribute: module_name
+    commands:
+      - all_open_command
