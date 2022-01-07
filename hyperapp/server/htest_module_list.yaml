@@ -15,14 +15,3 @@ import:
     htest:
       - htest_module_list_d
       - test_module
-require:
-  - servant_path_from_data
-  - rpc_call_factory
-  - server_identity
-  - server_rpc_endpoint
-  - server_ref_list
-  - module_list_service_factory
-  - htest
-  - htest_list
-  - htest_list_service_factory
-  - htest_global_list_service_factory

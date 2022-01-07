@@ -9,32 +9,43 @@ log = logging.getLogger(__name__)
 
 class TestModuleListServant:
 
-    def __init__(self, mosaic, web, peer_registry, servant_path_from_data, rpc_call_factory, identity, rpc_endpoint,
-                 module_selector, htest, htest_list, htest_list_service_factory, htest_global_list_service_factory, service):
+    def __init__(
+            self,
+            mosaic,
+            web,
+            peer_registry,
+            rpc_call_factory,
+            identity,
+            rpc_endpoint,
+            # module_selector,
+            htest,
+            htest_list,
+            # htest_list_service_factory,
+            # htest_global_list_service_factory,
+            # service,
+            ):
         self._web = web
         self._mosaic = mosaic
         self._peer_registry = peer_registry
-        self._servant_path_from_data = servant_path_from_data
         self._rpc_call_factory = rpc_call_factory
         self._identity = identity
         self._rpc_endpoint = rpc_endpoint
-        self._module_selector = module_selector
+        # self._module_selector = module_selector
         self._htest = htest
         self._htest_list = htest_list
-        self._htest_list_service_factory = htest_list_service_factory
-        self._htest_global_list_service_factory = htest_global_list_service_factory
-        self._service = service
+        # self._htest_list_service_factory = htest_list_service_factory
+        # self._htest_global_list_service_factory = htest_global_list_service_factory
+        # self._service = service
         self._rpc_call = None
 
     @property
     def _dict(self):
         return self._htest_list.dict
 
-    def list(self, request, peer_ref, servant_path_data):
+    def list(self, request, peer_ref, servant_ref):
         peer = self._peer_registry.invite(peer_ref)
-        servant_path = self._servant_path_from_data(servant_path_data)
-        self._rpc_call = self._rpc_call_factory(self._rpc_endpoint, peer, servant_path, self._identity)
-        log.info("HTest_module_list.list(%s, %s)", peer, servant_path)
+        log.info("HTest_module_list.list(%s, %s)", peer, servant_ref)
+        self._rpc_call = self._rpc_call_factory(self._rpc_endpoint, peer, servant_ref, self._identity)
         return list(self._dict.values())
 
     def open(self, request, current_key):
@@ -90,95 +101,100 @@ class ThisModule(Module):
 
         mosaic = services.mosaic
 
-        server_peer_ref = mosaic.put(services.server_identity.peer.piece)
+        server_ref_list_piece = services.resource_module_registry['server.server_ref_list'].make('server_ref_list')
+        server_ref_list = services.python_object_creg.animate(server_ref_list_piece)
 
-        servant_name = 'htest_module_list'
-        servant_path = services.servant_path().registry_name(servant_name)
+        service = services.resource_module_registry['server.htest_module_list'].make('service')
+        server_ref_list.add_ref('htest_module_list', 'Test module list', mosaic.put(service))
 
-        open_command = htypes.rpc_command.rpc_command(
-            peer_ref=server_peer_ref,
-            servant_path=servant_path.get_attr('open').as_data,
-            state_attr_list=['current_key'],
-            name='open',
-            )
-        globals_command = htypes.rpc_command.rpc_command(
-            peer_ref=server_peer_ref,
-            servant_path=servant_path.get_attr('globals').as_data,
-            state_attr_list=['current_key'],
-            name='globals',
-            )
-        module_command = htypes.rpc_command.rpc_command(
-            peer_ref=server_peer_ref,
-            servant_path=servant_path.get_attr('module').as_data,
-            state_attr_list=['current_key'],
-            name='module',
-            )
-        remove_command = htypes.rpc_command.rpc_command(
-            peer_ref=server_peer_ref,
-            servant_path=servant_path.get_attr('remove').as_data,
-            state_attr_list=['current_key'],
-            name='remove',
-            )
-        select_module_command = htypes.rpc_command.rpc_command(
-            peer_ref=server_peer_ref,
-            servant_path=servant_path.get_attr('select_module').as_data,
-            state_attr_list=[],
-            name='select_module',
-            )
-        collect_tests_command = htypes.rpc_command.rpc_command(
-            peer_ref=server_peer_ref,
-            servant_path=servant_path.get_attr('collect_tests').as_data,
-            state_attr_list=['current_key'],
-            name='collect_tests',
-            )
-        collect_globals_command = htypes.rpc_command.rpc_command(
-            peer_ref=server_peer_ref,
-            servant_path=servant_path.get_attr('collect_globals').as_data,
-            state_attr_list=['current_key'],
-            name='collect_globals',
-            )
-        service = htypes.service.live_list_service(
-            peer_ref=server_peer_ref,
-            servant_path=servant_path.get_attr('list').as_data,
-            dir_list=[[mosaic.put(htypes.htest.htest_module_list_d())]],
-            command_ref_list=[
-                mosaic.put(open_command),
-                mosaic.put(globals_command),
-                mosaic.put(module_command),
-                mosaic.put(remove_command),
-                mosaic.put(select_module_command),
-                mosaic.put(collect_tests_command),
-                mosaic.put(collect_globals_command),
-                ],
-            key_attribute='module_name',
-            )
+        # server_peer_ref = mosaic.put(services.server_identity.peer.piece)
 
-        module_list_service = services.module_list_service_factory(['available'])
-        rpc_callback = htypes.rpc_callback.rpc_callback(
-            peer_ref=server_peer_ref,
-            servant_path=servant_path.get_attr('set_module').as_data,
-            item_attr_list=['module_name', 'module_ref'],
-            )
-        module_selector = htypes.selector.selector(
-            list_ref=mosaic.put(module_list_service),
-            callback_ref=mosaic.put(rpc_callback),
-            )
+        # servant_name = 'htest_module_list'
+        # servant_path = services.servant_path().registry_name(servant_name)
 
-        servant = TestModuleListServant(
-            services.mosaic,
-            services.web,
-            services.peer_registry,
-            services.servant_path_from_data,
-            services.rpc_call_factory,
-            services.server_identity,
-            services.server_rpc_endpoint,
-            module_selector,
-            services.htest,
-            services.htest_list,
-            services.htest_list_service_factory,
-            services.htest_global_list_service_factory,
-            service,
-            )
-        services.server_rpc_endpoint.register_servant(servant_name, servant)
+        # open_command = htypes.rpc_command.rpc_command(
+        #     peer_ref=server_peer_ref,
+        #     servant_path=servant_path.get_attr('open').as_data,
+        #     state_attr_list=['current_key'],
+        #     name='open',
+        #     )
+        # globals_command = htypes.rpc_command.rpc_command(
+        #     peer_ref=server_peer_ref,
+        #     servant_path=servant_path.get_attr('globals').as_data,
+        #     state_attr_list=['current_key'],
+        #     name='globals',
+        #     )
+        # module_command = htypes.rpc_command.rpc_command(
+        #     peer_ref=server_peer_ref,
+        #     servant_path=servant_path.get_attr('module').as_data,
+        #     state_attr_list=['current_key'],
+        #     name='module',
+        #     )
+        # remove_command = htypes.rpc_command.rpc_command(
+        #     peer_ref=server_peer_ref,
+        #     servant_path=servant_path.get_attr('remove').as_data,
+        #     state_attr_list=['current_key'],
+        #     name='remove',
+        #     )
+        # select_module_command = htypes.rpc_command.rpc_command(
+        #     peer_ref=server_peer_ref,
+        #     servant_path=servant_path.get_attr('select_module').as_data,
+        #     state_attr_list=[],
+        #     name='select_module',
+        #     )
+        # collect_tests_command = htypes.rpc_command.rpc_command(
+        #     peer_ref=server_peer_ref,
+        #     servant_path=servant_path.get_attr('collect_tests').as_data,
+        #     state_attr_list=['current_key'],
+        #     name='collect_tests',
+        #     )
+        # collect_globals_command = htypes.rpc_command.rpc_command(
+        #     peer_ref=server_peer_ref,
+        #     servant_path=servant_path.get_attr('collect_globals').as_data,
+        #     state_attr_list=['current_key'],
+        #     name='collect_globals',
+        #     )
+        # service = htypes.service.live_list_service(
+        #     peer_ref=server_peer_ref,
+        #     servant_path=servant_path.get_attr('list').as_data,
+        #     dir_list=[[mosaic.put(htypes.htest.htest_module_list_d())]],
+        #     command_ref_list=[
+        #         mosaic.put(open_command),
+        #         mosaic.put(globals_command),
+        #         mosaic.put(module_command),
+        #         mosaic.put(remove_command),
+        #         mosaic.put(select_module_command),
+        #         mosaic.put(collect_tests_command),
+        #         mosaic.put(collect_globals_command),
+        #         ],
+        #     key_attribute='module_name',
+        #     )
 
-        services.server_ref_list.add_ref('htest_module_list', 'Test module list', mosaic.put(service))
+        # module_list_service = services.module_list_service_factory(['available'])
+        # rpc_callback = htypes.rpc_callback.rpc_callback(
+        #     peer_ref=server_peer_ref,
+        #     servant_path=servant_path.get_attr('set_module').as_data,
+        #     item_attr_list=['module_name', 'module_ref'],
+        #     )
+        # module_selector = htypes.selector.selector(
+        #     list_ref=mosaic.put(module_list_service),
+        #     callback_ref=mosaic.put(rpc_callback),
+        #     )
+
+        # servant = TestModuleListServant(
+        #     services.mosaic,
+        #     services.web,
+        #     services.peer_registry,
+        #     services.rpc_call_factory,
+        #     services.server_identity,
+        #     services.server_rpc_endpoint,
+        #     module_selector,
+        #     services.htest,
+        #     services.htest_list,
+        #     services.htest_list_service_factory,
+        #     services.htest_global_list_service_factory,
+        #     service,
+        #     )
+        # services.server_rpc_endpoint.register_servant(servant_name, servant)
+
+        # services.server_ref_list.add_ref('htest_module_list', 'Test module list', mosaic.put(service))

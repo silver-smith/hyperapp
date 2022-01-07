@@ -1,0 +1,78 @@
+import:
+  - legacy_module.server.htest_module_list
+  - legacy_service.mosaic
+  - legacy_service.web
+  - legacy_service.peer_registry
+  - legacy_service.rpc_call_factory
+  - legacy_service.server_identity
+  - legacy_service.server_rpc_endpoint
+  - legacy_service.htest
+  - legacy_service.htest_list
+  - legacy_type.htest.htest_module_list_d
+
+definitions:
+
+  servant_ctr:
+    type: attribute
+    object: legacy_module.server.htest_module_list
+    attr_name: TestModuleListServant
+
+  servant_factory:
+    type: partial
+    function: servant_ctr
+    params:
+      mosaic: legacy_service.mosaic
+      web: legacy_service.web
+      peer_registry: legacy_service.peer_registry
+      rpc_call_factory: legacy_service.rpc_call_factory
+      identity: legacy_service.server_identity
+      rpc_endpoint: legacy_service.server_rpc_endpoint
+      htest: legacy_service.htest
+      htest_list: legacy_service.htest_list
+
+  servant:
+    type: call
+    function: servant_factory
+
+  servant_list_method:
+    type: attribute
+    object: servant
+    attr_name: list
+
+  servant_module_method:
+    type: attribute
+    object: servant
+    attr_name: module
+
+  servant_collect_globals_method:
+    type: attribute
+    object: servant
+    attr_name: collect_globals
+
+  module_command:
+    type: rpc_command
+    identity: legacy_service.server_identity
+    servant: servant_module_method
+    state_attributes: ['current_key']
+    name: module
+
+  collect_globals_command:
+    type: rpc_command
+    identity: legacy_service.server_identity
+    servant: servant_collect_globals_method
+    state_attributes: ['current_key']
+    name: collect_globals
+
+  list_d:
+    type: call
+    function: legacy_type.htest.htest_module_list_d
+
+  service:
+    type: live_list_service
+    identity: legacy_service.server_identity
+    servant: servant_list_method
+    dir: [list_d]
+    key_attribute: module_name
+    commands:
+      - module_command
+      - collect_globals_command
