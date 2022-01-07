@@ -20,6 +20,7 @@ code_module_list = [
     'common.resource.partial',
     'common.resource.call',
     'common.resource.value',
+    'common.resource.piece_ref',
     'common.resource.rpc_command',
     'common.resource.list_service',
     'common.resource.live_list_service',

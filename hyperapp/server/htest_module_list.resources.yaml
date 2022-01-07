@@ -6,9 +6,9 @@ import:
   - legacy_service.rpc_call_factory
   - legacy_service.server_identity
   - legacy_service.server_rpc_endpoint
-  - legacy_service.htest
-  - legacy_service.htest_list
   - legacy_type.htest.htest_module_list_d
+  - server.htest.htest
+  - server.htest.htest_list
 
 definitions:
 
@@ -27,8 +27,8 @@ definitions:
       rpc_call_factory: legacy_service.rpc_call_factory
       identity: legacy_service.server_identity
       rpc_endpoint: legacy_service.server_rpc_endpoint
-      htest: legacy_service.htest
-      htest_list: legacy_service.htest_list
+      htest: server.htest.htest
+      htest_list: server.htest.htest_list
 
   servant:
     type: call

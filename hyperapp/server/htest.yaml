@@ -3,16 +3,3 @@ import:
     htest:
       - test_module
       - storage
-require:
-  - file_bundle
-  - ref_collector
-  - subprocess
-  - peer_registry
-  - servant_path
-  - servant_path_from_data
-  - rpc_call_factory
-  - server_identity
-  - server_rpc_endpoint
-provide:
-  - htest
-  - htest_list

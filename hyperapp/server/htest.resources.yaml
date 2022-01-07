@@ -1,0 +1,89 @@
+import:
+  - legacy_module.server.htest
+  - legacy_service.mosaic
+  - legacy_service.ref_collector
+  - legacy_service.file_bundle
+  - legacy_service.subprocess
+  - legacy_service.peer_registry
+  - legacy_service.rpc_call_factory
+  - legacy_service.server_identity
+  - legacy_service.server_rpc_endpoint
+
+definitions:
+
+  runner_signal_queue_factory:
+    type: attribute
+    object: legacy_module.server.htest
+    attr_name: runner_signal_queue
+
+  runner_signal_queue:
+    type: call
+    function: runner_signal_queue_factory
+
+  runner_is_ready_ctr:
+    type: attribute
+    object: legacy_module.server.htest
+    attr_name: runner_is_ready
+
+  runner_is_ready_fn:
+    type: partial
+    function: runner_is_ready_ctr
+    params:
+      queue: runner_signal_queue
+
+  runner_is_ready_fn_ref:
+    type: piece_ref
+    value: runner_is_ready_fn
+
+  htest_ctr:
+    type: attribute
+    object: legacy_module.server.htest
+    attr_name: HTest
+
+  htest_factory:
+    type: partial
+    function: htest_ctr
+    params:
+      mosaic: legacy_service.mosaic
+      ref_collector: legacy_service.ref_collector
+      subprocess_factory: legacy_service.subprocess
+      peer_registry: legacy_service.peer_registry
+      rpc_call_factory: legacy_service.rpc_call_factory
+      identity: legacy_service.server_identity
+      rpc_endpoint: legacy_service.server_rpc_endpoint
+      runner_signal_queue: runner_signal_queue
+      runner_is_ready_fn_ref: runner_is_ready_fn_ref
+
+  htest:
+    type: call
+    function: htest_factory
+
+  htest_list_file_ctr:
+    type: attribute
+    object: legacy_module.server.htest
+    attr_name: htest_list_file
+
+  htest_list_file_factory:
+    type: partial
+    function: htest_list_file_ctr
+    params:
+      file_bundle: legacy_service.file_bundle
+
+  htest_list_file:
+    type: call
+    function: htest_list_file_factory
+
+  htest_list_ctr:
+    type: attribute
+    object: legacy_module.server.htest
+    attr_name: HTestList
+
+  htest_list_factory:
+    type: partial
+    function: htest_list_ctr
+    params:
+      file: htest_list_file
+
+  htest_list:
+    type: call
+    function: htest_list_factory

@@ -1,0 +1,9 @@
+import:
+  types:
+    piece_ref:
+      - piece_ref
+provide:
+  - resource.piece_ref
+require:
+  - resource_type_registry
+  - python_object_creg

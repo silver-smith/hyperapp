@@ -18,6 +18,8 @@ class ResourceModule:
         self._import_list = None
 
     def __contains__(self, var_name):
+        if self._definitions is None:
+            self._load()
         return var_name in self._definitions
 
     def make(self, var_name):
