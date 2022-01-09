@@ -1,0 +1,25 @@
+import:
+  - legacy_module.server.htest_runner
+  - legacy_service.python_object_creg
+
+definitions:
+
+  runner_attribute:
+    type: attribute
+    object: legacy_module.server.htest_runner
+    attr_name: Runner
+
+  runner_factory:
+    type: partial
+    function: runner_attribute
+    params:
+      python_object_creg: legacy_service.python_object_creg
+
+  runner:
+    type: call
+    function: runner_factory
+
+  runner_method_collect_attributes:
+    type: attribute
+    object: runner
+    attr_name: collect_attributes

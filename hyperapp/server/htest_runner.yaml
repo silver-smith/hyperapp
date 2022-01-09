@@ -2,12 +2,3 @@ import:
   types:
     htest:
       - global_fn
-require:
-  - unbundler
-  - generate_rsa_identity
-  - peer_registry
-  - rpc_endpoint_factory
-  - endpoint_registry
-  - rpc_call_factory
-  - servant_path
-  - servant_path_from_data

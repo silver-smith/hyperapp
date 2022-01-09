@@ -83,6 +83,7 @@ class HTest:
     def __init__(
             self,
             mosaic,
+            local_modules,
             ref_collector,
             subprocess_factory,
             peer_registry,
@@ -91,8 +92,10 @@ class HTest:
             rpc_endpoint,
             runner_signal_queue,
             runner_is_ready_fn_ref,
+            runner_method_collect_attributes_ref,
             ):
         self._mosaic = mosaic
+        self._local_modules = local_modules
         self._ref_collector = ref_collector
         self._subprocess_factory = subprocess_factory
         self._peer_registry = peer_registry
@@ -101,21 +104,17 @@ class HTest:
         self._rpc_endpoint = rpc_endpoint
         self._runner_signal_queue = runner_signal_queue
         self._runner_is_ready_fn_ref = runner_is_ready_fn_ref
+        self._runner_method_collect_attributes_ref = runner_method_collect_attributes_ref
 
     def collect_globals(self, module_name):
-        log.info("Collect global from: %s", module_name)
+        log.info("Collect globals from: %s", module_name)
         with self._subprocess_running() as process:
-            collect_call = process.rpc_call('collect_globals')
-            global_list = collect_call(module_name)
+            call = process.rpc_call(self._runner_method_collect_attributes_ref)
+            module = self._local_modules.by_name[module_name]
+            module_ref = self._mosaic.put(module)
+            global_list = call(module_ref)
             log.info("Collected global list: %s", global_list)
             return global_list
-
-    def run_global(self, module_name, global_name, param_service_list, additional_module_list):
-        log.info("Run global: %s.%s (%d additional modules)", module_name, global_name, len(additional_module_list))
-        with self._subprocess_running() as process:
-            call = process.rpc_call('run_global')
-            result = call(module_name, global_name, param_service_list, additional_module_list)
-            log.info("Run global result: %s", result)
 
     @contextmanager
     def _subprocess_running(self):
@@ -128,11 +127,16 @@ class HTest:
         subprocess = self._subprocess_factory(
             process_name='htest',
             code_module_list=[
+                'common.resource.legacy_module',
+                'common.resource.legacy_service',
+                'common.resource.attribute',
+                'common.resource.partial',
+                'common.resource.call',
                 'sync.transport.tcp',  # Unbundler wants tcp route.
-                'server.htest_runner',
+                'server.subprocess_report_home',
                 ],
             config = {
-                'server.htest_runner': {'signal_service_bundle_cdr': signal_service_bundle_cdr},
+                'server.subprocess_report_home': {'signal_service_bundle_cdr': signal_service_bundle_cdr},
                 'sync.subprocess_child': {'master_peer_ref_cdr_list': server_peer_ref_cdr_list},
                 },
             )
@@ -149,7 +153,7 @@ def runner_signal_queue():
     return queue.Queue()
 
 
-def runner_is_ready(queue, request, runner_peer_ref):
+def runner_is_ready(request, runner_peer_ref, queue):
     queue.put(runner_peer_ref)
 
 

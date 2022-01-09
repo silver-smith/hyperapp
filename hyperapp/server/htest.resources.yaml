@@ -1,6 +1,7 @@
 import:
   - legacy_module.server.htest
   - legacy_service.mosaic
+  - legacy_service.local_modules
   - legacy_service.ref_collector
   - legacy_service.file_bundle
   - legacy_service.subprocess
@@ -8,6 +9,7 @@ import:
   - legacy_service.rpc_call_factory
   - legacy_service.server_identity
   - legacy_service.server_rpc_endpoint
+  - server.htest_runner.runner_method_collect_attributes
 
 definitions:
 
@@ -40,11 +42,16 @@ definitions:
     object: legacy_module.server.htest
     attr_name: HTest
 
+  runner_method_collect_attributes_ref:
+    type: piece_ref
+    value: server.htest_runner.runner_method_collect_attributes
+
   htest_factory:
     type: partial
     function: htest_ctr
     params:
       mosaic: legacy_service.mosaic
+      local_modules: legacy_service.local_modules
       ref_collector: legacy_service.ref_collector
       subprocess_factory: legacy_service.subprocess
       peer_registry: legacy_service.peer_registry
@@ -53,6 +60,7 @@ definitions:
       rpc_endpoint: legacy_service.server_rpc_endpoint
       runner_signal_queue: runner_signal_queue
       runner_is_ready_fn_ref: runner_is_ready_fn_ref
+      runner_method_collect_attributes_ref: runner_method_collect_attributes_ref
 
   htest:
     type: call

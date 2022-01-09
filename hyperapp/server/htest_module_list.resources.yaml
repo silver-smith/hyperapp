@@ -63,7 +63,7 @@ definitions:
     state_attributes: ['current_key']
     name: collect_globals
 
-  list_d:
+  htest_module_list_d:
     type: call
     function: legacy_type.htest.htest_module_list_d
 
@@ -71,7 +71,7 @@ definitions:
     type: live_list_service
     identity: legacy_service.server_identity
     servant: servant_list_method
-    dir: [list_d]
+    dir: [htest_module_list_d]
     key_attribute: module_name
     commands:
       - module_command
