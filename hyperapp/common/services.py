@@ -63,13 +63,8 @@ class Services(object):
         self._python_importer = PythonImporter()
         self._module_code_registry = CodeRegistry('module', self.web, self.types)
         self._module_code_registry.register_actor(code_module_t, CodeModule.from_piece, self.types, self.web)
-        self.module_registry = ModuleRegistry(self.mosaic, self.web, self._python_importer, self._module_code_registry)
+        self.module_registry = ModuleRegistry(self.mosaic, self.web, self._python_importer, self._module_code_registry, self.on_start)
         self._python_importer.register_meta_hook()
-
-    def start(self):
-        log.info("Start services.")
-        for start in self.on_start:
-            start()
 
     def stop(self):
         log.info("Stop services.")

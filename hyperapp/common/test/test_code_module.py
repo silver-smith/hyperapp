@@ -63,7 +63,8 @@ def python_importer():
 def module_registry(mosaic, web, types, python_importer):
     module_code_registry = CodeRegistry('module', web, types)
     module_code_registry.register_actor(code_module_t, CodeModule.from_piece, types, web)
-    return ModuleRegistry(mosaic, web, python_importer, module_code_registry)
+    on_start = []
+    return ModuleRegistry(mosaic, web, python_importer, module_code_registry, on_start)
 
 
 @pytest.fixture

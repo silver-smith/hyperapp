@@ -155,19 +155,24 @@ class ModuleRegistry:
 
     _Rec = namedtuple('_Rec', 'name module code_module python_module')
 
-    def __init__(self, mosaic, web, python_importer, module_code_registry):
+    def __init__(self, mosaic, web, python_importer, module_code_registry, on_start):
         self._mosaic = mosaic
         self._web = web
         self._python_importer = python_importer
         self._module_code_registry = module_code_registry
+        self._on_start = on_start
         self._registry = {}  # code_module_t -> _Rec
 
     def import_module_list(self, services, module_list, module_by_requirement, config_dict):
         module_code_list = self._resolve_requirements(module_list, module_by_requirement)
+        on_start_count = len(self._on_start)
         for module_code in module_code_list:
             config = config_dict.get(module_code.name, {})
             self._import_module(services, module_code, config)
         self._init_phases(module_code_list, services)
+        for start in self._on_start[on_start_count:]:
+            log.info("Call module start: %s", start)
+            start()
 
     def enum_method(self, method_name):
         for rec in self._registry.values():

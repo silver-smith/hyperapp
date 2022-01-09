@@ -73,7 +73,6 @@ def main():
     services = Services()
     services.init_services()
     services.init_modules(code_module_list)
-    services.start()
     log.info("Client is started.")
     services.stop_signal.wait()
     log.info("Client is stopping.")

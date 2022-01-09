@@ -50,7 +50,6 @@ def main():
     services = Services()
     services.init_services()
     services.init_modules(code_module_list, config)
-    services.start()
     log.info("Server is started.")
     try:
         services.stop_signal.wait()
