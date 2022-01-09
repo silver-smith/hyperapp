@@ -167,7 +167,7 @@ class ModuleRegistry:
         for module_code in module_code_list:
             config = config_dict.get(module_code.name, {})
             self._import_module(services, module_code, config)
-        self._init_phases(services)
+        self._init_phases(module_code_list, services)
 
     def enum_method(self, method_name):
         for rec in self._registry.values():
@@ -245,8 +245,9 @@ class ModuleRegistry:
         hash_hex = codecs.encode(module_ref.hash[:10], 'hex').decode()
         return f'{ROOT_PACKAGE}.{module_ref.hash_algorithm}_{hash_hex}'
 
-    def _init_phases(self, services):
+    def _init_phases(self, module_code_list, services):
         for phase_num in range(1, MAX_INIT_PHASE_COUNT + 1):
             for module_name, method in self.enum_method(f'init_phase_{phase_num}'):
-                log.info('Run init phase %d for: %s', phase_num, module_name)
-                method(services)
+                if module_name in {module.name for module in module_code_list}:
+                    log.info('Run init phase %d for: %s', phase_num, module_name)
+                    method(services)
