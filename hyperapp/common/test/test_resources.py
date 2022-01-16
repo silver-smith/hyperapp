@@ -22,15 +22,15 @@ def additional_module_dirs():
 @pytest.fixture
 def code_module_list():
     return [
-        'common.resource.registry',
-        'common.resource.legacy_module',
-        'common.resource.legacy_service',
-        'common.resource.legacy_type',
-        'common.resource.attribute',
-        'common.resource.partial',
-        'common.resource.call',
-        'common.resource.list_service',
-        'common.resource.resource_module',
+        'resource.registry',
+        'resource.legacy_module',
+        'resource.legacy_service',
+        'resource.legacy_type',
+        'resource.attribute',
+        'resource.partial',
+        'resource.call',
+        'resource.list_service',
+        'resource.resource_module',
         ]
 
 

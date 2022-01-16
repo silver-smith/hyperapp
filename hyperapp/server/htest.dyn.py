@@ -127,11 +127,11 @@ class HTest:
         subprocess = self._subprocess_factory(
             process_name='htest',
             code_module_list=[
-                'common.resource.legacy_module',
-                'common.resource.legacy_service',
-                'common.resource.attribute',
-                'common.resource.partial',
-                'common.resource.call',
+                'resource.legacy_module',
+                'resource.legacy_service',
+                'resource.attribute',
+                'resource.partial',
+                'resource.call',
                 'sync.transport.tcp',  # Unbundler wants tcp route.
                 'server.subprocess_report_home',
                 ],
