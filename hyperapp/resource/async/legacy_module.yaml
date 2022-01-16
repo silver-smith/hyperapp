@@ -2,6 +2,6 @@ import:
   code:
     - resource.legacy_module
 provide:
-  - async.resource.legacy_module
+  - resource.async.legacy_module
 require:
   - python_object_acreg

@@ -3,6 +3,6 @@ import:
     call:
       - call
 provide:
-  - async.resource.call
+  - resource.async.call
 require:
   - python_object_acreg

@@ -4,6 +4,6 @@ import:
       - param
       - partial
 provide:
-  - async.resource.partial
+  - resource.async.partial
 require:
   - python_object_acreg

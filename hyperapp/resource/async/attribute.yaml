@@ -3,6 +3,6 @@ import:
     attribute:
       - attribute
 provide:
-  - async.resource.attribute
+  - resource.async.attribute
 require:
   - python_object_acreg
