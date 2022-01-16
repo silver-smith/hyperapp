@@ -1,7 +1,9 @@
-from functools import cached_property
+from functools import cached_property, partial
 
-from hyperapp.common.htypes import ref_t, builtin_mt
+from hyperapp.common.htypes import TList, TRecord, tString, ref_t, builtin_mt
 from hyperapp.common.mapper import Mapper
+from hyperapp.common.dict_decoders import DictDecoder, join_path
+from hyperapp.common.module import Module
 
 
 class RefToStringMapper(Mapper):
@@ -23,6 +25,26 @@ class RefToStringMapper(Mapper):
         return self._mosaic.put(mapped_value)
 
 
+class DefinitionDecoder(DictDecoder):
+
+    def decode_list(self, t, value, path):
+        if (type(value) is dict
+            and isinstance(t, TList)
+            and isinstance(t.element_t, TRecord)
+            and len(t.element_t.fields) == 2
+            and list(t.element_t.fields.values())[0] is tString):
+            return self._decode_list_dict(t.element_t, value, path)
+        return super().decode_list(t, value, path)
+
+    def _decode_list_dict(self, element_t, list_value, path):
+        key_t, value_t = element_t.fields.values()
+        result = []
+        for idx, (key, raw_value) in enumerate(list_value.items()):
+            value = self.dispatch(value_t, raw_value, join_path(path, f'#{idx}', 'value'))
+            result.append(element_t(key, value))
+        return result
+
+
 class ResourceType:
 
     def __init__(self, types, mosaic, web, resource_t):
@@ -39,3 +61,15 @@ class ResourceType:
         definition_type = mapper.map(resource_type)
         definition_type_ref = self._mosaic.put(definition_type)
         return self._types.resolve(definition_type_ref)
+
+    def parse(self, data):
+        decoder = DefinitionDecoder()
+        return decoder.decode_dict(self.definition_t, data)
+
+
+class ThisModule(Module):
+
+    def __init__(self, module_name, services, config):
+        super().__init__(module_name, services, config)
+
+        services.resource_type_factory = partial(ResourceType, services.types, services.mosaic, services.web)

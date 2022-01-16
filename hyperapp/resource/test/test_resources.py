@@ -45,14 +45,37 @@ def test_resources(services):
     log.info("List service: %r", list_service)
 
 
-def test_resource_type(services, htypes, code):
+def test_definition_type(services, htypes, code):
     resource_t = htypes.partial.partial
     resource_type = code.resource_type.ResourceType(services.types, services.mosaic, services.web, resource_t)
     log.info("definition_t: %r", resource_type.definition_t)
     assert resource_type.definition_t == TRecord('partial', {
-        'fn_ref': tString,
+        'function': tString,
         'params': TList(TRecord('param', {
             'name': tString,
-            'value_ref': tString,
+            'value': tString,
             })),
         })
+
+
+def test_read_definition(services, htypes, code):
+    resource_t = htypes.partial.partial
+    resource_type = code.resource_type.ResourceType(services.types, services.mosaic, services.web, resource_t)
+    log.info("definition_t: %r", resource_type.definition_t)
+    definition_dict = {
+        'function': 'some_function',
+        'params': {
+            'param_1': 'value_1',
+            'param_2': 'value_2',
+            },
+        }
+    definition = resource_type.parse(definition_dict)
+    log.info("definition: %r", definition)
+    param_t = resource_type.definition_t.fields['params'].element_t
+    assert definition == resource_type.definition_t(
+        function='some_function',
+        params=[
+            param_t('param_1', 'value_1'),
+            param_t('param_2', 'value_2'),
+            ],
+        )

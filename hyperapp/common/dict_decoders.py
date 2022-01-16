@@ -99,6 +99,9 @@ class DictDecoder(metaclass=abc.ABCMeta):
         return t(**fields)
 
     @dispatch.register(TList)
+    def _decode_list(self, t, value, path):
+        return self.decode_list(t, value, path)
+
     def decode_list(self, t, value, path):
         self.expect_type(path, isinstance(value, list), value, 'list')
         return tuple(self.dispatch(t.element_t, elt, join_path(path, '#%d' % idx))
