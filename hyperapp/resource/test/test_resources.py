@@ -35,7 +35,7 @@ def code_module_list():
 
 
 def test_resources(services):
-    module = services.resource_module_registry['common.test.test_resources']
+    module = services.resource_module_registry['resource.test.test_resources']
     servant_list = module.make('servant_list')
     log.info("Servant list: %r", servant_list)
 
