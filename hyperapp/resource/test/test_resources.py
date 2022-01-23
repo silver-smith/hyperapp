@@ -79,3 +79,34 @@ def test_read_definition(services, htypes, code):
             param_t('param_2', 'value_2'),
             ],
         )
+
+
+def test_resolve_definition(services, htypes, code):
+    resource_t = htypes.partial.partial
+    resource_type = code.resource_type.ResourceType(services.types, services.mosaic, services.web, resource_t)
+    param_t = resource_type.definition_t.fields['params'].element_t
+    definition = resource_type.definition_t(
+        function='some_function',
+        params=[
+            param_t('param_1', 'value_1'),
+            param_t('param_2', 'value_2'),
+            ],
+        )
+    names = {
+        'some_function': services.mosaic.put('some_function'),
+        'value_1': services.mosaic.put(111),
+        'value_2': services.mosaic.put(222),
+        }
+
+    def resolve_name(name):
+        return names[name]
+
+    resource = resource_type.resolve(definition, resolve_name)
+    log.info('Resolved resource: %r', resource)
+    assert resource == resource_t(
+        function=names['some_function'],
+        params=[
+            htypes.partial.param('param_1', names['value_1']),
+            htypes.partial.param('param_2', names['value_2']),
+        ],
+    )

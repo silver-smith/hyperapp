@@ -26,7 +26,7 @@ class _NameToRefMapper(Mapper):
         self._types = types
         self._local_name_dict = local_name_dict
 
-    def map_record(self, t, value):
+    def map_record(self, t, value, context):
         if t is name_mt:
             return self._resolve_name(value)
         if t is ref_t:
