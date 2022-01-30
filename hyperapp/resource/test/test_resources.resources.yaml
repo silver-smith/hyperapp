@@ -36,9 +36,10 @@ definitions:
     type: call
     function: legacy_type.test_resources.test_d
 
-  # sample_list_service:
-  #   type: list_service
-  #   identity: legacy_service.server_identity
-  #   servant: servant_list
-  #   dir: [test_d]
-  #   key_attribute: id
+  sample_list_service:
+    type: list_service
+    identity: legacy_service.server_identity
+    function: servant_list
+    dir: test_d
+    commands: []
+    key_attribute: id

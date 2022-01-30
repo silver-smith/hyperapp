@@ -32,7 +32,7 @@ def code_module_list():
         'resource.attribute',
         'resource.partial',
         'resource.call',
-        # 'resource.list_service',
+        'resource.list_service',
         ]
 
 
@@ -42,8 +42,8 @@ def test_resources(services):
     servant_list = module['servant_list']
     log.info("Servant list: %r", servant_list)
 
-    # list_service = module['sample_list_service']
-    # log.info("List service: %r", list_service)
+    list_service = module['sample_list_service']
+    log.info("List service: %r", list_service)
 
 
 def test_definition_type(services, htypes, code):
@@ -82,7 +82,7 @@ def test_read_definition(services, htypes, code):
         )
 
 
-def test_resolve_definition(services, htypes, code):
+def test_resolve_definition_partial(services, htypes, code):
     resource_t = htypes.partial.partial
     resource_type = code.resource_type.ResourceType(services.types, services.mosaic, services.web, resource_t)
     param_t = resource_type.definition_t.fields['params'].element_t
@@ -111,3 +111,35 @@ def test_resolve_definition(services, htypes, code):
             htypes.partial.param('param_2', names['value_2']),
         ],
     )
+
+
+# Inherited record result_t should also work.
+def test_resolve_definition_list_service(services, htypes, code):
+    resource_t = htypes.resource_service.list_service
+    resource_type = code.resource_type.ResourceType(services.types, services.mosaic, services.web, resource_t)
+    definition = resource_type.definition_t(
+        identity='some_identity',
+        function='some_function',
+        dir='some_dir',
+        commands=['some_command'],
+        key_attribute='the_key',
+        )
+    names = {
+        'some_identity': services.mosaic.put('some_identity'),
+        'some_function': services.mosaic.put('some_function'),
+        'some_dir': services.mosaic.put('some_dir'),
+        'some_command': services.mosaic.put('some_command'),
+        }
+
+    def resolve_name(name):
+        return names[name]
+
+    resource = resource_type.resolve(definition, resolve_name)
+    log.info('Resolved resource: %r', resource)
+    assert resource == resource_t(
+        identity=names['some_identity'],
+        function=names['some_function'],
+        dir=names['some_dir'],
+        commands=[names['some_command']],
+        key_attribute='the_key',
+        )

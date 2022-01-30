@@ -1,6 +1,6 @@
 from functools import cached_property, partial
 
-from hyperapp.common.htypes import TList, TRecord, tString, ref_t, builtin_mt, name_wrapped_mt, field_mt
+from hyperapp.common.htypes import TList, TRecord, tString, ref_t, builtin_mt, name_wrapped_mt, field_mt, record_mt
 from hyperapp.common.mapper import Mapper
 from hyperapp.common.dict_decoders import DictDecoder, join_path
 from hyperapp.common.module import Module
@@ -17,11 +17,13 @@ class RefToStringMapper(Mapper):
 
     def process_record(self, t, value, context):
         if t is name_wrapped_mt:
-            self.path_to_record_t_ref[context] = self._mosaic.put(value)
+            self.path_to_record_t_ref[context[2]] = self._mosaic.put(value)
         if t is field_mt:
-            fields_context = (*context, value.name)
+            fields_context = (False, (*context[1], value.name), (*context[2], value.name))
+        elif t is record_mt:
+            fields_context = (True, context[1], context[2])
         else:
-            fields_context = context
+            fields_context = (False, context[1], context[2])
         fields = self.map_record_fields(t, value, fields_context)
         mapped_value = t(**fields)
         if t is ref_t:
@@ -39,8 +41,16 @@ class RefToStringMapper(Mapper):
         return self._mosaic.put(mapped_value)
 
     def map_builtin_ref(self, value, context):
-        self.path_set.add(context)
+        self.path_set.add(context[1])
         return builtin_mt(name='string')
+
+    def field_context(self, context, name, value):
+        if context[0] and name == 'base':
+            # This is record_mt 'base', field.
+            # Add path to second context so that supertypes do not overwrite subtypes at path_to_record_t_ref mapping.
+            return (False, context[1], (*context[2], 'record_base'))
+        else:
+            return (False, context[1], context[2])
 
 
 class NameResolver(Mapper):
@@ -98,7 +108,7 @@ class ResourceType:
         resource_type_ref = self._types.reverse_resolve(self.resource_t)
         resource_type = self._web.summon(resource_type_ref)
         mapper = RefToStringMapper(self._mosaic, self._web)
-        definition_type = mapper.map(resource_type, context=())
+        definition_type = mapper.map(resource_type, context=(False, (), ()))
         definition_type_ref = self._mosaic.put(definition_type)
 
         self._ref_path_set = mapper.path_set
