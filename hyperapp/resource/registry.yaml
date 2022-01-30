@@ -2,5 +2,5 @@ import:
   code:
     - common.cached_code_registry
 provide:
-  - resource_type_registry
+  - resource_type_reg
   - python_object_creg

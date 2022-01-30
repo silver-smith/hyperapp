@@ -25,24 +25,25 @@ def code_module_list():
     return [
         'resource.resource_type',
         'resource.registry',
+        'resource.resource_module',
         'resource.legacy_module',
         'resource.legacy_service',
         'resource.legacy_type',
         'resource.attribute',
         'resource.partial',
         'resource.call',
-        'resource.list_service',
-        'resource.resource_module',
+        # 'resource.list_service',
         ]
 
 
 def test_resources(services):
     module = services.resource_module_registry['resource.test.test_resources']
-    servant_list = module.make('servant_list')
+
+    servant_list = module['servant_list']
     log.info("Servant list: %r", servant_list)
 
-    list_service = module.make('sample_list_service')
-    log.info("List service: %r", list_service)
+    # list_service = module['sample_list_service']
+    # log.info("List service: %r", list_service)
 
 
 def test_definition_type(services, htypes, code):

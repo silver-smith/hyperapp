@@ -1,8 +1,8 @@
 
 param = record:
   name: string
-  value_ref: ref
+  value: ref
 
 partial = record:
-  fn_ref: ref
+  function: ref
   params: param list

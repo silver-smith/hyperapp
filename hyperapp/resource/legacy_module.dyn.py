@@ -18,7 +18,7 @@ class LegacyModuleResourceModule:
     def __contains__(self, var_name):
         return var_name in self._name_to_piece
 
-    def make(self, var_name):
+    def __getitem__(self, var_name):
         return self._name_to_piece[var_name]
 
 
