@@ -11,4 +11,6 @@ multi_item_service = record(service):
 list_service = record(multi_item_service)
 tree_service = record(multi_item_service)
 
+live_list_service = record(list_service)
+
 record_service = record(service)

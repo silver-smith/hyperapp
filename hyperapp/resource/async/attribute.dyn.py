@@ -4,7 +4,7 @@ from . import htypes
 
 
 async def python_object(piece, python_object_acreg):
-    object = await python_object_acreg.invite(piece.object_ref)
+    object = await python_object_acreg.invite(piece.object)
     return getattr(object, piece.attr_name)
 
 

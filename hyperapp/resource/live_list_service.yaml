@@ -1,6 +1,11 @@
 import:
   types:
+    resource_service:
+      - live_list_service
     service:
       - live_list_service
 provide:
   - resource.live_list_service
+require:
+  - resource_type_factory
+  - resource_type_reg
