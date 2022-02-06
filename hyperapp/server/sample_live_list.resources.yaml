@@ -56,14 +56,14 @@ definitions:
   raw_command:
     type: rpc_command
     identity: legacy_service.server_identity
-    servant: list_servant_raw_method
+    function: list_servant_raw_method
     state_attributes: ['current_key']
     name: raw
 
   describe_command:
     type: rpc_command
     identity: legacy_service.server_identity
-    servant: list_servant_describe_method
+    function: list_servant_describe_method
     state_attributes: ['current_key']
     name: describe
 
@@ -74,8 +74,8 @@ definitions:
   sample_list_service:
     type: live_list_service
     identity: legacy_service.server_identity
-    servant: list_servant_list_method
-    dir: [sample_live_list_d]
+    function: list_servant_list_method
+    dir: sample_live_list_d
     key_attribute: key
     commands:
       - raw_command

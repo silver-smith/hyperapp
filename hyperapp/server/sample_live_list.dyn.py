@@ -74,14 +74,16 @@ class ThisModule(Module):
 
         mosaic = services.mosaic
 
-        server_ref_list_piece = services.resource_module_registry['server.server_ref_list'].make('server_ref_list')
+        server_ref_list_piece = services.resource_module_registry['server.server_ref_list']['server_ref_list']
         server_ref_list = services.python_object_creg.animate(server_ref_list_piece)
+
         sample_list_module = services.resource_module_registry['server.sample_live_list']
-        sample_list_service = sample_list_module.make('sample_list_service')
+        sample_list_service_piece = sample_list_module['sample_list_service']
+        sample_list_service = services.python_object_creg.animate(sample_list_service_piece)
         server_ref_list.add_ref('sample_live_list', 'Sample live list', mosaic.put(sample_list_service))
 
         self._python_object_creg = services.python_object_creg
-        self._executor_piece = sample_list_module.make('executor')
+        self._executor_piece = sample_list_module['executor']
 
         services.on_stop.append(self.stop)
 
