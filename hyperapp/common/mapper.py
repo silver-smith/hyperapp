@@ -38,7 +38,7 @@ class Mapper(object):
 
     @dispatch.register(TList)
     def process_list(self, t, value, context):
-        return [self.dispatch(t.element_t, elt, context) for elt in value]
+        return tuple(self.dispatch(t.element_t, elt, context) for elt in value)
 
     @dispatch.register(TRecord)
     def _process_record(self, t, value, context):
