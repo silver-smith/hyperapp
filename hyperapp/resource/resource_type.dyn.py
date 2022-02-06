@@ -94,7 +94,7 @@ class DefinitionDecoder(DictDecoder):
         for idx, (key, raw_value) in enumerate(list_value.items()):
             value = self.dispatch(value_t, raw_value, join_path(path, f'#{idx}', 'value'))
             result.append(element_t(key, value))
-        return result
+        return tuple(result)
 
 
 class ResourceType:
