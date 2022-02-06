@@ -1,0 +1,3 @@
+
+typed_piece = record:
+  piece_t: ref

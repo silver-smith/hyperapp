@@ -1,6 +1,6 @@
 
 map_service = record:
-  fn_ref: ref
+  function: ref
 
 
 service = record:

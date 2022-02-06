@@ -11,5 +11,6 @@ provide:
   - resource.map_service
   - piece_service_registry
 require:
-  - resource_type_registry
+  - resource_type_factory
+  - resource_type_reg
   - python_object_creg
