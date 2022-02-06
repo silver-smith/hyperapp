@@ -8,5 +8,6 @@ import:
       - row
 require:
   - resource_module_registry
+  - python_object_creg
   - local_server_ref
   - server_rpc_endpoint
