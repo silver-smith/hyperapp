@@ -5,27 +5,19 @@ from hyperapp.common.module import Module
 from . import htypes
 
 
-def factory(mosaic, python_object_creg, data, resolve_name):
-    identity_ref = resolve_name(data['identity'])
-    identity = python_object_creg.invite(identity_ref)
+def python_object(piece, mosaic, python_object_creg):
+    identity = python_object_creg.invite(piece.identity)
     peer_ref = mosaic.put(identity.peer.piece)
-    servant_fn_ref = resolve_name(data['servant'])
-    dir = [
-        mosaic.put(d)
-        for d in data['dir']
-        ]
-    command_ref_list = [
-        resolve_name(command_name)
-        for command_name
-        in data.get('commands', [])
-        ]
-    key_attribute = data['key_attribute']
     return htypes.service.tree_service(
         peer_ref=peer_ref,
-        servant_fn_ref=servant_fn_ref,
-        dir_list=[dir],
-        command_ref_list=command_ref_list,
-        key_attribute=key_attribute,
+        servant_fn_ref=piece.function,
+        dir_list=[[piece.dir]],
+        command_ref_list=[
+            mosaic.put(python_object_creg.invite(command_ref))
+            for command_ref
+            in piece.commands
+            ],
+        key_attribute=piece.key_attribute,
         )
 
 
@@ -34,5 +26,6 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        services.resource_type_registry['tree_service'] = partial(
-            factory, services.mosaic, services.python_object_creg)
+        services.resource_type_reg['tree_service'] = services.resource_type_factory(htypes.resource_service.tree_service)
+        services.python_object_creg.register_actor(
+            htypes.resource_service.tree_service, python_object, services.mosaic, services.python_object_creg)

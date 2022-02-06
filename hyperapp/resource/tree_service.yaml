@@ -1,4 +1,11 @@
 import:
   types:
+    resource_service:
+      - tree_service
     service:
       - tree_service
+provide:
+  - resource.tree_service
+require:
+  - resource_type_factory
+  - resource_type_reg
