@@ -98,21 +98,21 @@ definitions:
   available_open_command:
     type: rpc_command
     identity: legacy_service.server_identity
-    servant: available_servant_open_method
+    function: available_servant_open_method
     state_attributes: ['current_key']
     name: open
 
   imported_open_command:
     type: rpc_command
     identity: legacy_service.server_identity
-    servant: imported_servant_open_method
+    function: imported_servant_open_method
     state_attributes: ['current_key']
     name: open
 
   all_open_command:
     type: rpc_command
     identity: legacy_service.server_identity
-    servant: all_servant_open_method
+    function: all_servant_open_method
     state_attributes: ['current_key']
     name: open
 
@@ -123,7 +123,7 @@ definitions:
   available_module_list_service:
     type: list_service
     identity: legacy_service.server_identity
-    servant: available_servant_list_method
+    function: available_servant_list_method
     dir: [module_list_d]
     key_attribute: module_name
     commands:
@@ -132,7 +132,7 @@ definitions:
   imported_module_list_service:
     type: list_service
     identity: legacy_service.server_identity
-    servant: imported_servant_list_method
+    function: imported_servant_list_method
     dir: [module_list_d]
     key_attribute: module_name
     commands:
@@ -141,8 +141,8 @@ definitions:
   all_module_list_service:
     type: list_service
     identity: legacy_service.server_identity
-    servant: all_servant_list_method
-    dir: [module_list_d]
+    function: all_servant_list_method
+    dir: module_list_d
     key_attribute: module_name
     commands:
       - all_open_command

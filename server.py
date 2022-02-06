@@ -19,7 +19,7 @@ code_module_list = [
     'resource.attribute',
     'resource.partial',
     'resource.call',
-    # 'resource.value',
+    'resource.value',
     'resource.piece_ref',
     'resource.rpc_command',
     'resource.list_service',
@@ -31,7 +31,7 @@ code_module_list = [
     'server.sample_list',
     'server.sample_live_list',
     'server.sample_tree',
-    # 'server.module_list',
+    'server.module_list',
     # 'server.htest_module_list',
     # 'server.htest_list',
     ]

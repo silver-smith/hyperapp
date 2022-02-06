@@ -52,11 +52,19 @@ class ThisModule(Module):
 
         mosaic = services.mosaic
 
-        server_ref_list_piece = services.resource_module_registry['server.server_ref_list'].make('server_ref_list')
+        server_ref_list_piece = services.resource_module_registry['server.server_ref_list']['server_ref_list']
         server_ref_list = services.python_object_creg.animate(server_ref_list_piece)
-        all_module_list_service = services.resource_module_registry['server.module_list'].make('all_module_list_service')
-        available_module_list_service = services.resource_module_registry['server.module_list'].make('available_module_list_service')
-        imported_module_list_service = services.resource_module_registry['server.module_list'].make('imported_module_list_service')
+
+        all_module_list_service_piece = services.resource_module_registry['server.module_list']['all_module_list_service']
+        available_module_list_service_piece = services.resource_module_registry['server.module_list']['available_module_list_service']
+        imported_module_list_service_piece = services.resource_module_registry['server.module_list']['imported_module_list_service']
+
+        sample_list_service = services.python_object_creg.animate(sample_list_service_piece)
+
+        all_module_list_service = services.python_object_creg.animate(all_module_list_service_piece)
+        available_module_list_service = services.python_object_creg.animate(available_module_list_service_piece)
+        imported_module_list_service = services.python_object_creg.animate(imported_module_list_service_piece)
+
         server_ref_list.add_ref('all_module_list', 'Module list', mosaic.put(all_module_list_service))
         server_ref_list.add_ref('available_module_list', 'Available modules', mosaic.put(available_module_list_service))
         server_ref_list.add_ref('imported_module_list', 'Imported modules', mosaic.put(imported_module_list_service))
