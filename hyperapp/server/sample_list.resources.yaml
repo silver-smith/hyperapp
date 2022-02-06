@@ -1,12 +1,13 @@
 import:
   - legacy_service.server_identity
   - legacy_type.sample_list.sample_list_d
+  - legacy_type.sample_list.sample_list
 
 definitions:
 
   list_servant:
     type: typed_piece
-    piece_t: sample_list.sample_list
+    piece_t: legacy_type.sample_list.sample_list
 
   list_servant_list_method:
     type: attribute
@@ -35,21 +36,21 @@ definitions:
   raw_command:
     type: rpc_command
     identity: legacy_service.server_identity
-    servant: list_servant_raw_method
+    function: list_servant_raw_method
     state_attributes: ['current_key']
     name: raw
 
   describe_command:
     type: rpc_command
     identity: legacy_service.server_identity
-    servant: list_servant_describe_method
+    function: list_servant_describe_method
     state_attributes: ['current_key']
     name: describe
 
   open_command:
     type: rpc_command
     identity: legacy_service.server_identity
-    servant: list_servant_open_method_mapped
+    function: list_servant_open_method_mapped
     state_attributes: ['current_key']
     name: open
 
@@ -60,8 +61,8 @@ definitions:
   sample_list_service:
     type: list_service
     identity: legacy_service.server_identity
-    servant: list_servant_list_method
-    dir: [sample_list_d]
+    function: list_servant_list_method
+    dir: sample_list_d
     key_attribute: key
     commands:
       - raw_command

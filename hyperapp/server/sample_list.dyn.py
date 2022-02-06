@@ -64,9 +64,11 @@ class ThisModule(Module):
         services.python_object_creg.register_actor(htypes.sample_list.sample_list, ListServant.from_piece)
         services.python_object_creg.register_actor(htypes.sample_list.sample_article, ArticleServant.from_piece)
 
-        server_ref_list_piece = services.resource_module_registry['server.server_ref_list'].make('server_ref_list')
+        server_ref_list_piece = services.resource_module_registry['server.server_ref_list']['server_ref_list']
         server_ref_list = services.python_object_creg.animate(server_ref_list_piece)
-        sample_list_service = services.resource_module_registry['server.sample_list'].make('sample_list_service')
+
+        sample_list_service_piece = services.resource_module_registry['server.sample_list']['sample_list_service']
+        sample_list_service = services.python_object_creg.animate(sample_list_service_piece)
         server_ref_list.add_ref('sample_list', 'Sample list', mosaic.put(sample_list_service))
 
         services.piece_service_registry[htypes.sample_list.sample_article] = htypes.map_service.record_service(
