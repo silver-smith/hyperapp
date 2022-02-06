@@ -4,7 +4,7 @@ from . import htypes
 
 
 def python_object(piece, python_object_creg):
-    object = python_object_creg.invite(piece.object_ref)
+    object = python_object_creg.invite(piece.object)
     return getattr(object, piece.attr_name)
 
 
