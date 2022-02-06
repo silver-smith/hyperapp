@@ -8,17 +8,12 @@ from . import htypes
 log = logging.getLogger(__name__)
 
 
-def factory(data, resolve_name):
-    fn_ref = resolve_name(data['function'])
-    return htypes.map_service.map_service(fn_ref)
-
-
 def map_piece_to_service(mosaic, request, piece, service):
     if isinstance(service, htypes.map_service.record_service):
         identity = request.receiver_identity
         peer_ref = mosaic.put(identity.peer.piece)
         get_fn = htypes.attribute.attribute(
-            object_ref=mosaic.put(piece),
+            object=mosaic.put(piece),
             attr_name='get',
             )
         return htypes.service.record_service(
@@ -31,7 +26,7 @@ def map_piece_to_service(mosaic, request, piece, service):
 
 
 def python_object(piece, mosaic, python_object_creg, piece_service_registry):
-    fn = python_object_creg.invite(piece.fn_ref)
+    fn = python_object_creg.invite(piece.function)
 
     def inner(request, *args, **kw):
         log.info("Map service inner: %s, %s/%s", request, args, kw)
