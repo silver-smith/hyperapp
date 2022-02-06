@@ -75,10 +75,10 @@ def test_read_definition(services, htypes, code):
     param_t = resource_type.definition_t.fields['params'].element_t
     assert definition == resource_type.definition_t(
         function='some_function',
-        params=[
+        params=(
             param_t('param_1', 'value_1'),
             param_t('param_2', 'value_2'),
-            ],
+            ),
         )
 
 
@@ -88,10 +88,10 @@ def test_resolve_definition_partial(services, htypes, code):
     param_t = resource_type.definition_t.fields['params'].element_t
     definition = resource_type.definition_t(
         function='some_function',
-        params=[
+        params=(
             param_t('param_1', 'value_1'),
             param_t('param_2', 'value_2'),
-            ],
+            ),
         )
     names = {
         'some_function': services.mosaic.put('some_function'),
@@ -106,10 +106,10 @@ def test_resolve_definition_partial(services, htypes, code):
     log.info('Resolved resource: %r', resource)
     assert resource == resource_t(
         function=names['some_function'],
-        params=[
+        params=(
             htypes.partial.param('param_1', names['value_1']),
             htypes.partial.param('param_2', names['value_2']),
-        ],
+        ),
     )
 
 
@@ -140,6 +140,6 @@ def test_resolve_definition_list_service(services, htypes, code):
         identity=names['some_identity'],
         function=names['some_function'],
         dir=names['some_dir'],
-        commands=[names['some_command']],
+        commands=(names['some_command'],),
         key_attribute='the_key',
         )
