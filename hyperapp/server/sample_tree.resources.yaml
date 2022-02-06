@@ -41,21 +41,21 @@ definitions:
   raw_command:
     type: rpc_command
     identity: legacy_service.server_identity
-    servant: tree_servant_raw_method
+    function: tree_servant_raw_method
     state_attributes: ['current_key']
     name: raw
 
   describe_command:
     type: rpc_command
     identity: legacy_service.server_identity
-    servant: tree_servant_describe_method
+    function: tree_servant_describe_method
     state_attributes: ['current_key']
     name: describe
 
   open_command:
     type: rpc_command
     identity: legacy_service.server_identity
-    servant: tree_servant_open_method_mapped
+    function: tree_servant_open_method_mapped
     state_attributes: ['current_key']
     name: open
 
@@ -66,8 +66,8 @@ definitions:
   sample_tree_service:
     type: tree_service
     identity: legacy_service.server_identity
-    servant: tree_servant_get_items_method
-    dir: [sample_tree_d]
+    function: tree_servant_get_items_method
+    dir: sample_tree_d
     key_attribute: key
     commands:
       - raw_command
