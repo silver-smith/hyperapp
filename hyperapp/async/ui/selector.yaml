@@ -9,9 +9,13 @@ import:
     - async.ui.command
     - async.ui.ui_object
     - async.code_registry
-require:
-  - async_web
-  - object_registry
 provide:
   - callback_registry
   - make_selector_callback_ref
+  - resource.selector
+require:
+  - async_web
+  - object_registry
+  - resource_type_factory
+  - resource_type_reg
+  - python_object_creg

@@ -9,6 +9,7 @@ import:
   - legacy_type.htest.htest_module_list_d
   - server.htest.htest
   - server.htest.htest_list
+  - server.module_list.available_module_list_service
 
 definitions:
 
@@ -49,10 +50,26 @@ definitions:
     object: servant
     attr_name: select_module
 
+  servant_set_module_method:
+    type: attribute
+    object: servant
+    attr_name: set_module
+
   servant_collect_globals_method:
     type: attribute
     object: servant
     attr_name: collect_globals
+
+  rpc_callback:
+    type: rpc_callback
+    identity: legacy_service.server_identity
+    function: servant_set_module_method
+    item_attributes: ['module_name', 'module_ref']
+
+  module_selector:
+    type: selector
+    list_service: server.module_list.available_module_list_service
+    callback: rpc_callback
 
   module_command:
     type: rpc_command
@@ -61,10 +78,21 @@ definitions:
     state_attributes: ['current_key']
     name: module
 
+  select_module_function:
+    type: attribute
+    object: legacy_module.server.htest_module_list
+    attr_name: select_module
+
+  select_module_partial:
+    type: partial
+    function: select_module_function
+    params:
+      module_selector: module_selector
+
   select_module_command:
     type: rpc_command
     identity: legacy_service.server_identity
-    function: servant_select_module_method
+    function: select_module_partial
     state_attributes: []
     name: select_module
 

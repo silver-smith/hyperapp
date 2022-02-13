@@ -51,8 +51,8 @@ class Selector(Object):
 
     @classmethod
     async def from_piece(cls, piece, mosaic, web, object_factory, callback_registry):
-        list = await object_factory.invite(piece.list_ref)
-        callback = await callback_registry.invite(piece.callback_ref)
+        list = await object_factory.invite(piece.list_service)
+        callback = await callback_registry.invite(piece.callback)
         return cls(mosaic, web, list, callback)
 
     def __init__(self, mosaic, web, list, callback):
@@ -92,6 +92,10 @@ class Selector(Object):
         return await self._callback.run(item)
 
 
+def python_object(piece):
+    return piece
+
+
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
@@ -117,6 +121,9 @@ class ThisModule(Module):
             )
         services.callback_registry = self._callback_registry
         services.make_selector_callback_ref = self.make_selector_callback_ref
+
+        services.resource_type_reg['selector'] = services.resource_type_factory(htypes.selector.selector)
+        services.python_object_creg.register_actor(htypes.selector.selector, python_object)
 
     def make_selector_callback_ref(self, method, **kw):
         object = method.__self__

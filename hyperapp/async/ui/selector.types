@@ -13,5 +13,5 @@ object_method_callback = record:
 
 
 selector = record:
-  list_ref: ref
-  callback_ref: ref
+  list_service: ref
+  callback: ref
