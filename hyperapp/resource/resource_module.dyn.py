@@ -59,12 +59,13 @@ class ResourceModule:
             if var_name not in module:
                 raise RuntimeError(f"{self._name}: Module {module_name} does not have {var_name!r}")
         self._definitions = {
-            name: self._read_definition(contents)
+            name: self._read_definition(name, contents)
             for name, contents in contents.get('definitions', {}).items()
             }
         self._import_list = import_list
 
-    def _read_definition(self, data):
+    def _read_definition(self, name, data):
+        log.debug("%s: Load definition %r: %s", self._name, name, data)
         type = self._resource_type_reg[data['type']]
         value = type.parse(data)
         return Definition(type, value)
