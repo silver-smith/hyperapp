@@ -6,7 +6,7 @@ from . import htypes
 
 
 def python_object(piece):
-    return piece.value_ref
+    return piece.value
 
 
 class ThisModule(Module):
