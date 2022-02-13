@@ -1,3 +1,3 @@
 
 value = record:
-  value: ref
+  value_ref: ref

@@ -6,11 +6,20 @@ from hyperapp.common.module import Module
 from . import htypes
 
 
-def factory(mosaic, types, data, resolve_name):
-    value = data['value']
-    t = deduce_complex_value_type(mosaic, types, value)
-    value_ref = mosaic.put(value, t)
-    return htypes.value.value(value_ref)
+class ValueResourceType:
+
+    def __init__(self, mosaic, types):
+        self._mosaic = mosaic
+        self._types = types
+
+    def parse(self, data):
+        value = data['value']
+        t = deduce_complex_value_type(self._mosaic, self._types, value)
+        value_ref = self._mosaic.put(value, t)
+        return htypes.value.value(value_ref)
+
+    def resolve(self, definition, resolve_name):
+        return definition
 
 
 def python_object(piece, web):
@@ -22,5 +31,5 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        services.resource_type_registry['value'] = partial(factory, services.mosaic, services.types)
+        services.resource_type_reg['value'] = ValueResourceType(services.mosaic, services.types)
         services.python_object_creg.register_actor(htypes.value.value, python_object, services.web)
