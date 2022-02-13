@@ -59,8 +59,6 @@ class ThisModule(Module):
         available_module_list_service_piece = services.resource_module_registry['server.module_list']['available_module_list_service']
         imported_module_list_service_piece = services.resource_module_registry['server.module_list']['imported_module_list_service']
 
-        sample_list_service = services.python_object_creg.animate(sample_list_service_piece)
-
         all_module_list_service = services.python_object_creg.animate(all_module_list_service_piece)
         available_module_list_service = services.python_object_creg.animate(available_module_list_service_piece)
         imported_module_list_service = services.python_object_creg.animate(imported_module_list_service_piece)

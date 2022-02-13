@@ -124,7 +124,7 @@ definitions:
     type: list_service
     identity: legacy_service.server_identity
     function: available_servant_list_method
-    dir: [module_list_d]
+    dir: module_list_d
     key_attribute: module_name
     commands:
       - available_open_command
@@ -133,7 +133,7 @@ definitions:
     type: list_service
     identity: legacy_service.server_identity
     function: imported_servant_list_method
-    dir: [module_list_d]
+    dir: module_list_d
     key_attribute: module_name
     commands:
       - imported_open_command
