@@ -4,7 +4,7 @@ from . import htypes
 
 
 async def python_object(piece, python_object_acreg):
-    fn = await python_object_acreg.invite(piece.fn_object_ref)
+    fn = await python_object_acreg.invite(piece.function)
     return fn()
 
 
