@@ -101,10 +101,11 @@ class ThisModule(Module):
 
         mosaic = services.mosaic
 
-        server_ref_list_piece = services.resource_module_registry['server.server_ref_list'].make('server_ref_list')
+        server_ref_list_piece = services.resource_module_registry['server.server_ref_list']['server_ref_list']
         server_ref_list = services.python_object_creg.animate(server_ref_list_piece)
 
-        service = services.resource_module_registry['server.htest_module_list'].make('service')
+        service_piece = services.resource_module_registry['server.htest_module_list']['service']
+        service = services.python_object_creg.animate(service_piece)
         server_ref_list.add_ref('htest_module_list', 'Test module list', mosaic.put(service))
 
         # server_peer_ref = mosaic.put(services.server_identity.peer.piece)

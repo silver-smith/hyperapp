@@ -44,6 +44,11 @@ definitions:
     object: servant
     attr_name: module
 
+  servant_select_module_method:
+    type: attribute
+    object: servant
+    attr_name: select_module
+
   servant_collect_globals_method:
     type: attribute
     object: servant
@@ -52,14 +57,21 @@ definitions:
   module_command:
     type: rpc_command
     identity: legacy_service.server_identity
-    servant: servant_module_method
+    function: servant_module_method
     state_attributes: ['current_key']
     name: module
+
+  select_module_command:
+    type: rpc_command
+    identity: legacy_service.server_identity
+    function: servant_select_module_method
+    state_attributes: []
+    name: select_module
 
   collect_globals_command:
     type: rpc_command
     identity: legacy_service.server_identity
-    servant: servant_collect_globals_method
+    function: servant_collect_globals_method
     state_attributes: ['current_key']
     name: collect_globals
 
@@ -70,9 +82,10 @@ definitions:
   service:
     type: live_list_service
     identity: legacy_service.server_identity
-    servant: servant_list_method
-    dir: [htest_module_list_d]
+    function: servant_list_method
+    dir: htest_module_list_d
     key_attribute: module_name
     commands:
       - module_command
+      - select_module_command
       - collect_globals_command
