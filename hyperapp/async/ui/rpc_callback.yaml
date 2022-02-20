@@ -5,7 +5,7 @@ import:
 require:
   - async_web
   - peer_registry
-  - servant_path_from_data
   - async_rpc_call_factory
+  - callback_registry
   - client_rpc_endpoint
   - client_identity

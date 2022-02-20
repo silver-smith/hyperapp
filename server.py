@@ -28,7 +28,6 @@ code_module_list = [
     'resource.tree_service',
     'resource.selector',
     'transport.rsa_identity',
-    'async.ui.rpc_callback',
     'server.tcp_server',
     'server.server_ref_list',
     'server.sample_list',
