@@ -3,7 +3,7 @@ import:
     - transport.route_table
 require:
   - aux_bundler_hooks
-  - aux_ref_unbundler_hooks
+  - aux_unbundler_hooks
   - peer_registry
 provide:
   - async_route_registry

@@ -19,5 +19,5 @@ class ThisModule(Module):
         services.async_route_table = route_table
         services.aux_bundler_hooks.append(partial(
             route_table.aux_bundler_hook, services.mosaic, services.peer_registry))
-        services.aux_ref_unbundler_hooks.append(partial(
+        services.aux_unbundler_hooks.append(partial(
             route_table.aux_ref_unbundler_hook, route_registry))
