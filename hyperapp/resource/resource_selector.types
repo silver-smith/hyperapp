@@ -1,0 +1,4 @@
+
+selector = record:
+  list_service: ref
+  callback: ref

@@ -51,8 +51,8 @@ class Selector(Object):
 
     @classmethod
     async def from_piece(cls, piece, mosaic, web, object_factory, callback_registry):
-        list = await object_factory.invite(piece.list_service)
-        callback = await callback_registry.invite(piece.callback)
+        list = await object_factory.invite(piece.list_service_ref)
+        callback = await callback_registry.invite(piece.callback_ref)
         return cls(mosaic, web, list, callback)
 
     def __init__(self, mosaic, web, list, callback):
