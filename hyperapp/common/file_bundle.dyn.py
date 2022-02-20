@@ -10,15 +10,15 @@ DEFAULT_ENCODING = 'json'
 
 class FileBundle:
 
-    def __init__(self, mosaic, ref_collector, unbundler, path, encoding=DEFAULT_ENCODING):
+    def __init__(self, mosaic, bundler, unbundler, path, encoding=DEFAULT_ENCODING):
         self._mosaic = mosaic
-        self._ref_collector = ref_collector
+        self._bundler = bundler
         self._unbundler = unbundler
         self.path = path
         self._encoding = encoding
 
     def save_ref(self, ref):
-        bundle = self._ref_collector([ref]).bundle
+        bundle = self._bundler([ref]).bundle
         data = packet_coders.encode(self._encoding, bundle)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.path.write_bytes(data)
@@ -44,4 +44,4 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-        services.file_bundle = partial(FileBundle, services.mosaic, services.ref_collector, services.unbundler)
+        services.file_bundle = partial(FileBundle, services.mosaic, services.bundler, services.unbundler)

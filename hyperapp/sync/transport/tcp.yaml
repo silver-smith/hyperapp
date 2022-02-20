@@ -5,7 +5,7 @@ import:
   code:
     - transport.tcp
 require:
-  - ref_collector
+  - bundler
   - unbundler
   - parcel_registry
   - route_table

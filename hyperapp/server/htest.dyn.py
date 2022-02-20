@@ -84,7 +84,7 @@ class HTest:
             self,
             mosaic,
             local_modules,
-            ref_collector,
+            bundler,
             subprocess_factory,
             peer_registry,
             rpc_call_factory,
@@ -96,7 +96,7 @@ class HTest:
             ):
         self._mosaic = mosaic
         self._local_modules = local_modules
-        self._ref_collector = ref_collector
+        self._bundler = bundler
         self._subprocess_factory = subprocess_factory
         self._peer_registry = peer_registry
         self._rpc_call_factory = rpc_call_factory
@@ -121,7 +121,7 @@ class HTest:
         server_peer_ref = self._mosaic.put(self._identity.peer.piece)
         server_peer_ref_cdr_list = [packet_coders.encode('cdr', server_peer_ref)]
 
-        signal_service_bundle = self._ref_collector([server_peer_ref, self._runner_is_ready_fn_ref]).bundle
+        signal_service_bundle = self._bundler([server_peer_ref, self._runner_is_ready_fn_ref]).bundle
         signal_service_bundle_cdr = packet_coders.encode('cdr', signal_service_bundle)
 
         subprocess = self._subprocess_factory(

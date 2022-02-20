@@ -12,10 +12,10 @@ log = logging.getLogger(__name__)
 
 class Connection:
 
-    def __init__(self, mosaic, ref_collector, unbundler, parcel_registry, route_table, transport,
+    def __init__(self, mosaic, bundler, unbundler, parcel_registry, route_table, transport,
                  client_factory, address, reader, writer):
         self._mosaic = mosaic
-        self._ref_collector = ref_collector
+        self._bundler = bundler
         self._unbundler = unbundler
         self._parcel_registry = parcel_registry
         self._route_table = route_table
@@ -31,7 +31,7 @@ class Connection:
 
     async def send(self, parcel):
         parcel_ref = self._mosaic.put(parcel.piece)
-        bundle = self._ref_collector([parcel_ref]).bundle
+        bundle = self._bundler([parcel_ref]).bundle
         data = encode_tcp_packet(bundle)
         self._writer.write(data)
         log.info("%s: Parcel is sent: %s", self, parcel_ref)
@@ -103,7 +103,7 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
         self._mosaic = services.mosaic
-        self._ref_collector = services.ref_collector
+        self._bundler = services.bundler
         self._unbundler = services.unbundler
         self._parcel_registry = services.parcel_registry
         self._route_table = services.async_route_table
@@ -124,7 +124,7 @@ class ThisModule(Module):
             host, port = address
             reader, writer = await asyncio.open_connection(host, port)
             connection = Connection(
-                self._mosaic, self._ref_collector, self._unbundler, self._parcel_registry, self._route_table, self._transport,
+                self._mosaic, self._bundler, self._unbundler, self._parcel_registry, self._route_table, self._transport,
                 self._client_factory, address, reader, writer)
             self._address_to_client[address] = connection
             log.debug('Async tcp: connection for %s is established', address_to_str(address))

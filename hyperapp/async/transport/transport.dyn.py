@@ -7,9 +7,9 @@ log = logging.getLogger(__name__)
 
 class Transport:
 
-    def __init__(self, mosaic, ref_collector, route_registry, route_table, transport_log_callback_registry):
+    def __init__(self, mosaic, bundler, route_registry, route_table, transport_log_callback_registry):
         self._mosaic = mosaic
-        self._ref_collector = ref_collector
+        self._bundler = bundler
         self._route_registry = route_registry
         self._route_table = route_table
         self._transport_log_callback_registry = transport_log_callback_registry
@@ -27,7 +27,7 @@ class Transport:
     async def send(self, receiver, sender_identity, ref_list):
         log.info("Send ref list %s to %s from %s", ref_list, receiver, sender_identity)
         self._transport_log_callback_registry.log_transaction('out', ref_list)
-        bundle = self._ref_collector(ref_list).bundle
+        bundle = self._bundler(ref_list).bundle
         parcel = receiver.make_parcel(bundle, sender_identity)
         await self.send_parcel(parcel)
 
@@ -38,7 +38,7 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
         services.async_transport = Transport(
             services.mosaic,
-            services.ref_collector,
+            services.bundler,
             services.async_route_registry,
             services.async_route_table,
             services.transport_log_callback_registry,

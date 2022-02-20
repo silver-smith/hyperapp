@@ -2,7 +2,7 @@ import:
   code:
     - sync.subprocess_connection
 require:
-  - ref_collector
+  - bundler
   - unbundler
   - route_table
   - parcel_registry

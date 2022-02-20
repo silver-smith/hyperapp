@@ -11,7 +11,7 @@ pytest_plugins = ['hyperapp.common.test.services']
 def code_module_list():
     return [
         'common.visitor',
-        'common.ref_collector',
+        'common.bundler',
         'common.unbundler',
         'transport.identity',
         'transport.rsa_identity',
@@ -61,7 +61,7 @@ def test_route_ref_collected(services, htypes, phony_route_t):
     non_persistable_route = NonPersistableRoute()
     services.route_table.add_route(peer_ref, non_persistable_route)
 
-    bundle = services.ref_collector([peer_ref]).bundle
+    bundle = services.bundler([peer_ref]).bundle
 
     route_association = htypes.transport.route_association(peer_ref, persistable_route_ref)
     route_association_ref = services.mosaic.put(route_association)

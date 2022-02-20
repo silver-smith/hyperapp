@@ -1,5 +1,5 @@
 require:
-  - ref_collector
+  - bundler
   - async_route_registry
   - async_route_table
 provide:

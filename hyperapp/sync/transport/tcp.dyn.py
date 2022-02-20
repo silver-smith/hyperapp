@@ -45,10 +45,10 @@ class Server:
 
 class Connection:
 
-    def __init__(self, mosaic, ref_collector, unbundler, parcel_registry,
+    def __init__(self, mosaic, bundler, unbundler, parcel_registry,
                  route_table, transport, selector, address, sock):
         self._mosaic = mosaic
-        self._ref_collector = ref_collector
+        self._bundler = bundler
         self._unbundler = unbundler
         self._parcel_registry = parcel_registry
         self._route_table = route_table
@@ -68,7 +68,7 @@ class Connection:
 
     def send(self, parcel):
         parcel_ref = self._mosaic.put(parcel.piece)
-        bundle = self._ref_collector([parcel_ref]).bundle
+        bundle = self._bundler([parcel_ref]).bundle
         data = encode_tcp_packet(bundle)
         ofs = 0
         while ofs < len(data):
@@ -169,7 +169,7 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
         self._mosaic = services.mosaic
-        self._ref_collector = services.ref_collector
+        self._bundler = services.bundler
         self._unbundler = services.unbundler
         self._parcel_registry = services.parcel_registry
         self._route_table = services.route_table
@@ -203,7 +203,7 @@ class ThisModule(Module):
         sock.setblocking(False)
         return Connection(
             self._mosaic,
-            self._ref_collector,
+            self._bundler,
             self._unbundler,
             self._parcel_registry,
             self._route_table,

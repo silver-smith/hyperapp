@@ -23,7 +23,7 @@ def additional_module_dirs():
 @pytest.fixture
 def code_module_list():
     return [
-        'common.ref_collector',
+        'common.bundler',
         'transport.rsa_identity',
         'sync.transport.endpoint',
         'sync.transport.tcp',
@@ -71,7 +71,7 @@ def echo_set_up(services, htypes):
     log.info("Tcp route: %r", server.route)
     services.route_table.add_route(master_peer_ref, server.route)
 
-    master_service_bundle = services.ref_collector([master_peer_ref, master_servant_ref]).bundle
+    master_service_bundle = services.bundler([master_peer_ref, master_servant_ref]).bundle
     master_service_bundle_cdr = packet_coders.encode('cdr', master_service_bundle)
 
     subprocess = services.subprocess(

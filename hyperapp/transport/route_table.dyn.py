@@ -17,7 +17,7 @@ class RouteTable:
     def peer_route_list(self, peer_ref):
         return self._peer2route[peer_ref]
 
-    def aux_ref_collector_hook(self, mosaic, peer_registry, ref, t, value):
+    def aux_bundler_hook(self, mosaic, peer_registry, ref, t, value):
         if not peer_registry.type_registered(t):
             return
         for route in self.peer_route_list(ref):

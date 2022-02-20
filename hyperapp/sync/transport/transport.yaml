@@ -1,5 +1,5 @@
 require:
-  - ref_collector
+  - bundler
   - route_registry
   - route_table
 provide:

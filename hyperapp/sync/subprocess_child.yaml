@@ -3,7 +3,7 @@ import:
     - sync.subprocess_connection
 require:
   - service_failure
-  - ref_collector
+  - bundler
   - unbundler
   - transport
   - parcel_registry

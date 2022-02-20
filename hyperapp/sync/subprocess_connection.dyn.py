@@ -16,9 +16,9 @@ class ConnectionEvent(Enum):
 
 class SubprocessRoute:
 
-    def __init__(self, mosaic, ref_collector, connection):
+    def __init__(self, mosaic, bundler, connection):
         self._mosaic = mosaic
-        self._ref_collector = ref_collector
+        self._bundler = bundler
         self._connection = connection
 
     @property
@@ -31,7 +31,7 @@ class SubprocessRoute:
 
     def send(self, parcel):
         parcel_ref = self._mosaic.put(parcel.piece)
-        parcel_bundle = self._ref_collector([parcel_ref]).bundle
+        parcel_bundle = self._bundler([parcel_ref]).bundle
         bundle_cdr = packet_coders.encode('cdr', parcel_bundle)
         self._connection.send((ConnectionEvent.PARCEL.value, bundle_cdr))
         log.info("Subprocess: parcel is sent: %s", ref_repr(parcel_ref))

@@ -15,7 +15,7 @@ pytest_plugins = ['hyperapp.common.test.services']
 @pytest.fixture
 def code_module_list():
     return [
-        'common.ref_collector',
+        'common.bundler',
         'transport.rsa_identity',
         'sync.transport.route_table',
         'sync.transport.endpoint',
@@ -45,7 +45,7 @@ def test_tcp_send(services):
     log.info("Tcp route: %r", server.route)
     services.route_table.add_route(master_peer_ref, server.route)
 
-    master_peer_bundle = services.ref_collector([master_peer_ref]).bundle
+    master_peer_bundle = services.bundler([master_peer_ref]).bundle
     master_peer_bundle_cdr = packet_coders.encode('cdr', master_peer_bundle)
 
     subprocess = services.subprocess(
@@ -79,7 +79,7 @@ def test_tcp_echo(services):
     log.info("Tcp route: %r", server.route)
     services.route_table.add_route(master_peer_ref, server.route)
 
-    master_peer_bundle = services.ref_collector([master_peer_ref]).bundle
+    master_peer_bundle = services.bundler([master_peer_ref]).bundle
     master_peer_bundle_cdr = packet_coders.encode('cdr', master_peer_bundle)
 
     subprocess = services.subprocess(

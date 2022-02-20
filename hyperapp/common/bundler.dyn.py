@@ -17,17 +17,17 @@ RECURSION_LIMIT = 100
 _RefsAndBundle = namedtuple('_RefsAndBundle', 'ref_set bundle')
 
 
-class RefCollector(Visitor):
+class Bundler(Visitor):
 
-    def __init__(self, mosaic, types, aux_ref_collector_hooks):
+    def __init__(self, mosaic, types, aux_bundler_hooks):
         self._mosaic = mosaic
         self._types = types
-        self._aux_ref_collector_hooks = aux_ref_collector_hooks
+        self._aux_bundler_hooks = aux_bundler_hooks
         self._collected_ref_set = None
         self._collected_type_ref_set = None
         self._collected_aux_set = set()
 
-    def collect(self, ref_list):
+    def bundle(self, ref_list):
         assert is_list_inst(ref_list, ref_t), repr(ref_list)
         log.info('Making bundle from refs: %s', [ref_repr(ref) for ref in ref_list])
         ref_set, capsule_list = self._collect_capsule_list(ref_list)
@@ -91,7 +91,7 @@ class RefCollector(Visitor):
             self._collected_ref_set.add(value)
 
     def _collect_aux_refs(self, ref, t, object):
-        for hook in self._aux_ref_collector_hooks:
+        for hook in self._aux_bundler_hooks:
             aux_ref_set = set(hook(ref, t, object) or [])
             self._collected_aux_set |= aux_ref_set
             self._collected_ref_set |= aux_ref_set  # Should collect these refs too.
@@ -103,10 +103,10 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
         self._mosaic = services.mosaic
         self._types = services.types
-        self._aux_ref_collector_hooks = []
-        services.aux_ref_collector_hooks = self._aux_ref_collector_hooks
-        services.ref_collector = self.ref_collector
+        self._aux_bundler_hooks = []
+        services.aux_bundler_hooks = self._aux_bundler_hooks
+        services.bundler = self.bundler
 
-    def ref_collector(self, ref_list):
-        collector = RefCollector(self._mosaic, self._types, self._aux_ref_collector_hooks)
-        return collector.collect(ref_list)
+    def bundler(self, ref_list):
+        bundler = Bundler(self._mosaic, self._types, self._aux_bundler_hooks)
+        return bundler.bundle(ref_list)
