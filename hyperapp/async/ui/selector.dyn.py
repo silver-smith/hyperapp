@@ -92,10 +92,6 @@ class Selector(Object):
         return await self._callback.run(item)
 
 
-def python_object(piece):
-    return piece
-
-
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
@@ -121,9 +117,6 @@ class ThisModule(Module):
             )
         services.callback_registry = self._callback_registry
         services.make_selector_callback_ref = self.make_selector_callback_ref
-
-        services.resource_type_reg['selector'] = services.resource_type_factory(htypes.selector.selector)
-        services.python_object_creg.register_actor(htypes.selector.selector, python_object)
 
     def make_selector_callback_ref(self, method, **kw):
         object = method.__self__
