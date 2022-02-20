@@ -64,10 +64,6 @@ class TestModuleListServant:
         log.info("Send diffs: %s", diff)
         self._rpc_call(diff)
 
-    def set_module(self, request, module_name, module_ref):
-        self._htest_list.add(module_name, module_ref)
-        return self._service
-
     def collect_tests(self, request, current_key):
         log.info("Collect tests for module: %r", current_key)
         test_list = self._htest.collect_tests(module_name=current_key)
@@ -93,6 +89,11 @@ class TestModuleListServant:
 
 def select_module(request, module_selector):
     return module_selector
+
+
+def set_module(request, module_name, module_ref, htest_list, service):
+    htest_list.add(module_name, module_ref)
+    return service
 
 
 class ThisModule(Module):

@@ -60,10 +60,22 @@ definitions:
     object: servant
     attr_name: collect_globals
 
+  set_module_function:
+    type: attribute
+    object: legacy_module.server.htest_module_list
+    attr_name: set_module
+
+  set_module_partial:
+    type: partial
+    function: set_module_function
+    params:
+      htest_list: server.htest.htest_list
+      service: service
+
   rpc_callback:
     type: rpc_callback
     identity: legacy_service.server_identity
-    function: servant_set_module_method
+    function: set_module_partial
     item_attributes: ['module_name', 'module_ref']
 
   module_selector:
