@@ -1,7 +1,6 @@
 import:
   types:
     layered_config_sheet:
-      - lcs_record
       - lcs_storage
       - lcs_association
   code:
