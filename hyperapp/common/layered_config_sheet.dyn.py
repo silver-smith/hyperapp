@@ -127,10 +127,35 @@ class LCSheet(LCSlice):
                 dir_to_record[slice_dir] = record
         return LCSlice(dir_to_record)
 
+    def aux_bundler_hook(self, ref, t, value):
+        for dir, value_list, persist in self.iter({value}):
+            log.info("LCS bundle aux: %s -> %s", set(dir), value_list)
+            for value in value_list:
+                dir_refs = tuple(
+                    self._mosaic.put(element)
+                    for element in dir
+                    )
+                association = htypes.layered_config_sheet.lcs_association(dir_refs, self._mosaic.put(value))
+                yield self._mosaic.put(association)
+
+    def aux_unbundler_hook(self, ref, t, value):
+        if t is not htypes.layered_config_sheet.lcs_association:
+            return
+        dir = [
+            self._web.summon(ref)
+            for ref in value.dir
+            ]
+        lcs_value = self._web.summon(value.value_ref)
+        log.info("LCS unbundle aux: %s -> %s", set(dir), lcs_value)
+        self._add(dir, lcs_value)
+
 
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
         bundle = services.file_bundle(lcs_path, encoding='cdr')
-        services.lcs = LCSheet(services.mosaic, services.web, bundle)
+        lcs = LCSheet(services.mosaic, services.web, bundle)
+        services.lcs = lcs
+        services.aux_bundler_hooks.append(lcs.aux_bundler_hook)
+        services.aux_unbundler_hooks.append(lcs.aux_unbundler_hook)

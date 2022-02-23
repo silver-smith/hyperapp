@@ -3,9 +3,12 @@ import:
     layered_config_sheet:
       - lcs_record
       - lcs_storage
+      - lcs_association
   code:
     - async.ui.module
 require:
   - file_bundle
+  - aux_bundler_hooks
+  - aux_unbundler_hooks
 provide:
   - lcs
