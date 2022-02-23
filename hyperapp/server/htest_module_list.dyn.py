@@ -102,12 +102,21 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
 
         mosaic = services.mosaic
+        python_object_creg = services.python_object_creg
+        htest_module_list = services.resource_module_registry['server.htest_module_list']
+
+        select_module_command = python_object_creg.animate(htest_module_list['select_module_command'])
+        htest_module_list_d = python_object_creg.animate(htest_module_list['htest_module_list_d'])
+        services.lcs.add(
+            [htest_module_list_d, htypes.command.object_commands_d()],
+            select_module_command,
+            )
 
         server_ref_list_piece = services.resource_module_registry['server.server_ref_list']['server_ref_list']
-        server_ref_list = services.python_object_creg.animate(server_ref_list_piece)
+        server_ref_list = python_object_creg.animate(server_ref_list_piece)
 
-        service_piece = services.resource_module_registry['server.htest_module_list']['service']
-        service = services.python_object_creg.animate(service_piece)
+        service_piece = htest_module_list['service']
+        service = python_object_creg.animate(service_piece)
         server_ref_list.add_ref('htest_module_list', 'Test module list', mosaic.put(service))
 
         # server_peer_ref = mosaic.put(services.server_identity.peer.piece)

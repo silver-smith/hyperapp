@@ -127,5 +127,4 @@ definitions:
     key_attribute: module_name
     commands:
       - module_command
-      - select_module_command
       - collect_globals_command

@@ -1,5 +1,7 @@
 import:
   types:
+    command:
+      - object_commands_d
     service:
       - list_diff
       - live_list_service
@@ -15,3 +17,5 @@ import:
     htest:
       - htest_module_list_d
       - test_module
+require:
+  - lcs
