@@ -106,16 +106,6 @@ class HTest:
         self._runner_is_ready_fn_ref = runner_is_ready_fn_ref
         self._runner_method_collect_attributes_ref = runner_method_collect_attributes_ref
 
-    def collect_globals(self, module_name):
-        log.info("Collect globals from: %s", module_name)
-        with self._subprocess_running() as process:
-            call = process.rpc_call(self._runner_method_collect_attributes_ref)
-            module = self._local_modules.by_name[module_name]
-            module_ref = self._mosaic.put(module)
-            global_list = call(module_ref)
-            log.info("Collected global list: %s", global_list)
-            return global_list
-
     @contextmanager
     def _subprocess_running(self):
         server_peer_ref = self._mosaic.put(self._identity.peer.piece)
@@ -147,6 +137,16 @@ class HTest:
             log.info("Got runner signal: peer=%s", runner_peer)
 
             yield RunnerProcess(self._rpc_call_factory, self._rpc_endpoint, self._identity, runner_peer)
+
+    def collect_globals(self, module_name):
+        log.info("Collect globals from: %s", module_name)
+        with self._subprocess_running() as process:
+            call = process.rpc_call(self._runner_method_collect_attributes_ref)
+            module = self._local_modules.by_name[module_name]
+            module_ref = self._mosaic.put(module)
+            global_list = call(module_ref)
+            log.info("Collected global list: %s", global_list)
+            return global_list
 
 
 def runner_signal_queue():
