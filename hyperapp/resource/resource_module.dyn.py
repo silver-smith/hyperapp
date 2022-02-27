@@ -1,6 +1,7 @@
 import logging
 import yaml
 from collections import namedtuple
+from functools import cached_property
 
 from hyperapp.common.module import Module
 
@@ -18,17 +19,12 @@ class ResourceModule:
         self._resource_module_registry = resource_module_registry
         self._name = name
         self._path = path
-        self._definitions = None
         self._import_list = None
 
     def __contains__(self, var_name):
-        if self._definitions is None:
-            self._load()
         return var_name in self._definitions
 
     def __getitem__(self, var_name):
-        if self._definitions is None:
-            self._load()
         try:
             definition = self._definitions[var_name]
         except KeyError:
@@ -36,6 +32,9 @@ class ResourceModule:
         piece = definition.type.resolve(definition.value, self._resolve_name)
         log.info("%s: Loaded resource %r: %s", self._name, var_name, piece)
         return piece
+
+    def __iter__(self):
+        return iter(self._definitions)
 
     def _resolve_name(self, name):
         if name in self._import_list:
@@ -45,7 +44,13 @@ class ResourceModule:
         else:
             piece = self[name]
         return self._mosaic.put(piece)
-        
+
+    @cached_property
+    def _definitions(self):
+        definitions, import_list = self._load()
+        self._import_list = import_list
+        return definitions
+
     def _load(self):
         log.info("Loading resource module %s: %s", self._name, self._path)
         contents = yaml.safe_load(self._path.read_text())
@@ -58,11 +63,11 @@ class ResourceModule:
                 raise RuntimeError(f"{self._name}: Importing {var_name} from unknown module: {module_name}")
             if var_name not in module:
                 raise RuntimeError(f"{self._name}: Module {module_name} does not have {var_name!r}")
-        self._definitions = {
+        definitions = {
             name: self._read_definition(name, contents)
             for name, contents in contents.get('definitions', {}).items()
             }
-        self._import_list = import_list
+        return (definitions, import_list)
 
     def _read_definition(self, name, data):
         log.debug("%s: Load definition %r: %s", self._name, name, data)
