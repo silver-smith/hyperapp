@@ -2,6 +2,7 @@ import:
   - legacy_module.server.htest
   - legacy_service.mosaic
   - legacy_service.local_modules
+  - legacy_service.resource_module_registry
   - legacy_service.bundler
   - legacy_service.file_bundle
   - legacy_service.subprocess
@@ -52,6 +53,7 @@ definitions:
     params:
       mosaic: legacy_service.mosaic
       local_modules: legacy_service.local_modules
+      resource_module_registry: legacy_service.resource_module_registry
       bundler: legacy_service.bundler
       subprocess_factory: legacy_service.subprocess
       peer_registry: legacy_service.peer_registry

@@ -84,6 +84,7 @@ class HTest:
             self,
             mosaic,
             local_modules,
+            resource_module_registry,
             bundler,
             subprocess_factory,
             peer_registry,
@@ -96,6 +97,7 @@ class HTest:
             ):
         self._mosaic = mosaic
         self._local_modules = local_modules
+        self._resource_module_registry = resource_module_registry
         self._bundler = bundler
         self._subprocess_factory = subprocess_factory
         self._peer_registry = peer_registry
@@ -147,6 +149,28 @@ class HTest:
             global_list = call(module_ref)
             log.info("Collected global list: %s", global_list)
             return global_list
+
+    def construct_resources(self, module_name):
+        log.info("Construct resources from: %s", module_name)
+        name_to_module = {
+            var_name: resource_module_name
+            for resource_module_name, resource_module in self._resource_module_registry.items()
+            for var_name in resource_module
+            }
+        import_set = {}
+        with self._subprocess_running() as process:
+            call = process.rpc_call(self._runner_method_collect_attributes_ref)
+            module = self._local_modules.by_name[module_name]
+            module_ref = self._mosaic.put(module)
+            global_list = call(module_ref)
+            log.info("Global list: %s", global_list)
+            for fn in global_list:
+                self._process_fn(module_name, module_ref, name_to_module, import_set, fn)
+
+    def _process_fn(self, module_name, module_ref, name_to_module, import_set, fn):
+        for param_name in fn.param_list:
+            resource_module_name = name_to_module[param_name]
+            import_set.add(resource_module_name)
 
 
 def runner_signal_queue():

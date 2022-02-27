@@ -86,6 +86,10 @@ class TestModuleListServant:
         log.info("Send diffs: %s", diff)
         self._rpc_call(diff)
 
+    def construct_resources(self, request, current_key):
+        log.info("Construct resources for module: %r", current_key)
+        self._htest.construct_resources(module_name=current_key)
+
 
 def select_module(request, module_selector):
     return module_selector

@@ -60,6 +60,11 @@ definitions:
     object: servant
     attr_name: collect_globals
 
+  servant_construct_resources_method:
+    type: attribute
+    object: servant
+    attr_name: construct_resources
+
   set_module_function:
     type: attribute
     object: legacy_module.server.htest_module_list
@@ -115,6 +120,13 @@ definitions:
     state_attributes: ['current_key']
     name: collect_globals
 
+  construct_resources_command:
+    type: rpc_command
+    identity: legacy_service.server_identity
+    function: servant_construct_resources_method
+    state_attributes: ['current_key']
+    name: construct_resources
+
   htest_module_list_d:
     type: call
     function: legacy_type.htest.htest_module_list_d
@@ -128,3 +140,4 @@ definitions:
     commands:
       - module_command
       - collect_globals_command
+      - construct_resources_command
