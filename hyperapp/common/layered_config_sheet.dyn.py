@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass, field
-from typing import List
+from typing import Set
 from pathlib import Path
 
 from . import htypes
@@ -14,7 +14,7 @@ lcs_path = Path('~/.local/share/hyperapp/client/lcs.cdr').expanduser()
 
 @dataclass
 class Record:
-    value_list: List = field(default_factory=list)
+    value_set: Set = field(default_factory=set)
     is_multi_value: bool = False
     persist: bool = False
 
@@ -24,11 +24,11 @@ class Record:
             web.summon(ref)
             for ref in piece.dir
             ]
-        value_list = [
+        value_set = {
             web.summon(ref)
             for ref in piece.value_list
-            ]
-        record = cls(value_list, piece.is_multi_value, persist)
+            }
+        record = cls(value_set, piece.is_multi_value, persist)
         return (dir, record)
 
     def as_piece(self, dir, mosaic):
@@ -38,7 +38,7 @@ class Record:
             ]
         values_refs = [
             mosaic.put(element)
-            for element in self.value_list
+            for element in self.value_set
             ]
         return htypes.layered_config_sheet.lcs_association(dir_refs, self.is_multi_value, values_refs)
 
@@ -57,7 +57,8 @@ class LCSlice:
             raise RuntimeError(f"LCS: Type error: {x}: {dir!r}")
         if record.is_multi_value:
             raise RuntimeError(f"LCS: Attempt to get single value from multi-value record: {set(dir)}")
-        return record.value_list[0]
+        [value] = record.value_set
+        return value
 
 
 class LCSheet(LCSlice):
@@ -97,14 +98,14 @@ class LCSheet(LCSlice):
         try:
             record = self._dir_to_record[frozenset(dir)]
         except KeyError:
-            record = Record([piece], is_multi_value=True, persist=persist)
+            record = Record({piece}, is_multi_value=True, persist=persist)
             self._dir_to_record[frozenset(dir)] = record
         else:
             if not record.is_multi_value:
                 raise RuntimeError(f"LCS: Attempt to add value to single-value record: {set(dir)} -> {piece}")
             if record.persist != persist:
                 raise RuntimeError(f"LCS: Attempt to change persistentency for: {set(dir)} -> {persist}")
-            record.value_list.append(piece)
+            record.value_set.add(piece)
         if persist:
             self._save()
 
@@ -113,20 +114,20 @@ class LCSheet(LCSlice):
         try:
             record = self._dir_to_record[frozenset(dir)]
         except KeyError:
-            record = Record([piece], is_multi_value=False, persist=persist)
+            record = Record({piece}, is_multi_value=False, persist=persist)
             self._dir_to_record[frozenset(dir)] = record
         else:
             if record.is_multi_value:
                 raise RuntimeError(f"LCS: Attempt to set value to multi-value record: {set(dir)} -> {piece}")
             if record.persist != persist:
                 raise RuntimeError(f"LCS: Attempt to change persistentency for: {set(dir)} -> {persist}")
-            record.value_list = [piece]
+            record.value_set = {piece}
         if persist:
             self._save()
 
     def remove(self, dir):
         record = self._dir_to_record.pop(frozenset(dir))
-        log.info("LCS: remove%s %s -> %s", '/persist' if record.persist else '', set(dir), record.value_list)
+        log.info("LCS: remove%s %s -> %s", '/persist' if record.persist else '', set(dir), record.value_set)
         if record.persist:
             self._save()
 
@@ -138,7 +139,7 @@ class LCSheet(LCSlice):
 
     def iter(self, filter_dir=None):
         for dir, record in self._iter(filter_dir):
-            yield (dir, record.value_list, record.persist)
+            yield (dir, record.value_set, record.persist)
 
     def iter_dir_list_values(self, dir_list):
         for dir in dir_list:
@@ -149,7 +150,7 @@ class LCSheet(LCSlice):
             else:
                 if not record.is_multi_value:
                     raise RuntimeError(f"LCS: Attempt to iter over values for single-value record: {set(dir)}")
-                yield from record.value_list
+                yield from record.value_set
 
     def slice(self, prefix_dir):
         prefix_dir_set = set(prefix_dir)
