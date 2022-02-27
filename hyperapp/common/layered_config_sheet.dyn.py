@@ -14,7 +14,7 @@ lcs_path = Path('~/.local/share/hyperapp/client/lcs.cdr').expanduser()
 
 @dataclass
 class Record:
-    value_set: Set = field(default_factory=set)
+    value_set: Set = field(default_factory=set)  # List for single value record
     is_multi_value: bool = False
     persist: bool = False
 
@@ -114,14 +114,14 @@ class LCSheet(LCSlice):
         try:
             record = self._dir_to_record[frozenset(dir)]
         except KeyError:
-            record = Record({piece}, is_multi_value=False, persist=persist)
+            record = Record([piece], is_multi_value=False, persist=persist)
             self._dir_to_record[frozenset(dir)] = record
         else:
             if record.is_multi_value:
                 raise RuntimeError(f"LCS: Attempt to set value to multi-value record: {set(dir)} -> {piece}")
             if record.persist != persist:
                 raise RuntimeError(f"LCS: Attempt to change persistentency for: {set(dir)} -> {persist}")
-            record.value_set = {piece}
+            record.value_set = [piece]
         if persist:
             self._save()
 
