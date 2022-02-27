@@ -8,10 +8,11 @@ from . import htypes
 def python_object(piece, mosaic, python_object_creg):
     identity = python_object_creg.invite(piece.identity)
     peer_ref = mosaic.put(identity.peer.piece)
+    dir = python_object_creg.invite(piece.dir)
     return htypes.service.live_list_service(
         peer_ref=peer_ref,
         servant_fn_ref=piece.function,
-        dir_list=[[piece.dir]],
+        dir_list=[[mosaic.put(dir)]],
         command_ref_list=[
             mosaic.put(python_object_creg.invite(command_ref))
             for command_ref
