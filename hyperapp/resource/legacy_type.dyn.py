@@ -22,6 +22,9 @@ class LegacyTypeResourceModule:
     def __getitem__(self, var_name):
         return self._name_to_piece[var_name]
 
+    def __iter__(self):
+        return iter(self._name_to_piece)
+
 
 def make_legacy_type_resource_module(type_module_loader):
     name_to_module = defaultdict(LegacyTypeResourceModule)

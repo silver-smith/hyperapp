@@ -18,6 +18,9 @@ class LegacyServiceResourceModule:
     def __getitem__(self, var_name):
         return self._name_to_piece[var_name]
 
+    def __iter__(self):
+        return iter(self._name_to_piece)
+
 
 def make_legacy_service_resource_module(mosaic, services, builtin_services, local_modules):
     name_to_piece = {}
