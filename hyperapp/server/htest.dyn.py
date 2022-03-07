@@ -86,6 +86,8 @@ class HTest:
             local_modules,
             resource_type_reg,
             resource_module_registry,
+            resource_module_factory,
+            python_object_creg,
             bundler,
             subprocess_factory,
             peer_registry,
@@ -100,6 +102,8 @@ class HTest:
         self._local_modules = local_modules
         self._resource_type_reg = resource_type_reg
         self._resource_module_registry = resource_module_registry
+        self._resource_module_factory = resource_module_factory
+        self._python_object_creg = python_object_creg
         self._bundler = bundler
         self._subprocess_factory = subprocess_factory
         self._peer_registry = peer_registry
@@ -152,14 +156,19 @@ class HTest:
             log.info("Collected global list: %s", global_list)
             return global_list
 
-    def construct_resources(self, module_name):
+    def construct_resources(self, module_name, root_dir):
         log.info("Construct resources from: %s", module_name)
         name_to_module = {
             var_name: resource_module_name
             for resource_module_name, resource_module in self._resource_module_registry.items()
             for var_name in resource_module
             }
-        import_set = set()
+        module_rpath = module_name.replace('.', '/')
+        resource_module = self._resource_module_factory(
+            module_name, root_dir / f'{module_rpath}.resources.yaml', allow_missing=True)
+        module_resource_name = f'legacy_module.{module_name}'
+        resource_module.add_import(module_resource_name)
+        import_set = {module_resource_name}
         resource_dict = {}
         with self._subprocess_running() as process:
             call = process.rpc_call(self._runner_method_collect_attributes_ref)
@@ -168,25 +177,27 @@ class HTest:
             global_list = call(module_ref)
             log.info("Global list: %s", global_list)
             for fn in global_list:
-                object_name = f'legacy_module.{module_name}'
-                resource_dict.update(self._process_fn(object_name, module_ref, name_to_module, import_set, fn))
+                resource_dict.update(self._process_fn(resource_module, module_resource_name, name_to_module, import_set, fn))
         return (import_set, resource_dict)
 
-    def _process_fn(self, object_name, module_ref, name_to_module, import_set, fn):
-        attr_resource = self._resource_type_reg['attribute'].definition_t(
+    def _process_fn(self, resource_module, object_name, name_to_module, import_set, fn_record):
+        attr_resource_t = self._resource_type_reg['attribute']
+        attr_resource = attr_resource_t.definition_t(
             object=object_name,
-            attr_name=fn.name,
+            attr_name=fn_record.name,
             )
-        attr_resource_name = f'{fn.name}_attribute'
+        attr_resource_name = f'{fn_record.name}_attribute'
         log.info("%r: %r", attr_resource_name, attr_resource)
 
         param_to_resource = {}
-        for param_name in fn.param_list:
+        for param_name in fn_record.param_list:
             resource_module_name = name_to_module[param_name]
             resource_name = f'{resource_module_name}.{param_name}'
             param_to_resource[param_name] = resource_name
             import_set.add(resource_name)
-        partial_def_t = self._resource_type_reg['partial'].definition_t
+            resource_module.add_import(resource_name)
+        partial_resource_t = self._resource_type_reg['partial']
+        partial_def_t = partial_resource_t.definition_t
         partial_param_def_t = partial_def_t.fields['params'].element_t
         partial_resource = partial_def_t(
             function=attr_resource_name,
@@ -196,13 +207,23 @@ class HTest:
                 in param_to_resource.items()
                 ],
             )
-        partial_resource_name = f'{fn.name}_partial'
+        partial_resource_name = f'{fn_record.name}_partial'
         log.info("%r: %r", partial_resource_name, partial_resource)
 
-        call_resource = self._resource_type_reg['call'].definition_t(
+        call_resource_t = self._resource_type_reg['call']
+        call_resource = call_resource_t.definition_t(
             function=partial_resource_name,
             )
-        call_resource_name = fn.name
+        call_resource_name = fn_record.name
+
+        resource_module.set_definition(attr_resource_name, attr_resource_t, attr_resource)
+        resource_module.set_definition(partial_resource_name, partial_resource_t, partial_resource)
+        resource_module.set_definition(call_resource_name, call_resource_t, call_resource)
+
+        fn_resource = resource_module[fn_record.name]
+        log.info("Function resource %s: %r", fn_record.name, fn_resource)
+        fn = self._python_object_creg.animate(fn_resource)
+        log.info("Function %s: %r", fn_record.name, fn)
 
         return {
             attr_resource_name: attr_resource,

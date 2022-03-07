@@ -11,11 +11,12 @@ log = logging.getLogger(__name__)
 pytest_plugins = ['hyperapp.common.test.services']
 
 TEST_DIR = Path(__file__).parent.resolve()
+TEST_RESOURCE_DIR = TEST_DIR / 'test_resources'
 
 
 @pytest.fixture
 def additional_module_dirs():
-    return [Path(__file__).parent / 'test_resources']
+    return [TEST_RESOURCE_DIR]
 
 
 @pytest.fixture
@@ -48,7 +49,7 @@ def test_resources(services):
     htest_resource = htest_module['htest']
     htest = services.python_object_creg.animate(htest_resource)
     log.info("Htest: %r", htest)
-    import_set, resource_dict = htest.construct_resources('construct_resources_sample')
+    import_set, resource_dict = htest.construct_resources('construct_resources_sample', TEST_RESOURCE_DIR)
     for import_name in sorted(import_set):
         log.info("Import: %s", import_name)
     for name, resource in resource_dict.items():

@@ -4,6 +4,8 @@ import:
   - legacy_service.local_modules
   - legacy_service.resource_type_reg
   - legacy_service.resource_module_registry
+  - legacy_service.resource_module_factory
+  - legacy_service.python_object_creg
   - legacy_service.bundler
   - legacy_service.file_bundle
   - legacy_service.subprocess
@@ -56,6 +58,8 @@ definitions:
       local_modules: legacy_service.local_modules
       resource_type_reg: legacy_service.resource_type_reg
       resource_module_registry: legacy_service.resource_module_registry
+      resource_module_factory: legacy_service.resource_module_factory
+      python_object_creg: legacy_service.python_object_creg
       bundler: legacy_service.bundler
       subprocess_factory: legacy_service.subprocess
       peer_registry: legacy_service.peer_registry

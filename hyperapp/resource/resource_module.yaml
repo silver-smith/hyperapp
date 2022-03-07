@@ -2,3 +2,4 @@ require:
   - resource_type_reg
 provide:
   - resource_module_registry
+  - resource_module_factory

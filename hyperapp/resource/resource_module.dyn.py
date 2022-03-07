@@ -1,8 +1,9 @@
 import logging
 import yaml
 from collections import namedtuple
-from functools import cached_property
+from functools import cached_property, partial
 
+from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.common.module import Module
 
 log = logging.getLogger(__name__)
@@ -13,13 +14,15 @@ Definition = namedtuple('Definition', 'type value')
 
 class ResourceModule:
 
-    def __init__(self, mosaic, resource_type_reg, resource_module_registry, name, path):
+    def __init__(self, mosaic, resource_type_reg, resource_module_registry, name, path, allow_missing=False):
         self._mosaic = mosaic
         self._resource_type_reg = resource_type_reg
         self._resource_module_registry = resource_module_registry
         self._name = name
         self._path = path
-        self._import_list = None
+        self._import_set = None
+        self._should_load = True
+        self._allow_missing = allow_missing
 
     def __contains__(self, var_name):
         return var_name in self._definitions
@@ -36,8 +39,15 @@ class ResourceModule:
     def __iter__(self):
         return iter(self._definitions)
 
+    def add_import(self, import_name):
+        self._definitions  # Force loading.
+        self._import_set.add(import_name)
+
+    def set_definition(self, var_name, resource_type, definition_value):
+        self._definitions[var_name] = Definition(resource_type, definition_value)
+
     def _resolve_name(self, name):
-        if name in self._import_list:
+        if name in self._import_set:
             module_name, var_name = name.rsplit('.', 1)
             module = self._resource_module_registry[module_name]
             piece = module[var_name]
@@ -47,15 +57,20 @@ class ResourceModule:
 
     @cached_property
     def _definitions(self):
-        definitions, import_list = self._load()
-        self._import_list = import_list
+        definitions, import_set = self._load()
+        self._import_set = import_set
         return definitions
 
     def _load(self):
         log.info("Loading resource module %s: %s", self._name, self._path)
-        contents = yaml.safe_load(self._path.read_text())
-        import_list = contents.get('import', [])
-        for name in import_list:
+        try:
+            contents = yaml.safe_load(self._path.read_text())
+        except FileNotFoundError:
+            if not self._allow_missing:
+                raise
+            return ({}, set())
+        import_set = set(contents.get('import', []))
+        for name in import_set:
             module_name, var_name = name.rsplit('.', 1)
             try:
                 module = self._resource_module_registry[module_name]
@@ -67,7 +82,7 @@ class ResourceModule:
             name: self._read_definition(name, contents)
             for name, contents in contents.get('definitions', {}).items()
             }
-        return (definitions, import_list)
+        return (definitions, import_set)
 
     def _read_definition(self, name, data):
         log.debug("%s: Load definition %r: %s", self._name, name, data)
@@ -101,3 +116,5 @@ class ThisModule(Module):
 
         services.resource_module_registry = load_resource_modules(
             services.mosaic, services.resource_type_reg, services.module_dir_list)
+        services.resource_module_factory = partial(
+            ResourceModule, services.mosaic, services.resource_type_reg, services.resource_module_registry)
