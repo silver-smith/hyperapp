@@ -157,7 +157,7 @@ class HTest:
             for resource_module_name, resource_module in self._resource_module_registry.items()
             for var_name in resource_module
             }
-        import_set = {}
+        import_set = set()
         with self._subprocess_running() as process:
             call = process.rpc_call(self._runner_method_collect_attributes_ref)
             module = self._local_modules.by_name[module_name]
@@ -166,11 +166,12 @@ class HTest:
             log.info("Global list: %s", global_list)
             for fn in global_list:
                 self._process_fn(module_name, module_ref, name_to_module, import_set, fn)
+        return import_set
 
     def _process_fn(self, module_name, module_ref, name_to_module, import_set, fn):
         for param_name in fn.param_list:
             resource_module_name = name_to_module[param_name]
-            import_set.add(resource_module_name)
+            import_set.add(f'{resource_module_name}.{param_name}')
 
 
 def runner_signal_queue():
