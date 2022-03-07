@@ -71,7 +71,11 @@ class ResourceModule:
 
     def _read_definition(self, name, data):
         log.debug("%s: Load definition %r: %s", self._name, name, data)
-        type = self._resource_type_reg[data['type']]
+        type_name = data['type']
+        try:
+            type = self._resource_type_reg[type_name]
+        except KeyError:
+            raise RuntimeError(f"Unsupported resource type: {type_name!r}")
         value = type.parse(data)
         return Definition(type, value)
 
