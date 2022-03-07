@@ -84,6 +84,7 @@ class HTest:
             self,
             mosaic,
             local_modules,
+            resource_type_reg,
             resource_module_registry,
             bundler,
             subprocess_factory,
@@ -97,6 +98,7 @@ class HTest:
             ):
         self._mosaic = mosaic
         self._local_modules = local_modules
+        self._resource_type_reg = resource_type_reg
         self._resource_module_registry = resource_module_registry
         self._bundler = bundler
         self._subprocess_factory = subprocess_factory
@@ -158,6 +160,7 @@ class HTest:
             for var_name in resource_module
             }
         import_set = set()
+        resource_dict = {}
         with self._subprocess_running() as process:
             call = process.rpc_call(self._runner_method_collect_attributes_ref)
             module = self._local_modules.by_name[module_name]
@@ -165,13 +168,47 @@ class HTest:
             global_list = call(module_ref)
             log.info("Global list: %s", global_list)
             for fn in global_list:
-                self._process_fn(module_name, module_ref, name_to_module, import_set, fn)
-        return import_set
+                object_name = f'legacy_module.{module_name}'
+                resource_dict.update(self._process_fn(object_name, module_ref, name_to_module, import_set, fn))
+        return (import_set, resource_dict)
 
-    def _process_fn(self, module_name, module_ref, name_to_module, import_set, fn):
+    def _process_fn(self, object_name, module_ref, name_to_module, import_set, fn):
+        attr_resource = self._resource_type_reg['attribute'].definition_t(
+            object=object_name,
+            attr_name=fn.name,
+            )
+        attr_resource_name = f'{fn.name}_attribute'
+        log.info("%r: %r", attr_resource_name, attr_resource)
+
+        param_to_resource = {}
         for param_name in fn.param_list:
             resource_module_name = name_to_module[param_name]
-            import_set.add(f'{resource_module_name}.{param_name}')
+            resource_name = f'{resource_module_name}.{param_name}'
+            param_to_resource[param_name] = resource_name
+            import_set.add(resource_name)
+        partial_def_t = self._resource_type_reg['partial'].definition_t
+        partial_param_def_t = partial_def_t.fields['params'].element_t
+        partial_resource = partial_def_t(
+            function=attr_resource_name,
+            params=[
+                partial_param_def_t(param_name, resource_name)
+                for param_name, resource_name
+                in param_to_resource.items()
+                ],
+            )
+        partial_resource_name = f'{fn.name}_partial'
+        log.info("%r: %r", partial_resource_name, partial_resource)
+
+        call_resource = self._resource_type_reg['call'].definition_t(
+            function=partial_resource_name,
+            )
+        call_resource_name = fn.name
+
+        return {
+            attr_resource_name: attr_resource,
+            partial_resource_name: partial_resource,
+            call_resource_name: call_resource,
+            }
 
 
 def runner_signal_queue():
