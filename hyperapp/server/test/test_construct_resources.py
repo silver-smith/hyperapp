@@ -1,4 +1,5 @@
 import logging
+import yaml
 from pathlib import Path
 
 import pytest
@@ -49,8 +50,6 @@ def test_resources(services):
     htest_resource = htest_module['htest']
     htest = services.python_object_creg.animate(htest_resource)
     log.info("Htest: %r", htest)
-    import_set, resource_dict = htest.construct_resources('construct_resources_sample', TEST_RESOURCE_DIR)
-    for import_name in sorted(import_set):
-        log.info("Import: %s", import_name)
-    for name, resource in resource_dict.items():
-        log.info("Resource %s: %r", name, resource)
+    resource_module = htest.construct_resources('construct_resources_sample', TEST_RESOURCE_DIR)
+    log.info("Resource module:\n%s", yaml.dump(resource_module.as_dict, sort_keys=False))
+    # resource_module.save()

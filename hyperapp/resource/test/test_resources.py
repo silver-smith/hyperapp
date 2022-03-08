@@ -71,7 +71,7 @@ def test_read_definition(services, htypes, code):
             'param_2': 'value_2',
             },
         }
-    definition = resource_type.parse(definition_dict)
+    definition = resource_type.from_dict(definition_dict)
     log.info("definition: %r", definition)
     param_t = resource_type.definition_t.fields['params'].element_t
     assert definition == resource_type.definition_t(
@@ -152,7 +152,7 @@ def test_value_type(services, htypes, code):
         'value': ['item_1', 'item_2'],
         }
 
-    definition = t.parse(data)
+    definition = t.from_dict(data)
     value = ('item_1', 'item_2')
     assert definition == htypes.value.value(
         value_ref=services.mosaic.put(value),

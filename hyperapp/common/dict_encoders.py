@@ -75,6 +75,9 @@ class DictEncoder(metaclass=abc.ABCMeta):
         return fields
 
     @dispatch.register(TList)
+    def _encode_list(self, t, value):
+        return self.encode_list(t, value)
+
     def encode_list(self, t, value):
         return [self.dispatch(t.element_t, elt) for elt in value]
 

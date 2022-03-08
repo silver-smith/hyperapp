@@ -13,5 +13,5 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        services.resource_type_reg['call'] = services.resource_type_factory(htypes.call.call)
+        services.resource_type_reg['call'] = services.resource_type_factory('call', htypes.call.call)
         services.python_object_creg.register_actor(htypes.call.call, python_object, services.python_object_creg)

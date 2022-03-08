@@ -12,7 +12,7 @@ class ValueResourceType:
         self._mosaic = mosaic
         self._types = types
 
-    def parse(self, data):
+    def from_dict(self, data):
         value = data['value']
         t = deduce_complex_value_type(self._mosaic, self._types, value)
         value_ref = self._mosaic.put(value, t)

@@ -16,6 +16,6 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        services.resource_type_reg['typed_piece'] = services.resource_type_factory(htypes.typed_piece.typed_piece)
+        services.resource_type_reg['typed_piece'] = services.resource_type_factory('typed_piece', htypes.typed_piece.typed_piece)
         services.python_object_creg.register_actor(
             htypes.typed_piece.typed_piece, python_object, services.python_object_creg)

@@ -3,6 +3,7 @@ from functools import cached_property, partial
 from hyperapp.common.htypes import TList, TRecord, tString, ref_t, builtin_mt, name_wrapped_mt, field_mt, record_mt
 from hyperapp.common.mapper import Mapper
 from hyperapp.common.dict_decoders import DictDecoder, join_path
+from hyperapp.common.dict_encoders import DictEncoder
 from hyperapp.common.module import Module
 
 
@@ -77,18 +78,23 @@ class NameResolver(Mapper):
         return (*context, name)
 
 
+def is_named_pair_list_t(t):
+    return (
+        isinstance(t, TList)
+        and isinstance(t.element_t, TRecord)
+        and len(t.element_t.fields) == 2
+        and list(t.element_t.fields.values())[0] is tString
+        )
+
+
 class DefinitionDecoder(DictDecoder):
 
     def decode_list(self, t, value, path):
-        if (type(value) is dict
-            and isinstance(t, TList)
-            and isinstance(t.element_t, TRecord)
-            and len(t.element_t.fields) == 2
-            and list(t.element_t.fields.values())[0] is tString):
-            return self._decode_list_dict(t.element_t, value, path)
+        if type(value) is dict and is_named_pair_list_t(t):
+            return self._decode_named_pair_list(t.element_t, value, path)
         return super().decode_list(t, value, path)
 
-    def _decode_list_dict(self, element_t, list_value, path):
+    def _decode_named_pair_list(self, element_t, list_value, path):
         key_t, value_t = element_t.fields.values()
         result = []
         for idx, (key, raw_value) in enumerate(list_value.items()):
@@ -97,12 +103,28 @@ class DefinitionDecoder(DictDecoder):
         return tuple(result)
 
 
+class DefinitionEncoder(DictEncoder):
+
+    def encode_list(self, t, value):
+        if is_named_pair_list_t(t):
+            return self._encode_named_pair_list(t.element_t, value)
+        return super().encode_list(t, value)
+
+    def _encode_named_pair_list(self, element_t, list_value):
+        name_attr, value_attr = element_t.fields
+        return {
+            getattr(element, name_attr): getattr(element, value_attr)
+            for element in list_value
+            }
+
+
 class ResourceType:
 
-    def __init__(self, types, mosaic, web, resource_t):
+    def __init__(self, types, mosaic, web, name, resource_t):
         self._types = types
         self._mosaic = mosaic
         self._web = web
+        self.name = name
         self.resource_t = resource_t
 
         resource_type_ref = self._types.reverse_resolve(self.resource_t)
@@ -119,9 +141,13 @@ class ResourceType:
             }
         self.definition_t = self._types.resolve(definition_type_ref)
 
-    def parse(self, data):
+    def from_dict(self, data):
         decoder = DefinitionDecoder()
         return decoder.decode_dict(self.definition_t, data)
+
+    def to_dict(self, definition):
+        encoder = DefinitionEncoder()
+        return encoder.encode(definition)
 
     def resolve(self, definition, resolve_name):
         resolver = NameResolver(self._ref_path_set, self._path_to_record_t, resolve_name)

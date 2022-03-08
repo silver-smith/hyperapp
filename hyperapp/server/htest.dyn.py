@@ -168,8 +168,6 @@ class HTest:
             module_name, root_dir / f'{module_rpath}.resources.yaml', allow_missing=True)
         module_resource_name = f'legacy_module.{module_name}'
         resource_module.add_import(module_resource_name)
-        import_set = {module_resource_name}
-        resource_dict = {}
         with self._subprocess_running() as process:
             call = process.rpc_call(self._runner_method_collect_attributes_ref)
             module = self._local_modules.by_name[module_name]
@@ -177,10 +175,10 @@ class HTest:
             global_list = call(module_ref)
             log.info("Global list: %s", global_list)
             for fn in global_list:
-                resource_dict.update(self._process_fn(resource_module, module_resource_name, name_to_module, import_set, fn))
-        return (import_set, resource_dict)
+                self._process_fn(resource_module, module_resource_name, name_to_module, fn)
+        return resource_module
 
-    def _process_fn(self, resource_module, object_name, name_to_module, import_set, fn_record):
+    def _process_fn(self, resource_module, object_name, name_to_module, fn_record):
         attr_resource_t = self._resource_type_reg['attribute']
         attr_resource = attr_resource_t.definition_t(
             object=object_name,
@@ -194,7 +192,6 @@ class HTest:
             resource_module_name = name_to_module[param_name]
             resource_name = f'{resource_module_name}.{param_name}'
             param_to_resource[param_name] = resource_name
-            import_set.add(resource_name)
             resource_module.add_import(resource_name)
         partial_resource_t = self._resource_type_reg['partial']
         partial_def_t = partial_resource_t.definition_t
@@ -224,12 +221,6 @@ class HTest:
         log.info("Function resource %s: %r", fn_record.name, fn_resource)
         fn = self._python_object_creg.animate(fn_resource)
         log.info("Function %s: %r", fn_record.name, fn)
-
-        return {
-            attr_resource_name: attr_resource,
-            partial_resource_name: partial_resource,
-            call_resource_name: call_resource,
-            }
 
 
 def runner_signal_queue():

@@ -46,6 +46,23 @@ class ResourceModule:
     def set_definition(self, var_name, resource_type, definition_value):
         self._definitions[var_name] = Definition(resource_type, definition_value)
 
+    def save(self):
+        self._path.write_text(yaml.dump(self.as_dict, sort_keys=False))
+
+    @property
+    def as_dict(self):
+        definitions = self._definitions  # Load before imports_set is used.
+        return {
+            'import': sorted(self._import_set),
+            'definitions': {
+                name: {
+                    'type': d.type.name,
+                    **d.type.to_dict(d.value),
+                    }
+                for name, d in sorted(definitions.items())
+                },
+            }
+
     def _resolve_name(self, name):
         if name in self._import_set:
             module_name, var_name = name.rsplit('.', 1)
@@ -91,7 +108,7 @@ class ResourceModule:
             type = self._resource_type_reg[type_name]
         except KeyError:
             raise RuntimeError(f"Unsupported resource type: {type_name!r}")
-        value = type.parse(data)
+        value = type.from_dict(data)
         return Definition(type, value)
 
 
