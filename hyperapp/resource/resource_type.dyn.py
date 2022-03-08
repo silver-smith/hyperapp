@@ -141,6 +141,12 @@ class ResourceType:
             }
         self.definition_t = self._types.resolve(definition_type_ref)
 
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return f"<ResourceType {self.name!r}:{self.resource_t}>"
+
     def from_dict(self, data):
         decoder = DefinitionDecoder()
         return decoder.decode_dict(self.definition_t, data)

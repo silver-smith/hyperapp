@@ -1,5 +1,7 @@
 import:
   - legacy_module.server.htest_runner
+  - legacy_service.mosaic
+  - legacy_service.types
   - legacy_service.python_object_creg
 
 definitions:
@@ -13,6 +15,8 @@ definitions:
     type: partial
     function: runner_attribute
     params:
+      mosaic: legacy_service.mosaic
+      types: legacy_service.types
       python_object_creg: legacy_service.python_object_creg
 
   runner:
@@ -23,3 +27,8 @@ definitions:
     type: attribute
     object: runner
     attr_name: collect_attributes
+
+  get_function_result_type:
+    type: attribute
+    object: runner
+    attr_name: get_function_result_type

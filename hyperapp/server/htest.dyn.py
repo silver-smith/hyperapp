@@ -97,6 +97,7 @@ class HTest:
             runner_signal_queue,
             runner_is_ready_fn_ref,
             runner_method_collect_attributes_ref,
+            runner_method_get_function_result_type_ref,
             ):
         self._mosaic = mosaic
         self._local_modules = local_modules
@@ -113,6 +114,7 @@ class HTest:
         self._runner_signal_queue = runner_signal_queue
         self._runner_is_ready_fn_ref = runner_is_ready_fn_ref
         self._runner_method_collect_attributes_ref = runner_method_collect_attributes_ref
+        self._runner_method_get_function_result_type_ref = runner_method_get_function_result_type_ref
 
     @contextmanager
     def _subprocess_running(self):
@@ -166,61 +168,82 @@ class HTest:
         module_rpath = module_name.replace('.', '/')
         resource_module = self._resource_module_factory(
             module_name, root_dir / f'{module_rpath}.resources.yaml', allow_missing=True)
-        module_resource_name = f'legacy_module.{module_name}'
-        resource_module.add_import(module_resource_name)
+        module_res_name = f'legacy_module.{module_name}'
+        resource_module.add_import(module_res_name)
         with self._subprocess_running() as process:
-            call = process.rpc_call(self._runner_method_collect_attributes_ref)
+            collect_attributes_call = process.rpc_call(self._runner_method_collect_attributes_ref)
             module = self._local_modules.by_name[module_name]
             module_ref = self._mosaic.put(module)
-            global_list = call(module_ref)
+            global_list = collect_attributes_call(module_ref)
             log.info("Global list: %s", global_list)
-            for fn in global_list:
-                self._process_fn(resource_module, module_resource_name, name_to_module, fn)
+            for globl in global_list:
+                self._process_fn(resource_module, process, collect_attributes_call, module_res_name, name_to_module, globl)
         return resource_module
 
-    def _process_fn(self, resource_module, object_name, name_to_module, fn_record):
-        attr_resource_t = self._resource_type_reg['attribute']
-        attr_resource = attr_resource_t.definition_t(
-            object=object_name,
-            attr_name=fn_record.name,
+    def _process_fn(self, resource_module, process, collect_attributes_call, module_res_name, name_to_module, globl):
+        attr_res_t = self._resource_type_reg['attribute']
+        attr_def = attr_res_t.definition_t(
+            object=module_res_name,
+            attr_name=globl.name,
             )
-        attr_resource_name = f'{fn_record.name}_attribute'
-        log.info("%r: %r", attr_resource_name, attr_resource)
+        attr_res_name = f'{globl.name}_attribute'
 
         param_to_resource = {}
-        for param_name in fn_record.param_list:
+        for param_name in globl.param_list:
             resource_module_name = name_to_module[param_name]
             resource_name = f'{resource_module_name}.{param_name}'
             param_to_resource[param_name] = resource_name
             resource_module.add_import(resource_name)
-        partial_resource_t = self._resource_type_reg['partial']
-        partial_def_t = partial_resource_t.definition_t
+        partial_res_t = self._resource_type_reg['partial']
+        partial_def_t = partial_res_t.definition_t
         partial_param_def_t = partial_def_t.fields['params'].element_t
-        partial_resource = partial_def_t(
-            function=attr_resource_name,
+        partial_def = partial_def_t(
+            function=attr_res_name,
             params=[
                 partial_param_def_t(param_name, resource_name)
                 for param_name, resource_name
                 in param_to_resource.items()
                 ],
             )
-        partial_resource_name = f'{fn_record.name}_partial'
-        log.info("%r: %r", partial_resource_name, partial_resource)
+        partial_res_name = f'{globl.name}_partial'
 
-        call_resource_t = self._resource_type_reg['call']
-        call_resource = call_resource_t.definition_t(
-            function=partial_resource_name,
+        call_res_t = self._resource_type_reg['call']
+        call_def = call_res_t.definition_t(
+            function=partial_res_name,
             )
-        call_resource_name = fn_record.name
+        call_res_name = globl.name
 
-        resource_module.set_definition(attr_resource_name, attr_resource_t, attr_resource)
-        resource_module.set_definition(partial_resource_name, partial_resource_t, partial_resource)
-        resource_module.set_definition(call_resource_name, call_resource_t, call_resource)
+        resource_module.set_definition(attr_res_name, attr_res_t, attr_def)
+        resource_module.set_definition(partial_res_name, partial_res_t, partial_def)
+        resource_module.set_definition(call_res_name, call_res_t, call_def)
 
-        fn_resource = resource_module[fn_record.name]
-        log.info("Function resource %s: %r", fn_record.name, fn_resource)
-        fn = self._python_object_creg.animate(fn_resource)
-        log.info("Function %s: %r", fn_record.name, fn)
+        object_res = resource_module[globl.name]
+        log.info("Function resource %s: %r", globl.name, object_res)
+        attr_list = collect_attributes_call(self._mosaic.put(object_res))
+        log.info("Attributes for %s: %r", globl.name, attr_list)
+
+        for attr in attr_list:
+            if attr.param_list in {(), ('request',)}:
+                self._process_service(resource_module, process, globl, object_res, attr)
+
+    def _process_service(self, resource_module, process, globl, object_res, attr):
+        attr_res_t = self._resource_type_reg['attribute']
+        attr_def = attr_res_t.definition_t(
+            object=globl.name,
+            attr_name=attr.name,
+            )
+        attr_res_name = f'{globl.name}_{attr.name}_method'
+        resource_module.set_definition(attr_res_name, attr_res_t, attr_def)
+        attr_res = resource_module[attr_res_name]
+        attr_res_ref = self._mosaic.put(attr_res)
+
+        get_result_call = process.rpc_call(self._runner_method_get_function_result_type_ref)
+        if attr.param_list == ('request',):
+            args = [None]
+        else:
+            args = []
+        result_t = get_result_call(attr_res_ref, *args)
+        log.info("Attribute %s.%s result type: %r", globl.name, attr.name, result_t)
 
 
 def runner_signal_queue():

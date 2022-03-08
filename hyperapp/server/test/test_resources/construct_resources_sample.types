@@ -1,0 +1,5 @@
+
+sample_item = record:
+  key: int
+  name: string
+  description: string

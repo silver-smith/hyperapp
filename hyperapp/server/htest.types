@@ -19,3 +19,7 @@ test = record:
 
 storage = record:
   test_module_list: test_module list
+
+
+list_t = record:
+  attr_name_list: string list

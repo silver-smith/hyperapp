@@ -14,6 +14,7 @@ import:
   - legacy_service.server_identity
   - legacy_service.server_rpc_endpoint
   - server.htest_runner.runner_method_collect_attributes
+  - server.htest_runner.get_function_result_type
 
 definitions:
 
@@ -50,6 +51,10 @@ definitions:
     type: piece_ref
     value: server.htest_runner.runner_method_collect_attributes
 
+  runner_method_get_function_result_type_ref:
+    type: piece_ref
+    value: server.htest_runner.get_function_result_type
+
   htest_factory:
     type: partial
     function: htest_ctr
@@ -69,6 +74,7 @@ definitions:
       runner_signal_queue: runner_signal_queue
       runner_is_ready_fn_ref: runner_is_ready_fn_ref
       runner_method_collect_attributes_ref: runner_method_collect_attributes_ref
+      runner_method_get_function_result_type_ref: runner_method_get_function_result_type_ref
 
   htest:
     type: call

@@ -2,3 +2,4 @@ import:
   types:
     htest:
       - global_fn
+      - list_t
