@@ -1,4 +1,6 @@
 
+SampleServant_d = record
+
 sample_item = record:
   key: int
   name: string

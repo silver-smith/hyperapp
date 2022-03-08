@@ -53,3 +53,6 @@ def test_resources(services):
     resource_module = htest.construct_resources('construct_resources_sample', TEST_RESOURCE_DIR)
     log.info("Resource module:\n%s", yaml.dump(resource_module.as_dict, sort_keys=False))
     # resource_module.save()
+    # service_res = resource_module['SampleServant_service']
+    # service = services.python_object_creg.animate(service_res)
+    # log.info("Service: %r", service)

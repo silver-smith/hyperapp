@@ -177,10 +177,10 @@ class HTest:
             global_list = collect_attributes_call(module_ref)
             log.info("Global list: %s", global_list)
             for globl in global_list:
-                self._process_fn(resource_module, process, collect_attributes_call, module_res_name, name_to_module, globl)
+                self._process_fn(module_name, resource_module, process, collect_attributes_call, module_res_name, name_to_module, globl)
         return resource_module
 
-    def _process_fn(self, resource_module, process, collect_attributes_call, module_res_name, name_to_module, globl):
+    def _process_fn(self, module_name, resource_module, process, collect_attributes_call, module_res_name, name_to_module, globl):
         attr_res_t = self._resource_type_reg['attribute']
         attr_def = attr_res_t.definition_t(
             object=module_res_name,
@@ -224,9 +224,9 @@ class HTest:
 
         for attr in attr_list:
             if attr.param_list in {(), ('request',)}:
-                self._process_service(resource_module, process, globl, object_res, attr)
+                self._process_service(module_name, resource_module, process, globl, object_res, attr)
 
-    def _process_service(self, resource_module, process, globl, object_res, attr):
+    def _process_service(self, module_name, resource_module, process, globl, object_res, attr):
         attr_res_t = self._resource_type_reg['attribute']
         attr_def = attr_res_t.definition_t(
             object=globl.name,
@@ -244,6 +244,35 @@ class HTest:
             args = []
         result_t = get_result_call(attr_res_ref, *args)
         log.info("Attribute %s.%s result type: %r", globl.name, attr.name, result_t)
+
+        for key_attribute in ['id', 'key', 'name']:
+            if key_attribute in result_t.attr_name_list:
+                break
+        else:
+            raise RuntimeError(f"Unable to deduce key attribute for {globl.name}.{attr.name}: {result_t}")
+
+        module_type_name = module_name.split('.')[-1]
+        dir_t_res_name = f'legacy_type.{module_type_name}.{globl.name}_d'
+        call_res_t = self._resource_type_reg['call']
+        dir_def = call_res_t.definition_t(
+            function=dir_t_res_name,
+            )
+        dir_res_name = f'{globl.name}_d'
+        resource_module.add_import(dir_t_res_name)
+        resource_module.set_definition(dir_res_name, call_res_t, dir_def)
+
+        identity_res_name = 'legacy_service.server_identity'
+        service_res_t = self._resource_type_reg['list_service']
+        service_def = service_res_t.definition_t(
+            identity='legacy_service.server_identity',
+            function=attr_res_name,
+            dir=dir_res_name,
+            commands=[],
+            key_attribute=key_attribute,
+            )
+        service_res_name = f'{globl.name}_service'
+        resource_module.add_import(identity_res_name)
+        resource_module.set_definition(service_res_name, service_res_t, service_def)
 
 
 def runner_signal_queue():
