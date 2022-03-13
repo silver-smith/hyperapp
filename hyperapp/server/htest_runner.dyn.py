@@ -35,7 +35,7 @@ class Runner:
                     continue
                 raise
             param_list = list(signature.parameters.keys())
-            yield htypes.htest.global_fn(name, param_list)
+            yield htypes.htest.attr(name, param_list)
 
 
     def get_function_result_type(self, request, function_ref, *args):

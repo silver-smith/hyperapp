@@ -1,6 +1,5 @@
 import logging
 import queue
-import re
 from contextlib import contextmanager
 from functools import cached_property, partial
 from pathlib import Path
@@ -11,12 +10,6 @@ from hyperapp.common.module import Module
 from . import htypes
 
 log = logging.getLogger(__name__)
-
-
-# https://stackoverflow.com/a/1176023 Camel case to snake case.
-def camel_to_snake(name):
-    name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
 
 
 class HTestList:
@@ -104,7 +97,7 @@ class HTest:
             runner_signal_queue,
             runner_is_ready_fn_ref,
             runner_method_collect_attributes_ref,
-            runner_method_get_function_result_type_ref,
+            construct_global,
             ):
         self._mosaic = mosaic
         self._local_modules = local_modules
@@ -121,7 +114,7 @@ class HTest:
         self._runner_signal_queue = runner_signal_queue
         self._runner_is_ready_fn_ref = runner_is_ready_fn_ref
         self._runner_method_collect_attributes_ref = runner_method_collect_attributes_ref
-        self._runner_method_get_function_result_type_ref = runner_method_get_function_result_type_ref
+        self._construct_global = construct_global
 
     @contextmanager
     def _subprocess_running(self):
@@ -184,7 +177,7 @@ class HTest:
             global_list = collect_attributes_call(module_ref)
             log.info("Global list: %s", global_list)
             for globl in global_list:
-                self._process_global(module_name, resource_module, process, collect_attributes_call, module_res_name, name_to_module, globl)
+                self._construct_global(module_name, resource_module, process, module_res_name, name_to_module, globl)
         return resource_module
 
     def _process_global(self, module_name, resource_module, process, collect_attributes_call, module_res_name, name_to_module, globl):

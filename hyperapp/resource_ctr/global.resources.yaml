@@ -1,0 +1,31 @@
+import:
+  - legacy_module.resource_ctr.global
+  - legacy_service.mosaic
+  - legacy_service.resource_type_reg
+  - legacy_service.resource_module_registry
+  - server.htest_runner.runner_method_collect_attributes
+  - server.htest_runner.get_function_result_type
+
+definitions:
+
+  runner_method_collect_attributes_ref:
+    type: piece_ref
+    value: server.htest_runner.runner_method_collect_attributes
+
+  runner_method_get_function_result_type_ref:
+    type: piece_ref
+    value: server.htest_runner.get_function_result_type
+
+  construct_global_attribute:
+    type: attribute
+    object: legacy_module.resource_ctr.global
+    attr_name: construct_global
+
+  construct_global:
+    type: partial
+    function: construct_global_attribute
+    params:
+      mosaic: legacy_service.mosaic
+      resource_type_reg: legacy_service.resource_type_reg
+      resource_module_registry: legacy_service.resource_module_registry
+      runner_method_collect_attributes_ref: runner_method_collect_attributes_ref

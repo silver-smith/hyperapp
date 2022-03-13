@@ -4,7 +4,7 @@ htest_list_d = record
 htest_global_list_d = record
 
 
-global_fn = record:
+attr = record:
   name: string
   param_list: string list
 
@@ -12,7 +12,7 @@ test_module = record:
   module_name: string
   module_ref: ref
   test_list: string list
-  global_list: global_fn list
+  global_list: attr list
 
 test = record:
   name: string

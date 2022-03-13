@@ -6,7 +6,6 @@ import:
       - rpc_command
     htest:
       - htest_global_list_d
-      - global_fn
 require:
   - server_identity
   - server_rpc_endpoint
