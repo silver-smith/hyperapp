@@ -49,7 +49,7 @@ def test_resources(services):
 
 def test_definition_type(services, htypes, code):
     resource_t = htypes.partial.partial
-    resource_type = code.resource_type.ResourceType(services.types, services.mosaic, services.web, resource_t)
+    resource_type = code.resource_type.ResourceType(services.types, services.mosaic, services.web, 'partial', resource_t)
     log.info("definition_t: %r", resource_type.definition_t)
     assert resource_type.definition_t == TRecord('partial', {
         'function': tString,
@@ -62,7 +62,7 @@ def test_definition_type(services, htypes, code):
 
 def test_read_definition(services, htypes, code):
     resource_t = htypes.partial.partial
-    resource_type = code.resource_type.ResourceType(services.types, services.mosaic, services.web, resource_t)
+    resource_type = code.resource_type.ResourceType(services.types, services.mosaic, services.web, 'partial', resource_t)
     log.info("definition_t: %r", resource_type.definition_t)
     definition_dict = {
         'function': 'some_function',
@@ -85,7 +85,7 @@ def test_read_definition(services, htypes, code):
 
 def test_resolve_definition_partial(services, htypes, code):
     resource_t = htypes.partial.partial
-    resource_type = code.resource_type.ResourceType(services.types, services.mosaic, services.web, resource_t)
+    resource_type = code.resource_type.ResourceType(services.types, services.mosaic, services.web, 'partial', resource_t)
     param_t = resource_type.definition_t.fields['params'].element_t
     definition = resource_type.definition_t(
         function='some_function',
@@ -117,7 +117,7 @@ def test_resolve_definition_partial(services, htypes, code):
 # Inherited record result_t should also work.
 def test_resolve_definition_list_service(services, htypes, code):
     resource_t = htypes.resource_service.list_service
-    resource_type = code.resource_type.ResourceType(services.types, services.mosaic, services.web, resource_t)
+    resource_type = code.resource_type.ResourceType(services.types, services.mosaic, services.web, 'partial', resource_t)
     definition = resource_type.definition_t(
         identity='some_identity',
         function='some_function',
