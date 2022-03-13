@@ -253,6 +253,10 @@ class HTest:
         result_t = get_result_call(attr_res_ref, *args)
         log.info("Attribute %s.%s result type: %r", global_snake_name, attr.name, result_t)
 
+        if isinstance(result_t, htypes.htest.list_t):
+            self._process_list_service(module_name, resource_module, process, global_snake_name, attr, attr_res_name, result_t)
+
+    def _process_list_service(self, module_name, resource_module, process, global_snake_name, attr, attr_res_name, result_t):
         for key_attribute in ['id', 'key', 'name']:
             if key_attribute in result_t.attr_name_list:
                 break
