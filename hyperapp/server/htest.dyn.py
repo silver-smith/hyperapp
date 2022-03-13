@@ -231,19 +231,13 @@ class HTest:
         log.info("Attributes for %s: %r", global_snake_name, attr_list)
 
         for attr in attr_list:
+            if 'current_key' in attr.param_list:
+                self._process_command(resource_module, global_snake_name, attr, state_attributes=['current_key'])
             if attr.param_list in {(), ('request',)}:
                 self._process_service(module_name, resource_module, process, global_snake_name, object_res, attr)
 
     def _process_service(self, module_name, resource_module, process, global_snake_name, object_res, attr):
-        attr_res_t = self._resource_type_reg['attribute']
-        attr_def = attr_res_t.definition_t(
-            object=global_snake_name,
-            attr_name=attr.name,
-            )
-        attr_res_name = f'{global_snake_name}_{attr.name}_method'
-        resource_module.set_definition(attr_res_name, attr_res_t, attr_def)
-        attr_res = resource_module[attr_res_name]
-        attr_res_ref = self._mosaic.put(attr_res)
+        attr_res_name, attr_res_ref = self._add_method(resource_module, global_snake_name, attr)
 
         get_result_call = process.rpc_call(self._runner_method_get_function_result_type_ref)
         if attr.param_list == ('request',):
@@ -276,7 +270,7 @@ class HTest:
         identity_res_name = 'legacy_service.server_identity'
         service_res_t = self._resource_type_reg['list_service']
         service_def = service_res_t.definition_t(
-            identity='legacy_service.server_identity',
+            identity=identity_res_name,
             function=attr_res_name,
             dir=dir_res_name,
             commands=[],
@@ -285,6 +279,32 @@ class HTest:
         service_res_name = f'{global_snake_name}_service'
         resource_module.add_import(identity_res_name)
         resource_module.set_definition(service_res_name, service_res_t, service_def)
+
+    def _process_command(self, resource_module, global_snake_name, attr, state_attributes):
+        attr_res_name, attr_res_ref = self._add_method(resource_module, global_snake_name, attr)
+
+        identity_res_name = 'legacy_service.server_identity'
+        rpc_command_res_t = self._resource_type_reg['rpc_command']
+        rpc_command_def = rpc_command_res_t.definition_t(
+            identity=identity_res_name,
+            function=attr_res_name,
+            state_attributes=state_attributes,
+            name=attr.name,
+            )
+        rpc_command_res_name = f'{global_snake_name}_{attr.name}_command'
+        resource_module.add_import(identity_res_name)
+        resource_module.set_definition(rpc_command_res_name, rpc_command_res_t, rpc_command_def)
+
+    def _add_method(self, resource_module, global_snake_name, attr):
+        attr_res_t = self._resource_type_reg['attribute']
+        attr_def = attr_res_t.definition_t(
+            object=global_snake_name,
+            attr_name=attr.name,
+            )
+        attr_res_name = f'{global_snake_name}_{attr.name}_method'
+        resource_module.set_definition(attr_res_name, attr_res_t, attr_def)
+        attr_res = resource_module[attr_res_name]
+        return (attr_res_name, self._mosaic.put(attr_res))
 
 
 def runner_signal_queue():
