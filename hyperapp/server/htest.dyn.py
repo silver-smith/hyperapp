@@ -249,6 +249,8 @@ class HTest:
 
         if isinstance(result_t, htypes.htest.list_t):
             self._process_list_service(module_name, resource_module, process, global_snake_name, attr, attr_res_name, result_t)
+        else:
+            self._process_command(resource_module, global_snake_name, attr, state_attributes=[])
 
     def _process_list_service(self, module_name, resource_module, process, global_snake_name, attr, attr_res_name, result_t):
         for key_attribute in ['id', 'key', 'name']:

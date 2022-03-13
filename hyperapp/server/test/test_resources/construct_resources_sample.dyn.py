@@ -27,5 +27,8 @@ class SampleServant:
     def open(self, request, current_key):
         pass
 
+    def parent(self, request):
+        pass
+
 
 log.info("construct_resources_sample module is loaded")
