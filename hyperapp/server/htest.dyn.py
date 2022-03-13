@@ -184,10 +184,10 @@ class HTest:
             global_list = collect_attributes_call(module_ref)
             log.info("Global list: %s", global_list)
             for globl in global_list:
-                self._process_fn(module_name, resource_module, process, collect_attributes_call, module_res_name, name_to_module, globl)
+                self._process_global(module_name, resource_module, process, collect_attributes_call, module_res_name, name_to_module, globl)
         return resource_module
 
-    def _process_fn(self, module_name, resource_module, process, collect_attributes_call, module_res_name, name_to_module, globl):
+    def _process_global(self, module_name, resource_module, process, collect_attributes_call, module_res_name, name_to_module, globl):
         global_snake_name = camel_to_snake(globl.name)
         attr_res_t = self._resource_type_reg['attribute']
         attr_def = attr_res_t.definition_t(
