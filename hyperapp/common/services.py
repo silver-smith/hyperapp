@@ -60,11 +60,11 @@ class Services(object):
         register_code_module_types(self.builtin_types, self.mosaic, self.types)
         self.type_module_loader = TypeModuleLoader(self.builtin_types, self.mosaic, self.types)
         self.code_module_loader = CodeModuleLoader(self.mosaic, self.type_module_loader.registry)
-        self._python_importer = PythonImporter()
+        self.python_importer = PythonImporter()
         self._module_code_registry = CodeRegistry('module', self.web, self.types)
         self._module_code_registry.register_actor(code_module_t, CodeModule.from_piece, self.types, self.web)
-        self.module_registry = ModuleRegistry(self.mosaic, self.web, self._python_importer, self._module_code_registry, self.on_start)
-        self._python_importer.register_meta_hook()
+        self.module_registry = ModuleRegistry(self.mosaic, self.web, self.python_importer, self._module_code_registry, self.on_start)
+        self.python_importer.register_meta_hook()
 
     def stop(self):
         log.info("Stop services.")
@@ -73,7 +73,7 @@ class Services(object):
         for stop in reversed(self.on_stop):
             stop()
         log.info('Stopping modules: done')
-        self._python_importer.remove_modules()
+        self.python_importer.remove_modules()
         self._is_stopped = True
         log.info("Services are stopped.")
 
@@ -83,11 +83,11 @@ class Services(object):
             self.type_module_loader.load_type_modules(self.module_dir_list)
             self._load_code_module_list(code_module_list, config or {})
         except:
-            self._python_importer.unregister_meta_hook()
+            self.python_importer.unregister_meta_hook()
             raise
 
     def unregister_import_meta_hook(self):
-        self._python_importer.unregister_meta_hook()
+        self.python_importer.unregister_meta_hook()
 
     def _load_code_module_list(self, module_name_list, config):
         local_modules = self.code_module_loader.load_code_modules(self.module_dir_list)

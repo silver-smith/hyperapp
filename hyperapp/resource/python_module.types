@@ -2,3 +2,4 @@
 python_module = record:
   module_name: string
   source: string
+  file_path: string

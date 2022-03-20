@@ -1,0 +1,6 @@
+import:
+  types:
+    python_module:
+      - python_module
+require:
+  - python_object_creg
