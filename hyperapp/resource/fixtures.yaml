@@ -1,0 +1,8 @@
+import:
+  types:
+    python_module:
+      - python_module
+require:
+  - resource_module_factory
+  - resource_module_registry
+  - resource_type_factory

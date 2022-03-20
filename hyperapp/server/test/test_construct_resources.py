@@ -42,7 +42,14 @@ def code_module_list():
         'resource.rpc_command',
         'resource.rpc_callback',
         'resource.map_service',
+        'resource.fixtures',
         ]
+
+
+def test_fixture(services):
+    fixtures_module = services.resource_module_registry['fixtures']
+    fixture = fixtures_module['construct_resources_sample']
+    log.info("Sample fixture: %r", fixture)
 
 
 @pytest.fixture

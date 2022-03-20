@@ -14,14 +14,13 @@ Definition = namedtuple('Definition', 'type value')
 
 class ResourceModule:
 
-    def __init__(self, mosaic, resource_type_reg, resource_module_registry, name, path, allow_missing=False):
+    def __init__(self, mosaic, resource_type_reg, resource_module_registry, name, path=None, allow_missing=False):
         self._mosaic = mosaic
         self._resource_type_reg = resource_type_reg
         self._resource_module_registry = resource_module_registry
         self._name = name
         self._path = path
         self._import_set = None
-        self._should_load = True
         self._allow_missing = allow_missing
 
     def __contains__(self, var_name):
@@ -49,6 +48,8 @@ class ResourceModule:
         self._definitions[var_name] = Definition(resource_type, definition_value)
 
     def save(self):
+        if self._path is None:
+            raise RuntimeError(f"Attempt to save ethemeral resource module: {self._name}")
         self._path.write_text(yaml.dump(self.as_dict, sort_keys=False))
 
     @property
@@ -81,6 +82,8 @@ class ResourceModule:
         return definitions
 
     def _load(self):
+        if self._path is None:
+            return ({}, set())
         log.info("Loading resource module %s: %s", self._name, self._path)
         try:
             contents = yaml.safe_load(self._path.read_text())
