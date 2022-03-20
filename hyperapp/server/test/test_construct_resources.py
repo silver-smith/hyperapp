@@ -45,13 +45,23 @@ def code_module_list():
         ]
 
 
-def test_resources(services):
+@pytest.fixture
+def compare():
+    def inner(resource_module, expected_fname):
+        expected_yaml = TEST_RESOURCE_DIR.joinpath(expected_fname + '.resources.yaml').read_text()
+        actual_yaml = yaml.dump(resource_module.as_dict, sort_keys=False)
+        assert expected_yaml == actual_yaml
+    return inner
+
+
+def test_resources(services, compare):
     htest_module = services.resource_module_registry['server.htest']
     htest_resource = htest_module['htest']
     htest = services.python_object_creg.animate(htest_resource)
     log.info("Htest: %r", htest)
     resource_module = htest.construct_resources('construct_resources_sample', TEST_RESOURCE_DIR)
     log.info("Resource module:\n%s", yaml.dump(resource_module.as_dict, sort_keys=False))
+    compare(resource_module, 'reference')
     # resource_module.save()
     # service_res = resource_module['sample_servant_service']
     # service = services.python_object_creg.animate(service_res)
