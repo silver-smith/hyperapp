@@ -3,6 +3,7 @@ import logging
 from hyperapp.common.module import Module
 
 from . import htypes
+from .python_module import load_python_module
 
 log = logging.getLogger(__name__)
 
@@ -14,16 +15,12 @@ def load_fixtures(resource_module, resource_type, module_dir_list):
             if 'test' in path.relative_to(root_dir).parts:
                 continue  # Skip test subdirectories.
             rpath = str(path.relative_to(root_dir))
+            path_stem = path.parent.joinpath(path.name[:-len(ext)])
             module_name = rpath[:-len(ext)].replace('/', '.')
-            module = htypes.python_module.python_module(
-                module_name=module_name,
-                source=path.read_text(),
-                file_path=str(path),
-                )
+            module = load_python_module(module_name, path_stem, path)
             log.info("Fixture %s: %s", module_name, path)
             resource_module.set_definition(module_name, resource_type, module)
             
-
 
 class ThisModule(Module):
 

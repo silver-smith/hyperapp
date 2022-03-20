@@ -1,5 +1,10 @@
 
+import_rec = record:
+  full_name: string
+  resource: ref
+
 python_module = record:
   module_name: string
   source: string
   file_path: string
+  import_list: import_rec list

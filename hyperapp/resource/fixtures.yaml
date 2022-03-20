@@ -2,6 +2,8 @@ import:
   types:
     python_module:
       - python_module
+  code:
+    - resource.python_module
 require:
   - resource_module_factory
   - resource_module_registry

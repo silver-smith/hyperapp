@@ -1,0 +1,6 @@
+import:
+  - legacy_type.construct_resources_sample.sample_item
+module_imports:
+  htypes:
+    construct_resources_sample:
+      sample_item: legacy_type.construct_resources_sample.sample_item
