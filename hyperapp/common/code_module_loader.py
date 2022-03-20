@@ -5,9 +5,6 @@ import yaml
 from .code_module import type_import_t, code_import_t, code_module_t
 
 
-DYN_MODULE_SUFFIX = '.dyn.py'
-
-
 _ModuleInfo = namedtuple('_ModuleInfo', 'info_path source_path type_import_dict code_import_list provide require')
 
 
@@ -35,18 +32,19 @@ class CodeModuleLoader:
         return registry
 
     def _load_modules_info(self, root_dir):
+        ext = '.dyn.py'
         name_to_info = {}
-        for info_path in root_dir.rglob('*.yaml'):
-            if info_path.name.endswith('.resources.yaml'):
-                continue  # Skip resources.
-            if 'test' in info_path.relative_to(root_dir).parts:
+        for source_path in root_dir.rglob(f'*{ext}'):
+            if 'test' in source_path.relative_to(root_dir).parts:
                 continue  # Skip test subdirectories.
-            module_name = '.'.join(info_path.with_suffix('').relative_to(root_dir).parts)
+            info_path = source_path.parent.joinpath(source_path.name[:-len(ext)] + '.yaml')
+            rpath = str(source_path.relative_to(root_dir))
+            module_name = rpath[:-len(ext)].replace('/', '.')
             raw_info = yaml.safe_load(info_path.read_text()) or {}
             imports = raw_info.get('import', {})
             info = _ModuleInfo(
                 info_path=info_path,
-                source_path=info_path.with_suffix(DYN_MODULE_SUFFIX),
+                source_path=source_path,
                 type_import_dict=imports.get('types', {}),
                 code_import_list=imports.get('code', []),
                 provide=raw_info.get('provide', []),
