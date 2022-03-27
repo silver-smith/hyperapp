@@ -1,6 +1,6 @@
 from functools import cached_property, partial
 
-from hyperapp.common.htypes import TList, TRecord, tString, ref_t, builtin_mt, name_wrapped_mt, field_mt, record_mt
+from hyperapp.common.htypes import ref_t, builtin_mt, name_wrapped_mt, field_mt, record_mt
 from hyperapp.common.mapper import Mapper
 from hyperapp.common.dict_decoders import NamedPairsDictDecoder
 from hyperapp.common.dict_encoders import NamedPairsDictEncoder

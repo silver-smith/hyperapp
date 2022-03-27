@@ -1,6 +1,7 @@
 import codecs
 import logging
 import yaml
+from collections import defaultdict
 
 from hyperapp.common.dict_decoders import NamedPairsDictDecoder
 from hyperapp.common.dict_encoders import NamedPairsDictEncoder
@@ -92,12 +93,49 @@ class _CodeModuleLoader(Finder):
         exec(ast, module.__dict__)
 
 
+class _DictLoader(Finder):
+
+    def __init__(self, globals):
+        self._globals = globals
+
+    def exec_module(self, module):
+        module.__dict__.update(self._globals)
+
+
+class _PackageLoader(Finder):
+
+    _is_package = True
+
+    def exec_module(self, module):
+        pass
+
+
+
 def make_module_name(mosaic, module):
     module_ref = mosaic.put(module)
     hash_hex = codecs.encode(module_ref.hash[:10], 'hex').decode()
     return f'{ROOT_PACKAGE}.{module_ref.hash_algorithm}_{hash_hex}'
 
 
+def sub_loader_dict(python_object_creg, import_list):
+    loader_dict = {}
+    module_dict = defaultdict(dict)
+    for rec in import_list:
+        path = rec.full_name.split('.')
+        for i in range(len(path) - 1):
+            package_name = '.'.join(path[:i])
+            if package_name not in loader_dict:
+                loader_dict[package_name] = _PackageLoader()
+        module_name = '.'.join(path[:-1])
+        name = path[-1]
+        module_dict[module_name][name] = python_object_creg.invite(rec.resource)
+    loader_dict.update({
+        name: _DictLoader(globals)
+        for name, globals in module_dict.items()
+        })
+    return loader_dict
+
+                
 def python_object(piece, mosaic, python_importer, python_object_creg):
     module_name = make_module_name(mosaic, piece)
     assert not python_importer.module_imported(module_name)
@@ -106,7 +144,9 @@ def python_object(piece, mosaic, python_importer, python_object_creg):
         source=piece.source,
         file_path=piece.file_path,
         )
-    return python_importer.import_module(module_name, root_loader, sub_loader_dict={})
+    return python_importer.import_module(
+        module_name, root_loader,
+        sub_loader_dict=sub_loader_dict(python_object_creg, piece.import_list))
             
 
 class ThisModule(Module):
