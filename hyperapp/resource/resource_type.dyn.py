@@ -2,8 +2,8 @@ from functools import cached_property, partial
 
 from hyperapp.common.htypes import TList, TRecord, tString, ref_t, builtin_mt, name_wrapped_mt, field_mt, record_mt
 from hyperapp.common.mapper import Mapper
-from hyperapp.common.dict_decoders import DictDecoder, join_path
-from hyperapp.common.dict_encoders import DictEncoder
+from hyperapp.common.dict_decoders import NamedPairsDictDecoder
+from hyperapp.common.dict_encoders import NamedPairsDictEncoder
 from hyperapp.common.module import Module
 
 
@@ -78,46 +78,6 @@ class NameResolver(Mapper):
         return (*context, name)
 
 
-def is_named_pair_list_t(t):
-    return (
-        isinstance(t, TList)
-        and isinstance(t.element_t, TRecord)
-        and len(t.element_t.fields) == 2
-        and list(t.element_t.fields.values())[0] is tString
-        )
-
-
-class DefinitionDecoder(DictDecoder):
-
-    def decode_list(self, t, value, path):
-        if type(value) is dict and is_named_pair_list_t(t):
-            return self._decode_named_pair_list(t.element_t, value, path)
-        return super().decode_list(t, value, path)
-
-    def _decode_named_pair_list(self, element_t, list_value, path):
-        key_t, value_t = element_t.fields.values()
-        result = []
-        for idx, (key, raw_value) in enumerate(list_value.items()):
-            value = self.dispatch(value_t, raw_value, join_path(path, f'#{idx}', 'value'))
-            result.append(element_t(key, value))
-        return tuple(result)
-
-
-class DefinitionEncoder(DictEncoder):
-
-    def encode_list(self, t, value):
-        if is_named_pair_list_t(t):
-            return self._encode_named_pair_list(t.element_t, value)
-        return super().encode_list(t, value)
-
-    def _encode_named_pair_list(self, element_t, list_value):
-        name_attr, value_attr = element_t.fields
-        return {
-            getattr(element, name_attr): getattr(element, value_attr)
-            for element in list_value
-            }
-
-
 class ResourceType:
 
     def __init__(self, types, mosaic, web, name, resource_t):
@@ -148,11 +108,11 @@ class ResourceType:
         return f"<ResourceType {self.name!r}:{self.resource_t}>"
 
     def from_dict(self, data):
-        decoder = DefinitionDecoder()
+        decoder = NamedPairsDictDecoder()
         return decoder.decode_dict(self.definition_t, data)
 
     def to_dict(self, definition):
-        encoder = DefinitionEncoder()
+        encoder = NamedPairsDictEncoder()
         return encoder.encode(definition)
 
     def resolve(self, definition, resolve_name):

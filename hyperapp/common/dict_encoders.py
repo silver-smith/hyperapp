@@ -20,6 +20,7 @@ from .htypes import (
     ref_t,
     )
 from .htypes.deduce_value_type import deduce_value_type
+from .named_pairs_coder import is_named_pair_list_t
 
 
 class DictEncoder(metaclass=abc.ABCMeta):
@@ -92,6 +93,21 @@ class DictEncoder(metaclass=abc.ABCMeta):
             type_name=decoded_capsule.t.name,  # Ignored by decoder - just for readability.
             value=value,
             )
+
+
+class NamedPairsDictEncoder(DictEncoder):
+
+    def encode_list(self, t, value):
+        if is_named_pair_list_t(t):
+            return self._encode_named_pair_list(t.element_t, value)
+        return super().encode_list(t, value)
+
+    def _encode_named_pair_list(self, element_t, list_value):
+        name_attr, value_attr = element_t.fields
+        return {
+            getattr(element, name_attr): getattr(element, value_attr)
+            for element in list_value
+            }
 
 
 class JsonEncoder(DictEncoder):

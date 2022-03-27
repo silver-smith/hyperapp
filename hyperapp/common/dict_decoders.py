@@ -20,6 +20,7 @@ from .htypes import (
     ref_t,
     )
 from .htypes.packet_coders import DecodeError
+from .named_pairs_coder import is_named_pair_list_t
 
 
 def join_path(*args):
@@ -126,6 +127,21 @@ class DictDecoder(metaclass=abc.ABCMeta):
         ref = self._mosaic.put(value, t)
         return ref
 
+
+class NamedPairsDictDecoder(DictDecoder):
+
+    def decode_list(self, t, value, path):
+        if type(value) is dict and is_named_pair_list_t(t):
+            return self._decode_named_pair_list(t.element_t, value, path)
+        return super().decode_list(t, value, path)
+
+    def _decode_named_pair_list(self, element_t, list_value, path):
+        key_t, value_t = element_t.fields.values()
+        result = []
+        for idx, (key, raw_value) in enumerate(list_value.items()):
+            value = self.dispatch(value_t, raw_value, join_path(path, f'#{idx}', 'value'))
+            result.append(element_t(key, value))
+        return tuple(result)
 
 class DictDecoderBase(DictDecoder, metaclass=abc.ABCMeta):
 
