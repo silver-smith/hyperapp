@@ -1,0 +1,8 @@
+import:
+  - legacy_type.construct_resources_sample.sample_item
+definitions:
+  sample_python_module:
+    type: python_module
+    module_name: sample_python_module
+    file_name: sample_python_module.dyn.py
+    import_list: []

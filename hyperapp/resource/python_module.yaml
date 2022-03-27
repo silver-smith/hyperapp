@@ -2,5 +2,8 @@ import:
   types:
     python_module:
       - python_module
+      - import_rec
+      - python_module_def
 require:
+  - resource_type_reg
   - python_object_creg

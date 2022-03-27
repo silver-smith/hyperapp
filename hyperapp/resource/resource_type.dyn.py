@@ -115,7 +115,7 @@ class ResourceType:
         encoder = NamedPairsDictEncoder()
         return encoder.encode(definition)
 
-    def resolve(self, definition, resolve_name):
+    def resolve(self, definition, resolve_name, resource_dir):
         resolver = NameResolver(self._ref_path_set, self._path_to_record_t, resolve_name)
         return resolver.map(definition, context=())
 

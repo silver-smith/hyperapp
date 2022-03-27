@@ -2,12 +2,51 @@ import codecs
 import logging
 import yaml
 
+from hyperapp.common.dict_decoders import NamedPairsDictDecoder
+from hyperapp.common.dict_encoders import NamedPairsDictEncoder
 from hyperapp.common.python_importer import ROOT_PACKAGE, Finder
 from hyperapp.common.module import Module
 
 from . import htypes
 
 log = logging.getLogger(__name__)
+
+
+class PythonModuleResourceType:
+
+    name = 'python_module'
+    resource_t = htypes.python_module.python_module
+    definition_t = htypes.python_module.python_module_def
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return f"<ResourceType: {self.name!r}>"
+
+    def from_dict(self, data):
+        decoder = NamedPairsDictDecoder()
+        return decoder.decode_dict(self.definition_t, data)
+
+    def to_dict(self, definition):
+        encoder = NamedPairsDictEncoder()
+        return encoder.encode(definition)
+
+    def resolve(self, definition, resolve_name, resource_path):
+        import_list = tuple(
+            htypes.python_module.import_rec(
+                full_name=rec.full_name,
+                resource=resolve_name(rec.resource),
+                )
+            for rec in definition.import_list
+            )
+        source_path = resource_path / definition.file_name
+        return htypes.python_module.python_module(
+            module_name=definition.module_name,
+            source=source_path.read_text(),
+            file_path=str(source_path),
+            import_list=import_list,
+            )
 
 
 def _collect_import_records(import_set, module_imports):
@@ -75,6 +114,7 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
+        services.resource_type_reg['python_module'] = PythonModuleResourceType()
         services.python_object_creg.register_actor(
             htypes.python_module.python_module, python_object,
             services.mosaic, services.python_importer, services.python_object_creg)

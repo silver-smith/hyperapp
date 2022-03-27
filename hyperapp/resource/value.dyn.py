@@ -18,7 +18,7 @@ class ValueResourceType:
         value_ref = self._mosaic.put(value, t)
         return htypes.value.value(value_ref)
 
-    def resolve(self, definition, resolve_name):
+    def resolve(self, definition, resolve_name, resource_dir):
         return definition
 
 
