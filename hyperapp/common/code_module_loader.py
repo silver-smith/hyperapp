@@ -1,9 +1,11 @@
+import logging
 from collections import defaultdict, namedtuple
 
 import yaml
 
 from .code_module import type_import_t, code_import_t, code_module_t
 
+log = logging.getLogger(__name__)
 
 _ModuleInfo = namedtuple('_ModuleInfo', 'info_path source_path type_import_dict code_import_list provide require')
 
@@ -40,6 +42,9 @@ class CodeModuleLoader:
             info_path = source_path.parent.joinpath(source_path.name[:-len(ext)] + '.yaml')
             rpath = str(source_path.relative_to(root_dir))
             module_name = rpath[:-len(ext)].replace('/', '.')
+            if not info_path.exists():
+                log.warning("No info path for dynamic module exists, skipping: %s", info_path)
+                continue
             raw_info = yaml.safe_load(info_path.read_text()) or {}
             imports = raw_info.get('import', {})
             info = _ModuleInfo(
