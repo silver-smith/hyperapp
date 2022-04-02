@@ -28,7 +28,6 @@ def code_module_list():
         'resource.resource_module',
         'resource.legacy_type',
         'resource.python_module',
-        'resource.fixtures',
         ]
 
 
@@ -41,8 +40,9 @@ def test_python_module_resource(services):
 
 
 def test_fixture(services):
-    fixtures_module = services.resource_module_registry['fixtures']
-    fixture = fixtures_module['construct_resources_sample']
+    module = services.fixture_resource_module_registry['sample_fixture']
+    fixture = module['sample_fixture']
     log.info("Sample fixture: %r", fixture)
     python_module = services.python_object_creg.animate(fixture)
     log.info("Python module: %r", python_module)
+    log.info("Sample item: %r", python_module.sample_item)

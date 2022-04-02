@@ -43,13 +43,12 @@ def code_module_list():
         'resource.rpc_callback',
         'resource.map_service',
         'resource.python_module',
-        'resource.fixtures',
         ]
 
 
 def test_fixture(services):
-    fixtures_module = services.resource_module_registry['fixtures']
-    fixture = fixtures_module['construct_resources_sample']
+    module = services.fixture_resource_module_registry['construct_resources_sample']
+    fixture = module['construct_resources_sample']
     log.info("Sample fixture: %r", fixture)
     python_module = services.python_object_creg.animate(fixture)
     log.info("Python module: %r", python_module)

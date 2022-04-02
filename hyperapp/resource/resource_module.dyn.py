@@ -119,16 +119,23 @@ class ResourceModule:
 
 def load_resource_modules(mosaic, resource_type_reg, dir_list):
     ext = '.resources.yaml'
+    fixture_ext = '.fixtures.resources.yaml'
     registry = {}
+    fixture_registry = {}
     for root_dir in dir_list:
         for path in root_dir.rglob(f'*{ext}'):
             if 'test' in path.relative_to(root_dir).parts:
                 continue  # Skip test subdirectories.
             rpath = str(path.relative_to(root_dir))
-            name = rpath[:-len(ext)].replace('/', '.')
-            log.info("Resource module: %r", name)
-            registry[name] = ResourceModule(mosaic, resource_type_reg, registry, name, path)
-    return registry
+            if str(path).endswith(fixture_ext):
+                name = rpath[:-len(fixture_ext)].replace('/', '.')
+                log.info("Fixture resource module: %r", name)
+                fixture_registry[name] = ResourceModule(mosaic, resource_type_reg, registry, name, path)
+            else:
+                name = rpath[:-len(ext)].replace('/', '.')
+                log.info("Resource module: %r", name)
+                registry[name] = ResourceModule(mosaic, resource_type_reg, registry, name, path)
+    return (registry, fixture_registry)
 
 
 class ThisModule(Module):
@@ -136,7 +143,7 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        services.resource_module_registry = load_resource_modules(
+        services.resource_module_registry, services.fixture_resource_module_registry = load_resource_modules(
             services.mosaic, services.resource_type_reg, services.module_dir_list)
         services.resource_module_factory = partial(
             ResourceModule, services.mosaic, services.resource_type_reg, services.resource_module_registry)
