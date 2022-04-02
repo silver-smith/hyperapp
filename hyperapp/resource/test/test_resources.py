@@ -13,11 +13,12 @@ log = logging.getLogger(__name__)
 pytest_plugins = ['hyperapp.common.test.services']
 
 TEST_DIR = Path(__file__).parent.resolve()
+TEST_RESOURCES_DIR = Path(__file__).parent / 'test_resources'
 
 
 @pytest.fixture
 def additional_module_dirs():
-    return [Path(__file__).parent / 'test_resources']
+    return [TEST_RESOURCES_DIR]
 
 
 @pytest.fixture
@@ -103,7 +104,7 @@ def test_resolve_definition_partial(services, htypes, code):
     def resolve_name(name):
         return names[name]
 
-    resource = resource_type.resolve(definition, resolve_name)
+    resource = resource_type.resolve(definition, resolve_name, TEST_RESOURCES_DIR)
     log.info('Resolved resource: %r', resource)
     assert resource == resource_t(
         function=names['some_function'],
@@ -135,7 +136,7 @@ def test_resolve_definition_list_service(services, htypes, code):
     def resolve_name(name):
         return names[name]
 
-    resource = resource_type.resolve(definition, resolve_name)
+    resource = resource_type.resolve(definition, resolve_name, TEST_RESOURCES_DIR)
     log.info('Resolved resource: %r', resource)
     assert resource == resource_t(
         identity=names['some_identity'],
@@ -158,7 +159,7 @@ def test_value_type(services, htypes, code):
         value_ref=services.mosaic.put(value),
         )
 
-    resource = t.resolve(definition, lambda name: None)
+    resource = t.resolve(definition, lambda name: None, TEST_RESOURCES_DIR)
     assert resource == definition
 
     assert services.python_object_creg.animate(resource) == value
