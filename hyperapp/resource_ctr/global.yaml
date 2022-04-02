@@ -1,1 +1,4 @@
-# empty
+import:
+  types:
+    attribute:
+      - attribute

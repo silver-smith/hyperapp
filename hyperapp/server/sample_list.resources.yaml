@@ -1,65 +1,72 @@
 import:
   - legacy_service.server_identity
+  - legacy_type.attribute.attribute
+  - legacy_type.partial.partial
+  - legacy_type.call.call
+  - legacy_type.map_service.map_service
+  - legacy_type.typed_piece.typed_piece
+  - legacy_type.resource_rpc_command.rpc_command
+  - legacy_type.resource_service.list_service
   - legacy_type.sample_list.sample_list_d
   - legacy_type.sample_list.sample_list
 
 definitions:
 
   list_servant:
-    type: typed_piece
+    _type: legacy_type.typed_piece.typed_piece
     piece_t: legacy_type.sample_list.sample_list
 
   list_servant_list_method:
-    type: attribute
+    _type: legacy_type.attribute.attribute
     object: list_servant
     attr_name: list
 
   list_servant_raw_method:
-    type: attribute
+    _type: legacy_type.attribute.attribute
     object: list_servant
     attr_name: raw
 
   list_servant_describe_method:
-    type: attribute
+    _type: legacy_type.attribute.attribute
     object: list_servant
     attr_name: describe
 
   list_servant_open_method:
-    type: attribute
+    _type: legacy_type.attribute.attribute
     object: list_servant
     attr_name: open
 
   list_servant_open_method_mapped:
-    type: map_service
+    _type: legacy_type.map_service.map_service
     function: list_servant_open_method
 
   raw_command:
-    type: rpc_command
+    _type: legacy_type.resource_rpc_command.rpc_command
     identity: legacy_service.server_identity
     function: list_servant_raw_method
     state_attributes: ['current_key']
     name: raw
 
   describe_command:
-    type: rpc_command
+    _type: legacy_type.resource_rpc_command.rpc_command
     identity: legacy_service.server_identity
     function: list_servant_describe_method
     state_attributes: ['current_key']
     name: describe
 
   open_command:
-    type: rpc_command
+    _type: legacy_type.resource_rpc_command.rpc_command
     identity: legacy_service.server_identity
     function: list_servant_open_method_mapped
     state_attributes: ['current_key']
     name: open
 
   sample_list_d:
-    type: call
+    _type: legacy_type.call.call
     function: legacy_type.sample_list.sample_list_d
 
   sample_list_service:
-    type: list_service
+    _type: legacy_type.resource_service.list_service
     identity: legacy_service.server_identity
     function: list_servant_list_method
     dir: sample_list_d

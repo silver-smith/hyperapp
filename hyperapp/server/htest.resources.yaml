@@ -13,6 +13,10 @@ import:
   - legacy_service.rpc_call_factory
   - legacy_service.server_identity
   - legacy_service.server_rpc_endpoint
+  - legacy_type.attribute.attribute
+  - legacy_type.partial.partial
+  - legacy_type.call.call
+  - legacy_type.piece_ref.piece_ref
   - server.htest_runner.runner_method_collect_attributes
   - server.htest_runner.get_function_result_type
   - resource_ctr.global.construct_global
@@ -20,44 +24,44 @@ import:
 definitions:
 
   runner_signal_queue_factory:
-    type: attribute
+    _type: legacy_type.attribute.attribute
     object: legacy_module.server.htest
     attr_name: runner_signal_queue
 
   runner_signal_queue:
-    type: call
+    _type: legacy_type.call.call
     function: runner_signal_queue_factory
 
   runner_is_ready_ctr:
-    type: attribute
+    _type: legacy_type.attribute.attribute
     object: legacy_module.server.htest
     attr_name: runner_is_ready
 
   runner_is_ready_fn:
-    type: partial
+    _type: legacy_type.partial.partial
     function: runner_is_ready_ctr
     params:
       queue: runner_signal_queue
 
   runner_is_ready_fn_ref:
-    type: piece_ref
+    _type: legacy_type.piece_ref.piece_ref
     value: runner_is_ready_fn
 
   htest_ctr:
-    type: attribute
+    _type: legacy_type.attribute.attribute
     object: legacy_module.server.htest
     attr_name: HTest
 
   runner_method_collect_attributes_ref:
-    type: piece_ref
+    _type: legacy_type.piece_ref.piece_ref
     value: server.htest_runner.runner_method_collect_attributes
 
   runner_method_get_function_result_type_ref:
-    type: piece_ref
+    _type: legacy_type.piece_ref.piece_ref
     value: server.htest_runner.get_function_result_type
 
   htest_factory:
-    type: partial
+    _type: legacy_type.partial.partial
     function: htest_ctr
     params:
       mosaic: legacy_service.mosaic
@@ -78,35 +82,35 @@ definitions:
       construct_global: resource_ctr.global.construct_global
 
   htest:
-    type: call
+    _type: legacy_type.call.call
     function: htest_factory
 
   htest_list_file_ctr:
-    type: attribute
+    _type: legacy_type.attribute.attribute
     object: legacy_module.server.htest
     attr_name: htest_list_file
 
   htest_list_file_factory:
-    type: partial
+    _type: legacy_type.partial.partial
     function: htest_list_file_ctr
     params:
       file_bundle: legacy_service.file_bundle
 
   htest_list_file:
-    type: call
+    _type: legacy_type.call.call
     function: htest_list_file_factory
 
   htest_list_ctr:
-    type: attribute
+    _type: legacy_type.attribute.attribute
     object: legacy_module.server.htest
     attr_name: HTestList
 
   htest_list_factory:
-    type: partial
+    _type: legacy_type.partial.partial
     function: htest_list_ctr
     params:
       file: htest_list_file
 
   htest_list:
-    type: call
+    _type: legacy_type.call.call
     function: htest_list_factory

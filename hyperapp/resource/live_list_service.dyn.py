@@ -27,6 +27,5 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        services.resource_type_reg['live_list_service'] = services.resource_type_factory('live_list_service', htypes.resource_service.live_list_service)
         services.python_object_creg.register_actor(
             htypes.resource_service.live_list_service, python_object, services.mosaic, services.python_object_creg)

@@ -50,6 +50,5 @@ class ThisModule(Module):
 
         services.piece_service_registry = {}  # piece_t -> map_service.service instance
 
-        services.resource_type_reg['map_service'] = services.resource_type_factory('map_service', htypes.map_service.map_service)
         services.python_object_creg.register_actor(
             htypes.map_service.map_service, python_object, services.mosaic, services.python_object_creg, services.piece_service_registry)

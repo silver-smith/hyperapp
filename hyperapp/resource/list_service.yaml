@@ -7,5 +7,4 @@ import:
 provide:
   - resource.list_service
 require:
-  - resource_type_factory
-  - resource_type_reg
+  - python_object_creg

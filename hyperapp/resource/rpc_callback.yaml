@@ -7,6 +7,4 @@ import:
 provide:
   - resource.rpc_callback
 require:
-  - resource_type_factory
-  - resource_type_reg
   - python_object_creg

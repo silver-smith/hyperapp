@@ -3,26 +3,29 @@ import:
   - legacy_service.mosaic
   - legacy_service.resource_type_reg
   - legacy_service.resource_module_registry
+  - legacy_type.attribute.attribute
+  - legacy_type.partial.partial
+  - legacy_type.piece_ref.piece_ref
   - server.htest_runner.runner_method_collect_attributes
   - server.htest_runner.get_function_result_type
 
 definitions:
 
   runner_method_collect_attributes_ref:
-    type: piece_ref
+    _type: legacy_type.piece_ref.piece_ref
     value: server.htest_runner.runner_method_collect_attributes
 
   runner_method_get_function_result_type_ref:
-    type: piece_ref
+    _type: legacy_type.piece_ref.piece_ref
     value: server.htest_runner.get_function_result_type
 
   construct_global_attribute:
-    type: attribute
+    _type: legacy_type.attribute.attribute
     object: legacy_module.resource_ctr.global
     attr_name: construct_global
 
   construct_global:
-    type: partial
+    _type: legacy_type.partial.partial
     function: construct_global_attribute
     params:
       mosaic: legacy_service.mosaic

@@ -80,11 +80,10 @@ class NameResolver(Mapper):
 
 class ResourceType:
 
-    def __init__(self, types, mosaic, web, name, resource_t):
+    def __init__(self, types, mosaic, web, resource_t):
         self._types = types
         self._mosaic = mosaic
         self._web = web
-        self.name = name
         self.resource_t = resource_t
 
         resource_type_ref = self._types.reverse_resolve(self.resource_t)
@@ -102,10 +101,10 @@ class ResourceType:
         self.definition_t = self._types.resolve(definition_type_ref)
 
     def __str__(self):
-        return self.name
+        return str(self.resource_t)
 
     def __repr__(self):
-        return f"<ResourceType {self.name!r}:{self.resource_t}>"
+        return f"<ResourceType {self}>"
 
     def from_dict(self, data):
         decoder = NamedPairsDictDecoder()

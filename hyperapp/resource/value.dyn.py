@@ -31,5 +31,6 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        services.resource_type_reg['value'] = ValueResourceType(services.mosaic, services.types)
+        # Registering by definition type, not resource type. Strange, hacky, likely having issues...
+        services.resource_type_reg[htypes.value.value] = ValueResourceType(services.mosaic, services.types)
         services.python_object_creg.register_actor(htypes.value.value, python_object, services.web)

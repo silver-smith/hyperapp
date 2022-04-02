@@ -3,16 +3,19 @@ import:
   - legacy_service.mosaic
   - legacy_service.types
   - legacy_service.python_object_creg
+  - legacy_type.attribute.attribute
+  - legacy_type.partial.partial
+  - legacy_type.call.call
 
 definitions:
 
   runner_attribute:
-    type: attribute
+    _type: legacy_type.attribute.attribute
     object: legacy_module.server.htest_runner
     attr_name: Runner
 
   runner_factory:
-    type: partial
+    _type: legacy_type.partial.partial
     function: runner_attribute
     params:
       mosaic: legacy_service.mosaic
@@ -20,15 +23,15 @@ definitions:
       python_object_creg: legacy_service.python_object_creg
 
   runner:
-    type: call
+    _type: legacy_type.call.call
     function: runner_factory
 
   runner_method_collect_attributes:
-    type: attribute
+    _type: legacy_type.attribute.attribute
     object: runner
     attr_name: collect_attributes
 
   get_function_result_type:
-    type: attribute
+    _type: legacy_type.attribute.attribute
     object: runner
     attr_name: get_function_result_type

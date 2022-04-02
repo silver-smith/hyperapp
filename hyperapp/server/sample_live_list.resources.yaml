@@ -5,26 +5,31 @@ import:
   - legacy_service.rpc_call_factory
   - legacy_service.server_identity
   - legacy_service.server_rpc_endpoint
+  - legacy_type.attribute.attribute
+  - legacy_type.partial.partial
+  - legacy_type.call.call
+  - legacy_type.resource_rpc_command.rpc_command
+  - legacy_type.resource_service.live_list_service
   - legacy_type.sample_list.sample_live_list_d
 
 definitions:
 
   executor_factory:
-    type: attribute
+    _type: legacy_type.attribute.attribute
     object: legacy_module.server.sample_live_list
     attr_name: executor
 
   executor:
-    type: call
+    _type: legacy_type.call.call
     function: executor_factory
 
   list_servant_ctr:
-    type: attribute
+    _type: legacy_type.attribute.attribute
     object: legacy_module.server.sample_live_list
     attr_name: LiveListServant
 
   list_servant_factory:
-    type: partial
+    _type: legacy_type.partial.partial
     function: list_servant_ctr
     params:
       mosaic: legacy_service.mosaic
@@ -35,44 +40,44 @@ definitions:
       executor: executor
 
   list_servant:
-    type: call
+    _type: legacy_type.call.call
     function: list_servant_factory
 
   list_servant_list_method:
-    type: attribute
+    _type: legacy_type.attribute.attribute
     object: list_servant
     attr_name: list
 
   list_servant_raw_method:
-    type: attribute
+    _type: legacy_type.attribute.attribute
     object: list_servant
     attr_name: raw
 
   list_servant_describe_method:
-    type: attribute
+    _type: legacy_type.attribute.attribute
     object: list_servant
     attr_name: describe
 
   raw_command:
-    type: rpc_command
+    _type: legacy_type.resource_rpc_command.rpc_command
     identity: legacy_service.server_identity
     function: list_servant_raw_method
     state_attributes: ['current_key']
     name: raw
 
   describe_command:
-    type: rpc_command
+    _type: legacy_type.resource_rpc_command.rpc_command
     identity: legacy_service.server_identity
     function: list_servant_describe_method
     state_attributes: ['current_key']
     name: describe
 
   sample_live_list_d:
-    type: call
+    _type: legacy_type.call.call
     function: legacy_type.sample_list.sample_live_list_d
 
   sample_list_service:
-    type: live_list_service
+    _type: legacy_type.resource_service.live_list_service
     identity: legacy_service.server_identity
     function: list_servant_list_method
     dir: sample_live_list_d

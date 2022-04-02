@@ -154,7 +154,7 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        services.resource_type_reg['python_module'] = PythonModuleResourceType()
+        services.resource_type_reg[htypes.python_module.python_module] = PythonModuleResourceType()
         services.python_object_creg.register_actor(
             htypes.python_module.python_module, python_object,
             services.mosaic, services.python_importer, services.python_object_creg)

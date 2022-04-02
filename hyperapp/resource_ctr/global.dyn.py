@@ -1,6 +1,8 @@
 import logging
 import re
 
+from . import htypes
+
 log = logging.getLogger(__name__)
 
 
@@ -11,7 +13,7 @@ def camel_to_snake(name):
 
 
 def construct_attr(resource_type_reg, resource_module, object_res_name, attr, add_object_prefix=True):
-    attr_res_t = resource_type_reg['attribute']
+    attr_res_t = resource_type_reg[htypes.attribute.attribute]
     attr_def = attr_res_t.definition_t(
         object=object_res_name,
         attr_name=attr.name,

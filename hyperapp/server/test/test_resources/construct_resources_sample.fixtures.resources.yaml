@@ -1,9 +1,10 @@
 import:
   - legacy_type.construct_resources_sample.sample_servant_d
   - legacy_type.construct_resources_sample.sample_item
+  - legacy_type.python_module.python_module
 definitions:
   construct_resources_sample:
-    type: python_module
+    _type: legacy_type.python_module.python_module
     module_name: construct_resources_sample
     file_name: construct_resources_sample.fixtures.dyn.py
     import_list:

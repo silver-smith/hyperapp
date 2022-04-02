@@ -1,5 +1,7 @@
 require:
   - resource_type_reg
+  - resource_type_factory
+  - python_object_creg
 provide:
   - resource_module_registry
   - resource_module_factory

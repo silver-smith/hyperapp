@@ -20,6 +20,5 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        services.resource_type_reg['rpc_callback'] = services.resource_type_factory('rpc_callback', htypes.resource_rpc_callback.rpc_callback)
         services.python_object_creg.register_actor(
             htypes.resource_rpc_callback.rpc_callback, python_object, services.mosaic, services.python_object_creg)
