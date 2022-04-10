@@ -1,7 +1,7 @@
 import:
   - legacy_module.resource_ctr.global
   - legacy_service.mosaic
-  - legacy_service.resource_type_reg
+  - legacy_service.resource_type_producer
   - legacy_service.resource_module_registry
   - legacy_type.attribute.attribute
   - legacy_type.partial.partial
@@ -29,6 +29,6 @@ definitions:
     function: construct_global_attribute
     params:
       mosaic: legacy_service.mosaic
-      resource_type_reg: legacy_service.resource_type_reg
+      resource_type_producer: legacy_service.resource_type_producer
       resource_module_registry: legacy_service.resource_module_registry
       runner_method_collect_attributes_ref: runner_method_collect_attributes_ref

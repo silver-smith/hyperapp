@@ -12,8 +12,8 @@ def camel_to_snake(name):
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
 
 
-def construct_attr(resource_type_reg, resource_module, object_res_name, attr, add_object_prefix=True):
-    attr_res_t = resource_type_reg[htypes.attribute.attribute]
+def construct_attr(resource_type_producer, resource_module, object_res_name, attr, add_object_prefix=True):
+    attr_res_t = resource_type_producer(htypes.attribute.attribute)
     attr_def = attr_res_t.definition_t(
         object=object_res_name,
         attr_name=attr.name,
@@ -26,7 +26,7 @@ def construct_attr(resource_type_reg, resource_module, object_res_name, attr, ad
     return attr_res_name
 
 
-def construct_resource_params_partial(resource_type_reg, resource_module_registry, resource_module, attr, attr_res_name):
+def construct_resource_params_partial(resource_type_producer, resource_module_registry, resource_module, attr, attr_res_name):
     name_to_module = {
         var_name: resource_module_name
         for resource_module_name, resource_module in resource_module_registry.items()
@@ -38,7 +38,7 @@ def construct_resource_params_partial(resource_type_reg, resource_module_registr
         resource_name = f'{resource_module_name}.{param_name}'
         param_to_resource[param_name] = resource_name
         resource_module.add_import(resource_name)
-    partial_res_t = resource_type_reg['partial']
+    partial_res_t = resource_type_producer(htypes.partial.partial)
     partial_def_t = partial_res_t.definition_t
     partial_param_def_t = partial_def_t.fields['params'].element_t
     partial_def = partial_def_t(
@@ -54,8 +54,8 @@ def construct_resource_params_partial(resource_type_reg, resource_module_registr
     return partial_res_name
 
 
-def construct_call(resource_type_reg, resource_module, function_res_name, res_name):
-    call_res_t = resource_type_reg['call']
+def construct_call(resource_type_producer, resource_module, function_res_name, res_name):
+    call_res_t = resource_type_producer(htypes.call.call)
     call_def = call_res_t.definition_t(
         function=function_res_name,
         )
@@ -64,14 +64,14 @@ def construct_call(resource_type_reg, resource_module, function_res_name, res_na
 
 def construct_global(
         module_name, resource_module, process, module_res_name, name_to_module, globl,
-        mosaic, resource_type_reg, resource_module_registry, runner_method_collect_attributes_ref,
+        mosaic, resource_type_producer, resource_module_registry, runner_method_collect_attributes_ref,
         ):
     collect_attributes_call = process.rpc_call(runner_method_collect_attributes_ref)
 
-    attr_res_name = construct_attr(resource_type_reg, resource_module, module_res_name, globl, add_object_prefix=False)
-    partial_res_name = construct_resource_params_partial(resource_type_reg, resource_module_registry, resource_module, globl, attr_res_name)
+    attr_res_name = construct_attr(resource_type_producer, resource_module, module_res_name, globl, add_object_prefix=False)
+    partial_res_name = construct_resource_params_partial(resource_type_producer, resource_module_registry, resource_module, globl, attr_res_name)
     global_res_name = camel_to_snake(globl.name)
-    construct_call(resource_type_reg, resource_module, partial_res_name, global_res_name)
+    construct_call(resource_type_producer, resource_module, partial_res_name, global_res_name)
 
     global_res = resource_module[global_res_name]
     log.info("Function resource %s: %r", global_res_name, global_res)

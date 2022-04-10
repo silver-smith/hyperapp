@@ -2,3 +2,7 @@ import:
   types:
     attribute:
       - attribute
+    partial:
+      - partial
+    call:
+      - call
