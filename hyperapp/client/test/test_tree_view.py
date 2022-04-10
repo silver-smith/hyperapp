@@ -17,9 +17,14 @@ pytest_plugins = ['hyperapp.common.test.services']
 
 
 @pytest.fixture
+def additional_module_dirs():
+    return [Path(__file__).parent.resolve()]
+
+
+@pytest.fixture
 def code_module_list():
     return  [
-        'common.layered_config_sheet',
+        'mock_file_bundle',
         'async.ui.qt.application',  # Use Qt event loop.
         'async.ui.tree_object',
         'async.ui.qt.tree_view',
