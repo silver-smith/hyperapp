@@ -29,6 +29,7 @@ def code_module_list():
         'sync.transport.tcp',
         'resource.registry',
         'resource.resource_module',
+        'resource.legacy_type',
         'resource.legacy_module',
         'resource.attribute',
         'resource.call',

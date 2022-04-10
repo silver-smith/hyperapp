@@ -1,13 +1,15 @@
 import:
   - legacy_module.echo_service
+  - legacy_type.attribute.attribute
+  - legacy_type.call.call
 
 definitions:
 
   echo_servant_factory:
-    type: attribute
+    _type: legacy_type.attribute.attribute
     object: legacy_module.echo_service
     attr_name: Echo
 
   echo_servant:
-    type: call
+    _type: legacy_type.call.call
     function: echo_servant_factory
