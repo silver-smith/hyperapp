@@ -222,7 +222,7 @@ class ModuleRegistry:
             if not provider_set:
                 raise RuntimeError(f"Code module {module_code.module.module_name!r} requires {service!r}, but no module provides it")
             if len(provider_set) > 1:
-                provider_set &= set(module_list)
+                provider_set &= set(module_list) | set(self._registry)
                 if not provider_set:
                     raise RuntimeError(
                         f"Service {service!r}:"
