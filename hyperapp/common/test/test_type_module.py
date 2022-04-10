@@ -48,13 +48,13 @@ def test_types(types, htypes, loader):
     loader.load_type_modules([TEST_MODULES_DIR / 'test_type_modules'])
 
 
-    assert htypes.type_module_1.record_1 == TRecord('record_1', {'int_field': tInt})
-    assert htypes.type_module_1.record_2 == TRecord('record_2', {'int_field': tInt, 'string_field': tString})
+    assert htypes.type_module_1.record_1 == TRecord('type_module_1', 'record_1', {'int_field': tInt})
+    assert htypes.type_module_1.record_2 == TRecord('type_module_1', 'record_2', {'int_field': tInt, 'string_field': tString})
 
     assert (htypes.type_module_2.record_3 ==
-            TRecord('record_3', {'int_field': tInt, 'string_field': tString, 'datetime_field': tDateTime}))
-    assert htypes.type_module_2.record_with_ref == TRecord('record_with_ref', {'ref_field': ref_t})
-    assert htypes.type_module_2.record_with_opt_ref == TRecord('record_with_opt_ref', {'opt_ref_field': TOptional(ref_t)})
+            TRecord('type_module_2', 'record_3', {'int_field': tInt, 'string_field': tString, 'datetime_field': tDateTime}))
+    assert htypes.type_module_2.record_with_ref == TRecord('type_module_2', 'record_with_ref', {'ref_field': ref_t})
+    assert htypes.type_module_2.record_with_opt_ref == TRecord('type_module_2', 'record_with_opt_ref', {'opt_ref_field': TOptional(ref_t)})
 
     assert htypes.type_module_1.empty_record_1.name == 'empty_record_1'
     assert htypes.type_module_2.empty_record_2.name == 'empty_record_2'
@@ -85,6 +85,6 @@ def test_same_instance(htypes, loader):
 def test_exception_type(types, htypes, loader):
     loader.load_type_modules([TEST_MODULES_DIR / 'test_type_modules'])
 
-    assert htypes.exceptions.exception_1 == TException('exception_1', {'int_field': tInt})
-    assert htypes.exceptions.exception_2 == TException('exception_2', {'int_field': tInt, 'string_field': tString})
-    assert htypes.exceptions.empty_exception == TException('empty_exception', {})
+    assert htypes.exceptions.exception_1 == TException('exceptions', 'exception_1', {'int_field': tInt})
+    assert htypes.exceptions.exception_2 == TException('exceptions', 'exception_2', {'int_field': tInt, 'string_field': tString})
+    assert htypes.exceptions.empty_exception == TException('exceptions', 'empty_exception', {})

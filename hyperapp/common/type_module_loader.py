@@ -117,7 +117,7 @@ class TypeModuleLoader(object):
         for typedef in source.typedefs:
             log.debug('Type module loader %r: mapping %r %s:', name, typedef.name, typedef.type)
             type_ref = mapper.map(typedef.type)
-            named = name_wrapped_mt(typedef.name, type_ref)
+            named = name_wrapped_mt(name, typedef.name, type_ref)
             ref = self._mosaic.put(named)
             local_type_module.register(typedef.name, ref)
             local_name_dict[typedef.name] = ref

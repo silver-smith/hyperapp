@@ -1,6 +1,7 @@
 # meta type is type for storing types themselves as data
 
 from .htypes import (
+    BUILTIN_MODULE_NAME,
     Type,
     tNone,
     tString,
@@ -16,58 +17,59 @@ from .exception import TException
 from .hyper_ref import ref_t
 
 
-builtin_mt = TRecord('builtin_mt', {
+builtin_mt = TRecord(BUILTIN_MODULE_NAME, 'builtin_mt', {
     'name': tString,
     })
 
 
 # Produced by type module parsed, removed by loader.
-name_mt = TRecord('name_mt', {
+name_mt = TRecord(BUILTIN_MODULE_NAME, 'name_mt', {
     'name': tString,
     })
 
 
-name_wrapped_mt = TRecord('name_wrapped_mt', {
+name_wrapped_mt = TRecord(BUILTIN_MODULE_NAME, 'name_wrapped_mt', {
+    'module_name': tString,
     'name': tString,
     'type': ref_t,
     })
 
 
-def name_wrapped_from_piece(rec, type_code_registry, name):
-    return type_code_registry.invite(rec.type, type_code_registry, rec.name)
+def name_wrapped_from_piece(rec, type_code_registry, module_name, name):
+    return type_code_registry.invite(rec.type, type_code_registry, rec.module_name, rec.name)
 
 
-optional_mt = TRecord('optional_mt', {
+optional_mt = TRecord(BUILTIN_MODULE_NAME, 'optional_mt', {
     'base': ref_t,
     })
 
 
-def optional_from_piece(rec, type_code_registry, name, types):
+def optional_from_piece(rec, type_code_registry, module_name, name, types):
     base_t = types.resolve(rec.base)
-    return TOptional(base_t)
+    return TOptional(base_t, module_name, name)
 
 
-list_mt = TRecord('list_mt', {
+list_mt = TRecord(BUILTIN_MODULE_NAME, 'list_mt', {
     'element': ref_t,
     })
 
 
-def list_from_piece(rec, type_code_registry, name, types):
+def list_from_piece(rec, type_code_registry, module_name, name, types):
     element_t = types.resolve(rec.element)
-    return TList(element_t)
+    return TList(element_t, module_name, name)
 
 
-field_mt = TRecord('field_mt', {
+field_mt = TRecord(BUILTIN_MODULE_NAME, 'field_mt', {
     'name': tString,
     'type': ref_t,
     })
 
-record_mt = TRecord('record_mt', {
+record_mt = TRecord(BUILTIN_MODULE_NAME, 'record_mt', {
     'base': TOptional(ref_t),
     'fields': TList(field_mt),
     })
 
-exception_mt = TRecord('exception_mt', {
+exception_mt = TRecord(BUILTIN_MODULE_NAME, 'exception_mt', {
     'base': TOptional(ref_t),
     'fields': TList(field_mt),
     })
@@ -82,24 +84,24 @@ def _field_dict_from_piece_list(field_list, types):
     return dict(_field_from_piece(field, types) for field in field_list)
 
 
-def record_from_piece(rec, type_code_registry, name, types):
+def record_from_piece(rec, type_code_registry, module_name, name, types):
     if rec.base is not None:
         base_t = types.resolve(rec.base)
         assert isinstance(base_t, TRecord), f"Record base is not a record: {base_t}"
     else:
         base_t = None
     field_dict = _field_dict_from_piece_list(rec.fields, types)
-    return TRecord(name, field_dict, base=base_t)
+    return TRecord(module_name, name, field_dict, base=base_t)
 
 
-def exception_from_piece(rec, type_code_registry, name, types):
+def exception_from_piece(rec, type_code_registry, module_name, name, types):
     if rec.base is not None:
         base_t = types.resolve(rec.base)
         assert isinstance(base_t, TException), f"Exception base is not an exception: {base_t}"
     else:
         base_t = None
     field_dict = _field_dict_from_piece_list(rec.fields, types)
-    return TException(name, field_dict, base=base_t)
+    return TException(module_name, name, field_dict, base=base_t)
 
 
 

@@ -52,9 +52,9 @@ def test_definition_type(services, htypes):
     resource_t = htypes.partial.partial
     resource_type = services.resource_type_factory(resource_t)
     log.info("definition_t: %r", resource_type.definition_t)
-    assert resource_type.definition_t == TRecord('partial', {
+    assert resource_type.definition_t == TRecord('partial', 'partial', {
         'function': tString,
-        'params': TList(TRecord('param', {
+        'params': TList(TRecord('partial', 'param', {
             'name': tString,
             'value': tString,
             })),

@@ -62,10 +62,11 @@ def test_record(types, mosaic):
         field_mt('string_list_field', mosaic.put(string_list_mt)),
         field_mt('bool_optional_field', mosaic.put(bool_opt_mt)),
         ])
+    module_name = 'test'
     name = 'some_test_record'
-    named_piece = name_wrapped_mt(name, mosaic.put(piece))
+    named_piece = name_wrapped_mt(module_name, name, mosaic.put(piece))
     t = types.resolve(mosaic.put(named_piece))
-    assert t == TRecord(name, {
+    assert t == TRecord(module_name, name, {
         'int_field': tInt,
         'string_list_field': TList(tString),
         'bool_optional_field': TOptional(tBool),
@@ -76,15 +77,16 @@ def test_based_record(types, mosaic):
     base_piece = record_mt(None, [
         field_mt('int_field', mosaic.put(builtin_mt('int'))),
         ])
-    named_base_piece = name_wrapped_mt('some_base_record', mosaic.put(base_piece))
+    named_base_piece = name_wrapped_mt('test', 'some_base_record', mosaic.put(base_piece))
     named_base_ref = mosaic.put(named_base_piece)
     piece = record_mt(named_base_ref, [
         field_mt('string_field', mosaic.put(builtin_mt('string'))),
         ])
+    module_name = 'test'
     name = 'some_test_record'
-    named_piece = name_wrapped_mt(name, mosaic.put(piece))
+    named_piece = name_wrapped_mt(module_name, name, mosaic.put(piece))
     t = types.resolve(mosaic.put(named_piece))
-    assert t == TRecord(name, {
+    assert t == TRecord(module_name, name, {
         'int_field': tInt,
         'string_field': tString,
         })
@@ -94,14 +96,14 @@ def test_empty_record(types, mosaic):
     piece = record_mt(None, [])
 
     name_1 = 'record_1'
-    named_piece_1 = name_wrapped_mt(name_1, mosaic.put(piece))
+    named_piece_1 = name_wrapped_mt('test', name_1, mosaic.put(piece))
     t_1 = types.resolve(mosaic.put(named_piece_1))
-    assert t_1 == TRecord(name_1, {})
+    assert t_1 == TRecord('test', name_1, {})
 
     name_2 = 'record_2'
-    named_piece_2 = name_wrapped_mt(name_2, mosaic.put(piece))
+    named_piece_2 = name_wrapped_mt('test', name_2, mosaic.put(piece))
     t_2 = types.resolve(mosaic.put(named_piece_2))
-    assert t_2 == TRecord(name_2, {})
+    assert t_2 == TRecord('test', name_2, {})
 
 
 def test_exception(types, mosaic):
@@ -112,10 +114,11 @@ def test_exception(types, mosaic):
         field_mt('string_list_field', mosaic.put(string_list_mt)),
         field_mt('bool_optional_field', mosaic.put(bool_opt_mt)),
         ])
+    module_name = 'test'
     name = 'some_test_exception'
-    named_piece = name_wrapped_mt(name, mosaic.put(piece))
+    named_piece = name_wrapped_mt(module_name, name, mosaic.put(piece))
     t = types.resolve(mosaic.put(named_piece))
-    assert t == TException(name, {
+    assert t == TException(module_name, name, {
         'int_field': tInt,
         'string_list_field': TList(tString),
         'bool_optional_field': TOptional(tBool),
@@ -126,15 +129,16 @@ def test_based_exception(types, mosaic):
     base_piece = exception_mt(None, [
         field_mt('int_field', mosaic.put(builtin_mt('int'))),
         ])
-    named_base_piece = name_wrapped_mt('some_base_exception', mosaic.put(base_piece))
+    named_base_piece = name_wrapped_mt('test', 'some_base_exception', mosaic.put(base_piece))
     named_base_ref = mosaic.put(named_base_piece)
     piece = exception_mt(named_base_ref, [
         field_mt('string_field', mosaic.put(builtin_mt('string'))),
         ])
+    module_name = 'test'
     name = 'some_test_exception'
-    named_piece = name_wrapped_mt(name, mosaic.put(piece))
+    named_piece = name_wrapped_mt(module_name, name, mosaic.put(piece))
     t = types.resolve(mosaic.put(named_piece))
-    assert t == TException(name, {
+    assert t == TException(module_name, name, {
         'int_field': tInt,
         'string_field': tString,
         })
@@ -144,11 +148,11 @@ def test_empty_exception(types, mosaic):
     piece = exception_mt(None, [])
 
     name_1 = 'exception_1'
-    named_piece_1 = name_wrapped_mt(name_1, mosaic.put(piece))
+    named_piece_1 = name_wrapped_mt('test', name_1, mosaic.put(piece))
     t_1 = types.resolve(mosaic.put(named_piece_1))
-    assert t_1 == TException(name_1, {})
+    assert t_1 == TException('test', name_1, {})
 
     name_2 = 'exception_2'
-    named_piece_2 = name_wrapped_mt(name_2, mosaic.put(piece))
+    named_piece_2 = name_wrapped_mt('test', name_2, mosaic.put(piece))
     t_2 = types.resolve(mosaic.put(named_piece_2))
-    assert t_2 == TException(name_2, {})
+    assert t_2 == TException('test', name_2, {})

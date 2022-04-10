@@ -9,7 +9,7 @@ from hyperapp.common.htypes import (
 
 
 def test_instantiate():
-    t = TException('test_exception', {
+    t = TException('test', 'test_exception', {
         'some_str': tString,
         'some_int': tInt,
         }, verbose=True)
@@ -31,7 +31,7 @@ def test_instantiate():
 
 
 def test_instantiate_empty():
-    t = TException('test_exception', {}, verbose=True)
+    t = TException('test', 'test_exception', {}, verbose=True)
     rec_1 = t()
     assert list(rec_1) == []
     assert rec_1._asdict() == {}
@@ -42,7 +42,7 @@ def test_instantiate_empty():
 
 
 def test_exception_repr():
-    t = TException('test', {
+    t = TException('test', 'test', {
         'field_1': tString,
         'field_2': tInt,
         })
@@ -50,14 +50,14 @@ def test_exception_repr():
 
 
 def test_exception_str_1():
-    t = TException('test', {
+    t = TException('test', 'test', {
         'field_1': tInt,
         })
     assert str(t(123)) == "test(field_1=123)"
 
 
 def test_exception_str_2():
-    t = TException('test', {
+    t = TException('test', 'test', {
         'field_1': tString,
         'field_2': tInt,
         })
@@ -65,12 +65,12 @@ def test_exception_str_2():
 
 
 def test_empty_exception_repr():
-    empty_t = TException('empty')
+    empty_t = TException('test', 'empty')
     assert repr(empty_t()) == "empty()"
 
 
 def test_is_instance_primitives():
-    t = TException('test_exception', {
+    t = TException('test', 'test_exception', {
         'str_field': tString,
         'int_field': tInt,
         })
@@ -78,7 +78,7 @@ def test_is_instance_primitives():
 
 
 def test_is_instance_ref_opt():
-    t = TException('test_exception', {
+    t = TException('test', 'test_exception', {
         'str_field': tString,
         'ref_field': TOptional(ref_t),
         })
@@ -86,11 +86,11 @@ def test_is_instance_ref_opt():
 
 
 def test_is_instance_list():
-    element_t = TException('test_element', {
+    element_t = TException('test', 'test_element', {
         'str_field': tString,
         'ref_field': TOptional(ref_t),
         })
-    t = TException('test_exception', {
+    t = TException('test', 'test_exception', {
         'element_list': TList(element_t),
         })
     element = element_t('abc', None)
@@ -99,14 +99,14 @@ def test_is_instance_list():
 
 
 def test_is_instance_base_list():
-    element_t = TException('test_element', {
+    element_t = TException('test', 'test_element', {
         'str_field': tString,
         'ref_field': TOptional(ref_t),
         })
-    base_t = TException('test_base', {
+    base_t = TException('test', 'test_base', {
         'element_list': TList(element_t),
         })
-    t = TException('test_exception', base=base_t)
+    t = TException('test', 'test_exception', base=base_t)
     element = element_t('abc', None)
     value = t(element_list=(element,))
     assert isinstance(value, t)

@@ -3,7 +3,7 @@ import sys
 from keyword import iskeyword
 
 from ..util import is_dict_inst
-from .htypes import Type, tString, tBinary
+from .htypes import BUILTIN_MODULE_NAME, Type, tString, tBinary
 
 
 CHECK_FIELD_TYPES = True
@@ -157,25 +157,25 @@ def _namedtuple(typename, field_names, verbose=False, rename=False, str_fmt=None
 
 class TRecord(Type):
 
-    def __init__(self, name, fields=None, base=None, verbose=False):
+    def __init__(self, module_name, name, fields=None, base=None, verbose=False):
         assert name
         assert fields is None or is_dict_inst(fields, str, Type), repr(fields)
         assert base is None or isinstance(base, TRecord), repr(base)
-        super().__init__(name)
+        super().__init__(module_name, name)
         self.fields = fields or {}
         if base:
             self.fields = {**base.fields, **self.fields}
         self.base = base
         self._named_tuple = _namedtuple(
             name, [name for name in self.fields], verbose, str_fmt=self._str_fmt(), repr_fmt=self._repr_fmt())
-        self._eq_key = (self._name, *self.fields.items())
+        self._eq_key = (self._module_name, self._name, *self.fields.items())
 
     def __str__(self):
         return f'TRecord({self.name!r})'
 
     def __repr__(self):
         fields = ', '.join("%s: %r" % (name, t) for name, t in self.fields.items())
-        return f"{self.name}({fields or ('(no fields)')})"
+        return f"{self.module_name}.{self.name}({fields or ('(no fields)')})"
 
     def _str_fmt(self):
         return self._repr_fmt()
@@ -233,7 +233,7 @@ class TRef(TRecord):
 
 hash_t = tBinary
 
-ref_t = TRef('ref', {
+ref_t = TRef(BUILTIN_MODULE_NAME, 'ref', {
     'hash_algorithm': tString,
     'hash': hash_t,
     })

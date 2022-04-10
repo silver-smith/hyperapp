@@ -3,6 +3,9 @@ import datetime
 from ..util import is_iterable_inst
 
 
+BUILTIN_MODULE_NAME = 'builtin'
+
+
 class TypeError(Exception): pass
 
 
@@ -12,9 +15,15 @@ def join_path(*args):
 
 class Type:
 
-    def __init__(self, name):
+    def __init__(self, module_name, name):
+        assert module_name is None or type(module_name) is str, repr(module_name)
         assert name is None or type(name) is str, repr(name)
+        self._module_name = module_name
         self._name = name
+
+    @property
+    def module_name(self):
+        return self._module_name
 
     @property
     def name(self):
@@ -26,19 +35,19 @@ class Type:
 
 class TPrimitive(Type):
 
-    # type, type_name - defined in children.
+    # type - defined in children.
 
-    def __init__(self, name=None):
-        super().__init__(name or self.type_name)
+    def __init__(self, module_name, name):
+        super().__init__(module_name, name)
 
     def __repr__(self):
         return '%s' % self.get_type().__name__
 
     def __hash__(self):
-        return hash(self.type_name)
+        return hash(self._name)
 
     def __eq__(self, rhs):
-        return rhs is self or isinstance(rhs, TPrimitive) and rhs.type_name == self.type_name
+        return rhs is self or isinstance(rhs, TPrimitive) and rhs._name == self._name
 
     def __instancecheck__(self, value):
         return isinstance(value, self.get_type())
@@ -48,43 +57,37 @@ class TPrimitive(Type):
 
 
 class TNone(TPrimitive):
-    type_name = 'none'
     type = type(None)
 
 class TString(TPrimitive):
-    type_name = 'string'
     type = str
 
 class TBinary(TPrimitive):
-    type_name = 'binary'
     type = bytes
 
 class TInt(TPrimitive):
-    type_name = 'int'
     type = int
 
 class TBool(TPrimitive):
-    type_name = 'bool'
     type = bool
 
 class TDateTime(TPrimitive):
-    type_name = 'datetime'
     type = datetime.datetime
 
 
-tNone = TNone()
-tString = TString()
-tBinary = TBinary()
-tInt = TInt()
-tBool = TBool()
-tDateTime = TDateTime()
+tNone = TNone(BUILTIN_MODULE_NAME, 'none')
+tString = TString(BUILTIN_MODULE_NAME, 'string')
+tBinary = TBinary(BUILTIN_MODULE_NAME, 'binary')
+tInt = TInt(BUILTIN_MODULE_NAME, 'int')
+tBool = TBool(BUILTIN_MODULE_NAME, 'bool')
+tDateTime = TDateTime(BUILTIN_MODULE_NAME, 'datetime')
 
 
 class TOptional(Type):
 
-    def __init__(self, base_t, name=None):
+    def __init__(self, base_t, module_name=None, name=None):
         assert isinstance(base_t, Type), repr(base_t)
-        super().__init__(name)
+        super().__init__(module_name, name)
         self.base_t = base_t
 
     def __repr__(self):
@@ -102,9 +105,9 @@ class TOptional(Type):
 
 class TList(Type):
 
-    def __init__(self, element_t, name=None):
+    def __init__(self, element_t, module_name=None, name=None):
         assert isinstance(element_t, Type), repr(element_t)
-        super().__init__(name)
+        super().__init__(module_name, name)
         self.element_t = element_t
 
     def __repr__(self):

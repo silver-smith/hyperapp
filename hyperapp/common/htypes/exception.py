@@ -143,11 +143,11 @@ def _namedtuple(typename, field_names, verbose=False, rename=False, str_fmt=None
 
 class TException(Type):
 
-    def __init__(self, name, fields=None, base=None, verbose=False):
+    def __init__(self, module_name, name, fields=None, base=None, verbose=False):
         assert name
         assert fields is None or is_dict_inst(fields, str, Type), repr(fields)
         assert base is None or isinstance(base, TException), repr(base)
-        super().__init__(name)
+        super().__init__(module_name, name)
         self.fields = fields or {}
         if base:
             self.fields = {**base.fields, **self.fields}
@@ -161,7 +161,7 @@ class TException(Type):
 
     def __repr__(self):
         fields = ', '.join("%s: %r" % (name, t) for name, t in self.fields.items())
-        return f"{self.name}({fields or ('(no fields)')})"
+        return f"{self.module_name}.{self.name}({fields or ('(no fields)')})"
 
     def _str_fmt(self):
         return self._repr_fmt()

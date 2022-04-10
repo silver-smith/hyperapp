@@ -9,7 +9,7 @@ from hyperapp.common.htypes import (
 
 
 def test_instantiate():
-    t = TRecord('test_record', {
+    t = TRecord('test', 'test_record', {
         'some_str': tString,
         'some_int': tInt,
         }, verbose=True)
@@ -32,7 +32,7 @@ def test_instantiate():
 
 
 def test_instantiate_empty():
-    t = TRecord('test_record', {}, verbose=True)
+    t = TRecord('test', 'test_record', {}, verbose=True)
     rec_1 = t()
     assert list(rec_1) == []
     assert rec_1._asdict() == {}
@@ -43,7 +43,7 @@ def test_instantiate_empty():
 
 
 def test_record_repr():
-    t = TRecord('test', {
+    t = TRecord('test', 'test', {
         'field_1': tString,
         'field_2': tInt,
         })
@@ -51,7 +51,7 @@ def test_record_repr():
 
 
 def test_empty_record_repr():
-    empty_t = TRecord('empty')
+    empty_t = TRecord('test', 'empty')
     assert repr(empty_t()) == "empty()"
 
 
@@ -66,7 +66,7 @@ def test_ref_repr():
 
 
 def test_is_instance_primitives():
-    t = TRecord('test_record', {
+    t = TRecord('test', 'test_record', {
         'str_field': tString,
         'int_field': tInt,
         })
@@ -74,7 +74,7 @@ def test_is_instance_primitives():
 
 
 def test_is_instance_ref_opt():
-    t = TRecord('test_record', {
+    t = TRecord('test', 'test_record', {
         'str_field': tString,
         'ref_field': TOptional(ref_t),
         })
@@ -82,11 +82,11 @@ def test_is_instance_ref_opt():
 
 
 def test_is_instance_list():
-    element_t = TRecord('test_element', {
+    element_t = TRecord('test', 'test_element', {
         'str_field': tString,
         'ref_field': TOptional(ref_t),
         })
-    t = TRecord('test_record', {
+    t = TRecord('test', 'test_record', {
         'element_list': TList(element_t),
         })
     element = element_t('abc', None)
@@ -95,14 +95,14 @@ def test_is_instance_list():
 
 
 def test_is_instance_base_list():
-    element_t = TRecord('test_element', {
+    element_t = TRecord('test', 'test_element', {
         'str_field': tString,
         'ref_field': TOptional(ref_t),
         })
-    base_t = TRecord('test_base', {
+    base_t = TRecord('test', 'test_base', {
         'element_list': TList(element_t),
         })
-    t = TRecord('test_record', base=base_t)
+    t = TRecord('test', 'test_record', base=base_t)
     element = element_t('abc', None)
     value = t(element_list=(element,))
     assert isinstance(value, t)
