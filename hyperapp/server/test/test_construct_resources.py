@@ -74,6 +74,6 @@ def test_resources(services, compare):
     log.info("Resource module:\n%s", yaml.dump(resource_module.as_dict, sort_keys=False))
     compare(resource_module, 'reference')
     # resource_module.save()
-    # service_res = resource_module['sample_servant_service']
-    # service = services.python_object_creg.animate(service_res)
-    # log.info("Service: %r", service)
+    servant_res = resource_module['sample_servant']
+    servant = services.python_object_creg.animate(servant_res)
+    log.info("Servant: %r", servant)
