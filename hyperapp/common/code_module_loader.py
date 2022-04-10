@@ -56,6 +56,7 @@ class CodeModuleLoader:
                 require=raw_info.get('require', []),
                 )
             name_to_info[module_name] = info
+            log.debug("Loaded code module info %r: %s", module_name, info)
         return name_to_info
 
     def _load_module(self, module_name, name_to_info, registry, dep_stack):
@@ -101,4 +102,5 @@ class CodeModuleLoader:
         for requirement in info.provide:
             registry.by_requirement[requirement].add(code_module)
             registry.module_provides[module_name].add(requirement)
+        log.debug("Loaded code module %s", module_name)
         return code_module
