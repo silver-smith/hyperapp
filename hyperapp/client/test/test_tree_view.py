@@ -18,7 +18,7 @@ pytest_plugins = ['hyperapp.common.test.services']
 
 @pytest.fixture
 def additional_module_dirs():
-    return [Path(__file__).parent.resolve()]
+    return [Path(__file__).parent.joinpath('../../common/test/mock').resolve()]
 
 
 @pytest.fixture

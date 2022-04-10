@@ -12,17 +12,19 @@ log = logging.getLogger(__name__)
 pytest_plugins = ['hyperapp.common.test.services']
 
 TEST_DIR = Path(__file__).parent.resolve()
+HYPERAPP_DIR = TEST_DIR.parent.parent
 TEST_RESOURCE_DIR = TEST_DIR / 'test_resources'
 
 
 @pytest.fixture
 def additional_module_dirs():
-    return [TEST_RESOURCE_DIR]
+    return [TEST_RESOURCE_DIR, HYPERAPP_DIR / 'common' / 'test' / 'mock']
 
 
 @pytest.fixture
 def code_module_list():
     return [
+        'mock_file_bundle',
         'resource.resource_type',
         'resource.registry',
         'resource.resource_module',
