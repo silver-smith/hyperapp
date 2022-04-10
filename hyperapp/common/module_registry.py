@@ -222,8 +222,12 @@ class ModuleRegistry:
             if not provider_set:
                 raise RuntimeError(f"Code module {module_code.module.module_name!r} requires {service!r}, but no module provides it")
             if len(provider_set) > 1:
-                # When requirements is provided by several modules, preferred should be included in module_list.
                 provider_set &= set(module_list)
+                if not provider_set:
+                    raise RuntimeError(
+                        f"Service {service!r}:"
+                        " When requirements is provided by several modules, preferred should be included in module_list"
+                        f" ({[m.module_name for m in module_list]})")
             [provider] = provider_set  # Only one provider is expected now.
             yield provider
 
