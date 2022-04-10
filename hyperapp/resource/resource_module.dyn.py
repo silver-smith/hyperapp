@@ -66,15 +66,19 @@ class ResourceModule:
     @property
     def as_dict(self):
         definitions = self._definitions  # Load before imports_set is used.
+        import_set = self._import_set
+        definition_dict = {}
+        for name, d in sorted(definitions.items()):
+            t = d.type.definition_t
+            type_name = f'legacy_type.{t.module_name}.{t.name}'
+            definition_dict[name] = {
+                '_type': type_name,
+                **d.type.to_dict(d.value),
+                }
+            import_set.add(type_name)
         return {
-            'import': sorted(self._import_set),
-            'definitions': {
-                name: {
-                    'type': d.type.name,
-                    **d.type.to_dict(d.value),
-                    }
-                for name, d in sorted(definitions.items())
-                },
+            'import': sorted(import_set),
+            'definitions': definition_dict,
             }
 
     def _resolve_name(self, name):

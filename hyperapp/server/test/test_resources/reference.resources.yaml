@@ -1,12 +1,12 @@
 import:
-  - legacy_module.construct_resources_sample
-  - legacy_service.mosaic
-  - legacy_service.peer_registry
-  - legacy_service.rpc_call_factory
-  - legacy_service.web
-  - legacy_type.attribute.attribute
-  - legacy_type.partial.partial
-  - legacy_type.call.call
+- legacy_module.construct_resources_sample
+- legacy_service.mosaic
+- legacy_service.peer_registry
+- legacy_service.rpc_call_factory
+- legacy_service.web
+- legacy_type.attribute.attribute
+- legacy_type.call.call
+- legacy_type.partial.partial
 definitions:
   sample_servant:
     _type: legacy_type.call.call
