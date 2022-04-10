@@ -4,3 +4,6 @@ import:
 provide:
   - resource_type_reg
   - python_object_creg
+  - resource_type_producer
+require:
+  - resource_type_factory

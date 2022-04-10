@@ -17,8 +17,7 @@ class ResourceModule:
     def __init__(
             self,
             mosaic,
-            resource_type_reg,
-            resource_type_factory,
+            resource_type_producer,
             python_object_creg,
             resource_module_registry,
             name,
@@ -26,8 +25,7 @@ class ResourceModule:
             allow_missing=False,
             ):
         self._mosaic = mosaic
-        self._resource_type_reg = resource_type_reg
-        self._resource_type_factory = resource_type_factory
+        self._resource_type_producer = resource_type_producer
         self._resource_module_registry = resource_module_registry
         self._python_object_creg = python_object_creg
         self._name = name
@@ -129,15 +127,12 @@ class ResourceModule:
             raise RuntimeError(f"{self._name}: definition {name!r} has no '_type' attribute")
         resource_t_res = self._resolve_name(resource_t_name)
         resource_t = self._python_object_creg.invite(resource_t_res)
-        try:
-            t = self._resource_type_reg[resource_t]
-        except KeyError:
-            t = self._resource_type_factory(resource_t)
+        t = self._resource_type_producer(resource_t)
         value = t.from_dict(data)
         return Definition(t, value)
 
 
-def load_resource_modules(mosaic, resource_type_reg, resource_type_factory, python_object_creg, dir_list):
+def load_resource_modules(mosaic, resource_type_producer, python_object_creg, dir_list):
     ext = '.resources.yaml'
     fixture_ext = '.fixtures.resources.yaml'
     registry = {}
@@ -151,12 +146,12 @@ def load_resource_modules(mosaic, resource_type_reg, resource_type_factory, pyth
                 name = rpath[:-len(fixture_ext)].replace('/', '.')
                 log.info("Fixture resource module: %r", name)
                 fixture_registry[name] = ResourceModule(
-                    mosaic, resource_type_reg, resource_type_factory, python_object_creg, registry, name, path)
+                    mosaic, resource_type_producer, python_object_creg, registry, name, path)
             else:
                 name = rpath[:-len(ext)].replace('/', '.')
                 log.info("Resource module: %r", name)
                 registry[name] = ResourceModule(
-                    mosaic, resource_type_reg, resource_type_factory, python_object_creg, registry, name, path)
+                    mosaic, resource_type_producer, python_object_creg, registry, name, path)
     return (registry, fixture_registry)
 
 
@@ -167,16 +162,14 @@ class ThisModule(Module):
 
         services.resource_module_registry, services.fixture_resource_module_registry = load_resource_modules(
             services.mosaic,
-            services.resource_type_reg,
-            services.resource_type_factory,
+            services.resource_type_producer,
             services.python_object_creg,
             services.module_dir_list,
         )
         services.resource_module_factory = partial(
             ResourceModule,
             services.mosaic,
-            services.resource_type_reg,
-            services.resource_type_factory,
+            services.resource_type_producer,
             services.python_object_creg,
             services.resource_module_registry,
         )
