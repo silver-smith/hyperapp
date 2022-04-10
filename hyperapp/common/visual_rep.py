@@ -12,7 +12,6 @@ from .htypes import (
     TOptional,
     TRecord,
     TList,
-    Interface,
     ref_t,
     capsule_t,
     )

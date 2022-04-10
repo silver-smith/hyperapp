@@ -11,9 +11,6 @@ from hyperapp.common.htypes import (
     TRecord,
     TException,
     TList,
-    Request,
-    Notification,
-    Interface,
     ref_t,
     )
 from hyperapp.common import cdr_coders  # register codec
@@ -64,53 +61,6 @@ def test_types(types, htypes, loader):
     assert htypes.type_module_1.empty_record_1 != htypes.type_module_2.empty_record_2
 
 
-    assert htypes.type_module_1.iface_a == Interface(
-        name='iface_a',
-        method_list=[
-            Request(
-                method_name='submit',
-                params_record_t=TRecord('iface_a_submit_params', {
-                    'name': TList(tString),
-                    'size': tInt,
-                }),
-                response_record_t=TRecord('iface_a_submit_response'),
-                ),
-            ],
-        )
-
-    assert htypes.type_module_1.iface_b == Interface(
-        name='iface_b',
-        base=htypes.type_module_1.iface_a,
-        method_list=[
-            Request(
-                method_name='update',
-                params_record_t=TRecord('iface_b_update_params'),
-                response_record_t=TRecord('iface_b_update_response', {
-                    'created_at': tDateTime,
-                    'id': TOptional(tInt),
-                    }),
-                ),
-            ],
-        )
-
-    assert htypes.type_module_2.iface_c == Interface(
-        name='iface_c',
-        base=htypes.type_module_1.iface_b,
-        method_list=[
-            Notification(
-                method_name='keep_alive',
-                params_record_t=TRecord('iface_c_keep_alive_params'),
-                ),
-            ],
-        )
-
-    # Types should be registered:
-    types.reverse_resolve(htypes.type_module_1.iface_a)
-    types.reverse_resolve(htypes.type_module_1.iface_a.methods['submit'].params_record_t)
-    types.reverse_resolve(htypes.type_module_1.iface_a.methods['submit'].response_record_t)
-    types.reverse_resolve(htypes.type_module_2.iface_c.methods['keep_alive'].params_record_t)
-
-
 def test_same_instance(htypes, loader):
     loader.load_type_modules([TEST_MODULES_DIR / 'same_instance'])
     element = htypes.same_instance.element('abcd')
@@ -130,8 +80,6 @@ def test_same_instance(htypes, loader):
     assert htypes.same_instance.based_container.base is htypes.same_instance.container
     value = htypes.same_instance.based_container(element_field=element)
     assert isinstance(value, htypes.same_instance.container)
-
-    assert htypes.same_instance.derived_interface.base_t is htypes.same_instance.base_interface
 
 
 def test_exception_type(types, htypes, loader):

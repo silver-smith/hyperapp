@@ -16,7 +16,6 @@ from .htypes import (
     TRecord,
     TException,
     TList,
-    Interface,
     ref_t,
     )
 from .htypes.deduce_value_type import deduce_value_type

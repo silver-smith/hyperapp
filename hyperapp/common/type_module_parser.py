@@ -12,9 +12,6 @@ from .htypes import (
     list_mt,
     record_mt,
     exception_mt,
-    request_mt,
-    notification_mt,
-    interface_mt,
     )
 from .local_type_module import (
     type_import_t,
@@ -34,7 +31,6 @@ keywords = [
     'list',
     'record',
     'exception',
-    'interface',
     'list_service_type',
     ]
 
@@ -162,10 +158,6 @@ class Grammar:
         'typedef_rhs : exception_def'
         p[0] = p[1]
 
-    def p_typedef_rhs_interface(self, p):
-        'typedef_rhs : interface_def'
-        p[0] = p[1]
-
 
     def p_record_def_1(self, p):
         'record_def : RECORD record_base_name_def'
@@ -235,56 +227,6 @@ class Grammar:
         'field_def : NAME COLON type_expr'
         ref = p.parser.mosaic.put(p[3])
         p[0] = field_mt(p[1], ref)
-
-
-    def p_interface_def(self, p):
-        'interface_def : INTERFACE interface_parent_def COLON BLOCK_BEGIN interface_method_list BLOCK_END'
-        p[0] = interface_mt(
-            base=p[2],
-            method_list=p[5],
-            )
-
-
-    def p_interface_parent_def_1(self, p):
-        'interface_parent_def : LPAR NAME RPAR'
-        p[0] = p.parser.mosaic.put(name_mt(p[2]))
-
-    def p_interface_parent_def_2(self, p):
-        'interface_parent_def : empty'
-        p[0] = None
-
-
-    def p_interface_method_list_1(self, p):
-        'interface_method_list : interface_method_list STMT_SEP interface_method'
-        method_ref = p.parser.mosaic.put(p[3])
-        p[0] = p[1] + [method_ref]
-
-    def p_interface_method_list_2(self, p):
-        'interface_method_list : interface_method'
-        method_ref = p.parser.mosaic.put(p[1])
-        p[0] = [method_ref]
-
-
-    def p_interface_method_request(self, p):
-        'interface_method : NAME LPAR method_field_list RPAR ARROW LPAR method_field_list RPAR'
-        p[0] = request_mt(p[1], p[3], p[7])
-
-    def p_interface_method_notification(self, p):
-        'interface_method : NAME LPAR method_field_list RPAR'
-        p[0] = notification_mt(p[1], p[3])
-
-
-    def p_method_field_list_1(self, p):
-        'method_field_list : method_field_list COMMA field_def'
-        p[0] = p[1] + [p[3]]
-
-    def p_method_field_list_2(self, p):
-        'method_field_list : field_def'
-        p[0] = [p[1]]
-
-    def p_method_field_list_3(self, p):
-        'method_field_list : empty'
-        p[0] = []
 
 
     def p_type_expr_1(self, p):

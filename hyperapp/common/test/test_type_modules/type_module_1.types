@@ -6,10 +6,3 @@ record_2 = record(record_1):
   string_field: string
 
 empty_record_1 = record
-
-
-iface_a = interface:
-  submit (name: string list, size: int) -> ()
-
-iface_b = interface(iface_a):
-  update () -> (created_at: datetime, id: int opt)

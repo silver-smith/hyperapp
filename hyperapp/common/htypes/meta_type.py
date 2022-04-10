@@ -14,7 +14,6 @@ from .htypes import (
 from .record import TRecord
 from .exception import TException
 from .hyper_ref import ref_t
-from .interface import Request, Notification, Interface
 
 
 builtin_mt = TRecord('builtin_mt', {
@@ -103,58 +102,6 @@ def exception_from_piece(rec, type_code_registry, name, types):
     return TException(name, field_dict, base=base_t)
 
 
-request_mt = TRecord('request_mt', {
-    'method_name': tString,
-    'param_fields': TList(field_mt),
-    'response_fields': TList(field_mt),
-    })
-
-notification_mt = TRecord('notification_mt', {
-    'method_name': tString,
-    'param_fields': TList(field_mt),
-    })
-
-interface_mt = TRecord('interface_mt', {
-    'base': TOptional(ref_t),
-    'method_list': TList(ref_t),
-    })
-
-
-def request_from_piece(piece, type_code_registry, name, mosaic, types):
-    # name here is interface name.
-    params_ref = mosaic.put(record_mt(None, piece.param_fields))
-    named_params_ref = mosaic.put(name_wrapped_mt(f'{name}_{piece.method_name}_params', params_ref))
-    params_record_t = types.resolve(named_params_ref)
-
-    response_ref = mosaic.put(record_mt(None, piece.response_fields))
-    named_response_ref = mosaic.put(name_wrapped_mt(f'{name}_{piece.method_name}_response', response_ref))
-    response_record_t = types.resolve(named_response_ref)
-
-    return Request(piece.method_name, params_record_t, response_record_t)
-
-
-def notification_from_piece(piece, type_code_registry, name, mosaic, types):
-    params_ref = mosaic.put(record_mt(None, piece.param_fields))
-    named_params_ref = mosaic.put(name_wrapped_mt(f'{name}_{piece.method_name}_params', params_ref))
-    params_record_t = types.resolve(named_params_ref)
-
-    return Notification(piece.method_name, params_record_t)
-
-
-def _method_iter_from_field_list(method_ref_list, type_code_registry, name):
-    for method_ref in method_ref_list:
-        yield type_code_registry.invite(method_ref, type_code_registry, name)
-
-
-def interface_from_piece(piece, type_code_registry, name, types):
-    if piece.base is not None:
-        base_t = types.resolve(piece.base)
-        assert isinstance(base_t, Interface), f"Interface base is not a Interface: {base_t}"
-    else:
-        base_t = None
-    method_list = list(_method_iter_from_field_list(piece.method_list, type_code_registry, name))
-    return Interface(name, base_t, method_list)
-
 
 def register_builtin_meta_types(builtin_types, mosaic, types):
     builtin_types.register(mosaic, types, name_mt)
@@ -164,9 +111,6 @@ def register_builtin_meta_types(builtin_types, mosaic, types):
     builtin_types.register(mosaic, types, field_mt)
     builtin_types.register(mosaic, types, record_mt)
     builtin_types.register(mosaic, types, exception_mt)
-    builtin_types.register(mosaic, types, request_mt)
-    builtin_types.register(mosaic, types, notification_mt)
-    builtin_types.register(mosaic, types, interface_mt)
 
 
 def register_meta_types(mosaic, types, type_code_registry):
@@ -176,6 +120,3 @@ def register_meta_types(mosaic, types, type_code_registry):
     type_code_registry.register_actor(list_mt, list_from_piece, types)
     type_code_registry.register_actor(record_mt, record_from_piece, types)
     type_code_registry.register_actor(exception_mt, exception_from_piece, types)
-    type_code_registry.register_actor(request_mt, request_from_piece, mosaic, types)
-    type_code_registry.register_actor(notification_mt, notification_from_piece, mosaic, types)
-    type_code_registry.register_actor(interface_mt, interface_from_piece, types)
