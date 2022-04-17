@@ -32,7 +32,7 @@ class ResourceModule:
         self._python_object_creg = python_object_creg
         self._name = name
         self._path = path
-        self._import_set = None
+        self._loaded_import_set = None
         self._loaded_definitions = None
         self._allow_missing = allow_missing
 
@@ -53,7 +53,6 @@ class ResourceModule:
 
     def add_import(self, import_name):
         log.info("%s: Add import: %r", self._name, import_name)
-        self._definitions  # Force loading.
         self._import_set.add(import_name)
 
     def set_definition(self, var_name, resource_type, definition_value):
@@ -70,10 +69,9 @@ class ResourceModule:
 
     @property
     def as_dict(self):
-        definitions = self._definitions  # Load before imports_set is used.
         import_set = self._import_set
         definition_dict = {}
-        for name, d in sorted(definitions.items()):
+        for name, d in sorted(self._definitions.items()):
             t = d.type.definition_t
             type_name = f'legacy_type.{t.module_name}.{t.name}'
             definition_dict[name] = {
@@ -101,13 +99,21 @@ class ResourceModule:
 
     @property
     def _definitions(self):
-        if self._import_set is None:
-            self._load()
+        self._ensure_loaded()
         return self._loaded_definitions
+
+    @property
+    def _import_set(self):
+        self._ensure_loaded()
+        return self._loaded_import_set
+
+    def _ensure_loaded(self):
+        if self._loaded_definitions is None:
+            self._load()
 
     def _load(self):
         if self._path is None:
-            self._import_set = set()
+            self._loaded_import_set = set()
             self._loaded_definitions = {}
             return
         log.info("Loading resource module %s: %s", self._name, self._path)
@@ -116,12 +122,12 @@ class ResourceModule:
         except FileNotFoundError:
             if not self._allow_missing:
                 raise
-            self._import_set = set()
+            self._loaded_import_set = set()
             self._loaded_definitions = {}
             return
-        self._import_set = set(contents.get('import', []))
+        self._loaded_import_set = set(contents.get('import', []))
         self._loaded_definitions = {}
-        for name in self._import_set:
+        for name in self._loaded_import_set:
             module_name, var_name = name.rsplit('.', 1)
             try:
                 module = self._resource_module_registry[module_name]
