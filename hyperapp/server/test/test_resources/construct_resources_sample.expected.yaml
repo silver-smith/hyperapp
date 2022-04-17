@@ -6,7 +6,9 @@ import:
 - legacy_service.rpc_call_factory
 - legacy_service.web
 - legacy_type.attribute.attribute
+- legacy_type.builtin.int
 - legacy_type.call.call
+- legacy_type.impl.list_impl
 - legacy_type.partial.partial
 definitions:
   sample_servant:
@@ -20,6 +22,10 @@ definitions:
     _type: legacy_type.attribute.attribute
     object: sample_servant
     attr_name: get
+  sample_servant_impl:
+    _type: legacy_type.impl.list_impl
+    function: sample_servant_partial
+    key_t: legacy_type.builtin.int
   sample_servant_partial:
     _type: legacy_type.partial.partial
     function: sample_servant_attribute
