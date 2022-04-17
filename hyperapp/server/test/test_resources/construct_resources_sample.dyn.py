@@ -7,7 +7,7 @@ log = logging.getLogger(__name__)
 
 class SampleServant:
 
-    def __init__(self, mosaic, web, peer_registry, rpc_call_factory):
+    def __init__(self, piece, mosaic, web, peer_registry, rpc_call_factory):
         log.info("constuct_resources_sample: SampleServant ctr: %s, %s, %s, %s", mosaic, web, peer_registry, rpc_call_factory)
 
     @property

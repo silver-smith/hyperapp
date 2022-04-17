@@ -127,8 +127,10 @@ class HTest:
         subprocess = self._subprocess_factory(
             process_name='htest',
             code_module_list=[
+                'resource.legacy_type',
                 'resource.legacy_module',
                 'resource.legacy_service',
+                'resource.python_module',
                 'resource.attribute',
                 'resource.partial',
                 'resource.call',

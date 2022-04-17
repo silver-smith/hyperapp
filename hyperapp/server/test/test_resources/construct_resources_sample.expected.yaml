@@ -1,4 +1,5 @@
 import:
+- construct_resources_sample.fixtures.sample_servant_piece
 - legacy_module.construct_resources_sample
 - legacy_service.mosaic
 - legacy_service.peer_registry
@@ -19,6 +20,7 @@ definitions:
     _type: legacy_type.partial.partial
     function: sample_servant_attribute
     params:
+      piece: construct_resources_sample.fixtures.sample_servant_piece
       mosaic: legacy_service.mosaic
       web: legacy_service.web
       peer_registry: legacy_service.peer_registry

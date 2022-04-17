@@ -20,6 +20,7 @@ class ResourceModule:
             resource_type_producer,
             python_object_creg,
             resource_module_registry,
+            fixture_resource_module_registry,
             name,
             path=None,
             allow_missing=False,
@@ -27,6 +28,7 @@ class ResourceModule:
         self._mosaic = mosaic
         self._resource_type_producer = resource_type_producer
         self._resource_module_registry = resource_module_registry
+        self._fixture_resource_module_registry = fixture_resource_module_registry
         self._python_object_creg = python_object_creg
         self._name = name
         self._path = path
@@ -87,7 +89,11 @@ class ResourceModule:
     def _resolve_name(self, name):
         if name in self._import_set:
             module_name, var_name = name.rsplit('.', 1)
-            module = self._resource_module_registry[module_name]
+            if module_name.endswith('.fixtures'):
+                fixture_module_name, _ = module_name.rsplit('.', 1)
+                module = self._fixture_resource_module_registry[fixture_module_name]
+            else:
+                module = self._resource_module_registry[module_name]
             piece = module[var_name]
         else:
             piece = self[name]
@@ -153,12 +159,12 @@ def load_resource_modules(mosaic, resource_type_producer, python_object_creg, di
                 name = rpath[:-len(fixture_ext)].replace('/', '.')
                 log.info("Fixture resource module: %r", name)
                 fixture_registry[name] = ResourceModule(
-                    mosaic, resource_type_producer, python_object_creg, registry, name, path)
+                    mosaic, resource_type_producer, python_object_creg, registry, fixture_registry, name, path)
             else:
                 name = rpath[:-len(ext)].replace('/', '.')
                 log.info("Resource module: %r", name)
                 registry[name] = ResourceModule(
-                    mosaic, resource_type_producer, python_object_creg, registry, name, path)
+                    mosaic, resource_type_producer, python_object_creg, registry, fixture_registry, name, path)
     return (registry, fixture_registry)
 
 
@@ -179,4 +185,5 @@ class ThisModule(Module):
             services.resource_type_producer,
             services.python_object_creg,
             services.resource_module_registry,
+            services.fixture_resource_module_registry,
         )

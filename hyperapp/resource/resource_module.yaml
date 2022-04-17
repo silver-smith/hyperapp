@@ -4,4 +4,5 @@ require:
   - python_object_creg
 provide:
   - resource_module_registry
+  - fixture_resource_module_registry
   - resource_module_factory

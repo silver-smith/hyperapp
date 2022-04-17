@@ -60,7 +60,7 @@ def test_fixture(services):
 @pytest.fixture
 def compare():
     def inner(resource_module, expected_fname):
-        expected_yaml = TEST_RESOURCE_DIR.joinpath(expected_fname + '.resources.yaml').read_text()
+        expected_yaml = TEST_RESOURCE_DIR.joinpath(expected_fname + '.expected.yaml').read_text()
         actual_yaml = yaml.dump(resource_module.as_dict, sort_keys=False)
         assert expected_yaml == actual_yaml
     return inner

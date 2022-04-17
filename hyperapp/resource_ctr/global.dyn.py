@@ -26,18 +26,30 @@ def construct_attr(resource_type_producer, resource_module, object_res_name, att
     return attr_res_name
 
 
-def construct_resource_params_partial(resource_type_producer, resource_module_registry, resource_module, attr, attr_res_name):
+def construct_resource_params_partial(
+        resource_type_producer, resource_module_registry, fixture_resource_module_registry, resource_module, attr, attr_res_name):
     name_to_module = {
         var_name: resource_module_name
         for resource_module_name, resource_module in resource_module_registry.items()
         for var_name in resource_module
         }
+    fixture_to_module = {
+        var_name: f'{resource_module_name}.fixtures'
+        for resource_module_name, resource_module in fixture_resource_module_registry.items()
+        for var_name in resource_module
+        }
+    attr_snake_name = camel_to_snake(attr.name)
     param_to_resource = {}
     for param_name in attr.param_list:
-        resource_module_name = name_to_module[param_name]
-        resource_name = f'{resource_module_name}.{param_name}'
-        param_to_resource[param_name] = resource_name
-        resource_module.add_import(resource_name)
+        try:
+            resource_name = f'{attr_snake_name}_{param_name}'
+            resource_module_name = fixture_to_module[resource_name]
+        except KeyError:
+            resource_name = param_name
+            resource_module_name = name_to_module[resource_name]
+        full_resource_name = f'{resource_module_name}.{resource_name}'
+        param_to_resource[param_name] = full_resource_name
+        resource_module.add_import(full_resource_name)
     partial_res_t = resource_type_producer(htypes.partial.partial)
     partial_def_t = partial_res_t.definition_t
     partial_param_def_t = partial_def_t.fields['params'].element_t
@@ -49,7 +61,6 @@ def construct_resource_params_partial(resource_type_producer, resource_module_re
             in param_to_resource.items()
             ],
         )
-    attr_snake_name = camel_to_snake(attr.name)
     partial_res_name = f'{attr_snake_name}_partial'
     resource_module.set_definition(partial_res_name, partial_res_t, partial_def)
     return partial_res_name
@@ -65,12 +76,13 @@ def construct_call(resource_type_producer, resource_module, function_res_name, r
 
 def construct_global(
         module_name, resource_module, process, module_res_name, name_to_module, globl,
-        mosaic, resource_type_producer, resource_module_registry, runner_method_collect_attributes_ref,
+        mosaic, resource_type_producer, resource_module_registry, fixture_resource_module_registry, runner_method_collect_attributes_ref,
         ):
     collect_attributes_call = process.rpc_call(runner_method_collect_attributes_ref)
 
     attr_res_name = construct_attr(resource_type_producer, resource_module, module_res_name, globl, add_object_prefix=False)
-    partial_res_name = construct_resource_params_partial(resource_type_producer, resource_module_registry, resource_module, globl, attr_res_name)
+    partial_res_name = construct_resource_params_partial(
+        resource_type_producer, resource_module_registry, fixture_resource_module_registry, resource_module, globl, attr_res_name)
     global_res_name = camel_to_snake(globl.name)
     construct_call(resource_type_producer, resource_module, partial_res_name, global_res_name)
 

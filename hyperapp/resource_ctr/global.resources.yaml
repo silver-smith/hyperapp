@@ -1,5 +1,6 @@
 import:
   - legacy_module.resource_ctr.global
+  - legacy_service.fixture_resource_module_registry
   - legacy_service.mosaic
   - legacy_service.resource_type_producer
   - legacy_service.resource_module_registry
@@ -31,4 +32,5 @@ definitions:
       mosaic: legacy_service.mosaic
       resource_type_producer: legacy_service.resource_type_producer
       resource_module_registry: legacy_service.resource_module_registry
+      fixture_resource_module_registry: legacy_service.fixture_resource_module_registry
       runner_method_collect_attributes_ref: runner_method_collect_attributes_ref

@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 
 
 def sample_servant_piece():
+    log.info("Fixture sample_servant_piece is called")
     return 'test value'
 
 

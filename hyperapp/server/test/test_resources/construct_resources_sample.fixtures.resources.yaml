@@ -1,7 +1,9 @@
 import:
-  - legacy_type.construct_resources_sample.sample_servant_d
-  - legacy_type.construct_resources_sample.sample_item
-  - legacy_type.python_module.python_module
+- legacy_type.attribute.attribute
+- legacy_type.call.call
+- legacy_type.construct_resources_sample.sample_servant_d
+- legacy_type.construct_resources_sample.sample_item
+- legacy_type.python_module.python_module
 definitions:
   construct_resources_sample:
     _type: legacy_type.python_module.python_module
@@ -10,3 +12,10 @@ definitions:
     import_list:
       htypes.construct_resources_sample.sample_servant_d: legacy_type.construct_resources_sample.sample_servant_d
       htypes.construct_resources_sample.sample_item: legacy_type.construct_resources_sample.sample_item
+  sample_servant_piece:
+    _type: legacy_type.call.call
+    function: sample_servant_piece_attribute
+  sample_servant_piece_attribute:
+    _type: legacy_type.attribute.attribute
+    object: construct_resources_sample
+    attr_name: sample_servant_piece
