@@ -61,7 +61,10 @@ class ResourceModule:
     def save(self):
         if self._path is None:
             raise RuntimeError(f"Attempt to save ethemeral resource module: {self._name}")
-        self._path.write_text(yaml.dump(self.as_dict, sort_keys=False))
+        self.save_as(self._path)
+
+    def save_as(self, path):
+        path.write_text(yaml.dump(self.as_dict, sort_keys=False))
 
     @property
     def as_dict(self):

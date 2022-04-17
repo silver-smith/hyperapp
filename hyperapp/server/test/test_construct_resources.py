@@ -1,4 +1,5 @@
 import logging
+import tempfile
 import yaml
 from pathlib import Path
 
@@ -72,8 +73,8 @@ def test_resources(services, compare):
     log.info("Htest: %r", htest)
     resource_module = htest.construct_resources('construct_resources_sample', TEST_RESOURCE_DIR)
     log.info("Resource module:\n%s", yaml.dump(resource_module.as_dict, sort_keys=False))
-    compare(resource_module, 'reference')
-    # resource_module.save()
+    resource_module.save_as(Path(tempfile.gettempdir()) / 'construct_resources_sample.resources.yaml')
+    compare(resource_module, 'construct_resources_sample')
     servant_res = resource_module['sample_servant']
     servant = services.python_object_creg.animate(servant_res)
     log.info("Servant: %r", servant)

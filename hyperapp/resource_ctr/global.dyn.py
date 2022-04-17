@@ -49,7 +49,8 @@ def construct_resource_params_partial(resource_type_producer, resource_module_re
             in param_to_resource.items()
             ],
         )
-    partial_res_name = f'{attr_res_name}_partial'
+    attr_snake_name = camel_to_snake(attr.name)
+    partial_res_name = f'{attr_snake_name}_partial'
     resource_module.set_definition(partial_res_name, partial_res_t, partial_def)
     return partial_res_name
 

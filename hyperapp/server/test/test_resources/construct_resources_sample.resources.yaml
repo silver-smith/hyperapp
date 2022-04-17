@@ -10,12 +10,12 @@ import:
 definitions:
   sample_servant:
     _type: legacy_type.call.call
-    function: sample_servant_attribute_partial
+    function: sample_servant_partial
   sample_servant_attribute:
     _type: legacy_type.attribute.attribute
     object: legacy_module.construct_resources_sample
     attr_name: SampleServant
-  sample_servant_attribute_partial:
+  sample_servant_partial:
     _type: legacy_type.partial.partial
     function: sample_servant_attribute
     params:
