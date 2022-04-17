@@ -21,5 +21,13 @@ storage = record:
   test_module_list: test_module list
 
 
+type_name = record:
+  module: string
+  name: string
+
+item_element = record:
+  name: string
+  type: type_name
+
 list_t = record:
-  attr_name_list: string list
+  element_list: item_element list

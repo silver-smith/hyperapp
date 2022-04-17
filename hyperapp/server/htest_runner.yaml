@@ -2,4 +2,6 @@ import:
   types:
     htest:
       - attr
+      - type_name
+      - item_element
       - list_t
