@@ -333,7 +333,7 @@ def parse_type_module_source(builtin_types, mosaic, fname, module_name, contents
     parser.module_name = module_name
     parser.fname = fname
     parser.lines = contents.splitlines()
-    parser.known_name_set = set(builtin_types.items())
+    parser.known_name_set = set(builtin_types.keys())
     parser.error_line = None
     parser.error = None
     #parser.provided_class_list = []

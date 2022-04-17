@@ -21,8 +21,11 @@ class BuiltinTypeRegistry:
     def resolve(self, name):
         return self._name_to_type[name]
 
-    def items(self):
-        return self._name_to_type
+    def keys(self):
+        return self._name_to_type.keys()
+
+    def values(self):
+        return self._name_to_type.values()
 
     def type_from_piece(self, piece, type_code_registry, name):
         return self._name_to_type[piece.name]
