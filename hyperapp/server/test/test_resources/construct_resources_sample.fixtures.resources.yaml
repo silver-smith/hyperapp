@@ -2,6 +2,7 @@ import:
 - legacy_type.attribute.attribute
 - legacy_type.call.call
 - legacy_type.construct_resources_sample.sample_servant_d
+- legacy_type.construct_resources_sample.sample
 - legacy_type.construct_resources_sample.sample_item
 - legacy_type.python_module.python_module
 definitions:
@@ -11,6 +12,7 @@ definitions:
     file_name: construct_resources_sample.fixtures.dyn.py
     import_list:
       htypes.construct_resources_sample.sample_servant_d: legacy_type.construct_resources_sample.sample_servant_d
+      htypes.construct_resources_sample.sample: legacy_type.construct_resources_sample.sample
       htypes.construct_resources_sample.sample_item: legacy_type.construct_resources_sample.sample_item
   sample_servant_piece:
     _type: legacy_type.call.call

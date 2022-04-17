@@ -1,6 +1,9 @@
 
 sample_servant_d = record
 
+sample = record:
+  id: int
+
 sample_item = record:
   key: int
   name: string

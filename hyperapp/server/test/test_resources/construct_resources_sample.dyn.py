@@ -14,7 +14,7 @@ class SampleServant:
     def _dict(self):
         return None
 
-    def list(self, request):
+    def get(self):
         return [
             htypes.construct_resources_sample.sample_item(1, 'First', 'First item'),
             htypes.construct_resources_sample.sample_item(2, 'Second', 'Second item'),

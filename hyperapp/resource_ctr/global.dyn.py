@@ -40,7 +40,7 @@ def construct_resource_params_partial(
         }
     attr_snake_name = camel_to_snake(attr.name)
     param_to_resource = {}
-    for param_name in attr.param_list:
+    for idx, param_name in enumerate(attr.param_list):
         try:
             resource_name = f'{attr_snake_name}_{param_name}'
             resource_module_name = fixture_to_module[resource_name]
@@ -74,22 +74,39 @@ def construct_call(resource_type_producer, resource_module, function_res_name, r
     resource_module.set_definition(res_name, call_res_t, call_def)
 
 
+def construct_impl(mosaic, resource_type_producer, resource_module, get_fn_result_t_call, object_res_name, get_attr):
+    attr_res_name = construct_attr(resource_type_producer, resource_module, object_res_name, get_attr, add_object_prefix=True)
+    attr_res = resource_module[attr_res_name]
+    result_t = get_fn_result_t_call(mosaic.put(attr_res))
+    log.info("%s 'get' method result type: %r", object_res_name, result_t)
+
+
 def construct_global(
         module_name, resource_module, process, module_res_name, name_to_module, globl,
-        mosaic, resource_type_producer, resource_module_registry, fixture_resource_module_registry, runner_method_collect_attributes_ref,
+        mosaic, resource_type_producer, resource_module_registry, fixture_resource_module_registry,
+        runner_method_collect_attributes_ref,
+        runner_method_get_function_result_type_ref,
         ):
     collect_attributes_call = process.rpc_call(runner_method_collect_attributes_ref)
+    get_fn_result_t_call = process.rpc_call(runner_method_get_function_result_type_ref)
 
     attr_res_name = construct_attr(resource_type_producer, resource_module, module_res_name, globl, add_object_prefix=False)
     partial_res_name = construct_resource_params_partial(
         resource_type_producer, resource_module_registry, fixture_resource_module_registry, resource_module, globl, attr_res_name)
-    global_res_name = camel_to_snake(globl.name)
-    construct_call(resource_type_producer, resource_module, partial_res_name, global_res_name)
+    object_res_name = camel_to_snake(globl.name)
+    construct_call(resource_type_producer, resource_module, partial_res_name, object_res_name)
 
-    global_res = resource_module[global_res_name]
-    log.info("Function resource %s: %r", global_res_name, global_res)
-    attr_list = collect_attributes_call(mosaic.put(global_res))
-    log.info("Attributes for %s: %r", global_res_name, attr_list)
+    object_res = resource_module[object_res_name]
+    log.info("Object/service resource %s: %r", object_res_name, object_res)
+    attr_list = collect_attributes_call(mosaic.put(object_res))
+    log.info("Attributes for %s: %r", object_res_name, attr_list)
+
+    name_to_attr = {
+        attr.name: attr
+        for attr in attr_list
+    }
+    if 'get' in name_to_attr:
+        construct_impl(mosaic, resource_type_producer, resource_module, get_fn_result_t_call, object_res_name, name_to_attr['get'])
 
     # for attr in attr_list:
     #     if 'current_key' in attr.param_list:
