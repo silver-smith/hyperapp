@@ -84,10 +84,7 @@ class HTest:
             self,
             mosaic,
             local_modules,
-            resource_type_reg,
-            resource_module_registry,
             resource_module_factory,
-            python_object_creg,
             bundler,
             subprocess_factory,
             peer_registry,
@@ -101,10 +98,7 @@ class HTest:
             ):
         self._mosaic = mosaic
         self._local_modules = local_modules
-        self._resource_type_reg = resource_type_reg
-        self._resource_module_registry = resource_module_registry
         self._resource_module_factory = resource_module_factory
-        self._python_object_creg = python_object_creg
         self._bundler = bundler
         self._subprocess_factory = subprocess_factory
         self._peer_registry = peer_registry
@@ -162,11 +156,6 @@ class HTest:
 
     def construct_resources(self, module_name, root_dir):
         log.info("Construct resources from: %s", module_name)
-        name_to_module = {
-            var_name: resource_module_name
-            for resource_module_name, resource_module in self._resource_module_registry.items()
-            for var_name in resource_module
-            }
         module_rpath = module_name.replace('.', '/')
         resource_module = self._resource_module_factory(
             module_name, root_dir / f'{module_rpath}.resources.yaml', allow_missing=True)
@@ -179,129 +168,8 @@ class HTest:
             global_list = collect_attributes_call(module_ref)
             log.info("Global list: %s", global_list)
             for globl in global_list:
-                self._construct_global(module_name, resource_module, process, module_res_name, name_to_module, globl)
+                self._construct_global(module_name, resource_module, process, module_res_name, globl)
         return resource_module
-
-    def _process_global(self, module_name, resource_module, process, collect_attributes_call, module_res_name, name_to_module, globl):
-        global_snake_name = camel_to_snake(globl.name)
-        attr_res_t = self._resource_type_reg['attribute']
-        attr_def = attr_res_t.definition_t(
-            object=module_res_name,
-            attr_name=globl.name,
-            )
-        attr_res_name = f'{global_snake_name}_attribute'
-
-        param_to_resource = {}
-        for param_name in globl.param_list:
-            resource_module_name = name_to_module[param_name]
-            resource_name = f'{resource_module_name}.{param_name}'
-            param_to_resource[param_name] = resource_name
-            resource_module.add_import(resource_name)
-        partial_res_t = self._resource_type_reg['partial']
-        partial_def_t = partial_res_t.definition_t
-        partial_param_def_t = partial_def_t.fields['params'].element_t
-        partial_def = partial_def_t(
-            function=attr_res_name,
-            params=[
-                partial_param_def_t(param_name, resource_name)
-                for param_name, resource_name
-                in param_to_resource.items()
-                ],
-            )
-        partial_res_name = f'{global_snake_name}_partial'
-
-        call_res_t = self._resource_type_reg['call']
-        call_def = call_res_t.definition_t(
-            function=partial_res_name,
-            )
-        call_res_name = global_snake_name
-
-        resource_module.set_definition(attr_res_name, attr_res_t, attr_def)
-        resource_module.set_definition(partial_res_name, partial_res_t, partial_def)
-        resource_module.set_definition(call_res_name, call_res_t, call_def)
-
-        object_res = resource_module[call_res_name]
-        log.info("Function resource %s: %r", global_snake_name, object_res)
-        attr_list = collect_attributes_call(self._mosaic.put(object_res))
-        log.info("Attributes for %s: %r", global_snake_name, attr_list)
-
-        for attr in attr_list:
-            if 'current_key' in attr.param_list:
-                self._process_command(resource_module, global_snake_name, attr, state_attributes=['current_key'])
-            if attr.param_list in {(), ('request',)}:
-                self._process_service(module_name, resource_module, process, global_snake_name, object_res, attr)
-
-    def _process_service(self, module_name, resource_module, process, global_snake_name, object_res, attr):
-        attr_res_name, attr_res_ref = self._add_method(resource_module, global_snake_name, attr)
-
-        get_result_call = process.rpc_call(self._runner_method_get_function_result_type_ref)
-        if attr.param_list == ('request',):
-            args = [None]
-        else:
-            args = []
-        result_t = get_result_call(attr_res_ref, *args)
-        log.info("Attribute %s.%s result type: %r", global_snake_name, attr.name, result_t)
-
-        if isinstance(result_t, htypes.htest.list_t):
-            self._process_list_service(module_name, resource_module, process, global_snake_name, attr, attr_res_name, result_t)
-        else:
-            self._process_command(resource_module, global_snake_name, attr, state_attributes=[])
-
-    def _process_list_service(self, module_name, resource_module, process, global_snake_name, attr, attr_res_name, result_t):
-        for key_attribute in ['id', 'key', 'name']:
-            if key_attribute in result_t.attr_name_list:
-                break
-        else:
-            raise RuntimeError(f"Unable to deduce key attribute for {global_snake_name}.{attr.name}: {result_t}")
-
-        module_type_name = module_name.split('.')[-1]
-        dir_t_res_name = f'legacy_type.{module_type_name}.{global_snake_name}_d'
-        call_res_t = self._resource_type_reg['call']
-        dir_def = call_res_t.definition_t(
-            function=dir_t_res_name,
-            )
-        dir_res_name = f'{global_snake_name}_d'
-        resource_module.add_import(dir_t_res_name)
-        resource_module.set_definition(dir_res_name, call_res_t, dir_def)
-
-        identity_res_name = 'legacy_service.server_identity'
-        service_res_t = self._resource_type_reg['list_service']
-        service_def = service_res_t.definition_t(
-            identity=identity_res_name,
-            function=attr_res_name,
-            dir=dir_res_name,
-            commands=[],
-            key_attribute=key_attribute,
-            )
-        service_res_name = f'{global_snake_name}_service'
-        resource_module.add_import(identity_res_name)
-        resource_module.set_definition(service_res_name, service_res_t, service_def)
-
-    def _process_command(self, resource_module, global_snake_name, attr, state_attributes):
-        attr_res_name, attr_res_ref = self._add_method(resource_module, global_snake_name, attr)
-
-        identity_res_name = 'legacy_service.server_identity'
-        rpc_command_res_t = self._resource_type_reg['rpc_command']
-        rpc_command_def = rpc_command_res_t.definition_t(
-            identity=identity_res_name,
-            function=attr_res_name,
-            state_attributes=state_attributes,
-            name=attr.name,
-            )
-        rpc_command_res_name = f'{global_snake_name}_{attr.name}_command'
-        resource_module.add_import(identity_res_name)
-        resource_module.set_definition(rpc_command_res_name, rpc_command_res_t, rpc_command_def)
-
-    def _add_method(self, resource_module, global_snake_name, attr):
-        attr_res_t = self._resource_type_reg['attribute']
-        attr_def = attr_res_t.definition_t(
-            object=global_snake_name,
-            attr_name=attr.name,
-            )
-        attr_res_name = f'{global_snake_name}_{attr.name}_method'
-        resource_module.set_definition(attr_res_name, attr_res_t, attr_def)
-        attr_res = resource_module[attr_res_name]
-        return (attr_res_name, self._mosaic.put(attr_res))
 
 
 def runner_signal_queue():

@@ -111,7 +111,7 @@ def construct_impl(mosaic, resource_type_producer, resource_module, get_fn_resul
 
 
 def construct_global(
-        module_name, resource_module, process, module_res_name, name_to_module, globl,
+        module_name, resource_module, process, module_res_name, globl,
         mosaic, resource_type_producer, resource_module_registry, fixture_resource_module_registry,
         runner_method_collect_attributes_ref,
         runner_method_get_function_result_type_ref,
@@ -137,9 +137,3 @@ def construct_global(
     if 'get' in name_to_attr:
         construct_impl(mosaic, resource_type_producer, resource_module, get_fn_result_t_call,
                        globl.name, object_res_name, partial_res_name, name_to_attr['get'])
-
-    # for attr in attr_list:
-    #     if 'current_key' in attr.param_list:
-    #         self._process_command(resource_module, global_snake_name, attr, state_attributes=['current_key'])
-    #     if attr.param_list in {(), ('request',)}:
-    #         self._process_service(module_name, resource_module, process, global_snake_name, object_res, attr)
