@@ -19,13 +19,17 @@ TEST_RESOURCE_DIR = TEST_DIR / 'test_resources'
 
 @pytest.fixture
 def additional_module_dirs():
-    return [TEST_RESOURCE_DIR, HYPERAPP_DIR / 'common' / 'test' / 'mock']
+    return [
+        TEST_RESOURCE_DIR,
+        HYPERAPP_DIR / 'common' / 'test' / 'mock',
+        ]
 
 
 @pytest.fixture
 def code_module_list():
     return [
         'mock_file_bundle',
+        'ui.impl_registry',
         'resource.resource_type',
         'resource.registry',
         'resource.resource_module',
@@ -66,7 +70,7 @@ def compare():
     return inner
 
 
-def test_resources(services, compare):
+def test_resources(services, htypes, compare):
     htest_module = services.resource_module_registry['server.htest']
     htest_resource = htest_module['htest']
     htest = services.python_object_creg.animate(htest_resource)
@@ -82,3 +86,8 @@ def test_resources(services, compare):
 
     impl_res = resource_module['sample_servant_impl']
     log.info("Servant implementation resource: %r", impl_res)
+
+    for assoc in resource_module.associations:
+        services.meta_registry.animate(assoc)
+
+    assert isinstance(services.impl_registry[htypes.construct_resources_sample.sample], htypes.impl.list_impl)

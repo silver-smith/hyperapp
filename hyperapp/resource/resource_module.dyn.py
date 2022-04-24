@@ -38,11 +38,11 @@ class ResourceModule:
         self._allow_missing = allow_missing
 
     def __contains__(self, var_name):
-        return var_name in self._definitions
+        return var_name in self._definition_set
 
     def __getitem__(self, var_name):
         try:
-            definition = self._definitions[var_name]
+            definition = self._definition_set[var_name]
         except KeyError:
             raise RuntimeError(f"Resource module {self._name!r}: Unknown resource: {var_name!r}")
         piece = definition.type.resolve(definition.value, self._resolve_name, self._path.parent)
@@ -50,7 +50,7 @@ class ResourceModule:
         return piece
 
     def __iter__(self):
-        return iter(self._definitions)
+        return iter(self._definition_set)
 
     @property
     def name(self):
@@ -62,12 +62,12 @@ class ResourceModule:
 
     def set_definition(self, var_name, resource_type, definition_value):
         log.info("%s: Set definition %r, %s: %r", self._name, var_name, resource_type, definition_value)
-        self._definitions[var_name] = Definition(resource_type, definition_value)
+        self._definition_set[var_name] = Definition(resource_type, definition_value)
         self._import_set.add(self._resource_type_name(resource_type))
 
     def add_association(self, resource_type, definition_value):
         log.info("%s: Add association %s: %r", self._name, resource_type, definition_value)
-        self.associations.add(Definition(resource_type, definition_value))
+        self._association_set.add(Definition(resource_type, definition_value))
         self._import_set.add(self._resource_type_name(resource_type))
 
     def save(self):
@@ -84,11 +84,11 @@ class ResourceModule:
             'import': sorted(self._import_set),
             'associations': [
                 self._definition_as_dict(d)
-                for d in sorted(self.associations)
+                for d in sorted(self._association_set)
                 ],
             'definitions': {
                 name: self._definition_as_dict(d)
-                for name, d in sorted(self._definitions.items())
+                for name, d in sorted(self._definition_set.items())
                 },
             }
 
@@ -120,14 +120,21 @@ class ResourceModule:
         return self._loaded_import_set
 
     @property
-    def _definitions(self):
+    def _definition_set(self):
         self._ensure_loaded()
         return self._loaded_definitions
 
     @property
-    def associations(self):
+    def _association_set(self):
         self._ensure_loaded()
         return self._loaded_associations
+
+    @property
+    def associations(self):
+        return {
+            d.type.resolve(d.value, self._resolve_name, self._path.parent)
+            for d in self._association_set
+            }
 
     def _ensure_loaded(self):
         if self._loaded_definitions is None:

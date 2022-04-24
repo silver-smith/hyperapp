@@ -120,11 +120,13 @@ def construct_impl(mosaic, resource_type_producer, fixture_resource_module_regis
         raise RuntimeError(f"{resource_module.name}: {object_res_name}: Expected record type, but got: {piece_t!r}")
 
     assoc_res_t = resource_type_producer(htypes.impl.impl_association)
+    piece_t_name = f'legacy_type.{piece_t.type.module}.{piece_t.type.name}'
     assoc_def = assoc_res_t.definition_t(
-        piece_t=f'legacy_type.{piece_t.type.module}.{piece_t.type.name}',
+        piece_t=piece_t_name,
         implementation=impl_res_name,
         )
     resource_module.add_association(assoc_res_t, assoc_def)
+    resource_module.add_import(piece_t_name)
 
 
 def construct_global(

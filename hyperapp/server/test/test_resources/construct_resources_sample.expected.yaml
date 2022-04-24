@@ -8,6 +8,7 @@ import:
 - legacy_type.attribute.attribute
 - legacy_type.builtin.int
 - legacy_type.call.call
+- legacy_type.construct_resources_sample.sample
 - legacy_type.impl.impl_association
 - legacy_type.impl.list_impl
 - legacy_type.partial.partial
