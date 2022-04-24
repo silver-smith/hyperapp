@@ -93,6 +93,7 @@ def construct_list_impl(resource_type_producer, resource_module, object_name, ob
         )
     res_name = f'{object_res_name}_impl'
     resource_module.set_definition(res_name, impl_res_t, impl_def)
+    return res_name
 
 
 def construct_impl(mosaic, resource_type_producer, fixture_resource_module_registry, fixture_to_module, resource_module, get_resource_type_call,
@@ -106,7 +107,7 @@ def construct_impl(mosaic, resource_type_producer, fixture_resource_module_regis
     log.info("%s 'get' method result type: %r", object_res_name, result_t)
 
     if isinstance(result_t, htypes.htest.list_t):
-        construct_list_impl(resource_type_producer, resource_module, object_name, object_res_name, partial_res_name, result_t)
+        impl_res_name = construct_list_impl(resource_type_producer, resource_module, object_name, object_res_name, partial_res_name, result_t)
     else:
         raise RuntimeError(f"{resource_module.name}: Unknown {get_attr.name}.get method result type: {result_t!r}")
 
@@ -115,6 +116,15 @@ def construct_impl(mosaic, resource_type_producer, fixture_resource_module_regis
     fixture_res = fixture_module[fixture_name]
     piece_t = get_resource_type_call(mosaic.put(fixture_res))
     log.info("%s piece type: %r", object_res_name, piece_t)
+    if not isinstance(piece_t, htypes.htest.record_t):
+        raise RuntimeError(f"{resource_module.name}: {object_res_name}: Expected record type, but got: {piece_t!r}")
+
+    assoc_res_t = resource_type_producer(htypes.impl.impl_association)
+    assoc_def = assoc_res_t.definition_t(
+        piece_t=f'legacy_type.{piece_t.type.module}.{piece_t.type.name}',
+        implementation=impl_res_name,
+        )
+    resource_module.add_association(assoc_res_t, assoc_def)
 
 
 def construct_global(

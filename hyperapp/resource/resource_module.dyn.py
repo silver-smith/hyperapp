@@ -34,6 +34,7 @@ class ResourceModule:
         self._path = path
         self._loaded_import_set = None
         self._loaded_definitions = None
+        self._loaded_associations = None
         self._allow_missing = allow_missing
 
     def __contains__(self, var_name):
@@ -62,6 +63,12 @@ class ResourceModule:
     def set_definition(self, var_name, resource_type, definition_value):
         log.info("%s: Set definition %r, %s: %r", self._name, var_name, resource_type, definition_value)
         self._definitions[var_name] = Definition(resource_type, definition_value)
+        self._import_set.add(self._resource_type_name(resource_type))
+
+    def add_association(self, resource_type, definition_value):
+        log.info("%s: Add association %s: %r", self._name, resource_type, definition_value)
+        self.associations.add(Definition(resource_type, definition_value))
+        self._import_set.add(self._resource_type_name(resource_type))
 
     def save(self):
         if self._path is None:
@@ -73,20 +80,27 @@ class ResourceModule:
 
     @property
     def as_dict(self):
-        import_set = self._import_set
-        definition_dict = {}
-        for name, d in sorted(self._definitions.items()):
-            t = d.type.definition_t
-            type_name = f'legacy_type.{t.module_name}.{t.name}'
-            definition_dict[name] = {
-                '_type': type_name,
-                **d.type.to_dict(d.value),
-                }
-            import_set.add(type_name)
         return {
-            'import': sorted(import_set),
-            'definitions': definition_dict,
+            'import': sorted(self._import_set),
+            'associations': [
+                self._definition_as_dict(d)
+                for d in sorted(self.associations)
+                ],
+            'definitions': {
+                name: self._definition_as_dict(d)
+                for name, d in sorted(self._definitions.items())
+                },
             }
+
+    def _definition_as_dict(self, definition):
+        return {
+            '_type': self._resource_type_name(definition.type),
+            **definition.type.to_dict(definition.value),
+            }
+
+    def _resource_type_name(self, resource_type):
+        t = resource_type.definition_t
+        return f'legacy_type.{t.module_name}.{t.name}'
 
     def _resolve_name(self, name):
         if name in self._import_set:
@@ -101,23 +115,29 @@ class ResourceModule:
         return self._mosaic.put(piece)
 
     @property
+    def _import_set(self):
+        self._ensure_loaded()
+        return self._loaded_import_set
+
+    @property
     def _definitions(self):
         self._ensure_loaded()
         return self._loaded_definitions
 
     @property
-    def _import_set(self):
+    def associations(self):
         self._ensure_loaded()
-        return self._loaded_import_set
+        return self._loaded_associations
 
     def _ensure_loaded(self):
         if self._loaded_definitions is None:
             self._load()
 
     def _load(self):
+        self._loaded_import_set = set()
+        self._loaded_definitions = {}
+        self._loaded_associations = set()
         if self._path is None:
-            self._loaded_import_set = set()
-            self._loaded_definitions = {}
             return
         log.info("Loading resource module %s: %s", self._name, self._path)
         try:
@@ -125,11 +145,8 @@ class ResourceModule:
         except FileNotFoundError:
             if not self._allow_missing:
                 raise
-            self._loaded_import_set = set()
-            self._loaded_definitions = {}
             return
         self._loaded_import_set = set(contents.get('import', []))
-        self._loaded_definitions = {}
         for name in self._loaded_import_set:
             module_name, var_name = name.rsplit('.', 1)
             try:
@@ -140,6 +157,9 @@ class ResourceModule:
                 raise RuntimeError(f"{self._name}: Module {module_name} does not have {var_name!r}")
         for name, contents in contents.get('definitions', {}).items():
             self._loaded_definitions[name] = self._read_definition(name, contents)
+        for contents in contents.get('associations', {}).items():
+            name = contents.get('_type')  # Just for logging and error strings.
+            self._loaded_associations.add(self._read_definition(name, contents))
 
     def _read_definition(self, name, data):
         log.debug("%s: Load definition %r: %s", self._name, name, data)

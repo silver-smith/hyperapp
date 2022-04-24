@@ -8,8 +8,13 @@ import:
 - legacy_type.attribute.attribute
 - legacy_type.builtin.int
 - legacy_type.call.call
+- legacy_type.impl.impl_association
 - legacy_type.impl.list_impl
 - legacy_type.partial.partial
+associations:
+- _type: legacy_type.impl.impl_association
+  piece_t: legacy_type.construct_resources_sample.sample
+  implementation: sample_servant_impl
 definitions:
   sample_servant:
     _type: legacy_type.call.call
