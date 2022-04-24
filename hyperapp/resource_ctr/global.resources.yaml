@@ -8,7 +8,7 @@ import:
   - legacy_type.partial.partial
   - legacy_type.piece_ref.piece_ref
   - server.htest_runner.runner_method_collect_attributes
-  - server.htest_runner.get_function_result_type
+  - server.htest_runner.get_resource_type
 
 definitions:
 
@@ -16,13 +16,13 @@ definitions:
     _type: legacy_type.piece_ref.piece_ref
     value: server.htest_runner.runner_method_collect_attributes
 
-  runner_method_get_function_result_type_ref:
+  runner_method_get_resource_type_ref:
     _type: legacy_type.piece_ref.piece_ref
-    value: server.htest_runner.get_function_result_type
+    value: server.htest_runner.get_resource_type
 
-  runner_method_get_function_result_type_ref:
+  runner_method_get_resource_type_ref:
     _type: legacy_type.piece_ref.piece_ref
-    value: server.htest_runner.get_function_result_type
+    value: server.htest_runner.get_resource_type
 
   construct_global_attribute:
     _type: legacy_type.attribute.attribute
@@ -38,4 +38,4 @@ definitions:
       resource_module_registry: legacy_service.resource_module_registry
       fixture_resource_module_registry: legacy_service.fixture_resource_module_registry
       runner_method_collect_attributes_ref: runner_method_collect_attributes_ref
-      runner_method_get_function_result_type_ref: runner_method_get_function_result_type_ref
+      runner_method_get_resource_type_ref: runner_method_get_resource_type_ref

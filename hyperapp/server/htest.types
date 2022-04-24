@@ -29,5 +29,8 @@ item_element = record:
   name: string
   type: type_name
 
+record_t = record:
+  type: type_name
+
 list_t = record:
   element_list: item_element list

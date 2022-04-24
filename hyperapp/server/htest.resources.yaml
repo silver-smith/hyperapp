@@ -15,7 +15,7 @@ import:
   - legacy_type.call.call
   - legacy_type.piece_ref.piece_ref
   - server.htest_runner.runner_method_collect_attributes
-  - server.htest_runner.get_function_result_type
+  - server.htest_runner.get_resource_type
   - resource_ctr.global.construct_global
 
 definitions:
@@ -53,9 +53,9 @@ definitions:
     _type: legacy_type.piece_ref.piece_ref
     value: server.htest_runner.runner_method_collect_attributes
 
-  runner_method_get_function_result_type_ref:
+  runner_method_get_resource_type_ref:
     _type: legacy_type.piece_ref.piece_ref
-    value: server.htest_runner.get_function_result_type
+    value: server.htest_runner.get_resource_type
 
   htest_factory:
     _type: legacy_type.partial.partial

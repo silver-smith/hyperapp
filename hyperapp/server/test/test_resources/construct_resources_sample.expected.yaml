@@ -22,6 +22,9 @@ definitions:
     _type: legacy_type.attribute.attribute
     object: sample_servant
     attr_name: get
+  sample_servant_get_call:
+    _type: legacy_type.call.call
+    function: sample_servant_get_attribute
   sample_servant_impl:
     _type: legacy_type.impl.list_impl
     function: sample_servant_partial

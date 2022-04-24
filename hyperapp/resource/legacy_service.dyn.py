@@ -12,6 +12,10 @@ class LegacyServiceResourceModule:
     def __init__(self, name_to_piece):
         self._name_to_piece = name_to_piece
 
+    @property
+    def name(self):
+        return 'legacy_service'
+
     def __contains__(self, var_name):
         return var_name in self._name_to_piece
 

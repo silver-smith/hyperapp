@@ -4,4 +4,5 @@ import:
       - attr
       - type_name
       - item_element
+      - record_t
       - list_t

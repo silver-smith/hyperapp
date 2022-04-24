@@ -13,6 +13,10 @@ class LegacyTypeResourceModule:
     def __init__(self):
         self._name_to_piece = {}
 
+    @property
+    def name(self):
+        return 'legacy_type'
+
     def __setitem__(self, name, type_piece):
         self._name_to_piece[name] = type_piece
 

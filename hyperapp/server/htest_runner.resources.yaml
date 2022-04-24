@@ -31,7 +31,7 @@ definitions:
     object: runner
     attr_name: collect_attributes
 
-  get_function_result_type:
+  get_resource_type:
     _type: legacy_type.attribute.attribute
     object: runner
-    attr_name: get_function_result_type
+    attr_name: get_resource_type

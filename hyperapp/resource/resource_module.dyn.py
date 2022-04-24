@@ -51,6 +51,10 @@ class ResourceModule:
     def __iter__(self):
         return iter(self._definitions)
 
+    @property
+    def name(self):
+        return self._name
+
     def add_import(self, import_name):
         log.info("%s: Add import: %r", self._name, import_name)
         self._import_set.add(import_name)
@@ -88,8 +92,7 @@ class ResourceModule:
         if name in self._import_set:
             module_name, var_name = name.rsplit('.', 1)
             if module_name.endswith('.fixtures'):
-                fixture_module_name, _ = module_name.rsplit('.', 1)
-                module = self._fixture_resource_module_registry[fixture_module_name]
+                module = self._fixture_resource_module_registry[module_name]
             else:
                 module = self._resource_module_registry[module_name]
             piece = module[var_name]
@@ -161,13 +164,12 @@ def load_resource_modules(mosaic, resource_type_producer, python_object_creg, di
             if 'test' in path.relative_to(root_dir).parts:
                 continue  # Skip test subdirectories.
             rpath = str(path.relative_to(root_dir))
+            name = rpath[:-len(ext)].replace('/', '.')
             if str(path).endswith(fixture_ext):
-                name = rpath[:-len(fixture_ext)].replace('/', '.')
                 log.info("Fixture resource module: %r", name)
                 fixture_registry[name] = ResourceModule(
                     mosaic, resource_type_producer, python_object_creg, registry, fixture_registry, name, path)
             else:
-                name = rpath[:-len(ext)].replace('/', '.')
                 log.info("Resource module: %r", name)
                 registry[name] = ResourceModule(
                     mosaic, resource_type_producer, python_object_creg, registry, fixture_registry, name, path)

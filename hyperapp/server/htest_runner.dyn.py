@@ -38,17 +38,21 @@ class Runner:
             yield htypes.htest.attr(name, param_list)
 
 
-    def get_function_result_type(self, request, function_ref, *args):
-        log.info("Get function result type: %s", function_ref)
-        fn = self._python_object_creg.invite(function_ref)
-        result = fn(*args)
-        log.info("Get function result type result: %r", result)
-        t = deduce_complex_value_type(self._mosaic, self._types, result)
-        log.info("Get function result type result t: %r", t)
+    def get_resource_type(self, request, resource_ref):
+        log.info("Get type for resource: %s", resource_ref)
+        value = self._python_object_creg.invite(resource_ref)
+        log.info("Get type for value: %r", value)
+        t = deduce_complex_value_type(self._mosaic, self._types, value)
+        log.info("Type is: %r", t)
+        if isinstance(t, TRecord):
+            type_name = htypes.htest.type_name(t.module_name, t.name)
+            return htypes.htest.record_t(
+                type=type_name,
+            )
         if isinstance(t, TList) and isinstance(t.element_t, TRecord):
             element_list = []
-            for name, t in t.element_t.fields.items():
-                type_name = htypes.htest.type_name(t.module_name, t.name)
+            for name, field_t in t.element_t.fields.items():
+                type_name = htypes.htest.type_name(field_t.module_name, field_t.name)
                 element = htypes.htest.item_element(name, type_name)
                 element_list.append(element)
             return htypes.htest.list_t(

@@ -12,6 +12,10 @@ class LegacyModuleResourceModule:
     def __init__(self):
         self._name_to_piece = {}  # Full module name -> code_module_t ref
 
+    @property
+    def name(self):
+        return 'legacy_module'
+
     def add(self, name, code_module_ref):
         self._name_to_piece[name] = code_module_ref
 
