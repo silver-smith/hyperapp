@@ -1,0 +1,17 @@
+import:
+- legacy_service.hyperapp_dir
+- legacy_type.attribute.attribute
+- legacy_type.python_module.python_module
+- server.htest.htest
+definitions:
+  construct_resources_module:
+    _type: legacy_type.python_module.python_module
+    module_name: construct_resources
+    file_name: construct_resources.dyn.py
+    import_list:
+      services.htest: server.htest.htest
+      services.hyperapp_dir: legacy_service.hyperapp_dir
+  construct_resources:
+    _type: legacy_type.attribute.attribute
+    object: construct_resources_module
+    attr_name: construct_resources

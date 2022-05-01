@@ -30,6 +30,7 @@ class Services(object):
 
     builtin_services = [
         'builtin_services',
+        'hyperapp_dir',
         'mosaic',
         'types',
         'web',
