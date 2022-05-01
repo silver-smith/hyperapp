@@ -4,7 +4,6 @@ from hyperapp.common.htypes import (
     optional_mt,
     field_mt,
     record_mt,
-    request_mt,
     name_wrapped_mt,
     ref_t,
     )
