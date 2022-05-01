@@ -80,9 +80,9 @@ def test_resources(services, htypes, compare):
     resource_module.save_as(Path(tempfile.gettempdir()) / 'construct_resources_sample.resources.yaml')
     compare(resource_module, 'construct_resources_sample')
 
-    servant_res = resource_module['sample_servant']
-    servant = services.python_object_creg.animate(servant_res)
-    log.info("Servant: %r", servant)
+    fn_res = resource_module['sample_servant_partial']
+    fn = services.python_object_creg.animate(fn_res)
+    log.info("Constructor fn: %r", fn)
 
     impl_res = resource_module['sample_servant_impl']
     log.info("Servant implementation resource: %r", impl_res)

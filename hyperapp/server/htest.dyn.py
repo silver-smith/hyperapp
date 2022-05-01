@@ -168,7 +168,7 @@ class HTest:
             global_list = collect_attributes_call(module_ref)
             log.info("Global list: %s", global_list)
             for globl in global_list:
-                self._construct_global(module_name, resource_module, process, module_res_name, globl)
+                self._construct_global(root_dir, module_name, resource_module, process, module_res_name, globl)
         return resource_module
 
 

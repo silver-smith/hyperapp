@@ -3,6 +3,7 @@ import:
   - legacy_service.fixture_resource_module_registry
   - legacy_service.mosaic
   - legacy_service.resource_type_producer
+  - legacy_service.resource_module_factory
   - legacy_service.resource_module_registry
   - legacy_type.attribute.attribute
   - legacy_type.partial.partial
@@ -35,6 +36,7 @@ definitions:
     params:
       mosaic: legacy_service.mosaic
       resource_type_producer: legacy_service.resource_type_producer
+      resource_module_factory: legacy_service.resource_module_factory
       resource_module_registry: legacy_service.resource_module_registry
       fixture_resource_module_registry: legacy_service.fixture_resource_module_registry
       runner_method_collect_attributes_ref: runner_method_collect_attributes_ref

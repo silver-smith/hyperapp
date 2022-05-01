@@ -1,5 +1,4 @@
 import:
-- construct_resources_sample.fixtures.sample_servant_piece
 - legacy_module.construct_resources_sample
 - legacy_service.mosaic
 - legacy_service.peer_registry
@@ -7,7 +6,6 @@ import:
 - legacy_service.web
 - legacy_type.attribute.attribute
 - legacy_type.builtin.int
-- legacy_type.call.call
 - legacy_type.construct_resources_sample.sample
 - legacy_type.impl.impl_association
 - legacy_type.impl.list_impl
@@ -17,20 +15,10 @@ associations:
   piece_t: legacy_type.construct_resources_sample.sample
   implementation: sample_servant_impl
 definitions:
-  sample_servant:
-    _type: legacy_type.call.call
-    function: sample_servant_partial
   sample_servant_attribute:
     _type: legacy_type.attribute.attribute
     object: legacy_module.construct_resources_sample
     attr_name: SampleServant
-  sample_servant_get_attribute:
-    _type: legacy_type.attribute.attribute
-    object: sample_servant
-    attr_name: get
-  sample_servant_get_call:
-    _type: legacy_type.call.call
-    function: sample_servant_get_attribute
   sample_servant_impl:
     _type: legacy_type.impl.list_impl
     function: sample_servant_partial
@@ -39,7 +27,6 @@ definitions:
     _type: legacy_type.partial.partial
     function: sample_servant_attribute
     params:
-      piece: construct_resources_sample.fixtures.sample_servant_piece
       mosaic: legacy_service.mosaic
       web: legacy_service.web
       peer_registry: legacy_service.peer_registry

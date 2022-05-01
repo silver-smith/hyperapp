@@ -27,7 +27,7 @@ def construct_attr(resource_type_producer, resource_module, object_res_name, att
 
 
 def construct_resource_params_partial(
-        resource_type_producer, resource_module_registry, fixture_to_module, resource_module, attr, attr_res_name):
+        resource_type_producer, resource_module_registry, fixture_to_module, resource_module, fix_module, attr, attr_res_name):
     name_to_module = {
         var_name: resource_module
         for resource_module_name, resource_module in resource_module_registry.items()
@@ -35,16 +35,23 @@ def construct_resource_params_partial(
         }
     attr_snake_name = camel_to_snake(attr.name)
     param_to_resource = {}
+    fix_param_to_resource = {}
     for idx, param_name in enumerate(attr.param_list):
         try:
             resource_name = f'{attr_snake_name}_{param_name}'
             param_module = fixture_to_module[resource_name]
+            is_fix = True
         except KeyError:
             resource_name = param_name
             param_module = name_to_module[resource_name]
+            is_fix = False
         full_resource_name = f'{param_module.name}.{resource_name}'
-        param_to_resource[param_name] = full_resource_name
-        resource_module.add_import(full_resource_name)
+        fix_param_to_resource[param_name] = full_resource_name
+        fix_module.add_import(full_resource_name)
+        if not is_fix:
+            param_to_resource[param_name] = full_resource_name
+            resource_module.add_import(full_resource_name)
+    partial_res_name = f'{attr_snake_name}_partial'
     partial_res_t = resource_type_producer(htypes.partial.partial)
     partial_def_t = partial_res_t.definition_t
     partial_param_def_t = partial_def_t.fields['params'].element_t
@@ -56,8 +63,17 @@ def construct_resource_params_partial(
             in param_to_resource.items()
             ],
         )
-    partial_res_name = f'{attr_snake_name}_partial'
     resource_module.set_definition(partial_res_name, partial_res_t, partial_def)
+    if fix_param_to_resource:
+        fix_partial_def = partial_def_t(
+            function=attr_res_name,
+            params=[
+                partial_param_def_t(param_name, resource_name)
+            for param_name, resource_name
+                in fix_param_to_resource.items()
+            ],
+        )
+        fix_module.set_definition(partial_res_name, partial_res_t, fix_partial_def)
     return partial_res_name
 
 
@@ -96,14 +112,14 @@ def construct_list_impl(resource_type_producer, resource_module, object_name, ob
     return res_name
 
 
-def construct_impl(mosaic, resource_type_producer, fixture_resource_module_registry, fixture_to_module, resource_module, get_resource_type_call,
-                   object_name, object_res_name, partial_res_name, get_attr):
-    attr_res_name = construct_attr(resource_type_producer, resource_module, object_res_name, get_attr, add_object_prefix=True)
+def construct_impl(mosaic, resource_type_producer, fixture_resource_module_registry, get_resource_type_call,
+                   fixture_to_module, resource_module, fix_module, object_name, object_res_name, partial_res_name, get_attr):
+    get_attr_res_name = construct_attr(resource_type_producer, fix_module, object_res_name, get_attr, add_object_prefix=True)
 
-    call_res_name = f'{object_res_name}_{get_attr.name}_call'
-    construct_call(resource_type_producer, resource_module, attr_res_name, call_res_name)
-    call_res = resource_module[call_res_name]
-    result_t = get_resource_type_call(mosaic.put(call_res))
+    get_call_res_name = f'{object_res_name}_{get_attr.name}_call'
+    construct_call(resource_type_producer, fix_module, get_attr_res_name, get_call_res_name)
+    get_call_res = resource_module.with_module(fix_module)[get_call_res_name]
+    result_t = get_resource_type_call(mosaic.put(get_call_res))
     log.info("%s 'get' method result type: %r", object_res_name, result_t)
 
     if isinstance(result_t, htypes.htest.list_t):
@@ -130,10 +146,9 @@ def construct_impl(mosaic, resource_type_producer, fixture_resource_module_regis
 
 
 def construct_global(
-        module_name, resource_module, process, module_res_name, globl,
-        mosaic, resource_type_producer, resource_module_registry, fixture_resource_module_registry,
-        runner_method_collect_attributes_ref,
-        runner_method_get_resource_type_ref,
+        root_dir, module_name, resource_module, process, module_res_name, globl,
+        mosaic, resource_type_producer, resource_module_factory, resource_module_registry, fixture_resource_module_registry,
+        runner_method_collect_attributes_ref, runner_method_get_resource_type_ref,
         ):
     collect_attributes_call = process.rpc_call(runner_method_collect_attributes_ref)
     get_resource_type_call = process.rpc_call(runner_method_get_resource_type_ref)
@@ -144,13 +159,18 @@ def construct_global(
         for var_name in resource_module
         }
 
+    fix_module_name = f'{module_name}.with-fixtures'
+    fix_module_rpath = module_name.replace('.', '/') + '.with-fixtures'
+    fix_module = resource_module_factory(
+        fix_module_name, root_dir / f'{fix_module_rpath}.resources.yaml', allow_missing=True)
+
     attr_res_name = construct_attr(resource_type_producer, resource_module, module_res_name, globl, add_object_prefix=False)
     partial_res_name = construct_resource_params_partial(
-        resource_type_producer, resource_module_registry, fixture_to_module, resource_module, globl, attr_res_name)
+        resource_type_producer, resource_module_registry, fixture_to_module, resource_module, fix_module, globl, attr_res_name)
     object_res_name = camel_to_snake(globl.name)
-    construct_call(resource_type_producer, resource_module, partial_res_name, object_res_name)
+    construct_call(resource_type_producer, fix_module, partial_res_name, object_res_name)
 
-    object_res = resource_module[object_res_name]
+    object_res = resource_module.with_module(fix_module)[object_res_name]
     log.info("Object/service resource %s: %r", object_res_name, object_res)
     attr_list = collect_attributes_call(mosaic.put(object_res))
     log.info("Attributes for %s: %r", object_res_name, attr_list)
@@ -160,5 +180,5 @@ def construct_global(
         for attr in attr_list
     }
     if 'get' in name_to_attr and globl.param_list and globl.param_list[0] == 'piece':
-        construct_impl(mosaic, resource_type_producer, fixture_resource_module_registry, fixture_to_module, resource_module, get_resource_type_call,
-                       globl.name, object_res_name, partial_res_name, name_to_attr['get'])
+        construct_impl(mosaic, resource_type_producer, fixture_resource_module_registry, get_resource_type_call,
+                       fixture_to_module, resource_module, fix_module, globl.name, object_res_name, partial_res_name, name_to_attr['get'])
