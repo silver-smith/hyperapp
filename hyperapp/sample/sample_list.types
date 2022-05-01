@@ -1,0 +1,10 @@
+
+sample_list_d = record
+
+sample_list = record:
+  id: int
+
+item = record:
+  key: int
+  name: string
+  description: string
