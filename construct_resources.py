@@ -57,7 +57,7 @@ def main():
         resource = module['construct_resources']
         fn = services.python_object_creg.animate(resource)
         log.info("Construct resources function: %r", fn)
-        fn(args)
+        fn(args.source_path)
     finally:
         log.info("Stopping.")
         services.stop()
