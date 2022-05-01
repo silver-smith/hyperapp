@@ -94,7 +94,8 @@ class ResourceModule:
         self.save_as(self._path)
 
     def save_as(self, path):
-        path.write_text(yaml.dump(self.as_dict, sort_keys=False))
+        yaml_text = yaml.dump(self.as_dict, sort_keys=False)
+        path.write_text(f'# Automatically generated file. Do not edit.\n\n' + yaml_text)
 
     @property
     def as_dict(self):
