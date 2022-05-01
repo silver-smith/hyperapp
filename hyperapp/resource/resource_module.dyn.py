@@ -22,8 +22,11 @@ class ResourceModule:
             resource_module_registry,
             fixture_resource_module_registry,
             name,
-            path=None,
+            path,
             allow_missing=False,
+            imports=None,
+            definitions=None,
+            associations=None,
             ):
         self._mosaic = mosaic
         self._resource_type_producer = resource_type_producer
@@ -32,17 +35,17 @@ class ResourceModule:
         self._python_object_creg = python_object_creg
         self._name = name
         self._path = path
-        self._loaded_import_set = None
-        self._loaded_definitions = None
-        self._loaded_associations = None
+        self._loaded_imports = imports
+        self._loaded_definitions = definitions
+        self._loaded_associations = associations
         self._allow_missing = allow_missing
 
     def __contains__(self, var_name):
-        return var_name in self._definition_set
+        return var_name in self._definition_dict
 
     def __getitem__(self, var_name):
         try:
-            definition = self._definition_set[var_name]
+            definition = self._definition_dict[var_name]
         except KeyError:
             raise RuntimeError(f"Resource module {self._name!r}: Unknown resource: {var_name!r}")
         piece = definition.type.resolve(definition.value, self._resolve_name, self._path.parent)
@@ -50,11 +53,26 @@ class ResourceModule:
         return piece
 
     def __iter__(self):
-        return iter(self._definition_set)
+        return iter(self._definition_dict)
 
     @property
     def name(self):
         return self._name
+
+    def with_module(self, module):
+        return ResourceModule(
+            mosaic=self._mosaic,
+            resource_type_producer=self._resource_type_producer,
+            python_object_creg=self._python_object_creg,
+            resource_module_registry=self._resource_module_registry,
+            fixture_resource_module_registry=self._fixture_resource_module_registry,
+            name=f'{self._name}-with-{module.name}',
+            path=self._path.with_name('dummy'),
+            allow_missing=True,
+            imports=self._import_set | module._import_set,
+            definitions={**self._definition_dict, **module._definition_dict},
+            associations=self._association_set | module._association_set,
+            )
 
     def add_import(self, import_name):
         log.info("%s: Add import: %r", self._name, import_name)
@@ -62,7 +80,7 @@ class ResourceModule:
 
     def set_definition(self, var_name, resource_type, definition_value):
         log.info("%s: Set definition %r, %s: %r", self._name, var_name, resource_type, definition_value)
-        self._definition_set[var_name] = Definition(resource_type, definition_value)
+        self._definition_dict[var_name] = Definition(resource_type, definition_value)
         self._import_set.add(self._resource_type_name(resource_type))
 
     def add_association(self, resource_type, definition_value):
@@ -88,7 +106,7 @@ class ResourceModule:
                 ],
             'definitions': {
                 name: self._definition_as_dict(d)
-                for name, d in sorted(self._definition_set.items())
+                for name, d in sorted(self._definition_dict.items())
                 },
             }
 
@@ -117,10 +135,10 @@ class ResourceModule:
     @property
     def _import_set(self):
         self._ensure_loaded()
-        return self._loaded_import_set
+        return self._loaded_imports
 
     @property
-    def _definition_set(self):
+    def _definition_dict(self):
         self._ensure_loaded()
         return self._loaded_definitions
 
@@ -141,7 +159,7 @@ class ResourceModule:
             self._load()
 
     def _load(self):
-        self._loaded_import_set = set()
+        self._loaded_imports = set()
         self._loaded_definitions = {}
         self._loaded_associations = set()
         if self._path is None:
@@ -153,8 +171,8 @@ class ResourceModule:
             if not self._allow_missing:
                 raise
             return
-        self._loaded_import_set = set(contents.get('import', []))
-        for name in self._loaded_import_set:
+        self._loaded_imports = set(contents.get('import', []))
+        for name in self._loaded_imports:
             module_name, var_name = name.rsplit('.', 1)
             try:
                 module = self._resource_module_registry[module_name]
