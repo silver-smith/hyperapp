@@ -106,6 +106,16 @@ class ResourceType:
     def __repr__(self):
         return f"<ResourceType {self}>"
 
+    def __eq__(self, rhs):
+        return (self is rhs or
+                isinstance(rhs, ResourceType) and self.resource_t == rhs.resource_t)
+
+    def __lt__(self, rhs):
+        return self.resource_t < rhs.resource_t
+
+    def __hash__(self):
+        return hash(self.resource_t)
+
     def from_dict(self, data):
         decoder = NamedPairsDictDecoder()
         return decoder.decode_dict(self.definition_t, data)
