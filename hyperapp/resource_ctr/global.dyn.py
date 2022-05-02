@@ -2,6 +2,7 @@ import logging
 import re
 
 from . import htypes
+from .htypes import attribute, partial, call, htest, impl
 
 log = logging.getLogger(__name__)
 

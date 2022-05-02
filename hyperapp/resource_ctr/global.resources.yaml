@@ -1,17 +1,35 @@
 import:
-  - legacy_module.resource_ctr.global
   - legacy_service.fixture_resource_module_registry
   - legacy_service.mosaic
   - legacy_service.resource_type_producer
   - legacy_service.resource_module_factory
   - legacy_service.resource_module_registry
   - legacy_type.attribute.attribute
+  - legacy_type.call.call
+  - legacy_type.htest.list_t
+  - legacy_type.htest.record_t
+  - legacy_type.impl.impl_association
+  - legacy_type.impl.list_impl
   - legacy_type.partial.partial
   - legacy_type.piece_ref.piece_ref
+  - legacy_type.python_module.python_module
   - server.htest_runner.runner_method_collect_attributes
   - server.htest_runner.get_resource_type
 
 definitions:
+
+  resource_ctr_global_module:
+    _type: legacy_type.python_module.python_module
+    module_name: global
+    file_name: global.dyn.py
+    import_list:
+      htypes.attribute.attribute: legacy_type.attribute.attribute
+      htypes.partial.partial: legacy_type.partial.partial
+      htypes.call.call: legacy_type.call.call
+      htypes.htest.record_t: legacy_type.htest.record_t
+      htypes.htest.list_t: legacy_type.htest.list_t
+      htypes.impl.list_impl: legacy_type.impl.list_impl
+      htypes.impl.impl_association: legacy_type.impl.impl_association
 
   runner_method_collect_attributes_ref:
     _type: legacy_type.piece_ref.piece_ref
@@ -21,13 +39,9 @@ definitions:
     _type: legacy_type.piece_ref.piece_ref
     value: server.htest_runner.get_resource_type
 
-  runner_method_get_resource_type_ref:
-    _type: legacy_type.piece_ref.piece_ref
-    value: server.htest_runner.get_resource_type
-
   construct_global_attribute:
     _type: legacy_type.attribute.attribute
-    object: legacy_module.resource_ctr.global
+    object: resource_ctr_global_module
     attr_name: construct_global
 
   construct_global:
