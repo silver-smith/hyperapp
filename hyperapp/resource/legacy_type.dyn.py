@@ -29,6 +29,10 @@ class LegacyTypeResourceModule:
     def __iter__(self):
         return iter(self._name_to_piece)
 
+    @property
+    def associations(self):
+        return set()
+
 
 def make_legacy_type_resource_module(builtin_types, types, type_module_loader):
     name_to_module = defaultdict(LegacyTypeResourceModule)

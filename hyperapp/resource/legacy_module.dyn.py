@@ -28,6 +28,10 @@ class LegacyModuleResourceModule:
     def __iter__(self):
         return iter(self._name_to_piece)
 
+    @property
+    def associations(self):
+        return set()
+
 
 def make_legacy_module_resource_modules(local_modules):
     name_to_module = defaultdict(LegacyModuleResourceModule)

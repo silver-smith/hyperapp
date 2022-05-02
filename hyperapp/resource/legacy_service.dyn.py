@@ -25,6 +25,10 @@ class LegacyServiceResourceModule:
     def __iter__(self):
         return iter(self._name_to_piece)
 
+    @property
+    def associations(self):
+        return set()
+
 
 def make_legacy_service_resource_module(mosaic, services, builtin_services, local_modules):
     name_to_piece = {}
