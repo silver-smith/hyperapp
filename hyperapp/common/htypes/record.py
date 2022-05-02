@@ -194,6 +194,9 @@ class TRecord(Type):
         return (rhs is self
                 or (isinstance(rhs, TRecord) and rhs._eq_key == self._eq_key))
 
+    def __lt__(self, rhs):
+        return self._eq_key < rhs._eq_key
+
     def __subclasscheck__(self, cls):
         ## print('__subclasscheck__', self, cls)
         if cls is self:
