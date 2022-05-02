@@ -178,7 +178,7 @@ class ResourceModule:
             try:
                 module = self._resource_module_registry[module_name]
             except KeyError:
-                raise RuntimeError(f"{self._name}: Importing {var_name} from unknown module: {module_name}")
+                raise RuntimeError(f"{self._name}: Importing {var_name!r} from unknown module: {module_name}")
             if var_name not in module:
                 raise RuntimeError(f"{self._name}: Module {module_name} does not have {var_name!r}")
         for name, contents in module_contents.get('definitions', {}).items():
