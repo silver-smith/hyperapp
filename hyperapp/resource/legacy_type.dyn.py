@@ -58,7 +58,6 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        
         services.resource_module_registry.update(
             make_legacy_type_resource_module(services.builtin_types, services.types, services.type_module_loader))
         services.python_object_creg.register_actor(htypes.legacy_type.type, python_object, services.types)
