@@ -107,7 +107,22 @@ def pick_key_t(object_name, result_t):
     raise RuntimeError(f"{object_name}: Unable to pick key element from: {list(name_to_type)}")
 
 
-def construct_list_impl(resource_module, object_name, object_res_name, partial_res_name, result_t):
+def construct_dir(module_name, resource_module, object_res_name):
+    type_module_name = module_name.split('.')[-1]
+    dir_t_res_name = f'legacy_type.{type_module_name}.{object_res_name}_d'
+    call_res_t = resource_type_producer(htypes.call.call)
+    call_def = call_res_t.definition_t(
+        function=dir_t_res_name,
+        )
+    res_name = f'{object_res_name}_d'
+    resource_module.set_definition(res_name, call_res_t, call_def)
+    resource_module.add_import(dir_t_res_name)
+    return res_name
+
+
+def construct_list_impl(module_name, resource_module, object_name, object_res_name, partial_res_name, result_t):
+    dir_res_name = construct_dir(module_name, resource_module, object_res_name)
+
     key_t_name = pick_key_t(object_name, result_t)
     key_t_res_name = f'legacy_type.{key_t_name.module}.{key_t_name.name}'
     resource_module.add_import(key_t_res_name)
@@ -115,6 +130,7 @@ def construct_list_impl(resource_module, object_name, object_res_name, partial_r
     impl_def = impl_res_t.definition_t(
         function=partial_res_name,
         key_t=key_t_res_name,
+        dir=dir_res_name,
         )
     res_name = f'{object_res_name}_impl'
     resource_module.set_definition(res_name, impl_res_t, impl_def)
@@ -122,6 +138,7 @@ def construct_list_impl(resource_module, object_name, object_res_name, partial_r
 
 
 def construct_impl(
+        module_name,
         get_resource_type_call,
         fixture_to_module,
         resource_module,
@@ -140,7 +157,7 @@ def construct_impl(
     log.info("%s 'get' method result type: %r", object_res_name, result_t)
 
     if isinstance(result_t, htypes.htest.list_t):
-        impl_res_name = construct_list_impl(resource_module, object_name, object_res_name, partial_res_name, result_t)
+        impl_res_name = construct_list_impl(module_name, resource_module, object_name, object_res_name, partial_res_name, result_t)
     else:
         raise RuntimeError(f"{resource_module.name}: Unknown {get_attr.name}.get method result type: {result_t!r}")
 
@@ -194,6 +211,7 @@ def construct_global(root_dir, module_name, resource_module, process, module_res
     }
     if 'get' in name_to_attr and globl.param_list and globl.param_list[0] == 'piece':
         construct_impl(
+            module_name,
             get_resource_type_call,
             fixture_to_module,
             resource_module,

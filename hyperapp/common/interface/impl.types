@@ -2,6 +2,7 @@
 list_impl = record:
   function: ref
   key_t: ref
+  dir: ref
 
 impl_association = record:
   piece_t: ref
