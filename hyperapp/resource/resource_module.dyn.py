@@ -196,7 +196,10 @@ class ResourceModule:
         resource_t_res = self._resolve_name(resource_t_name)
         resource_t = self._python_object_creg.invite(resource_t_res)
         t = self._resource_type_producer(resource_t)
-        value = t.from_dict(data)
+        try:
+            value = t.from_dict(data)
+        except Exception as x:
+            raise RuntimeError(f"Error loading definition {self._name}/{name}: {x}")
         return Definition(t, value)
 
 
