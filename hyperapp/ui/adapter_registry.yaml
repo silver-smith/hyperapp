@@ -1,0 +1,9 @@
+import:
+  code:
+    - async.code_registry
+provide:
+  - adapter_registry
+  - adapter_factory
+require:
+  - async_web
+  - impl_registry
