@@ -1,6 +1,7 @@
 
 list_impl = record:
   function: ref
+  key_attribute: string
   key_t: ref
   dir: ref
 

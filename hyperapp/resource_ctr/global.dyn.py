@@ -101,7 +101,7 @@ def pick_key_t(object_name, result_t):
         }
     for name in ['id', 'key', 'name']:
         try:
-            return name_to_type[name]
+            return (name, name_to_type[name])
         except KeyError:
             pass
     raise RuntimeError(f"{object_name}: Unable to pick key element from: {list(name_to_type)}")
@@ -123,12 +123,13 @@ def construct_dir(module_name, resource_module, object_res_name):
 def construct_list_impl(module_name, resource_module, object_name, object_res_name, partial_res_name, result_t):
     dir_res_name = construct_dir(module_name, resource_module, object_res_name)
 
-    key_t_name = pick_key_t(object_name, result_t)
+    key_attribute, key_t_name = pick_key_t(object_name, result_t)
     key_t_res_name = f'legacy_type.{key_t_name.module}.{key_t_name.name}'
     resource_module.add_import(key_t_res_name)
     impl_res_t = resource_type_producer(htypes.impl.list_impl)
     impl_def = impl_res_t.definition_t(
         function=partial_res_name,
+        key_attribute=key_attribute,
         key_t=key_t_res_name,
         dir=dir_res_name,
         )
