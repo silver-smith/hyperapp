@@ -7,7 +7,7 @@ definitions:
   sample_list_module:
     _type: legacy_type.python_module.python_module
     module_name: sample_list_fixtures
-    file_name: list.fixtures.dyn.py
+    file_name: sample_list.fixtures.dyn.py
     import_list:
       htypes.sample_list.sample_list: legacy_type.sample_list.sample_list
   sample_list_piece:
