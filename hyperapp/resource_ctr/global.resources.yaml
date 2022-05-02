@@ -30,6 +30,13 @@ definitions:
       htypes.htest.list_t: legacy_type.htest.list_t
       htypes.impl.list_impl: legacy_type.impl.list_impl
       htypes.impl.impl_association: legacy_type.impl.impl_association
+      services.mosaic: legacy_service.mosaic
+      services.resource_type_producer: legacy_service.resource_type_producer
+      services.resource_module_factory: legacy_service.resource_module_factory
+      services.resource_module_registry: legacy_service.resource_module_registry
+      services.fixture_resource_module_registry: legacy_service.fixture_resource_module_registry
+      services.runner_method_collect_attributes_ref: runner_method_collect_attributes_ref
+      services.runner_method_get_resource_type_ref: runner_method_get_resource_type_ref
 
   runner_method_collect_attributes_ref:
     _type: legacy_type.piece_ref.piece_ref
@@ -39,19 +46,7 @@ definitions:
     _type: legacy_type.piece_ref.piece_ref
     value: server.htest_runner.get_resource_type
 
-  construct_global_attribute:
+  construct_global:
     _type: legacy_type.attribute.attribute
     object: resource_ctr_global_module
     attr_name: construct_global
-
-  construct_global:
-    _type: legacy_type.partial.partial
-    function: construct_global_attribute
-    params:
-      mosaic: legacy_service.mosaic
-      resource_type_producer: legacy_service.resource_type_producer
-      resource_module_factory: legacy_service.resource_module_factory
-      resource_module_registry: legacy_service.resource_module_registry
-      fixture_resource_module_registry: legacy_service.fixture_resource_module_registry
-      runner_method_collect_attributes_ref: runner_method_collect_attributes_ref
-      runner_method_get_resource_type_ref: runner_method_get_resource_type_ref
