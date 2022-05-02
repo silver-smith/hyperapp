@@ -167,12 +167,12 @@ class ResourceModule:
             return
         log.info("Loading resource module %s: %s", self._name, self._path)
         try:
-            contents = yaml.safe_load(self._path.read_text())
+            module_contents = yaml.safe_load(self._path.read_text())
         except FileNotFoundError:
             if not self._allow_missing:
                 raise
             return
-        self._loaded_imports = set(contents.get('import', []))
+        self._loaded_imports = set(module_contents.get('import', []))
         for name in self._loaded_imports:
             module_name, var_name = name.rsplit('.', 1)
             try:
@@ -181,9 +181,9 @@ class ResourceModule:
                 raise RuntimeError(f"{self._name}: Importing {var_name} from unknown module: {module_name}")
             if var_name not in module:
                 raise RuntimeError(f"{self._name}: Module {module_name} does not have {var_name!r}")
-        for name, contents in contents.get('definitions', {}).items():
+        for name, contents in module_contents.get('definitions', {}).items():
             self._loaded_definitions[name] = self._read_definition(name, contents)
-        for contents in contents.get('associations', {}).items():
+        for contents in module_contents.get('associations', []):
             name = contents.get('_type')  # Just for logging and error strings.
             self._loaded_associations.add(self._read_definition(name, contents))
 
