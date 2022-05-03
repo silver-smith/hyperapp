@@ -16,6 +16,8 @@ code_module_list = [
     'resource.legacy_service',
     'resource.legacy_type',
     'resource.resource_module',
+    'resource.attribute',
+    'resource.partial',
     'resource.python_module',
     'resource.value',
     'resource.call',

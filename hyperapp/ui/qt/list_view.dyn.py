@@ -15,26 +15,29 @@ ROW_HEIGHT_PADDING = 3  # same as default QTreeView padding
 
 class _Model(QtCore.QAbstractTableModel):
 
-    def __init__(self, view, object, config):
+    def __init__(self, view, adapter, config):
         QtCore.QAbstractTableModel.__init__(self)
+        self._adapter = adapter
 
     # Qt methods  -------------------------------------------------------------------------------------------------------
 
     def columnCount(self, parent):
-        return 10
+        return len(self._adapter.columns)
 
     def headerData(self, section, orient, role):
         if role == QtCore.Qt.DisplayRole and orient == QtCore.Qt.Orientation.Horizontal:
-            return 'test header'
+            return self._adapter.columns[section]
         return QtCore.QAbstractTableModel.headerData(self, section, orient, role)
 
     def rowCount(self, parent):
-        return 10
+        return self._adapter.row_count
 
     def data(self, index, role):
         if role != QtCore.Qt.DisplayRole:
             return None
-        return 'test'
+        row = self._adapter.row(index.row())
+        name = self._adapter.columns[index.column()]
+        return row[name]
 
 
 class ListView(QtWidgets.QTableView):
@@ -44,9 +47,9 @@ class ListView(QtWidgets.QTableView):
         config = lcs.slice(adapter.dir_list[-1])
         return cls(adapter, config)
 
-    def __init__(self, object, config, key=None):
+    def __init__(self, adapter, config, key=None):
         QtWidgets.QTableView.__init__(self)
-        self.setModel(_Model(self, object, config))
+        self.setModel(_Model(self, adapter, config))
         self.verticalHeader().hide()
         opts = self.viewOptions()
         self.verticalHeader().setDefaultSectionSize(QtGui.QFontInfo(opts.font).pixelSize() + ROW_HEIGHT_PADDING)

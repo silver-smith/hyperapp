@@ -9,7 +9,7 @@ from .code_registry import CodeRegistry, CodeRegistryKeyError
 async def adapter_factory(impl_registry, adapter_registry, piece):
     piece_t = deduce_value_type(piece)
     impl = impl_registry[piece_t]
-    return await adapter_registry.animate(impl)
+    return await adapter_registry.animate(impl, piece)
 
 
 class ThisModule(Module):
