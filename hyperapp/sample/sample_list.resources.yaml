@@ -1,0 +1,42 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_module.sample.sample_list
+- legacy_service.mosaic
+- legacy_service.peer_registry
+- legacy_service.rpc_call_factory
+- legacy_service.web
+- legacy_type.attribute.attribute
+- legacy_type.builtin.int
+- legacy_type.call.call
+- legacy_type.impl.impl_association
+- legacy_type.impl.list_impl
+- legacy_type.partial.partial
+- legacy_type.sample_list.sample_list
+- legacy_type.sample_list.sample_list_d
+associations:
+- _type: legacy_type.impl.impl_association
+  piece_t: legacy_type.sample_list.sample_list
+  implementation: sample_list_impl
+definitions:
+  sample_list_attribute:
+    _type: legacy_type.attribute.attribute
+    object: legacy_module.sample.sample_list
+    attr_name: SampleList
+  sample_list_d:
+    _type: legacy_type.call.call
+    function: legacy_type.sample_list.sample_list_d
+  sample_list_impl:
+    _type: legacy_type.impl.list_impl
+    function: sample_list_partial
+    key_attribute: key
+    key_t: legacy_type.builtin.int
+    dir: sample_list_d
+  sample_list_partial:
+    _type: legacy_type.partial.partial
+    function: sample_list_attribute
+    params:
+      mosaic: legacy_service.mosaic
+      web: legacy_service.web
+      peer_registry: legacy_service.peer_registry
+      rpc_call_factory: legacy_service.rpc_call_factory

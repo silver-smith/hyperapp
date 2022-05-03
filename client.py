@@ -12,6 +12,16 @@ log = logging.getLogger(__name__)
 
 
 code_module_list = [
+    'resource.legacy_module',
+    'resource.legacy_service',
+    'resource.legacy_type',
+    'resource.resource_module',
+    'resource.python_module',
+    'resource.value',
+    'resource.call',
+    'ui.impl_registry',
+    'resource.register_associations',
+    'ui.list_adapter',
     'async.ui.qt.application',
     'async.ui.command_list',
     'async.ui.qt.tab_view',
@@ -27,7 +37,7 @@ code_module_list = [
     'async.ui.ref_object',
     'async.ui.qt.line_edit',
     'async.ui.qt.text_view',
-    'async.ui.qt.list_view',
+    'ui.qt.list_view',
     'async.ui.qt.tree_view',
     'client.list_view_sample',
     'client.tree_view_sample',

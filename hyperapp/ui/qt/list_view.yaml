@@ -1,0 +1,17 @@
+import:
+  types:
+    column:
+      - column_d
+      - column_visible_d
+      - column_list_d
+    list_object:
+      - list_object_d
+    view:
+      - view_d
+    list_view:
+      - list_view
+  code:
+    - async.ui.list_object
+require:
+  - lcs
+  - view_registry

@@ -1,0 +1,9 @@
+import:
+  types:
+    list_object:
+      - list_object_d
+    impl:
+      - list_impl
+require:
+  - python_object_creg
+  - adapter_registry

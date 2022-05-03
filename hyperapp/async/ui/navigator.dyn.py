@@ -60,14 +60,14 @@ class Navigator(ViewCommander):
             command_hub,
             mosaic,
             async_web,
-            object_factory,
+            adapter_factory,
             object_commands_factory,
             view_producer,
             global_command_list,
             ):
         self = cls(
             mosaic,
-            object_factory,
+            adapter_factory,
             object_commands_factory,
             view_producer,
             global_command_list,
@@ -80,7 +80,7 @@ class Navigator(ViewCommander):
     def __init__(
             self,
             mosaic,
-            object_factory,
+            adapter_factory,
             object_commands_factory,
             view_producer,
             global_command_list,
@@ -89,31 +89,33 @@ class Navigator(ViewCommander):
             ):
         super().__init__()
         self._mosaic = mosaic
-        self._object_factory = object_factory
+        self._adapter_factory = adapter_factory
         self._object_commands_factory = object_commands_factory
         self._view_producer = view_producer
         self._global_command_list = global_command_list
         self._command_hub = command_hub
         self._history = _History()
-        self._current_object = None
+        self._current_adapter = None
+        self._current_piece = None
         self._current_origin_dir = None
         self._current_view = None
 
     async def _async_init(self, async_web, initial_piece_ref, origin_dir, view_state_ref):
         piece = await async_web.summon(initial_piece_ref)
-        self._current_object = object = await self._object_factory.animate(piece)
+        self._current_adapter = await self._adapter_factory(piece)
+        self._current_piece = piece
         self._current_origin_dir = [
             await async_web.summon(ref)
             for ref in origin_dir
             ]
-        view = await self._create_view(self._current_object, self._current_origin_dir)
+        view = await self._create_view(self._current_adapter, self._current_origin_dir)
         if view_state_ref is not None:
             view.state = await async_web.summon(view_state_ref)
         self._current_view = view
 
     @property
     def state(self):
-        piece_ref = self._mosaic.put(self._current_object.piece)
+        piece_ref = self._mosaic.put(self._current_piece)
         origin_dir_refs = tuple(
             self._mosaic.put(piece)
             for piece in self._current_origin_dir
@@ -134,14 +136,14 @@ class Navigator(ViewCommander):
 
     @property
     def title(self):
-        return self._current_object.title
+        return self._current_adapter.title
 
     def iter_view_commands(self):
         for command in self.get_command_list():
             yield (['navigator'], command)
 
     async def get_current_commands(self):
-        object_command_list = await self._object_commands_factory.get_object_command_list(self._current_view.object)
+        object_command_list = await self._object_commands_factory.get_object_command_list(self._current_adapter)
         object_view_command_list = [
             Command(command.name, command.dir, partial(self._run_object_command, command), kind='object')
             for command in object_command_list
@@ -156,12 +158,12 @@ class Navigator(ViewCommander):
             *global_command_list,
             ]
 
-    def _origin_dir(self, object, command_dir):
+    def _origin_dir(self, adapter, command_dir):
         command_dir_refs = tuple(
             self._mosaic.put(piece)
             for piece in command_dir
             )
-        return [htypes.view.command_source_d(command_dir_refs), *object.dir_list[-1]]
+        return [htypes.view.command_source_d(command_dir_refs), *adapter.dir_list[-1]]
 
     async def _run_object_command(self, command):
         view_state = self._current_view.state
@@ -181,26 +183,27 @@ class Navigator(ViewCommander):
         await self._save_history_and_open_piece(piece, command.dir)
 
     async def _save_history_and_open_piece(self, piece, command_dir):
-        object = await self._object_factory.animate(piece)
-        origin_dir = self._origin_dir(object, command_dir)
+        adapter = await self._adapter_factory.animate(piece)
+        origin_dir = self._origin_dir(adapter, command_dir)
         self._history.append(self._current_history_item)
-        await self._open_object(object, origin_dir)
+        await self._open_object(piece, adapter, origin_dir)
 
     @property
     def _current_history_item(self):
-        return _HistoryItem(self._current_object.piece, self._current_origin_dir, self._current_view.state)
+        return _HistoryItem(self._current_piece, self._current_origin_dir, self._current_view.state)
 
-    async def _open_object(self, object, origin_dir, view_state=None):
-        view = await self._create_view(object, origin_dir, view_state)
-        self._current_object = object
+    async def _open_object(self, piece, adapter, origin_dir, view_state=None):
+        view = await self._create_view(adapter, origin_dir, view_state)
+        self._current_adapter = adapter
+        self._current_piece = piece
         self._current_origin_dir = origin_dir
         owner = self._current_view.parent().parent()  # Assuming parent is tab view; todo: unhack.
         self._current_view = view
         owner.replace_qt_widget(self)
         await self._command_hub.update()
 
-    async def _create_view(self, object, origin_dir, view_state=None):
-        view = await self._view_producer.create_view(object, add_dir_list=[origin_dir])
+    async def _create_view(self, adapter, origin_dir, view_state=None):
+        view = await self._view_producer.create_view(adapter, add_dir_list=[origin_dir])
         if view_state is not None:
             view.state = view_state
         return view
@@ -211,8 +214,8 @@ class Navigator(ViewCommander):
             item = self._history.move_backward(self._current_history_item)
         except IndexError:
             return
-        object = await self._object_factory.animate(item.piece)
-        await self._open_object(object, item.origin_dir, item.view_state)
+        adapter = await self._adapter_factory.animate(item.piece)
+        await self._open_object(item.piece, adapter, item.origin_dir, item.view_state)
 
     @command
     async def go_forward(self):
@@ -220,8 +223,8 @@ class Navigator(ViewCommander):
             item = self._history.move_forward(self._current_history_item)
         except IndexError:
             return
-        object = await self._object_factory.animate(item.piece)
-        await self._open_object(object, item.origin_dir, item.view_state)
+        adapter = await self._adapter_factory.animate(item.piece)
+        await self._open_object(item.piece, adapter, item.origin_dir, item.view_state)
 
 
 class ThisModule(Module):
@@ -233,7 +236,7 @@ class ThisModule(Module):
             Navigator.from_state,
             services.mosaic,
             services.async_web,
-            services.object_factory,
+            services.adapter_factory,
             services.object_commands_factory,
             services.view_producer,
             services.global_command_list,
