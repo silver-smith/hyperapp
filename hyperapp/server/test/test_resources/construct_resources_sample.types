@@ -1,5 +1,7 @@
 
 sample_servant_d = record
+sample_servant_open_d = record
+sample_servant_parent_d = record
 
 sample = record:
   id: int

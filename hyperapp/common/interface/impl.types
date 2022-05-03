@@ -8,3 +8,8 @@ list_impl = record:
 impl_association = record:
   piece_t: ref
   implementation: ref
+
+
+command_impl = record:
+  dir: ref
+  state_attributes: string list

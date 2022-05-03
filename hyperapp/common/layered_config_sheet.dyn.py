@@ -182,12 +182,24 @@ class LCSheet(LCSlice):
             self._dir_to_record[frozenset(dir)] = record
 
 
+
+def register_association(piece, lcs):
+    if piece.is_multi_value:
+        for value in piece.value_list:
+            lcs.add(piece.dir, value)
+        else:
+            lcs.set(piece.dir, piece.value_list[0])
+
+
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
+
         bundle = services.file_bundle(lcs_path, encoding='cdr')
         lcs = LCSheet(services.mosaic, services.web, bundle)
         services.lcs = lcs
         services.aux_bundler_hooks.append(lcs.aux_bundler_hook)
         services.aux_unbundler_hooks.append(lcs.aux_unbundler_hook)
+
+        services.meta_registry.register_actor(htypes.layered_config_sheet.lcs_association, register_association, services.lcs)

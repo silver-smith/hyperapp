@@ -7,16 +7,38 @@ import:
 - legacy_type.attribute.attribute
 - legacy_type.builtin.int
 - legacy_type.call.call
+- legacy_type.command.object_commands_d
 - legacy_type.construct_resources_sample.sample
 - legacy_type.construct_resources_sample.sample_servant_d
+- legacy_type.construct_resources_sample.sample_servant_open_d
+- legacy_type.construct_resources_sample.sample_servant_parent_d
+- legacy_type.impl.command_impl
 - legacy_type.impl.impl_association
 - legacy_type.impl.list_impl
+- legacy_type.layered_config_sheet.lcs_association
 - legacy_type.partial.partial
 associations:
 - _type: legacy_type.impl.impl_association
   piece_t: legacy_type.construct_resources_sample.sample
   implementation: sample_servant_impl
+- _type: legacy_type.layered_config_sheet.lcs_association
+  dir:
+  - sample_servant_d
+  - object_commands_d
+  is_multi_value: false
+  value_list:
+  - sample_servant_open_command
+- _type: legacy_type.layered_config_sheet.lcs_association
+  dir:
+  - sample_servant_d
+  - object_commands_d
+  is_multi_value: false
+  value_list:
+  - sample_servant_parent_command
 definitions:
+  object_commands_d:
+    _type: legacy_type.call.call
+    function: legacy_type.command.object_commands_d
   sample_servant_attribute:
     _type: legacy_type.attribute.attribute
     object: legacy_module.construct_resources_sample
@@ -30,6 +52,21 @@ definitions:
     key_attribute: key
     key_t: legacy_type.builtin.int
     dir: sample_servant_d
+  sample_servant_open_command:
+    _type: legacy_type.impl.command_impl
+    dir: sample_servant_open_d
+    state_attributes:
+    - current_key
+  sample_servant_open_d:
+    _type: legacy_type.call.call
+    function: legacy_type.construct_resources_sample.sample_servant_open_d
+  sample_servant_parent_command:
+    _type: legacy_type.impl.command_impl
+    dir: sample_servant_parent_d
+    state_attributes: []
+  sample_servant_parent_d:
+    _type: legacy_type.call.call
+    function: legacy_type.construct_resources_sample.sample_servant_parent_d
   sample_servant_partial:
     _type: legacy_type.partial.partial
     function: sample_servant_attribute

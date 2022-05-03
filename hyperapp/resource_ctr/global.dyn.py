@@ -2,7 +2,7 @@ import logging
 import re
 
 from . import htypes
-from .htypes import attribute, partial, call, htest, impl
+from .htypes import attribute, partial, call, htest, impl, lcs
 from .services import (
     mosaic,
     resource_type_producer,
@@ -107,21 +107,30 @@ def pick_key_t(object_name, result_t):
     raise RuntimeError(f"{object_name}: Unable to pick key element from: {list(name_to_type)}")
 
 
-def construct_dir(module_name, resource_module, object_res_name):
+def construct_module_dir(module_name, resource_module, target_res_name):
     type_module_name = module_name.split('.')[-1]
-    dir_t_res_name = f'legacy_type.{type_module_name}.{object_res_name}_d'
+    dir_t_res_name = f'legacy_type.{type_module_name}.{target_res_name}_d'
+    return construct_dir(resource_module, target_res_name, dir_t_res_name)
+
+
+def construct_dir(resource_module, target_res_name, dir_t_res_name):
     call_res_t = resource_type_producer(htypes.call.call)
     call_def = call_res_t.definition_t(
         function=dir_t_res_name,
         )
-    res_name = f'{object_res_name}_d'
+    res_name = f'{target_res_name}_d'
     resource_module.set_definition(res_name, call_res_t, call_def)
     resource_module.add_import(dir_t_res_name)
     return res_name
 
 
+def construct_object_commands_dir(resource_module):
+    dir_t_res_name = f'legacy_type.command.object_commands_d'
+    return construct_dir(resource_module, 'object_commands', dir_t_res_name)
+
+
 def construct_list_impl(module_name, resource_module, object_name, object_res_name, partial_res_name, result_t):
-    dir_res_name = construct_dir(module_name, resource_module, object_res_name)
+    dir_res_name = construct_module_dir(module_name, resource_module, object_res_name)
 
     key_attribute, key_t_name = pick_key_t(object_name, result_t)
     key_t_res_name = f'legacy_type.{key_t_name.module}.{key_t_name.name}'
@@ -135,7 +144,7 @@ def construct_list_impl(module_name, resource_module, object_name, object_res_na
         )
     res_name = f'{object_res_name}_impl'
     resource_module.set_definition(res_name, impl_res_t, impl_def)
-    return res_name
+    return (res_name, dir_res_name)
 
 
 def construct_impl(
@@ -158,7 +167,8 @@ def construct_impl(
     log.info("%s 'get' method result type: %r", object_res_name, result_t)
 
     if isinstance(result_t, htypes.htest.list_t):
-        impl_res_name = construct_list_impl(module_name, resource_module, object_name, object_res_name, partial_res_name, result_t)
+        impl_res_name, dir_res_name = construct_list_impl(
+            module_name, resource_module, object_name, object_res_name, partial_res_name, result_t)
     else:
         raise RuntimeError(f"{resource_module.name}: Unknown {get_attr.name}.get method result type: {result_t!r}")
 
@@ -178,6 +188,31 @@ def construct_impl(
         )
     resource_module.add_association(assoc_res_t, assoc_def)
     resource_module.add_import(piece_t_name)
+
+    return dir_res_name
+
+
+def construct_command(module_name, resource_module, object_res_name, object_dir_res_name, attr):
+    dir_res_name = construct_module_dir(module_name, resource_module, f'{object_res_name}_{attr.name}')
+
+    command_res_t = resource_type_producer(htypes.impl.command_impl)
+    command_def = command_res_t.definition_t(
+        dir=dir_res_name,
+        state_attributes=attr.param_list,
+    )
+    command_res_name = f'{object_res_name}_{attr.name}_command'
+    resource_module.set_definition(command_res_name, command_res_t, command_def)
+
+    # Called for every command, but results is single resource.
+    object_commands_d_res_name = construct_object_commands_dir(resource_module)
+
+    association_res_t = resource_type_producer(htypes.lcs.lcs_association)
+    association_def = association_res_t.definition_t(
+        dir=(object_dir_res_name, object_commands_d_res_name),
+        is_multi_value=False,
+        value_list=(command_res_name,),
+        )
+    resource_module.add_association(association_res_t, association_def)
 
 
 def construct_global(root_dir, module_name, resource_module, process, module_res_name, globl):
@@ -211,7 +246,7 @@ def construct_global(root_dir, module_name, resource_module, process, module_res
         for attr in attr_list
     }
     if 'get' in name_to_attr and globl.param_list and globl.param_list[0] == 'piece':
-        construct_impl(
+        object_dir_res_name = construct_impl(
             module_name,
             get_resource_type_call,
             fixture_to_module,
@@ -222,3 +257,8 @@ def construct_global(root_dir, module_name, resource_module, process, module_res
             partial_res_name,
             name_to_attr['get'],
         )
+
+    for attr in attr_list:
+        if attr.name == 'get':
+            continue
+        construct_command(module_name, resource_module, object_res_name, object_dir_res_name, attr)

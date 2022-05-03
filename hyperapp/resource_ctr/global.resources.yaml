@@ -8,8 +8,10 @@ import:
   - legacy_type.call.call
   - legacy_type.htest.list_t
   - legacy_type.htest.record_t
+  - legacy_type.layered_config_sheet.lcs_association
   - legacy_type.impl.impl_association
   - legacy_type.impl.list_impl
+  - legacy_type.impl.command_impl
   - legacy_type.partial.partial
   - legacy_type.piece_ref.piece_ref
   - legacy_type.python_module.python_module
@@ -28,7 +30,9 @@ definitions:
       htypes.call.call: legacy_type.call.call
       htypes.htest.record_t: legacy_type.htest.record_t
       htypes.htest.list_t: legacy_type.htest.list_t
+      htypes.lcs.lcs_association: legacy_type.layered_config_sheet.lcs_association
       htypes.impl.list_impl: legacy_type.impl.list_impl
+      htypes.impl.command_impl: legacy_type.impl.command_impl
       htypes.impl.impl_association: legacy_type.impl.impl_association
       services.mosaic: legacy_service.mosaic
       services.resource_type_producer: legacy_service.resource_type_producer

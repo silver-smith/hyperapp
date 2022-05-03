@@ -10,10 +10,6 @@ class SampleServant:
     def __init__(self, piece, mosaic, web, peer_registry, rpc_call_factory):
         log.info("constuct_resources_sample: SampleServant ctr: %s, %s, %s, %s", mosaic, web, peer_registry, rpc_call_factory)
 
-    @property
-    def _dict(self):
-        return None
-
     def get(self):
         return [
             htypes.construct_resources_sample.sample_item(1, 'First', 'First item'),
@@ -21,13 +17,10 @@ class SampleServant:
             htypes.construct_resources_sample.sample_item(3, 'Thirt', 'Third item'),
             ]
 
-    def list_live(self, request, peer_ref, servant_path_data):
+    def open(self, current_key):
         pass
 
-    def open(self, request, current_key):
-        pass
-
-    def parent(self, request):
+    def parent(self):
         pass
 
 

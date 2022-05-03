@@ -28,6 +28,7 @@ def additional_module_dirs():
 @pytest.fixture
 def code_module_list():
     return [
+        'common.layered_config_sheet',
         'mock_file_bundle',
         'ui.impl_registry',
         'resource.resource_type',

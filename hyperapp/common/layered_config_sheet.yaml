@@ -9,5 +9,6 @@ require:
   - file_bundle
   - aux_bundler_hooks
   - aux_unbundler_hooks
+  - meta_registry
 provide:
   - lcs
