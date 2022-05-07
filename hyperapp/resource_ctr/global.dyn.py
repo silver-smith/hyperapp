@@ -209,8 +209,7 @@ def construct_command(module_name, resource_module, object_res_name, object_dir_
     association_res_t = resource_type_producer(htypes.lcs.lcs_association)
     association_def = association_res_t.definition_t(
         dir=(object_dir_res_name, object_commands_d_res_name),
-        is_multi_value=False,
-        value_list=(command_res_name,),
+        value=command_res_name,
         )
     resource_module.add_association(association_res_t, association_def)
 

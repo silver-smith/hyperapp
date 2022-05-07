@@ -15,26 +15,22 @@ import:
 - legacy_type.impl.command_impl
 - legacy_type.impl.impl_association
 - legacy_type.impl.list_impl
-- legacy_type.layered_config_sheet.lcs_association
+- legacy_type.lcs.lcs_association
 - legacy_type.partial.partial
 associations:
 - _type: legacy_type.impl.impl_association
   piece_t: legacy_type.construct_resources_sample.sample
   implementation: sample_servant_impl
-- _type: legacy_type.layered_config_sheet.lcs_association
+- _type: legacy_type.lcs.lcs_association
   dir:
   - sample_servant_d
   - object_commands_d
-  is_multi_value: false
-  value_list:
-  - sample_servant_open_command
-- _type: legacy_type.layered_config_sheet.lcs_association
+  value: sample_servant_open_command
+- _type: legacy_type.lcs.lcs_association
   dir:
   - sample_servant_d
   - object_commands_d
-  is_multi_value: false
-  value_list:
-  - sample_servant_parent_command
+  value: sample_servant_parent_command
 definitions:
   object_commands_d:
     _type: legacy_type.call.call

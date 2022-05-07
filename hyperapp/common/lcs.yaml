@@ -1,8 +1,9 @@
 import:
   types:
-    layered_config_sheet:
-      - lcs_storage
+    lcs:
+      - storage
       - lcs_association
+      - lcs_set_association
   code:
     - async.ui.module
 require:

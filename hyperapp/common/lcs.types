@@ -1,0 +1,11 @@
+
+lcs_association = record:
+  dir: ref list
+  value: ref
+
+lcs_set_association = record:
+  dir: ref list
+  value: ref
+
+storage = record:
+  association_list: ref list

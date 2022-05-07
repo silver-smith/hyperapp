@@ -8,7 +8,7 @@ import:
   - legacy_type.call.call
   - legacy_type.htest.list_t
   - legacy_type.htest.record_t
-  - legacy_type.layered_config_sheet.lcs_association
+  - legacy_type.lcs.lcs_association
   - legacy_type.impl.impl_association
   - legacy_type.impl.list_impl
   - legacy_type.impl.command_impl
@@ -30,7 +30,7 @@ definitions:
       htypes.call.call: legacy_type.call.call
       htypes.htest.record_t: legacy_type.htest.record_t
       htypes.htest.list_t: legacy_type.htest.list_t
-      htypes.lcs.lcs_association: legacy_type.layered_config_sheet.lcs_association
+      htypes.lcs.lcs_association: legacy_type.lcs.lcs_association
       htypes.impl.list_impl: legacy_type.impl.list_impl
       htypes.impl.command_impl: legacy_type.impl.command_impl
       htypes.impl.impl_association: legacy_type.impl.impl_association

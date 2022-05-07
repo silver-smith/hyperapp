@@ -1,9 +1,0 @@
-
-lcs_association = record:
-  dir: ref list
-  is_multi_value: bool
-  value_list: ref list
-
-lcs_storage = record:
-  record_list: lcs_association list
-

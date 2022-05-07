@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass, field
-from typing import Set
+from typing import Any, Set
 from pathlib import Path
 
 from . import htypes
@@ -13,34 +13,37 @@ lcs_path = Path('~/.local/share/hyperapp/client/lcs.cdr').expanduser()
 
 
 @dataclass
-class Record:
-    value_set: Set = field(default_factory=set)  # List for single value record
-    is_multi_value: bool = False
+class SingleRecord:
+    value: Any
     persist: bool = False
 
-    @classmethod
-    def from_piece(cls, piece, web, persist):
-        dir = [
-            web.summon(ref)
-            for ref in piece.dir
-            ]
-        value_set = {
-            web.summon(ref)
-            for ref in piece.value_list
-            }
-        record = cls(value_set, piece.is_multi_value, persist)
-        return (dir, record)
-
-    def as_piece(self, dir, mosaic):
+    def association_list(self, dir, mosaic):
         dir_refs = [
             mosaic.put(element)
             for element in dir
             ]
-        values_refs = [
+        values_ref = mosaic.put(self.value)
+        return [htypes.lcs.lcs_association(dir_refs, values_ref)]
+
+    @property
+    def value_set(self):
+        return {self.value}
+
+
+@dataclass
+class MultiRecord:
+    value_set: Set = field(default_factory=set)
+    persist: bool = False
+
+    def association_list(self, dir, mosaic):
+        dir_refs = [
             mosaic.put(element)
-            for element in self.value_set
+            for element in dir
             ]
-        return htypes.layered_config_sheet.lcs_association(dir_refs, self.is_multi_value, values_refs)
+        return [
+            htypes.lcs.lcs_set_association(dir_refs, mosaic.put(value))
+            for value in self.value_set
+            ]
 
 
 class LCSlice:
@@ -55,7 +58,7 @@ class LCSlice:
             return None
         except TypeError as x:
             raise RuntimeError(f"LCS: Type error: {x}: {dir!r}")
-        if record.is_multi_value:
+        if not isinstance(record, SingleRecord):
             raise RuntimeError(f"LCS: Attempt to get single value from multi-value record: {set(dir)}")
         [value] = record.value_set
         return value
@@ -76,58 +79,80 @@ class LCSheet(LCSlice):
         except FileNotFoundError:
             pass
         else:
-            for association in storage.record_list:
-                dir, record = Record.from_piece(association, self._web, persist=True)
+            for association_ref in storage.association_list:
+                association = self._web.summon(association_ref)
+                dir, record = self._add_association(association, persist=True)
                 log.info("LCS: loaded %s -> %s", set(dir), record)
-                self._set(dir, record)
 
     def _save(self):
-        rec_list = [
-            record.as_piece(dir, self._mosaic)
-            for dir, record
-            in self._dir_to_record.items()
-            if record.persist
+        association_list = []
+        for dir, record in self._dir_to_record.items():
+            if not record.persist:
+                continue
+            association_list += [
+                self._mosaic.put(piece)
+                for piece in record.association_list(dir, self._mosaic)
+                ]
+        self._bundle.save_piece(htypes.lcs.storage(association_list))
+
+    def _add_association(self, association, persist):
+        dir = [
+            self._web.summon(ref)
+            for ref in association.dir
             ]
-        self._bundle.save_piece(htypes.layered_config_sheet.lcs_storage(rec_list))
-
-    def _set(self, dir, record):
-        self._dir_to_record[frozenset(dir)] = record
-
-    def add(self, dir, piece, persist=False):
-        log.info("LCS: add%s %s -> %s", '/persist' if persist else '', set(dir), piece)
-        try:
-            record = self._dir_to_record[frozenset(dir)]
-        except KeyError:
-            record = Record({piece}, is_multi_value=True, persist=persist)
-            self._dir_to_record[frozenset(dir)] = record
+        value = self._web.summon(association.value)
+        if isinstance(association, htypes.lcs.lcs_association):
+            record = self._set(dir, value, persist)
         else:
-            if not record.is_multi_value:
+            assert isinstance(association, htypes.lcs.lcs_set_association)
+            record = self._add(dir, value, persist)
+        return (dir, record)
+
+    def _set(self, dir, piece, persist):
+        fs_dir = frozenset(dir)
+        try:
+            record = self._dir_to_record[fs_dir]
+        except KeyError:
+            record = SingleRecord(piece, persist)
+            self._dir_to_record[fs_dir] = record
+        else:
+            if not isinstance(record, SingleRecord):
+                raise RuntimeError(f"LCS: Attempt to set value to multi-value record: {set(dir)} -> {piece}")
+            if record.persist != persist:
+                raise RuntimeError(f"LCS: Attempt to change persistentency for: {set(dir)} -> {persist}")
+            record.value = piece
+        return record
+
+    def _add(self, dir, piece, persist):
+        fs_dir = frozenset(dir)
+        try:
+            record = self._dir_to_record[fs_dir]
+        except KeyError:
+            record = MultiRecord({piece}, persist)
+            self._dir_to_record[fs_dir] = record
+        else:
+            if not isinstance(record, MultiRecord):
                 raise RuntimeError(f"LCS: Attempt to add value to single-value record: {set(dir)} -> {piece}")
             if record.persist != persist:
                 raise RuntimeError(f"LCS: Attempt to change persistentency for: {set(dir)} -> {persist}")
             record.value_set.add(piece)
+        return record
+        
+    def add(self, dir, piece, persist=False):
+        log.info("LCS: add%s %s -> %s", '/persist' if persist else '', set(dir), piece)
+        self._add(dir, piece, persist)
         if persist:
             self._save()
 
     def set(self, dir, piece, persist=False):
         log.info("LCS: set%s %s -> %s", '/persist' if persist else '', set(dir), piece)
-        try:
-            record = self._dir_to_record[frozenset(dir)]
-        except KeyError:
-            record = Record([piece], is_multi_value=False, persist=persist)
-            self._dir_to_record[frozenset(dir)] = record
-        else:
-            if record.is_multi_value:
-                raise RuntimeError(f"LCS: Attempt to set value to multi-value record: {set(dir)} -> {piece}")
-            if record.persist != persist:
-                raise RuntimeError(f"LCS: Attempt to change persistentency for: {set(dir)} -> {persist}")
-            record.value_set = [piece]
+        self._set(dir, piece, persist)
         if persist:
             self._save()
 
     def remove(self, dir):
         record = self._dir_to_record.pop(frozenset(dir))
-        log.info("LCS: remove%s %s -> %s", '/persist' if record.persist else '', set(dir), record.value_set)
+        log.info("LCS: remove%s %s -> %s", '/persist' if record.persist else '', set(dir), record)
         if record.persist:
             self._save()
 
@@ -148,7 +173,7 @@ class LCSheet(LCSlice):
             except KeyError:
                 pass
             else:
-                if not record.is_multi_value:
+                if not isinstance(record, MultiRecord):
                     raise RuntimeError(f"LCS: Attempt to iter over values for single-value record: {set(dir)}")
                 yield from record.value_set
 
@@ -163,32 +188,19 @@ class LCSheet(LCSlice):
 
     def aux_bundler_hook(self, ref, t, value):
         for dir, record in self._iter({value}):
-            log.info("LCS bundle aux: %s -> %s", dir, record)
-            yield self._mosaic.put(record.as_piece(dir, self._mosaic))
+            for association in record.association_list(dir, self._mosaic):
+                log.info("LCS bundle aux: %s -> %s", dir, association)
+                yield self._mosaic.put(association)
 
     def aux_unbundler_hook(self, ref, t, value):
-        if t is not htypes.layered_config_sheet.lcs_association:
+        if t not in {htypes.lcs.lcs_association, htypes.lcs.lcs_set_association}:
             return
-        dir, record = Record.from_piece(value, self._web, persist=False)
-        try:
-            prev_record = self._dir_to_record[frozenset(dir)]
-        except KeyError:
-            self._dir_to_record[frozenset(dir)] = record
-            log.info("LCS unbundle aux: %s -> %s", set(dir), record)
-        else:
-            if record.is_multi_value != prev_record.is_multi_value:
-                raise RuntimeError(f"LCS unbundle aux: Attempt to change is_multi_value for: {set(dir)}")
-            log.debug("LCS unbundle aux: Warning: overriding %s: %s -> %s",  set(dir), prev_record, record)
-            self._dir_to_record[frozenset(dir)] = record
-
+        dir, record = self._add_association(value, persist=False)
+        log.info("LCS unbundle aux: %s -> %s", set(dir), record)
 
 
 def register_association(piece, lcs):
-    if piece.is_multi_value:
-        for value in piece.value_list:
-            lcs.add(piece.dir, value)
-        else:
-            lcs.set(piece.dir, piece.value_list[0])
+    lcs._add_association(piece, persist=False)
 
 
 class ThisModule(ClientModule):
@@ -202,4 +214,5 @@ class ThisModule(ClientModule):
         services.aux_bundler_hooks.append(lcs.aux_bundler_hook)
         services.aux_unbundler_hooks.append(lcs.aux_unbundler_hook)
 
-        services.meta_registry.register_actor(htypes.layered_config_sheet.lcs_association, register_association, services.lcs)
+        services.meta_registry.register_actor(htypes.lcs.lcs_association, register_association, services.lcs)
+        services.meta_registry.register_actor(htypes.lcs.lcs_set_association, register_association, services.lcs)
