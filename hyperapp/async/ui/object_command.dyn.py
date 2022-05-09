@@ -74,6 +74,10 @@ class Command:
         self._kw = kw
 
     @property
+    def kind(self):
+        return 'object'
+
+    @property
     def dir(self):
         return [htypes.command.context_object_command_d(self._module_name, self.name)]
 

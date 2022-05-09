@@ -144,19 +144,11 @@ class Navigator(ViewCommander):
 
     async def get_current_commands(self):
         object_command_list = await self._object_commands_factory.get_object_command_list(
-            self, self._current_adapter, self._current_view)
-        object_view_command_list = [
-            Command(command.name, command.dir, partial(self._run_object_command, command), kind='object')
-            for command in object_command_list
-            ]
-        global_command_list = [
-            Command(command.name, command.dir, partial(self._run_global_command, command), kind='global')
-            for command in self._global_command_list
-            ]
+            self, self._current_piece, self._current_adapter, self._current_view)
         return [
             *super().get_command_list(),
-            *object_view_command_list,
-            *global_command_list,
+            *object_command_list,
+            *self._global_command_list,
             ]
 
     def _origin_dir(self, adapter, command_dir):
@@ -171,14 +163,6 @@ class Navigator(ViewCommander):
         _log.info("Run object command: %s with state %s, origin %s", command, view_state, self._current_origin_dir)
         piece = await command.run(self._current_view.object, view_state, self._current_origin_dir)
         _log.info("Run object command %s result: %r", command, piece)
-        if piece is None:
-            return
-        await self._save_history_and_open_piece(piece, command.dir)
-
-    async def _run_global_command(self, command):
-        _log.info("Run global command: %s", command)
-        piece = await command.run()
-        _log.info("Run global command %s result: %r", command, piece)
         if piece is None:
             return
         await self._save_history_and_open_piece(piece, command.dir)

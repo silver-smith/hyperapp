@@ -13,7 +13,7 @@ import:
 - legacy_type.impl.impl_association
 - legacy_type.impl.list_impl
 - legacy_type.impl.object_command_impl
-- legacy_type.lcs.lcs_association
+- legacy_type.lcs.lcs_set_resource_association
 - legacy_type.partial.partial
 - legacy_type.sample_list.sample_list
 - legacy_type.sample_list.sample_list_d
@@ -22,7 +22,7 @@ associations:
 - _type: legacy_type.impl.impl_association
   piece_t: legacy_type.sample_list.sample_list
   implementation: sample_list_impl
-- _type: legacy_type.lcs.lcs_association
+- _type: legacy_type.lcs.lcs_set_resource_association
   dir:
   - sample_list_d
   - object_commands_d

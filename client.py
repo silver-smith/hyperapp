@@ -25,6 +25,7 @@ code_module_list = [
     'ui.impl_registry',
     'resource.register_associations',
     'ui.list_adapter',
+    'ui.command_adapter',
     'async.ui.qt.application',
     'async.ui.command_list',
     'async.ui.qt.tab_view',

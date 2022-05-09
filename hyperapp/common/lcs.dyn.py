@@ -203,6 +203,20 @@ def register_association(piece, lcs):
     lcs._add_association(piece, persist=False)
 
 
+def register_resource_association(piece, web, lcs, python_object_creg):
+    dir = [
+        python_object_creg.invite(ref)
+        for ref in piece.dir
+        ]
+    value = web.summon(piece.value)
+    if isinstance(piece, htypes.lcs.lcs_resource_association):
+        record = lcs._set(dir, value, persist=False)
+    else:
+        assert isinstance(piece, htypes.lcs.lcs_set_resource_association)
+        record = lcs._add(dir, value, persist=False)
+    log.info("LCS: resource association: %s -> %s", set(dir), record)
+
+
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
@@ -216,3 +230,8 @@ class ThisModule(ClientModule):
 
         services.meta_registry.register_actor(htypes.lcs.lcs_association, register_association, services.lcs)
         services.meta_registry.register_actor(htypes.lcs.lcs_set_association, register_association, services.lcs)
+
+        services.meta_registry.register_actor(
+            htypes.lcs.lcs_resource_association, register_resource_association, services.web, services.lcs, services.python_object_creg)
+        services.meta_registry.register_actor(
+            htypes.lcs.lcs_set_resource_association, register_resource_association, services.web, services.lcs, services.python_object_creg)

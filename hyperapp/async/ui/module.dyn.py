@@ -28,6 +28,10 @@ class GlobalCommand:
     def __repr__(self):
         return f"Global:{self.name}@{self._module_name}"
 
+    @property
+    def kind(self):
+        return 'global'
+
     async def run(self):
         return await self._method()
 

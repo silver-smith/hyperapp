@@ -208,7 +208,7 @@ def construct_command(module_name, resource_module, object_res_name, object_dir_
     # Called for every command, but results is single resource.
     object_commands_d_res_name = construct_object_commands_dir(resource_module)
 
-    association_res_t = resource_type_producer(htypes.lcs.lcs_association)
+    association_res_t = resource_type_producer(htypes.lcs.lcs_set_resource_association)
     association_def = association_res_t.definition_t(
         dir=(object_dir_res_name, object_commands_d_res_name),
         value=command_res_name,
