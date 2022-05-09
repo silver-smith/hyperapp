@@ -1,5 +1,6 @@
 
 sample_list_d = record
+sample_list_open_d = record
 
 sample_list = record:
   id: int

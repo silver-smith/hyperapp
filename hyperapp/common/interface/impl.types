@@ -10,6 +10,8 @@ impl_association = record:
   implementation: ref
 
 
-command_impl = record:
+object_command_impl = record:
+  object_ctr: ref
+  method: string
+  params: string list
   dir: ref
-  state_attributes: string list

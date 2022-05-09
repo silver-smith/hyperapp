@@ -50,7 +50,7 @@ definitions:
     _type: legacy_type.resource_rpc_command.rpc_command
     identity: legacy_service.server_identity
     function: ref_list_servant_open_method
-    state_attributes: ['current_key']
+    params: ['current_key']
     name: open
 
   server_ref_list_d:

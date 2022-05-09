@@ -105,21 +105,21 @@ definitions:
     _type: legacy_type.resource_rpc_command.rpc_command
     identity: legacy_service.server_identity
     function: available_servant_open_method
-    state_attributes: ['current_key']
+    params: ['current_key']
     name: open
 
   imported_open_command:
     _type: legacy_type.resource_rpc_command.rpc_command
     identity: legacy_service.server_identity
     function: imported_servant_open_method
-    state_attributes: ['current_key']
+    params: ['current_key']
     name: open
 
   all_open_command:
     _type: legacy_type.resource_rpc_command.rpc_command
     identity: legacy_service.server_identity
     function: all_servant_open_method
-    state_attributes: ['current_key']
+    params: ['current_key']
     name: open
 
   module_list_d:

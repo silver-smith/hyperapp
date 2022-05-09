@@ -12,9 +12,9 @@ import:
 - legacy_type.construct_resources_sample.sample_servant_d
 - legacy_type.construct_resources_sample.sample_servant_open_d
 - legacy_type.construct_resources_sample.sample_servant_parent_d
-- legacy_type.impl.command_impl
 - legacy_type.impl.impl_association
 - legacy_type.impl.list_impl
+- legacy_type.impl.object_command_impl
 - legacy_type.lcs.lcs_association
 - legacy_type.partial.partial
 associations:
@@ -49,17 +49,21 @@ definitions:
     key_t: legacy_type.builtin.int
     dir: sample_servant_d
   sample_servant_open_command:
-    _type: legacy_type.impl.command_impl
-    dir: sample_servant_open_d
-    state_attributes:
+    _type: legacy_type.impl.object_command_impl
+    object_ctr: sample_servant_partial
+    method: open
+    params:
     - current_key
+    dir: sample_servant_open_d
   sample_servant_open_d:
     _type: legacy_type.call.call
     function: legacy_type.construct_resources_sample.sample_servant_open_d
   sample_servant_parent_command:
-    _type: legacy_type.impl.command_impl
+    _type: legacy_type.impl.object_command_impl
+    object_ctr: sample_servant_partial
+    method: parent
+    params: []
     dir: sample_servant_parent_d
-    state_attributes: []
   sample_servant_parent_d:
     _type: legacy_type.call.call
     function: legacy_type.construct_resources_sample.sample_servant_parent_d

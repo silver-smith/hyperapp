@@ -192,13 +192,15 @@ def construct_impl(
     return dir_res_name
 
 
-def construct_command(module_name, resource_module, object_res_name, object_dir_res_name, attr):
+def construct_command(module_name, resource_module, object_res_name, object_dir_res_name, partial_res_name, attr):
     dir_res_name = construct_module_dir(module_name, resource_module, f'{object_res_name}_{attr.name}')
 
-    command_res_t = resource_type_producer(htypes.impl.command_impl)
+    command_res_t = resource_type_producer(htypes.impl.object_command_impl)
     command_def = command_res_t.definition_t(
+        object_ctr=partial_res_name,
+        method=attr.name,
+        params=attr.param_list,
         dir=dir_res_name,
-        state_attributes=attr.param_list,
     )
     command_res_name = f'{object_res_name}_{attr.name}_command'
     resource_module.set_definition(command_res_name, command_res_t, command_def)
@@ -260,4 +262,4 @@ def construct_global(root_dir, module_name, resource_module, process, module_res
     for attr in attr_list:
         if attr.name == 'get':
             continue
-        construct_command(module_name, resource_module, object_res_name, object_dir_res_name, attr)
+        construct_command(module_name, resource_module, object_res_name, object_dir_res_name, partial_res_name, attr)

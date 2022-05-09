@@ -9,16 +9,28 @@ import:
 - legacy_type.attribute.attribute
 - legacy_type.builtin.int
 - legacy_type.call.call
+- legacy_type.command.object_commands_d
 - legacy_type.impl.impl_association
 - legacy_type.impl.list_impl
+- legacy_type.impl.object_command_impl
+- legacy_type.lcs.lcs_association
 - legacy_type.partial.partial
 - legacy_type.sample_list.sample_list
 - legacy_type.sample_list.sample_list_d
+- legacy_type.sample_list.sample_list_open_d
 associations:
 - _type: legacy_type.impl.impl_association
   piece_t: legacy_type.sample_list.sample_list
   implementation: sample_list_impl
+- _type: legacy_type.lcs.lcs_association
+  dir:
+  - sample_list_d
+  - object_commands_d
+  value: sample_list_open_command
 definitions:
+  object_commands_d:
+    _type: legacy_type.call.call
+    function: legacy_type.command.object_commands_d
   sample_list_attribute:
     _type: legacy_type.attribute.attribute
     object: legacy_module.sample.sample_list
@@ -32,6 +44,16 @@ definitions:
     key_attribute: key
     key_t: legacy_type.builtin.int
     dir: sample_list_d
+  sample_list_open_command:
+    _type: legacy_type.impl.object_command_impl
+    object_ctr: sample_list_partial
+    method: open
+    params:
+    - current_key
+    dir: sample_list_open_d
+  sample_list_open_d:
+    _type: legacy_type.call.call
+    function: legacy_type.sample_list.sample_list_open_d
   sample_list_partial:
     _type: legacy_type.partial.partial
     function: sample_list_attribute

@@ -4,6 +4,6 @@ import:
       - object_commands_d
 require:
   - lcs
-  - command_registry
+  - adapter_factory
 provide:
   - object_commands_factory

@@ -99,7 +99,7 @@ definitions:
     _type: legacy_type.resource_rpc_command.rpc_command
     identity: legacy_service.server_identity
     function: servant_module_method
-    state_attributes: ['current_key']
+    params: ['current_key']
     name: module
 
   select_module_function:
@@ -117,21 +117,21 @@ definitions:
     _type: legacy_type.resource_rpc_command.rpc_command
     identity: legacy_service.server_identity
     function: select_module_partial
-    state_attributes: []
+    params: []
     name: select_module
 
   collect_globals_command:
     _type: legacy_type.resource_rpc_command.rpc_command
     identity: legacy_service.server_identity
     function: servant_collect_globals_method
-    state_attributes: ['current_key']
+    params: ['current_key']
     name: collect_globals
 
   construct_resources_command:
     _type: legacy_type.resource_rpc_command.rpc_command
     identity: legacy_service.server_identity
     function: servant_construct_resources_method
-    state_attributes: ['current_key']
+    params: ['current_key']
     name: construct_resources
 
   htest_module_list_d:

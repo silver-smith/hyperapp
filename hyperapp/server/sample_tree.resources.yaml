@@ -48,21 +48,21 @@ definitions:
     _type: legacy_type.resource_rpc_command.rpc_command
     identity: legacy_service.server_identity
     function: tree_servant_raw_method
-    state_attributes: ['current_key']
+    params: ['current_key']
     name: raw
 
   describe_command:
     _type: legacy_type.resource_rpc_command.rpc_command
     identity: legacy_service.server_identity
     function: tree_servant_describe_method
-    state_attributes: ['current_key']
+    params: ['current_key']
     name: describe
 
   open_command:
     _type: legacy_type.resource_rpc_command.rpc_command
     identity: legacy_service.server_identity
     function: tree_servant_open_method_mapped
-    state_attributes: ['current_key']
+    params: ['current_key']
     name: open
 
   sample_tree_d:

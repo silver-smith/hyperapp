@@ -21,6 +21,7 @@ code_module_list = [
     'resource.python_module',
     'resource.value',
     'resource.call',
+    'common.lcs',
     'ui.impl_registry',
     'resource.register_associations',
     'ui.list_adapter',

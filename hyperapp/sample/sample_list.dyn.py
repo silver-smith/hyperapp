@@ -17,5 +17,8 @@ class SampleList:
             htypes.sample_list.item(3, 'Thirt', 'Third item'),
             ]
 
+    def open(self, current_key):
+        pass
+
 
 log.info("sample/list module is loaded")

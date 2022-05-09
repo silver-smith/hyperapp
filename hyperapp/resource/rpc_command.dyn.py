@@ -11,7 +11,7 @@ def python_object(piece, mosaic, python_object_creg):
     return htypes.rpc_command.rpc_command(
         peer_ref=peer_ref,
         servant_fn_ref=piece.function,
-        state_attr_list=piece.state_attributes,
+        state_attr_list=piece.params,
         name=piece.name,
         )
 
