@@ -35,4 +35,8 @@ class ThisModule(Module):
         if self._root_view:  # Services init failed before layout constructed?
             log.info("Save application state.")
             state = self._root_view.state
+            if not state.window_list:
+                # Init still failed.
+                log.warning("Not saving application state with no windows")
+                return
             self._state_storage.save_state(state)
