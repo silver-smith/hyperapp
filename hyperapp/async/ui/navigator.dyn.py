@@ -143,7 +143,8 @@ class Navigator(ViewCommander):
             yield (['navigator'], command)
 
     async def get_current_commands(self):
-        object_command_list = await self._object_commands_factory.get_object_command_list(self._current_adapter)
+        object_command_list = await self._object_commands_factory.get_object_command_list(
+            self, self._current_adapter, self._current_view)
         object_view_command_list = [
             Command(command.name, command.dir, partial(self._run_object_command, command), kind='object')
             for command in object_command_list

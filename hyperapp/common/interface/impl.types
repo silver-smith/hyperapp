@@ -11,7 +11,7 @@ impl_association = record:
 
 
 object_command_impl = record:
-  object_ctr: ref
+  object_ctr: ref  # Unused.
   method: string
   params: string list
   dir: ref

@@ -28,6 +28,10 @@ class ListAdapter:
             ]
 
     @property
+    def object(self):
+        return self._object
+
+    @property
     def key_attribute(self):
         return self._key_attribute
 
