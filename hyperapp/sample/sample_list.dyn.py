@@ -21,4 +21,8 @@ class SampleList:
         return f"Opened item: {current_key}"
 
 
+def open_sample_list():
+    return htypes.sample_list.sample_list()
+
+
 log.info("sample/list module is loaded")

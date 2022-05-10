@@ -2,8 +2,9 @@
 sample_list_d = record
 sample_list_open_d = record
 
-sample_list = record:
-  id: int
+open_sample_list_d = record
+
+sample_list = record
 
 item = record:
   key: int

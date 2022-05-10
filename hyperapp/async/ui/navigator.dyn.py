@@ -145,10 +145,15 @@ class Navigator(ViewCommander):
     async def get_current_commands(self):
         object_command_list = await self._object_commands_factory.get_object_command_list(
             self, self._current_piece, self._current_adapter, self._current_view)
+        global_command_list = [
+            await self._object_commands_factory.command_from_piece(
+                command_piece, self, self._current_piece, self._current_adapter, self._current_view)
+            for command_piece in self._global_command_list
+            ]
         return [
             *super().get_command_list(),
             *object_command_list,
-            *self._global_command_list,
+            *global_command_list,
             ]
 
     def _origin_dir(self, adapter, command_dir):

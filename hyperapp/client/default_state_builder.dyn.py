@@ -6,7 +6,7 @@ from . import htypes
 
 
 def default_state_builder(mosaic):
-    piece = htypes.sample_list.sample_list(12345)
+    piece = htypes.sample_list.sample_list()
     piece_ref = mosaic.put(piece)
 
     navigator = htypes.navigator.navigator(piece_ref, origin_dir=[], view_state_ref=None)

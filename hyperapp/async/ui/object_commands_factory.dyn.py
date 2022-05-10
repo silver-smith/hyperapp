@@ -9,14 +9,17 @@ class ObjectCommandsFactory:
         self._lcs = lcs
         self._command_registry = command_registry
 
-    async def get_object_command_list(self, navigator, piece, adapter, view):
+    async def get_object_command_list(self, navigator, object_piece, adapter, view):
         command_piece_it = self._lcs.iter_dir_list_values(
             [[*dir, htypes.command.object_commands_d()] for dir in adapter.dir_list]
             )
         return [
-            await self._command_registry.animate(command_piece, piece, navigator, adapter, view)
+            await self.command_from_piece(command_piece, navigator, object_piece, adapter, view)
             for command_piece in command_piece_it
             ]
+
+    async def command_from_piece(self, command_piece, navigator, object_piece, adapter, view):
+        return await self._command_registry.animate(command_piece, navigator, object_piece, adapter, view)
 
     async def command_by_name(self, object, name):
         for command in await self.get_object_command_list(object):
