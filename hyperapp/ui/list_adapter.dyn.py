@@ -84,6 +84,14 @@ class ListAdapter:
             }
 
     @cached_property
+    def id_to_idx(self):
+        return {
+            row[self._key_attribute]: idx
+            for idx, row
+            in enumerate(self._rows)
+            }
+
+    @cached_property
     def state_t(self):
         # todo: construct state from key_t.
         if self._key_t is tInt:

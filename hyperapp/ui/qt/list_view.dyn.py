@@ -66,6 +66,14 @@ class ListView(QtWidgets.QTableView):
             return None  # Happens when widget is not visible.
         return self._adapter.state_t(current_key)
 
+    @state.setter
+    def state(self, state):
+        if state is None:
+            return
+        idx = self._adapter.id_to_idx[state.current_key]
+        index = self.model().createIndex(idx, 0)
+        self.setCurrentIndex(index)
+
 
 class ThisModule(Module):
 
