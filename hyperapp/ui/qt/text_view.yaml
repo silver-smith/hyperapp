@@ -2,13 +2,11 @@ import:
   types:
     view:
       - view_d
+    text:
+      - text_d
     text_view:
       - text_view
       - text_edit_view
-  code:
-    - async.ui.ui_object
-    - async.ui.qt.view
-    - async.ui.string_object
 require:
   - lcs
   - available_view_registry

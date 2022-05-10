@@ -5,6 +5,9 @@ list_impl = record:
   key_t: ref
   dir: ref
 
+string_impl = record
+
+
 impl_association = record:
   piece_t: ref
   implementation: ref

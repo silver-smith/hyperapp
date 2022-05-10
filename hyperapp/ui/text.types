@@ -1,4 +1,6 @@
 
+text_d = record
+
 wiki_ref = record:
   id: int
   title: string

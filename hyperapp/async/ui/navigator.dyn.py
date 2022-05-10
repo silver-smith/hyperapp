@@ -190,7 +190,7 @@ class Navigator(ViewCommander):
             item = self._history.move_backward(self._current_history_item)
         except IndexError:
             return
-        adapter = await self._adapter_factory.animate(item.piece)
+        adapter = await self._adapter_factory(item.piece)
         await self._open_object(item.piece, adapter, item.origin_dir, item.view_state)
 
     @command
@@ -199,7 +199,7 @@ class Navigator(ViewCommander):
             item = self._history.move_forward(self._current_history_item)
         except IndexError:
             return
-        adapter = await self._adapter_factory.animate(item.piece)
+        adapter = await self._adapter_factory(item.piece)
         await self._open_object(item.piece, adapter, item.origin_dir, item.view_state)
 
 

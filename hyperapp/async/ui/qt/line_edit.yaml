@@ -7,6 +7,5 @@ import:
   code:
     - async.ui.ui_object
     - async.ui.qt.view
-    - async.ui.string_object
 require:
   - available_view_registry

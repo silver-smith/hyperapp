@@ -9,6 +9,5 @@ import:
     - async.ui.command
     - async.ui.ui_object
     - async.ui.tree_object
-    - async.ui.string_object
     - async.ui.record_object
     - async.ui.module

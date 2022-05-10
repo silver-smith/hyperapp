@@ -40,7 +40,7 @@ class ListAdapter:
 
     @property
     def title(self):
-        return 'todo: title'
+        return 'todo: list title'
 
     @property
     def command_list(self):
