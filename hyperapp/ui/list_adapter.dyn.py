@@ -1,5 +1,6 @@
 from functools import cached_property
 
+from hyperapp.common.htypes import tInt, tString
 from hyperapp.common.module import Module
 
 from . import htypes
@@ -9,21 +10,23 @@ class ListAdapter:
 
     @classmethod
     async def from_piece(cls, impl, piece, python_object_creg):
+        key_t = python_object_creg.invite(impl.key_t)
         dir = python_object_creg.invite(impl.dir)
         ctr = python_object_creg.invite(impl.function)
         object = ctr(piece)
-        return cls(dir, object, impl.key_attribute)
+        return cls(dir, object, impl.key_attribute, key_t)
 
-    def __init__(self, dir, object, key_attribute):
+    def __init__(self, dir, object, key_attribute, key_t):
         self._dir = dir
         self._object = object
         self._key_attribute = key_attribute
+        self._key_t = key_t
         self._columns = []
 
     @property
     def dir_list(self):
         return [
-            [htypes.list_object.list_object_d()],
+            [htypes.list.list_d()],
             [self._dir],
             ]
 
@@ -72,10 +75,28 @@ class ListAdapter:
             row_list.append(row)
         return row_list
 
+    @cached_property
+    def idx_to_id(self):
+        return {
+            idx: row[self._key_attribute]
+            for idx, row
+            in enumerate(self._rows)
+            }
+
+    @cached_property
+    def state_t(self):
+        # todo: construct state from key_t.
+        if self._key_t is tInt:
+            return htypes.list.int_state
+        if self._key_t is tString:
+            return htypes.list.string_state
+        raise RuntimeError(f"{self.__class__.__name__}: Unsupported key type: {self._key_t}")
+
 
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        services.adapter_registry.register_actor(htypes.impl.list_impl, ListAdapter.from_piece, services.python_object_creg)
+        services.adapter_registry.register_actor(
+            htypes.impl.list_impl, ListAdapter.from_piece, services.python_object_creg)

@@ -1,7 +1,9 @@
 import:
   types:
-    list_object:
-      - list_object_d
+    list:
+      - list_d
+      - int_state
+      - string_state
     impl:
       - list_impl
 require:

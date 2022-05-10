@@ -5,7 +5,6 @@ from PySide2 import QtCore, QtGui, QtWidgets
 from hyperapp.common.module import Module
 
 from . import htypes
-from .list_object import ListObject
 
 log = logging.getLogger(__name__)
 
@@ -49,6 +48,7 @@ class ListView(QtWidgets.QTableView):
 
     def __init__(self, adapter, config, key=None):
         QtWidgets.QTableView.__init__(self)
+        self._adapter = adapter
         self.setModel(_Model(self, adapter, config))
         self.verticalHeader().hide()
         opts = self.viewOptions()
@@ -58,10 +58,18 @@ class ListView(QtWidgets.QTableView):
         self.setSelectionBehavior(self.SelectRows)
         self.setSelectionMode(self.SingleSelection)
 
+    @property
+    def state(self):
+        idx = self.currentIndex().row()
+        current_key = self._adapter.idx_to_id[idx]
+        if current_key is None:
+            return None  # Happens when widget is not visible.
+        return self._adapter.state_t(current_key)
+
 
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
-        services.lcs.set([htypes.view.view_d('default'), htypes.list_object.list_object_d()], htypes.list_view.list_view())
+        services.lcs.set([htypes.view.view_d('default'), htypes.list.list_d()], htypes.list_view.list_view())
         services.view_registry.register_actor(htypes.list_view.list_view, ListView.from_piece, services.lcs)
