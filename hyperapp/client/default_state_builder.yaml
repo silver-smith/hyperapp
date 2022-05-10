@@ -13,7 +13,5 @@ import:
     - pos
     - window
     - state
-    sample_list:
-    - sample_list
 provide:
   - default_state_builder
