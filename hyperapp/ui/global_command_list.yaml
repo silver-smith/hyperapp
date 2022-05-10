@@ -1,0 +1,8 @@
+import:
+  types:
+    global_command:
+      - global_command_association
+require:
+  - meta_registry
+provide:
+  - global_command_list

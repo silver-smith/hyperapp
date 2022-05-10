@@ -24,4 +24,8 @@ class SampleServant:
         pass
 
 
+def sample():
+    return htypes.construct_resources_sample.sample(123)
+
+
 log.info("construct_resources_sample module is loaded")

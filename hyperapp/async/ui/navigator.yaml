@@ -14,4 +14,3 @@ require:
   - object_commands_factory
   - view_producer
   - view_registry
-  - global_command_list

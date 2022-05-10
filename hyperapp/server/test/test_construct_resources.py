@@ -51,6 +51,7 @@ def code_module_list():
         'resource.rpc_callback',
         'resource.map_service',
         'resource.python_module',
+        'ui.global_command_list',
         ]
 
 

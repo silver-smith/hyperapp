@@ -10,3 +10,6 @@ sample_item = record:
   key: int
   name: string
   description: string
+
+
+sample_d = record

@@ -1,7 +1,1 @@
-import:
-  types:
-    command:
-      - module_d
-      - global_command_d
-provide:
-  - global_command_list
+# empty

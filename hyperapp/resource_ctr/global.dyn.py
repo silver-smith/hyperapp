@@ -2,7 +2,7 @@ import logging
 import re
 
 from . import htypes
-from .htypes import attribute, partial, call, htest, impl, lcs
+from .htypes import attribute, partial, call, global_command, htest, impl, lcs
 from .services import (
     mosaic,
     resource_type_producer,
@@ -216,6 +216,24 @@ def construct_command(module_name, resource_module, object_res_name, object_dir_
     resource_module.add_association(association_res_t, association_def)
 
 
+def construct_global_command(module_name, resource_module, attr_res_name, function_res_name):
+    dir_res_name = construct_module_dir(module_name, resource_module, attr_res_name)
+
+    command_res_t = resource_type_producer(htypes.impl.global_command_impl)
+    command_def = command_res_t.definition_t(
+        function=function_res_name,
+        dir=dir_res_name,
+        )
+    command_res_name = f'{attr_res_name}_command'
+    resource_module.set_definition(command_res_name, command_res_t, command_def)
+
+    association_res_t = resource_type_producer(htypes.global_command.global_command_association)
+    association_def = association_res_t.definition_t(
+        command=command_res_name,
+        )
+    resource_module.add_association(association_res_t, association_def)
+
+
 def construct_global(root_dir, module_name, resource_module, process, module_res_name, globl):
     collect_attributes_call = process.rpc_call(runner_method_collect_attributes_ref)
     get_resource_type_call = process.rpc_call(runner_method_get_resource_type_ref)
@@ -245,7 +263,8 @@ def construct_global(root_dir, module_name, resource_module, process, module_res
     name_to_attr = {
         attr.name: attr
         for attr in attr_list
-    }
+        }
+
     if 'get' in name_to_attr and globl.param_list and globl.param_list[0] == 'piece':
         object_dir_res_name = construct_impl(
             module_name,
@@ -257,9 +276,10 @@ def construct_global(root_dir, module_name, resource_module, process, module_res
             object_res_name,
             partial_res_name,
             name_to_attr['get'],
-        )
-
-    for attr in attr_list:
-        if attr.name == 'get':
-            continue
-        construct_command(module_name, resource_module, object_res_name, object_dir_res_name, partial_res_name, attr)
+            )
+        for attr in attr_list:
+            if attr.name == 'get':
+                continue
+            construct_command(module_name, resource_module, object_res_name, object_dir_res_name, partial_res_name, attr)
+    else:
+        construct_global_command(module_name, resource_module, object_res_name, partial_res_name)

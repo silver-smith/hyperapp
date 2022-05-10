@@ -6,7 +6,6 @@ import:
       - global_command_list_d
       - view_command_list_d
       - object_command_list
-      - global_command_list
       - view_command_list
       - command_list_command
     command:
@@ -24,5 +23,4 @@ require:
   - command_registry
   - object_registry
   - object_commands_factory
-  - global_command_list
   - root_view
