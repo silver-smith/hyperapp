@@ -18,7 +18,7 @@ class SampleList:
             ]
 
     def open(self, current_key):
-        pass
+        return f"Opened item: {current_key}"
 
 
 log.info("sample/list module is loaded")

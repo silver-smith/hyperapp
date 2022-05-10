@@ -158,17 +158,8 @@ class Navigator(ViewCommander):
             )
         return [htypes.view.command_source_d(command_dir_refs), *adapter.dir_list[-1]]
 
-    async def _run_object_command(self, command):
-        view_state = self._current_view.state
-        _log.info("Run object command: %s with state %s, origin %s", command, view_state, self._current_origin_dir)
-        piece = await command.run(self._current_view.object, view_state, self._current_origin_dir)
-        _log.info("Run object command %s result: %r", command, piece)
-        if piece is None:
-            return
-        await self._save_history_and_open_piece(piece, command.dir)
-
-    async def _save_history_and_open_piece(self, piece, command_dir):
-        adapter = await self._adapter_factory.animate(piece)
+    async def save_history_and_open_piece(self, piece, command_dir):
+        adapter = await self._adapter_factory(piece)
         origin_dir = self._origin_dir(adapter, command_dir)
         self._history.append(self._current_history_item)
         await self._open_object(piece, adapter, origin_dir)
