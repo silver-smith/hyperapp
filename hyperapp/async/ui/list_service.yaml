@@ -1,6 +1,0 @@
-import:
-  types:
-    service:
-      - list_service
-  code:
-    - async.ui.simple_list_object

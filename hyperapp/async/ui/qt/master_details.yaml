@@ -8,7 +8,6 @@ import:
   code:
     - async.ui.command
     - client.composite
-    - async.ui.list_object
     - async.ui.tree_object
     - async.ui.module
 require:
