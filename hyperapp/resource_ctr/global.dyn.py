@@ -56,20 +56,21 @@ def construct_resource_params_partial(resource_module, fix_module, attr, attr_re
     param_to_resource = {}
     fix_param_to_resource = {}
     for idx, param_name in enumerate(attr.param_list):
-        try:
-            resource_name = f'{attr_snake_name}_{param_name}'
-            param_module = fixture_to_module[resource_name]
-            is_fix = True
-        except KeyError:
-            resource_name = param_name
-            param_module = name_to_module[resource_name]
-            is_fix = False
-        full_resource_name = f'{param_module.name}.{resource_name}'
-        fix_param_to_resource[param_name] = full_resource_name
-        fix_module.add_import(full_resource_name)
-        if not is_fix:
+        if param_name != 'piece':
+            param_module = name_to_module[param_name]
+            full_resource_name = f'{param_module.name}.{param_name}'
             param_to_resource[param_name] = full_resource_name
             resource_module.add_import(full_resource_name)
+        try:
+            fix_resource_name = f'{attr_snake_name}_{param_name}'
+            param_module = fixture_to_module[fix_resource_name]
+        except KeyError:
+            fix_param_to_resource[param_name] = full_resource_name
+            fix_module.add_import(full_resource_name)
+        else:
+            full_resource_name = f'{param_module.name}.{fix_resource_name}'
+            fix_param_to_resource[param_name] = full_resource_name
+            fix_module.add_import(full_resource_name)
     partial_res_name = f'{attr_snake_name}_partial'
     partial_res_t = resource_type_producer(htypes.partial.partial)
     partial_def_t = partial_res_t.definition_t
