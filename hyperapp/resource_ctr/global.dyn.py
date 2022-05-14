@@ -179,7 +179,7 @@ def construct_impl(
         impl_res_name, dir_res_name = construct_list_impl(
             module_name, resource_module, object_name, object_res_name, partial_res_name, result_t)
     else:
-        raise RuntimeError(f"{resource_module.name}: Unknown {get_attr.name}.get method result type: {result_t!r}")
+        raise RuntimeError(f"{resource_module.name}: Unknown {object_name}.{get_attr.name} method result type: {result_t!r}")
 
     fixture_name = f'{object_res_name}_piece'
     fixture_module = fixture_to_module[fixture_name]
