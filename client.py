@@ -79,6 +79,7 @@ code_module_list = [
     # 'async.ui.transport_log',
     # 'async.ui.rpc_callback',
     'resource.async.attribute',
+    'client.command_list',
     ]
 
 
