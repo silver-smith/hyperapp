@@ -1,6 +1,5 @@
 
 from . import htypes
-# from htypes import command, command_list
 
 
 class GlobalCommandList:
@@ -21,3 +20,7 @@ class GlobalCommandList:
 
     def _command_shortcut(self, command):
         return self._lcs.get([*command.dir, htypes.command.command_shortcut_d()])
+
+
+def open_global_command_list():
+    return htypes.command_list.global_command_list()

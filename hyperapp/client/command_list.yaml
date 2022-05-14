@@ -4,4 +4,5 @@ import:
       - command_shortcut_d
     command_list:
       - global_command_list_d
+      - global_command_list
       - item
