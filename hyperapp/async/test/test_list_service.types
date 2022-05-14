@@ -1,6 +1,0 @@
-
-master_servant = record
-
-row_t = record:
-  key: int
-  value_list: string list
