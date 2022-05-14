@@ -16,6 +16,21 @@ from .services import (
 log = logging.getLogger(__name__)
 
 
+name_to_module = {
+    var_name: resource_module
+    for resource_module_name, resource_module in resource_module_registry.items()
+    for var_name in resource_module
+    if not resource_module_name.startswith('legacy_type.')
+    }
+
+fixture_to_module = {
+    var_name: resource_module
+    for resource_module_name, resource_module in fixture_resource_module_registry.items()
+    for var_name in resource_module
+    if not resource_module_name.startswith('legacy_type.')
+    }
+
+
 # https://stackoverflow.com/a/1176023 Camel case to snake case.
 def camel_to_snake(name):
     name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
@@ -36,12 +51,7 @@ def construct_attr(resource_module, object_res_name, attr, add_object_prefix=Tru
     return attr_res_name
 
 
-def construct_resource_params_partial(fixture_to_module, resource_module, fix_module, attr, attr_res_name):
-    name_to_module = {
-        var_name: resource_module
-        for resource_module_name, resource_module in resource_module_registry.items()
-        for var_name in resource_module
-        }
+def construct_resource_params_partial(resource_module, fix_module, attr, attr_res_name):
     attr_snake_name = camel_to_snake(attr.name)
     param_to_resource = {}
     fix_param_to_resource = {}
@@ -150,7 +160,6 @@ def construct_list_impl(module_name, resource_module, object_name, object_res_na
 def construct_impl(
         module_name,
         get_resource_type_call,
-        fixture_to_module,
         resource_module,
         fix_module,
         object_name,
@@ -238,12 +247,6 @@ def construct_global(root_dir, module_name, resource_module, process, module_res
     collect_attributes_call = process.rpc_call(runner_method_collect_attributes_ref)
     get_resource_type_call = process.rpc_call(runner_method_get_resource_type_ref)
 
-    fixture_to_module = {
-        var_name: resource_module
-        for resource_module_name, resource_module in fixture_resource_module_registry.items()
-        for var_name in resource_module
-        }
-
     fix_module_name = f'{module_name}.with-fixtures'
     fix_module_rpath = module_name.replace('.', '/') + '.with-fixtures'
     fix_module = resource_module_factory(
@@ -251,7 +254,7 @@ def construct_global(root_dir, module_name, resource_module, process, module_res
 
     attr_res_name = construct_attr(resource_module, module_res_name, globl, add_object_prefix=False)
     partial_res_name = construct_resource_params_partial(
-        fixture_to_module, resource_module, fix_module, globl, attr_res_name)
+        resource_module, fix_module, globl, attr_res_name)
     object_res_name = camel_to_snake(globl.name)
     construct_call(fix_module, partial_res_name, object_res_name)
 
@@ -269,7 +272,6 @@ def construct_global(root_dir, module_name, resource_module, process, module_res
         object_dir_res_name = construct_impl(
             module_name,
             get_resource_type_call,
-            fixture_to_module,
             resource_module,
             fix_module,
             globl.name,
