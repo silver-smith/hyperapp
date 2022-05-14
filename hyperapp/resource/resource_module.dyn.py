@@ -124,10 +124,13 @@ class ResourceModule:
     def _resolve_name(self, name):
         if name in self._import_set:
             module_name, var_name = name.rsplit('.', 1)
-            if module_name.endswith('.fixtures'):
-                module = self._fixture_resource_module_registry[module_name]
-            else:
-                module = self._resource_module_registry[module_name]
+            try:
+                if module_name.endswith('.fixtures'):
+                    module = self._fixture_resource_module_registry[module_name]
+                else:
+                    module = self._resource_module_registry[module_name]
+            except KeyError:
+                raise RuntimeError(f"{self._name}: Error resolving imported {name!r}: Unknown module {module_name!r}")
             piece = module[var_name]
         else:
             piece = self[name]
