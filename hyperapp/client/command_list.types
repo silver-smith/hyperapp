@@ -1,8 +1,8 @@
 
-command_list_d = record
 object_command_list_d = record
 global_command_list_d = record
 view_command_list_d = record
+open_command_list_d = record
 
 object_command_list = record:
   piece_ref: ref
@@ -11,5 +11,6 @@ object_command_list = record:
 global_command_list = record
 view_command_list = record
 
-
-command_list_command = record
+item = record:
+  name: string
+  shortcut: string

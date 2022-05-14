@@ -1,0 +1,38 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_module.client.command_list
+- legacy_service.global_command_list
+- legacy_service.lcs
+- legacy_type.attribute.attribute
+- legacy_type.builtin.string
+- legacy_type.call.call
+- legacy_type.command_list.global_command_list
+- legacy_type.command_list.global_command_list_d
+- legacy_type.impl.impl_association
+- legacy_type.impl.list_impl
+- legacy_type.partial.partial
+associations:
+- _type: legacy_type.impl.impl_association
+  piece_t: legacy_type.command_list.global_command_list
+  implementation: global_command_list_impl
+definitions:
+  global_command_list_attribute:
+    _type: legacy_type.attribute.attribute
+    object: legacy_module.client.command_list
+    attr_name: GlobalCommandList
+  global_command_list_d:
+    _type: legacy_type.call.call
+    function: legacy_type.command_list.global_command_list_d
+  global_command_list_impl:
+    _type: legacy_type.impl.list_impl
+    function: global_command_list_partial
+    key_attribute: name
+    key_t: legacy_type.builtin.string
+    dir: global_command_list_d
+  global_command_list_partial:
+    _type: legacy_type.partial.partial
+    function: global_command_list_attribute
+    params:
+      lcs: legacy_service.lcs
+      global_command_list: legacy_service.global_command_list

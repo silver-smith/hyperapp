@@ -21,7 +21,7 @@ class CommandList(SimpleListObject):
 
     dir_list = [
         *SimpleListObject.dir_list,
-        [htypes.command_list.command_list_d()],
+#        [htypes.command_list.command_list_d()],
         ]
 
     def __init__(self, lcs):
@@ -228,49 +228,49 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        self._mosaic = services.mosaic
+    #     self._mosaic = services.mosaic
 
-    async def async_init(self, services):
-        services.object_registry.register_actor(
-            htypes.command_list.object_command_list,
-            ObjectCommandList.from_piece,
-            services.mosaic,
-            services.async_web,
-            services.lcs,
-            services.object_factory,
-            services.object_commands_factory,
-            )
-        services.object_registry.register_actor(
-            htypes.command_list.global_command_list,
-            GlobalCommandList.from_piece,
-            services.async_web,
-            services.lcs,
-            services.global_command_list,
-            services.root_view,
-            )
-        services.object_registry.register_actor(
-            htypes.command_list.view_command_list,
-            ViewCommandList.from_piece,
-            services.async_web,
-            services.lcs,
-            services.root_view,
-            )
-        services.lcs.add(
-            [*Object.dir_list[-1], htypes.command.object_commands_d()],
-            htypes.command_list.command_list_command(),
-            )
-        services.command_registry.register_actor(
-            htypes.command_list.command_list_command, Command.from_fn(self.name, self.command_list))
+    # async def async_init(self, services):
+    #     services.object_registry.register_actor(
+    #         htypes.command_list.object_command_list,
+    #         ObjectCommandList.from_piece,
+    #         services.mosaic,
+    #         services.async_web,
+    #         services.lcs,
+    #         services.object_factory,
+    #         services.object_commands_factory,
+    #         )
+    #     services.object_registry.register_actor(
+    #         htypes.command_list.global_command_list,
+    #         GlobalCommandList.from_piece,
+    #         services.async_web,
+    #         services.lcs,
+    #         services.global_command_list,
+    #         services.root_view,
+    #         )
+    #     services.object_registry.register_actor(
+    #         htypes.command_list.view_command_list,
+    #         ViewCommandList.from_piece,
+    #         services.async_web,
+    #         services.lcs,
+    #         services.root_view,
+    #         )
+        # services.lcs.add(
+        #     [*Object.dir_list[-1], htypes.command.object_commands_d()],
+        #     htypes.command_list.command_list_command(),
+        #     )
+        # services.command_registry.register_actor(
+        #     htypes.command_list.command_list_command, Command.from_fn(self.name, self.command_list))
 
-    async def command_list(self, object, view_state, origin_dir):
-        piece_ref = self._mosaic.put(object.piece)
-        view_state_ref = self._mosaic.put(view_state)
-        return htypes.command_list.object_command_list(piece_ref, view_state_ref)
+    # async def command_list(self, object, view_state, origin_dir):
+    #     piece_ref = self._mosaic.put(object.piece)
+    #     view_state_ref = self._mosaic.put(view_state)
+    #     return htypes.command_list.object_command_list(piece_ref, view_state_ref)
 
-    @command
-    async def global_commands(self):
-        return htypes.command_list.global_command_list()
+    # @command
+    # async def global_commands(self):
+    #     return htypes.command_list.global_command_list()
 
-    @command
-    async def view_commands(self):
-        return htypes.command_list.view_command_list()
+    # @command
+    # async def view_commands(self):
+    #     return htypes.command_list.view_command_list()

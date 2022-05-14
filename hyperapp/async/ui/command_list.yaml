@@ -1,13 +1,11 @@
 import:
   types:
     command_list:
-      - command_list_d
       - object_command_list_d
       - global_command_list_d
       - view_command_list_d
       - object_command_list
       - view_command_list
-      - command_list_command
     command:
       - object_commands_d
       - command_shortcut_d
