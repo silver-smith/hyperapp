@@ -12,7 +12,6 @@ log = logging.getLogger(__name__)
 
 
 code_module_list = [
-    'ui.impl_registry',
     'resource.resource_type',
     'resource.registry',
     'resource.resource_module',
@@ -33,6 +32,8 @@ code_module_list = [
     'resource.rpc_callback',
     'resource.map_service',
     'resource.python_module',
+    'resource.raw',
+    'ui.impl_registry',
     ]
 
 

@@ -1,0 +1,9 @@
+import:
+  types:
+    raw:
+      - raw
+provide:
+  - resource.raw
+require:
+  - resource_type_factory
+  - python_object_creg

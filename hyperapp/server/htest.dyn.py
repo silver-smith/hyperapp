@@ -128,6 +128,7 @@ class HTest:
                 'resource.attribute',
                 'resource.partial',
                 'resource.call',
+                'resource.raw',
                 'sync.transport.tcp',  # Unbundler wants tcp route.
                 'server.subprocess_report_home',
                 ],
