@@ -31,8 +31,9 @@ class _CommandList:
 
 class GlobalCommandList(_CommandList):
 
-    def __init__(self, piece, web, lcs, python_object_creg, global_command_list):
+    def __init__(self, piece, web, mosaic, lcs, python_object_creg, global_command_list):
         super().__init__(web, lcs)
+        self._mosaic = mosaic
         self._python_object_creg = python_object_creg
         self._global_command_list = global_command_list
 
@@ -42,7 +43,7 @@ class GlobalCommandList(_CommandList):
             dir = self._python_object_creg.invite(command.dir)
             item = htypes.command_list.item(
                 name=dir._t.name.rstrip('_d'),  # todo: load title from lcs.
-                dir=command.dir,
+                dir=self._mosaic.put(dir),
                 shortcut=self._command_shortcut(dir) or '',
                 )
             record_list.append(item)
