@@ -5,4 +5,7 @@ import:
     command_list:
       - global_command_list_d
       - global_command_list
+      - view_command_list_d
+      - view_command_list
       - item
+      - view_item

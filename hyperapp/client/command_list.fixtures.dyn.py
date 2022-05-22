@@ -6,5 +6,19 @@ def global_command_list_piece():
     return command_list.global_command_list()
 
 
+def view_command_list_piece():
+    return command_list.view_command_list()
+
+
 def global_command_list_global_command_list():
     return [sample_global_command_command]
+
+
+class _PhonyRootView:
+
+    def iter_view_commands(self):
+        return [([], sample_global_command_command)]
+
+
+def view_command_list_root_view():
+    return _PhonyRootView()

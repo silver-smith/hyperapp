@@ -2,37 +2,19 @@ import:
 - legacy_type.attribute.attribute
 - legacy_type.call.call
 - legacy_type.command_list.global_command_list
+- legacy_type.command_list.view_command_list
 - legacy_type.command_list_fixtures.sample_global_command_d
 - legacy_type.impl.global_command_impl
 - legacy_type.raw.raw
 - legacy_type.python_module.python_module
 definitions:
-  command_list_fixtures_module:
-    _type: legacy_type.python_module.python_module
-    module_name: command_list_fixtures
-    file_name: command_list.fixtures.dyn.py
-    import_list:
-      htypes.command_list.global_command_list: legacy_type.command_list.global_command_list
-      services.sample_global_command_command: sample_global_command_command_raw
+
   command_list_fixtures_aux_module:
     _type: legacy_type.python_module.python_module
     module_name: command_list_fixtures_aux
     file_name: command_list.fixtures.aux.dyn.py
     import_list: []
-  global_command_list_piece:
-    _type: legacy_type.call.call
-    function: global_command_list_piece_attribute
-  global_command_list_piece_attribute:
-    _type: legacy_type.attribute.attribute
-    object: command_list_fixtures_module
-    attr_name: global_command_list_piece
-  global_command_list_global_command_list:
-    _type: legacy_type.call.call
-    function: global_command_list_global_command_list_attribute
-  global_command_list_global_command_list_attribute:
-    _type: legacy_type.attribute.attribute
-    object: command_list_fixtures_module
-    attr_name: global_command_list_global_command_list
+
   sample_global_command:
     _type: legacy_type.attribute.attribute
     object: command_list_fixtures_aux_module
@@ -47,3 +29,44 @@ definitions:
   sample_global_command_d:
     _type: legacy_type.call.call
     function: legacy_type.command_list_fixtures.sample_global_command_d
+
+  command_list_fixtures_module:
+    _type: legacy_type.python_module.python_module
+    module_name: command_list_fixtures
+    file_name: command_list.fixtures.dyn.py
+    import_list:
+      htypes.command_list.global_command_list: legacy_type.command_list.global_command_list
+      htypes.command_list.view_command_list: legacy_type.command_list.view_command_list
+      services.sample_global_command_command: sample_global_command_command_raw
+
+  global_command_list_piece:
+    _type: legacy_type.call.call
+    function: global_command_list_piece_attribute
+  global_command_list_piece_attribute:
+    _type: legacy_type.attribute.attribute
+    object: command_list_fixtures_module
+    attr_name: global_command_list_piece
+
+  global_command_list_global_command_list:
+    _type: legacy_type.call.call
+    function: global_command_list_global_command_list_attribute
+  global_command_list_global_command_list_attribute:
+    _type: legacy_type.attribute.attribute
+    object: command_list_fixtures_module
+    attr_name: global_command_list_global_command_list
+
+  view_command_list_piece:
+    _type: legacy_type.call.call
+    function: view_command_list_piece_attribute
+  view_command_list_piece_attribute:
+    _type: legacy_type.attribute.attribute
+    object: command_list_fixtures_module
+    attr_name: view_command_list_piece
+
+  view_command_list_root_view:
+    _type: legacy_type.call.call
+    function: view_command_list_root_view_attribute
+  view_command_list_root_view_attribute:
+    _type: legacy_type.attribute.attribute
+    object: command_list_fixtures_module
+    attr_name: view_command_list_root_view
