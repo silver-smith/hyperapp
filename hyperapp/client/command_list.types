@@ -6,6 +6,9 @@ view_command_list_d = record
 open_global_command_list_d = record
 open_view_command_list_d = record
 
+global_command_list_set_key_d = record
+view_command_list_set_key_d = record
+
 object_command_list = record:
   piece_ref: ref
   view_state_ref: ref
@@ -15,9 +18,11 @@ view_command_list = record
 
 item = record:
   name: string
+  dir: ref
   shortcut: string
 
 view_item = record:
   name: string
+  dir: ref
   path: string
   shortcut: string

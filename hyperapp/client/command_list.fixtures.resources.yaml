@@ -1,4 +1,5 @@
 import:
+- legacy_module.async.ui.view_command
 - legacy_type.attribute.attribute
 - legacy_type.call.call
 - legacy_type.command_list.global_command_list
@@ -38,6 +39,7 @@ definitions:
       htypes.command_list.global_command_list: legacy_type.command_list.global_command_list
       htypes.command_list.view_command_list: legacy_type.command_list.view_command_list
       services.sample_global_command_command: sample_global_command_command_raw
+      view_command: legacy_module.async.ui.view_command
 
   global_command_list_piece:
     _type: legacy_type.call.call

@@ -9,3 +9,5 @@ import:
       - view_command_list
       - item
       - view_item
+  code:
+    - async.ui.qt.qt_keys
