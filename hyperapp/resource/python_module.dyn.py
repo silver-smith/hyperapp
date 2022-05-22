@@ -121,14 +121,20 @@ def sub_loader_dict(python_object_creg, import_list):
     loader_dict = {}
     module_dict = defaultdict(dict)
     for rec in import_list:
+        resource = python_object_creg.invite(rec.resource)
         path = rec.full_name.split('.')
+        if len(path) == 1:
+            # This is code module import, resource is python module.
+            [module_name] = path
+            module_dict[module_name] = resource.__dict__
+            continue
         for i in range(len(path) - 1):
             package_name = '.'.join(path[:i])
             if package_name not in loader_dict:
                 loader_dict[package_name] = _PackageLoader()
         module_name = '.'.join(path[:-1])
         name = path[-1]
-        module_dict[module_name][name] = python_object_creg.invite(rec.resource)
+        module_dict[module_name][name] = resource
     loader_dict.update({
         name: _DictLoader(globals)
         for name, globals in module_dict.items()
