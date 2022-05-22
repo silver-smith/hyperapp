@@ -25,7 +25,7 @@ class ViewCommand:
 
     @property
     def dir(self):
-        return [htypes.command.view_command_d(self._module_name, self._qual_name)]
+        return htypes.command.view_command_d(self._module_name, self._qual_name)
 
     async def run(self):
         await self._method()

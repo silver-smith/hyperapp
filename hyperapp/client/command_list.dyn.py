@@ -60,7 +60,7 @@ class ViewCommandList(_CommandList):
     def get(self):
         record_list = []
         for path, command in self._root_view.iter_view_commands():
-            [dir] = command.dir
+            dir = command.dir
             item = htypes.command_list.view_item(
                 name=command.name,
                 dir=self._mosaic.put(dir),

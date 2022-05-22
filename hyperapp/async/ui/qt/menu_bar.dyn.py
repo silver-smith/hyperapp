@@ -54,7 +54,7 @@ class MenuBar(QtWidgets.QMenuBar):
 
     def _make_action(self, menu, command, add_shortcut, used_shortcut_set=None):
         text = command.name
-        shortcut = self._lcs.get([*command.dir, htypes.command.command_shortcut_d()])
+        shortcut = self._lcs.get([command.dir, htypes.command.command_shortcut_d()])
 
         if used_shortcut_set is not None:
             # remove duplicates
