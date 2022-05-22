@@ -61,6 +61,8 @@ class ListView(QtWidgets.QTableView):
     @property
     def state(self):
         idx = self.currentIndex().row()
+        if idx == -1:
+            return None  # No row is selected.
         current_key = self._adapter.idx_to_id[idx]
         if current_key is None:
             return None  # Happens when widget is not visible.
@@ -70,7 +72,10 @@ class ListView(QtWidgets.QTableView):
     def state(self, state):
         if state is None:
             return
-        idx = self._adapter.id_to_idx[state.current_key]
+        try:
+            idx = self._adapter.id_to_idx[state.current_key]
+        except KeyError:
+            return  # No such name: list contents changes, it's ok.
         index = self.model().createIndex(idx, 0)
         self.setCurrentIndex(index)
 
