@@ -1,0 +1,31 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_module.client.local_server
+- legacy_service.local_server_ref
+- legacy_type.attribute.attribute
+- legacy_type.call.call
+- legacy_type.global_command.global_command_association
+- legacy_type.impl.global_command_impl
+- legacy_type.local_server.open_local_server_d
+- legacy_type.partial.partial
+associations:
+- _type: legacy_type.global_command.global_command_association
+  command: open_local_server_command
+definitions:
+  open_local_server_attribute:
+    _type: legacy_type.attribute.attribute
+    object: legacy_module.client.local_server
+    attr_name: open_local_server
+  open_local_server_command:
+    _type: legacy_type.impl.global_command_impl
+    function: open_local_server_partial
+    dir: open_local_server_d
+  open_local_server_d:
+    _type: legacy_type.call.call
+    function: legacy_type.local_server.open_local_server_d
+  open_local_server_partial:
+    _type: legacy_type.partial.partial
+    function: open_local_server_attribute
+    params:
+      local_server_ref: legacy_service.local_server_ref
