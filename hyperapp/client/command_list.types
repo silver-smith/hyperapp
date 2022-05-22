@@ -7,7 +7,9 @@ open_global_command_list_d = record
 open_view_command_list_d = record
 
 global_command_list_set_key_d = record
+global_command_list_set_key_escape_d = record
 view_command_list_set_key_d = record
+view_command_list_set_key_escape_d = record
 
 object_command_list = record:
   piece_ref: ref

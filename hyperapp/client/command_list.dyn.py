@@ -20,6 +20,9 @@ class _CommandList:
         if shortcut:
             self._set_key(current_item, shortcut)
 
+    def set_key_escape(self, current_item):
+        self._set_key(current_item, 'Escape')
+
     def _set_key(self, item, shortcut):
         _log.info("Set shortcut for command %s: %r", item.name, shortcut)
         dir = self._web.summon(item.dir)

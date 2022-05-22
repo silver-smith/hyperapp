@@ -15,11 +15,13 @@ import:
 - legacy_type.command_list.global_command_list
 - legacy_type.command_list.global_command_list_d
 - legacy_type.command_list.global_command_list_set_key_d
+- legacy_type.command_list.global_command_list_set_key_escape_d
 - legacy_type.command_list.open_global_command_list_d
 - legacy_type.command_list.open_view_command_list_d
 - legacy_type.command_list.view_command_list
 - legacy_type.command_list.view_command_list_d
 - legacy_type.command_list.view_command_list_set_key_d
+- legacy_type.command_list.view_command_list_set_key_escape_d
 - legacy_type.global_command.global_command_association
 - legacy_type.impl.global_command_impl
 - legacy_type.impl.impl_association
@@ -45,9 +47,19 @@ associations:
   value: global_command_list_set_key_command
 - _type: legacy_type.lcs.lcs_set_resource_association
   dir:
+  - global_command_list_d
+  - object_commands_d
+  value: global_command_list_set_key_escape_command
+- _type: legacy_type.lcs.lcs_set_resource_association
+  dir:
   - view_command_list_d
   - object_commands_d
   value: view_command_list_set_key_command
+- _type: legacy_type.lcs.lcs_set_resource_association
+  dir:
+  - view_command_list_d
+  - object_commands_d
+  value: view_command_list_set_key_escape_command
 definitions:
   global_command_list_attribute:
     _type: legacy_type.attribute.attribute
@@ -80,6 +92,16 @@ definitions:
   global_command_list_set_key_d:
     _type: legacy_type.call.call
     function: legacy_type.command_list.global_command_list_set_key_d
+  global_command_list_set_key_escape_command:
+    _type: legacy_type.impl.object_command_impl
+    object_ctr: global_command_list_partial
+    method: set_key_escape
+    params:
+    - current_item
+    dir: global_command_list_set_key_escape_d
+  global_command_list_set_key_escape_d:
+    _type: legacy_type.call.call
+    function: legacy_type.command_list.global_command_list_set_key_escape_d
   object_commands_d:
     _type: legacy_type.call.call
     function: legacy_type.command.object_commands_d
@@ -144,3 +166,13 @@ definitions:
   view_command_list_set_key_d:
     _type: legacy_type.call.call
     function: legacy_type.command_list.view_command_list_set_key_d
+  view_command_list_set_key_escape_command:
+    _type: legacy_type.impl.object_command_impl
+    object_ctr: view_command_list_partial
+    method: set_key_escape
+    params:
+    - current_item
+    dir: view_command_list_set_key_escape_d
+  view_command_list_set_key_escape_d:
+    _type: legacy_type.call.call
+    function: legacy_type.command_list.view_command_list_set_key_escape_d
