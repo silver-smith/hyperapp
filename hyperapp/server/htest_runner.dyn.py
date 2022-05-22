@@ -1,5 +1,6 @@
 import inspect
 import logging
+import types
 
 from hyperapp.common.htypes import TList, TRecord
 from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
@@ -28,6 +29,8 @@ class Runner:
             value = getattr(object, name)
             if not callable(value):
                 continue
+            if type(object) is types.ModuleType and value.__module__ != object.__name__:
+                continue  # Skip functions imported from other modules.
             try:
                 signature = inspect.signature(value)
             except ValueError as x:
