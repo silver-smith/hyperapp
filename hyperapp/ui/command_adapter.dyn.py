@@ -36,11 +36,14 @@ class ObjectCommandAdapter:
 
     async def run(self):
         view_state = self._view.state
-        log.info("Run object command: %s with state %s", self._dir, view_state)
-        kw = {
-            name: getattr(view_state, name)
-            for name in self._params
-            }
+        kw = {}
+        for name in self._params:
+            if name == 'current_item':
+                value = self._view.current_item
+            else:
+                value = getattr(view_state, name)
+            kw[name] = value
+        log.info("Run object command: %s with params %s", self._dir, kw)
         result = self._fn(**kw)
         log.info("Run object command %s result: %r", self._dir, result)
         if result:

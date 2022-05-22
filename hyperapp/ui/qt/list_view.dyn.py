@@ -1,4 +1,5 @@
 import logging
+from types import SimpleNamespace
 
 from PySide2 import QtCore, QtGui, QtWidgets
 
@@ -78,6 +79,14 @@ class ListView(QtWidgets.QTableView):
             return  # No such name: list contents changes, it's ok.
         index = self.model().createIndex(idx, 0)
         self.setCurrentIndex(index)
+
+    @property
+    def current_item(self):
+        idx = self.currentIndex().row()
+        if idx == -1:
+            return None  # No row is selected.
+        row = self._adapter.row(idx)
+        return SimpleNamespace(**row)
 
 
 class ThisModule(Module):
