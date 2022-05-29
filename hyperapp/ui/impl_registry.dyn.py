@@ -9,9 +9,10 @@ log = logging.getLogger(__name__)
 
 def register_impl(piece, python_object_creg, web, impl_registry):
     piece_t = python_object_creg.invite(piece.piece_t)
-    impl = web.summon(piece.implementation)
-    log.info("Register implementation: %s -> %s", piece_t, impl)
-    impl_registry[piece_t] = impl
+    ctr_fn = web.summon(piece.ctr_fn)
+    spec = web.summon(piece.spec)
+    log.info("Register implementation: %s -> %s, spec: %s", piece_t, ctr_fn, spec)
+    impl_registry[piece_t] = (ctr_fn, spec)
 
 
 class ThisModule(Module):

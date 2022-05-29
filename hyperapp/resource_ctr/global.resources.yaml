@@ -12,7 +12,7 @@ import:
   - legacy_type.lcs.lcs_set_resource_association
   - legacy_type.impl.impl_association
   - legacy_type.impl.global_command_impl
-  - legacy_type.impl.list_impl
+  - legacy_type.impl.list_spec
   - legacy_type.impl.object_command_impl
   - legacy_type.partial.partial
   - legacy_type.piece_ref.piece_ref
@@ -35,7 +35,7 @@ definitions:
       htypes.lcs.lcs_set_resource_association: legacy_type.lcs.lcs_set_resource_association
       htypes.impl.impl_association: legacy_type.impl.impl_association
       htypes.impl.global_command_impl: legacy_type.impl.global_command_impl
-      htypes.impl.list_impl: legacy_type.impl.list_impl
+      htypes.impl.list_spec: legacy_type.impl.list_spec
       htypes.impl.object_command_impl: legacy_type.impl.object_command_impl
       htypes.global_command.global_command_association: legacy_type.global_command.global_command_association
       services.mosaic: legacy_service.mosaic

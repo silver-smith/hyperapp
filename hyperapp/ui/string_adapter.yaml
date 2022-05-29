@@ -3,7 +3,7 @@ import:
     text:
       - text_d
     impl:
-      - string_impl
+      - string_spec
 require:
   - python_object_creg
   - impl_registry

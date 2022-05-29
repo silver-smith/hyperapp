@@ -25,7 +25,7 @@ import:
 - legacy_type.global_command.global_command_association
 - legacy_type.impl.global_command_impl
 - legacy_type.impl.impl_association
-- legacy_type.impl.list_impl
+- legacy_type.impl.list_spec
 - legacy_type.impl.object_command_impl
 - legacy_type.lcs.lcs_set_resource_association
 - legacy_type.partial.partial
@@ -36,10 +36,12 @@ associations:
   command: open_view_command_list_command
 - _type: legacy_type.impl.impl_association
   piece_t: legacy_type.command_list.global_command_list
-  implementation: global_command_list_impl
+  ctr_fn: global_command_list_partial
+  spec: global_command_list_spec
 - _type: legacy_type.impl.impl_association
   piece_t: legacy_type.command_list.view_command_list
-  implementation: view_command_list_impl
+  ctr_fn: view_command_list_partial
+  spec: view_command_list_spec
 - _type: legacy_type.lcs.lcs_set_resource_association
   dir:
   - global_command_list_d
@@ -68,12 +70,6 @@ definitions:
   global_command_list_d:
     _type: legacy_type.call.call
     function: legacy_type.command_list.global_command_list_d
-  global_command_list_impl:
-    _type: legacy_type.impl.list_impl
-    function: global_command_list_partial
-    key_attribute: name
-    key_t: legacy_type.builtin.string
-    dir: global_command_list_d
   global_command_list_partial:
     _type: legacy_type.partial.partial
     function: global_command_list_attribute
@@ -103,6 +99,11 @@ definitions:
   global_command_list_set_key_escape_d:
     _type: legacy_type.call.call
     function: legacy_type.command_list.global_command_list_set_key_escape_d
+  global_command_list_spec:
+    _type: legacy_type.impl.list_spec
+    key_attribute: name
+    key_t: legacy_type.builtin.string
+    dir: global_command_list_d
   object_commands_d:
     _type: legacy_type.call.call
     function: legacy_type.command.object_commands_d
@@ -143,12 +144,6 @@ definitions:
   view_command_list_d:
     _type: legacy_type.call.call
     function: legacy_type.command_list.view_command_list_d
-  view_command_list_impl:
-    _type: legacy_type.impl.list_impl
-    function: view_command_list_partial
-    key_attribute: name
-    key_t: legacy_type.builtin.string
-    dir: view_command_list_d
   view_command_list_partial:
     _type: legacy_type.partial.partial
     function: view_command_list_attribute
@@ -177,3 +172,8 @@ definitions:
   view_command_list_set_key_escape_d:
     _type: legacy_type.call.call
     function: legacy_type.command_list.view_command_list_set_key_escape_d
+  view_command_list_spec:
+    _type: legacy_type.impl.list_spec
+    key_attribute: name
+    key_t: legacy_type.builtin.string
+    dir: view_command_list_d

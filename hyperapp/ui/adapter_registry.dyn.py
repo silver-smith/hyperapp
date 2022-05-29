@@ -6,10 +6,12 @@ from hyperapp.common.module import Module
 from .code_registry import CodeRegistry, CodeRegistryKeyError
 
 
-async def adapter_factory(impl_registry, adapter_registry, piece):
+async def adapter_factory(python_object_creg, impl_registry, adapter_registry, piece):
     piece_t = deduce_value_type(piece)
-    impl = impl_registry[piece_t]
-    return await adapter_registry.animate(impl, piece)
+    ctr_fn_piece, impl = impl_registry[piece_t]
+    ctr_fn = python_object_creg.animate(ctr_fn_piece)
+    object = ctr_fn(piece)
+    return await adapter_registry.animate(impl, object)
 
 
 class ThisModule(Module):
@@ -18,4 +20,5 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
 
         services.adapter_registry = CodeRegistry('adapter', services.async_web, services.types)
-        services.adapter_factory = partial(adapter_factory, services.impl_registry, services.adapter_registry)
+        services.adapter_factory = partial(
+            adapter_factory, services.python_object_creg, services.impl_registry, services.adapter_registry)

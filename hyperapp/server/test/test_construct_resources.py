@@ -86,10 +86,11 @@ def test_resources(services, htypes, compare):
     fn = services.python_object_creg.animate(fn_res)
     log.info("Constructor fn: %r", fn)
 
-    impl_res = resource_module['sample_servant_impl']
-    log.info("Servant implementation resource: %r", impl_res)
+    spec_res = resource_module['sample_servant_spec']
+    log.info("Servant spec resource: %r", spec_res)
 
     for assoc in resource_module.associations:
         services.meta_registry.animate(assoc)
 
-    assert isinstance(services.impl_registry[htypes.construct_resources_sample.sample], htypes.impl.list_impl)
+    ctr_fn, spec = services.impl_registry[htypes.construct_resources_sample.sample]
+    assert isinstance(spec, htypes.impl.list_spec)

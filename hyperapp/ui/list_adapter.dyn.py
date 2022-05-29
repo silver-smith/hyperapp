@@ -9,12 +9,10 @@ from . import htypes
 class ListAdapter:
 
     @classmethod
-    async def from_piece(cls, impl, piece, python_object_creg):
-        key_t = python_object_creg.invite(impl.key_t)
-        dir = python_object_creg.invite(impl.dir)
-        ctr = python_object_creg.invite(impl.function)
-        object = ctr(piece)
-        return cls(dir, object, impl.key_attribute, key_t)
+    async def from_piece(cls, piece, object, python_object_creg):
+        key_t = python_object_creg.invite(piece.key_t)
+        dir = python_object_creg.invite(piece.dir)
+        return cls(dir, object, piece.key_attribute, key_t)
 
     def __init__(self, dir, object, key_attribute, key_t):
         self._dir = dir
@@ -107,4 +105,4 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
 
         services.adapter_registry.register_actor(
-            htypes.impl.list_impl, ListAdapter.from_piece, services.python_object_creg)
+            htypes.impl.list_spec, ListAdapter.from_piece, services.python_object_creg)

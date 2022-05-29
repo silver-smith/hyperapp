@@ -5,7 +5,7 @@ import:
       - int_state
       - string_state
     impl:
-      - list_impl
+      - list_spec
 require:
   - python_object_creg
   - adapter_registry

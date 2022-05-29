@@ -6,4 +6,5 @@ provide:
   - adapter_factory
 require:
   - async_web
+  - python_object_creg
   - impl_registry

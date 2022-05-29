@@ -7,7 +7,7 @@ from . import htypes
 class StringAdapter:
 
     @classmethod
-    async def from_piece(cls, impl, piece, python_object_creg):
+    async def from_piece(cls, impl, object, python_object_creg):
         return cls(text=piece)
 
     def __init__(self, text):
@@ -34,5 +34,5 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
 
         services.adapter_registry.register_actor(
-            htypes.impl.string_impl, StringAdapter.from_piece, services.python_object_creg)
-        services.impl_registry[tString] = htypes.impl.string_impl()
+            htypes.impl.string_spec, StringAdapter.from_piece, services.python_object_creg)
+        services.impl_registry[tString] = (None, htypes.impl.string_spec())

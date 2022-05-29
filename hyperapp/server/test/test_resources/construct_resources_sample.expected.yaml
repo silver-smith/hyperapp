@@ -16,7 +16,7 @@ import:
 - legacy_type.global_command.global_command_association
 - legacy_type.impl.global_command_impl
 - legacy_type.impl.impl_association
-- legacy_type.impl.list_impl
+- legacy_type.impl.list_spec
 - legacy_type.impl.object_command_impl
 - legacy_type.lcs.lcs_set_resource_association
 - legacy_type.partial.partial
@@ -25,7 +25,8 @@ associations:
   command: sample_command
 - _type: legacy_type.impl.impl_association
   piece_t: legacy_type.construct_resources_sample.sample
-  implementation: sample_servant_impl
+  ctr_fn: sample_servant_partial
+  spec: sample_servant_spec
 - _type: legacy_type.lcs.lcs_set_resource_association
   dir:
   - sample_servant_d
@@ -62,12 +63,6 @@ definitions:
   sample_servant_d:
     _type: legacy_type.call.call
     function: legacy_type.construct_resources_sample.sample_servant_d
-  sample_servant_impl:
-    _type: legacy_type.impl.list_impl
-    function: sample_servant_partial
-    key_attribute: key
-    key_t: legacy_type.builtin.int
-    dir: sample_servant_d
   sample_servant_open_command:
     _type: legacy_type.impl.object_command_impl
     object_ctr: sample_servant_partial
@@ -95,3 +90,8 @@ definitions:
       web: legacy_service.web
       peer_registry: legacy_service.peer_registry
       rpc_call_factory: legacy_service.rpc_call_factory
+  sample_servant_spec:
+    _type: legacy_type.impl.list_spec
+    key_attribute: key
+    key_t: legacy_type.builtin.int
+    dir: sample_servant_d

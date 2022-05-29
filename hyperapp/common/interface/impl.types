@@ -1,16 +1,16 @@
 
-list_impl = record:
-  function: ref
+list_spec = record:
   key_attribute: string
   key_t: ref
   dir: ref
 
-string_impl = record
+string_spec = record
 
 
 impl_association = record:
   piece_t: ref
-  implementation: ref
+  ctr_fn: ref opt
+  spec: ref
 
 
 object_command_impl = record:

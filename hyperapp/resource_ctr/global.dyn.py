@@ -140,21 +140,20 @@ def construct_object_commands_dir(resource_module):
     return construct_dir(resource_module, 'object_commands', dir_t_res_name)
 
 
-def construct_list_impl(module_name, resource_module, object_name, object_res_name, partial_res_name, result_t):
+def construct_list_spec(module_name, resource_module, object_name, object_res_name, result_t):
     dir_res_name = construct_module_dir(module_name, resource_module, object_res_name)
 
     key_attribute, key_t_name = pick_key_t(object_name, result_t)
     key_t_res_name = f'legacy_type.{key_t_name.module}.{key_t_name.name}'
     resource_module.add_import(key_t_res_name)
-    impl_res_t = resource_type_producer(htypes.impl.list_impl)
-    impl_def = impl_res_t.definition_t(
-        function=partial_res_name,
+    spec_res_t = resource_type_producer(htypes.impl.list_spec)
+    spec_def = spec_res_t.definition_t(
         key_attribute=key_attribute,
         key_t=key_t_res_name,
         dir=dir_res_name,
         )
-    res_name = f'{object_res_name}_impl'
-    resource_module.set_definition(res_name, impl_res_t, impl_def)
+    res_name = f'{object_res_name}_spec'
+    resource_module.set_definition(res_name, spec_res_t, spec_def)
     return (res_name, dir_res_name)
 
 
@@ -177,8 +176,8 @@ def construct_impl(
     log.info("%s 'get' method result type: %r", object_res_name, result_t)
 
     if isinstance(result_t, htypes.htest.list_t):
-        impl_res_name, dir_res_name = construct_list_impl(
-            module_name, resource_module, object_name, object_res_name, partial_res_name, result_t)
+        spec_res_name, dir_res_name = construct_list_spec(
+            module_name, resource_module, object_name, object_res_name, result_t)
     else:
         raise RuntimeError(f"{resource_module.name}: Unknown {object_name}.{get_attr.name} method result type: {result_t!r}")
 
@@ -194,7 +193,8 @@ def construct_impl(
     piece_t_name = f'legacy_type.{piece_t.type.module}.{piece_t.type.name}'
     assoc_def = assoc_res_t.definition_t(
         piece_t=piece_t_name,
-        implementation=impl_res_name,
+        ctr_fn=partial_res_name,
+        spec=spec_res_name,
         )
     resource_module.add_association(assoc_res_t, assoc_def)
     resource_module.add_import(piece_t_name)
