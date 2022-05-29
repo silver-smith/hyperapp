@@ -9,6 +9,7 @@ import:
 - legacy_type.call.call
 - legacy_type.command.object_commands_d
 - legacy_type.construct_resources_sample.sample
+- legacy_type.construct_resources_sample.sample_command_d
 - legacy_type.construct_resources_sample.sample_d
 - legacy_type.construct_resources_sample.sample_servant_d
 - legacy_type.construct_resources_sample.sample_servant_open_d
@@ -18,6 +19,7 @@ import:
 - legacy_type.impl.impl_association
 - legacy_type.impl.list_spec
 - legacy_type.impl.method_command_impl
+- legacy_type.impl.object_command_impl
 - legacy_type.lcs.lcs_set_resource_association
 - legacy_type.partial.partial
 associations:
@@ -49,6 +51,23 @@ definitions:
     _type: legacy_type.impl.global_command_impl
     function: sample_partial
     dir: sample_d
+  sample_command_attribute:
+    _type: legacy_type.attribute.attribute
+    object: legacy_module.construct_resources_sample
+    attr_name: sample_command
+  sample_command_command:
+    _type: legacy_type.impl.object_command_impl
+    function: sample_command_partial
+    params:
+    - adapter
+    dir: sample_command_d
+  sample_command_d:
+    _type: legacy_type.call.call
+    function: legacy_type.construct_resources_sample.sample_command_d
+  sample_command_partial:
+    _type: legacy_type.partial.partial
+    function: sample_command_attribute
+    params: {}
   sample_d:
     _type: legacy_type.call.call
     function: legacy_type.construct_resources_sample.sample_d

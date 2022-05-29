@@ -56,11 +56,13 @@ def construct_resource_params_partial(resource_module, fix_module, attr, attr_re
     param_to_resource = {}
     fix_param_to_resource = {}
     for idx, param_name in enumerate(attr.param_list):
-        if param_name != 'piece':
+        if param_name not in {'piece', 'adapter'}:
             param_module = name_to_module[param_name]
             full_resource_name = f'{param_module.name}.{param_name}'
             param_to_resource[param_name] = full_resource_name
             resource_module.add_import(full_resource_name)
+        if param_name == 'adapter':
+            continue
         try:
             fix_resource_name = f'{attr_snake_name}_{param_name}'
             param_module = fixture_to_module[fix_resource_name]
@@ -226,6 +228,19 @@ def construct_command(module_name, resource_module, object_res_name, object_dir_
     resource_module.add_association(association_res_t, association_def)
 
 
+def construct_object_command(module_name, resource_module, globl, object_res_name, partial_res_name):
+    dir_res_name = construct_module_dir(module_name, resource_module, object_res_name)
+
+    command_res_t = resource_type_producer(htypes.impl.object_command_impl)
+    command_def = command_res_t.definition_t(
+        function=partial_res_name,
+        params=globl.param_list,
+        dir=dir_res_name,
+    )
+    command_res_name = f'{object_res_name}_command'
+    resource_module.set_definition(command_res_name, command_res_t, command_def)
+
+
 def construct_global_command(module_name, resource_module, attr_res_name, function_res_name):
     dir_res_name = construct_module_dir(module_name, resource_module, attr_res_name)
 
@@ -256,7 +271,13 @@ def construct_global(root_dir, module_name, resource_module, process, module_res
     attr_res_name = construct_attr(resource_module, module_res_name, globl, add_object_prefix=False)
     partial_res_name = construct_resource_params_partial(
         resource_module, fix_module, globl, attr_res_name)
+
     object_res_name = camel_to_snake(globl.name)
+
+    if globl.name.endswith('_command'):
+        construct_object_command(module_name, resource_module, globl, object_res_name, partial_res_name)
+        return
+
     construct_call(fix_module, partial_res_name, object_res_name)
 
     object_res = resource_module.with_module(fix_module)[object_res_name]

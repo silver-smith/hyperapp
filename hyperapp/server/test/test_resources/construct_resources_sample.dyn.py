@@ -28,4 +28,8 @@ def sample():
     return htypes.construct_resources_sample.sample(123)
 
 
+def sample_command(adapter):
+    pass
+
+
 log.info("construct_resources_sample module is loaded")

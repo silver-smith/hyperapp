@@ -19,6 +19,11 @@ method_command_impl = record:
   params: string list
   dir: ref
 
+object_command_impl = record:
+  function: ref
+  params: string list
+  dir: ref
+
 global_command_impl = record:
   function: ref
   dir: ref
