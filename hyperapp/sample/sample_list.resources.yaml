@@ -14,7 +14,7 @@ import:
 - legacy_type.impl.global_command_impl
 - legacy_type.impl.impl_association
 - legacy_type.impl.list_spec
-- legacy_type.impl.object_command_impl
+- legacy_type.impl.method_command_impl
 - legacy_type.lcs.lcs_set_resource_association
 - legacy_type.partial.partial
 - legacy_type.sample_list.open_sample_list_d
@@ -60,7 +60,7 @@ definitions:
     _type: legacy_type.call.call
     function: legacy_type.sample_list.sample_list_d
   sample_list_open_command:
-    _type: legacy_type.impl.object_command_impl
+    _type: legacy_type.impl.method_command_impl
     object_ctr: sample_list_partial
     method: open
     params:

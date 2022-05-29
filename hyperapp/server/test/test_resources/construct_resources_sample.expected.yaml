@@ -17,7 +17,7 @@ import:
 - legacy_type.impl.global_command_impl
 - legacy_type.impl.impl_association
 - legacy_type.impl.list_spec
-- legacy_type.impl.object_command_impl
+- legacy_type.impl.method_command_impl
 - legacy_type.lcs.lcs_set_resource_association
 - legacy_type.partial.partial
 associations:
@@ -64,7 +64,7 @@ definitions:
     _type: legacy_type.call.call
     function: legacy_type.construct_resources_sample.sample_servant_d
   sample_servant_open_command:
-    _type: legacy_type.impl.object_command_impl
+    _type: legacy_type.impl.method_command_impl
     object_ctr: sample_servant_partial
     method: open
     params:
@@ -74,7 +74,7 @@ definitions:
     _type: legacy_type.call.call
     function: legacy_type.construct_resources_sample.sample_servant_open_d
   sample_servant_parent_command:
-    _type: legacy_type.impl.object_command_impl
+    _type: legacy_type.impl.method_command_impl
     object_ctr: sample_servant_partial
     method: parent
     params: []

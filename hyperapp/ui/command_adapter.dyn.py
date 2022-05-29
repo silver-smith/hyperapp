@@ -56,4 +56,4 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
 
         services.command_registry.register_actor(
-            htypes.impl.object_command_impl, ObjectCommandAdapter.from_piece, services.python_object_creg)
+            htypes.impl.method_command_impl, ObjectCommandAdapter.from_piece, services.python_object_creg)

@@ -13,7 +13,7 @@ impl_association = record:
   spec: ref
 
 
-object_command_impl = record:
+method_command_impl = record:
   object_ctr: ref  # Unused.
   method: string
   params: string list

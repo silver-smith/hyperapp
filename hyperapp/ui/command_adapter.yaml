@@ -1,7 +1,7 @@
 import:
   types:
     impl:
-      - object_command_impl
+      - method_command_impl
 require:
   - python_object_creg
   - command_registry

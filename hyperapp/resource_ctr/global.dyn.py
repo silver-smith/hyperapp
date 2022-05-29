@@ -205,7 +205,7 @@ def construct_impl(
 def construct_command(module_name, resource_module, object_res_name, object_dir_res_name, partial_res_name, attr):
     dir_res_name = construct_module_dir(module_name, resource_module, f'{object_res_name}_{attr.name}')
 
-    command_res_t = resource_type_producer(htypes.impl.object_command_impl)
+    command_res_t = resource_type_producer(htypes.impl.method_command_impl)
     command_def = command_res_t.definition_t(
         object_ctr=partial_res_name,
         method=attr.name,
