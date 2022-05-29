@@ -8,7 +8,7 @@ class StringAdapter:
 
     @classmethod
     async def from_piece(cls, impl, object, python_object_creg):
-        return cls(text=piece)
+        return cls(text=object)
 
     def __init__(self, text):
         self._text = text

@@ -9,8 +9,11 @@ from .code_registry import CodeRegistry, CodeRegistryKeyError
 async def adapter_factory(python_object_creg, impl_registry, adapter_registry, piece):
     piece_t = deduce_value_type(piece)
     ctr_fn_piece, impl = impl_registry[piece_t]
-    ctr_fn = python_object_creg.animate(ctr_fn_piece)
-    object = ctr_fn(piece)
+    if ctr_fn_piece is not None:
+        ctr_fn = python_object_creg.animate(ctr_fn_piece)
+        object = ctr_fn(piece)
+    else:
+        object = piece
     return await adapter_registry.animate(impl, object)
 
 
