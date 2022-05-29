@@ -20,6 +20,7 @@ code_module_list = [
     'resource.partial',
     'resource.call',
     'resource.value',
+    'resource.python_module',
     'resource.piece_ref',
     'resource.rpc_command',
     'resource.rpc_callback',
@@ -29,18 +30,23 @@ code_module_list = [
     'resource.selector',
     'transport.rsa_identity',
     'server.tcp_server',
-    'server.server_ref_list',
-    'server.sample_list',
-    'server.sample_live_list',
-    'server.sample_tree',
-    'server.module_list',
-    'server.htest_module_list',
+    # 'server.server_ref_list',
+    # 'server.sample_list',
+    # 'server.sample_live_list',
+    # 'server.sample_tree',
+    # 'server.module_list',
+    # 'server.htest_module_list',
     # 'server.htest_list',
     ]
 
 config = {
     'server.tcp_server': {'bind_address': ('localhost', 8080)},
     }
+
+
+def init_sample_list(resource_module_registry, python_object_creg):
+    call_resource = resource_module_registry['server.sample_list_ref']['save_sample_list_ref_call']
+    python_object_creg.animate(call_resource)
 
 
 def main():
@@ -52,6 +58,9 @@ def main():
     services = Services()
     services.init_services()
     services.init_modules(code_module_list, config)
+
+    init_sample_list(services.resource_module_registry, services.python_object_creg)
+
     log.info("Server is started.")
     try:
         services.stop_signal.wait()
