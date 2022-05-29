@@ -88,6 +88,11 @@ class ListView(QtWidgets.QTableView):
         row = self._adapter.row(idx)
         return SimpleNamespace(**row)
 
+    def setVisible(self, visible):
+        super().setVisible(visible)
+        if visible:
+            self.resizeColumnsToContents()
+
 
 class ThisModule(Module):
 
