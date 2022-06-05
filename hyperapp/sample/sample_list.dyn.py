@@ -22,7 +22,7 @@ class SampleList:
 
 
 def open_sample_list():
-    return htypes.sample_list.sample_list()
+    return htypes.sample_list.sample_list(provider='client')
 
 
 log.info("sample/list module is loaded")

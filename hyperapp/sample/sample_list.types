@@ -4,7 +4,8 @@ sample_list_open_d = record
 
 open_sample_list_d = record
 
-sample_list = record
+sample_list = record:
+  provider: string
 
 item = record:
   key: int
