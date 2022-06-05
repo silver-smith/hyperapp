@@ -65,6 +65,9 @@ class CodeModule:
         self._web = web
         self._code_module = code_module
 
+    def __repr__(self):
+        return f"<CodeModule({self.name})"
+
     @property
     def name(self):
         return self._code_module.module_name
