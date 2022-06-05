@@ -9,14 +9,16 @@ from . import htypes
 class ListAdapter:
 
     @classmethod
-    async def from_piece(cls, piece, object, python_object_creg):
-        key_t = python_object_creg.invite(piece.key_t)
-        dir = python_object_creg.invite(piece.dir)
-        return cls(dir, object, piece.key_attribute, key_t)
+    async def from_spec(cls, spec, piece, object, python_object_creg):
+        title = str(piece)
+        key_t = python_object_creg.invite(spec.key_t)
+        dir = python_object_creg.invite(spec.dir)
+        return cls(dir, object, title, spec.key_attribute, key_t)
 
-    def __init__(self, dir, object, key_attribute, key_t):
+    def __init__(self, dir, object, title, key_attribute, key_t):
         self._dir = dir
         self._object = object
+        self._title = title
         self._key_attribute = key_attribute
         self._key_t = key_t
         self._columns = []
@@ -38,7 +40,7 @@ class ListAdapter:
 
     @property
     def title(self):
-        return 'todo: list title'
+        return self._title
 
     @property
     def command_list(self):
@@ -105,4 +107,4 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
 
         services.adapter_registry.register_actor(
-            htypes.impl.list_spec, ListAdapter.from_piece, services.python_object_creg)
+            htypes.impl.list_spec, ListAdapter.from_spec, services.python_object_creg)
