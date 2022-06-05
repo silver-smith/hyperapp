@@ -1,6 +1,7 @@
 import:
   code:
     - async.code_registry
+    - ui.async_rpc_proxy
 provide:
   - adapter_registry
   - adapter_factory
@@ -9,3 +10,6 @@ require:
   - python_object_creg
   - impl_registry
   - service_provider_reg
+  - async_rpc_call_factory
+  - client_rpc_endpoint
+  - client_identity
