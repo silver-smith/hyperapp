@@ -17,6 +17,7 @@ def aux_bundler_hook(mosaic, impl_registry, server_peer_ref, ref, t, value):
     service_provider = htypes.impl.service_provider(
         service=ref,
         provider=server_peer_ref,
+        servant=mosaic.put(value),
         spec=mosaic.put(spec),
         )
     yield mosaic.put(service_provider)
