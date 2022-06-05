@@ -13,6 +13,7 @@ log = logging.getLogger(__name__)
 
 code_module_list = [
     'common.dict_coders',  # Load json coders.
+    'common.lcs',
     'resource.legacy_module',
     'resource.legacy_service',
     'resource.legacy_type',
@@ -29,7 +30,11 @@ code_module_list = [
     'resource.tree_service',
     'resource.selector',
     'transport.rsa_identity',
+    'ui.impl_registry',
+    'ui.global_command_list',
     'server.tcp_server',
+    'resource.register_associations',
+    'server.announce_provider',
     # 'server.server_ref_list',
     # 'server.sample_list',
     # 'server.sample_live_list',
