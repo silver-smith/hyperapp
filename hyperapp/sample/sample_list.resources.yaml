@@ -2,10 +2,6 @@
 
 import:
 - legacy_module.sample.sample_list
-- legacy_service.mosaic
-- legacy_service.peer_registry
-- legacy_service.rpc_call_factory
-- legacy_service.web
 - legacy_type.attribute.attribute
 - legacy_type.builtin.int
 - legacy_type.call.call
@@ -72,11 +68,7 @@ definitions:
   sample_list_partial:
     _type: legacy_type.partial.partial
     function: sample_list_attribute
-    params:
-      mosaic: legacy_service.mosaic
-      web: legacy_service.web
-      peer_registry: legacy_service.peer_registry
-      rpc_call_factory: legacy_service.rpc_call_factory
+    params: {}
   sample_list_spec:
     _type: legacy_type.impl.list_spec
     key_attribute: key

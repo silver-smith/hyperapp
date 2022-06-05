@@ -7,8 +7,8 @@ log = logging.getLogger(__name__)
 
 class SampleList:
 
-    def __init__(self, piece, mosaic, web, peer_registry, rpc_call_factory):
-        log.info("sapmle/list: SampleList ctr: %s, %s, %s, %s, %s", piece, mosaic, web, peer_registry, rpc_call_factory)
+    def __init__(self, piece):
+        log.info("sapmle/list: SampleList ctr: %s", piece.provider)
 
     def get(self):
         return [
