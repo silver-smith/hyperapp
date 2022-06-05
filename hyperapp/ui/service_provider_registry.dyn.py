@@ -11,8 +11,9 @@ _log = logging.getLogger(__name__)
 def register_service_provider(piece, web, peer_registry, service_provider_reg):
     service = web.summon(piece.service)
     server_peer = peer_registry.invite(piece.provider)
-    service_provider_reg[service] = server_peer
-    _log.info("Service %s is provided by: %s", service, server_peer)
+    spec = web.summon(piece.spec)
+    service_provider_reg[service] = (server_peer, spec)
+    _log.info("Service %s is provided by: %s, spec %s", service, server_peer, spec)
 
 
 def aux_unbundler_hook(web, peer_registry, service_provider_reg, ref, t, value):

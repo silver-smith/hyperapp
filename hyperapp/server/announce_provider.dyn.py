@@ -13,8 +13,12 @@ def aux_bundler_hook(mosaic, impl_registry, server_peer_ref, ref, t, value):
         ctr_fn, spec = impl_registry[t]
     except KeyError:
         return
-    _log.info("Announce provider for service %s: %s", value, server_peer_ref)
-    service_provider = htypes.impl.service_provider(ref, server_peer_ref)
+    _log.info("Announce provider for service %s: %s, spec: %s", value, server_peer_ref, spec)
+    service_provider = htypes.impl.service_provider(
+        service=ref,
+        provider=server_peer_ref,
+        spec=mosaic.put(spec),
+        )
     yield mosaic.put(service_provider)
 
 
