@@ -8,3 +8,4 @@ require:
   - async_web
   - python_object_creg
   - impl_registry
+  - service_provider_reg

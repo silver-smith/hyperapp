@@ -55,6 +55,7 @@ code_module_list = [
     # 'async.ui.fs_local_service',
     # 'client.wiki_text_sample',
     # 'client.local_server',
+    'transport.rsa_identity',
     'async.transport.tcp',
     # 'client.list_service',
     # 'client.live_list_service',

@@ -15,7 +15,7 @@ impl_association = record:
 
 service_provider = record:
   service: ref
-  peer: ref
+  provider: ref
 
 method_command_impl = record:
   object_ctr: ref  # Unused.
