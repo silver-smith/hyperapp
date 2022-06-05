@@ -3,8 +3,9 @@ from dataclasses import dataclass, field
 from typing import Any, Set
 from pathlib import Path
 
+from hyperapp.common.module import Module
+
 from . import htypes
-from .module import ClientModule
 
 log = logging.getLogger(__name__)
 
@@ -217,7 +218,7 @@ def register_resource_association(piece, web, lcs, python_object_creg):
     log.info("LCS: resource association: %s -> %s", set(dir), record)
 
 
-class ThisModule(ClientModule):
+class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)

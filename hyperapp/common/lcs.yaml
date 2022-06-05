@@ -6,8 +6,6 @@ import:
       - lcs_set_association
       - lcs_resource_association
       - lcs_set_resource_association
-  code:
-    - async.ui.module
 require:
   - file_bundle
   - aux_bundler_hooks
