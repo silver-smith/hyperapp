@@ -191,15 +191,23 @@ def construct_impl(
     if not isinstance(piece_t, htypes.htest.record_t):
         raise RuntimeError(f"{resource_module.name}: {object_res_name}: Expected record type, but got: {piece_t!r}")
 
-    assoc_res_t = resource_type_producer(htypes.impl.impl_association)
     piece_t_name = f'legacy_type.{piece_t.type.module}.{piece_t.type.name}'
+    resource_module.add_import(piece_t_name)
+
+    assoc_res_t = resource_type_producer(htypes.impl.impl_association)
     assoc_def = assoc_res_t.definition_t(
         piece_t=piece_t_name,
         ctr_fn=partial_res_name,
         spec=spec_res_name,
         )
     resource_module.add_association(assoc_res_t, assoc_def)
-    resource_module.add_import(piece_t_name)
+
+    pyobject_a_res_t = resource_type_producer(htypes.impl.python_object_association)
+    pyobject_a_def = pyobject_a_res_t.definition_t(
+        t=piece_t_name,
+        function=partial_res_name,
+        )
+    resource_module.add_association(pyobject_a_res_t, pyobject_a_def)
 
     return dir_res_name
 

@@ -1,4 +1,7 @@
 import:
+  types:
+    impl:
+      - python_object_association
   code:
     - common.cached_code_registry
 provide:
@@ -6,4 +9,5 @@ provide:
   - python_object_creg
   - resource_type_producer
 require:
+  - meta_registry
   - resource_type_factory

@@ -11,6 +11,7 @@ import:
 - legacy_type.impl.impl_association
 - legacy_type.impl.list_spec
 - legacy_type.impl.method_command_impl
+- legacy_type.impl.python_object_association
 - legacy_type.lcs.lcs_set_resource_association
 - legacy_type.partial.partial
 - legacy_type.sample_list.open_sample_list_d
@@ -24,6 +25,9 @@ associations:
   piece_t: legacy_type.sample_list.sample_list
   ctr_fn: sample_list_partial
   spec: sample_list_spec
+- _type: legacy_type.impl.python_object_association
+  t: legacy_type.sample_list.sample_list
+  function: sample_list_partial
 - _type: legacy_type.lcs.lcs_set_resource_association
   dir:
   - sample_list_d

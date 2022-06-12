@@ -15,6 +15,7 @@ import:
   - legacy_type.impl.list_spec
   - legacy_type.impl.method_command_impl
   - legacy_type.impl.object_command_impl
+  - legacy_type.impl.python_object_association
   - legacy_type.partial.partial
   - legacy_type.piece_ref.piece_ref
   - legacy_type.python_module.python_module
@@ -39,6 +40,7 @@ definitions:
       htypes.impl.list_spec: legacy_type.impl.list_spec
       htypes.impl.method_command_impl: legacy_type.impl.method_command_impl
       htypes.impl.object_command_impl: legacy_type.impl.object_command_impl
+      htypes.impl.python_object_association: legacy_type.impl.python_object_association
       htypes.global_command.global_command_association: legacy_type.global_command.global_command_association
       services.mosaic: legacy_service.mosaic
       services.resource_type_producer: legacy_service.resource_type_producer

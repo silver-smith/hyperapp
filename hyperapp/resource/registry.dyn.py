@@ -1,8 +1,12 @@
+import logging
 from functools import partial
 
 from hyperapp.common.module import Module
 
+from . import htypes
 from .cached_code_registry import CachedCodeRegistry
+
+_log = logging.getLogger(__name__)
 
 
 def resource_type_producer(resource_type_factory, resource_type_reg, resource_t):
@@ -10,6 +14,13 @@ def resource_type_producer(resource_type_factory, resource_type_reg, resource_t)
         return resource_type_reg[resource_t]
     except KeyError:
         return resource_type_factory(resource_t)
+
+
+def register_python_object(piece, python_object_creg):
+    t = python_object_creg.invite(piece.t)
+    function = python_object_creg.invite(piece.function)
+    _log.info("Register python object: %s -> %s", t, function)
+    python_object_creg.register_actor(t, function)
 
 
 class ThisModule(Module):
@@ -20,3 +31,5 @@ class ThisModule(Module):
         services.resource_type_reg = {}  # resource_t -> ResourceType instance
         services.python_object_creg = CachedCodeRegistry('python_object', services.web, services.types)
         services.resource_type_producer = partial(resource_type_producer, services.resource_type_factory, services.resource_type_reg)
+        services.meta_registry.register_actor(
+            htypes.impl.python_object_association, register_python_object, services.python_object_creg)
