@@ -18,6 +18,6 @@ class AsyncRpcProxy:
         rpc_call = self._async_rpc_call_factory(self._async_rpc_endpoint, self._peer, fn_ref, self._identity)
 
         async def method(*args, **kw):
-            return rpc_call(*args, **kw)
+            return await rpc_call(*args, **kw)
 
         return method

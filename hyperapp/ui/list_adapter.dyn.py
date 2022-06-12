@@ -1,3 +1,5 @@
+import asyncio
+import inspect
 from functools import cached_property
 
 from hyperapp.common.htypes import tInt, tString
@@ -6,14 +8,7 @@ from hyperapp.common.module import Module
 from . import htypes
 
 
-class ListAdapter:
-
-    @classmethod
-    async def from_spec(cls, spec, piece, object, python_object_creg):
-        title = str(piece)
-        key_t = python_object_creg.invite(spec.key_t)
-        dir = python_object_creg.invite(spec.dir)
-        return cls(dir, object, title, spec.key_attribute, key_t)
+class _ListAdapter:
 
     def __init__(self, dir, object, title, key_attribute, key_t):
         self._dir = dir
@@ -59,23 +54,6 @@ class ListAdapter:
         return self._rows[idx]
 
     @cached_property
-    def _rows(self):
-        row_list = []
-        for item in self._object.get():
-            row = {}
-            for name in sorted(dir(item)):
-                if name.startswith('_'):
-                    continue
-                value = getattr(item, name)
-                if callable(value):
-                    continue
-                row[name] = value
-                if name not in self._columns:
-                    self._columns.append(name)
-            row_list.append(row)
-        return row_list
-
-    @cached_property
     def idx_to_id(self):
         return {
             idx: row[self._key_attribute]
@@ -100,6 +78,65 @@ class ListAdapter:
             return htypes.list.string_state
         raise RuntimeError(f"{self.__class__.__name__}: Unsupported key type: {self._key_t}")
 
+    # Side-effect: self._columns is updated if new attributes are fetched.
+    def _populate_rows(self, item_list):
+        row_list = []
+        for item in item_list:
+            row = {}
+            for name in sorted(dir(item)):
+                if name.startswith('_'):
+                    continue
+                value = getattr(item, name)
+                if callable(value):
+                    continue
+                row[name] = value
+                if name not in self._columns:
+                    self._columns.append(name)
+            row_list.append(row)
+        return row_list
+
+
+class SyncListAdapter(_ListAdapter):
+
+    def can_fetch_more(self):
+        return False
+
+    def fetch_more(self):
+        pass
+
+    @cached_property
+    def _rows(self):
+        item_list = self._object.get()
+        return self._populate_rows(item_list)
+
+
+class AsyncListAdapter(_ListAdapter):
+
+    def __init__(self, dir, object, title, key_attribute, key_t):
+        super().__init__(dir, object, title, key_attribute, key_t)
+        self._rows_are_fetched = False
+        self._rows = []
+
+    def can_fetch_more(self):
+        return not self._rows_are_fetched
+
+    def fetch_more(self):
+        asyncio.create_task(self._fetch_rows())
+
+    async def _fetch_rows(self):
+        item_list = await self._object.get()
+        self._rows = self._populate_rows(item_list)
+
+
+def make_adapter(spec, piece, object, python_object_creg):
+    title = str(piece)
+    key_t = python_object_creg.invite(spec.key_t)
+    dir = python_object_creg.invite(spec.dir)
+    if inspect.iscoroutinefunction(object.get):
+        return AsyncListAdapter(dir, object, title, spec.key_attribute, key_t)
+    else:
+        return SyncListAdapter(dir, object, title, spec.key_attribute, key_t)
+
 
 class ThisModule(Module):
 
@@ -107,4 +144,4 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
 
         services.adapter_registry.register_actor(
-            htypes.impl.list_spec, ListAdapter.from_spec, services.python_object_creg)
+            htypes.impl.list_spec, make_adapter, services.python_object_creg)

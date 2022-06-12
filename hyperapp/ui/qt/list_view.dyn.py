@@ -39,6 +39,12 @@ class _Model(QtCore.QAbstractTableModel):
         name = self._adapter.columns[index.column()]
         return row[name]
 
+    def canFetchMore(self, parent):
+        return self._adapter.can_fetch_more()
+
+    def fetchMore(self, parent):
+        return self._adapter.fetch_more()
+
 
 class ListView(QtWidgets.QTableView):
 
