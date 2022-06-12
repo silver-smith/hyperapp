@@ -33,6 +33,7 @@ code_module_list = [
     'ui.impl_registry',
     'ui.global_command_list',
     'server.tcp_server',
+    'server.rpc_endpoint',
     'resource.register_associations',
     'server.announce_provider',
     # 'server.server_ref_list',
