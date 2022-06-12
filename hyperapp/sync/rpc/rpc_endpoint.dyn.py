@@ -1,4 +1,5 @@
 import logging
+import inspect
 import threading
 from collections import namedtuple
 from functools import partial
@@ -84,9 +85,12 @@ class RpcEndpoint:
                 self._mosaic.resolve_ref(ref).value
                 for ref in request.params
                 ]
-            log.info("Call rpc servant: %s (%s)", servant_fn, params)
             rpc_request = RpcRequest(transport_request.receiver_identity, sender)
-            result = servant_fn(rpc_request, *params)
+            args = params
+            if 'rpc_request' in inspect.signature(servant_fn).parameters:
+                args = [rpc_request, *args]
+            log.info("Call rpc servant: %s (%s)", servant_fn, args)
+            result = servant_fn(*args)
             log.info("Rpc servant %s call result: %s", servant_fn, result)
             result_t = deduce_complex_value_type(self._mosaic, self._types, result)
             result_ref = self._mosaic.put(result, result_t)
