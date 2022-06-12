@@ -1,5 +1,6 @@
 import asyncio
 import inspect
+import weakref
 from functools import cached_property
 
 from hyperapp.common.htypes import tInt, tString
@@ -17,6 +18,7 @@ class _ListAdapter:
         self._key_attribute = key_attribute
         self._key_t = key_t
         self._columns = []
+        self.subscribers = weakref.WeakSet()
 
     @property
     def dir_list(self):
@@ -126,6 +128,9 @@ class AsyncListAdapter(_ListAdapter):
     async def _fetch_rows(self):
         item_list = await self._object.get()
         self._rows = self._populate_rows(item_list)
+        for subscriber in self.subscribers:
+            subscriber.rows_appended(len(self._columns), len(self._rows))
+        self._rows_are_fetched = True
 
 
 def make_adapter(spec, piece, object, python_object_creg):

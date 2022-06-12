@@ -64,6 +64,7 @@ class ListView(QtWidgets.QTableView):
         self.setShowGrid(False)
         self.setSelectionBehavior(self.SelectRows)
         self.setSelectionMode(self.SingleSelection)
+        adapter.subscribers.add(self)
 
     @property
     def state(self):
@@ -98,6 +99,15 @@ class ListView(QtWidgets.QTableView):
         super().setVisible(visible)
         if visible:
             self.resizeColumnsToContents()
+
+    def rows_appended(self, added_column_count, added_row_count):
+        new_column_count = len(self._adapter.columns)
+        new_row_count = self._adapter.row_count
+        self.model().beginInsertRows(QtCore.QModelIndex(), new_row_count - added_row_count, new_row_count - 1)
+        self.model().endInsertRows()
+        self.model().beginInsertColumns(QtCore.QModelIndex(), new_column_count - added_column_count, new_column_count - 1)
+        self.model().endInsertColumns()
+        self.resizeColumnsToContents()
 
 
 class ThisModule(Module):
