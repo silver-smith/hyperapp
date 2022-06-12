@@ -2,7 +2,6 @@ import logging
 import re
 
 from . import htypes
-from .htypes import attribute, partial, call, global_command, htest, impl, lcs
 from .services import (
     mosaic,
     resource_type_producer,

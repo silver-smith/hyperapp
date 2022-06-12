@@ -1,15 +1,15 @@
 import logging
 
-from .htypes import sample_python_module
+from . import htypes
 
 log = logging.getLogger(__name__)
 
 
 log.info("sample_python_module is loaded")
-log.info("sample_servant_d: %r", sample_python_module.sample_servant_d)
-log.info("sample_item: %r", sample_python_module.sample_item)
+log.info("sample_servant_d: %r", htypes.sample_python_module.sample_servant_d)
+log.info("sample_item: %r", htypes.sample_python_module.sample_item)
 
-value = sample_python_module.sample_item(
+value = htypes.sample_python_module.sample_item(
     key=123,
     name="Some value",
     description="Some description",

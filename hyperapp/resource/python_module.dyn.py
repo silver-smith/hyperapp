@@ -1,5 +1,6 @@
 import codecs
 import logging
+import importlib
 import yaml
 from collections import defaultdict
 
@@ -86,6 +87,18 @@ class _PackageLoader(Finder):
         pass
 
 
+# htypes.* modules are loaded automatically, without importing each of them manually.
+class _HTypeRootLoader(Finder):
+
+    _is_package = True
+
+    def __init__(self):
+        self.sub_module_list = []
+
+    def exec_module(self, module):
+        for module_name in self.sub_module_list:
+            importlib.import_module(module_name)
+
 
 def make_module_name(mosaic, module):
     module_ref = mosaic.put(module)
@@ -93,7 +106,7 @@ def make_module_name(mosaic, module):
     return f'{ROOT_PACKAGE}.{module_ref.hash_algorithm}_{hash_hex}'
 
 
-def sub_loader_dict(python_object_creg, import_list):
+def sub_loader_dict(python_object_creg, import_list, root_module_name):
     loader_dict = {}
     module_dict = defaultdict(dict)
     for rec in import_list:
@@ -104,10 +117,15 @@ def sub_loader_dict(python_object_creg, import_list):
             [module_name] = path
             module_dict[module_name] = resource.__dict__
             continue
-        for i in range(len(path) - 1):
+        for i in range(len(path)):
             package_name = '.'.join(path[:i])
             if package_name not in loader_dict:
-                loader_dict[package_name] = _PackageLoader()
+                if package_name == 'htypes':
+                    loader_dict[package_name] = _HTypeRootLoader()
+                else:
+                    loader_dict[package_name] = _PackageLoader()
+            if path[0] == 'htypes' and i == 2:
+                loader_dict['htypes'].sub_module_list.append(f'{root_module_name}.{package_name}')
         module_name = '.'.join(path[:-1])
         name = path[-1]
         module_dict[module_name][name] = resource
@@ -128,7 +146,7 @@ def python_object(piece, mosaic, python_importer, python_object_creg):
         )
     return python_importer.import_module(
         module_name, root_loader,
-        sub_loader_dict=sub_loader_dict(python_object_creg, piece.import_list))
+        sub_loader_dict=sub_loader_dict(python_object_creg, piece.import_list, module_name))
             
 
 class ThisModule(Module):
