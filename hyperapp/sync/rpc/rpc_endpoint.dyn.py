@@ -87,7 +87,7 @@ class RpcEndpoint:
                 ]
             rpc_request = RpcRequest(transport_request.receiver_identity, sender)
             args = params
-            if 'rpc_request' in inspect.signature(servant_fn).parameters:
+            if 'request' in inspect.signature(servant_fn).parameters:
                 args = [rpc_request, *args]
             log.info("Call rpc servant: %s (%s)", servant_fn, args)
             result = servant_fn(*args)
