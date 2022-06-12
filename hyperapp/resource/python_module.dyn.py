@@ -50,30 +50,6 @@ class PythonModuleResourceType:
             )
 
 
-def _collect_import_records(import_set, module_imports):
-    def _collect(prefix, import_dict):
-        for key, value in import_dict.items():
-            if isinstance(value, str):
-                yield '.'.join([*prefix, key]), value
-            elif isinstance(value, dict):
-                yield from _collect([*prefix, key], value)
-            else:
-                raise RuntimeError(f"String or dict expected at {key!r}: {value!r}")
-    yield from _collect([], module_imports)
-
-
-def load_python_module(module_name, path_stem, source_path):
-    imports_path = path_stem.parent.joinpath(path_stem.name + '.imports.yaml')
-    import_dict = yaml.safe_load(imports_path.read_text())
-    import_set = set(import_dict['import'])
-    module = htypes.python_module.python_module(
-        module_name=module_name,
-        source=source_path.read_text(),
-        file_path=str(source_path),
-        import_list=tuple(_collect_import_records(import_set, import_dict['module_imports'])),
-        )
-
-
 class _CodeModuleLoader(Finder):
 
     _is_package = True
