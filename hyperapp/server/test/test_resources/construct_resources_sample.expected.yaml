@@ -20,6 +20,7 @@ import:
 - legacy_type.impl.list_spec
 - legacy_type.impl.method_command_impl
 - legacy_type.impl.object_command_impl
+- legacy_type.impl.python_object_association
 - legacy_type.lcs.lcs_set_resource_association
 - legacy_type.partial.partial
 associations:
@@ -29,6 +30,9 @@ associations:
   piece_t: legacy_type.construct_resources_sample.sample
   ctr_fn: sample_servant_partial
   spec: sample_servant_spec
+- _type: legacy_type.impl.python_object_association
+  t: legacy_type.construct_resources_sample.sample
+  function: sample_servant_partial
 - _type: legacy_type.lcs.lcs_set_resource_association
   dir:
   - sample_servant_d
