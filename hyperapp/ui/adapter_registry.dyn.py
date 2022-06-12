@@ -8,6 +8,7 @@ from .async_rpc_proxy import AsyncRpcProxy
 
 
 async def adapter_factory(
+        mosaic,
         python_object_creg,
         impl_registry,
         service_provider_reg,
@@ -30,6 +31,7 @@ async def adapter_factory(
     else:
         async_rpc_endpoint = async_rpc_endpoint_holder[0]
         object = AsyncRpcProxy(
+            mosaic=mosaic,
             async_rpc_call_factory=async_rpc_call_factory,
             async_rpc_endpoint=async_rpc_endpoint,
             identity=identity,
@@ -48,6 +50,7 @@ class ThisModule(Module):
         services.adapter_registry = CodeRegistry('adapter', services.async_web, services.types)
         services.adapter_factory = partial(
             adapter_factory,
+            services.mosaic,
             services.python_object_creg,
             services.impl_registry,
             services.service_provider_reg,
