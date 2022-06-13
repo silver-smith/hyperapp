@@ -29,6 +29,7 @@ HYPERAPP_DIR = Path(__file__).parent.joinpath('../..').resolve()
 class Services(object):
 
     builtin_services = [
+        'services',
         'builtin_services',
         'hyperapp_dir',
         'mosaic',
@@ -50,6 +51,7 @@ class Services(object):
 
     def init_services(self):
         log.info("Init services.")
+        self.services = self  # Allows resources to access services itself.
         self.builtin_types = BuiltinTypeRegistry()
         self.types = TypeSystem()
         self.web = Web(self.types)

@@ -1,4 +1,5 @@
 import codecs
+import inspect
 import logging
 import importlib
 import yaml
@@ -80,11 +81,7 @@ class _DictLoader(Finder):
 
 
 class _PackageLoader(Finder):
-
     _is_package = True
-
-    def exec_module(self, module):
-        pass
 
 
 # htypes.* modules are loaded automatically, without importing each of them manually.
@@ -113,9 +110,12 @@ def sub_loader_dict(python_object_creg, import_list, root_module_name):
         resource = python_object_creg.invite(rec.resource)
         path = rec.full_name.split('.')
         if len(path) == 1:
-            # This is code module import, resource is python module.
             [module_name] = path
-            module_dict[module_name] = resource.__dict__
+            if inspect.ismodule(resource):
+                # This is code module import, resource is python module.
+                module_dict[module_name] = resource.__dict__
+            else:
+                module_dict[module_name] = resource  # Auto-importer?
             continue
         for i in range(len(path)):
             package_name = '.'.join(path[:i])
@@ -130,7 +130,7 @@ def sub_loader_dict(python_object_creg, import_list, root_module_name):
         name = path[-1]
         module_dict[module_name][name] = resource
     loader_dict.update({
-        name: _DictLoader(globals)
+        name: _DictLoader(globals) if isinstance(globals, dict) else globals
         for name, globals in module_dict.items()
         })
     return loader_dict

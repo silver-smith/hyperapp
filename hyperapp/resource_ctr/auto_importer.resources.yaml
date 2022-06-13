@@ -1,0 +1,49 @@
+import:
+  - legacy_service.module_registry
+  - legacy_service.services
+  - legacy_service.type_module_loader
+  - legacy_service.types
+  - legacy_type.attribute.attribute
+  - legacy_type.call.call
+  - legacy_type.partial.partial
+  - legacy_type.python_module.python_module
+
+definitions:
+
+  auto_importer_module:
+    _type: legacy_type.python_module.python_module
+    module_name: auto_importer
+    file_name: auto_importer.dyn.py
+    import_list: []
+
+  auto_importer_ctr:
+    _type: legacy_type.attribute.attribute
+    object: auto_importer_module
+    attr_name: AutoImporter
+
+  auto_importer_partial:
+    _type: legacy_type.partial.partial
+    function: auto_importer_ctr
+    params:
+      services: legacy_service.services
+      types: legacy_service.types
+      type_module_loader: legacy_service.type_module_loader
+      module_registry: legacy_service.module_registry
+
+  auto_importer:
+    _type: legacy_type.call.call
+    function: auto_importer_partial
+
+  auto_importer_loader_fn:
+    _type: legacy_type.attribute.attribute
+    object: auto_importer
+    attr_name: loader
+
+  auto_importer_import_list_fn:
+    _type: legacy_type.attribute.attribute
+    object: auto_importer
+    attr_name: import_list
+
+  auto_importer_loader:
+    _type: legacy_type.call.call
+    function: auto_importer_loader_fn

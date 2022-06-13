@@ -19,19 +19,20 @@ class Finder:
     def get_spec(self, fullname):
         return importlib.util.spec_from_loader(fullname, self, is_package=self._is_package)
 
-    
-class _EmptyLoader(Finder):
-
-    _is_package = True
-
     def exec_module(self, module):
         pass
+
+    
+class _EmptyLoader(Finder):
+    _is_package = True
 
 
 class _MetaPathFinder:
 
-    def __init__(self, module_name_to_loader):
+    def __init__(self, module_name_to_loader, sub_path_loaders):
+        # These are modified after this constructor is called.
         self._module_name_to_loader = module_name_to_loader
+        self._sub_path_loaders = sub_path_loaders  # 'some.module.' -> loader
 
     # MetaPathFinder implementation.
     def find_spec(self, fullname, path, target=None):
@@ -39,13 +40,17 @@ class _MetaPathFinder:
         loader = self._module_name_to_loader.get(fullname)
         if loader:
             return loader.get_spec(fullname)
+        for prefix, loader in self._sub_path_loaders.items():
+            if fullname.startswith(prefix):
+                return loader.get_spec(fullname)
 
 
 class PythonImporter:
 
     def __init__(self):
         self._module_name_to_loader = {ROOT_PACKAGE: _EmptyLoader()}
-        self._meta_path_finder = _MetaPathFinder(self._module_name_to_loader)
+        self._sub_path_loaders = {}
+        self._meta_path_finder = _MetaPathFinder(self._module_name_to_loader, self._sub_path_loaders)
         self._imported_modules = []
 
     def register_meta_hook(self):
@@ -65,16 +70,23 @@ class PythonImporter:
                 pass  # It may be added to loader, but never actually imported by anyone.
 
     def import_module(self, module_name, root_loader, sub_loader_dict):
+        sub_path_loaders = {}
         module_name_to_loader = {module_name: root_loader}
         for sub_name, loader in sub_loader_dict.items():
             full_name = f'{module_name}.{sub_name}'
-            module_name_to_loader[full_name] = loader
+            if full_name.endswith('.*'):
+                # This is auto-importer; it wants full_name.
+                loader.set_base_module_name(full_name[:-2])
+                sub_path_loaders[full_name[:-1]] = loader
+            else:
+                module_name_to_loader[full_name] = loader
         # Should reload if already loaded (pytest case).
         for full_name in module_name_to_loader:
             try:
                 del sys.modules[full_name]
             except KeyError:
                 pass
+        self._sub_path_loaders.update(sub_path_loaders)
         self._module_name_to_loader.update(module_name_to_loader)
         log.debug('Import python module: %s', module_name)
         module = importlib.import_module(module_name)
