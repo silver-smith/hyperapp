@@ -4,6 +4,7 @@ import:
   - legacy_service.type_module_loader
   - legacy_service.types
   - legacy_type.attribute.attribute
+  - legacy_type.auto_importer.import_rec
   - legacy_type.call.call
   - legacy_type.partial.partial
   - legacy_type.python_module.python_module
@@ -14,7 +15,8 @@ definitions:
     _type: legacy_type.python_module.python_module
     module_name: auto_importer
     file_name: auto_importer.dyn.py
-    import_list: []
+    import_list:
+      htypes.auto_importer.import_rec: legacy_type.auto_importer.import_rec
 
   auto_importer_ctr:
     _type: legacy_type.attribute.attribute
@@ -39,10 +41,10 @@ definitions:
     object: auto_importer
     attr_name: loader
 
-  auto_importer_import_list_fn:
+  auto_importer_imports_fn:
     _type: legacy_type.attribute.attribute
     object: auto_importer
-    attr_name: import_list
+    attr_name: imports
 
   auto_importer_loader:
     _type: legacy_type.call.call

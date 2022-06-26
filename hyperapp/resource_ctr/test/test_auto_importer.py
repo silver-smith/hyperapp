@@ -80,10 +80,14 @@ def test_auto_importer(services, htypes, subprocess):
     log.info("Collected global list: %s", global_list)
 
     auto_importer_module = services.resource_module_registry['resource_ctr.auto_importer']
-    auto_importer_import_list_res = auto_importer_module['auto_importer_import_list_fn']
-    auto_importer_import_list_ref = services.mosaic.put(auto_importer_import_list_res)
-    auto_importer_import_list_call = subprocess.rpc_call(auto_importer_import_list_ref)
-    import_list = auto_importer_import_list_call()
-    log.info("Import list: %s", import_list)
+    auto_importer_imports_res = auto_importer_module['auto_importer_imports_fn']
+    auto_importer_imports_ref = services.mosaic.put(auto_importer_imports_res)
+    auto_importer_imports_call = subprocess.rpc_call(auto_importer_imports_ref)
+    imports = auto_importer_imports_call()
+    log.info("Import list: %s", imports)
 
-    assert set(import_list) == {'services.web', 'htypes.impl.list_spec', 'meta_registry'}
+    assert imports == (
+       htypes.auto_importer.import_rec('htypes.impl.list_spec', 'legacy_type.impl.list_spec'),
+       htypes.auto_importer.import_rec('meta_registry', 'legacy_module.meta_registry'),
+       htypes.auto_importer.import_rec('services.web', 'legacy_service.web'),
+       )
