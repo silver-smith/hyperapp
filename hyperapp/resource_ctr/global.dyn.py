@@ -273,7 +273,7 @@ def construct_global(root_dir, module_name, resource_module, process, module_res
     fix_module_name = f'{module_name}.with-fixtures'
     fix_module_rpath = module_name.replace('.', '/') + '.with-fixtures'
     fix_module = resource_module_factory(
-        fix_module_name, root_dir / f'{fix_module_rpath}.resources.yaml', allow_missing=True)
+        fix_module_name, root_dir / f'{fix_module_rpath}.resources.yaml', load_from_file=False)
 
     attr_res_name = construct_attr(resource_module, module_res_name, globl, add_object_prefix=False)
     partial_res_name = construct_resource_params_partial(

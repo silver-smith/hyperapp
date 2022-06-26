@@ -159,7 +159,7 @@ class HTest:
         log.info("Construct resources from: %s", module_name)
         module_rpath = module_name.replace('.', '/')
         resource_module = self._resource_module_factory(
-            module_name, root_dir / f'{module_rpath}.resources.yaml', allow_missing=True)
+            module_name, root_dir / f'{module_rpath}.resources.yaml', load_from_file=False)
         module_res_name = f'legacy_module.{module_name}'
         resource_module.add_import(module_res_name)
         with self._subprocess_running() as process:

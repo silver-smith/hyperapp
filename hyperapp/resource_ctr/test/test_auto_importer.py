@@ -52,7 +52,7 @@ def test_auto_importer(services, htypes, subprocess):
     resource_module = services.resource_module_factory(
         'test_auto_importer',
         Path(tempfile.gettempdir()) / 'test_auto_importer.resources.yaml',
-        allow_missing=True,
+        load_from_file=False,
     )
 
     auto_importer_module_path = Path(__file__).parent / 'test_resources' / 'auto_importer_module.dyn.py'

@@ -23,7 +23,7 @@ class ResourceModule:
             fixture_resource_module_registry,
             name,
             path,
-            allow_missing=False,
+            load_from_file=True,
             imports=None,
             definitions=None,
             associations=None,
@@ -38,7 +38,7 @@ class ResourceModule:
         self._loaded_imports = imports
         self._loaded_definitions = definitions
         self._loaded_associations = associations
-        self._allow_missing = allow_missing
+        self._load_from_file = load_from_file
 
     def __contains__(self, var_name):
         return var_name in self._definition_dict
@@ -68,7 +68,7 @@ class ResourceModule:
             fixture_resource_module_registry=self._fixture_resource_module_registry,
             name=f'{self._name}-with-{module.name}',
             path=self._path.with_name('dummy'),
-            allow_missing=True,
+            load_from_file=True,
             imports=self._import_set | module._import_set,
             definitions={**self._definition_dict, **module._definition_dict},
             associations=self._association_set | module._association_set,
@@ -166,15 +166,10 @@ class ResourceModule:
         self._loaded_imports = set()
         self._loaded_definitions = {}
         self._loaded_associations = set()
-        if self._path is None:
+        if self._path is None or not self._load_from_file:
             return
         log.info("Loading resource module %s: %s", self._name, self._path)
-        try:
-            module_contents = yaml.safe_load(self._path.read_text())
-        except FileNotFoundError:
-            if not self._allow_missing:
-                raise
-            return
+        module_contents = yaml.safe_load(self._path.read_text())
         self._loaded_imports = set(module_contents.get('import', []))
         for name in self._loaded_imports:
             module_name, var_name = name.rsplit('.', 1)
