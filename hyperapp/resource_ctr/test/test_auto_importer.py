@@ -88,6 +88,26 @@ def test_auto_importer(services, htypes, subprocess):
 
     assert imports == (
        htypes.auto_importer.import_rec('htypes.impl.list_spec', 'legacy_type.impl.list_spec'),
-       htypes.auto_importer.import_rec('meta_registry', 'legacy_module.meta_registry'),
+       htypes.auto_importer.import_rec('meta_registry', 'legacy_module.common.meta_registry'),
        htypes.auto_importer.import_rec('services.web', 'legacy_service.web'),
        )
+
+    for r in imports:
+        if '.' in r.resource_name:
+            resource_module.add_import(r.resource_name)
+    module_def = module_res_t.definition_t(
+        module_name='check_importer_module',
+        file_name=str(auto_importer_module_path),
+        import_list=[
+            import_rec_def_t(r.name, r.resource_name)
+            for r in imports
+            ],
+        )
+    check_module_res_name = 'check_importer_module'
+    resource_module.set_definition(check_module_res_name, module_res_t, module_def)
+    check_module = resource_module[check_module_res_name]
+    check_module_ref = services.mosaic.put(check_module)
+
+    check_global_list = collect_attributes_call(check_module_ref)
+    log.info("Collected global list: %s", check_global_list)
+    assert check_global_list == global_list

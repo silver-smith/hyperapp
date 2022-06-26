@@ -111,7 +111,7 @@ class _Loader(Finder):
                 raise RuntimeError(f"Unknown code module: {last_name}")
             module = types.ModuleType(spec.name)
             module.__dict__.update(code_module.__dict__)
-            self._import_dict[rel_name] = f'legacy_module.{rel_name}'
+            self._import_dict[rel_name] = f'legacy_module.{name}'
         module.__name__ = spec.name
         module.__loader__ = self
         module.__path__ = None
