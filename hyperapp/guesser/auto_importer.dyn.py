@@ -4,6 +4,10 @@ import types
 from hyperapp.common.python_importer import Finder
 
 from . import htypes
+from .services import (
+    python_object_creg,
+    resource_module_registry,
+    )
 
 
 class _ServicesModule(types.ModuleType):
@@ -75,11 +79,11 @@ class _Loader(Finder):
 
     _is_package = True
 
-    def __init__(self, services, types, local_type_module_reg, code_module_dict, import_dict):
+    def __init__(self, services, types, local_type_module_reg, code_module_names, import_dict):
         self._services = services
         self._types = types
         self._local_type_module_reg = local_type_module_reg
-        self._code_module_dict = code_module_dict
+        self._code_module_names = code_module_names
         self._import_dict = import_dict
         self._base_module_name = None
 
@@ -104,14 +108,17 @@ class _Loader(Finder):
             root =_HTypesRoot(spec.name, self._import_dict, self._types, self._local_type_module_reg)
             module = getattr(root, last_name)
         else:
-            for name, code_module in self._code_module_dict.items():
-                if name.split('.')[-1] == last_name:
+            for name in self._code_module_names:
+                package_name, name = name.rsplit('.', 1)
+                if name == last_name:
                     break
             else:
                 raise RuntimeError(f"Unknown code module: {last_name}")
+            module_res = resource_module_registry[f'legacy_module.{package_name}']
+            python_module = python_object_creg.animate(module_res[name])
             module = types.ModuleType(spec.name)
-            module.__dict__.update(code_module.__dict__)
-            self._import_dict[rel_name] = f'legacy_module.{name}'
+            module.__dict__.update(python_module.__dict__)
+            self._import_dict[rel_name] = f'legacy_module.{package_name}.{name}'
         module.__name__ = spec.name
         module.__loader__ = self
         module.__path__ = None
@@ -124,18 +131,15 @@ class _Loader(Finder):
 
 class AutoImporter:
 
-    def __init__(self, services, types, type_module_loader, module_registry):
+    def __init__(self, services, types, type_module_loader, local_modules):
         self._services = services
         self._types = types
         self._local_type_module_reg = type_module_loader.registry
-        self._code_module_dict = {
-            rec.name: rec.python_module
-            for rec in module_registry.elements()
-            }
+        self._code_module_names = list(local_modules.by_name)
         self._import_dict = {}
 
     def loader(self):
-        return _Loader(self._services, self._types, self._local_type_module_reg, self._code_module_dict, self._import_dict)
+        return _Loader(self._services, self._types, self._local_type_module_reg, self._code_module_names, self._import_dict)
 
     def imports(self):
         return [

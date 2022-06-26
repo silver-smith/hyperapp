@@ -1,0 +1,38 @@
+import:
+  - legacy_service.mosaic
+  - legacy_service.resource_module_factory
+  - legacy_service.resource_type_producer
+  - legacy_type.attribute.attribute
+  - legacy_type.piece_ref.piece_ref
+  - legacy_type.python_module.python_module
+  - guesser.auto_importer.auto_importer_imports_fn
+  - server.htest_runner.runner_method_collect_attributes
+  - sync.subprocess_context.subprocess_running
+
+definitions:
+
+  auto_importer_imports_ref:
+    _type: legacy_type.piece_ref.piece_ref
+    value: guesser.auto_importer.auto_importer_imports_fn
+
+  runner_method_collect_attributes_ref:
+    _type: legacy_type.piece_ref.piece_ref
+    value: server.htest_runner.runner_method_collect_attributes
+
+  construct_resources_module:
+    _type: legacy_type.python_module.python_module
+    module_name: construct_resources
+    file_name: construct_resources.dyn.py
+    import_list:
+      htypes.python_module.python_module: legacy_type.python_module.python_module
+      services.auto_importer_imports_ref: auto_importer_imports_ref
+      services.mosaic: legacy_service.mosaic
+      services.runner_method_collect_attributes_ref: runner_method_collect_attributes_ref
+      services.resource_module_factory: legacy_service.resource_module_factory
+      services.resource_type_producer: legacy_service.resource_type_producer
+      services.subprocess_running: sync.subprocess_context.subprocess_running
+
+  construct_resources:
+    _type: legacy_type.attribute.attribute
+    object: construct_resources_module
+    attr_name: construct_resources

@@ -62,12 +62,12 @@ def test_auto_importer(services, htypes, subprocess):
         module_name='auto_importer_module',
         file_name=str(auto_importer_module_path),
         import_list=[
-            import_rec_def_t('*', 'resource_ctr.auto_importer.auto_importer_loader'),
+            import_rec_def_t('*', 'guesser.auto_importer.auto_importer_loader'),
             ],
         )
     module_res_name = 'auto_importer_module'
     resource_module.set_definition(module_res_name, module_res_t, module_def)
-    resource_module.add_import('resource_ctr.auto_importer.auto_importer_loader')
+    resource_module.add_import('guesser.auto_importer.auto_importer_loader')
     module = resource_module[module_res_name]
     module_ref = services.mosaic.put(module)
 
@@ -79,7 +79,7 @@ def test_auto_importer(services, htypes, subprocess):
     global_list = collect_attributes_call(module_ref)
     log.info("Collected global list: %s", global_list)
 
-    auto_importer_module = services.resource_module_registry['resource_ctr.auto_importer']
+    auto_importer_module = services.resource_module_registry['guesser.auto_importer']
     auto_importer_imports_res = auto_importer_module['auto_importer_imports_fn']
     auto_importer_imports_ref = services.mosaic.put(auto_importer_imports_res)
     auto_importer_imports_call = subprocess.rpc_call(auto_importer_imports_ref)
@@ -87,9 +87,11 @@ def test_auto_importer(services, htypes, subprocess):
     log.info("Import list: %s", imports)
 
     assert imports == (
-       htypes.auto_importer.import_rec('htypes.impl.list_spec', 'legacy_type.impl.list_spec'),
-       htypes.auto_importer.import_rec('meta_registry', 'legacy_module.common.meta_registry'),
-       htypes.auto_importer.import_rec('services.web', 'legacy_service.web'),
+        htypes.auto_importer.import_rec('htypes.impl.list_spec', 'legacy_type.impl.list_spec'),
+        htypes.auto_importer.import_rec('lcs', 'legacy_module.common.lcs'),
+        htypes.auto_importer.import_rec('meta_registry', 'legacy_module.common.meta_registry'),
+        htypes.auto_importer.import_rec('qt_keys', 'legacy_module.async.ui.qt.qt_keys'),
+        htypes.auto_importer.import_rec('services.web', 'legacy_service.web'),
        )
 
     for r in imports:

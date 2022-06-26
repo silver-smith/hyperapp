@@ -43,4 +43,10 @@ def test_fn():
     pass
 
 
+from . import lcs
+_log.info(f"{lcs=}")
+_log.info(f"{lcs.LCSheet=}")
+
+from .qt_keys import run_input_key_dialog
+
 _log.info("Loaded: auto_importer_module")
