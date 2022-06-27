@@ -16,6 +16,30 @@ log = logging.getLogger(__name__)
 DUP_OFFSET = htypes.window.pos(150, 50)
 
 
+# Root view service is requested before actual root view is constructed.
+# Use proxy to allow postponed construction.
+class RootViewHolder:
+
+    def __init__(self):
+        self._target = None
+
+    def init(self, root_view):
+        self._target = root_view
+
+    async def open(self, state):
+        await self._target.open(state)
+
+    @property
+    def state(self):
+        return self._target.state
+
+    def iter_view_commands(self):
+        return self._target.iter_view_commands()
+
+    async def update_commands(self):
+        await self._target.update_commands()
+
+
 class RootView(View):
 
     @classmethod
@@ -159,6 +183,7 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
+        services.root_view = RootViewHolder()
         services.view_registry.register_actor(
             htypes.window.state,
             RootView.from_state,

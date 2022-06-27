@@ -12,3 +12,5 @@ import:
 require:
   - async_stop_event
   - view_registry
+provide:
+  - root_view
