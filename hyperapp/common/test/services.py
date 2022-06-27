@@ -22,8 +22,26 @@ def post_stop_checks():
 
 
 @pytest.fixture
-def module_dir_list():
-    return [HYPERAPP_DIR]
+def hyperapp_dir():
+    return HYPERAPP_DIR
+
+
+@pytest.fixture
+def default_module_dir_list(hyperapp_dir):
+    return [
+        hyperapp_dir / 'common',
+        hyperapp_dir / 'resource',
+        hyperapp_dir / 'transport',
+        hyperapp_dir / 'sync',
+        hyperapp_dir / 'async',
+        hyperapp_dir / 'ui',
+        hyperapp_dir / 'sample',
+        ]
+
+
+@pytest.fixture
+def module_dir_list(default_module_dir_list):
+    return default_module_dir_list
 
 
 @pytest.fixture

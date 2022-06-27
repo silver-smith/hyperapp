@@ -6,7 +6,6 @@ from pathlib import Path
 import pytest
 
 from hyperapp.common.htypes import tInt
-from hyperapp.common.services import Services
 from hyperapp.client.test.utils import wait_for_all_tasks_to_complete
 from hyperapp.common import cdr_coders  # self-registering
 
@@ -17,14 +16,17 @@ pytest_plugins = ['hyperapp.common.test.services']
 
 
 @pytest.fixture
-def additional_module_dirs():
-    return [Path(__file__).parent.joinpath('../../common/test/mock').resolve()]
+def module_dir_list(hyperapp_dir, default_module_dir_list):
+    return [
+        *default_module_dir_list,
+        hyperapp_dir / 'common/test/mock',
+        ]
 
 
 @pytest.fixture
 def code_module_list():
     return  [
-        'mock_file_bundle',
+        'common.test.mock.mock_file_bundle',
         'async.ui.qt.application',  # Use Qt event loop.
         'async.ui.tree_object',
         'async.ui.qt.tree_view',
