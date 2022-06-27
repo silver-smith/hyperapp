@@ -23,7 +23,7 @@ log = logging.getLogger(__name__)
 
 
 TYPE_MODULE_EXT = '.types'
-HYPERAPP_DIR = Path(__file__).parent.joinpath('../..').resolve()
+HYPERAPP_DIR = Path(__file__).parent.parent.resolve()
 
 
 class Services(object):
@@ -41,9 +41,9 @@ class Services(object):
         'module_registry',
     ]
 
-    def __init__(self):
-        self.hyperapp_dir = HYPERAPP_DIR / 'hyperapp'
-        self.module_dir_list = [self.hyperapp_dir]
+    def __init__(self, module_dir_list):
+        self.hyperapp_dir = HYPERAPP_DIR
+        self.module_dir_list = module_dir_list
         self.on_start = []
         self.on_stop = []
         self.stop_signal = threading.Event()
@@ -62,7 +62,7 @@ class Services(object):
         register_builtin_types(self.builtin_types, self.mosaic, self.types)
         register_code_module_types(self.builtin_types, self.mosaic, self.types)
         self.type_module_loader = TypeModuleLoader(self.builtin_types, self.mosaic, self.types)
-        self.code_module_loader = CodeModuleLoader(self.mosaic, self.type_module_loader.registry)
+        self.code_module_loader = CodeModuleLoader(self.hyperapp_dir, self.mosaic, self.type_module_loader.registry)
         self.python_importer = PythonImporter()
         self._module_code_registry = CodeRegistry('module', self.web, self.types)
         self._module_code_registry.register_actor(code_module_t, CodeModule.from_piece, self.types, self.web)

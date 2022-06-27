@@ -20,7 +20,8 @@ class Registry:
 
 class CodeModuleLoader:
 
-    def __init__(self, mosaic, local_type_module_registry):
+    def __init__(self, hyperapp_dir, mosaic, local_type_module_registry):
+        self._hyperapp_dir = hyperapp_dir
         self._mosaic = mosaic
         self._local_type_module_registry = local_type_module_registry
 
@@ -40,7 +41,7 @@ class CodeModuleLoader:
             if 'test' in source_path.relative_to(root_dir).parts:
                 continue  # Skip test subdirectories.
             info_path = source_path.parent.joinpath(source_path.name[:-len(ext)] + '.yaml')
-            rpath = str(source_path.relative_to(root_dir))
+            rpath = str(source_path.relative_to(self._hyperapp_dir))
             module_name = rpath[:-len(ext)].replace('/', '.')
             if not info_path.exists():
                 log.warning("No info path for dynamic module exists, skipping: %s", info_path)

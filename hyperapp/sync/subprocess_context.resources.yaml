@@ -4,8 +4,6 @@ import:
   - legacy_service.subprocess
   - legacy_service.peer_registry
   - legacy_service.rpc_call_factory
-  - legacy_service.server_identity
-  - legacy_service.server_rpc_endpoint
   - legacy_type.attribute.attribute
   - legacy_type.partial.partial
   - legacy_type.call.call
@@ -54,8 +52,6 @@ definitions:
       services.subprocess_factory: legacy_service.subprocess
       services.peer_registry: legacy_service.peer_registry
       services.rpc_call_factory: legacy_service.rpc_call_factory
-      services.server_identity: legacy_service.server_identity
-      services.server_rpc_endpoint: legacy_service.server_rpc_endpoint
       services.runner_is_ready_fn_ref: runner_is_ready_fn_ref
       services.runner_signal_queue: runner_signal_queue
 

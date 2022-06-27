@@ -205,7 +205,7 @@ class ResourceModule:
         return Definition(t, value)
 
 
-def load_resource_modules(mosaic, resource_type_producer, python_object_creg, dir_list):
+def load_resource_modules(hyperapp_dir, mosaic, resource_type_producer, python_object_creg, dir_list):
     ext = '.resources.yaml'
     fixture_ext = '.fixtures.resources.yaml'
     registry = {}
@@ -214,7 +214,7 @@ def load_resource_modules(mosaic, resource_type_producer, python_object_creg, di
         for path in root_dir.rglob(f'*{ext}'):
             if 'test' in path.relative_to(root_dir).parts:
                 continue  # Skip test subdirectories.
-            rpath = str(path.relative_to(root_dir))
+            rpath = str(path.relative_to(hyperapp_dir))
             name = rpath[:-len(ext)].replace('/', '.')
             if str(path).endswith(fixture_ext):
                 log.info("Fixture resource module: %r", name)
@@ -233,6 +233,7 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
 
         services.resource_module_registry, services.fixture_resource_module_registry = load_resource_modules(
+            services.hyperapp_dir,
             services.mosaic,
             services.resource_type_producer,
             services.python_object_creg,

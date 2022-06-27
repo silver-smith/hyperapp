@@ -3,7 +3,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from hyperapp.common.services import Services
+from hyperapp.common.services import HYPERAPP_DIR, Services
 from hyperapp.common.test.hyper_types_namespace import HyperTypesNamespace
 
 log = logging.getLogger(__name__)
@@ -22,15 +22,14 @@ def post_stop_checks():
 
 
 @pytest.fixture
-def additional_module_dirs():
-    return []
+def module_dir_list():
+    return [HYPERAPP_DIR]
 
 
 @pytest.fixture
-def services(additional_module_dirs, code_module_list, post_stop_checks):
-    services = Services()
+def services(module_dir_list, code_module_list, post_stop_checks):
+    services = Services(module_dir_list)
     services.init_services()
-    services.module_dir_list += additional_module_dirs
     services.init_modules(code_module_list)
     yield services
     services.unregister_import_meta_hook() # Call before stopping, as stopping may raise an exception.
