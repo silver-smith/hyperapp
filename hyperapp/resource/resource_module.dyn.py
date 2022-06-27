@@ -122,7 +122,7 @@ class ResourceModule:
             }
 
     def _resource_type_name(self, resource_type):
-        t = resource_type.definition_t
+        t = resource_type.resource_t
         return f'legacy_type.{t.module_name}.{t.name}'
 
     def _resolve_name(self, name):

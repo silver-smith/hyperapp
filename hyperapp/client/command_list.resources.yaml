@@ -33,7 +33,7 @@ import:
 - legacy_type.impl.python_object_association
 - legacy_type.lcs.lcs_set_resource_association
 - legacy_type.partial.partial
-- legacy_type.python_module.python_module_def
+- legacy_type.python_module.python_module
 associations:
 - _type: legacy_type.global_command.global_command_association
   command: open_global_command_list_command
@@ -75,7 +75,7 @@ associations:
   value: view_command_list_set_key_escape_command
 definitions:
   command_list_module:
-    _type: legacy_type.python_module.python_module_def
+    _type: legacy_type.python_module.python_module
     module_name: client.command_list
     file_name: command_list.dyn.py
     import_list:
