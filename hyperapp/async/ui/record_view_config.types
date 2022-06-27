@@ -1,6 +1,0 @@
-from object_view_config import object_view_config
-
-
-record_view_config_d = record
-
-record_view_config = record(object_view_config)

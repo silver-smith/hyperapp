@@ -1,6 +1,0 @@
-
-master_details_view_factory = record
-
-master_details_view = record:
-  master_view_ref: ref
-  open_command_id: string

@@ -1,7 +1,0 @@
-import:
-  types:
-    text:
-      - wiki_text
-  code:
-    - async.ui.ui_object
-    - async.ui.module

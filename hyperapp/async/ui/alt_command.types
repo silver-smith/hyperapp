@@ -1,7 +1,0 @@
-clone_command_command = record
-
-alt_command_d = record
-
-alt_command = record:
-  object: ref
-  method_name: string

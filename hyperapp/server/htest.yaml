@@ -1,8 +1,0 @@
-import:
-  types:
-    resource_service:
-      - list_service
-    htest:
-      - test_module
-      - storage
-      - list_t
