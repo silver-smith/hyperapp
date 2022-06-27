@@ -7,8 +7,8 @@ from . import htypes
 class StringAdapter:
 
     @classmethod
-    async def from_piece(cls, impl, object, python_object_creg):
-        return cls(text=object)
+    async def from_piece(cls, spec, piece, object, python_object_creg):
+        return cls(text=piece)
 
     def __init__(self, text):
         self._text = text
