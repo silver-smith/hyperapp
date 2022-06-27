@@ -78,6 +78,10 @@ class ResourceModule:
         log.info("%s: Add import: %r", self._name, import_name)
         self._import_set.add(import_name)
 
+    def remove_import(self, import_name):
+        log.info("%s: Remove import: %r", self._name, import_name)
+        self._import_set.remove(import_name)
+
     def set_definition(self, var_name, resource_type, definition_value):
         log.info("%s: Set definition %r, %s: %r", self._name, var_name, resource_type, definition_value)
         self._definition_dict[var_name] = Definition(resource_type, definition_value)
