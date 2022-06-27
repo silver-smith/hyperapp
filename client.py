@@ -21,10 +21,10 @@ code_module_list = [
     'resource.python_module',
     'resource.value',
     'resource.call',
+    'resource.python_module',
     'common.lcs',
     'ui.impl_registry',
     'ui.global_command_list',
-    'resource.register_associations',
     'ui.list_adapter',
     'ui.string_adapter',
     'ui.command_adapter',
@@ -80,7 +80,7 @@ code_module_list = [
     # 'async.ui.transport_log',
     # 'async.ui.rpc_callback',
     'resource.async.attribute',
-    'client.command_list',
+    'resource.register_associations',
     ]
 
 
