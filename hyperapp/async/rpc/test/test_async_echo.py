@@ -16,8 +16,11 @@ pytest_plugins = ['hyperapp.common.test.services']
 
 
 @pytest.fixture
-def additional_module_dirs():
-    return [Path(__file__).parent]
+def module_dir_list(default_module_dir_list):
+    return [
+        *default_module_dir_list,
+        Path(__file__).parent,
+        ]
 
 
 @pytest.fixture
@@ -65,7 +68,7 @@ def echo_set_up(services, htypes):
     services.python_object_creg.register_actor(htypes.echo_service.master_servant, lambda piece: servant.run)
     master_servant_ref = mosaic.put(htypes.echo_service.master_servant())
 
-    echo_servant = services.resource_module_registry['echo_service']['echo_servant']
+    echo_servant = services.resource_module_registry['async.rpc.test.echo_service']['echo_servant']
     echo_servant_ref = mosaic.put(echo_servant)
 
     server = services.tcp_server()
@@ -77,7 +80,7 @@ def echo_set_up(services, htypes):
 
     subprocess = services.subprocess(
         'subprocess',
-        additional_module_dirs=[Path(__file__).parent],
+        services.module_dir_list,
         code_module_list=[
             'async.event_loop',
             'async.async_main',
@@ -87,10 +90,10 @@ def echo_set_up(services, htypes):
             'resource.async.legacy_module',
             'resource.async.attribute',
             'resource.async.call',
-            'echo_service',
+            'async.rpc.test.echo_service',
             ],
         config = {
-            'echo_service': {'master_service_bundle_cdr': master_service_bundle_cdr},
+            'async.rpc.test.echo_service': {'master_service_bundle_cdr': master_service_bundle_cdr},
             },
         )
 
