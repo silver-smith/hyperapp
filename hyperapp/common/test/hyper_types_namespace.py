@@ -15,7 +15,7 @@ class HyperTypesNamespace:
                 pass
             else:
                 return self._type_module_namespace(type_module)
-        raise AttributeError(name)
+        raise RuntimeError(f"Unknown type module: {name!r}")
 
     def _type_module_namespace(self, type_module):
         name_to_type = {}
