@@ -19,6 +19,7 @@ def code_module_list():
 def test_subprocess(services):
     subprocess = services.subprocess(
         'subprocess',
+        services.module_dir_list,
         )
     with subprocess:
         pass
@@ -27,9 +28,9 @@ def test_subprocess(services):
 def test_import_failure(services):
     subprocess = services.subprocess(
         'subprocess',
-        additional_module_dirs=[Path(__file__).parent],
+        module_dir_list=[*services.module_dir_list, Path(__file__).parent],
         code_module_list=[
-            'import_failure',
+            'sync.test.import_failure',
             ],
         )
     with pytest.raises(AssertionError) as excinfo:
@@ -42,9 +43,9 @@ def test_import_failure(services):
 def test_module_init_failure(services, sleep_sec):
     subprocess = services.subprocess(
         'subprocess',
-        additional_module_dirs=[Path(__file__).parent],
+        module_dir_list=[*services.module_dir_list, Path(__file__).parent],
         code_module_list=[
-            'module_init_failure',
+            'sync.test.module_init_failure',
             ],
         )
     with pytest.raises(AssertionError) as excinfo:
