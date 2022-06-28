@@ -50,15 +50,15 @@ def test_tcp_send(services):
 
     subprocess = services.subprocess(
         'subprocess',
-        additional_module_dirs=[Path(__file__).parent],
+        module_dir_list=[*services.module_dir_list, Path(__file__).parent],
         code_module_list=[
             'async.event_loop',
             'async.async_main',
             'async.transport.tcp',
-            'send',
+            'async.transport.test.send',
             ],
         config={
-            'send': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
+            'async.transport.test.send': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
             },
         )
     with subprocess:
@@ -84,16 +84,16 @@ def test_tcp_echo(services):
 
     subprocess = services.subprocess(
         'subprocess',
-        additional_module_dirs=[Path(__file__).parent],
+        module_dir_list=[*services.module_dir_list, Path(__file__).parent],
         code_module_list=[
             'sync.transport.tcp',  # tcp_transport.route is required registered at sync route_registry.
             'async.event_loop',
             'async.async_main',
             'async.transport.tcp',
-            'echo',
+            'async.transport.test.echo',
             ],
         config={
-            'echo': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
+            'async.transport.test.echo': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
             },
         )
     with subprocess:
