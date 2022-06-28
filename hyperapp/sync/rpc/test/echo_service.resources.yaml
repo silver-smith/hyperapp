@@ -1,5 +1,5 @@
 import:
-  - legacy_module.echo_service
+  - legacy_module.sync.rpc.test.echo_service
   - legacy_type.attribute.attribute
   - legacy_type.call.call
 
@@ -7,7 +7,7 @@ definitions:
 
   echo_servant_factory:
     _type: legacy_type.attribute.attribute
-    object: legacy_module.echo_service
+    object: legacy_module.sync.rpc.test.echo_service
     attr_name: Echo
 
   echo_servant:
