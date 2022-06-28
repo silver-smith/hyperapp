@@ -12,8 +12,11 @@ pytest_plugins = ['hyperapp.common.test.services']
 
 
 @pytest.fixture
-def additional_module_dirs():
-    return [Path(__file__).parent]
+def module_dir_list(default_module_dir_list):
+    return [
+        *default_module_dir_list,
+        Path(__file__).parent,
+        ]
 
 
 @pytest.fixture(params=['native', 'qt'])
@@ -29,7 +32,7 @@ def event_loop_module(request):
 def code_module_list(event_loop_module):
     return [
         event_loop_module,
-        'module_async_init_close',
+        'async.test.module_async_init_close',
         ]
 
 
