@@ -55,7 +55,8 @@ def construct_resource_params_partial(resource_module, fix_module, attr, attr_re
     param_to_resource = {}
     fix_param_to_resource = {}
     for idx, param_name in enumerate(attr.param_list):
-        if param_name not in {'piece', 'adapter'}:
+        special_names = {'piece', 'adapter'}
+        if param_name not in special_names:
             param_module = name_to_module[param_name]
             full_resource_name = f'{param_module.name}.{param_name}'
             param_to_resource[param_name] = full_resource_name
@@ -66,6 +67,8 @@ def construct_resource_params_partial(resource_module, fix_module, attr, attr_re
             fix_resource_name = f'{attr_snake_name}_{param_name}'
             param_module = fixture_to_module[fix_resource_name]
         except KeyError:
+            if param_name in special_names:
+                raise RuntimeError(f"No fixture is found for parameter: {param_name!r}")
             fix_param_to_resource[param_name] = full_resource_name
             fix_module.add_import(full_resource_name)
         else:
@@ -176,7 +179,7 @@ def construct_impl(
     result_t = get_resource_type_call(mosaic.put(get_call_res))
     log.info("%s 'get' method result type: %r", object_res_name, result_t)
 
-    if isinstance(result_t, htypes.htest.list_t):
+    if isinstance(result_t, htypes.inspect.list_t):
         spec_res_name, dir_res_name = construct_list_spec(
             module_name, resource_module, object_name, object_res_name, result_t)
     else:
@@ -187,7 +190,7 @@ def construct_impl(
     fixture_res = fixture_module[fixture_name]
     piece_t = get_resource_type_call(mosaic.put(fixture_res))
     log.info("%s piece type: %r", object_res_name, piece_t)
-    if not isinstance(piece_t, htypes.htest.record_t):
+    if not isinstance(piece_t, htypes.inspect.record_t):
         raise RuntimeError(f"{resource_module.name}: {object_res_name}: Expected record type, but got: {piece_t!r}")
 
     piece_t_name = f'legacy_type.{piece_t.type.module}.{piece_t.type.name}'

@@ -38,7 +38,7 @@ class Runner:
                     continue
                 raise
             param_list = list(signature.parameters.keys())
-            yield htypes.htest.attr(name, param_list)
+            yield htypes.inspect.attr(name, param_list)
 
 
     def get_resource_type(self, request, resource_ref):
@@ -48,16 +48,16 @@ class Runner:
         t = deduce_complex_value_type(self._mosaic, self._types, value)
         log.info("Type is: %r", t)
         if isinstance(t, TRecord):
-            type_name = htypes.htest.type_name(t.module_name, t.name)
-            return htypes.htest.record_t(
+            type_name = htypes.inspect.type_name(t.module_name, t.name)
+            return htypes.inspect.record_t(
                 type=type_name,
             )
         if isinstance(t, TList) and isinstance(t.element_t, TRecord):
             element_list = []
             for name, field_t in t.element_t.fields.items():
-                type_name = htypes.htest.type_name(field_t.module_name, field_t.name)
-                element = htypes.htest.item_element(name, type_name)
+                type_name = htypes.inspect.type_name(field_t.module_name, field_t.name)
+                element = htypes.inspect.item_element(name, type_name)
                 element_list.append(element)
-            return htypes.htest.list_t(
+            return htypes.inspect.list_t(
                 element_list=element_list,
                 )

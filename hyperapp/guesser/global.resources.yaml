@@ -7,8 +7,8 @@ import:
   - legacy_type.attribute.attribute
   - legacy_type.call.call
   - legacy_type.global_command.global_command_association
-  - legacy_type.htest.list_t
-  - legacy_type.htest.record_t
+  - legacy_type.inspect.list_t
+  - legacy_type.inspect.record_t
   - legacy_type.lcs.lcs_set_resource_association
   - legacy_type.impl.impl_association
   - legacy_type.impl.global_command_impl
@@ -19,8 +19,8 @@ import:
   - legacy_type.partial.partial
   - legacy_type.piece_ref.piece_ref
   - legacy_type.python_module.python_module
-  - server.htest_runner.runner_method_collect_attributes
-  - server.htest_runner.get_resource_type
+  - guesser.runner.runner_method_collect_attributes
+  - guesser.runner.get_resource_type
 
 definitions:
 
@@ -32,8 +32,8 @@ definitions:
       htypes.attribute.attribute: legacy_type.attribute.attribute
       htypes.partial.partial: legacy_type.partial.partial
       htypes.call.call: legacy_type.call.call
-      htypes.htest.record_t: legacy_type.htest.record_t
-      htypes.htest.list_t: legacy_type.htest.list_t
+      htypes.inspect.record_t: legacy_type.inspect.record_t
+      htypes.inspect.list_t: legacy_type.inspect.list_t
       htypes.lcs.lcs_set_resource_association: legacy_type.lcs.lcs_set_resource_association
       htypes.impl.impl_association: legacy_type.impl.impl_association
       htypes.impl.global_command_impl: legacy_type.impl.global_command_impl
@@ -52,11 +52,11 @@ definitions:
 
   runner_method_collect_attributes_ref:
     _type: legacy_type.piece_ref.piece_ref
-    value: server.htest_runner.runner_method_collect_attributes
+    value: guesser.runner.runner_method_collect_attributes
 
   runner_method_get_resource_type_ref:
     _type: legacy_type.piece_ref.piece_ref
-    value: server.htest_runner.get_resource_type
+    value: guesser.runner.get_resource_type
 
   construct_global:
     _type: legacy_type.attribute.attribute

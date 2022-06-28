@@ -71,7 +71,7 @@ def test_auto_importer(services, htypes, subprocess):
     module = resource_module[module_res_name]
     module_ref = services.mosaic.put(module)
 
-    runner_module = services.resource_module_registry['server.htest_runner']
+    runner_module = services.resource_module_registry['guesser.runner']
     runner_method_collect_attributes_res = runner_module['runner_method_collect_attributes']
     runner_method_collect_attributes_ref = services.mosaic.put(runner_method_collect_attributes_res)
 

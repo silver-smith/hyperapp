@@ -4,9 +4,12 @@ from . import htypes
 from .services import (
     auto_importer_imports_ref,
     construct_global,
+    endpoint_registry,
+    generate_rsa_identity,
     mosaic,
     resource_module_factory,
     resource_type_producer,
+    rpc_endpoint_factory,
     runner_method_collect_attributes_ref,
     subprocess_running,
     )
@@ -16,6 +19,11 @@ _log = logging.getLogger(__name__)
 
 def construct_resources(module_name, module_path, root_dir):
     _log.info("Construct resources from: %s", module_name)
+
+    identity = generate_rsa_identity(fast=True)
+    rpc_endpoint = rpc_endpoint_factory()
+    endpoint_registry.register(identity, rpc_endpoint)
+
     module_last_name = module_name.split('.')[-1]
     module_res_name = f'{module_last_name}_module'
 
@@ -37,7 +45,7 @@ def construct_resources(module_name, module_path, root_dir):
     ai_module = resource_module[module_res_name]
     ai_module_ref = mosaic.put(ai_module)
 
-    with subprocess_running('guesser') as process:
+    with subprocess_running(rpc_endpoint, identity, 'guesser') as process:
         collect_attributes_call = process.rpc_call(runner_method_collect_attributes_ref)
         global_list = collect_attributes_call(ai_module_ref)
         _log.info("Collected global list: %s", global_list)

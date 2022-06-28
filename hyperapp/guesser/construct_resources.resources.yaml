@@ -1,13 +1,16 @@
 import:
+  - legacy_service.endpoint_registry
+  - legacy_service.generate_rsa_identity
   - legacy_service.mosaic
   - legacy_service.resource_module_factory
   - legacy_service.resource_type_producer
+  - legacy_service.rpc_endpoint_factory
   - legacy_type.attribute.attribute
   - legacy_type.piece_ref.piece_ref
   - legacy_type.python_module.python_module
   - guesser.auto_importer.auto_importer_imports_fn
   - guesser.global.construct_global
-  - server.htest_runner.runner_method_collect_attributes
+  - guesser.runner.runner_method_collect_attributes
   - sync.subprocess_context.subprocess_running
 
 definitions:
@@ -18,7 +21,7 @@ definitions:
 
   runner_method_collect_attributes_ref:
     _type: legacy_type.piece_ref.piece_ref
-    value: server.htest_runner.runner_method_collect_attributes
+    value: guesser.runner.runner_method_collect_attributes
 
   construct_resources_module:
     _type: legacy_type.python_module.python_module
@@ -28,10 +31,13 @@ definitions:
       htypes.python_module.python_module: legacy_type.python_module.python_module
       services.auto_importer_imports_ref: auto_importer_imports_ref
       services.construct_global: guesser.global.construct_global
+      services.endpoint_registry: legacy_service.endpoint_registry
+      services.generate_rsa_identity: legacy_service.generate_rsa_identity
       services.mosaic: legacy_service.mosaic
       services.runner_method_collect_attributes_ref: runner_method_collect_attributes_ref
       services.resource_module_factory: legacy_service.resource_module_factory
       services.resource_type_producer: legacy_service.resource_type_producer
+      services.rpc_endpoint_factory: legacy_service.rpc_endpoint_factory
       services.subprocess_running: sync.subprocess_context.subprocess_running
 
   construct_resources:

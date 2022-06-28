@@ -1,6 +1,6 @@
 import:
   types:
-    htest:
+    inspect:
       - attr
       - type_name
       - item_element

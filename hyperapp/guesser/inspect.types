@@ -1,0 +1,18 @@
+
+attr = record:
+  name: string
+  param_list: string list
+
+type_name = record:
+  module: string
+  name: string
+
+item_element = record:
+  name: string
+  type: type_name
+
+record_t = record:
+  type: type_name
+
+list_t = record:
+  element_list: item_element list

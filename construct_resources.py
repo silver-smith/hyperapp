@@ -6,10 +6,22 @@ from pathlib import Path
 
 from hyperapp.common.init_logging import init_logging
 from hyperapp.common import cdr_coders  # register codec
-from hyperapp.common.services import Services
+from hyperapp.common.services import HYPERAPP_DIR, Services
 
 log = logging.getLogger(__name__)
 
+
+module_dir_list = [
+    HYPERAPP_DIR / 'common',
+    HYPERAPP_DIR / 'resource',
+    HYPERAPP_DIR / 'transport',
+    HYPERAPP_DIR / 'sync',
+    HYPERAPP_DIR / 'async',
+    HYPERAPP_DIR / 'ui',
+    HYPERAPP_DIR / 'sample',
+    HYPERAPP_DIR / 'guesser',
+    HYPERAPP_DIR / 'command_line',
+    ]
 
 code_module_list = [
     'resource.resource_type',
@@ -48,7 +60,7 @@ def main():
         'command_line.construct_resources': {'args': args},
     }
 
-    services = Services()
+    services = Services(module_dir_list)
     services.init_services()
     services.init_modules(code_module_list, config)
     log.info("Initialized.")

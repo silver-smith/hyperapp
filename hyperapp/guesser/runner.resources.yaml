@@ -1,5 +1,5 @@
 import:
-  - legacy_module.server.htest_runner
+  - legacy_module.guesser.runner
   - legacy_service.mosaic
   - legacy_service.types
   - legacy_service.python_object_creg
@@ -11,7 +11,7 @@ definitions:
 
   runner_attribute:
     _type: legacy_type.attribute.attribute
-    object: legacy_module.server.htest_runner
+    object: legacy_module.guesser.runner
     attr_name: Runner
 
   runner_factory:
