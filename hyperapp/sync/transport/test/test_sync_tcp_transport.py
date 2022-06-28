@@ -50,13 +50,13 @@ def test_tcp_send(services):
 
     subprocess = services.subprocess(
         'subprocess',
-        additional_module_dirs=[Path(__file__).parent],
+        module_dir_list=[*services.module_dir_list, Path(__file__).parent],
         code_module_list=[
             'sync.transport.tcp',
-            'send',
+            'sync.transport.test.send',
             ],
         config={
-            'send': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
+            'sync.transport.test.send': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
             },
         )
     with subprocess:
@@ -82,13 +82,13 @@ def test_tcp_echo(services):
 
     subprocess = services.subprocess(
         'subprocess',
-        additional_module_dirs=[Path(__file__).parent],
+        module_dir_list=[*services.module_dir_list, Path(__file__).parent],
         code_module_list=[
             'sync.transport.tcp',
-            'echo',
+            'sync.transport.test.echo',
             ],
         config={
-            'echo': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
+            'sync.transport.test.echo': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
             },
         )
     with subprocess:
