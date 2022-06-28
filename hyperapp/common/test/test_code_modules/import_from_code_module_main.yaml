@@ -3,4 +3,4 @@ import:
     type_module_2:
       - record_3
   code:
-    - subdir.import_from_code_module_sub
+    - common.test.test_code_modules.subdir.import_from_code_module_sub
