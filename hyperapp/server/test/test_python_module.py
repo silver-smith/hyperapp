@@ -16,8 +16,11 @@ TEST_RESOURCE_DIR = TEST_DIR / 'test_resources'
 
 
 @pytest.fixture
-def additional_module_dirs():
-    return [TEST_RESOURCE_DIR]
+def module_dir_list(default_module_dir_list):
+    return [
+        *default_module_dir_list,
+        TEST_RESOURCE_DIR,
+        ]
 
 
 @pytest.fixture
@@ -32,7 +35,7 @@ def code_module_list():
 
 
 def test_python_module_resource(services):
-    htest_module = services.resource_module_registry['sample_python_module']
+    htest_module = services.resource_module_registry['server.test.test_resources.sample_python_module']
     python_module_resource = htest_module['sample_python_module']
     log.info("Loading python module: %r", python_module_resource)
     python_module = services.python_object_creg.animate(python_module_resource)
@@ -40,7 +43,7 @@ def test_python_module_resource(services):
 
 
 def test_fixture(services):
-    module = services.fixture_resource_module_registry['sample_fixture.fixtures']
+    module = services.fixture_resource_module_registry['server.test.test_resources.sample_fixture.fixtures']
     fixture = module['sample_fixture']
     log.info("Sample fixture: %r", fixture)
     python_module = services.python_object_creg.animate(fixture)
