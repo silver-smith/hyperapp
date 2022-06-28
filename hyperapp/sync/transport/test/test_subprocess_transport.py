@@ -45,12 +45,12 @@ def test_send_subprocess_parcel(services):
 
     subprocess = services.subprocess(
         'subprocess',
-        additional_module_dirs=[Path(__file__).parent],
+        module_dir_list=[*services.module_dir_list, Path(__file__).parent],
         code_module_list=[
-            'send',
+            'sync.transport.test.send',
             ],
         config = {
-            'send': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
+            'sync.transport.test.send': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
             'sync.subprocess_child': {'master_peer_ref_cdr_list': master_peer_ref_cdr_list},
             },
         )
@@ -77,12 +77,12 @@ def test_subprocess_transport_echo(services):
 
     subprocess = services.subprocess(
         'subprocess',
-        additional_module_dirs=[Path(__file__).parent],
+        module_dir_list=[*services.module_dir_list, Path(__file__).parent],
         code_module_list=[
-            'echo',
+            'sync.transport.test.echo',
             ],
         config = {
-            'echo': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
+            'sync.transport.test.echo': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
             'sync.subprocess_child': {'master_peer_ref_cdr_list': master_peer_ref_cdr_list},
             },
         )
