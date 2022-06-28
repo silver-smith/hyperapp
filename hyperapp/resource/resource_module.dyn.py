@@ -20,7 +20,6 @@ class ResourceModule:
             resource_type_producer,
             python_object_creg,
             resource_module_registry,
-            fixture_resource_module_registry,
             name,
             path,
             load_from_file=True,
@@ -31,7 +30,6 @@ class ResourceModule:
         self._mosaic = mosaic
         self._resource_type_producer = resource_type_producer
         self._resource_module_registry = resource_module_registry
-        self._fixture_resource_module_registry = fixture_resource_module_registry
         self._python_object_creg = python_object_creg
         self._name = name
         self._path = path
@@ -65,7 +63,6 @@ class ResourceModule:
             resource_type_producer=self._resource_type_producer,
             python_object_creg=self._python_object_creg,
             resource_module_registry=self._resource_module_registry,
-            fixture_resource_module_registry=self._fixture_resource_module_registry,
             name=f'{self._name}-with-{module.name}',
             path=self._path.with_name('dummy'),
             load_from_file=True,
@@ -129,10 +126,7 @@ class ResourceModule:
         if name in self._import_set:
             module_name, var_name = name.rsplit('.', 1)
             try:
-                if module_name.endswith('.fixtures'):
-                    module = self._fixture_resource_module_registry[module_name]
-                else:
-                    module = self._resource_module_registry[module_name]
+                module = self._resource_module_registry[module_name]
             except KeyError:
                 raise RuntimeError(f"{self._name}: Error resolving imported {name!r}: Unknown module {module_name!r}")
             piece = module[var_name]
@@ -205,26 +199,16 @@ class ResourceModule:
         return Definition(t, value)
 
 
-def load_resource_modules(hyperapp_dir, mosaic, resource_type_producer, python_object_creg, dir_list):
+def load_resource_modules(hyperapp_dir, resource_module_factory, dir_list, registry):
     ext = '.resources.yaml'
-    fixture_ext = '.fixtures.resources.yaml'
-    registry = {}
-    fixture_registry = {}
     for root_dir in dir_list:
         for path in root_dir.rglob(f'*{ext}'):
             if 'test' in path.relative_to(root_dir).parts:
                 continue  # Skip test subdirectories.
             rpath = str(path.relative_to(hyperapp_dir))
             name = rpath[:-len(ext)].replace('/', '.')
-            if str(path).endswith(fixture_ext):
-                log.info("Fixture resource module: %r", name)
-                fixture_registry[name] = ResourceModule(
-                    mosaic, resource_type_producer, python_object_creg, registry, fixture_registry, name, path)
-            else:
-                log.info("Resource module: %r", name)
-                registry[name] = ResourceModule(
-                    mosaic, resource_type_producer, python_object_creg, registry, fixture_registry, name, path)
-    return (registry, fixture_registry)
+            log.info("Resource module: %r", name)
+            registry[name] = resource_module_factory(registry, name, path)
 
 
 class ThisModule(Module):
@@ -232,18 +216,16 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        services.resource_module_registry, services.fixture_resource_module_registry = load_resource_modules(
-            services.hyperapp_dir,
-            services.mosaic,
-            services.resource_type_producer,
-            services.python_object_creg,
-            services.module_dir_list,
-        )
-        services.resource_module_factory = partial(
+        services.resource_module_factory = resource_module_factory = partial(
             ResourceModule,
             services.mosaic,
             services.resource_type_producer,
             services.python_object_creg,
-            services.resource_module_registry,
-            services.fixture_resource_module_registry,
         )
+        services.resource_module_registry = {}
+        services.resource_loader = resource_loader = partial(
+            load_resource_modules,
+            services.hyperapp_dir,
+            resource_module_factory,
+            )
+        resource_loader(services.module_dir_list, services.resource_module_registry)

@@ -6,8 +6,11 @@ from .services import (
     construct_global,
     endpoint_registry,
     generate_rsa_identity,
+    hyperapp_dir,
     mosaic,
+    resource_loader,
     resource_module_factory,
+    resource_module_registry,
     resource_type_producer,
     rpc_endpoint_factory,
     runner_method_collect_attributes_ref,
@@ -15,6 +18,12 @@ from .services import (
     )
 
 _log = logging.getLogger(__name__)
+
+
+def custom_res_module_reg(resources_dir):
+    module_reg = {**resource_module_registry}
+    resource_loader([hyperapp_dir / resources_dir], module_reg)
+    return module_reg
 
 
 def construct_resources(module_name, module_path, root_dir):
@@ -27,8 +36,10 @@ def construct_resources(module_name, module_path, root_dir):
     module_last_name = module_name.split('.')[-1]
     module_res_name = f'{module_last_name}_module'
 
+    local_res_module_reg = custom_res_module_reg(module_path.parent)
+
     resource_module = resource_module_factory(
-        module_name, root_dir / f'{module_path}_auto_import.resources.yaml', load_from_file=False)
+        local_res_module_reg, module_name, root_dir / f'{module_path}_auto_import.resources.yaml', load_from_file=False)
 
     module_res_t = resource_type_producer(htypes.python_module.python_module)
     import_rec_def_t = module_res_t.definition_t.fields['import_list'].element_t
@@ -51,7 +62,7 @@ def construct_resources(module_name, module_path, root_dir):
         _log.info("Collected global list: %s", global_list)
 
         for globl in global_list:
-            construct_global(root_dir, module_name, resource_module, process, module_res_name, globl)
+            construct_global(local_res_module_reg, root_dir, module_name, resource_module, process, module_res_name, globl)
 
         auto_importer_imports_call = process.rpc_call(auto_importer_imports_ref)
         imports = auto_importer_imports_call()

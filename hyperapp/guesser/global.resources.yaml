@@ -1,9 +1,7 @@
 import:
-  - legacy_service.fixture_resource_module_registry
   - legacy_service.mosaic
   - legacy_service.resource_type_producer
   - legacy_service.resource_module_factory
-  - legacy_service.resource_module_registry
   - legacy_type.attribute.attribute
   - legacy_type.call.call
   - legacy_type.global_command.global_command_association
@@ -45,8 +43,6 @@ definitions:
       services.mosaic: legacy_service.mosaic
       services.resource_type_producer: legacy_service.resource_type_producer
       services.resource_module_factory: legacy_service.resource_module_factory
-      services.resource_module_registry: legacy_service.resource_module_registry
-      services.fixture_resource_module_registry: legacy_service.fixture_resource_module_registry
       services.runner_method_collect_attributes_ref: runner_method_collect_attributes_ref
       services.runner_method_get_resource_type_ref: runner_method_get_resource_type_ref
 
