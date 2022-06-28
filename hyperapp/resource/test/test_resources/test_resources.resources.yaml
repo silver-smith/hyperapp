@@ -1,10 +1,10 @@
 import:
-  - legacy_module.server.htest_sample
+  - legacy_module.resource.test.test_resources.sample_module
   - legacy_service.mosaic
   - legacy_service.web
   - legacy_service.peer_registry
   - legacy_service.rpc_call_factory
-  - legacy_service.server_identity
+  - legacy_service.mock_identity
   - legacy_type.attribute.attribute
   - legacy_type.partial.partial
   - legacy_type.call.call
@@ -15,7 +15,7 @@ definitions:
 
   sample_servant_factory:
     _type: legacy_type.attribute.attribute
-    object: legacy_module.server.htest_sample
+    object: legacy_module.resource.test.test_resources.sample_module
     attr_name: sample_servant
 
   sample_servant_partial:
@@ -42,7 +42,7 @@ definitions:
 
   sample_list_service:
     _type: legacy_type.resource_service.list_service
-    identity: legacy_service.server_identity
+    identity: legacy_service.mock_identity
     function: servant_list
     dir: test_d
     commands: []

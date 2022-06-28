@@ -1,0 +1,4 @@
+require:
+  - generate_rsa_identity
+provide:
+  - mock_identity
