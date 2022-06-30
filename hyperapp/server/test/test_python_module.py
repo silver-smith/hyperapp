@@ -43,7 +43,7 @@ def test_python_module_resource(services):
 
 
 def test_fixture(services):
-    module = services.fixture_resource_module_registry['server.test.test_resources.sample_fixture.fixtures']
+    module = services.resource_module_registry['server.test.test_resources.sample_fixture.fixtures']
     fixture = module['sample_fixture']
     log.info("Sample fixture: %r", fixture)
     python_module = services.python_object_creg.animate(fixture)
