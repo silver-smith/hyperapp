@@ -47,15 +47,15 @@ class _HTypesModule(types.ModuleType):
 
 class _HTypesRoot(types.ModuleType):
 
-    def __init__(self, name, import_dict, types, local_type_module_reg):
+    def __init__(self, name, import_dict, types, local_types):
         super().__init__(name)
         self._import_dict = import_dict
         self._types = types
-        self._local_type_module_reg = local_type_module_reg
+        self._local_types = local_types
 
     def __getattr__(self, name):
         try:
-            type_module = self._local_type_module_reg[name]
+            type_module = self._local_types[name]
         except KeyError:
             raise RuntimeError(f"Unknown type module: {name}")
         module = _HTypesModule(f'{self.__name__}.{name}', self._import_dict, self._types, name, type_module)
@@ -79,10 +79,10 @@ class _Loader(Finder):
 
     _is_package = True
 
-    def __init__(self, services, types, local_type_module_reg, code_module_names, import_dict):
+    def __init__(self, services, types, local_types, code_module_names, import_dict):
         self._services = services
         self._types = types
-        self._local_type_module_reg = local_type_module_reg
+        self._local_types = local_types
         self._code_module_names = code_module_names
         self._import_dict = import_dict
         self._base_module_name = None
@@ -103,9 +103,9 @@ class _Loader(Finder):
         if rel_name == 'services':
             module = _ServicesModule(spec.name, self._services, self._import_dict)
         elif rel_name == 'htypes':
-            module = _HTypesRoot(spec.name, self._import_dict, self._types, self._local_type_module_reg)
+            module = _HTypesRoot(spec.name, self._import_dict, self._types, self._local_types)
         elif rel_name.startswith('htypes.'):
-            root =_HTypesRoot(spec.name, self._import_dict, self._types, self._local_type_module_reg)
+            root =_HTypesRoot(spec.name, self._import_dict, self._types, self._local_types)
             module = getattr(root, last_name)
         else:
             for name in self._code_module_names:
@@ -131,15 +131,15 @@ class _Loader(Finder):
 
 class AutoImporter:
 
-    def __init__(self, services, types, type_module_loader, local_modules):
+    def __init__(self, services, types, local_types, local_modules):
         self._services = services
         self._types = types
-        self._local_type_module_reg = type_module_loader.registry
+        self._local_types = local_types
         self._code_module_names = list(local_modules.by_name)
         self._import_dict = {}
 
     def loader(self):
-        return _Loader(self._services, self._types, self._local_type_module_reg, self._code_module_names, self._import_dict)
+        return _Loader(self._services, self._types, self._local_types, self._code_module_names, self._import_dict)
 
     def imports(self):
         return [

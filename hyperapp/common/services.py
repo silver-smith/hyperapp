@@ -35,9 +35,10 @@ class Services(object):
         'mosaic',
         'types',
         'web',
+        'local_types',
+        'local_modules',
         'type_module_loader',
         'code_module_loader',
-        'local_modules',
         'module_registry',
     ]
 

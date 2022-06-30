@@ -3,7 +3,7 @@ import:
   - legacy_service.python_object_creg
   - legacy_service.resource_module_registry
   - legacy_service.services
-  - legacy_service.type_module_loader
+  - legacy_service.local_types
   - legacy_service.types
   - legacy_type.attribute.attribute
   - legacy_type.auto_importer.import_rec
@@ -33,7 +33,7 @@ definitions:
     params:
       services: legacy_service.services
       types: legacy_service.types
-      type_module_loader: legacy_service.type_module_loader
+      local_types: legacy_service.local_types
       local_modules: legacy_service.local_modules
 
   auto_importer:
