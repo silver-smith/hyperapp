@@ -58,7 +58,7 @@ def services(module_dir_list, code_module_list, post_stop_checks):
 
 @pytest.fixture
 def htypes(services):
-    return HyperTypesNamespace(services.types, services.type_module_loader.registry)
+    return HyperTypesNamespace(services.types, services.local_types)
 
 
 @pytest.fixture

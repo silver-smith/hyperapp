@@ -10,28 +10,32 @@ log = logging.getLogger(__name__)
 _ModuleInfo = namedtuple('_ModuleInfo', 'info_path source_path type_import_dict code_import_list provide require')
 
 
-class Registry:
+class CodeModuleRegistry:
 
     def __init__(self):
         self.by_name = {}  # str -> code_module_t
         self.by_requirement = defaultdict(set)  # str -> code_module_t set
         self.module_provides = defaultdict(set)  # module name -> provide set
 
+    def update(self, registry):
+        self.by_name.update(registry.by_name)
+        self.by_requirement.update(registry.by_requirement)
+        self.module_provides.update(registry.module_provides)
+
 
 class CodeModuleLoader:
 
-    def __init__(self, hyperapp_dir, mosaic, local_type_module_registry):
+    def __init__(self, hyperapp_dir, mosaic):
         self._hyperapp_dir = hyperapp_dir
         self._mosaic = mosaic
-        self._local_type_module_registry = local_type_module_registry
 
-    def load_code_modules(self, root_dir_list):
+    def load_code_modules(self, local_types, root_dir_list):
         name_to_info = {}
         for root_dir in root_dir_list:
             name_to_info.update(self._load_modules_info(root_dir))
-        registry = Registry()
+        registry = CodeModuleRegistry()
         for name in name_to_info:
-            self._load_module(name, name_to_info, registry, [])
+            self._load_module(local_types, name, name_to_info, registry, [])
         return registry
 
     def _load_modules_info(self, root_dir):
@@ -60,7 +64,7 @@ class CodeModuleLoader:
             log.debug("Loaded code module info %r: %s", module_name, info)
         return name_to_info
 
-    def _load_module(self, module_name, name_to_info, registry, dep_stack):
+    def _load_module(self, local_types, module_name, name_to_info, registry, dep_stack):
         if module_name in dep_stack:
             raise RuntimeError("Circular code module dependency: {}".format('->'.join([*dep_stack, module_name])))
         info = name_to_info[module_name]
@@ -72,13 +76,13 @@ class CodeModuleLoader:
             if not imported_module:
                 if import_module_name not in name_to_info:
                     raise RuntimeError(f"Code module {module_name!r} wants unknown code module {import_module_name!r}.")
-                imported_module = self._load_module(import_module_name, name_to_info, registry, [*dep_stack, module_name])
+                imported_module = self._load_module(local_types, import_module_name, name_to_info, registry, [*dep_stack, module_name])
             imported_module_ref = self._mosaic.put(imported_module)
             code_import_list.append(code_import_t(import_module_name, imported_module_ref))
         type_import_list = []
         for type_module_name, import_name_list in info.type_import_dict.items():
             try:
-                local_type_module = self._local_type_module_registry[type_module_name]
+                local_type_module = local_types[type_module_name]
             except KeyError:
                 raise RuntimeError(f"{info.info_path}: Unknown type module: {type_module_name}")
             for type_name in import_name_list:

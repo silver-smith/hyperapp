@@ -14,7 +14,7 @@ from .module_ref_resolver import ModuleRefResolver
 from .type_module_loader import TypeModuleLoader
 from .type_system import TypeSystem
 from .code_module import register_code_module_types
-from .code_module_loader import CodeModuleLoader
+from .code_module_loader import CodeModuleRegistry, CodeModuleLoader
 from .code_registry import CodeRegistry
 from .python_importer import PythonImporter
 from .module_registry import CodeModule, ModuleRegistry
@@ -61,8 +61,11 @@ class Services(object):
         self.web.add_source(self.mosaic)
         register_builtin_types(self.builtin_types, self.mosaic, self.types)
         register_code_module_types(self.builtin_types, self.mosaic, self.types)
+        self.local_types = {}  # module name -> name -> name_wrapped_mt ref.
+        # CodeModuleRegistry: by_name: name -> code_module_t, by_requirement: name -> code_module_t set.
+        self.local_modules = CodeModuleRegistry()
         self.type_module_loader = TypeModuleLoader(self.builtin_types, self.mosaic, self.types)
-        self.code_module_loader = CodeModuleLoader(self.hyperapp_dir, self.mosaic, self.type_module_loader.registry)
+        self.code_module_loader = CodeModuleLoader(self.hyperapp_dir, self.mosaic)
         self.python_importer = PythonImporter()
         self._module_code_registry = CodeRegistry('module', self.web, self.types)
         self._module_code_registry.register_actor(code_module_t, CodeModule.from_piece, self.types, self.web)
@@ -83,7 +86,7 @@ class Services(object):
     def init_modules(self, code_module_list, config=None):
         log.info("Init modules.")
         try:
-            self.type_module_loader.load_type_modules(self.module_dir_list)
+            self.type_module_loader.load_type_modules(self.module_dir_list, self.local_types)
             self._load_code_module_list(code_module_list, config or {})
         except:
             self.python_importer.unregister_meta_hook()
@@ -93,11 +96,10 @@ class Services(object):
         self.python_importer.unregister_meta_hook()
 
     def _load_code_module_list(self, module_name_list, config):
-        local_modules = self.code_module_loader.load_code_modules(self.module_dir_list)
-        self.local_modules = local_modules  # Registry (by_name: name -> code_module_t, by_requirement: name -> code_module_t set).
-
+        self.local_modules.update(
+            self.code_module_loader.load_code_modules(self.local_types, self.module_dir_list))
         module_list = [
-            local_modules.by_name[name]
+            self.local_modules.by_name[name]
             for name in module_name_list
             ]
-        self.module_registry.import_module_list(self, module_list, local_modules.by_requirement, config)
+        self.module_registry.import_module_list(self, module_list, self.local_modules.by_requirement, config)

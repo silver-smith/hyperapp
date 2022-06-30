@@ -34,14 +34,14 @@ class LegacyTypeResourceModule:
         return set()
 
 
-def make_legacy_type_resource_module(builtin_types, types, type_module_loader):
+def make_legacy_type_resource_module(builtin_types, types, local_types):
     name_to_module = defaultdict(LegacyTypeResourceModule)
     for t in builtin_types.values():
         type_ref = types.reverse_resolve(t)
         type_piece = htypes.legacy_type.type(type_ref)
         name_to_module[f'legacy_type.{t.module_name}'][t.name] = type_piece
         log.info("Legacy type resource %s.%s: %s", t.module_name, t.name, type_piece)
-    for module_name, local_type_module in type_module_loader.registry.items():
+    for module_name, local_type_module in local_types.items():
         for name, type_ref in local_type_module.items():
             type_piece = htypes.legacy_type.type(type_ref)
             name_to_module[f'legacy_type.{module_name}'][name] = type_piece
@@ -59,5 +59,5 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
 
         services.resource_module_registry.update(
-            make_legacy_type_resource_module(services.builtin_types, services.types, services.type_module_loader))
+            make_legacy_type_resource_module(services.builtin_types, services.types, services.local_types))
         services.python_object_creg.register_actor(htypes.legacy_type.type, python_object, services.types)

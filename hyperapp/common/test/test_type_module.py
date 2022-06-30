@@ -25,27 +25,32 @@ TEST_MODULES_DIR = Path(__file__).parent.resolve()
 
 
 @pytest.fixture
+def local_types():
+    return {}
+
+
+@pytest.fixture
 def loader(builtin_types, mosaic, types):
     return TypeModuleLoader(builtin_types, mosaic, types)
 
 
 @pytest.fixture
-def htypes(types, loader):
-    return HyperTypesNamespace(types, loader.registry)
+def htypes(types, local_types):
+    return HyperTypesNamespace(types, local_types)
 
 
-def test_type_module_loader(loader):
-    loader.load_type_modules([TEST_MODULES_DIR / 'test_type_modules'])
+def test_type_module_loader(local_types, loader):
+    loader.load_type_modules([TEST_MODULES_DIR / 'test_type_modules'], local_types)
 
 
-def test_circular_type_dep(loader):
+def test_circular_type_dep(local_types, loader):
     with pytest.raises(CircularDepError) as excinfo:
-        loader.load_type_modules([TEST_MODULES_DIR / 'circular_type_dep'])
+        loader.load_type_modules([TEST_MODULES_DIR / 'circular_type_dep'], local_types)
     assert str(excinfo.value) == 'Circular type module dependency: module_1->module_2->module_3->module_1'
 
 
-def test_types(types, htypes, loader):
-    loader.load_type_modules([TEST_MODULES_DIR / 'test_type_modules'])
+def test_types(types, local_types, htypes, loader):
+    loader.load_type_modules([TEST_MODULES_DIR / 'test_type_modules'], local_types)
 
 
     assert htypes.type_module_1.record_1 == TRecord('type_module_1', 'record_1', {'int_field': tInt})
@@ -61,8 +66,8 @@ def test_types(types, htypes, loader):
     assert htypes.type_module_1.empty_record_1 != htypes.type_module_2.empty_record_2
 
 
-def test_same_instance(htypes, loader):
-    loader.load_type_modules([TEST_MODULES_DIR / 'same_instance'])
+def test_same_instance(local_types, htypes, loader):
+    loader.load_type_modules([TEST_MODULES_DIR / 'same_instance'], local_types)
     element = htypes.same_instance.element('abcd')
 
     # Same types should resolve to same instances.
@@ -82,8 +87,8 @@ def test_same_instance(htypes, loader):
     assert isinstance(value, htypes.same_instance.container)
 
 
-def test_exception_type(types, htypes, loader):
-    loader.load_type_modules([TEST_MODULES_DIR / 'test_type_modules'])
+def test_exception_type(types, local_types, htypes, loader):
+    loader.load_type_modules([TEST_MODULES_DIR / 'test_type_modules'], local_types)
 
     assert htypes.exceptions.exception_1 == TException('exceptions', 'exception_1', {'int_field': tInt})
     assert htypes.exceptions.exception_2 == TException('exceptions', 'exception_2', {'int_field': tInt, 'string_field': tString})

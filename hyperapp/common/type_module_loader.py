@@ -8,7 +8,6 @@ from .htypes import (
 from .ref import ref_repr
 from .visual_rep import pprint
 from .type_module_parser import load_type_module_source
-from .local_type_module import LocalTypeModule
 from .mapper import Mapper
 
 log = logging.getLogger(__name__)
@@ -56,20 +55,14 @@ class TypeModuleLoader(object):
         self._builtin_types = builtin_types
         self._mosaic = mosaic
         self._types = types
-        self._registry = {}  # name -> LocalTypeModule
 
-    @property
-    def registry(self):
-        return self._registry
-
-    def load_type_modules(self, dir_list):
+    # registry: module name -> name -> name_wrapped_mt ref
+    def load_type_modules(self, dir_list, registry):
         log.info("Load type modules from: %s", dir_list)
-        name_to_source = self._load_sources(dir_list)
-        name_to_module = {}  # mapped/resolved module
+        name_to_source = self._load_sources(dir_list)  # name -> type_module_t.
         for name, source in sorted(name_to_source.items()):
-            module = self._resolve_module(name_to_source, name_to_module, name, [])
-            name_to_module[name] = module
-        self._registry.update(name_to_module)
+            module = self._resolve_module(name_to_source, registry, name, [])
+            registry[name] = module
 
     def _load_sources(self, dir_list):
         name_to_source = {}
@@ -112,14 +105,14 @@ class TypeModuleLoader(object):
         return local_name_dict
 
     def _map_module_names(self, name, source, local_name_dict):
-        local_type_module = LocalTypeModule()
+        local_type_module = {}
         mapper = _NameToRefMapper(self._builtin_types, self._mosaic, self._types, local_name_dict)
         for typedef in source.typedefs:
             log.debug('Type module loader %r: mapping %r %s:', name, typedef.name, typedef.type)
             type_ref = mapper.map(typedef.type)
             named = name_wrapped_mt(name, typedef.name, type_ref)
             ref = self._mosaic.put(named)
-            local_type_module.register(typedef.name, ref)
+            local_type_module[typedef.name] = ref
             local_name_dict[typedef.name] = ref
             log.debug('Type module loader %r: %r is mapped to %s', name, typedef.name, ref)
         return local_type_module
