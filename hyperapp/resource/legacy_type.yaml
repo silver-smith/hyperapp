@@ -3,6 +3,7 @@ import:
     legacy_type:
       - type
 provide:
+  - legacy_type_resource_loader
   - resource.legacy_type
 require:
   - resource_module_registry
