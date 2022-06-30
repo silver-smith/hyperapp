@@ -17,10 +17,12 @@ class CodeModuleRegistry:
         self.by_requirement = defaultdict(set)  # str -> code_module_t set
         self.module_provides = defaultdict(set)  # module name -> provide set
 
-    def update(self, registry):
-        self.by_name.update(registry.by_name)
-        self.by_requirement.update(registry.by_requirement)
-        self.module_provides.update(registry.module_provides)
+    def copy(self):
+        registry = CodeModuleRegistry()
+        registry.by_name.update(self.by_name)
+        registry.by_requirement.update(self.by_requirement)
+        registry.module_provides.update(self.module_provides)
+        return registry
 
 
 class CodeModuleLoader:
@@ -29,14 +31,12 @@ class CodeModuleLoader:
         self._hyperapp_dir = hyperapp_dir
         self._mosaic = mosaic
 
-    def load_code_modules(self, local_types, root_dir_list):
+    def load_code_modules(self, local_types, root_dir_list, registry):
         name_to_info = {}
         for root_dir in root_dir_list:
             name_to_info.update(self._load_modules_info(root_dir))
-        registry = CodeModuleRegistry()
         for name in name_to_info:
             self._load_module(local_types, name, name_to_info, registry, [])
-        return registry
 
     def _load_modules_info(self, root_dir):
         ext = '.dyn.py'

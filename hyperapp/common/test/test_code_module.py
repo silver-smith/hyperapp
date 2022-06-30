@@ -2,7 +2,7 @@ from pathlib import Path
 import pytest
 
 from hyperapp.common.code_module import code_module_t
-from hyperapp.common.code_module_loader import CodeModuleLoader
+from hyperapp.common.code_module_loader import CodeModuleRegistry, CodeModuleLoader
 from hyperapp.common.code_registry import CodeRegistry
 from hyperapp.common.module_registry import CodeModule, ModuleRegistry
 from hyperapp.common.python_importer import PythonImporter
@@ -25,6 +25,11 @@ def local_types():
 
 
 @pytest.fixture
+def local_modules():
+    return CodeModuleRegistry()
+
+
+@pytest.fixture
 def type_module_loader(builtin_types, mosaic, types):
     return TypeModuleLoader(builtin_types, mosaic, types)
 
@@ -34,14 +39,14 @@ def code_module_loader(hyperapp_dir, mosaic):
     return CodeModuleLoader(hyperapp_dir, mosaic)
 
 
-def test_code_module_load(local_types, type_module_loader, code_module_loader):
+def test_code_module_load(local_types, local_modules, type_module_loader, code_module_loader):
     type_module_loader.load_type_modules([TEST_DIR / 'test_type_modules'], local_types)
 
-    registry = code_module_loader.load_code_modules(local_types, [TEST_DIR / 'test_code_modules'])
-    for module_name, code_module in registry.by_name.items():
+    code_module_loader.load_code_modules(local_types, [TEST_DIR / 'test_code_modules'], local_modules)
+    for module_name, code_module in local_modules.by_name.items():
         assert isinstance(code_module, code_module_t)
         pprint(code_module, title=f"Loaded code module: {module_name!r}")
-    assert set(registry.by_name) == {
+    assert set(local_modules.by_name) == {
         'common.test.test_code_modules.module',
         'common.test.test_code_modules.module_with_types',
         'common.test.test_code_modules.module_requirements_main',
@@ -74,35 +79,35 @@ def services():
     return None
 
 
-def test_code_module_import(local_types, type_module_loader, code_module_loader, module_registry, services):
+def test_code_module_import(local_types, local_modules, type_module_loader, code_module_loader, module_registry, services):
     type_module_loader.load_type_modules([TEST_DIR / 'test_type_modules'], local_types)
-    local_modules = code_module_loader.load_code_modules(local_types, [TEST_DIR / 'test_code_modules'])
+    code_module_loader.load_code_modules(local_types, [TEST_DIR / 'test_code_modules'], local_modules)
     module = local_modules.by_name['common.test.test_code_modules.module']
     module_registry.import_module_list(services, [module], local_modules.by_requirement, {})
     python_module = module_registry.get_python_module(module)
     assert python_module.value == "Value in module"
 
 
-def test_code_module_import_with_types(local_types, type_module_loader, code_module_loader, module_registry, services):
+def test_code_module_import_with_types(local_types, local_modules, type_module_loader, code_module_loader, module_registry, services):
     type_module_loader.load_type_modules([TEST_DIR / 'test_type_modules'], local_types)
-    local_modules = code_module_loader.load_code_modules(local_types, [TEST_DIR / 'test_code_modules'])
+    code_module_loader.load_code_modules(local_types, [TEST_DIR / 'test_code_modules'], local_modules)
     module = local_modules.by_name['common.test.test_code_modules.module_with_types']
     module_registry.import_module_list(services, [module], local_modules.by_requirement, {})
     python_module = module_registry.get_python_module(module)
 
 
-def test_module_requirement(local_types, type_module_loader, code_module_loader, module_registry, services):
+def test_module_requirement(local_types, local_modules, type_module_loader, code_module_loader, module_registry, services):
     type_module_loader.load_type_modules([TEST_DIR / 'test_type_modules'], local_types)
-    local_modules = code_module_loader.load_code_modules(local_types, [TEST_DIR / 'test_code_modules'])
+    code_module_loader.load_code_modules(local_types, [TEST_DIR / 'test_code_modules'], local_modules)
     module_main = local_modules.by_name['common.test.test_code_modules.module_requirements_main']
     module_registry.import_module_list(services, [module_main], local_modules.by_requirement, {})
     module_sub = local_modules.by_name['common.test.test_code_modules.subdir.module_requirements_sub']
     assert module_registry.get_python_module(module_sub)  # Should be loaded too because it is required by module main.
 
 
-def test_code_module_import_from_code_module(local_types, type_module_loader, code_module_loader, module_registry, services):
+def test_code_module_import_from_code_module(local_types, local_modules, type_module_loader, code_module_loader, module_registry, services):
     type_module_loader.load_type_modules([TEST_DIR / 'test_type_modules'], local_types)
-    local_modules = code_module_loader.load_code_modules(local_types, [TEST_DIR / 'test_code_modules'])
+    code_module_loader.load_code_modules(local_types, [TEST_DIR / 'test_code_modules'], local_modules)
     module_main = local_modules.by_name['common.test.test_code_modules.import_from_code_module_main']
     module_registry.import_module_list(services, [module_main], local_modules.by_requirement, {})
     module_sub = local_modules.by_name['common.test.test_code_modules.subdir.import_from_code_module_sub']
@@ -110,9 +115,9 @@ def test_code_module_import_from_code_module(local_types, type_module_loader, co
     module_registry.get_python_module(module_main).main_value == 'main:sub'
 
  
-def test_module_init(local_types, type_module_loader, code_module_loader, module_registry, services):
+def test_module_init(local_types, local_modules, type_module_loader, code_module_loader, module_registry, services):
     type_module_loader.load_type_modules([TEST_DIR / 'test_type_modules'], local_types)
-    local_modules = code_module_loader.load_code_modules(local_types, [TEST_DIR / 'test_code_modules'])
+    code_module_loader.load_code_modules(local_types, [TEST_DIR / 'test_code_modules'], local_modules)
     module = local_modules.by_name['common.test.test_code_modules.module_init']
     config = {'common.test.test_code_modules.module_init': {'value': 123}}
     module_registry.import_module_list(services, [module], local_modules.by_requirement, config)
@@ -120,9 +125,9 @@ def test_module_init(local_types, type_module_loader, code_module_loader, module
     assert python_module.this_module.value == 123
 
 
-def test_enum_method(local_types, type_module_loader, code_module_loader, module_registry, services):
+def test_enum_method(local_types, local_modules, type_module_loader, code_module_loader, module_registry, services):
     type_module_loader.load_type_modules([TEST_DIR / 'test_type_modules'], local_types)
-    local_modules = code_module_loader.load_code_modules(local_types, [TEST_DIR / 'test_code_modules'])
+    code_module_loader.load_code_modules(local_types, [TEST_DIR / 'test_code_modules'], local_modules)
     module = local_modules.by_name['common.test.test_code_modules.module_init']
     config = {'common.test.test_code_modules.module_init': {'value': 123}}
     module_registry.import_module_list(services, [module], local_modules.by_requirement, config)
@@ -134,9 +139,9 @@ def test_enum_method(local_types, type_module_loader, code_module_loader, module
         pytest.fail("some_method is not returned by enum_method")
 
 
-def test_init_phases(local_types, type_module_loader, code_module_loader, module_registry, services):
+def test_init_phases(local_types, local_modules, type_module_loader, code_module_loader, module_registry, services):
     type_module_loader.load_type_modules([TEST_DIR / 'test_type_modules'], local_types)
-    local_modules = code_module_loader.load_code_modules(local_types, [TEST_DIR / 'test_code_modules'])
+    code_module_loader.load_code_modules(local_types, [TEST_DIR / 'test_code_modules'], local_modules)
     module = local_modules.by_name['common.test.test_code_modules.module_init']
     config = {'common.test.test_code_modules.module_init': {'value': 1}}
     module_registry.import_module_list(services, [module], local_modules.by_requirement, config)

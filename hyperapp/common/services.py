@@ -97,8 +97,7 @@ class Services(object):
         self.python_importer.unregister_meta_hook()
 
     def _load_code_module_list(self, module_name_list, config):
-        self.local_modules.update(
-            self.code_module_loader.load_code_modules(self.local_types, self.module_dir_list))
+        self.code_module_loader.load_code_modules(self.local_types, self.module_dir_list, self.local_modules)
         module_list = [
             self.local_modules.by_name[name]
             for name in module_name_list
