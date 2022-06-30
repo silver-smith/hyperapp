@@ -7,6 +7,8 @@ from .services import (
     endpoint_registry,
     generate_rsa_identity,
     hyperapp_dir,
+    legacy_type_resource_loader,
+    local_types,
     mosaic,
     resource_loader,
     resource_module_factory,
@@ -15,13 +17,19 @@ from .services import (
     rpc_endpoint_factory,
     runner_method_collect_attributes_ref,
     subprocess_running,
+    type_module_loader,
     )
 
 _log = logging.getLogger(__name__)
 
 
 def custom_res_module_reg(resources_dir):
-    module_reg = {**resource_module_registry}
+    custom_types = {**local_types}
+    type_module_loader.load_type_modules([hyperapp_dir / resources_dir], custom_types)
+    module_reg = {
+        **resource_module_registry,
+        **legacy_type_resource_loader(custom_types),
+        }
     resource_loader([hyperapp_dir / resources_dir], module_reg)
     return module_reg
 
