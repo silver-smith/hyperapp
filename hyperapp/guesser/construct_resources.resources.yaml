@@ -7,6 +7,7 @@ import:
   - legacy_service.legacy_type_resource_loader
   - legacy_service.local_modules
   - legacy_service.local_types
+  - legacy_service.module_dir_list
   - legacy_service.mosaic
   - legacy_service.resource_loader
   - legacy_service.resource_module_factory
@@ -48,6 +49,7 @@ definitions:
       services.legacy_type_resource_loader: legacy_service.legacy_type_resource_loader
       services.local_modules: legacy_service.local_modules
       services.local_types: legacy_service.local_types
+      services.module_dir_list: legacy_service.module_dir_list
       services.mosaic: legacy_service.mosaic
       services.runner_method_collect_attributes_ref: runner_method_collect_attributes_ref
       services.resource_loader: legacy_service.resource_loader

@@ -32,6 +32,7 @@ class Services(object):
         'services',
         'builtin_services',
         'hyperapp_dir',
+        'module_dir_list',
         'mosaic',
         'types',
         'web',

@@ -30,20 +30,13 @@ class SubProcess:
 
 
 @contextmanager
-def subprocess_running(rpc_endpoint, identity, process_name):
+def subprocess_running(module_dir_list, rpc_endpoint, identity, process_name):
     peer_ref = mosaic.put(identity.peer.piece)
     peer_ref_cdr_list = [packet_coders.encode('cdr', peer_ref)]
 
     signal_service_bundle = bundler([peer_ref, runner_is_ready_fn_ref]).bundle
     signal_service_bundle_cdr = packet_coders.encode('cdr', signal_service_bundle)
 
-    module_dir_list = [
-        hyperapp_dir / 'common',
-        hyperapp_dir / 'resource',
-        hyperapp_dir / 'transport',
-        hyperapp_dir / 'sync',
-        hyperapp_dir / 'async',
-        ]
     code_module_list = [
         'resource.legacy_type',
         'resource.legacy_module',

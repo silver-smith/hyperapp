@@ -12,6 +12,7 @@ from .services import (
     legacy_type_resource_loader,
     local_modules,
     local_types,
+    module_dir_list,
     mosaic,
     resource_loader,
     resource_module_factory,
@@ -70,7 +71,8 @@ def construct_resources(module_name, module_path, root_dir):
     ai_module = resource_module[module_res_name]
     ai_module_ref = mosaic.put(ai_module)
 
-    with subprocess_running(rpc_endpoint, identity, 'guesser') as process:
+    custom_module_dirs = [*module_dir_list, hyperapp_dir / module_path.parent]
+    with subprocess_running(custom_module_dirs, rpc_endpoint, identity, 'guesser') as process:
         collect_attributes_call = process.rpc_call(runner_method_collect_attributes_ref)
         global_list = collect_attributes_call(ai_module_ref)
         _log.info("Collected global list: %s", global_list)
