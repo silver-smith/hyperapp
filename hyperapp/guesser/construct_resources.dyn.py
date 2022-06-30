@@ -5,9 +5,12 @@ from .services import (
     auto_importer_imports_ref,
     construct_global,
     endpoint_registry,
+    code_module_loader,
     generate_rsa_identity,
     hyperapp_dir,
+    legacy_module_resource_loader,
     legacy_type_resource_loader,
+    local_modules,
     local_types,
     mosaic,
     resource_loader,
@@ -26,9 +29,12 @@ _log = logging.getLogger(__name__)
 def custom_res_module_reg(resources_dir):
     custom_types = {**local_types}
     type_module_loader.load_type_modules([hyperapp_dir / resources_dir], custom_types)
+    custom_modules = local_modules.copy()
+    code_module_loader.load_code_modules(custom_types, [hyperapp_dir / resources_dir], custom_modules)
     module_reg = {
         **resource_module_registry,
         **legacy_type_resource_loader(custom_types),
+        **legacy_module_resource_loader(custom_modules),
         }
     resource_loader([hyperapp_dir / resources_dir], module_reg)
     return module_reg
