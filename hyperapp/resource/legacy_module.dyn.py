@@ -33,7 +33,7 @@ class LegacyModuleResourceModule:
         return set()
 
 
-def make_legacy_module_resource_modules(local_modules):
+def legacy_module_resource_loader(local_modules):
     name_to_module = defaultdict(LegacyModuleResourceModule)
     for name, code_module in local_modules.by_name.items():
         *module_name_parts, var_name = name.split('.')
@@ -54,6 +54,7 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        services.resource_module_registry.update(make_legacy_module_resource_modules(services.local_modules))
+        services.legacy_module_resource_loader = legacy_module_resource_loader
+        services.resource_module_registry.update(legacy_module_resource_loader(services.local_modules))
         services.python_object_creg.register_actor(
             code_module_t, python_object, services.module_registry, services.local_modules.by_requirement, services)
