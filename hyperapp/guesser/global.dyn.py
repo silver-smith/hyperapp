@@ -280,6 +280,7 @@ def construct_global(res_module_reg, root_dir, module_name, resource_module, pro
         res_module_reg, fix_module_name, root_dir / f'{fix_module_rpath}.resources.yaml', load_from_file=False)
 
     attr_res_name = construct_attr(resource_module, module_res_name, globl, add_object_prefix=False)
+
     partial_res_name = construct_resource_params_partial(
         name_to_module, fixture_to_module, resource_module, fix_module, globl, attr_res_name)
 
@@ -287,6 +288,11 @@ def construct_global(res_module_reg, root_dir, module_name, resource_module, pro
 
     if globl.name.endswith('_command'):
         construct_object_command(module_name, resource_module, globl, object_res_name, partial_res_name)
+        return
+
+    if module_name.split('.')[-1] == 'fixtures':
+        construct_call(resource_module, partial_res_name, object_res_name)
+        # Do not produce commands for fixture modules
         return
 
     construct_call(fix_module, partial_res_name, object_res_name)

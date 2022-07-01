@@ -62,7 +62,7 @@ definitions:
     function: legacy_type.sample_list.sample_list_d
   sample_list_module:
     _type: legacy_type.python_module.python_module
-    module_name: sample.sample_list
+    module_name: sample_list
     file_name: sample_list.dyn.py
     import_list:
       htypes.sample_list.item: legacy_type.sample_list.item
