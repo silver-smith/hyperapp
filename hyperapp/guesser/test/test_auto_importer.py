@@ -13,6 +13,14 @@ pytest_plugins = ['hyperapp.common.test.services']
 
 
 @pytest.fixture
+def module_dir_list(hyperapp_dir, default_module_dir_list):
+    return [
+        *default_module_dir_list,
+        hyperapp_dir / 'guesser',
+        ]
+
+
+@pytest.fixture
 def code_module_list():
     return [
         'resource.resource_type',
@@ -35,21 +43,31 @@ def code_module_list():
         'resource.rpc_callback',
         'resource.map_service',
         'resource.python_module',
+        'transport.rsa_identity',
+        'sync.transport.endpoint',
+        'sync.rpc.rpc_endpoint',
         ]
 
 
 @pytest.fixture
 def subprocess(services):
+
+    identity = services.generate_rsa_identity(fast=True)
+    rpc_endpoint = services.rpc_endpoint_factory()
+    services.endpoint_registry.register(identity, rpc_endpoint)
+
     module = services.resource_module_registry['sync.subprocess_context']
     subprocess_running_res = module['subprocess_running']
     subprocess_running = services.python_object_creg.animate(subprocess_running_res)
-    with subprocess_running('auto_importer') as process:
+
+    with subprocess_running(services.module_dir_list, rpc_endpoint, identity, 'auto_importer') as process:
         yield process
 
 
 def test_auto_importer(services, htypes, subprocess):
 
     resource_module = services.resource_module_factory(
+        services.resource_module_registry,
         'test_auto_importer',
         Path(tempfile.gettempdir()) / 'test_auto_importer.resources.yaml',
         load_from_file=False,
