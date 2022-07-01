@@ -1,5 +1,4 @@
 import:
-- legacy_module.construct_resources_sample
 - legacy_service.mosaic
 - legacy_service.peer_registry
 - legacy_service.rpc_call_factory
@@ -11,6 +10,7 @@ import:
 - legacy_type.construct_resources_sample.sample
 - legacy_type.construct_resources_sample.sample_command_d
 - legacy_type.construct_resources_sample.sample_d
+- legacy_type.construct_resources_sample.sample_item
 - legacy_type.construct_resources_sample.sample_servant_d
 - legacy_type.construct_resources_sample.sample_servant_open_d
 - legacy_type.construct_resources_sample.sample_servant_parent_d
@@ -23,6 +23,7 @@ import:
 - legacy_type.impl.python_object_association
 - legacy_type.lcs.lcs_set_resource_association
 - legacy_type.partial.partial
+- legacy_type.python_module.python_module
 associations:
 - _type: legacy_type.global_command.global_command_association
   command: sample_command
@@ -44,12 +45,19 @@ associations:
   - object_commands_d
   value: sample_servant_parent_command
 definitions:
+  construct_resources_sample_module:
+    _type: legacy_type.python_module.python_module
+    module_name: construct_resources_sample
+    file_name: construct_resources_sample.dyn.py
+    import_list:
+      htypes.construct_resources_sample.sample: legacy_type.construct_resources_sample.sample
+      htypes.construct_resources_sample.sample_item: legacy_type.construct_resources_sample.sample_item
   object_commands_d:
     _type: legacy_type.call.call
     function: legacy_type.command.object_commands_d
   sample_attribute:
     _type: legacy_type.attribute.attribute
-    object: legacy_module.construct_resources_sample
+    object: construct_resources_sample_module
     attr_name: sample
   sample_command:
     _type: legacy_type.impl.global_command_impl
@@ -57,7 +65,7 @@ definitions:
     dir: sample_d
   sample_command_attribute:
     _type: legacy_type.attribute.attribute
-    object: legacy_module.construct_resources_sample
+    object: construct_resources_sample_module
     attr_name: sample_command
   sample_command_command:
     _type: legacy_type.impl.object_command_impl
@@ -81,7 +89,7 @@ definitions:
     params: {}
   sample_servant_attribute:
     _type: legacy_type.attribute.attribute
-    object: legacy_module.construct_resources_sample
+    object: construct_resources_sample_module
     attr_name: SampleServant
   sample_servant_d:
     _type: legacy_type.call.call

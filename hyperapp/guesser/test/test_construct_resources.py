@@ -14,14 +14,16 @@ pytest_plugins = ['hyperapp.common.test.services']
 
 TEST_DIR = Path(__file__).parent.resolve()
 HYPERAPP_DIR = TEST_DIR.parent.parent
-TEST_RESOURCE_DIR = TEST_DIR / 'test_resources'
+TEST_RESOURCES_DIR = TEST_DIR / 'test_resources'
 
 
 @pytest.fixture
-def additional_module_dirs():
+def module_dir_list(hyperapp_dir, default_module_dir_list):
     return [
-        TEST_RESOURCE_DIR,
-        HYPERAPP_DIR / 'common' / 'test' / 'mock',
+        *default_module_dir_list,
+        hyperapp_dir / 'guesser',
+        hyperapp_dir / 'common' / 'test' / 'mock',
+        TEST_RESOURCES_DIR,
         ]
 
 
@@ -29,7 +31,7 @@ def additional_module_dirs():
 def code_module_list():
     return [
         'common.lcs',
-        'mock_file_bundle',
+        'common.test.mock.mock_file_bundle',
         'ui.impl_registry',
         'resource.resource_type',
         'resource.registry',
@@ -56,7 +58,7 @@ def code_module_list():
 
 
 def test_fixture(services):
-    module = services.fixture_resource_module_registry['construct_resources_sample.fixtures']
+    module = services.resource_module_registry['guesser.test.test_resources.construct_resources_sample.fixtures']
     fixture = module['construct_resources_sample']
     log.info("Sample fixture: %r", fixture)
     python_module = services.python_object_creg.animate(fixture)
@@ -66,18 +68,21 @@ def test_fixture(services):
 @pytest.fixture
 def compare():
     def inner(resource_module, expected_fname):
-        expected_yaml = TEST_RESOURCE_DIR.joinpath(expected_fname + '.expected.yaml').read_text()
+        expected_yaml = TEST_RESOURCES_DIR.joinpath(expected_fname + '.expected.yaml').read_text()
         actual_yaml = yaml.dump(resource_module.as_dict, sort_keys=False)
-        assert expected_yaml == actual_yaml
+        assert actual_yaml == expected_yaml
     return inner
 
 
-def test_resources(services, htypes, compare):
-    htest_module = services.resource_module_registry['server.htest']
-    htest_resource = htest_module['htest']
-    htest = services.python_object_creg.animate(htest_resource)
-    log.info("Htest: %r", htest)
-    resource_module = htest.construct_resources('construct_resources_sample', TEST_RESOURCE_DIR)
+def test_resources(services, htypes, hyperapp_dir, compare):
+    construct_resource_res = services.resource_module_registry['guesser.construct_resources']['construct_resources']
+    construct_resources = services.python_object_creg.animate(construct_resource_res)
+    log.info("construct_resources: %r", construct_resources)
+    resource_module = construct_resources(
+        full_module_name='construct_resources_sample',
+        module_name='construct_resources_sample',
+        module_path=TEST_RESOURCES_DIR.joinpath('construct_resources_sample.dyn.py').relative_to(hyperapp_dir),
+        root_dir=hyperapp_dir)
     log.info("Resource module:\n%s", yaml.dump(resource_module.as_dict, sort_keys=False))
     resource_module.save_as(Path(tempfile.gettempdir()) / 'construct_resources_sample.resources.yaml')
     compare(resource_module, 'construct_resources_sample')
