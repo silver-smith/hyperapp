@@ -76,7 +76,7 @@ associations:
 definitions:
   command_list_module:
     _type: legacy_type.python_module.python_module
-    module_name: client.command_list
+    module_name: command_list
     file_name: command_list.dyn.py
     import_list:
       htypes.command.command_shortcut_d: legacy_type.command.command_shortcut_d

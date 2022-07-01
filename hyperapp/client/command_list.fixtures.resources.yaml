@@ -20,10 +20,12 @@ definitions:
     _type: legacy_type.attribute.attribute
     object: command_list_fixtures_aux_module
     attr_name: sample_global_command
+
   sample_global_command_command:
     _type: legacy_type.impl.global_command_impl
     function: sample_global_command
     dir: sample_global_command_d
+
   sample_global_command_command_raw:
     _type: legacy_type.raw.raw
     resource: sample_global_command_command

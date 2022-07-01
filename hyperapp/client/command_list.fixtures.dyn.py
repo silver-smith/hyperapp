@@ -1,14 +1,14 @@
-from .htypes import command_list
+from .import htypes
 from .services import sample_global_command_command
 from .view_command import ViewCommand
 
 
 def global_command_list_piece():
-    return command_list.global_command_list()
+    return htypes.command_list.global_command_list()
 
 
 def view_command_list_piece():
-    return command_list.view_command_list()
+    return htypes.command_list.view_command_list()
 
 
 def global_command_list_global_command_list():
