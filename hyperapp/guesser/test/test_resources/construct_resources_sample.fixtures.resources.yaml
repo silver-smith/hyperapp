@@ -1,23 +1,29 @@
+# Automatically generated file. Do not edit.
+
 import:
 - legacy_type.attribute.attribute
 - legacy_type.call.call
-- legacy_type.construct_resources_sample.sample_servant_d
 - legacy_type.construct_resources_sample.sample
 - legacy_type.construct_resources_sample.sample_item
+- legacy_type.partial.partial
 - legacy_type.python_module.python_module
+associations: []
 definitions:
-  construct_resources_sample:
+  construct_resources_sample_fixtures_module:
     _type: legacy_type.python_module.python_module
-    module_name: construct_resources_sample
+    module_name: construct_resources_sample.fixtures
     file_name: construct_resources_sample.fixtures.dyn.py
     import_list:
-      htypes.construct_resources_sample.sample_servant_d: legacy_type.construct_resources_sample.sample_servant_d
       htypes.construct_resources_sample.sample: legacy_type.construct_resources_sample.sample
       htypes.construct_resources_sample.sample_item: legacy_type.construct_resources_sample.sample_item
   sample_servant_piece:
     _type: legacy_type.call.call
-    function: sample_servant_piece_attribute
+    function: sample_servant_piece_partial
   sample_servant_piece_attribute:
     _type: legacy_type.attribute.attribute
-    object: construct_resources_sample
+    object: construct_resources_sample_fixtures_module
     attr_name: sample_servant_piece
+  sample_servant_piece_partial:
+    _type: legacy_type.partial.partial
+    function: sample_servant_piece_attribute
+    params: {}

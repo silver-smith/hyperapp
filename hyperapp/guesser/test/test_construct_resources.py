@@ -59,10 +59,10 @@ def code_module_list():
 
 def test_fixture(services):
     module = services.resource_module_registry['guesser.test.test_resources.construct_resources_sample.fixtures']
-    fixture = module['construct_resources_sample']
+    fixture = module['sample_servant_piece']
     log.info("Sample fixture: %r", fixture)
-    python_module = services.python_object_creg.animate(fixture)
-    log.info("Python module: %r", python_module)
+    piece = services.python_object_creg.animate(fixture)
+    log.info("Sample piece: %r", piece)
 
 
 @pytest.fixture

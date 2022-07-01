@@ -290,17 +290,17 @@ def construct_global(res_module_reg, root_dir, module_name, resource_module, pro
         construct_object_command(module_name, resource_module, globl, object_res_name, partial_res_name)
         return
 
-    if module_name.split('.')[-1] == 'fixtures':
-        construct_call(resource_module, partial_res_name, object_res_name)
-        # Do not produce commands for fixture modules
-        return
-
     construct_call(fix_module, partial_res_name, object_res_name)
 
     object_res = resource_module.with_module(fix_module)[object_res_name]
     log.info("Object/service resource %s: %r", object_res_name, object_res)
     attr_list = collect_attributes_call(mosaic.put(object_res))
     log.info("Attributes for %s: %r", object_res_name, attr_list)
+
+    if module_name.split('.')[-1] == 'fixtures':
+        construct_call(resource_module, partial_res_name, object_res_name)
+        # Do not produce commands for fixture modules
+        return
 
     name_to_attr = {
         attr.name: attr
