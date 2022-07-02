@@ -1,6 +1,7 @@
 import:
   - legacy_service.builtin_services
   - legacy_service.local_modules
+  - legacy_service.mosaic
   - legacy_service.python_object_creg
   - legacy_service.resource_module_registry
   - legacy_service.services
@@ -24,6 +25,7 @@ definitions:
       services.builtin_services: legacy_service.builtin_services
       services.local_modules: legacy_service.local_modules
       services.local_types: legacy_service.local_types
+      services.mosaic: legacy_service.mosaic
       services.python_object_creg: legacy_service.python_object_creg
       services.resource_module_registry: legacy_service.resource_module_registry
       services.types: legacy_service.types

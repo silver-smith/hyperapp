@@ -29,6 +29,8 @@ class Runner:
             value = getattr(object, name)
             if not callable(value):
                 continue
+            if not hasattr(value, '__module__'):
+                continue  # 'partial' does not have it; may be others too.
             if type(object) is types.ModuleType and value.__module__ != object.__name__:
                 continue  # Skip functions imported from other modules.
             try:

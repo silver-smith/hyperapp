@@ -109,6 +109,7 @@ def test_auto_importer(services, htypes, subprocess):
         htypes.auto_importer.import_rec('lcs', 'legacy_module.common.lcs'),
         htypes.auto_importer.import_rec('meta_registry', 'legacy_module.common.meta_registry'),
         htypes.auto_importer.import_rec('qt_keys', 'legacy_module.async.ui.qt.qt_keys'),
+        htypes.auto_importer.import_rec('services.file_bundle', 'legacy_service.file_bundle'),
         htypes.auto_importer.import_rec('services.web', 'legacy_service.web'),
        )
 

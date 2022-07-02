@@ -14,6 +14,9 @@ assert hasattr(services.web, 'pull')
 assert hasattr(web, 'pull')
 assert services.web is web
 
+from .services import file_bundle
+_log.info(f"{file_bundle=}")
+
 
 from . import htypes
 
@@ -34,9 +37,6 @@ assert impl.list_spec is htypes.impl.list_spec
 
 from . import meta_registry
 _log.info(f"{meta_registry=}")
-
-# from . import lcs
-# _log.info(f"{lcs=}")
 
 
 def test_fn():

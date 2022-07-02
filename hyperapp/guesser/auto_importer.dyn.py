@@ -8,6 +8,7 @@ from .services import (
     builtin_services,
     local_modules,
     local_types,
+    mosaic,
     python_object_creg,
     resource_module_registry,
     types,
@@ -20,12 +21,25 @@ class _ServicesModule(ModuleType):
     def __init__(self, name, import_dict):
         super().__init__(name)
         self._import_dict = import_dict
+        self._requirement_to_module = {
+            service_name: local_modules.by_name[module_name]
+            for module_name, service_name_set in local_modules.module_provides.items()
+            for service_name in service_name_set
+            }
 
     def __getattr__(self, name):
+        if name not in builtin_services:
+            try:
+                code_module = self._requirement_to_module[name]
+            except KeyError:
+                raise RuntimeError(f"Unknown service: {name!r}")
+            code_module_ref = mosaic.put(code_module)
+            _ = python_object_creg.invite(code_module_ref)  # Ensure it is loaded.
         try:
             service = getattr(services, name)
         except AttributeError:
-            raise RuntimeError(f"Unknown service: {name!r}")
+            # Allowing AttributeError leaving __getattr__ leads to undesired behaviour.
+            raise RuntimeError(f"Error retrieving service: {name!r}")
         self._import_dict[f'services.{name}'] = f'legacy_service.{name}'
         return service
 
