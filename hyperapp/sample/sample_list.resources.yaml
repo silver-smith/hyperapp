@@ -69,7 +69,6 @@ definitions:
       htypes.sample_list.sample_list: legacy_type.sample_list.sample_list
   sample_list_open_command:
     _type: legacy_type.impl.method_command_impl
-    object_ctr: sample_list_partial
     method: open
     params:
     - current_key

@@ -21,7 +21,6 @@ service_provider = record:
 
 
 method_command_impl = record:
-  object_ctr: ref  # Unused.
   method: string
   params: string list
   dir: ref

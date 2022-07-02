@@ -96,7 +96,6 @@ definitions:
     function: legacy_type.construct_resources_sample.sample_servant_d
   sample_servant_open_command:
     _type: legacy_type.impl.method_command_impl
-    object_ctr: sample_servant_partial
     method: open
     params:
     - current_key
@@ -106,7 +105,6 @@ definitions:
     function: legacy_type.construct_resources_sample.sample_servant_open_d
   sample_servant_parent_command:
     _type: legacy_type.impl.method_command_impl
-    object_ctr: sample_servant_partial
     method: parent
     params: []
     dir: sample_servant_parent_d
