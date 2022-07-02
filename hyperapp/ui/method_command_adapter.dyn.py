@@ -7,7 +7,7 @@ from . import htypes
 log = logging.getLogger(__name__)
 
 
-class ObjectCommandAdapter:
+class MethodCommandAdapter:
 
     @classmethod
     async def from_piece(cls, impl, navigator, object_piece, adapter, view, python_object_creg):
@@ -56,4 +56,4 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
 
         services.command_registry.register_actor(
-            htypes.impl.method_command_impl, ObjectCommandAdapter.from_piece, services.python_object_creg)
+            htypes.impl.method_command_impl, MethodCommandAdapter.from_piece, services.python_object_creg)

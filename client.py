@@ -38,7 +38,7 @@ code_module_list = [
     'ui.global_command_list',
     'ui.list_adapter',
     'ui.string_adapter',
-    'ui.command_adapter',
+    'ui.method_command_adapter',
     'ui.global_command_adapter',
     'async.ui.qt.application',
     # 'async.ui.command_list',
