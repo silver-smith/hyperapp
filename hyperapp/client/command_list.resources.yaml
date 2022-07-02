@@ -85,6 +85,10 @@ definitions:
       htypes.command_list.view_command_list: legacy_type.command_list.view_command_list
       htypes.command_list.view_item: legacy_type.command_list.view_item
       qt_keys: legacy_module.async.ui.qt.qt_keys
+      services.lcs: legacy_service.lcs
+      services.mosaic: legacy_service.mosaic
+      services.python_object_creg: legacy_service.python_object_creg
+      services.web: legacy_service.web
   global_command_list_attribute:
     _type: legacy_type.attribute.attribute
     object: command_list_module
@@ -96,10 +100,6 @@ definitions:
     _type: legacy_type.partial.partial
     function: global_command_list_attribute
     params:
-      web: legacy_service.web
-      mosaic: legacy_service.mosaic
-      lcs: legacy_service.lcs
-      python_object_creg: legacy_service.python_object_creg
       global_command_list: legacy_service.global_command_list
   global_command_list_set_key_command:
     _type: legacy_type.impl.method_command_impl
@@ -168,9 +168,6 @@ definitions:
     _type: legacy_type.partial.partial
     function: view_command_list_attribute
     params:
-      web: legacy_service.web
-      lcs: legacy_service.lcs
-      mosaic: legacy_service.mosaic
       root_view: legacy_service.root_view
   view_command_list_set_key_command:
     _type: legacy_type.impl.method_command_impl
