@@ -3,7 +3,7 @@ import logging
 import types
 
 from hyperapp.common.htypes import TList, TRecord
-from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
+from hyperapp.common.htypes.deduce_value_type import DeduceTypeError, deduce_complex_value_type
 
 from . import htypes
 
@@ -46,14 +46,27 @@ class Runner:
     def get_resource_type(self, request, resource_ref):
         log.info("Get type for resource: %s", resource_ref)
         value = self._python_object_creg.invite(resource_ref)
+
+        if value is None:
+            return htypes.inspect.none_t()
+
         log.info("Get type for value: %r", value)
-        t = deduce_complex_value_type(self._mosaic, self._types, value)
+        try:
+            t = deduce_complex_value_type(self._mosaic, self._types, value)
+        except DeduceTypeError:
+            log.info("Non-data type: %r", value.__class__.__name__)
+            return htypes.inspect.object_t(
+                class_name=value.__class__.__name__,
+                )
+
         log.info("Type is: %r", t)
+
         if isinstance(t, TRecord):
             type_name = htypes.inspect.type_name(t.module_name, t.name)
             return htypes.inspect.record_t(
                 type=type_name,
             )
+
         if isinstance(t, TList) and isinstance(t.element_t, TRecord):
             element_list = []
             for name, field_t in t.element_t.fields.items():

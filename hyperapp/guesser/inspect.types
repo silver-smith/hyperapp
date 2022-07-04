@@ -11,6 +11,12 @@ item_element = record:
   name: string
   type: type_name
 
+
+none_t = record
+
+object_t = record:
+  class_name: string
+
 record_t = record:
   type: type_name
 
