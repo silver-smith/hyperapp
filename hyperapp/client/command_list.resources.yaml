@@ -2,9 +2,11 @@
 
 import:
 - legacy_module.async.ui.qt.qt_keys
+- legacy_service.adapter_factory
 - legacy_service.global_command_list
 - legacy_service.lcs
 - legacy_service.mosaic
+- legacy_service.object_commands_factory
 - legacy_service.python_object_creg
 - legacy_service.root_view
 - legacy_service.web
@@ -85,8 +87,10 @@ definitions:
       htypes.command_list.view_command_list: legacy_type.command_list.view_command_list
       htypes.command_list.view_item: legacy_type.command_list.view_item
       qt_keys: legacy_module.async.ui.qt.qt_keys
+      services.adapter_factory: legacy_service.adapter_factory
       services.lcs: legacy_service.lcs
       services.mosaic: legacy_service.mosaic
+      services.object_commands_factory: legacy_service.object_commands_factory
       services.python_object_creg: legacy_service.python_object_creg
       services.web: legacy_service.web
   global_command_list_attribute:

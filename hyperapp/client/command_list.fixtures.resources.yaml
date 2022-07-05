@@ -7,6 +7,7 @@ import:
 - legacy_type.attribute.attribute
 - legacy_type.call.call
 - legacy_type.command_list.global_command_list
+- legacy_type.command_list.object_command_list
 - legacy_type.command_list.view_command_list
 - legacy_type.command_list_fixtures.sample_global_command_d
 - legacy_type.impl.global_command_impl
@@ -22,6 +23,7 @@ definitions:
     import_list:
       htypes.call.call: legacy_type.call.call
       htypes.command_list.global_command_list: legacy_type.command_list.global_command_list
+      htypes.command_list.object_command_list: legacy_type.command_list.object_command_list
       htypes.command_list.view_command_list: legacy_type.command_list.view_command_list
       htypes.command_list_fixtures.sample_global_command_d: legacy_type.command_list_fixtures.sample_global_command_d
       htypes.impl.global_command_impl: legacy_type.impl.global_command_impl
@@ -50,6 +52,39 @@ definitions:
   global_command_list_piece_partial:
     _type: legacy_type.partial.partial
     function: global_command_list_piece_attribute
+    params: {}
+  object_command_list_piece:
+    _type: legacy_type.call.call
+    function: object_command_list_piece_partial
+  object_command_list_piece_attribute:
+    _type: legacy_type.attribute.attribute
+    object: command_list_fixtures_module
+    attr_name: object_command_list_piece
+  object_command_list_piece_partial:
+    _type: legacy_type.partial.partial
+    function: object_command_list_piece_attribute
+    params: {}
+  object_commands_piece:
+    _type: legacy_type.call.call
+    function: object_commands_piece_partial
+  object_commands_piece_attribute:
+    _type: legacy_type.attribute.attribute
+    object: command_list_fixtures_module
+    attr_name: object_commands_piece
+  object_commands_piece_partial:
+    _type: legacy_type.partial.partial
+    function: object_commands_piece_attribute
+    params: {}
+  object_commands_view_state:
+    _type: legacy_type.call.call
+    function: object_commands_view_state_partial
+  object_commands_view_state_attribute:
+    _type: legacy_type.attribute.attribute
+    object: command_list_fixtures_module
+    attr_name: object_commands_view_state
+  object_commands_view_state_partial:
+    _type: legacy_type.partial.partial
+    function: object_commands_view_state_attribute
     params: {}
   view_command_list_piece:
     _type: legacy_type.call.call

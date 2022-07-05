@@ -5,6 +5,7 @@ view_command_list_d = record
 
 open_global_command_list_d = record
 open_view_command_list_d = record
+object_commands_d = record
 
 global_command_list_set_key_d = record
 global_command_list_set_key_escape_d = record

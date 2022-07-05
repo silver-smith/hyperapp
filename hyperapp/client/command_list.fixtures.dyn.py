@@ -45,3 +45,18 @@ class _PhonyRootView:
 
 def view_command_list_root_view():
     return _PhonyRootView()
+
+
+def object_command_list_piece():
+    return htypes.command_list.object_command_list(
+        piece_ref=mosaic.put(None),
+        view_state_ref=mosaic.put(None),
+        )
+
+
+def object_commands_piece():
+    return None
+
+
+def object_commands_view_state():
+    return None

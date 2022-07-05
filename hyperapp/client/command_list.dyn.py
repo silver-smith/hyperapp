@@ -2,8 +2,10 @@ import logging
 
 from . import htypes
 from .services import (
+    adapter_factory,
     lcs,
     mosaic,
+    object_commands_factory,
     python_object_creg,
     web,
     )
@@ -69,9 +71,36 @@ class ViewCommandList(_CommandList):
         return record_list
 
 
+class ObjectCommandList(_CommandList):
+
+    def __init__(self, piece):
+        self._object_piece = web.summon(piece.piece_ref)
+        self._view_state = web.summon(piece.view_state_ref)
+
+    async def get(self):
+        adapter = await adapter_factory(self._object_piece)
+        record_list = []
+        for piece in object_commands_factory.enum_object_command_pieces(adapter):
+            dir = python_object_creg.invite(piece.dir)
+            item = htypes.command_list.item(
+                name=dir._t.name.rstrip('_d'),  # todo: load title from lcs.
+                dir=mosaic.put(dir),
+                shortcut=self._command_shortcut(dir) or '',
+                )
+            record_list.append(item)
+        return record_list
+
+
 def open_global_command_list():
     return htypes.command_list.global_command_list()
 
 
 def open_view_command_list():
     return htypes.command_list.view_command_list()
+
+
+def object_commands(piece, view_state):
+    return htypes.command_list.object_command_list(
+        piece_ref=mosaic.put(piece),
+        view_state_ref=mosaic.put(view_state),
+        )
