@@ -22,3 +22,5 @@ record_t = record:
 
 list_t = record:
   element_list: item_element list
+
+coroutine_fn_t = record

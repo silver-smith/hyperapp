@@ -50,6 +50,9 @@ class Runner:
         if value is None:
             return htypes.inspect.none_t()
 
+        if inspect.iscoroutine(value):
+            return htypes.inspect.coroutine_fn_t()
+
         log.info("Get type for value: %r", value)
         try:
             t = deduce_complex_value_type(self._mosaic, self._types, value)
