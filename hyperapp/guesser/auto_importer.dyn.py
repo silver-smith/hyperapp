@@ -34,7 +34,11 @@ class _ServicesModule(ModuleType):
             except KeyError:
                 raise RuntimeError(f"Unknown service: {name!r}")
             code_module_ref = mosaic.put(code_module)
-            _ = python_object_creg.invite(code_module_ref)  # Ensure it is loaded.
+            try:
+                _ = python_object_creg.invite(code_module_ref)  # Ensure it is loaded.
+            except Exception as x:
+                # Should convert exception or it will be swallowed.
+                raise RuntimeError(f"Error importing module {code_module.module_name} for service {name!r}: {x}")
         try:
             service = getattr(services, name)
         except AttributeError:
