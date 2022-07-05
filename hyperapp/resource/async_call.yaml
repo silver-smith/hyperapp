@@ -1,0 +1,8 @@
+import:
+  types:
+    async_call:
+      - async_call
+provide:
+  - resource.async_call
+require:
+  - python_object_creg
