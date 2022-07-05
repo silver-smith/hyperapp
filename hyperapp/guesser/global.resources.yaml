@@ -2,9 +2,11 @@ import:
   - legacy_service.mosaic
   - legacy_service.resource_type_producer
   - legacy_service.resource_module_factory
+  - legacy_type.async_call.async_call
   - legacy_type.attribute.attribute
   - legacy_type.call.call
   - legacy_type.global_command.global_command_association
+  - legacy_type.inspect.coroutine_fn_t
   - legacy_type.inspect.list_t
   - legacy_type.inspect.record_t
   - legacy_type.lcs.lcs_set_resource_association
@@ -27,9 +29,11 @@ definitions:
     module_name: global
     file_name: global.dyn.py
     import_list:
+      htypes.async_call.async_call: legacy_type.async_call.async_call
       htypes.attribute.attribute: legacy_type.attribute.attribute
       htypes.partial.partial: legacy_type.partial.partial
       htypes.call.call: legacy_type.call.call
+      htypes.inspect.coroutine_fn_t: legacy_type.inspect.coroutine_fn_t
       htypes.inspect.record_t: legacy_type.inspect.record_t
       htypes.inspect.list_t: legacy_type.inspect.list_t
       htypes.lcs.lcs_set_resource_association: legacy_type.lcs.lcs_set_resource_association

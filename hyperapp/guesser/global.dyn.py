@@ -13,6 +13,9 @@ from .services import (
 log = logging.getLogger(__name__)
 
 
+special_param_names = {'piece', 'adapter', 'view', 'navigator'}
+
+
 # https://stackoverflow.com/a/1176023 Camel case to snake case.
 def camel_to_snake(name):
     name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
@@ -38,26 +41,26 @@ def construct_resource_params_partial(name_to_module, fixture_to_module, resourc
     param_to_resource = {}
     fix_param_to_resource = {}
     for idx, param_name in enumerate(attr.param_list):
-        special_names = {'piece', 'adapter'}
-        if param_name not in special_names:
-            param_module = name_to_module[param_name]
-            full_resource_name = f'{param_module.name}.{param_name}'
-            param_to_resource[param_name] = full_resource_name
-            resource_module.add_import(full_resource_name)
-        if param_name == 'adapter':
-            continue
         try:
             fix_resource_name = f'{attr_snake_name}_{param_name}'
             param_module = fixture_to_module[fix_resource_name]
         except KeyError:
-            if param_name in special_names:
-                raise RuntimeError(f"No fixture is found for parameter: {param_name!r}")
-            fix_param_to_resource[param_name] = full_resource_name
-            fix_module.add_import(full_resource_name)
+            if param_name in special_param_names:
+                raise RuntimeError(f"No fixture is found for {attr.name} parameter: {param_name!r}")
+            try:
+                param_module = name_to_module[param_name]
+            except KeyError:
+                raise RuntimeError(f"No service nor fixture is found for {attr.name} parameter: {param_name!r}")
         else:
-            full_resource_name = f'{param_module.name}.{fix_resource_name}'
-            fix_param_to_resource[param_name] = full_resource_name
-            fix_module.add_import(full_resource_name)
+            full_fix_resource_name = f'{param_module.name}.{fix_resource_name}'
+            fix_param_to_resource[param_name] = full_fix_resource_name
+            fix_module.add_import(full_fix_resource_name)
+        if param_name not in special_param_names:
+            param_module = name_to_module[param_name]
+            full_resource_name = f'{param_module.name}.{param_name}'
+            param_to_resource[param_name] = full_resource_name
+            resource_module.add_import(full_resource_name)
+
     partial_res_name = f'{attr_snake_name}_partial'
     partial_res_t = resource_type_producer(htypes.partial.partial)
     partial_def_t = partial_res_t.definition_t
@@ -86,6 +89,14 @@ def construct_resource_params_partial(name_to_module, fixture_to_module, resourc
 
 def construct_call(resource_module, function_res_name, res_name):
     call_res_t = resource_type_producer(htypes.call.call)
+    call_def = call_res_t.definition_t(
+        function=function_res_name,
+        )
+    resource_module.set_definition(res_name, call_res_t, call_def)
+
+
+def construct_async_call(resource_module, function_res_name, res_name):
+    call_res_t = resource_type_producer(htypes.async_call.async_call)
     call_def = call_res_t.definition_t(
         function=function_res_name,
         )
@@ -162,6 +173,13 @@ def construct_impl(
     get_call_res = resource_module.with_module(fix_module)[get_call_res_name]
     result_t = get_resource_type_call(mosaic.put(get_call_res))
     log.info("%s 'get' method result type: %r", object_res_name, result_t)
+
+    if isinstance(result_t, htypes.inspect.coroutine_fn_t):
+        get_acall_res_name = f'{object_res_name}_{get_attr.name}_async_call'
+        construct_async_call(fix_module, get_attr_res_name, get_acall_res_name)
+        get_acall_res = resource_module.with_module(fix_module)[get_acall_res_name]
+        result_t = get_resource_type_call(mosaic.put(get_acall_res))
+        log.info("%s 'get' method async call result type: %r", object_res_name, result_t)
 
     if isinstance(result_t, htypes.inspect.list_t):
         spec_res_name, dir_res_name = construct_list_spec(
@@ -285,20 +303,28 @@ def construct_global(res_module_reg, root_dir, module_name, resource_module, pro
 
     object_res_name = camel_to_snake(globl.name)
 
-    if globl.name.endswith('_command'):
-        construct_object_command(module_name, resource_module, globl, object_res_name, partial_res_name)
-        return
-
     construct_call(fix_module, partial_res_name, object_res_name)
 
     object_res = resource_module.with_module(fix_module)[object_res_name]
     log.info("Object/service resource %s: %r", object_res_name, object_res)
-    attr_list = collect_attributes_call(mosaic.put(object_res))
+    object_res_ref = mosaic.put(object_res)
+
+    object_t = get_resource_type_call(object_res_ref)
+    log.info("Type for %s: %r", globl.name, object_t)
+
+    attr_list = collect_attributes_call(object_res_ref)
     log.info("Attributes for %s: %r", object_res_name, attr_list)
 
     if module_name.split('.')[-1] == 'fixtures':
         construct_call(resource_module, partial_res_name, object_res_name)
         # Do not produce commands for fixture modules
+        return
+
+    if isinstance(object_t, htypes.inspect.record_t):
+        if set(globl.param_list) & special_param_names:
+            construct_object_command(module_name, resource_module, globl, object_res_name, partial_res_name)
+        else:
+            construct_global_command(module_name, resource_module, object_res_name, partial_res_name)
         return
 
     name_to_attr = {
@@ -322,5 +348,3 @@ def construct_global(res_module_reg, root_dir, module_name, resource_module, pro
             if attr.name == 'get':
                 continue
             construct_method_command(module_name, resource_module, object_res_name, object_dir_res_name, attr)
-    else:
-        construct_global_command(module_name, resource_module, object_res_name, partial_res_name)
