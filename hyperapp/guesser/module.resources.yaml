@@ -1,0 +1,34 @@
+import:
+- guesser.auto_importer.auto_importer_loader
+- guesser.runner.runner_method_collect_attributes
+- legacy_service.mosaic
+- legacy_type.attribute.attribute
+- legacy_type.piece_ref.piece_ref
+- legacy_type.python_module.import_rec
+- legacy_type.python_module.python_module
+
+definitions:
+
+  auto_importer_loader_ref:
+    _type: legacy_type.piece_ref.piece_ref
+    value: guesser.auto_importer.auto_importer_loader
+
+  runner_method_collect_attributes_ref:
+    _type: legacy_type.piece_ref.piece_ref
+    value: guesser.runner.runner_method_collect_attributes
+
+  module_module:
+    _type: legacy_type.python_module.python_module
+    module_name: module
+    file_name: module.dyn.py
+    import_list:
+      htypes.python_module.python_module: legacy_type.python_module.python_module
+      htypes.python_module.import_rec: legacy_type.python_module.import_rec
+      services.auto_importer_loader_ref: auto_importer_loader_ref
+      services.mosaic: legacy_service.mosaic
+      services.runner_method_collect_attributes_ref: runner_method_collect_attributes_ref
+
+  ModuleVisitor:
+    _type: legacy_type.attribute.attribute
+    object: module_module
+    attr_name: ModuleVisitor

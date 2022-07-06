@@ -9,7 +9,8 @@ from .services import (
 
 def construct_resources(source_path_list):
     for path in source_path_list:
-        rel_path = path.absolute().relative_to(hyperapp_dir)
+        abs_path = path.absolute()
+        rel_path = abs_path.relative_to(hyperapp_dir)
         ext = '.dyn.py'
         if rel_path.name.endswith(ext):
             stem = rel_path.name[:-len(ext)]
@@ -19,7 +20,7 @@ def construct_resources(source_path_list):
             log.error(f"Source file name should end with %r: %s", ext, path)
             continue
         log.info("Construct resources for: %s @ %s", full_name, hyperapp_dir)
-        resource_module = services.construct_resources(full_name, name, rel_path, hyperapp_dir)
-        res_path = path.with_name(stem + '.resources.yaml')
-        resource_module.save_as(res_path)
-        log.info("Written resource file: %s", res_path)
+        resource_module = services.construct_resources(full_name, name, abs_path, hyperapp_dir)
+        # res_path = path.with_name(stem + '.resources.yaml')
+        # resource_module.save_as(res_path)
+        # log.info("Written resource file: %s", res_path)

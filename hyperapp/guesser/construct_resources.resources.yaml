@@ -19,6 +19,7 @@ import:
   - legacy_type.piece_ref.piece_ref
   - legacy_type.python_module.python_module
   - guesser.auto_importer.auto_importer_imports_fn
+  - guesser.module.ModuleVisitor
   - guesser.global.construct_global
   - guesser.runner.runner_method_collect_attributes
   - sync.subprocess_context.subprocess_running
@@ -39,6 +40,7 @@ definitions:
     file_name: construct_resources.dyn.py
     import_list:
       htypes.python_module.python_module: legacy_type.python_module.python_module
+      module.ModuleVisitor: guesser.module.ModuleVisitor
       services.auto_importer_imports_ref: auto_importer_imports_ref
       services.construct_global: guesser.global.construct_global
       services.endpoint_registry: legacy_service.endpoint_registry
