@@ -3,10 +3,12 @@ import logging
 from . import htypes
 from .services import (
     adapter_factory,
+    global_command_list,
     lcs,
     mosaic,
     object_commands_factory,
     python_object_creg,
+    root_view,
     web,
     )
 from .qt_keys import run_input_key_dialog
@@ -35,12 +37,12 @@ class _CommandList:
 
 class GlobalCommandList(_CommandList):
 
-    def __init__(self, piece, global_command_list):
-        self._global_command_list = global_command_list
+    def __init__(self, piece):
+        pass
 
     def get(self):
         record_list = []
-        for command in self._global_command_list:
+        for command in global_command_list:
             dir = python_object_creg.invite(command.dir)
             item = htypes.command_list.item(
                 name=dir._t.name.rstrip('_d'),  # todo: load title from lcs.
@@ -53,13 +55,13 @@ class GlobalCommandList(_CommandList):
 
 class ViewCommandList(_CommandList):
 
-    def __init__(self, piece, root_view):
-        self._root_view = root_view
+    def __init__(self, piece):
+        pass
 
     # todo: postpone population; empty list is shown if this is initially opened object.
     def get(self):
         record_list = []
-        for path, command in self._root_view.iter_view_commands():
+        for path, command in root_view.iter_view_commands():
             dir = command.dir
             item = htypes.command_list.view_item(
                 name=command.name,
