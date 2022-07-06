@@ -1,38 +1,15 @@
 import:
   - legacy_service.endpoint_registry
-  - legacy_service.code_module_loader
   - legacy_service.generate_rsa_identity
-  - legacy_service.hyperapp_dir
-  - legacy_service.legacy_module_resource_loader
-  - legacy_service.legacy_type_resource_loader
-  - legacy_service.local_modules
-  - legacy_service.local_types
   - legacy_service.module_dir_list
-  - legacy_service.mosaic
-  - legacy_service.resource_loader
-  - legacy_service.resource_module_factory
-  - legacy_service.resource_module_registry
-  - legacy_service.resource_type_producer
   - legacy_service.rpc_endpoint_factory
-  - legacy_service.type_module_loader
   - legacy_type.attribute.attribute
-  - legacy_type.piece_ref.piece_ref
   - legacy_type.python_module.python_module
-  - guesser.auto_importer.auto_importer_imports_fn
+  - guesser.constructor.Constructor
   - guesser.module.ModuleVisitor
-  - guesser.global.construct_global
-  - guesser.runner.runner_method_collect_attributes
   - sync.subprocess_context.subprocess_running
 
 definitions:
-
-  auto_importer_imports_ref:
-    _type: legacy_type.piece_ref.piece_ref
-    value: guesser.auto_importer.auto_importer_imports_fn
-
-  runner_method_collect_attributes_ref:
-    _type: legacy_type.piece_ref.piece_ref
-    value: guesser.runner.runner_method_collect_attributes
 
   construct_resources_module:
     _type: legacy_type.python_module.python_module
@@ -40,27 +17,13 @@ definitions:
     file_name: construct_resources.dyn.py
     import_list:
       htypes.python_module.python_module: legacy_type.python_module.python_module
-      module.ModuleVisitor: guesser.module.ModuleVisitor
-      services.auto_importer_imports_ref: auto_importer_imports_ref
-      services.construct_global: guesser.global.construct_global
+      services.Constructor: guesser.constructor.Constructor
+      services.ModuleVisitor: guesser.module.ModuleVisitor
       services.endpoint_registry: legacy_service.endpoint_registry
-      services.code_module_loader: legacy_service.code_module_loader
       services.generate_rsa_identity: legacy_service.generate_rsa_identity
-      services.hyperapp_dir: legacy_service.hyperapp_dir
-      services.legacy_module_resource_loader: legacy_service.legacy_module_resource_loader
-      services.legacy_type_resource_loader: legacy_service.legacy_type_resource_loader
-      services.local_modules: legacy_service.local_modules
-      services.local_types: legacy_service.local_types
       services.module_dir_list: legacy_service.module_dir_list
-      services.mosaic: legacy_service.mosaic
-      services.runner_method_collect_attributes_ref: runner_method_collect_attributes_ref
-      services.resource_loader: legacy_service.resource_loader
-      services.resource_module_factory: legacy_service.resource_module_factory
-      services.resource_module_registry: legacy_service.resource_module_registry
-      services.resource_type_producer: legacy_service.resource_type_producer
       services.rpc_endpoint_factory: legacy_service.rpc_endpoint_factory
       services.subprocess_running: sync.subprocess_context.subprocess_running
-      services.type_module_loader: legacy_service.type_module_loader
 
   construct_resources:
     _type: legacy_type.attribute.attribute

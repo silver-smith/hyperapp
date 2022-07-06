@@ -13,8 +13,9 @@ _log = logging.getLogger(__name__)
 
 class ModuleVisitor:
 
-    def __init__(self, on_module):
+    def __init__(self, on_module, on_global):
         self._on_module = on_module
+        self._on_global = on_global
 
     def run(self, process, module_name, source_path):
         collect_attributes = process.rpc_call(runner_method_collect_attributes_ref)
@@ -32,6 +33,9 @@ class ModuleVisitor:
 
         global_list = collect_attributes(mosaic.put(module))
         _log.info("Collected global list: %s", global_list)
+
+        for attr in global_list:
+            self._on_global(process, attr)
 
         imports = auto_importer_imports()
         _log.info("Import list: %s", imports)
