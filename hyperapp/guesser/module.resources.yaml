@@ -1,4 +1,5 @@
 import:
+- guesser.auto_importer.auto_importer_imports_fn
 - guesser.auto_importer.auto_importer_loader
 - guesser.runner.runner_method_collect_attributes
 - legacy_service.mosaic
@@ -8,6 +9,10 @@ import:
 - legacy_type.python_module.python_module
 
 definitions:
+
+  auto_importer_imports_ref:
+    _type: legacy_type.piece_ref.piece_ref
+    value: guesser.auto_importer.auto_importer_imports_fn
 
   auto_importer_loader_ref:
     _type: legacy_type.piece_ref.piece_ref
@@ -24,6 +29,7 @@ definitions:
     import_list:
       htypes.python_module.python_module: legacy_type.python_module.python_module
       htypes.python_module.import_rec: legacy_type.python_module.import_rec
+      services.auto_importer_imports_ref: auto_importer_imports_ref
       services.auto_importer_loader_ref: auto_importer_loader_ref
       services.mosaic: legacy_service.mosaic
       services.runner_method_collect_attributes_ref: runner_method_collect_attributes_ref
