@@ -3,6 +3,8 @@ from hyperapp.common.htypes import phony_ref
 from .import htypes
 from .services import (
     mosaic,
+    param,
+    service,
     types,
     )
 from .view_command import ViewCommand
@@ -11,15 +13,7 @@ from .view_command import ViewCommand
 _null_ref = phony_ref('null')
 
 
-def global_command_list_piece():
-    return htypes.command_list.global_command_list()
-
-
-def view_command_list_piece():
-    return htypes.command_list.view_command_list()
-
-
-def global_command_list_global_command_list():
+def global_command_list():
     dir_t = htypes.command_list_fixtures.sample_global_command_d
     dir_t_ref = types.reverse_resolve(dir_t)
     dir_t_res = htypes.legacy_type.type(dir_t_ref)
@@ -43,20 +37,15 @@ class _PhonyRootView:
         return [([], command)]
 
 
-def view_command_list_root_view():
-    return _PhonyRootView()
+service.root_view = _PhonyRootView()
 
+param.global_command_list.piece = htypes.command_list.global_command_list()
+param.view_command_list.piece = htypes.command_list.view_command_list()
 
-def object_command_list_piece():
-    return htypes.command_list.object_command_list(
-        piece_ref=mosaic.put(None),
-        view_state_ref=mosaic.put(None),
-        )
+param.object_command_list.piece = htypes.command_list.object_command_list(
+    piece_ref=mosaic.put(None),
+    view_state_ref=mosaic.put(None),
+    )
 
-
-def object_commands_piece():
-    return None
-
-
-def object_commands_view_state():
-    return None
+param.object_commands.piece = None
+param.object_commands.view_state = None

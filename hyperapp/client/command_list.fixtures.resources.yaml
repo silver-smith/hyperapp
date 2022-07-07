@@ -1,18 +1,15 @@
 # Automatically generated file. Do not edit.
 
 import:
+- guesser.marker.param
+- guesser.marker.service
 - legacy_module.async.ui.view_command
 - legacy_service.mosaic
 - legacy_service.types
 - legacy_type.attribute.attribute
-- legacy_type.call.call
 - legacy_type.command_list.global_command_list
 - legacy_type.command_list.object_command_list
 - legacy_type.command_list.view_command_list
-- legacy_type.command_list_fixtures.sample_global_command_d
-- legacy_type.impl.global_command_impl
-- legacy_type.legacy_type.type
-- legacy_type.partial.partial
 - legacy_type.python_module.python_module
 associations: []
 definitions:
@@ -21,90 +18,15 @@ definitions:
     module_name: command_list.fixtures
     file_name: command_list.fixtures.dyn.py
     import_list:
-      htypes.call.call: legacy_type.call.call
       htypes.command_list.global_command_list: legacy_type.command_list.global_command_list
       htypes.command_list.object_command_list: legacy_type.command_list.object_command_list
       htypes.command_list.view_command_list: legacy_type.command_list.view_command_list
-      htypes.command_list_fixtures.sample_global_command_d: legacy_type.command_list_fixtures.sample_global_command_d
-      htypes.impl.global_command_impl: legacy_type.impl.global_command_impl
-      htypes.legacy_type.type: legacy_type.legacy_type.type
       services.mosaic: legacy_service.mosaic
+      services.param: guesser.marker.param
+      services.service: guesser.marker.service
       services.types: legacy_service.types
       view_command: legacy_module.async.ui.view_command
-  global_command_list_global_command_list:
-    _type: legacy_type.call.call
-    function: global_command_list_global_command_list_partial
-  global_command_list_global_command_list_attribute:
+  global_command_list_attribute:
     _type: legacy_type.attribute.attribute
     object: command_list_fixtures_module
-    attr_name: global_command_list_global_command_list
-  global_command_list_global_command_list_partial:
-    _type: legacy_type.partial.partial
-    function: global_command_list_global_command_list_attribute
-    params: {}
-  global_command_list_piece:
-    _type: legacy_type.call.call
-    function: global_command_list_piece_partial
-  global_command_list_piece_attribute:
-    _type: legacy_type.attribute.attribute
-    object: command_list_fixtures_module
-    attr_name: global_command_list_piece
-  global_command_list_piece_partial:
-    _type: legacy_type.partial.partial
-    function: global_command_list_piece_attribute
-    params: {}
-  object_command_list_piece:
-    _type: legacy_type.call.call
-    function: object_command_list_piece_partial
-  object_command_list_piece_attribute:
-    _type: legacy_type.attribute.attribute
-    object: command_list_fixtures_module
-    attr_name: object_command_list_piece
-  object_command_list_piece_partial:
-    _type: legacy_type.partial.partial
-    function: object_command_list_piece_attribute
-    params: {}
-  object_commands_piece:
-    _type: legacy_type.call.call
-    function: object_commands_piece_partial
-  object_commands_piece_attribute:
-    _type: legacy_type.attribute.attribute
-    object: command_list_fixtures_module
-    attr_name: object_commands_piece
-  object_commands_piece_partial:
-    _type: legacy_type.partial.partial
-    function: object_commands_piece_attribute
-    params: {}
-  object_commands_view_state:
-    _type: legacy_type.call.call
-    function: object_commands_view_state_partial
-  object_commands_view_state_attribute:
-    _type: legacy_type.attribute.attribute
-    object: command_list_fixtures_module
-    attr_name: object_commands_view_state
-  object_commands_view_state_partial:
-    _type: legacy_type.partial.partial
-    function: object_commands_view_state_attribute
-    params: {}
-  view_command_list_piece:
-    _type: legacy_type.call.call
-    function: view_command_list_piece_partial
-  view_command_list_piece_attribute:
-    _type: legacy_type.attribute.attribute
-    object: command_list_fixtures_module
-    attr_name: view_command_list_piece
-  view_command_list_piece_partial:
-    _type: legacy_type.partial.partial
-    function: view_command_list_piece_attribute
-    params: {}
-  view_command_list_root_view:
-    _type: legacy_type.call.call
-    function: view_command_list_root_view_partial
-  view_command_list_root_view_attribute:
-    _type: legacy_type.attribute.attribute
-    object: command_list_fixtures_module
-    attr_name: view_command_list_root_view
-  view_command_list_root_view_partial:
-    _type: legacy_type.partial.partial
-    function: view_command_list_root_view_attribute
-    params: {}
+    attr_name: global_command_list
