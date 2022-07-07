@@ -1,7 +1,11 @@
 
 attr = record:
   name: string
+  resource_name: string opt
+
+fn_attr = record(attr):
   param_list: string list
+
 
 type_name = record:
   module: string

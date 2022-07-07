@@ -6,6 +6,7 @@ from .services import (
     auto_importer_loader_ref,
     mosaic,
     runner_method_collect_attributes_ref,
+    web,
     )
 
 _log = logging.getLogger(__name__)
@@ -31,7 +32,8 @@ class ModuleVisitor:
                 ],
             )
 
-        global_list = collect_attributes(mosaic.put(module))
+        global_ref_list = collect_attributes(mosaic.put(module))
+        global_list = [web.summon(ref) for ref in global_ref_list]
         _log.info("Collected global list: %s", global_list)
 
         for attr in global_list:

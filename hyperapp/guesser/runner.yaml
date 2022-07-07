@@ -2,6 +2,7 @@ import:
   types:
     inspect:
       - attr
+      - fn_attr
       - type_name
       - item_element
       - none_t

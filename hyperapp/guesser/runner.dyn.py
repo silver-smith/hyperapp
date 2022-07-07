@@ -20,19 +20,26 @@ class Runner:
     def collect_attributes(self, request, object_ref):
         log.info("Collect attributes: %s", object_ref)
         object = self._python_object_creg.invite(object_ref)
-        return list(self._iter_callables(object))
+        return [
+            self._mosaic.put(attr) for attr
+            in self._iter_callables(object)
+        ]
 
     def _iter_callables(self, object):
+        name_to_res_name = getattr(object, '__resource_names__', {})
         for name in dir(object):
             if name.startswith('_'):
                 continue
+            resource_name = name_to_res_name.get(name)
             value = getattr(object, name)
+            if not resource_name:
+                if not hasattr(value, '__module__'):
+                    continue  # 'partial' does not have it; may be others too.
+                if type(object) is types.ModuleType and value.__module__ != object.__name__:
+                    continue  # Skip functions imported from other modules.
             if not callable(value):
+                yield htypes.inspect.attr(name, resource_name)
                 continue
-            if not hasattr(value, '__module__'):
-                continue  # 'partial' does not have it; may be others too.
-            if type(object) is types.ModuleType and value.__module__ != object.__name__:
-                continue  # Skip functions imported from other modules.
             try:
                 signature = inspect.signature(value)
             except ValueError as x:
@@ -40,7 +47,7 @@ class Runner:
                     continue
                 raise
             param_list = list(signature.parameters.keys())
-            yield htypes.inspect.attr(name, param_list)
+            yield htypes.inspect.fn_attr(name, resource_name, param_list)
 
 
     def get_resource_type(self, request, resource_ref):
