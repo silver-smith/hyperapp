@@ -26,26 +26,55 @@ class _ServicesModule(ModuleType):
             for module_name, service_name_set in local_modules.module_provides.items()
             for service_name in service_name_set
             }
+        self._resource_to_module = {
+            name: res_module
+            for module_name, res_module in resource_module_registry.items()
+            for name in res_module
+            if not module_name.startswith('legacy_')
+            }
 
     def __getattr__(self, name):
-        if name not in builtin_services:
+        if name.startswith('_'):
+            raise AttributeError(name)
+        if name in builtin_services:
+            service = self._pick_legacy_service(name)
+            resource_name = f'legacy_service.{name}'
+        elif name in self._requirement_to_module:
+            self._load_legacy_code_module(self._requirement_to_module[name])
+            service = self._pick_legacy_service(name)
+            resource_name = f'legacy_service.{name}'
+        else:
             try:
-                code_module = self._requirement_to_module[name]
+                res_module = self._resource_to_module[name]
             except KeyError:
                 raise RuntimeError(f"Unknown service: {name!r}")
-            code_module_ref = mosaic.put(code_module)
-            try:
-                _ = python_object_creg.invite(code_module_ref)  # Ensure it is loaded.
-            except Exception as x:
-                # Should convert exception or it will be swallowed.
-                raise RuntimeError(f"Error importing module {code_module.module_name} for service {name!r}: {x}")
+            service = self._load_resource(res_module, name)
+            resource_name = f'{res_module.name}.{name}'
+        self._import_dict[f'services.{name}'] = resource_name
+        return service
+
+    def _pick_legacy_service(self, name):
         try:
-            service = getattr(services, name)
+            return getattr(services, name)
         except AttributeError:
             # Allowing AttributeError leaving __getattr__ leads to undesired behaviour.
             raise RuntimeError(f"Error retrieving service: {name!r}")
-        self._import_dict[f'services.{name}'] = f'legacy_service.{name}'
-        return service
+
+    def _load_legacy_code_module(self, code_module):
+        code_module_ref = mosaic.put(code_module)
+        try:
+            _ = python_object_creg.invite(code_module_ref)  # Ensure it is loaded.
+        except Exception as x:
+            # Should convert exception or it will be swallowed.
+            raise RuntimeError(f"Error importing module {code_module.module_name} for service {name!r}: {x}")
+
+    def _load_resource(self, res_module, name):
+        try:
+            resource = res_module[name]
+            return python_object_creg.animate(resource)
+        except Exception as x:
+            # Should convert exception or it will be swallowed.
+            raise RuntimeError(f"Error resolving service from resource {res_module.name}.{name}: {x}")
 
 
 class _HTypesModule(ModuleType):
@@ -73,6 +102,8 @@ class _HTypesRoot(ModuleType):
         self._import_dict = import_dict
 
     def __getattr__(self, name):
+        if name.startswith('_'):
+            raise AttributeError(name)
         try:
             type_module = local_types[name]
         except KeyError:
