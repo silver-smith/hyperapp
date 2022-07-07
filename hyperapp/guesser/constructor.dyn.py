@@ -66,7 +66,7 @@ class Constructor:
 
     def on_global(self, process, attr):
         attr_snake_name = camel_to_snake(attr.name)
-        target_name = f'{attr_snake_name}_attribute'
+        target_name = attr.resource_name or f'{attr_snake_name}_attribute'
         self._construct_attr(target_name, self._module_res_name, attr)
 
     def _construct_attr(self, target_name, object_res_name, attr):
