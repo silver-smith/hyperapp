@@ -1,64 +1,34 @@
 import:
   - legacy_service.mosaic
-  - legacy_service.resource_type_producer
-  - legacy_service.resource_module_factory
-  - legacy_type.async_call.async_call
+  - legacy_service.python_object_creg
   - legacy_type.attribute.attribute
   - legacy_type.call.call
-  - legacy_type.global_command.global_command_association
-  - legacy_type.inspect.coroutine_fn_t
-  - legacy_type.inspect.list_t
-  - legacy_type.inspect.record_t
-  - legacy_type.lcs.lcs_set_resource_association
-  - legacy_type.impl.impl_association
-  - legacy_type.impl.global_command_impl
-  - legacy_type.impl.list_spec
-  - legacy_type.impl.method_command_impl
-  - legacy_type.impl.object_command_impl
-  - legacy_type.impl.python_object_association
+  - legacy_type.inspect.fn_attr
   - legacy_type.partial.partial
   - legacy_type.piece_ref.piece_ref
   - legacy_type.python_module.python_module
-  - guesser.runner.runner_method_collect_attributes
   - guesser.runner.get_resource_type
 
 definitions:
-
-  resource_ctr_global_module:
-    _type: legacy_type.python_module.python_module
-    module_name: global
-    file_name: global.dyn.py
-    import_list:
-      htypes.async_call.async_call: legacy_type.async_call.async_call
-      htypes.attribute.attribute: legacy_type.attribute.attribute
-      htypes.partial.partial: legacy_type.partial.partial
-      htypes.call.call: legacy_type.call.call
-      htypes.inspect.coroutine_fn_t: legacy_type.inspect.coroutine_fn_t
-      htypes.inspect.record_t: legacy_type.inspect.record_t
-      htypes.inspect.list_t: legacy_type.inspect.list_t
-      htypes.lcs.lcs_set_resource_association: legacy_type.lcs.lcs_set_resource_association
-      htypes.impl.impl_association: legacy_type.impl.impl_association
-      htypes.impl.global_command_impl: legacy_type.impl.global_command_impl
-      htypes.impl.list_spec: legacy_type.impl.list_spec
-      htypes.impl.method_command_impl: legacy_type.impl.method_command_impl
-      htypes.impl.object_command_impl: legacy_type.impl.object_command_impl
-      htypes.impl.python_object_association: legacy_type.impl.python_object_association
-      htypes.global_command.global_command_association: legacy_type.global_command.global_command_association
-      services.mosaic: legacy_service.mosaic
-      services.resource_type_producer: legacy_service.resource_type_producer
-      services.resource_module_factory: legacy_service.resource_module_factory
-      services.runner_method_collect_attributes_ref: runner_method_collect_attributes_ref
-      services.runner_method_get_resource_type_ref: runner_method_get_resource_type_ref
-
-  runner_method_collect_attributes_ref:
-    _type: legacy_type.piece_ref.piece_ref
-    value: guesser.runner.runner_method_collect_attributes
 
   runner_method_get_resource_type_ref:
     _type: legacy_type.piece_ref.piece_ref
     value: guesser.runner.get_resource_type
 
-  construct_global:
+  global_module:
+    _type: legacy_type.python_module.python_module
+    module_name: global
+    file_name: global.dyn.py
+    import_list:
+      htypes.attribute.attribute: legacy_type.attribute.attribute
+      htypes.call.call: legacy_type.call.call
+      htypes.partial.partial: legacy_type.partial.partial
+      htypes.inspect.fn_attr: legacy_type.inspect.fn_attr
+      services.mosaic: legacy_service.mosaic
+      services.python_object_creg: legacy_service.python_object_creg
+      services.runner_method_get_resource_type_ref: runner_method_get_resource_type_ref
+
+  GlobalVisitor:
     _type: legacy_type.attribute.attribute
-    object: resource_ctr_global_module
-    attr_name: construct_global
+    object: global_module
+    attr_name: GlobalVisitor

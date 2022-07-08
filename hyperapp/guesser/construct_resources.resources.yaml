@@ -6,6 +6,7 @@ import:
   - legacy_type.attribute.attribute
   - legacy_type.python_module.python_module
   - guesser.constructor.Constructor
+  - guesser.global.global_module
   - guesser.module.ModuleVisitor
   - sync.subprocess_context.subprocess_running
 
@@ -24,6 +25,7 @@ definitions:
       services.module_dir_list: legacy_service.module_dir_list
       services.rpc_endpoint_factory: legacy_service.rpc_endpoint_factory
       services.subprocess_running: sync.subprocess_context.subprocess_running
+      globl: guesser.global.global_module
 
   construct_resources:
     _type: legacy_type.attribute.attribute

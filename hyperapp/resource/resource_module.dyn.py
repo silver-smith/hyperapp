@@ -45,7 +45,7 @@ class ResourceModule:
         try:
             definition = self._definition_dict[var_name]
         except KeyError:
-            raise RuntimeError(f"Resource module {self._name!r}: Unknown resource: {var_name!r}")
+            raise KeyError(f"Resource module {self._name!r}: Unknown resource: {var_name!r}")
         piece = definition.type.resolve(definition.value, self._resolve_name, self._path.parent)
         log.info("%s: Loaded resource %r: %s", self._name, var_name, piece)
         return piece

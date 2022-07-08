@@ -37,7 +37,7 @@ class ModuleVisitor:
         _log.info("Collected global list: %s", global_list)
 
         for attr in global_list:
-            self._on_global(process, attr)
+            self._on_global(process, module, attr)
 
         imports = auto_importer_imports()
         _log.info("Import list: %s", imports)

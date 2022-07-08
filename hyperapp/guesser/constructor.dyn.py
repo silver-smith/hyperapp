@@ -1,5 +1,3 @@
-import re
-
 from . import htypes
 from .services import (
     code_module_loader,
@@ -15,7 +13,6 @@ from .services import (
     )
 
 
-
 def custom_res_module_reg(resources_dir):
     custom_types = {**local_types}
     type_module_loader.load_type_modules([resources_dir], custom_types)
@@ -28,12 +25,6 @@ def custom_res_module_reg(resources_dir):
         }
     resource_loader([resources_dir], module_reg)
     return module_reg
-
-
-# https://stackoverflow.com/a/1176023 Camel case to snake case.
-def camel_to_snake(name):
-    name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
 
 
 class Constructor:
@@ -64,9 +55,8 @@ class Constructor:
             )
         self.resource_module.set_definition(self._module_res_name, module_res_t, module_def)
 
-    def on_global(self, process, attr):
-        attr_snake_name = camel_to_snake(attr.name)
-        target_name = attr.resource_name or f'{attr_snake_name}_attribute'
+    def on_global(self, process, attr, result_t):
+        target_name = attr.resource_name or attr.name
         self._construct_attr(target_name, self._module_res_name, attr)
 
     def _construct_attr(self, target_name, object_res_name, attr):
