@@ -39,10 +39,10 @@ class _PhonyRootView:
 
 service.root_view = _PhonyRootView()
 
-param.global_command_list.piece = htypes.command_list.global_command_list()
-param.view_command_list.piece = htypes.command_list.view_command_list()
+param.GlobalCommandList.piece = htypes.command_list.global_command_list()
+param.ViewCommandList.piece = htypes.command_list.view_command_list()
 
-param.object_command_list.piece = htypes.command_list.object_command_list(
+param.ObjectCommandList.piece = htypes.command_list.object_command_list(
     piece_ref=mosaic.put(None),
     view_state_ref=mosaic.put(None),
     )
