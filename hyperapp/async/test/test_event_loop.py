@@ -22,7 +22,7 @@ def module_dir_list(default_module_dir_list):
 @pytest.fixture(params=['native', 'qt'])
 def event_loop_module(request):
     if request.param == 'native':
-        return 'async.event_loop'
+        return 'async.test.event_loop'
     if request.param == 'qt':
         return 'async.ui.qt.application'
     assert False, request.param

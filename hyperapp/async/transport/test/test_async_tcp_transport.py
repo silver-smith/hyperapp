@@ -11,6 +11,9 @@ log = logging.getLogger(__name__)
 
 pytest_plugins = ['hyperapp.common.test.services']
 
+TEST_DIR = Path(__file__).parent
+ASYNC_TEST_DIR = TEST_DIR.joinpath('../../test').resolve()  # async.test.event_loop is used.
+
 
 @pytest.fixture
 def code_module_list():
@@ -50,9 +53,9 @@ def test_tcp_send(services):
 
     subprocess = services.subprocess(
         'subprocess',
-        module_dir_list=[*services.module_dir_list, Path(__file__).parent],
+        module_dir_list=[*services.module_dir_list, TEST_DIR, ASYNC_TEST_DIR],
         code_module_list=[
-            'async.event_loop',
+            'async.test.event_loop',
             'async.async_main',
             'async.transport.tcp',
             'async.transport.test.send',
@@ -84,10 +87,10 @@ def test_tcp_echo(services):
 
     subprocess = services.subprocess(
         'subprocess',
-        module_dir_list=[*services.module_dir_list, Path(__file__).parent],
+        module_dir_list=[*services.module_dir_list, TEST_DIR, ASYNC_TEST_DIR],
         code_module_list=[
             'sync.transport.tcp',  # tcp_transport.route is required registered at sync route_registry.
-            'async.event_loop',
+            'async.test.event_loop',
             'async.async_main',
             'async.transport.tcp',
             'async.transport.test.echo',
