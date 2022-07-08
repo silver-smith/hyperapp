@@ -40,7 +40,7 @@ class _ServicesModule(ModuleType):
             service = self._pick_legacy_service(name)
             resource_name = f'legacy_service.{name}'
         elif name in self._requirement_to_module:
-            self._load_legacy_code_module(self._requirement_to_module[name])
+            self._load_legacy_code_module(self._requirement_to_module[name], name)
             service = self._pick_legacy_service(name)
             resource_name = f'legacy_service.{name}'
         else:
@@ -60,7 +60,7 @@ class _ServicesModule(ModuleType):
             # Allowing AttributeError leaving __getattr__ leads to undesired behaviour.
             raise RuntimeError(f"Error retrieving service: {name!r}")
 
-    def _load_legacy_code_module(self, code_module):
+    def _load_legacy_code_module(self, code_module, name):
         code_module_ref = mosaic.put(code_module)
         try:
             _ = python_object_creg.invite(code_module_ref)  # Ensure it is loaded.
