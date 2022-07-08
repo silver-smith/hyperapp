@@ -1,0 +1,32 @@
+import:
+  - legacy_service.code_module_loader
+  - legacy_service.legacy_module_resource_loader
+  - legacy_service.legacy_type_resource_loader
+  - legacy_service.local_modules
+  - legacy_service.local_types
+  - legacy_service.resource_loader
+  - legacy_service.resource_module_registry
+  - legacy_service.type_module_loader
+  - legacy_type.attribute.attribute
+  - legacy_type.python_module.python_module
+
+definitions:
+
+  custom_resource_module_registry_module:
+    _type: legacy_type.python_module.python_module
+    module_name: custom_resource_module_registry
+    file_name: custom_resource_module_registry.dyn.py
+    import_list:
+      services.code_module_loader: legacy_service.code_module_loader
+      services.legacy_module_resource_loader: legacy_service.legacy_module_resource_loader
+      services.legacy_type_resource_loader: legacy_service.legacy_type_resource_loader
+      services.local_modules: legacy_service.local_modules
+      services.local_types: legacy_service.local_types
+      services.resource_loader: legacy_service.resource_loader
+      services.resource_module_registry: legacy_service.resource_module_registry
+      services.type_module_loader: legacy_service.type_module_loader
+
+  custom_resource_module_registry:
+    _type: legacy_type.attribute.attribute
+    object: custom_resource_module_registry_module
+    attr_name: custom_resource_module_registry

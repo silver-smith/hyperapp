@@ -10,6 +10,7 @@ from .services import (
     rpc_endpoint_factory,
     subprocess_running,
     )
+from .custom_resource_module_registry import custom_resource_module_registry
 from .globl import GlobalVisitor
 
 _log = logging.getLogger(__name__)
@@ -29,13 +30,15 @@ def construct_resources(full_module_name, module_name, module_path, root_dir):
     rpc_endpoint = rpc_endpoint_factory()
     endpoint_registry.register(identity, rpc_endpoint)
 
-    constructor = Constructor(root_dir, full_module_name, module_name, module_path)
+    resource_module_reg = custom_resource_module_registry(resources_dir=module_path.parent)
+    constructor = Constructor(
+        resource_module_reg, root_dir, full_module_name, module_name, module_path)
 
     custom_module_dirs = [*module_dir_list, module_path.parent]
     with subprocess_running(custom_module_dirs, rpc_endpoint, identity, 'guesser') as process:
 
         global_visitor = GlobalVisitor(
-            fixtures_module=full_module_name + '.fixtures',
+            fixtures_module=resource_module_reg.get(full_module_name + '.fixtures'),
             on_global=constructor.on_global,
             )
         visitor = ModuleVisitor(

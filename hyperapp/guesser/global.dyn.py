@@ -17,6 +17,7 @@ class GlobalVisitor:
         self._on_global = on_global
 
     def run(self, process, module, globl):
+        _log.info("Loading type for global: %r", globl.name)
         get_resource_type = process.rpc_call(runner_method_get_resource_type_ref)
 
         attr = htypes.attribute.attribute(
@@ -34,7 +35,10 @@ class GlobalVisitor:
                 fn = htypes.partial.partial(
                     function=attr_ref,
                     params=[
-                        htypes.partial.param(name, value)
+                        htypes.partial.param(
+                            name=name,
+                            value=mosaic.put(value),
+                            )
                         for name, value in kw.items()
                         ],
                     )
@@ -52,10 +56,11 @@ class GlobalVisitor:
 
         self._on_global(process, globl, result_t)
 
-    def _fixture(self, globl_name, param__name):
+    def _fixture(self, globl_name, param_name):
         res_name = f'param.{globl_name}.{param_name}'
+        if not self._fix_module:
+            raise RuntimeError(f"Fixture {res_name!r} is required but fixtures module does not exist")
         try:
-            fixture_res = self._fix_module[res_name]
+            return self._fix_module[res_name]
         except KeyError:
-            raise RuntimeError("Fixture {res_name!r} is not defined at: {self._fix_module.name}")
-        return python_object_creg.animate(fixture_res)
+            raise RuntimeError(f"Fixture {res_name!r} is not defined at: {self._fix_module.name}")

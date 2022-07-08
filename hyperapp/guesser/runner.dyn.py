@@ -51,8 +51,9 @@ class Runner:
 
 
     def get_resource_type(self, request, resource_ref):
-        log.info("Get type for resource: %s", resource_ref)
+        log.info("Get type for resource ref: %s", resource_ref)
         value = self._python_object_creg.invite(resource_ref)
+        log.info("Resource value: %s", resource_ref)
 
         if value is None:
             return htypes.inspect.none_t()

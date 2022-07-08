@@ -1,38 +1,15 @@
 from . import htypes
 from .services import (
-    code_module_loader,
-    legacy_module_resource_loader,
-    legacy_type_resource_loader,
-    local_modules,
-    local_types,
-    resource_loader,
     resource_module_factory,
-    resource_module_registry,
     resource_type_producer,
-    type_module_loader,
     )
-
-
-def custom_res_module_reg(resources_dir):
-    custom_types = {**local_types}
-    type_module_loader.load_type_modules([resources_dir], custom_types)
-    custom_modules = local_modules.copy()
-    code_module_loader.load_code_modules(custom_types, [resources_dir], custom_modules)
-    module_reg = {
-        **resource_module_registry,
-        **legacy_type_resource_loader(custom_types),
-        **legacy_module_resource_loader(custom_modules),
-        }
-    resource_loader([resources_dir], module_reg)
-    return module_reg
 
 
 class Constructor:
 
-    def __init__(self, root_dir, full_module_name, module_name, module_path):
-        self._local_res_module_reg = custom_res_module_reg(module_path.parent)
+    def __init__(self, resource_module_reg, root_dir, full_module_name, module_name, module_path):
         self.resource_module = resource_module_factory(
-            resource_module_registry=self._local_res_module_reg,
+            resource_module_registry=resource_module_reg,
             name=full_module_name,
             path=module_path.with_name(f'{module_path.name}_auto_import.resources.yaml'),
             load_from_file=False,

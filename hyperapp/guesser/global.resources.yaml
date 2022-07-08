@@ -4,9 +4,11 @@ import:
   - legacy_type.attribute.attribute
   - legacy_type.call.call
   - legacy_type.inspect.fn_attr
+  - legacy_type.partial.param
   - legacy_type.partial.partial
   - legacy_type.piece_ref.piece_ref
   - legacy_type.python_module.python_module
+  - legacy_type.raw.raw
   - guesser.runner.get_resource_type
 
 definitions:
@@ -22,8 +24,10 @@ definitions:
     import_list:
       htypes.attribute.attribute: legacy_type.attribute.attribute
       htypes.call.call: legacy_type.call.call
-      htypes.partial.partial: legacy_type.partial.partial
       htypes.inspect.fn_attr: legacy_type.inspect.fn_attr
+      htypes.partial.param: legacy_type.partial.param
+      htypes.partial.partial: legacy_type.partial.partial
+      htypes.raw.raw: legacy_type.raw.raw
       services.mosaic: legacy_service.mosaic
       services.python_object_creg: legacy_service.python_object_creg
       services.runner_method_get_resource_type_ref: runner_method_get_resource_type_ref
