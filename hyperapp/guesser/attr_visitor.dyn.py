@@ -12,11 +12,12 @@ _log = logging.getLogger(__name__)
 
 class AttrVisitor:
 
-    def __init__(self, fixtures_module, on_attr):
+    def __init__(self, fixtures_module, on_attr, on_object=None):
         self._fix_module = fixtures_module
         self._on_attr = on_attr
+        self._on_object = on_object
 
-    def run(self, process, object_res, attr):
+    def run(self, process, object_res, path, attr):
         _log.info("Loading type for global: %r", attr.name)
         get_resource_type = process.rpc_call(runner_method_get_resource_type_ref)
 
@@ -28,7 +29,7 @@ class AttrVisitor:
 
         if isinstance(attr, htypes.inspect.fn_attr):
             kw = {
-                name: self._fixture(attr.name, name)
+                name: self._fixture(path, attr.name, name)
                 for name in attr.param_list
                 }
             if kw:
@@ -46,9 +47,10 @@ class AttrVisitor:
             else:
                 fn_ref = attr_ref
 
-            call = htypes.call.call(fn_ref)
-            value_ref = mosaic.put(call)
+            value_res = htypes.call.call(fn_ref)
+            value_ref = mosaic.put(value_res)
         else:
+            value_res = attr_res
             value_ref = attr_ref
 
         result_t = get_resource_type(value_ref)
@@ -56,8 +58,11 @@ class AttrVisitor:
 
         self._on_attr(process, attr, result_t)
 
-    def _fixture(self, attr_name, param_name):
-        res_name = f'param.{attr_name}.{param_name}'
+        if self._on_object and isinstance(result_t, htypes.inspect.object_t):
+            self._on_object(process, value_res, path=[*path, attr.name])
+
+    def _fixture(self, path, attr_name, param_name):
+        res_name = '.'.join(['param', *path, attr_name, param_name])
         if not self._fix_module:
             raise RuntimeError(f"Fixture {res_name!r} is required but fixtures module does not exist")
         try:

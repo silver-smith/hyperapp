@@ -36,6 +36,9 @@ class Constructor:
         target_name = attr.resource_name or attr.name
         self._construct_attr(target_name, self._module_res_name, attr)
 
+    def on_attr(self, process, attr, result_t):
+        pass
+
     def _construct_attr(self, target_name, object_res_name, attr):
         attr_res_t = resource_type_producer(htypes.attribute.attribute)
         attr_def = attr_res_t.definition_t(

@@ -40,14 +40,22 @@ def construct_resources(full_module_name, module_name, module_path, root_dir):
 
         attr_visitor = AttrVisitor(
             fixtures_module=resource_module_reg.get(full_module_name + '.fixtures'),
-            on_attr=constructor.on_global,
+            on_attr=constructor.on_attr,
             )
         object_visitor = ObjectVisitor(
             on_attr=attr_visitor.run,
             )
+        global_attr_visitor = AttrVisitor(
+            fixtures_module=resource_module_reg.get(full_module_name + '.fixtures'),
+            on_attr=constructor.on_global,
+            on_object=object_visitor.run,
+            )
+        global_visitor = ObjectVisitor(
+            on_attr=global_attr_visitor.run,
+            )
         module_visitor = ModuleVisitor(
             on_module=constructor.on_module,
-            on_object=object_visitor.run,
+            on_object=global_visitor.run,
             )
         module_visitor.run(process, module_name, module_path)
 

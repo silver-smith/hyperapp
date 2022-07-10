@@ -28,7 +28,7 @@ class ModuleVisitor:
                 ],
             )
 
-        self._on_object(process, module_res)
+        self._on_object(process, module_res, path=[])
 
         imports = auto_importer_imports()
         _log.info("Import list: %s", imports)

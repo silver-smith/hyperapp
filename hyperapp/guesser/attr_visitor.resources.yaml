@@ -4,6 +4,7 @@ import:
   - legacy_type.attribute.attribute
   - legacy_type.call.call
   - legacy_type.inspect.fn_attr
+  - legacy_type.inspect.object_t
   - legacy_type.partial.param
   - legacy_type.partial.partial
   - legacy_type.piece_ref.piece_ref
@@ -25,6 +26,7 @@ definitions:
       htypes.attribute.attribute: legacy_type.attribute.attribute
       htypes.call.call: legacy_type.call.call
       htypes.inspect.fn_attr: legacy_type.inspect.fn_attr
+      htypes.inspect.object_t: legacy_type.inspect.object_t
       htypes.partial.param: legacy_type.partial.param
       htypes.partial.partial: legacy_type.partial.partial
       htypes.raw.raw: legacy_type.raw.raw
