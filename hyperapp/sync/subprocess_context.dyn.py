@@ -13,6 +13,7 @@ from .services import (
     runner_signal_queue,
     subprocess_factory,
     )
+from .rpc_proxy import RpcProxy
 
 _log = logging.getLogger(__name__)
 
@@ -27,6 +28,9 @@ class SubProcess:
     def rpc_call(self, servant_fn_ref):
         return rpc_call_factory(
             self._rpc_endpoint, self._peer, servant_fn_ref, self._identity)
+
+    def proxy(self, servant_ref):
+        return RpcProxy(self._rpc_endpoint, self._identity, self._peer, servant_ref)
 
 
 @contextmanager

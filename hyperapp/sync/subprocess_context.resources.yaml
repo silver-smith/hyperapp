@@ -10,6 +10,7 @@ import:
   - legacy_type.call.call
   - legacy_type.piece_ref.piece_ref
   - legacy_type.python_module.python_module
+  - sync.rpc_proxy.rpc_proxy_module
 
 definitions:
 
@@ -56,6 +57,7 @@ definitions:
       services.rpc_call_factory: legacy_service.rpc_call_factory
       services.runner_is_ready_fn_ref: runner_is_ready_fn_ref
       services.runner_signal_queue: runner_signal_queue
+      rpc_proxy: sync.rpc_proxy.rpc_proxy_module
 
   subprocess_running:
     _type: legacy_type.attribute.attribute
