@@ -125,16 +125,24 @@ class _CodeModule(ModuleType):
         self.code_module = code_module
 
 
-class _Loader(Finder):
+class AutoImporter(Finder):
 
     _is_package = True
 
-    def __init__(self, import_dict):
-        self._import_dict = import_dict
+    def __init__(self):
+        self._import_dict = {}
         self._base_module_name = None
+
+    def imports(self):
+        return [
+            htypes.auto_importer.import_rec(key, value)
+            for key, value in sorted(self._import_dict.items())
+            ]
 
     def set_base_module_name(self, name):
         self._base_module_name = name
+
+    # Finder interface:
 
     def get_spec(self, fullname):
         spec = super().get_spec(fullname)
@@ -179,18 +187,3 @@ class _Loader(Finder):
         module.__dict__.update(python_module.__dict__)
         self._import_dict[module_name] = f'legacy_module.{package_name}.{name}'
         return module
-
-
-class AutoImporter:
-
-    def __init__(self):
-        self._import_dict = {}
-
-    def loader(self):
-        return _Loader(self._import_dict)
-
-    def imports(self):
-        return [
-            htypes.auto_importer.import_rec(key, value)
-            for key, value in sorted(self._import_dict.items())
-            ]

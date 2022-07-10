@@ -80,12 +80,12 @@ def test_auto_importer(services, htypes, subprocess):
         module_name='auto_importer_module',
         file_name=str(auto_importer_module_path),
         import_list=[
-            import_rec_def_t('*', 'guesser.auto_importer.auto_importer_loader'),
+            import_rec_def_t('*', 'guesser.auto_importer.auto_importer'),
             ],
         )
     module_res_name = 'auto_importer_module'
     resource_module.set_definition(module_res_name, module_res_t, module_def)
-    resource_module.add_import('guesser.auto_importer.auto_importer_loader')
+    resource_module.add_import('guesser.auto_importer.auto_importer')
     module = resource_module[module_res_name]
     module_ref = services.mosaic.put(module)
 

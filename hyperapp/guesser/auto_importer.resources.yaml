@@ -31,30 +31,16 @@ definitions:
       services.types: legacy_service.types
       services.services: legacy_service.services
 
-  auto_importer_ctr:
+  AutoImporter:
     _type: legacy_type.attribute.attribute
     object: auto_importer_module
     attr_name: AutoImporter
 
-  auto_importer_partial:
-    _type: legacy_type.partial.partial
-    function: auto_importer_ctr
-    params: {}
-
   auto_importer:
     _type: legacy_type.call.call
-    function: auto_importer_partial
-
-  auto_importer_loader_fn:
-    _type: legacy_type.attribute.attribute
-    object: auto_importer
-    attr_name: loader
+    function: AutoImporter
 
   auto_importer_imports_fn:
     _type: legacy_type.attribute.attribute
     object: auto_importer
     attr_name: imports
-
-  auto_importer_loader:
-    _type: legacy_type.call.call
-    function: auto_importer_loader_fn

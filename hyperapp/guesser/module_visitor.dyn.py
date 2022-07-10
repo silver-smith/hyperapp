@@ -3,7 +3,7 @@ import logging
 from . import htypes
 from .services import (
     auto_importer_imports_ref,
-    auto_importer_loader_ref,
+    auto_importer_ref,
     )
 
 _log = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ class ModuleVisitor:
     def run(self, process, module_name, source_path):
         auto_importer_imports = process.rpc_call(auto_importer_imports_ref)
 
-        loader = auto_importer_loader_ref
+        loader = auto_importer_ref
         module_res = htypes.python_module.python_module(
             module_name=module_name,
             source=source_path.read_text(),
