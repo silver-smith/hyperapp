@@ -19,3 +19,8 @@ definitions:
     _type: legacy_type.attribute.attribute
     object: marker_module
     attr_name: service
+
+  module:
+    _type: legacy_type.attribute.attribute
+    object: marker_module
+    attr_name: module
