@@ -10,26 +10,26 @@ from .services import (
 _log = logging.getLogger(__name__)
 
 
-class GlobalVisitor:
+class AttrVisitor:
 
-    def __init__(self, fixtures_module, on_global):
+    def __init__(self, fixtures_module, on_attr):
         self._fix_module = fixtures_module
-        self._on_global = on_global
+        self._on_attr = on_attr
 
-    def run(self, process, module, globl):
-        _log.info("Loading type for global: %r", globl.name)
+    def run(self, process, object_res, attr):
+        _log.info("Loading type for global: %r", attr.name)
         get_resource_type = process.rpc_call(runner_method_get_resource_type_ref)
 
-        attr = htypes.attribute.attribute(
-            object=mosaic.put(module),
-            attr_name=globl.name,
+        attr_res = htypes.attribute.attribute(
+            object=mosaic.put(object_res),
+            attr_name=attr.name,
             )
-        attr_ref = mosaic.put(attr)
+        attr_ref = mosaic.put(attr_res)
 
-        if isinstance(globl, htypes.inspect.fn_attr):
+        if isinstance(attr, htypes.inspect.fn_attr):
             kw = {
-                name: self._fixture(globl.name, name)
-                for name in globl.param_list
+                name: self._fixture(attr.name, name)
+                for name in attr.param_list
                 }
             if kw:
                 fn = htypes.partial.partial(
@@ -52,12 +52,12 @@ class GlobalVisitor:
             value_ref = attr_ref
 
         result_t = get_resource_type(value_ref)
-        _log.info("%r type: %r", globl.name, result_t)
+        _log.info("%r type: %r", attr.name, result_t)
 
-        self._on_global(process, globl, result_t)
+        self._on_attr(process, attr, result_t)
 
-    def _fixture(self, globl_name, param_name):
-        res_name = f'param.{globl_name}.{param_name}'
+    def _fixture(self, attr_name, param_name):
+        res_name = f'param.{attr_name}.{param_name}'
         if not self._fix_module:
             raise RuntimeError(f"Fixture {res_name!r} is required but fixtures module does not exist")
         try:

@@ -3,7 +3,6 @@ import logging
 from . import htypes
 from .services import (
     Constructor,
-    ModuleVisitor,
     endpoint_registry,
     generate_rsa_identity,
     module_dir_list,
@@ -11,7 +10,9 @@ from .services import (
     subprocess_running,
     )
 from .custom_resource_module_registry import custom_resource_module_registry
-from .globl import GlobalVisitor
+from .attr_visitor import AttrVisitor
+from .module_visitor import ModuleVisitor
+from .object_visitor import ObjectVisitor
 
 _log = logging.getLogger(__name__)
 
@@ -37,14 +38,17 @@ def construct_resources(full_module_name, module_name, module_path, root_dir):
     custom_module_dirs = [*module_dir_list, module_path.parent]
     with subprocess_running(custom_module_dirs, rpc_endpoint, identity, 'guesser') as process:
 
-        global_visitor = GlobalVisitor(
+        attr_visitor = AttrVisitor(
             fixtures_module=resource_module_reg.get(full_module_name + '.fixtures'),
-            on_global=constructor.on_global,
+            on_attr=constructor.on_global,
             )
-        visitor = ModuleVisitor(
+        object_visitor = ObjectVisitor(
+            on_attr=attr_visitor.run,
+            )
+        module_visitor = ModuleVisitor(
             on_module=constructor.on_module,
-            on_global=global_visitor.run,
+            on_object=object_visitor.run,
             )
-        visitor.run(process, module_name, module_path)
+        module_visitor.run(process, module_name, module_path)
 
     return constructor.resource_module

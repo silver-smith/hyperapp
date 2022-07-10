@@ -1,0 +1,27 @@
+import:
+- guesser.runner.runner_method_collect_attributes
+- legacy_service.mosaic
+- legacy_service.web
+- legacy_type.attribute.attribute
+- legacy_type.piece_ref.piece_ref
+- legacy_type.python_module.python_module
+
+definitions:
+
+  runner_method_collect_attributes_ref:
+    _type: legacy_type.piece_ref.piece_ref
+    value: guesser.runner.runner_method_collect_attributes
+
+  object_visitor_module:
+    _type: legacy_type.python_module.python_module
+    module_name: object_visitor
+    file_name: object_visitor.dyn.py
+    import_list:
+      services.mosaic: legacy_service.mosaic
+      services.runner_method_collect_attributes_ref: runner_method_collect_attributes_ref
+      services.web: legacy_service.web
+
+  ObjectVisitor:
+    _type: legacy_type.attribute.attribute
+    object: object_visitor_module
+    attr_name: ObjectVisitor
