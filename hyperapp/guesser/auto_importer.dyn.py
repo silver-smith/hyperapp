@@ -154,17 +154,9 @@ class _Loader(Finder):
             root =_HTypesRoot(spec.name, self._import_dict)
             module = getattr(root, last_name)
         else:
-            for name in local_modules.by_name:
-                package_name, name = name.rsplit('.', 1)
-                if name == last_name:
-                    break
-            else:
-                raise RuntimeError(f"Unknown code module: {last_name}")
-            module_res = resource_module_registry[f'legacy_module.{package_name}']
-            python_module = python_object_creg.animate(module_res[name])
-            module = ModuleType(spec.name)
-            module.__dict__.update(python_module.__dict__)
-            self._import_dict[rel_name] = f'legacy_module.{package_name}.{name}'
+            if '.' in rel_name:
+                raise RuntimeError(f"Unsupported import style: {rel_name}")
+            module = self._import_sub_module(spec, last_name)
         module.__name__ = spec.name
         module.__loader__ = self
         module.__path__ = None
@@ -173,6 +165,20 @@ class _Loader(Finder):
 
     def exec_module(self, module):
         pass
+
+    def _import_sub_module(self, spec, module_name):
+        for name in local_modules.by_name:
+            package_name, name = name.rsplit('.', 1)
+            if name == module_name:
+                break
+        else:
+            raise RuntimeError(f"Unknown code module: {module_name}")
+        module_res = resource_module_registry[f'legacy_module.{package_name}']
+        python_module = python_object_creg.animate(module_res[name])
+        module = ModuleType(spec.name)
+        module.__dict__.update(python_module.__dict__)
+        self._import_dict[module_name] = f'legacy_module.{package_name}.{name}'
+        return module
 
 
 class AutoImporter:
