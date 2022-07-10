@@ -24,7 +24,8 @@ def call_n(fn_list):
     return inner
 
 
-def construct_resources(full_module_name, module_name, module_path, root_dir):
+def construct_resources(resource_dir_list, full_module_name, module_name, module_path, root_dir):
+    _log.info("Additional resource dirs: %s", resource_dir_list)
     _log.info("Construct resources from: %s", full_module_name)
 
     identity = generate_rsa_identity(fast=True)
@@ -35,7 +36,11 @@ def construct_resources(full_module_name, module_name, module_path, root_dir):
     constructor = Constructor(
         resource_module_reg, root_dir, full_module_name, module_name, module_path)
 
-    custom_module_dirs = [*module_dir_list, module_path.parent]
+    custom_module_dirs = [
+        *module_dir_list,
+        *resource_dir_list,
+        module_path.parent,
+        ]
     with subprocess_running(custom_module_dirs, rpc_endpoint, identity, 'guesser') as process:
 
         attr_visitor = AttrVisitor(

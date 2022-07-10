@@ -53,6 +53,7 @@ def main():
     init_logging('server')
 
     parser = argparse.ArgumentParser(description='Construct resources')
+    parser.add_argument('--resource-dir', type=Path, nargs='*', help="Additional resource dir")
     parser.add_argument('source_path', type=Path, nargs='+', help="Path to source file")
     args = parser.parse_args()
 
@@ -70,7 +71,10 @@ def main():
         resource = module['construct_resources']
         fn = services.python_object_creg.animate(resource)
         log.info("Construct resources function: %r", fn)
-        fn(args.source_path)
+        resource_dir_list = [
+            dir.absolute() for dir in args.resource_dir
+            ]
+        fn(resource_dir_list, args.source_path)
     finally:
         log.info("Stopping.")
         services.stop()
