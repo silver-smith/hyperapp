@@ -2,6 +2,7 @@ from hyperapp.common.htypes import phony_ref
 
 from .import htypes
 from .services import (
+    module,
     mosaic,
     param,
     service,
@@ -11,6 +12,11 @@ from .view_command import ViewCommand
 
 
 _null_ref = phony_ref('null')
+
+
+@module.qt_keys.run_input_key_dialog
+def run_input_key_dialog():
+    return ''
 
 
 def global_command_list():
@@ -40,6 +46,8 @@ class _PhonyRootView:
 service.root_view = _PhonyRootView()
 
 param.GlobalCommandList.piece = htypes.command_list.global_command_list()
+param.GlobalCommandList.set_key.current_item = None
+
 param.ViewCommandList.piece = htypes.command_list.view_command_list()
 
 param.ObjectCommandList.piece = htypes.command_list.object_command_list(

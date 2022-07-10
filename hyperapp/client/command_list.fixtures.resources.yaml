@@ -1,6 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
+- guesser.marker.module
 - guesser.marker.param
 - guesser.marker.service
 - legacy_module.async.ui.view_command
@@ -29,6 +30,7 @@ definitions:
       htypes.command_list_fixtures.sample_global_command_d: legacy_type.command_list_fixtures.sample_global_command_d
       htypes.impl.global_command_impl: legacy_type.impl.global_command_impl
       htypes.legacy_type.type: legacy_type.legacy_type.type
+      services.module: guesser.marker.module
       services.mosaic: legacy_service.mosaic
       services.param: guesser.marker.param
       services.service: guesser.marker.service
@@ -38,10 +40,18 @@ definitions:
     _type: legacy_type.attribute.attribute
     object: command_list_fixtures_module
     attr_name: global_command_list
+  module.qt_keys.run_input_key_dialog:
+    _type: legacy_type.attribute.attribute
+    object: command_list_fixtures_module
+    attr_name: run_input_key_dialog
   param.GlobalCommandList.piece:
     _type: legacy_type.attribute.attribute
     object: command_list_fixtures_module
     attr_name: param_GlobalCommandList_piece
+  param.GlobalCommandList.set_key.current_item:
+    _type: legacy_type.attribute.attribute
+    object: command_list_fixtures_module
+    attr_name: param_GlobalCommandList_set_key_current_item
   param.ObjectCommandList.piece:
     _type: legacy_type.attribute.attribute
     object: command_list_fixtures_module
