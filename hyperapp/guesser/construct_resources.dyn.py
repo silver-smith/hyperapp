@@ -24,6 +24,15 @@ def call_n(fn_list):
     return inner
 
 
+
+process_code_module_list = [
+    'common.lcs',
+    'ui.impl_registry',
+    'ui.global_command_list',
+    'resource.register_associations',
+    ]
+
+
 def construct_resources(resource_dir_list, full_module_name, module_name, module_path, root_dir):
     _log.info("Additional resource dirs: %s", resource_dir_list)
     _log.info("Construct resources from: %s", full_module_name)
@@ -41,7 +50,13 @@ def construct_resources(resource_dir_list, full_module_name, module_name, module
         *resource_dir_list,
         module_path.parent,
         ]
-    with subprocess_running(custom_module_dirs, rpc_endpoint, identity, 'guesser') as process:
+    with subprocess_running(
+            custom_module_dirs,
+            process_code_module_list,
+            rpc_endpoint,
+            identity,
+            'guesser',
+        ) as process:
 
         attr_visitor = AttrVisitor(
             fixtures_module=resource_module_reg.get(full_module_name + '.fixtures'),

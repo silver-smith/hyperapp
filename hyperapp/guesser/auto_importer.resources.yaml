@@ -9,10 +9,18 @@ import:
   - legacy_service.services
   - legacy_service.types
   - legacy_type.attribute.attribute
+  - legacy_type.auto_importer.auto_importer
   - legacy_type.auto_importer.import_rec
   - legacy_type.call.call
+  - legacy_type.impl.python_object_association
   - legacy_type.partial.partial
   - legacy_type.python_module.python_module
+
+associations:
+
+- _type: legacy_type.impl.python_object_association
+  t: legacy_type.auto_importer.auto_importer
+  function: AutoImporter
 
 definitions:
 
@@ -39,8 +47,3 @@ definitions:
   auto_importer:
     _type: legacy_type.call.call
     function: AutoImporter
-
-  auto_importer_imports_fn:
-    _type: legacy_type.attribute.attribute
-    object: auto_importer
-    attr_name: imports

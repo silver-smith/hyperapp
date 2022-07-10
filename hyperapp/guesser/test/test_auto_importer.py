@@ -60,7 +60,7 @@ def subprocess(services):
     subprocess_running_res = module['subprocess_running']
     subprocess_running = services.python_object_creg.animate(subprocess_running_res)
 
-    with subprocess_running(services.module_dir_list, rpc_endpoint, identity, 'auto_importer') as process:
+    with subprocess_running(services.module_dir_list, [], rpc_endpoint, identity, 'auto_importer') as process:
         yield process
 
 

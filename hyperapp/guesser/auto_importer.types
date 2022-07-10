@@ -1,3 +1,12 @@
+mock = record:
+  import_name: string
+  resource: ref
+
+
+auto_importer = record:
+  mocks: mock list
+
+
 import_rec = record:
   name: string
   resource_name: string

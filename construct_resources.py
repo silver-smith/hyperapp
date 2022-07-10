@@ -72,7 +72,7 @@ def main():
         fn = services.python_object_creg.animate(resource)
         log.info("Construct resources function: %r", fn)
         resource_dir_list = [
-            dir.absolute() for dir in args.resource_dir
+            dir.absolute() for dir in args.resource_dir or []
             ]
         fn(resource_dir_list, args.source_path)
     finally:

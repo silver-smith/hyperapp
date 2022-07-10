@@ -1,30 +1,21 @@
 import:
-- guesser.auto_importer.auto_importer_imports_fn
-- guesser.auto_importer.auto_importer
 - legacy_type.attribute.attribute
-- legacy_type.piece_ref.piece_ref
+- legacy_type.auto_importer.auto_importer
 - legacy_type.python_module.import_rec
 - legacy_type.python_module.python_module
+- legacy_service.mosaic
 
 definitions:
-
-  auto_importer_imports_ref:
-    _type: legacy_type.piece_ref.piece_ref
-    value: guesser.auto_importer.auto_importer_imports_fn
-
-  auto_importer_ref:
-    _type: legacy_type.piece_ref.piece_ref
-    value: guesser.auto_importer.auto_importer
 
   module_visitor_module:
     _type: legacy_type.python_module.python_module
     module_name: module_visitor
     file_name: module_visitor.dyn.py
     import_list:
+      htypes.auto_importer.auto_importer: legacy_type.auto_importer.auto_importer
       htypes.python_module.python_module: legacy_type.python_module.python_module
       htypes.python_module.import_rec: legacy_type.python_module.import_rec
-      services.auto_importer_imports_ref: auto_importer_imports_ref
-      services.auto_importer_ref: auto_importer_ref
+      services.mosaic: legacy_service.mosaic
 
   ModuleVisitor:
     _type: legacy_type.attribute.attribute

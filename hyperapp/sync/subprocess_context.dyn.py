@@ -34,7 +34,7 @@ class SubProcess:
 
 
 @contextmanager
-def subprocess_running(module_dir_list, rpc_endpoint, identity, process_name):
+def subprocess_running(module_dir_list, code_module_list, rpc_endpoint, identity, process_name):
     peer_ref = mosaic.put(identity.peer.piece)
     peer_ref_cdr_list = [packet_coders.encode('cdr', peer_ref)]
 
@@ -53,6 +53,7 @@ def subprocess_running(module_dir_list, rpc_endpoint, identity, process_name):
         'resource.raw',
         'sync.transport.tcp',  # Unbundler wants tcp route.
         'sync.subprocess_report_home',
+        *(code_module_list or []),
         ]
     subprocess = subprocess_factory(
         process_name,

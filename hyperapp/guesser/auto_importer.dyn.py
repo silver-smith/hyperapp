@@ -129,9 +129,13 @@ class AutoImporter(Finder):
 
     _is_package = True
 
-    def __init__(self):
+    def __init__(self, piece):
         self._import_dict = {}
         self._base_module_name = None
+        self._mocks = {
+            r.import_name: r.resource
+            for r in piece.mocks
+            }
 
     def imports(self):
         return [
