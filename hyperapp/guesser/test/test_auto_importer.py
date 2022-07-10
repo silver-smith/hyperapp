@@ -49,6 +49,14 @@ def code_module_list():
         ]
 
 
+process_code_module_list = [
+    'common.lcs',
+    'ui.impl_registry',
+    'ui.global_command_list',
+    'resource.register_associations',
+    ]
+
+
 @pytest.fixture
 def subprocess(services):
 
@@ -60,34 +68,31 @@ def subprocess(services):
     subprocess_running_res = module['subprocess_running']
     subprocess_running = services.python_object_creg.animate(subprocess_running_res)
 
-    with subprocess_running(services.module_dir_list, [], rpc_endpoint, identity, 'auto_importer') as process:
+    with subprocess_running(
+            services.module_dir_list,
+            process_code_module_list,
+            rpc_endpoint,
+            identity,
+            'auto_importer',
+    ) as process:
         yield process
 
 
 def test_auto_importer(services, htypes, subprocess):
 
-    resource_module = services.resource_module_factory(
-        services.resource_module_registry,
-        'test_auto_importer',
-        Path(tempfile.gettempdir()) / 'test_auto_importer.resources.yaml',
-        load_from_file=False,
-    )
+    auto_importer_res = htypes.auto_importer.auto_importer(mocks=[])
+    auto_importer_ref = services.mosaic.put(auto_importer_res)
 
     auto_importer_module_path = Path(__file__).parent / 'test_resources' / 'auto_importer_module.dyn.py'
-    module_res_t = services.resource_type_producer(htypes.python_module.python_module)
-    import_rec_def_t = module_res_t.definition_t.fields['import_list'].element_t
-    module_def = module_res_t.definition_t(
+    module_res = htypes.python_module.python_module(
         module_name='auto_importer_module',
-        file_name=str(auto_importer_module_path),
+        source=auto_importer_module_path.read_text(),
+        file_path=str(auto_importer_module_path),
         import_list=[
-            import_rec_def_t('*', 'guesser.auto_importer.auto_importer'),
+            htypes.python_module.import_rec('*', auto_importer_ref),
             ],
         )
-    module_res_name = 'auto_importer_module'
-    resource_module.set_definition(module_res_name, module_res_t, module_def)
-    resource_module.add_import('guesser.auto_importer.auto_importer')
-    module = resource_module[module_res_name]
-    module_ref = services.mosaic.put(module)
+    module_ref = services.mosaic.put(module_res)
 
     runner_module = services.resource_module_registry['guesser.runner']
     runner_method_collect_attributes_res = runner_module['runner_method_collect_attributes']
@@ -97,11 +102,8 @@ def test_auto_importer(services, htypes, subprocess):
     global_list = collect_attributes_call(module_ref)
     log.info("Collected global list: %s", global_list)
 
-    auto_importer_module = services.resource_module_registry['guesser.auto_importer']
-    auto_importer_imports_res = auto_importer_module['auto_importer_imports_fn']
-    auto_importer_imports_ref = services.mosaic.put(auto_importer_imports_res)
-    auto_importer_imports_call = subprocess.rpc_call(auto_importer_imports_ref)
-    imports = auto_importer_imports_call()
+    auto_importer = subprocess.proxy(auto_importer_ref)
+    imports = auto_importer.imports()
     log.info("Import list: %s", imports)
 
     assert imports == (
@@ -113,9 +115,19 @@ def test_auto_importer(services, htypes, subprocess):
         htypes.auto_importer.import_rec('services.web', 'legacy_service.web'),
        )
 
+    resource_module = services.resource_module_factory(
+        services.resource_module_registry,
+        'test_auto_importer',
+        Path(tempfile.gettempdir()) / 'test_auto_importer.resources.yaml',
+        load_from_file=False,
+    )
+
     for r in imports:
         if '.' in r.resource_name:
             resource_module.add_import(r.resource_name)
+
+    module_res_t = services.resource_type_producer(htypes.python_module.python_module)
+    import_rec_def_t = module_res_t.definition_t.fields['import_list'].element_t
     module_def = module_res_t.definition_t(
         module_name='check_importer_module',
         file_name=str(auto_importer_module_path),
