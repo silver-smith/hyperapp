@@ -17,7 +17,10 @@ class ModuleVisitor:
 
     def run(self, process, module_name, source_path):
 
-        resources = available_import_resources()
+        resources = [
+            htypes.auto_importer.resource(name, resource_ref)
+            for name, resource_ref in available_import_resources()
+            ]
         auto_importer_res = htypes.auto_importer.auto_importer(resources)
         module_res = htypes.python_module.python_module(
             module_name=module_name,

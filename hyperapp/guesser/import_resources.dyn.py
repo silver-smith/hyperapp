@@ -12,10 +12,11 @@ def available_import_resources():
     # Types:
     for module_name, type_module in local_types.items():
         for name, type_ref in type_module.items():
-            resource_ref = htypes.legacy_type.type(type_ref)
+            resource = htypes.legacy_type.type(type_ref)
+            resource_ref = mosaic.put(resource)
             yield (f'htypes.{module_name}.{name}', resource_ref)
     # Legacy builtin services:
-    if service_name in builtin_services:
+    for service_name in builtin_services:
         resource = htypes.legacy_service.builtin_service(service_name)
         resource_ref = mosaic.put(resource)
         yield (f'services.{service_name}', resource_ref)
@@ -29,6 +30,8 @@ def available_import_resources():
             yield (f'services.{service_name}', resource_ref)
     # Resources as services:
     for module_name, res_module in resource_module_registry.items():
+        if module_name.startswith(('legacy_type.', 'legacy_service.', 'legacy_module.')):
+            continue
         for name in res_module:
             resource = res_module[name]
             resource_ref = mosaic.put(resource)

@@ -83,7 +83,7 @@ class AutoImporter(Finder):
     _is_package = True
 
     def __init__(self, piece):
-        self._import_set = {}
+        self._import_set = set()
         self._base_module_name = None
         self._resources = {
             r.name: r.resource

@@ -51,7 +51,7 @@ def construct_resources(resource_dir_list, full_module_name, module_name, module
         module_path.parent,
         ]
     with subprocess_running(
-            custom_module_dirs,
+            module_dir_list,
             process_code_module_list,
             rpc_endpoint,
             identity,
