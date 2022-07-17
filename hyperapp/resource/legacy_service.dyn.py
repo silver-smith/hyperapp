@@ -52,7 +52,11 @@ def builtin_service_python_object(piece, services):
 
 def module_service_python_object(piece, python_object_creg, services):
     _ = python_object_creg.invite(piece.module_ref)  # Ensure it is loaded.
-    return getattr(services, piece.name)
+    try:
+        return getattr(services, piece.name)
+    except AttributeError as x:
+        # Allowing AttributeError leaving __getattr__ leads to undesired behaviour when called from import statement.
+        raise RuntimeError(f"Error retrieving service {piece.name!r}: {x}")
 
 
 class ThisModule(Module):

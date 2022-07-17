@@ -4,6 +4,7 @@ from . import htypes
 from .services import (
     mosaic,
     )
+from .import_resources import available_import_resources
 
 _log = logging.getLogger(__name__)
 
@@ -16,7 +17,8 @@ class ModuleVisitor:
 
     def run(self, process, module_name, source_path):
 
-        auto_importer_res = htypes.auto_importer.auto_importer(mocks=[])
+        resources = available_import_resources()
+        auto_importer_res = htypes.auto_importer.auto_importer(resources)
         module_res = htypes.python_module.python_module(
             module_name=module_name,
             source=source_path.read_text(),

@@ -1,4 +1,5 @@
 import:
+- guesser.import_resources.import_resources_module
 - legacy_type.attribute.attribute
 - legacy_type.auto_importer.auto_importer
 - legacy_type.python_module.import_rec
@@ -16,6 +17,7 @@ definitions:
       htypes.python_module.python_module: legacy_type.python_module.python_module
       htypes.python_module.import_rec: legacy_type.python_module.import_rec
       services.mosaic: legacy_service.mosaic
+      import_resources: guesser.import_resources.import_resources_module
 
   ModuleVisitor:
     _type: legacy_type.attribute.attribute

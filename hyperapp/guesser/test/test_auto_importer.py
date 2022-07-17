@@ -80,7 +80,7 @@ def subprocess(services):
 
 def test_auto_importer(services, htypes, subprocess):
 
-    auto_importer_res = htypes.auto_importer.auto_importer(mocks=[])
+    auto_importer_res = htypes.auto_importer.auto_importer(resources=[])
     auto_importer_ref = services.mosaic.put(auto_importer_res)
 
     auto_importer_module_path = Path(__file__).parent / 'test_resources' / 'auto_importer_module.dyn.py'

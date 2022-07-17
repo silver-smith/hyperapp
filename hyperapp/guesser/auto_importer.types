@@ -1,10 +1,10 @@
-mock = record:
-  import_name: string
+resource = record:
+  name: string
   resource: ref
 
 
 auto_importer = record:
-  mocks: mock list
+  resources: resource list
 
 
 import_rec = record:

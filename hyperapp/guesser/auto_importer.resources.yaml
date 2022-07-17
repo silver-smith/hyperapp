@@ -1,19 +1,8 @@
 import:
-  - legacy_service.builtin_services
-  - legacy_service.local_modules
-  - legacy_service.mosaic
   - legacy_service.python_object_creg
-  - legacy_service.resource_module_registry
-  - legacy_service.services
-  - legacy_service.local_types
-  - legacy_service.services
-  - legacy_service.types
   - legacy_type.attribute.attribute
   - legacy_type.auto_importer.auto_importer
-  - legacy_type.auto_importer.import_rec
-  - legacy_type.call.call
   - legacy_type.impl.python_object_association
-  - legacy_type.partial.partial
   - legacy_type.python_module.python_module
 
 associations:
@@ -29,21 +18,9 @@ definitions:
     module_name: auto_importer
     file_name: auto_importer.dyn.py
     import_list:
-      htypes.auto_importer.import_rec: legacy_type.auto_importer.import_rec
-      services.builtin_services: legacy_service.builtin_services
-      services.local_modules: legacy_service.local_modules
-      services.local_types: legacy_service.local_types
-      services.mosaic: legacy_service.mosaic
       services.python_object_creg: legacy_service.python_object_creg
-      services.resource_module_registry: legacy_service.resource_module_registry
-      services.types: legacy_service.types
-      services.services: legacy_service.services
 
   AutoImporter:
     _type: legacy_type.attribute.attribute
     object: auto_importer_module
     attr_name: AutoImporter
-
-  auto_importer:
-    _type: legacy_type.call.call
-    function: AutoImporter
