@@ -62,4 +62,6 @@ def subprocess_main_safe(connection, module_dir_list, code_module_list, config):
     services.init_modules(code_module_list + ['sync.subprocess_child'], config)
     log.info("Running, waiting for stop signal.")
     services.subprocess_stop_event.wait()
+    log.info("Got stop signal, stopping subprocess services.")
     services.stop()
+    log.info("Subprocess services are stopped.")
