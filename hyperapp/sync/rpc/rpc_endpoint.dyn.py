@@ -41,7 +41,7 @@ class ErrorResponse:
 
 class RpcEndpoint:
 
-    def __init__(self, web, mosaic, types, peer_registry, transport, python_object_creg):
+    def __init__(self, web, mosaic, types, peer_registry, transport, python_object_creg, endpoint_list):
         self._mosaic = mosaic
         self._types = types
         self._peer_registry = peer_registry
@@ -51,17 +51,28 @@ class RpcEndpoint:
         self._response_lock = threading.Lock()
         self._response_available = threading.Condition(self._response_lock)
         self._message_registry = registry = CodeRegistry('rpc_message', web, types)
+        self._is_stopping = False
         registry.register_actor(htypes.rpc.request, self._handle_request)
         registry.register_actor(htypes.rpc.response, self._handle_response)
         registry.register_actor(htypes.rpc.error_response, self._handle_error_response)
+        endpoint_list.append(self)
 
     def __repr__(self):
         return '<sync RpcEndpoint>'
+
+    def stop(self):
+        log.info("Stop rpc endpoint")
+        with self._response_lock:
+            self._is_stopping = True
+            self._response_available.notify_all()
 
     def wait_for_response(self, request_id, timeout_sec=10):
         log.info("Wait for rpc response (timeout %s): %s", timeout_sec, request_id)
         with self._response_lock:
             while True:
+                if self._is_stopping:
+                    log.warning("Services are stopping, but we are still waiting for response for request: %s", request_id)
+                    raise RuntimeError("Services are stopping")
                 try:
                     response = self._result_by_request_id.pop(request_id)
                     return response.get_result()
@@ -133,6 +144,7 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
+        self._endpoint_list = []
         services.rpc_endpoint_factory = partial(
             RpcEndpoint,
             services.web,
@@ -141,4 +153,10 @@ class ThisModule(Module):
             services.peer_registry,
             services.transport,
             services.python_object_creg,
+            self._endpoint_list,
             )
+        services.on_stop.append(self.on_stop)
+
+    def on_stop(self):
+        for endpoint in self._endpoint_list:
+            endpoint.stop()
