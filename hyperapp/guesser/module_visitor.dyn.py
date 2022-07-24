@@ -4,23 +4,22 @@ from . import htypes
 from .services import (
     mosaic,
     )
-from .import_resources import available_import_resources
 
 _log = logging.getLogger(__name__)
 
 
 class ModuleVisitor:
 
-    def __init__(self, custom_resources, on_object, on_module):
-        self._custom_resources = custom_resources
+    def __init__(self, import_resources, on_object, on_module):
+        self._import_resources = import_resources
         self._on_object = on_object
         self._on_module = on_module
 
     def run(self, process, module_name, source_path):
 
         resources = [
-            htypes.auto_importer.resource(name, resource_ref)
-            for name, resource_ref in available_import_resources(self._custom_resources)
+            htypes.auto_importer.resource(rec.import_name, rec.resource_ref)
+            for rec in self._import_resources
             ]
         auto_importer_res = htypes.auto_importer.auto_importer(resources)
         module_res = htypes.python_module.python_module(

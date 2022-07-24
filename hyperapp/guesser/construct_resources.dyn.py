@@ -10,6 +10,7 @@ from .services import (
     subprocess_running,
     )
 from .custom_resource_module_registry import load_custom_resources
+from .import_resources import available_import_resources
 from .attr_visitor import AttrVisitor
 from .module_visitor import ModuleVisitor
 from .object_visitor import ObjectVisitor
@@ -42,8 +43,9 @@ def construct_resources(resource_dir_list, full_module_name, module_name, module
     endpoint_registry.register(identity, rpc_endpoint)
 
     custom_resources = load_custom_resources(resources_dir=module_path.parent)
+    import_resources = list(available_import_resources(custom_resources))
     constructor = Constructor(
-        custom_resources.res_module_reg, root_dir, full_module_name, module_name, module_path)
+        custom_resources.res_module_reg, import_resources, root_dir, full_module_name, module_name, module_path)
 
     custom_module_dirs = [
         *module_dir_list,
@@ -74,7 +76,7 @@ def construct_resources(resource_dir_list, full_module_name, module_name, module
             on_attr=global_attr_visitor.run,
             )
         module_visitor = ModuleVisitor(
-            custom_resources,
+            import_resources,
             on_module=constructor.on_module,
             on_object=global_visitor.run,
             )
