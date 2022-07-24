@@ -46,7 +46,7 @@ class _HTypesModule(ModuleType):
         except KeyError:
             raise RuntimeError(f"Unknown htype: {full_name!r}")
         try:
-            service = python_object_creg.invite(resource_ref)
+            return python_object_creg.invite(resource_ref)
         except Exception as x:
             raise RuntimeError(f"Error importing htype {full_name!r}: {x}")
 
