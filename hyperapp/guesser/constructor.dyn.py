@@ -18,7 +18,7 @@ class Constructor:
             rec.import_name: rec.resource_name
             for rec in import_resources
             }
-        self._module_res_name = module_name.replace('.', '_') + '_module'
+        self._module_res_name = module_name.replace('.', '_') + '.module'
 
     def on_module(self, module_name, module_path, imports):
         module_res_t = resource_type_producer(htypes.python_module.python_module)
@@ -38,6 +38,8 @@ class Constructor:
     def on_global(self, process, attr, result_t):
         target_name = attr.resource_name or attr.name
         self._construct_attr(target_name, self._module_res_name, attr)
+        if isinstance(attr, htypes.inspect.fn_attr):
+            self._construct_service(self._module_res_name, target_name)
 
     def on_attr(self, process, attr, result_t):
         pass
@@ -49,3 +51,11 @@ class Constructor:
             attr_name=attr.name,
             )
         self.resource_module.set_definition(target_name, attr_res_t, attr_def)
+
+    def _construct_service(self, module_res_name, attr_name):
+        target_name = f'{attr_name}.service'
+        call_res_t = resource_type_producer(htypes.call.call)
+        call_def = call_res_t.definition_t(
+            function=attr_name,
+            )
+        self.resource_module.set_definition(target_name, call_res_t, call_def)

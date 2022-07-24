@@ -2,14 +2,11 @@ from hyperapp.common.htypes import phony_ref
 
 from .import htypes
 from .services import (
-    module,
     mosaic,
-    param,
-    service,
     types,
     )
 from .view_command import ViewCommand
-
+from .marker import module, param, service
 
 _null_ref = phony_ref('null')
 

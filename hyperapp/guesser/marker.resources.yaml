@@ -4,7 +4,7 @@ import:
 
 definitions:
 
-  marker_module:
+  marker.module:
     _type: legacy_type.python_module.python_module
     module_name: marker
     file_name: marker.dyn.py
@@ -12,15 +12,15 @@ definitions:
 
   param:
     _type: legacy_type.attribute.attribute
-    object: marker_module
+    object: marker.module
     attr_name: param
 
   service:
     _type: legacy_type.attribute.attribute
-    object: marker_module
+    object: marker.module
     attr_name: service
 
   module:
     _type: legacy_type.attribute.attribute
-    object: marker_module
+    object: marker.module
     attr_name: module

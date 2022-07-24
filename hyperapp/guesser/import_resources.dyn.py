@@ -1,3 +1,4 @@
+import re
 from collections import namedtuple
 
 from . import htypes
@@ -30,14 +31,25 @@ def available_import_resources(custom_resources):
             resource = htypes.legacy_service.module_service(service_name, code_module_ref)
             resource_ref = mosaic.put(resource)
             yield ImportRes(f'services.{service_name}', resource_ref, f'legacy_service.{service_name}')
-    # Resources as services:
+    # Resources as services and modules:
     for module_name, res_module in custom_resources.res_module_reg.items():
         if module_name.startswith(('legacy_type.', 'legacy_service.', 'legacy_module.')):
             continue
         for name in res_module:
-            resource = res_module[name]
-            resource_ref = mosaic.put(resource)
-            yield ImportRes(f'services.{name}', resource_ref, f'{module_name}.{name}')
+            mo = re.match(r'(.+)\.module$', name)
+            if mo:
+                import_module_name = mo[1]
+                resource = res_module[name]
+                resource_ref = mosaic.put(resource)
+                yield ImportRes(import_module_name, resource_ref, f'{module_name}.{name}')
+                continue
+            mo = re.match(r'(.+)\.service$', name)
+            if mo:
+                service_name = mo[1]
+                resource = res_module[name]
+                resource_ref = mosaic.put(resource)
+                yield ImportRes(f'services.{service_name}', resource_ref, f'{module_name}.{name}')
+                continue
     # Legacy modules:
     for full_name in custom_resources.modules.by_name:
         package_name, name = full_name.rsplit('.', 1)
