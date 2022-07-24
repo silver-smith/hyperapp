@@ -4,6 +4,7 @@ from . import htypes
 from .services import (
     Constructor,
     endpoint_registry,
+    load_additional_modules_ref,
     generate_rsa_identity,
     module_dir_list,
     rpc_endpoint_factory,
@@ -47,11 +48,6 @@ def construct_resources(resource_dir_list, full_module_name, module_name, module
     constructor = Constructor(
         custom_resources.res_module_reg, import_resources, root_dir, full_module_name, module_name, module_path)
 
-    custom_module_dirs = [
-        *module_dir_list,
-        *resource_dir_list,
-        module_path.parent,
-        ]
     with subprocess_running(
             module_dir_list,
             process_code_module_list,
@@ -59,6 +55,9 @@ def construct_resources(resource_dir_list, full_module_name, module_name, module
             identity,
             'guesser',
         ) as process:
+
+        load_additional_modules = process.rpc_call(load_additional_modules_ref)
+        load_additional_modules([str(module_path.parent)])
 
         attr_visitor = AttrVisitor(
             fixtures_module=custom_resources.res_module_reg.get(full_module_name + '.fixtures'),

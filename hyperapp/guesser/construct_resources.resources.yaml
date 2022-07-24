@@ -4,8 +4,10 @@ import:
   - legacy_service.module_dir_list
   - legacy_service.rpc_endpoint_factory
   - legacy_type.attribute.attribute
+  - legacy_type.piece_ref.piece_ref
   - legacy_type.python_module.python_module
   - guesser.attr_visitor.attr_visitor_module
+  - guesser.load_modules.load_additional_modules
   - guesser.constructor.Constructor
   - guesser.custom_resource_module_registry.custom_resource_module_registry_module
   - guesser.import_resources.import_resources_module
@@ -15,6 +17,10 @@ import:
 
 definitions:
 
+  load_additional_modules_ref:
+    _type: legacy_type.piece_ref.piece_ref
+    value: guesser.load_modules.load_additional_modules
+
   construct_resources_module:
     _type: legacy_type.python_module.python_module
     module_name: construct_resources
@@ -23,6 +29,7 @@ definitions:
       htypes.python_module.python_module: legacy_type.python_module.python_module
       services.Constructor: guesser.constructor.Constructor
       services.endpoint_registry: legacy_service.endpoint_registry
+      services.load_additional_modules_ref: load_additional_modules_ref
       services.generate_rsa_identity: legacy_service.generate_rsa_identity
       services.module_dir_list: legacy_service.module_dir_list
       services.rpc_endpoint_factory: legacy_service.rpc_endpoint_factory

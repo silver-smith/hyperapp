@@ -1,0 +1,24 @@
+import:
+  - legacy_service.code_module_loader
+  - legacy_service.local_modules
+  - legacy_service.local_types
+  - legacy_service.type_module_loader
+  - legacy_type.attribute.attribute
+  - legacy_type.python_module.python_module
+
+definitions:
+
+  load_modules_module:
+    _type: legacy_type.python_module.python_module
+    module_name: load_modules
+    file_name: load_modules.dyn.py
+    import_list:
+      services.code_module_loader: legacy_service.code_module_loader
+      services.local_modules: legacy_service.local_modules
+      services.local_types: legacy_service.local_types
+      services.type_module_loader: legacy_service.type_module_loader
+
+  load_additional_modules:
+    _type: legacy_type.attribute.attribute
+    object: load_modules_module
+    attr_name: load_additional_modules
