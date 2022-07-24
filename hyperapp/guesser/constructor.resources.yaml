@@ -1,26 +1,26 @@
 import:
-  - legacy_service.resource_module_factory
-  - legacy_service.resource_type_producer
-  - legacy_type.attribute.attribute
-  - legacy_type.call.call
-  - legacy_type.inspect.fn_attr
-  - legacy_type.python_module.python_module
+  - legacy_service:resource_module_factory
+  - legacy_service:resource_type_producer
+  - legacy_type.attribute:attribute
+  - legacy_type.call:call
+  - legacy_type.inspect:fn_attr
+  - legacy_type.python_module:python_module
 
 definitions:
 
   constructor_module:
-    _type: legacy_type.python_module.python_module
+    _type: legacy_type.python_module:python_module
     module_name: constructor
     file_name: constructor.dyn.py
     import_list:
-      htypes.attribute.attribute: legacy_type.attribute.attribute
-      htypes.call.call: legacy_type.call.call
-      htypes.inspect.fn_attr: legacy_type.inspect.fn_attr
-      htypes.python_module.python_module: legacy_type.python_module.python_module
-      services.resource_module_factory: legacy_service.resource_module_factory
-      services.resource_type_producer: legacy_service.resource_type_producer
+      htypes.attribute.attribute: legacy_type.attribute:attribute
+      htypes.call.call: legacy_type.call:call
+      htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
+      htypes.python_module.python_module: legacy_type.python_module:python_module
+      services.resource_module_factory: legacy_service:resource_module_factory
+      services.resource_type_producer: legacy_service:resource_type_producer
 
   Constructor:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: constructor_module
     attr_name: Constructor

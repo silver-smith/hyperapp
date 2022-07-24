@@ -1,65 +1,65 @@
 import:
-  - legacy_service.mosaic
-  - legacy_service.bundler
-  - legacy_service.hyperapp_dir
-  - legacy_service.subprocess
-  - legacy_service.peer_registry
-  - legacy_service.rpc_call_factory
-  - legacy_type.attribute.attribute
-  - legacy_type.partial.partial
-  - legacy_type.call.call
-  - legacy_type.piece_ref.piece_ref
-  - legacy_type.python_module.python_module
-  - sync.rpc_proxy.rpc_proxy_module
+  - legacy_service:mosaic
+  - legacy_service:bundler
+  - legacy_service:hyperapp_dir
+  - legacy_service:subprocess
+  - legacy_service:peer_registry
+  - legacy_service:rpc_call_factory
+  - legacy_type.attribute:attribute
+  - legacy_type.partial:partial
+  - legacy_type.call:call
+  - legacy_type.piece_ref:piece_ref
+  - legacy_type.python_module:python_module
+  - sync.rpc_proxy:rpc_proxy_module
 
 definitions:
 
   subprocess_context_queue_module:
-    _type: legacy_type.python_module.python_module
+    _type: legacy_type.python_module:python_module
     module_name: subprocess_context_queue
     file_name: subprocess_context_queue.dyn.py
     import_list: []
 
   runner_is_ready_ctr:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: subprocess_context_queue_module
     attr_name: runner_is_ready
 
   runner_signal_queue_factory:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: subprocess_context_queue_module
     attr_name: runner_signal_queue
 
   runner_signal_queue:
-    _type: legacy_type.call.call
+    _type: legacy_type.call:call
     function: runner_signal_queue_factory
 
   runner_is_ready_fn:
-    _type: legacy_type.partial.partial
+    _type: legacy_type.partial:partial
     function: runner_is_ready_ctr
     params:
       queue: runner_signal_queue
 
   runner_is_ready_fn_ref:
-    _type: legacy_type.piece_ref.piece_ref
+    _type: legacy_type.piece_ref:piece_ref
     value: runner_is_ready_fn
 
   subprocess_context_module:
-    _type: legacy_type.python_module.python_module
+    _type: legacy_type.python_module:python_module
     module_name: subprocess_context
     file_name: subprocess_context.dyn.py
     import_list:
-      services.mosaic: legacy_service.mosaic
-      services.bundler: legacy_service.bundler
-      services.hyperapp_dir: legacy_service.hyperapp_dir
-      services.subprocess_factory: legacy_service.subprocess
-      services.peer_registry: legacy_service.peer_registry
-      services.rpc_call_factory: legacy_service.rpc_call_factory
+      services.mosaic: legacy_service:mosaic
+      services.bundler: legacy_service:bundler
+      services.hyperapp_dir: legacy_service:hyperapp_dir
+      services.subprocess_factory: legacy_service:subprocess
+      services.peer_registry: legacy_service:peer_registry
+      services.rpc_call_factory: legacy_service:rpc_call_factory
       services.runner_is_ready_fn_ref: runner_is_ready_fn_ref
       services.runner_signal_queue: runner_signal_queue
-      rpc_proxy: sync.rpc_proxy.rpc_proxy_module
+      rpc_proxy: sync.rpc_proxy:rpc_proxy_module
 
   subprocess_running:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: subprocess_context_module
     attr_name: subprocess_running

@@ -1,26 +1,26 @@
 import:
-  - legacy_type.attribute.attribute
-  - legacy_type.python_module.python_module
+  - legacy_type.attribute:attribute
+  - legacy_type.python_module:python_module
 
 definitions:
 
   marker.module:
-    _type: legacy_type.python_module.python_module
+    _type: legacy_type.python_module:python_module
     module_name: marker
     file_name: marker.dyn.py
     import_list: {}
 
   param:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: marker.module
     attr_name: param
 
   service:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: marker.module
     attr_name: service
 
   module:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: marker.module
     attr_name: module

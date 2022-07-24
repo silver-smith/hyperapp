@@ -120,11 +120,11 @@ class ResourceModule:
 
     def _resource_type_name(self, resource_type):
         t = resource_type.resource_t
-        return f'legacy_type.{t.module_name}.{t.name}'
+        return f'legacy_type.{t.module_name}:{t.name}'
 
     def _resolve_name(self, name):
         if name in self._import_set:
-            module_name, var_name = name.rsplit('.', 1)
+            module_name, var_name = name.split(':')
             try:
                 module = self._resource_module_registry[module_name]
             except KeyError:
@@ -170,7 +170,7 @@ class ResourceModule:
         module_contents = yaml.safe_load(self._path.read_text())
         self._loaded_imports = set(module_contents.get('import', []))
         for name in self._loaded_imports:
-            module_name, var_name = name.rsplit('.', 1)
+            module_name, var_name = name.split(':')
             try:
                 module = self._resource_module_registry[module_name]
             except KeyError:

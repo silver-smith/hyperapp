@@ -1,87 +1,87 @@
 # Automatically generated file. Do not edit.
 
 import:
-- legacy_type.attribute.attribute
-- legacy_type.builtin.int
-- legacy_type.call.call
-- legacy_type.command.object_commands_d
-- legacy_type.global_command.global_command_association
-- legacy_type.impl.global_command_impl
-- legacy_type.impl.impl_association
-- legacy_type.impl.list_spec
-- legacy_type.impl.method_command_impl
-- legacy_type.impl.python_object_association
-- legacy_type.lcs.lcs_set_resource_association
-- legacy_type.partial.partial
-- legacy_type.python_module.python_module
-- legacy_type.sample_list.item
-- legacy_type.sample_list.open_sample_list_d
-- legacy_type.sample_list.sample_list
-- legacy_type.sample_list.sample_list_d
-- legacy_type.sample_list.sample_list_open_d
+- legacy_type.attribute:attribute
+- legacy_type.builtin:int
+- legacy_type.call:call
+- legacy_type.command:object_commands_d
+- legacy_type.global_command:global_command_association
+- legacy_type.impl:global_command_impl
+- legacy_type.impl:impl_association
+- legacy_type.impl:list_spec
+- legacy_type.impl:method_command_impl
+- legacy_type.impl:python_object_association
+- legacy_type.lcs:lcs_set_resource_association
+- legacy_type.partial:partial
+- legacy_type.python_module:python_module
+- legacy_type.sample_list:item
+- legacy_type.sample_list:open_sample_list_d
+- legacy_type.sample_list:sample_list
+- legacy_type.sample_list:sample_list_d
+- legacy_type.sample_list:sample_list_open_d
 associations:
-- _type: legacy_type.global_command.global_command_association
+- _type: legacy_type.global_command:global_command_association
   command: open_sample_list_command
-- _type: legacy_type.impl.impl_association
-  piece_t: legacy_type.sample_list.sample_list
+- _type: legacy_type.impl:impl_association
+  piece_t: legacy_type.sample_list:sample_list
   ctr_fn: sample_list_partial
   spec: sample_list_spec
-- _type: legacy_type.impl.python_object_association
-  t: legacy_type.sample_list.sample_list
+- _type: legacy_type.impl:python_object_association
+  t: legacy_type.sample_list:sample_list
   function: sample_list_partial
-- _type: legacy_type.lcs.lcs_set_resource_association
+- _type: legacy_type.lcs:lcs_set_resource_association
   dir:
   - sample_list_d
   - object_commands_d
   value: sample_list_open_command
 definitions:
   object_commands_d:
-    _type: legacy_type.call.call
-    function: legacy_type.command.object_commands_d
+    _type: legacy_type.call:call
+    function: legacy_type.command:object_commands_d
   open_sample_list_attribute:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: sample_list_module
     attr_name: open_sample_list
   open_sample_list_command:
-    _type: legacy_type.impl.global_command_impl
+    _type: legacy_type.impl:global_command_impl
     function: open_sample_list_partial
     dir: open_sample_list_d
   open_sample_list_d:
-    _type: legacy_type.call.call
-    function: legacy_type.sample_list.open_sample_list_d
+    _type: legacy_type.call:call
+    function: legacy_type.sample_list:open_sample_list_d
   open_sample_list_partial:
-    _type: legacy_type.partial.partial
+    _type: legacy_type.partial:partial
     function: open_sample_list_attribute
     params: {}
   sample_list_attribute:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: sample_list_module
     attr_name: SampleList
   sample_list_d:
-    _type: legacy_type.call.call
-    function: legacy_type.sample_list.sample_list_d
+    _type: legacy_type.call:call
+    function: legacy_type.sample_list:sample_list_d
   sample_list_module:
-    _type: legacy_type.python_module.python_module
+    _type: legacy_type.python_module:python_module
     module_name: sample_list
     file_name: sample_list.dyn.py
     import_list:
-      htypes.sample_list.item: legacy_type.sample_list.item
-      htypes.sample_list.sample_list: legacy_type.sample_list.sample_list
+      htypes.sample_list.item: legacy_type.sample_list:item
+      htypes.sample_list.sample_list: legacy_type.sample_list:sample_list
   sample_list_open_command:
-    _type: legacy_type.impl.method_command_impl
+    _type: legacy_type.impl:method_command_impl
     method: open
     params:
     - current_key
     dir: sample_list_open_d
   sample_list_open_d:
-    _type: legacy_type.call.call
-    function: legacy_type.sample_list.sample_list_open_d
+    _type: legacy_type.call:call
+    function: legacy_type.sample_list:sample_list_open_d
   sample_list_partial:
-    _type: legacy_type.partial.partial
+    _type: legacy_type.partial:partial
     function: sample_list_attribute
     params: {}
   sample_list_spec:
-    _type: legacy_type.impl.list_spec
+    _type: legacy_type.impl:list_spec
     key_attribute: key
-    key_t: legacy_type.builtin.int
+    key_t: legacy_type.builtin:int
     dir: sample_list_d

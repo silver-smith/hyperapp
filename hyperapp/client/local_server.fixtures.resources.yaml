@@ -1,19 +1,19 @@
 import:
-- legacy_type.attribute.attribute
-- legacy_type.call.call
-- legacy_type.python_module.python_module
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.python_module:python_module
 definitions:
 
   local_server_fixtures_module:
-    _type: legacy_type.python_module.python_module
+    _type: legacy_type.python_module:python_module
     module_name: local_server_fixtures
     file_name: local_server.fixtures.dyn.py
     import_list: []
 
   open_local_server_local_server_ref:
-    _type: legacy_type.call.call
+    _type: legacy_type.call:call
     function: open_local_server_local_server_ref_attribute
   open_local_server_local_server_ref_attribute:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: local_server_fixtures_module
     attr_name: open_local_server_local_server_ref

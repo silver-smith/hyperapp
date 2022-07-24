@@ -1,46 +1,46 @@
 import:
-  - legacy_service.endpoint_registry
-  - legacy_service.generate_rsa_identity
-  - legacy_service.module_dir_list
-  - legacy_service.rpc_endpoint_factory
-  - legacy_type.attribute.attribute
-  - legacy_type.piece_ref.piece_ref
-  - legacy_type.python_module.python_module
-  - guesser.attr_visitor.attr_visitor_module
-  - guesser.load_modules.load_additional_modules
-  - guesser.constructor.Constructor
-  - guesser.custom_resource_module_registry.custom_resource_module_registry_module
-  - guesser.import_resources.import_resources_module
-  - guesser.module_visitor.module_visitor_module
-  - guesser.object_visitor.object_visitor_module
-  - sync.subprocess_context.subprocess_running
+  - legacy_service:endpoint_registry
+  - legacy_service:generate_rsa_identity
+  - legacy_service:module_dir_list
+  - legacy_service:rpc_endpoint_factory
+  - legacy_type.attribute:attribute
+  - legacy_type.piece_ref:piece_ref
+  - legacy_type.python_module:python_module
+  - guesser.attr_visitor:attr_visitor_module
+  - guesser.load_modules:load_additional_modules
+  - guesser.constructor:Constructor
+  - guesser.custom_resource_module_registry:custom_resource_module_registry_module
+  - guesser.import_resources:import_resources_module
+  - guesser.module_visitor:module_visitor_module
+  - guesser.object_visitor:object_visitor_module
+  - sync.subprocess_context:subprocess_running
 
 definitions:
 
   load_additional_modules_ref:
-    _type: legacy_type.piece_ref.piece_ref
-    value: guesser.load_modules.load_additional_modules
+    _type: legacy_type.piece_ref:piece_ref
+    value: guesser.load_modules:load_additional_modules
 
   construct_resources_module:
-    _type: legacy_type.python_module.python_module
+    _type: legacy_type.python_module:python_module
     module_name: construct_resources
     file_name: construct_resources.dyn.py
     import_list:
-      htypes.python_module.python_module: legacy_type.python_module.python_module
-      services.Constructor: guesser.constructor.Constructor
-      services.endpoint_registry: legacy_service.endpoint_registry
+      htypes.python_module.python_module: legacy_type.python_module:python_module
+      services.Constructor: guesser.constructor:Constructor
+      services.endpoint_registry: legacy_service:endpoint_registry
       services.load_additional_modules_ref: load_additional_modules_ref
-      services.generate_rsa_identity: legacy_service.generate_rsa_identity
-      services.module_dir_list: legacy_service.module_dir_list
-      services.rpc_endpoint_factory: legacy_service.rpc_endpoint_factory
-      services.subprocess_running: sync.subprocess_context.subprocess_running
-      attr_visitor: guesser.attr_visitor.attr_visitor_module
-      custom_resource_module_registry: guesser.custom_resource_module_registry.custom_resource_module_registry_module
-      import_resources: guesser.import_resources.import_resources_module
-      module_visitor: guesser.module_visitor.module_visitor_module
-      object_visitor: guesser.object_visitor.object_visitor_module
+      services.generate_rsa_identity: legacy_service:generate_rsa_identity
+      services.module_dir_list: legacy_service:module_dir_list
+      services.rpc_endpoint_factory: legacy_service:rpc_endpoint_factory
+      services.subprocess_running: sync.subprocess_context:subprocess_running
+      attr_visitor: guesser.attr_visitor:attr_visitor_module
+      custom_resource_module_registry: guesser.custom_resource_module_registry:custom_resource_module_registry_module
+      import_resources: guesser.import_resources:import_resources_module
+      module_visitor: guesser.module_visitor:module_visitor_module
+      object_visitor: guesser.object_visitor:object_visitor_module
 
   construct_resources:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: construct_resources_module
     attr_name: construct_resources

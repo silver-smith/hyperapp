@@ -1,73 +1,73 @@
 # Automatically generated file. Do not edit.
 
 import:
-- guesser.marker.marker.module
-- legacy_module.async.ui.view_command
-- legacy_service.mosaic
-- legacy_service.types
-- legacy_type.attribute.attribute
-- legacy_type.call.call
-- legacy_type.command_list.global_command_list
-- legacy_type.command_list.object_command_list
-- legacy_type.command_list.view_command_list
-- legacy_type.command_list_fixtures.sample_global_command_d
-- legacy_type.impl.global_command_impl
-- legacy_type.legacy_type.type
-- legacy_type.python_module.python_module
+- guesser.marker:marker.module
+- legacy_module.async.ui:view_command
+- legacy_service:mosaic
+- legacy_service:types
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.command_list:global_command_list
+- legacy_type.command_list:object_command_list
+- legacy_type.command_list:view_command_list
+- legacy_type.command_list_fixtures:sample_global_command_d
+- legacy_type.impl:global_command_impl
+- legacy_type.legacy_type:type
+- legacy_type.python_module:python_module
 associations: []
 definitions:
   command_list_fixtures.module:
-    _type: legacy_type.python_module.python_module
+    _type: legacy_type.python_module:python_module
     module_name: command_list.fixtures
     file_name: command_list.fixtures.dyn.py
     import_list:
-      htypes.call.call: legacy_type.call.call
-      htypes.command_list.global_command_list: legacy_type.command_list.global_command_list
-      htypes.command_list.object_command_list: legacy_type.command_list.object_command_list
-      htypes.command_list.view_command_list: legacy_type.command_list.view_command_list
-      htypes.command_list_fixtures.sample_global_command_d: legacy_type.command_list_fixtures.sample_global_command_d
-      htypes.impl.global_command_impl: legacy_type.impl.global_command_impl
-      htypes.legacy_type.type: legacy_type.legacy_type.type
-      marker: guesser.marker.marker.module
-      services.mosaic: legacy_service.mosaic
-      services.types: legacy_service.types
-      view_command: legacy_module.async.ui.view_command
+      htypes.call.call: legacy_type.call:call
+      htypes.command_list.global_command_list: legacy_type.command_list:global_command_list
+      htypes.command_list.object_command_list: legacy_type.command_list:object_command_list
+      htypes.command_list.view_command_list: legacy_type.command_list:view_command_list
+      htypes.command_list_fixtures.sample_global_command_d: legacy_type.command_list_fixtures:sample_global_command_d
+      htypes.impl.global_command_impl: legacy_type.impl:global_command_impl
+      htypes.legacy_type.type: legacy_type.legacy_type:type
+      marker: guesser.marker:marker.module
+      services.mosaic: legacy_service:mosaic
+      services.types: legacy_service:types
+      view_command: legacy_module.async.ui:view_command
   global_command_list:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: command_list_fixtures.module
     attr_name: global_command_list
   global_command_list.service:
-    _type: legacy_type.call.call
+    _type: legacy_type.call:call
     function: global_command_list
   module.qt_keys.run_input_key_dialog:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: command_list_fixtures.module
     attr_name: run_input_key_dialog
   param.GlobalCommandList.piece:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: command_list_fixtures.module
     attr_name: param_GlobalCommandList_piece
   param.GlobalCommandList.set_key.current_item:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: command_list_fixtures.module
     attr_name: param_GlobalCommandList_set_key_current_item
   param.ObjectCommandList.piece:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: command_list_fixtures.module
     attr_name: param_ObjectCommandList_piece
   param.ViewCommandList.piece:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: command_list_fixtures.module
     attr_name: param_ViewCommandList_piece
   param.object_commands.piece:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: command_list_fixtures.module
     attr_name: param_object_commands_piece
   param.object_commands.view_state:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: command_list_fixtures.module
     attr_name: param_object_commands_view_state
   service.root_view:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: command_list_fixtures.module
     attr_name: service_root_view
