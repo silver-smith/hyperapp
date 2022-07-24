@@ -1,4 +1,5 @@
 import logging
+from functools import partial
 
 from hyperapp.common.module import Module
 
@@ -17,4 +18,4 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        register_associations(services.meta_registry, services.resource_module_registry)
+        services.register_associations = partial(register_associations, services.meta_registry)

@@ -104,6 +104,7 @@ def main():
     services = Services(module_dir_list)
     services.init_services()
     services.init_modules(code_module_list)
+    services.register_associations(services.resource_module_registry)
     log.info("Client is started.")
     services.stop_signal.wait()
     log.info("Client is stopping.")

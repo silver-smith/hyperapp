@@ -60,6 +60,7 @@ def subprocess_main_safe(connection, module_dir_list, code_module_list, config):
     services.subprocess_stop_event = threading.Event()
     services.init_services()
     services.init_modules(code_module_list + ['sync.subprocess_child'], config)
+    services.register_associations(services.resource_module_registry)
     log.info("Running, waiting for stop signal.")
     services.subprocess_stop_event.wait()
     log.info("Got stop signal, stopping subprocess services.")

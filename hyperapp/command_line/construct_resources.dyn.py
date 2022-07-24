@@ -4,10 +4,13 @@ log = logging.getLogger(__name__)
 
 from .services import (
     hyperapp_dir,
+    resource_module_registry,
+    register_associations,
     )
 
 
 def construct_resources(resource_dir_list, source_path_list):
+    register_associations(resource_module_registry)
     for path in source_path_list:
         abs_path = path.absolute()
         rel_path = abs_path.relative_to(hyperapp_dir)

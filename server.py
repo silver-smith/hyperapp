@@ -75,6 +75,7 @@ def main():
     services.init_services()
     services.init_modules(code_module_list, config)
 
+    services.register_associations(services.resource_module_registry)
     init_sample_list(services.resource_module_registry, services.python_object_creg)
 
     log.info("Server is started.")

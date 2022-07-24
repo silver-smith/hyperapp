@@ -1,5 +1,7 @@
 import:
 - legacy_service.hyperapp_dir
+- legacy_service.resource_module_registry
+- legacy_service.register_associations
 - legacy_type.attribute.attribute
 - legacy_type.python_module.python_module
 - guesser.construct_resources.construct_resources
@@ -13,6 +15,8 @@ definitions:
     import_list:
       services.construct_resources: guesser.construct_resources.construct_resources
       services.hyperapp_dir: legacy_service.hyperapp_dir
+      services.resource_module_registry: legacy_service.resource_module_registry
+      services.register_associations: legacy_service.register_associations
 
   construct_resources:
     _type: legacy_type.attribute.attribute

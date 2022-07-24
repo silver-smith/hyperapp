@@ -1,3 +1,5 @@
 require:
   - meta_registry
   - resource_module_registry
+provide:
+  - register_associations
