@@ -1,9 +1,6 @@
 import:
   - legacy_service.builtin_services
-  - legacy_service.local_modules
-  - legacy_service.local_types
   - legacy_service.mosaic
-  - legacy_service.resource_module_registry
   - legacy_type.attribute.attribute
   - legacy_type.python_module.python_module
   - legacy_type.legacy_service.builtin_service
@@ -21,10 +18,7 @@ definitions:
       htypes.legacy_service.builtin_service: legacy_type.legacy_service.builtin_service
       htypes.legacy_service.module_service: legacy_type.legacy_service.module_service
       services.builtin_services: legacy_service.builtin_services
-      services.local_modules: legacy_service.local_modules
-      services.local_types: legacy_service.local_types
       services.mosaic: legacy_service.mosaic
-      services.resource_module_registry: legacy_service.resource_module_registry
 
   available_import_resources:
     _type: legacy_type.attribute.attribute

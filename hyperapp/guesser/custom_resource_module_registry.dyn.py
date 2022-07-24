@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 from .services import (
     code_module_loader,
     legacy_module_resource_loader,
@@ -10,7 +12,10 @@ from .services import (
     )
 
 
-def custom_resource_module_registry(resources_dir):
+CustomResources = namedtuple('CustomResources', 'types modules res_module_reg')
+
+
+def load_custom_resources(resources_dir):
     custom_types = {**local_types}
     type_module_loader.load_type_modules([resources_dir], custom_types)
     custom_modules = local_modules.copy()
@@ -21,4 +26,8 @@ def custom_resource_module_registry(resources_dir):
         **legacy_module_resource_loader(custom_modules),
         }
     resource_loader([resources_dir], module_reg)
-    return module_reg
+    return CustomResources(
+        types=custom_types,
+        modules=custom_modules,
+        res_module_reg=module_reg,
+        )

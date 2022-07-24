@@ -9,7 +9,7 @@ from .services import (
     rpc_endpoint_factory,
     subprocess_running,
     )
-from .custom_resource_module_registry import custom_resource_module_registry
+from .custom_resource_module_registry import load_custom_resources
 from .attr_visitor import AttrVisitor
 from .module_visitor import ModuleVisitor
 from .object_visitor import ObjectVisitor
@@ -41,9 +41,9 @@ def construct_resources(resource_dir_list, full_module_name, module_name, module
     rpc_endpoint = rpc_endpoint_factory()
     endpoint_registry.register(identity, rpc_endpoint)
 
-    resource_module_reg = custom_resource_module_registry(resources_dir=module_path.parent)
+    custom_resources = load_custom_resources(resources_dir=module_path.parent)
     constructor = Constructor(
-        resource_module_reg, root_dir, full_module_name, module_name, module_path)
+        custom_resources.res_module_reg, root_dir, full_module_name, module_name, module_path)
 
     custom_module_dirs = [
         *module_dir_list,
@@ -59,14 +59,14 @@ def construct_resources(resource_dir_list, full_module_name, module_name, module
         ) as process:
 
         attr_visitor = AttrVisitor(
-            fixtures_module=resource_module_reg.get(full_module_name + '.fixtures'),
+            fixtures_module=custom_resources.res_module_reg.get(full_module_name + '.fixtures'),
             on_attr=constructor.on_attr,
             )
         object_visitor = ObjectVisitor(
             on_attr=attr_visitor.run,
             )
         global_attr_visitor = AttrVisitor(
-            fixtures_module=resource_module_reg.get(full_module_name + '.fixtures'),
+            fixtures_module=custom_resources.res_module_reg.get(full_module_name + '.fixtures'),
             on_attr=constructor.on_global,
             on_object=object_visitor.run,
             )
@@ -74,6 +74,7 @@ def construct_resources(resource_dir_list, full_module_name, module_name, module
             on_attr=global_attr_visitor.run,
             )
         module_visitor = ModuleVisitor(
+            custom_resources,
             on_module=constructor.on_module,
             on_object=global_visitor.run,
             )

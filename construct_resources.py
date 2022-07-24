@@ -24,6 +24,7 @@ module_dir_list = [
     ]
 
 code_module_list = [
+    'common.lcs',
     'resource.resource_type',
     'resource.registry',
     'resource.resource_module',
@@ -46,6 +47,7 @@ code_module_list = [
     'resource.python_module',
     'resource.raw',
     'ui.impl_registry',
+    'ui.global_command_list',
     ]
 
 

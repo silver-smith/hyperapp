@@ -11,7 +11,8 @@ _log = logging.getLogger(__name__)
 
 class ModuleVisitor:
 
-    def __init__(self, on_object, on_module):
+    def __init__(self, custom_resources, on_object, on_module):
+        self._custom_resources = custom_resources
         self._on_object = on_object
         self._on_module = on_module
 
@@ -19,7 +20,7 @@ class ModuleVisitor:
 
         resources = [
             htypes.auto_importer.resource(name, resource_ref)
-            for name, resource_ref in available_import_resources()
+            for name, resource_ref in available_import_resources(self._custom_resources)
             ]
         auto_importer_res = htypes.auto_importer.auto_importer(resources)
         module_res = htypes.python_module.python_module(

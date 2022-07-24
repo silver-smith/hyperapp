@@ -26,7 +26,7 @@ definitions:
       services.resource_module_registry: legacy_service.resource_module_registry
       services.type_module_loader: legacy_service.type_module_loader
 
-  custom_resource_module_registry:
+  load_custom_resources:
     _type: legacy_type.attribute.attribute
     object: custom_resource_module_registry_module
-    attr_name: custom_resource_module_registry
+    attr_name: load_custom_resources
