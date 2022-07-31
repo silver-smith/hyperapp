@@ -1,0 +1,24 @@
+import:
+- legacy_service:python_object_creg
+- legacy_type.attribute:attribute
+- legacy_type.impl:python_object_association
+- legacy_type.mock_module:mock_module
+- legacy_type.python_module:python_module
+
+associations:
+
+- _type: legacy_type.impl:python_object_association
+  t: legacy_type.mock_module:mock_module
+  function: python_object
+
+definitions:
+  mock_module.module:
+    _type: legacy_type.python_module:python_module
+    module_name: mock_module
+    file_name: mock_module.dyn.py
+    import_list:
+      services.python_object_creg: legacy_service:python_object_creg
+  python_object:
+    _type: legacy_type.attribute:attribute
+    object: mock_module.module
+    attr_name: python_object

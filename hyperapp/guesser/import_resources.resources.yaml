@@ -2,6 +2,8 @@ import:
   - legacy_service:builtin_services
   - legacy_service:mosaic
   - legacy_type.attribute:attribute
+  - legacy_type.mock_module:mock_module
+  - legacy_type.mock_module:attribute
   - legacy_type.python_module:python_module
   - legacy_type.legacy_service:builtin_service
   - legacy_type.legacy_service:module_service
@@ -14,6 +16,8 @@ definitions:
     module_name: import_resources
     file_name: import_resources.dyn.py
     import_list:
+      htypes.mock_module.mock_module: legacy_type.mock_module:mock_module
+      htypes.mock_module.attribute: legacy_type.mock_module:attribute
       htypes.legacy_type.type: legacy_type.legacy_type:type
       htypes.legacy_service.builtin_service: legacy_type.legacy_service:builtin_service
       htypes.legacy_service.module_service: legacy_type.legacy_service:module_service
@@ -24,3 +28,8 @@ definitions:
     _type: legacy_type.attribute:attribute
     object: import_resources_module
     attr_name: available_import_resources
+
+  override_import_resources_with_fixtures:
+    _type: legacy_type.attribute:attribute
+    object: import_resources_module
+    attr_name: override_import_resources_with_fixtures

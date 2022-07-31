@@ -1,5 +1,5 @@
 import re
-from collections import namedtuple
+from collections import defaultdict, namedtuple
 
 from . import htypes
 from .services import (
@@ -57,3 +57,29 @@ def available_import_resources(custom_resources):
         resource = module_res[name]
         resource_ref = mosaic.put(resource)
         yield (name, ImportRes(resource_ref, f'legacy_module.{package_name}:{name}'))
+
+
+def override_import_resources_with_fixtures(import_resources, fixtures_module=None):
+    if not fixtures_module:
+        return import_resources
+    overridden_resources = import_resources.copy()
+    modules = defaultdict(dict)  # module -> attr name -> resource ref
+    for name in fixtures_module:
+        if name.startswith('module.'):
+            try:
+                _, module_name, attr_name = name.split('.')
+            except ValueError:
+                raise RuntimeError(f"Module override should be in the form 'module.<module-name>.<attr-name>': {name!r}")
+            modules[module_name][attr_name] = mosaic.put(fixtures_module[name])
+    for module_name, attributes in modules.items():
+        try:
+            original_import_res = import_resources[module_name]
+        except KeyError:
+            raise RuntimeError(f"Attempt to override non-existing module {module_name!r}: {', '.join(attrs)}")
+        attr_list = [
+            htypes.mock_module.attribute(name, ref)
+            for name, ref in attributes.items()
+            ]
+        resource = htypes.mock_module.mock_module(attr_list)
+        overridden_resources[module_name] = ImportRes(mosaic.put(resource), original_import_res.resource_name)
+    return overridden_resources
