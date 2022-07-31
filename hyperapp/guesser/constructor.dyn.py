@@ -38,8 +38,8 @@ class Constructor:
     def on_global(self, process, attr, result_t):
         target_name = attr.resource_name or attr.name
         self._construct_attr(target_name, self._module_res_name, attr)
-        if isinstance(attr, htypes.inspect.fn_attr):
-            self._construct_service(self._module_res_name, target_name)
+        # if isinstance(attr, htypes.inspect.fn_attr):
+        #     self._construct_service(self._module_res_name, target_name)
 
     def on_attr(self, process, attr, result_t):
         pass
