@@ -21,10 +21,16 @@ DUP_OFFSET = htypes.window.pos(150, 50)
 class RootViewHolder:
 
     def __init__(self):
-        self._target = None
+        self._root_view_target = None
 
     def init(self, root_view):
-        self._target = root_view
+        self._root_view_target = root_view
+
+    @property
+    def _target(self):
+        if self._root_view_target is None:
+            raise RuntimeError("Root view is not yet created")
+        return self._root_view_target
 
     async def open(self, state):
         await self._target.open(state)
