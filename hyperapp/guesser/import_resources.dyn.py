@@ -64,6 +64,7 @@ def override_import_resources_with_fixtures(import_resources, fixtures_module=No
         return import_resources
     overridden_resources = import_resources.copy()
     modules = defaultdict(dict)  # module -> attr name -> resource ref
+
     for name in fixtures_module:
         if name.startswith('module.'):
             try:
@@ -71,15 +72,29 @@ def override_import_resources_with_fixtures(import_resources, fixtures_module=No
             except ValueError:
                 raise RuntimeError(f"Module override should be in the form 'module.<module-name>.<attr-name>': {name!r}")
             modules[module_name][attr_name] = mosaic.put(fixtures_module[name])
+        if name.startswith('service.'):
+            try:
+                _, service_name = name.split('.')
+            except ValueError:
+                raise RuntimeError(f"Service override should be in the form 'service.<service-name>': {name!r}")
+            import_name = f'services.{service_name}'
+            try:
+                original_import_res = import_resources[import_name]
+            except KeyError:
+                raise RuntimeError(f"Attempt to override non-existing service: {service_name!r}")
+            resource = fixtures_module[name]
+            overridden_resources[import_name] = ImportRes(mosaic.put(resource), original_import_res.resource_name)
+
     for module_name, attributes in modules.items():
         try:
             original_import_res = import_resources[module_name]
         except KeyError:
-            raise RuntimeError(f"Attempt to override non-existing module {module_name!r}: {', '.join(attrs)}")
+            raise RuntimeError(f"Attempt to override non-existing module: {module_name!r} ({', '.join(attrs)})")
         attr_list = [
             htypes.mock_module.attribute(name, ref)
             for name, ref in attributes.items()
             ]
         resource = htypes.mock_module.mock_module(attr_list)
         overridden_resources[module_name] = ImportRes(mosaic.put(resource), original_import_res.resource_name)
+
     return overridden_resources
