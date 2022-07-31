@@ -42,15 +42,29 @@ class _PhonyRootView:
 
 service.root_view = _PhonyRootView()
 
+
+class PhonyItem:
+
+    def __init__(self):
+        dir = htypes.command_list_fixtures.phony_d()
+        self.name = "Phony item"
+        self.dir = mosaic.put(dir)
+
+
 param.GlobalCommandList.piece = htypes.command_list.global_command_list()
-param.GlobalCommandList.set_key.current_item = None
+param.GlobalCommandList.set_key.current_item = PhonyItem()
+param.GlobalCommandList.set_key_escape.current_item = PhonyItem()
 
 param.ViewCommandList.piece = htypes.command_list.view_command_list()
+param.ViewCommandList.set_key.current_item = PhonyItem()
+param.ViewCommandList.set_key_escape.current_item = PhonyItem()
 
 param.ObjectCommandList.piece = htypes.command_list.object_command_list(
     piece_ref=mosaic.put(None),
     view_state_ref=mosaic.put(None),
     )
+param.ObjectCommandList.set_key.current_item = PhonyItem()
+param.ObjectCommandList.set_key_escape.current_item = PhonyItem()
 
 param.object_commands.piece = None
 param.object_commands.view_state = None

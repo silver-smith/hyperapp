@@ -10,12 +10,17 @@ import:
 - legacy_type.command_list:global_command_list
 - legacy_type.command_list:object_command_list
 - legacy_type.command_list:view_command_list
+- legacy_type.command_list_fixtures:phony_d
 - legacy_type.command_list_fixtures:sample_global_command_d
 - legacy_type.impl:global_command_impl
 - legacy_type.legacy_type:type
 - legacy_type.python_module:python_module
 associations: []
 definitions:
+  PhonyItem:
+    _type: legacy_type.attribute:attribute
+    object: command_list_fixtures.module
+    attr_name: PhonyItem
   command_list_fixtures.module:
     _type: legacy_type.python_module:python_module
     module_name: command_list.fixtures
@@ -25,6 +30,7 @@ definitions:
       htypes.command_list.global_command_list: legacy_type.command_list:global_command_list
       htypes.command_list.object_command_list: legacy_type.command_list:object_command_list
       htypes.command_list.view_command_list: legacy_type.command_list:view_command_list
+      htypes.command_list_fixtures.phony_d: legacy_type.command_list_fixtures:phony_d
       htypes.command_list_fixtures.sample_global_command_d: legacy_type.command_list_fixtures:sample_global_command_d
       htypes.impl.global_command_impl: legacy_type.impl:global_command_impl
       htypes.legacy_type.type: legacy_type.legacy_type:type
@@ -36,9 +42,6 @@ definitions:
     _type: legacy_type.attribute:attribute
     object: command_list_fixtures.module
     attr_name: global_command_list
-  global_command_list.service:
-    _type: legacy_type.call:call
-    function: global_command_list
   module.qt_keys.run_input_key_dialog:
     _type: legacy_type.attribute:attribute
     object: command_list_fixtures.module
@@ -51,14 +54,34 @@ definitions:
     _type: legacy_type.attribute:attribute
     object: command_list_fixtures.module
     attr_name: param_GlobalCommandList_set_key_current_item
+  param.GlobalCommandList.set_key_escape.current_item:
+    _type: legacy_type.attribute:attribute
+    object: command_list_fixtures.module
+    attr_name: param_GlobalCommandList_set_key_escape_current_item
   param.ObjectCommandList.piece:
     _type: legacy_type.attribute:attribute
     object: command_list_fixtures.module
     attr_name: param_ObjectCommandList_piece
+  param.ObjectCommandList.set_key.current_item:
+    _type: legacy_type.attribute:attribute
+    object: command_list_fixtures.module
+    attr_name: param_ObjectCommandList_set_key_current_item
+  param.ObjectCommandList.set_key_escape.current_item:
+    _type: legacy_type.attribute:attribute
+    object: command_list_fixtures.module
+    attr_name: param_ObjectCommandList_set_key_escape_current_item
   param.ViewCommandList.piece:
     _type: legacy_type.attribute:attribute
     object: command_list_fixtures.module
     attr_name: param_ViewCommandList_piece
+  param.ViewCommandList.set_key.current_item:
+    _type: legacy_type.attribute:attribute
+    object: command_list_fixtures.module
+    attr_name: param_ViewCommandList_set_key_current_item
+  param.ViewCommandList.set_key_escape.current_item:
+    _type: legacy_type.attribute:attribute
+    object: command_list_fixtures.module
+    attr_name: param_ViewCommandList_set_key_escape_current_item
   param.object_commands.piece:
     _type: legacy_type.attribute:attribute
     object: command_list_fixtures.module
