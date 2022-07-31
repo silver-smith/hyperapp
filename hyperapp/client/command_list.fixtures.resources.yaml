@@ -1,7 +1,6 @@
 # Automatically generated file. Do not edit.
 
 import:
-- guesser.marker:marker.module
 - legacy_module.async.ui:view_command
 - legacy_service:mosaic
 - legacy_service:types
@@ -15,6 +14,7 @@ import:
 - legacy_type.impl:global_command_impl
 - legacy_type.legacy_type:type
 - legacy_type.python_module:python_module
+- resource.marker:marker.module
 associations: []
 definitions:
   PhonyItem:
@@ -34,7 +34,7 @@ definitions:
       htypes.command_list_fixtures.sample_global_command_d: legacy_type.command_list_fixtures:sample_global_command_d
       htypes.impl.global_command_impl: legacy_type.impl:global_command_impl
       htypes.legacy_type.type: legacy_type.legacy_type:type
-      marker: guesser.marker:marker.module
+      marker: resource.marker:marker.module
       services.mosaic: legacy_service:mosaic
       services.types: legacy_service:types
       view_command: legacy_module.async.ui:view_command
