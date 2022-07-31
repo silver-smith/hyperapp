@@ -15,8 +15,8 @@ class Constructor:
             load_from_file=False,
             )
         self._import_to_res_name = {
-            rec.import_name: rec.resource_name
-            for rec in import_resources
+            import_name: rec.resource_name
+            for import_name, rec in import_resources.items()
             }
         self._module_res_name = module_name.replace('.', '_') + '.module'
 

@@ -44,7 +44,7 @@ def construct_resources(resource_dir_list, full_module_name, module_name, module
     endpoint_registry.register(identity, rpc_endpoint)
 
     custom_resources = load_custom_resources(resources_dir=module_path.parent)
-    import_resources = list(available_import_resources(custom_resources))
+    import_resources = dict(available_import_resources(custom_resources))
     constructor = Constructor(
         custom_resources.res_module_reg, import_resources, root_dir, full_module_name, module_name, module_path)
 
