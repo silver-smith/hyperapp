@@ -17,7 +17,7 @@ class AttrVisitor:
         self._on_attr = on_attr
         self._on_object = on_object
 
-    def run(self, process, object_res, path, attr):
+    def run(self, process, object_res, path, attr, constructor_ctx):
         _log.info("Loading type for global: %r", attr.name)
         get_resource_type = process.rpc_call(runner_method_get_resource_type_ref)
 
@@ -56,10 +56,10 @@ class AttrVisitor:
         result_t = get_resource_type(value_ref)
         _log.info("%r type: %r", attr.name, result_t)
 
-        self._on_attr(process, attr, result_t)
+        attr_ctx = self._on_attr(process, attr, result_t, constructor_ctx)
 
         if self._on_object and isinstance(result_t, htypes.inspect.object_t):
-            self._on_object(process, value_res, path=[*path, attr.name])
+            self._on_object(process, value_res, path=[*path, attr.name], constructor_ctx=attr_ctx)
 
     def _fixture(self, path, attr_name, param_name):
         res_name = '.'.join(['param', *path, attr_name, param_name])

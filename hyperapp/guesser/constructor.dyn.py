@@ -35,13 +35,14 @@ class Constructor:
             )
         self.resource_module.set_definition(self._module_res_name, module_res_t, module_def)
 
-    def on_global(self, process, attr, result_t):
-        target_name = attr.resource_name or attr.name
-        self._construct_attr(target_name, self._module_res_name, attr)
+    def on_global(self, process, attr, result_t, ctx):
+        global_res_name = attr.resource_name or attr.name
+        self._construct_attr(global_res_name, self._module_res_name, attr)
         # if isinstance(attr, htypes.inspect.fn_attr):
-        #     self._construct_service(self._module_res_name, target_name)
+        #     self._construct_service(self._module_res_name, global_res_name)
+        return global_res_name
 
-    def on_attr(self, process, attr, result_t):
+    def on_attr(self, process, attr, result_t, global_res_name):
         pass
 
     def _construct_attr(self, target_name, object_res_name, attr):
