@@ -31,6 +31,7 @@ class Marker:
         frame = inspect.stack()[1].frame
         module = inspect.getmodule(frame)
         self._set_res_name(module, fn.__name__, self._name)
+        return fn
 
     def _set_res_name(self, module, attr_name, res_name):
         try:
