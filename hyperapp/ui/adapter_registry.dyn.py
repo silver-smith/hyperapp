@@ -22,7 +22,10 @@ async def adapter_factory(
         provider, servant_ref, spec = service_provider_reg[piece]
     except KeyError:
         piece_t = deduce_value_type(piece)
-        ctr_fn_piece, spec = impl_registry[piece_t]
+        try:
+            ctr_fn_piece, spec = impl_registry[piece_t]
+        except KeyError:
+            raise RuntimeError(f"No implementation is registered for {piece_t!r}: {piece!r}")
         if ctr_fn_piece is not None:
             ctr_fn = python_object_creg.animate(ctr_fn_piece)
             object = ctr_fn(piece)
