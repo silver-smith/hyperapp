@@ -5,9 +5,23 @@ from .services import (
     )
 
 
+def pick_key_t(error_prefix, result_t):
+    name_to_type = {
+        element.name: element.type
+        for element in result_t.element_list
+        }
+    for name in ['id', 'key', 'name']:
+        try:
+            return (name, name_to_type[name])
+        except KeyError:
+            pass
+    raise RuntimeError(f"{error_prefix}: Unable to pick key element from: {list(name_to_type)}")
+
+
 class Constructor:
 
     def __init__(self, resource_module_reg, import_resources, root_dir, full_module_name, module_name, module_path):
+        self._module_name = module_name
         self.resource_module = resource_module_factory(
             resource_module_registry=resource_module_reg,
             name=full_module_name,
@@ -43,7 +57,30 @@ class Constructor:
         return global_res_name
 
     def on_attr(self, process, attr, result_t, global_res_name):
-        pass
+        if attr.name != 'get':
+            return
+        if isinstance(result_t, htypes.inspect.list_t):
+            self._construct_list_spec(global_res_name, result_t)
+        else:
+            raise RuntimeError(f"{self.resource_module.name}: Unsupported {global_res_name}.{attr.name} method result type: {result_t!r}")
+
+    def _construct_list_spec(self, global_res_name, result_t):
+        dir_res_name = self._construct_module_dir(target_res_name=global_res_name)
+
+    def _construct_module_dir(self, target_res_name):
+        type_module_name = self._module_name
+        dir_t_res_name = f'legacy_type.{type_module_name}.{target_res_name}_d'
+        return self._construct_dir(target_res_name, dir_t_res_name)
+
+    def _construct_dir(self, target_res_name, dir_t_res_name):
+        call_res_t = resource_type_producer(htypes.call.call)
+        call_def = call_res_t.definition_t(
+            function=dir_t_res_name,
+            )
+        res_name = f'{target_res_name}_d'
+        self.resource_module.set_definition(res_name, call_res_t, call_def)
+        self.resource_module.add_import(dir_t_res_name)
+        return res_name
 
     def _construct_attr(self, target_name, object_res_name, attr):
         attr_res_t = resource_type_producer(htypes.attribute.attribute)

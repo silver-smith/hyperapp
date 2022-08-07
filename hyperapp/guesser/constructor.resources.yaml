@@ -4,6 +4,7 @@ import:
   - legacy_type.attribute:attribute
   - legacy_type.call:call
   - legacy_type.inspect:fn_attr
+  - legacy_type.inspect:list_t
   - legacy_type.python_module:python_module
 
 definitions:
@@ -16,6 +17,7 @@ definitions:
       htypes.attribute.attribute: legacy_type.attribute:attribute
       htypes.call.call: legacy_type.call:call
       htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
+      htypes.inspect.list_t: legacy_type.inspect:list_t
       htypes.python_module.python_module: legacy_type.python_module:python_module
       services.resource_module_factory: legacy_service:resource_module_factory
       services.resource_type_producer: legacy_service:resource_type_producer
