@@ -13,7 +13,7 @@ def camel_to_snake(name):
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
 
 
-def pick_key_t(error_prefix, result_t):
+def pick_key_t(result_t, error_prefix):
     name_to_type = {
         element.name: element.type
         for element in result_t.element_list
@@ -75,6 +75,19 @@ class Constructor:
     def _construct_list_spec(self, global_res_name, result_t):
         dir_res_name = camel_to_snake(global_res_name) + '_d'
         self._construct_module_dir(dir_res_name)
+
+        key_attribute, key_t_name = pick_key_t(result_t, error_prefix=global_res_name)
+        key_t_res_name = f'legacy_type.{key_t_name.module}:{key_t_name.name}'
+        self.resource_module.add_import(key_t_res_name)
+        spec_res_t = resource_type_producer(htypes.impl.list_spec)
+        spec_def = spec_res_t.definition_t(
+            key_attribute=key_attribute,
+            key_t=key_t_res_name,
+            dir=dir_res_name,
+            )
+        res_name = camel_to_snake(global_res_name) + '_spec'
+        self.resource_module.set_definition(res_name, spec_res_t, spec_def)
+        return (res_name, dir_res_name)
 
     def _construct_module_dir(self, target_res_name):
         type_module_name = self._module_name

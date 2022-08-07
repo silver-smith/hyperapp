@@ -11,6 +11,7 @@ import:
 - legacy_service:root_view
 - legacy_service:web
 - legacy_type.attribute:attribute
+- legacy_type.builtin:string
 - legacy_type.call:call
 - legacy_type.command:command_shortcut_d
 - legacy_type.command_list:global_command_list
@@ -21,6 +22,7 @@ import:
 - legacy_type.command_list:view_command_list
 - legacy_type.command_list:view_command_list_d
 - legacy_type.command_list:view_item
+- legacy_type.impl:list_spec
 - legacy_type.python_module:python_module
 associations: []
 definitions:
@@ -59,9 +61,19 @@ definitions:
   global_command_list_d:
     _type: legacy_type.call:call
     function: legacy_type.command_list:global_command_list_d
+  global_command_list_spec:
+    _type: legacy_type.impl:list_spec
+    key_attribute: name
+    key_t: legacy_type.builtin:string
+    dir: global_command_list_d
   object_command_list_d:
     _type: legacy_type.call:call
     function: legacy_type.command_list:object_command_list_d
+  object_command_list_spec:
+    _type: legacy_type.impl:list_spec
+    key_attribute: name
+    key_t: legacy_type.builtin:string
+    dir: object_command_list_d
   object_commands:
     _type: legacy_type.attribute:attribute
     object: command_list.module
@@ -77,3 +89,8 @@ definitions:
   view_command_list_d:
     _type: legacy_type.call:call
     function: legacy_type.command_list:view_command_list_d
+  view_command_list_spec:
+    _type: legacy_type.impl:list_spec
+    key_attribute: name
+    key_t: legacy_type.builtin:string
+    dir: view_command_list_d
