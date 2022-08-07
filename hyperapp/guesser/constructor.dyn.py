@@ -82,17 +82,7 @@ class Constructor:
             raise RuntimeError(
                 f"{self.resource_module.name}: Unsupported {global_res_name}.{attr.name} method result type: {result_t!r}")
 
-        assert isinstance(global_attr, htypes.inspect.fn_attr)  # How can we get here if global is not a function?
-        if list(global_attr.param_list) != ['piece']:
-            raise RuntimeError(
-                "Single parameter, 'piece', is expected for implementation object constructors,"
-                f" but got: {global_attr.param_list!r}")
-        piece_t = self._get_piece_param_t(process, global_res_name)
-        if not isinstance(piece_t, htypes.inspect.record_t):
-            raise RuntimeError(
-                f"{self.resource_module.name}: {global_res_name} 'piece' parameter: Expected record type, but got: {piece_t!r}")
-
-        piece_t_name = f'legacy_type.{piece_t.type.module}:{piece_t.type.name}'
+        piece_t_name = self._get_and_check_piece_param_res(process, global_res_name, global_attr)
         self.resource_module.add_import(piece_t_name)
 
         assoc_res_t = resource_type_producer(htypes.impl.impl_association)
@@ -109,6 +99,18 @@ class Constructor:
             function=global_res_name,
             )
         self.resource_module.add_association(pyobject_a_res_t, pyobject_a_def)
+
+    def _get_and_check_piece_param_res(self, process, global_res_name, global_attr):
+        assert isinstance(global_attr, htypes.inspect.fn_attr)  # How can we get here if global is not a function?
+        if list(global_attr.param_list) != ['piece']:
+            raise RuntimeError(
+                "Single parameter, 'piece', is expected for implementation object constructors,"
+                f" but got: {global_attr.param_list!r}")
+        piece_t = self._get_piece_param_t(process, global_res_name)
+        if not isinstance(piece_t, htypes.inspect.record_t):
+            raise RuntimeError(
+                f"{self.resource_module.name}: {global_res_name} 'piece' parameter: Expected record type, but got: {piece_t!r}")
+        return f'legacy_type.{piece_t.type.module}:{piece_t.type.name}'
 
     def _get_piece_param_t(self, process, global_res_name):
         get_resource_type = process.rpc_call(runner_method_get_resource_type_ref)
