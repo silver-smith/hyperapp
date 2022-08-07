@@ -2,7 +2,9 @@ import:
   - legacy_service:mosaic
   - legacy_service:python_object_creg
   - legacy_type.attribute:attribute
+  - legacy_type.async_call:async_call
   - legacy_type.call:call
+  - legacy_type.inspect:coroutine_fn_t
   - legacy_type.inspect:fn_attr
   - legacy_type.inspect:object_t
   - legacy_type.partial:param
@@ -24,7 +26,9 @@ definitions:
     file_name: attr_visitor.dyn.py
     import_list:
       htypes.attribute.attribute: legacy_type.attribute:attribute
+      htypes.async_call.async_call: legacy_type.async_call:async_call
       htypes.call.call: legacy_type.call:call
+      htypes.inspect.coroutine_fn_t: legacy_type.inspect:coroutine_fn_t
       htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
       htypes.inspect.object_t: legacy_type.inspect:object_t
       htypes.partial.param: legacy_type.partial:param
