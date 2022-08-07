@@ -9,4 +9,5 @@ import:
       - object_t
       - record_t
       - list_t
+      - empty_list_t
       - coroutine_fn_t

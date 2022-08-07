@@ -78,6 +78,9 @@ class Runner:
                 type=type_name,
             )
 
+        if isinstance(t, TList) and not value:
+            return htypes.inspect.empty_list_t()
+
         if isinstance(t, TList) and isinstance(t.element_t, TRecord):
             element_list = []
             for name, field_t in t.element_t.fields.items():
