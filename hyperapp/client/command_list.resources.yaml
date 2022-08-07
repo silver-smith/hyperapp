@@ -22,9 +22,22 @@ import:
 - legacy_type.command_list:view_command_list
 - legacy_type.command_list:view_command_list_d
 - legacy_type.command_list:view_item
+- legacy_type.impl:impl_association
 - legacy_type.impl:list_spec
 - legacy_type.python_module:python_module
-associations: []
+associations:
+- _type: legacy_type.impl:impl_association
+  piece_t: legacy_type.command_list:global_command_list
+  ctr_fn: GlobalCommandList
+  spec: global_command_list_spec
+- _type: legacy_type.impl:impl_association
+  piece_t: legacy_type.command_list:object_command_list
+  ctr_fn: ObjectCommandList
+  spec: object_command_list_spec
+- _type: legacy_type.impl:impl_association
+  piece_t: legacy_type.command_list:view_command_list
+  ctr_fn: ViewCommandList
+  spec: view_command_list_spec
 definitions:
   GlobalCommandList:
     _type: legacy_type.attribute:attribute

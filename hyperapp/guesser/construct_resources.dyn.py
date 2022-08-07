@@ -48,7 +48,8 @@ def construct_resources(resource_dir_list, full_module_name, module_name, module
     import_resources = dict(available_import_resources(custom_resources))
     overridden_import_resources = override_import_resources_with_fixtures(import_resources, fixtures_module)
     constructor = Constructor(
-        custom_resources.res_module_reg, import_resources, root_dir, full_module_name, module_name, module_path)
+        custom_resources.res_module_reg, fixtures_module, import_resources,
+        root_dir, full_module_name, module_name, module_path)
 
     with subprocess_running(
             module_dir_list,

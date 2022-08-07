@@ -1,9 +1,12 @@
 import re
+from collections import namedtuple
 
 from . import htypes
 from .services import (
+    mosaic,
     resource_module_factory,
     resource_type_producer,
+    runner_method_get_resource_type_ref,
     )
 
 
@@ -26,9 +29,13 @@ def pick_key_t(result_t, error_prefix):
     raise RuntimeError(f"{error_prefix}: Unable to pick key element from: {list(name_to_type)}")
 
 
+GlobalContext = namedtuple('GlobalContext', 'global_res_name global_attr')
+
+
 class Constructor:
 
-    def __init__(self, resource_module_reg, import_resources, root_dir, full_module_name, module_name, module_path):
+    def __init__(self, resource_module_reg, fixtures_module, import_resources, root_dir, full_module_name, module_name, module_path):
+        self._fix_module = fixtures_module
         self._module_name = module_name
         self.resource_module = resource_module_factory(
             resource_module_registry=resource_module_reg,
@@ -62,15 +69,47 @@ class Constructor:
         self._construct_attr(global_res_name, self._module_res_name, attr)
         # if isinstance(attr, htypes.inspect.fn_attr):
         #     self._construct_service(self._module_res_name, global_res_name)
-        return global_res_name
+        return GlobalContext(global_res_name, attr)
 
-    def on_attr(self, process, attr, result_t, global_res_name):
-        if attr.name != 'get':
-            return
+    def on_attr(self, process, attr, result_t, ctx):
+        if attr.name == 'get':
+            self._construct_impl(process, ctx.global_res_name, ctx.global_attr, attr, result_t)
+
+    def _construct_impl(self, process, global_res_name, global_attr, attr, result_t):
         if isinstance(result_t, htypes.inspect.list_t):
-            self._construct_list_spec(global_res_name, result_t)
+            spec_res_name, dir_res_name = self._construct_list_spec(global_res_name, result_t)
         else:
-            raise RuntimeError(f"{self.resource_module.name}: Unsupported {global_res_name}.{attr.name} method result type: {result_t!r}")
+            raise RuntimeError(
+                f"{self.resource_module.name}: Unsupported {global_res_name}.{attr.name} method result type: {result_t!r}")
+
+        assert isinstance(global_attr, htypes.inspect.fn_attr)  # How can we get here if global is not a function?
+        if list(global_attr.param_list) != ['piece']:
+            raise RuntimeError(
+                "Single parameter, 'piece', is expected for implementation object constructors,"
+                f" but got: {global_attr.param_list!r}")
+        piece_t = self._get_piece_param_t(process, global_res_name)
+        if not isinstance(piece_t, htypes.inspect.record_t):
+            raise RuntimeError(
+                f"{self.resource_module.name}: {global_res_name} 'piece' parameter: Expected record type, but got: {piece_t!r}")
+
+        piece_t_name = f'legacy_type.{piece_t.type.module}:{piece_t.type.name}'
+        self.resource_module.add_import(piece_t_name)
+
+        assoc_res_t = resource_type_producer(htypes.impl.impl_association)
+        assoc_def = assoc_res_t.definition_t(
+            piece_t=piece_t_name,
+            ctr_fn=global_res_name,
+            spec=spec_res_name,
+            )
+        self.resource_module.add_association(assoc_res_t, assoc_def)
+
+    def _get_piece_param_t(self, process, global_res_name):
+        get_resource_type = process.rpc_call(runner_method_get_resource_type_ref)
+
+        res_name = f'param.{global_res_name}.piece'
+        resource = self._fix_module[res_name]
+        resource_ref = mosaic.put(resource)
+        return get_resource_type(resource_ref)
 
     def _construct_list_spec(self, global_res_name, result_t):
         dir_res_name = camel_to_snake(global_res_name) + '_d'
