@@ -103,6 +103,13 @@ class Constructor:
             )
         self.resource_module.add_association(assoc_res_t, assoc_def)
 
+        pyobject_a_res_t = resource_type_producer(htypes.impl.python_object_association)
+        pyobject_a_def = pyobject_a_res_t.definition_t(
+            t=piece_t_name,
+            function=global_res_name,
+            )
+        self.resource_module.add_association(pyobject_a_res_t, pyobject_a_def)
+
     def _get_piece_param_t(self, process, global_res_name):
         get_resource_type = process.rpc_call(runner_method_get_resource_type_ref)
 

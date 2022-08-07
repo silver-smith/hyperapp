@@ -24,6 +24,7 @@ import:
 - legacy_type.command_list:view_item
 - legacy_type.impl:impl_association
 - legacy_type.impl:list_spec
+- legacy_type.impl:python_object_association
 - legacy_type.python_module:python_module
 associations:
 - _type: legacy_type.impl:impl_association
@@ -38,6 +39,15 @@ associations:
   piece_t: legacy_type.command_list:view_command_list
   ctr_fn: ViewCommandList
   spec: view_command_list_spec
+- _type: legacy_type.impl:python_object_association
+  t: legacy_type.command_list:global_command_list
+  function: GlobalCommandList
+- _type: legacy_type.impl:python_object_association
+  t: legacy_type.command_list:object_command_list
+  function: ObjectCommandList
+- _type: legacy_type.impl:python_object_association
+  t: legacy_type.command_list:view_command_list
+  function: ViewCommandList
 definitions:
   GlobalCommandList:
     _type: legacy_type.attribute:attribute
