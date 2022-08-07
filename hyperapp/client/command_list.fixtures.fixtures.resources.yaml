@@ -1,0 +1,22 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.attribute:attribute
+- legacy_type.python_module:python_module
+- resource.marker:marker.module
+associations: []
+definitions:
+  command_list_fixtures_fixtures.module:
+    _type: legacy_type.python_module:python_module
+    module_name: command_list.fixtures.fixtures
+    file_name: command_list.fixtures.fixtures.dyn.py
+    import_list:
+      marker: resource.marker:marker.module
+  param.phony_adapter_factory.piece:
+    _type: legacy_type.attribute:attribute
+    object: command_list_fixtures_fixtures.module
+    attr_name: param_phony_adapter_factory_piece
+  param.service_object_commands_factory.enum_object_command_pieces.adapter:
+    _type: legacy_type.attribute:attribute
+    object: command_list_fixtures_fixtures.module
+    attr_name: param_service_object_commands_factory_enum_object_command_pieces_adapter

@@ -16,16 +16,17 @@ def run_input_key_dialog():
     return ''
 
 
-def global_command_list():
+def _phony_command():
     dir_t = htypes.command_list_fixtures.sample_global_command_d
     dir_t_ref = types.reverse_resolve(dir_t)
     dir_t_res = htypes.legacy_type.type(dir_t_ref)
     dir = htypes.call.call(mosaic.put(dir_t_res))
-    command = htypes.impl.global_command_impl(
+    return htypes.impl.global_command_impl(
         function=_null_ref,
         dir=mosaic.put(dir),
         )
-    return [command]
+
+service.global_command_list = [_phony_command()]
 
 
 class _PhonyRootView:
@@ -58,6 +59,21 @@ param.GlobalCommandList.set_key_escape.current_item = PhonyItem()
 param.ViewCommandList.piece = htypes.command_list.view_command_list()
 param.ViewCommandList.set_key.current_item = PhonyItem()
 param.ViewCommandList.set_key_escape.current_item = PhonyItem()
+
+
+@service.adapter_factory
+async def phony_adapter_factory(piece):
+    return None
+
+
+class _PhonyObjectCommandsFactory:
+
+    def enum_object_command_pieces(self, adapter):
+        return [_phony_command()]
+
+
+service.object_commands_factory = _PhonyObjectCommandsFactory()
+
 
 param.ObjectCommandList.piece = htypes.command_list.object_command_list(
     piece_ref=mosaic.put(None),
