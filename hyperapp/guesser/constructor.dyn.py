@@ -1,8 +1,16 @@
+import re
+
 from . import htypes
 from .services import (
     resource_module_factory,
     resource_type_producer,
     )
+
+
+# https://stackoverflow.com/a/1176023 Camel case to snake case.
+def camel_to_snake(name):
+    name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
 
 
 def pick_key_t(error_prefix, result_t):
@@ -65,22 +73,21 @@ class Constructor:
             raise RuntimeError(f"{self.resource_module.name}: Unsupported {global_res_name}.{attr.name} method result type: {result_t!r}")
 
     def _construct_list_spec(self, global_res_name, result_t):
-        dir_res_name = self._construct_module_dir(target_res_name=global_res_name)
+        dir_res_name = camel_to_snake(global_res_name) + '_d'
+        self._construct_module_dir(dir_res_name)
 
     def _construct_module_dir(self, target_res_name):
         type_module_name = self._module_name
-        dir_t_res_name = f'legacy_type.{type_module_name}.{target_res_name}_d'
-        return self._construct_dir(target_res_name, dir_t_res_name)
+        dir_t_res_name = f'legacy_type.{type_module_name}:{target_res_name}'
+        self._construct_dir(target_res_name, dir_t_res_name)
 
     def _construct_dir(self, target_res_name, dir_t_res_name):
         call_res_t = resource_type_producer(htypes.call.call)
         call_def = call_res_t.definition_t(
             function=dir_t_res_name,
             )
-        res_name = f'{target_res_name}_d'
-        self.resource_module.set_definition(res_name, call_res_t, call_def)
+        self.resource_module.set_definition(target_res_name, call_res_t, call_def)
         self.resource_module.add_import(dir_t_res_name)
-        return res_name
 
     def _construct_attr(self, target_name, object_res_name, attr):
         attr_res_t = resource_type_producer(htypes.attribute.attribute)

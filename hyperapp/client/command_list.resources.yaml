@@ -11,11 +11,15 @@ import:
 - legacy_service:root_view
 - legacy_service:web
 - legacy_type.attribute:attribute
+- legacy_type.call:call
 - legacy_type.command:command_shortcut_d
 - legacy_type.command_list:global_command_list
+- legacy_type.command_list:global_command_list_d
 - legacy_type.command_list:item
 - legacy_type.command_list:object_command_list
+- legacy_type.command_list:object_command_list_d
 - legacy_type.command_list:view_command_list
+- legacy_type.command_list:view_command_list_d
 - legacy_type.command_list:view_item
 - legacy_type.python_module:python_module
 associations: []
@@ -52,6 +56,12 @@ definitions:
       services.python_object_creg: legacy_service:python_object_creg
       services.root_view: legacy_service:root_view
       services.web: legacy_service:web
+  global_command_list_d:
+    _type: legacy_type.call:call
+    function: legacy_type.command_list:global_command_list_d
+  object_command_list_d:
+    _type: legacy_type.call:call
+    function: legacy_type.command_list:object_command_list_d
   object_commands:
     _type: legacy_type.attribute:attribute
     object: command_list.module
@@ -64,3 +74,6 @@ definitions:
     _type: legacy_type.attribute:attribute
     object: command_list.module
     attr_name: open_view_command_list
+  view_command_list_d:
+    _type: legacy_type.call:call
+    function: legacy_type.command_list:view_command_list_d
