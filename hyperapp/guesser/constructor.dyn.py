@@ -175,6 +175,18 @@ class Constructor:
         command_res_name = f'{global_res_name}.command'
         self.resource_module.set_definition(command_res_name, command_res_t, command_def)
 
+        # todo: move following to separate method, decorate target function with destination dir.
+
+        # Called for every command, but results is single resource.
+        object_commands_d_res_name = self._construct_object_commands_dir()
+
+        association_res_t = resource_type_producer(htypes.lcs.lcs_set_resource_association)
+        association_def = association_res_t.definition_t(
+            dir=(object_commands_d_res_name,),
+            value=command_res_name,
+            )
+        self.resource_module.add_association(association_res_t, association_def)
+
     def _construct_method_command(self, global_res_name, global_dir_res_name, attr):
         global_snake_name = camel_to_snake(global_res_name)
         dir_res_name = f'{global_snake_name}_{attr.name}_d'
