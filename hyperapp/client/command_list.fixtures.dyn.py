@@ -82,5 +82,5 @@ param.ObjectCommandList.piece = htypes.command_list.object_command_list(
 param.ObjectCommandList.set_key.current_item = PhonyItem()
 param.ObjectCommandList.set_key_escape.current_item = PhonyItem()
 
-param.object_commands.piece = None
-param.object_commands.view_state = None
+param.open_object_commands.piece = None
+param.open_object_commands.view_state = None
