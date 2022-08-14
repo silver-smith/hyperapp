@@ -29,7 +29,7 @@ def pick_key_t(result_t, error_prefix):
     raise RuntimeError(f"{error_prefix}: Unable to pick key element from: {list(name_to_type)}")
 
 
-GlobalContext = namedtuple('GlobalContext', 'global_res_name global_attr')
+GlobalContext = namedtuple('GlobalContext', 'global_res_name global_dir_res_name global_attr')
 
 
 class Constructor:
@@ -72,15 +72,18 @@ class Constructor:
                 self._construct_global_command(global_res_name)
         # if isinstance(attr, htypes.inspect.fn_attr):
         #     self._construct_service(self._module_res_name, global_res_name)
-        return GlobalContext(global_res_name, attr)
+        global_dir_res_name = camel_to_snake(global_res_name) + '_d'
+        return GlobalContext(global_res_name, global_dir_res_name, attr)
 
     def on_attr(self, process, attr, result_t, ctx):
         if attr.name == 'get':
-            self._construct_impl(process, ctx.global_res_name, ctx.global_attr, attr, result_t)
+            self._construct_impl(process, ctx.global_res_name, ctx.global_dir_res_name, ctx.global_attr, attr, result_t)
+        else:
+            self._construct_method_command(ctx.global_res_name, ctx.global_dir_res_name, attr)
 
-    def _construct_impl(self, process, global_res_name, global_attr, attr, result_t):
+    def _construct_impl(self, process, global_res_name, global_dir_res_name, global_attr, attr, result_t):
         if isinstance(result_t, htypes.inspect.list_t):
-            spec_res_name, dir_res_name = self._construct_list_spec(global_res_name, result_t)
+            spec_res_name = self._construct_list_spec(global_res_name, global_dir_res_name, result_t)
         else:
             raise RuntimeError(
                 f"{self.resource_module.name}: Unsupported {global_res_name}.{attr.name} method result type: {result_t!r}")
@@ -123,9 +126,8 @@ class Constructor:
         resource_ref = mosaic.put(resource)
         return get_resource_type(resource_ref)
 
-    def _construct_list_spec(self, global_res_name, result_t):
-        dir_res_name = camel_to_snake(global_res_name) + '_d'
-        self._construct_module_dir(dir_res_name)
+    def _construct_list_spec(self, global_res_name, global_dir_res_name, result_t):
+        self._construct_module_dir(global_dir_res_name)
 
         key_attribute, key_t_name = pick_key_t(result_t, error_prefix=global_res_name)
         key_t_res_name = f'legacy_type.{key_t_name.module}:{key_t_name.name}'
@@ -134,11 +136,11 @@ class Constructor:
         spec_def = spec_res_t.definition_t(
             key_attribute=key_attribute,
             key_t=key_t_res_name,
-            dir=dir_res_name,
+            dir=global_dir_res_name,
             )
         res_name = camel_to_snake(global_res_name) + '_spec'
         self.resource_module.set_definition(res_name, spec_res_t, spec_def)
-        return (res_name, dir_res_name)
+        return res_name
 
     def _construct_global_command(self, global_res_name):
         dir_res_name = camel_to_snake(global_res_name) + '_d'
@@ -157,6 +159,36 @@ class Constructor:
             command=command_res_name,
             )
         self.resource_module.add_association(association_res_t, association_def)
+
+    def _construct_method_command(self, global_res_name, global_dir_res_name, attr):
+        global_snake_name = camel_to_snake(global_res_name)
+        dir_res_name = f'{global_snake_name}_{attr.name}_d'
+        self._construct_module_dir(dir_res_name)
+
+        command_res_t = resource_type_producer(htypes.impl.method_command_impl)
+        command_def = command_res_t.definition_t(
+            method=attr.name,
+            params=attr.param_list,
+            dir=dir_res_name,
+        )
+        command_res_name = f'{global_snake_name}.{attr.name}.command'
+        self.resource_module.set_definition(command_res_name, command_res_t, command_def)
+
+        # Called for every command, but results is single resource.
+        object_commands_d_res_name = self._construct_object_commands_dir()
+
+        association_res_t = resource_type_producer(htypes.lcs.lcs_set_resource_association)
+        association_def = association_res_t.definition_t(
+            dir=(global_dir_res_name, object_commands_d_res_name),
+            value=command_res_name,
+            )
+        self.resource_module.add_association(association_res_t, association_def)
+
+    def _construct_object_commands_dir(self):
+        target_res_name = 'object_commands_d'
+        dir_t_res_name = f'legacy_type.command:object_commands_d'
+        self._construct_dir(target_res_name, dir_t_res_name)
+        return target_res_name
 
     def _construct_module_dir(self, target_res_name):
         type_module_name = self._module_name
