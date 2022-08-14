@@ -68,7 +68,9 @@ class Constructor:
         global_res_name = attr.resource_name or attr.name
         self._construct_attr(global_res_name, self._module_res_name, attr)
         if isinstance(result_t, htypes.inspect.record_t):
-            if not attr.param_list:
+            if attr.param_list:
+                self._construct_object_command(global_res_name, attr)
+            else:
                 self._construct_global_command(global_res_name)
         # if isinstance(attr, htypes.inspect.fn_attr):
         #     self._construct_service(self._module_res_name, global_res_name)
@@ -159,6 +161,19 @@ class Constructor:
             command=command_res_name,
             )
         self.resource_module.add_association(association_res_t, association_def)
+
+    def _construct_object_command(self, global_res_name, global_attr):
+        dir_res_name = camel_to_snake(global_res_name) + '_d'
+        self._construct_module_dir(dir_res_name)
+
+        command_res_t = resource_type_producer(htypes.impl.object_command_impl)
+        command_def = command_res_t.definition_t(
+            function=global_res_name,
+            params=global_attr.param_list,
+            dir=dir_res_name,
+        )
+        command_res_name = f'{global_res_name}.command'
+        self.resource_module.set_definition(command_res_name, command_res_t, command_def)
 
     def _construct_method_command(self, global_res_name, global_dir_res_name, attr):
         global_snake_name = camel_to_snake(global_res_name)
