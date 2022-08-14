@@ -67,6 +67,9 @@ class Constructor:
     def on_global(self, process, attr, result_t, ctx):
         global_res_name = attr.resource_name or attr.name
         self._construct_attr(global_res_name, self._module_res_name, attr)
+        if isinstance(result_t, htypes.inspect.record_t):
+            if not attr.param_list:
+                self._construct_global_command(global_res_name)
         # if isinstance(attr, htypes.inspect.fn_attr):
         #     self._construct_service(self._module_res_name, global_res_name)
         return GlobalContext(global_res_name, attr)
@@ -136,6 +139,24 @@ class Constructor:
         res_name = camel_to_snake(global_res_name) + '_spec'
         self.resource_module.set_definition(res_name, spec_res_t, spec_def)
         return (res_name, dir_res_name)
+
+    def _construct_global_command(self, global_res_name):
+        dir_res_name = camel_to_snake(global_res_name) + '_d'
+        self._construct_module_dir(dir_res_name)
+
+        command_res_t = resource_type_producer(htypes.impl.global_command_impl)
+        command_def = command_res_t.definition_t(
+            function=global_res_name,
+            dir=dir_res_name,
+            )
+        command_res_name = f'{global_res_name}.command'
+        self.resource_module.set_definition(command_res_name, command_res_t, command_def)
+
+        association_res_t = resource_type_producer(htypes.global_command.global_command_association)
+        association_def = association_res_t.definition_t(
+            command=command_res_name,
+            )
+        self.resource_module.add_association(association_res_t, association_def)
 
     def _construct_module_dir(self, target_res_name):
         type_module_name = self._module_name

@@ -7,9 +7,11 @@ import:
   - legacy_type.inspect:fn_attr
   - legacy_type.inspect:list_t
   - legacy_type.inspect:record_t
+  - legacy_type.impl:global_command_impl
   - legacy_type.impl:impl_association
   - legacy_type.impl:list_spec
   - legacy_type.impl:python_object_association
+  - legacy_type.global_command:global_command_association
   - legacy_type.piece_ref:piece_ref
   - legacy_type.python_module:python_module
   - guesser.runner:get_resource_type
@@ -30,9 +32,11 @@ definitions:
       htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
       htypes.inspect.list_t: legacy_type.inspect:list_t
       htypes.inspect.record_t: legacy_type.inspect:record_t
+      htypes.impl.global_command_impl: legacy_type.impl:global_command_impl
       htypes.impl.impl_association: legacy_type.impl:impl_association
       htypes.impl.list_spec: legacy_type.impl:list_spec
       htypes.impl.python_object_association: legacy_type.impl:python_object_association
+      htypes.global_command.global_command_association: legacy_type.global_command:global_command_association
       htypes.python_module.python_module: legacy_type.python_module:python_module
       services.mosaic: legacy_service:mosaic
       services.resource_module_factory: legacy_service:resource_module_factory
