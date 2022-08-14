@@ -4,5 +4,7 @@ import:
       - global_command_association
 require:
   - meta_registry
+  - event_loop_holder
+  - command_hub_list
 provide:
   - global_command_list
