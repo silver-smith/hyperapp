@@ -7,7 +7,6 @@ from hyperapp.common.module import Module
 from . import htypes
 from .view import View
 from .command import command
-from .command_hub import CommandHub
 
 log = logging.getLogger(__name__)
 
@@ -49,14 +48,15 @@ class RootViewHolder:
 class RootView(View):
 
     @classmethod
-    async def from_state(cls, state, mosaic, async_stop_event, view_registry):
-        return cls(mosaic, async_stop_event, view_registry)
+    async def from_state(cls, state, mosaic, async_stop_event, view_registry, command_hub_factory):
+        return cls(mosaic, async_stop_event, view_registry, command_hub_factory)
 
-    def __init__(self, mosaic, async_stop_event, view_registry):
+    def __init__(self, mosaic, async_stop_event, view_registry, command_hub_factory):
         super().__init__()
         self._mosaic = mosaic
         self._async_stop_event = async_stop_event
         self._view_registry = view_registry
+        self._command_hub_factory = command_hub_factory
         self._window_list = None
 
     async def open(self, state):
@@ -67,7 +67,7 @@ class RootView(View):
             window.show()
 
     async def _create_window(self, state):
-        command_hub = CommandHub()
+        command_hub = self._command_hub_factory()
         menu_bar = await self._view_registry.invite(state.menu_bar_ref, command_hub)
         command_pane = await self._view_registry.invite(state.command_pane_ref, command_hub)
         central_view = await self._view_registry.invite(state.central_view_ref, command_hub)
@@ -196,4 +196,5 @@ class ThisModule(Module):
             services.mosaic,
             services.async_stop_event,
             services.view_registry,
+            services.command_hub_factory,
             )

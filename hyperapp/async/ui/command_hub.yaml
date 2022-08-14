@@ -1,1 +1,3 @@
-# empty
+provide:
+- command_hub_list
+- command_hub_factory
