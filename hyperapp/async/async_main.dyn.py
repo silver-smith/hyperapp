@@ -1,10 +1,37 @@
 import asyncio
 import logging
 import threading
+from functools import partial
 
 from hyperapp.common.module import Module
 
 log = logging.getLogger(__name__)
+
+
+class EventLoopHolder:
+
+    def __init__(self):
+        self._loop = None
+        self._lock = threading.Lock()
+
+    def set_loop(self, loop):
+        with self._lock:
+            assert not self._loop
+            self._loop = loop
+
+    def clear_loop(self):
+        with self._lock:
+            assert self._loop
+            self._loop = None
+
+    def create_task_if_started(self, coro):
+        with self._lock:
+            if not self._loop:
+                return
+            self._loop.call_soon_threadsafe(partial(self._run_coro, self._loop, coro))
+
+    def _run_coro(self, loop, coro):
+        loop.create_task(coro)
 
 
 class AsyncStopEvent:
@@ -34,10 +61,12 @@ class ThisModule(Module):
         self._sync_stop_signal = services.stop_signal
         self._event_loop = None
         self._async_stop_event = AsyncStopEvent()
+        self._event_loop_holder = EventLoopHolder()
         self._thread = threading.Thread(target=self._event_loop_main)
         services.on_start.append(self.start)
         services.on_stop.append(self.stop)
         services.async_stop_event = self._async_stop_event
+        services.event_loop_holder = self._event_loop_holder
 
     def start(self):
         self._thread.start()
@@ -45,6 +74,7 @@ class ThisModule(Module):
     def stop(self):
         log.info("Stop async loop thread.")
         self._event_loop.call_soon_threadsafe(self._async_stop_event.set)
+        self._event_loop_holder.clear_loop()
         self._thread.join()
         log.info("Async loop thread is stopped.")
 
@@ -54,6 +84,7 @@ class ThisModule(Module):
         loop = self._event_loop_ctr()
         loop.set_debug(True)
         asyncio.set_event_loop(loop)  # Should be set before any asyncio objects created.
+        self._event_loop_holder.set_loop(loop)
         self._event_loop = loop
         self._async_stop_event.init(asyncio.Event())
         try:
