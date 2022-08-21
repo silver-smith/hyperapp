@@ -1,0 +1,22 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_service:mosaic
+- legacy_type.attribute:attribute
+- legacy_type.global_command_ctr:global_command_ctr
+- legacy_type.python_module:python_module
+- resource.constants:constants.module
+associations: []
+definitions:
+  global_command:
+    _type: legacy_type.attribute:attribute
+    object: global_command_ctr.module
+    attr_name: global_command
+  global_command_ctr.module:
+    _type: legacy_type.python_module:python_module
+    module_name: global_command_ctr
+    file_name: global_command_ctr.dyn.py
+    import_list:
+      constants: resource.constants:constants.module
+      htypes.global_command_ctr.global_command_ctr: legacy_type.global_command_ctr:global_command_ctr
+      services.mosaic: legacy_service:mosaic

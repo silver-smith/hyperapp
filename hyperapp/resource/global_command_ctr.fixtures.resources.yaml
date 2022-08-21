@@ -1,0 +1,18 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.attribute:attribute
+- legacy_type.python_module:python_module
+- resource.marker:marker.module
+associations: []
+definitions:
+  global_command_ctr_fixtures.module:
+    _type: legacy_type.python_module:python_module
+    module_name: global_command_ctr.fixtures
+    file_name: global_command_ctr.fixtures.dyn.py
+    import_list:
+      marker: resource.marker:marker.module
+  param.global_command.fn:
+    _type: legacy_type.attribute:attribute
+    object: global_command_ctr_fixtures.module
+    attr_name: param_global_command_fn
