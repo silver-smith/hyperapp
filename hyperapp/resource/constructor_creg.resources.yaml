@@ -1,0 +1,15 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_service:types
+- legacy_service:web
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  constructor_creg.module:
+    _type: legacy_type.python_module:python_module
+    module_name: constructor_creg
+    file_name: constructor_creg.dyn.py
+    import_list:
+      services.types: legacy_service:types
+      services.web: legacy_service:web
