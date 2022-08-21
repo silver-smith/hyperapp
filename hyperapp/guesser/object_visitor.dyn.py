@@ -15,6 +15,7 @@ class ObjectVisitor:
         self._on_attr = on_attr
 
     def run(self, process, object_res, path, constructor_ctx):
+        _log.info("Visiting object %s: %r", path, object_res)
         collect_attributes = process.rpc_call(collect_attributes_ref)
 
         attr_ref_list = collect_attributes(mosaic.put(object_res))

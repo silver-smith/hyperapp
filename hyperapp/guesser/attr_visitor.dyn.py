@@ -18,7 +18,7 @@ class AttrVisitor:
         self._on_object = on_object
 
     def run(self, process, object_res, path, attr, constructor_ctx):
-        _log.info("Loading type for global: %r", attr.name)
+        _log.info("Loading type for attribute %s: %r", path, attr.name)
         get_resource_type = process.rpc_call(get_resource_type_ref)
 
         attr_res = htypes.attribute.attribute(
