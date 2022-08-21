@@ -6,7 +6,7 @@ from .services import (
     mosaic,
     resource_module_factory,
     resource_type_producer,
-    runner_method_get_resource_type_ref,
+    get_resource_type_ref,
     )
 
 
@@ -121,7 +121,7 @@ class Constructor:
         return f'legacy_type.{piece_t.type.module}:{piece_t.type.name}'
 
     def _get_piece_param_t(self, process, global_res_name):
-        get_resource_type = process.rpc_call(runner_method_get_resource_type_ref)
+        get_resource_type = process.rpc_call(get_resource_type_ref)
 
         res_name = f'param.{global_res_name}.piece'
         resource = self._fix_module[res_name]

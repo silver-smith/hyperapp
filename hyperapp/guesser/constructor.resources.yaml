@@ -21,7 +21,7 @@ import:
 
 definitions:
 
-  runner_method_get_resource_type_ref:
+  get_resource_type_ref:
     _type: legacy_type.piece_ref:piece_ref
     value: guesser.runner:get_resource_type
 
@@ -47,7 +47,7 @@ definitions:
       services.mosaic: legacy_service:mosaic
       services.resource_module_factory: legacy_service:resource_module_factory
       services.resource_type_producer: legacy_service:resource_type_producer
-      services.runner_method_get_resource_type_ref: runner_method_get_resource_type_ref
+      services.get_resource_type_ref: get_resource_type_ref
 
   Constructor:
     _type: legacy_type.attribute:attribute

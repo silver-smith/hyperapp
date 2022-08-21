@@ -95,10 +95,10 @@ def test_auto_importer(services, htypes, subprocess):
     module_ref = services.mosaic.put(module_res)
 
     runner_module = services.resource_module_registry['guesser.runner']
-    runner_method_collect_attributes_res = runner_module['runner_method_collect_attributes']
-    runner_method_collect_attributes_ref = services.mosaic.put(runner_method_collect_attributes_res)
+    collect_attributes_res = runner_module['collect_attributes']
+    collect_attributes_ref = services.mosaic.put(collect_attributes_res)
 
-    collect_attributes_call = subprocess.rpc_call(runner_method_collect_attributes_ref)
+    collect_attributes_call = subprocess.rpc_call(collect_attributes_ref)
     global_list = collect_attributes_call(module_ref)
     log.info("Collected global list: %s", global_list)
 

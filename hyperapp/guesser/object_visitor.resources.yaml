@@ -1,5 +1,5 @@
 import:
-- guesser.runner:runner_method_collect_attributes
+- guesser.runner:collect_attributes
 - legacy_service:mosaic
 - legacy_service:web
 - legacy_type.attribute:attribute
@@ -8,9 +8,9 @@ import:
 
 definitions:
 
-  runner_method_collect_attributes_ref:
+  collect_attributes_ref:
     _type: legacy_type.piece_ref:piece_ref
-    value: guesser.runner:runner_method_collect_attributes
+    value: guesser.runner:collect_attributes
 
   object_visitor_module:
     _type: legacy_type.python_module:python_module
@@ -18,7 +18,7 @@ definitions:
     file_name: object_visitor.dyn.py
     import_list:
       services.mosaic: legacy_service:mosaic
-      services.runner_method_collect_attributes_ref: runner_method_collect_attributes_ref
+      services.collect_attributes_ref: collect_attributes_ref
       services.web: legacy_service:web
 
   ObjectVisitor:

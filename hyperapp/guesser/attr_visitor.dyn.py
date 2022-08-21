@@ -4,7 +4,7 @@ from . import htypes
 from .services import (
     mosaic,
     python_object_creg,
-    runner_method_get_resource_type_ref,
+    get_resource_type_ref,
     )
 
 _log = logging.getLogger(__name__)
@@ -19,7 +19,7 @@ class AttrVisitor:
 
     def run(self, process, object_res, path, attr, constructor_ctx):
         _log.info("Loading type for global: %r", attr.name)
-        get_resource_type = process.rpc_call(runner_method_get_resource_type_ref)
+        get_resource_type = process.rpc_call(get_resource_type_ref)
 
         attr_res = htypes.attribute.attribute(
             object=mosaic.put(object_res),

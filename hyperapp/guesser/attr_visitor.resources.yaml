@@ -16,7 +16,7 @@ import:
 
 definitions:
 
-  runner_method_get_resource_type_ref:
+  get_resource_type_ref:
     _type: legacy_type.piece_ref:piece_ref
     value: guesser.runner:get_resource_type
 
@@ -36,7 +36,7 @@ definitions:
       htypes.raw.raw: legacy_type.raw:raw
       services.mosaic: legacy_service:mosaic
       services.python_object_creg: legacy_service:python_object_creg
-      services.runner_method_get_resource_type_ref: runner_method_get_resource_type_ref
+      services.get_resource_type_ref: get_resource_type_ref
 
   AttrVisitor:
     _type: legacy_type.attribute:attribute

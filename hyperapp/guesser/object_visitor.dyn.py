@@ -2,7 +2,7 @@ import logging
 
 from .services import (
     mosaic,
-    runner_method_collect_attributes_ref,
+    collect_attributes_ref,
     web,
     )
 
@@ -15,7 +15,7 @@ class ObjectVisitor:
         self._on_attr = on_attr
 
     def run(self, process, object_res, path, constructor_ctx):
-        collect_attributes = process.rpc_call(runner_method_collect_attributes_ref)
+        collect_attributes = process.rpc_call(collect_attributes_ref)
 
         attr_ref_list = collect_attributes(mosaic.put(object_res))
         attr_list = [web.summon(ref) for ref in attr_ref_list]

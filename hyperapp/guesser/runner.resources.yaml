@@ -1,37 +1,49 @@
 import:
-  - legacy_module.guesser:runner
   - legacy_service:mosaic
   - legacy_service:types
   - legacy_service:python_object_creg
   - legacy_type.attribute:attribute
-  - legacy_type.partial:partial
   - legacy_type.call:call
+  - legacy_type.inspect:attr
+  - legacy_type.inspect:fn_attr
+  - legacy_type.inspect:type_name
+  - legacy_type.inspect:item_element
+  - legacy_type.inspect:none_t
+  - legacy_type.inspect:object_t
+  - legacy_type.inspect:record_t
+  - legacy_type.inspect:list_t
+  - legacy_type.inspect:empty_list_t
+  - legacy_type.inspect:coroutine_fn_t
+  - legacy_type.partial:partial
+  - legacy_type.python_module:python_module
 
 definitions:
 
-  runner_attribute:
+  runner.module:
+    _type: legacy_type.python_module:python_module
+    module_name: runner
+    file_name: runner.dyn.py
+    import_list:
+      htypes.inspect.attr: legacy_type.inspect:attr
+      htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
+      htypes.inspect.type_name: legacy_type.inspect:type_name
+      htypes.inspect.item_element: legacy_type.inspect:item_element
+      htypes.inspect.none_t: legacy_type.inspect:none_t
+      htypes.inspect.object_t: legacy_type.inspect:object_t
+      htypes.inspect.record_t: legacy_type.inspect:record_t
+      htypes.inspect.list_t: legacy_type.inspect:list_t
+      htypes.inspect.empty_list_t: legacy_type.inspect:empty_list_t
+      htypes.inspect.coroutine_fn_t: legacy_type.inspect:coroutine_fn_t
+      services.mosaic: legacy_service:mosaic
+      services.types: legacy_service:types
+      services.python_object_creg: legacy_service:python_object_creg
+
+  collect_attributes:
     _type: legacy_type.attribute:attribute
-    object: legacy_module.guesser:runner
-    attr_name: Runner
-
-  runner_factory:
-    _type: legacy_type.partial:partial
-    function: runner_attribute
-    params:
-      mosaic: legacy_service:mosaic
-      types: legacy_service:types
-      python_object_creg: legacy_service:python_object_creg
-
-  runner:
-    _type: legacy_type.call:call
-    function: runner_factory
-
-  runner_method_collect_attributes:
-    _type: legacy_type.attribute:attribute
-    object: runner
+    object: runner.module
     attr_name: collect_attributes
 
   get_resource_type:
     _type: legacy_type.attribute:attribute
-    object: runner
+    object: runner.module
     attr_name: get_resource_type
