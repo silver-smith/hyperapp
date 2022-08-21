@@ -16,6 +16,7 @@ import:
   - legacy_type.inspect:coroutine_fn_t
   - legacy_type.partial:partial
   - legacy_type.python_module:python_module
+  - resource.constants:constants.module
 
 definitions:
 
@@ -37,6 +38,7 @@ definitions:
       services.mosaic: legacy_service:mosaic
       services.types: legacy_service:types
       services.python_object_creg: legacy_service:python_object_creg
+      constants: resource.constants:constants.module
 
   collect_attributes:
     _type: legacy_type.attribute:attribute

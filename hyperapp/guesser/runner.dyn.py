@@ -11,6 +11,7 @@ from .services import (
     types,
     python_object_creg,
     )
+from .constants import RESOURCE_NAMES_ATTR
 
 log = logging.getLogger(__name__)
 
@@ -25,7 +26,7 @@ def collect_attributes(object_ref):
 
 
 def _iter_callables(object):
-    name_to_res_name = getattr(object, '__resource_names__', {})
+    name_to_res_name = getattr(object, RESOURCE_NAMES_ATTR, {})
     for name in dir(object):
         if name.startswith('_'):
             continue

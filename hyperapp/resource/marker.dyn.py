@@ -3,8 +3,7 @@ import logging
 
 _log = logging.getLogger(__name__)
 
-
-RESOURCE_NAMES_ATTR = '__resource_names__'
+from .constants import RESOURCE_NAMES_ATTR
 
 
 class Marker:

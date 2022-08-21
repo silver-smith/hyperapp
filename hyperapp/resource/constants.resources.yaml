@@ -1,0 +1,11 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  constants.module:
+    _type: legacy_type.python_module:python_module
+    module_name: constants
+    file_name: constants.dyn.py
+    import_list: {}

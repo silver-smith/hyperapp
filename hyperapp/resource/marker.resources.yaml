@@ -1,6 +1,7 @@
 import:
   - legacy_type.attribute:attribute
   - legacy_type.python_module:python_module
+  - resource.constants:constants.module
 
 definitions:
 
@@ -8,7 +9,8 @@ definitions:
     _type: legacy_type.python_module:python_module
     module_name: marker
     file_name: marker.dyn.py
-    import_list: {}
+    import_list:
+      constants: resource.constants:constants.module
 
   param:
     _type: legacy_type.attribute:attribute
