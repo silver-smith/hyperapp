@@ -67,17 +67,21 @@ class Constructor:
     def on_global(self, process, attr, result_t, ctx):
         global_res_name = attr.resource_name or attr.name
         self._construct_attr(global_res_name, self._module_res_name, attr)
-        if isinstance(result_t, htypes.inspect.record_t):
-            if attr.param_list:
-                self._construct_object_command(global_res_name, attr)
-            else:
-                self._construct_global_command(global_res_name)
         # if isinstance(attr, htypes.inspect.fn_attr):
-        #     self._construct_service(self._module_res_name, global_res_name)
+        #     if isinstance(result_t, htypes.inspect.record_t):
+        #         if attr.param_list:
+        #             self._construct_object_command(global_res_name, attr)
+        #         else:
+        #             self._construct_global_command(global_res_name)
+            #     self._construct_service(self._module_res_name, global_res_name)
         global_dir_res_name = camel_to_snake(global_res_name) + '_d'
         return GlobalContext(global_res_name, global_dir_res_name, attr)
 
     def on_attr(self, process, attr, result_t, ctx):
+        if not isinstance(attr, htypes.inspect.fn_attr):
+            return
+        if not isinstance(ctx.global_attr, htypes.inspect.fn_attr) or ctx.global_attr.param_list != ['piece']:
+            return
         if attr.name == 'get':
             self._construct_impl(process, ctx.global_res_name, ctx.global_dir_res_name, ctx.global_attr, attr, result_t)
         else:
