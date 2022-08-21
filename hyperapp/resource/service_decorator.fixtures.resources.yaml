@@ -1,0 +1,18 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.attribute:attribute
+- legacy_type.python_module:python_module
+- resource.marker:marker.module
+associations: []
+definitions:
+  param.service.fn:
+    _type: legacy_type.attribute:attribute
+    object: service_decorator_fixtures.module
+    attr_name: param_service_fn
+  service_decorator_fixtures.module:
+    _type: legacy_type.python_module:python_module
+    module_name: service_decorator.fixtures
+    file_name: service_decorator.fixtures.dyn.py
+    import_list:
+      marker: resource.marker:marker.module

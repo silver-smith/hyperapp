@@ -1,0 +1,18 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.attribute:attribute
+- legacy_type.python_module:python_module
+- resource.constants:constants.module
+associations: []
+definitions:
+  service:
+    _type: legacy_type.attribute:attribute
+    object: service_decorator.module
+    attr_name: service
+  service_decorator.module:
+    _type: legacy_type.python_module:python_module
+    module_name: service_decorator
+    file_name: service_decorator.dyn.py
+    import_list:
+      constants: resource.constants:constants.module
