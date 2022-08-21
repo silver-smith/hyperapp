@@ -11,7 +11,7 @@ from .services import (
     types,
     python_object_creg,
     )
-from .constants import RESOURCE_NAMES_ATTR
+from .constants import RESOURCE_NAMES_ATTR, RESOURCE_CTR_ATTR
 
 log = logging.getLogger(__name__)
 
@@ -27,10 +27,12 @@ def collect_attributes(object_ref):
 
 def _iter_callables(object):
     name_to_res_name = getattr(object, RESOURCE_NAMES_ATTR, {})
+    name_to_ctr_list = getattr(object, RESOURCE_CTR_ATTR, {})
     for name in dir(object):
         if name.startswith('_'):
             continue
         resource_name = name_to_res_name.get(name)
+        constructors = name_to_ctr_list.get(name, [])
         value = getattr(object, name)
         if not resource_name:
             if not hasattr(value, '__module__'):
@@ -38,7 +40,7 @@ def _iter_callables(object):
             if type(object) is ModuleType and value.__module__ != object.__name__:
                 continue  # Skip functions imported from other modules.
         if not callable(value):
-            yield htypes.inspect.attr(name, resource_name)
+            yield htypes.inspect.attr(name, resource_name, constructors)
             continue
         try:
             signature = inspect.signature(value)
@@ -47,7 +49,7 @@ def _iter_callables(object):
                 continue
             raise
         param_list = list(signature.parameters.keys())
-        yield htypes.inspect.fn_attr(name, resource_name, param_list)
+        yield htypes.inspect.fn_attr(name, resource_name, constructors, param_list)
 
 
 def get_resource_type(resource_ref):
