@@ -12,6 +12,7 @@ from .services import (
     web,
     )
 from .qt_keys import run_input_key_dialog
+from .global_command_ctr import global_command
 
 _log = logging.getLogger(__name__)
 
@@ -93,10 +94,12 @@ class ObjectCommandList(_CommandList):
         return record_list
 
 
+@global_command
 def open_global_command_list():
     return htypes.command_list.global_command_list()
 
 
+@global_command
 def open_view_command_list():
     return htypes.command_list.view_command_list()
 
