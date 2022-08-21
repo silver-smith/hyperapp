@@ -78,14 +78,14 @@ definitions:
     _type: legacy_type.attribute:attribute
     object: command_list_fixtures.module
     attr_name: param_ViewCommandList_set_key_escape_current_item
-  param.object_commands.piece:
+  param.open_object_commands.piece:
     _type: legacy_type.attribute:attribute
     object: command_list_fixtures.module
-    attr_name: param_object_commands_piece
-  param.object_commands.view_state:
+    attr_name: param_open_object_commands_piece
+  param.open_object_commands.view_state:
     _type: legacy_type.attribute:attribute
     object: command_list_fixtures.module
-    attr_name: param_object_commands_view_state
+    attr_name: param_open_object_commands_view_state
   service.adapter_factory:
     _type: legacy_type.attribute:attribute
     object: command_list_fixtures.module
