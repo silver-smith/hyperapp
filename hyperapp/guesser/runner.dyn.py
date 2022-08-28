@@ -21,11 +21,11 @@ def collect_attributes(object_ref):
     object = python_object_creg.invite(object_ref)
     return [
         mosaic.put(attr) for attr
-        in _iter_callables(object)
+        in _iter_attributes(object)
     ]
 
 
-def _iter_callables(object):
+def _iter_attributes(object):
     name_to_res_name = getattr(object, RESOURCE_NAMES_ATTR, {})
     name_to_ctr_list = getattr(object, RESOURCE_CTR_ATTR, {})
     for name in dir(object):
@@ -49,7 +49,7 @@ def _iter_callables(object):
                 continue
             raise
         param_list = list(signature.parameters.keys())
-        yield htypes.inspect.fn_attr(name, resource_name, constructors, param_list)
+        yield htypes.inspect.fn_attr(name, resource_name, constructors, value.__module__, param_list)
 
 
 def get_resource_type(resource_ref):

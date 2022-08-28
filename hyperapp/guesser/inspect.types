@@ -5,6 +5,7 @@ attr = record:
   constructors: ref list
 
 fn_attr = record(attr):
+  module: string
   param_list: string list
 
 
