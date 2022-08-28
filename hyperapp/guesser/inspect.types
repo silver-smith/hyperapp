@@ -21,6 +21,7 @@ none_t = record
 
 object_t = record:
   class_name: string
+  class_module: string
 
 record_t = record:
   type: type_name

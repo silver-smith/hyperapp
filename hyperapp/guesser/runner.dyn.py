@@ -70,6 +70,7 @@ def get_resource_type(resource_ref):
         log.info("Non-data type: %r", value.__class__.__name__)
         return htypes.inspect.object_t(
             class_name=value.__class__.__name__,
+            class_module=value.__class__.__module__,
             )
 
     log.info("Type is: %r", t)
