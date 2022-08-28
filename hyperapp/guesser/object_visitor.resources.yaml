@@ -3,6 +3,7 @@ import:
 - legacy_service:mosaic
 - legacy_service:web
 - legacy_type.attribute:attribute
+- legacy_type.inspect:fn_attr
 - legacy_type.piece_ref:piece_ref
 - legacy_type.python_module:python_module
 
@@ -17,6 +18,7 @@ definitions:
     module_name: object_visitor
     file_name: object_visitor.dyn.py
     import_list:
+      htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
       services.mosaic: legacy_service:mosaic
       services.collect_attributes_ref: collect_attributes_ref
       services.web: legacy_service:web

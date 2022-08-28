@@ -31,7 +31,7 @@ class ModuleVisitor:
                 ],
             )
 
-        self._on_object(process, module_res, path=[], constructor_ctx=None)
+        self._on_object(process, module_res, module_name=None, path=[], constructor_ctx=None)
 
         auto_importer = process.proxy(mosaic.put(auto_importer_res))
         imports = auto_importer.imports()

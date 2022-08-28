@@ -6,6 +6,10 @@ import:
 - resource.constants:constants.module
 associations: []
 definitions:
+  get_caller_module:
+    _type: legacy_type.attribute:attribute
+    object: service_decorator.module
+    attr_name: get_caller_module
   service:
     _type: legacy_type.attribute:attribute
     object: service_decorator.module

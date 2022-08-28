@@ -1,5 +1,6 @@
 import logging
 
+from . import htypes
 from .services import (
     mosaic,
     collect_attributes_ref,
@@ -14,7 +15,7 @@ class ObjectVisitor:
     def __init__(self, on_attr):
         self._on_attr = on_attr
 
-    def run(self, process, object_res, path, constructor_ctx):
+    def run(self, process, object_res, module_name, path, constructor_ctx):
         _log.info("Visiting object %s: %r", path, object_res)
         collect_attributes = process.rpc_call(collect_attributes_ref)
 
@@ -23,4 +24,9 @@ class ObjectVisitor:
         _log.info("Collected attr list: %s", attr_list)
 
         for attr in attr_list:
-            self._on_attr(process, object_res, path, attr, constructor_ctx)
+            if isinstance(attr, htypes.inspect.fn_attr):
+                if not module_name:
+                    module_name = attr.module
+                elif attr.module != module_name:
+                    continue  # Skip types from other modules.
+            self._on_attr(process, object_res, module_name, path, attr, constructor_ctx)
