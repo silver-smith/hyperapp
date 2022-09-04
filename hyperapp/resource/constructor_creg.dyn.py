@@ -7,5 +7,4 @@ from .services import (
 from .service_decorator import service
 
 
-
 service.constructor_creg = CodeRegistry('resource_ctr', web, types)

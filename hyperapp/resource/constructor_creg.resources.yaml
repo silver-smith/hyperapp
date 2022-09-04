@@ -3,7 +3,9 @@
 import:
 - legacy_service:types
 - legacy_service:web
+- legacy_type.attribute:attribute
 - legacy_type.python_module:python_module
+- resource.service_decorator:service_decorator.module
 associations: []
 definitions:
   constructor_creg.module:
@@ -11,5 +13,10 @@ definitions:
     module_name: constructor_creg
     file_name: constructor_creg.dyn.py
     import_list:
+      service_decorator: resource.service_decorator:service_decorator.module
       services.types: legacy_service:types
       services.web: legacy_service:web
+  constructor_creg.service:
+    _type: legacy_type.attribute:attribute
+    object: constructor_creg.module
+    attr_name: constructor_creg
