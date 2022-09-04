@@ -12,6 +12,10 @@ definitions:
     file_name: global_command_ctr.fixtures.dyn.py
     import_list:
       marker: resource.marker:marker.module
+  param.construct.piece:
+    _type: legacy_type.attribute:attribute
+    object: global_command_ctr_fixtures.module
+    attr_name: param_construct_piece
   param.global_command.fn:
     _type: legacy_type.attribute:attribute
     object: global_command_ctr_fixtures.module

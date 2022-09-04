@@ -6,6 +6,7 @@ from .services import (
     mosaic,
     resource_module_factory,
     resource_type_producer,
+    constructor_creg,
     get_resource_type_ref,
     )
 
@@ -67,6 +68,8 @@ class Constructor:
     def on_global(self, process, attr, result_t, ctx):
         global_res_name = attr.resource_name or attr.name
         self._construct_attr(global_res_name, self._module_res_name, attr)
+        for ctr_ref in attr.constructors:
+            self._run_constructor(attr, ctr_ref)
         # if isinstance(attr, htypes.inspect.fn_attr):
         #     if isinstance(result_t, htypes.inspect.record_t):
         #         if attr.param_list:
@@ -214,6 +217,10 @@ class Constructor:
             value=command_res_name,
             )
         self.resource_module.add_association(association_res_t, association_def)
+
+    def _run_constructor(self, attr, ctr_ref):
+        ctr = constructor_creg.invite(ctr_ref)
+        assert 0, ctr
 
     def _construct_object_commands_dir(self):
         target_res_name = 'object_commands_d'

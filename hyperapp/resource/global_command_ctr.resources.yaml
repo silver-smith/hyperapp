@@ -8,6 +8,10 @@ import:
 - resource.constants:constants.module
 associations: []
 definitions:
+  construct:
+    _type: legacy_type.attribute:attribute
+    object: global_command_ctr.module
+    attr_name: construct
   global_command:
     _type: legacy_type.attribute:attribute
     object: global_command_ctr.module

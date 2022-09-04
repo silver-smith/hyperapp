@@ -1,0 +1,8 @@
+import:
+- legacy_type.constructor_creg:constructor_creg_association
+- legacy_type.global_command_ctr:global_command_ctr
+- resource.global_command_ctr:construct
+associations:
+- _type: legacy_type.constructor_creg:constructor_creg_association
+  t: legacy_type.global_command_ctr:global_command_ctr
+  fn: resource.global_command_ctr:construct

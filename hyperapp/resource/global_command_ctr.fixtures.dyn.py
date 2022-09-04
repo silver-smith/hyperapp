@@ -6,3 +6,4 @@ def _dummy_fn():
 
 
 param.global_command.fn = _dummy_fn
+param.construct.piece = None

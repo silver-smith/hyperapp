@@ -14,3 +14,7 @@ def global_command(fn):
     ctr = htypes.global_command_ctr.global_command_ctr()
     ctr_list.append(mosaic.put(ctr))
     return fn
+
+
+def construct(piece):
+    assert 0

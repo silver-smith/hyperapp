@@ -18,6 +18,7 @@ import:
   - legacy_type.piece_ref:piece_ref
   - legacy_type.python_module:python_module
   - guesser.runner:get_resource_type
+  - resource.constructor_creg:constructor_creg.service
 
 definitions:
 
@@ -47,6 +48,7 @@ definitions:
       services.mosaic: legacy_service:mosaic
       services.resource_module_factory: legacy_service:resource_module_factory
       services.resource_type_producer: legacy_service:resource_type_producer
+      services.constructor_creg: resource.constructor_creg:constructor_creg.service
       services.get_resource_type_ref: get_resource_type_ref
 
   Constructor:
