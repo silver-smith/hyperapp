@@ -23,9 +23,11 @@ class ObjectVisitor:
         attr_list = [web.summon(ref) for ref in object_attrs.attr_list]
         _log.info("Collected attr list, module %s: %s", object_attrs.object_module, attr_list)
 
-        if not module_name:
+        if module_name:
+            if object_attrs.object_module != module_name:
+                return  # Skip types from other modules.
+        else:
             module_name = object_attrs.object_module
 
         for attr in attr_list:
-            if attr.module == module_name:  # Skip types from other modules.
-                self._on_attr(process, object_res, module_name, path, attr, constructor_ctx)
+            self._on_attr(process, object_res, module_name, path, attr, constructor_ctx)

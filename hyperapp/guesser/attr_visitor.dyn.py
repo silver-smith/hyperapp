@@ -64,8 +64,13 @@ class AttrVisitor:
 
         attr_ctx = self._on_attr(process, attr, result_t, constructor_ctx)
 
-        if self._on_object and isinstance(result_t, htypes.inspect.object_t):
-            self._on_object(process, value_res, module_name, path=[*path, attr.name], constructor_ctx=attr_ctx)
+        if attr.module != module_name:
+            return  # Skip types from other modules.
+        if not self._on_object:
+            return
+        if not isinstance(result_t, htypes.inspect.object_t):
+            return
+        self._on_object(process, value_res, module_name, path=[*path, attr.name], constructor_ctx=attr_ctx)
 
     def _fixture(self, path, attr_name, param_name):
         res_name = '.'.join(['param', *path, attr_name, param_name])
