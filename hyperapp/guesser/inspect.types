@@ -1,11 +1,11 @@
 
 attr = record:
   name: string
+  module: string
   resource_name: string opt
   constructors: ref list
 
 fn_attr = record(attr):
-  module: string
   param_list: string list
 
 

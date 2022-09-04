@@ -24,9 +24,8 @@ class ObjectVisitor:
         _log.info("Collected attr list: %s", attr_list)
 
         for attr in attr_list:
-            if isinstance(attr, htypes.inspect.fn_attr):
-                if not module_name:
-                    module_name = attr.module
-                elif attr.module != module_name:
-                    continue  # Skip types from other modules.
+            if not module_name:
+                module_name = attr.module
+            elif attr.module != module_name:
+                continue  # Skip types from other modules.
             self._on_attr(process, object_res, module_name, path, attr, constructor_ctx)

@@ -40,7 +40,7 @@ def _iter_attributes(object):
             if type(object) is ModuleType and value.__module__ != object.__name__:
                 continue  # Skip functions imported from other modules.
         if not callable(value):
-            yield htypes.inspect.attr(name, resource_name, constructors)
+            yield htypes.inspect.attr(name, value.__module__, resource_name, constructors)
             continue
         try:
             signature = inspect.signature(value)
@@ -49,7 +49,7 @@ def _iter_attributes(object):
                 continue
             raise
         param_list = list(signature.parameters.keys())
-        yield htypes.inspect.fn_attr(name, resource_name, constructors, value.__module__, param_list)
+        yield htypes.inspect.fn_attr(name, value.__module__, resource_name, constructors, param_list)
 
 
 def get_resource_type(resource_ref):
