@@ -1,6 +1,9 @@
 import inspect
+import logging
 
 from .constants import RESOURCE_NAMES_ATTR
+
+_log = logging.getLogger(__name__)
 
 
 def get_caller_module():
