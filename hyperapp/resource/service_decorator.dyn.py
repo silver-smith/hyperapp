@@ -17,6 +17,7 @@ class _Marker:
         module = get_caller_module()
         resource_name = f'{name}.service'
         _log.info("Mark: %s: %s -> %s (%r)", module.__name__, name, resource_name, value)
+        module.__dict__[name] = value
         res_name_dict = module.__dict__.setdefault(RESOURCE_NAMES_ATTR, {})
         res_name_dict[name] = resource_name
 
