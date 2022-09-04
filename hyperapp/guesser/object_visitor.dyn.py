@@ -19,13 +19,13 @@ class ObjectVisitor:
         _log.info("Visiting object %s: %r", path, object_res)
         collect_attributes = process.rpc_call(collect_attributes_ref)
 
-        attr_ref_list = collect_attributes(mosaic.put(object_res))
-        attr_list = [web.summon(ref) for ref in attr_ref_list]
-        _log.info("Collected attr list: %s", attr_list)
+        object_attrs = collect_attributes(mosaic.put(object_res))
+        attr_list = [web.summon(ref) for ref in object_attrs.attr_list]
+        _log.info("Collected attr list, module %s: %s", object_attrs.object_module, attr_list)
+
+        if not module_name:
+            module_name = object_attrs.object_module
 
         for attr in attr_list:
-            if not module_name:
-                module_name = attr.module
-            elif attr.module != module_name:
-                continue  # Skip types from other modules.
-            self._on_attr(process, object_res, module_name, path, attr, constructor_ctx)
+            if attr.module == module_name:  # Skip types from other modules.
+                self._on_attr(process, object_res, module_name, path, attr, constructor_ctx)

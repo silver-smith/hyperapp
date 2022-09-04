@@ -6,6 +6,7 @@ import:
   - legacy_type.call:call
   - legacy_type.inspect:attr
   - legacy_type.inspect:fn_attr
+  - legacy_type.inspect:object_attributes
   - legacy_type.inspect:type_name
   - legacy_type.inspect:item_element
   - legacy_type.inspect:none_t
@@ -27,6 +28,7 @@ definitions:
     import_list:
       htypes.inspect.attr: legacy_type.inspect:attr
       htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
+      htypes.inspect.object_attributes: legacy_type.inspect:object_attributes
       htypes.inspect.type_name: legacy_type.inspect:type_name
       htypes.inspect.item_element: legacy_type.inspect:item_element
       htypes.inspect.none_t: legacy_type.inspect:none_t

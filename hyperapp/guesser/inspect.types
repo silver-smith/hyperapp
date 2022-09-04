@@ -9,6 +9,11 @@ fn_attr = record(attr):
   param_list: string list
 
 
+object_attributes = record:
+  object_module: string
+  attr_list: ref list
+
+
 type_name = record:
   module: string
   name: string

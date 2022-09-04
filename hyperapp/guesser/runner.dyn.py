@@ -19,10 +19,15 @@ log = logging.getLogger(__name__)
 def collect_attributes(object_ref):
     log.info("Collect attributes: %s", object_ref)
     object = python_object_creg.invite(object_ref)
-    return [
+    attr_list = [
         mosaic.put(attr) for attr
         in _iter_attributes(object)
-    ]
+        ]
+    if isinstance(object, ModuleType):
+        object_module = object.__name__
+    else:
+        object_module = object.__module__
+    return htypes.inspect.object_attributes(object_module, attr_list)
 
 
 def _iter_attributes(object):
