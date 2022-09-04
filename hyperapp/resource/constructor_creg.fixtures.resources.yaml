@@ -1,0 +1,28 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_service:mosaic
+- legacy_service:resource_module_registry
+- legacy_service:types
+- legacy_type.attribute:attribute
+- legacy_type.constructor_creg:constructor_creg_association
+- legacy_type.constructor_creg_fixtures:sample_type
+- legacy_type.python_module:python_module
+- resource.marker:marker.module
+associations: []
+definitions:
+  constructor_creg_fixtures.module:
+    _type: legacy_type.python_module:python_module
+    module_name: constructor_creg.fixtures
+    file_name: constructor_creg.fixtures.dyn.py
+    import_list:
+      htypes.constructor_creg.constructor_creg_association: legacy_type.constructor_creg:constructor_creg_association
+      htypes.constructor_creg_fixtures.sample_type: legacy_type.constructor_creg_fixtures:sample_type
+      marker: resource.marker:marker.module
+      services.mosaic: legacy_service:mosaic
+      services.resource_module_registry: legacy_service:resource_module_registry
+      services.types: legacy_service:types
+  param.register_constructor.piece:
+    _type: legacy_type.attribute:attribute
+    object: constructor_creg_fixtures.module
+    attr_name: param_register_constructor_piece

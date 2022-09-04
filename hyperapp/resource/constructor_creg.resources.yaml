@@ -1,6 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
+- legacy_service:python_object_creg
 - legacy_service:types
 - legacy_service:web
 - legacy_type.attribute:attribute
@@ -14,9 +15,14 @@ definitions:
     file_name: constructor_creg.dyn.py
     import_list:
       service_decorator: resource.service_decorator:service_decorator.module
+      services.python_object_creg: legacy_service:python_object_creg
       services.types: legacy_service:types
       services.web: legacy_service:web
   constructor_creg.service:
     _type: legacy_type.attribute:attribute
     object: constructor_creg.module
     attr_name: constructor_creg
+  register_constructor:
+    _type: legacy_type.attribute:attribute
+    object: constructor_creg.module
+    attr_name: register_constructor

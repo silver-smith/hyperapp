@@ -1,0 +1,16 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.attribute:attribute
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  constructor_creg_fixtures_aux.module:
+    _type: legacy_type.python_module:python_module
+    module_name: constructor_creg.fixtures.aux
+    file_name: constructor_creg.fixtures.aux.dyn.py
+    import_list: {}
+  sample_function:
+    _type: legacy_type.attribute:attribute
+    object: constructor_creg_fixtures_aux.module
+    attr_name: sample_function
