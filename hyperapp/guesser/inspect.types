@@ -1,7 +1,7 @@
 
 attr = record:
   name: string
-  module: string
+  module: string opt
   resource_name: string opt
   constructors: ref list
 

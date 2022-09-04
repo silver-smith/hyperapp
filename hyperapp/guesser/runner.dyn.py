@@ -45,7 +45,7 @@ def _iter_attributes(object):
             if type(object) is ModuleType and value.__module__ != object.__name__:
                 continue  # Skip functions imported from other modules.
         if not callable(value):
-            yield htypes.inspect.attr(name, value.__module__, resource_name, constructors)
+            yield htypes.inspect.attr(name, getattr(value, '__module__', None), resource_name, constructors)
             continue
         try:
             signature = inspect.signature(value)
