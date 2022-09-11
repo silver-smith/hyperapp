@@ -9,7 +9,7 @@ from .service_decorator import service
 
 
 def register_constructor(piece):
-  t = types.resolve(piece.t)
+  t = python_object_creg.invite(piece.t)
   fn = python_object_creg.invite(piece.fn)
   constructor_creg.register_actor(t, fn)
 

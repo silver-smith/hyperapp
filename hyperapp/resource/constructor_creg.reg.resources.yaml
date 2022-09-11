@@ -1,3 +1,8 @@
 import:
+- legacy_type.meta_registry:meta_association
+- legacy_type.constructor_creg:constructor_creg_association
+- resource.constructor_creg:register_constructor
 associations:
-- _type: legacy_type.
+- _type: legacy_type.meta_registry:meta_association
+  t: legacy_type.constructor_creg:constructor_creg_association
+  fn: resource.constructor_creg:register_constructor
