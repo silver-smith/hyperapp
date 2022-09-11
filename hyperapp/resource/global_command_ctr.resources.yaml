@@ -2,12 +2,20 @@
 
 import:
 - legacy_service:mosaic
+- legacy_service:resource_type_producer
 - legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.global_command:global_command_association
 - legacy_type.global_command_ctr:global_command_ctr
+- legacy_type.impl:global_command_impl
 - legacy_type.python_module:python_module
 - resource.constants:constants.module
 associations: []
 definitions:
+  camel_to_snake:
+    _type: legacy_type.attribute:attribute
+    object: global_command_ctr.module
+    attr_name: camel_to_snake
   construct:
     _type: legacy_type.attribute:attribute
     object: global_command_ctr.module
@@ -22,5 +30,9 @@ definitions:
     file_name: global_command_ctr.dyn.py
     import_list:
       constants: resource.constants:constants.module
+      htypes.call.call: legacy_type.call:call
+      htypes.global_command.global_command_association: legacy_type.global_command:global_command_association
       htypes.global_command_ctr.global_command_ctr: legacy_type.global_command_ctr:global_command_ctr
+      htypes.impl.global_command_impl: legacy_type.impl:global_command_impl
       services.mosaic: legacy_service:mosaic
+      services.resource_type_producer: legacy_service:resource_type_producer

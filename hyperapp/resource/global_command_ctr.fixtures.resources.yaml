@@ -1,7 +1,9 @@
 # Automatically generated file. Do not edit.
 
 import:
+- legacy_service:resource_module_factory
 - legacy_type.attribute:attribute
+- legacy_type.inspect:fn_attr
 - legacy_type.python_module:python_module
 - resource.marker:marker.module
 associations: []
@@ -11,11 +13,29 @@ definitions:
     module_name: global_command_ctr.fixtures
     file_name: global_command_ctr.fixtures.dyn.py
     import_list:
+      htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
       marker: resource.marker:marker.module
+      services.resource_module_factory: legacy_service:resource_module_factory
+  param.camel_to_snake.name:
+    _type: legacy_type.attribute:attribute
+    object: global_command_ctr_fixtures.module
+    attr_name: param_camel_to_snake_name
+  param.construct.attr:
+    _type: legacy_type.attribute:attribute
+    object: global_command_ctr_fixtures.module
+    attr_name: param_construct_attr
+  param.construct.module_name:
+    _type: legacy_type.attribute:attribute
+    object: global_command_ctr_fixtures.module
+    attr_name: param_construct_module_name
   param.construct.piece:
     _type: legacy_type.attribute:attribute
     object: global_command_ctr_fixtures.module
     attr_name: param_construct_piece
+  param.construct.resource_module:
+    _type: legacy_type.attribute:attribute
+    object: global_command_ctr_fixtures.module
+    attr_name: param_construct_resource_module
   param.global_command.fn:
     _type: legacy_type.attribute:attribute
     object: global_command_ctr_fixtures.module

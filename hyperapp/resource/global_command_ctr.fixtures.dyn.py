@@ -1,9 +1,30 @@
+from . import htypes
+from .services import (
+    resource_module_factory,
+    )
 from .marker import param
 
 
 def _dummy_fn():
-  pass
+    pass
 
 
 param.global_command.fn = _dummy_fn
+
+param.camel_to_snake.name = ''
+
 param.construct.piece = None
+param.construct.resource_module = resource_module_factory(
+    resource_module_registry={},
+    name='sample_resource_module',
+    path='/non-existend-dir/sample_module.resources.yaml',
+    load_from_file=False,
+    )
+param.construct.module_name = 'sample_module_name'
+param.construct.attr = htypes.inspect.fn_attr(
+    name='sample_fn',
+    module=None,
+    resource_name=None,
+    constructors=[],
+    param_list=[],
+    )
