@@ -1,0 +1,26 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_service:meta_registry
+- legacy_service:python_object_creg
+- legacy_type.attribute:attribute
+- legacy_type.meta_registry:meta_association
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  meta_registry_association.module:
+    _type: legacy_type.python_module:python_module
+    module_name: meta_registry_association
+    file_name: meta_registry_association.dyn.py
+    import_list:
+      htypes.meta_registry.meta_association: legacy_type.meta_registry:meta_association
+      services.meta_registry: legacy_service:meta_registry
+      services.python_object_creg: legacy_service:python_object_creg
+  register_meta:
+    _type: legacy_type.attribute:attribute
+    object: meta_registry_association.module
+    attr_name: register_meta
+  init:
+    _type: legacy_type.attribute:attribute
+    object: meta_registry_association.module
+    attr_name: init

@@ -60,6 +60,9 @@ def subprocess_main_safe(connection, module_dir_list, code_module_list, config):
     services.subprocess_stop_event = threading.Event()
     services.init_services()
     services.init_modules(code_module_list + ['sync.subprocess_child'], config)
+    meta_registry_association = services.python_object_creg.animate(
+        services.resource_module_registry['common.meta_registry_association']['meta_registry_association.module'])
+    meta_registry_association.init()
     services.register_associations(services.resource_module_registry)
     log.info("Running, waiting for stop signal.")
     services.subprocess_stop_event.wait()

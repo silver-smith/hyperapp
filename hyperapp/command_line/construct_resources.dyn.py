@@ -7,9 +7,11 @@ from .services import (
     resource_module_registry,
     register_associations,
     )
+from . import meta_registry_association
 
 
 def construct_resources(resource_dir_list, source_path_list):
+    meta_registry_association.init()
     register_associations(resource_module_registry)
     for path in source_path_list:
         abs_path = path.absolute()

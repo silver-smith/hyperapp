@@ -5,6 +5,7 @@ import:
 - legacy_type.attribute:attribute
 - legacy_type.python_module:python_module
 - guesser.construct_resources:construct_resources
+- common.meta_registry_association:meta_registry_association.module
 
 definitions:
 
@@ -17,6 +18,7 @@ definitions:
       services.hyperapp_dir: legacy_service:hyperapp_dir
       services.resource_module_registry: legacy_service:resource_module_registry
       services.register_associations: legacy_service:register_associations
+      meta_registry_association: common.meta_registry_association:meta_registry_association.module
 
   construct_resources:
     _type: legacy_type.attribute:attribute
