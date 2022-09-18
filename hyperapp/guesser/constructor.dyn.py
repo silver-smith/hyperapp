@@ -77,11 +77,7 @@ class Constructor:
             self._run_constructor(attr, ctr_ref)
         # if isinstance(attr, htypes.inspect.fn_attr):
         #     if isinstance(result_t, htypes.inspect.record_t):
-        #         if attr.param_list:
-        #             self._construct_object_command(global_res_name, attr)
-        #         else:
-        #             self._construct_global_command(global_res_name)
-            #     self._construct_service(self._module_res_name, global_res_name)
+        #         self._construct_service(self._module_res_name, global_res_name)
         global_dir_res_name = camel_to_snake(global_res_name) + '_d'
         return GlobalContext(global_res_name, global_dir_res_name, attr)
 
@@ -155,31 +151,6 @@ class Constructor:
         res_name = camel_to_snake(global_res_name) + '_spec'
         self.resource_module.set_definition(res_name, spec_res_t, spec_def)
         return res_name
-
-    def _construct_object_command(self, global_res_name, global_attr):
-        dir_res_name = camel_to_snake(global_res_name) + '_d'
-        self._construct_module_dir(dir_res_name)
-
-        command_res_t = resource_type_producer(htypes.impl.object_command_impl)
-        command_def = command_res_t.definition_t(
-            function=global_res_name,
-            params=global_attr.param_list,
-            dir=dir_res_name,
-        )
-        command_res_name = f'{global_res_name}.command'
-        self.resource_module.set_definition(command_res_name, command_res_t, command_def)
-
-        # todo: move following to separate method, decorate target function with destination dir.
-
-        # Called for every command, but results is single resource.
-        object_commands_d_res_name = construct_object_commands_dir(self.resource_module)
-
-        association_res_t = resource_type_producer(htypes.lcs.lcs_set_resource_association)
-        association_def = association_res_t.definition_t(
-            dir=(object_commands_d_res_name,),
-            value=command_res_name,
-            )
-        self.resource_module.add_association(association_res_t, association_def)
 
     def _construct_method_command(self, global_res_name, global_dir_res_name, attr):
         global_snake_name = camel_to_snake(global_res_name)
