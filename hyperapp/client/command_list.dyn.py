@@ -13,6 +13,7 @@ from .services import (
     )
 from .qt_keys import run_input_key_dialog
 from .global_command_ctr import global_command
+from .object_command_ctr import object_command
 
 _log = logging.getLogger(__name__)
 
@@ -104,6 +105,7 @@ def open_view_command_list():
     return htypes.command_list.view_command_list()
 
 
+@object_command
 def open_object_commands(piece, view_state):
     return htypes.command_list.object_command_list(
         piece_ref=mosaic.put(piece),
