@@ -56,4 +56,3 @@ def construct(piece, resource_module, module_name, attr):
         command=command_res_name,
         )
     resource_module.add_association(association_res_t, association_def)
-
