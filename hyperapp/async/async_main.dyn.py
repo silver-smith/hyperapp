@@ -73,8 +73,8 @@ class ThisModule(Module):
 
     def stop(self):
         log.info("Stop async loop thread.")
-        self._event_loop.call_soon_threadsafe(self._async_stop_event.set)
-        self._event_loop_holder.clear_loop()
+        if not self._event_loop.is_closed():
+            self._event_loop.call_soon_threadsafe(self._async_stop_event.set)
         self._thread.join()
         log.info("Async loop thread is stopped.")
 
@@ -96,6 +96,7 @@ class ThisModule(Module):
                     loop.run_until_complete(loop.shutdown_asyncgens())
                     # loop.run_until_complete(loop.shutdown_default_executor())  # python 3.9
                 finally:
+                    self._event_loop_holder.clear_loop()
                     asyncio.set_event_loop(None)
                     loop.close()
                     self._event_loop_dtr()
