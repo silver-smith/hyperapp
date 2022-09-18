@@ -19,6 +19,7 @@ import:
   - legacy_type.python_module:python_module
   - guesser.runner:get_resource_type
   - resource.constructor_creg:constructor_creg.service
+  - resource.construct_dir:construct_dir.module
 
 definitions:
 
@@ -31,6 +32,7 @@ definitions:
     module_name: constructor
     file_name: constructor.dyn.py
     import_list:
+      construct_dir: resource.construct_dir:construct_dir.module
       htypes.attribute.attribute: legacy_type.attribute:attribute
       htypes.call.call: legacy_type.call:call
       htypes.inspect.fn_attr: legacy_type.inspect:fn_attr

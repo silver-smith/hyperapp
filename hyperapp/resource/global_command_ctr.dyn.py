@@ -7,6 +7,7 @@ from .services import (
     resource_type_producer,
   )
 from .constants import RESOURCE_CTR_ATTR
+from .construct_dir import construct_module_dir
 
 
 def global_command(fn):
@@ -24,24 +25,10 @@ def camel_to_snake(name):
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
 
 
-def _construct_dir(resource_module, target_res_name, dir_t_res_name):
-    call_res_t = resource_type_producer(htypes.call.call)
-    call_def = call_res_t.definition_t(
-        function=dir_t_res_name,
-        )
-    resource_module.set_definition(target_res_name, call_res_t, call_def)
-    resource_module.add_import(dir_t_res_name)
-
-
-def _construct_module_dir(resource_module, type_module_name, target_res_name):
-    dir_t_res_name = f'legacy_type.{type_module_name}:{target_res_name}'
-    _construct_dir(resource_module, target_res_name, dir_t_res_name)
-
-
 def construct(piece, resource_module, module_name, attr):
     attr_res_name = attr.resource_name or attr.name
     dir_res_name = camel_to_snake(attr_res_name) + '_d'
-    _construct_module_dir(resource_module, type_module_name=module_name, target_res_name=dir_res_name)
+    construct_module_dir(resource_module, type_module_name=module_name, target_res_name=dir_res_name)
 
     command_res_t = resource_type_producer(htypes.impl.global_command_impl)
     command_def = command_res_t.definition_t(

@@ -1,0 +1,44 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_service:resource_module_factory
+- legacy_type.attribute:attribute
+- legacy_type.python_module:python_module
+- resource.marker:marker.module
+associations: []
+definitions:
+  construct_dir_fixtures.module:
+    _type: legacy_type.python_module:python_module
+    module_name: construct_dir.fixtures
+    file_name: construct_dir.fixtures.dyn.py
+    import_list:
+      marker: resource.marker:marker.module
+      services.resource_module_factory: legacy_service:resource_module_factory
+  param.construct_dir.dir_t_res_name:
+    _type: legacy_type.attribute:attribute
+    object: construct_dir_fixtures.module
+    attr_name: param_construct_dir_dir_t_res_name
+  param.construct_dir.resource_module:
+    _type: legacy_type.attribute:attribute
+    object: construct_dir_fixtures.module
+    attr_name: param_construct_dir_resource_module
+  param.construct_dir.target_res_name:
+    _type: legacy_type.attribute:attribute
+    object: construct_dir_fixtures.module
+    attr_name: param_construct_dir_target_res_name
+  param.construct_module_dir.resource_module:
+    _type: legacy_type.attribute:attribute
+    object: construct_dir_fixtures.module
+    attr_name: param_construct_module_dir_resource_module
+  param.construct_module_dir.target_res_name:
+    _type: legacy_type.attribute:attribute
+    object: construct_dir_fixtures.module
+    attr_name: param_construct_module_dir_target_res_name
+  param.construct_module_dir.type_module_name:
+    _type: legacy_type.attribute:attribute
+    object: construct_dir_fixtures.module
+    attr_name: param_construct_module_dir_type_module_name
+  param.construct_object_commands_dir.resource_module:
+    _type: legacy_type.attribute:attribute
+    object: construct_dir_fixtures.module
+    attr_name: param_construct_object_commands_dir_resource_module

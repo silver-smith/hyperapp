@@ -9,6 +9,11 @@ from .services import (
     constructor_creg,
     get_resource_type_ref,
     )
+from .construct_dir import (
+    construct_module_dir,
+    construct_object_commands_dir,
+    construct_dir,
+    )
 
 
 # https://stackoverflow.com/a/1176023 Camel case to snake case.
@@ -167,7 +172,7 @@ class Constructor:
         # todo: move following to separate method, decorate target function with destination dir.
 
         # Called for every command, but results is single resource.
-        object_commands_d_res_name = self._construct_object_commands_dir()
+        object_commands_d_res_name = construct_object_commands_dir(self.resource_module)
 
         association_res_t = resource_type_producer(htypes.lcs.lcs_set_resource_association)
         association_def = association_res_t.definition_t(
@@ -191,7 +196,7 @@ class Constructor:
         self.resource_module.set_definition(command_res_name, command_res_t, command_def)
 
         # Called for every command, but results is single resource.
-        object_commands_d_res_name = self._construct_object_commands_dir()
+        object_commands_d_res_name = construct_object_commands_dir(self.resource_module)
 
         association_res_t = resource_type_producer(htypes.lcs.lcs_set_resource_association)
         association_def = association_res_t.definition_t(
@@ -203,24 +208,9 @@ class Constructor:
     def _run_constructor(self, attr, ctr_ref):
         constructor_creg.invite(ctr_ref, self.resource_module, self._module_name, attr)
 
-    def _construct_object_commands_dir(self):
-        target_res_name = 'object_commands_d'
-        dir_t_res_name = f'legacy_type.command:object_commands_d'
-        self._construct_dir(target_res_name, dir_t_res_name)
-        return target_res_name
-
     def _construct_module_dir(self, target_res_name):
-        type_module_name = self._module_name
-        dir_t_res_name = f'legacy_type.{type_module_name}:{target_res_name}'
-        self._construct_dir(target_res_name, dir_t_res_name)
-
-    def _construct_dir(self, target_res_name, dir_t_res_name):
-        call_res_t = resource_type_producer(htypes.call.call)
-        call_def = call_res_t.definition_t(
-            function=dir_t_res_name,
-            )
-        self.resource_module.set_definition(target_res_name, call_res_t, call_def)
-        self.resource_module.add_import(dir_t_res_name)
+        construct_module_dir(
+            self.resource_module, type_module_name=self._module_name, target_res_name=target_res_name)
 
     def _construct_attr(self, target_name, object_res_name, attr):
         attr_res_t = resource_type_producer(htypes.attribute.attribute)

@@ -1,0 +1,28 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_service:resource_type_producer
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  construct_dir:
+    _type: legacy_type.attribute:attribute
+    object: construct_dir.module
+    attr_name: construct_dir
+  construct_dir.module:
+    _type: legacy_type.python_module:python_module
+    module_name: construct_dir
+    file_name: construct_dir.dyn.py
+    import_list:
+      htypes.call.call: legacy_type.call:call
+      services.resource_type_producer: legacy_service:resource_type_producer
+  construct_module_dir:
+    _type: legacy_type.attribute:attribute
+    object: construct_dir.module
+    attr_name: construct_module_dir
+  construct_object_commands_dir:
+    _type: legacy_type.attribute:attribute
+    object: construct_dir.module
+    attr_name: construct_object_commands_dir
