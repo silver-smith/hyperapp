@@ -83,7 +83,7 @@ class Constructor:
     def on_attr(self, process, attr, result_t, ctx):
         if not isinstance(attr, htypes.inspect.fn_attr):
             return
-        if not isinstance(ctx.global_attr, htypes.inspect.fn_attr) or ctx.global_attr.param_list != ['piece']:
+        if not isinstance(ctx.global_attr, htypes.inspect.fn_attr) or list(ctx.global_attr.param_list) != ['piece']:
             return
         if attr.name == 'get':
             self._construct_impl(process, ctx.global_res_name, ctx.global_dir_res_name, ctx.global_attr, attr, result_t)
