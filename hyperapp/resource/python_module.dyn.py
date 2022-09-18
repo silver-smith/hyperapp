@@ -139,7 +139,8 @@ def sub_loader_dict(python_object_creg, import_list, root_module_name):
                 
 def python_object(piece, mosaic, python_importer, python_object_creg):
     module_name = make_module_name(mosaic, piece)
-    assert not python_importer.module_imported(module_name)
+    if python_importer.module_imported(module_name):
+        raise RuntimeError(f"Error: module {module_name} is aleady imported")
     root_loader = _CodeModuleLoader(
         name=piece.module_name,
         source=piece.source,

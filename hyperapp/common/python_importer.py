@@ -89,6 +89,9 @@ class PythonImporter:
         self._sub_path_loaders.update(sub_path_loaders)
         self._module_name_to_loader.update(module_name_to_loader)
         log.debug('Import python module: %s', module_name)
-        module = importlib.import_module(module_name)
+        try:
+            module = importlib.import_module(module_name)
+        except Exception as x:
+            raise RuntimeError(f"Error importing module {module_name}: {x}")
         self._imported_modules += module_name_to_loader
         return module
