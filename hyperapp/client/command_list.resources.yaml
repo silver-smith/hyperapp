@@ -24,8 +24,8 @@ import:
 - legacy_type.command_list:object_command_list_d
 - legacy_type.command_list:object_command_list_set_key_d
 - legacy_type.command_list:object_command_list_set_key_escape_d
-- legacy_type.command_list:object_commands_d
 - legacy_type.command_list:open_global_command_list_d
+- legacy_type.command_list:open_object_commands_d
 - legacy_type.command_list:open_view_command_list_d
 - legacy_type.command_list:view_command_list
 - legacy_type.command_list:view_command_list_d
@@ -41,6 +41,8 @@ import:
 - legacy_type.impl:python_object_association
 - legacy_type.lcs:lcs_set_resource_association
 - legacy_type.python_module:python_module
+- resource.global_command_ctr:global_command_ctr.module
+- resource.object_command_ctr:object_command_ctr.module
 associations:
 - _type: legacy_type.global_command:global_command_association
   command: open_global_command_list.command
@@ -89,6 +91,10 @@ associations:
   value: object_command_list.set_key_escape.command
 - _type: legacy_type.lcs:lcs_set_resource_association
   dir:
+  - object_commands_d
+  value: open_object_commands.command
+- _type: legacy_type.lcs:lcs_set_resource_association
+  dir:
   - view_command_list_d
   - object_commands_d
   value: view_command_list.set_key.command
@@ -115,12 +121,14 @@ definitions:
     module_name: command_list
     file_name: command_list.dyn.py
     import_list:
+      global_command_ctr: resource.global_command_ctr:global_command_ctr.module
       htypes.command.command_shortcut_d: legacy_type.command:command_shortcut_d
       htypes.command_list.global_command_list: legacy_type.command_list:global_command_list
       htypes.command_list.item: legacy_type.command_list:item
       htypes.command_list.object_command_list: legacy_type.command_list:object_command_list
       htypes.command_list.view_command_list: legacy_type.command_list:view_command_list
       htypes.command_list.view_item: legacy_type.command_list:view_item
+      object_command_ctr: resource.object_command_ctr:object_command_ctr.module
       qt_keys: legacy_module.async.ui.qt:qt_keys
       services.adapter_factory: legacy_service:adapter_factory
       services.global_command_list: legacy_service:global_command_list
@@ -182,20 +190,9 @@ definitions:
     key_attribute: name
     key_t: legacy_type.builtin:string
     dir: object_command_list_d
-  object_commands:
-    _type: legacy_type.attribute:attribute
-    object: command_list.module
-    attr_name: object_commands
-  object_commands.command:
-    _type: legacy_type.impl:object_command_impl
-    function: object_commands
-    params:
-    - piece
-    - view_state
-    dir: object_commands_d
   object_commands_d:
     _type: legacy_type.call:call
-    function: legacy_type.command_list:object_commands_d
+    function: legacy_type.command:object_commands_d
   open_global_command_list:
     _type: legacy_type.attribute:attribute
     object: command_list.module
@@ -207,6 +204,20 @@ definitions:
   open_global_command_list_d:
     _type: legacy_type.call:call
     function: legacy_type.command_list:open_global_command_list_d
+  open_object_commands:
+    _type: legacy_type.attribute:attribute
+    object: command_list.module
+    attr_name: open_object_commands
+  open_object_commands.command:
+    _type: legacy_type.impl:object_command_impl
+    function: open_object_commands
+    params:
+    - piece
+    - view_state
+    dir: open_object_commands_d
+  open_object_commands_d:
+    _type: legacy_type.call:call
+    function: legacy_type.command_list:open_object_commands_d
   open_view_command_list:
     _type: legacy_type.attribute:attribute
     object: command_list.module
