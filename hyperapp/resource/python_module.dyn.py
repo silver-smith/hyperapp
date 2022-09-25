@@ -146,9 +146,12 @@ def python_object(piece, mosaic, python_importer, python_object_creg):
         source=piece.source,
         file_path=piece.file_path,
         )
-    return python_importer.import_module(
-        module_name, root_loader,
-        sub_loader_dict=sub_loader_dict(python_object_creg, piece.import_list, module_name))
+    try:
+        return python_importer.import_module(
+            module_name, root_loader,
+            sub_loader_dict=sub_loader_dict(python_object_creg, piece.import_list, module_name))
+    except Exception as x:
+        raise RuntimeError(f"Error importing module {piece.module_name!r}: {x}")
             
 
 class ThisModule(Module):
