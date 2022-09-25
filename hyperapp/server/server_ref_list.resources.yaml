@@ -1,65 +1,65 @@
 import:
-  - legacy_module.server.server_ref_list
-  - legacy_service.web
-  - legacy_service.server_identity
-  - legacy_type.attribute.attribute
-  - legacy_type.partial.partial
-  - legacy_type.call.call
-  - legacy_type.resource_rpc_command.rpc_command
-  - legacy_type.resource_service.list_service
-  - legacy_type.server_ref_list.server_ref_list_d
+  - legacy_module.server:server_ref_list
+  - legacy_service:web
+  - legacy_service:server_identity
+  - legacy_type.attribute:attribute
+  - legacy_type.partial:partial
+  - legacy_type.call:call
+  - legacy_type.resource_rpc_command:rpc_command
+  - legacy_type.resource_service:list_service
+  - legacy_type.server_ref_list:server_ref_list_d
 
 definitions:
 
   server_ref_list_factory:
-    _type: legacy_type.attribute.attribute
-    object: legacy_module.server.server_ref_list
+    _type: legacy_type.attribute:attribute
+    object: legacy_module.server:server_ref_list
     attr_name: RefList
 
   server_ref_list:
-    _type: legacy_type.call.call
+    _type: legacy_type.call:call
     function: server_ref_list_factory
 
   ref_list_servant_factory:
-    _type: legacy_type.attribute.attribute
-    object: legacy_module.server.server_ref_list
+    _type: legacy_type.attribute:attribute
+    object: legacy_module.server:server_ref_list
     attr_name: RefListServant
 
   ref_list_servant_partial:
-    _type: legacy_type.partial.partial
+    _type: legacy_type.partial:partial
     function: ref_list_servant_factory
     params:
-      web: legacy_service.web
+      web: legacy_service:web
       ref_list: server_ref_list
 
   ref_list_servant:
-    _type: legacy_type.call.call
+    _type: legacy_type.call:call
     function: ref_list_servant_partial
 
   ref_list_servant_get_method:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: ref_list_servant
     attr_name: get
 
   ref_list_servant_open_method:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: ref_list_servant
     attr_name: open
 
   open_command:
-    _type: legacy_type.resource_rpc_command.rpc_command
-    identity: legacy_service.server_identity
+    _type: legacy_type.resource_rpc_command:rpc_command
+    identity: legacy_service:server_identity
     function: ref_list_servant_open_method
     params: ['current_key']
     name: open
 
   server_ref_list_d:
-    _type: legacy_type.call.call
-    function: legacy_type.server_ref_list.server_ref_list_d
+    _type: legacy_type.call:call
+    function: legacy_type.server_ref_list:server_ref_list_d
 
   server_ref_list_service:
-    _type: legacy_type.resource_service.list_service
-    identity: legacy_service.server_identity
+    _type: legacy_type.resource_service:list_service
+    identity: legacy_service:server_identity
     function: ref_list_servant_get_method
     dir: server_ref_list_d
     key_attribute: id

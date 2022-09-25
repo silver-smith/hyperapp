@@ -1,134 +1,134 @@
 import:
-  - legacy_module.server.module_list
-  - legacy_service.mosaic
-  - legacy_service.web
-  - legacy_service.local_modules
-  - legacy_service.module_registry
-  - legacy_service.server_identity
-  - legacy_type.attribute.attribute
-  - legacy_type.partial.partial
-  - legacy_type.call.call
-  - legacy_type.value.value
-  - legacy_type.resource_rpc_command.rpc_command
-  - legacy_type.resource_service.list_service
-  - legacy_type.module_list.module_list_d
+  - legacy_module.server:module_list
+  - legacy_service:mosaic
+  - legacy_service:web
+  - legacy_service:local_modules
+  - legacy_service:module_registry
+  - legacy_service:server_identity
+  - legacy_type.attribute:attribute
+  - legacy_type.partial:partial
+  - legacy_type.call:call
+  - legacy_type.value:value
+  - legacy_type.resource_rpc_command:rpc_command
+  - legacy_type.resource_service:list_service
+  - legacy_type.module_list:module_list_d
 
 definitions:
 
   servant_attribute:
-    _type: legacy_type.attribute.attribute
-    object: legacy_module.server.module_list
+    _type: legacy_type.attribute:attribute
+    object: legacy_module.server:module_list
     attr_name: Servant
 
   servant_factory:
-    _type: legacy_type.partial.partial
+    _type: legacy_type.partial:partial
     function: servant_attribute
     params:
-      mosaic: legacy_service.mosaic
-      web: legacy_service.web
-      local_modules: legacy_service.local_modules
-      module_registry: legacy_service.module_registry
+      mosaic: legacy_service:mosaic
+      web: legacy_service:web
+      local_modules: legacy_service:local_modules
+      module_registry: legacy_service:module_registry
 
   all_filter:
-    _type: legacy_type.value.value
+    _type: legacy_type.value:value
     value: ['imported', 'available']
 
   available_filter:
-    _type: legacy_type.value.value
+    _type: legacy_type.value:value
     value: ['available']
 
   imported_filter:
-    _type: legacy_type.value.value
+    _type: legacy_type.value:value
     value: ['imported']
 
   available_servant_factory:
-    _type: legacy_type.partial.partial
+    _type: legacy_type.partial:partial
     function: servant_factory
     params:
       status_filter: available_filter
 
   imported_servant_factory:
-    _type: legacy_type.partial.partial
+    _type: legacy_type.partial:partial
     function: servant_factory
     params:
       status_filter: imported_filter
 
   all_servant_factory:
-    _type: legacy_type.partial.partial
+    _type: legacy_type.partial:partial
     function: servant_factory
     params:
       status_filter: all_filter
 
   available_servant:
-    _type: legacy_type.call.call
+    _type: legacy_type.call:call
     function: available_servant_factory
 
   imported_servant:
-    _type: legacy_type.call.call
+    _type: legacy_type.call:call
     function: imported_servant_factory
 
   all_servant:
-    _type: legacy_type.call.call
+    _type: legacy_type.call:call
     function: all_servant_factory
 
   available_servant_list_method:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: available_servant
     attr_name: list
 
   imported_servant_list_method:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: imported_servant
     attr_name: list
 
   all_servant_list_method:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: all_servant
     attr_name: list
 
   available_servant_open_method:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: available_servant
     attr_name: open
 
   imported_servant_open_method:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: imported_servant
     attr_name: open
 
   all_servant_open_method:
-    _type: legacy_type.attribute.attribute
+    _type: legacy_type.attribute:attribute
     object: all_servant
     attr_name: open
 
   available_open_command:
-    _type: legacy_type.resource_rpc_command.rpc_command
-    identity: legacy_service.server_identity
+    _type: legacy_type.resource_rpc_command:rpc_command
+    identity: legacy_service:server_identity
     function: available_servant_open_method
     params: ['current_key']
     name: open
 
   imported_open_command:
-    _type: legacy_type.resource_rpc_command.rpc_command
-    identity: legacy_service.server_identity
+    _type: legacy_type.resource_rpc_command:rpc_command
+    identity: legacy_service:server_identity
     function: imported_servant_open_method
     params: ['current_key']
     name: open
 
   all_open_command:
-    _type: legacy_type.resource_rpc_command.rpc_command
-    identity: legacy_service.server_identity
+    _type: legacy_type.resource_rpc_command:rpc_command
+    identity: legacy_service:server_identity
     function: all_servant_open_method
     params: ['current_key']
     name: open
 
   module_list_d:
-    _type: legacy_type.call.call
-    function: legacy_type.module_list.module_list_d
+    _type: legacy_type.call:call
+    function: legacy_type.module_list:module_list_d
 
   available_module_list_service:
-    _type: legacy_type.resource_service.list_service
-    identity: legacy_service.server_identity
+    _type: legacy_type.resource_service:list_service
+    identity: legacy_service:server_identity
     function: available_servant_list_method
     dir: module_list_d
     key_attribute: module_name
@@ -136,8 +136,8 @@ definitions:
       - available_open_command
 
   imported_module_list_service:
-    _type: legacy_type.resource_service.list_service
-    identity: legacy_service.server_identity
+    _type: legacy_type.resource_service:list_service
+    identity: legacy_service:server_identity
     function: imported_servant_list_method
     dir: module_list_d
     key_attribute: module_name
@@ -145,8 +145,8 @@ definitions:
       - imported_open_command
 
   all_module_list_service:
-    _type: legacy_type.resource_service.list_service
-    identity: legacy_service.server_identity
+    _type: legacy_type.resource_service:list_service
+    identity: legacy_service:server_identity
     function: all_servant_list_method
     dir: module_list_d
     key_attribute: module_name
