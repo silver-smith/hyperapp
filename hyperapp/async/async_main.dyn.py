@@ -13,11 +13,13 @@ class EventLoopHolder:
     def __init__(self):
         self._loop = None
         self._lock = threading.Lock()
+        self._loop_created = threading.Condition(self._lock)
 
     def set_loop(self, loop):
         with self._lock:
             assert not self._loop
             self._loop = loop
+            self._loop_created.notify_all()
 
     def clear_loop(self):
         with self._lock:
@@ -28,6 +30,12 @@ class EventLoopHolder:
         with self._lock:
             if not self._loop:
                 return
+            self._loop.call_soon_threadsafe(partial(self._run_coro, self._loop, coro))
+
+    def create_task(self, coro):
+        with self._lock:
+            while not self._loop:
+                self._loop_created.wait()
             self._loop.call_soon_threadsafe(partial(self._run_coro, self._loop, coro))
 
     def _run_coro(self, loop, coro):

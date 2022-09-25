@@ -13,15 +13,18 @@ class ThisModule(Module):
         self._state_storage = services.application_state_storage
         self._async_stop_event = services.async_stop_event
         self._root_view = services.root_view
+        self._default_state_builder = services.default_state_builder
+        self._view_registry = services.view_registry
+        services.open_application = self.open_application
 
-    async def async_init(self, services):
+    async def open_application(self):
         log.info("Load application state.")
         state = self._state_storage.load_state()
         if state is None:
-            state = services.default_state_builder()
-        self._root_view.init(await services.view_registry.animate(state))
+            state = self._default_state_builder()
+        self._root_view.init(await self._view_registry.animate(state))
         # Construct windows only after all modules are (async) inited - registered all their actors.
-        asyncio.get_event_loop().create_task(self._open(state))
+        asyncio.get_running_loop().create_task(self._open(state))
 
     async def _open(self, state):
         try:
