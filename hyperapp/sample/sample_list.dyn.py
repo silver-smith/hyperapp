@@ -1,6 +1,7 @@
 import logging
 
 from . import htypes
+from .global_command_ctr import global_command
 
 log = logging.getLogger(__name__)
 
@@ -8,7 +9,7 @@ log = logging.getLogger(__name__)
 class SampleList:
 
     def __init__(self, piece):
-        log.info("sapmle/list: SampleList ctr: %s", piece.provider)
+        log.info("sample/list: SampleList ctr: %s", piece.provider)
 
     def get(self):
         return [
@@ -21,6 +22,7 @@ class SampleList:
         return f"Opened item: {current_key}"
 
 
+@global_command
 def open_sample_list():
     return htypes.sample_list.sample_list(provider='client')
 

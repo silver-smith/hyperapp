@@ -2,26 +2,23 @@
 
 import:
 - legacy_type.attribute:attribute
-- legacy_type.call:call
-- legacy_type.partial:partial
 - legacy_type.python_module:python_module
 - legacy_type.sample_list:sample_list
+- resource.marker:marker.module
 associations: []
 definitions:
-  sample_list_fixtures_module:
+  param.SampleList.open.current_key:
+    _type: legacy_type.attribute:attribute
+    object: sample_list_fixtures.module
+    attr_name: param_SampleList_open_current_key
+  param.SampleList.piece:
+    _type: legacy_type.attribute:attribute
+    object: sample_list_fixtures.module
+    attr_name: param_SampleList_piece
+  sample_list_fixtures.module:
     _type: legacy_type.python_module:python_module
     module_name: sample_list.fixtures
     file_name: sample_list.fixtures.dyn.py
     import_list:
       htypes.sample_list.sample_list: legacy_type.sample_list:sample_list
-  sample_list_piece:
-    _type: legacy_type.call:call
-    function: sample_list_piece_partial
-  sample_list_piece_attribute:
-    _type: legacy_type.attribute:attribute
-    object: sample_list_fixtures_module
-    attr_name: sample_list_piece
-  sample_list_piece_partial:
-    _type: legacy_type.partial:partial
-    function: sample_list_piece_attribute
-    params: {}
+      marker: resource.marker:marker.module

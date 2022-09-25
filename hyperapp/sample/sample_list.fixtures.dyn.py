@@ -1,13 +1,6 @@
-import logging
-
-from .htypes import sample_list
-
-log = logging.getLogger(__name__)
+from . import htypes
+from .marker import param
 
 
-def sample_list_piece():
-    log.info("Fixture sample_list_piece is called")
-    return sample_list.sample_list(provider='fixture')
-
-
-log.info("sample/list fixture module is loaded; piece t: %s", sample_list.sample_list)
+param.SampleList.piece = htypes.sample_list.sample_list(provider='fixture')
+param.SampleList.open.current_key = 123
