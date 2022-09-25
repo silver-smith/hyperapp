@@ -11,7 +11,7 @@ class ObjectCommandsFactory:
 
     def enum_object_command_pieces(self, adapter):
         return self._lcs.iter_dir_list_values(
-            [[*dir, htypes.command.object_commands_d()] for dir in adapter.dir_list]
+            [[*dir, htypes.command.object_commands_d()] for dir in [[], *adapter.dir_list]]
             )
 
     async def get_object_command_list(self, navigator, object_piece, adapter, view):
