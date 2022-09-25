@@ -102,6 +102,7 @@ def init_meta_registry_association(resource_module_registry, python_object_creg)
     module = python_object_creg.animate(resource)
     module.init()
 
+
 def main():
     init_logging('client')
 
