@@ -1,3 +1,4 @@
+import inspect
 import logging
 
 from hyperapp.common.module import Module
@@ -45,6 +46,8 @@ class MethodCommandAdapter:
             kw[name] = value
         log.info("Run object command: %s with params %s", self._dir, kw)
         result = self._fn(**kw)
+        if inspect.iscoroutine(result):
+            result = await result
         log.info("Run object command %s result: %r", self._dir, result)
         if result:
             await self._navigator.save_history_and_open_piece(result, self._dir)
