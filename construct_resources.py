@@ -66,6 +66,7 @@ def main():
     services = Services(module_dir_list)
     services.init_services()
     services.init_modules(code_module_list, config)
+    services.start_modules()
     log.info("Initialized.")
 
     try:

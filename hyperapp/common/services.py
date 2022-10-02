@@ -94,6 +94,11 @@ class Services(object):
             self.python_importer.unregister_meta_hook()
             raise
 
+    def start_modules(self):
+        for start in self.on_start:
+            log.info("Call module start: %s", start)
+            start()
+
     def unregister_import_meta_hook(self):
         self.python_importer.unregister_meta_hook()
 
@@ -103,4 +108,4 @@ class Services(object):
             self.local_modules.by_name[name]
             for name in module_name_list
             ]
-        self.module_registry.import_module_list(self, module_list, self.local_modules.by_requirement, config)
+        self.module_registry.import_module_list(self, module_list, self.local_modules.by_requirement, config, start_modules=False)

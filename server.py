@@ -86,6 +86,8 @@ def main():
     services.register_associations(services.resource_module_registry)
     init_sample_list(services.resource_module_registry, services.python_object_creg)
 
+    services.start_modules()
+
     log.info("Server is started.")
     try:
         services.stop_signal.wait()

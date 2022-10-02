@@ -166,16 +166,17 @@ class ModuleRegistry:
         self._on_start = on_start
         self._registry = {}  # code_module_t -> _Rec
 
-    def import_module_list(self, services, module_list, module_by_requirement, config_dict):
+    def import_module_list(self, services, module_list, module_by_requirement, config_dict, start_modules=True):
         module_code_list = self._resolve_requirements(module_list, module_by_requirement)
         on_start_count = len(self._on_start)
         for module_code in module_code_list:
             config = config_dict.get(module_code.name, {})
             self._import_module(services, module_code, config)
         self._init_phases(module_code_list, services)
-        for start in self._on_start[on_start_count:]:
-            log.info("Call module start: %s", start)
-            start()
+        if start_modules:
+            for start in self._on_start[on_start_count:]:
+                log.info("Call module start: %s", start)
+                start()
 
     def enum_method(self, method_name):
         for rec in self._registry.values():

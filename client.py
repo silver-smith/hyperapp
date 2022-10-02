@@ -114,6 +114,7 @@ def main():
     services.init_modules(code_module_list)
     init_meta_registry_association(services.resource_module_registry, services.python_object_creg)
     services.register_associations(services.resource_module_registry)
+    services.start_modules()
     services.event_loop_holder.create_task(services.open_application())
     log.info("Client is started.")
     services.stop_signal.wait()

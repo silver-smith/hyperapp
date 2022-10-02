@@ -75,6 +75,7 @@ def subprocess_main_safe(connection, module_dir_list, code_module_list, config):
     services.init_modules(code_module_list + additional_code_module_list, config)
     init_meta_registry_association(services.resource_module_registry, services.python_object_creg)
     services.register_associations(services.resource_module_registry)
+    services.start_modules()
     log.info("Running, waiting for stop signal.")
     services.subprocess_stop_event.wait()
     log.info("Got stop signal, stopping subprocess services.")
