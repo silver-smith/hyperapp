@@ -24,6 +24,19 @@ def code_module_list():
         ]
 
 
+common_subprocess_module_list = [
+    'common.lcs',
+    'resource.legacy_type',
+    'resource.legacy_module',
+    'resource.legacy_service',
+    'resource.python_module',
+    'resource.attribute',
+    'resource.call',
+    'ui.impl_registry',
+    'ui.global_command_list',
+    ]
+
+
 class Endpoint:
 
     def __init__(self, request_queue):
@@ -51,7 +64,7 @@ def test_tcp_send(services):
     subprocess = services.subprocess(
         'subprocess',
         module_dir_list=[*services.module_dir_list, Path(__file__).parent],
-        code_module_list=[
+        code_module_list=common_subprocess_module_list + [
             'sync.transport.tcp',
             'sync.transport.test.send',
             ],
@@ -83,7 +96,7 @@ def test_tcp_echo(services):
     subprocess = services.subprocess(
         'subprocess',
         module_dir_list=[*services.module_dir_list, Path(__file__).parent],
-        code_module_list=[
+        code_module_list=common_subprocess_module_list + [
             'sync.transport.tcp',
             'sync.transport.test.echo',
             ],
