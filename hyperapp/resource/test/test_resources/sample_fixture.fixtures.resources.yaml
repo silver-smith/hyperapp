@@ -1,12 +1,12 @@
 import:
-  - legacy_type.sample_fixture.sample_servant_d
-  - legacy_type.sample_fixture.sample_item
-  - legacy_type.python_module.python_module
+  - legacy_type.sample_fixture:sample_servant_d
+  - legacy_type.sample_fixture:sample_item
+  - legacy_type.python_module:python_module
 definitions:
   sample_fixture:
-    _type: legacy_type.python_module.python_module
+    _type: legacy_type.python_module:python_module
     module_name: sample_fixture
     file_name: sample_fixture.fixtures.dyn.py
     import_list:
-      htypes.sample_fixture.sample_servant_d: legacy_type.sample_fixture.sample_servant_d
-      htypes.sample_fixture.sample_item: legacy_type.sample_fixture.sample_item
+      htypes.sample_fixture.sample_servant_d: legacy_type.sample_fixture:sample_servant_d
+      htypes.sample_fixture.sample_item: legacy_type.sample_fixture:sample_item
