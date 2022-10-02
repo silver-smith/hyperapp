@@ -16,10 +16,24 @@ def code_module_list():
         ]
 
 
+common_subprocess_module_list = [
+    'common.lcs',
+    'resource.legacy_type',
+    'resource.legacy_module',
+    'resource.legacy_service',
+    'resource.python_module',
+    'resource.attribute',
+    'resource.call',
+    'ui.impl_registry',
+    'ui.global_command_list',
+    ]
+
+
 def test_subprocess(services):
     subprocess = services.subprocess(
         'subprocess',
         services.module_dir_list,
+        code_module_list=common_subprocess_module_list,
         )
     with subprocess:
         pass
@@ -29,14 +43,14 @@ def test_import_failure(services):
     subprocess = services.subprocess(
         'subprocess',
         module_dir_list=[*services.module_dir_list, Path(__file__).parent],
-        code_module_list=[
+        code_module_list=common_subprocess_module_list + [
             'sync.test.import_failure',
             ],
         )
-    with pytest.raises(AssertionError) as excinfo:
+    with pytest.raises(RuntimeError) as excinfo:
         with subprocess:
             pass
-    assert str(excinfo.value) == 'Test import failure'
+    assert 'Test import failure' in str(excinfo.value)
 
 
 @pytest.mark.parametrize('sleep_sec', [0, 1])
@@ -44,7 +58,7 @@ def test_module_init_failure(services, sleep_sec):
     subprocess = services.subprocess(
         'subprocess',
         module_dir_list=[*services.module_dir_list, Path(__file__).parent],
-        code_module_list=[
+        code_module_list=common_subprocess_module_list + [
             'sync.test.module_init_failure',
             ],
         )
