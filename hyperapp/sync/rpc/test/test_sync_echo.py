@@ -85,8 +85,14 @@ def echo_set_up(services, htypes):
             'subprocess',
             services.module_dir_list,
             code_module_list=[
+                'common.lcs',
                 'resource.registry',
+                'resource.legacy_type',
                 'resource.legacy_module',
+                'resource.legacy_service',
+                'resource.python_module',
+                'ui.impl_registry',
+                'ui.global_command_list',
                 'sync.rpc.test.echo_service',
                 ],
             config = {
