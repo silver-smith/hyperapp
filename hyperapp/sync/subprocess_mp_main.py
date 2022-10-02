@@ -61,12 +61,18 @@ def init_meta_registry_association(resource_module_registry, python_object_creg)
     module.init()
 
 
+additional_code_module_list = [
+    'resource.register_associations',
+    'sync.subprocess_child',
+    ]
+
+
 def subprocess_main_safe(connection, module_dir_list, code_module_list, config):
     services = Services(module_dir_list)
     services.master_process_connection = connection
     services.subprocess_stop_event = threading.Event()
     services.init_services()
-    services.init_modules(code_module_list + ['sync.subprocess_child'], config)
+    services.init_modules(code_module_list + additional_code_module_list, config)
     init_meta_registry_association(services.resource_module_registry, services.python_object_creg)
     services.register_associations(services.resource_module_registry)
     log.info("Running, waiting for stop signal.")

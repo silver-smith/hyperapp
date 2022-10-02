@@ -31,7 +31,6 @@ process_code_module_list = [
     'common.lcs',
     'ui.impl_registry',
     'ui.global_command_list',
-    'resource.register_associations',
     ]
 
 
