@@ -27,6 +27,19 @@ def code_module_list():
         ]
 
 
+common_subprocess_module_list = [
+    'common.lcs',
+    'resource.legacy_type',
+    'resource.legacy_module',
+    'resource.legacy_service',
+    'resource.python_module',
+    'resource.attribute',
+    'resource.call',
+    'ui.impl_registry',
+    'ui.global_command_list',
+    ]
+
+
 class Endpoint:
 
     def __init__(self, request_queue):
@@ -59,7 +72,7 @@ def test_tcp_send(services):
             'async.async_main',
             'async.transport.tcp',
             'async.transport.test.send',
-            ],
+            ] + common_subprocess_module_list,
         config={
             'async.transport.test.send': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
             },
@@ -94,7 +107,7 @@ def test_tcp_echo(services):
             'async.async_main',
             'async.transport.tcp',
             'async.transport.test.echo',
-            ],
+            ] + common_subprocess_module_list,
         config={
             'async.transport.test.echo': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
             },
