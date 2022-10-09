@@ -1,14 +1,20 @@
 import logging
 
 from . import htypes
+from .services import (
+    mosaic,
+    web,
+    peer_registry,
+    rpc_call_factory,
+    )
 
 log = logging.getLogger(__name__)
 
 
 class SampleServant:
 
-    def __init__(self, piece, mosaic, web, peer_registry, rpc_call_factory):
-        log.info("constuct_resources_sample: SampleServant ctr: %s, %s, %s, %s", mosaic, web, peer_registry, rpc_call_factory)
+    def __init__(self, piece):
+        log.info("constuct_resources_sample: SampleServant ctr: %s", piece)
 
     def get(self):
         return [
@@ -32,4 +38,5 @@ def sample_command(adapter):
     pass
 
 
-log.info("construct_resources_sample module is loaded")
+log.info("construct_resources_sample module is loaded, mosaic=%s, web=%s, peer_registry=%s, rpc_call_factory=%s",
+         mosaic, web, peer_registry, rpc_call_factory)
