@@ -58,15 +58,27 @@ process_code_module_list = [
 
 
 @pytest.fixture
-def subprocess(services):
+def python_object(services):
+    resource_module_registry = services.resource_module_registry
+    python_object_creg = services.python_object_creg
+
+    def get(path):
+        module_name, object_name = path.split(':')
+        module_res = resource_module_registry[module_name]
+        object_res = module_res[object_name]
+        return python_object_creg.animate(object_res)
+
+    return get
+
+
+@pytest.fixture
+def subprocess(services, python_object):
 
     identity = services.generate_rsa_identity(fast=True)
     rpc_endpoint = services.rpc_endpoint_factory()
     services.endpoint_registry.register(identity, rpc_endpoint)
 
-    module = services.resource_module_registry['sync.subprocess_context']
-    subprocess_running_res = module['subprocess_running']
-    subprocess_running = services.python_object_creg.animate(subprocess_running_res)
+    subprocess_running = python_object('sync.subprocess_context:subprocess_running')
 
     with subprocess_running(
             services.module_dir_list,
@@ -78,9 +90,22 @@ def subprocess(services):
         yield process
 
 
-def test_auto_importer(services, htypes, subprocess):
+def test_auto_importer(services, htypes, python_object, subprocess):
 
-    auto_importer_res = htypes.auto_importer.auto_importer(resources=[])
+    CustomResources = python_object('guesser.custom_resource_module_registry:CustomResources')
+    available_import_resources = python_object('guesser.import_resources:available_import_resources')
+
+    custom_resources = CustomResources(
+        types=services.local_types,
+        modules=services.local_modules,
+        res_module_reg=services.resource_module_registry,
+        )
+    import_resources = dict(available_import_resources(custom_resources))
+    resources = [
+        htypes.auto_importer.resource(import_name, rec.resource_ref)
+        for import_name, rec in import_resources.items()
+        ]
+    auto_importer_res = htypes.auto_importer.auto_importer(resources)
     auto_importer_ref = services.mosaic.put(auto_importer_res)
 
     auto_importer_module_path = Path(__file__).parent / 'test_resources' / 'auto_importer_module.dyn.py'
@@ -99,7 +124,8 @@ def test_auto_importer(services, htypes, subprocess):
     collect_attributes_ref = services.mosaic.put(collect_attributes_res)
 
     collect_attributes_call = subprocess.rpc_call(collect_attributes_ref)
-    global_list = collect_attributes_call(module_ref)
+    collected = collect_attributes_call(module_ref)
+    global_list = [services.web.summon(ref).name for ref in collected.attr_list]
     log.info("Collected global list: %s", global_list)
 
     auto_importer = subprocess.proxy(auto_importer_ref)
@@ -107,13 +133,15 @@ def test_auto_importer(services, htypes, subprocess):
     log.info("Import list: %s", imports)
 
     assert imports == (
-        htypes.auto_importer.import_rec('htypes.impl.list_spec', 'legacy_type.impl.list_spec'),
-        htypes.auto_importer.import_rec('lcs', 'legacy_module.common.lcs'),
-        htypes.auto_importer.import_rec('meta_registry', 'legacy_module.common.meta_registry'),
-        htypes.auto_importer.import_rec('qt_keys', 'legacy_module.async.ui.qt.qt_keys'),
-        htypes.auto_importer.import_rec('services.file_bundle', 'legacy_service.file_bundle'),
-        htypes.auto_importer.import_rec('services.web', 'legacy_service.web'),
+        'htypes.impl.list_spec',
+        'lcs',
+        'meta_registry',
+        'qt_keys',
+        'services.file_bundle',
+        'services.web',
        )
+
+    # Now, check if target module works with discovered imports.
 
     resource_module = services.resource_module_factory(
         services.resource_module_registry,
@@ -122,25 +150,30 @@ def test_auto_importer(services, htypes, subprocess):
         load_from_file=False,
     )
 
-    for r in imports:
-        if '.' in r.resource_name:
-            resource_module.add_import(r.resource_name)
-
     module_res_t = services.resource_type_producer(htypes.python_module.python_module)
     import_rec_def_t = module_res_t.definition_t.fields['import_list'].element_t
+
+    import_to_res_name = {
+        import_name: rec.resource_name
+        for import_name, rec in import_resources.items()
+        }
+    import_list = []
+    for name in imports:
+        resource_name = import_to_res_name[name]
+        resource_module.add_import(resource_name)
+        import_list.append(import_rec_def_t(name, resource_name))
     module_def = module_res_t.definition_t(
         module_name='check_importer_module',
         file_name=str(auto_importer_module_path),
-        import_list=[
-            import_rec_def_t(r.name, r.resource_name)
-            for r in imports
-            ],
+        import_list=import_list,
         )
+
     check_module_res_name = 'check_importer_module'
     resource_module.set_definition(check_module_res_name, module_res_t, module_def)
     check_module = resource_module[check_module_res_name]
     check_module_ref = services.mosaic.put(check_module)
 
-    check_global_list = collect_attributes_call(check_module_ref)
+    check_collected = collect_attributes_call(check_module_ref)
+    check_global_list = [services.web.summon(ref).name for ref in check_collected.attr_list]
     log.info("Collected global list: %s", check_global_list)
     assert check_global_list == global_list

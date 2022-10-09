@@ -12,6 +12,11 @@ import:
 
 definitions:
 
+  CustomResources:
+    _type: legacy_type.attribute:attribute
+    object: custom_resource_module_registry_module
+    attr_name: CustomResources
+
   custom_resource_module_registry_module:
     _type: legacy_type.python_module:python_module
     module_name: custom_resource_module_registry
