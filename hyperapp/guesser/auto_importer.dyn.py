@@ -113,7 +113,7 @@ class AutoImporter(Finder):
         elif rel_name == 'htypes':
             module = _HTypesRoot(spec.name, self._resources, self._import_set)
         elif rel_name.startswith('htypes.'):
-            root =_HTypesRoot(spec.name, self._import_set)
+            root =_HTypesRoot(spec.name, self._resources, self._import_set)
             module = getattr(root, last_name)
         else:
             if '.' in rel_name:
