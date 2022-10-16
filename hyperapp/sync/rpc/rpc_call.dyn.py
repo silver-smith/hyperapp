@@ -21,10 +21,13 @@ class ThisModule(Module):
     def rpc_call_factory(mosaic, types, transport, rpc_endpoint, receiver_peer, servant_ref, sender_identity, timeout_sec=10):
         sender_peer_ref = mosaic.put(sender_identity.peer.piece)
 
-        def call(*args):
+        def call(**kw):
             params = [
-                mosaic.put(arg, deduce_complex_value_type(mosaic, types, arg))
-                for arg in args
+                htypes.rpc.param(
+                    name=name,
+                    value=mosaic.put(value, deduce_complex_value_type(mosaic, types, value)),
+                    )
+                for name, value in kw.items()
                 ]
             request_id = str(uuid.uuid4())
             request = htypes.rpc.request(
@@ -34,7 +37,7 @@ class ThisModule(Module):
                 sender_peer_ref=sender_peer_ref,
                 )
             request_ref = mosaic.put(request)
-            log.info("Rpc call: %s %s (%s): send rpc request: %s", receiver_peer, servant_ref, args, request)
+            log.info("Rpc call: %s %s (%s): send rpc request: %s", receiver_peer, servant_ref, kw, request)
             transport.send(receiver_peer, sender_identity, [request_ref])
             result = rpc_endpoint.wait_for_response(request_id, timeout_sec)
             log.info("Rpc call: got result: %s", result)

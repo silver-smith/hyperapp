@@ -50,7 +50,7 @@ class ThisModule(Module):
             self._async_endpoint_registry.register(self._my_identity, rpc_endpoint)
             rpc_call = services.async_rpc_call_factory(rpc_endpoint, self._master_peer, self._master_servant_ref, self._my_identity)
 
-            await rpc_call(self._my_peer_ref)
+            await rpc_call(echo_peer_ref=self._my_peer_ref)
         except Exception as x:
             log.exception("Echo service async run is failed:")
         log.info("Echo service async run: done.")

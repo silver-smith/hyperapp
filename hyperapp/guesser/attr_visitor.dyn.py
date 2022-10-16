@@ -53,13 +53,13 @@ class AttrVisitor:
             value_res = attr_res
             value_ref = attr_ref
 
-        result_t = get_resource_type(value_ref)
+        result_t = get_resource_type(resource_ref=value_ref)
         _log.info("%s/%s type: %r", constructor_ctx or '', attr.name, result_t)
 
         if isinstance(result_t, htypes.inspect.coroutine_fn_t):
             async_call = htypes.async_call.async_call(fn_ref)
             async_call_ref = mosaic.put(async_call)
-            result_t = get_resource_type(async_call_ref)
+            result_t = get_resource_type(resource_ref=async_call_ref)
             _log.info("%s/%s async call type: %r", constructor_ctx or '', attr.name, result_t)
 
         attr_ctx = self._on_attr(process, attr, result_t, constructor_ctx)

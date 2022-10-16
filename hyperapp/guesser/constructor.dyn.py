@@ -134,7 +134,7 @@ class Constructor:
         res_name = f'param.{global_res_name}.piece'
         resource = self._fix_module[res_name]
         resource_ref = mosaic.put(resource)
-        return get_resource_type(resource_ref)
+        return get_resource_type(resource_ref=resource_ref)
 
     def _construct_list_spec(self, global_res_name, global_dir_res_name, result_t):
         self._construct_module_dir(global_dir_res_name)

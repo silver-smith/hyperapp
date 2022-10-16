@@ -19,7 +19,7 @@ class ObjectVisitor:
         _log.info("Visiting object %s: %r", path, object_res)
         collect_attributes = process.rpc_call(collect_attributes_ref)
 
-        object_attrs = collect_attributes(mosaic.put(object_res))
+        object_attrs = collect_attributes(object_ref=mosaic.put(object_res))
         attr_list = [web.summon(ref) for ref in object_attrs.attr_list]
         _log.info("Collected attr list, module %s: %s", object_attrs.object_module, attr_list)
 

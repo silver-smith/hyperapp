@@ -62,7 +62,7 @@ def construct_resources(root_dir, resource_dir_list, full_module_name, module_na
         ) as process:
 
         load_additional_modules = process.rpc_call(load_additional_modules_ref)
-        load_additional_modules([str(module_path.parent)])
+        load_additional_modules(dir_list=[str(module_path.parent)])
 
         attr_visitor = AttrVisitor(
             fixtures_module=fixtures_module,

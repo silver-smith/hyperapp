@@ -44,7 +44,7 @@ class ThisModule(Module):
     def _run(self, mosaic, rpc_call, my_peer_ref):
         log.info("Report home start signal thread is started")
         try:
-            rpc_call(my_peer_ref)
+            rpc_call(runner_peer_ref=my_peer_ref)
         except Exception as x:
             log.exception("Report home start signal thread is failed")
         log.info("Report home start signal thread is finished")

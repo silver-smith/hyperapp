@@ -82,13 +82,13 @@ class RpcEndpoint:
         try:
             log.debug("Resolve rpc servant: %s", request.servant_ref)
             servant_fn = await self._python_object_acreg.invite(request.servant_ref)
-            params = [
-                self._mosaic.resolve_ref(ref).value
-                for ref in request.params
-                ]
+            params = {
+                p.name: self._mosaic.resolve_ref(p.value).value
+                for p in request.params
+                }
             log.info("Call rpc servant: %s (%s)", servant_fn, params)
             rpc_request = RpcRequest(transport_request.receiver_identity, sender)
-            result = await servant_fn(rpc_request, *params)
+            result = await servant_fn(rpc_request, **params)
             log.info("Rpc servant %s call result: %s", servant_fn, result)
             result_ref = self._mosaic.put(result)
             response = htypes.rpc.response(

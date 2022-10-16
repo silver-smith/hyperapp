@@ -21,10 +21,13 @@ class ThisModule(Module):
     def rpc_call_factory(mosaic, types, async_transport, async_rpc_endpoint, receiver_peer, servant_ref, sender_identity):
         sender_peer_ref = mosaic.put(sender_identity.peer.piece)
 
-        async def call(*args):
+        async def call(**kw):
             params = [
-                mosaic.put(arg, deduce_complex_value_type(mosaic, types, arg))
-                for arg in args
+                htypes.rpc.param(
+                    name=name,
+                    value=mosaic.put(value, deduce_complex_value_type(mosaic, types, value)),
+                    )
+                for name, value in kw.items()
                 ]
             request_id = str(uuid.uuid4())
             request = htypes.rpc.request(

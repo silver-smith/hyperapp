@@ -92,16 +92,19 @@ class RpcEndpoint:
         try:
             log.debug("Resolve rpc servant: %s", request.servant_ref)
             servant_fn = self._python_object_creg.invite(request.servant_ref)
-            params = [
-                self._mosaic.resolve_ref(ref).value
-                for ref in request.params
-                ]
+            params = {
+                p.name: self._mosaic.resolve_ref(p.value).value
+                for p in request.params
+                }
             rpc_request = RpcRequest(transport_request.receiver_identity, sender)
-            args = params
+            kw = params
             if 'request' in inspect.signature(servant_fn).parameters:
-                args = [rpc_request, *args]
-            log.info("Call rpc servant: %s (%s)", servant_fn, args)
-            result = servant_fn(*args)
+                kw = {
+                    'request': rpc_request,
+                    **kw,
+                    }
+            log.info("Call rpc servant: %s (%s)", servant_fn, kw)
+            result = servant_fn(**kw)
             log.info("Rpc servant %s call result: %s", servant_fn, result)
             result_t = deduce_complex_value_type(self._mosaic, self._types, result)
             result_ref = self._mosaic.put(result, result_t)

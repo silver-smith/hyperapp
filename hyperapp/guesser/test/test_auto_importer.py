@@ -124,7 +124,7 @@ def test_auto_importer(services, htypes, python_object, subprocess):
     collect_attributes_ref = services.mosaic.put(collect_attributes_res)
 
     collect_attributes_call = subprocess.rpc_call(collect_attributes_ref)
-    collected = collect_attributes_call(module_ref)
+    collected = collect_attributes_call(object_ref=module_ref)
     global_list = [services.web.summon(ref).name for ref in collected.attr_list]
     log.info("Collected global list: %s", global_list)
 
@@ -173,7 +173,7 @@ def test_auto_importer(services, htypes, python_object, subprocess):
     check_module = resource_module[check_module_res_name]
     check_module_ref = services.mosaic.put(check_module)
 
-    check_collected = collect_attributes_call(check_module_ref)
+    check_collected = collect_attributes_call(object_ref=check_module_ref)
     check_global_list = [services.web.summon(ref).name for ref in check_collected.attr_list]
     log.info("Collected global list: %s", check_global_list)
     assert check_global_list == global_list

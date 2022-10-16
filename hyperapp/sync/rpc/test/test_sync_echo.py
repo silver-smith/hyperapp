@@ -121,7 +121,7 @@ def echo_set_up(services, htypes):
 
 def test_successful_call(echo_set_up):
     with echo_set_up('echo') as rpc_call:
-        result = rpc_call('Hello')
+        result = rpc_call(message='Hello')
         log.info("Got echo result: %s", result)
         assert result == 'Hello to you too'
 

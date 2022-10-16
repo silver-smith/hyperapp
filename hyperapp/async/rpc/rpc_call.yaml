@@ -1,6 +1,7 @@
 import:
   types:
     rpc:
+      - param
       - request
 require:
   - async_transport
