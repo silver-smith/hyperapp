@@ -17,6 +17,11 @@ TEST_RESOURCES_DIR = Path(__file__).parent / 'test_resources'
 
 
 @pytest.fixture
+def additional_root_dirs():
+    return [TEST_RESOURCES_DIR]
+
+
+@pytest.fixture
 def module_dir_list(default_module_dir_list):
     return [
         *default_module_dir_list,
@@ -43,7 +48,7 @@ def code_module_list():
 
 
 def test_resources(services):
-    module = services.resource_module_registry['resource.test.test_resources.test_resources']
+    module = services.resource_module_registry['test_resources']
 
     servant_list = module['servant_list']
     log.info("Servant list: %r", servant_list)
