@@ -3,6 +3,7 @@ from types import SimpleNamespace
 
 import pytest
 
+from hyperapp.common.resource_dir import ResourceDir
 from hyperapp.common.services import HYPERAPP_DIR, Services
 from hyperapp.common.test.hyper_types_namespace import HyperTypesNamespace
 
@@ -40,13 +41,21 @@ def default_module_dir_list(hyperapp_dir):
 
 
 @pytest.fixture
+def additional_root_dirs():
+    return []
+
+
+@pytest.fixture
 def module_dir_list(default_module_dir_list):
     return default_module_dir_list
 
 
 @pytest.fixture
-def services(module_dir_list, code_module_list, post_stop_checks):
-    services = Services(module_dir_list)
+def services(additional_root_dirs, module_dir_list, code_module_list, post_stop_checks):
+    additional_resource_dirs = [
+        ResourceDir(d) for d in additional_root_dirs
+        ]
+    services = Services(module_dir_list, additional_resource_dirs)
     services.init_services()
     services.init_modules(code_module_list)
     services.start_modules()

@@ -1,5 +1,7 @@
 import logging
 
+from hyperapp.common.resource_dir import ResourceDir
+
 from . import htypes
 from .services import (
     Constructor,
@@ -34,7 +36,7 @@ process_code_module_list = [
     ]
 
 
-def construct_resources(resource_dir_list, full_module_name, module_name, module_path, root_dir):
+def construct_resources(root_dir, resource_dir_list, full_module_name, module_name, module_path):
     _log.info("Additional resource dirs: %s", resource_dir_list)
     _log.info("Construct resources from: %s", full_module_name)
 
@@ -42,13 +44,14 @@ def construct_resources(resource_dir_list, full_module_name, module_name, module
     rpc_endpoint = rpc_endpoint_factory()
     endpoint_registry.register(identity, rpc_endpoint)
 
-    custom_resources = load_custom_resources(resources_dir=module_path.parent)
+    resource_dir = ResourceDir(root_dir, [*resource_dir_list, module_path.parent])
+    custom_resources = load_custom_resources(resource_dir)
     fixtures_module = custom_resources.res_module_reg.get(full_module_name + '.fixtures')
     import_resources = dict(available_import_resources(custom_resources))
     overridden_import_resources = override_import_resources_with_fixtures(import_resources, fixtures_module)
     constructor = Constructor(
         custom_resources.res_module_reg, fixtures_module, import_resources,
-        root_dir, full_module_name, module_name, module_path)
+        full_module_name, module_name, module_path)
 
     with subprocess_running(
             module_dir_list,

@@ -199,16 +199,10 @@ class ResourceModule:
         return Definition(t, value)
 
 
-def load_resource_modules(hyperapp_dir, resource_module_factory, dir_list, registry):
-    ext = '.resources.yaml'
-    for root_dir in dir_list:
-        for path in root_dir.rglob(f'*{ext}'):
-            if 'test' in path.relative_to(root_dir).parts:
-                continue  # Skip test subdirectories.
-            rpath = str(path.relative_to(hyperapp_dir))
-            name = rpath[:-len(ext)].replace('/', '.')
-            log.info("Resource module: %r", name)
-            registry[name] = resource_module_factory(registry, name, path)
+def load_resource_modules(resource_module_factory, resource_dir, registry):
+    for rp in resource_dir.enum():
+        log.info("Resource module: %r", rp.name)
+        registry[rp.name] = resource_module_factory(registry, rp.name, rp.path)
 
 
 class ThisModule(Module):
@@ -225,7 +219,7 @@ class ThisModule(Module):
         services.resource_module_registry = {}
         services.resource_loader = resource_loader = partial(
             load_resource_modules,
-            services.hyperapp_dir,
             resource_module_factory,
             )
-        resource_loader(services.module_dir_list, services.resource_module_registry)
+        for resource_dir in services.resource_dir_list:
+            resource_loader(resource_dir, services.resource_module_registry)

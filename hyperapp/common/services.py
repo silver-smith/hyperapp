@@ -18,6 +18,7 @@ from .code_module_loader import CodeModuleRegistry, CodeModuleLoader
 from .code_registry import CodeRegistry
 from .python_importer import PythonImporter
 from .module_registry import CodeModule, ModuleRegistry
+from .resource_dir import ResourceDir
 
 log = logging.getLogger(__name__)
 
@@ -43,8 +44,12 @@ class Services(object):
         'module_registry',
     ]
 
-    def __init__(self, module_dir_list):
+    def __init__(self, module_dir_list, additional_resource_dirs=None):
         self.hyperapp_dir = HYPERAPP_DIR
+        self.resource_dir_list = [
+            ResourceDir(HYPERAPP_DIR, module_dir_list),
+            *(additional_resource_dirs or []),
+            ]
         self.module_dir_list = module_dir_list
         self.on_start = []
         self.on_stop = []

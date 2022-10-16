@@ -55,6 +55,7 @@ def main():
     init_logging('server')
 
     parser = argparse.ArgumentParser(description='Construct resources')
+    parser.add_argument('--root-dir', type=Path, help="Resource root dir")
     parser.add_argument('--resource-dir', type=Path, nargs='*', help="Additional resource dir")
     parser.add_argument('source_path', type=Path, nargs='+', help="Path to source file")
     args = parser.parse_args()
@@ -77,7 +78,7 @@ def main():
         resource_dir_list = [
             dir.absolute() for dir in args.resource_dir or []
             ]
-        fn(resource_dir_list, args.source_path)
+        fn(args.root_dir or services.hyperapp_dir, resource_dir_list, args.source_path)
     finally:
         log.info("Stopping.")
         services.stop()

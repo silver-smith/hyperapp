@@ -40,7 +40,7 @@ GlobalContext = namedtuple('GlobalContext', 'global_res_name global_dir_res_name
 
 class Constructor:
 
-    def __init__(self, resource_module_reg, fixtures_module, import_resources, root_dir, full_module_name, module_name, module_path):
+    def __init__(self, resource_module_reg, fixtures_module, import_resources, full_module_name, module_name, module_path):
         self._fix_module = fixtures_module
         self._module_name = module_name
         self.resource_module = resource_module_factory(
