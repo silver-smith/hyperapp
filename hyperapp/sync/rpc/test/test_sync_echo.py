@@ -14,12 +14,19 @@ log = logging.getLogger(__name__)
 
 pytest_plugins = ['hyperapp.common.test.services']
 
+TEST_DIR = Path(__file__).parent
+
+
+@pytest.fixture
+def additional_root_dirs():
+    return [TEST_DIR]
+
 
 @pytest.fixture
 def module_dir_list(default_module_dir_list):
     return [
         *default_module_dir_list,
-        Path(__file__).parent,
+        TEST_DIR,
         ]
 
 
@@ -66,7 +73,7 @@ def echo_set_up(services, htypes):
     services.python_object_creg.register_actor(htypes.echo_service.master_servant, lambda piece: servant.run)
     master_servant_ref = mosaic.put(htypes.echo_service.master_servant())
 
-    echo_servant = services.resource_module_registry['sync.rpc.test.echo_service']['echo_servant']
+    echo_servant = services.resource_module_registry['echo_service']['echo_servant']
     echo_servant_ref = mosaic.put(echo_servant)
 
     rpc_call_factory = services.rpc_call_factory
