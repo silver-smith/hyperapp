@@ -55,14 +55,6 @@ def code_module_list():
         ]
 
 
-def test_fixture(services):
-    module = services.resource_module_registry['guesser.test.test_resources.construct_resources_sample.fixtures']
-    fixture = module['param.SampleServant.piece']
-    log.info("Sample fixture: %r", fixture)
-    piece = services.python_object_creg.animate(fixture)
-    log.info("Sample piece: %r", piece)
-
-
 @pytest.fixture
 def compare():
     def inner(resource_module, expected_fname):
@@ -78,17 +70,17 @@ def test_resources(services, htypes, hyperapp_dir, compare):
     log.info("construct_resources: %r", construct_resources)
 
     resource_module = construct_resources(
+        root_dir=TEST_RESOURCES_DIR,
         resource_dir_list=[],
         full_module_name='construct_resources_sample',
         module_name='construct_resources_sample',
         module_path=TEST_RESOURCES_DIR.joinpath('construct_resources_sample.dyn.py'),
-        root_dir=hyperapp_dir,
         )
     log.info("Resource module:\n%s", yaml.dump(resource_module.as_dict, sort_keys=False))
     resource_module.save_as(Path(tempfile.gettempdir()) / 'construct_resources_sample.resources.yaml')
     compare(resource_module, 'construct_resources_sample')
 
-    fn_res = resource_module['sample_servant_partial']
+    fn_res = resource_module['SampleServant']
     fn = services.python_object_creg.animate(fn_res)
     log.info("Constructor fn: %r", fn)
 

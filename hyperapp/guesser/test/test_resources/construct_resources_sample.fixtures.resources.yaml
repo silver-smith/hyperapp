@@ -16,6 +16,10 @@ definitions:
       htypes.construct_resources_sample.sample: legacy_type.construct_resources_sample:sample
       htypes.construct_resources_sample.sample_item: legacy_type.construct_resources_sample:sample_item
       marker: resource.marker:marker.module
+  param.SampleServant.open.current_key:
+    _type: legacy_type.attribute:attribute
+    object: construct_resources_sample_fixtures.module
+    attr_name: param_SampleServant_open_current_key
   param.SampleServant.piece:
     _type: legacy_type.attribute:attribute
     object: construct_resources_sample_fixtures.module

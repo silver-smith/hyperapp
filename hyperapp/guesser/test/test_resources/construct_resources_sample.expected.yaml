@@ -8,117 +8,81 @@ import:
 - legacy_type.call:call
 - legacy_type.command:object_commands_d
 - legacy_type.construct_resources_sample:sample
-- legacy_type.construct_resources_sample:sample_command_d
-- legacy_type.construct_resources_sample:sample_d
 - legacy_type.construct_resources_sample:sample_item
 - legacy_type.construct_resources_sample:sample_servant_d
 - legacy_type.construct_resources_sample:sample_servant_open_d
 - legacy_type.construct_resources_sample:sample_servant_parent_d
-- legacy_type.global_command:global_command_association
-- legacy_type.impl:global_command_impl
 - legacy_type.impl:impl_association
 - legacy_type.impl:list_spec
 - legacy_type.impl:method_command_impl
-- legacy_type.impl:object_command_impl
 - legacy_type.impl:python_object_association
 - legacy_type.lcs:lcs_set_resource_association
-- legacy_type.partial:partial
 - legacy_type.python_module:python_module
 associations:
-- _type: legacy_type.global_command:global_command_association
-  command: sample_command
 - _type: legacy_type.impl:impl_association
   piece_t: legacy_type.construct_resources_sample:sample
-  ctr_fn: sample_servant_partial
+  ctr_fn: SampleServant
   spec: sample_servant_spec
 - _type: legacy_type.impl:python_object_association
   t: legacy_type.construct_resources_sample:sample
-  function: sample_servant_partial
+  function: SampleServant
 - _type: legacy_type.lcs:lcs_set_resource_association
   dir:
   - sample_servant_d
   - object_commands_d
-  value: sample_servant_open_command
+  value: sample_servant.open.command
 - _type: legacy_type.lcs:lcs_set_resource_association
   dir:
   - sample_servant_d
   - object_commands_d
-  value: sample_servant_parent_command
+  value: sample_servant.parent.command
 definitions:
-  construct_resources_sample_module:
+  SampleServant:
+    _type: legacy_type.attribute:attribute
+    object: construct_resources_sample.module
+    attr_name: SampleServant
+  construct_resources_sample.module:
     _type: legacy_type.python_module:python_module
     module_name: construct_resources_sample
     file_name: construct_resources_sample.dyn.py
     import_list:
       htypes.construct_resources_sample.sample: legacy_type.construct_resources_sample:sample
       htypes.construct_resources_sample.sample_item: legacy_type.construct_resources_sample:sample_item
+      services.mosaic: legacy_service:mosaic
+      services.peer_registry: legacy_service:peer_registry
+      services.rpc_call_factory: legacy_service:rpc_call_factory
+      services.web: legacy_service:web
   object_commands_d:
     _type: legacy_type.call:call
     function: legacy_type.command:object_commands_d
-  sample_attribute:
+  sample:
     _type: legacy_type.attribute:attribute
-    object: construct_resources_sample_module
+    object: construct_resources_sample.module
     attr_name: sample
   sample_command:
-    _type: legacy_type.impl:global_command_impl
-    function: sample_partial
-    dir: sample_d
-  sample_command_attribute:
     _type: legacy_type.attribute:attribute
-    object: construct_resources_sample_module
+    object: construct_resources_sample.module
     attr_name: sample_command
-  sample_command_command:
-    _type: legacy_type.impl:object_command_impl
-    function: sample_command_partial
-    params:
-    - adapter
-    dir: sample_command_d
-  sample_command_d:
-    _type: legacy_type.call:call
-    function: legacy_type.construct_resources_sample:sample_command_d
-  sample_command_partial:
-    _type: legacy_type.partial:partial
-    function: sample_command_attribute
-    params: {}
-  sample_d:
-    _type: legacy_type.call:call
-    function: legacy_type.construct_resources_sample:sample_d
-  sample_partial:
-    _type: legacy_type.partial:partial
-    function: sample_attribute
-    params: {}
-  sample_servant_attribute:
-    _type: legacy_type.attribute:attribute
-    object: construct_resources_sample_module
-    attr_name: SampleServant
-  sample_servant_d:
-    _type: legacy_type.call:call
-    function: legacy_type.construct_resources_sample:sample_servant_d
-  sample_servant_open_command:
+  sample_servant.open.command:
     _type: legacy_type.impl:method_command_impl
     method: open
     params:
     - current_key
     dir: sample_servant_open_d
-  sample_servant_open_d:
-    _type: legacy_type.call:call
-    function: legacy_type.construct_resources_sample:sample_servant_open_d
-  sample_servant_parent_command:
+  sample_servant.parent.command:
     _type: legacy_type.impl:method_command_impl
     method: parent
     params: []
     dir: sample_servant_parent_d
+  sample_servant_d:
+    _type: legacy_type.call:call
+    function: legacy_type.construct_resources_sample:sample_servant_d
+  sample_servant_open_d:
+    _type: legacy_type.call:call
+    function: legacy_type.construct_resources_sample:sample_servant_open_d
   sample_servant_parent_d:
     _type: legacy_type.call:call
     function: legacy_type.construct_resources_sample:sample_servant_parent_d
-  sample_servant_partial:
-    _type: legacy_type.partial:partial
-    function: sample_servant_attribute
-    params:
-      mosaic: legacy_service:mosaic
-      web: legacy_service:web
-      peer_registry: legacy_service:peer_registry
-      rpc_call_factory: legacy_service:rpc_call_factory
   sample_servant_spec:
     _type: legacy_type.impl:list_spec
     key_attribute: key

@@ -7,6 +7,7 @@ log = logging.getLogger(__name__)
 
 
 param.SampleServant.piece = htypes.construct_resources_sample.sample(id=123)
+param.SampleServant.open.current_key = None
 param.sample_command.adapter = None
 
 
