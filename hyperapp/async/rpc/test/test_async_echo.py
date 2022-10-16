@@ -19,6 +19,11 @@ ASYNC_TEST_DIR = TEST_DIR.joinpath('../../test').resolve()  # async.test.event_l
 
 
 @pytest.fixture
+def additional_root_dirs():
+    return [TEST_DIR]
+
+
+@pytest.fixture
 def module_dir_list(default_module_dir_list):
     return [
         *default_module_dir_list,
@@ -71,7 +76,7 @@ def echo_set_up(services, htypes):
     services.python_object_creg.register_actor(htypes.echo_service.master_servant, lambda piece: servant.run)
     master_servant_ref = mosaic.put(htypes.echo_service.master_servant())
 
-    echo_servant = services.resource_module_registry['async.rpc.test.echo_service']['echo_servant']
+    echo_servant = services.resource_module_registry['echo_service']['echo_servant']
     echo_servant_ref = mosaic.put(echo_servant)
 
     server = services.tcp_server()
