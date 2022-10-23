@@ -1,6 +1,7 @@
 import:
   - legacy_service:code_module_loader
   - legacy_service:legacy_module_resource_loader
+  - legacy_service:legacy_service_resource_loader
   - legacy_service:legacy_type_resource_loader
   - legacy_service:local_modules
   - legacy_service:local_types
@@ -24,6 +25,7 @@ definitions:
     import_list:
       services.code_module_loader: legacy_service:code_module_loader
       services.legacy_module_resource_loader: legacy_service:legacy_module_resource_loader
+      services.legacy_service_resource_loader: legacy_service:legacy_service_resource_loader
       services.legacy_type_resource_loader: legacy_service:legacy_type_resource_loader
       services.local_modules: legacy_service:local_modules
       services.local_types: legacy_service:local_types

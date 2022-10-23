@@ -4,6 +4,7 @@ import:
       - builtin_service
       - module_service
 provide:
+  - legacy_service_resource_loader
   - resource.legacy_service
 require:
   - resource_module_registry

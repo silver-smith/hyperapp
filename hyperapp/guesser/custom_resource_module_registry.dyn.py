@@ -3,6 +3,7 @@ from collections import namedtuple
 from .services import (
     code_module_loader,
     legacy_module_resource_loader,
+    legacy_service_resource_loader,
     legacy_type_resource_loader,
     local_modules,
     local_types,
@@ -20,10 +21,13 @@ def load_custom_resources(resources_dir):
     type_module_loader.load_type_modules([resources_dir.root], custom_types)
     custom_modules = local_modules.copy()
     code_module_loader.load_code_modules(custom_types, [resources_dir.root], custom_modules)
+    custom_services = legacy_service_resource_loader(custom_modules)
+    legacy_services = resource_module_registry['legacy_service'].merge_with(custom_services)
     module_reg = {
         **resource_module_registry,
         **legacy_type_resource_loader(custom_types),
         **legacy_module_resource_loader(custom_modules),
+        'legacy_service': legacy_services,
         }
     resource_loader(resources_dir, module_reg)
     return CustomResources(

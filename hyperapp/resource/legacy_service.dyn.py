@@ -1,4 +1,5 @@
 import logging
+from functools import partial
 
 from hyperapp.common.module import Module
 
@@ -16,6 +17,9 @@ class LegacyServiceResourceModule:
     def name(self):
         return 'legacy_service'
 
+    def __setitem__(self, name, service_piece):
+        self._name_to_piece[name] = service_piece
+
     def __contains__(self, var_name):
         return var_name in self._name_to_piece
 
@@ -28,6 +32,13 @@ class LegacyServiceResourceModule:
     @property
     def associations(self):
         return set()
+
+    def merge_with(self, other):
+        assert isinstance(other, LegacyServiceResourceModule)
+        return LegacyServiceResourceModule({
+            **self._name_to_piece,
+            **other._name_to_piece,
+            })
 
 
 def make_legacy_service_resource_module(mosaic, services, builtin_services, local_modules):
@@ -64,8 +75,9 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        services.resource_module_registry['legacy_service'] = make_legacy_service_resource_module(
-            services.mosaic, services, services.builtin_services, services.local_modules)
+        services.legacy_service_resource_loader = loader = partial(
+            make_legacy_service_resource_module, services.mosaic, services, services.builtin_services)
+        services.resource_module_registry['legacy_service'] = loader(services.local_modules)
 
         services.python_object_creg.register_actor(htypes.legacy_service.builtin_service, builtin_service_python_object, services)
         services.python_object_creg.register_actor(htypes.legacy_service.module_service, module_service_python_object, services.python_object_creg, services)
