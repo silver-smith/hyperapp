@@ -1,0 +1,8 @@
+
+server_global_commands = record
+server_global_commands_d = record
+server_global_commands_run_d = record
+
+item = record:
+  name: string
+  function: ref

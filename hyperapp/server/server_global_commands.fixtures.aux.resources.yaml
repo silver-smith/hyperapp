@@ -1,0 +1,16 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.attribute:attribute
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  sample_function:
+    _type: legacy_type.attribute:attribute
+    object: server_global_commands_fixtures_aux.module
+    attr_name: sample_function
+  server_global_commands_fixtures_aux.module:
+    _type: legacy_type.python_module:python_module
+    module_name: server_global_commands.fixtures.aux
+    file_name: server_global_commands.fixtures.aux.dyn.py
+    import_list: {}

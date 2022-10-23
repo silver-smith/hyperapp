@@ -1,0 +1,44 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_service:mosaic
+- legacy_service:resource_module_registry
+- legacy_service:types
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.impl:global_command_impl
+- legacy_type.legacy_type:type
+- legacy_type.python_module:python_module
+- legacy_type.server_global_commands:item
+- legacy_type.server_global_commands:server_global_commands
+- legacy_type.server_global_commands_fixtures:sample_global_command_d
+- resource.marker:marker.module
+associations: []
+definitions:
+  param.ServerGlobalCommands.piece:
+    _type: legacy_type.attribute:attribute
+    object: server_global_commands_fixtures.module
+    attr_name: param_ServerGlobalCommands_piece
+  param.ServerGlobalCommands.run.current_item:
+    _type: legacy_type.attribute:attribute
+    object: server_global_commands_fixtures.module
+    attr_name: param_ServerGlobalCommands_run_current_item
+  param.global_command_to_item.piece:
+    _type: legacy_type.attribute:attribute
+    object: server_global_commands_fixtures.module
+    attr_name: param_global_command_to_item_piece
+  server_global_commands_fixtures.module:
+    _type: legacy_type.python_module:python_module
+    module_name: server_global_commands.fixtures
+    file_name: server_global_commands.fixtures.dyn.py
+    import_list:
+      htypes.call.call: legacy_type.call:call
+      htypes.impl.global_command_impl: legacy_type.impl:global_command_impl
+      htypes.legacy_type.type: legacy_type.legacy_type:type
+      htypes.server_global_commands.item: legacy_type.server_global_commands:item
+      htypes.server_global_commands.server_global_commands: legacy_type.server_global_commands:server_global_commands
+      htypes.server_global_commands_fixtures.sample_global_command_d: legacy_type.server_global_commands_fixtures:sample_global_command_d
+      marker: resource.marker:marker.module
+      services.mosaic: legacy_service:mosaic
+      services.resource_module_registry: legacy_service:resource_module_registry
+      services.types: legacy_service:types

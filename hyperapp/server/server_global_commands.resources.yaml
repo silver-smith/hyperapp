@@ -1,0 +1,75 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_service:global_command_list
+- legacy_service:python_object_creg
+- legacy_service:types
+- legacy_service:web
+- legacy_type.attribute:attribute
+- legacy_type.builtin:string
+- legacy_type.call:call
+- legacy_type.command:object_commands_d
+- legacy_type.impl:global_command_impl
+- legacy_type.impl:impl_association
+- legacy_type.impl:list_spec
+- legacy_type.impl:method_command_impl
+- legacy_type.impl:python_object_association
+- legacy_type.lcs:lcs_set_resource_association
+- legacy_type.python_module:python_module
+- legacy_type.server_global_commands:item
+- legacy_type.server_global_commands:server_global_commands
+- legacy_type.server_global_commands:server_global_commands_d
+- legacy_type.server_global_commands:server_global_commands_run_d
+associations:
+- _type: legacy_type.impl:impl_association
+  piece_t: legacy_type.server_global_commands:server_global_commands
+  ctr_fn: ServerGlobalCommands
+  spec: server_global_commands_spec
+- _type: legacy_type.impl:python_object_association
+  t: legacy_type.server_global_commands:server_global_commands
+  function: ServerGlobalCommands
+- _type: legacy_type.lcs:lcs_set_resource_association
+  dir:
+  - server_global_commands_d
+  - object_commands_d
+  value: server_global_commands.run.command
+definitions:
+  ServerGlobalCommands:
+    _type: legacy_type.attribute:attribute
+    object: server_global_commands.module
+    attr_name: ServerGlobalCommands
+  global_command_to_item:
+    _type: legacy_type.attribute:attribute
+    object: server_global_commands.module
+    attr_name: global_command_to_item
+  object_commands_d:
+    _type: legacy_type.call:call
+    function: legacy_type.command:object_commands_d
+  server_global_commands.module:
+    _type: legacy_type.python_module:python_module
+    module_name: server_global_commands
+    file_name: server_global_commands.dyn.py
+    import_list:
+      htypes.impl.global_command_impl: legacy_type.impl:global_command_impl
+      htypes.server_global_commands.item: legacy_type.server_global_commands:item
+      services.global_command_list: legacy_service:global_command_list
+      services.python_object_creg: legacy_service:python_object_creg
+      services.types: legacy_service:types
+      services.web: legacy_service:web
+  server_global_commands.run.command:
+    _type: legacy_type.impl:method_command_impl
+    method: run
+    params:
+    - current_item
+    dir: server_global_commands_run_d
+  server_global_commands_d:
+    _type: legacy_type.call:call
+    function: legacy_type.server_global_commands:server_global_commands_d
+  server_global_commands_run_d:
+    _type: legacy_type.call:call
+    function: legacy_type.server_global_commands:server_global_commands_run_d
+  server_global_commands_spec:
+    _type: legacy_type.impl:list_spec
+    key_attribute: name
+    key_t: legacy_type.builtin:string
+    dir: server_global_commands_d
