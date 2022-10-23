@@ -67,9 +67,10 @@ def init_meta_registry_association(resource_module_registry, python_object_creg)
     module.init()
 
 
-def init_sample_list(resource_module_registry, python_object_creg):
-    call_resource = resource_module_registry['server.sample_list_ref']['save_sample_list_ref_call']
-    python_object_creg.animate(call_resource)
+def init_local_server_ref(resource_module_registry, python_object_creg):
+    init_res = resource_module_registry['server.init_local_server_ref']['init_local_server_ref']
+    init = python_object_creg.animate(init_res)
+    init()
 
 
 def main():
@@ -84,7 +85,7 @@ def main():
 
     init_meta_registry_association(services.resource_module_registry, services.python_object_creg)
     services.register_associations(services.resource_module_registry)
-    init_sample_list(services.resource_module_registry, services.python_object_creg)
+    init_local_server_ref(services.resource_module_registry, services.python_object_creg)
 
     services.start_modules()
 

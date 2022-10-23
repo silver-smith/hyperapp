@@ -1,0 +1,20 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_service:local_server_ref
+- legacy_type.attribute:attribute
+- legacy_type.python_module:python_module
+- legacy_type.server_global_commands:server_global_commands
+associations: []
+definitions:
+  init_local_server_ref:
+    _type: legacy_type.attribute:attribute
+    object: init_local_server_ref.module
+    attr_name: init_local_server_ref
+  init_local_server_ref.module:
+    _type: legacy_type.python_module:python_module
+    module_name: init_local_server_ref
+    file_name: init_local_server_ref.dyn.py
+    import_list:
+      htypes.server_global_commands.server_global_commands: legacy_type.server_global_commands:server_global_commands
+      services.local_server_ref: legacy_service:local_server_ref
