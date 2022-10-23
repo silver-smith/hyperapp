@@ -44,7 +44,8 @@ def construct_resources(root_dir, resource_dir_list, full_module_name, module_na
     rpc_endpoint = rpc_endpoint_factory()
     endpoint_registry.register(identity, rpc_endpoint)
 
-    resource_dir = ResourceDir(root_dir, [*resource_dir_list, module_path.parent])
+    additional_dir_list = [*resource_dir_list, module_path.parent]
+    resource_dir = ResourceDir(root_dir, additional_dir_list)
     custom_resources = load_custom_resources(resource_dir)
     fixtures_module = custom_resources.res_module_reg.get(full_module_name + '.fixtures')
     import_resources = dict(available_import_resources(custom_resources))
@@ -54,7 +55,7 @@ def construct_resources(root_dir, resource_dir_list, full_module_name, module_na
         full_module_name, module_name, module_path)
 
     with subprocess_running(
-            module_dir_list,
+            [*module_dir_list, *additional_dir_list],
             process_code_module_list,
             rpc_endpoint,
             identity,
