@@ -94,7 +94,7 @@ class Bundler(Visitor):
         for hook in self._aux_bundler_hooks:
             aux_ref_set = set(hook(ref, t, object) or [])
             self._collected_aux_set |= aux_ref_set
-            self._collected_ref_set |= aux_ref_set  # Should collect these refs too.
+            self._collected_ref_set |= aux_ref_set  # Should collect from these refs too.
 
 
 class ThisModule(Module):
