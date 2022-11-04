@@ -12,7 +12,6 @@ from .services import (
 from .construct_dir import (
     construct_module_dir,
     construct_object_commands_dir,
-    construct_dir,
     )
 
 
