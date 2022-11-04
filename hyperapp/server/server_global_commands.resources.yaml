@@ -43,8 +43,7 @@ definitions:
     object: server_global_commands.module
     attr_name: global_command_to_item
   object_commands_d:
-    _type: legacy_type.call:call
-    function: legacy_type.command:object_commands_d
+    _type: legacy_type.command:object_commands_d
   server_global_commands.module:
     _type: legacy_type.python_module:python_module
     module_name: server_global_commands
@@ -63,11 +62,9 @@ definitions:
     - current_item
     dir: server_global_commands_run_d
   server_global_commands_d:
-    _type: legacy_type.call:call
-    function: legacy_type.server_global_commands:server_global_commands_d
+    _type: legacy_type.server_global_commands:server_global_commands_d
   server_global_commands_run_d:
-    _type: legacy_type.call:call
-    function: legacy_type.server_global_commands:server_global_commands_run_d
+    _type: legacy_type.server_global_commands:server_global_commands_run_d
   server_global_commands_spec:
     _type: legacy_type.impl:list_spec
     key_attribute: name

@@ -1,3 +1,4 @@
+from . import htypes
 from .services import (
     resource_module_factory,
     )
@@ -14,8 +15,8 @@ def _stub_resource_module():
 
 
 param.construct_dir.resource_module = _stub_resource_module()
+param.construct_dir.dir_t = htypes.command.object_commands_d
 param.construct_dir.target_res_name = 'sample_target_resource'
-param.construct_dir.dir_t_res_name = 'sample_target_dir'
 
 param.construct_module_dir.resource_module = _stub_resource_module()
 param.construct_module_dir.type_module_name = 'sample_type_module_name'

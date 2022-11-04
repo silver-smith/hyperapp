@@ -1,9 +1,12 @@
 # Automatically generated file. Do not edit.
 
 import:
+- legacy_service:local_types
 - legacy_service:resource_type_producer
+- legacy_service:types
 - legacy_type.attribute:attribute
 - legacy_type.call:call
+- legacy_type.command:object_commands_d
 - legacy_type.python_module:python_module
 associations: []
 definitions:
@@ -17,7 +20,10 @@ definitions:
     file_name: construct_dir.dyn.py
     import_list:
       htypes.call.call: legacy_type.call:call
+      htypes.command.object_commands_d: legacy_type.command:object_commands_d
+      services.local_types: legacy_service:local_types
       services.resource_type_producer: legacy_service:resource_type_producer
+      services.types: legacy_service:types
   construct_module_dir:
     _type: legacy_type.attribute:attribute
     object: construct_dir.module

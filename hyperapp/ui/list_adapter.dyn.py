@@ -133,10 +133,10 @@ class AsyncListAdapter(_ListAdapter):
         self._rows_are_fetched = True
 
 
-def make_adapter(spec, piece, object, python_object_creg):
+def make_adapter(spec, piece, object, web, python_object_creg):
     title = str(piece)
     key_t = python_object_creg.invite(spec.key_t)
-    dir = python_object_creg.invite(spec.dir)
+    dir = web.summon(spec.dir)
     if inspect.iscoroutinefunction(object.get):
         return AsyncListAdapter(dir, object, title, spec.key_attribute, key_t)
     else:
@@ -149,4 +149,4 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
 
         services.adapter_registry.register_actor(
-            htypes.impl.list_spec, make_adapter, services.python_object_creg)
+            htypes.impl.list_spec, make_adapter, services.web, services.python_object_creg)
