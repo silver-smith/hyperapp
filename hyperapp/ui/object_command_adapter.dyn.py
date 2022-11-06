@@ -10,8 +10,8 @@ log = logging.getLogger(__name__)
 class ObjectCommandAdapter:
 
     @classmethod
-    async def from_piece(cls, impl, navigator, object_piece, adapter, view, python_object_creg):
-        dir = python_object_creg.invite(impl.dir)
+    async def from_piece(cls, impl, navigator, object_piece, adapter, view, web, python_object_creg):
+        dir = web.summon(impl.dir)
         fn = python_object_creg.invite(impl.function)
         return cls(dir, fn, navigator, object_piece, view, impl.params)
 
@@ -61,4 +61,4 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
 
         services.command_registry.register_actor(
-            htypes.impl.object_command_impl, ObjectCommandAdapter.from_piece, services.python_object_creg)
+            htypes.impl.object_command_impl, ObjectCommandAdapter.from_piece, services.web, services.python_object_creg)
