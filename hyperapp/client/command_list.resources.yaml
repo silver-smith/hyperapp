@@ -7,12 +7,10 @@ import:
 - legacy_service:lcs
 - legacy_service:mosaic
 - legacy_service:object_commands_factory
-- legacy_service:python_object_creg
 - legacy_service:root_view
 - legacy_service:web
 - legacy_type.attribute:attribute
 - legacy_type.builtin:string
-- legacy_type.call:call
 - legacy_type.command:command_shortcut_d
 - legacy_type.command:object_commands_d
 - legacy_type.command_list:global_command_list
@@ -135,7 +133,6 @@ definitions:
       services.lcs: legacy_service:lcs
       services.mosaic: legacy_service:mosaic
       services.object_commands_factory: legacy_service:object_commands_factory
-      services.python_object_creg: legacy_service:python_object_creg
       services.root_view: legacy_service:root_view
       services.web: legacy_service:web
   global_command_list.set_key.command:
@@ -151,14 +148,11 @@ definitions:
     - current_item
     dir: global_command_list_set_key_escape_d
   global_command_list_d:
-    _type: legacy_type.call:call
-    function: legacy_type.command_list:global_command_list_d
+    _type: legacy_type.command_list:global_command_list_d
   global_command_list_set_key_d:
-    _type: legacy_type.call:call
-    function: legacy_type.command_list:global_command_list_set_key_d
+    _type: legacy_type.command_list:global_command_list_set_key_d
   global_command_list_set_key_escape_d:
-    _type: legacy_type.call:call
-    function: legacy_type.command_list:global_command_list_set_key_escape_d
+    _type: legacy_type.command_list:global_command_list_set_key_escape_d
   global_command_list_spec:
     _type: legacy_type.impl:list_spec
     key_attribute: name
@@ -177,22 +171,18 @@ definitions:
     - current_item
     dir: object_command_list_set_key_escape_d
   object_command_list_d:
-    _type: legacy_type.call:call
-    function: legacy_type.command_list:object_command_list_d
+    _type: legacy_type.command_list:object_command_list_d
   object_command_list_set_key_d:
-    _type: legacy_type.call:call
-    function: legacy_type.command_list:object_command_list_set_key_d
+    _type: legacy_type.command_list:object_command_list_set_key_d
   object_command_list_set_key_escape_d:
-    _type: legacy_type.call:call
-    function: legacy_type.command_list:object_command_list_set_key_escape_d
+    _type: legacy_type.command_list:object_command_list_set_key_escape_d
   object_command_list_spec:
     _type: legacy_type.impl:list_spec
     key_attribute: name
     key_t: legacy_type.builtin:string
     dir: object_command_list_d
   object_commands_d:
-    _type: legacy_type.call:call
-    function: legacy_type.command:object_commands_d
+    _type: legacy_type.command:object_commands_d
   open_global_command_list:
     _type: legacy_type.attribute:attribute
     object: command_list.module
@@ -202,8 +192,7 @@ definitions:
     function: open_global_command_list
     dir: open_global_command_list_d
   open_global_command_list_d:
-    _type: legacy_type.call:call
-    function: legacy_type.command_list:open_global_command_list_d
+    _type: legacy_type.command_list:open_global_command_list_d
   open_object_commands:
     _type: legacy_type.attribute:attribute
     object: command_list.module
@@ -216,8 +205,7 @@ definitions:
     - view_state
     dir: open_object_commands_d
   open_object_commands_d:
-    _type: legacy_type.call:call
-    function: legacy_type.command_list:open_object_commands_d
+    _type: legacy_type.command_list:open_object_commands_d
   open_view_command_list:
     _type: legacy_type.attribute:attribute
     object: command_list.module
@@ -227,8 +215,7 @@ definitions:
     function: open_view_command_list
     dir: open_view_command_list_d
   open_view_command_list_d:
-    _type: legacy_type.call:call
-    function: legacy_type.command_list:open_view_command_list_d
+    _type: legacy_type.command_list:open_view_command_list_d
   view_command_list.set_key.command:
     _type: legacy_type.impl:method_command_impl
     method: set_key
@@ -242,14 +229,11 @@ definitions:
     - current_item
     dir: view_command_list_set_key_escape_d
   view_command_list_d:
-    _type: legacy_type.call:call
-    function: legacy_type.command_list:view_command_list_d
+    _type: legacy_type.command_list:view_command_list_d
   view_command_list_set_key_d:
-    _type: legacy_type.call:call
-    function: legacy_type.command_list:view_command_list_set_key_d
+    _type: legacy_type.command_list:view_command_list_set_key_d
   view_command_list_set_key_escape_d:
-    _type: legacy_type.call:call
-    function: legacy_type.command_list:view_command_list_set_key_escape_d
+    _type: legacy_type.command_list:view_command_list_set_key_escape_d
   view_command_list_spec:
     _type: legacy_type.impl:list_spec
     key_attribute: name

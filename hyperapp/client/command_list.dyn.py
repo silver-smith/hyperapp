@@ -7,7 +7,6 @@ from .services import (
     lcs,
     mosaic,
     object_commands_factory,
-    python_object_creg,
     root_view,
     web,
     )
@@ -45,7 +44,7 @@ class GlobalCommandList(_CommandList):
     def get(self):
         record_list = []
         for command in global_command_list:
-            dir = python_object_creg.invite(command.dir)
+            dir = web.summon(command.dir)
             item = htypes.command_list.item(
                 name=dir._t.name.rstrip('_d'),  # todo: load title from lcs.
                 dir=mosaic.put(dir),
@@ -85,7 +84,7 @@ class ObjectCommandList(_CommandList):
         adapter = await adapter_factory(self._object_piece)
         record_list = []
         for piece in object_commands_factory.enum_object_command_pieces(adapter):
-            dir = python_object_creg.invite(piece.dir)
+            dir = web.summon(piece.dir)
             item = htypes.command_list.item(
                 name=dir._t.name.rstrip('_d'),  # todo: load title from lcs.
                 dir=mosaic.put(dir),
