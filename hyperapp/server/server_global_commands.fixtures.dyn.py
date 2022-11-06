@@ -6,8 +6,7 @@ from .services import (
     resource_module_registry,
     types,
     )
-from .marker import param
-from .service_decorator import service
+from .marker import param, service
 
 
 function_res = resource_module_registry['server.server_global_commands.fixtures.aux']['sample_function']

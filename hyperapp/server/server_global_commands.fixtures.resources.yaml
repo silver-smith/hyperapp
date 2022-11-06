@@ -12,13 +12,8 @@ import:
 - legacy_type.server_global_commands:server_global_commands
 - legacy_type.server_global_commands_fixtures:sample_global_command_d
 - resource.marker:marker.module
-- resource.service_decorator:service_decorator.module
 associations: []
 definitions:
-  global_command_list.service:
-    _type: legacy_type.attribute:attribute
-    object: server_global_commands_fixtures.module
-    attr_name: global_command_list
   param.ServerGlobalCommands.piece:
     _type: legacy_type.attribute:attribute
     object: server_global_commands_fixtures.module
@@ -42,7 +37,10 @@ definitions:
       htypes.server_global_commands.server_global_commands: legacy_type.server_global_commands:server_global_commands
       htypes.server_global_commands_fixtures.sample_global_command_d: legacy_type.server_global_commands_fixtures:sample_global_command_d
       marker: resource.marker:marker.module
-      service_decorator: resource.service_decorator:service_decorator.module
       services.mosaic: legacy_service:mosaic
       services.resource_module_registry: legacy_service:resource_module_registry
       services.types: legacy_service:types
+  service.global_command_list:
+    _type: legacy_type.attribute:attribute
+    object: server_global_commands_fixtures.module
+    attr_name: service_global_command_list
