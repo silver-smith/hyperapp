@@ -7,7 +7,6 @@ import:
 - legacy_service:web
 - legacy_type.attribute:attribute
 - legacy_type.builtin:string
-- legacy_type.call:call
 - legacy_type.command:object_commands_d
 - legacy_type.impl:global_command_impl
 - legacy_type.impl:impl_association
