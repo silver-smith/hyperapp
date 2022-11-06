@@ -9,20 +9,24 @@ import:
 - legacy_type.impl:global_command_impl
 - legacy_type.legacy_type:type
 - legacy_type.python_module:python_module
-- legacy_type.server_global_commands:item
 - legacy_type.server_global_commands:server_global_commands
 - legacy_type.server_global_commands_fixtures:sample_global_command_d
 - resource.marker:marker.module
+- resource.service_decorator:service_decorator.module
 associations: []
 definitions:
+  global_command_list.service:
+    _type: legacy_type.attribute:attribute
+    object: server_global_commands_fixtures.module
+    attr_name: global_command_list
   param.ServerGlobalCommands.piece:
     _type: legacy_type.attribute:attribute
     object: server_global_commands_fixtures.module
     attr_name: param_ServerGlobalCommands_piece
-  param.ServerGlobalCommands.run.current_item:
+  param.ServerGlobalCommands.run.current_key:
     _type: legacy_type.attribute:attribute
     object: server_global_commands_fixtures.module
-    attr_name: param_ServerGlobalCommands_run_current_item
+    attr_name: param_ServerGlobalCommands_run_current_key
   param.global_command_to_item.piece:
     _type: legacy_type.attribute:attribute
     object: server_global_commands_fixtures.module
@@ -35,10 +39,10 @@ definitions:
       htypes.call.call: legacy_type.call:call
       htypes.impl.global_command_impl: legacy_type.impl:global_command_impl
       htypes.legacy_type.type: legacy_type.legacy_type:type
-      htypes.server_global_commands.item: legacy_type.server_global_commands:item
       htypes.server_global_commands.server_global_commands: legacy_type.server_global_commands:server_global_commands
       htypes.server_global_commands_fixtures.sample_global_command_d: legacy_type.server_global_commands_fixtures:sample_global_command_d
       marker: resource.marker:marker.module
+      service_decorator: resource.service_decorator:service_decorator.module
       services.mosaic: legacy_service:mosaic
       services.resource_module_registry: legacy_service:resource_module_registry
       services.types: legacy_service:types

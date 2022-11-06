@@ -1,12 +1,14 @@
+from functools import cached_property
+
 from hyperapp.common.code_registry import CodeRegistry
 
 from . import htypes
 from .services import (
-  global_command_list,
-  python_object_creg,
-  types,
-  web,
-  )
+    global_command_list,
+    python_object_creg,
+    types,
+    web,
+    )
 
 
 class ServerGlobalCommands:
@@ -14,22 +16,29 @@ class ServerGlobalCommands:
     def __init__(self, piece):
       pass
 
-    def get(self):
+    @cached_property
+    def _items(self):
         item_list = []
         for command in global_command_list:
             item = server_command_creg.animate(command)
             item_list.append(item)
         return item_list
 
-    def run(self, current_item):
-        fn = python_object_creg.invite(current_item.function)
+    def get(self):
+        return self._items
+
+    def run(self, current_key):
+        name_to_fn = {item.name: item.function for item in self._items}
+        fn_ref = name_to_fn[current_key]
+        fn = python_object_creg.invite(fn_ref)
         return fn()
 
 
 def global_command_to_item(piece):
     dir = python_object_creg.invite(piece.dir)
+    assert dir._t.name.endswith('_d')
     return htypes.server_global_commands.item(
-        name=dir._t.name.rstrip('_d'),  # todo: load title from lcs.
+        name=dir._t.name[:-2],  # todo: load title from lcs.
         function=piece.function,
         )
 

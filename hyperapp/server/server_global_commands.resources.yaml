@@ -58,7 +58,7 @@ definitions:
     _type: legacy_type.impl:method_command_impl
     method: run
     params:
-    - current_item
+    - current_key
     dir: server_global_commands_run_d
   server_global_commands_d:
     _type: legacy_type.server_global_commands:server_global_commands_d
