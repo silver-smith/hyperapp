@@ -5,7 +5,6 @@ import:
 - legacy_service:web
 - legacy_type.attribute:attribute
 - legacy_type.builtin:int
-- legacy_type.call:call
 - legacy_type.command:object_commands_d
 - legacy_type.construct_resources_sample:sample
 - legacy_type.construct_resources_sample:sample_item
@@ -53,8 +52,7 @@ definitions:
       services.rpc_call_factory: legacy_service:rpc_call_factory
       services.web: legacy_service:web
   object_commands_d:
-    _type: legacy_type.call:call
-    function: legacy_type.command:object_commands_d
+    _type: legacy_type.command:object_commands_d
   sample:
     _type: legacy_type.attribute:attribute
     object: construct_resources_sample.module
@@ -75,14 +73,11 @@ definitions:
     params: []
     dir: sample_servant_parent_d
   sample_servant_d:
-    _type: legacy_type.call:call
-    function: legacy_type.construct_resources_sample:sample_servant_d
+    _type: legacy_type.construct_resources_sample:sample_servant_d
   sample_servant_open_d:
-    _type: legacy_type.call:call
-    function: legacy_type.construct_resources_sample:sample_servant_open_d
+    _type: legacy_type.construct_resources_sample:sample_servant_open_d
   sample_servant_parent_d:
-    _type: legacy_type.call:call
-    function: legacy_type.construct_resources_sample:sample_servant_parent_d
+    _type: legacy_type.construct_resources_sample:sample_servant_parent_d
   sample_servant_spec:
     _type: legacy_type.impl:list_spec
     key_attribute: key
