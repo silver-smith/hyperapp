@@ -20,7 +20,7 @@ param.construct.resource_module = resource_module_factory(
     path='/non-existend-dir/sample_module.resources.yaml',
     load_from_file=False,
     )
-param.construct.module_name = 'sample_module_name'
+param.construct.module_name = 'global_command_ctr_fixtures'
 param.construct.attr = htypes.inspect.fn_attr(
     name='sample_fn',
     module=None,
