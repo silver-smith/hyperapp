@@ -5,7 +5,6 @@ import:
 - legacy_service:resource_type_producer
 - legacy_service:types
 - legacy_type.attribute:attribute
-- legacy_type.call:call
 - legacy_type.command:object_commands_d
 - legacy_type.python_module:python_module
 associations: []
@@ -19,7 +18,6 @@ definitions:
     module_name: construct_dir
     file_name: construct_dir.dyn.py
     import_list:
-      htypes.call.call: legacy_type.call:call
       htypes.command.object_commands_d: legacy_type.command:object_commands_d
       services.local_types: legacy_service:local_types
       services.resource_type_producer: legacy_service:resource_type_producer
