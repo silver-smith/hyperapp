@@ -35,6 +35,8 @@ def available_import_resources(custom_resources):
     for module_name, res_module in custom_resources.res_module_reg.items():
         if module_name.startswith(('legacy_type.', 'legacy_service.', 'legacy_module.')):
             continue
+        if module_name.endswith('.fixtures'):
+            continue
         for name in res_module:
             mo = re.match(r'(.+)\.module$', name)
             if mo:
