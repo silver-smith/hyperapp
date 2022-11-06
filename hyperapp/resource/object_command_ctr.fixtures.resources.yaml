@@ -1,6 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
+- legacy_service:local_types
 - legacy_service:resource_module_factory
 - legacy_type.attribute:attribute
 - legacy_type.inspect:fn_attr
@@ -15,6 +16,7 @@ definitions:
     import_list:
       htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
       marker: resource.marker:marker.module
+      services.local_types: legacy_service:local_types
       services.resource_module_factory: legacy_service:resource_module_factory
   param.camel_to_snake.name:
     _type: legacy_type.attribute:attribute
@@ -24,6 +26,10 @@ definitions:
     _type: legacy_type.attribute:attribute
     object: object_command_ctr_fixtures.module
     attr_name: param_construct_attr
+  param.construct.custom_types:
+    _type: legacy_type.attribute:attribute
+    object: object_command_ctr_fixtures.module
+    attr_name: param_construct_custom_types
   param.construct.module_name:
     _type: legacy_type.attribute:attribute
     object: object_command_ctr_fixtures.module

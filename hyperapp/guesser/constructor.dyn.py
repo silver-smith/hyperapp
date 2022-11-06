@@ -39,7 +39,8 @@ GlobalContext = namedtuple('GlobalContext', 'global_res_name global_dir_res_name
 
 class Constructor:
 
-    def __init__(self, resource_module_reg, fixtures_module, import_resources, full_module_name, module_name, module_path):
+    def __init__(self, resource_module_reg, custom_types, fixtures_module, import_resources, full_module_name, module_name, module_path):
+        self._custom_types = custom_types
         self._fix_module = fixtures_module
         self._module_name = module_name
         self.resource_module = resource_module_factory(
@@ -176,11 +177,11 @@ class Constructor:
         self.resource_module.add_association(association_res_t, association_def)
 
     def _run_constructor(self, attr, ctr_ref):
-        constructor_creg.invite(ctr_ref, self.resource_module, self._module_name, attr)
+        constructor_creg.invite(ctr_ref, self._custom_types, self.resource_module, self._module_name, attr)
 
     def _construct_module_dir(self, target_res_name):
         construct_module_dir(
-            self.resource_module, type_module_name=self._module_name, target_res_name=target_res_name)
+            self._custom_types, self.resource_module, type_module_name=self._module_name, target_res_name=target_res_name)
 
     def _construct_attr(self, target_name, object_res_name, attr):
         attr_res_t = resource_type_producer(htypes.attribute.attribute)

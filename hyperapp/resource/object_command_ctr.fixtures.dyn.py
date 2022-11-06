@@ -1,5 +1,6 @@
 from . import htypes
 from .services import (
+    local_types,
     resource_module_factory,
     )
 from .marker import param
@@ -14,6 +15,7 @@ param.object_command.fn = _dummy_fn
 param.camel_to_snake.name = ''
 
 param.construct.piece = None
+param.construct.custom_types = local_types
 param.construct.resource_module = resource_module_factory(
     resource_module_registry={},
     name='sample_resource_module',

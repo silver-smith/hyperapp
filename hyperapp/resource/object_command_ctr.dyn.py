@@ -25,10 +25,10 @@ def camel_to_snake(name):
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
 
 
-def construct(piece, resource_module, module_name, attr):
+def construct(piece, custom_types, resource_module, module_name, attr):
     attr_res_name = attr.resource_name or attr.name
     dir_res_name = camel_to_snake(attr_res_name) + '_d'
-    construct_module_dir(resource_module, type_module_name=module_name, target_res_name=dir_res_name)
+    construct_module_dir(custom_types, resource_module, type_module_name=module_name, target_res_name=dir_res_name)
 
     command_res_t = resource_type_producer(htypes.impl.object_command_impl)
     command_def = command_res_t.definition_t(

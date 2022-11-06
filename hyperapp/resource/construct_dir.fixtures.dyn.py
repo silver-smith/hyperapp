@@ -1,5 +1,6 @@
 from . import htypes
 from .services import (
+    local_types,
     resource_module_factory,
     )
 from .marker import param
@@ -18,6 +19,7 @@ param.construct_dir.resource_module = _stub_resource_module()
 param.construct_dir.dir_t = htypes.command.object_commands_d
 param.construct_dir.target_res_name = 'sample_target_resource'
 
+param.construct_module_dir.custom_types = local_types
 param.construct_module_dir.resource_module = _stub_resource_module()
 param.construct_module_dir.type_module_name = 'command'
 param.construct_module_dir.target_res_name = 'object_commands_d'

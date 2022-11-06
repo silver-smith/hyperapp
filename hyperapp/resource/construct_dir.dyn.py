@@ -1,6 +1,5 @@
 from . import htypes
 from .services import (
-    local_types,
     resource_type_producer,
     types,
   )
@@ -14,8 +13,8 @@ def construct_dir(resource_module, dir_t, target_res_name):
     # resource_module.add_import(dir_t_res_name)
 
 
-def construct_module_dir(resource_module, type_module_name, target_res_name):
-    dir_t_ref = local_types[type_module_name][target_res_name]
+def construct_module_dir(custom_types, resource_module, type_module_name, target_res_name):
+    dir_t_ref = custom_types[type_module_name][target_res_name]
     dir_t = types.resolve(dir_t_ref)
     construct_dir(resource_module, dir_t, target_res_name)
 
