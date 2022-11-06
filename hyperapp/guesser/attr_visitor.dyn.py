@@ -19,8 +19,35 @@ class AttrVisitor:
 
     def run(self, process, object_res, module_name, path, attr, constructor_ctx):
         _log.info("Loading type for attribute %s: %r", path, attr.name)
-        get_resource_type = process.rpc_call(get_resource_type_ref)
 
+        belongs_here = attr.module == module_name
+
+        if belongs_here:
+            value_res, value_ref, fn_ref = self._make_attr_value_res(object_res, path, attr)
+            result_t = self._get_result_t(process, attr, value_ref, fn_ref, constructor_ctx)
+        else:
+            result_t = None  # Do not call functions defined in other modules.
+
+        attr_ctx = self._on_attr(process, attr, result_t, constructor_ctx)
+
+        if not belongs_here:
+            return  # Skip types from other modules.
+        if not self._on_object:
+            return
+        if not isinstance(result_t, htypes.inspect.object_t):
+            return
+        self._on_object(process, value_res, module_name, path=[*path, attr.name], constructor_ctx=attr_ctx)
+
+    def _fixture(self, path, attr_name, param_name):
+        res_name = '.'.join(['param', *path, attr_name, param_name])
+        if not self._fix_module:
+            raise RuntimeError(f"Fixture {res_name!r} is required but fixtures module does not exist")
+        try:
+            return self._fix_module[res_name]
+        except KeyError:
+            raise RuntimeError(f"Fixture {res_name!r} is not defined at: {self._fix_module.name}")
+
+    def _make_attr_value_res(self, object_res, path, attr):
         attr_res = htypes.attribute.attribute(
             object=mosaic.put(object_res),
             attr_name=attr.name,
@@ -52,31 +79,18 @@ class AttrVisitor:
         else:
             value_res = attr_res
             value_ref = attr_ref
+            fn_ref = None
+
+        return (value_res, value_ref, fn_ref)
+
+    def _get_result_t(self, process, attr, value_ref, fn_ref, constructor_ctx):
+        get_resource_type = process.rpc_call(get_resource_type_ref)
 
         result_t = get_resource_type(resource_ref=value_ref)
         _log.info("%s/%s type: %r", constructor_ctx or '', attr.name, result_t)
-
         if isinstance(result_t, htypes.inspect.coroutine_fn_t):
             async_call = htypes.async_call.async_call(fn_ref)
             async_call_ref = mosaic.put(async_call)
             result_t = get_resource_type(resource_ref=async_call_ref)
             _log.info("%s/%s async call type: %r", constructor_ctx or '', attr.name, result_t)
-
-        attr_ctx = self._on_attr(process, attr, result_t, constructor_ctx)
-
-        if attr.module != module_name:
-            return  # Skip types from other modules.
-        if not self._on_object:
-            return
-        if not isinstance(result_t, htypes.inspect.object_t):
-            return
-        self._on_object(process, value_res, module_name, path=[*path, attr.name], constructor_ctx=attr_ctx)
-
-    def _fixture(self, path, attr_name, param_name):
-        res_name = '.'.join(['param', *path, attr_name, param_name])
-        if not self._fix_module:
-            raise RuntimeError(f"Fixture {res_name!r} is required but fixtures module does not exist")
-        try:
-            return self._fix_module[res_name]
-        except KeyError:
-            raise RuntimeError(f"Fixture {res_name!r} is not defined at: {self._fix_module.name}")
+        return result_t
