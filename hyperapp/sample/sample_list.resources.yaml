@@ -3,7 +3,6 @@
 import:
 - legacy_type.attribute:attribute
 - legacy_type.builtin:int
-- legacy_type.call:call
 - legacy_type.command:object_commands_d
 - legacy_type.global_command:global_command_association
 - legacy_type.impl:global_command_impl
@@ -40,8 +39,7 @@ definitions:
     object: sample_list.module
     attr_name: SampleList
   object_commands_d:
-    _type: legacy_type.call:call
-    function: legacy_type.command:object_commands_d
+    _type: legacy_type.command:object_commands_d
   open_sample_list:
     _type: legacy_type.attribute:attribute
     object: sample_list.module
@@ -51,8 +49,7 @@ definitions:
     function: open_sample_list
     dir: open_sample_list_d
   open_sample_list_d:
-    _type: legacy_type.call:call
-    function: legacy_type.sample_list:open_sample_list_d
+    _type: legacy_type.sample_list:open_sample_list_d
   sample_list.module:
     _type: legacy_type.python_module:python_module
     module_name: sample_list
@@ -68,11 +65,9 @@ definitions:
     - current_key
     dir: sample_list_open_d
   sample_list_d:
-    _type: legacy_type.call:call
-    function: legacy_type.sample_list:sample_list_d
+    _type: legacy_type.sample_list:sample_list_d
   sample_list_open_d:
-    _type: legacy_type.call:call
-    function: legacy_type.sample_list:sample_list_open_d
+    _type: legacy_type.sample_list:sample_list_open_d
   sample_list_spec:
     _type: legacy_type.impl:list_spec
     key_attribute: key
