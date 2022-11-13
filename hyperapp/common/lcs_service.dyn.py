@@ -1,5 +1,4 @@
 import logging
-from pathlib import Path
 
 from hyperapp.common.module import Module
 
@@ -7,9 +6,6 @@ from . import htypes
 from .lcs import LCSheet
 
 log = logging.getLogger(__name__)
-
-
-lcs_path = Path('/tmp/lcs.cdr')
 
 
 def register_association(piece, lcs):
@@ -35,8 +31,7 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        bundle = services.file_bundle(lcs_path, encoding='cdr')
-        lcs = LCSheet(services.mosaic, services.web, bundle)
+        lcs = LCSheet(services.mosaic, services.web)
         services.lcs = lcs
         services.aux_bundler_hooks.append(lcs.aux_bundler_hook)
 

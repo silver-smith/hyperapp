@@ -8,7 +8,6 @@ import:
   code:
   - common.lcs
 require:
-- file_bundle
 - aux_bundler_hooks
 - meta_registry
 provide:

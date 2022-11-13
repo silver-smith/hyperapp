@@ -63,7 +63,7 @@ class LCSlice:
 
 class LCSheet(LCSlice):
 
-    def __init__(self, mosaic, web, bundle):
+    def __init__(self, mosaic, web, bundle=None):
         super().__init__()
         self._mosaic = mosaic
         self._web = web
@@ -71,6 +71,8 @@ class LCSheet(LCSlice):
         self._load()
 
     def _load(self):
+        if not self._bundle:
+            return
         try:
             storage = self._bundle.load_piece()
         except FileNotFoundError:
@@ -82,6 +84,8 @@ class LCSheet(LCSlice):
                 log.info("LCS: loaded %s -> %s", set(dir), record)
 
     def _save(self):
+        if not self._bundle:
+            return
         association_list = []
         for dir, record in self._dir_to_record.items():
             if not record.persist:
