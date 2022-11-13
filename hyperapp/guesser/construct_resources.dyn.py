@@ -31,6 +31,7 @@ def call_n(fn_list):
 
 process_code_module_list = [
     'common.lcs',
+    'common.lcs_service',
     'ui.impl_registry',
     'ui.global_command_list',
     ]

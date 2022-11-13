@@ -93,6 +93,7 @@ code_module_list = [
     # 'async.ui.rpc_callback',
     'resource.async.attribute',
     'resource.register_associations',
+    'client.client_lcs_service',
     ]
 
 

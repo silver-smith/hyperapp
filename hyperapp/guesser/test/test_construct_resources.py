@@ -30,6 +30,7 @@ def module_dir_list(hyperapp_dir, default_module_dir_list):
 def code_module_list():
     return [
         'common.lcs',
+        'common.lcs_service',
         'ui.impl_registry',
         'resource.resource_type',
         'resource.registry',

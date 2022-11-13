@@ -95,6 +95,7 @@ def echo_set_up(services, htypes):
             'sync.transport.tcp',  # tcp_transport.route is required registered at sync route_registry.
             'async.transport.tcp',
             'common.lcs',
+            'common.lcs_service',
             'resource.legacy_type',
             'resource.legacy_module',
             'resource.legacy_service',

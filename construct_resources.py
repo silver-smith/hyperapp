@@ -25,6 +25,7 @@ module_dir_list = [
 
 code_module_list = [
     'common.lcs',
+    'common.lcs_service',
     'resource.resource_type',
     'resource.registry',
     'resource.resource_module',

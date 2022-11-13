@@ -93,6 +93,7 @@ def echo_set_up(services, htypes):
             services.module_dir_list,
             code_module_list=[
                 'common.lcs',
+                'common.lcs_service',
                 'resource.registry',
                 'resource.legacy_type',
                 'resource.legacy_module',

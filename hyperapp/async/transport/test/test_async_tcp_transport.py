@@ -29,6 +29,7 @@ def code_module_list():
 
 common_subprocess_module_list = [
     'common.lcs',
+    'common.lcs_service',
     'resource.legacy_type',
     'resource.legacy_module',
     'resource.legacy_service',

@@ -24,6 +24,7 @@ module_dir_list = [
 code_module_list = [
     'common.dict_coders',  # Load json coders.
     'common.lcs',
+    'common.lcs_service',
     'resource.legacy_module',
     'resource.legacy_service',
     'resource.legacy_type',
