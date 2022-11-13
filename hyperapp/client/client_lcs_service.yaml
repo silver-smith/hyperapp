@@ -3,8 +3,6 @@ import:
     lcs:
       - lcs_association
       - lcs_set_association
-      - lcs_resource_association
-      - lcs_set_resource_association
   code:
   - common.lcs
 require:

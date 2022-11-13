@@ -10,7 +10,7 @@ import:
 - legacy_type.impl:list_spec
 - legacy_type.impl:method_command_impl
 - legacy_type.impl:python_object_association
-- legacy_type.lcs:lcs_set_resource_association
+- legacy_type.lcs:lcs_set_association
 - legacy_type.python_module:python_module
 - legacy_type.sample_list:item
 - legacy_type.sample_list:open_sample_list_d
@@ -28,7 +28,7 @@ associations:
 - _type: legacy_type.impl:python_object_association
   t: legacy_type.sample_list:sample_list
   function: SampleList
-- _type: legacy_type.lcs:lcs_set_resource_association
+- _type: legacy_type.lcs:lcs_set_association
   dir:
   - sample_list_d
   - object_commands_d

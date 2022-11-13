@@ -37,7 +37,7 @@ import:
 - legacy_type.impl:method_command_impl
 - legacy_type.impl:object_command_impl
 - legacy_type.impl:python_object_association
-- legacy_type.lcs:lcs_set_resource_association
+- legacy_type.lcs:lcs_set_association
 - legacy_type.python_module:python_module
 - resource.global_command_ctr:global_command_ctr.module
 - resource.object_command_ctr:object_command_ctr.module
@@ -67,36 +67,36 @@ associations:
 - _type: legacy_type.impl:python_object_association
   t: legacy_type.command_list:view_command_list
   function: ViewCommandList
-- _type: legacy_type.lcs:lcs_set_resource_association
+- _type: legacy_type.lcs:lcs_set_association
   dir:
   - global_command_list_d
   - object_commands_d
   value: global_command_list.set_key.command
-- _type: legacy_type.lcs:lcs_set_resource_association
+- _type: legacy_type.lcs:lcs_set_association
   dir:
   - global_command_list_d
   - object_commands_d
   value: global_command_list.set_key_escape.command
-- _type: legacy_type.lcs:lcs_set_resource_association
+- _type: legacy_type.lcs:lcs_set_association
   dir:
   - object_command_list_d
   - object_commands_d
   value: object_command_list.set_key.command
-- _type: legacy_type.lcs:lcs_set_resource_association
+- _type: legacy_type.lcs:lcs_set_association
   dir:
   - object_command_list_d
   - object_commands_d
   value: object_command_list.set_key_escape.command
-- _type: legacy_type.lcs:lcs_set_resource_association
+- _type: legacy_type.lcs:lcs_set_association
   dir:
   - object_commands_d
   value: open_object_commands.command
-- _type: legacy_type.lcs:lcs_set_resource_association
+- _type: legacy_type.lcs:lcs_set_association
   dir:
   - view_command_list_d
   - object_commands_d
   value: view_command_list.set_key.command
-- _type: legacy_type.lcs:lcs_set_resource_association
+- _type: legacy_type.lcs:lcs_set_association
   dir:
   - view_command_list_d
   - object_commands_d

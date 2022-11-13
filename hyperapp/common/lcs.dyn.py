@@ -96,6 +96,9 @@ class LCSheet(LCSlice):
                 ]
         self._bundle.save_piece(htypes.lcs.storage(association_list))
 
+    def register_association(self, association):
+        self._add_association(association, persist=False)
+
     def _add_association(self, association, persist):
         dir = [
             self._web.summon(ref)
@@ -198,17 +201,3 @@ class LCSheet(LCSlice):
             return
         dir, record = self._add_association(value, persist=False)
         log.info("LCS unbundle aux: %s -> %s", set(dir), record)
-
-
-def register_resource_association(piece, web, lcs):
-    dir = [
-        web.summon(ref)
-        for ref in piece.dir
-        ]
-    value = web.summon(piece.value)
-    if isinstance(piece, htypes.lcs.lcs_resource_association):
-        record = lcs._set(dir, value, persist=False)
-    else:
-        assert isinstance(piece, htypes.lcs.lcs_set_resource_association)
-        record = lcs._add(dir, value, persist=False)
-    log.info("LCS: resource association: %s -> %s", set(dir), record)

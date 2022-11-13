@@ -13,7 +13,7 @@ import:
   - legacy_type.impl:method_command_impl
   - legacy_type.impl:object_command_impl
   - legacy_type.impl:python_object_association
-  - legacy_type.lcs:lcs_set_resource_association
+  - legacy_type.lcs:lcs_set_association
   - legacy_type.global_command:global_command_association
   - legacy_type.piece_ref:piece_ref
   - legacy_type.python_module:python_module
@@ -44,7 +44,7 @@ definitions:
       htypes.impl.method_command_impl: legacy_type.impl:method_command_impl
       htypes.impl.object_command_impl: legacy_type.impl:object_command_impl
       htypes.impl.python_object_association: legacy_type.impl:python_object_association
-      htypes.lcs.lcs_set_resource_association: legacy_type.lcs:lcs_set_resource_association
+      htypes.lcs.lcs_set_association: legacy_type.lcs:lcs_set_association
       htypes.global_command.global_command_association: legacy_type.global_command:global_command_association
       htypes.python_module.python_module: legacy_type.python_module:python_module
       services.mosaic: legacy_service:mosaic

@@ -5,7 +5,7 @@ import:
 - legacy_service:resource_type_producer
 - legacy_type.attribute:attribute
 - legacy_type.impl:object_command_impl
-- legacy_type.lcs:lcs_set_resource_association
+- legacy_type.lcs:lcs_set_association
 - legacy_type.object_command_ctr:object_command_ctr
 - legacy_type.python_module:python_module
 - resource.constants:constants.module
@@ -32,7 +32,7 @@ definitions:
       constants: resource.constants:constants.module
       construct_dir: resource.construct_dir:construct_dir.module
       htypes.impl.object_command_impl: legacy_type.impl:object_command_impl
-      htypes.lcs.lcs_set_resource_association: legacy_type.lcs:lcs_set_resource_association
+      htypes.lcs.lcs_set_association: legacy_type.lcs:lcs_set_association
       htypes.object_command_ctr.object_command_ctr: legacy_type.object_command_ctr:object_command_ctr
       services.mosaic: legacy_service:mosaic
       services.resource_type_producer: legacy_service:resource_type_producer

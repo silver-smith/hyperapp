@@ -9,12 +9,3 @@ lcs_set_association = record:
 
 storage = record:
   association_list: ref list
-
-
-lcs_resource_association = record:
-  dir: ref list
-  value: ref
-
-lcs_set_resource_association = record:
-  dir: ref list
-  value: ref
