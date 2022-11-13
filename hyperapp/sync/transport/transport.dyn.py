@@ -1,4 +1,5 @@
 import logging
+from collections import defaultdict
 
 from hyperapp.common.module import Module
 
@@ -12,6 +13,7 @@ class Transport:
         self._bundler = bundler
         self._route_registry = route_registry
         self._route_table = route_table
+        self._receiver_peer_to_seen_refs = defaultdict(set)
 
     def send_parcel(self, parcel):
         receiver_peer_ref = self._mosaic.put(parcel.receiver.piece)
@@ -25,8 +27,10 @@ class Transport:
 
     def send(self, receiver, sender_identity, ref_list):
         log.info("Send ref list %s to %s from %s", ref_list, receiver, sender_identity)
-        bundle = self._bundler(ref_list).bundle
-        parcel = receiver.make_parcel(bundle, sender_identity)
+        seen_refs = self._receiver_peer_to_seen_refs[receiver.piece]
+        refs_and_bundle = self._bundler(ref_list, seen_refs)
+        seen_refs |= refs_and_bundle.ref_set
+        parcel = receiver.make_parcel(refs_and_bundle.bundle, sender_identity)
         self.send_parcel(parcel)
 
 

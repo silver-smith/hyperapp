@@ -27,10 +27,10 @@ class Bundler(Visitor):
         self._collected_type_ref_set = None
         self._collected_aux_set = set()
 
-    def bundle(self, ref_list):
+    def bundle(self, ref_list, seen_refs=None):
         assert is_list_inst(ref_list, ref_t), repr(ref_list)
         log.info('Making bundle from refs: %s', [ref_repr(ref) for ref in ref_list])
-        ref_set, capsule_list = self._collect_capsule_list(ref_list)
+        ref_set, capsule_list = self._collect_capsule_list(ref_list, seen_refs or [])
         bundle = bundle_t(
             roots=ref_list,
             aux_roots=list(self._collected_aux_set),
@@ -38,12 +38,12 @@ class Bundler(Visitor):
             )
         return _RefsAndBundle(ref_set, bundle)
 
-    def _collect_capsule_list(self, ref_list):
+    def _collect_capsule_list(self, ref_list, seen_refs):
         self._collected_type_ref_set = set()
         capsule_set = set()
         type_capsule_set = set()
         missing_ref_count = 0
-        processed_ref_set = set()
+        processed_ref_set = set(seen_refs)
         ref_set = set(ref_list)
         for i in range(RECURSION_LIMIT):
             new_ref_set = set()
@@ -107,6 +107,6 @@ class ThisModule(Module):
         services.aux_bundler_hooks = self._aux_bundler_hooks
         services.bundler = self.bundler
 
-    def bundler(self, ref_list):
+    def bundler(self, ref_list, seen_refs=None):
         bundler = Bundler(self._mosaic, self._types, self._aux_bundler_hooks)
-        return bundler.bundle(ref_list)
+        return bundler.bundle(ref_list, seen_refs)
