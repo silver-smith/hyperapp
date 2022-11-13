@@ -14,9 +14,7 @@ function_res = resource_module_registry['server.server_global_commands.fixtures.
 
 def _phony_global_command():
     dir_t = htypes.server_global_commands_fixtures.sample_global_command_d
-    dir_t_ref = types.reverse_resolve(dir_t)
-    dir_t_res = htypes.legacy_type.type(dir_t_ref)
-    dir = htypes.call.call(mosaic.put(dir_t_res))
+    dir = dir_t()
     return htypes.impl.global_command_impl(
         function=mosaic.put(function_res),
         dir=mosaic.put(dir),

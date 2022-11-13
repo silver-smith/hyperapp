@@ -5,9 +5,7 @@ import:
 - legacy_service:resource_module_registry
 - legacy_service:types
 - legacy_type.attribute:attribute
-- legacy_type.call:call
 - legacy_type.impl:global_command_impl
-- legacy_type.legacy_type:type
 - legacy_type.python_module:python_module
 - legacy_type.server_global_commands:server_global_commands
 - legacy_type.server_global_commands_fixtures:sample_global_command_d
@@ -31,9 +29,7 @@ definitions:
     module_name: server_global_commands.fixtures
     file_name: server_global_commands.fixtures.dyn.py
     import_list:
-      htypes.call.call: legacy_type.call:call
       htypes.impl.global_command_impl: legacy_type.impl:global_command_impl
-      htypes.legacy_type.type: legacy_type.legacy_type:type
       htypes.server_global_commands.server_global_commands: legacy_type.server_global_commands:server_global_commands
       htypes.server_global_commands_fixtures.sample_global_command_d: legacy_type.server_global_commands_fixtures:sample_global_command_d
       marker: resource.marker:marker.module
