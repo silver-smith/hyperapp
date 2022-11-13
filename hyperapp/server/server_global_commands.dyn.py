@@ -35,7 +35,7 @@ class ServerGlobalCommands:
 
 
 def global_command_to_item(piece):
-    dir = python_object_creg.invite(piece.dir)
+    dir = web.summon(piece.dir)
     assert dir._t.name.endswith('_d')
     return htypes.server_global_commands.item(
         name=dir._t.name[:-2],  # todo: load title from lcs.
