@@ -1,81 +1,125 @@
 from functools import cached_property, partial
 
-from hyperapp.common.htypes import ref_t, builtin_mt, name_wrapped_mt, field_mt, record_mt
+from hyperapp.common.htypes import ref_t, builtin_mt, name_wrapped_mt, list_mt, optional_mt, field_mt, record_mt
 from hyperapp.common.mapper import Mapper
 from hyperapp.common.dict_decoders import NamedPairsDictDecoder
 from hyperapp.common.dict_encoders import NamedPairsDictEncoder
 from hyperapp.common.module import Module
 
 
-class RefToStringMapper(Mapper):
+class TypeToDefinitionMapper(Mapper):
 
     def __init__(self, mosaic, web):
         super().__init__()
         self._mosaic = mosaic
         self._web = web
-        self.path_set = set()
-        self.path_to_record_t_ref = {}
-
-    def process_record(self, t, value, context):
-        if t is name_wrapped_mt:
-            self.path_to_record_t_ref[context[2]] = self._mosaic.put(value)
-        if t is field_mt:
-            fields_context = (False, (*context[1], value.name), (*context[2], value.name))
-        elif t is record_mt:
-            fields_context = (True, context[1], context[2])
-        else:
-            fields_context = (False, context[1], context[2])
-        fields = self.map_record_fields(t, value, fields_context)
-        mapped_value = t(**fields)
-        if t is ref_t:
-            return self.map_type_ref(mapped_value, context)
-        if t is builtin_mt and mapped_value.name == 'ref':
-            return self.map_builtin_ref(mapped_value, context)
-        return mapped_value
-
-    def map_type_ref(self, value, context):
-        referred_value = self._web.summon(value)
-        mapper = RefToStringMapper(self._mosaic, self._web)
-        mapped_value = mapper.map(referred_value, context=context)
-        self.path_set |= mapper.path_set
-        self.path_to_record_t_ref.update(mapper.path_to_record_t_ref)
-        return self._mosaic.put(mapped_value)
-
-    def map_builtin_ref(self, value, context):
-        self.path_set.add(context[1])
-        return builtin_mt(name='string')
-
-    def field_context(self, context, name, value):
-        if context[0] and name == 'base':
-            # This is record_mt 'base', field.
-            # Add path to second context so that supertypes do not overwrite subtypes at path_to_record_t_ref mapping.
-            return (False, context[1], (*context[2], 'record_base'))
-        else:
-            return (False, context[1], context[2])
-
-
-class NameResolver(Mapper):
-
-    def __init__(self, ref_path_set, path_to_record_t, resolve_name):
-        super().__init__()
-        self._ref_path_set = ref_path_set
-        self._path_to_record_t = path_to_record_t
-        self._resolve_name = resolve_name
+        self.type_meta_to_def_meta = {}
 
     def process_record(self, t, value, context):
         fields = self.map_record_fields(t, value, context)
-        result_t = self._path_to_record_t[context]
-        result = result_t(**fields)
-        return self.map_record(t, result, context)
+        if t is name_wrapped_mt:
+            fields = {**fields, 'name': fields['name'] + '_def'}
+        mapped_value = t(**fields)
+        if t is name_wrapped_mt:
+            self.type_meta_to_def_meta[value] = mapped_value
+        if t is ref_t:
+            return self._map_type_ref(mapped_value)
+        if t is builtin_mt and mapped_value.name == 'ref':
+            return builtin_mt(name='string')
+        return mapped_value
 
-    def process_primitive(self, t, value, context):
-        if context in self._ref_path_set:
-            return self._resolve_name(value)
-        else:
-            return value
+    def _map_type_ref(self, value):
+        referred_value = self._web.summon(value)
+        mapped_value = self.map(referred_value)
+        return self._mosaic.put(mapped_value)
 
-    def field_context(self, context, name, value):
-        return (*context, name)
+
+class TypeToValueMapper(Mapper):
+
+    def __init__(self, types, mosaic, web, source_meta_to_target_meta):
+        super().__init__()
+        self._types = types
+        self._mosaic = mosaic
+        self._web = web
+        self._source_meta_to_target_meta = source_meta_to_target_meta
+
+    def process_record(self, t, value, context):
+        if t is name_wrapped_mt:
+            return self.map(value.type, context=value)
+        if t is ref_t:
+            return self._map_type_ref(value, context)
+        if t is record_mt:
+            return self._map_record(value, name_meta=context)
+        if t is list_mt:
+            return ListMapper(self.map(value.element))
+        if t is optional_mt:
+            return OptinalMapper(self.map(value.base))
+        if t is builtin_mt:
+            if value.name == 'ref':
+                return ResolveMapper()
+            else:
+                return IdentityMapper()
+        raise RuntimeError(f"Unknown meta type {t}: {value}")
+
+    def _map_record(self, value, name_meta):
+        target_t_meta = self._source_meta_to_target_meta[name_meta]
+        target_t_ref = self._mosaic.put(target_t_meta)
+        target_t = self._types.resolve(target_t_ref)
+        fields = {
+            f.name: self.map(f.type)
+            for f in value.fields
+            }
+        return RecordMapper(target_t, fields)
+
+    def _map_type_ref(self, value, context):
+        referred_value = self._web.summon(value)
+        return self.map(referred_value, context=context)
+
+
+class RecordMapper:
+
+    def __init__(self, target_t, field_mappers):
+        self._target_t = target_t
+        self._field_mappers = field_mappers
+
+    def map(self, resolver, value):
+        fields = {
+            name: mapper.map(resolver, getattr(value, name))
+            for name, mapper in self._field_mappers.items()
+            }
+        return self._target_t(**fields)
+
+
+class OptionalMapper:
+
+    def __init__(self, base_mapper):
+        self._base_mapper = base_mapper
+
+    def map(self, resolver, value):
+        if value is None:
+            return None
+        return self._base_mapper.map(resolver, value)
+
+
+class ListMapper:
+
+    def __init__(self, base_mapper):
+        self._base_mapper = base_mapper
+
+    def map(self, resolver, value):
+        return tuple(self._base_mapper.map(resolver, item) for item in value)
+
+
+class IdentityMapper:
+
+    def map(self, resolver, value):
+        return value
+
+
+class ResolveMapper:
+
+    def map(self, resolver, value):
+        return resolver(value)
 
 
 class ResourceType:
@@ -87,16 +131,14 @@ class ResourceType:
         self.resource_t = resource_t
 
         resource_type_ref = self._types.reverse_resolve(self.resource_t)
-        resource_type = self._web.summon(resource_type_ref)
-        mapper = RefToStringMapper(self._mosaic, self._web)
-        definition_type = mapper.map(resource_type, context=(False, (), ()))
-        definition_type_ref = self._mosaic.put(definition_type)
+        self._resource_type_mt = self._web.summon(resource_type_ref)
 
-        self._ref_path_set = mapper.path_set
-        self._path_to_record_t = {
-            path: self._types.resolve(type_ref)
-            for path, type_ref
-            in mapper.path_to_record_t_ref.items()
+        mapper = TypeToDefinitionMapper(self._mosaic, self._web)
+        definition_type = mapper.map(self._resource_type_mt)
+        definition_type_ref = self._mosaic.put(definition_type)
+        self._type_meta_to_def_meta = mapper.type_meta_to_def_meta
+        self._type_meta_to_type_meta = {
+            key: key for key in mapper.type_meta_to_def_meta.keys()
             }
         self.definition_t = self._types.resolve(definition_type_ref)
 
@@ -116,6 +158,22 @@ class ResourceType:
     def __hash__(self):
         return hash(self.resource_t)
 
+    @cached_property
+    def _mapper(self):
+        type_mapper = TypeToValueMapper(self._types, self._mosaic, self._web, self._type_meta_to_type_meta)
+        return type_mapper.map(self._resource_type_mt)
+
+    @cached_property
+    def _reverse_mapper(self):
+        type_mapper = TypeToValueMapper(self._types, self._mosaic, self._web, self._type_meta_to_def_meta)
+        return type_mapper.map(self._resource_type_mt)
+
+    def resolve(self, value, resolver, resource_dir):
+        return self._mapper.map(resolver, value)
+
+    def reverse_resolve(self, value, resolver, resource_dir):
+        return self._reverse_mapper.map(resolver, value)
+
     def from_dict(self, data):
         decoder = NamedPairsDictDecoder()
         return decoder.decode_dict(self.definition_t, data)
@@ -123,10 +181,6 @@ class ResourceType:
     def to_dict(self, definition):
         encoder = NamedPairsDictEncoder()
         return encoder.encode(definition)
-
-    def resolve(self, definition, resolve_name, resource_dir):
-        resolver = NameResolver(self._ref_path_set, self._path_to_record_t, resolve_name)
-        return resolver.map(definition, context=())
 
 
 class ThisModule(Module):

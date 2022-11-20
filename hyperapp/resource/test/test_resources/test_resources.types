@@ -1,2 +1,9 @@
 
 test_d = record
+
+
+test_resource_t_base = record:
+  value: ref opt
+
+test_resource_t = record(test_resource_t_base):
+  other_value: ref list
