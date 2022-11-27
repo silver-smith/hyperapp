@@ -52,12 +52,12 @@ class ThisModule(Module):
 
         mosaic = services.mosaic
 
-        server_ref_list_piece = services.resource_module_registry['server.server_ref_list']['server_ref_list']
+        server_ref_list_piece = services.resource_registry['server.server_ref_list', 'server_ref_list']
         server_ref_list = services.python_object_creg.animate(server_ref_list_piece)
 
-        all_module_list_service_piece = services.resource_module_registry['server.module_list']['all_module_list_service']
-        available_module_list_service_piece = services.resource_module_registry['server.module_list']['available_module_list_service']
-        imported_module_list_service_piece = services.resource_module_registry['server.module_list']['imported_module_list_service']
+        all_module_list_service_piece = services.resource_registry['server.module_list', 'all_module_list_service']
+        available_module_list_service_piece = services.resource_registry['server.module_list', 'available_module_list_service']
+        imported_module_list_service_piece = services.resource_registry['server.module_list', 'imported_module_list_service']
 
         all_module_list_service = services.python_object_creg.animate(all_module_list_service_piece)
         available_module_list_service = services.python_object_creg.animate(available_module_list_service_piece)

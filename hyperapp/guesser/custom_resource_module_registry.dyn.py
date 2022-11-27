@@ -8,12 +8,12 @@ from .services import (
     local_modules,
     local_types,
     resource_loader,
-    resource_module_registry,
+    resource_registry,
     type_module_loader,
     )
 
 
-CustomResources = namedtuple('CustomResources', 'types modules res_module_reg')
+CustomResources = namedtuple('CustomResources', 'types modules resource_registry')
 
 
 def load_custom_resources(resources_dir):
@@ -22,7 +22,9 @@ def load_custom_resources(resources_dir):
     custom_modules = local_modules.copy()
     code_module_loader.load_code_modules(custom_types, [resources_dir.root], custom_modules)
     custom_services = legacy_service_resource_loader(custom_modules)
+    assert 0, 'todo:'
     legacy_services = resource_module_registry['legacy_service'].merge_with(custom_services)
+    assert 0, 'todo:'
     module_reg = {
         **resource_module_registry,
         **legacy_type_resource_loader(custom_types),
@@ -33,5 +35,5 @@ def load_custom_resources(resources_dir):
     return CustomResources(
         types=custom_types,
         modules=custom_modules,
-        res_module_reg=module_reg,
+        resource_registry=module_reg,
         )

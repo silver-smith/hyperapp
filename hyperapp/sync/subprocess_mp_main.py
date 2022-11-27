@@ -54,9 +54,8 @@ def logging_inited(process_name):
         handler.close()
 
 
-def init_meta_registry_association(resource_module_registry, python_object_creg):
-    module_res = resource_module_registry['common.meta_registry_association']
-    resource = module_res['meta_registry_association.module']
+def init_meta_registry_association(resource_registry, python_object_creg):
+    resource = resource_registry['common.meta_registry_association', 'meta_registry_association.module']
     module = python_object_creg.animate(resource)
     module.init()
 
@@ -73,8 +72,8 @@ def subprocess_main_safe(connection, module_dir_list, code_module_list, config):
     services.subprocess_stop_event = threading.Event()
     services.init_services()
     services.init_modules(code_module_list + additional_code_module_list, config)
-    init_meta_registry_association(services.resource_module_registry, services.python_object_creg)
-    services.register_associations(services.resource_module_registry)
+    init_meta_registry_association(services.resource_registry, services.python_object_creg)
+    services.register_associations(services.resource_registry)
     services.start_modules()
     log.info("Running, waiting for stop signal.")
     services.subprocess_stop_event.wait()

@@ -131,7 +131,8 @@ class ResourceModule:
             assert ':' not in name
             module_name = self._name
             var_name = name
-        return self._resource_registry[module_name, var_name]
+        piece = self._resource_registry[module_name, var_name]
+        return self._mosaic.put(piece)
 
     @property
     def _import_set(self):

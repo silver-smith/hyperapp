@@ -3,6 +3,7 @@ from .services import (
     local_types,
     resource_module_factory,
     )
+from .resource_registry import ResourceRegistry
 from .marker import param
 
 
@@ -17,7 +18,7 @@ param.camel_to_snake.name = ''
 param.construct.piece = None
 param.construct.custom_types = local_types
 param.construct.resource_module = resource_module_factory(
-    resource_module_registry={},
+    resource_registry=ResourceRegistry(),
     name='sample_resource_module',
     path='/non-existend-dir/sample_module.resources.yaml',
     load_from_file=False,

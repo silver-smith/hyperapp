@@ -2,7 +2,7 @@
 
 import:
 - legacy_service:mosaic
-- legacy_service:resource_module_registry
+- legacy_service:resource_registry
 - legacy_service:types
 - legacy_type.attribute:attribute
 - legacy_type.impl:global_command_impl
@@ -34,7 +34,7 @@ definitions:
       htypes.server_global_commands_fixtures.sample_global_command_d: legacy_type.server_global_commands_fixtures:sample_global_command_d
       marker: resource.marker:marker.module
       services.mosaic: legacy_service:mosaic
-      services.resource_module_registry: legacy_service:resource_module_registry
+      services.resource_registry: legacy_service:resource_registry
       services.types: legacy_service:types
   service.global_command_list:
     _type: legacy_type.attribute:attribute

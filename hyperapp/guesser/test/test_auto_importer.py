@@ -59,13 +59,12 @@ process_code_module_list = [
 
 @pytest.fixture
 def python_object(services):
-    resource_module_registry = services.resource_module_registry
+    resource_registry = services.resource_registry
     python_object_creg = services.python_object_creg
 
     def get(path):
         module_name, object_name = path.split(':')
-        module_res = resource_module_registry[module_name]
-        object_res = module_res[object_name]
+        object_res = resource_registry[module_name, object_name]
         return python_object_creg.animate(object_res)
 
     return get
@@ -98,7 +97,7 @@ def test_auto_importer(services, htypes, python_object, subprocess):
     custom_resources = CustomResources(
         types=services.local_types,
         modules=services.local_modules,
-        res_module_reg=services.resource_module_registry,
+        res_module_reg=services.resource_registry,
         )
     import_resources = dict(available_import_resources(custom_resources))
     resources = [
@@ -119,8 +118,7 @@ def test_auto_importer(services, htypes, python_object, subprocess):
         )
     module_ref = services.mosaic.put(module_res)
 
-    runner_module = services.resource_module_registry['guesser.runner']
-    collect_attributes_res = runner_module['collect_attributes']
+    collect_attributes_res = services.resource_registry['guesser.runner', 'collect_attributes']
     collect_attributes_ref = services.mosaic.put(collect_attributes_res)
 
     collect_attributes_call = subprocess.rpc_call(collect_attributes_ref)
@@ -144,7 +142,7 @@ def test_auto_importer(services, htypes, python_object, subprocess):
     # Now, check if target module works with discovered imports.
 
     resource_module = services.resource_module_factory(
-        services.resource_module_registry,
+        services.resource_registry,
         'test_auto_importer',
         Path(tempfile.gettempdir()) / 'test_auto_importer.resources.yaml',
         load_from_file=False,

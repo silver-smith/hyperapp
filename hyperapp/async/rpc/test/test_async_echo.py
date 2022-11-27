@@ -76,7 +76,7 @@ def echo_set_up(services, htypes):
     services.python_object_creg.register_actor(htypes.echo_service.master_servant, lambda piece: servant.run)
     master_servant_ref = mosaic.put(htypes.echo_service.master_servant())
 
-    echo_servant = services.resource_module_registry['echo_service']['echo_servant']
+    echo_servant = services.resource_registry['echo_service', 'echo_servant']
     echo_servant_ref = mosaic.put(echo_servant)
 
     server = services.tcp_server()

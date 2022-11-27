@@ -3,7 +3,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from .services import (
-    resource_module_registry,
+    resource_registry,
     register_associations,
     )
 from . import meta_registry_association
@@ -11,7 +11,7 @@ from . import meta_registry_association
 
 def construct_resources(root_dir, resource_dir_list, source_path_list):
     meta_registry_association.init()
-    register_associations(resource_module_registry)
+    register_associations(resource_registry)
     for path in source_path_list:
         abs_path = path.absolute()
         rel_path = abs_path.relative_to(root_dir)

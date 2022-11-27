@@ -96,9 +96,8 @@ code_module_list = [
     ]
 
 
-def init_meta_registry_association(resource_module_registry, python_object_creg):
-    module_res = resource_module_registry['common.meta_registry_association']
-    resource = module_res['meta_registry_association.module']
+def init_meta_registry_association(resource_registry, python_object_creg):
+    resource = resource_registry['common.meta_registry_association', 'meta_registry_association.module']
     module = python_object_creg.animate(resource)
     module.init()
 
@@ -112,8 +111,8 @@ def main():
     services = Services(module_dir_list)
     services.init_services()
     services.init_modules(code_module_list)
-    init_meta_registry_association(services.resource_module_registry, services.python_object_creg)
-    services.register_associations(services.resource_module_registry)
+    init_meta_registry_association(services.resource_registry, services.python_object_creg)
+    services.register_associations(services.resource_registry)
     services.start_modules()
     services.event_loop_holder.create_task(services.open_application())
     log.info("Client is started.")

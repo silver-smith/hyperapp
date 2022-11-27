@@ -41,16 +41,14 @@ def code_module_list():
 
 
 def test_python_module_resource(services):
-    htest_module = services.resource_module_registry['sample_python_module']
-    python_module_resource = htest_module['sample_python_module']
+    python_module_resource = services.resource_registry['sample_python_module', 'sample_python_module']
     log.info("Loading python module: %r", python_module_resource)
     python_module = services.python_object_creg.animate(python_module_resource)
     log.info("Python module: %r", python_module)
 
 
 def test_fixture(services):
-    module = services.resource_module_registry['sample_fixture.fixtures']
-    fixture = module['sample_fixture']
+    fixture = services.resource_registry['sample_fixture.fixtures', 'sample_fixture']
     log.info("Sample fixture: %r", fixture)
     python_module = services.python_object_creg.animate(fixture)
     log.info("Python module: %r", python_module)

@@ -2,7 +2,7 @@
 
 import:
 - legacy_service:mosaic
-- legacy_service:resource_module_registry
+- legacy_service:resource_registry
 - legacy_service:types
 - legacy_type.attribute:attribute
 - legacy_type.constructor_creg:constructor_creg_association
@@ -20,7 +20,7 @@ definitions:
       htypes.constructor_creg_fixtures.sample_type: legacy_type.constructor_creg_fixtures:sample_type
       marker: resource.marker:marker.module
       services.mosaic: legacy_service:mosaic
-      services.resource_module_registry: legacy_service:resource_module_registry
+      services.resource_registry: legacy_service:resource_registry
       services.types: legacy_service:types
   param.register_constructor.piece:
     _type: legacy_type.attribute:attribute

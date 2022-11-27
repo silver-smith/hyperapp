@@ -65,10 +65,10 @@ class ThisModule(Module):
 
         services.python_object_creg.register_actor(htypes.sample_tree.sample_article, ArticleServant.from_piece)
 
-        server_ref_list_piece = services.resource_module_registry['server.server_ref_list']['server_ref_list']
+        server_ref_list_piece = services.resource_registry['server.server_ref_list', 'server_ref_list']
         server_ref_list = services.python_object_creg.animate(server_ref_list_piece)
 
-        sample_tree_service_piece = services.resource_module_registry['server.sample_tree']['sample_tree_service']
+        sample_tree_service_piece = services.resource_registry['server.sample_tree', 'sample_tree_service']
         sample_tree_service = services.python_object_creg.animate(sample_tree_service_piece)
         server_ref_list.add_ref('sample_tree', 'Sample tree', mosaic.put(sample_tree_service))
 

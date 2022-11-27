@@ -6,11 +6,10 @@ from hyperapp.common.module import Module
 log = logging.getLogger(__name__)
 
 
-def register_associations(meta_registry, resource_module_registry):
-    for resource_module in reversed(resource_module_registry.values()):
-        for assoc in resource_module.associations:
-            log.info("Register association: %r", assoc)
-            meta_registry.animate(assoc)
+def register_associations(meta_registry, resource_registry):
+    for assoc in reversed(resource_registry.associations):
+        log.info("Register association: %r", assoc)
+        meta_registry.animate(assoc)
 
 
 class ThisModule(Module):

@@ -4,11 +4,12 @@ from .services import (
     resource_module_factory,
     )
 from .marker import param
+from .resource_registry import ResourceRegistry
 
 
 def _stub_resource_module():
   return resource_module_factory(
-    resource_module_registry={},
+    resource_registry=ResourceRegistry(),
     name='sample_resource_module',
     path='/non-existend-dir/sample_module.resources.yaml',
     load_from_file=False,

@@ -65,7 +65,7 @@ def compare():
 
 
 def test_resources(services, htypes, hyperapp_dir, compare):
-    construct_resource_res = services.resource_module_registry['guesser.construct_resources']['construct_resources']
+    construct_resource_res = services.resource_registry['guesser.construct_resources', 'construct_resources']
     construct_resources = services.python_object_creg.animate(construct_resource_res)
     log.info("construct_resources: %r", construct_resources)
 

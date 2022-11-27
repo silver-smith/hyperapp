@@ -60,15 +60,14 @@ config = {
     }
 
 
-def init_meta_registry_association(resource_module_registry, python_object_creg):
-    module_res = resource_module_registry['common.meta_registry_association']
-    resource = module_res['meta_registry_association.module']
+def init_meta_registry_association(resource_registry, python_object_creg):
+    resource = resource_registry['common.meta_registry_association', 'meta_registry_association.module']
     module = python_object_creg.animate(resource)
     module.init()
 
 
-def init_local_server_ref(resource_module_registry, python_object_creg):
-    init_res = resource_module_registry['server.init_local_server_ref']['init_local_server_ref']
+def init_local_server_ref(resource_registry, python_object_creg):
+    init_res = resource_registry['server.init_local_server_ref', 'init_local_server_ref']
     init = python_object_creg.animate(init_res)
     init()
 
@@ -83,9 +82,9 @@ def main():
     services.init_services()
     services.init_modules(code_module_list, config)
 
-    init_meta_registry_association(services.resource_module_registry, services.python_object_creg)
-    services.register_associations(services.resource_module_registry)
-    init_local_server_ref(services.resource_module_registry, services.python_object_creg)
+    init_meta_registry_association(services.resource_registry, services.python_object_creg)
+    services.register_associations(services.resource_registry)
+    init_local_server_ref(services.resource_registry, services.python_object_creg)
 
     services.start_modules()
 

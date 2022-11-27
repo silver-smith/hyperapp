@@ -3,13 +3,13 @@ from hyperapp.common.htypes import phony_ref
 from . import htypes
 from .services import (
     mosaic,
-    resource_module_registry,
+    resource_registry,
     types,
     )
 from .marker import param, service
 
 
-function_res = resource_module_registry['server.server_global_commands.fixtures.aux']['sample_function']
+function_res = resource_registry['server.server_global_commands.fixtures.aux', 'sample_function']
 
 
 def _phony_global_command():

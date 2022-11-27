@@ -11,25 +11,32 @@ class ResourceRegistry:
 
     def __init__(self, mosaic):
         self._mosaic = mosaic
-        self._name_pair_to_ref = {}
-        self._ref_to_name_pair = {}
-        self._module_reg = {}
+        self._name_pair_to_piece = {}
+        self._piece_to_name_pair = {}
+        self._module_registry = {}
 
     def __getitem__(self, name_pair):
         return self.resolve(name_pair)
 
+    @property
+    def associations(self):
+        association_set = set()
+        for module in self._module_registry.values():
+            association_set |= module.associations
+        return association_set
+
     def set_module(self, name, module):
-        self._module_reg[name] = module
+        self._module_registry[name] = module
 
     def update_modules(self, module_dict):
-        self._module_reg.update(module_dict)
+        self._module_registry.update(module_dict)
 
     def check_has_name(self, name_pair):
-        if name_pair in self._name_pair_to_ref:
+        if name_pair in self._name_pair_to_piece:
             return
         module_name, var_name = name_pair
         try:
-            module = self._module_reg[module_name]
+            module = self._module_registry[module_name]
         except KeyError:
             raise UnknownResourceName(f"Unknown module: {module_name!r}")
         if var_name not in module:
@@ -37,23 +44,22 @@ class ResourceRegistry:
 
     def resolve(self, name_pair):
         try:
-            return self._name_pair_to_ref[name_pair]
+            return self._name_pair_to_piece[name_pair]
         except KeyError:
             pass
         module_name, var_name = name_pair
         try:
-            module = self._module_reg[module_name]
+            module = self._module_registry[module_name]
         except KeyError:
             raise RuntimeError(f"Error resolving {module_name}:{var_name}: Unknown module {module_name!r}")
         piece = module[var_name]
-        piece_ref = self._mosaic.put(piece)
-        self._name_pair_to_ref[name_pair] = piece_ref
-        self._ref_to_name_pair[piece_ref] = name_pair
-        return piece_ref
+        self._name_pair_to_piece[name_pair] = piece
+        self._piece_to_name_pair[piece] = name_pair
+        return piece
 
-    def reverse_resolve(self, piece_ref):
+    def reverse_resolve(self, piece):
         try:
-            return self._ref_to_name_pair[piece_ref]
+            return self._piece_to_name_pair[piece]
         except KeyError:
             raise RuntimeError(f"Not are known resource: {piece!r}")
 

@@ -50,6 +50,6 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        service_piece = services.resource_module_registry['server.server_ref_list']['server_ref_list_service']
+        service_piece = services.resource_registry['server.server_ref_list', 'server_ref_list_service']
         service = services.python_object_creg.animate(service_piece)
         services.local_server_ref.save_piece(service)

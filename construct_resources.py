@@ -71,8 +71,7 @@ def main():
     log.info("Initialized.")
 
     try:
-        module = services.resource_module_registry['command_line.construct_resources']
-        resource = module['construct_resources']
+        resource = services.resource_registry['command_line.construct_resources', 'construct_resources']
         fn = services.python_object_creg.animate(resource)
         log.info("Construct resources function: %r", fn)
         resource_dir_list = [
