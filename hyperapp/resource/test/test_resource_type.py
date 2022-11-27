@@ -2,7 +2,6 @@ import logging
 from pathlib import Path
 
 import pytest
-import yaml
 
 from hyperapp.common.htypes import tString, TOptional, TList, TRecord
 from hyperapp.common import cdr_coders  # self-registering
@@ -33,8 +32,6 @@ def module_dir_list(default_module_dir_list):
 def code_module_list():
     return [
         'resource.resource_type',
-        'resource.registry',
-        'resource.resource_module',
         'resource.legacy_module',
         'resource.legacy_service',
         'resource.legacy_type',
@@ -42,21 +39,10 @@ def code_module_list():
         'resource.partial',
         'resource.call',
         'resource.list_service',
-        'resource.test.test_resources.mock_identity',
         ]
 
 
-def test_resources(services):
-    module = services.resource_module_registry['test_resources']
-
-    servant_list = module['servant_list']
-    log.info("Servant list: %r", servant_list)
-
-    list_service = module['sample_list_service']
-    log.info("List service: %r", list_service)
-
-
-def test_definition_type(services, htypes):
+def test_definition_type_partial(services, htypes):
     resource_t = htypes.partial.partial
     resource_type = services.resource_type_factory(resource_t)
     log.info("definition_t: %r", resource_type.definition_t)
@@ -69,7 +55,7 @@ def test_definition_type(services, htypes):
         })
 
 
-def test_based_definition_type(services, htypes):
+def test_definition_type_based(services, htypes):
     resource_t = htypes.test_resources.test_resource_t
     resource_type = services.resource_type_factory(resource_t)
     log.info("definition_t: %r", resource_type.definition_t)
@@ -88,7 +74,7 @@ def test_mapper(services, htypes):
     log.info("mapper: %r", resource_type._mapper)
 
 
-def test_read_definition(services, htypes):
+def test_from_dict_partial(services, htypes):
     resource_t = htypes.partial.partial
     resource_type = services.resource_type_factory(resource_t)
     log.info("definition_t: %r", resource_type.definition_t)
@@ -108,6 +94,22 @@ def test_read_definition(services, htypes):
             param_t('param_1', 'value_1'),
             param_t('param_2', 'value_2'),
             ),
+        )
+
+
+def test_from_dict_based(services, htypes):
+    resource_t = htypes.test_resources.test_resource_t
+    resource_type = services.resource_type_factory(resource_t)
+    log.info("definition_t: %r", resource_type.definition_t)
+    definition_dict = {
+        'value': 'some value',
+        'other_value': ['some other value 1', 'some other value 2'],
+        }
+    definition = resource_type.from_dict(definition_dict)
+    log.info("definition: %r", definition)
+    assert definition == resource_type.definition_t(
+        value='some value',
+        other_value=('some other value 1', 'some other value 2'),
         )
 
 
@@ -142,6 +144,30 @@ def test_resolve_definition_partial(services, htypes):
     )
 
 
+def test_resolve_definition_based(services, htypes):
+    resource_t = htypes.test_resources.test_resource_t
+    resource_type = services.resource_type_factory(resource_t)
+    definition = resource_type.definition_t(
+        value='some-value',
+        other_value=('other-1', 'other-2'),
+        )
+    names = {
+        'some-value': services.mosaic.put('some value'),
+        'other-1': services.mosaic.put(111),
+        'other-2': services.mosaic.put(222),
+        }
+
+    def resolve_name(name):
+        return names[name]
+
+    resource = resource_type.resolve(definition, resolve_name, TEST_RESOURCES_DIR)
+    log.info('Resolved resource: %r', resource)
+    assert resource == resource_t(
+        value=names['some-value'],
+        other_value=(names['other-1'], names['other-2']),
+    )
+
+
 def test_reverse_resolve_definition_partial(services, htypes):
     resource_t = htypes.partial.partial
     resource_type = services.resource_type_factory(resource_t)
@@ -153,7 +179,7 @@ def test_reverse_resolve_definition_partial(services, htypes):
     reverse_names = {
         value: key for key, value in names.items()
         }
-    resource = htypes.partial.partial(
+    resource = resource_t(
         function=names['some_function'],
         params=(
             htypes.partial.param('param_1', names['value_1']),
@@ -174,6 +200,33 @@ def test_reverse_resolve_definition_partial(services, htypes):
             param_t('param_2', 'value_2'),
         ),
     )
+
+
+def test_reverse_resolve_definition_based(services, htypes):
+    resource_t = htypes.test_resources.test_resource_t
+    resource_type = services.resource_type_factory(resource_t)
+    names = {
+        'some-value': services.mosaic.put('some value'),
+        'other-1': services.mosaic.put(111),
+        'other-2': services.mosaic.put(222),
+        }
+    reverse_names = {
+        value: key for key, value in names.items()
+        }
+    resource = resource_t(
+        value=names['some-value'],
+        other_value=(names['other-1'], names['other-2']),
+        )
+
+    def reverse_resolve_name(name):
+        return reverse_names[name]
+
+    definition = resource_type.reverse_resolve(resource, reverse_resolve_name, TEST_RESOURCES_DIR)
+    log.info('Resolved definition: %r', definition)
+    assert definition == resource_type.definition_t(
+        value='some-value',
+        other_value=('other-1', 'other-2'),
+        )
 
 
 # Inherited record result_t should also work.

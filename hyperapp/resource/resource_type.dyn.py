@@ -62,6 +62,11 @@ class TypeToValueMapper(Mapper):
         raise RuntimeError(f"Unknown meta type {t}: {value}")
 
     def _map_record(self, value, name_meta):
+        if value.base:
+            base_record = self._web.summon(value.base)
+            base_mapper = self.map(base_record)
+        else:
+            base_mapper = None
         target_t_meta = self._source_meta_to_target_meta[name_meta]
         target_t_ref = self._mosaic.put(target_t_meta)
         target_t = self._types.resolve(target_t_ref)
@@ -69,7 +74,7 @@ class TypeToValueMapper(Mapper):
             f.name: self.map(f.type)
             for f in value.fields
             }
-        return RecordMapper(target_t, fields)
+        return RecordMapper(target_t, fields, base_mapper)
 
     def _map_type_ref(self, value, context):
         referred_value = self._web.summon(value)
@@ -78,9 +83,11 @@ class TypeToValueMapper(Mapper):
 
 class RecordMapper:
 
-    def __init__(self, target_t, field_mappers):
+    def __init__(self, target_t, field_mappers, base_mapper=None):
         self._target_t = target_t
         self._field_mappers = field_mappers
+        if base_mapper:
+            self._field_mappers.update(base_mapper._field_mappers)
 
     def map(self, resolver, value):
         fields = {
