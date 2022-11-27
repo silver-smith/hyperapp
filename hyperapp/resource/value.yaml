@@ -1,9 +1,0 @@
-import:
-  types:
-    value:
-      - value
-provide:
-  - resource.value
-require:
-  - resource_type_reg
-  - python_object_creg

@@ -42,7 +42,6 @@ def code_module_list():
         'resource.partial',
         'resource.call',
         'resource.list_service',
-        'resource.value',
         'resource.test.test_resources.mock_identity',
         ]
 
@@ -207,21 +206,3 @@ def test_resolve_definition_list_service(services, htypes):
         commands=(names['some_command'],),
         key_attribute='the_key',
         )
-
-
-def test_value_type(services, htypes, code):
-    t = code.value.ValueResourceType(services.mosaic, services.types)
-    data = {
-        'value': ['item_1', 'item_2'],
-        }
-
-    definition = t.from_dict(data)
-    value = ('item_1', 'item_2')
-    assert definition == htypes.value.value(
-        value_ref=services.mosaic.put(value),
-        )
-
-    resource = t.resolve(definition, lambda name: None, TEST_RESOURCES_DIR)
-    assert resource == definition
-
-    assert services.python_object_creg.animate(resource) == value

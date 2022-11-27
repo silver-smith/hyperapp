@@ -35,7 +35,6 @@ def code_module_list():
         'resource.list_service',
         'resource.live_list_service',
         'resource.tree_service',
-        'resource.value',
         'resource.piece_ref',
         'resource.typed_piece',
         'resource.selector',

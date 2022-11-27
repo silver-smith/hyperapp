@@ -31,7 +31,6 @@ code_module_list = [
     'resource.attribute',
     'resource.partial',
     'resource.call',
-    'resource.value',
     'resource.python_module',
     'resource.piece_ref',
     'resource.rpc_command',
