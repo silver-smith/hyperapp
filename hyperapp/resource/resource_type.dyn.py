@@ -53,7 +53,7 @@ class TypeToValueMapper(Mapper):
         if t is list_mt:
             return ListMapper(self.map(value.element))
         if t is optional_mt:
-            return OptinalMapper(self.map(value.base))
+            return OptionalMapper(self.map(value.base))
         if t is builtin_mt:
             if value.name == 'ref':
                 return ResolveMapper()
