@@ -113,6 +113,43 @@ def test_from_dict_based(services, htypes):
         )
 
 
+def test_to_dict_partial(services, htypes):
+    resource_t = htypes.partial.partial
+    resource_type = services.resource_type_factory(resource_t)
+    param_t = resource_type.definition_t.fields['params'].element_t
+    definition = resource_type.definition_t(
+        function='some_function',
+        params=(
+            param_t('param_1', 'value_1'),
+            param_t('param_2', 'value_2'),
+            ),
+        )
+    definition_dict = resource_type.to_dict(definition)
+    log.info("definition dict: %r", definition_dict)
+    assert definition_dict == {
+        'function': 'some_function',
+        'params': {
+            'param_1': 'value_1',
+            'param_2': 'value_2',
+            },
+        }
+
+
+def test_to_dict_based(services, htypes):
+    resource_t = htypes.test_resources.test_resource_t
+    resource_type = services.resource_type_factory(resource_t)
+    definition = resource_type.definition_t(
+        value='some value',
+        other_value=('some other value 1', 'some other value 2'),
+        )
+    definition_dict = resource_type.to_dict(definition)
+    log.info("definition dict: %r", definition_dict)
+    assert definition_dict == {
+        'value': 'some value',
+        'other_value': ['some other value 1', 'some other value 2'],
+        }
+
+
 def test_resolve_definition_partial(services, htypes):
     resource_t = htypes.partial.partial
     resource_type = services.resource_type_factory(resource_t)
