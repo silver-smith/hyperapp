@@ -37,8 +37,7 @@ definitions:
     attr_name: list
 
   test_d:
-    _type: legacy_type.call:call
-    function: legacy_type.test_resources:test_d
+    _type: legacy_type.test_resources:test_d
 
   sample_list_service:
     _type: legacy_type.resource_service:list_service
