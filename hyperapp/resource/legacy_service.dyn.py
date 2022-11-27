@@ -77,7 +77,7 @@ class ThisModule(Module):
 
         services.legacy_service_resource_loader = loader = partial(
             make_legacy_service_resource_module, services.mosaic, services, services.builtin_services)
-        services.resource_module_registry['legacy_service'] = loader(services.local_modules)
+        services.resource_registry.set_module('legacy_service', loader(services.local_modules))
 
         services.python_object_creg.register_actor(htypes.legacy_service.builtin_service, builtin_service_python_object, services)
         services.python_object_creg.register_actor(htypes.legacy_service.module_service, module_service_python_object, services.python_object_creg, services)

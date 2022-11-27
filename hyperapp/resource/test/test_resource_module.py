@@ -44,11 +44,9 @@ def code_module_list():
         ]
 
 
-def test_resources(services):
-    module = services.resource_module_registry['test_resources']
-
-    servant_list = module['servant_list']
+def test_load(services):
+    servant_list = services.resource_registry['test_resources', 'servant_list']
     log.info("Servant list: %r", servant_list)
 
-    list_service = module['sample_list_service']
+    list_service = services.resource_registry['test_resources', 'sample_list_service']
     log.info("List service: %r", list_service)

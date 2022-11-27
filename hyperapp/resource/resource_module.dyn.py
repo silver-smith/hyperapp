@@ -6,6 +6,8 @@ from functools import partial
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.common.module import Module
 
+from .resource_registry import UnknownResourceName
+
 log = logging.getLogger(__name__)
 
 
@@ -19,7 +21,7 @@ class ResourceModule:
             mosaic,
             resource_type_producer,
             python_object_creg,
-            resource_module_registry,
+            resource_registry,
             name,
             path,
             load_from_file=True,
@@ -29,7 +31,7 @@ class ResourceModule:
             ):
         self._mosaic = mosaic
         self._resource_type_producer = resource_type_producer
-        self._resource_module_registry = resource_module_registry
+        self._resource_registry = resource_registry
         self._python_object_creg = python_object_creg
         self._name = name
         self._path = path
@@ -62,7 +64,7 @@ class ResourceModule:
             mosaic=self._mosaic,
             resource_type_producer=self._resource_type_producer,
             python_object_creg=self._python_object_creg,
-            resource_module_registry=self._resource_module_registry,
+            resource_registry=self._resource_registry,
             name=f'{self._name}-with-{module.name}',
             path=self._path.with_name('dummy'),
             load_from_file=True,
@@ -125,14 +127,11 @@ class ResourceModule:
     def _resolve_name(self, name):
         if name in self._import_set:
             module_name, var_name = name.split(':')
-            try:
-                module = self._resource_module_registry[module_name]
-            except KeyError:
-                raise RuntimeError(f"{self._name}: Error resolving imported {name!r}: Unknown module {module_name!r}")
-            piece = module[var_name]
         else:
-            piece = self[name]
-        return self._mosaic.put(piece)
+            assert ':' not in name
+            module_name = self._name
+            var_name = name
+        return self._resource_registry[module_name, var_name]
 
     @property
     def _import_set(self):
@@ -170,13 +169,11 @@ class ResourceModule:
         module_contents = yaml.safe_load(self._path.read_text())
         self._loaded_imports = set(module_contents.get('import', []))
         for name in self._loaded_imports:
-            module_name, var_name = name.split(':')
             try:
-                module = self._resource_module_registry[module_name]
-            except KeyError:
-                raise RuntimeError(f"{self._name}: Importing {var_name!r} from unknown module: {module_name}")
-            if var_name not in module:
-                raise RuntimeError(f"{self._name}: Module {module_name} does not have {var_name!r}")
+                module_name, var_name = name.split(':')
+                self._resource_registry.check_has_name((module_name, var_name))
+            except UnknownResourceName as x:
+                raise RuntimeError(f"{self._name}: Importing {name!r}: {x}")
         for name, contents in module_contents.get('definitions', {}).items():
             self._loaded_definitions[name] = self._read_definition(name, contents)
         for contents in module_contents.get('associations', []):
@@ -199,10 +196,10 @@ class ResourceModule:
         return Definition(t, value)
 
 
-def load_resource_modules(resource_module_factory, resource_dir, registry):
+def load_resource_modules(resource_module_factory, resource_dir, resource_registry):
     for rp in resource_dir.enum():
         log.info("Resource module: %r", rp.name)
-        registry[rp.name] = resource_module_factory(registry, rp.name, rp.path)
+        resource_registry.set_module(rp.name, resource_module_factory(resource_registry, rp.name, rp.path))
 
 
 class ThisModule(Module):
@@ -216,10 +213,9 @@ class ThisModule(Module):
             services.resource_type_producer,
             services.python_object_creg,
         )
-        services.resource_module_registry = {}
         services.resource_loader = resource_loader = partial(
             load_resource_modules,
             resource_module_factory,
             )
         for resource_dir in services.resource_dir_list:
-            resource_loader(resource_dir, services.resource_module_registry)
+            resource_loader(resource_dir, services.resource_registry)

@@ -55,6 +55,6 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
 
         services.legacy_module_resource_loader = legacy_module_resource_loader
-        services.resource_module_registry.update(legacy_module_resource_loader(services.local_modules))
+        services.resource_registry.update_modules(legacy_module_resource_loader(services.local_modules))
         services.python_object_creg.register_actor(
             code_module_t, python_object, services.module_registry, services.local_modules.by_requirement, services)

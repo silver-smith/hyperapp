@@ -1,8 +1,11 @@
+import:
+  code:
+  - resource.resource_registry
 require:
-  - resource_type_reg
-  - resource_type_factory
-  - python_object_creg
+- resource_type_reg
+- resource_type_factory
+- resource_registry
+- python_object_creg
 provide:
-  - resource_module_registry
-  - resource_module_factory
-  - resource_loader
+- resource_module_factory
+- resource_loader

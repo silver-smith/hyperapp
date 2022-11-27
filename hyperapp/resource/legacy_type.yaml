@@ -6,5 +6,5 @@ provide:
   - legacy_type_resource_loader
   - resource.legacy_type
 require:
-  - resource_module_registry
+  - resource_registry
   - python_object_creg

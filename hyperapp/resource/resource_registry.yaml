@@ -1,0 +1,3 @@
+provide:
+  - resource_registry_factory
+  - resource_registry

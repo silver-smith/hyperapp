@@ -7,5 +7,5 @@ provide:
   - legacy_service_resource_loader
   - resource.legacy_service
 require:
-  - resource_module_registry
+  - resource_registry
   - python_object_creg

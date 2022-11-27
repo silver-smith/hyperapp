@@ -2,5 +2,5 @@ provide:
   - legacy_module_resource_loader
   - resource.legacy_module
 require:
-  - resource_module_registry
+  - resource_registry
   - python_object_creg

@@ -65,8 +65,8 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
 
         services.legacy_type_resource_loader = partial(legacy_type_resource_loader, services.types)
-        services.resource_module_registry.update(
+        services.resource_registry.update_modules(
             legacy_builtin_type_resource_loader(services.types, services.builtin_types))
-        services.resource_module_registry.update(
+        services.resource_registry.update_modules(
             services.legacy_type_resource_loader(services.local_types))
         services.python_object_creg.register_actor(htypes.legacy_type.type, python_object, services.types)
