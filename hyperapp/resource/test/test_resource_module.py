@@ -61,6 +61,16 @@ def resource_module_factory(services):
     return services.resource_module_factory
 
 
+@pytest.fixture
+def compare():
+    def inner(resource_module, expected_fname):
+        expected_yaml = TEST_DIR.joinpath(expected_fname + '.expected.yaml').read_text()
+        actual_yaml = yaml.dump(resource_module.as_dict, sort_keys=False)
+        Path(f'/tmp/{expected_fname}.resources.yaml').write_text(actual_yaml)
+        assert actual_yaml == expected_yaml
+    return inner
+
+
 def test_load(resource_registry):
     servant_list = resource_registry['test_resources', 'servant_list']
     log.info("Servant list: %r", servant_list)
@@ -69,7 +79,7 @@ def test_load(resource_registry):
     log.info("List service: %r", list_service)
 
 
-def test_set_attr(htypes, mosaic, resource_registry, resource_module_factory):
+def test_set_attr(htypes, mosaic, resource_registry, resource_module_factory, compare):
     sample_module_2 = resource_registry['sample_module_2', 'sample_module_2.module']
     res_module = resource_module_factory(resource_registry, 'test_module')
     res_module['sample_servant_2'] = htypes.attribute.attribute(
@@ -80,7 +90,4 @@ def test_set_attr(htypes, mosaic, resource_registry, resource_module_factory):
         object=mosaic.put(sample_module_2),
         attr_name='sample_servant_2',
         )
-    expected_yaml = TEST_DIR.joinpath('test_set_attr.expected.yaml').read_text()
-    actual_yaml = yaml.dump(res_module.as_dict, sort_keys=False)
-    Path('/tmp/test_set_attr.resources.yaml').write_text(actual_yaml)
-    assert actual_yaml == expected_yaml
+    compare(res_module, 'test_set_attr')
