@@ -41,7 +41,7 @@ class LegacyServiceResourceModule:
             })
 
 
-def make_legacy_service_resource_module(mosaic, services, builtin_services, local_modules):
+def make_legacy_service_resource_module(mosaic, services, builtin_services, resource_registry, local_modules):
     name_to_piece = {}
     for service_name in builtin_services:
         piece = htypes.legacy_service.builtin_service(service_name)
@@ -54,6 +54,8 @@ def make_legacy_service_resource_module(mosaic, services, builtin_services, loca
             piece = htypes.legacy_service.module_service(service_name, code_module_ref)
             name_to_piece[service_name] = piece
             log.info("Legacy service resource %r: %s", service_name, piece)
+    for name, piece in name_to_piece.items():
+        resource_registry.add_to_cache(('legacy_service', name), piece)
     return LegacyServiceResourceModule(name_to_piece)
 
 
@@ -77,7 +79,7 @@ class ThisModule(Module):
 
         services.legacy_service_resource_loader = loader = partial(
             make_legacy_service_resource_module, services.mosaic, services, services.builtin_services)
-        services.resource_registry.set_module('legacy_service', loader(services.local_modules))
+        services.resource_registry.set_module('legacy_service', loader(services.resource_registry, services.local_modules))
 
         services.python_object_creg.register_actor(htypes.legacy_service.builtin_service, builtin_service_python_object, services)
         services.python_object_creg.register_actor(htypes.legacy_service.module_service, module_service_python_object, services.python_object_creg, services)
