@@ -58,6 +58,7 @@ class ResourceModule:
         t = self._resource_type_producer(resource_t)
         definition = t.reverse_resolve(resource, self._resolve_ref, self._resource_dir)
         self.set_definition(name, t, definition)
+        self._resource_registry.add_to_cache((self._name, name), resource)
 
     def __iter__(self):
         return iter(self._definition_dict)

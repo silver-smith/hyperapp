@@ -31,6 +31,10 @@ class ResourceRegistry:
     def update_modules(self, module_dict):
         self._module_registry.update(module_dict)
 
+    def add_to_cache(self, name_pair, piece):
+        self._name_pair_to_piece[name_pair] = piece
+        self._piece_to_name_pair[piece] = name_pair
+
     def check_has_name(self, name_pair):
         if name_pair in self._name_pair_to_piece:
             return
@@ -61,7 +65,7 @@ class ResourceRegistry:
         try:
             return self._piece_to_name_pair[piece]
         except KeyError:
-            raise RuntimeError(f"Not are known resource: {piece!r}")
+            raise RuntimeError(f"Not a known resource: {piece!r}")
 
 
 class ThisModule(Module):

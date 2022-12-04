@@ -86,8 +86,28 @@ def test_set_attr(htypes, mosaic, resource_registry, resource_module_factory, co
         object=mosaic.put(sample_module_2),
         attr_name='sample_servant_2',
         )
-    res_module['sample_servant_2'] == htypes.attribute.attribute(
+    assert res_module['sample_servant_2'] == htypes.attribute.attribute(
         object=mosaic.put(sample_module_2),
         attr_name='sample_servant_2',
         )
     compare(res_module, 'test_set_attr')
+
+
+def test_set_partial(htypes, mosaic, resource_registry, resource_module_factory, compare):
+    sample_module_2 = resource_registry['sample_module_2', 'sample_module_2.module']
+    res_module = resource_module_factory(resource_registry, 'test_module')
+    attr = htypes.attribute.attribute(
+        object=mosaic.put(sample_module_2),
+        attr_name='sample_servant_2',
+        )
+    partial = htypes.partial.partial(
+        function=mosaic.put(attr),
+        params=tuple([
+            htypes.partial.param('mosaic', mosaic.put(htypes.legacy_service.builtin_service('mosaic'))),
+            htypes.partial.param('web', mosaic.put(htypes.legacy_service.builtin_service('web'))),
+            ]),
+        )
+    res_module['sample_servant_2'] = attr
+    res_module['sample_servant_2_partial'] = partial
+    assert res_module['sample_servant_2_partial'] == partial
+    compare(res_module, 'test_set_partial')
