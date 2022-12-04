@@ -45,6 +45,7 @@ def test_python_module_resource(services):
     log.info("Loading python module: %r", python_module_resource)
     python_module = services.python_object_creg.animate(python_module_resource)
     log.info("Python module: %r", python_module)
+    assert python_module.value.key == 123
 
 
 def test_fixture(services):
