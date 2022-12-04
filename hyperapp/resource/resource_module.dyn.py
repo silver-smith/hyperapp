@@ -94,7 +94,7 @@ class ResourceModule:
         self._definition_dict[var_name] = Definition(resource_type, definition_value)
         self._import_set.add(self._resource_type_name(resource_type))
 
-    def add_association(self, resource_type, definition_value):
+    def add_association_def(self, resource_type, definition_value):
         log.info("%s: Add association %s: %r", self._name, resource_type, definition_value)
         self._association_set.add(Definition(resource_type, definition_value))
         self._import_set.add(self._resource_type_name(resource_type))

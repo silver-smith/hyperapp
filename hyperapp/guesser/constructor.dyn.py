@@ -107,14 +107,14 @@ class Constructor:
             ctr_fn=global_res_name,
             spec=spec_res_name,
             )
-        self.resource_module.add_association(assoc_res_t, assoc_def)
+        self.resource_module.add_association_def(assoc_res_t, assoc_def)
 
         pyobject_a_res_t = resource_type_producer(htypes.impl.python_object_association)
         pyobject_a_def = pyobject_a_res_t.definition_t(
             t=piece_t_name,
             function=global_res_name,
             )
-        self.resource_module.add_association(pyobject_a_res_t, pyobject_a_def)
+        self.resource_module.add_association_def(pyobject_a_res_t, pyobject_a_def)
 
     def _get_and_check_piece_param_res(self, process, global_res_name, global_attr):
         assert isinstance(global_attr, htypes.inspect.fn_attr)  # How can we get here if global is not a function?
@@ -174,7 +174,7 @@ class Constructor:
             dir=(global_dir_res_name, object_commands_d_res_name),
             value=command_res_name,
             )
-        self.resource_module.add_association(association_res_t, association_def)
+        self.resource_module.add_association_def(association_res_t, association_def)
 
     def _run_constructor(self, attr, ctr_ref):
         constructor_creg.invite(ctr_ref, self._custom_types, self.resource_module, self._module_name, attr)

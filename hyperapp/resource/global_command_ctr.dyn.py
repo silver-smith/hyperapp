@@ -42,4 +42,4 @@ def construct(piece, custom_types, resource_module, module_name, attr):
     association_def = association_res_t.definition_t(
         command=command_res_name,
         )
-    resource_module.add_association(association_res_t, association_def)
+    resource_module.add_association_def(association_res_t, association_def)

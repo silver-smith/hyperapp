@@ -47,4 +47,4 @@ def construct(piece, custom_types, resource_module, module_name, attr):
         dir=(object_commands_d_res_name,),
         value=command_res_name,
         )
-    resource_module.add_association(association_res_t, association_def)
+    resource_module.add_association_def(association_res_t, association_def)
