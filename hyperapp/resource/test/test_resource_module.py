@@ -1,4 +1,5 @@
 import logging
+import yaml
 from pathlib import Path
 
 import pytest
@@ -79,3 +80,7 @@ def test_set_attr(htypes, mosaic, resource_registry, resource_module_factory):
         object=mosaic.put(sample_module_2),
         attr_name='sample_servant_2',
         )
+    expected_yaml = TEST_DIR.joinpath('test_set_attr.expected.yaml').read_text()
+    actual_yaml = yaml.dump(res_module.as_dict, sort_keys=False)
+    Path('/tmp/test_set_attr.resources.yaml').write_text(actual_yaml)
+    assert actual_yaml == expected_yaml
