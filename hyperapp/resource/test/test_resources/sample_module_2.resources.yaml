@@ -1,0 +1,8 @@
+import:
+- legacy_type.python_module:python_module
+definitions:
+  sample_module_2.module:
+    _type: legacy_type.python_module:python_module
+    module_name: sample_module_2
+    file_name: sample_module_2.dyn.py
+    import_list: {}

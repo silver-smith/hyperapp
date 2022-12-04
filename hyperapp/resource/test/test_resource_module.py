@@ -39,14 +39,43 @@ def code_module_list():
         'resource.attribute',
         'resource.partial',
         'resource.call',
+        'resource.python_module',
         'resource.list_service',
         'resource.test.test_resources.mock_identity',
         ]
 
 
-def test_load(services):
-    servant_list = services.resource_registry['test_resources', 'servant_list']
+@pytest.fixture
+def mosaic(services):
+    return services.mosaic
+
+
+@pytest.fixture
+def resource_registry(services):
+    return services.resource_registry
+
+
+@pytest.fixture
+def resource_module_factory(services):
+    return services.resource_module_factory
+
+
+def test_load(resource_registry):
+    servant_list = resource_registry['test_resources', 'servant_list']
     log.info("Servant list: %r", servant_list)
 
-    list_service = services.resource_registry['test_resources', 'sample_list_service']
+    list_service = resource_registry['test_resources', 'sample_list_service']
     log.info("List service: %r", list_service)
+
+
+def test_set_attr(htypes, mosaic, resource_registry, resource_module_factory):
+    sample_module_2 = resource_registry['sample_module_2', 'sample_module_2.module']
+    res_module = resource_module_factory(resource_registry, 'test_module')
+    res_module['sample_servant_2'] = htypes.attribute.attribute(
+        object=mosaic.put(sample_module_2),
+        attr_name='sample_servant_2',
+        )
+    res_module['sample_servant_2'] == htypes.attribute.attribute(
+        object=mosaic.put(sample_module_2),
+        attr_name='sample_servant_2',
+        )

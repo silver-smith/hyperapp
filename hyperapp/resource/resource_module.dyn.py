@@ -23,7 +23,7 @@ class ResourceModule:
             python_object_creg,
             resource_registry,
             name,
-            path,
+            path=None,
             load_from_file=True,
             imports=None,
             definitions=None,
@@ -35,10 +35,11 @@ class ResourceModule:
         self._python_object_creg = python_object_creg
         self._name = name
         self._path = path
+        self._resource_dir = path.parent if path else None
         self._loaded_imports = imports
         self._loaded_definitions = definitions
         self._loaded_associations = associations
-        self._load_from_file = load_from_file
+        self._load_from_file = load_from_file and path is not None
 
     def __contains__(self, var_name):
         return var_name in self._definition_dict
@@ -48,9 +49,15 @@ class ResourceModule:
             definition = self._definition_dict[var_name]
         except KeyError:
             raise KeyError(f"Resource module {self._name!r}: Unknown resource: {var_name!r}")
-        piece = definition.type.resolve(definition.value, self._resolve_name, self._path.parent)
+        piece = definition.type.resolve(definition.value, self._resolve_name, self._resource_dir)
         log.info("%s: Loaded resource %r: %s", self._name, var_name, piece)
         return piece
+
+    def __setitem__(self, name, resource):
+        resource_t = deduce_value_type(resource)
+        t = self._resource_type_producer(resource_t)
+        definition = t.reverse_resolve(resource, self._resolve_ref, self._resource_dir)
+        self.set_definition(name, t, definition)
 
     def __iter__(self):
         return iter(self._definition_dict)
@@ -133,6 +140,16 @@ class ResourceModule:
             var_name = name
         piece = self._resource_registry[module_name, var_name]
         return self._mosaic.put(piece)
+
+    def _resolve_ref(self, resource_ref):
+        resource = self._mosaic.resolve_ref(resource_ref).value
+        module_name, var_name = self._resource_registry.reverse_resolve(resource)
+        if module_name == self._name:
+            return var_name
+        else:
+            full_name = f'{module_name}:{var_name}'
+            self._import_set.add(full_name)
+            return full_name
 
     @property
     def _import_set(self):

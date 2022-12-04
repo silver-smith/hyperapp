@@ -2,8 +2,7 @@ import:
   code:
   - resource.resource_registry
 require:
-- resource_type_reg
-- resource_type_factory
+- resource_type_producer
 - resource_registry
 - python_object_creg
 provide:
