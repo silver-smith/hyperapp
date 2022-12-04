@@ -1,0 +1,8 @@
+import:
+- legacy_type.sample_association:sample_association
+- sample_module_2:sample_module_2.module
+associations:
+- _type: legacy_type.sample_association:sample_association
+  name: associated_name
+  value: sample_module_2:sample_module_2.module
+definitions: {}

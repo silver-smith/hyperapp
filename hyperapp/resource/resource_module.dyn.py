@@ -54,11 +54,21 @@ class ResourceModule:
         return piece
 
     def __setitem__(self, name, resource):
+        log.info("%s: Set resource %r: %r", self._name, name, resource)
+        t, definition = self._resource_to_definition(resource)
+        self.set_definition(name, t, definition)
+        self._resource_registry.add_to_cache((self._name, name), resource)
+
+    def add_association(self, resource):
+        log.info("%s: Add association: %r", self._name, resource)
+        t, definition = self._resource_to_definition(resource)
+        self.add_association_def(t, definition)
+
+    def _resource_to_definition(self, resource):
         resource_t = deduce_value_type(resource)
         t = self._resource_type_producer(resource_t)
         definition = t.reverse_resolve(resource, self._resolve_ref, self._resource_dir)
-        self.set_definition(name, t, definition)
-        self._resource_registry.add_to_cache((self._name, name), resource)
+        return (t, definition)
 
     def __iter__(self):
         return iter(self._definition_dict)
@@ -94,9 +104,9 @@ class ResourceModule:
         self._definition_dict[var_name] = Definition(resource_type, definition_value)
         self._import_set.add(self._resource_type_name(resource_type))
 
-    def add_association_def(self, resource_type, definition_value):
-        log.info("%s: Add association %s: %r", self._name, resource_type, definition_value)
-        self._association_set.add(Definition(resource_type, definition_value))
+    def add_association_def(self, resource_type, definition):
+        log.info("%s: Add association definition %s: %r", self._name, resource_type, definition)
+        self._association_set.add(Definition(resource_type, definition))
         self._import_set.add(self._resource_type_name(resource_type))
 
     def save(self):

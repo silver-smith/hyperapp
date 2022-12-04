@@ -111,3 +111,14 @@ def test_set_partial(htypes, mosaic, resource_registry, resource_module_factory,
     res_module['sample_servant_2_partial'] = partial
     assert res_module['sample_servant_2_partial'] == partial
     compare(res_module, 'test_set_partial')
+
+
+def test_add_association(htypes, mosaic, resource_registry, resource_module_factory, compare):
+    sample_module_2 = resource_registry['sample_module_2', 'sample_module_2.module']
+    association = htypes.sample_association.sample_association(
+        name='associated_name',
+        value=mosaic.put(sample_module_2),
+        )
+    res_module = resource_module_factory(resource_registry, 'test_module')
+    res_module.add_association(association)
+    compare(res_module, 'test_add_association')
