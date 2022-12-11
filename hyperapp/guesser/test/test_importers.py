@@ -133,11 +133,54 @@ def test_import_recorder(services, htypes, python_object, subprocess):
     global_list = [web.summon(ref).name for ref in collected.attr_list]
     log.info("Collected global list: %s", global_list)
 
-    auto_importer = subprocess.proxy(import_recorder_ref)
-    imports = auto_importer.used_imports()
+    import_recorder = subprocess.proxy(import_recorder_ref)
+    imports = import_recorder.used_imports()
     log.info("Import list: %s", imports)
 
     assert imports == (
         ('htypes', 'sample_types', 'another_rec'),
         ('htypes', 'sample_types', 'sample_rec'),
        )
+
+
+def test_import_discoverer(services, htypes, python_object, subprocess):
+    mosaic = services.mosaic
+    web = services.web
+    resource_registry = services.resource_registry
+
+    import_discoverer_res = htypes.import_discoverer.import_discoverer()
+    import_discoverer_ref = mosaic.put(import_discoverer_res)
+
+    sample_module_path = TEST_RESOURCES_DIR / 'import_discoverer_sample_module.dyn.py'
+    module_res = htypes.python_module.python_module(
+        module_name='import_discoverer_sample_module',
+        source=sample_module_path.read_text(),
+        file_path=str(sample_module_path),
+        import_list=[
+            htypes.python_module.import_rec('*', import_discoverer_ref),
+            ],
+        )
+    module_ref = mosaic.put(module_res)
+
+    collect_attributes_res = resource_registry['guesser.runner', 'collect_attributes']
+    collect_attributes_ref = mosaic.put(collect_attributes_res)
+    collect_attributes = subprocess.rpc_call(collect_attributes_ref)
+
+    collected = collect_attributes(object_ref=module_ref)
+    global_list = [web.summon(ref).name for ref in collected.attr_list]
+    log.info("Collected global list: %s", global_list)
+
+    import_discoverer = subprocess.proxy(import_discoverer_ref)
+    imports = import_discoverer.discovered_imports()
+    log.info("Import list: %s", imports)
+
+    assert imports == tuple(sorted([
+        ('code', 'code_module_1'),
+        ('code', 'code_module_1', 'attr'),
+        ('code', 'code_module_2'),
+        ('services', 'service_1'),
+        ('services', 'service_2'),
+        ('services', 'service_1', 'attr'),
+        ('services', 'service_1', 'attr', 'nested'),
+        ('tested', 'code', 'code_module_3', 'tested_attr'),
+       ]))
