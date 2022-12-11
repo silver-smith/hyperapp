@@ -1,0 +1,5 @@
+sample_rec = record:
+  str_attr: string
+
+another_rec = record:
+  int_attr: int

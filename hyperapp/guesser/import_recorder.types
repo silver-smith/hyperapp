@@ -1,0 +1,6 @@
+resource = record:
+  name: string list
+  resource: ref
+
+import_recorder = record:
+  resources: resource list
