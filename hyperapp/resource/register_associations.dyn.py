@@ -1,15 +1,21 @@
 import logging
 from functools import partial
 
+from . import htypes
 from hyperapp.common.module import Module
 
 log = logging.getLogger(__name__)
 
 
 def register_associations(meta_registry, resource_registry):
-    for assoc in reversed(resource_registry.associations):
-        log.info("Register association: %r", assoc)
-        meta_registry.animate(assoc)
+    for assoc in resource_registry.associations:
+        if isinstance(assoc, htypes.meta_registry.meta_association):
+            log.info("Register meta association: %r", assoc)
+            meta_registry.animate(assoc)
+    for assoc in resource_registry.associations:
+        if not isinstance(assoc, htypes.meta_registry.meta_association):
+            log.info("Register association: %r", assoc)
+            meta_registry.animate(assoc)
 
 
 class ThisModule(Module):

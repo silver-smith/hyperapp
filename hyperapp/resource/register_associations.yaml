@@ -1,3 +1,7 @@
+import:
+  types:
+    meta_registry:
+    - meta_association
 require:
   - meta_registry
   - resource_registry
