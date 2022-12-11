@@ -53,6 +53,7 @@ process_code_module_list = [
     'common.lcs_service',
     'ui.impl_registry',
     'ui.global_command_list',
+    'resource.resource_module',
     'resource.register_associations',
     ]
 
@@ -97,7 +98,7 @@ def test_auto_importer(services, htypes, python_object, subprocess):
     custom_resources = CustomResources(
         types=services.local_types,
         modules=services.local_modules,
-        res_module_reg=services.resource_registry,
+        resource_registry=services.resource_registry,
         )
     import_resources = dict(available_import_resources(custom_resources))
     resources = [
