@@ -9,6 +9,16 @@ log = logging.getLogger(__name__)
 ROOT_PACKAGE = 'hyperapp.dynamic'
 
 
+def is_sub_path(sub_path, full_path):
+    for x, y in zip(
+        sub_path.split('.'),
+        full_path.split('.'),
+        ):
+        if x != y:
+            return False
+    return True
+
+
 class Finder:
 
     _is_package = False
@@ -41,7 +51,7 @@ class _MetaPathFinder:
         if loader:
             return loader.get_spec(fullname)
         for prefix, loader in self._sub_path_loaders.items():
-            if fullname.startswith(prefix):
+            if fullname.startswith(prefix) and is_sub_path(prefix, fullname):
                 return loader.get_spec(fullname)
 
 
@@ -76,8 +86,8 @@ class PythonImporter:
             full_name = f'{module_name}.{sub_name}'
             if full_name.endswith('.*'):
                 # This is auto-importer; it wants full_name.
-                loader.set_base_module_name(full_name[:-2])
-                sub_path_loaders[full_name[:-1]] = loader
+                loader.set_base_module_name(module_name)
+                sub_path_loaders[full_name[:-2]] = loader
             else:
                 module_name_to_loader[full_name] = loader
         # Should reload if already loaded (pytest case).

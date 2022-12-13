@@ -184,3 +184,66 @@ def test_import_discoverer(services, htypes, python_object, subprocess):
         ('services', 'service_1', 'attr', 'nested'),
         ('tested', 'code', 'code_module_3', 'tested_attr'),
        ]))
+
+
+def test_combined(services, htypes, python_object, subprocess):
+    mosaic = services.mosaic
+    web = services.web
+    types = services.types
+    resource_registry = services.resource_registry
+
+    sample_rec_ref = types.reverse_resolve(htypes.sample_types.sample_rec)
+    sample_rec_res = htypes.legacy_type.type(sample_rec_ref)
+    sample_rec_res_ref = mosaic.put(sample_rec_res)
+
+    resources = [
+        htypes.import_recorder.resource(('htypes', 'sample_types', 'sample_rec'), sample_rec_res_ref),
+        ]
+    import_recorder_res = htypes.import_recorder.import_recorder(resources)
+    import_recorder_ref = mosaic.put(import_recorder_res)
+
+    import_discoverer_res = htypes.import_discoverer.import_discoverer()
+    import_discoverer_ref = mosaic.put(import_discoverer_res)
+
+    sample_module_path = TEST_RESOURCES_DIR / 'import_both_sample_module.dyn.py'
+    module_res = htypes.python_module.python_module(
+        module_name='import_both_sample_module',
+        source=sample_module_path.read_text(),
+        file_path=str(sample_module_path),
+        import_list=[
+            htypes.python_module.import_rec('htypes.*', import_recorder_ref),
+            htypes.python_module.import_rec('*', import_discoverer_ref),
+            ],
+        )
+    module_ref = mosaic.put(module_res)
+
+    collect_attributes_res = resource_registry['guesser.runner', 'collect_attributes']
+    collect_attributes_ref = mosaic.put(collect_attributes_res)
+    collect_attributes = subprocess.rpc_call(collect_attributes_ref)
+
+    collected = collect_attributes(object_ref=module_ref)
+    global_list = [web.summon(ref).name for ref in collected.attr_list]
+    log.info("Collected global list: %s", global_list)
+
+    import_recorder = subprocess.proxy(import_recorder_ref)
+    recorded_imports = import_recorder.used_imports()
+    log.info("Recorded import list: %s", recorded_imports)
+
+    import_discoverer = subprocess.proxy(import_discoverer_ref)
+    discovered_imports = import_discoverer.discovered_imports()
+    log.info("Discovered import list: %s", discovered_imports)
+
+    assert recorded_imports == (
+        ('htypes', 'sample_types', 'sample_rec'),
+       )
+
+    assert discovered_imports == tuple(sorted([
+        ('code', 'code_module_1'),
+        ('code', 'code_module_1', 'attr'),
+        ('code', 'code_module_2'),
+        ('services', 'service_1'),
+        ('services', 'service_2'),
+        ('services', 'service_1', 'attr'),
+        ('services', 'service_1', 'attr', 'nested'),
+        ('tested', 'code', 'code_module_3', 'tested_attr'),
+       ]))

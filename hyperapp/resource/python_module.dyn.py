@@ -110,13 +110,15 @@ def sub_loader_dict(python_object_creg, import_list, root_module_name):
     for rec in import_list:
         resource = python_object_creg.invite(rec.resource)
         path = rec.full_name.split('.')
-        if len(path) == 1:
+        if len(path) == 1 and inspect.ismodule(resource):
+            # This is code module import, resource is python module.
             [module_name] = path
-            if inspect.ismodule(resource):
-                # This is code module import, resource is python module.
-                module_dict[module_name] = resource.__dict__
-            else:
-                module_dict[module_name] = resource  # Auto-importer?
+            module_dict[module_name] = resource.__dict__
+            continue
+        if path[-1] == '*':
+            # An auto importer.
+            module_name = rec.full_name
+            module_dict[module_name] = resource
             continue
         for i in range(len(path)):
             package_name = '.'.join(path[:i])
