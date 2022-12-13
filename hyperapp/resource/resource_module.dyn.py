@@ -1,7 +1,7 @@
 import logging
 import yaml
 from collections import namedtuple
-from functools import partial
+from functools import cached_property, partial
 
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.common.module import Module
@@ -58,6 +58,19 @@ class ResourceModule:
         t, definition = self._resource_to_definition(resource)
         self.set_definition(name, t, definition)
         self._resource_registry.add_to_cache((self._name, name), resource)
+
+    @property
+    def used_modules(self):
+        module_set = set()
+        if self._loaded_definitions is None:
+            # Do not try to resolve if not loaded.
+            module_contents = self._module_contents
+            import_set = set(module_contents.get('import', []))
+        else:
+            import_set = self._import_set
+        for name in import_set:
+            module_set.add(name.split(':')[0])
+        return module_set
 
     def add_association(self, resource):
         log.info("%s: Add association: %r", self._name, resource)
@@ -195,7 +208,7 @@ class ResourceModule:
         if self._path is None or not self._load_from_file:
             return
         log.info("Loading resource module %s: %s", self._name, self._path)
-        module_contents = yaml.safe_load(self._path.read_text())
+        module_contents = self._module_contents
         self._loaded_imports = set(module_contents.get('import', []))
         for name in self._loaded_imports:
             try:
@@ -208,6 +221,10 @@ class ResourceModule:
         for contents in module_contents.get('associations', []):
             name = contents.get('_type')  # Just for logging and error strings.
             self._loaded_associations.add(self._read_definition(name, contents))
+
+    @cached_property
+    def _module_contents(self):
+        return yaml.safe_load(self._path.read_text())
 
     def _read_definition(self, name, data):
         log.debug("%s: Load definition %r: %s", self._name, name, data)
