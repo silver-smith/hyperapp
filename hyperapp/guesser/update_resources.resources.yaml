@@ -1,6 +1,8 @@
 import:
-  - legacy_type.attribute:attribute
-  - legacy_type.python_module:python_module
+- legacy_service:resource_module_factory
+- legacy_service:resource_registry_factory
+- legacy_type.attribute:attribute
+- legacy_type.python_module:python_module
 
 definitions:
 
@@ -8,7 +10,9 @@ definitions:
     _type: legacy_type.python_module:python_module
     module_name: update_resources
     file_name: update_resources.dyn.py
-    import_list: {}
+    import_list:
+      services.resource_module_factory: legacy_service:resource_module_factory
+      services.resource_registry_factory: legacy_service:resource_registry_factory
 
   update_resources:
     _type: legacy_type.attribute:attribute
