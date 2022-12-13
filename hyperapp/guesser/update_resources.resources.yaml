@@ -1,0 +1,16 @@
+import:
+  - legacy_type.attribute:attribute
+  - legacy_type.python_module:python_module
+
+definitions:
+
+  update_resources.module:
+    _type: legacy_type.python_module:python_module
+    module_name: update_resources
+    file_name: update_resources.dyn.py
+    import_list: {}
+
+  update_resources:
+    _type: legacy_type.attribute:attribute
+    object: update_resources.module
+    attr_name: update_resources

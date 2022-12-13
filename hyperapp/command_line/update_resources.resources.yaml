@@ -1,0 +1,24 @@
+import:
+- legacy_service:resource_registry
+- legacy_service:register_associations
+- legacy_type.attribute:attribute
+- legacy_type.python_module:python_module
+- guesser.update_resources:update_resources
+- common.meta_registry_association:meta_registry_association.module
+
+definitions:
+
+  update_resources.module:
+    _type: legacy_type.python_module:python_module
+    module_name: update_resources
+    file_name: update_resources.dyn.py
+    import_list:
+      services.update_resources: guesser.update_resources:update_resources
+      services.resource_registry: legacy_service:resource_registry
+      services.register_associations: legacy_service:register_associations
+      meta_registry_association: common.meta_registry_association:meta_registry_association.module
+
+  update_resources:
+    _type: legacy_type.attribute:attribute
+    object: update_resources.module
+    attr_name: update_resources
