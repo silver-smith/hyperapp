@@ -2,14 +2,19 @@ import:
 - guesser.runner:collect_attributes
 - legacy_service:endpoint_registry
 - legacy_service:generate_rsa_identity
+- legacy_service:local_types
 - legacy_service:module_dir_list
 - legacy_service:mosaic
 - legacy_service:resource_module_factory
 - legacy_service:resource_registry_factory
 - legacy_service:rpc_endpoint_factory
+- legacy_service:type_module_loader
 - legacy_service:web
 - legacy_type.attribute:attribute
 - legacy_type.import_discoverer:import_discoverer
+- legacy_type.import_recorder:import_recorder
+- legacy_type.import_recorder:resource
+- legacy_type.legacy_type:type
 - legacy_type.piece_ref:piece_ref
 - legacy_type.python_module:python_module
 - legacy_type.python_module:import_rec
@@ -27,17 +32,22 @@ definitions:
     file_name: update_resources.dyn.py
     import_list:
       htypes.import_discoverer.import_discoverer: legacy_type.import_discoverer:import_discoverer
+      htypes.import_recorder.import_recorder: legacy_type.import_recorder:import_recorder
+      htypes.import_recorder.resource: legacy_type.import_recorder:resource
+      htypes.legacy_type.type: legacy_type.legacy_type:type
       htypes.python_module.python_module: legacy_type.python_module:python_module
       htypes.python_module.import_rec: legacy_type.python_module:import_rec
       services.collect_attributes_ref: collect_attributes_ref
       services.endpoint_registry: legacy_service:endpoint_registry
       services.generate_rsa_identity: legacy_service:generate_rsa_identity
+      services.local_types: legacy_service:local_types
       services.module_dir_list: legacy_service:module_dir_list
       services.mosaic: legacy_service:mosaic
       services.resource_module_factory: legacy_service:resource_module_factory
       services.resource_registry_factory: legacy_service:resource_registry_factory
       services.rpc_endpoint_factory: legacy_service:rpc_endpoint_factory
       services.subprocess_running: sync.subprocess_context:subprocess_running
+      services.type_module_loader: legacy_service:type_module_loader
       services.web: legacy_service:web
 
   update_resources:

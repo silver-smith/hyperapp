@@ -7,12 +7,14 @@ from .services import (
     collect_attributes_ref,
     endpoint_registry,
     generate_rsa_identity,
+    local_types,
     module_dir_list,
     mosaic,
     resource_module_factory,
     resource_registry_factory,
     rpc_endpoint_factory,
     subprocess_running,
+    type_module_loader,
     web,
     )
 
@@ -51,9 +53,12 @@ def update_resources(root_dir, subdir_list):
             deps[base_name].add(name)
     for name, deps in sorted(deps.items()):
         _log.info("Dep: %s -> %s", name, ', '.join(deps))
+
+    type_res_list = legacy_type_resources(root_dir, subdir_list)
+
     with subprocess(additional_dir_list) as process:
         for file in file_dict.values():
-            load_file_deps(process, file)
+            load_file_deps(process, type_res_list, file)
 
 
 @contextmanager
@@ -94,7 +99,25 @@ def process_file(resource_registry, path):
     return FileInfo(stem, path, res_path, used_modules)
 
 
-def load_file_deps(process, file):
+def legacy_type_resources(root_dir, subdir_list):
+    custom_types = {**local_types}
+    dir_list = [root_dir / d for d in subdir_list]
+    type_module_loader.load_type_modules(dir_list, custom_types)
+
+    resource_list = []
+    for module_name, type_module in custom_types.items():
+        for name, type_ref in type_module.items():
+            resource = htypes.legacy_type.type(type_ref)
+            resource_ref = mosaic.put(resource)
+            resource_list.append(
+                htypes.import_recorder.resource(('htypes', module_name, name), resource_ref))
+    return resource_list
+
+
+def load_file_deps(process, type_res_list, file):
+    import_recorder_res = htypes.import_recorder.import_recorder(type_res_list)
+    import_recorder_ref = mosaic.put(import_recorder_res)
+
     import_discoverer_res = htypes.import_discoverer.import_discoverer()
     import_discoverer_ref = mosaic.put(import_discoverer_res)
 
@@ -103,6 +126,7 @@ def load_file_deps(process, file):
         source=file.source_path.read_text(),
         file_path=str(file.source_path),
         import_list=[
+            htypes.python_module.import_rec('htypes.*', import_recorder_ref),
             htypes.python_module.import_rec('*', import_discoverer_ref),
             ],
         )
