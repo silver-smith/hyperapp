@@ -2,7 +2,7 @@ from hyperapp.common.python_importer import Finder
 
 from .services import (
     python_object_creg,
-    )
+)
 
 
 class DiscovererObject:
@@ -17,6 +17,9 @@ class DiscovererObject:
         resource_path = (*self._prefix, name)
         self._imported_set.add(resource_path)
         return DiscovererObject(resource_path, self._imported_set)
+
+    def __call__(self, fn):
+        return fn
 
 
 class ImportDiscoverer(Finder):
