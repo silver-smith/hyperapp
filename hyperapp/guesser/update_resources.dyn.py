@@ -32,17 +32,17 @@ process_code_module_list = [
     ]
 
 
-def update_resources(root_dir, resource_dir_list, source_dir_list):
-    additional_dir_list = [*resource_dir_list]
+def update_resources(root_dir, subdir_list):
+    additional_dir_list = [root_dir / d for d in subdir_list]
     resource_registry = resource_registry_factory()
     deps = defaultdict(set)
     file_dict = {}
-    for dir in source_dir_list:
-        for path in dir.rglob('*.dyn.py'):
+    for subdir in subdir_list:
+        for path in root_dir.joinpath(subdir).rglob('*.dyn.py'):
             file = process_file(resource_registry, path)
             if not file:
                 continue
-            _log.info("File: %s", file)
+            _log.debug("File: %s", file)
             deps[file.name] |= file.used_modules
             file_dict[file.name] = file
     for name in file_dict:

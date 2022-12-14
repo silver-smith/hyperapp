@@ -9,8 +9,8 @@ from .services import (
 from . import meta_registry_association
 
 
-def update_resources(root_dir, resource_dir_list, source_dir_list):
+def update_resources(root_dir, subdir_list):
     meta_registry_association.init()
     register_associations(resource_registry)
-    log.info("Update resources at: %s", source_dir_list)
-    services.update_resources(root_dir, resource_dir_list, source_dir_list)
+    log.info("Update resources at: %s, %s", root_dir, subdir_list)
+    services.update_resources(root_dir, subdir_list)

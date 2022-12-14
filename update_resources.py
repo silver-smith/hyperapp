@@ -56,8 +56,7 @@ def main():
 
     parser = argparse.ArgumentParser(description='Update resources')
     parser.add_argument('--root-dir', type=Path, help="Resource root dir")
-    parser.add_argument('--resource-dir', type=Path, nargs='*', help="Additional resource dir")
-    parser.add_argument('source_dir', type=Path, nargs='+', help="Dirs with source files")
+    parser.add_argument('source_subdir', type=str, nargs='+', help="Subdirs with source files")
     args = parser.parse_args()
 
     config = {
@@ -74,10 +73,7 @@ def main():
         resource = services.resource_registry['command_line.update_resources', 'update_resources']
         fn = services.python_object_creg.animate(resource)
         log.info("Update resources function: %r", fn)
-        resource_dir_list = [
-            dir.absolute() for dir in args.resource_dir or []
-            ]
-        fn(args.root_dir or services.hyperapp_dir, resource_dir_list, args.source_dir)
+        fn(args.root_dir or services.hyperapp_dir, args.source_subdir)
     finally:
         log.info("Stopping.")
         services.stop()
