@@ -41,6 +41,8 @@ def update_resources(root_dir, subdir_list):
     file_dict = {}
     for subdir in subdir_list:
         for path in root_dir.joinpath(subdir).rglob('*.dyn.py'):
+            if 'test' in path.parts:
+                continue
             file = process_file(resource_registry, path)
             if not file:
                 continue
