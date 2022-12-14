@@ -1,18 +1,44 @@
 import:
+- guesser.runner:collect_attributes
+- legacy_service:endpoint_registry
+- legacy_service:generate_rsa_identity
+- legacy_service:module_dir_list
+- legacy_service:mosaic
 - legacy_service:resource_module_factory
 - legacy_service:resource_registry_factory
+- legacy_service:rpc_endpoint_factory
+- legacy_service:web
 - legacy_type.attribute:attribute
+- legacy_type.import_discoverer:import_discoverer
+- legacy_type.piece_ref:piece_ref
 - legacy_type.python_module:python_module
+- legacy_type.python_module:import_rec
+- sync.subprocess_context:subprocess_running
 
 definitions:
+
+  collect_attributes_ref:
+    _type: legacy_type.piece_ref:piece_ref
+    value: guesser.runner:collect_attributes
 
   update_resources.module:
     _type: legacy_type.python_module:python_module
     module_name: update_resources
     file_name: update_resources.dyn.py
     import_list:
+      htypes.import_discoverer.import_discoverer: legacy_type.import_discoverer:import_discoverer
+      htypes.python_module.python_module: legacy_type.python_module:python_module
+      htypes.python_module.import_rec: legacy_type.python_module:import_rec
+      services.collect_attributes_ref: collect_attributes_ref
+      services.endpoint_registry: legacy_service:endpoint_registry
+      services.generate_rsa_identity: legacy_service:generate_rsa_identity
+      services.module_dir_list: legacy_service:module_dir_list
+      services.mosaic: legacy_service:mosaic
       services.resource_module_factory: legacy_service:resource_module_factory
       services.resource_registry_factory: legacy_service:resource_registry_factory
+      services.rpc_endpoint_factory: legacy_service:rpc_endpoint_factory
+      services.subprocess_running: sync.subprocess_context:subprocess_running
+      services.web: legacy_service:web
 
   update_resources:
     _type: legacy_type.attribute:attribute

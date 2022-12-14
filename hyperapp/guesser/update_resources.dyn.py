@@ -1,9 +1,19 @@
 import logging
 from collections import defaultdict, namedtuple
+from contextlib import contextmanager
 
+from . import htypes
 from .services import (
+    collect_attributes_ref,
+    endpoint_registry,
+    generate_rsa_identity,
+    module_dir_list,
+    mosaic,
     resource_module_factory,
     resource_registry_factory,
+    rpc_endpoint_factory,
+    subprocess_running,
+    web,
     )
 
 _log = logging.getLogger(__name__)
@@ -13,6 +23,52 @@ AUTO_GEN_LINE = '# Automatically generated file. Do not edit.'
 
 
 FileInfo = namedtuple('FileInfo', 'name source_path resources_path used_modules')
+
+process_code_module_list = [
+    'common.lcs',
+    'common.lcs_service',
+    'ui.impl_registry',
+    'ui.global_command_list',
+    ]
+
+
+def update_resources(root_dir, resource_dir_list, source_dir_list):
+    additional_dir_list = [*resource_dir_list]
+    resource_registry = resource_registry_factory()
+    deps = defaultdict(set)
+    file_dict = {}
+    for dir in source_dir_list:
+        for path in dir.rglob('*.dyn.py'):
+            file = process_file(resource_registry, path)
+            if not file:
+                continue
+            _log.info("File: %s", file)
+            deps[file.name] |= file.used_modules
+            file_dict[file.name] = file
+    for name in file_dict:
+        base_name = '.'.join(name.split('.')[:-1])
+        if base_name in file_dict:
+            deps[base_name].add(name)
+    for name, deps in sorted(deps.items()):
+        _log.info("Dep: %s -> %s", name, ', '.join(deps))
+    with subprocess(additional_dir_list) as process:
+        for file in file_dict.values():
+            load_file_deps(process, file)
+
+
+@contextmanager
+def subprocess(additional_dir_list):
+    identity = generate_rsa_identity(fast=True)
+    rpc_endpoint = rpc_endpoint_factory()
+    endpoint_registry.register(identity, rpc_endpoint)
+    with subprocess_running(
+            [*module_dir_list, *additional_dir_list],
+            process_code_module_list,
+            rpc_endpoint,
+            identity,
+            'update_resources',
+        ) as process:
+        yield process
 
 
 def process_file(resource_registry, path):
@@ -38,21 +94,20 @@ def process_file(resource_registry, path):
     return FileInfo(stem, path, res_path, used_modules)
 
 
-def update_resources(root_dir, resource_dir_list, source_dir_list):
-    resource_registry = resource_registry_factory()
-    deps = defaultdict(set)
-    file_dict = {}
-    for dir in source_dir_list:
-        for path in dir.rglob('*.dyn.py'):
-            file = process_file(resource_registry, path)
-            if not file:
-                continue
-            _log.info("File: %s", file)
-            deps[file.name] |= file.used_modules
-            file_dict[file.name] = file
-    for name in file_dict:
-        base_name = '.'.join(name.split('.')[:-1])
-        if base_name in file_dict:
-            deps[base_name].add(name)
-    for name, deps in sorted(deps.items()):
-        _log.info("Dep: %s -> %s", name, ', '.join(deps))
+def load_file_deps(process, file):
+    import_discoverer_res = htypes.import_discoverer.import_discoverer()
+    import_discoverer_ref = mosaic.put(import_discoverer_res)
+
+    module_res = htypes.python_module.python_module(
+        module_name=file.name,
+        source=file.source_path.read_text(),
+        file_path=str(file.source_path),
+        import_list=[
+            htypes.python_module.import_rec('*', import_discoverer_ref),
+            ],
+        )
+
+    collect_attributes = process.rpc_call(collect_attributes_ref)
+    object_attrs = collect_attributes(object_ref=mosaic.put(module_res))
+    attr_list = [web.summon(ref) for ref in object_attrs.attr_list]
+    _log.info("Collected attr list, module %s: %s", object_attrs.object_module, attr_list)
