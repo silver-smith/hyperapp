@@ -61,6 +61,7 @@ def init_meta_registry_association(resource_registry, python_object_creg):
 
 
 additional_code_module_list = [
+    'resource.resource_module',
     'resource.register_associations',
     'sync.subprocess_child',
     ]
