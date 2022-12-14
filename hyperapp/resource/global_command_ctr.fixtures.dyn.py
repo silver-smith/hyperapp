@@ -17,12 +17,18 @@ param.camel_to_snake.name = ''
 
 param.construct.piece = None
 param.construct.custom_types = local_types
-param.construct.resource_module = resource_module_factory(
-    resource_registry=ResourceRegistry(),
-    name='sample_resource_module',
-    path='/non-existend-dir/sample_module.resources.yaml',
-    load_from_file=False,
-    )
+
+
+@param.construct
+def resource_module():
+    return resource_module_factory(
+        resource_registry=ResourceRegistry(),
+        name='sample_resource_module',
+        path='/non-existend-dir/sample_module.resources.yaml',
+        load_from_file=False,
+        )
+
+
 param.construct.module_name = 'global_command_ctr_fixtures'
 param.construct.attr = htypes.inspect.fn_attr(
     name='sample_fn',

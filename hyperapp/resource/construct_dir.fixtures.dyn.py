@@ -16,13 +16,26 @@ def _stub_resource_module():
     )
 
 
-param.construct_dir.resource_module = _stub_resource_module()
+@param.construct_dir
+def resource_module():
+    return _stub_resource_module()
+
+
 param.construct_dir.dir_t = htypes.command.object_commands_d
 param.construct_dir.target_res_name = 'sample_target_resource'
 
 param.construct_module_dir.custom_types = local_types
-param.construct_module_dir.resource_module = _stub_resource_module()
+
+
+@param.construct_module_dir
+def resource_module():
+    return _stub_resource_module()
+
+
 param.construct_module_dir.type_module_name = 'command'
 param.construct_module_dir.target_res_name = 'object_commands_d'
 
-param.construct_object_commands_dir.resource_module = _stub_resource_module()
+
+@param.construct_object_commands_dir
+def resource_module():
+    return _stub_resource_module()
