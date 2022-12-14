@@ -43,7 +43,7 @@ def update_resources(root_dir, subdir_list):
         for path in root_dir.joinpath(subdir).rglob('*.dyn.py'):
             if 'test' in path.parts:
                 continue
-            file = process_file(resource_registry, path)
+            file = process_file(resource_registry, root_dir, path)
             if not file:
                 continue
             _log.debug("File: %s", file)
@@ -78,7 +78,7 @@ def subprocess(additional_dir_list):
         yield process
 
 
-def process_file(resource_registry, path):
+def process_file(resource_registry, root_dir, path):
     stem = path.name[:-len('.dyn.py')]
     yaml_path = path.with_name(stem + '.yaml')
     if yaml_path.exists():
@@ -98,7 +98,8 @@ def process_file(resource_registry, path):
     else:
         _log.info("%s: no resources", path)
         used_modules = set()
-    return FileInfo(stem, path, res_path, used_modules)
+    full_name = str(path.relative_to(root_dir).with_name(stem)).replace('/', '.')
+    return FileInfo(full_name, path, res_path, used_modules)
 
 
 def legacy_type_resources(root_dir, subdir_list):
@@ -136,4 +137,4 @@ def load_file_deps(process, type_res_list, file):
     collect_attributes = process.rpc_call(collect_attributes_ref)
     object_attrs = collect_attributes(object_ref=mosaic.put(module_res))
     attr_list = [web.summon(ref) for ref in object_attrs.attr_list]
-    _log.info("Collected attr list, module %s: %s", object_attrs.object_module, attr_list)
+    _log.info("Collected attrs for %r, module %s: %s", file.name, object_attrs.object_module, attr_list)
