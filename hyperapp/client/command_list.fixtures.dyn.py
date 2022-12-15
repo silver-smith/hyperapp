@@ -26,7 +26,9 @@ def _phony_command():
         dir=mosaic.put(dir),
         )
 
-service.global_command_list = [_phony_command()]
+@service
+def global_command_list():
+    return [_phony_command()]
 
 
 class _PhonyRootView:
@@ -41,7 +43,9 @@ class _PhonyRootView:
         return [([], command)]
 
 
-service.root_view = _PhonyRootView()
+@service
+def root_view():
+    return _PhonyRootView()
 
 
 class PhonyItem:
@@ -52,13 +56,32 @@ class PhonyItem:
         self.dir = mosaic.put(dir)
 
 
-param.GlobalCommandList.piece = htypes.command_list.global_command_list()
-param.GlobalCommandList.set_key.current_item = PhonyItem()
-param.GlobalCommandList.set_key_escape.current_item = PhonyItem()
+@param.GlobalCommandList
+def piece():
+    return htypes.command_list.global_command_list()
+
+
+@param.GlobalCommandList.set_key
+def current_item():
+    return PhonyItem()
+
+
+@param.GlobalCommandList.set_key_escape
+def current_item():
+    return PhonyItem()
+
 
 param.ViewCommandList.piece = htypes.command_list.view_command_list()
-param.ViewCommandList.set_key.current_item = PhonyItem()
-param.ViewCommandList.set_key_escape.current_item = PhonyItem()
+
+
+@param.ViewCommandList.set_key
+def current_item():
+    return PhonyItem()
+
+
+@param.ViewCommandList.set_key_escape
+def current_item():
+    return PhonyItem()
 
 
 @service.adapter_factory
@@ -72,15 +95,28 @@ class _PhonyObjectCommandsFactory:
         return [_phony_command()]
 
 
-service.object_commands_factory = _PhonyObjectCommandsFactory()
+@service
+def object_commands_factory():
+    return _PhonyObjectCommandsFactory()
 
 
-param.ObjectCommandList.piece = htypes.command_list.object_command_list(
-    piece_ref=mosaic.put(None),
-    view_state_ref=mosaic.put(None),
-    )
-param.ObjectCommandList.set_key.current_item = PhonyItem()
-param.ObjectCommandList.set_key_escape.current_item = PhonyItem()
+@param.ObjectCommandList
+def piece():
+    return htypes.command_list.object_command_list(
+        piece_ref=mosaic.put(None),
+        view_state_ref=mosaic.put(None),
+        )
+
+
+@param.ObjectCommandList.set_key
+def current_item():
+    return PhonyItem()
+
+
+@param.ObjectCommandList.set_key_escape
+def current_item():
+    return PhonyItem()
+
 
 param.open_object_commands.piece = None
 param.open_object_commands.view_state = None
