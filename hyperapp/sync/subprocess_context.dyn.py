@@ -42,6 +42,7 @@ def subprocess_running(module_dir_list, code_module_list, rpc_endpoint, identity
     signal_service_bundle_cdr = packet_coders.encode('cdr', signal_service_bundle)
 
     code_module_list = [
+        *(code_module_list or []),
         'resource.legacy_type',
         'resource.legacy_module',
         'resource.legacy_service',
@@ -53,7 +54,6 @@ def subprocess_running(module_dir_list, code_module_list, rpc_endpoint, identity
         'resource.raw',
         'sync.transport.tcp',  # Unbundler wants tcp route.
         'sync.subprocess_report_home',
-        *(code_module_list or []),
         ]
     subprocess = subprocess_factory(
         process_name,
