@@ -3,8 +3,8 @@ from .services import (
     local_types,
     resource_module_factory,
     )
-from .resource_registry import ResourceRegistry
-from .marker import param
+from .code.resource_registry import ResourceRegistry
+from .code.marker import param
 
 
 def _dummy_fn():
