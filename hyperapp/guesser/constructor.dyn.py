@@ -191,10 +191,10 @@ class Constructor:
             )
         self.resource_module.set_definition(target_name, attr_res_t, attr_def)
 
-    def _construct_service(self, module_res_name, attr_name):
-        target_name = f'{attr_name}.service'
-        call_res_t = resource_type_producer(htypes.call.call)
-        call_def = call_res_t.definition_t(
-            function=attr_name,
-            )
-        self.resource_module.set_definition(target_name, call_res_t, call_def)
+    # def _construct_service(self, module_res_name, attr_name):
+    #     target_name = f'{attr_name}.service'
+    #     call_res_t = resource_type_producer(htypes.call.call)
+    #     call_def = call_res_t.definition_t(
+    #         function=attr_name,
+    #         )
+    #     self.resource_module.set_definition(target_name, call_res_t, call_def)
