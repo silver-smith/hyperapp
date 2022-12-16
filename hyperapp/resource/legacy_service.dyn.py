@@ -1,4 +1,5 @@
 import logging
+from collections import defaultdict
 from functools import partial
 
 from hyperapp.common.module import Module
@@ -41,19 +42,36 @@ class LegacyServiceResourceModule:
             })
 
 
-def make_legacy_service_resource_module(mosaic, services, builtin_services, resource_registry, local_modules):
+def make_legacy_service_resource_module(mosaic, services, module_registry, builtin_services, resource_registry, local_modules):
     name_to_piece = {}
+
     for service_name in builtin_services:
         piece = htypes.legacy_service.builtin_service(service_name)
         name_to_piece[service_name] = piece
         log.info("Builtin legacy service resource %r: %s", service_name, piece)
+
+    loaded_modules = {
+        rec.name for rec in module_registry.elements()
+        }
+    service_provider = defaultdict(list)
     for module_name, service_name_set in local_modules.module_provides.items():
         for service_name in service_name_set:
-            code_module = local_modules.by_name[module_name]
-            code_module_ref = mosaic.put(code_module)
-            piece = htypes.legacy_service.module_service(service_name, code_module_ref)
-            name_to_piece[service_name] = piece
-            log.info("Legacy service resource %r: %s", service_name, piece)
+            service_provider[service_name].append(module_name)
+    for service_name, module_name_list in service_provider.items():
+        if len(module_name_list) > 1:
+            for module_name in module_name_list:
+                if module_name in loaded_modules:
+                    break
+            else:
+                raise RuntimeError(f"Several modules provide {service_name!r}, but no one is loaded: {module_name_list}")
+        else:
+            [module_name] = module_name_list
+        code_module = local_modules.by_name[module_name]
+        code_module_ref = mosaic.put(code_module)
+        piece = htypes.legacy_service.module_service(service_name, code_module_ref)
+        name_to_piece[service_name] = piece
+        log.info("Legacy service resource %r: %s", service_name, piece)
+
     for name, piece in name_to_piece.items():
         resource_registry.add_to_cache(('legacy_service', name), piece)
     return LegacyServiceResourceModule(name_to_piece)
@@ -78,7 +96,7 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
 
         services.legacy_service_resource_loader = loader = partial(
-            make_legacy_service_resource_module, services.mosaic, services, services.builtin_services)
+            make_legacy_service_resource_module, services.mosaic, services, services.module_registry, services.builtin_services)
         services.resource_registry.set_module('legacy_service', loader(services.resource_registry, services.local_modules))
 
         services.python_object_creg.register_actor(htypes.legacy_service.builtin_service, builtin_service_python_object, services)
