@@ -24,8 +24,8 @@ _log = logging.getLogger(__name__)
 AUTO_GEN_LINE = '# Automatically generated file. Do not edit.'
 
 
-Deps = namedtuple('Deps', 'want_services want_code tests_services tests_code')
-FileInfo = namedtuple('FileInfo', 'name source_path resources_path deps')
+Source = namedtuple('Source', 'import_name attr_list want_services want_code tests_services tests_code')
+FileInfo = namedtuple('FileInfo', 'name source_path resources_path source')
 
 
 process_code_module_list = [
@@ -120,7 +120,9 @@ def load_file_deps(process, type_res_list, module_name, source_path):
     _log.info("Discovered import deps: tests_services: %s", tests_services)
     _log.info("Discovered import deps: tests_code: %s", tests_code)
 
-    return Deps(
+    return Source(
+        import_name=object_attrs.object_module,
+        attr_list=attr_list,
         want_services=want_services,
         want_code=want_code,
         tests_services=tests_services,
@@ -142,25 +144,30 @@ def process_file(process, type_res_list, resource_registry, root_dir, source_pat
     yaml_path = source_path.with_name(stem + '.yaml')
     if yaml_path.exists():
         _log.debug("%s: legacy module", source_path)
-        return None
+        return FileInfo(module_name, source_path, None, None)
     res_path = source_path.with_name(stem + '.resources.yaml')
     if res_path.exists() and not res_path.read_text().startswith(AUTO_GEN_LINE):
         _log.debug("%s: manually generated", source_path)
-        return None
+        return FileInfo(module_name, source_path, res_path, None)
     # if res_path.exists():
     #     used_modules = load_deps_from_resource(resource_registry, module_name, res_path)
     #     _log.info("%s: %s", path, ', '.join(used_modules))
     # else:
     #     _log.info("%s: no resources", path)
     #     used_modules = set()
-    deps = load_file_deps(process, type_res_list, module_name, source_path)
-    return FileInfo(module_name, source_path, res_path, deps)
+    source_info = load_file_deps(process, type_res_list, module_name, source_path)
+    return FileInfo(module_name, source_path, res_path, source_info)
+
+
+def construct_resources(process, file):
+    _log.info("Construct resources for: %s", file.name)
 
 
 def update_resources(root_dir, subdir_list):
     additional_dir_list = [root_dir / d for d in subdir_list]
     resource_registry = resource_registry_factory()
-    deps = defaultdict(set)
+    dep_dict = defaultdict(set)
+    up_to_date = set()  # module_name set
     file_dict = {}
 
     type_res_list = legacy_type_resources(root_dir, subdir_list)
@@ -172,15 +179,22 @@ def update_resources(root_dir, subdir_list):
                 if 'test' in path.parts:
                     continue
                 file = process_file(process, type_res_list, resource_registry, root_dir, path)
-                if not file:
+                if not file.source:
+                    up_to_date.add(file.name)
                     continue
                 _log.debug("File: %s", file)
-                deps[file.name] |= file.deps.want_code
+                dep_dict[file.name] |= file.source.want_code
                 file_dict[file.name] = file
 
-    for name in file_dict:
-        base_name = '.'.join(name.split('.')[:-1])
-        if base_name in file_dict:
-            deps[base_name].add(name)
-    for name, deps in sorted(deps.items()):
-        _log.info("Dep: %s -> %s", name, ', '.join(deps))
+        for name in file_dict:
+            base_name = '.'.join(name.split('.')[:-1])
+            if base_name in file_dict:
+                dep_dict[base_name].add(name)
+        for name, deps in sorted(dep_dict.items()):
+            _log.info("Dep: %s -> %s", name, ', '.join(deps))
+        _log.info("Up-to-date: %s", up_to_date)
+
+        for name, dep_list in sorted(dep_dict.items()):
+            if not all(dep in up_to_date for dep in dep_list):
+                continue
+            construct_resources(process, file_dict[name])
