@@ -138,17 +138,22 @@ def load_deps_from_resource(resource_registry, module_name, res_path):
         }
 
 
-def process_file(process, type_res_list, resource_registry, root_dir, source_path):
+def process_file(process, type_res_list, resource_registry, root_dir, source_path, file_dict, res_modules, code_modules):
     stem = source_path.name[:-len('.dyn.py')]
     module_name = str(source_path.relative_to(root_dir).with_name(stem)).replace('/', '.')
     yaml_path = source_path.with_name(stem + '.yaml')
     if yaml_path.exists():
         _log.debug("%s: legacy module", source_path)
-        return FileInfo(module_name, source_path, None, None)
+        file_dict[module_name] =  FileInfo(module_name, source_path, None, None)
+        code_modules[module_name] = f'legacy_module.{module_name}:{stem}'
+        return
+    code_modules[module_name] = f'{module_name}:{stem}.module'
     res_path = source_path.with_name(stem + '.resources.yaml')
     if res_path.exists() and not res_path.read_text().startswith(AUTO_GEN_LINE):
         _log.debug("%s: manually generated", source_path)
-        return FileInfo(module_name, source_path, res_path, None)
+        file_dict[module_name] = FileInfo(module_name, source_path, res_path, None)
+        res_modules[module_name] = resource_module_factory(resource_registry, module_name, res_path)
+        return
     # if res_path.exists():
     #     used_modules = load_deps_from_resource(resource_registry, module_name, res_path)
     #     _log.info("%s: %s", path, ', '.join(used_modules))
@@ -156,7 +161,7 @@ def process_file(process, type_res_list, resource_registry, root_dir, source_pat
     #     _log.info("%s: no resources", path)
     #     used_modules = set()
     source_info = load_file_deps(process, type_res_list, module_name, source_path)
-    return FileInfo(module_name, source_path, res_path, source_info)
+    file_dict[module_name] = FileInfo(module_name, source_path, res_path, source_info)
 
 
 def construct_resources(process, file):
@@ -167,8 +172,9 @@ def update_resources(root_dir, subdir_list):
     additional_dir_list = [root_dir / d for d in subdir_list]
     resource_registry = resource_registry_factory()
     dep_dict = defaultdict(set)
-    up_to_date = set()  # module_name set
-    file_dict = {}
+    file_dict = {}  # full name -> FileInfo.
+    res_modules = {}  # full name -> resource module.
+    code_modules = {}  # full name -> code module path.
 
     type_res_list = legacy_type_resources(root_dir, subdir_list)
 
@@ -178,23 +184,32 @@ def update_resources(root_dir, subdir_list):
             for path in root_dir.joinpath(subdir).rglob('*.dyn.py'):
                 if 'test' in path.parts:
                     continue
-                file = process_file(process, type_res_list, resource_registry, root_dir, path)
-                if not file.source:
-                    up_to_date.add(file.name)
-                    continue
-                _log.debug("File: %s", file)
-                dep_dict[file.name] |= file.source.want_code
-                file_dict[file.name] = file
+                process_file(process, type_res_list, resource_registry, root_dir, path, file_dict, res_modules, code_modules)
 
-        for name in file_dict:
+        name_to_full_name = {
+            name.split('.')[-1]: name
+            for name in file_dict.keys()
+            }
+
+        for name, file in file_dict.items():
+            if file.source:
+                for code_name in file.source.want_code:
+                    dep_dict[file.name].add(name_to_full_name[code_name])
             base_name = '.'.join(name.split('.')[:-1])
             if base_name in file_dict:
                 dep_dict[base_name].add(name)
+
         for name, deps in sorted(dep_dict.items()):
             _log.info("Dep: %s -> %s", name, ', '.join(deps))
-        _log.info("Up-to-date: %s", up_to_date)
+        _log.info("Resource modules: %s", ", ".join(res_modules.keys()))
+        _log.info("Code modules: %s", code_modules)
 
-        for name, dep_list in sorted(dep_dict.items()):
-            if not all(dep in up_to_date for dep in dep_list):
+        for name, file in sorted(file_dict.items()):
+            if not file.resources_path:
+                continue  # Legacy module.
+            if name in res_modules:
+                continue  # Already made.
+            if not all(dep in res_modules or not file_dict[dep].resources_path for dep in dep_dict[name]):
+                _log.info("Deps are not ready for: %s", name)
                 continue
             construct_resources(process, file_dict[name])
