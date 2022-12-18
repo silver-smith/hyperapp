@@ -134,8 +134,7 @@ def load_file_deps(process, type_res_list, module_name, source_path):
         )
 
 
-def load_deps_from_resource(resource_registry, module_name, res_path):
-    res_module = resource_module_factory(resource_registry, module_name, res_path)
+def resource_module_deps(resource_registry, module_name, res_module):
     return {
         name for name in res_module.used_modules
         if name.split('.')[0] not in {'legacy_type', 'legacy_service', 'legacy_module'}
@@ -160,12 +159,6 @@ def process_file(process, type_res_list, resource_registry, root_dir, source_pat
         res_modules[module_name] = res_module
         resource_registry.set_module(module_name, res_module)
         return
-    # if res_path.exists():
-    #     used_modules = load_deps_from_resource(resource_registry, module_name, res_path)
-    #     _log.info("%s: %s", path, ', '.join(used_modules))
-    # else:
-    #     _log.info("%s: no resources", path)
-    #     used_modules = set()
     source_info = load_file_deps(process, type_res_list, module_name, source_path)
     file_dict[module_name] = FileInfo(module_name, source_path, res_path, source_info)
 
@@ -231,6 +224,19 @@ def update_resources(root_dir, subdir_list):
             base_name = '.'.join(name.split('.')[:-1])
             if base_name in file_dict:
                 dep_dict[base_name].add(name)
+
+        # Remove resource modules having missing deps.
+        have_removed_modules = True
+        while have_removed_modules:
+            have_removed_modules = False
+            for module_name, res_module in list(res_modules.items()):
+                used_modules = resource_module_deps(resource_registry, module_name, res_module)
+                for name in used_modules:
+                    if name not in res_modules:
+                        _log.info("Resource module %s dep %s is not ready", module_name, name)
+                        del res_modules[module_name]
+                        have_removed_modules = True
+                        break
 
         for name, deps in sorted(dep_dict.items()):
             _log.info("Dep: %s -> %s", name, ', '.join(deps))
