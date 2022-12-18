@@ -9,6 +9,7 @@ from .services import (
     endpoint_registry,
     generate_rsa_identity,
     legacy_module_resource_loader,
+    legacy_service_resource_loader,
     legacy_type_resource_loader,
     local_modules,
     local_types,
@@ -178,12 +179,16 @@ def construct_resources(process, resource_registry, type_res_list, name_to_full_
         code_module = resource_registry[code_path]
         import_list.append(
             htypes.python_module.import_rec(f'code.{code_name}', mosaic.put(code_module)))
+    for service_name in file.source.wants_services:
+        service = resource_registry['legacy_service', service_name]
+        import_list.append(
+            htypes.python_module.import_rec(f'service.{service_name}', mosaic.put(service)))
     _log.info("Import list: %s", import_list)
 
     module_res = htypes.python_module.python_module(
-        module_name=module_name,
-        source=source_path.read_text(),
-        file_path=str(source_path),
+        module_name=file.name,
+        source=file.source_path.read_text(),
+        file_path=str(file.source_path),
         import_list=import_list,
         )
 
@@ -203,6 +208,8 @@ def update_resources(root_dir, subdir_list):
     code_module_loader.load_code_modules(custom_types, [root_dir / d for d in subdir_list], custom_modules)
     _log.info("Custom modules: %s", ", ".join(custom_modules.by_name.keys()))
     resource_registry.update_modules(legacy_module_resource_loader(custom_modules))
+
+    resource_registry.set_module('legacy_service', legacy_service_resource_loader(resource_registry, custom_modules))
 
     with subprocess(additional_dir_list) as process:
 
@@ -244,8 +251,8 @@ def update_resources(root_dir, subdir_list):
         _log.info("Code modules: %s", code_modules)
 
         for name, file in sorted(file_dict.items()):
-            if not file.resources_path:
-                continue  # Legacy module.
+            if not file.source:
+                continue  # Legacy module or manual.
             if name in res_modules:
                 continue  # Already made.
             if not all(dep in res_modules or not file_dict[dep].resources_path for dep in dep_dict[name]):
