@@ -1,7 +1,11 @@
 import:
 - guesser.runner:collect_attributes
+- legacy_service:code_module_loader
 - legacy_service:endpoint_registry
 - legacy_service:generate_rsa_identity
+- legacy_service:legacy_module_resource_loader
+- legacy_service:legacy_type_resource_loader
+- legacy_service:local_modules
 - legacy_service:local_types
 - legacy_service:module_dir_list
 - legacy_service:mosaic
@@ -37,9 +41,13 @@ definitions:
       htypes.legacy_type.type: legacy_type.legacy_type:type
       htypes.python_module.python_module: legacy_type.python_module:python_module
       htypes.python_module.import_rec: legacy_type.python_module:import_rec
+      services.code_module_loader: legacy_service:code_module_loader
       services.collect_attributes_ref: collect_attributes_ref
       services.endpoint_registry: legacy_service:endpoint_registry
       services.generate_rsa_identity: legacy_service:generate_rsa_identity
+      services.legacy_module_resource_loader: legacy_service:legacy_module_resource_loader
+      services.legacy_type_resource_loader: legacy_service:legacy_type_resource_loader
+      services.local_modules: legacy_service:local_modules
       services.local_types: legacy_service:local_types
       services.module_dir_list: legacy_service:module_dir_list
       services.mosaic: legacy_service:mosaic

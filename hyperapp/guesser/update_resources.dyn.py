@@ -4,9 +4,13 @@ from contextlib import contextmanager
 
 from . import htypes
 from .services import (
+    code_module_loader,
     collect_attributes_ref,
     endpoint_registry,
     generate_rsa_identity,
+    legacy_module_resource_loader,
+    legacy_type_resource_loader,
+    local_modules,
     local_types,
     module_dir_list,
     mosaic,
@@ -24,7 +28,7 @@ _log = logging.getLogger(__name__)
 AUTO_GEN_LINE = '# Automatically generated file. Do not edit.'
 
 
-Source = namedtuple('Source', 'import_name attr_list want_services want_code tests_services tests_code')
+Source = namedtuple('Source', 'import_name attr_list wants_services wants_code tests_services tests_code')
 FileInfo = namedtuple('FileInfo', 'name source_path resources_path source')
 
 
@@ -63,7 +67,7 @@ def legacy_type_resources(root_dir, subdir_list):
             resource_ref = mosaic.put(resource)
             resource_list.append(
                 htypes.import_recorder.resource(('htypes', module_name, name), resource_ref))
-    return resource_list
+    return (custom_types, resource_list)
 
 
 def load_file_deps(process, type_res_list, module_name, source_path):
@@ -92,8 +96,8 @@ def load_file_deps(process, type_res_list, module_name, source_path):
     discovered_imports = import_discoverer.discovered_imports()
     _log.info("Discovered import list: %s", discovered_imports)
 
-    want_services = set()
-    want_code = set()
+    wants_services = set()
+    wants_code = set()
     tests_services = set()
     tests_code = set()
     for imp in discovered_imports:
@@ -101,10 +105,10 @@ def load_file_deps(process, type_res_list, module_name, source_path):
             continue
         kind, name, *_ = imp
         if kind == 'services':
-            want_services.add(name)
+            wants_services.add(name)
             continue
         if kind == 'code':
-            want_code.add(name)
+            wants_code.add(name)
             continue
         if kind == 'tested':
             _, kind, name, *_ = imp
@@ -115,16 +119,16 @@ def load_file_deps(process, type_res_list, module_name, source_path):
                 tests_code.add(name)
                 continue
         _log.warning("Unknown import kind (old-style import?): %r at %s", kind, source_path)
-    _log.info("Discovered import deps: want_services: %s", want_services)
-    _log.info("Discovered import deps: want_code: %s", want_code)
+    _log.info("Discovered import deps: wants_services: %s", wants_services)
+    _log.info("Discovered import deps: wants_code: %s", wants_code)
     _log.info("Discovered import deps: tests_services: %s", tests_services)
     _log.info("Discovered import deps: tests_code: %s", tests_code)
 
     return Source(
         import_name=object_attrs.object_module,
         attr_list=attr_list,
-        want_services=want_services,
-        want_code=want_code,
+        wants_services=wants_services,
+        wants_code=wants_code,
         tests_services=tests_services,
         tests_code=tests_code,
         )
@@ -145,14 +149,16 @@ def process_file(process, type_res_list, resource_registry, root_dir, source_pat
     if yaml_path.exists():
         _log.debug("%s: legacy module", source_path)
         file_dict[module_name] =  FileInfo(module_name, source_path, None, None)
-        code_modules[module_name] = f'legacy_module.{module_name}:{stem}'
+        code_modules[module_name] = (f'legacy_module.{module_name}', stem)
         return
-    code_modules[module_name] = f'{module_name}:{stem}.module'
+    code_modules[module_name] = (module_name, f'{stem}.module')
     res_path = source_path.with_name(stem + '.resources.yaml')
     if res_path.exists() and not res_path.read_text().startswith(AUTO_GEN_LINE):
         _log.debug("%s: manually generated", source_path)
         file_dict[module_name] = FileInfo(module_name, source_path, res_path, None)
-        res_modules[module_name] = resource_module_factory(resource_registry, module_name, res_path)
+        res_module = resource_module_factory(resource_registry, module_name, res_path)
+        res_modules[module_name] = res_module
+        resource_registry.set_module(module_name, res_module)
         return
     # if res_path.exists():
     #     used_modules = load_deps_from_resource(resource_registry, module_name, res_path)
@@ -164,8 +170,29 @@ def process_file(process, type_res_list, resource_registry, root_dir, source_pat
     file_dict[module_name] = FileInfo(module_name, source_path, res_path, source_info)
 
 
-def construct_resources(process, file):
+def construct_resources(process, resource_registry, type_res_list, name_to_full_name, code_modules, file):
     _log.info("Construct resources for: %s", file.name)
+
+    import_recorder_res = htypes.import_recorder.import_recorder(type_res_list)
+    import_recorder_ref = mosaic.put(import_recorder_res)
+
+    import_list = [
+        htypes.python_module.import_rec('htypes.*', import_recorder_ref),
+        ]
+    for code_name in file.source.wants_code:
+        name = name_to_full_name[code_name]
+        code_path = code_modules[name]
+        code_module = resource_registry[code_path]
+        import_list.append(
+            htypes.python_module.import_rec(f'code.{code_name}', mosaic.put(code_module)))
+    _log.info("Import list: %s", import_list)
+
+    module_res = htypes.python_module.python_module(
+        module_name=module_name,
+        source=source_path.read_text(),
+        file_path=str(source_path),
+        import_list=import_list,
+        )
 
 
 def update_resources(root_dir, subdir_list):
@@ -176,7 +203,13 @@ def update_resources(root_dir, subdir_list):
     res_modules = {}  # full name -> resource module.
     code_modules = {}  # full name -> code module path.
 
-    type_res_list = legacy_type_resources(root_dir, subdir_list)
+    custom_types, type_res_list = legacy_type_resources(root_dir, subdir_list)
+    resource_registry.update_modules(legacy_type_resource_loader(custom_types))
+
+    custom_modules = local_modules.copy()
+    code_module_loader.load_code_modules(custom_types, [root_dir / d for d in subdir_list], custom_modules)
+    _log.info("Custom modules: %s", ", ".join(custom_modules.by_name.keys()))
+    resource_registry.update_modules(legacy_module_resource_loader(custom_modules))
 
     with subprocess(additional_dir_list) as process:
 
@@ -193,7 +226,7 @@ def update_resources(root_dir, subdir_list):
 
         for name, file in file_dict.items():
             if file.source:
-                for code_name in file.source.want_code:
+                for code_name in file.source.wants_code:
                     dep_dict[file.name].add(name_to_full_name[code_name])
             base_name = '.'.join(name.split('.')[:-1])
             if base_name in file_dict:
@@ -212,4 +245,4 @@ def update_resources(root_dir, subdir_list):
             if not all(dep in res_modules or not file_dict[dep].resources_path for dep in dep_dict[name]):
                 _log.info("Deps are not ready for: %s", name)
                 continue
-            construct_resources(process, file_dict[name])
+            construct_resources(process, resource_registry, type_res_list, name_to_full_name, code_modules, file_dict[name])
