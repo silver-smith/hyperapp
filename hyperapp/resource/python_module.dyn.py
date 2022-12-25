@@ -4,6 +4,7 @@ import logging
 import importlib
 import yaml
 from collections import defaultdict
+from pathlib import Path
 
 from hyperapp.common.dict_decoders import NamedPairsDictDecoder
 from hyperapp.common.dict_encoders import NamedPairsDictEncoder
@@ -35,11 +36,11 @@ class PythonModuleResourceType:
         encoder = NamedPairsDictEncoder()
         return encoder.encode(definition)
 
-    def resolve(self, definition, resolve_name, resource_path):
+    def resolve(self, definition, resolver, resource_path):
         import_list = tuple(
             htypes.python_module.import_rec(
                 full_name=rec.full_name,
-                resource=resolve_name(rec.resource),
+                resource=resolver(rec.resource),
                 )
             for rec in definition.import_list
             )
@@ -48,6 +49,20 @@ class PythonModuleResourceType:
             module_name=definition.module_name,
             source=source_path.read_text(),
             file_path=str(source_path),
+            import_list=import_list,
+            )
+
+    def reverse_resolve(self, resource, resolver, resource_dir):
+        import_list = tuple(
+            htypes.python_module.import_rec_def(
+                full_name=rec.full_name,
+                resource=resolver(rec.resource),
+                )
+            for rec in resource.import_list
+            )
+        return htypes.python_module.python_module_def(
+            module_name=resource.module_name,
+            file_name=str(Path(resource.file_path).name),
             import_list=import_list,
             )
 
