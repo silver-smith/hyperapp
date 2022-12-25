@@ -77,6 +77,8 @@ def load_file_deps(process, type_res_list, module_name, source_path):
 
     import_discoverer_res = htypes.import_discoverer.import_discoverer()
     import_discoverer_ref = mosaic.put(import_discoverer_res)
+    import_discoverer = process.proxy(import_discoverer_ref)
+    import_discoverer.reset()
 
     module_res = htypes.python_module.python_module(
         module_name=module_name,
@@ -93,7 +95,6 @@ def load_file_deps(process, type_res_list, module_name, source_path):
     attr_list = [web.summon(ref) for ref in object_attrs.attr_list]
     _log.info("Collected attrs for %r, module %s: %s", module_name, object_attrs.object_module, attr_list)
 
-    import_discoverer = process.proxy(import_discoverer_ref)
     discovered_imports = import_discoverer.discovered_imports()
     _log.info("Discovered import list: %s", discovered_imports)
 
@@ -255,7 +256,11 @@ def update_resources(root_dir, subdir_list):
                 continue  # Legacy module or manual.
             if name in res_modules:
                 continue  # Already made.
-            if not all(dep in res_modules or not file_dict[dep].resources_path for dep in dep_dict[name]):
-                _log.info("Deps are not ready for: %s", name)
+            not_ready_deps = [
+                dep for dep in dep_dict[name]
+                if file_dict[dep].resources_path and dep not in res_modules
+                ]
+            if not_ready_deps:
+                _log.info("Deps are not ready for %s: %s", name, ", ".join(not_ready_deps))
                 continue
             construct_resources(process, resource_registry, type_res_list, name_to_full_name, code_modules, file_dict[name])

@@ -30,6 +30,9 @@ class ImportDiscoverer(Finder):
         self._base_module_name = None
         self._imported_set = set()
 
+    def reset(self):
+        self._imported_set.clear()
+
     def discovered_imports(self):
         return list(sorted(self._imported_set))
 

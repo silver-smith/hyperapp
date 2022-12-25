@@ -50,6 +50,9 @@ class ImportRecorder(Finder):
                     self._packages.add(prefix)
         self._imported_set = set()
 
+    def reset(self):
+        self._imported_set.clear()
+
     def used_imports(self):
         return list(sorted(self._imported_set))
 
