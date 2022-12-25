@@ -172,7 +172,7 @@ def construct_resources(process, resource_registry, type_res_list, name_to_full_
     import_recorder_ref = mosaic.put(import_recorder_res)
 
     import_list = [
-        htypes.python_module.import_rec('htypes.*', import_recorder_ref),
+#        htypes.python_module.import_rec('htypes.*', import_recorder_ref),
         ]
     for code_name in file.source.wants_code:
         name = name_to_full_name[code_name]
@@ -186,12 +186,18 @@ def construct_resources(process, resource_registry, type_res_list, name_to_full_
             htypes.python_module.import_rec(f'service.{service_name}', mosaic.put(service)))
     _log.info("Import list: %s", import_list)
 
+    res_module = resource_module_factory(resource_registry, file.name)
+
     module_res = htypes.python_module.python_module(
         module_name=file.name,
         source=file.source_path.read_text(),
         file_path=str(file.source_path),
-        import_list=import_list,
+        import_list=tuple(import_list),
         )
+    res_module[f'{file.name}.module'] = module_res
+
+    _log.info("Write %s: %s", file.name, file.resources_path)
+    res_module.save_as(file.resources_path)
 
 
 def update_resources(root_dir, subdir_list):
