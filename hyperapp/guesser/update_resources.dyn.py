@@ -2,6 +2,11 @@ import logging
 from collections import defaultdict, namedtuple
 from contextlib import contextmanager
 
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+
+from hyperapp.common.ref import hash_sha512
+
 from . import htypes
 from .services import (
     code_module_loader,
@@ -26,11 +31,8 @@ from .services import (
 _log = logging.getLogger(__name__)
 
 
-AUTO_GEN_LINE = '# Automatically generated file. Do not edit.'
-
-
-Source = namedtuple('Source', 'import_name attr_list wants_services wants_code tests_services tests_code')
-FileInfo = namedtuple('FileInfo', 'name source_path resources_path source')
+SourceInfo = namedtuple('Source', 'import_name attr_list wants_services wants_code tests_services tests_code')
+FileInfo = namedtuple('FileInfo', 'name source_path resources_path source_info')
 
 
 process_code_module_list = [
@@ -126,7 +128,7 @@ def load_file_deps(process, type_res_list, module_name, source_path):
     _log.info("Discovered import deps: tests_services: %s", tests_services)
     _log.info("Discovered import deps: tests_code: %s", tests_code)
 
-    return Source(
+    return SourceInfo(
         import_name=object_attrs.object_module,
         attr_list=attr_list,
         wants_services=wants_services,
@@ -143,6 +145,21 @@ def resource_module_deps(resource_registry, module_name, res_module):
         }
 
 
+def is_up_to_date(module_name, source_path, resources_module):
+    if not resources_module.is_auto_generated:
+        _log.info("%s: manually generated", module_name)
+        return True
+    if not resources_module.source_hash:
+        _log.info("%s: no source hash", module_name)
+        return False
+    source_hash = hash_sha512(source_path.read_bytes())
+    if resources_module.source_hash == source_hash:
+        _log.info("%s: up to date", module_name)
+        return True
+    _log.info("%s: changed", module_name)
+    return False
+
+
 def process_file(process, type_res_list, resource_registry, root_dir, source_path, file_dict, res_modules, code_modules):
     stem = source_path.name[:-len('.dyn.py')]
     module_name = str(source_path.relative_to(root_dir).with_name(stem)).replace('/', '.')
@@ -153,16 +170,23 @@ def process_file(process, type_res_list, resource_registry, root_dir, source_pat
         code_modules[module_name] = (f'legacy_module.{module_name}', stem)
         return
     code_modules[module_name] = (module_name, f'{stem}.module')
-    res_path = source_path.with_name(stem + '.resources.yaml')
-    if res_path.exists() and not res_path.read_text().startswith(AUTO_GEN_LINE):
-        _log.debug("%s: manually generated", source_path)
-        file_dict[module_name] = FileInfo(module_name, source_path, res_path, None)
-        res_module = resource_module_factory(resource_registry, module_name, res_path)
-        res_modules[module_name] = res_module
-        resource_registry.set_module(module_name, res_module)
-        return
+    resources_path = source_path.with_name(stem + '.resources.yaml')
+    if resources_path.exists():
+        resources_module = resource_module_factory(resource_registry, module_name, resources_path)
+        if is_up_to_date(module_name, source_path, resources_module):
+            file_dict[module_name] = FileInfo(module_name, source_path, resources_path, None)
+            res_modules[module_name] = resources_module
+            resource_registry.set_module(module_name, resources_module)
+            return
     source_info = load_file_deps(process, type_res_list, module_name, source_path)
-    file_dict[module_name] = FileInfo(module_name, source_path, res_path, source_info)
+    file_dict[module_name] = FileInfo(module_name, source_path, resources_path, source_info)
+
+
+def discover_type_imports(import_list):
+    import_list = [
+        htypes.python_module.import_rec('htypes.*', import_recorder_ref),
+        *import_list,
+        ]
 
 
 def construct_resources(process, resource_registry, type_res_list, name_to_full_name, code_modules, file):
@@ -171,16 +195,14 @@ def construct_resources(process, resource_registry, type_res_list, name_to_full_
     import_recorder_res = htypes.import_recorder.import_recorder(type_res_list)
     import_recorder_ref = mosaic.put(import_recorder_res)
 
-    import_list = [
-#        htypes.python_module.import_rec('htypes.*', import_recorder_ref),
-        ]
-    for code_name in file.source.wants_code:
+    import_list = []
+    for code_name in file.source_info.wants_code:
         name = name_to_full_name[code_name]
         code_path = code_modules[name]
         code_module = resource_registry[code_path]
         import_list.append(
             htypes.python_module.import_rec(f'code.{code_name}', mosaic.put(code_module)))
-    for service_name in file.source.wants_services:
+    for service_name in file.source_info.wants_services:
         service = resource_registry['legacy_service', service_name]
         import_list.append(
             htypes.python_module.import_rec(f'service.{service_name}', mosaic.put(service)))
@@ -188,16 +210,18 @@ def construct_resources(process, resource_registry, type_res_list, name_to_full_
 
     res_module = resource_module_factory(resource_registry, file.name)
 
+    name = file.name.split('.')[-1]
     module_res = htypes.python_module.python_module(
-        module_name=file.name,
+        module_name=name,
         source=file.source_path.read_text(),
         file_path=str(file.source_path),
         import_list=tuple(import_list),
         )
-    res_module[f'{file.name}.module'] = module_res
+    res_module[f'{name}.module'] = module_res
 
+    source_hash = hash_sha512(file.source_path.read_bytes())
     _log.info("Write %s: %s", file.name, file.resources_path)
-    res_module.save_as(file.resources_path)
+    res_module.save_as(file.resources_path, source_hash)
 
 
 def update_resources(root_dir, subdir_list):
@@ -232,8 +256,8 @@ def update_resources(root_dir, subdir_list):
             }
 
         for name, file in file_dict.items():
-            if file.source:
-                for code_name in file.source.wants_code:
+            if file.source_info:
+                for code_name in file.source_info.wants_code:
                     dep_dict[file.name].add(name_to_full_name[code_name])
             base_name = '.'.join(name.split('.')[:-1])
             if base_name in file_dict:
@@ -258,7 +282,7 @@ def update_resources(root_dir, subdir_list):
         _log.info("Code modules: %s", code_modules)
 
         for name, file in sorted(file_dict.items()):
-            if not file.source:
+            if not file.source_info:
                 continue  # Legacy module or manual.
             if name in res_modules:
                 continue  # Already made.
@@ -270,3 +294,4 @@ def update_resources(root_dir, subdir_list):
                 _log.info("Deps are not ready for %s: %s", name, ", ".join(not_ready_deps))
                 continue
             construct_resources(process, resource_registry, type_res_list, name_to_full_name, code_modules, file_dict[name])
+            return

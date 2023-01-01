@@ -22,13 +22,17 @@ class UnexpectedTypeError(RuntimeError):
         super().__init__("Capsule has unexpected type: expected is %r, actual is %r", expected_type, actual_type)
 
 
+def hash_sha512(source_bytes):
+    digest = hashes.Hash(hashes.SHA512(), backend=default_backend())
+    digest.update(source_bytes)
+    return digest.finalize()
+
+
 def make_ref(capsule):
     assert isinstance(capsule, capsule_t)
     # use same encoding for capsule as for object
     encoded_capsule = packet_coders.encode(capsule.encoding, capsule)
-    digest = hashes.Hash(hashes.SHA512(), backend=default_backend())
-    digest.update(encoded_capsule)
-    hash = digest.finalize()
+    hash = hash_sha512(encoded_capsule)
     return ref_t(DEFAULT_HASH_ALGORITHM, hash)
 
 

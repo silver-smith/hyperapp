@@ -11,6 +11,10 @@ from .resource_registry import UnknownResourceName
 log = logging.getLogger(__name__)
 
 
+AUTO_GEN_LINE = '# Automatically generated file. Do not edit.'
+SOURCE_HASH_PREFIX = '# Source hash: '
+
+
 Definition = namedtuple('Definition', 'type value')
 
 
@@ -52,6 +56,20 @@ class ResourceModule:
         piece = definition.type.resolve(definition.value, self._resolve_name, self._resource_dir)
         log.info("%s: Loaded resource %r: %s", self._name, var_name, piece)
         return piece
+
+    @cached_property
+    def is_auto_generated(self):
+        lines = self._path.read_text().splitlines()
+        return len(lines) >= 1 and lines[0] == AUTO_GEN_LINE
+
+    @cached_property
+    def source_hash(self):
+        lines = self._path.read_text().splitlines()
+        if len(lines) >= 2 and lines[1].startswith(SOURCE_HASH_PREFIX):
+            hex_hash = lines[1][len(SOURCE_HASH_PREFIX):]
+            return bytes.fromhex(hex_hash)
+        else:
+            return None
 
     def __setitem__(self, name, resource):
         log.info("%s: Set resource %r: %r", self._name, name, resource)
@@ -127,9 +145,15 @@ class ResourceModule:
             raise RuntimeError(f"Attempt to save ethemeral resource module: {self._name}")
         self.save_as(self._path)
 
-    def save_as(self, path):
+    def save_as(self, path, source_hash):
         yaml_text = yaml.dump(self.as_dict, sort_keys=False)
-        path.write_text(f'# Automatically generated file. Do not edit.\n\n' + yaml_text)
+        lines = [
+            AUTO_GEN_LINE,
+            SOURCE_HASH_PREFIX + source_hash.hex(),
+            '',
+            yaml_text,
+            ]
+        path.write_text('\n'.join(lines))
 
     @property
     def as_dict(self):
