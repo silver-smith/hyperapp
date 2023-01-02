@@ -90,6 +90,21 @@ class ResourceModule:
             module_set.add(name.split(':')[0])
         return module_set
 
+    @property
+    def provided_services(self):
+        services = set()
+        if self._loaded_definitions is None:
+            # Do not try to resolve if not loaded.
+            module_contents = self._module_contents
+            definitions = set(module_contents.get('definitions', []))
+        else:
+            definitions = self._definition_dict
+        for name in definitions:
+            l = name.split('.')
+            if len(l) == 2 and l[1] == 'service':
+                services.add(l[0])
+        return services
+
     def add_association(self, resource):
         log.info("%s: Add association: %r", self._name, resource)
         t, definition = self._resource_to_definition(resource)
