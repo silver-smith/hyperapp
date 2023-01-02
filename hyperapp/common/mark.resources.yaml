@@ -1,0 +1,27 @@
+import:
+- legacy_type.attr_constructors:service
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.python_module:python_module
+- resource.constants:constants.module
+
+associations: []
+
+definitions:
+
+  mark.module:
+    _type: legacy_type.python_module:python_module
+    module_name: mark
+    file_name: mark.dyn.py
+    import_list:
+      htypes.attr_constructors.service: legacy_type.attr_constructors:service
+      code.constants: resource.constants:constants.module
+
+  mark:
+    _type: legacy_type.attribute:attribute
+    object: mark.module
+    attr_name: mark
+
+  mark.service:
+    _type: legacy_type.call:call
+    function: mark
