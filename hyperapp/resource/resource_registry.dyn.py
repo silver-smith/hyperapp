@@ -18,6 +18,11 @@ class ResourceRegistry:
     def __getitem__(self, name_pair):
         return self.resolve(name_pair)
 
+    # def __iter__(self):
+    #     for module_name, module in self._module_registry.items():
+    #         for var_name in module:
+    #             yield (module_name, var_name)
+
     @property
     def associations(self):
         association_set = set()

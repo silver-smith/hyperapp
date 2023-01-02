@@ -281,14 +281,15 @@ def collect_deps(resource_registry, file_dict, res_modules, name_to_full_name):
     return dep_dict
 
 
-def construct_resources(process, resource_registry, type_res_list, name_to_full_name, code_modules, file):
+def construct_resources(process, resource_registry, res_modules, type_res_list, name_to_full_name, code_modules, file):
     _log.info("Construct resources for: %s", file.name)
 
     service_resources = {}
-    for module_name, var_name in resource_registry:
-        l = var_name.split('.')
-        if len(l) == 2 and l[1] == 'service':
-            service_resources[l[1]] = resource_registry[module_name, var_name]
+    for module_name, module in res_modules.items():
+        for var_name in module:
+            l = var_name.split('.')
+            if len(l) == 2 and l[1] == 'service':
+                service_resources[l[1]] = resource_registry[module_name, var_name]
 
     import_list = []
     for code_name in file.deps_info.wants_code:
@@ -367,5 +368,5 @@ def update_resources(root_dir, subdir_list):
             if not_ready_deps:
                 _log.info("Deps are not ready for %s: %s", name, ", ".join(not_ready_deps))
                 continue
-            construct_resources(process, resource_registry, type_res_list, name_to_full_name, code_modules, file_dict[name])
+            construct_resources(process, resource_registry, res_modules, type_res_list, name_to_full_name, code_modules, file_dict[name])
             return
