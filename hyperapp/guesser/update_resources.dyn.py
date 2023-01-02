@@ -32,8 +32,9 @@ from .services import (
 _log = logging.getLogger(__name__)
 
 
-SourceInfo = namedtuple('Source', 'import_name attr_list wants_services wants_code tests_services tests_code')
-FileInfo = namedtuple('FileInfo', 'name source_path resources_path source_info')
+SourceInfo = namedtuple('SourceInfo', 'import_name attr_list')
+DepsInfo = namedtuple('DepsInfo', 'provide_services wants_services wants_code tests_services tests_code')
+FileInfo = namedtuple('FileInfo', 'name source_path resources_path deps_info source_info', defaults=[None, None, None])
 
 
 process_code_module_list = [
@@ -74,7 +75,7 @@ def legacy_type_resources(root_dir, subdir_list):
     return (custom_types, resource_list)
 
 
-def load_file_deps(process, type_res_list, module_name, source_path):
+def parse_source(process, type_res_list, module_name, source_path):
     import_recorder_res = htypes.import_recorder.import_recorder(type_res_list)
     import_recorder_ref = mosaic.put(import_recorder_res)
 
@@ -129,13 +130,28 @@ def load_file_deps(process, type_res_list, module_name, source_path):
     _log.info("Discovered import deps: tests_services: %s", tests_services)
     _log.info("Discovered import deps: tests_code: %s", tests_code)
 
-    return SourceInfo(
-        import_name=object_attrs.object_module,
-        attr_list=attr_list,
+    deps_info = DepsInfo(
+        provide_services=set(),
         wants_services=wants_services,
         wants_code=wants_code,
         tests_services=tests_services,
         tests_code=tests_code,
+        )
+    source_info = SourceInfo(
+        import_name=object_attrs.object_module,
+        attr_list=attr_list,
+        )
+    return (deps_info, source_info)
+
+
+
+def deps_from_module(resource_module):
+    return DepsInfo(
+        provide_services=resource_module.provided_services,
+        wants_services=set(),
+        wants_code=set(),
+        tests_services=set(),
+        tests_code=set(),
         )
 
 
@@ -167,7 +183,7 @@ def process_file(process, type_res_list, resource_registry, root_dir, source_pat
     yaml_path = source_path.with_name(stem + '.yaml')
     if yaml_path.exists():
         _log.debug("%s: legacy module", source_path)
-        file_dict[module_name] =  FileInfo(module_name, source_path, None, None)
+        file_dict[module_name] =  FileInfo(module_name, source_path)
         code_modules[module_name] = (f'legacy_module.{module_name}', stem)
         return
     code_modules[module_name] = (module_name, f'{stem}.module')
@@ -175,12 +191,13 @@ def process_file(process, type_res_list, resource_registry, root_dir, source_pat
     if resources_path.exists():
         resource_module = resource_module_factory(resource_registry, module_name, resources_path)
         if is_up_to_date(module_name, source_path, resource_module):
-            file_dict[module_name] = FileInfo(module_name, source_path, resources_path, None)
+            deps_info = deps_from_module(resource_module)
+            file_dict[module_name] = FileInfo(module_name, source_path, resources_path, deps_info)
             res_modules[module_name] = resource_module
             resource_registry.set_module(module_name, resource_module)
             return
-    source_info = load_file_deps(process, type_res_list, module_name, source_path)
-    file_dict[module_name] = FileInfo(module_name, source_path, resources_path, source_info)
+    deps_info, source_info  = parse_source(process, type_res_list, module_name, source_path)
+    file_dict[module_name] = FileInfo(module_name, source_path, resources_path, deps_info, source_info)
 
 
 def make_module_res(file, local_name, import_list):
@@ -219,18 +236,72 @@ def discover_type_imports(process, resource_registry, file, local_name, type_res
         _log.info("%s/%s type: %r", file.name, attr.name, result_t)
 
 
+def collect_deps(resource_registry, file_dict, res_modules, name_to_full_name):
+    _log.info("Collect deps")
+
+    dep_dict = defaultdict(set)
+
+    service_providers = {
+        service: file.name
+        for file in file_dict.values()
+        if file.deps_info
+        for service in file.deps_info.provide_services
+        }
+
+    for name, file in file_dict.items():
+        if file.deps_info:
+            for code_name in file.deps_info.wants_code:
+                full_code_name = name_to_full_name[code_name]
+                _log.info("%s wants code %r from: %s", name, code_name, full_code_name)
+                dep_dict[file.name].add(full_code_name)
+            for service in file.deps_info.wants_services:
+                try:
+                    provider = service_providers[service]
+                except KeyError:
+                    continue  # Legacy service.
+                _log.info("%s wants service %r from: %s", name, service, provider)
+                dep_dict[file.name].add(provider)
+        base_name = '.'.join(name.split('.')[:-1])
+        if base_name in file_dict:
+            dep_dict[base_name].add(name)
+
+    # Remove resource modules having missing deps.
+    have_removed_modules = True
+    while have_removed_modules:
+        have_removed_modules = False
+        for module_name, res_module in list(res_modules.items()):
+            used_modules = resource_module_deps(resource_registry, module_name, res_module)
+            for name in used_modules:
+                if name not in res_modules:
+                    _log.info("Resource module %s dep %s is not ready", module_name, name)
+                    del res_modules[module_name]
+                    have_removed_modules = True
+                    break
+
+    return dep_dict
+
+
 def construct_resources(process, resource_registry, type_res_list, name_to_full_name, code_modules, file):
     _log.info("Construct resources for: %s", file.name)
 
+    service_resources = {}
+    for module_name, var_name in resource_registry:
+        l = var_name.split('.')
+        if len(l) == 2 and l[1] == 'service':
+            service_resources[l[1]] = resource_registry[module_name, var_name]
+
     import_list = []
-    for code_name in file.source_info.wants_code:
+    for code_name in file.deps_info.wants_code:
         name = name_to_full_name[code_name]
         code_path = code_modules[name]
         code_module = resource_registry[code_path]
         import_list.append(
             htypes.python_module.import_rec(f'code.{code_name}', mosaic.put(code_module)))
-    for service_name in file.source_info.wants_services:
-        service = resource_registry['legacy_service', service_name]
+    for service_name in file.deps_info.wants_services:
+        try:
+            service = service_resources[service_name]
+        except KeyError:
+            service = resource_registry['legacy_service', service_name]
         import_list.append(
             htypes.python_module.import_rec(f'services.{service_name}', mosaic.put(service)))
     _log.info("Import list: %s", import_list)
@@ -250,7 +321,6 @@ def construct_resources(process, resource_registry, type_res_list, name_to_full_
 def update_resources(root_dir, subdir_list):
     additional_dir_list = [root_dir / d for d in subdir_list]
     resource_registry = resource_registry_factory()
-    dep_dict = defaultdict(set)
     file_dict = {}  # full name -> FileInfo.
     res_modules = {}  # full name -> resource module.
     code_modules = {}  # full name -> code module path.
@@ -278,26 +348,7 @@ def update_resources(root_dir, subdir_list):
             for name in file_dict.keys()
             }
 
-        for name, file in file_dict.items():
-            if file.source_info:
-                for code_name in file.source_info.wants_code:
-                    dep_dict[file.name].add(name_to_full_name[code_name])
-            base_name = '.'.join(name.split('.')[:-1])
-            if base_name in file_dict:
-                dep_dict[base_name].add(name)
-
-        # Remove resource modules having missing deps.
-        have_removed_modules = True
-        while have_removed_modules:
-            have_removed_modules = False
-            for module_name, res_module in list(res_modules.items()):
-                used_modules = resource_module_deps(resource_registry, module_name, res_module)
-                for name in used_modules:
-                    if name not in res_modules:
-                        _log.info("Resource module %s dep %s is not ready", module_name, name)
-                        del res_modules[module_name]
-                        have_removed_modules = True
-                        break
+        dep_dict = collect_deps(resource_registry, file_dict, res_modules, name_to_full_name)
 
         for name, deps in sorted(dep_dict.items()):
             _log.info("Dep: %s -> %s", name, ', '.join(deps))
