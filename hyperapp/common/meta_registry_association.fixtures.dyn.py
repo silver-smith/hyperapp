@@ -1,7 +1,7 @@
 from hyperapp.common.code_registry import CodeRegistry
 
-from .code import mark
 from .services import (
+    mark,
     types,
     web,
     )
