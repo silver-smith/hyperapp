@@ -33,6 +33,11 @@ class ResourceRegistry:
     def set_module(self, name, module):
         self._module_registry[name] = module
 
+    def remove_module(self, name):
+        del self._module_registry[name]
+        self._piece_to_name_pair.clear()
+        self._name_pair_to_piece.clear()
+
     def update_modules(self, module_dict):
         self._module_registry.update(module_dict)
 

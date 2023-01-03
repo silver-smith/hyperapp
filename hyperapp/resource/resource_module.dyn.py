@@ -78,7 +78,7 @@ class ResourceModule:
         self._resource_registry.add_to_cache((self._name, name), resource)
 
     @property
-    def used_modules(self):
+    def used_imports(self):
         module_set = set()
         if self._loaded_definitions is None:
             # Do not try to resolve if not loaded.
@@ -87,7 +87,7 @@ class ResourceModule:
         else:
             import_set = self._import_set
         for name in import_set:
-            module_set.add(name.split(':')[0])
+            module_set.add(name.split(':')[1])
         return module_set
 
     @property
