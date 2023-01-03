@@ -45,10 +45,9 @@ class SourceFile:
         self.name = source_path.name[:-len('.dyn.py')]
         self.module_name = str(source_path.relative_to(root_dir).with_name(self.name)).replace('/', '.')
         self.resources_path = source_path.with_name(self.name + '.resources.yaml')
-        self._source_deps = None
+        self.deps = None
         self._source_info = None
         self.resource_module = None
-        self.resource_module_deps = None
         self.is_manually_generated = None
 
     @property
@@ -71,13 +70,14 @@ class SourceFile:
 
     def set_resource_module(self, resource_registry, resource_module):
         self.resource_module = resource_module
-        self.resource_module_deps = None
+        self.deps = None
         resource_registry.set_module(self.module_name, self.resource_module)
 
     def init_resource_module(self, resource_registry):
         if self.is_legacy_module:
             return
         if not self.resources_path.exists():
+            self.is_manually_generated = False
             return
         resource_module = resource_module_factory(resource_registry, self.module_name, self.resources_path)
         self.is_manually_generated = not resource_module.is_auto_generated
@@ -91,7 +91,7 @@ class SourceFile:
         if self.is_legacy_module or self.is_manually_generated:
             return
         self.resource_module = None
-        self.resource_module_deps = None
+        self.deps = None
         resource_registry.remove_module(self.module_name)
 
     def check_up_to_date(self, resource_module):
@@ -190,15 +190,13 @@ class SourceFile:
             )
         return (deps_info, source_info)
 
-    def get_deps(self, process, type_res_list):
+    def init_deps(self, process, type_res_list):
+        if self.is_legacy_module or self.deps:
+            return
         if self.up_to_date:
-            if not self.resource_module_deps:
-                self.resource_module_deps = self.get_resource_module_deps()
-            return self.resource_module_deps
+            self.deps = self.get_resource_module_deps()
         else:
-            if not self._source_deps:
-                self._source_deps, self._source_info = self.parse_source(process, type_res_list)
-            return self._source_deps
+            self.deps, self._source_info = self.parse_source(process, type_res_list)
 
 
 process_code_module_list = [
@@ -275,7 +273,12 @@ def discover_type_imports(process, resource_registry, file, local_name, type_res
         _log.info("%s/%s type: %r", file.name, attr.name, result_t)
 
 
-def collect_deps(process, type_res_list, resource_registry, file_dict):
+def init_deps(process, type_res_list, file_dict):
+    for file in file_dict.values():
+        file.init_deps(process, type_res_list)
+
+
+def collect_deps(resource_registry, file_dict):
     _log.info("Collect deps")
 
     code_providers = {
@@ -283,26 +286,23 @@ def collect_deps(process, type_res_list, resource_registry, file_dict):
         for file in file_dict.values()
         }
 
-    dep_infos = {
-        file.module_name: file.get_deps(process, type_res_list)
-        for file in file_dict.values()
-        if not file.is_legacy_module
-        }
-
     service_providers = {
         service: module_name
-        for module_name, info in dep_infos.items()
-        for service in info.provide_services
+        for module_name, file in file_dict.items()
+        if not file.is_legacy_module
+        for service in file.deps.provide_services
         }
 
     deps = defaultdict(set)  # module_name -> module_name list
 
-    for module_name, info in dep_infos.items():
-        for code_name in info.wants_code:
+    for module_name, file in file_dict.items():
+        if file.is_legacy_module:
+            continue
+        for code_name in file.deps.wants_code:
             provider = code_providers[code_name]
             _log.info("%s wants code %r from: %s", module_name, code_name, provider)
             deps[module_name].add(provider)
-        for service in info.wants_services:
+        for service in file.deps.wants_services:
             try:
                 provider = service_providers[service]
             except KeyError:
@@ -310,7 +310,7 @@ def collect_deps(process, type_res_list, resource_registry, file_dict):
             _log.info("%s wants service %r from: %s", module_name, service, provider)
             deps[module_name].add(provider)
         base_name = '.'.join(module_name.split('.')[:-1])
-        if base_name in dep_infos:
+        if base_name in file_dict and not file_dict[base_name].is_legacy_module:
             deps[base_name].add(module_name)  # Add fixture deps.
 
     # Invalidate resource modules having outdated deps.
@@ -353,8 +353,19 @@ def ready_for_construction_files(file_dict, deps):
         yield file
 
 
-def construct_resources(process, resource_registry, type_res_list, file):
+def construct_resources(process, resource_registry, type_res_list, file_dict, file):
     _log.info("***** Construct resources for: %s  %s", file.module_name, '*'*50)
+
+    code_modules = {
+        file.name: file.code_module_pair
+        for file in file_dict.values()
+        }
+
+    service_resources = {
+        service: module_name
+        for module_name, info in dep_infos.items()
+        for service in info.provide_services
+        }
 
     service_resources = {}
     for module_name, module in res_modules.items():
@@ -420,9 +431,9 @@ def update_resources(root_dir, subdir_list):
     with subprocess(additional_dir_list) as process:
 
         file_dict = collect_source_files(root_dir, subdir_list, resource_registry)
-
-        deps = collect_deps(process, type_res_list, resource_registry, file_dict)
+        init_deps(process, type_res_list, file_dict)
+        deps = collect_deps(resource_registry, file_dict)
 
         for file in ready_for_construction_files(file_dict, deps):
-            construct_resources(process, resource_registry, type_res_list, file)
+            construct_resources(process, resource_registry, type_res_list, file_dict, file)
             return
