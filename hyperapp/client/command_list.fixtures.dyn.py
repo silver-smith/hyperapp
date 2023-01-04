@@ -2,16 +2,16 @@ from hyperapp.common.htypes import phony_ref
 
 from .import htypes
 from .services import (
+    mark,
     mosaic,
     types,
     )
-from .view_command import ViewCommand
-from .marker import module, param, service
+from .code.view_command import ViewCommand
 
 _null_ref = phony_ref('null')
 
 
-@module.qt_keys.run_input_key_dialog
+@mark.module.qt_keys.run_input_key_dialog
 def run_input_key_dialog():
     return ''
 
@@ -26,7 +26,7 @@ def _phony_command():
         dir=mosaic.put(dir),
         )
 
-@service
+@mark.service
 def global_command_list():
     return [_phony_command()]
 
@@ -43,7 +43,7 @@ class _PhonyRootView:
         return [([], command)]
 
 
-@service
+@mark.service
 def root_view():
     return _PhonyRootView()
 
@@ -56,35 +56,37 @@ class PhonyItem:
         self.dir = mosaic.put(dir)
 
 
-@param.GlobalCommandList
+@mark.param.GlobalCommandList
 def piece():
     return htypes.command_list.global_command_list()
 
 
-@param.GlobalCommandList.set_key
+@mark.param.GlobalCommandList.set_key
 def current_item():
     return PhonyItem()
 
 
-@param.GlobalCommandList.set_key_escape
+@mark.param.GlobalCommandList.set_key_escape
 def current_item():
     return PhonyItem()
 
 
-param.ViewCommandList.piece = htypes.command_list.view_command_list()
+@mark.param.ViewCommandList
+def piece():
+    return htypes.command_list.view_command_list()
 
 
-@param.ViewCommandList.set_key
+@mark.param.ViewCommandList.set_key
 def current_item():
     return PhonyItem()
 
 
-@param.ViewCommandList.set_key_escape
+@mark.param.ViewCommandList.set_key_escape
 def current_item():
     return PhonyItem()
 
 
-@service.adapter_factory
+@mark.service.adapter_factory
 async def phony_adapter_factory(piece):
     return None
 
@@ -95,12 +97,12 @@ class _PhonyObjectCommandsFactory:
         return [_phony_command()]
 
 
-@service
+@mark.service
 def object_commands_factory():
     return _PhonyObjectCommandsFactory()
 
 
-@param.ObjectCommandList
+@mark.param.ObjectCommandList
 def piece():
     return htypes.command_list.object_command_list(
         piece_ref=mosaic.put(None),
@@ -108,15 +110,21 @@ def piece():
         )
 
 
-@param.ObjectCommandList.set_key
+@mark.param.ObjectCommandList.set_key
 def current_item():
     return PhonyItem()
 
 
-@param.ObjectCommandList.set_key_escape
+@mark.param.ObjectCommandList.set_key_escape
 def current_item():
     return PhonyItem()
 
 
-param.open_object_commands.piece = None
-param.open_object_commands.view_state = None
+@mark.param.open_object_commands
+def piece():
+    return None
+
+
+@mark.param.open_object_commands
+def view_state():
+    return None

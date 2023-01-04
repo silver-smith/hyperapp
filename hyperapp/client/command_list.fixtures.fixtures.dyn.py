@@ -1,5 +1,13 @@
-from .code.marker import param
+from .services import (
+    mark,
+    )
 
 
-param.phony_adapter_factory.piece = None
-param.service_object_commands_factory.enum_object_command_pieces.adapter = None
+@mark.param.phony_adapter_factory
+def piece():
+    return None
+
+
+@mark.param.service_object_commands_factory.enum_object_command_pieces
+def adapter():
+    return None
