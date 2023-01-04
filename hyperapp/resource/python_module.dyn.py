@@ -125,11 +125,6 @@ def sub_loader_dict(python_object_creg, import_list, root_module_name):
     for rec in import_list:
         resource = python_object_creg.invite(rec.resource)
         path = rec.full_name.split('.')
-        if len(path) == 1 and inspect.ismodule(resource):
-            # This is code module import, resource is python module.
-            [module_name] = path
-            module_dict[module_name] = resource.__dict__
-            continue
         if path[-1] == '*':
             # An auto importer.
             module_name = rec.full_name
@@ -144,6 +139,10 @@ def sub_loader_dict(python_object_creg, import_list, root_module_name):
                     loader_dict[package_name] = _PackageLoader()
             if path[0] == 'htypes' and i == 2:
                 loader_dict['htypes'].sub_module_list.append(f'{root_module_name}.{package_name}')
+        if inspect.ismodule(resource):
+            # This is code module import, resource is python module.
+            module_dict[rec.full_name] = resource.__dict__
+            continue
         module_name = '.'.join(path[:-1])
         name = path[-1]
         module_dict[module_name][name] = resource
