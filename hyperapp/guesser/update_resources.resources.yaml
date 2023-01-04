@@ -28,6 +28,7 @@ import:
 - legacy_type.piece_ref:piece_ref
 - legacy_type.python_module:python_module
 - legacy_type.python_module:import_rec
+- resource.constructor_creg:constructor_creg.service
 - sync.subprocess_context:subprocess_running
 
 definitions:
@@ -58,6 +59,7 @@ definitions:
       htypes.python_module.import_rec: legacy_type.python_module:import_rec
       services.code_module_loader: legacy_service:code_module_loader
       services.collect_attributes_ref: collect_attributes_ref
+      services.constructor_creg: resource.constructor_creg:constructor_creg.service
       services.endpoint_registry: legacy_service:endpoint_registry
       services.generate_rsa_identity: legacy_service:generate_rsa_identity
       services.get_resource_type_ref: get_resource_type_ref

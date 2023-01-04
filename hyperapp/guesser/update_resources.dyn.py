@@ -12,6 +12,7 @@ from . import htypes
 from .services import (
     code_module_loader,
     collect_attributes_ref,
+    constructor_creg,
     endpoint_registry,
     generate_rsa_identity,
     get_resource_type_ref,
@@ -34,8 +35,7 @@ _log = logging.getLogger(__name__)
 
 
 SourceInfo = namedtuple('SourceInfo', 'import_name attr_list')
-DepsInfo = namedtuple('DepsInfo', 'provide_services wants_services wants_code tests_services tests_code')
-FileInfo = namedtuple('FileInfo', 'name source_path resources_path deps_info source_info', defaults=[None, None, None])
+DepsInfo = namedtuple('DepsInfo', 'provides_services wants_services wants_code tests_services tests_code')
 
 
 class SourceFile:
@@ -46,7 +46,7 @@ class SourceFile:
         self.module_name = str(source_path.relative_to(root_dir).with_name(self.name)).replace('/', '.')
         self.resources_path = source_path.with_name(self.name + '.resources.yaml')
         self.deps = None
-        self._source_info = None
+        self.source_info = None
         self.resource_module = None
         self.is_manually_generated = None
 
@@ -115,7 +115,7 @@ class SourceFile:
             if len(l) > 1 and l[-1] == 'module':
                 wants_code.add('.'.join(l[:-1]))
         return DepsInfo(
-            provide_services=self.resource_module.provided_services,
+            provides_services=self.resource_module.provided_services,
             wants_services=wants_services,
             wants_code=wants_code,
             tests_services=set(),
@@ -178,7 +178,7 @@ class SourceFile:
         _log.info("Discovered import deps: tests_code: %s", tests_code)
 
         deps_info = DepsInfo(
-            provide_services=set(),
+            provides_services=set(),
             wants_services=wants_services,
             wants_code=wants_code,
             tests_services=tests_services,
@@ -196,7 +196,7 @@ class SourceFile:
         if self.up_to_date:
             self.deps = self.get_resource_module_deps()
         else:
-            self.deps, self._source_info = self.parse_source(process, type_res_list)
+            self.deps, self.source_info = self.parse_source(process, type_res_list)
 
 
 process_code_module_list = [
@@ -237,42 +237,6 @@ def legacy_type_resources(root_dir, subdir_list):
     return (custom_types, resource_list)
 
 
-def make_module_res(file, local_name, import_list):
-    return htypes.python_module.python_module(
-        module_name=local_name,
-        source=file.source_path.read_text(),
-        file_path=str(file.source_path),
-        import_list=tuple(sorted(import_list)),
-        )
-
-
-def discover_type_imports(process, resource_registry, file, local_name, type_res_list, import_list):
-    import_recorder_res = htypes.import_recorder.import_recorder(type_res_list)
-    import_recorder_ref = mosaic.put(import_recorder_res)
-    recorder_import_list = [
-        htypes.python_module.import_rec('htypes.*', import_recorder_ref),
-        *import_list,
-        ]
-    resource_module = resource_module_factory(resource_registry, file.name)
-    module_res = make_module_res(file, local_name, recorder_import_list)
-    # resource_module[f'{local_name}.module'] = module_res
-
-    for attr in file.source_info.attr_list:
-        if not isinstance(attr, htypes.inspect.fn_attr):
-            continue
-        attr_res = htypes.attribute.attribute(
-            object=mosaic.put(module_res),
-            attr_name=attr.name,
-            )
-        if attr.param_list:
-            continue  # TODO: Fixtures.
-        call_res = htypes.call.call(mosaic.put(attr_res))
-
-        get_resource_type = process.rpc_call(get_resource_type_ref)
-        result_t = get_resource_type(resource_ref=mosaic.put(call_res))
-        _log.info("%s/%s type: %r", file.name, attr.name, result_t)
-
-
 def init_deps(process, type_res_list, file_dict):
     for file in file_dict.values():
         file.init_deps(process, type_res_list)
@@ -290,7 +254,7 @@ def collect_deps(resource_registry, file_dict):
         service: module_name
         for module_name, file in file_dict.items()
         if not file.is_legacy_module
-        for service in file.deps.provide_services
+        for service in file.deps.provides_services
         }
 
     deps = defaultdict(set)  # module_name -> module_name list
@@ -337,65 +301,80 @@ def collect_deps(resource_registry, file_dict):
     return deps
 
 
-def ready_for_construction_files(file_dict, deps):
-    for module_name, file in sorted(file_dict.items()):
-        if file.is_legacy_module:
-            continue
-        if file.up_to_date:
-            continue
-        not_ready_deps = [
-            d for d in deps[module_name]
-            if not file_dict[d].up_to_date
-            ]
-        if not_ready_deps:
-            _log.info("Deps are not ready for %s: %s", module_name, ", ".join(not_ready_deps))
-            continue
-        yield file
+def make_module_res(file, import_list):
+    return htypes.python_module.python_module(
+        module_name=file.name,
+        source=file.source_path.read_text(),
+        file_path=str(file.source_path),
+        import_list=tuple(sorted(import_list)),
+        )
 
 
-def construct_resources(process, resource_registry, type_res_list, file_dict, file):
-    _log.info("***** Construct resources for: %s  %s", file.module_name, '*'*50)
+def discover_type_imports(process, resource_registry, file, type_res_list, import_list):
+    import_recorder_res = htypes.import_recorder.import_recorder(type_res_list)
+    import_recorder_ref = mosaic.put(import_recorder_res)
+    recorder_import_list = [
+        htypes.python_module.import_rec('htypes.*', import_recorder_ref),
+        *import_list,
+        ]
+    resource_module = resource_module_factory(resource_registry, file.name)
+    module_res = make_module_res(file, recorder_import_list)
+
+    for attr in file.source_info.attr_list:
+        if not isinstance(attr, htypes.inspect.fn_attr):
+            continue
+        attr_res = htypes.attribute.attribute(
+            object=mosaic.put(module_res),
+            attr_name=attr.name,
+            )
+        if attr.param_list:
+            continue  # TODO: Fixtures.
+        call_res = htypes.call.call(mosaic.put(attr_res))
+
+        get_resource_type = process.rpc_call(get_resource_type_ref)
+        result_t = get_resource_type(resource_ref=mosaic.put(call_res))
+        _log.info("%s/%s type: %r", file.name, attr.name, result_t)
+
+
+def construct_resources(process, resource_registry, custom_types, type_res_list, file_dict, file):
 
     code_modules = {
         file.name: file.code_module_pair
         for file in file_dict.values()
         }
 
-    service_resources = {
+    service_modules = {
         service: module_name
-        for module_name, info in dep_infos.items()
-        for service in info.provide_services
+        for module_name, file in file_dict.items()
+        if not file.is_legacy_module
+        for service in file.deps.provides_services
         }
 
-    service_resources = {}
-    for module_name, module in res_modules.items():
-        for var_name in module:
-            l = var_name.split('.')
-            if len(l) == 2 and l[1] == 'service':
-                service_resources[l[1]] = resource_registry[module_name, var_name]
-
     import_list = []
-    for code_name in file.deps_info.wants_code:
-        name = name_to_full_name[code_name]
-        code_path = code_modules[name]
-        code_module = resource_registry[code_path]
+    for name in file.deps.wants_code:
+        name_pair = code_modules[name]
+        module = resource_registry[name_pair]
         import_list.append(
-            htypes.python_module.import_rec(f'code.{code_name}', mosaic.put(code_module)))
-    for service_name in file.deps_info.wants_services:
+            htypes.python_module.import_rec(f'code.{name}', mosaic.put(module)))
+    for service_name in file.deps.wants_services:
         try:
-            service = service_resources[service_name]
+            module_name = service_modules[service_name]
         except KeyError:
             service = resource_registry['legacy_service', service_name]
+        else:
+            service = resource_registry[module_name, f'{service_name}.service']
         import_list.append(
             htypes.python_module.import_rec(f'services.{service_name}', mosaic.put(service)))
     _log.info("Import list: %s", import_list)
 
-    local_name = file.name.split('.')[-1]
-
-    discover_type_imports(process, resource_registry, file, local_name, type_res_list, import_list)
+    discover_type_imports(process, resource_registry, file, type_res_list, import_list)
 
     resource_module = resource_module_factory(resource_registry, file.name)
-    resource_module[f'{local_name}.module'] = make_module_res(file, local_name, import_list)
+    resource_module[f'{file.name}.module'] = make_module_res(file, import_list)
+
+    for attr in file.source_info.attr_list:
+        for ctr_ref in attr.constructors:
+            constructor_creg.invite(ctr_ref, custom_types, file.resource_module, attr)
 
     source_hash = hash_sha512(file.source_path.read_bytes())
     _log.info("Write %s: %s", file.name, file.resources_path)
@@ -412,6 +391,22 @@ def collect_source_files(root_dir, subdir_list, resource_registry):
             source_file.init_resource_module(resource_registry)
             file_dict[source_file.module_name] = source_file
     return file_dict
+
+
+def ready_for_construction_files(file_dict, deps):
+    for module_name, file in sorted(file_dict.items()):
+        if file.is_legacy_module:
+            continue
+        if file.up_to_date:
+            continue
+        not_ready_deps = [
+            d for d in deps[module_name]
+            if not file_dict[d].up_to_date
+            ]
+        if not_ready_deps:
+            _log.info("Deps are not ready for %s: %s", module_name, ", ".join(not_ready_deps))
+            continue
+        yield file
 
 
 def update_resources(root_dir, subdir_list):
@@ -434,6 +429,9 @@ def update_resources(root_dir, subdir_list):
         init_deps(process, type_res_list, file_dict)
         deps = collect_deps(resource_registry, file_dict)
 
+        idx = 0
         for file in ready_for_construction_files(file_dict, deps):
-            construct_resources(process, resource_registry, type_res_list, file_dict, file)
+            _log.info("****** #%d Construct resources for: %s  %s", idx, file.module_name, '*'*50)
+            construct_resources(process, resource_registry, custom_types, type_res_list, file_dict, file)
+            idx += 1
             return
