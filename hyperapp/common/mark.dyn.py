@@ -8,27 +8,45 @@ from .services import (
 from .code.constants import RESOURCE_CTR_ATTR
 
 
-class Marker:
+def add_fn_module_constructor(fn, ctr):
+    module = inspect.getmodule(fn)
+    ctr_dict = module.__dict__.setdefault(RESOURCE_CTR_ATTR, {})
+    ctr_list = ctr_dict.setdefault(fn.__name__, [])
+    ctr_list.append(mosaic.put(ctr))
 
-    def __init__(self, name):
-        self._name = name
+
+class ServiceMarker:
+
+    def __call__(self, fn):
+        ctr = htypes.attr_constructors.service(
+            attr_name=fn.__name__,
+            name=fn.__name__,
+            )
+        add_fn_module_constructor(fn, ctr)
+        return fn
+
+
+class ParamMarker:
+
+    def __init__(self, path=None):
+        self._path = path or []
 
     def __getattr__(self, name):
         if name.startswith('_'):
             raise AttributeError(name)
-        return Marker(f'{self._name}.{name}')
+        return ParamMarker([*self._path, name])
 
     def __call__(self, fn):
-        module = inspect.getmodule(fn)
-        ctr_dict = module.__dict__.setdefault(RESOURCE_CTR_ATTR, {})
-        ctr_list = ctr_dict.setdefault(fn.__name__, [])
-        ctr = htypes.attr_constructors.service(name=fn.__name__)
-        ctr_list.append(mosaic.put(ctr))
+        ctr = htypes.attr_constructors.parameter(
+            attr_name=fn.__name__,
+            path=[*self._path, fn.__name__],
+            )
+        add_fn_module_constructor(fn, ctr)
         return fn
 
 
 def mark():
     return SimpleNamespace(
-        param=Marker('param'),
-        service=Marker('service'),
+        param=ParamMarker(),
+        service=ServiceMarker(),
         )

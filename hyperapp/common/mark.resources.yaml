@@ -1,4 +1,6 @@
 import:
+- legacy_service:mosaic
+- legacy_type.attr_constructors:parameter
 - legacy_type.attr_constructors:service
 - legacy_type.attribute:attribute
 - legacy_type.call:call
@@ -14,8 +16,10 @@ definitions:
     module_name: mark
     file_name: mark.dyn.py
     import_list:
+      htypes.attr_constructors.parameter: legacy_type.attr_constructors:parameter
       htypes.attr_constructors.service: legacy_type.attr_constructors:service
       code.constants: resource.constants:constants.module
+      services.mosaic: legacy_service:mosaic
 
   mark:
     _type: legacy_type.attribute:attribute
