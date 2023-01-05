@@ -8,7 +8,7 @@ import:
 
 definitions:
 
-  module_visitor_module:
+  module_visitor.module:
     _type: legacy_type.python_module:python_module
     module_name: module_visitor
     file_name: module_visitor.dyn.py
@@ -21,5 +21,5 @@ definitions:
 
   ModuleVisitor:
     _type: legacy_type.attribute:attribute
-    object: module_visitor_module
+    object: module_visitor.module
     attr_name: ModuleVisitor

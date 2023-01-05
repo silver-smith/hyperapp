@@ -13,7 +13,7 @@ associations:
 
 definitions:
 
-  import_discoverer_module:
+  import_discoverer.module:
     _type: legacy_type.python_module:python_module
     module_name: import_discoverer
     file_name: import_discoverer.dyn.py
@@ -22,5 +22,5 @@ definitions:
 
   ImportDiscoverer:
     _type: legacy_type.attribute:attribute
-    object: import_discoverer_module
+    object: import_discoverer.module
     attr_name:  ImportDiscoverer

@@ -20,7 +20,7 @@ definitions:
     _type: legacy_type.piece_ref:piece_ref
     value: guesser.runner:get_resource_type
 
-  attr_visitor_module:
+  attr_visitor.module:
     _type: legacy_type.python_module:python_module
     module_name: attr_visitor
     file_name: attr_visitor.dyn.py
@@ -40,5 +40,5 @@ definitions:
 
   AttrVisitor:
     _type: legacy_type.attribute:attribute
-    object: attr_visitor_module
+    object: attr_visitor.module
     attr_name: AttrVisitor

@@ -15,10 +15,10 @@ definitions:
 
   CustomResources:
     _type: legacy_type.attribute:attribute
-    object: custom_resource_module_registry_module
+    object: custom_resource_module_registry.module
     attr_name: CustomResources
 
-  custom_resource_module_registry_module:
+  custom_resource_module_registry.module:
     _type: legacy_type.python_module:python_module
     module_name: custom_resource_module_registry
     file_name: custom_resource_module_registry.dyn.py
@@ -35,5 +35,5 @@ definitions:
 
   load_custom_resources:
     _type: legacy_type.attribute:attribute
-    object: custom_resource_module_registry_module
+    object: custom_resource_module_registry.module
     attr_name: load_custom_resources

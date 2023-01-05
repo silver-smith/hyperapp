@@ -8,7 +8,7 @@ import:
 
 definitions:
 
-  load_modules_module:
+  load_modules.module:
     _type: legacy_type.python_module:python_module
     module_name: load_modules
     file_name: load_modules.dyn.py
@@ -20,5 +20,5 @@ definitions:
 
   load_additional_modules:
     _type: legacy_type.attribute:attribute
-    object: load_modules_module
+    object: load_modules.module
     attr_name: load_additional_modules

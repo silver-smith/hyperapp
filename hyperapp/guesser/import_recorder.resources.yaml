@@ -13,7 +13,7 @@ associations:
 
 definitions:
 
-  import_recorder_module:
+  import_recorder.module:
     _type: legacy_type.python_module:python_module
     module_name: import_recorder
     file_name: import_recorder.dyn.py
@@ -22,5 +22,5 @@ definitions:
 
   ImportRecorder:
     _type: legacy_type.attribute:attribute
-    object: import_recorder_module
+    object: import_recorder.module
     attr_name:  ImportRecorder

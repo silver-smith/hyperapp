@@ -13,7 +13,7 @@ associations:
 
 definitions:
 
-  auto_importer_module:
+  auto_importer.module:
     _type: legacy_type.python_module:python_module
     module_name: auto_importer
     file_name: auto_importer.dyn.py
@@ -22,5 +22,5 @@ definitions:
 
   AutoImporter:
     _type: legacy_type.attribute:attribute
-    object: auto_importer_module
+    object: auto_importer.module
     attr_name: AutoImporter

@@ -11,7 +11,7 @@ import:
 
 definitions:
 
-  import_resources_module:
+  import_resources.module:
     _type: legacy_type.python_module:python_module
     module_name: import_resources
     file_name: import_resources.dyn.py
@@ -26,10 +26,10 @@ definitions:
 
   available_import_resources:
     _type: legacy_type.attribute:attribute
-    object: import_resources_module
+    object: import_resources.module
     attr_name: available_import_resources
 
   override_import_resources_with_fixtures:
     _type: legacy_type.attribute:attribute
-    object: import_resources_module
+    object: import_resources.module
     attr_name: override_import_resources_with_fixtures

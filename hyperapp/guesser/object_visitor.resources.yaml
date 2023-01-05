@@ -13,7 +13,7 @@ definitions:
     _type: legacy_type.piece_ref:piece_ref
     value: guesser.runner:collect_attributes
 
-  object_visitor_module:
+  object_visitor.module:
     _type: legacy_type.python_module:python_module
     module_name: object_visitor
     file_name: object_visitor.dyn.py
@@ -25,5 +25,5 @@ definitions:
 
   ObjectVisitor:
     _type: legacy_type.attribute:attribute
-    object: object_visitor_module
+    object: object_visitor.module
     attr_name: ObjectVisitor
