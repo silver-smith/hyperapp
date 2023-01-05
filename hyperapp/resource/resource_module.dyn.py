@@ -87,7 +87,8 @@ class ResourceModule:
         else:
             import_set = self._import_set
         for name in import_set:
-            module_set.add(name.split(':')[1])
+            module_name, var_name = name.split(':')
+            module_set.add((module_name, var_name))
         return module_set
 
     @property

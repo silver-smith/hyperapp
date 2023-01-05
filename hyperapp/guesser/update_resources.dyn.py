@@ -35,7 +35,7 @@ _log = logging.getLogger(__name__)
 
 
 SourceInfo = namedtuple('SourceInfo', 'import_name attr_list')
-DepsInfo = namedtuple('DepsInfo', 'provides_services wants_services wants_code tests_services tests_code')
+DepsInfo = namedtuple('DepsInfo', 'provides_services uses_modules wants_services wants_code tests_services tests_code')
 
 
 class SourceFile:
@@ -49,6 +49,9 @@ class SourceFile:
         self.source_info = None
         self.resource_module = None
         self.is_manually_generated = None
+
+    def __repr__(self):
+        return f"<SourceFile {self.module_name!r}>"
 
     @property
     def up_to_date(self):
@@ -64,13 +67,15 @@ class SourceFile:
     @cached_property
     def code_module_pair(self):
         if self.is_legacy_module:
-            return (f'legacy_module.{self.module_name}', self.name)
+            l = self.module_name.split('.')
+            package = '.'.join(l[:-1])
+            return (f'legacy_module.{package}', self.name)
         else:
             return (self.module_name, f'{self.name}.module')
 
     def set_resource_module(self, resource_registry, resource_module):
         self.resource_module = resource_module
-        self.deps = None
+        self.deps = self.get_resource_module_deps()
         resource_registry.set_module(self.module_name, self.resource_module)
 
     def init_resource_module(self, resource_registry):
@@ -106,25 +111,67 @@ class SourceFile:
         return False
 
     def get_resource_module_deps(self):
+        uses_modules = set()
         wants_services = set()
         wants_code = set()
-        for name in self.resource_module.used_imports:
-            l = name.split('.')
+        for module_name, var_name in self.resource_module.used_imports:
+            uses_modules.add(module_name)
+            l = var_name.split('.')
             if len(l) == 2 and l[1] == 'service':
                 wants_services.add(l[0])
             if len(l) > 1 and l[-1] == 'module':
                 wants_code.add('.'.join(l[:-1]))
         return DepsInfo(
             provides_services=self.resource_module.provided_services,
+            uses_modules=uses_modules,
             wants_services=wants_services,
             wants_code=wants_code,
             tests_services=set(),
             tests_code=set(),
             )
 
-    def parse_source(self, process, type_res_list):
-        import_recorder_res = htypes.import_recorder.import_recorder(type_res_list)
+    # Can we load this resource module? Can we use it's code_module_pair?
+    def deps_up_to_date(self, file_dict, name_to_file):
+        if self.is_legacy_module:
+            return True
+        if not self.up_to_date:
+            return False
+        for module_name in self.deps.uses_modules:
+            if module_name.split('.')[0] in {'legacy_type', 'legacy_module', 'legacy_service'}:
+                continue
+            file = file_dict[module_name]
+            if not file.deps_up_to_date(file_dict, name_to_file):
+                return False
+        for module_name in self.deps.wants_code:
+            file = name_to_file[module_name]
+            if not file.deps_up_to_date(file_dict, name_to_file):
+                return False
+        return True
+
+    def parse_source(self, resource_registry, process, type_res_list, file_dict):
+        resource_list = [*type_res_list]
+
+        name_to_file = {
+            file.name: file
+            for file in file_dict.values()
+            }
+
+        for file in file_dict.values():
+            if not file.deps_up_to_date(file_dict, name_to_file):
+                continue
+            resource = resource_registry[file.code_module_pair]
+            resource_list.append(
+                htypes.import_recorder.resource(('code', file.name), mosaic.put(resource)))
+            if file.is_legacy_module:
+                continue
+            for service in file.deps.provides_services:
+                resource = resource_registry[file.module_name, f'{service}.service']
+                resource_list.append(
+                    htypes.import_recorder.resource(('services', service), mosaic.put(resource)))
+
+        import_recorder_res = htypes.import_recorder.import_recorder(resource_list)
         import_recorder_ref = mosaic.put(import_recorder_res)
+        import_recorder = process.proxy(import_recorder_ref)
 
         import_discoverer_res = htypes.import_discoverer.import_discoverer()
         import_discoverer_ref = mosaic.put(import_discoverer_res)
@@ -137,6 +184,8 @@ class SourceFile:
             file_path=str(self.source_path),
             import_list=[
                 htypes.python_module.import_rec('htypes.*', import_recorder_ref),
+                htypes.python_module.import_rec('services.*', import_recorder_ref),
+                htypes.python_module.import_rec('code.*', import_recorder_ref),
                 htypes.python_module.import_rec('*', import_discoverer_ref),
                 ],
             )
@@ -149,11 +198,14 @@ class SourceFile:
         discovered_imports = import_discoverer.discovered_imports()
         _log.info("Discovered import list: %s", discovered_imports)
 
+        used_imports = import_recorder.used_imports()
+        _log.info("Used import list: %s", used_imports)
+
         wants_services = set()
         wants_code = set()
         tests_services = set()
         tests_code = set()
-        for imp in discovered_imports:
+        for imp in discovered_imports + used_imports:
             if len(imp) < 2:
                 continue
             kind, name, *_ = imp
@@ -171,6 +223,8 @@ class SourceFile:
                 if kind == 'code':
                     tests_code.add(name)
                     continue
+            if kind == 'htypes':
+                continue  # TODO: store htypes used by top-level statements too.
             _log.warning("Unknown import kind (old-style import?): %r at %s", kind, self.source_path)
         _log.info("Discovered import deps: wants_services: %s", wants_services)
         _log.info("Discovered import deps: wants_code: %s", wants_code)
@@ -179,6 +233,7 @@ class SourceFile:
 
         deps_info = DepsInfo(
             provides_services=set(),
+            uses_modules=set(),
             wants_services=wants_services,
             wants_code=wants_code,
             tests_services=tests_services,
@@ -190,13 +245,13 @@ class SourceFile:
             )
         return (deps_info, source_info)
 
-    def init_deps(self, process, type_res_list):
+    def init_deps(self, resource_registry, process, type_res_list, file_dict):
         if self.is_legacy_module or self.deps:
             return
         if self.up_to_date:
             self.deps = self.get_resource_module_deps()
         else:
-            self.deps, self.source_info = self.parse_source(process, type_res_list)
+            self.deps, self.source_info = self.parse_source(resource_registry, process, type_res_list, file_dict)
 
 
 process_code_module_list = [
@@ -235,11 +290,6 @@ def legacy_type_resources(root_dir, subdir_list):
             resource_list.append(
                 htypes.import_recorder.resource(('htypes', module_name, name), resource_ref))
     return (custom_types, resource_list)
-
-
-def init_deps(process, type_res_list, file_dict):
-    for file in file_dict.values():
-        file.init_deps(process, type_res_list)
 
 
 def collect_deps(resource_registry, file_dict):
@@ -314,8 +364,8 @@ def discover_type_imports(process, resource_registry, file, type_res_list, impor
     import_recorder_res = htypes.import_recorder.import_recorder(type_res_list)
     import_recorder_ref = mosaic.put(import_recorder_res)
     recorder_import_list = [
-        htypes.python_module.import_rec('htypes.*', import_recorder_ref),
         *import_list,
+        htypes.python_module.import_rec('htypes.*', import_recorder_ref),
         ]
     resource_module = resource_module_factory(resource_registry, file.name)
     module_res = make_module_res(file, recorder_import_list)
@@ -336,8 +386,7 @@ def discover_type_imports(process, resource_registry, file, type_res_list, impor
         _log.info("%s/%s type: %r", file.name, attr.name, result_t)
 
 
-def construct_resources(process, resource_registry, custom_types, type_res_list, file_dict, file):
-
+def make_import_list(resource_registry, file_dict, file):
     code_modules = {
         file.name: file.code_module_pair
         for file in file_dict.values()
@@ -346,16 +395,18 @@ def construct_resources(process, resource_registry, custom_types, type_res_list,
     service_modules = {
         service: module_name
         for module_name, file in file_dict.items()
-        if not file.is_legacy_module
+        if not file.is_legacy_module and file.up_to_date
         for service in file.deps.provides_services
         }
 
     import_list = []
+
     for name in file.deps.wants_code:
         name_pair = code_modules[name]
         module = resource_registry[name_pair]
         import_list.append(
             htypes.python_module.import_rec(f'code.{name}', mosaic.put(module)))
+
     for service_name in file.deps.wants_services:
         try:
             module_name = service_modules[service_name]
@@ -365,8 +416,13 @@ def construct_resources(process, resource_registry, custom_types, type_res_list,
             service = resource_registry[module_name, f'{service_name}.service']
         import_list.append(
             htypes.python_module.import_rec(f'services.{service_name}', mosaic.put(service)))
-    _log.info("Import list: %s", import_list)
 
+    _log.info("Import list: %s", import_list)
+    return import_list
+
+
+def construct_resources(process, resource_registry, custom_types, type_res_list, file_dict, file):
+    import_list = make_import_list(resource_registry, file_dict, file)
     discover_type_imports(process, resource_registry, file, type_res_list, import_list)
 
     resource_module = resource_module_factory(resource_registry, file.name)
@@ -391,6 +447,11 @@ def collect_source_files(root_dir, subdir_list, resource_registry):
             source_file.init_resource_module(resource_registry)
             file_dict[source_file.module_name] = source_file
     return file_dict
+
+
+def init_deps(resource_registry, process, type_res_list, file_dict):
+    for file in file_dict.values():
+        file.init_deps(resource_registry, process, type_res_list, file_dict)
 
 
 def ready_for_construction_files(file_dict, deps):
@@ -426,7 +487,7 @@ def update_resources(root_dir, subdir_list):
     with subprocess(additional_dir_list) as process:
 
         file_dict = collect_source_files(root_dir, subdir_list, resource_registry)
-        init_deps(process, type_res_list, file_dict)
+        init_deps(resource_registry, process, type_res_list, file_dict)
         deps = collect_deps(resource_registry, file_dict)
 
         idx = 0
