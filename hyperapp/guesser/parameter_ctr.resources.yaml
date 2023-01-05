@@ -1,0 +1,26 @@
+import:
+- common.mark:mark.service
+- legacy_type.attr_constructors:parameter
+- legacy_type.attribute:attribute
+- legacy_type.constructor_creg:constructor_creg_association
+- legacy_type.python_module:python_module
+
+associations:
+
+- _type: legacy_type.constructor_creg:constructor_creg_association
+  t: legacy_type.attr_constructors:parameter
+  fn: construct
+
+definitions:
+
+  parameter_ctr.module:
+    _type: legacy_type.python_module:python_module
+    module_name: parameter_ctr
+    file_name: parameter_ctr.dyn.py
+    import_list:
+      services.mark: common.mark:mark.service
+
+  construct:
+    _type: legacy_type.attribute:attribute
+    object: parameter_ctr.module
+    attr_name: construct
