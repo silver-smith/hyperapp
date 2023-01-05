@@ -45,8 +45,23 @@ class ParamMarker:
         return fn
 
 
+class ModuleMarker:
+
+    def __init__(self, path=None):
+        self._path = path or []
+
+    def __getattr__(self, name):
+        if name.startswith('_'):
+            raise AttributeError(name)
+        return ModuleMarker([*self._path, name])
+
+    def __call__(self, fn):
+        return fn
+
+
 def mark():
     return SimpleNamespace(
         param=ParamMarker(),
         service=ServiceMarker(),
+        module=ModuleMarker(),
         )
