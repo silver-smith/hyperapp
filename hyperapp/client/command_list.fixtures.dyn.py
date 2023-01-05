@@ -86,8 +86,8 @@ def current_item():
     return PhonyItem()
 
 
-@mark.service.adapter_factory
-async def phony_adapter_factory(piece):
+@mark.service
+async def adapter_factory():
     return None
 
 
