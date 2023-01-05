@@ -52,7 +52,9 @@ class _MetaPathFinder:
             return loader.get_spec(fullname)
         for prefix, loader in self._sub_path_loaders.items():
             if fullname.startswith(prefix) and is_sub_path(prefix, fullname):
-                return loader.get_spec(fullname)
+                spec = loader.get_spec(fullname)
+                if spec is not None:
+                    return spec
 
 
 class PythonImporter:

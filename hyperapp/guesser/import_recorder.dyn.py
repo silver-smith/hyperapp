@@ -23,7 +23,8 @@ class RecorderObject:
         try:
             resource_ref = self._resources[resource_path]
         except KeyError:
-            raise RuntimeError(f"Unknown name for import: {resource_path_str!r}")
+            # Use AttributeError to give other importers a chance.
+            raise AttributeError(name)
         try:
             object = python_object_creg.invite(resource_ref)
         except Exception as x:
@@ -59,17 +60,23 @@ class ImportRecorder(Finder):
     def set_base_module_name(self, name):
         self._base_module_name = name
 
+    def _name_prefix(self, fullname):
+        assert fullname.startswith(self._base_module_name + '.')
+        rel_name = fullname[len(self._base_module_name) + 1 :]
+        return rel_name.split('.')
+
     # Finder interface:
 
     def get_spec(self, fullname):
-        spec = super().get_spec(fullname)
-        return spec
+        prefix = tuple(self._name_prefix(fullname))
+        if prefix in self._packages or prefix in self._resources:
+            return super().get_spec(fullname)
+        else:
+            return None
 
     def create_module(self, spec):
-        assert spec.name.startswith(self._base_module_name + '.')
-        rel_name = spec.name[len(self._base_module_name) + 1 :]
-        name = rel_name.split('.')
-        return RecorderObject(name, self._resources, self._packages, self._imported_set)
+        prefix = self._name_prefix(spec.name)
+        return RecorderObject(prefix, self._resources, self._packages, self._imported_set)
 
     def exec_module(self, module):
         pass
