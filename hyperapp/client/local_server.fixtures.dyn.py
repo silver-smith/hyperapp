@@ -1,4 +1,6 @@
-from .code.marker import service
+from .services import (
+    mark,
+    )
 
 
 class _PhonyFileBundle:
@@ -7,4 +9,6 @@ class _PhonyFileBundle:
         return None
 
 
-service.local_server_ref = _PhonyFileBundle()
+@mark.service
+def local_server_ref():
+    return _PhonyFileBundle()

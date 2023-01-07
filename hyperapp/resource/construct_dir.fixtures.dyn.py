@@ -1,10 +1,10 @@
 from . import htypes
 from .services import (
     local_types,
+    mark,
     resource_module_factory,
     )
-from .marker import param
-from .resource_registry import ResourceRegistry
+from .code.resource_registry import ResourceRegistry
 
 
 def _stub_resource_module():
@@ -16,26 +16,41 @@ def _stub_resource_module():
     )
 
 
-@param.construct_dir
+@mark.param.construct_dir
 def resource_module():
     return _stub_resource_module()
 
 
-param.construct_dir.dir_t = htypes.command.object_commands_d
-param.construct_dir.target_res_name = 'sample_target_resource'
+@mark.param.construct_dir
+def dir_t():
+    return htypes.command.object_commands_d
 
-param.construct_module_dir.custom_types = local_types
+
+@mark.param.construct_dir
+def target_res_name():
+    return 'sample_target_resource'
 
 
-@param.construct_module_dir
+@mark.param.construct_module_dir
+def custom_types():
+    return local_types
+
+
+@mark.param.construct_module_dir
 def resource_module():
     return _stub_resource_module()
 
 
-param.construct_module_dir.type_module_name = 'command'
-param.construct_module_dir.target_res_name = 'object_commands_d'
+@mark.param.construct_module_dir
+def type_module_name():
+    return 'command'
 
 
-@param.construct_object_commands_dir
+@mark.param.construct_module_dir
+def target_res_name():
+    return 'object_commands_d'
+
+
+@mark.param.construct_object_commands_dir
 def resource_module():
     return _stub_resource_module()
