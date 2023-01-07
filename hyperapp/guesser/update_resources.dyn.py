@@ -264,6 +264,8 @@ class SourceFile:
     def discover_type_imports(self, process, resource_registry, type_res_list, import_list):
         import_recorder_res = htypes.import_recorder.import_recorder(type_res_list)
         import_recorder_ref = mosaic.put(import_recorder_res)
+        import_recorder = process.proxy(import_recorder_ref)
+
         recorder_import_list = [
             *import_list,
             htypes.python_module.import_rec('htypes.*', import_recorder_ref),
@@ -285,6 +287,20 @@ class SourceFile:
             get_resource_type = process.rpc_call(get_resource_type_ref)
             result_t = get_resource_type(resource_ref=mosaic.put(call_res))
             _log.info("%s/%s type: %r", self.name, attr.name, result_t)
+
+        used_imports = import_recorder.used_imports()
+        _log.info("Used import list: %s", used_imports)
+
+        used_types = set()
+        for imp in used_imports:
+            if len(imp) < 3:
+                continue
+            kind, module, name = imp
+            if kind != 'htypes':
+                continue
+            used_types.add((module, name))
+        _log.info("Discovered import htypes: %s", used_types)
+        return used_types
 
     def make_import_list(self, resource_registry, file_dict):
         code_modules = {
@@ -321,8 +337,18 @@ class SourceFile:
         return import_list
 
     def construct_resources(self, process, resource_registry, custom_types, type_res_list, file_dict):
-        import_list = self.make_import_list(resource_registry, file_dict)
-        self.discover_type_imports(process, resource_registry, type_res_list, import_list)
+        discover_import_list = self.make_import_list(resource_registry, file_dict)
+        used_types = self.discover_type_imports(process, resource_registry, type_res_list, discover_import_list)
+
+        pair_to_resource_ref = {
+            (r.name[1], r.name[2]): r.resource
+            for r in type_res_list
+            }
+        types_import_list = {
+            htypes.python_module.import_rec(f'htypes.{pair[0]}.{pair[1]}', pair_to_resource_ref[pair])
+            for pair in used_types
+            }
+        import_list = [*types_import_list, *discover_import_list]
 
         resource_module = resource_module_factory(resource_registry, self.name)
         module_res = self.make_module_res(import_list)
@@ -375,6 +401,12 @@ def legacy_type_resources(root_dir, subdir_list):
             resource_list.append(
                 htypes.import_recorder.resource(('htypes', module_name, name), resource_ref))
     return (custom_types, resource_list)
+
+
+def add_legacy_types_to_cache(resource_registry, legacy_type_modules):
+    for module_name, module in legacy_type_modules.items():
+        for var_name in module:
+            resource_registry.add_to_cache((module_name, var_name), module[var_name])
 
 
 def collect_deps(resource_registry, file_dict):
@@ -474,7 +506,9 @@ def update_resources(root_dir, subdir_list):
     resource_registry = resource_registry_factory()
 
     custom_types, type_res_list = legacy_type_resources(root_dir, subdir_list)
-    resource_registry.update_modules(legacy_type_resource_loader(custom_types))
+    legacy_type_modules = legacy_type_resource_loader(custom_types)
+    add_legacy_types_to_cache(resource_registry, legacy_type_modules)
+    resource_registry.update_modules(legacy_type_modules)
 
     custom_modules = local_modules.copy()
     code_module_loader.load_code_modules(custom_types, [root_dir / d for d in subdir_list], custom_modules)
@@ -496,4 +530,4 @@ def update_resources(root_dir, subdir_list):
             _log.info("****** #%d Construct resources for: %s  %s", idx, file.module_name, '*'*50)
             file.construct_resources(process, resource_registry, custom_types, type_res_list, file_dict)
             idx += 1
-            return
+            # return
