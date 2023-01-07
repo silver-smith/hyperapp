@@ -14,5 +14,4 @@ def construct(piece, custom_types, resource_module, module_res, attr):
     parameter = htypes.call.call(
         function=mosaic.put(attribute),
         )
-    path_str = '.'.join(piece.path)
-    resource_module[f'{path_str}.parameter'] = parameter
+    resource_module[f'{piece.name}.service'] = parameter

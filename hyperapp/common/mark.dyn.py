@@ -19,7 +19,6 @@ class ServiceMarker:
 
     def __call__(self, fn):
         ctr = htypes.attr_constructors.service(
-            attr_name=fn.__name__,
             name=fn.__name__,
             )
         add_fn_module_constructor(fn, ctr)
@@ -38,7 +37,6 @@ class ParamMarker:
 
     def __call__(self, fn):
         ctr = htypes.attr_constructors.parameter(
-            attr_name=fn.__name__,
             path=[*self._path, fn.__name__],
             )
         add_fn_module_constructor(fn, ctr)

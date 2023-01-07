@@ -1,8 +1,6 @@
 
 service = record:
-  attr_name: string
   name: string
 
 parameter = record:
-  attr_name: string
   path: string list
