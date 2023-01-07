@@ -1,7 +1,9 @@
 import:
 - common.mark:mark.service
+- legacy_service:mosaic
 - legacy_type.attr_constructors:parameter
 - legacy_type.attribute:attribute
+- legacy_type.call:call
 - legacy_type.constructor_creg:constructor_creg_association
 - legacy_type.python_module:python_module
 
@@ -18,7 +20,10 @@ definitions:
     module_name: parameter_ctr
     file_name: parameter_ctr.dyn.py
     import_list:
+      htypes.attribute.attribute: legacy_type.attribute:attribute
+      htypes.call.call: legacy_type.call:call
       services.mark: common.mark:mark.service
+      services.mosaic: legacy_service:mosaic
 
   construct:
     _type: legacy_type.attribute:attribute

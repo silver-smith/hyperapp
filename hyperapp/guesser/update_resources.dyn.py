@@ -426,11 +426,14 @@ def construct_resources(process, resource_registry, custom_types, type_res_list,
     discover_type_imports(process, resource_registry, file, type_res_list, import_list)
 
     resource_module = resource_module_factory(resource_registry, file.name)
-    resource_module[f'{file.name}.module'] = make_module_res(file, import_list)
+    module_res = make_module_res(file, import_list)
+    resource_module[f'{file.name}.module'] = module_res
 
     for attr in file.source_info.attr_list:
         for ctr_ref in attr.constructors:
-            constructor_creg.invite(ctr_ref, custom_types, file.resource_module, attr)
+            constructor_creg.invite(ctr_ref, custom_types, resource_module, module_res, attr)
+
+    file.set_resource_module(resource_registry, resource_module)
 
     source_hash = hash_sha512(file.source_path.read_bytes())
     _log.info("Write %s: %s", file.name, file.resources_path)
@@ -492,6 +495,8 @@ def update_resources(root_dir, subdir_list):
 
         idx = 0
         for file in ready_for_construction_files(file_dict, deps):
+            # if file.name != 'parameter_ctr':
+            #     continue
             _log.info("****** #%d Construct resources for: %s  %s", idx, file.module_name, '*'*50)
             construct_resources(process, resource_registry, custom_types, type_res_list, file_dict, file)
             idx += 1
