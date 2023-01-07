@@ -1,0 +1,34 @@
+# Automatically generated file. Do not edit.
+# Source hash: eb5750d9853b7c4dd71fdcacb5ec7831603072ecd61db14f312df9beabc9ec12a7e8f447d484c5ca0152a7e9367e0b537ff82cf9036b55f612046a4080d3fe96
+
+import:
+- common.mark:mark.service
+- legacy_service:types
+- legacy_service:web
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  meta_registry:
+    _type: legacy_type.attribute:attribute
+    object: meta_registry_association.fixtures.module
+    attr_name: meta_registry
+  meta_registry.service:
+    _type: legacy_type.call:call
+    function: meta_registry
+  meta_registry_association.fixtures.module:
+    _type: legacy_type.python_module:python_module
+    module_name: meta_registry_association.fixtures
+    file_name: meta_registry_association.fixtures.dyn.py
+    import_list:
+      services.mark: common.mark:mark.service
+      services.types: legacy_service:types
+      services.web: legacy_service:web
+  piece:
+    _type: legacy_type.attribute:attribute
+    object: meta_registry_association.fixtures.module
+    attr_name: piece
+  register_meta.piece.parameter:
+    _type: legacy_type.call:call
+    function: piece

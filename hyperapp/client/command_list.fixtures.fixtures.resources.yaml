@@ -1,22 +1,30 @@
 # Automatically generated file. Do not edit.
+# Source hash: 66ea3511f4d9d8324d1d8072c3462356cf83ac1cc82fe3bd861662e13718bb11774a559a9635d63e6f8881a2e8a03b427aa1bfae5adda7dd7fcc2682ddc41e46
 
 import:
+- common.mark:mark.service
 - legacy_type.attribute:attribute
+- legacy_type.call:call
 - legacy_type.python_module:python_module
-- resource.marker:marker.module
 associations: []
 definitions:
-  command_list_fixtures_fixtures.module:
+  adapter:
+    _type: legacy_type.attribute:attribute
+    object: command_list.fixtures.fixtures.module
+    attr_name: adapter
+  command_list.fixtures.fixtures.module:
     _type: legacy_type.python_module:python_module
     module_name: command_list.fixtures.fixtures
     file_name: command_list.fixtures.fixtures.dyn.py
     import_list:
-      marker: resource.marker:marker.module
-  param.phony_adapter_factory.piece:
+      services.mark: common.mark:mark.service
+  phony_adapter_factory.piece.parameter:
+    _type: legacy_type.call:call
+    function: piece
+  piece:
     _type: legacy_type.attribute:attribute
-    object: command_list_fixtures_fixtures.module
-    attr_name: param_phony_adapter_factory_piece
-  param.service_object_commands_factory.enum_object_command_pieces.adapter:
-    _type: legacy_type.attribute:attribute
-    object: command_list_fixtures_fixtures.module
-    attr_name: param_service_object_commands_factory_enum_object_command_pieces_adapter
+    object: command_list.fixtures.fixtures.module
+    attr_name: piece
+  service_object_commands_factory.enum_object_command_pieces.adapter.parameter:
+    _type: legacy_type.call:call
+    function: adapter

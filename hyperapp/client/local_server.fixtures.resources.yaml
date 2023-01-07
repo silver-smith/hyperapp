@@ -1,18 +1,23 @@
 # Automatically generated file. Do not edit.
+# Source hash: 56b7d4e04af9510b463e1f55982596f3517a7fb8e36ab17dc4a25cdb85f1a7f4877920af52b865aafc75c67867408a8476015aa311dfb0119fd53bffb393156d
 
 import:
+- common.mark:mark.service
 - legacy_type.attribute:attribute
+- legacy_type.call:call
 - legacy_type.python_module:python_module
-- resource.marker:marker.module
 associations: []
 definitions:
-  local_server_fixtures.module:
+  local_server.fixtures.module:
     _type: legacy_type.python_module:python_module
     module_name: local_server.fixtures
     file_name: local_server.fixtures.dyn.py
     import_list:
-      marker: resource.marker:marker.module
-  service.local_server_ref:
+      services.mark: common.mark:mark.service
+  local_server_ref:
     _type: legacy_type.attribute:attribute
-    object: local_server_fixtures.module
-    attr_name: service_local_server_ref
+    object: local_server.fixtures.module
+    attr_name: local_server_ref
+  local_server_ref.service:
+    _type: legacy_type.call:call
+    function: local_server_ref
