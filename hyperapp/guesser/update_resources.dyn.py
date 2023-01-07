@@ -253,6 +253,91 @@ class SourceFile:
         else:
             self.deps, self.source_info = self.parse_source(resource_registry, process, type_res_list, file_dict)
 
+    def make_module_res(self, import_list):
+        return htypes.python_module.python_module(
+            module_name=self.name,
+            source=self.source_path.read_text(),
+            file_path=str(self.source_path),
+            import_list=tuple(sorted(import_list)),
+            )
+
+    def discover_type_imports(self, process, resource_registry, type_res_list, import_list):
+        import_recorder_res = htypes.import_recorder.import_recorder(type_res_list)
+        import_recorder_ref = mosaic.put(import_recorder_res)
+        recorder_import_list = [
+            *import_list,
+            htypes.python_module.import_rec('htypes.*', import_recorder_ref),
+            ]
+        resource_module = resource_module_factory(resource_registry, self.name)
+        module_res = self.make_module_res(recorder_import_list)
+
+        for attr in self.source_info.attr_list:
+            if not isinstance(attr, htypes.inspect.fn_attr):
+                continue
+            attr_res = htypes.attribute.attribute(
+                object=mosaic.put(module_res),
+                attr_name=attr.name,
+                )
+            if attr.param_list:
+                continue  # TODO: Fixtures.
+            call_res = htypes.call.call(mosaic.put(attr_res))
+
+            get_resource_type = process.rpc_call(get_resource_type_ref)
+            result_t = get_resource_type(resource_ref=mosaic.put(call_res))
+            _log.info("%s/%s type: %r", self.name, attr.name, result_t)
+
+    def make_import_list(self, resource_registry, file_dict):
+        code_modules = {
+            file.name: file.code_module_pair
+            for file in file_dict.values()
+            }
+
+        service_modules = {
+            service: module_name
+            for module_name, file in file_dict.items()
+            if not file.is_legacy_module and file.up_to_date
+            for service in file.deps.provides_services
+            }
+
+        import_list = []
+
+        for name in self.deps.wants_code:
+            name_pair = code_modules[name]
+            module = resource_registry[name_pair]
+            import_list.append(
+                htypes.python_module.import_rec(f'code.{name}', mosaic.put(module)))
+
+        for service_name in self.deps.wants_services:
+            try:
+                module_name = service_modules[service_name]
+            except KeyError:
+                service = resource_registry['legacy_service', service_name]
+            else:
+                service = resource_registry[module_name, f'{service_name}.service']
+            import_list.append(
+                htypes.python_module.import_rec(f'services.{service_name}', mosaic.put(service)))
+
+        _log.info("Import list: %s", import_list)
+        return import_list
+
+    def construct_resources(self, process, resource_registry, custom_types, type_res_list, file_dict):
+        import_list = self.make_import_list(resource_registry, file_dict)
+        self.discover_type_imports(process, resource_registry, type_res_list, import_list)
+
+        resource_module = resource_module_factory(resource_registry, self.name)
+        module_res = self.make_module_res(import_list)
+        resource_module[f'{self.name}.module'] = module_res
+
+        for attr in self.source_info.attr_list:
+            for ctr_ref in attr.constructors:
+                constructor_creg.invite(ctr_ref, custom_types, resource_module, module_res, attr)
+
+        self.set_resource_module(resource_registry, resource_module)
+
+        source_hash = hash_sha512(self.source_path.read_bytes())
+        _log.info("Write %s: %s", self.name, self.resources_path)
+        resource_module.save_as(self.resources_path, source_hash)
+
 
 process_code_module_list = [
     'common.lcs',
@@ -351,95 +436,6 @@ def collect_deps(resource_registry, file_dict):
     return deps
 
 
-def make_module_res(file, import_list):
-    return htypes.python_module.python_module(
-        module_name=file.name,
-        source=file.source_path.read_text(),
-        file_path=str(file.source_path),
-        import_list=tuple(sorted(import_list)),
-        )
-
-
-def discover_type_imports(process, resource_registry, file, type_res_list, import_list):
-    import_recorder_res = htypes.import_recorder.import_recorder(type_res_list)
-    import_recorder_ref = mosaic.put(import_recorder_res)
-    recorder_import_list = [
-        *import_list,
-        htypes.python_module.import_rec('htypes.*', import_recorder_ref),
-        ]
-    resource_module = resource_module_factory(resource_registry, file.name)
-    module_res = make_module_res(file, recorder_import_list)
-
-    for attr in file.source_info.attr_list:
-        if not isinstance(attr, htypes.inspect.fn_attr):
-            continue
-        attr_res = htypes.attribute.attribute(
-            object=mosaic.put(module_res),
-            attr_name=attr.name,
-            )
-        if attr.param_list:
-            continue  # TODO: Fixtures.
-        call_res = htypes.call.call(mosaic.put(attr_res))
-
-        get_resource_type = process.rpc_call(get_resource_type_ref)
-        result_t = get_resource_type(resource_ref=mosaic.put(call_res))
-        _log.info("%s/%s type: %r", file.name, attr.name, result_t)
-
-
-def make_import_list(resource_registry, file_dict, file):
-    code_modules = {
-        file.name: file.code_module_pair
-        for file in file_dict.values()
-        }
-
-    service_modules = {
-        service: module_name
-        for module_name, file in file_dict.items()
-        if not file.is_legacy_module and file.up_to_date
-        for service in file.deps.provides_services
-        }
-
-    import_list = []
-
-    for name in file.deps.wants_code:
-        name_pair = code_modules[name]
-        module = resource_registry[name_pair]
-        import_list.append(
-            htypes.python_module.import_rec(f'code.{name}', mosaic.put(module)))
-
-    for service_name in file.deps.wants_services:
-        try:
-            module_name = service_modules[service_name]
-        except KeyError:
-            service = resource_registry['legacy_service', service_name]
-        else:
-            service = resource_registry[module_name, f'{service_name}.service']
-        import_list.append(
-            htypes.python_module.import_rec(f'services.{service_name}', mosaic.put(service)))
-
-    _log.info("Import list: %s", import_list)
-    return import_list
-
-
-def construct_resources(process, resource_registry, custom_types, type_res_list, file_dict, file):
-    import_list = make_import_list(resource_registry, file_dict, file)
-    discover_type_imports(process, resource_registry, file, type_res_list, import_list)
-
-    resource_module = resource_module_factory(resource_registry, file.name)
-    module_res = make_module_res(file, import_list)
-    resource_module[f'{file.name}.module'] = module_res
-
-    for attr in file.source_info.attr_list:
-        for ctr_ref in attr.constructors:
-            constructor_creg.invite(ctr_ref, custom_types, resource_module, module_res, attr)
-
-    file.set_resource_module(resource_registry, resource_module)
-
-    source_hash = hash_sha512(file.source_path.read_bytes())
-    _log.info("Write %s: %s", file.name, file.resources_path)
-    resource_module.save_as(file.resources_path, source_hash)
-
-
 def collect_source_files(root_dir, subdir_list, resource_registry):
     file_dict = {}
     for subdir in subdir_list:
@@ -498,6 +494,6 @@ def update_resources(root_dir, subdir_list):
             # if file.name != 'parameter_ctr':
             #     continue
             _log.info("****** #%d Construct resources for: %s  %s", idx, file.module_name, '*'*50)
-            construct_resources(process, resource_registry, custom_types, type_res_list, file_dict, file)
+            file.construct_resources(process, resource_registry, custom_types, type_res_list, file_dict)
             idx += 1
             return
