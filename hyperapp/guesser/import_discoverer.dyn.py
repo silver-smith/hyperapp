@@ -48,7 +48,8 @@ class ImportDiscoverer(Finder):
     def create_module(self, spec):
         assert spec.name.startswith(self._base_module_name + '.')
         rel_name = spec.name[len(self._base_module_name) + 1 :]
-        name = rel_name.split('.')
+        name = tuple(rel_name.split('.'))
+        self._imported_set.add(name)
         return DiscovererObject(name, self._imported_set)
 
     def exec_module(self, module):
