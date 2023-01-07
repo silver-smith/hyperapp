@@ -196,10 +196,11 @@ class ResourceModule:
         return f'legacy_type.{t.module_name}:{t.name}'
 
     def _resolve_name(self, name):
-        if name in self._import_set:
+        if ':' in name:
+            if name not in self._import_set:
+                raise RuntimeError(f"{self._name}: Full path is not in imports: {name!r}")
             module_name, var_name = name.split(':')
         else:
-            assert ':' not in name
             module_name = self._name
             var_name = name
         piece = self._resource_registry[module_name, var_name]
