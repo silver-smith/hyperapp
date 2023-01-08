@@ -1,52 +1,70 @@
 # Automatically generated file. Do not edit.
+# Source hash: e6af2db1d3b5f4821c3dec7d094cef3d2dd90334fa3989640c3bff2809187fd912cc96ddd7cce7ec298eb17d6601cf6fbd7409c2b2f2603b40fff58c1310e816
 
 import:
+- common.mark:mark.service
+- legacy_module.resource:resource_registry
 - legacy_service:local_types
+- legacy_service:mosaic
 - legacy_service:resource_module_factory
 - legacy_type.attribute:attribute
+- legacy_type.call:call
 - legacy_type.command:object_commands_d
 - legacy_type.python_module:python_module
-- resource.marker:marker.module
 associations: []
 definitions:
-  construct_dir_fixtures.module:
+  construct_dir.dir_t.parameter:
+    _type: legacy_type.call:call
+    function: dir_t
+  construct_dir.fixtures.module:
     _type: legacy_type.python_module:python_module
     module_name: construct_dir.fixtures
     file_name: construct_dir.fixtures.dyn.py
     import_list:
+      code.resource_registry: legacy_module.resource:resource_registry
       htypes.command.object_commands_d: legacy_type.command:object_commands_d
-      marker: resource.marker:marker.module
       services.local_types: legacy_service:local_types
+      services.mark: common.mark:mark.service
+      services.mosaic: legacy_service:mosaic
       services.resource_module_factory: legacy_service:resource_module_factory
-  param.construct_dir.dir_t:
+  construct_dir.resource_module.parameter:
+    _type: legacy_type.call:call
+    function: resource_module
+  construct_dir.target_res_name.parameter:
+    _type: legacy_type.call:call
+    function: target_res_name
+  construct_module_dir.custom_types.parameter:
+    _type: legacy_type.call:call
+    function: custom_types
+  construct_module_dir.resource_module.parameter:
+    _type: legacy_type.call:call
+    function: resource_module
+  construct_module_dir.target_res_name.parameter:
+    _type: legacy_type.call:call
+    function: target_res_name
+  construct_module_dir.type_module_name.parameter:
+    _type: legacy_type.call:call
+    function: type_module_name
+  construct_object_commands_dir.resource_module.parameter:
+    _type: legacy_type.call:call
+    function: resource_module
+  custom_types:
     _type: legacy_type.attribute:attribute
-    object: construct_dir_fixtures.module
-    attr_name: param_construct_dir_dir_t
-  param.construct_dir.resource_module:
+    object: construct_dir.fixtures.module
+    attr_name: custom_types
+  dir_t:
     _type: legacy_type.attribute:attribute
-    object: construct_dir_fixtures.module
-    attr_name: param_construct_dir_resource_module
-  param.construct_dir.target_res_name:
+    object: construct_dir.fixtures.module
+    attr_name: dir_t
+  resource_module:
     _type: legacy_type.attribute:attribute
-    object: construct_dir_fixtures.module
-    attr_name: param_construct_dir_target_res_name
-  param.construct_module_dir.custom_types:
+    object: construct_dir.fixtures.module
+    attr_name: resource_module
+  target_res_name:
     _type: legacy_type.attribute:attribute
-    object: construct_dir_fixtures.module
-    attr_name: param_construct_module_dir_custom_types
-  param.construct_module_dir.resource_module:
+    object: construct_dir.fixtures.module
+    attr_name: target_res_name
+  type_module_name:
     _type: legacy_type.attribute:attribute
-    object: construct_dir_fixtures.module
-    attr_name: param_construct_module_dir_resource_module
-  param.construct_module_dir.target_res_name:
-    _type: legacy_type.attribute:attribute
-    object: construct_dir_fixtures.module
-    attr_name: param_construct_module_dir_target_res_name
-  param.construct_module_dir.type_module_name:
-    _type: legacy_type.attribute:attribute
-    object: construct_dir_fixtures.module
-    attr_name: param_construct_module_dir_type_module_name
-  param.construct_object_commands_dir.resource_module:
-    _type: legacy_type.attribute:attribute
-    object: construct_dir_fixtures.module
-    attr_name: param_construct_object_commands_dir_resource_module
+    object: construct_dir.fixtures.module
+    attr_name: type_module_name

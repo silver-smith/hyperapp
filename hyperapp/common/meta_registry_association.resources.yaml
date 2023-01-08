@@ -1,9 +1,9 @@
 # Automatically generated file. Do not edit.
+# Source hash: 5d8063a60b1b2340590b7fcf5617ee3d19bfa1b7fbbdadfdbfac403664255492b1463df22dc2a260cb931d6fc170a8771fd2e0a1a70a2c10a9ce9fdca7b60721
 
 import:
 - legacy_service:meta_registry
 - legacy_service:python_object_creg
-- legacy_type.attribute:attribute
 - legacy_type.meta_registry:meta_association
 - legacy_type.python_module:python_module
 associations: []
@@ -16,11 +16,3 @@ definitions:
       htypes.meta_registry.meta_association: legacy_type.meta_registry:meta_association
       services.meta_registry: legacy_service:meta_registry
       services.python_object_creg: legacy_service:python_object_creg
-  register_meta:
-    _type: legacy_type.attribute:attribute
-    object: meta_registry_association.module
-    attr_name: register_meta
-  init:
-    _type: legacy_type.attribute:attribute
-    object: meta_registry_association.module
-    attr_name: init
