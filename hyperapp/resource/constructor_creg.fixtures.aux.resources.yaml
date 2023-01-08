@@ -1,16 +1,12 @@
 # Automatically generated file. Do not edit.
+# Source hash: 5c74d836045446911c531998c7c993fb2ed970c8876e4482a737c502bea3b15c0c3ba77fff36f5dee40efbee849bb00084e07ba6a2ae056585015adc1970b899
 
 import:
-- legacy_type.attribute:attribute
 - legacy_type.python_module:python_module
 associations: []
 definitions:
-  constructor_creg_fixtures_aux.module:
+  constructor_creg.fixtures.aux.module:
     _type: legacy_type.python_module:python_module
     module_name: constructor_creg.fixtures.aux
     file_name: constructor_creg.fixtures.aux.dyn.py
     import_list: {}
-  sample_function:
-    _type: legacy_type.attribute:attribute
-    object: constructor_creg_fixtures_aux.module
-    attr_name: sample_function
