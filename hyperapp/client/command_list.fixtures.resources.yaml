@@ -1,5 +1,5 @@
 # Automatically generated file. Do not edit.
-# Source hash: 0afa1c8a2f8c22d92d1ce677468b1e2aeab3b879258fafb56d02a68d6c28a61f2ef06b500b5a0e6ad923651b513f8eae65896618208991749effdd30dbd4d46c
+# Source hash: 32b765d58f993be4a1f97bfc8e95680f3bdd1b72b9e2a01de7d82e7d0fb76f69e63273f1ede2ab6c5943d3118494fe5b832c673bf954bf907db8d35690dbb36a
 
 import:
 - common.mark:mark.service
@@ -104,6 +104,13 @@ definitions:
   root_view.service:
     _type: legacy_type.call:call
     function: root_view
+  run_input_key_dialog:
+    _type: legacy_type.attribute:attribute
+    object: command_list.fixtures.module
+    attr_name: run_input_key_dialog
+  run_input_key_dialog.service:
+    _type: legacy_type.call:call
+    function: run_input_key_dialog
   view_state:
     _type: legacy_type.attribute:attribute
     object: command_list.fixtures.module

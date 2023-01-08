@@ -2,6 +2,8 @@ import logging
 
 from PySide2 import QtCore, QtWidgets
 
+from hyperapp.common.module import Module
+
 log = logging.getLogger(__name__)
 
 
@@ -497,7 +499,14 @@ class KeyInputDialog(QtWidgets.QDialog):
             self.input_line.setText(text)
 
 
-def run_input_key_dialog():
-    dialog = KeyInputDialog()
-    dialog.exec_()
-    return dialog.key_result
+class ThisModule(Module):
+
+    def __init__(self, module_name, services, config):
+        super().__init__(module_name, services, config)
+
+        services.run_input_key_dialog = self.run_input_key_dialog
+
+    def run_input_key_dialog(self):
+        dialog = KeyInputDialog()
+        dialog.exec_()
+        return dialog.key_result

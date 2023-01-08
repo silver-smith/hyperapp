@@ -8,11 +8,11 @@ from .services import (
     mosaic,
     object_commands_factory,
     root_view,
+    run_input_key_dialog,
     web,
     )
-from .qt_keys import run_input_key_dialog
-from .global_command_ctr import global_command
-from .object_command_ctr import object_command
+from .code.global_command_ctr import global_command
+from .code.object_command_ctr import object_command
 
 _log = logging.getLogger(__name__)
 

@@ -11,7 +11,7 @@ from .code.view_command import ViewCommand
 _null_ref = phony_ref('null')
 
 
-@mark.module.qt_keys.run_input_key_dialog
+@mark.service
 def run_input_key_dialog():
     return ''
 
