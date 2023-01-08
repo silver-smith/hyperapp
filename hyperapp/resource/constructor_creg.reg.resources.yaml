@@ -1,8 +1,16 @@
 import:
+- legacy_type.attribute:attribute
 - legacy_type.meta_registry:meta_association
 - legacy_type.constructor_creg:constructor_creg_association
-- resource.constructor_creg:register_constructor
+- resource.constructor_creg:constructor_creg.module
+
 associations:
 - _type: legacy_type.meta_registry:meta_association
   t: legacy_type.constructor_creg:constructor_creg_association
-  fn: resource.constructor_creg:register_constructor
+  fn: register_constructor
+
+definitions:
+  register_constructor:
+    _type: legacy_type.attribute:attribute
+    object: resource.constructor_creg:constructor_creg.module
+    attr_name: register_constructor

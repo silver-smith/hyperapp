@@ -1,28 +1,31 @@
 # Automatically generated file. Do not edit.
+# Source hash: 96b366345b352dbcf3407f35685d3c39f4650a9243f8f5e4daecb50e75c305d2a72b22b80a3bb85a70bcedf6dc56a46681bdccbdc579efb65d19b3fba9e6a5a6
 
 import:
+- common.mark:mark.service
 - legacy_service:python_object_creg
+- legacy_service:resource_registry
 - legacy_service:types
 - legacy_service:web
 - legacy_type.attribute:attribute
+- legacy_type.call:call
 - legacy_type.python_module:python_module
-- resource.service_decorator:service_decorator.module
 associations: []
 definitions:
+  constructor_creg:
+    _type: legacy_type.attribute:attribute
+    object: constructor_creg.module
+    attr_name: constructor_creg
   constructor_creg.module:
     _type: legacy_type.python_module:python_module
     module_name: constructor_creg
     file_name: constructor_creg.dyn.py
     import_list:
-      service_decorator: resource.service_decorator:service_decorator.module
+      services.mark: common.mark:mark.service
       services.python_object_creg: legacy_service:python_object_creg
+      services.resource_registry: legacy_service:resource_registry
       services.types: legacy_service:types
       services.web: legacy_service:web
   constructor_creg.service:
-    _type: legacy_type.attribute:attribute
-    object: constructor_creg.module
-    attr_name: constructor_creg
-  register_constructor:
-    _type: legacy_type.attribute:attribute
-    object: constructor_creg.module
-    attr_name: register_constructor
+    _type: legacy_type.call:call
+    function: constructor_creg

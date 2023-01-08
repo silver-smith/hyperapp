@@ -1,9 +1,10 @@
 # Automatically generated file. Do not edit.
-# Source hash: 11324ff59b40c7e599d57dfc97ed46333bdf9a6624d1b861be86c0e985ce51f650c7d4cdafdef0c34c6aa42a7f0fa7a6c27f1356093af1f8c16672cf97c38c0b
+# Source hash: be058376af0f5f2c1b232d2868200140d86bc726c28f50a6ffaf7417a2f07d774c8b2db9dba6145a799eb5b8b0746a33cdf769e70d3458bbf11032f2e77e5926
 
 import:
 - common.mark:mark.service
 - legacy_service:mosaic
+- legacy_service:python_object_creg
 - legacy_service:resource_registry
 - legacy_service:types
 - legacy_type.attribute:attribute
@@ -23,6 +24,7 @@ definitions:
       htypes.constructor_creg_fixtures.sample_type: legacy_type.constructor_creg_fixtures:sample_type
       services.mark: common.mark:mark.service
       services.mosaic: legacy_service:mosaic
+      services.python_object_creg: legacy_service:python_object_creg
       services.resource_registry: legacy_service:resource_registry
       services.types: legacy_service:types
   piece:
