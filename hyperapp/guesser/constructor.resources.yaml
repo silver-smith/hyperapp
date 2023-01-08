@@ -27,7 +27,7 @@ definitions:
     _type: legacy_type.piece_ref:piece_ref
     value: guesser.runner:get_resource_type
 
-  constructor_module:
+  constructor.module:
     _type: legacy_type.python_module:python_module
     module_name: constructor
     file_name: constructor.dyn.py
@@ -55,5 +55,5 @@ definitions:
 
   Constructor:
     _type: legacy_type.attribute:attribute
-    object: constructor_module
+    object: constructor.module
     attr_name: Constructor

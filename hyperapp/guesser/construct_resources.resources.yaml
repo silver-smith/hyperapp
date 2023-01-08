@@ -21,7 +21,7 @@ definitions:
     _type: legacy_type.piece_ref:piece_ref
     value: guesser.load_modules:load_additional_modules
 
-  construct_resources_module:
+  construct_resources.module:
     _type: legacy_type.python_module:python_module
     module_name: construct_resources
     file_name: construct_resources.dyn.py
@@ -42,5 +42,5 @@ definitions:
 
   construct_resources:
     _type: legacy_type.attribute:attribute
-    object: construct_resources_module
+    object: construct_resources.module
     attr_name: construct_resources
