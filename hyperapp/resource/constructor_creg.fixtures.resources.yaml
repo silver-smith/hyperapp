@@ -1,28 +1,34 @@
 # Automatically generated file. Do not edit.
+# Source hash: 11324ff59b40c7e599d57dfc97ed46333bdf9a6624d1b861be86c0e985ce51f650c7d4cdafdef0c34c6aa42a7f0fa7a6c27f1356093af1f8c16672cf97c38c0b
 
 import:
+- common.mark:mark.service
 - legacy_service:mosaic
 - legacy_service:resource_registry
 - legacy_service:types
 - legacy_type.attribute:attribute
+- legacy_type.call:call
 - legacy_type.constructor_creg:constructor_creg_association
 - legacy_type.constructor_creg_fixtures:sample_type
 - legacy_type.python_module:python_module
-- resource.marker:marker.module
 associations: []
 definitions:
-  constructor_creg_fixtures.module:
+  constructor_creg.fixtures.module:
     _type: legacy_type.python_module:python_module
     module_name: constructor_creg.fixtures
     file_name: constructor_creg.fixtures.dyn.py
     import_list:
+      htypes.attribute.attribute: legacy_type.attribute:attribute
       htypes.constructor_creg.constructor_creg_association: legacy_type.constructor_creg:constructor_creg_association
       htypes.constructor_creg_fixtures.sample_type: legacy_type.constructor_creg_fixtures:sample_type
-      marker: resource.marker:marker.module
+      services.mark: common.mark:mark.service
       services.mosaic: legacy_service:mosaic
       services.resource_registry: legacy_service:resource_registry
       services.types: legacy_service:types
-  param.register_constructor.piece:
+  piece:
     _type: legacy_type.attribute:attribute
-    object: constructor_creg_fixtures.module
-    attr_name: param_register_constructor_piece
+    object: constructor_creg.fixtures.module
+    attr_name: piece
+  register_constructor.piece.parameter:
+    _type: legacy_type.call:call
+    function: piece
