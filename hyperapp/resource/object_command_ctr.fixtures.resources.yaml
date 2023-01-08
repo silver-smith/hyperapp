@@ -1,48 +1,75 @@
 # Automatically generated file. Do not edit.
+# Source hash: b2a2d1c765e3b2b9622fae24edaa72458ceca38106e031f7dacd0cbf2afba37d3716eafa396b6d7795a7df904c64f9903cfd8b016196c65c986f6d4f106a2946
 
 import:
+- common.mark:mark.service
+- legacy_module.resource:resource_registry
 - legacy_service:local_types
+- legacy_service:mosaic
 - legacy_service:resource_module_factory
 - legacy_type.attribute:attribute
+- legacy_type.call:call
 - legacy_type.inspect:fn_attr
 - legacy_type.python_module:python_module
-- resource.marker:marker.module
 associations: []
 definitions:
-  object_command_ctr_fixtures.module:
+  attr:
+    _type: legacy_type.attribute:attribute
+    object: object_command_ctr.fixtures.module
+    attr_name: attr
+  camel_to_snake.name.parameter:
+    _type: legacy_type.call:call
+    function: name
+  construct.attr.parameter:
+    _type: legacy_type.call:call
+    function: attr
+  construct.custom_types.parameter:
+    _type: legacy_type.call:call
+    function: custom_types
+  construct.module_name.parameter:
+    _type: legacy_type.call:call
+    function: module_name
+  construct.piece.parameter:
+    _type: legacy_type.call:call
+    function: piece
+  construct.resource_module.parameter:
+    _type: legacy_type.call:call
+    function: resource_module
+  custom_types:
+    _type: legacy_type.attribute:attribute
+    object: object_command_ctr.fixtures.module
+    attr_name: custom_types
+  fn:
+    _type: legacy_type.attribute:attribute
+    object: object_command_ctr.fixtures.module
+    attr_name: fn
+  module_name:
+    _type: legacy_type.attribute:attribute
+    object: object_command_ctr.fixtures.module
+    attr_name: module_name
+  name:
+    _type: legacy_type.attribute:attribute
+    object: object_command_ctr.fixtures.module
+    attr_name: name
+  object_command.fn.parameter:
+    _type: legacy_type.call:call
+    function: fn
+  object_command_ctr.fixtures.module:
     _type: legacy_type.python_module:python_module
     module_name: object_command_ctr.fixtures
     file_name: object_command_ctr.fixtures.dyn.py
     import_list:
+      code.resource_registry: legacy_module.resource:resource_registry
       htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
-      marker: resource.marker:marker.module
       services.local_types: legacy_service:local_types
+      services.mark: common.mark:mark.service
+      services.mosaic: legacy_service:mosaic
       services.resource_module_factory: legacy_service:resource_module_factory
-  param.camel_to_snake.name:
+  piece:
     _type: legacy_type.attribute:attribute
-    object: object_command_ctr_fixtures.module
-    attr_name: param_camel_to_snake_name
-  param.construct.attr:
+    object: object_command_ctr.fixtures.module
+    attr_name: piece
+  resource_module:
     _type: legacy_type.attribute:attribute
-    object: object_command_ctr_fixtures.module
-    attr_name: param_construct_attr
-  param.construct.custom_types:
-    _type: legacy_type.attribute:attribute
-    object: object_command_ctr_fixtures.module
-    attr_name: param_construct_custom_types
-  param.construct.module_name:
-    _type: legacy_type.attribute:attribute
-    object: object_command_ctr_fixtures.module
-    attr_name: param_construct_module_name
-  param.construct.piece:
-    _type: legacy_type.attribute:attribute
-    object: object_command_ctr_fixtures.module
-    attr_name: param_construct_piece
-  param.construct.resource_module:
-    _type: legacy_type.attribute:attribute
-    object: object_command_ctr_fixtures.module
-    attr_name: param_construct_resource_module
-  param.object_command.fn:
-    _type: legacy_type.attribute:attribute
-    object: object_command_ctr_fixtures.module
-    attr_name: param_object_command_fn
+    object: object_command_ctr.fixtures.module
+    attr_name: resource_module
