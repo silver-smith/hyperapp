@@ -262,7 +262,59 @@ class SourceFile:
             import_list=tuple(sorted(import_list)),
             )
 
-    def discover_type_imports(self, process, resource_registry, type_res_list, import_list):
+    @staticmethod
+    def service_provider_modules(resource_registry, file_dict):
+        return {
+            service: module_name
+            for module_name, file in file_dict.items()
+            if (not file.is_legacy_module
+                and file.up_to_date
+                and 'fixtures' not in file.name.split('.'))
+            for service in file.deps.provides_services
+            }
+
+    @staticmethod
+    def fixture_service_provider_modules(file):
+        return {
+            service: file.module_name
+            for service in file.deps.provides_services
+            }
+
+    def make_import_list(self, resource_registry, file_dict, service_provider_modules):
+        code_modules = {
+            file.name: file.code_module_pair
+            for file in file_dict.values()
+            if 'fixtures' not in file.name.split('.')
+            }
+
+        import_list = []
+
+        for name in self.deps.wants_code:
+            name_pair = code_modules[name]
+            module = resource_registry[name_pair]
+            import_list.append(
+                htypes.python_module.import_rec(f'code.{name}', mosaic.put(module)))
+
+        for service_name in self.deps.wants_services:
+            try:
+                module_name = service_provider_modules[service_name]
+            except KeyError:
+                service = resource_registry['legacy_service', service_name]
+            else:
+                service = resource_registry[module_name, f'{service_name}.service']
+            import_list.append(
+                htypes.python_module.import_rec(f'services.{service_name}', mosaic.put(service)))
+
+        _log.info("Import list: %s", import_list)
+        return import_list
+
+    def discover_type_imports(self, process, resource_registry, type_res_list, file_dict):
+        service_providers = self.service_provider_modules(resource_registry, file_dict)
+        fixtures_file = file_dict.get(f'{self.module_name}.fixtures')
+        if fixtures_file:
+            service_providers.update(self.fixture_service_provider_modules(fixtures_file))
+        import_list = self.make_import_list(resource_registry, file_dict, service_providers)
+
         import_recorder_res = htypes.import_recorder.import_recorder(type_res_list)
         import_recorder_ref = mosaic.put(import_recorder_res)
         import_recorder = process.proxy(import_recorder_ref)
@@ -304,53 +356,25 @@ class SourceFile:
         _log.info("Discovered import htypes: %s", used_types)
         return used_types
 
-    def make_import_list(self, resource_registry, file_dict):
-        code_modules = {
-            file.name: file.code_module_pair
-            for file in file_dict.values()
-            }
-
-        service_modules = {
-            service: module_name
-            for module_name, file in file_dict.items()
-            if not file.is_legacy_module and file.up_to_date
-            for service in file.deps.provides_services
-            }
-
-        import_list = []
-
-        for name in self.deps.wants_code:
-            name_pair = code_modules[name]
-            module = resource_registry[name_pair]
-            import_list.append(
-                htypes.python_module.import_rec(f'code.{name}', mosaic.put(module)))
-
-        for service_name in self.deps.wants_services:
-            try:
-                module_name = service_modules[service_name]
-            except KeyError:
-                service = resource_registry['legacy_service', service_name]
-            else:
-                service = resource_registry[module_name, f'{service_name}.service']
-            import_list.append(
-                htypes.python_module.import_rec(f'services.{service_name}', mosaic.put(service)))
-
-        _log.info("Import list: %s", import_list)
-        return import_list
-
-    def construct_resources(self, process, resource_registry, custom_types, type_res_list, file_dict):
-        discover_import_list = self.make_import_list(resource_registry, file_dict)
-        used_types = self.discover_type_imports(process, resource_registry, type_res_list, discover_import_list)
-
+    @staticmethod
+    def types_import_list(type_res_list, used_types):
         pair_to_resource_ref = {
             (r.name[1], r.name[2]): r.resource
             for r in type_res_list
             }
-        types_import_list = {
+        return {
             htypes.python_module.import_rec(f'htypes.{pair[0]}.{pair[1]}', pair_to_resource_ref[pair])
             for pair in used_types
             }
-        import_list = [*types_import_list, *discover_import_list]
+
+    def construct_resources(self, process, resource_registry, custom_types, type_res_list, file_dict):
+        used_types = self.discover_type_imports(process, resource_registry, type_res_list, file_dict)
+
+        service_providers = self.service_provider_modules(resource_registry, file_dict)
+        import_list = [
+            *self.make_import_list(resource_registry, file_dict, service_providers),
+            *self.types_import_list(type_res_list, used_types),
+            ]
 
         resource_module = resource_module_factory(resource_registry, self.name)
         module_res = self.make_module_res(import_list)
@@ -527,7 +551,7 @@ def update_resources(root_dir, subdir_list):
 
         idx = 0
         for file in ready_for_construction_files(file_dict, deps):
-            # if file.name != 'parameter_ctr':
+            # if file.name != 'meta_registry_association':
             #     continue
             _log.info("****** #%d Construct resources for: %s  %s", idx, file.module_name, '*'*50)
             file.construct_resources(process, resource_registry, custom_types, type_res_list, file_dict)
