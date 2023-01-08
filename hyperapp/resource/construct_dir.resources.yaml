@@ -1,17 +1,13 @@
 # Automatically generated file. Do not edit.
+# Source hash: addee0c682a1c08a26c83010b8f719a1e6c5bb2737c64c30a8a53c6c0373930f9bdf3946be7b63db0681fdd73092054ed3306137a13eea52f3bfa0e8a3b803bb
 
 import:
 - legacy_service:resource_type_producer
 - legacy_service:types
-- legacy_type.attribute:attribute
 - legacy_type.command:object_commands_d
 - legacy_type.python_module:python_module
 associations: []
 definitions:
-  construct_dir:
-    _type: legacy_type.attribute:attribute
-    object: construct_dir.module
-    attr_name: construct_dir
   construct_dir.module:
     _type: legacy_type.python_module:python_module
     module_name: construct_dir
@@ -20,11 +16,3 @@ definitions:
       htypes.command.object_commands_d: legacy_type.command:object_commands_d
       services.resource_type_producer: legacy_service:resource_type_producer
       services.types: legacy_service:types
-  construct_module_dir:
-    _type: legacy_type.attribute:attribute
-    object: construct_dir.module
-    attr_name: construct_module_dir
-  construct_object_commands_dir:
-    _type: legacy_type.attribute:attribute
-    object: construct_dir.module
-    attr_name: construct_object_commands_dir
