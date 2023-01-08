@@ -25,6 +25,8 @@ import:
 - legacy_type.inspect:fn_attr
 - legacy_type.inspect:object_t
 - legacy_type.legacy_type:type
+- legacy_type.partial:param
+- legacy_type.partial:partial
 - legacy_type.piece_ref:piece_ref
 - legacy_type.python_module:python_module
 - legacy_type.python_module:import_rec
@@ -55,6 +57,8 @@ definitions:
       htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
       htypes.inspect.object_t: legacy_type.inspect:object_t
       htypes.legacy_type.type: legacy_type.legacy_type:type
+      htypes.partial.param: legacy_type.partial:param
+      htypes.partial.partial: legacy_type.partial:partial
       htypes.python_module.python_module: legacy_type.python_module:python_module
       htypes.python_module.import_rec: legacy_type.python_module:import_rec
       services.code_module_loader: legacy_service:code_module_loader

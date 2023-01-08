@@ -308,6 +308,15 @@ class SourceFile:
         _log.info("Import list: %s", import_list)
         return import_list
 
+    def parameter_fixture(self, fixtures_file, attr, param):
+        if not fixtures_file:
+            return None
+        name = '.'.join([attr.name, param, 'parameter'])
+        try:
+            return fixtures_file.resource_module[name]
+        except KeyError:
+            return None
+
     def discover_type_imports(self, process, resource_registry, type_res_list, file_dict):
         service_providers = self.service_provider_modules(resource_registry, file_dict)
         fixtures_file = file_dict.get(f'{self.module_name}.fixtures')
@@ -335,8 +344,29 @@ class SourceFile:
                 attr_name=attr.name,
                 )
             if attr.param_list:
-                continue  # TODO: Fixtures.
-            call_res = htypes.call.call(mosaic.put(attr_res))
+                kw = {
+                    param: self.parameter_fixture(fixtures_file, attr, param)
+                    for param in attr.param_list
+                    }
+                missing_params = ", ".join(sorted(set(attr.param_list) - set(kw)))
+                if missing_params:
+                    if kw:
+                        raise RuntimeError(f"Some parameters are missing for {self.module_name} {attr.name}: {missing_params}")
+                    else:
+                        # All are missing - guess this function is not intended to be tested using fixture parameters.
+                        _log.warning("Some parameters are missing for %s %s: %s", self.module_name, attr.name, missing_params)
+                        continue
+                function_res = htypes.partial.partial(
+                    function=mosaic.put(attr_res),
+                    params=[
+                        htypes.partial.param(name, mosaic.put(value))
+                        for name, value in kw.items()
+                        ],
+                    )
+            else:
+                function_res = attr_res
+
+            call_res = htypes.call.call(mosaic.put(function_res))
 
             get_resource_type = process.rpc_call(get_resource_type_ref)
             result_t = get_resource_type(resource_ref=mosaic.put(call_res))
