@@ -172,6 +172,7 @@ class SourceFile:
         import_recorder_res = htypes.import_recorder.import_recorder(resource_list)
         import_recorder_ref = mosaic.put(import_recorder_res)
         import_recorder = process.proxy(import_recorder_ref)
+        import_recorder.reset()
 
         import_discoverer_res = htypes.import_discoverer.import_discoverer()
         import_discoverer_ref = mosaic.put(import_discoverer_res)
@@ -265,6 +266,7 @@ class SourceFile:
         import_recorder_res = htypes.import_recorder.import_recorder(type_res_list)
         import_recorder_ref = mosaic.put(import_recorder_res)
         import_recorder = process.proxy(import_recorder_ref)
+        import_recorder.reset()
 
         recorder_import_list = [
             *import_list,
