@@ -40,6 +40,24 @@ class ParamMarker:
             path=[*self._path, fn.__name__],
             )
         add_fn_module_constructor(fn, ctr)
+        module = inspect.getmodule(fn)
+        name = fn.__name__
+        try:
+            prev_fn = getattr(module, name)
+        except AttributeError:
+            pass
+        else:
+            # Parameter fixture with same name is already present, make duplicates.
+            idx = 1
+            while True:
+                if not hasattr(module, f'{name}_{idx}'):
+                    break
+                idx += 1
+            if idx == 1:
+                # Save previous one.
+                setattr(module, f'{name}_{idx}', prev_fn)
+                idx += 1
+            setattr(module, f'{name}_{idx}', fn)
         return fn
 
 
