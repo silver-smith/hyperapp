@@ -1,6 +1,14 @@
 from . import htypes
-from .code.marker import param
+from .services import (
+    mark,
+    )
 
 
-param.SampleList.piece = htypes.sample_list.sample_list(provider='fixture')
-param.SampleList.open.current_key = 123
+@mark.param.SampleList
+def piece():
+    return htypes.sample_list.sample_list(provider='fixture')
+
+
+@mark.param.SampleList.open
+def current_key():
+    return 123
