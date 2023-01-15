@@ -2,7 +2,7 @@ import:
 - common.mark:mark.module
 - legacy_service:mosaic
 - legacy_service:python_object_creg
-- legacy_type.code_registry:code_registry_constructor
+- legacy_type.code_registry:constructor
 - legacy_type.python_module:python_module
 
 associations: []
@@ -15,6 +15,6 @@ definitions:
     file_name: dyn_code_registry.dyn.py
     import_list:
       code.mark: common.mark:mark.module
-      htypes.code_registry.code_registry_constructor: legacy_type.code_registry:code_registry_constructor
+      htypes.code_registry.constructor: legacy_type.code_registry:constructor
       services.mosaic: legacy_service:mosaic
       services.python_object_creg: legacy_service:python_object_creg

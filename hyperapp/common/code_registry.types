@@ -1,10 +1,10 @@
 
-code_registry_association = record:
+association = record:
   service: ref
   type: ref
   function: ref
 
 
-code_registry_constructor = record:
+constructor = record:
   service: ref
   type: ref
