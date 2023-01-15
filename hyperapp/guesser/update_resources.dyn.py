@@ -350,6 +350,7 @@ class SourceFile:
                     param: self.parameter_fixture(fixtures_file, attr, param)
                     for param in attr.param_list
                     }
+                kw = {key: value for key, value in kw.items() if value is not None}
                 _log.info("%s/%s: Parameter fixtures: %s", self.name, attr.name, kw)
                 missing_params = ", ".join(sorted(set(attr.param_list) - set(kw)))
                 if missing_params:
@@ -588,7 +589,7 @@ def update_resources(root_dir, subdir_list, module_list):
         ready_module_names = [f.module_name for f in ready_files]
         _log.info("Ready for construction: %s", ", ".join(ready_module_names))
         if module_list and not set(module_list) & set(ready_module_names):
-            raise RuntimeError(f"No ready files among selected modules: {', '.join(ready_module_names)}")
+            raise RuntimeError(f"No ready files among selected modules: {', '.join(module_list)}")
         for file in ready_files:
             if module_list and file.module_name not in module_list:
                 continue
