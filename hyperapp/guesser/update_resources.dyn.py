@@ -557,7 +557,7 @@ def ready_for_construction_files(file_dict, deps):
         yield file
 
 
-def update_resources(root_dir, subdir_list):
+def update_resources(root_dir, subdir_list, module_list):
     additional_dir_list = [root_dir / d for d in subdir_list]
     resource_registry = resource_registry_factory()
 
@@ -580,9 +580,14 @@ def update_resources(root_dir, subdir_list):
         deps = collect_deps(resource_registry, file_dict)
 
         idx = 0
-        for file in ready_for_construction_files(file_dict, deps):
-            # if file.name != 'meta_registry_association':
-            #     continue
+        ready_files = list(ready_for_construction_files(file_dict, deps))
+        ready_module_names = [f.module_name for f in ready_files]
+        _log.info("Ready for construction: %s", ", ".join(ready_module_names))
+        if module_list and not set(module_list) & set(ready_module_names):
+            raise RuntimeError(f"No ready files among selected modules: {', '.join(ready_module_names)}")
+        for file in ready_files:
+            if module_list and file.module_name not in module_list:
+                continue
             _log.info("****** #%d Construct resources for: %s  %s", idx, file.module_name, '*'*50)
             file.construct_resources(process, resource_registry, custom_types, type_res_list, file_dict)
             idx += 1
