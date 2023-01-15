@@ -1,8 +1,0 @@
-import:
-- legacy_type.constructor_creg:constructor_creg_association
-- legacy_type.object_command_ctr:object_command_ctr
-- resource.object_command_ctr:construct
-associations:
-- _type: legacy_type.constructor_creg:constructor_creg_association
-  t: legacy_type.object_command_ctr:object_command_ctr
-  fn: resource.object_command_ctr:construct
