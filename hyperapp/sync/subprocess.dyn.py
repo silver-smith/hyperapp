@@ -115,7 +115,7 @@ class ThisModule(Module):
             log.exception("Subprocess is exited")
             self._subprocess_is_stopped_now(process, connection)
             return
-        log.info("Subprocess recv thread: received %r from %r: %s", ConnectionEvent(event), process.name, payload)
+        log.debug("Subprocess recv thread: received %r from %r: %s", ConnectionEvent(event), process.name, payload)
         if event != ConnectionEvent.PARCEL.value:
             self._process_stop_event(process, connection, event, payload)
             return

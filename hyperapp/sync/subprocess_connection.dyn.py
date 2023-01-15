@@ -34,4 +34,4 @@ class SubprocessRoute:
         parcel_bundle = self._bundler([parcel_ref]).bundle
         bundle_cdr = packet_coders.encode('cdr', parcel_bundle)
         self._connection.send((ConnectionEvent.PARCEL.value, bundle_cdr))
-        log.info("Subprocess: parcel is sent: %s", ref_repr(parcel_ref))
+        log.debug("Subprocess: parcel is sent: %s", ref_repr(parcel_ref))

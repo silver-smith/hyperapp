@@ -53,7 +53,7 @@ class RpcEndpoint:
         return '<async RpcEndpoint>'
 
     async def wait_for_response(self, request_id, timeout_sec=20):
-        log.info("Wait for rpc response (timeout %s): %s", timeout_sec, request_id)
+        log.debug("Wait for rpc response (timeout %s): %s", timeout_sec, request_id)
         timeout_at = time.monotonic() + timeout_sec
         remaining = timeout_at - time.monotonic()
         async with self._response_available:
@@ -71,7 +71,7 @@ class RpcEndpoint:
         raise RuntimeError(f"Timed out waiting for response (timeout {timeout_sec} seconds)")
 
     async def process(self, request):
-        log.info("Received rpc message: %s", request)
+        log.debug("Received rpc message: %s", request)
         await self._message_registry.invite(request.ref_list[0], request)
 
     async def _handle_request(self, request, transport_request):
@@ -112,7 +112,7 @@ class RpcEndpoint:
         await self._transport.send(sender, receiver_identity, [response_ref])
 
     async def _handle_response(self, response, transport_request):
-        log.info("Process rpc response: %s", response)
+        log.debug("Process rpc response: %s", response)
         result = self._mosaic.resolve_ref(response.result_ref).value
         async with self._response_available:
             self._result_by_request_id[response.request_id] = SuccessResponse(result)

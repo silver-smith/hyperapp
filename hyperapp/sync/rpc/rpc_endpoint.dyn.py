@@ -67,7 +67,7 @@ class RpcEndpoint:
             self._response_available.notify_all()
 
     def wait_for_response(self, request_id, timeout_sec=10):
-        log.info("Wait for rpc response (timeout %s): %s", timeout_sec, request_id)
+        log.debug("Wait for rpc response (timeout %s): %s", timeout_sec, request_id)
         with self._response_lock:
             while True:
                 if self._is_stopping:
@@ -81,7 +81,7 @@ class RpcEndpoint:
                         raise TimeoutWaitingForResponse(f"Timed out waiting for response (timeout {timeout_sec} seconds)")
 
     def process(self, request):
-        log.info("Received rpc message: %s", request)
+        log.debug("Received rpc message: %s", request)
         self._message_registry.invite(request.ref_list[0], request)
 
     def _handle_request(self, request, transport_request):
@@ -129,7 +129,7 @@ class RpcEndpoint:
         self._transport.send(sender, receiver_identity, [response_ref])
 
     def _handle_response(self, response, transport_request):
-        log.info("Process rpc response: %s", response)
+        log.debug("Process rpc response: %s", response)
         result = self._mosaic.resolve_ref(response.result_ref).value
         with self._response_lock:
             self._result_by_request_id[response.request_id] = SuccessResponse(result)

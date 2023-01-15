@@ -29,7 +29,7 @@ class Bundler(Visitor):
 
     def bundle(self, ref_list, seen_refs=None):
         assert is_list_inst(ref_list, ref_t), repr(ref_list)
-        log.info('Making bundle from refs: %s', [ref_repr(ref) for ref in ref_list])
+        log.debug('Making bundle from refs: %s', [ref_repr(ref) for ref in ref_list])
         ref_set, capsule_list = self._collect_capsule_list(ref_list, seen_refs or [])
         bundle = bundle_t(
             roots=ref_list,
