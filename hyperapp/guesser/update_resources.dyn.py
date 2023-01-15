@@ -191,6 +191,7 @@ class SourceFile:
                 ],
             )
 
+        _log.debug("Collecting attributes for: %r", self.module_name)
         collect_attributes = process.rpc_call(collect_attributes_ref)
         object_attrs = collect_attributes(object_ref=mosaic.put(module_res))
         attr_list = [web.summon(ref) for ref in object_attrs.attr_list]
@@ -318,6 +319,7 @@ class SourceFile:
             return None
 
     def discover_type_imports(self, process, resource_registry, type_res_list, file_dict):
+        _log.info("%s: Discover type imports", self.module_name)
         service_providers = self.service_provider_modules(resource_registry, file_dict)
         fixtures_file = file_dict.get(f'{self.module_name}.fixtures')
         if fixtures_file:
@@ -348,6 +350,7 @@ class SourceFile:
                     param: self.parameter_fixture(fixtures_file, attr, param)
                     for param in attr.param_list
                     }
+                _log.info("%s/%s: Parameter fixtures: %s", self.name, attr.name, kw)
                 missing_params = ", ".join(sorted(set(attr.param_list) - set(kw)))
                 if missing_params:
                     if kw:
@@ -368,6 +371,7 @@ class SourceFile:
 
             call_res = htypes.call.call(mosaic.put(function_res))
 
+            _log.info("%s/%s: Retrieving type: %s", self.name, attr.name, call_res)
             get_resource_type = process.rpc_call(get_resource_type_ref)
             result_t = get_resource_type(resource_ref=mosaic.put(call_res))
             _log.info("%s/%s type: %r", self.name, attr.name, result_t)
