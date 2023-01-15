@@ -1,5 +1,3 @@
-from hyperapp.common.code_registry import CodeRegistry
-
 from .services import (
     mark,
     python_object_creg,
@@ -7,6 +5,7 @@ from .services import (
     types,
     web,
     )
+from .code.dyn_code_registry import DynCodeRegistry
 
 
 def register_constructor(piece):
@@ -21,4 +20,4 @@ def register_constructor(piece):
 
 @mark.service
 def constructor_creg():
-    return CodeRegistry('resource_ctr', web, types)
+    return DynCodeRegistry('resource_ctr', web, types)
