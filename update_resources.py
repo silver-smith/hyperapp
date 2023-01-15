@@ -52,7 +52,7 @@ code_module_list = [
 
 
 def main():
-    init_logging('server')
+    init_logging('update_resources')
 
     parser = argparse.ArgumentParser(description='Update resources')
     parser.add_argument('--root-dir', type=Path, help="Resource root dir")

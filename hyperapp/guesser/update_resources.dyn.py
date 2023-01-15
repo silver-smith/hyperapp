@@ -439,7 +439,7 @@ def subprocess(additional_dir_list):
             process_code_module_list,
             rpc_endpoint,
             identity,
-            'update_resources',
+            'update-resources-runner',
         ) as process:
         yield process
 
