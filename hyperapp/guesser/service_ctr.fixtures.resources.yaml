@@ -1,0 +1,60 @@
+# Automatically generated file. Do not edit.
+# Source hash: 1cd156be3783e165d98e6c262ddec7ccdb860d8265ade8104f57983c5272e587d0b76420e01eb3429cf4bb2c7c1a1d45e26c6951ce64d1963e25de25fec054a6
+
+import:
+- common.mark:mark.service
+- legacy_service:resource_module_factory
+- legacy_service:resource_registry_factory
+- legacy_type.attr_constructors:service
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.inspect:attr
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  attr:
+    _type: legacy_type.attribute:attribute
+    object: service_ctr.fixtures.module
+    attr_name: attr
+  construct.attr.parameter:
+    _type: legacy_type.call:call
+    function: attr
+  construct.custom_types.parameter:
+    _type: legacy_type.call:call
+    function: custom_types
+  construct.module_res.parameter:
+    _type: legacy_type.call:call
+    function: module_res
+  construct.piece.parameter:
+    _type: legacy_type.call:call
+    function: piece
+  construct.resource_module.parameter:
+    _type: legacy_type.call:call
+    function: resource_module
+  custom_types:
+    _type: legacy_type.attribute:attribute
+    object: service_ctr.fixtures.module
+    attr_name: custom_types
+  module_res:
+    _type: legacy_type.attribute:attribute
+    object: service_ctr.fixtures.module
+    attr_name: module_res
+  piece:
+    _type: legacy_type.attribute:attribute
+    object: service_ctr.fixtures.module
+    attr_name: piece
+  resource_module:
+    _type: legacy_type.attribute:attribute
+    object: service_ctr.fixtures.module
+    attr_name: resource_module
+  service_ctr.fixtures.module:
+    _type: legacy_type.python_module:python_module
+    module_name: service_ctr.fixtures
+    file_name: service_ctr.fixtures.dyn.py
+    import_list:
+      htypes.attr_constructors.service: legacy_type.attr_constructors:service
+      htypes.inspect.attr: legacy_type.inspect:attr
+      htypes.python_module.python_module: legacy_type.python_module:python_module
+      services.mark: common.mark:mark.service
+      services.resource_module_factory: legacy_service:resource_module_factory
+      services.resource_registry_factory: legacy_service:resource_registry_factory

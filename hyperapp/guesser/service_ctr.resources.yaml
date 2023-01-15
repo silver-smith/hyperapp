@@ -1,31 +1,33 @@
+# Automatically generated file. Do not edit.
+# Source hash: 2b8d1585f79f2429ea650c34c6160bf1d1f6eec3be776516065c153ca81c6939f8b7395c5970d353d6d106465d6a95bd23f4e5be6e3d7d2941d28391caa1ef8a
+
 import:
 - common.mark:mark.service
 - legacy_service:mosaic
 - legacy_type.attr_constructors:service
 - legacy_type.attribute:attribute
 - legacy_type.call:call
-- legacy_type.constructor_creg:constructor_creg_association
+- legacy_type.code_registry:association
 - legacy_type.python_module:python_module
-
+- resource.constructor_creg:constructor_creg.service
 associations:
-
-- _type: legacy_type.constructor_creg:constructor_creg_association
-  t: legacy_type.attr_constructors:service
-  fn: construct
-
+- _type: legacy_type.code_registry:association
+  service: resource.constructor_creg:constructor_creg.service
+  type: legacy_type.attr_constructors:service
+  function: construct
 definitions:
-
+  construct:
+    _type: legacy_type.attribute:attribute
+    object: service_ctr.module
+    attr_name: construct
   service_ctr.module:
     _type: legacy_type.python_module:python_module
     module_name: service_ctr
     file_name: service_ctr.dyn.py
     import_list:
+      htypes.attr_constructors.service: legacy_type.attr_constructors:service
       htypes.attribute.attribute: legacy_type.attribute:attribute
       htypes.call.call: legacy_type.call:call
+      services.constructor_creg: resource.constructor_creg:constructor_creg.service
       services.mark: common.mark:mark.service
       services.mosaic: legacy_service:mosaic
-
-  construct:
-    _type: legacy_type.attribute:attribute
-    object: service_ctr.module
-    attr_name: construct

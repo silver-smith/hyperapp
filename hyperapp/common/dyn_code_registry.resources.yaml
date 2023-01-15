@@ -2,10 +2,17 @@ import:
 - common.mark:mark.module
 - legacy_service:mosaic
 - legacy_service:python_object_creg
+- legacy_type.attribute:attribute
+- legacy_type.code_registry:association
 - legacy_type.code_registry:constructor
+- legacy_type.meta_registry:meta_association
 - legacy_type.python_module:python_module
 
-associations: []
+associations:
+
+- _type: legacy_type.meta_registry:meta_association
+  t: legacy_type.code_registry:association
+  fn: register
 
 definitions:
 
@@ -18,3 +25,8 @@ definitions:
       htypes.code_registry.constructor: legacy_type.code_registry:constructor
       services.mosaic: legacy_service:mosaic
       services.python_object_creg: legacy_service:python_object_creg
+
+  register:
+    _type: legacy_type.attribute:attribute
+    object: dyn_code_registry.module
+    attr_name: register

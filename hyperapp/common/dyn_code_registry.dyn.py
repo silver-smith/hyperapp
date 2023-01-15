@@ -8,6 +8,13 @@ from .services import (
 from .code.mark import add_fn_module_constructor
 
 
+def register(piece):
+    code_registry_svc = python_object_creg.invite(piece.service)
+    t = python_object_creg.invite(piece.type)
+    fn = python_object_creg.invite(piece.function)
+    code_registry_svc.register_actor(t, fn)
+
+
 class DynCodeRegistry(CodeRegistry):
 
     def actor(self, t):
