@@ -5,6 +5,10 @@ from .services import (
 )
 
 
+class UsingIncompleteObject(Exception):
+    pass
+
+
 class DiscovererObject:
 
     def __init__(self, prefix, imported_set):
@@ -19,7 +23,8 @@ class DiscovererObject:
         return DiscovererObject(resource_path, self._imported_set)
 
     def __call__(self, fn):
-        return fn
+        path = '.'.join(self._prefix)
+        raise UsingIncompleteObject(f"Attempt to use not-ready object {path} for: {fn}")
 
 
 class ImportDiscoverer(Finder):
