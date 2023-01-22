@@ -19,6 +19,7 @@ import:
 - legacy_type.attribute:attribute
 - legacy_type.call:call
 - legacy_type.import_discoverer:import_discoverer
+- legacy_type.import_discoverer:using_incomplete_object
 - legacy_type.import_recorder:import_recorder
 - legacy_type.import_recorder:resource
 - legacy_type.inspect:coroutine_fn_t
@@ -51,6 +52,7 @@ definitions:
       htypes.attribute.attribute: legacy_type.attribute:attribute
       htypes.call.call: legacy_type.call:call
       htypes.import_discoverer.import_discoverer: legacy_type.import_discoverer:import_discoverer
+      htypes.import_discoverer.using_incomplete_object: legacy_type.import_discoverer:using_incomplete_object
       htypes.import_recorder.import_recorder: legacy_type.import_recorder:import_recorder
       htypes.import_recorder.resource: legacy_type.import_recorder:resource
       htypes.inspect.coroutine_fn_t: legacy_type.inspect:coroutine_fn_t

@@ -6,6 +6,7 @@ from functools import cached_property
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 
+from hyperapp.common.htypes import HException
 from hyperapp.common.ref import hash_sha512
 
 from . import htypes
@@ -193,9 +194,17 @@ class SourceFile:
 
         _log.debug("Collecting attributes for: %r", self.module_name)
         collect_attributes = process.rpc_call(collect_attributes_ref)
-        object_attrs = collect_attributes(object_ref=mosaic.put(module_res))
-        attr_list = [web.summon(ref) for ref in object_attrs.attr_list]
-        _log.info("Collected attrs for %r, module %s: %s", self.module_name, object_attrs.object_module, attr_list)
+        try:
+            object_attrs = collect_attributes(object_ref=mosaic.put(module_res))
+        except HException as x:
+            if isinstance(x, htypes.import_discoverer.using_incomplete_object):
+                _log.warning("%s: Using incomplete object: %s", self.name, x.message)
+                object_attrs = None
+            else:
+                raise
+        else:
+            attr_list = [web.summon(ref) for ref in object_attrs.attr_list]
+            _log.info("Collected attrs for %r, module %s: %s", self.module_name, object_attrs.object_module, attr_list)
 
         discovered_imports = import_discoverer.discovered_imports()
         _log.info("Discovered import list: %s", discovered_imports)
@@ -241,10 +250,13 @@ class SourceFile:
             tests_services=tests_services,
             tests_code=tests_code,
             )
-        source_info = SourceInfo(
-            import_name=object_attrs.object_module,
-            attr_list=attr_list,
-            )
+        if object_attrs:
+            source_info = SourceInfo(
+                import_name=object_attrs.object_module,
+                attr_list=attr_list,
+                )
+        else:
+            source_info = None
         return (deps_info, source_info)
 
     def init_deps(self, resource_registry, process, type_res_list, file_dict):
