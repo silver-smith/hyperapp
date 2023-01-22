@@ -35,8 +35,11 @@ class ResourceRegistry:
 
     def remove_module(self, name):
         del self._module_registry[name]
-        self._piece_to_name_pair.clear()
-        self._name_pair_to_piece.clear()
+        for name_pair, piece in list(self._name_pair_to_piece.items()):
+            module_name, var_name = name_pair
+            if module_name == name:
+                del self._piece_to_name_pair[piece]
+                del self._name_pair_to_piece[name_pair]
 
     def update_modules(self, module_dict):
         self._module_registry.update(module_dict)
