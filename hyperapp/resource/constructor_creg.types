@@ -1,4 +1,0 @@
-
-constructor_creg_association = record:
-  t: ref
-  fn: ref
