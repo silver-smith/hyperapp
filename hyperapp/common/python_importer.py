@@ -3,6 +3,8 @@ import importlib.util
 import logging
 import sys
 
+from hyperapp.common.htypes import HException
+
 log = logging.getLogger(__name__)
 
 
@@ -103,6 +105,8 @@ class PythonImporter:
         log.debug('Import python module: %s', module_name)
         try:
             module = importlib.import_module(module_name)
+        except HException:
+            raise
         except Exception as x:
             raise RuntimeError(f"Error importing module {module_name}: {x}")
         self._imported_modules += module_name_to_loader

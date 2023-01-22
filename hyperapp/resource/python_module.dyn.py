@@ -6,6 +6,7 @@ import yaml
 from collections import defaultdict
 from pathlib import Path
 
+from hyperapp.common.htypes import HException
 from hyperapp.common.dict_decoders import NamedPairsDictDecoder
 from hyperapp.common.dict_encoders import NamedPairsDictEncoder
 from hyperapp.common.python_importer import ROOT_PACKAGE, Finder
@@ -166,6 +167,8 @@ def python_object(piece, mosaic, python_importer, python_object_creg):
         return python_importer.import_module(
             module_name, root_loader,
             sub_loader_dict=sub_loader_dict(python_object_creg, piece.import_list, module_name))
+    except HException:
+        raise
     except Exception as x:
         raise RuntimeError(f"Error importing module {piece.module_name!r}: {x}")
             

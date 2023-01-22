@@ -2,6 +2,7 @@ import:
   - legacy_service:python_object_creg
   - legacy_type.attribute:attribute
   - legacy_type.import_discoverer:import_discoverer
+  - legacy_type.import_discoverer:using_incomplete_object
   - legacy_type.impl:python_object_association
   - legacy_type.python_module:python_module
 
@@ -18,6 +19,7 @@ definitions:
     module_name: import_discoverer
     file_name: import_discoverer.dyn.py
     import_list:
+      htypes.import_discoverer.using_incomplete_object: legacy_type.import_discoverer:using_incomplete_object
       services.python_object_creg: legacy_service:python_object_creg
 
   ImportDiscoverer:

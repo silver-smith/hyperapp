@@ -1,11 +1,13 @@
+from hyperapp.common.htypes import HException
 from hyperapp.common.python_importer import Finder
 
+from . import htypes
 from .services import (
     python_object_creg,
 )
 
 
-class UsingIncompleteObject(Exception):
+class UsingIncompleteObject(HException):
     pass
 
 
@@ -24,7 +26,7 @@ class DiscovererObject:
 
     def __call__(self, fn):
         path = '.'.join(self._prefix)
-        raise UsingIncompleteObject(f"Attempt to use not-ready object {path} for: {fn}")
+        raise htypes.import_discoverer.using_incomplete_object(f"Attempt to use not-ready object {path} for: {fn}")
 
 
 class ImportDiscoverer(Finder):

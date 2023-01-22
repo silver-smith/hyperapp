@@ -1,1 +1,4 @@
 import_discoverer = record
+
+using_incomplete_object = exception:
+  message: string
