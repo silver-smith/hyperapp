@@ -1,0 +1,60 @@
+# Automatically generated file. Do not edit.
+# Source hash: 640dafc72553c0e3e4b5a5f5fe8bf999c0c408641318c9562ba741739e567acb3fbefa13c6e50c1fdf248c76c5d5491dde8b5b9e98359b7241c09e8d399632a3
+
+import:
+- common.mark:mark.service
+- legacy_service:resource_module_factory
+- legacy_service:resource_registry_factory
+- legacy_type.attr_constructors:parameter
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.inspect:attr
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  attr:
+    _type: legacy_type.attribute:attribute
+    object: parameter_ctr.fixtures.module
+    attr_name: attr
+  construct.attr.parameter:
+    _type: legacy_type.call:call
+    function: attr
+  construct.custom_types.parameter:
+    _type: legacy_type.call:call
+    function: custom_types
+  construct.module_res.parameter:
+    _type: legacy_type.call:call
+    function: module_res
+  construct.piece.parameter:
+    _type: legacy_type.call:call
+    function: piece
+  construct.resource_module.parameter:
+    _type: legacy_type.call:call
+    function: resource_module
+  custom_types:
+    _type: legacy_type.attribute:attribute
+    object: parameter_ctr.fixtures.module
+    attr_name: custom_types
+  module_res:
+    _type: legacy_type.attribute:attribute
+    object: parameter_ctr.fixtures.module
+    attr_name: module_res
+  parameter_ctr.fixtures.module:
+    _type: legacy_type.python_module:python_module
+    module_name: parameter_ctr.fixtures
+    file_name: parameter_ctr.fixtures.dyn.py
+    import_list:
+      htypes.attr_constructors.parameter: legacy_type.attr_constructors:parameter
+      htypes.inspect.attr: legacy_type.inspect:attr
+      htypes.python_module.python_module: legacy_type.python_module:python_module
+      services.mark: common.mark:mark.service
+      services.resource_module_factory: legacy_service:resource_module_factory
+      services.resource_registry_factory: legacy_service:resource_registry_factory
+  piece:
+    _type: legacy_type.attribute:attribute
+    object: parameter_ctr.fixtures.module
+    attr_name: piece
+  resource_module:
+    _type: legacy_type.attribute:attribute
+    object: parameter_ctr.fixtures.module
+    attr_name: resource_module

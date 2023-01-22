@@ -1,10 +1,12 @@
 from . import htypes
 from .services import (
+    constructor_creg,
     mark,
     mosaic,
     )
 
 
+@constructor_creg.actor(htypes.attr_constructors.parameter)
 def construct(piece, custom_types, resource_module, module_res, attr):
     attribute = htypes.attribute.attribute(
         object=mosaic.put(module_res),
