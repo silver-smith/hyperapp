@@ -1,7 +1,7 @@
 import logging
 
 from . import htypes
-from .global_command_ctr import global_command
+from .code.global_command_ctr import global_command
 
 log = logging.getLogger(__name__)
 
