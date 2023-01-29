@@ -2,6 +2,7 @@ import logging
 from collections import defaultdict, namedtuple
 from contextlib import contextmanager
 from functools import cached_property
+from operator import attrgetter
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -498,7 +499,7 @@ def add_legacy_types_to_cache(resource_registry, legacy_type_modules):
 
 
 def collect_deps(resource_registry, file_dict):
-    _log.info("Collect deps")
+    _log.info("Collect dependencies")
 
     code_providers = {
         file.name: file.module_name
@@ -609,18 +610,29 @@ def update_resources(generator_ref, root_dir, subdir_list, module_list):
 
         file_dict = collect_source_files(generator_ref, root_dir, subdir_list, resource_registry)
         init_deps(resource_registry, process, type_res_list, file_dict)
-        deps = collect_deps(resource_registry, file_dict)
 
+        round = 0
         idx = 0
-        ready_files = list(ready_for_construction_files(file_dict, deps))
-        ready_module_names = [f.module_name for f in ready_files]
-        _log.info("Ready for construction: %s", ", ".join(ready_module_names))
-        if module_list and not set(module_list) & set(ready_module_names):
-            raise RuntimeError(f"No ready files among selected modules: {', '.join(module_list)}")
-        for file in ready_files:
-            if module_list and file.module_name not in module_list:
-                continue
-            _log.info("****** #%d Construct resources for: %s  %s", idx, file.module_name, '*'*50)
-            file.construct_resources(process, resource_registry, custom_types, type_res_list, file_dict)
-            idx += 1
-            # return
+        while True:
+            _log.info("****** Round #%d  %s", round, '*'*50)
+            deps = collect_deps(resource_registry, file_dict)
+            ready_files = list(sorted(
+                ready_for_construction_files(file_dict, deps), key=attrgetter('module_name')))
+            ready_module_names = [f.module_name for f in ready_files]
+            _log.info("Ready for construction: %s", ", ".join(ready_module_names))
+            if module_list:
+                wanted_files = [f for f in ready_files if f.module_name in module_list]
+            else:
+                wanted_files = ready_files
+            if not wanted_files:
+                if round == 0:
+                    raise RuntimeError(f"No ready files among selected modules: {', '.join(module_list)}")
+                _log.info("All %d files are constructed in %d rounds", idx, round)
+                break
+            for file in ready_files:
+                if module_list and file.module_name not in module_list:
+                    continue
+                _log.info("****** #%d Construct resources for: %s  %s", idx, file.module_name, '*'*50)
+                file.construct_resources(process, resource_registry, custom_types, type_res_list, file_dict)
+                idx += 1
+            round += 1
