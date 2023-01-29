@@ -149,7 +149,7 @@ class SourceFile:
                 return False
         return True
 
-    def parse_source(self, resource_registry, process, type_res_list, file_dict):
+    def parse_source(self, resource_registry, process, type_res_list, file_dict, fail_on_incomplete):
         resource_list = [*type_res_list]
 
         name_to_file = {
@@ -198,6 +198,8 @@ class SourceFile:
             object_attrs = collect_attributes(object_ref=mosaic.put(module_res))
         except HException as x:
             if isinstance(x, htypes.import_discoverer.using_incomplete_object):
+                if fail_on_incomplete:
+                    raise RuntimeError(f"While constructing {self.module_name}: Using incomplete object: {x.message}")
                 _log.warning("%s: Using incomplete object: %s", self.name, x.message)
                 object_attrs = None
             else:
@@ -265,7 +267,8 @@ class SourceFile:
         if self.up_to_date:
             self.deps = self.get_resource_module_deps()
         else:
-            self.deps, self.source_info = self.parse_source(resource_registry, process, type_res_list, file_dict)
+            self.deps, self.source_info = self.parse_source(
+                resource_registry, process, type_res_list, file_dict, fail_on_incomplete=False)
 
     def make_module_res(self, import_list):
         return htypes.python_module.python_module(
@@ -332,6 +335,11 @@ class SourceFile:
 
     def discover_type_imports(self, process, resource_registry, type_res_list, file_dict):
         _log.info("%s: Discover type imports", self.module_name)
+
+        if not self.source_info:
+            self.deps, self.source_info = self.parse_source(
+                resource_registry, process, type_res_list, file_dict, fail_on_incomplete=True)
+
         service_providers = self.service_provider_modules(resource_registry, file_dict)
         fixtures_file = file_dict.get(f'{self.module_name}.fixtures')
         if fixtures_file:
