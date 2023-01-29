@@ -23,14 +23,34 @@ class RecorderObject:
         try:
             resource_ref = self._resources[resource_path]
         except KeyError:
+            if len(self._prefix) >= 2 and self._prefix[0] == 'code':
+                return self._load_code_module_attr(name)
             # Use AttributeError to give other importers a chance.
             raise AttributeError(name)
-        try:
-            object = python_object_creg.invite(resource_ref)
-        except Exception as x:
-            raise RuntimeError(f"Error importing {resource_path_str!r}: {x}")
+        object = self._load_resource(resource_path_str, resource_ref)
         self._imported_set.add(resource_path)
         return object
+
+    def _load_code_module_attr(self, attr_name):
+        module_path = self._prefix
+        module_path_str = '.'.join(module_path)
+        try:
+            code_module_ref = self._resources[module_path]
+        except KeyError:
+            msg = f"Attempt to get attribute {attr_name!r} from unknown code module: {module_path_str}"
+            raise RuntimeError(msg)
+        module = self._load_resource(module_path_str, code_module_ref)
+        self._imported_set.add(module_path)
+        if not hasattr(module, attr_name):
+            msg = f"Attempt to import missing attribute {attr_name!r} from code module: {module_path_str}"
+            raise RuntimeError(msg)
+        return getattr(module, attr_name)
+
+    def _load_resource(self, resource_path_str, resource_ref):
+        try:
+            return python_object_creg.invite(resource_ref)
+        except Exception as x:
+            raise RuntimeError(f"Error importing {resource_path_str!r}: {x}")
 
 
 class ImportRecorder(Finder):
@@ -63,7 +83,7 @@ class ImportRecorder(Finder):
     def _name_prefix(self, fullname):
         assert fullname.startswith(self._base_module_name + '.')
         rel_name = fullname[len(self._base_module_name) + 1 :]
-        return rel_name.split('.')
+        return tuple(rel_name.split('.'))
 
     # Finder interface:
 
