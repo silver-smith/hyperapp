@@ -1,5 +1,6 @@
 # Automatically generated file. Do not edit.
 # Source hash: c0f62c7b3102224ab202a5e4dd06d4addf1860a5ba7468615437bb52dee824386519eefb366800f584a6ecf0ce32e601e095b88aceabba253d52220cbf940bee
+# Generator hash: 1c6336cca4d55f056d945915ef699bbbc02e97aad9fd1f22b5c1c7d208584320c64349546775cc3b35ed4c97d3b8ad1a67940b4ff3d2fefd959538f384727a28
 
 import:
 - legacy_type.python_module:python_module
