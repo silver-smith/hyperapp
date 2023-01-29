@@ -1,12 +1,18 @@
 # Automatically generated file. Do not edit.
-# Source hash: eb5750d9853b7c4dd71fdcacb5ec7831603072ecd61db14f312df9beabc9ec12a7e8f447d484c5ca0152a7e9367e0b537ff82cf9036b55f612046a4080d3fe96
+# Source hash: db5b68cb49ce5cea337dbdccd506ed8bd70a2737d2572fd6d6ba3fc3ece08c51338eef66b1a71a198d0c00bbd4ca06560c38be6662afb0d7c9cf21ab8a927e7a
+# Generator hash: 0e51c83a824bcadabb4666c3312ffa388beab951a5165c1c3740612cdf9959e0973cf63925ab1465287f863a7578d7a3568b9820b5168bfe97a84cd84c847e34
 
 import:
 - common.mark:mark.service
+- legacy_service:mosaic
+- legacy_service:python_object_creg
+- legacy_service:resource_registry
 - legacy_service:types
 - legacy_service:web
 - legacy_type.attribute:attribute
 - legacy_type.call:call
+- legacy_type.meta_registry:meta_association
+- legacy_type.meta_registry_association_fixtures:sample
 - legacy_type.python_module:python_module
 associations: []
 definitions:
@@ -22,7 +28,13 @@ definitions:
     module_name: meta_registry_association.fixtures
     file_name: meta_registry_association.fixtures.dyn.py
     import_list:
+      htypes.attribute.attribute: legacy_type.attribute:attribute
+      htypes.meta_registry.meta_association: legacy_type.meta_registry:meta_association
+      htypes.meta_registry_association_fixtures.sample: legacy_type.meta_registry_association_fixtures:sample
       services.mark: common.mark:mark.service
+      services.mosaic: legacy_service:mosaic
+      services.python_object_creg: legacy_service:python_object_creg
+      services.resource_registry: legacy_service:resource_registry
       services.types: legacy_service:types
       services.web: legacy_service:web
   piece:
