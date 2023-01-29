@@ -1,4 +1,5 @@
 import:
+- legacy_service:mosaic
 - legacy_service:resource_registry
 - legacy_service:register_associations
 - legacy_type.attribute:attribute
@@ -13,6 +14,7 @@ definitions:
     module_name: update_resources
     file_name: update_resources.dyn.py
     import_list:
+      services.mosaic: legacy_service:mosaic
       services.update_resources: guesser.update_resources:update_resources
       services.resource_registry: legacy_service:resource_registry
       services.register_associations: legacy_service:register_associations

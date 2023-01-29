@@ -13,6 +13,7 @@ log = logging.getLogger(__name__)
 
 AUTO_GEN_LINE = '# Automatically generated file. Do not edit.'
 SOURCE_HASH_PREFIX = '# Source hash: '
+GENERATOR_HASH_PREFIX = '# Generator hash: '
 
 
 Definition = namedtuple('Definition', 'type value')
@@ -67,6 +68,15 @@ class ResourceModule:
         lines = self._path.read_text().splitlines()
         if len(lines) >= 2 and lines[1].startswith(SOURCE_HASH_PREFIX):
             hex_hash = lines[1][len(SOURCE_HASH_PREFIX):]
+            return bytes.fromhex(hex_hash)
+        else:
+            return None
+
+    @cached_property
+    def generator_hash(self):
+        lines = self._path.read_text().splitlines()
+        if len(lines) >= 3 and lines[2].startswith(GENERATOR_HASH_PREFIX):
+            hex_hash = lines[2][len(GENERATOR_HASH_PREFIX):]
             return bytes.fromhex(hex_hash)
         else:
             return None
@@ -161,11 +171,12 @@ class ResourceModule:
             raise RuntimeError(f"Attempt to save ethemeral resource module: {self._name}")
         self.save_as(self._path)
 
-    def save_as(self, path, source_hash):
+    def save_as(self, path, source_hash, generator_hash):
         yaml_text = yaml.dump(self.as_dict, sort_keys=False)
         lines = [
             AUTO_GEN_LINE,
             SOURCE_HASH_PREFIX + source_hash.hex(),
+            GENERATOR_HASH_PREFIX + generator_hash.hex(),
             '',
             yaml_text,
             ]

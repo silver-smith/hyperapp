@@ -71,10 +71,10 @@ def main():
     log.info("Initialized.")
 
     try:
-        resource = services.resource_registry['command_line.update_resources', 'update_resources']
-        fn = services.python_object_creg.animate(resource)
+        fn_res = services.resource_registry['command_line.update_resources', 'update_resources']
+        fn = services.python_object_creg.animate(fn_res)
         log.info("Update resources function: %r", fn)
-        fn(args.root_dir or services.hyperapp_dir, args.source_subdir, args.module)
+        fn(fn_res, args.root_dir or services.hyperapp_dir, args.source_subdir, args.module)
     finally:
         log.info("Stopping.")
         services.stop()

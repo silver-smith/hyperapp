@@ -41,7 +41,8 @@ DepsInfo = namedtuple('DepsInfo', 'provides_services uses_modules wants_services
 
 class SourceFile:
 
-    def __init__(self, root_dir, source_path):
+    def __init__(self, generator_ref, root_dir, source_path):
+        self._generator_ref = generator_ref
         self.source_path = source_path
         self.name = source_path.name[:-len('.dyn.py')]
         self.module_name = str(source_path.relative_to(root_dir).with_name(self.name)).replace('/', '.')
@@ -105,11 +106,17 @@ class SourceFile:
             _log.info("%s: no source hash", self.module_name)
             return False
         source_hash = hash_sha512(self.source_path.read_bytes())
-        if resource_module.source_hash == source_hash:
-            _log.info("%s: up to date", self.module_name)
-            return True
-        _log.info("%s: changed", self.module_name)
-        return False
+        if resource_module.source_hash != source_hash:
+            _log.info("%s: changed", self.module_name)
+            return False
+        if not resource_module.generator_hash:
+            _log.info("%s: no generator hash", self.module_name)
+            return False
+        if resource_module.generator_hash != self._generator_ref.hash:
+            _log.info("%s: generator changed", self.module_name)
+            return False
+        _log.info("%s: up to date", self.module_name)
+        return True
 
     def get_resource_module_deps(self):
         uses_modules = set()
@@ -443,7 +450,7 @@ class SourceFile:
 
         source_hash = hash_sha512(self.source_path.read_bytes())
         _log.info("Write %s: %s", self.name, self.resources_path)
-        resource_module.save_as(self.resources_path, source_hash)
+        resource_module.save_as(self.resources_path, source_hash, self._generator_ref.hash)
 
 
 process_code_module_list = [
@@ -549,13 +556,13 @@ def collect_deps(resource_registry, file_dict):
     return deps
 
 
-def collect_source_files(root_dir, subdir_list, resource_registry):
+def collect_source_files(generator_ref, root_dir, subdir_list, resource_registry):
     file_dict = {}
     for subdir in subdir_list:
         for path in root_dir.joinpath(subdir).rglob('*.dyn.py'):
             if 'test' in path.parts:
                 continue
-            source_file = SourceFile(root_dir, path)
+            source_file = SourceFile(generator_ref, root_dir, path)
             source_file.init_resource_module(resource_registry)
             file_dict[source_file.module_name] = source_file
     return file_dict
@@ -582,7 +589,7 @@ def ready_for_construction_files(file_dict, deps):
         yield file
 
 
-def update_resources(root_dir, subdir_list, module_list):
+def update_resources(generator_ref, root_dir, subdir_list, module_list):
     additional_dir_list = [root_dir / d for d in subdir_list]
     resource_registry = resource_registry_factory()
 
@@ -600,7 +607,7 @@ def update_resources(root_dir, subdir_list, module_list):
 
     with subprocess(additional_dir_list) as process:
 
-        file_dict = collect_source_files(root_dir, subdir_list, resource_registry)
+        file_dict = collect_source_files(generator_ref, root_dir, subdir_list, resource_registry)
         init_deps(resource_registry, process, type_res_list, file_dict)
         deps = collect_deps(resource_registry, file_dict)
 
