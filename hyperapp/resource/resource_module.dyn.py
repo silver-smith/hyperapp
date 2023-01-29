@@ -181,6 +181,8 @@ class ResourceModule:
             yaml_text,
             ]
         path.write_text('\n'.join(lines))
+        self._path = path
+        self._resource_dir = path.parent
 
     @property
     def as_dict(self):
