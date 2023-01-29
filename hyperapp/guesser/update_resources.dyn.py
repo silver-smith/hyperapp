@@ -341,6 +341,45 @@ class SourceFile:
         except KeyError:
             return None
 
+    def _visit_attribute(self, process, fixtures_file, module_res, attr):
+        if not isinstance(attr, htypes.inspect.fn_attr):
+            return
+        attr_res = htypes.attribute.attribute(
+            object=mosaic.put(module_res),
+            attr_name=attr.name,
+            )
+        if attr.param_list:
+            kw = {
+                param: self.parameter_fixture(fixtures_file, attr, param)
+                for param in attr.param_list
+                }
+            kw = {key: value for key, value in kw.items() if value is not None}
+            _log.info("%s/%s: Parameter fixtures: %s", self.name, attr.name, kw)
+            missing_params = ", ".join(sorted(set(attr.param_list) - set(kw)))
+            if missing_params:
+                if kw:
+                    raise RuntimeError(f"Some parameters are missing for {self.module_name} {attr.name}: {missing_params}")
+                else:
+                    # All are missing - guess this function is not intended to be tested using fixture parameters.
+                    _log.warning("Some parameters are missing for %s %s: %s", self.module_name, attr.name, missing_params)
+                    return
+            function_res = htypes.partial.partial(
+                function=mosaic.put(attr_res),
+                params=[
+                    htypes.partial.param(name, mosaic.put(value))
+                    for name, value in kw.items()
+                    ],
+                )
+        else:
+            function_res = attr_res
+
+        call_res = htypes.call.call(mosaic.put(function_res))
+
+        _log.info("%s/%s: Retrieving type: %s", self.name, attr.name, call_res)
+        get_resource_type = process.rpc_call(get_resource_type_ref)
+        result_t = get_resource_type(resource_ref=mosaic.put(call_res))
+        _log.info("%s/%s type: %r", self.name, attr.name, result_t)
+
     def discover_type_imports(self, process, resource_registry, type_res_list, file_dict):
         _log.info("%s: Discover type imports", self.module_name)
 
@@ -367,43 +406,7 @@ class SourceFile:
         module_res = self.make_module_res(recorder_import_list)
 
         for attr in self.source_info.attr_list:
-            if not isinstance(attr, htypes.inspect.fn_attr):
-                continue
-            attr_res = htypes.attribute.attribute(
-                object=mosaic.put(module_res),
-                attr_name=attr.name,
-                )
-            if attr.param_list:
-                kw = {
-                    param: self.parameter_fixture(fixtures_file, attr, param)
-                    for param in attr.param_list
-                    }
-                kw = {key: value for key, value in kw.items() if value is not None}
-                _log.info("%s/%s: Parameter fixtures: %s", self.name, attr.name, kw)
-                missing_params = ", ".join(sorted(set(attr.param_list) - set(kw)))
-                if missing_params:
-                    if kw:
-                        raise RuntimeError(f"Some parameters are missing for {self.module_name} {attr.name}: {missing_params}")
-                    else:
-                        # All are missing - guess this function is not intended to be tested using fixture parameters.
-                        _log.warning("Some parameters are missing for %s %s: %s", self.module_name, attr.name, missing_params)
-                        continue
-                function_res = htypes.partial.partial(
-                    function=mosaic.put(attr_res),
-                    params=[
-                        htypes.partial.param(name, mosaic.put(value))
-                        for name, value in kw.items()
-                        ],
-                    )
-            else:
-                function_res = attr_res
-
-            call_res = htypes.call.call(mosaic.put(function_res))
-
-            _log.info("%s/%s: Retrieving type: %s", self.name, attr.name, call_res)
-            get_resource_type = process.rpc_call(get_resource_type_ref)
-            result_t = get_resource_type(resource_ref=mosaic.put(call_res))
-            _log.info("%s/%s type: %r", self.name, attr.name, result_t)
+            self._visit_attribute(process, fixtures_file, module_res, attr)
 
         used_imports = import_recorder.used_imports()
         _log.info("Used import list: %s", used_imports)
