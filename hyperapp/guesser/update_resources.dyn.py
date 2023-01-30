@@ -522,7 +522,10 @@ def collect_deps(resource_registry, file_dict):
         if file.is_legacy_module:
             continue
         for code_name in file.deps.wants_code:
-            provider = code_providers[code_name]
+            try:
+                provider = code_providers[code_name]
+            except KeyError:
+                raise RuntimeError(f"Module {file.module_name!r} wants code module {code_name!r}, but no one provides it")
             _log.info("%s wants code %r from: %s", module_name, code_name, provider)
             deps[module_name].add(provider)
         for service in file.deps.wants_services:
