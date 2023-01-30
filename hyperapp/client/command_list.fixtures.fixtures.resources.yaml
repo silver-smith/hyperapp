@@ -1,5 +1,6 @@
 # Automatically generated file. Do not edit.
-# Source hash: 66ea3511f4d9d8324d1d8072c3462356cf83ac1cc82fe3bd861662e13718bb11774a559a9635d63e6f8881a2e8a03b427aa1bfae5adda7dd7fcc2682ddc41e46
+# Source hash: 2f0080393be01e444732a5cc5ca80e513d9bf8a538bd99f3da8325a6350ddb77369beb8cbad1d7d5af91b7e5f21861d9d23be0a8c4eda9d07b8f6d143882d483
+# Generator hash: 60371cadf0acef59fb6c7777f73289217d934c76304f3abb3584b2e013bffc42298846febabc615dc6de45bc36610b01ecfb649b1ba354787c356ed88eb3a7d2
 
 import:
 - common.mark:mark.service
@@ -18,13 +19,6 @@ definitions:
     file_name: command_list.fixtures.fixtures.dyn.py
     import_list:
       services.mark: common.mark:mark.service
-  phony_adapter_factory.piece.parameter:
-    _type: legacy_type.call:call
-    function: piece
-  piece:
-    _type: legacy_type.attribute:attribute
-    object: command_list.fixtures.fixtures.module
-    attr_name: piece
   service_object_commands_factory.enum_object_command_pieces.adapter.parameter:
     _type: legacy_type.call:call
     function: adapter

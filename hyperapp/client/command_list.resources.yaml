@@ -1,0 +1,66 @@
+# Automatically generated file. Do not edit.
+# Source hash: b7d4cf4dcbb9ee31d52a42f078fc64d7084d58eb78b0498e3f1536dd5d26ab3e5e3d781de2a406b9a6dff5cfa3e7054da6f554d650bd29145eff968cf12f75f9
+# Generator hash: 60371cadf0acef59fb6c7777f73289217d934c76304f3abb3584b2e013bffc42298846febabc615dc6de45bc36610b01ecfb649b1ba354787c356ed88eb3a7d2
+
+import:
+- common.mark:mark.service
+- legacy_service:adapter_factory
+- legacy_service:global_command_list
+- legacy_service:lcs
+- legacy_service:mosaic
+- legacy_service:object_commands_factory
+- legacy_service:root_view
+- legacy_service:run_input_key_dialog
+- legacy_service:web
+- legacy_type.attribute:attribute
+- legacy_type.command_list:global_command_list
+- legacy_type.command_list:object_command_list
+- legacy_type.command_list:open_global_command_list_d
+- legacy_type.command_list:open_view_command_list_d
+- legacy_type.command_list:view_command_list
+- legacy_type.global_command:global_command_association
+- legacy_type.impl:global_command_impl
+- legacy_type.python_module:python_module
+associations:
+- _type: legacy_type.global_command:global_command_association
+  command: open_global_command_list.command
+- _type: legacy_type.global_command:global_command_association
+  command: open_view_command_list.command
+definitions:
+  command_list.module:
+    _type: legacy_type.python_module:python_module
+    module_name: command_list
+    file_name: command_list.dyn.py
+    import_list:
+      htypes.command_list.global_command_list: legacy_type.command_list:global_command_list
+      htypes.command_list.object_command_list: legacy_type.command_list:object_command_list
+      htypes.command_list.view_command_list: legacy_type.command_list:view_command_list
+      services.adapter_factory: legacy_service:adapter_factory
+      services.global_command_list: legacy_service:global_command_list
+      services.lcs: legacy_service:lcs
+      services.mark: common.mark:mark.service
+      services.mosaic: legacy_service:mosaic
+      services.object_commands_factory: legacy_service:object_commands_factory
+      services.root_view: legacy_service:root_view
+      services.run_input_key_dialog: legacy_service:run_input_key_dialog
+      services.web: legacy_service:web
+  open_global_command_list:
+    _type: legacy_type.attribute:attribute
+    object: command_list.module
+    attr_name: open_global_command_list
+  open_global_command_list.command:
+    _type: legacy_type.impl:global_command_impl
+    function: open_global_command_list
+    dir: open_global_command_list_d
+  open_global_command_list_d:
+    _type: legacy_type.command_list:open_global_command_list_d
+  open_view_command_list:
+    _type: legacy_type.attribute:attribute
+    object: command_list.module
+    attr_name: open_view_command_list
+  open_view_command_list.command:
+    _type: legacy_type.impl:global_command_impl
+    function: open_view_command_list
+    dir: open_view_command_list_d
+  open_view_command_list_d:
+    _type: legacy_type.command_list:open_view_command_list_d

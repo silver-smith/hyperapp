@@ -1,5 +1,6 @@
 # Automatically generated file. Do not edit.
 # Source hash: 32b765d58f993be4a1f97bfc8e95680f3bdd1b72b9e2a01de7d82e7d0fb76f69e63273f1ede2ab6c5943d3118494fe5b832c673bf954bf907db8d35690dbb36a
+# Generator hash: 60371cadf0acef59fb6c7777f73289217d934c76304f3abb3584b2e013bffc42298846febabc615dc6de45bc36610b01ecfb649b1ba354787c356ed88eb3a7d2
 
 import:
 - common.mark:mark.service
@@ -20,31 +21,31 @@ associations: []
 definitions:
   GlobalCommandList.piece.parameter:
     _type: legacy_type.call:call
-    function: piece
+    function: piece_1
   GlobalCommandList.set_key.current_item.parameter:
     _type: legacy_type.call:call
-    function: current_item
+    function: current_item_1
   GlobalCommandList.set_key_escape.current_item.parameter:
     _type: legacy_type.call:call
-    function: current_item
+    function: current_item_2
   ObjectCommandList.piece.parameter:
     _type: legacy_type.call:call
-    function: piece
+    function: piece_3
   ObjectCommandList.set_key.current_item.parameter:
     _type: legacy_type.call:call
-    function: current_item
+    function: current_item_5
   ObjectCommandList.set_key_escape.current_item.parameter:
     _type: legacy_type.call:call
-    function: current_item
+    function: current_item_6
   ViewCommandList.piece.parameter:
     _type: legacy_type.call:call
-    function: piece
+    function: piece_2
   ViewCommandList.set_key.current_item.parameter:
     _type: legacy_type.call:call
-    function: current_item
+    function: current_item_3
   ViewCommandList.set_key_escape.current_item.parameter:
     _type: legacy_type.call:call
-    function: current_item
+    function: current_item_4
   adapter_factory:
     _type: legacy_type.attribute:attribute
     object: command_list.fixtures.module
@@ -73,6 +74,30 @@ definitions:
     _type: legacy_type.attribute:attribute
     object: command_list.fixtures.module
     attr_name: current_item
+  current_item_1:
+    _type: legacy_type.attribute:attribute
+    object: command_list.fixtures.module
+    attr_name: current_item_1
+  current_item_2:
+    _type: legacy_type.attribute:attribute
+    object: command_list.fixtures.module
+    attr_name: current_item_2
+  current_item_3:
+    _type: legacy_type.attribute:attribute
+    object: command_list.fixtures.module
+    attr_name: current_item_3
+  current_item_4:
+    _type: legacy_type.attribute:attribute
+    object: command_list.fixtures.module
+    attr_name: current_item_4
+  current_item_5:
+    _type: legacy_type.attribute:attribute
+    object: command_list.fixtures.module
+    attr_name: current_item_5
+  current_item_6:
+    _type: legacy_type.attribute:attribute
+    object: command_list.fixtures.module
+    attr_name: current_item_6
   global_command_list:
     _type: legacy_type.attribute:attribute
     object: command_list.fixtures.module
@@ -89,7 +114,7 @@ definitions:
     function: object_commands_factory
   open_object_commands.piece.parameter:
     _type: legacy_type.call:call
-    function: piece
+    function: piece_4
   open_object_commands.view_state.parameter:
     _type: legacy_type.call:call
     function: view_state
@@ -97,6 +122,22 @@ definitions:
     _type: legacy_type.attribute:attribute
     object: command_list.fixtures.module
     attr_name: piece
+  piece_1:
+    _type: legacy_type.attribute:attribute
+    object: command_list.fixtures.module
+    attr_name: piece_1
+  piece_2:
+    _type: legacy_type.attribute:attribute
+    object: command_list.fixtures.module
+    attr_name: piece_2
+  piece_3:
+    _type: legacy_type.attribute:attribute
+    object: command_list.fixtures.module
+    attr_name: piece_3
+  piece_4:
+    _type: legacy_type.attribute:attribute
+    object: command_list.fixtures.module
+    attr_name: piece_4
   root_view:
     _type: legacy_type.attribute:attribute
     object: command_list.fixtures.module
