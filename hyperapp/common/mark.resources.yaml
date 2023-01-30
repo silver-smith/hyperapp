@@ -4,6 +4,7 @@ import:
 - legacy_type.attr_constructors:service
 - legacy_type.attribute:attribute
 - legacy_type.call:call
+- legacy_type.global_command_ctr:global_command_ctr
 - legacy_type.python_module:python_module
 - resource.constants:constants.module
 
@@ -18,6 +19,7 @@ definitions:
     import_list:
       htypes.attr_constructors.parameter: legacy_type.attr_constructors:parameter
       htypes.attr_constructors.service: legacy_type.attr_constructors:service
+      htypes.global_command_ctr.global_command_ctr: legacy_type.global_command_ctr:global_command_ctr
       code.constants: resource.constants:constants.module
       services.mosaic: legacy_service:mosaic
 

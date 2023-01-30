@@ -61,8 +61,15 @@ class ParamMarker:
         return fn
 
 
+def global_command(fn):
+    ctr = htypes.global_command_ctr.global_command_ctr()
+    add_fn_module_constructor(fn, ctr)
+    return fn
+
+
 def mark():
     return SimpleNamespace(
         param=ParamMarker(),
         service=ServiceMarker(),
+        global_command=global_command,
         )
