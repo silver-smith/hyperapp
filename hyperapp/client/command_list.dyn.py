@@ -104,7 +104,7 @@ def open_view_command_list():
     return htypes.command_list.view_command_list()
 
 
-#@object_command
+@mark.object_command
 def open_object_commands(piece, view_state):
     return htypes.command_list.object_command_list(
         piece_ref=mosaic.put(piece),
