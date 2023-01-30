@@ -82,9 +82,16 @@ def global_command(fn):
     return fn
 
 
+def object_command(fn):
+    ctr = htypes.object_command_ctr.object_command_ctr()
+    add_fn_module_constructor(fn, ctr)
+    return fn
+
+
 def mark():
     return SimpleNamespace(
         param=ParamMarker(),
         service=ServiceMarker(),
         global_command=global_command,
+        object_command=object_command,
         )
