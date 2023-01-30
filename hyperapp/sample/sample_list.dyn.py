@@ -1,7 +1,9 @@
 import logging
 
 from . import htypes
-from .code.global_command_ctr import global_command
+from .services import (
+    mark,
+    )
 
 log = logging.getLogger(__name__)
 
@@ -22,7 +24,7 @@ class SampleList:
         return f"Opened item: {current_key}"
 
 
-@global_command
+@mark.global_command
 def open_sample_list():
     return htypes.sample_list.sample_list(provider='client')
 

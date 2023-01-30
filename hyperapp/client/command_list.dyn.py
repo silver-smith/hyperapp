@@ -5,14 +5,14 @@ from .services import (
     adapter_factory,
     global_command_list,
     lcs,
+    mark,
     mosaic,
     object_commands_factory,
     root_view,
     run_input_key_dialog,
     web,
     )
-from .code.global_command_ctr import global_command
-from .code.object_command_ctr import object_command
+# from .code.object_command_ctr import object_command
 
 _log = logging.getLogger(__name__)
 
@@ -94,17 +94,17 @@ class ObjectCommandList(_CommandList):
         return record_list
 
 
-@global_command
+@mark.global_command
 def open_global_command_list():
     return htypes.command_list.global_command_list()
 
 
-@global_command
+@mark.global_command
 def open_view_command_list():
     return htypes.command_list.view_command_list()
 
 
-@object_command
+#@object_command
 def open_object_commands(piece, view_state):
     return htypes.command_list.object_command_list(
         piece_ref=mosaic.put(piece),
