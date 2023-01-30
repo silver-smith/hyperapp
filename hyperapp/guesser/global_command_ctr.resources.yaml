@@ -1,0 +1,36 @@
+# Automatically generated file. Do not edit.
+# Source hash: 330f8ab9bf165c9f2f2de179fa53f90893efd15139aa8f824386bef46b34a4f3856bcd6affdd1a253428fddb5d00de8f28cd13e2d265fce7223e507cbf022000
+# Generator hash: 7406d01d73c4e6068ccdf90217fcb065c80189d0f30082c43fb2a098da859e8251df72478ce9d980f49edbf1c09e825dacfa56f513b6f75693b4f984175ea965
+
+import:
+- legacy_service:mosaic
+- legacy_service:types
+- legacy_type.attribute:attribute
+- legacy_type.code_registry:association
+- legacy_type.global_command:global_command_association
+- legacy_type.global_command_ctr:global_command_ctr
+- legacy_type.impl:global_command_impl
+- legacy_type.python_module:python_module
+- resource.constructor_creg:constructor_creg.service
+associations:
+- _type: legacy_type.code_registry:association
+  service: resource.constructor_creg:constructor_creg.service
+  type: legacy_type.global_command_ctr:global_command_ctr
+  function: construct
+definitions:
+  construct:
+    _type: legacy_type.attribute:attribute
+    object: global_command_ctr.module
+    attr_name: construct
+  global_command_ctr.module:
+    _type: legacy_type.python_module:python_module
+    module_name: global_command_ctr
+    file_name: global_command_ctr.dyn.py
+    import_list:
+      htypes.attribute.attribute: legacy_type.attribute:attribute
+      htypes.global_command.global_command_association: legacy_type.global_command:global_command_association
+      htypes.global_command_ctr.global_command_ctr: legacy_type.global_command_ctr:global_command_ctr
+      htypes.impl.global_command_impl: legacy_type.impl:global_command_impl
+      services.constructor_creg: resource.constructor_creg:constructor_creg.service
+      services.mosaic: legacy_service:mosaic
+      services.types: legacy_service:types

@@ -1,0 +1,68 @@
+# Automatically generated file. Do not edit.
+# Source hash: e512fe54e7c5ce158b9ede628f881c9ea7f52522225e38fbaf474fc64b2d2304fd7ffdf9ab3994237e43eb97514660dbdcb2b0ab8f51a4e60b8b67faba55d917
+# Generator hash: 7406d01d73c4e6068ccdf90217fcb065c80189d0f30082c43fb2a098da859e8251df72478ce9d980f49edbf1c09e825dacfa56f513b6f75693b4f984175ea965
+
+import:
+- common.mark:mark.service
+- legacy_service:local_types
+- legacy_service:resource_module_factory
+- legacy_service:resource_registry_factory
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.inspect:attr
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  attr:
+    _type: legacy_type.attribute:attribute
+    object: global_command_ctr.fixtures.module
+    attr_name: attr
+  camel_to_snake.name.parameter:
+    _type: legacy_type.call:call
+    function: name
+  construct.attr.parameter:
+    _type: legacy_type.call:call
+    function: attr
+  construct.custom_types.parameter:
+    _type: legacy_type.call:call
+    function: custom_types
+  construct.module_res.parameter:
+    _type: legacy_type.call:call
+    function: module_res
+  construct.piece.parameter:
+    _type: legacy_type.call:call
+    function: piece
+  construct.resource_module.parameter:
+    _type: legacy_type.call:call
+    function: resource_module
+  custom_types:
+    _type: legacy_type.attribute:attribute
+    object: global_command_ctr.fixtures.module
+    attr_name: custom_types
+  global_command_ctr.fixtures.module:
+    _type: legacy_type.python_module:python_module
+    module_name: global_command_ctr.fixtures
+    file_name: global_command_ctr.fixtures.dyn.py
+    import_list:
+      htypes.inspect.attr: legacy_type.inspect:attr
+      htypes.python_module.python_module: legacy_type.python_module:python_module
+      services.local_types: legacy_service:local_types
+      services.mark: common.mark:mark.service
+      services.resource_module_factory: legacy_service:resource_module_factory
+      services.resource_registry_factory: legacy_service:resource_registry_factory
+  module_res:
+    _type: legacy_type.attribute:attribute
+    object: global_command_ctr.fixtures.module
+    attr_name: module_res
+  name:
+    _type: legacy_type.attribute:attribute
+    object: global_command_ctr.fixtures.module
+    attr_name: name
+  piece:
+    _type: legacy_type.attribute:attribute
+    object: global_command_ctr.fixtures.module
+    attr_name: piece
+  resource_module:
+    _type: legacy_type.attribute:attribute
+    object: global_command_ctr.fixtures.module
+    attr_name: resource_module
