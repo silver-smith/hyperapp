@@ -7,7 +7,7 @@ from .services import (
 from .code.utils import camel_to_snake
 
 
-@constructor_creg.actor(htypes.global_command_ctr.global_command_ctr)
+@constructor_creg.actor(htypes.object_command_ctr.object_command_ctr)
 def construct(piece, custom_types, resource_module, module_res, attr):
     dir_name = camel_to_snake(attr.name) + '_d'
     dir_t_ref = custom_types[resource_module.name][dir_name]
@@ -21,13 +21,19 @@ def construct(piece, custom_types, resource_module, module_res, attr):
         )
     resource_module[attr.name] = attribute
 
-    command = htypes.impl.global_command_impl(
+    command = htypes.impl.object_command_impl(
         function=mosaic.put(attribute),
+        params=attr.param_list,
         dir=mosaic.put(dir),
         )
     resource_module[f'{attr.name}.command'] = command
 
-    association = htypes.global_command.global_command_association(
-        command=mosaic.put(command),
+    # Called for every command, but results with single resource.
+    object_commands_d = htypes.command.object_commands_d()
+    resource_module['object_commands_d'] = object_commands_d
+
+    association = htypes.lcs.lcs_set_association(
+        dir=(mosaic.put(object_commands_d),),
+        value=mosaic.put(command),
         )
     resource_module.add_association(association)

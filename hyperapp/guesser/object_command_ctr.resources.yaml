@@ -1,5 +1,5 @@
 # Automatically generated file. Do not edit.
-# Source hash: f5e0935521ba5098c5583acc018938c458ebd6ddd16bb4ddd1b1bf0d422b56de60658d83116e67237615612f548a629858a5c3500482c4cb98a5dd005d3fba9f
+# Source hash: f991c121d2253ccf1fce2c8b2025c24d0d48a71bb2467c90d7875b538696ad3c234e7ce3fc1c5429f3a340769a0f3b30830c494a85f214e34a79939bd0489d64
 # Generator hash: 0fab7efdcaa40340c1823828f57288c72d3cdbe27f4a888b4dbc198a7ccee92665a1745e16e3417ed431afcb39aca90b8048cb34813dc99a0852e9c280402b69
 
 import:
@@ -8,31 +8,33 @@ import:
 - legacy_service:types
 - legacy_type.attribute:attribute
 - legacy_type.code_registry:association
-- legacy_type.global_command:global_command_association
-- legacy_type.global_command_ctr:global_command_ctr
-- legacy_type.impl:global_command_impl
+- legacy_type.command:object_commands_d
+- legacy_type.impl:object_command_impl
+- legacy_type.lcs:lcs_set_association
+- legacy_type.object_command_ctr:object_command_ctr
 - legacy_type.python_module:python_module
 - resource.constructor_creg:constructor_creg.service
 associations:
 - _type: legacy_type.code_registry:association
   service: resource.constructor_creg:constructor_creg.service
-  type: legacy_type.global_command_ctr:global_command_ctr
+  type: legacy_type.object_command_ctr:object_command_ctr
   function: construct
 definitions:
   construct:
     _type: legacy_type.attribute:attribute
-    object: global_command_ctr.module
+    object: object_command_ctr.module
     attr_name: construct
-  global_command_ctr.module:
+  object_command_ctr.module:
     _type: legacy_type.python_module:python_module
-    module_name: global_command_ctr
-    file_name: global_command_ctr.dyn.py
+    module_name: object_command_ctr
+    file_name: object_command_ctr.dyn.py
     import_list:
       code.utils: guesser.utils:utils.module
       htypes.attribute.attribute: legacy_type.attribute:attribute
-      htypes.global_command.global_command_association: legacy_type.global_command:global_command_association
-      htypes.global_command_ctr.global_command_ctr: legacy_type.global_command_ctr:global_command_ctr
-      htypes.impl.global_command_impl: legacy_type.impl:global_command_impl
+      htypes.command.object_commands_d: legacy_type.command:object_commands_d
+      htypes.impl.object_command_impl: legacy_type.impl:object_command_impl
+      htypes.lcs.lcs_set_association: legacy_type.lcs:lcs_set_association
+      htypes.object_command_ctr.object_command_ctr: legacy_type.object_command_ctr:object_command_ctr
       services.constructor_creg: resource.constructor_creg:constructor_creg.service
       services.mosaic: legacy_service:mosaic
       services.types: legacy_service:types

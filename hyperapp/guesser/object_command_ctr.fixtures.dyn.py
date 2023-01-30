@@ -20,7 +20,7 @@ def custom_types():
 @mark.param.construct
 def resource_module():
     registry = resource_registry_factory()
-    module = resource_module_factory(registry, 'global_command_ctr_fixtures')
+    module = resource_module_factory(registry, 'object_command_ctr_fixtures')
     module['sample_module'] = module_res()
     return module
 
@@ -37,9 +37,10 @@ def module_res():
 
 @mark.param.construct
 def attr():
-    return htypes.inspect.attr(
+    return htypes.inspect.fn_attr(
         name='sample_attr',
         module=None,
         resource_name=None,
         constructors=(),
+        param_list=('sample_param',),
         )

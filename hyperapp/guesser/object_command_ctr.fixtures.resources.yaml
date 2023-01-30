@@ -1,5 +1,5 @@
 # Automatically generated file. Do not edit.
-# Source hash: 843f89efbd9c20aba27aa75f201bcbaa93bc04a77d1da3341fa0abc8f9be9b308b398eee51eaab8f4730931de38ec8ee67a6ed8b43f991ecfb2bcbd38138fb5f
+# Source hash: b89d84d4519a6a71fa45b262de4bd5b1903eedeedc15f2441ea7e6fce18495edd203a928f70f5632971e1aff3d7477f1d4e752e22043339a5b0db68eee0ee233
 # Generator hash: 0fab7efdcaa40340c1823828f57288c72d3cdbe27f4a888b4dbc198a7ccee92665a1745e16e3417ed431afcb39aca90b8048cb34813dc99a0852e9c280402b69
 
 import:
@@ -9,13 +9,13 @@ import:
 - legacy_service:resource_registry_factory
 - legacy_type.attribute:attribute
 - legacy_type.call:call
-- legacy_type.inspect:attr
+- legacy_type.inspect:fn_attr
 - legacy_type.python_module:python_module
 associations: []
 definitions:
   attr:
     _type: legacy_type.attribute:attribute
-    object: global_command_ctr.fixtures.module
+    object: object_command_ctr.fixtures.module
     attr_name: attr
   construct.attr.parameter:
     _type: legacy_type.call:call
@@ -34,28 +34,28 @@ definitions:
     function: resource_module
   custom_types:
     _type: legacy_type.attribute:attribute
-    object: global_command_ctr.fixtures.module
+    object: object_command_ctr.fixtures.module
     attr_name: custom_types
-  global_command_ctr.fixtures.module:
+  module_res:
+    _type: legacy_type.attribute:attribute
+    object: object_command_ctr.fixtures.module
+    attr_name: module_res
+  object_command_ctr.fixtures.module:
     _type: legacy_type.python_module:python_module
-    module_name: global_command_ctr.fixtures
-    file_name: global_command_ctr.fixtures.dyn.py
+    module_name: object_command_ctr.fixtures
+    file_name: object_command_ctr.fixtures.dyn.py
     import_list:
-      htypes.inspect.attr: legacy_type.inspect:attr
+      htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
       htypes.python_module.python_module: legacy_type.python_module:python_module
       services.local_types: legacy_service:local_types
       services.mark: common.mark:mark.service
       services.resource_module_factory: legacy_service:resource_module_factory
       services.resource_registry_factory: legacy_service:resource_registry_factory
-  module_res:
-    _type: legacy_type.attribute:attribute
-    object: global_command_ctr.fixtures.module
-    attr_name: module_res
   piece:
     _type: legacy_type.attribute:attribute
-    object: global_command_ctr.fixtures.module
+    object: object_command_ctr.fixtures.module
     attr_name: piece
   resource_module:
     _type: legacy_type.attribute:attribute
-    object: global_command_ctr.fixtures.module
+    object: object_command_ctr.fixtures.module
     attr_name: resource_module
