@@ -632,7 +632,11 @@ def update_resources(generator_ref, root_dir, subdir_list, module_list):
                 wanted_files = ready_files
             if not wanted_files:
                 if round == 0:
-                    raise RuntimeError(f"No ready files among selected modules: {', '.join(module_list)}")
+                    if module_list:
+                        raise RuntimeError(f"No ready files among selected modules: {', '.join(module_list)}")
+                    else:
+                        _log.info("All files are up-to-date, nothing to do")
+                        break
                 _log.info("All %d files are constructed in %d rounds", idx, round)
                 break
             for file in ready_files:
