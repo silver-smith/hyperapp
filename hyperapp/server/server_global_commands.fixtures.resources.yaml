@@ -1,0 +1,62 @@
+# Automatically generated file. Do not edit.
+# Source hash: fec7604b798de107e1b298e3efca05495b26d7464ffac4c9404810d14257ff3c718f85e459f5d7d06a550f49f6cd2d6de7cc8b3c729ba7f523950f7c1ccf3f55
+# Generator hash: 7c0ab8f69fe4d0b34673d60ad4729ccbbbc86cb3bb3a07c2643cf201855650df5ba1834d970e21fd52d5e3dcef7ff568003cccd9139f3c338658c75651b3cd20
+
+import:
+- common.mark:mark.service
+- legacy_service:mosaic
+- legacy_service:resource_registry
+- legacy_service:types
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.impl:global_command_impl
+- legacy_type.python_module:python_module
+- legacy_type.server_global_commands:server_global_commands
+- legacy_type.server_global_commands_fixtures:sample_global_command_d
+associations: []
+definitions:
+  ServerGlobalCommands.piece.parameter:
+    _type: legacy_type.call:call
+    function: piece_1
+  ServerGlobalCommands.run.current_key.parameter:
+    _type: legacy_type.call:call
+    function: current_key
+  current_key:
+    _type: legacy_type.attribute:attribute
+    object: server_global_commands.fixtures.module
+    attr_name: current_key
+  global_command_list:
+    _type: legacy_type.attribute:attribute
+    object: server_global_commands.fixtures.module
+    attr_name: global_command_list
+  global_command_list.service:
+    _type: legacy_type.call:call
+    function: global_command_list
+  global_command_to_item.piece.parameter:
+    _type: legacy_type.call:call
+    function: piece_2
+  piece:
+    _type: legacy_type.attribute:attribute
+    object: server_global_commands.fixtures.module
+    attr_name: piece
+  piece_1:
+    _type: legacy_type.attribute:attribute
+    object: server_global_commands.fixtures.module
+    attr_name: piece_1
+  piece_2:
+    _type: legacy_type.attribute:attribute
+    object: server_global_commands.fixtures.module
+    attr_name: piece_2
+  server_global_commands.fixtures.module:
+    _type: legacy_type.python_module:python_module
+    module_name: server_global_commands.fixtures
+    file_name: server_global_commands.fixtures.dyn.py
+    import_list:
+      htypes.attribute.attribute: legacy_type.attribute:attribute
+      htypes.impl.global_command_impl: legacy_type.impl:global_command_impl
+      htypes.server_global_commands.server_global_commands: legacy_type.server_global_commands:server_global_commands
+      htypes.server_global_commands_fixtures.sample_global_command_d: legacy_type.server_global_commands_fixtures:sample_global_command_d
+      services.mark: common.mark:mark.service
+      services.mosaic: legacy_service:mosaic
+      services.resource_registry: legacy_service:resource_registry
+      services.types: legacy_service:types

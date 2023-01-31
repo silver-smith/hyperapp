@@ -9,14 +9,20 @@ from .services import (
     )
 
 
+def _sample_fn():
+    pass
 
 
 def _phony_global_command():
-    function_res = resource_registry['server.server_global_commands.fixtures.aux', 'sample_function']
+    this_module_res = resource_registry['server.server_global_commands.fixtures', 'server_global_commands.fixtures.module']
+    fn_res = htypes.attribute.attribute(
+        object=mosaic.put(this_module_res),
+        attr_name='_sample_fn',
+        )
     dir_t = htypes.server_global_commands_fixtures.sample_global_command_d
     dir = dir_t()
     return htypes.impl.global_command_impl(
-        function=mosaic.put(function_res),
+        function=mosaic.put(fn_res),
         dir=mosaic.put(dir),
         )
 
