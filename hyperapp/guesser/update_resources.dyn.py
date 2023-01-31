@@ -30,8 +30,10 @@ from .services import (
     rpc_endpoint_factory,
     subprocess_running,
     type_module_loader,
+    types,
     web,
     )
+from .code.utils import camel_to_snake
 
 _log = logging.getLogger(__name__)
 
@@ -381,10 +383,42 @@ class SourceFile:
         _log.info("%s %s type: %r", self.name, attr_path_str, result_t)
         return (call_res, result_t)
 
-    def _visit_object_method(self, process, fixtures_file, ctr_attr, object_res, attr):
-        call_res, result_t = self._visit_function(process, fixtures_file, object_res, attr, path=[ctr_attr.name])
+    def _construct_dir(self, custom_types, resource_module, name):
+        dir_name = camel_to_snake(f'{name}_d')
+        dir_t_ref = custom_types[self.name][dir_name]
+        dir_t = types.resolve(dir_t_ref)
+        dir = dir_t()
+        resource_module[dir_name] = dir
+        return dir
 
-    def _visit_object(self, process, fixtures_file, module_res, ctr_attr, object_res):
+    def _construct_method_command(self, custom_types, resource_module, ctr_attr, object_res, object_dir, attr):
+        dir = self._construct_dir(custom_types, resource_module, f'{ctr_attr.name}_{attr.name}')
+
+        command = htypes.impl.method_command_impl(
+            method=attr.name,
+            params=attr.param_list,
+            dir=mosaic.put(dir),
+            )
+        resource_module[f'{ctr_attr.name}.{attr.name}.command'] = command
+
+        # Called for every command, but results with single resource.
+        object_commands_d = htypes.command.object_commands_d()
+        resource_module['object_commands_d'] = object_commands_d
+
+        association = htypes.lcs.lcs_set_association(
+            dir=(mosaic.put(object_dir), mosaic.put(object_commands_d)),
+            value=mosaic.put(command),
+            )
+        resource_module.add_association(association)
+
+    def _visit_object_method(self, process, custom_types, resource_module, fixtures_file, ctr_attr, object_res, object_dir, attr):
+        call_res, result_t = self._visit_function(process, fixtures_file, object_res, attr, path=[ctr_attr.name])
+        if attr.name == 'get':
+            pass
+        else:
+            self._construct_method_command(custom_types, resource_module, ctr_attr, object_res, object_dir, attr)
+
+    def _visit_object(self, process, custom_types, resource_module, fixtures_file, module_res, ctr_attr, object_res):
         _log.debug("Collect attributes for: %s.%s", self.module_name, ctr_attr.name)
         collect_attributes = process.rpc_call(collect_attributes_ref)
         object_attrs = collect_attributes(object_ref=mosaic.put(object_res))
@@ -393,18 +427,22 @@ class SourceFile:
         _log.info("Collected attrs for %s.%s: %s", self.module_name, ctr_attr.name, attr_list)
         if 'get' not in [attr.name for attr in attr_list]:
             _log.info("Object %s.%s does not have 'get' method; skipping", self.module_name, ctr_attr.name)
+            return
+
+        object_dir = self._construct_dir(custom_types, resource_module, ctr_attr.name)
+
         for attr in attr_list:
             if isinstance(attr, htypes.inspect.fn_attr):
-                self._visit_object_method(process, fixtures_file, ctr_attr, object_res, attr)
+                self._visit_object_method(process, custom_types, resource_module, fixtures_file, ctr_attr, object_res, object_dir, attr)
 
-    def _visit_attribute(self, process, fixtures_file, module_res, attr):
+    def _visit_attribute(self, process, custom_types, resource_module, fixtures_file, module_res, attr):
         if not isinstance(attr, htypes.inspect.fn_attr):
             return
         call_res, result_t = self._visit_function(process, fixtures_file, module_res, attr, path=[])
         if list(attr.param_list) == ['piece'] and isinstance(result_t, htypes.inspect.object_t):
-            self._visit_object(process, fixtures_file, module_res, attr, call_res)
+            self._visit_object(process, custom_types, resource_module, fixtures_file, module_res, attr, call_res)
 
-    def discover_type_imports(self, process, resource_registry, type_res_list, file_dict):
+    def _visit_module(self, process, resource_registry, custom_types, type_res_list, file_dict, resource_module):
         _log.info("%s: Discover type imports", self.module_name)
 
         if not self.source_info:
@@ -426,11 +464,10 @@ class SourceFile:
             *import_list,
             htypes.python_module.import_rec('htypes.*', import_recorder_ref),
             ]
-        resource_module = resource_module_factory(resource_registry, self.name)
         module_res = self.make_module_res(recorder_import_list)
 
         for attr in self.source_info.attr_list:
-            self._visit_attribute(process, fixtures_file, module_res, attr)
+            self._visit_attribute(process, custom_types, resource_module, fixtures_file, module_res, attr)
 
         used_imports = import_recorder.used_imports()
         _log.info("Used import list: %s", used_imports)
@@ -458,7 +495,9 @@ class SourceFile:
             }
 
     def construct_resources(self, process, resource_registry, custom_types, type_res_list, file_dict):
-        used_types = self.discover_type_imports(process, resource_registry, type_res_list, file_dict)
+        resource_module = resource_module_factory(resource_registry, self.name)
+
+        used_types = self._visit_module(process, resource_registry, custom_types, type_res_list, file_dict, resource_module)
 
         service_providers = self.service_provider_modules(resource_registry, file_dict)
         import_list = [
@@ -466,7 +505,6 @@ class SourceFile:
             *self.types_import_list(type_res_list, used_types),
             ]
 
-        resource_module = resource_module_factory(resource_registry, self.name)
         module_res = self.make_module_res(import_list)
         resource_module[f'{self.name}.module'] = module_res
 

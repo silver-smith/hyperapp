@@ -1,6 +1,7 @@
 import:
 - guesser.runner:collect_attributes
 - guesser.runner:get_resource_type
+- guesser.utils:utils.module
 - legacy_service:code_module_loader
 - legacy_service:endpoint_registry
 - legacy_service:generate_rsa_identity
@@ -15,9 +16,12 @@ import:
 - legacy_service:resource_registry_factory
 - legacy_service:rpc_endpoint_factory
 - legacy_service:type_module_loader
+- legacy_service:types
 - legacy_service:web
 - legacy_type.attribute:attribute
 - legacy_type.call:call
+- legacy_type.command:object_commands_d
+- legacy_type.impl:method_command_impl
 - legacy_type.import_discoverer:import_discoverer
 - legacy_type.import_discoverer:using_incomplete_object
 - legacy_type.import_recorder:import_recorder
@@ -25,6 +29,7 @@ import:
 - legacy_type.inspect:coroutine_fn_t
 - legacy_type.inspect:fn_attr
 - legacy_type.inspect:object_t
+- legacy_type.lcs:lcs_set_association
 - legacy_type.legacy_type:type
 - legacy_type.partial:param
 - legacy_type.partial:partial
@@ -49,8 +54,11 @@ definitions:
     module_name: update_resources
     file_name: update_resources.dyn.py
     import_list:
+      code.utils: guesser.utils:utils.module
       htypes.attribute.attribute: legacy_type.attribute:attribute
       htypes.call.call: legacy_type.call:call
+      htypes.command.object_commands_d: legacy_type.command:object_commands_d
+      htypes.impl.method_command_impl: legacy_type.impl:method_command_impl
       htypes.import_discoverer.import_discoverer: legacy_type.import_discoverer:import_discoverer
       htypes.import_discoverer.using_incomplete_object: legacy_type.import_discoverer:using_incomplete_object
       htypes.import_recorder.import_recorder: legacy_type.import_recorder:import_recorder
@@ -58,6 +66,7 @@ definitions:
       htypes.inspect.coroutine_fn_t: legacy_type.inspect:coroutine_fn_t
       htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
       htypes.inspect.object_t: legacy_type.inspect:object_t
+      htypes.lcs.lcs_set_association: legacy_type.lcs:lcs_set_association
       htypes.legacy_type.type: legacy_type.legacy_type:type
       htypes.partial.param: legacy_type.partial:param
       htypes.partial.partial: legacy_type.partial:partial
@@ -81,6 +90,7 @@ definitions:
       services.rpc_endpoint_factory: legacy_service:rpc_endpoint_factory
       services.subprocess_running: sync.subprocess_context:subprocess_running
       services.type_module_loader: legacy_service:type_module_loader
+      services.types: legacy_service:types
       services.web: legacy_service:web
 
   update_resources:
