@@ -200,7 +200,7 @@ class SourceFile:
                 ],
             )
 
-        _log.debug("Collecting attributes for: %r", self.module_name)
+        _log.debug("Collect attributes for: %r", self.module_name)
         collect_attributes = process.rpc_call(collect_attributes_ref)
         try:
             object_attrs = collect_attributes(object_ref=mosaic.put(module_res))
@@ -332,37 +332,37 @@ class SourceFile:
         _log.info("Import list: %s", import_list)
         return import_list
 
-    def parameter_fixture(self, fixtures_file, attr, param):
+    def _parameter_fixture(self, fixtures_file, path):
         if not fixtures_file:
             return None
-        name = '.'.join([attr.name, param, 'parameter'])
+        name = '.'.join([*path, 'parameter'])
         try:
             return fixtures_file.resource_module[name]
         except KeyError:
             return None
 
-    def _visit_attribute(self, process, fixtures_file, module_res, attr):
-        if not isinstance(attr, htypes.inspect.fn_attr):
-            return
+    def _visit_function(self, process, fixtures_file, object_res, attr, path):
+        attr_path = [*path, attr.name]
+        attr_path_str = '.'.join(attr_path)
         attr_res = htypes.attribute.attribute(
-            object=mosaic.put(module_res),
+            object=mosaic.put(object_res),
             attr_name=attr.name,
             )
         if attr.param_list:
             kw = {
-                param: self.parameter_fixture(fixtures_file, attr, param)
+                param: self._parameter_fixture(fixtures_file, [*attr_path, param])
                 for param in attr.param_list
                 }
             kw = {key: value for key, value in kw.items() if value is not None}
-            _log.info("%s/%s: Parameter fixtures: %s", self.name, attr.name, kw)
+            _log.info("%s %s: Parameter fixtures: %s", self.name, attr_path_str, kw)
             missing_params = ", ".join(sorted(set(attr.param_list) - set(kw)))
             if missing_params:
                 if kw:
-                    raise RuntimeError(f"Some parameters are missing for {self.module_name} {attr.name}: {missing_params}")
+                    raise RuntimeError(f"Some parameter fixtures are missing for {self.name} {attr_path_str}: {missing_params}")
                 else:
                     # All are missing - guess this function is not intended to be tested using fixture parameters.
-                    _log.warning("Some parameters are missing for %s %s: %s", self.module_name, attr.name, missing_params)
-                    return
+                    _log.warning("Pparameter fixtures are missing for %s %s: %s", self.name, attr_path_str, missing_params)
+                    return (None, None)
             function_res = htypes.partial.partial(
                 function=mosaic.put(attr_res),
                 params=[
@@ -375,10 +375,34 @@ class SourceFile:
 
         call_res = htypes.call.call(mosaic.put(function_res))
 
-        _log.info("%s/%s: Retrieving type: %s", self.name, attr.name, call_res)
+        _log.info("%s %s: Retrieving type: %s", self.name, attr_path_str, call_res)
         get_resource_type = process.rpc_call(get_resource_type_ref)
         result_t = get_resource_type(resource_ref=mosaic.put(call_res))
-        _log.info("%s/%s type: %r", self.name, attr.name, result_t)
+        _log.info("%s %s type: %r", self.name, attr_path_str, result_t)
+        return (call_res, result_t)
+
+    def _visit_object_method(self, process, fixtures_file, ctr_attr, object_res, attr):
+        call_res, result_t = self._visit_function(process, fixtures_file, object_res, attr, path=[ctr_attr.name])
+
+    def _visit_object(self, process, fixtures_file, module_res, ctr_attr, object_res):
+        _log.debug("Collect attributes for: %s.%s", self.module_name, ctr_attr.name)
+        collect_attributes = process.rpc_call(collect_attributes_ref)
+        object_attrs = collect_attributes(object_ref=mosaic.put(object_res))
+
+        attr_list = [web.summon(ref) for ref in object_attrs.attr_list]
+        _log.info("Collected attrs for %s.%s: %s", self.module_name, ctr_attr.name, attr_list)
+        if 'get' not in [attr.name for attr in attr_list]:
+            _log.info("Object %s.%s does not have 'get' method; skipping", self.module_name, ctr_attr.name)
+        for attr in attr_list:
+            if isinstance(attr, htypes.inspect.fn_attr):
+                self._visit_object_method(process, fixtures_file, ctr_attr, object_res, attr)
+
+    def _visit_attribute(self, process, fixtures_file, module_res, attr):
+        if not isinstance(attr, htypes.inspect.fn_attr):
+            return
+        call_res, result_t = self._visit_function(process, fixtures_file, module_res, attr, path=[])
+        if list(attr.param_list) == ['piece'] and isinstance(result_t, htypes.inspect.object_t):
+            self._visit_object(process, fixtures_file, module_res, attr, call_res)
 
     def discover_type_imports(self, process, resource_registry, type_res_list, file_dict):
         _log.info("%s: Discover type imports", self.module_name)
