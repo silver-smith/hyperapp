@@ -13,7 +13,9 @@ _null_ref = phony_ref('null')
 
 @mark.service
 def run_input_key_dialog():
-    return ''
+    def _run_input_key_dialog():
+        return ''
+    return _run_input_key_dialog
 
 
 def _phony_command():
