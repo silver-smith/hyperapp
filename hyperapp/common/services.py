@@ -32,6 +32,7 @@ class Services(object):
     builtin_services = [
         'services',
         'builtin_services',
+        'builtin_types',
         'hyperapp_dir',
         'module_dir_list',
         'mosaic',

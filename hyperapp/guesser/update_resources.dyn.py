@@ -12,6 +12,7 @@ from hyperapp.common.ref import hash_sha512
 
 from . import htypes
 from .services import (
+    builtin_types,
     code_module_loader,
     collect_attributes_ref,
     constructor_creg,
@@ -40,6 +41,19 @@ _log = logging.getLogger(__name__)
 
 SourceInfo = namedtuple('SourceInfo', 'import_name attr_list')
 DepsInfo = namedtuple('DepsInfo', 'provides_services uses_modules wants_services wants_code tests_services tests_code')
+
+
+def pick_key_t(result_t, error_prefix):
+    name_to_type = {
+        element.name: element.type
+        for element in result_t.element_list
+        }
+    for name in ['id', 'key', 'name']:
+        try:
+            return (name, name_to_type[name])
+        except KeyError:
+            pass
+    raise RuntimeError(f"{error_prefix}: Unable to pick key element from: {list(name_to_type)}")
 
 
 class SourceFile:
@@ -411,10 +425,27 @@ class SourceFile:
             )
         resource_module.add_association(association)
 
+    def _construct_list_spec(self, custom_types, resource_module, ctr_attr, object_dir, result_t):
+        key_attribute, key_t_name = pick_key_t(result_t, error_prefix=f"{self.name} {ctr_attr.name}")
+        key_t_ref = custom_types[key_t_name.module][key_t_name.name]
+        spec = htypes.impl.list_spec(
+            key_attribute=key_attribute,
+            key_t=key_t_ref,
+            dir=mosaic.put(object_dir),
+            )
+        resource_module[f'{ctr_attr.name}.spec'] = spec
+        return spec
+
+    def _construct_object_impl(self, custom_types, resource_module, ctr_attr, object_res, object_dir, attr, result_t):
+        if not isinstance(result_t, htypes.inspect.list_t):
+            raise RuntimeError(
+                f"{self.name}: Unsupported {ctr_attr.name}.{attr.name} method result type: {result_t!r}")
+        spec = self._construct_list_spec(custom_types, resource_module, ctr_attr, object_dir, result_t)
+
     def _visit_object_method(self, process, custom_types, resource_module, fixtures_file, ctr_attr, object_res, object_dir, attr):
         call_res, result_t = self._visit_function(process, fixtures_file, object_res, attr, path=[ctr_attr.name])
         if attr.name == 'get':
-            pass
+            self._construct_object_impl(custom_types, resource_module, ctr_attr, object_res, object_dir, attr, result_t)
         else:
             self._construct_method_command(custom_types, resource_module, ctr_attr, object_res, object_dir, attr)
 
@@ -544,6 +575,12 @@ def subprocess(additional_dir_list):
 
 def legacy_type_resources(root_dir, subdir_list):
     custom_types = {**local_types}
+
+    for t in builtin_types.values():
+        type_ref = types.reverse_resolve(t)
+        module_reg = custom_types.setdefault(t.module_name, {})
+        module_reg[t.name] = type_ref
+
     dir_list = [root_dir / d for d in subdir_list]
     type_module_loader.load_type_modules(dir_list, custom_types)
 
