@@ -14,7 +14,7 @@ import:
   - legacy_type.inspect:record_t
   - legacy_type.inspect:list_t
   - legacy_type.inspect:empty_list_t
-  - legacy_type.inspect:coroutine_fn_t
+  - legacy_type.inspect:coroutine_t
   - legacy_type.partial:partial
   - legacy_type.python_module:python_module
   - resource.constants:constants.module
@@ -36,7 +36,7 @@ definitions:
       htypes.inspect.record_t: legacy_type.inspect:record_t
       htypes.inspect.list_t: legacy_type.inspect:list_t
       htypes.inspect.empty_list_t: legacy_type.inspect:empty_list_t
-      htypes.inspect.coroutine_fn_t: legacy_type.inspect:coroutine_fn_t
+      htypes.inspect.coroutine_t: legacy_type.inspect:coroutine_t
       services.mosaic: legacy_service:mosaic
       services.types: legacy_service:types
       services.python_object_creg: legacy_service:python_object_creg

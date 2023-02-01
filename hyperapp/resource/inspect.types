@@ -37,4 +37,4 @@ list_t = record:
 
 empty_list_t = record
 
-coroutine_fn_t = record
+coroutine_t = record

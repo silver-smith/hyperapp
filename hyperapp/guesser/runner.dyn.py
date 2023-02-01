@@ -66,7 +66,7 @@ def get_resource_type(resource_ref):
         return htypes.inspect.none_t()
 
     if inspect.iscoroutine(value):
-        return htypes.inspect.coroutine_fn_t()
+        return htypes.inspect.coroutine_t()
 
     log.info("Get type for value: %r", value)
     try:
