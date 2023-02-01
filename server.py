@@ -44,6 +44,7 @@ code_module_list = [
     'ui.global_command_list',
     'server.tcp_server',
     'server.rpc_endpoint',
+    'resource.resource_module',
     'resource.register_associations',
     'server.announce_provider',
     # 'server.server_ref_list',
@@ -67,9 +68,9 @@ def init_meta_registry_association(resource_registry, python_object_creg):
 
 
 def init_local_server_ref(resource_registry, python_object_creg):
-    init_res = resource_registry['server.init_local_server_ref', 'init_local_server_ref']
-    init = python_object_creg.animate(init_res)
-    init()
+    init_module_res = resource_registry['server.init_local_server_ref', 'init_local_server_ref.module']
+    init_module = python_object_creg.animate(init_module_res)
+    init_module.init_local_server_ref()
 
 
 def main():
