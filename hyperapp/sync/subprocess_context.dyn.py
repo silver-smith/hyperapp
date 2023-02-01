@@ -50,7 +50,7 @@ def subprocess_running(module_dir_list, code_module_list, rpc_endpoint, identity
         'resource.attribute',
         'resource.partial',
         'resource.call',
-        'resource.async_call',
+        'resource.async_run',
         'resource.raw',
         'sync.transport.tcp',  # Unbundler wants tcp route.
         'sync.subprocess_report_home',
