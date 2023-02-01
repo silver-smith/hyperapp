@@ -23,8 +23,10 @@ import:
 - legacy_type.attribute:attribute
 - legacy_type.call:call
 - legacy_type.command:object_commands_d
+- legacy_type.impl:impl_association
 - legacy_type.impl:list_spec
 - legacy_type.impl:method_command_impl
+- legacy_type.impl:python_object_association
 - legacy_type.import_discoverer:import_discoverer
 - legacy_type.import_discoverer:using_incomplete_object
 - legacy_type.import_recorder:import_recorder
@@ -33,6 +35,7 @@ import:
 - legacy_type.inspect:fn_attr
 - legacy_type.inspect:list_t
 - legacy_type.inspect:object_t
+- legacy_type.inspect:record_t
 - legacy_type.lcs:lcs_set_association
 - legacy_type.legacy_type:type
 - legacy_type.partial:param
@@ -63,8 +66,10 @@ definitions:
       htypes.attribute.attribute: legacy_type.attribute:attribute
       htypes.call.call: legacy_type.call:call
       htypes.command.object_commands_d: legacy_type.command:object_commands_d
+      htypes.impl.impl_association: legacy_type.impl:impl_association
       htypes.impl.list_spec: legacy_type.impl:list_spec
       htypes.impl.method_command_impl: legacy_type.impl:method_command_impl
+      htypes.impl.python_object_association: legacy_type.impl:python_object_association
       htypes.import_discoverer.import_discoverer: legacy_type.import_discoverer:import_discoverer
       htypes.import_discoverer.using_incomplete_object: legacy_type.import_discoverer:using_incomplete_object
       htypes.import_recorder.import_recorder: legacy_type.import_recorder:import_recorder
@@ -73,6 +78,7 @@ definitions:
       htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
       htypes.inspect.list_t: legacy_type.inspect:list_t
       htypes.inspect.object_t: legacy_type.inspect:object_t
+      htypes.inspect.record_t: legacy_type.inspect:record_t
       htypes.lcs.lcs_set_association: legacy_type.lcs:lcs_set_association
       htypes.legacy_type.type: legacy_type.legacy_type:type
       htypes.partial.param: legacy_type.partial:param
