@@ -11,23 +11,18 @@ import:
   - legacy_type.piece_ref:piece_ref
   - legacy_type.python_module:python_module
   - sync.rpc_proxy:rpc_proxy.module
+  - sync.subprocess_context_queue:subprocess_context_queue.module
 
 definitions:
 
-  subprocess_context_queue_module:
-    _type: legacy_type.python_module:python_module
-    module_name: subprocess_context_queue
-    file_name: subprocess_context_queue.dyn.py
-    import_list: []
-
   runner_is_ready_ctr:
     _type: legacy_type.attribute:attribute
-    object: subprocess_context_queue_module
+    object: sync.subprocess_context_queue:subprocess_context_queue.module
     attr_name: runner_is_ready
 
   runner_signal_queue_factory:
     _type: legacy_type.attribute:attribute
-    object: subprocess_context_queue_module
+    object: sync.subprocess_context_queue:subprocess_context_queue.module
     attr_name: runner_signal_queue
 
   runner_signal_queue:
