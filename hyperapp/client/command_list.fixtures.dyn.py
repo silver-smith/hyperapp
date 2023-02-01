@@ -89,8 +89,10 @@ def current_item():
 
 
 @mark.service
-async def adapter_factory():
-    return None
+def adapter_factory():
+    async def _adapter_factory(piece):
+        return None
+    return _adapter_factory
 
 
 class _PhonyObjectCommandsFactory:
