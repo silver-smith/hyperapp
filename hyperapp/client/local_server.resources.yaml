@@ -1,0 +1,33 @@
+# Automatically generated file. Do not edit.
+# Source hash: 1e4c42d262148b64edf8719e8016f6d136fef648c01d50301e6cfaa7d411cf8c92c3b16d8f08645a3bede7a385f608a94d3a93426a8ecb7d03b265ce7d5b26e0
+# Generator hash: 2488306f246409ca5a82b0a7adfa74536b698cf7e423b0a95c330adcf4d2d409eb066777115b32f36fb3ed08ebdcf56313491d2adc8d8ac587905b422ddea172
+
+import:
+- common.mark:mark.service
+- legacy_service:local_server_ref
+- legacy_type.attribute:attribute
+- legacy_type.global_command:global_command_association
+- legacy_type.impl:global_command_impl
+- legacy_type.local_server:open_local_server_d
+- legacy_type.python_module:python_module
+associations:
+- _type: legacy_type.global_command:global_command_association
+  command: open_local_server.command
+definitions:
+  local_server.module:
+    _type: legacy_type.python_module:python_module
+    module_name: local_server
+    file_name: local_server.dyn.py
+    import_list:
+      services.local_server_ref: legacy_service:local_server_ref
+      services.mark: common.mark:mark.service
+  open_local_server:
+    _type: legacy_type.attribute:attribute
+    object: local_server.module
+    attr_name: open_local_server
+  open_local_server.command:
+    _type: legacy_type.impl:global_command_impl
+    function: open_local_server
+    dir: open_local_server_d
+  open_local_server_d:
+    _type: legacy_type.local_server:open_local_server_d
