@@ -1,4 +1,6 @@
 # Automatically generated file. Do not edit.
+# Source hash: 303a149ef9aa896d4a70e5e01359c106070cf311afeb15933c3c8c56ecf68725a01b95a12d8d57350c67f9c3ee9ad0981ff3c734fcd2075c80d35da2d405bdc9
+# Generator hash: 2488306f246409ca5a82b0a7adfa74536b698cf7e423b0a95c330adcf4d2d409eb066777115b32f36fb3ed08ebdcf56313491d2adc8d8ac587905b422ddea172
 
 import:
 - legacy_service:global_command_list
@@ -23,7 +25,7 @@ associations:
 - _type: legacy_type.impl:impl_association
   piece_t: legacy_type.server_global_commands:server_global_commands
   ctr_fn: ServerGlobalCommands
-  spec: server_global_commands_spec
+  spec: ServerGlobalCommands.spec
 - _type: legacy_type.impl:python_object_association
   t: legacy_type.server_global_commands:server_global_commands
   function: ServerGlobalCommands
@@ -31,16 +33,23 @@ associations:
   dir:
   - server_global_commands_d
   - object_commands_d
-  value: server_global_commands.run.command
+  value: ServerGlobalCommands.run.command
 definitions:
   ServerGlobalCommands:
     _type: legacy_type.attribute:attribute
     object: server_global_commands.module
     attr_name: ServerGlobalCommands
-  global_command_to_item:
-    _type: legacy_type.attribute:attribute
-    object: server_global_commands.module
-    attr_name: global_command_to_item
+  ServerGlobalCommands.run.command:
+    _type: legacy_type.impl:method_command_impl
+    method: run
+    params:
+    - current_key
+    dir: server_global_commands_run_d
+  ServerGlobalCommands.spec:
+    _type: legacy_type.impl:list_spec
+    key_attribute: name
+    key_t: legacy_type.builtin:string
+    dir: server_global_commands_d
   object_commands_d:
     _type: legacy_type.command:object_commands_d
   server_global_commands.module:
@@ -54,18 +63,7 @@ definitions:
       services.python_object_creg: legacy_service:python_object_creg
       services.types: legacy_service:types
       services.web: legacy_service:web
-  server_global_commands.run.command:
-    _type: legacy_type.impl:method_command_impl
-    method: run
-    params:
-    - current_key
-    dir: server_global_commands_run_d
   server_global_commands_d:
     _type: legacy_type.server_global_commands:server_global_commands_d
   server_global_commands_run_d:
     _type: legacy_type.server_global_commands:server_global_commands_run_d
-  server_global_commands_spec:
-    _type: legacy_type.impl:list_spec
-    key_attribute: name
-    key_t: legacy_type.builtin:string
-    dir: server_global_commands_d

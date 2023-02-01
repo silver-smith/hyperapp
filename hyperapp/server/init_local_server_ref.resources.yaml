@@ -1,16 +1,13 @@
 # Automatically generated file. Do not edit.
+# Source hash: 5cdd7fa680023deaaf4139dc04c01fb35c727a4cc4e2362433af935267b2881b485681681470e95986892035d23172616344fbea4480ffd2dcb0df19392aea7b
+# Generator hash: 2488306f246409ca5a82b0a7adfa74536b698cf7e423b0a95c330adcf4d2d409eb066777115b32f36fb3ed08ebdcf56313491d2adc8d8ac587905b422ddea172
 
 import:
 - legacy_service:local_server_ref
-- legacy_type.attribute:attribute
 - legacy_type.python_module:python_module
 - legacy_type.server_global_commands:server_global_commands
 associations: []
 definitions:
-  init_local_server_ref:
-    _type: legacy_type.attribute:attribute
-    object: init_local_server_ref.module
-    attr_name: init_local_server_ref
   init_local_server_ref.module:
     _type: legacy_type.python_module:python_module
     module_name: init_local_server_ref

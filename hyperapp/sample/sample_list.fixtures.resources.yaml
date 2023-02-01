@@ -1,0 +1,33 @@
+# Automatically generated file. Do not edit.
+# Source hash: 7b449b58bf2477fea355b084423de2c1744325929a261c843e7eadc1a38878907241e55da536ecd1571483d7bf15b44c119d0071b538ad59ec3292bafa94daee
+# Generator hash: 2488306f246409ca5a82b0a7adfa74536b698cf7e423b0a95c330adcf4d2d409eb066777115b32f36fb3ed08ebdcf56313491d2adc8d8ac587905b422ddea172
+
+import:
+- common.mark:mark.service
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.python_module:python_module
+- legacy_type.sample_list:sample_list
+associations: []
+definitions:
+  SampleList.open.current_key.parameter:
+    _type: legacy_type.call:call
+    function: current_key
+  SampleList.piece.parameter:
+    _type: legacy_type.call:call
+    function: piece
+  current_key:
+    _type: legacy_type.attribute:attribute
+    object: sample_list.fixtures.module
+    attr_name: current_key
+  piece:
+    _type: legacy_type.attribute:attribute
+    object: sample_list.fixtures.module
+    attr_name: piece
+  sample_list.fixtures.module:
+    _type: legacy_type.python_module:python_module
+    module_name: sample_list.fixtures
+    file_name: sample_list.fixtures.dyn.py
+    import_list:
+      htypes.sample_list.sample_list: legacy_type.sample_list:sample_list
+      services.mark: common.mark:mark.service

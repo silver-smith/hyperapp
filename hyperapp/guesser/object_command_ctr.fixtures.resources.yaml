@@ -1,6 +1,6 @@
 # Automatically generated file. Do not edit.
 # Source hash: b89d84d4519a6a71fa45b262de4bd5b1903eedeedc15f2441ea7e6fce18495edd203a928f70f5632971e1aff3d7477f1d4e752e22043339a5b0db68eee0ee233
-# Generator hash: 0fab7efdcaa40340c1823828f57288c72d3cdbe27f4a888b4dbc198a7ccee92665a1745e16e3417ed431afcb39aca90b8048cb34813dc99a0852e9c280402b69
+# Generator hash: 2488306f246409ca5a82b0a7adfa74536b698cf7e423b0a95c330adcf4d2d409eb066777115b32f36fb3ed08ebdcf56313491d2adc8d8ac587905b422ddea172
 
 import:
 - common.mark:mark.service
