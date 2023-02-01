@@ -12,7 +12,7 @@ from hyperapp.common.ref import hash_sha512
 
 from . import htypes
 from .services import (
-    builtin_types,
+    builtin_types_as_dict,
     code_module_loader,
     collect_attributes_ref,
     constructor_creg,
@@ -428,9 +428,10 @@ class SourceFile:
     def _construct_list_spec(self, custom_types, resource_module, ctr_attr, object_dir, result_t):
         key_attribute, key_t_name = pick_key_t(result_t, error_prefix=f"{self.name} {ctr_attr.name}")
         key_t_ref = custom_types[key_t_name.module][key_t_name.name]
+        key_t_res = htypes.legacy_type.type(key_t_ref)
         spec = htypes.impl.list_spec(
             key_attribute=key_attribute,
-            key_t=key_t_ref,
+            key_t=mosaic.put(key_t_res),
             dir=mosaic.put(object_dir),
             )
         resource_module[f'{ctr_attr.name}.spec'] = spec
@@ -574,12 +575,10 @@ def subprocess(additional_dir_list):
 
 
 def legacy_type_resources(root_dir, subdir_list):
-    custom_types = {**local_types}
-
-    for t in builtin_types.values():
-        type_ref = types.reverse_resolve(t)
-        module_reg = custom_types.setdefault(t.module_name, {})
-        module_reg[t.name] = type_ref
+    custom_types = {
+        **builtin_types_as_dict(),
+        **local_types,
+        }
 
     dir_list = [root_dir / d for d in subdir_list]
     type_module_loader.load_type_modules(dir_list, custom_types)

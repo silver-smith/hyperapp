@@ -2,7 +2,7 @@ import:
 - guesser.runner:collect_attributes
 - guesser.runner:get_resource_type
 - guesser.utils:utils.module
-- legacy_service:builtin_types
+- legacy_service:builtin_types_as_dict
 - legacy_service:code_module_loader
 - legacy_service:endpoint_registry
 - legacy_service:generate_rsa_identity
@@ -77,7 +77,7 @@ definitions:
       htypes.partial.partial: legacy_type.partial:partial
       htypes.python_module.python_module: legacy_type.python_module:python_module
       htypes.python_module.import_rec: legacy_type.python_module:import_rec
-      services.builtin_types: legacy_service:builtin_types
+      services.builtin_types_as_dict: legacy_service:builtin_types_as_dict
       services.code_module_loader: legacy_service:code_module_loader
       services.collect_attributes_ref: collect_attributes_ref
       services.constructor_creg: resource.constructor_creg:constructor_creg.service
