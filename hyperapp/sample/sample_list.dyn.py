@@ -1,9 +1,6 @@
 import logging
 
 from . import htypes
-from .services import (
-    mark,
-    )
 
 log = logging.getLogger(__name__)
 
@@ -22,11 +19,6 @@ class SampleList:
 
     def open(self, current_key):
         return f"Opened item: {current_key}"
-
-
-@mark.global_command
-def open_sample_list():
-    return htypes.sample_list.sample_list(provider='client')
 
 
 log.info("sample/list module is loaded")

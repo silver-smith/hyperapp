@@ -1,0 +1,33 @@
+# Automatically generated file. Do not edit.
+# Source hash: 5bc3aade3a1be751ea9c6071a333bd71ecab624df5c8a0a73643fef30d0e0883be4d7dedfe2b2854dc8f07abfb6483192264ebfd31dafb19b949755222e9c8ca
+# Generator hash: 2488306f246409ca5a82b0a7adfa74536b698cf7e423b0a95c330adcf4d2d409eb066777115b32f36fb3ed08ebdcf56313491d2adc8d8ac587905b422ddea172
+
+import:
+- common.mark:mark.service
+- legacy_type.attribute:attribute
+- legacy_type.global_command:global_command_association
+- legacy_type.impl:global_command_impl
+- legacy_type.python_module:python_module
+- legacy_type.sample_list:open_sample_list_d
+- legacy_type.sample_list:sample_list
+associations:
+- _type: legacy_type.global_command:global_command_association
+  command: open_sample_list.command
+definitions:
+  open_sample_list:
+    _type: legacy_type.attribute:attribute
+    object: sample_list.module
+    attr_name: open_sample_list
+  open_sample_list.command:
+    _type: legacy_type.impl:global_command_impl
+    function: open_sample_list
+    dir: open_sample_list_d
+  open_sample_list_d:
+    _type: legacy_type.sample_list:open_sample_list_d
+  sample_list.module:
+    _type: legacy_type.python_module:python_module
+    module_name: sample_list
+    file_name: sample_list.dyn.py
+    import_list:
+      htypes.sample_list.sample_list: legacy_type.sample_list:sample_list
+      services.mark: common.mark:mark.service
