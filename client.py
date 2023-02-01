@@ -23,10 +23,10 @@ module_dir_list = [
     ]
 
 code_module_list = [
+    'client.client_lcs_service',
     'resource.legacy_module',
     'resource.legacy_service',
     'resource.legacy_type',
-    'resource.resource_module',
     'resource.attribute',
     'resource.partial',
     'resource.python_module',
@@ -91,8 +91,8 @@ code_module_list = [
     # 'async.ui.transport_log',
     # 'async.ui.rpc_callback',
     'resource.async.attribute',
+    'resource.resource_module',
     'resource.register_associations',
-    'client.client_lcs_service',
     ]
 
 
