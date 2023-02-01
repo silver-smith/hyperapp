@@ -559,12 +559,18 @@ class SourceFile:
             )
         resource_module[object_name] = ctr_attribute
 
-        association = htypes.impl.impl_association(
+        impl_association = htypes.impl.impl_association(
             piece_t=mosaic.put(piece_t_res),
             ctr_fn=mosaic.put(ctr_attribute),
             spec=mosaic.put(spec),
             )
-        resource_module.add_association(association)
+        resource_module.add_association(impl_association)
+
+        pyobj_association = htypes.impl.python_object_association(
+            t=mosaic.put(piece_t_res),
+            function=mosaic.put(ctr_attribute),
+            )
+        resource_module.add_association(pyobj_association)
 
     def construct_resources(self, process, resource_registry, custom_types, type_res_list, file_dict):
         resource_module = resource_module_factory(resource_registry, self.name)
