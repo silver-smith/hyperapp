@@ -19,6 +19,7 @@ import:
 - legacy_service:type_module_loader
 - legacy_service:types
 - legacy_service:web
+- legacy_type.async_run:async_run
 - legacy_type.attribute:attribute
 - legacy_type.call:call
 - legacy_type.command:object_commands_d
@@ -28,7 +29,7 @@ import:
 - legacy_type.import_discoverer:using_incomplete_object
 - legacy_type.import_recorder:import_recorder
 - legacy_type.import_recorder:resource
-- legacy_type.inspect:coroutine_fn_t
+- legacy_type.inspect:coroutine_t
 - legacy_type.inspect:fn_attr
 - legacy_type.inspect:list_t
 - legacy_type.inspect:object_t
@@ -58,6 +59,7 @@ definitions:
     file_name: update_resources.dyn.py
     import_list:
       code.utils: guesser.utils:utils.module
+      htypes.async_run.async_run: legacy_type.async_run:async_run
       htypes.attribute.attribute: legacy_type.attribute:attribute
       htypes.call.call: legacy_type.call:call
       htypes.command.object_commands_d: legacy_type.command:object_commands_d
@@ -67,7 +69,7 @@ definitions:
       htypes.import_discoverer.using_incomplete_object: legacy_type.import_discoverer:using_incomplete_object
       htypes.import_recorder.import_recorder: legacy_type.import_recorder:import_recorder
       htypes.import_recorder.resource: legacy_type.import_recorder:resource
-      htypes.inspect.coroutine_fn_t: legacy_type.inspect:coroutine_fn_t
+      htypes.inspect.coroutine_t: legacy_type.inspect:coroutine_t
       htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
       htypes.inspect.list_t: legacy_type.inspect:list_t
       htypes.inspect.object_t: legacy_type.inspect:object_t

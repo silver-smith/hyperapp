@@ -395,6 +395,12 @@ class SourceFile:
         get_resource_type = process.rpc_call(get_resource_type_ref)
         result_t = get_resource_type(resource_ref=mosaic.put(call_res))
         _log.info("%s %s type: %r", self.name, attr_path_str, result_t)
+
+        if isinstance(result_t, htypes.inspect.coroutine_t):
+            async_run = htypes.async_run.async_run(mosaic.put(call_res))
+            result_t = get_resource_type(resource_ref=mosaic.put(async_run))
+            _log.info("%s %s async call type: %r", self.name, attr_path_str, result_t)
+
         return (call_res, result_t)
 
     def _construct_dir(self, custom_types, resource_module, name):
