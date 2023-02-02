@@ -49,7 +49,7 @@ def pick_key_t(result_t, error_prefix):
         element.name: element.type
         for element in result_t.element_list
         }
-    for name in ['id', 'key', 'name']:
+    for name in ['id', 'key', 'idx', 'name']:
         try:
             return (name, name_to_type[name])
         except KeyError:
