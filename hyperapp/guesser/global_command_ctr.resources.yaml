@@ -1,6 +1,6 @@
 # Automatically generated file. Do not edit.
 # Source hash: f5e0935521ba5098c5583acc018938c458ebd6ddd16bb4ddd1b1bf0d422b56de60658d83116e67237615612f548a629858a5c3500482c4cb98a5dd005d3fba9f
-# Generator hash: a6316d68f8e7ce60eca85cca8202e7c53f0ae3515f46ebbdc63d56de1ec491cf04b115e8b15bb291e45ca3622eed044ad21960a170fc014c9039714a33fe90da
+# Generator hash: a4bbb0e5cb225f70971bfb60cdf0537cff81a66bedf406b4815e67568f15173552f3e5a9b99cf3e9508c4b4fed262ec9658f42e377733edd4237c6973683b55d
 
 import:
 - guesser.utils:utils.module
