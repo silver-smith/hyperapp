@@ -1,6 +1,6 @@
 # Automatically generated file. Do not edit.
-# Source hash: f58a40cf74258b434066a4a0fdd8e09aeff8ae96a4239dc69a1a0bc312613c2856e6e505e8f9956b05248c633cdca6b79a0df650985d6cfe9d6927c8474ab1f7
-# Generator hash: ffce21039ab6e243f17f881b449324c80a4942e1ade823dc05c9ac14a8b4e2be5bee2b3378332124398f2ea6a9ea7293818a74dd51608bbdb2f52815463838cd
+# Source hash: 8633d98c6a7a94b2a95e4c08f620aa523f95f48a18f5a3b7fb108731bea3b1a7587048293ca08458796c832e7c845d1dc70b28fb3c29dfa500aafd9339065f7d
+# Generator hash: a4bbb0e5cb225f70971bfb60cdf0537cff81a66bedf406b4815e67568f15173552f3e5a9b99cf3e9508c4b4fed262ec9658f42e377733edd4237c6973683b55d
 
 import:
 - common.mark:mark.service
@@ -23,9 +23,12 @@ import:
 - legacy_type.resources_view:module_item
 - legacy_type.resources_view:open_association_list_d
 - legacy_type.resources_view:open_resource_module_list_d
+- legacy_type.resources_view:resource_module_association_list
+- legacy_type.resources_view:resource_module_association_list_d
 - legacy_type.resources_view:resource_module_list
+- legacy_type.resources_view:resource_module_list_associations_d
 - legacy_type.resources_view:resource_module_list_d
-- legacy_type.resources_view:resource_module_list_open_d
+- legacy_type.resources_view:resource_module_list_variables_d
 - legacy_type.resources_view:resource_module_var_list
 - legacy_type.resources_view:resource_module_var_list_d
 - legacy_type.resources_view:var_item
@@ -39,6 +42,10 @@ associations:
   ctr_fn: AssociationList
   spec: AssociationList.spec
 - _type: legacy_type.impl:impl_association
+  piece_t: legacy_type.resources_view:resource_module_association_list
+  ctr_fn: ResourceModuleAssociationList
+  spec: ResourceModuleAssociationList.spec
+- _type: legacy_type.impl:impl_association
   piece_t: legacy_type.resources_view:resource_module_list
   ctr_fn: ResourceModuleList
   spec: ResourceModuleList.spec
@@ -50,6 +57,9 @@ associations:
   t: legacy_type.resources_view:association_list
   function: AssociationList
 - _type: legacy_type.impl:python_object_association
+  t: legacy_type.resources_view:resource_module_association_list
+  function: ResourceModuleAssociationList
+- _type: legacy_type.impl:python_object_association
   t: legacy_type.resources_view:resource_module_list
   function: ResourceModuleList
 - _type: legacy_type.impl:python_object_association
@@ -59,7 +69,12 @@ associations:
   dir:
   - resource_module_list_d
   - object_commands_d
-  value: ResourceModuleList.open.command
+  value: ResourceModuleList.associations.command
+- _type: legacy_type.lcs:lcs_set_association
+  dir:
+  - resource_module_list_d
+  - object_commands_d
+  value: ResourceModuleList.variables.command
 definitions:
   AssociationList:
     _type: legacy_type.attribute:attribute
@@ -70,21 +85,36 @@ definitions:
     key_attribute: idx
     key_t: legacy_type.builtin:int
     dir: association_list_d
+  ResourceModuleAssociationList:
+    _type: legacy_type.attribute:attribute
+    object: resources_view.module
+    attr_name: ResourceModuleAssociationList
+  ResourceModuleAssociationList.spec:
+    _type: legacy_type.impl:list_spec
+    key_attribute: idx
+    key_t: legacy_type.builtin:int
+    dir: resource_module_association_list_d
   ResourceModuleList:
     _type: legacy_type.attribute:attribute
     object: resources_view.module
     attr_name: ResourceModuleList
-  ResourceModuleList.open.command:
+  ResourceModuleList.associations.command:
     _type: legacy_type.impl:method_command_impl
-    method: open
+    method: associations
     params:
     - current_key
-    dir: resource_module_list_open_d
+    dir: resource_module_list_associations_d
   ResourceModuleList.spec:
     _type: legacy_type.impl:list_spec
     key_attribute: name
     key_t: legacy_type.builtin:string
     dir: resource_module_list_d
+  ResourceModuleList.variables.command:
+    _type: legacy_type.impl:method_command_impl
+    method: variables
+    params:
+    - current_key
+    dir: resource_module_list_variables_d
   ResourceModuleVarList:
     _type: legacy_type.attribute:attribute
     object: resources_view.module
@@ -118,10 +148,14 @@ definitions:
     dir: open_resource_module_list_d
   open_resource_module_list_d:
     _type: legacy_type.resources_view:open_resource_module_list_d
+  resource_module_association_list_d:
+    _type: legacy_type.resources_view:resource_module_association_list_d
+  resource_module_list_associations_d:
+    _type: legacy_type.resources_view:resource_module_list_associations_d
   resource_module_list_d:
     _type: legacy_type.resources_view:resource_module_list_d
-  resource_module_list_open_d:
-    _type: legacy_type.resources_view:resource_module_list_open_d
+  resource_module_list_variables_d:
+    _type: legacy_type.resources_view:resource_module_list_variables_d
   resource_module_var_list_d:
     _type: legacy_type.resources_view:resource_module_var_list_d
   resources_view.module:
@@ -132,6 +166,7 @@ definitions:
       htypes.resources_view.association_item: legacy_type.resources_view:association_item
       htypes.resources_view.association_list: legacy_type.resources_view:association_list
       htypes.resources_view.module_item: legacy_type.resources_view:module_item
+      htypes.resources_view.resource_module_association_list: legacy_type.resources_view:resource_module_association_list
       htypes.resources_view.resource_module_list: legacy_type.resources_view:resource_module_list
       htypes.resources_view.resource_module_var_list: legacy_type.resources_view:resource_module_var_list
       htypes.resources_view.var_item: legacy_type.resources_view:var_item

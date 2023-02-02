@@ -1,6 +1,6 @@
 # Automatically generated file. Do not edit.
-# Source hash: a5bc56ab4c3beaa9e7ab2d304dc207fd550d4f2949328c26a67872496c781cfea6046f22a699e66aa74463ecfbaf25880cfe01a31c7b10f586cd54c48f15e36e
-# Generator hash: ffce21039ab6e243f17f881b449324c80a4942e1ade823dc05c9ac14a8b4e2be5bee2b3378332124398f2ea6a9ea7293818a74dd51608bbdb2f52815463838cd
+# Source hash: a8a4aea74209b101006141cd8866ab5e3c4371d5e8342ea790f61894a93af107f6d9b721fd17fc8173ef05be9529a1017e8671d5b410e299c66d9f50b78e1bfa
+# Generator hash: a4bbb0e5cb225f70971bfb60cdf0537cff81a66bedf406b4815e67568f15173552f3e5a9b99cf3e9508c4b4fed262ec9658f42e377733edd4237c6973683b55d
 
 import:
 - common.mark:mark.service
@@ -8,6 +8,7 @@ import:
 - legacy_type.call:call
 - legacy_type.python_module:python_module
 - legacy_type.resources_view:association_list
+- legacy_type.resources_view:resource_module_association_list
 - legacy_type.resources_view:resource_module_list
 - legacy_type.resources_view:resource_module_var_list
 associations: []
@@ -15,12 +16,18 @@ definitions:
   AssociationList.piece.parameter:
     _type: legacy_type.call:call
     function: piece_2
-  ResourceModuleList.open.current_key.parameter:
+  ResourceModuleAssociationList.piece.parameter:
     _type: legacy_type.call:call
-    function: current_key
+    function: piece_4
+  ResourceModuleList.associations.current_key.parameter:
+    _type: legacy_type.call:call
+    function: current_key_2
   ResourceModuleList.piece.parameter:
     _type: legacy_type.call:call
     function: piece_1
+  ResourceModuleList.variables.current_key.parameter:
+    _type: legacy_type.call:call
+    function: current_key_1
   ResourceModuleVarList.piece.parameter:
     _type: legacy_type.call:call
     function: piece_3
@@ -28,6 +35,14 @@ definitions:
     _type: legacy_type.attribute:attribute
     object: resources_view.fixtures.module
     attr_name: current_key
+  current_key_1:
+    _type: legacy_type.attribute:attribute
+    object: resources_view.fixtures.module
+    attr_name: current_key_1
+  current_key_2:
+    _type: legacy_type.attribute:attribute
+    object: resources_view.fixtures.module
+    attr_name: current_key_2
   piece:
     _type: legacy_type.attribute:attribute
     object: resources_view.fixtures.module
@@ -44,12 +59,17 @@ definitions:
     _type: legacy_type.attribute:attribute
     object: resources_view.fixtures.module
     attr_name: piece_3
+  piece_4:
+    _type: legacy_type.attribute:attribute
+    object: resources_view.fixtures.module
+    attr_name: piece_4
   resources_view.fixtures.module:
     _type: legacy_type.python_module:python_module
     module_name: resources_view.fixtures
     file_name: resources_view.fixtures.dyn.py
     import_list:
       htypes.resources_view.association_list: legacy_type.resources_view:association_list
+      htypes.resources_view.resource_module_association_list: legacy_type.resources_view:resource_module_association_list
       htypes.resources_view.resource_module_list: legacy_type.resources_view:resource_module_list
       htypes.resources_view.resource_module_var_list: legacy_type.resources_view:resource_module_var_list
       services.mark: common.mark:mark.service

@@ -27,8 +27,8 @@ class ResourceRegistry:
     def module_list(self):
         return list(self._module_registry)
 
-    def module_vars(self, module_name):
-        return list(self._module_registry[module_name])
+    def get_module(self, module_name):
+        return self._module_registry.get(module_name)
 
     @property
     def associations(self):

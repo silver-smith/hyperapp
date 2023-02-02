@@ -4,9 +4,13 @@ association_list = record
 resource_module_var_list = record:
   module_name: string
 
+resource_module_association_list = record:
+  module_name: string
+
 module_item = record:
   name: string
   var_count: int
+  association_count: int
 
 association_item = record:
   idx: int
@@ -17,11 +21,13 @@ var_item = record:
   value: string
 
 resource_module_list_d = record
-resource_module_list_open_d = record
+resource_module_list_variables_d = record
+resource_module_list_associations_d = record
 
 association_list_d = record
 
 resource_module_var_list_d = record
+resource_module_association_list_d = record
 
 open_resource_module_list_d = record
 open_association_list_d = record
