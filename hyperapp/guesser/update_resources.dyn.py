@@ -174,6 +174,14 @@ class SourceFile:
                 return False
         return True
 
+    def _make_module_res(self, import_list):
+        return htypes.python_module.python_module(
+            module_name=self.name,
+            source=self.source_path.read_text(),
+            file_path=str(self.source_path),
+            import_list=tuple(import_list),
+            )
+
     def parse_source(self, resource_registry, process, type_res_list, file_dict, fail_on_incomplete):
         resource_list = [*type_res_list]
 
@@ -205,17 +213,12 @@ class SourceFile:
         import_discoverer = process.proxy(import_discoverer_ref)
         import_discoverer.reset()
 
-        module_res = htypes.python_module.python_module(
-            module_name=self.module_name,
-            source=self.source_path.read_text(),
-            file_path=str(self.source_path),
-            import_list=[
+        module_res = self._make_module_res([
                 htypes.python_module.import_rec('htypes.*', import_recorder_ref),
                 htypes.python_module.import_rec('services.*', import_recorder_ref),
                 htypes.python_module.import_rec('code.*', import_recorder_ref),
                 htypes.python_module.import_rec('*', import_discoverer_ref),
-                ],
-            )
+                ])
 
         _log.debug("Collect attributes for: %r", self.module_name)
         collect_attributes = process.rpc_call(collect_attributes_ref)
@@ -296,14 +299,6 @@ class SourceFile:
         else:
             self.deps, self.source_info = self.parse_source(
                 resource_registry, process, type_res_list, file_dict, fail_on_incomplete=False)
-
-    def make_module_res(self, import_list):
-        return htypes.python_module.python_module(
-            module_name=self.name,
-            source=self.source_path.read_text(),
-            file_path=str(self.source_path),
-            import_list=tuple(sorted(import_list)),
-            )
 
     @staticmethod
     def service_provider_modules(resource_registry, file_dict):
@@ -496,7 +491,7 @@ class SourceFile:
             *import_list,
             htypes.python_module.import_rec('htypes.*', import_recorder_ref),
             ]
-        module_res = self.make_module_res(recorder_import_list)
+        module_res = self._make_module_res(recorder_import_list)
 
         object_info_dict = {}
         for attr in self.source_info.attr_list:
@@ -593,7 +588,7 @@ class SourceFile:
             *self.types_import_list(type_res_list, used_types),
             ]
 
-        module_res = self.make_module_res(import_list)
+        module_res = self._make_module_res(sorted(import_list))
         resource_module[f'{self.name}.module'] = module_res
 
         for name, object_info in object_info_dict.items():
