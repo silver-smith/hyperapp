@@ -9,6 +9,11 @@ def piece():
     return htypes.resources_view.resource_module_list()
 
 
+@mark.param.AssociationList
+def piece():
+    return htypes.resources_view.association_list()
+
+
 @mark.param.ResourceModuleList.open
 def current_key():
     return 'common.mark'

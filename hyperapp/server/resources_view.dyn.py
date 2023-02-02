@@ -27,6 +27,23 @@ class ResourceModuleList:
             )
 
 
+class AssociationList:
+
+  def __init__(self, piece):
+      pass
+
+  def get(self):
+      association_str_list = map(str, resource_registry.associations)
+      return [
+          htypes.resources_view.association_item(
+              idx=idx,
+              value=str(association),
+              )
+          for idx, association
+          in enumerate(sorted(association_str_list))
+          ]
+
+
 class ResourceModuleVarList:
 
     def __init__(self, piece):
@@ -46,3 +63,8 @@ class ResourceModuleVarList:
 @mark.global_command
 def open_resource_module_list():
     return htypes.resources_view.resource_module_list()
+
+
+@mark.global_command
+def open_association_list():
+    return htypes.resources_view.association_list()
