@@ -47,7 +47,6 @@ code_module_list = [
     'resource.resource_module',
     'resource.register_associations',
     'server.announce_provider',
-    # 'server.server_ref_list',
     # 'server.sample_list',
     # 'server.sample_live_list',
     # 'server.sample_tree',
