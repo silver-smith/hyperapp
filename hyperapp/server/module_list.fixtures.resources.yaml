@@ -1,0 +1,33 @@
+# Automatically generated file. Do not edit.
+# Source hash: 852abf1c648dc9b7d810295c4fb659d8af24d8d18ae83ce31fb355ae7fffaf7fcbd5ad36284eff921f404f2a5842eb91f92026b55363d65fa36b5292c1f15c43
+# Generator hash: 2488306f246409ca5a82b0a7adfa74536b698cf7e423b0a95c330adcf4d2d409eb066777115b32f36fb3ed08ebdcf56313491d2adc8d8ac587905b422ddea172
+
+import:
+- common.mark:mark.service
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.module_list:module_list
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  ModuleList.open.current_key.parameter:
+    _type: legacy_type.call:call
+    function: current_key
+  ModuleList.piece.parameter:
+    _type: legacy_type.call:call
+    function: piece
+  current_key:
+    _type: legacy_type.attribute:attribute
+    object: module_list.fixtures.module
+    attr_name: current_key
+  module_list.fixtures.module:
+    _type: legacy_type.python_module:python_module
+    module_name: module_list.fixtures
+    file_name: module_list.fixtures.dyn.py
+    import_list:
+      htypes.module_list.module_list: legacy_type.module_list:module_list
+      services.mark: common.mark:mark.service
+  piece:
+    _type: legacy_type.attribute:attribute
+    object: module_list.fixtures.module
+    attr_name: piece

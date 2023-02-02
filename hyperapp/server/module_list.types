@@ -1,8 +1,15 @@
+module_list = record:
+  status: string opt
 
 module_list_d = record
+module_list_open_d = record
+
+open_module_list_d = record
+open_imported_module_list_d = record
+open_available_module_list_d = record
 
 item = record:
-  module_name: string
+  name: string
   module_ref: ref
   path: string
   status: string

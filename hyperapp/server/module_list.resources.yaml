@@ -1,0 +1,111 @@
+# Automatically generated file. Do not edit.
+# Source hash: 4493f38cc6a55430490c83560071702c3ff2dc8b5b4cadfe1fc9f2eb20d4287823cbfe815549e9a7f634e46c15bae0cedb207b5e38478e94b1cd18dcc1c3ca76
+# Generator hash: 2488306f246409ca5a82b0a7adfa74536b698cf7e423b0a95c330adcf4d2d409eb066777115b32f36fb3ed08ebdcf56313491d2adc8d8ac587905b422ddea172
+
+import:
+- common.mark:mark.service
+- legacy_service:local_modules
+- legacy_service:module_registry
+- legacy_service:mosaic
+- legacy_service:web
+- legacy_type.attribute:attribute
+- legacy_type.builtin:string
+- legacy_type.command:object_commands_d
+- legacy_type.global_command:global_command_association
+- legacy_type.impl:global_command_impl
+- legacy_type.impl:impl_association
+- legacy_type.impl:list_spec
+- legacy_type.impl:method_command_impl
+- legacy_type.impl:python_object_association
+- legacy_type.lcs:lcs_set_association
+- legacy_type.module_list:item
+- legacy_type.module_list:module_list
+- legacy_type.module_list:module_list_d
+- legacy_type.module_list:module_list_open_d
+- legacy_type.module_list:open_available_module_list_d
+- legacy_type.module_list:open_imported_module_list_d
+- legacy_type.module_list:open_module_list_d
+- legacy_type.python_module:python_module
+associations:
+- _type: legacy_type.global_command:global_command_association
+  command: open_available_module_list.command
+- _type: legacy_type.global_command:global_command_association
+  command: open_imported_module_list.command
+- _type: legacy_type.global_command:global_command_association
+  command: open_module_list.command
+- _type: legacy_type.impl:impl_association
+  piece_t: legacy_type.module_list:module_list
+  ctr_fn: ModuleList
+  spec: ModuleList.spec
+- _type: legacy_type.impl:python_object_association
+  t: legacy_type.module_list:module_list
+  function: ModuleList
+- _type: legacy_type.lcs:lcs_set_association
+  dir:
+  - module_list_d
+  - object_commands_d
+  value: ModuleList.open.command
+definitions:
+  ModuleList:
+    _type: legacy_type.attribute:attribute
+    object: module_list.module
+    attr_name: ModuleList
+  ModuleList.open.command:
+    _type: legacy_type.impl:method_command_impl
+    method: open
+    params:
+    - current_key
+    dir: module_list_open_d
+  ModuleList.spec:
+    _type: legacy_type.impl:list_spec
+    key_attribute: name
+    key_t: legacy_type.builtin:string
+    dir: module_list_d
+  module_list.module:
+    _type: legacy_type.python_module:python_module
+    module_name: module_list
+    file_name: module_list.dyn.py
+    import_list:
+      htypes.module_list.item: legacy_type.module_list:item
+      htypes.module_list.module_list: legacy_type.module_list:module_list
+      services.local_modules: legacy_service:local_modules
+      services.mark: common.mark:mark.service
+      services.module_registry: legacy_service:module_registry
+      services.mosaic: legacy_service:mosaic
+      services.web: legacy_service:web
+  module_list_d:
+    _type: legacy_type.module_list:module_list_d
+  module_list_open_d:
+    _type: legacy_type.module_list:module_list_open_d
+  object_commands_d:
+    _type: legacy_type.command:object_commands_d
+  open_available_module_list:
+    _type: legacy_type.attribute:attribute
+    object: module_list.module
+    attr_name: open_available_module_list
+  open_available_module_list.command:
+    _type: legacy_type.impl:global_command_impl
+    function: open_available_module_list
+    dir: open_available_module_list_d
+  open_available_module_list_d:
+    _type: legacy_type.module_list:open_available_module_list_d
+  open_imported_module_list:
+    _type: legacy_type.attribute:attribute
+    object: module_list.module
+    attr_name: open_imported_module_list
+  open_imported_module_list.command:
+    _type: legacy_type.impl:global_command_impl
+    function: open_imported_module_list
+    dir: open_imported_module_list_d
+  open_imported_module_list_d:
+    _type: legacy_type.module_list:open_imported_module_list_d
+  open_module_list:
+    _type: legacy_type.attribute:attribute
+    object: module_list.module
+    attr_name: open_module_list
+  open_module_list.command:
+    _type: legacy_type.impl:global_command_impl
+    function: open_module_list
+    dir: open_module_list_d
+  open_module_list_d:
+    _type: legacy_type.module_list:open_module_list_d
