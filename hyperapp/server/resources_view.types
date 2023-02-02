@@ -1,0 +1,19 @@
+resource_module_list = record
+
+resource_module_var_list = record:
+  module_name: string
+
+module_item = record:
+  name: string
+  var_count: int
+
+var_item = record:
+  name: string
+  value: string
+
+resource_module_list_d = record
+resource_module_list_open_d = record
+
+resource_module_var_list_d = record
+
+open_resource_module_list_d = record

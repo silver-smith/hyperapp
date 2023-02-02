@@ -24,6 +24,13 @@ class ResourceRegistry:
     #             yield (module_name, var_name)
 
     @property
+    def module_list(self):
+        return list(self._module_registry)
+
+    def module_vars(self, module_name):
+        return list(self._module_registry[module_name])
+
+    @property
     def associations(self):
         association_set = set()
         for module in self._module_registry.values():

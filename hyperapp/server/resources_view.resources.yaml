@@ -1,0 +1,102 @@
+# Automatically generated file. Do not edit.
+# Source hash: 5282cd14a28372b379718146e26361d27f22dba552bb730421a7e8340c18cb53072617a7dcfb19aefe5460fa2dfa07d45787c3da6c4842b267b4285607242fa9
+# Generator hash: a6316d68f8e7ce60eca85cca8202e7c53f0ae3515f46ebbdc63d56de1ec491cf04b115e8b15bb291e45ca3622eed044ad21960a170fc014c9039714a33fe90da
+
+import:
+- common.mark:mark.service
+- legacy_service:resource_registry
+- legacy_type.attribute:attribute
+- legacy_type.builtin:string
+- legacy_type.command:object_commands_d
+- legacy_type.global_command:global_command_association
+- legacy_type.impl:global_command_impl
+- legacy_type.impl:impl_association
+- legacy_type.impl:list_spec
+- legacy_type.impl:method_command_impl
+- legacy_type.impl:python_object_association
+- legacy_type.lcs:lcs_set_association
+- legacy_type.python_module:python_module
+- legacy_type.resources_view:module_item
+- legacy_type.resources_view:open_resource_module_list_d
+- legacy_type.resources_view:resource_module_list
+- legacy_type.resources_view:resource_module_list_d
+- legacy_type.resources_view:resource_module_list_open_d
+- legacy_type.resources_view:resource_module_var_list
+- legacy_type.resources_view:resource_module_var_list_d
+- legacy_type.resources_view:var_item
+associations:
+- _type: legacy_type.global_command:global_command_association
+  command: open_resource_module_list.command
+- _type: legacy_type.impl:impl_association
+  piece_t: legacy_type.resources_view:resource_module_list
+  ctr_fn: ResourceModuleList
+  spec: ResourceModuleList.spec
+- _type: legacy_type.impl:impl_association
+  piece_t: legacy_type.resources_view:resource_module_var_list
+  ctr_fn: ResourceModuleVarList
+  spec: ResourceModuleVarList.spec
+- _type: legacy_type.impl:python_object_association
+  t: legacy_type.resources_view:resource_module_list
+  function: ResourceModuleList
+- _type: legacy_type.impl:python_object_association
+  t: legacy_type.resources_view:resource_module_var_list
+  function: ResourceModuleVarList
+- _type: legacy_type.lcs:lcs_set_association
+  dir:
+  - resource_module_list_d
+  - object_commands_d
+  value: ResourceModuleList.open.command
+definitions:
+  ResourceModuleList:
+    _type: legacy_type.attribute:attribute
+    object: resources_view.module
+    attr_name: ResourceModuleList
+  ResourceModuleList.open.command:
+    _type: legacy_type.impl:method_command_impl
+    method: open
+    params:
+    - current_key
+    dir: resource_module_list_open_d
+  ResourceModuleList.spec:
+    _type: legacy_type.impl:list_spec
+    key_attribute: name
+    key_t: legacy_type.builtin:string
+    dir: resource_module_list_d
+  ResourceModuleVarList:
+    _type: legacy_type.attribute:attribute
+    object: resources_view.module
+    attr_name: ResourceModuleVarList
+  ResourceModuleVarList.spec:
+    _type: legacy_type.impl:list_spec
+    key_attribute: name
+    key_t: legacy_type.builtin:string
+    dir: resource_module_var_list_d
+  object_commands_d:
+    _type: legacy_type.command:object_commands_d
+  open_resource_module_list:
+    _type: legacy_type.attribute:attribute
+    object: resources_view.module
+    attr_name: open_resource_module_list
+  open_resource_module_list.command:
+    _type: legacy_type.impl:global_command_impl
+    function: open_resource_module_list
+    dir: open_resource_module_list_d
+  open_resource_module_list_d:
+    _type: legacy_type.resources_view:open_resource_module_list_d
+  resource_module_list_d:
+    _type: legacy_type.resources_view:resource_module_list_d
+  resource_module_list_open_d:
+    _type: legacy_type.resources_view:resource_module_list_open_d
+  resource_module_var_list_d:
+    _type: legacy_type.resources_view:resource_module_var_list_d
+  resources_view.module:
+    _type: legacy_type.python_module:python_module
+    module_name: resources_view
+    file_name: resources_view.dyn.py
+    import_list:
+      htypes.resources_view.module_item: legacy_type.resources_view:module_item
+      htypes.resources_view.resource_module_list: legacy_type.resources_view:resource_module_list
+      htypes.resources_view.resource_module_var_list: legacy_type.resources_view:resource_module_var_list
+      htypes.resources_view.var_item: legacy_type.resources_view:var_item
+      services.mark: common.mark:mark.service
+      services.resource_registry: legacy_service:resource_registry

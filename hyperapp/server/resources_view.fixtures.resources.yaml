@@ -1,0 +1,46 @@
+# Automatically generated file. Do not edit.
+# Source hash: eaefef67f2f7f29f25dabde414c2b6ac584c29716ad9b1f05c7604c77309d1999572be72fc4129031ceaa99bb23651beebf52d2a519cbdf3f3becc0c0d90967f
+# Generator hash: a6316d68f8e7ce60eca85cca8202e7c53f0ae3515f46ebbdc63d56de1ec491cf04b115e8b15bb291e45ca3622eed044ad21960a170fc014c9039714a33fe90da
+
+import:
+- common.mark:mark.service
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.python_module:python_module
+- legacy_type.resources_view:resource_module_list
+- legacy_type.resources_view:resource_module_var_list
+associations: []
+definitions:
+  ResourceModuleList.open.current_key.parameter:
+    _type: legacy_type.call:call
+    function: current_key
+  ResourceModuleList.piece.parameter:
+    _type: legacy_type.call:call
+    function: piece_1
+  ResourceModuleVarList.piece.parameter:
+    _type: legacy_type.call:call
+    function: piece_2
+  current_key:
+    _type: legacy_type.attribute:attribute
+    object: resources_view.fixtures.module
+    attr_name: current_key
+  piece:
+    _type: legacy_type.attribute:attribute
+    object: resources_view.fixtures.module
+    attr_name: piece
+  piece_1:
+    _type: legacy_type.attribute:attribute
+    object: resources_view.fixtures.module
+    attr_name: piece_1
+  piece_2:
+    _type: legacy_type.attribute:attribute
+    object: resources_view.fixtures.module
+    attr_name: piece_2
+  resources_view.fixtures.module:
+    _type: legacy_type.python_module:python_module
+    module_name: resources_view.fixtures
+    file_name: resources_view.fixtures.dyn.py
+    import_list:
+      htypes.resources_view.resource_module_list: legacy_type.resources_view:resource_module_list
+      htypes.resources_view.resource_module_var_list: legacy_type.resources_view:resource_module_var_list
+      services.mark: common.mark:mark.service
