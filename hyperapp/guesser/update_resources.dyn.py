@@ -254,6 +254,8 @@ class SourceFile:
                 wants_code.add(name)
                 continue
             if kind == 'tested':
+                if len(imp) < 3:
+                    continue
                 _, kind, name, *_ = imp
                 if kind == 'services':
                     tests_services.add(name)
@@ -335,6 +337,12 @@ class SourceFile:
             module = resource_registry[name_pair]
             import_list.append(
                 htypes.python_module.import_rec(f'code.{name}', mosaic.put(module)))
+
+        for name in self.deps.tests_code:
+            name_pair = code_modules[name]
+            module = resource_registry[name_pair]
+            import_list.append(
+                htypes.python_module.import_rec(f'tested.code.{name}', mosaic.put(module)))
 
         for service_name in self.deps.wants_services:
             try:
