@@ -355,7 +355,7 @@ class SourceFile:
             for service in file.deps.provides_services
             }
 
-    def make_import_list(self, resource_registry, file_dict, service_provider_modules):
+    def _make_import_list(self, resource_registry, file_dict, service_provider_modules):
         code_modules = {
             file.name: file.code_module_pair
             for file in file_dict.values()
@@ -370,12 +370,6 @@ class SourceFile:
             import_list.append(
                 htypes.python_module.import_rec(f'code.{name}', mosaic.put(module)))
 
-        for name in self.deps.tests_code:
-            name_pair = code_modules[name]
-            module = resource_registry[name_pair]
-            import_list.append(
-                htypes.python_module.import_rec(f'tested.code.{name}', mosaic.put(module)))
-
         for service_name in self.deps.wants_services:
             try:
                 module_name = service_provider_modules[service_name]
@@ -388,6 +382,23 @@ class SourceFile:
 
         _log.info("Import list: %s", import_list)
         return import_list
+
+    def _make_tested_import_list(self, resource_registry, type_res_list, process, file_dict):
+        name_to_file = {
+            file.name: file
+            for file in file_dict.values()
+            }
+
+        name_to_recorder = {}
+        import_list = []
+        for name in self.deps.tests_code:
+            file = name_to_file[name]
+            import_recorder, module = file._attr_collect_module_res(
+                resource_registry, type_res_list, process, file_dict)
+            import_list.append(
+                htypes.python_module.import_rec(f'tested.code.{name}', mosaic.put(module)))
+            name_to_recorder[name] = import_recorder
+        return (name_to_recorder, import_list)
 
     def _parameter_fixture(self, fixtures_file, path):
         if not fixtures_file:
@@ -519,15 +530,17 @@ class SourceFile:
         service_providers = self.service_provider_modules(resource_registry, file_dict)
         if fixtures_file:
             service_providers.update(self.fixture_service_provider_modules(fixtures_file))
-        import_list = self.make_import_list(resource_registry, file_dict, service_providers)
+        import_list = self._make_import_list(resource_registry, file_dict, service_providers)
 
         import_recorder, import_recorder_ref = self._prepare_import_recorder(process, type_res_list)
+        name_to_recorder, tested_import_list = self._make_tested_import_list(
+            resource_registry, type_res_list, process, file_dict)
 
         recorder_import_list = [
             *import_list,
             htypes.python_module.import_rec('htypes.*', import_recorder_ref),
             ]
-        module_res = self._make_module_res(recorder_import_list)
+        module_res = self._make_module_res([*tested_import_list, *recorder_import_list])
 
         object_info_dict = {}
         for attr in self.source_info.attr_list:
@@ -550,7 +563,7 @@ class SourceFile:
         return (used_types, object_info_dict)
 
     @staticmethod
-    def types_import_list(type_res_list, used_types):
+    def _types_import_list(type_res_list, used_types):
         pair_to_resource_ref = {
             (r.name[1], r.name[2]): r.resource
             for r in type_res_list
@@ -620,8 +633,8 @@ class SourceFile:
 
         service_providers = self.service_provider_modules(resource_registry, file_dict)
         import_list = [
-            *self.make_import_list(resource_registry, file_dict, service_providers),
-            *self.types_import_list(type_res_list, used_types),
+            *self._make_import_list(resource_registry, file_dict, service_providers),
+            *self._types_import_list(type_res_list, used_types),
             ]
 
         module_res = self._make_module_res(sorted(import_list))
