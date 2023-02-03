@@ -182,8 +182,45 @@ class SourceFile:
             import_list=tuple(import_list),
             )
 
-    def parse_source(self, resource_registry, process, type_res_list, file_dict, fail_on_incomplete):
+    def _prepare_import_recorder(self, process, resource_list):
+        import_recorder_res = htypes.import_recorder.import_recorder(resource_list)
+        import_recorder_ref = mosaic.put(import_recorder_res)
+        import_recorder = process.proxy(import_recorder_ref)
+        import_recorder.reset()
+        return (import_recorder, import_recorder_ref)
+
+    def _prepare_import_discoverer(self, process):
+        import_discoverer_res = htypes.import_discoverer.import_discoverer()
+        import_discoverer_ref = mosaic.put(import_discoverer_res)
+        import_discoverer = process.proxy(import_discoverer_ref)
+        import_discoverer.reset()
+        return (import_discoverer, import_discoverer_ref)
+
+    def _dep_discover_module_res(self, resource_registry, type_res_list, process):
         resource_list = [*type_res_list]
+
+        mark_service = resource_registry['common.mark', 'mark.service']
+        resource_list.append(
+            htypes.import_recorder.resource(('services', 'mark'), mosaic.put(mark_service)))
+
+        import_recorder, import_recorder_ref = self._prepare_import_recorder(process, resource_list)
+        import_discoverer, import_discoverer_ref = self._prepare_import_discoverer(process)
+
+        module_res = self._make_module_res([
+                htypes.python_module.import_rec('htypes.*', import_recorder_ref),
+                htypes.python_module.import_rec('services.*', import_recorder_ref),
+                htypes.python_module.import_rec('*', import_discoverer_ref),
+                ])
+        return (import_recorder, import_discoverer, module_res)
+
+    def _attr_collect_module_res(self, resource_registry, type_res_list, process, file_dict):
+        resource_list = [*type_res_list]
+
+        legacy_service_module = resource_registry.get_module('legacy_service')
+        for service_name in legacy_service_module:
+            service = resource_registry['legacy_service', service_name]
+            resource_list.append(
+                htypes.import_recorder.resource(('services', service_name), mosaic.put(service)))
 
         name_to_file = {
             file.name: file
@@ -203,50 +240,21 @@ class SourceFile:
                 resource_list.append(
                     htypes.import_recorder.resource(('services', service), mosaic.put(resource)))
 
-        import_recorder_res = htypes.import_recorder.import_recorder(resource_list)
-        import_recorder_ref = mosaic.put(import_recorder_res)
-        import_recorder = process.proxy(import_recorder_ref)
-        import_recorder.reset()
-
-        import_discoverer_res = htypes.import_discoverer.import_discoverer()
-        import_discoverer_ref = mosaic.put(import_discoverer_res)
-        import_discoverer = process.proxy(import_discoverer_ref)
-        import_discoverer.reset()
+        import_recorder, import_recorder_ref = self._prepare_import_recorder(process, resource_list)
 
         module_res = self._make_module_res([
                 htypes.python_module.import_rec('htypes.*', import_recorder_ref),
                 htypes.python_module.import_rec('services.*', import_recorder_ref),
                 htypes.python_module.import_rec('code.*', import_recorder_ref),
-                htypes.python_module.import_rec('*', import_discoverer_ref),
                 ])
+        return (import_recorder, module_res)
 
-        _log.debug("Collect attributes for: %r", self.module_name)
-        collect_attributes = process.rpc_call(collect_attributes_ref)
-        try:
-            object_attrs = collect_attributes(object_ref=mosaic.put(module_res))
-        except HException as x:
-            if isinstance(x, htypes.import_discoverer.using_incomplete_object):
-                if fail_on_incomplete:
-                    raise RuntimeError(f"While constructing {self.module_name}: Using incomplete object: {x.message}")
-                _log.warning("%s: Using incomplete object: %s", self.name, x.message)
-                object_attrs = None
-            else:
-                raise
-        else:
-            attr_list = [web.summon(ref) for ref in object_attrs.attr_list]
-            _log.info("Collected attrs for %r, module %s: %s", self.module_name, object_attrs.object_module, attr_list)
-
-        discovered_imports = import_discoverer.discovered_imports()
-        _log.info("Discovered import list: %s", discovered_imports)
-
-        used_imports = import_recorder.used_imports()
-        _log.info("Used import list: %s", used_imports)
-
+    def _imports_to_deps(self, import_set):
         wants_services = set()
         wants_code = set()
         tests_services = set()
         tests_code = set()
-        for imp in discovered_imports + used_imports:
+        for imp in import_set:
             if len(imp) < 2:
                 continue
             kind, name, *_ = imp
@@ -274,7 +282,7 @@ class SourceFile:
         _log.info("Discovered import deps: tests_services: %s", tests_services)
         _log.info("Discovered import deps: tests_code: %s", tests_code)
 
-        deps_info = DepsInfo(
+        return DepsInfo(
             provides_services=set(),
             uses_modules=set(),
             wants_services=wants_services,
@@ -282,6 +290,33 @@ class SourceFile:
             tests_services=tests_services,
             tests_code=tests_code,
             )
+
+    def parse_source(self, import_recorder, import_discoverer, module_res, process, fail_on_incomplete):
+        _log.debug("Collect attributes for: %r", self.module_name)
+        collect_attributes = process.rpc_call(collect_attributes_ref)
+        try:
+            object_attrs = collect_attributes(object_ref=mosaic.put(module_res))
+        except HException as x:
+            if isinstance(x, htypes.import_discoverer.using_incomplete_object):
+                if fail_on_incomplete:
+                    raise RuntimeError(f"While constructing {self.module_name}: Using incomplete object: {x.message}")
+                _log.warning("%s: Using incomplete object: %s", self.name, x.message)
+                object_attrs = None
+            else:
+                raise
+        else:
+            attr_list = [web.summon(ref) for ref in object_attrs.attr_list]
+            _log.info("Collected attrs for %r, module %s: %s", self.module_name, object_attrs.object_module, attr_list)
+
+        used_imports = import_recorder.used_imports()
+        _log.info("Used import list: %s", used_imports)
+        import_set = set(used_imports)
+        if import_discoverer:
+            discovered_imports = import_discoverer.discovered_imports()
+            _log.info("Discovered import list: %s", discovered_imports)
+            import_set |= set(discovered_imports)
+        deps_info = self._imports_to_deps(import_set)
+
         if object_attrs:
             source_info = SourceInfo(
                 import_name=object_attrs.object_module,
@@ -297,8 +332,10 @@ class SourceFile:
         if self.up_to_date:
             self.deps = self.get_resource_module_deps()
         else:
+            (import_recorder, import_discoverer, module_res) = self._dep_discover_module_res(
+                resource_registry, type_res_list, process)
             self.deps, self.source_info = self.parse_source(
-                resource_registry, process, type_res_list, file_dict, fail_on_incomplete=False)
+                import_recorder, import_discoverer, module_res, process, fail_on_incomplete=False)
 
     @staticmethod
     def service_provider_modules(resource_registry, file_dict):
@@ -474,18 +511,17 @@ class SourceFile:
         _log.info("%s: Discover type imports", self.module_name)
 
         if not self.source_info:
+            import_recorder, collect_module_res = self._attr_collect_module_res(
+                resource_registry, type_res_list, process, file_dict)
             self.deps, self.source_info = self.parse_source(
-                resource_registry, process, type_res_list, file_dict, fail_on_incomplete=True)
+                import_recorder, None, collect_module_res, process, fail_on_incomplete=True)
 
         service_providers = self.service_provider_modules(resource_registry, file_dict)
         if fixtures_file:
             service_providers.update(self.fixture_service_provider_modules(fixtures_file))
         import_list = self.make_import_list(resource_registry, file_dict, service_providers)
 
-        import_recorder_res = htypes.import_recorder.import_recorder(type_res_list)
-        import_recorder_ref = mosaic.put(import_recorder_res)
-        import_recorder = process.proxy(import_recorder_ref)
-        import_recorder.reset()
+        import_recorder, import_recorder_ref = self._prepare_import_recorder(process, type_res_list)
 
         recorder_import_list = [
             *import_list,
