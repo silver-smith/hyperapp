@@ -518,6 +518,17 @@ class SourceFile:
         if list(attr.param_list) == ['piece'] and isinstance(result_t, htypes.inspect.object_t):
             return self._visit_object(process, custom_types, resource_module, fixtures_file, attr.name, call_res)
 
+    def _imports_to_type_set(self, import_set):
+        used_types = set()
+        for imp in import_set:
+            if len(imp) < 3:
+                continue
+            kind, module, name = imp
+            if kind != 'htypes':
+                continue
+            used_types.add((module, name))
+        return used_types
+
     def _visit_module(self, process, resource_registry, custom_types, type_res_list, file_dict, resource_module, fixtures_file):
         _log.info("%s: Discover type imports", self.module_name)
 
@@ -551,15 +562,9 @@ class SourceFile:
         used_imports = import_recorder.used_imports()
         _log.info("Used import list: %s", used_imports)
 
-        used_types = set()
-        for imp in used_imports:
-            if len(imp) < 3:
-                continue
-            kind, module, name = imp
-            if kind != 'htypes':
-                continue
-            used_types.add((module, name))
+        used_types = self._imports_to_type_set(used_imports)
         _log.info("Discovered import htypes: %s", used_types)
+
         return (used_types, object_info_dict)
 
     @staticmethod
