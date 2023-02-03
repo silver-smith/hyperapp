@@ -1,0 +1,15 @@
+# Automatically generated file. Do not edit.
+# Source hash: 44c9075cfe398505e1bbaaab3345fd9dabcb777d59f0d835e65f173981e5f3a0c3afc357246ba21def59eccfc3dd4228b13e57c75c9e13426871629b7863d3f0
+# Generator hash: dce0a3a6c61686de92d8c8d36b9ffde39a0336c7d350ad6ea5df345e1e066c5de2762c1aa99e6e03aa1378af1951cb2faeccd517d9ca78d5ff9581d3f687aed7
+
+import:
+- legacy_type.python_module:python_module
+- legacy_type.tested_module:one
+associations: []
+definitions:
+  tested_module.tests.module:
+    _type: legacy_type.python_module:python_module
+    module_name: tested_module.tests
+    file_name: tested_module.tests.dyn.py
+    import_list:
+      htypes.tested_module.one: legacy_type.tested_module:one

@@ -397,7 +397,7 @@ class SourceFile:
                 resource_registry, type_res_list, process, file_dict)
             import_list.append(
                 htypes.python_module.import_rec(f'tested.code.{name}', mosaic.put(module)))
-            name_to_recorder[name] = import_recorder
+            name_to_recorder[file.module_name] = import_recorder
         return (name_to_recorder, import_list)
 
     def _parameter_fixture(self, fixtures_file, path):
@@ -529,7 +529,7 @@ class SourceFile:
             used_types.add((module, name))
         return used_types
 
-    def _visit_module(self, process, resource_registry, custom_types, type_res_list, file_dict, resource_module, fixtures_file):
+    def _visit_module(self, process, resource_registry, custom_types, type_res_list, tested_module_imports, file_dict, resource_module, fixtures_file):
         _log.info("%s: Discover type imports", self.module_name)
 
         if not self.source_info:
@@ -564,6 +564,16 @@ class SourceFile:
 
         used_types = self._imports_to_type_set(used_imports)
         _log.info("Discovered import htypes: %s", used_types)
+
+        name_to_imports = {
+            module_name: self._imports_to_type_set(recorder.used_imports())
+            for module_name, recorder in name_to_recorder.items()
+            }
+        if name_to_imports:
+            _log.info("Discovered tested imports: %s", name_to_imports)
+            for module_name, imports in name_to_imports.items():
+                import_set = tested_module_imports.setdefault(module_name, set())
+                import_set |= imports
 
         return (used_types, object_info_dict)
 
@@ -629,12 +639,14 @@ class SourceFile:
             )
         resource_module.add_association(pyobj_association)
 
-    def construct_resources(self, process, resource_registry, custom_types, type_res_list, file_dict):
+    def construct_resources(self, process, resource_registry, custom_types, type_res_list, tested_module_imports, file_dict):
         resource_module = resource_module_factory(resource_registry, self.name)
         fixtures_file = file_dict.get(f'{self.module_name}.fixtures')
 
         used_types, object_info_dict = self._visit_module(
-            process, resource_registry, custom_types, type_res_list, file_dict, resource_module, fixtures_file)
+            process, resource_registry, custom_types, type_res_list, tested_module_imports, file_dict, resource_module, fixtures_file)
+        # Add types discovered by tests.
+        used_types |= tested_module_imports.get(self.module_name, set())
 
         service_providers = self.service_provider_modules(resource_registry, file_dict)
         import_list = [
@@ -817,6 +829,8 @@ def update_resources(generator_ref, root_dir, subdir_list, module_list):
 
     resource_registry.set_module('legacy_service', legacy_service_resource_loader(resource_registry, custom_modules))
 
+    tested_module_imports = {}  # module name -> type import tuple set
+
     with subprocess(additional_dir_list) as process:
 
         file_dict = collect_source_files(generator_ref, root_dir, subdir_list, resource_registry)
@@ -848,6 +862,6 @@ def update_resources(generator_ref, root_dir, subdir_list, module_list):
                 if module_list and file.module_name not in module_list:
                     continue
                 _log.info("****** #%d Construct resources for: %s  %s", idx, file.module_name, '*'*50)
-                file.construct_resources(process, resource_registry, custom_types, type_res_list, file_dict)
+                file.construct_resources(process, resource_registry, custom_types, type_res_list, tested_module_imports, file_dict)
                 idx += 1
             round += 1
