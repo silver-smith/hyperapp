@@ -1,30 +1,53 @@
 # Automatically generated file. Do not edit.
+# Source hash: 7f0f21d626de3e98ae82b4aa896b203e90680cb1c7d2d7e20ab39cb4a1c233f9ec8c7ff1eb1f4acec2e5e1b03458c7cf9d037794a8b215bc7cee1bae47abf795
+# Generator hash: b3f425e1aaa2b556c749ae4baebcbe4f19085b075ad3691dd80ef0732535726d51a44ccc8b0b7fad9af94135610623941c36664604da7a286dad34c2fad02610
 
 import:
+- common.mark:mark.service
 - legacy_type.attribute:attribute
+- legacy_type.call:call
 - legacy_type.construct_resources_sample:sample
 - legacy_type.construct_resources_sample:sample_item
 - legacy_type.python_module:python_module
-- resource.marker:marker.module
 associations: []
 definitions:
-  construct_resources_sample_fixtures.module:
+  SampleList.open.current_key.parameter:
+    _type: legacy_type.call:call
+    function: current_key
+  SampleList.piece.parameter:
+    _type: legacy_type.call:call
+    function: piece_1
+  construct_resources_sample.fixtures.module:
     _type: legacy_type.python_module:python_module
     module_name: construct_resources_sample.fixtures
     file_name: construct_resources_sample.fixtures.dyn.py
     import_list:
       htypes.construct_resources_sample.sample: legacy_type.construct_resources_sample:sample
       htypes.construct_resources_sample.sample_item: legacy_type.construct_resources_sample:sample_item
-      marker: resource.marker:marker.module
-  param.SampleServant.open.current_key:
+      services.mark: common.mark:mark.service
+  current_key:
     _type: legacy_type.attribute:attribute
-    object: construct_resources_sample_fixtures.module
-    attr_name: param_SampleServant_open_current_key
-  param.SampleServant.piece:
+    object: construct_resources_sample.fixtures.module
+    attr_name: current_key
+  piece:
     _type: legacy_type.attribute:attribute
-    object: construct_resources_sample_fixtures.module
-    attr_name: param_SampleServant_piece
-  param.sample_command.adapter:
+    object: construct_resources_sample.fixtures.module
+    attr_name: piece
+  piece_1:
     _type: legacy_type.attribute:attribute
-    object: construct_resources_sample_fixtures.module
-    attr_name: param_sample_command_adapter
+    object: construct_resources_sample.fixtures.module
+    attr_name: piece_1
+  piece_2:
+    _type: legacy_type.attribute:attribute
+    object: construct_resources_sample.fixtures.module
+    attr_name: piece_2
+  sample_object_command.piece.parameter:
+    _type: legacy_type.call:call
+    function: piece_2
+  sample_object_command.view_state.parameter:
+    _type: legacy_type.call:call
+    function: view_state
+  view_state:
+    _type: legacy_type.attribute:attribute
+    object: construct_resources_sample.fixtures.module
+    attr_name: view_state

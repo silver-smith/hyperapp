@@ -1,7 +1,7 @@
 
-sample_servant_d = record
-sample_servant_open_d = record
-sample_servant_parent_d = record
+sample_list_d = record
+sample_list_open_d = record
+sample_list_parent_d = record
 
 sample = record:
   id: int
@@ -12,4 +12,5 @@ sample_item = record:
   description: string
 
 
-sample_d = record
+sample_global_command_d = record
+sample_object_command_d = record

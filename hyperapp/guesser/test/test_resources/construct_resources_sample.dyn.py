@@ -2,6 +2,7 @@ import logging
 
 from . import htypes
 from .services import (
+    mark,
     mosaic,
     web,
     peer_registry,
@@ -11,7 +12,7 @@ from .services import (
 log = logging.getLogger(__name__)
 
 
-class SampleServant:
+class SampleList:
 
     def __init__(self, piece):
         log.info("constuct_resources_sample: SampleServant ctr: %s", piece)
@@ -30,11 +31,13 @@ class SampleServant:
         pass
 
 
-def sample():
+@mark.global_command
+def sample_global_command():
     return htypes.construct_resources_sample.sample(123)
 
 
-def sample_command(adapter):
+@mark.object_command
+def sample_object_command(piece, view_state):
     pass
 
 

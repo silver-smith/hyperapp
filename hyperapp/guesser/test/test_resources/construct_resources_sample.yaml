@@ -1,5 +1,0 @@
-import:
-  types:
-    construct_resources_sample:
-      - sample
-      - sample_item
