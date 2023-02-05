@@ -17,6 +17,7 @@ from .services import (
     collect_attributes_ref,
     constructor_creg,
     endpoint_registry,
+    hyperapp_dir,
     generate_rsa_identity,
     get_resource_type_ref,
     legacy_module_resource_loader,
@@ -693,13 +694,12 @@ def subprocess(additional_dir_list):
         yield process
 
 
-def legacy_type_resources(root_dir, subdir_list):
+def legacy_type_resources(dir_list):
     custom_types = {
         **builtin_types_as_dict(),
         **local_types,
         }
 
-    dir_list = [root_dir / d for d in subdir_list]
     type_module_loader.load_type_modules(dir_list, custom_types)
 
     resource_list = []
@@ -780,15 +780,22 @@ def collect_deps(resource_registry, file_dict):
     return deps
 
 
-def collect_source_files(generator_ref, root_dir, subdir_list, resource_registry):
+def collect_source_files(generator_ref, subdir_list, root_dirs, resource_registry):
     file_dict = {}
-    for subdir in subdir_list:
-        for path in root_dir.joinpath(subdir).rglob('*.dyn.py'):
-            if 'test' in path.parts:
+
+    def add_source_files(root, dir):
+        for path in dir.rglob('*.dyn.py'):
+            if 'test' in path.relative_to(root).parts:
                 continue
-            source_file = SourceFile(generator_ref, root_dir, path)
+            source_file = SourceFile(generator_ref, root, path)
             source_file.init_resource_module(resource_registry)
             file_dict[source_file.module_name] = source_file
+
+    for subdir in subdir_list:
+        add_source_files(hyperapp_dir, hyperapp_dir / subdir)
+    for root in root_dirs:
+        add_source_files(root, root)
+
     return file_dict
 
 
@@ -813,17 +820,17 @@ def ready_for_construction_files(file_dict, deps):
         yield file
 
 
-def update_resources(generator_ref, root_dir, subdir_list, module_list):
-    additional_dir_list = [root_dir / d for d in subdir_list]
+def update_resources(generator_ref, subdir_list, root_dirs, module_list):
+    resource_dir_list = [hyperapp_dir / d for d in subdir_list] + root_dirs
     resource_registry = resource_registry_factory()
 
-    custom_types, type_res_list = legacy_type_resources(root_dir, subdir_list)
+    custom_types, type_res_list = legacy_type_resources(resource_dir_list)
     legacy_type_modules = legacy_type_resource_loader(custom_types)
     add_legacy_types_to_cache(resource_registry, legacy_type_modules)
     resource_registry.update_modules(legacy_type_modules)
 
     custom_modules = local_modules.copy()
-    code_module_loader.load_code_modules(custom_types, [root_dir / d for d in subdir_list], custom_modules)
+    code_module_loader.load_code_modules(custom_types, resource_dir_list, custom_modules)
     _log.info("Custom modules: %s", ", ".join(custom_modules.by_name.keys()))
     resource_registry.update_modules(legacy_module_resource_loader(custom_modules))
 
@@ -831,9 +838,9 @@ def update_resources(generator_ref, root_dir, subdir_list, module_list):
 
     tested_module_imports = {}  # module name -> type import tuple set
 
-    with subprocess(additional_dir_list) as process:
+    with subprocess(resource_dir_list) as process:
 
-        file_dict = collect_source_files(generator_ref, root_dir, subdir_list, resource_registry)
+        file_dict = collect_source_files(generator_ref, subdir_list, root_dirs, resource_registry)
         init_deps(resource_registry, process, type_res_list, file_dict)
 
         round = 0
