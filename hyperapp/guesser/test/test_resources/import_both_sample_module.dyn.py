@@ -10,7 +10,7 @@ from .services import (
 from .tested.code.code_module_3 import tested_attr
 
 
-print("sample type 1: %s", htypes.sample_types.sample_rec)
+print(f"sample type 1: {htypes.sample_types.sample_rec}")
 
 code_module_1_attr = code_module_1.attr
 service_1_attr_nested = service_1.attr.nested
