@@ -1,0 +1,13 @@
+# Automatically generated file. Do not edit.
+# Source hash: 70241fcf496c6c14019c9611d0c9597a4ab4e4fea249a17702a9d255a701852008d6a530fc9f5df59f2e9b6b6f8b915545d1caccb919e2c2d9649c7295442e8d
+# Generator hash: b3f425e1aaa2b556c749ae4baebcbe4f19085b075ad3691dd80ef0732535726d51a44ccc8b0b7fad9af94135610623941c36664604da7a286dad34c2fad02610
+
+import:
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  code_module_2.module:
+    _type: legacy_type.python_module:python_module
+    module_name: code_module_2
+    file_name: code_module_2.dyn.py
+    import_list: {}
