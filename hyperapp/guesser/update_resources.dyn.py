@@ -640,7 +640,7 @@ class SourceFile:
             )
         resource_module.add_association(pyobj_association)
 
-    def construct_resources(self, process, resource_registry, custom_types, type_res_list, tested_module_imports, file_dict):
+    def construct_resources(self, process, resource_registry, custom_types, type_res_list, tested_module_imports, file_dict, saver):
         resource_module = resource_module_factory(resource_registry, self.name)
         fixtures_file = file_dict.get(f'{self.module_name}.fixtures')
 
@@ -668,19 +668,20 @@ class SourceFile:
 
         source_hash = hash_sha512(self.source_path.read_bytes())
         _log.info("Write %s: %s", self.name, self.resources_path)
-        resource_module.save_as(self.resources_path, source_hash, self._generator_ref.hash)
+        saver(resource_module, self.resources_path, source_hash, self._generator_ref.hash)
 
 
 process_code_module_list = [
     'common.lcs',
     'common.lcs_service',
+    'resource.piece_ref',
     'ui.impl_registry',
     'ui.global_command_list',
     ]
 
 
 @contextmanager
-def subprocess(additional_dir_list):
+def subprocess(process_name, additional_dir_list):
     identity = generate_rsa_identity(fast=True)
     rpc_endpoint = rpc_endpoint_factory()
     endpoint_registry.register(identity, rpc_endpoint)
@@ -689,7 +690,7 @@ def subprocess(additional_dir_list):
             process_code_module_list,
             rpc_endpoint,
             identity,
-            'update-resources-runner',
+            process_name,
         ) as process:
         yield process
 
@@ -820,7 +821,11 @@ def ready_for_construction_files(file_dict, deps):
         yield file
 
 
-def update_resources(generator_ref, subdir_list, root_dirs, module_list):
+def resource_saver(resource_module, path, source_hash, generator_hash):
+    resource_module.save_as(path, source_hash, generator_hash)
+
+
+def update_resources(generator_ref, subdir_list, root_dirs, module_list, process_name='update-resources-runner', saver=resource_saver):
     resource_dir_list = [hyperapp_dir / d for d in subdir_list] + root_dirs
     resource_registry = resource_registry_factory()
 
@@ -838,7 +843,7 @@ def update_resources(generator_ref, subdir_list, root_dirs, module_list):
 
     tested_module_imports = {}  # module name -> type import tuple set
 
-    with subprocess(resource_dir_list) as process:
+    with subprocess(process_name, resource_dir_list) as process:
 
         file_dict = collect_source_files(generator_ref, subdir_list, root_dirs, resource_registry)
         init_deps(resource_registry, process, type_res_list, file_dict)
@@ -869,6 +874,7 @@ def update_resources(generator_ref, subdir_list, root_dirs, module_list):
                 if module_list and file.module_name not in module_list:
                     continue
                 _log.info("****** #%d Construct resources for: %s  %s", idx, file.module_name, '*'*50)
-                file.construct_resources(process, resource_registry, custom_types, type_res_list, tested_module_imports, file_dict)
+                file.construct_resources(
+                    process, resource_registry, custom_types, type_res_list, tested_module_imports, file_dict, saver)
                 idx += 1
             round += 1
