@@ -668,6 +668,9 @@ class SourceFile:
 
         self.set_resource_module(resource_registry, resource_module)
 
+        if 'tests' in self.name.split('.'):
+            return  # Tests should not produce resources.
+
         source_hash = hash_sha512(self.source_path.read_bytes())
         _log.info("Write %s: %s", self.name, self.resources_path)
         saver(resource_module, self.resources_path, source_hash, self._generator_ref.hash)
@@ -848,12 +851,12 @@ def update_resources(generator_ref, subdir_list, root_dirs, module_list, process
     with subprocess(process_name, resource_dir_list) as process:
 
         file_dict = collect_source_files(generator_ref, subdir_list, root_dirs, resource_registry)
-        init_deps(resource_registry, process, type_res_list, file_dict)
 
         round = 0
         idx = 0
         while True:
             _log.info("****** Round #%d  %s", round, '*'*50)
+            init_deps(resource_registry, process, type_res_list, file_dict)
             deps = collect_deps(resource_registry, file_dict)
             ready_files = list(sorted(
                 ready_for_construction_files(file_dict, deps), key=attrgetter('module_name')))
