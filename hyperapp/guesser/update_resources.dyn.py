@@ -229,6 +229,8 @@ class SourceFile:
             }
 
         for file in file_dict.values():
+            if 'fixtures' in file.name.split('.'):
+                continue
             if not file.deps_up_to_date(file_dict, name_to_file):
                 continue
             resource = resource_registry[file.code_module_pair]
