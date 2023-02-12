@@ -54,7 +54,11 @@ def _iter_attributes(object):
                 continue
             raise
         param_list = list(signature.parameters.keys())
-        yield htypes.inspect.fn_attr(name, value.__module__, resource_name, constructors, param_list)
+        args = (name, value.__module__, resource_name, constructors, param_list)
+        if inspect.isgeneratorfunction(value):
+            yield htypes.inspect.generator_fn_attr(*args)
+        else:
+            yield htypes.inspect.fn_attr(*args)
 
 
 def get_resource_type(resource_ref):
@@ -68,6 +72,10 @@ def get_resource_type(resource_ref):
     if inspect.iscoroutine(value):
         return htypes.inspect.coroutine_t()
 
+    if inspect.isgenerator(value):
+        log.info("Expanding generator: %r", value)
+        value = list(value)
+        
     log.info("Get type for value: %r", value)
     try:
         t = deduce_complex_value_type(mosaic, types, value)

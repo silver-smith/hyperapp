@@ -8,6 +8,8 @@ attr = record:
 fn_attr = record(attr):
   param_list: string list
 
+generator_fn_attr = record(fn_attr)
+
 
 object_attributes = record:
   object_module: string
