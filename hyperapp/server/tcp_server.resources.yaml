@@ -5,9 +5,9 @@
 import:
 - legacy_service:mosaic
 - legacy_service:route_table
-- legacy_service:server_identity
 - legacy_service:tcp_server_factory
 - legacy_type.python_module:python_module
+- server.identity:server_identity.service
 associations: []
 definitions:
   tcp_server.module:
@@ -17,5 +17,5 @@ definitions:
     import_list:
       services.mosaic: legacy_service:mosaic
       services.route_table: legacy_service:route_table
-      services.server_identity: legacy_service:server_identity
+      services.server_identity: server.identity:server_identity.service
       services.tcp_server_factory: legacy_service:tcp_server_factory

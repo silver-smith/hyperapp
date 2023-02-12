@@ -1,0 +1,23 @@
+# Automatically generated file. Do not edit.
+# Source hash: 24cb2a9a40a95d2e13f1154fe44020fd423490d020d41bc21b59be5b7f72384a65420874a187fa1694008c99c4faf501a8f52da662818556ab3f9441bd1cb492
+# Generator hash: b81513e335af7b743e0f43d3ccc7e1b091617f493dbb744c078eb5b97e418c2e28c92f88c25c7814e5bc6b37e28728c2fcfd8a57fb589791996b542672e8bc21
+
+import:
+- legacy_service:aux_bundler_hooks
+- legacy_service:impl_registry
+- legacy_service:mosaic
+- legacy_type.impl:service_provider
+- legacy_type.python_module:python_module
+- server.identity:server_identity.service
+associations: []
+definitions:
+  announce_provider.module:
+    _type: legacy_type.python_module:python_module
+    module_name: announce_provider
+    file_name: announce_provider.dyn.py
+    import_list:
+      htypes.impl.service_provider: legacy_type.impl:service_provider
+      services.aux_bundler_hooks: legacy_service:aux_bundler_hooks
+      services.impl_registry: legacy_service:impl_registry
+      services.mosaic: legacy_service:mosaic
+      services.server_identity: server.identity:server_identity.service

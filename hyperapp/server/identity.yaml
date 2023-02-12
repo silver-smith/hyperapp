@@ -1,5 +1,0 @@
-require:
-  - file_bundle
-  - generate_rsa_identity
-provide:
-  - server_identity

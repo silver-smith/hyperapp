@@ -1,8 +1,0 @@
-import:
-  types:
-    impl:
-      - service_provider
-require:
-  - aux_bundler_hooks
-  - impl_registry
-  - server_identity

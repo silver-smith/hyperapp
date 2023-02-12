@@ -1,0 +1,56 @@
+# Automatically generated file. Do not edit.
+# Source hash: 32b95cf41786eb8e5fa5e9377bb503acf6ba13c9a98cf9e1f7ddd043ed35b8189f5a7386a7bcdbb5c0065bfbd1b28c3db2d6820f7458cd2a6ded58839f3354ed
+# Generator hash: b81513e335af7b743e0f43d3ccc7e1b091617f493dbb744c078eb5b97e418c2e28c92f88c25c7814e5bc6b37e28728c2fcfd8a57fb589791996b542672e8bc21
+
+import:
+- common.mark:mark.service
+- legacy_service:generate_rsa_identity
+- legacy_service:mosaic
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  announce_provider.fixtures.module:
+    _type: legacy_type.python_module:python_module
+    module_name: announce_provider.fixtures
+    file_name: announce_provider.fixtures.dyn.py
+    import_list:
+      services.generate_rsa_identity: legacy_service:generate_rsa_identity
+      services.mark: common.mark:mark.service
+      services.mosaic: legacy_service:mosaic
+  aux_bundler_hook.ref.parameter:
+    _type: legacy_type.call:call
+    function: ref
+  aux_bundler_hook.server_peer_ref.parameter:
+    _type: legacy_type.call:call
+    function: server_peer_ref
+  aux_bundler_hook.t.parameter:
+    _type: legacy_type.call:call
+    function: t
+  aux_bundler_hook.value.parameter:
+    _type: legacy_type.call:call
+    function: value
+  impl_registry:
+    _type: legacy_type.attribute:attribute
+    object: announce_provider.fixtures.module
+    attr_name: impl_registry
+  impl_registry.service:
+    _type: legacy_type.call:call
+    function: impl_registry
+  ref:
+    _type: legacy_type.attribute:attribute
+    object: announce_provider.fixtures.module
+    attr_name: ref
+  server_peer_ref:
+    _type: legacy_type.attribute:attribute
+    object: announce_provider.fixtures.module
+    attr_name: server_peer_ref
+  t:
+    _type: legacy_type.attribute:attribute
+    object: announce_provider.fixtures.module
+    attr_name: t
+  value:
+    _type: legacy_type.attribute:attribute
+    object: announce_provider.fixtures.module
+    attr_name: value

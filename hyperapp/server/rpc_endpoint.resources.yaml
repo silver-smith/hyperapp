@@ -1,0 +1,19 @@
+# Automatically generated file. Do not edit.
+# Source hash: ef566c6faccb899056356a298877966d916eafff3f6a668196aec59d5af2b44aec22cc7d982273e3c34eaca451f6d690c862f60c155a1ef216329c2ddd50ce7d
+# Generator hash: 719475ab60e68ad1f48e381ebf085101cc3022fb7f8d5a58fb670177775092ec23ee1ba7e528850be81390871e7ae0607774a2f06a87487add781b6744fd9a29
+
+import:
+- legacy_service:endpoint_registry
+- legacy_service:rpc_endpoint_factory
+- legacy_type.python_module:python_module
+- server.identity:server_identity.service
+associations: []
+definitions:
+  rpc_endpoint.module:
+    _type: legacy_type.python_module:python_module
+    module_name: rpc_endpoint
+    file_name: rpc_endpoint.dyn.py
+    import_list:
+      services.endpoint_registry: legacy_service:endpoint_registry
+      services.rpc_endpoint_factory: legacy_service:rpc_endpoint_factory
+      services.server_identity: server.identity:server_identity.service

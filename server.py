@@ -3,6 +3,7 @@
 import argparse
 import logging
 import sys
+from functools import partial
 
 from hyperapp.common.init_logging import init_logging
 from hyperapp.common import cdr_coders  # register codec
@@ -43,10 +44,8 @@ code_module_list = [
     'transport.rsa_identity',
     'ui.impl_registry',
     'ui.global_command_list',
-    'server.rpc_endpoint',
     'resource.resource_module',
     'resource.register_associations',
-    'server.announce_provider',
     # 'server.sample_list',
     # 'server.sample_live_list',
     # 'server.sample_tree',
@@ -58,22 +57,10 @@ code_module_list = [
 BIND_ADDRESS = ('localhost', 8080)
 
 
-def init_meta_registry_association(resource_registry, python_object_creg):
-    resource = resource_registry['common.meta_registry_association', 'meta_registry_association.module']
-    module = python_object_creg.animate(resource)
-    module.init()
-
-
-def init_tcp_server(resource_registry, python_object_creg):
-    resource = resource_registry['server.tcp_server', 'tcp_server.module']
-    module = python_object_creg.animate(resource)
-    return module.tcp_server(BIND_ADDRESS)
-
-
-def init_local_server_ref(resource_registry, python_object_creg):
-    init_module_res = resource_registry['server.init_local_server_ref', 'init_local_server_ref.module']
-    init_module = python_object_creg.animate(init_module_res)
-    init_module.init_local_server_ref()
+def load_module(resource_registry, python_object_creg, module_name):
+    var_name = module_name.split('.')[-1] + '.module'
+    module_res = resource_registry[module_name, var_name]
+    return python_object_creg.animate(module_res)
 
 
 def main():
@@ -90,11 +77,15 @@ def main():
 
     resource_registry = services.resource_registry
     python_object_creg = services.python_object_creg
+    module = partial(load_module, resource_registry, python_object_creg)
 
-    init_meta_registry_association(resource_registry, python_object_creg)
+    module('common.meta_registry_association').init()
     services.register_associations(resource_registry)
-    server = init_tcp_server(resource_registry, python_object_creg)
-    init_local_server_ref(resource_registry, python_object_creg)
+
+    server = module('server.tcp_server').tcp_server(BIND_ADDRESS)
+    module('server.rpc_endpoint').init_server_rpc_endpoint()
+    module('server.announce_provider').init_server_provider_announcer()
+    module('server.init_local_server_ref').init_local_server_ref()
 
     log.info("Server is started.")
     try:

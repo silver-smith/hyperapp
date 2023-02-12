@@ -1,14 +1,18 @@
 import logging
 from functools import partial
 
-from hyperapp.common.module import Module
-
 from . import htypes
+from .services import (
+    aux_bundler_hooks,
+    impl_registry,
+    mosaic,
+    server_identity,
+    )
 
 _log = logging.getLogger(__name__)
 
 
-def aux_bundler_hook(mosaic, impl_registry, server_peer_ref, ref, t, value):
+def aux_bundler_hook(server_peer_ref, ref, t, value):
     try:
         ctr_fn, spec = impl_registry[t]
     except KeyError:
@@ -23,12 +27,6 @@ def aux_bundler_hook(mosaic, impl_registry, server_peer_ref, ref, t, value):
     yield mosaic.put(service_provider)
 
 
-class ThisModule(Module):
-
-    def __init__(self, module_name, services, config):
-        super().__init__(module_name, services, config)
-
-        server_peer_ref = services.mosaic.put(
-            services.server_identity.peer.piece)
-        services.aux_bundler_hooks.append(
-            partial(aux_bundler_hook, services.mosaic, services.impl_registry, server_peer_ref))
+def init_server_provider_announcer():
+    server_peer_ref = mosaic.put(server_identity.peer.piece)
+    aux_bundler_hooks.append(partial(aux_bundler_hook, server_peer_ref))

@@ -1,9 +1,10 @@
-from hyperapp.common.module import Module
+from .services import (
+    endpoint_registry,
+    rpc_endpoint_factory,
+    server_identity,
+    )
 
 
-class ThisModule(Module):
-
-    def __init__(self, module_name, services, config):
-        super().__init__(module_name, services, config)
-        services.server_rpc_endpoint = services.rpc_endpoint_factory()
-        services.endpoint_registry.register(services.server_identity, services.server_rpc_endpoint)
+def init_server_rpc_endpoint():
+    server_rpc_endpoint = rpc_endpoint_factory()
+    endpoint_registry.register(server_identity, server_rpc_endpoint)

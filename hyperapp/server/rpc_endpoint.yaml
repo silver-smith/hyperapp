@@ -1,6 +1,0 @@
-require:
-  - rpc_endpoint_factory
-  - server_identity
-  - endpoint_registry
-provide:
-  - server_rpc_endpoint
