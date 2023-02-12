@@ -1,3 +1,0 @@
-require:
-  - server_identity
-  - tcp_server_factory

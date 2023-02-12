@@ -10,6 +10,7 @@ from hyperapp.common.services import HYPERAPP_DIR, Services
 
 log = logging.getLogger(__name__)
 
+
 module_dir_list = [
     HYPERAPP_DIR / 'common',
     HYPERAPP_DIR / 'resource',
@@ -42,7 +43,6 @@ code_module_list = [
     'transport.rsa_identity',
     'ui.impl_registry',
     'ui.global_command_list',
-    'server.tcp_server',
     'server.rpc_endpoint',
     'resource.resource_module',
     'resource.register_associations',
@@ -55,15 +55,19 @@ code_module_list = [
     # 'server.htest_list',
     ]
 
-config = {
-    'server.tcp_server': {'bind_address': ('localhost', 8080)},
-    }
+BIND_ADDRESS = ('localhost', 8080)
 
 
 def init_meta_registry_association(resource_registry, python_object_creg):
     resource = resource_registry['common.meta_registry_association', 'meta_registry_association.module']
     module = python_object_creg.animate(resource)
     module.init()
+
+
+def init_tcp_server(resource_registry, python_object_creg):
+    resource = resource_registry['server.tcp_server', 'tcp_server.module']
+    module = python_object_creg.animate(resource)
+    return module.tcp_server(BIND_ADDRESS)
 
 
 def init_local_server_ref(resource_registry, python_object_creg):
@@ -80,13 +84,17 @@ def main():
 
     services = Services(module_dir_list)
     services.init_services()
-    services.init_modules(code_module_list, config)
-
-    init_meta_registry_association(services.resource_registry, services.python_object_creg)
-    services.register_associations(services.resource_registry)
-    init_local_server_ref(services.resource_registry, services.python_object_creg)
+    services.init_modules(code_module_list, config={})
 
     services.start_modules()
+
+    resource_registry = services.resource_registry
+    python_object_creg = services.python_object_creg
+
+    init_meta_registry_association(resource_registry, python_object_creg)
+    services.register_associations(resource_registry)
+    server = init_tcp_server(resource_registry, python_object_creg)
+    init_local_server_ref(resource_registry, python_object_creg)
 
     log.info("Server is started.")
     try:

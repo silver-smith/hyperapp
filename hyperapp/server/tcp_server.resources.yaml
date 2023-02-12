@@ -1,0 +1,21 @@
+# Automatically generated file. Do not edit.
+# Source hash: 29bc98a76221c9fd969d81c1b9a14d24e7d8b893d449e88cef6b14a49a0c4ab7dc1eb31e75060bddf2e292f40dd20f0342e9bfadb09cf33f76e72d0c3bfa4658
+# Generator hash: 719475ab60e68ad1f48e381ebf085101cc3022fb7f8d5a58fb670177775092ec23ee1ba7e528850be81390871e7ae0607774a2f06a87487add781b6744fd9a29
+
+import:
+- legacy_service:mosaic
+- legacy_service:route_table
+- legacy_service:server_identity
+- legacy_service:tcp_server_factory
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  tcp_server.module:
+    _type: legacy_type.python_module:python_module
+    module_name: tcp_server
+    file_name: tcp_server.dyn.py
+    import_list:
+      services.mosaic: legacy_service:mosaic
+      services.route_table: legacy_service:route_table
+      services.server_identity: legacy_service:server_identity
+      services.tcp_server_factory: legacy_service:tcp_server_factory
