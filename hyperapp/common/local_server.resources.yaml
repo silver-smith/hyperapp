@@ -1,0 +1,26 @@
+# Automatically generated file. Do not edit.
+# Source hash: 8917dcff6acefd7b3d745bcaa510d80ac439a01e50e57e710287c91ac3ae0f33cd4a92ae8c86878399899fa213f5be5c0b5a875e90dbf1a7dba4d912d125d1e4
+# Generator hash: 719475ab60e68ad1f48e381ebf085101cc3022fb7f8d5a58fb670177775092ec23ee1ba7e528850be81390871e7ae0607774a2f06a87487add781b6744fd9a29
+
+import:
+- common.mark:mark.service
+- legacy_service:file_bundle
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  local_server.module:
+    _type: legacy_type.python_module:python_module
+    module_name: local_server
+    file_name: local_server.dyn.py
+    import_list:
+      services.file_bundle: legacy_service:file_bundle
+      services.mark: common.mark:mark.service
+  local_server_ref:
+    _type: legacy_type.attribute:attribute
+    object: local_server.module
+    attr_name: local_server_ref
+  local_server_ref.service:
+    _type: legacy_type.call:call
+    function: local_server_ref

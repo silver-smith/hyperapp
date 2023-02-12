@@ -1,10 +1,11 @@
 from pathlib import Path
 
-from hyperapp.common.module import Module
+from .services import (
+    mark,
+    file_bundle,
+    )
 
 
-class ThisModule(Module):
-
-    def __init__(self, module_name, services, config):
-        super().__init__(module_name, services, config)
-        services.local_server_ref = services.file_bundle(Path.home() / '.local/share/hyperapp/server-ref.json')
+@mark.service
+def local_server_ref():
+    return file_bundle(Path.home() / '.local/share/hyperapp/server-ref.json')
