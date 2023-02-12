@@ -182,7 +182,7 @@ class ThisModule(Module):
         services.route_registry.register_actor(htypes.tcp_transport.route, Route.from_piece, self._client_factory)
         services.on_start.append(self.start)
         services.on_stop.append(self.stop)
-        services.tcp_server = self.server_factory
+        services.tcp_server_factory = self.server_factory
 
     def server_factory(self, bind_address=None):
         server = Server(self._selector, self._connection_factory)

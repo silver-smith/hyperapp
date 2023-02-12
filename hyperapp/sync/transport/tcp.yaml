@@ -12,4 +12,4 @@ require:
   - transport
   - service_failure
 provide:
-  - tcp_server
+  - tcp_server_factory

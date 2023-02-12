@@ -79,7 +79,7 @@ def echo_set_up(services, htypes):
     echo_servant = services.resource_registry['echo_service', 'echo_servant']
     echo_servant_ref = mosaic.put(echo_servant)
 
-    server = services.tcp_server()
+    server = services.tcp_server_factory()
     log.info("Tcp route: %r", server.route)
     services.route_table.add_route(master_peer_ref, server.route)
 
