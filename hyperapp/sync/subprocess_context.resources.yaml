@@ -54,7 +54,7 @@ definitions:
       services.runner_signal_queue: runner_signal_queue
       rpc_proxy: sync.rpc_proxy:rpc_proxy.module
 
-  subprocess_running:
+  subprocess_running.service:
     _type: legacy_type.attribute:attribute
     object: subprocess_context.module
     attr_name: subprocess_running

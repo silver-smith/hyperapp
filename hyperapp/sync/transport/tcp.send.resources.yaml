@@ -1,0 +1,19 @@
+# Automatically generated file. Do not edit.
+# Source hash: d7047006d838bc388002d91c24cc39983658f0c521695556fc0d6262228e1b7a9924a1002a7ea89cec2ab4c41d4f2fa63dd280a9e706365c397a17e60393b551
+# Generator hash: 3b6e57a27cf8ba460dcee631e65c13d39ec3e1d5dfb503f7e2c38eadb7142afd93b66ad901f219629ff6fc144e484ee89c1c8d433f2529629f805207e4ec59f9
+
+import:
+- legacy_service:generate_rsa_identity
+- legacy_service:peer_registry
+- legacy_service:transport
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  tcp.send.module:
+    _type: legacy_type.python_module:python_module
+    module_name: tcp.send
+    file_name: tcp.send.dyn.py
+    import_list:
+      services.generate_rsa_identity: legacy_service:generate_rsa_identity
+      services.peer_registry: legacy_service:peer_registry
+      services.transport: legacy_service:transport

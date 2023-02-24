@@ -2,11 +2,22 @@ import logging
 import selectors
 import socket
 import threading
-
-from hyperapp.common.module import Module
+from functools import partial
 
 from . import htypes
-from .tcp import address_to_str, has_full_tcp_packet, decode_tcp_packet, encode_tcp_packet
+from .services import (
+    bundler,
+    failed,
+    mark,
+    mosaic,
+    on_stop,
+    parcel_registry,
+    route_table,
+    transport,
+    stop_signal,
+    unbundler,
+    )
+from .code.tcp import address_to_str, has_full_tcp_packet, decode_tcp_packet, encode_tcp_packet
 
 log = logging.getLogger(__name__)
 
@@ -45,14 +56,7 @@ class Server:
 
 class Connection:
 
-    def __init__(self, mosaic, bundler, unbundler, parcel_registry,
-                 route_table, transport, selector, address, sock):
-        self._mosaic = mosaic
-        self._bundler = bundler
-        self._unbundler = unbundler
-        self._parcel_registry = parcel_registry
-        self._route_table = route_table
-        self._transport = transport
+    def __init__(self, selector, address, sock):
         self._selector = selector
         self._address = address
         self._socket = sock
@@ -67,8 +71,8 @@ class Connection:
         return self._socket is None
 
     def send(self, parcel):
-        parcel_ref = self._mosaic.put(parcel.piece)
-        bundle = self._bundler([parcel_ref]).bundle
+        parcel_ref = mosaic.put(parcel.piece)
+        bundle = bundler([parcel_ref]).bundle
         data = encode_tcp_packet(bundle)
         ofs = 0
         while ofs < len(data):
@@ -103,13 +107,13 @@ class Connection:
     def _process_bundle(self, bundle):
         parcel_ref = bundle.roots[0]
         log.info("%s: Received bundle: parcel: %s", self, parcel_ref)
-        self._unbundler.register_bundle(bundle)
-        parcel = self._parcel_registry.invite(parcel_ref)
-        sender_ref = self._mosaic.put(parcel.sender.piece)
+        unbundler.register_bundle(bundle)
+        parcel = parcel_registry.invite(parcel_ref)
+        sender_ref = mosaic.put(parcel.sender.piece)
         # Add route first - it may be used during parcel processing.
         log.info("%s will be routed via established connection from: %s", sender_ref, self)
-        self._route_table.add_route(sender_ref, self._this_route)
-        self._transport.send_parcel(parcel)
+        route_table.add_route(sender_ref, self._this_route)
+        transport.send_parcel(parcel)
 
 
 class Route:
@@ -164,78 +168,55 @@ class IncomingConnectionRoute:
         self._connection.send(parcel)
 
 
-class ThisModule(Module):
+def selector_thread_main(selector, address_to_client):
+    log.info("TCP selector thread is started.")
+    try:
+        while not stop_signal.is_set():
+            event_list = selector.select(timeout=0.5)
+            for key, mask in event_list:
+                handler = key.data
+                handler(key.fileobj, mask)
+            for address, client in address_to_client.items():
+                if client.closed:
+                    log.debug("Remove client %s from cache", client)
+                    del address_to_client[address]
+    except Exception as x:
+        log.exception("TCP selector thread is failed:")
+        failed(f"TCP selector thread is failed: {x}", x)
+    log.info("TCP selector thread is finished.")
 
-    def __init__(self, module_name, services, config):
-        super().__init__(module_name, services, config)
-        self._mosaic = services.mosaic
-        self._bundler = services.bundler
-        self._unbundler = services.unbundler
-        self._parcel_registry = services.parcel_registry
-        self._route_table = services.route_table
-        self._transport = services.transport
-        self._on_failure = services.failed
-        self._stop_flag = False
-        self._selector = selectors.DefaultSelector()
-        self._address_to_client = {}  # (host, port) -> Connection
-        self._thread = threading.Thread(target=self._selector_thread_main)
-        services.route_registry.register_actor(htypes.tcp_transport.route, Route.from_piece, self._client_factory)
-        services.on_start.append(self.start)
-        services.on_stop.append(self.stop)
-        services.tcp_server_factory = self.server_factory
 
-    def server_factory(self, bind_address=None):
-        server = Server(self._selector, self._connection_factory)
-        server.start(bind_address)
-        return server
+@mark.service
+def tcp_server_factory():
+    selector = selectors.DefaultSelector()
+    address_to_client = {}  # (host, port) -> Connection
+    selector_thread = threading.Thread(target=selector_thread_main(selector, address_to_client))
 
-    def _client_factory(self, address):
-        connection = self._address_to_client.get(address)
+    def stop():
+        log.info("Stop TCP selector thread.")
+        selector_thread.join()
+        log.info("TCP selector thread is stopped.")
+
+    def connection_factory(address, sock):
+        sock.setblocking(False)
+        return Connection(selector, address, sock)
+
+    def client_factory(address):
+        connection = address_to_client.get(address)
         if not connection:
             sock = socket.socket()
             sock.connect(address)
-            connection = self._connection_factory(address, sock)
-            self._address_to_client[address] = connection
-            self._selector.register(sock, selectors.EVENT_READ, connection.on_read)
+            connection = connection_factory(address, sock)
+            address_to_client[address] = connection
+            selector.register(sock, selectors.EVENT_READ, connection.on_read)
         return connection
 
-    def _connection_factory(self, address, sock):
-        sock.setblocking(False)
-        return Connection(
-            self._mosaic,
-            self._bundler,
-            self._unbundler,
-            self._parcel_registry,
-            self._route_table,
-            self._transport,
-            self._selector,
-            address,
-            sock,
-            )
+    def server_factory(bind_address=None):
+        server = Server(selector, connection_factory)
+        server.start(bind_address)
+        return server
 
-    def start(self):
-        log.info("Start TCP selector thread.")
-        self._thread.start()
-
-    def stop(self):
-        log.info("Stop TCP selector thread.")
-        self._stop_flag = True
-        self._thread.join()
-        log.info("TCP selector thread is stopped.")
-
-    def _selector_thread_main(self):
-        log.info("TCP selector thread is started.")
-        try:
-            while not self._stop_flag:
-                event_list = self._selector.select(timeout=0.5)
-                for key, mask in event_list:
-                    handler = key.data
-                    handler(key.fileobj, mask)
-                for address, client in self._address_to_client.items():
-                    if client.closed:
-                        log.debug("Remove client %s from cache", client)
-                        del self._address_to_client[address]
-        except Exception as x:
-            log.exception("TCP selector thread is failed:")
-            self._on_failure(f"TCP selector thread is failed: {x}", x)
-        log.info("TCP selector thread is finished.")
+    route_registry.register_actor(htypes.tcp_transport.route, Route.from_piece, client_factory)
+    selector_thread.start()
+    on_stop.append(stop)
+    return server_factory

@@ -1,0 +1,21 @@
+# Automatically generated file. Do not edit.
+# Source hash: d8730574bc744ac7e42fe937e9c182f341988afb96256480281548923b3502427bad9a3ffbcf6f734aa2f3d9bb2e3eebc79503b0966b485370aaf71de3a28391
+# Generator hash: 3b6e57a27cf8ba460dcee631e65c13d39ec3e1d5dfb503f7e2c38eadb7142afd93b66ad901f219629ff6fc144e484ee89c1c8d433f2529629f805207e4ec59f9
+
+import:
+- legacy_service:endpoint_registry
+- legacy_service:generate_rsa_identity
+- legacy_service:rpc_call_factory
+- legacy_service:rpc_endpoint_factory
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  tcp_tests_call_back.module:
+    _type: legacy_type.python_module:python_module
+    module_name: tcp_tests_call_back
+    file_name: tcp_tests_call_back.dyn.py
+    import_list:
+      services.endpoint_registry: legacy_service:endpoint_registry
+      services.generate_rsa_identity: legacy_service:generate_rsa_identity
+      services.rpc_call_factory: legacy_service:rpc_call_factory
+      services.rpc_endpoint_factory: legacy_service:rpc_endpoint_factory

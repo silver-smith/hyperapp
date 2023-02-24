@@ -37,7 +37,7 @@ def code_module_list():
         'common.bundler',
         'transport.rsa_identity',
         'sync.transport.endpoint',
-        'sync.transport.tcp',
+        # 'sync.transport.tcp',
         'resource.registry',
         'resource.resource_module',
         'resource.legacy_type',
@@ -92,7 +92,7 @@ def echo_set_up(services, htypes):
         code_module_list=[
             'async.test.event_loop',
             'async.async_main',
-            'sync.transport.tcp',  # tcp_transport.route is required registered at sync route_registry.
+            # 'sync.transport.tcp',  # tcp_transport.route is required registered at sync route_registry.
             'async.transport.tcp',
             'common.lcs',
             'common.lcs_service',
