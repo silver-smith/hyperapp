@@ -21,6 +21,7 @@ import:
 - legacy_service:types
 - legacy_service:web
 - legacy_type.async_run:async_run
+- legacy_type.attr_constructors:service
 - legacy_type.attribute:attribute
 - legacy_type.call:call
 - legacy_type.command:object_commands_d
@@ -45,7 +46,7 @@ import:
 - legacy_type.python_module:python_module
 - legacy_type.python_module:import_rec
 - resource.constructor_creg:constructor_creg.service
-- sync.subprocess_context:subprocess_running
+- sync.subprocess_context:subprocess_running.service
 
 definitions:
 
@@ -64,6 +65,7 @@ definitions:
     import_list:
       code.utils: guesser.utils:utils.module
       htypes.async_run.async_run: legacy_type.async_run:async_run
+      htypes.attr_constructors.service: legacy_type.attr_constructors:service
       htypes.attribute.attribute: legacy_type.attribute:attribute
       htypes.call.call: legacy_type.call:call
       htypes.command.object_commands_d: legacy_type.command:object_commands_d
@@ -104,7 +106,7 @@ definitions:
       services.resource_module_factory: legacy_service:resource_module_factory
       services.resource_registry_factory: legacy_service:resource_registry_factory
       services.rpc_endpoint_factory: legacy_service:rpc_endpoint_factory
-      services.subprocess_running: sync.subprocess_context:subprocess_running
+      services.subprocess_running: sync.subprocess_context:subprocess_running.service
       services.type_module_loader: legacy_service:type_module_loader
       services.types: legacy_service:types
       services.web: legacy_service:web

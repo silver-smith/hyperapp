@@ -40,7 +40,7 @@ from .code.utils import camel_to_snake
 _log = logging.getLogger(__name__)
 
 
-SourceInfo = namedtuple('SourceInfo', 'import_name attr_list')
+SourceInfo = namedtuple('SourceInfo', 'import_name attr_list service_to_attr')
 DepsInfo = namedtuple('DepsInfo', 'provides_services uses_modules wants_services wants_code tests_services tests_code')
 ObjectInfo = namedtuple('ObjectInfo', 'dir get_result_t')
 
@@ -84,6 +84,14 @@ class SourceFile:
     def is_legacy_module(self):
         yaml_path = self.source_path.with_name(self.name + '.yaml')
         return yaml_path.exists()
+
+    @cached_property
+    def is_fixtures(self):
+        return 'fixtures' in self.name.split('.')
+
+    @cached_property
+    def is_tests(self):
+        return self.name.endswith('.tests')
 
     @cached_property
     def code_module_pair(self):
@@ -158,7 +166,7 @@ class SourceFile:
             )
 
     # Can we load this resource module? Can we use it's code_module_pair?
-    def deps_up_to_date(self, file_dict, name_to_file):
+    def deps_up_to_date(self, file_dict, code_providers):
         if self.is_legacy_module:
             return True
         if not self.up_to_date:
@@ -167,11 +175,11 @@ class SourceFile:
             if module_name.split('.')[0] in {'legacy_type', 'legacy_module', 'legacy_service'}:
                 continue
             file = file_dict[module_name]
-            if not file.deps_up_to_date(file_dict, name_to_file):
+            if not file.deps_up_to_date(file_dict, code_providers):
                 return False
-        for module_name in self.deps.wants_code:
-            file = name_to_file[module_name]
-            if not file.deps_up_to_date(file_dict, name_to_file):
+        for name in self.deps.wants_code:
+            provider = code_providers[name]
+            if not provider.deps_up_to_date(file_dict, code_providers):
                 return False
         return True
 
@@ -197,7 +205,8 @@ class SourceFile:
         import_discoverer.reset()
         return (import_discoverer, import_discoverer_ref)
 
-    def _dep_discover_module_res(self, resource_registry, type_res_list, process):
+    # Module resource with import discoverer.
+    def _discover_module_res(self, resource_registry, type_res_list, process):
         resource_list = [*type_res_list]
 
         mark_service = resource_registry['common.mark', 'mark.service']
@@ -214,7 +223,8 @@ class SourceFile:
                 ])
         return (import_recorder, import_discoverer, module_res)
 
-    def _attr_collect_module_res(self, resource_registry, type_res_list, process, file_dict):
+    # Module resource with import recorder.
+    def recorder_module_res(self, resource_registry, type_res_list, process, file_dict):
         resource_list = [*type_res_list]
 
         legacy_service_module = resource_registry.get_module('legacy_service')
@@ -223,25 +233,22 @@ class SourceFile:
             resource_list.append(
                 htypes.import_recorder.resource(('services', service_name), mosaic.put(service)))
 
-        name_to_file = {
-            file.name: file
-            for file in file_dict.values()
-            }
+        code_providers = code_provider_modules(file_dict)
 
         for file in file_dict.values():
-            if 'fixtures' in file.name.split('.'):
+            if file.is_fixtures or file.is_tests:
                 continue
-            if not file.deps_up_to_date(file_dict, name_to_file):
+            if not file.deps_up_to_date(file_dict, code_providers):
                 continue
-            resource = resource_registry[file.code_module_pair]
+            code_res = resource_registry[file.code_module_pair]
             resource_list.append(
-                htypes.import_recorder.resource(('code', file.name), mosaic.put(resource)))
+                htypes.import_recorder.resource(('code', file.name), mosaic.put(code_res)))
             if file.is_legacy_module:
                 continue
             for service in file.deps.provides_services:
-                resource = resource_registry[file.module_name, f'{service}.service']
+                service_res = resource_registry[file.module_name, f'{service}.service']
                 resource_list.append(
-                    htypes.import_recorder.resource(('services', service), mosaic.put(resource)))
+                    htypes.import_recorder.resource(('services', service), mosaic.put(service_res)))
 
         import_recorder, import_recorder_ref = self._prepare_import_recorder(process, resource_list)
 
@@ -252,7 +259,7 @@ class SourceFile:
                 ])
         return (import_recorder, module_res)
 
-    def _imports_to_deps(self, import_set):
+    def _imports_to_deps(self, import_set, provides_services):
         wants_services = set()
         wants_code = set()
         tests_services = set()
@@ -286,7 +293,7 @@ class SourceFile:
         _log.info("Discovered import deps: tests_code: %s", tests_code)
 
         return DepsInfo(
-            provides_services=set(),
+            provides_services=provides_services,
             uses_modules=set(),
             wants_services=wants_services,
             wants_code=wants_code,
@@ -318,15 +325,25 @@ class SourceFile:
             discovered_imports = import_discoverer.discovered_imports()
             _log.info("Discovered import list: %s", discovered_imports)
             import_set |= set(discovered_imports)
-        deps_info = self._imports_to_deps(import_set)
 
+        provides_services = set()
         if object_attrs:
+            service_to_attr = {}
+            for attr in attr_list:
+                for ctr_ref in attr.constructors:
+                    ctr = web.summon(ctr_ref)
+                    if isinstance(ctr, htypes.attr_constructors.service):
+                        provides_services.add(ctr.name)
+                        service_to_attr[ctr.name] = attr
             source_info = SourceInfo(
                 import_name=object_attrs.object_module,
                 attr_list=attr_list,
+                service_to_attr=service_to_attr,
                 )
         else:
             source_info = None
+
+        deps_info = self._imports_to_deps(import_set, provides_services)
         return (deps_info, source_info)
 
     def init_deps(self, resource_registry, process, type_res_list, file_dict):
@@ -335,51 +352,36 @@ class SourceFile:
         if self.up_to_date:
             self.deps = self.get_resource_module_deps()
         else:
-            (import_recorder, import_discoverer, module_res) = self._dep_discover_module_res(
+            (import_recorder, import_discoverer, module_res) = self._discover_module_res(
                 resource_registry, type_res_list, process)
             self.deps, self.source_info = self.parse_source(
                 import_recorder, import_discoverer, module_res, process, fail_on_incomplete=False)
 
     @staticmethod
-    def service_provider_modules(resource_registry, file_dict):
-        return {
-            service: module_name
-            for module_name, file in file_dict.items()
-            if (not file.is_legacy_module
-                and file.up_to_date
-                and 'fixtures' not in file.name.split('.'))
-            for service in file.deps.provides_services
-            }
-
-    @staticmethod
     def fixture_service_provider_modules(file):
         return {
-            service: file.module_name
+            service: file
             for service in file.deps.provides_services
             }
 
-    def _make_import_list(self, resource_registry, file_dict, service_provider_modules):
-        code_modules = {
-            file.name: file.code_module_pair
-            for file in file_dict.values()
-            if 'fixtures' not in file.name.split('.')
-            }
+    def _make_import_list(self, resource_registry, file_dict, service_providers):
+        code_providers = code_provider_modules(file_dict)
 
         import_list = []
 
         for name in self.deps.wants_code:
-            name_pair = code_modules[name]
-            module = resource_registry[name_pair]
+            provider = code_providers[name]
+            module = resource_registry[provider.code_module_pair]
             import_list.append(
                 htypes.python_module.import_rec(f'code.{name}', mosaic.put(module)))
 
         for service_name in self.deps.wants_services:
             try:
-                module_name = service_provider_modules[service_name]
+                provider = service_providers[service_name]
             except KeyError:
                 service = resource_registry['legacy_service', service_name]
             else:
-                service = resource_registry[module_name, f'{service_name}.service']
+                service = resource_registry[provider.module_name, f'{service_name}.service']
             import_list.append(
                 htypes.python_module.import_rec(f'services.{service_name}', mosaic.put(service)))
 
@@ -387,23 +389,38 @@ class SourceFile:
         return import_list
 
     def _make_tested_import_list(self, resource_registry, type_res_list, process, file_dict):
-        name_to_file = {
-            file.name: file
-            for file in file_dict.values()
-            }
+        code_providers = code_provider_modules(file_dict)
+        service_providers = service_provider_modules(file_dict, want_up_to_date=False)
 
         name_to_recorder = {}
         import_list = []
         for name in self.deps.tests_code:
-            file = name_to_file[name]
-            import_recorder, module = file._attr_collect_module_res(
+            provider = code_providers[name]
+            import_recorder, module_res = provider.recorder_module_res(
                 resource_registry, type_res_list, process, file_dict)
             import_list.append(
-                htypes.python_module.import_rec(f'tested.code.{name}', mosaic.put(module)))
-            name_to_recorder[file.module_name] = import_recorder
+                htypes.python_module.import_rec(f'tested.code.{name}', mosaic.put(module_res)))
+            name_to_recorder[provider.module_name] = import_recorder
+        for service_name in self.deps.tests_services:
+            provider = service_providers[service_name]
+            import_recorder, module_res = provider.recorder_module_res(
+                resource_registry, type_res_list, process, file_dict)
+            service_attr = provider.source_info.service_to_attr[service_name]
+            attribute = htypes.attribute.attribute(
+                object=mosaic.put(module_res),
+                attr_name=service_attr.name,
+                )
+            service = htypes.call.call(
+                function=mosaic.put(attribute),
+                )
+            import_list.append(
+                htypes.python_module.import_rec(f'tested.service.{service_name}', mosaic.put(service)))
+            name_to_recorder[provider.module_name] = import_recorder
+
         return (name_to_recorder, import_list)
 
-    def _parameter_fixture(self, fixtures_file, path):
+    @staticmethod
+    def _parameter_fixture(fixtures_file, path):
         if not fixtures_file:
             return None
         name = '.'.join([*path, 'parameter'])
@@ -536,12 +553,12 @@ class SourceFile:
         _log.info("%s: Discover type imports", self.module_name)
 
         if not self.source_info:
-            import_recorder, collect_module_res = self._attr_collect_module_res(
+            import_recorder, collect_module_res = self.recorder_module_res(
                 resource_registry, type_res_list, process, file_dict)
             self.deps, self.source_info = self.parse_source(
                 import_recorder, None, collect_module_res, process, fail_on_incomplete=True)
 
-        service_providers = self.service_provider_modules(resource_registry, file_dict)
+        service_providers = service_provider_modules(file_dict)
         if fixtures_file:
             service_providers.update(self.fixture_service_provider_modules(fixtures_file))
         import_list = self._make_import_list(resource_registry, file_dict, service_providers)
@@ -642,6 +659,11 @@ class SourceFile:
             )
         resource_module.add_association(pyobj_association)
 
+    def call_attr_constructors(self, custom_types, resource_module, module_res):
+        for attr in self.source_info.attr_list:
+            for ctr_ref in attr.constructors:
+                constructor_creg.invite(ctr_ref, custom_types, resource_module, module_res, attr)
+
     def construct_resources(self, process, resource_registry, custom_types, type_res_list, tested_module_imports, file_dict, saver):
         resource_module = resource_module_factory(resource_registry, self.name)
         fixtures_file = file_dict.get(f'{self.module_name}.fixtures')
@@ -651,7 +673,7 @@ class SourceFile:
         # Add types discovered by tests.
         used_types |= tested_module_imports.get(self.module_name, set())
 
-        service_providers = self.service_provider_modules(resource_registry, file_dict)
+        service_providers = service_provider_modules(file_dict)
         import_list = [
             *self._make_import_list(resource_registry, file_dict, service_providers),
             *self._types_import_list(type_res_list, used_types),
@@ -662,13 +684,11 @@ class SourceFile:
 
         for name, object_info in object_info_dict.items():
             self._construct_object_impl(process, custom_types, resource_module, fixtures_file, module_res, name, object_info)
-        for attr in self.source_info.attr_list:
-            for ctr_ref in attr.constructors:
-                constructor_creg.invite(ctr_ref, custom_types, resource_module, module_res, attr)
+        self.call_attr_constructors(custom_types, resource_module, module_res)
 
         self.set_resource_module(resource_registry, resource_module)
 
-        if 'tests' in self.name.split('.'):
+        if self.is_tests:
             return  # Tests should not produce resources.
 
         source_hash = hash_sha512(self.source_path.read_bytes())
@@ -724,20 +744,29 @@ def add_legacy_types_to_cache(resource_registry, legacy_type_modules):
             resource_registry.add_to_cache((module_name, var_name), module[var_name])
 
 
-def collect_deps(resource_registry, file_dict):
-    _log.info("Collect dependencies")
-
-    code_providers = {
-        file.name: file.module_name
+def code_provider_modules(file_dict):
+    return {
+        file.name: file
         for file in file_dict.values()
         }
 
-    service_providers = {
-        service: module_name
+
+def service_provider_modules(file_dict, want_up_to_date=True, want_fixtures=False):
+    return {
+        service: file
         for module_name, file in file_dict.items()
-        if not file.is_legacy_module
+        if (not file.is_legacy_module
+            and (not want_up_to_date or file.up_to_date)
+            and (want_fixtures or not file.is_fixtures))
         for service in file.deps.provides_services
         }
+
+
+def collect_deps(resource_registry, file_dict):
+    _log.info("Collect dependencies")
+
+    code_providers = code_provider_modules(file_dict)
+    service_providers = service_provider_modules(file_dict, want_up_to_date=False)
 
     deps = defaultdict(set)  # module_name -> module_name list
 
@@ -749,15 +778,15 @@ def collect_deps(resource_registry, file_dict):
                 provider = code_providers[code_name]
             except KeyError:
                 raise RuntimeError(f"Module {file.module_name!r} wants code module {code_name!r}, but no one provides it")
-            _log.info("%s wants code %r from: %s", module_name, code_name, provider)
-            deps[module_name].add(provider)
+            _log.info("%s wants code %r from: %s", module_name, code_name, provider.module_name)
+            deps[module_name].add(provider.module_name)
         for service in file.deps.wants_services:
             try:
                 provider = service_providers[service]
             except KeyError:
                 continue  # Legacy service.
-            _log.info("%s wants service %r from: %s", module_name, service, provider)
-            deps[module_name].add(provider)
+            _log.info("%s wants service %r from: %s", module_name, service, provider.module_name)
+            deps[module_name].add(provider.module_name)
         base_name = '.'.join(module_name.split('.')[:-1])
         if base_name in file_dict and not file_dict[base_name].is_legacy_module:
             deps[base_name].add(module_name)  # Add fixture deps.
