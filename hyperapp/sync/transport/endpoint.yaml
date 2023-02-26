@@ -1,5 +1,5 @@
 require:
-  - service_failure
+  - failed
   - unbundler
   - route_table
 provide:

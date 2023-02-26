@@ -2,7 +2,7 @@ import:
   code:
     - sync.subprocess_connection
 require:
-  - service_failure
+  - failed
   - bundler
   - unbundler
   - transport

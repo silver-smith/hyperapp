@@ -6,7 +6,7 @@ require:
   - unbundler
   - route_table
   - parcel_registry
-  - service_failure
+  - failed
   - transport
   - work_dir
 provide:
