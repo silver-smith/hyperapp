@@ -43,6 +43,7 @@ class Services(object):
         'type_module_loader',
         'code_module_loader',
         'module_registry',
+        'stop_signal',
     ]
 
     def __init__(self, module_dir_list, additional_resource_dirs=None):
