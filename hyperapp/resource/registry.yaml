@@ -1,5 +1,7 @@
 import:
   types:
+    attribute:
+      - attribute
     impl:
       - python_object_association
   code:
@@ -7,6 +9,7 @@ import:
 provide:
   - resource_type_reg
   - python_object_creg
+  - fn_to_ref
   - resource_type_producer
 require:
   - meta_registry

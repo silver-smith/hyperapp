@@ -1,3 +1,4 @@
+import inspect
 import logging
 from functools import partial
 
@@ -23,6 +24,16 @@ def register_python_object(piece, python_object_creg):
     python_object_creg.register_actor(t, function)
 
 
+def fn_to_ref(mosaic, python_object_creg, fn):
+    module = inspect.getmodule(fn)
+    module_res = python_object_creg.reverse_resolve(module)
+    fn_res = htypes.attribute.attribute(
+        object=mosaic.put(module_res),
+        attr_name=fn.__name__,
+        )
+    return mosaic.put(fn_res)
+
+
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
@@ -30,6 +41,7 @@ class ThisModule(Module):
 
         services.resource_type_reg = {}  # resource_t -> ResourceType instance
         services.python_object_creg = CachedCodeRegistry('python_object', services.web, services.types)
+        services.fn_to_ref = partial(fn_to_ref, services.mosaic, services.python_object_creg)
         services.resource_type_producer = partial(resource_type_producer, services.resource_type_factory, services.resource_type_reg)
         services.meta_registry.register_actor(
             htypes.impl.python_object_association, register_python_object, services.python_object_creg)
