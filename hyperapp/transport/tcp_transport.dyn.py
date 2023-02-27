@@ -12,6 +12,7 @@ from .services import (
     mosaic,
     on_stop,
     parcel_registry,
+    route_registry,
     route_table,
     transport,
     stop_signal,
@@ -190,7 +191,7 @@ def selector_thread_main(selector, address_to_client):
 def tcp_server_factory():
     selector = selectors.DefaultSelector()
     address_to_client = {}  # (host, port) -> Connection
-    selector_thread = threading.Thread(target=selector_thread_main(selector, address_to_client))
+    selector_thread = threading.Thread(target=selector_thread_main, args=[selector, address_to_client])
 
     def stop():
         log.info("Stop TCP selector thread.")

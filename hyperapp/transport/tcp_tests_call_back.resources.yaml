@@ -1,10 +1,11 @@
 # Automatically generated file. Do not edit.
-# Source hash: d8730574bc744ac7e42fe937e9c182f341988afb96256480281548923b3502427bad9a3ffbcf6f734aa2f3d9bb2e3eebc79503b0966b485370aaf71de3a28391
-# Generator hash: f221e2ab46fd65ea23e153501fc648a74e09f556950a5be707b2a39a973adaae98d36a2f16b069aa507727c8d06748fe76a7a87cc248856b488e12693238ad2f
+# Source hash: a07d8b34d7ad4346b787d52a06a81a83061159593e842700d4d0230e0e800dd57148afa36cf89bfd4d31621d6e01f6055e6066793db5ce964aee02e6c8098aad
+# Generator hash: 475ad5c5b387be8be53f8b0db04ac1e8b24162a180fe9336320b09c55104a3ef287e0e771b5c38959112482f25f51e1785ecb8ccade920240bc38b14538d4a45
 
 import:
 - legacy_service:endpoint_registry
 - legacy_service:generate_rsa_identity
+- legacy_service:peer_registry
 - legacy_service:rpc_call_factory
 - legacy_service:rpc_endpoint_factory
 - legacy_type.python_module:python_module
@@ -17,5 +18,6 @@ definitions:
     import_list:
       services.endpoint_registry: legacy_service:endpoint_registry
       services.generate_rsa_identity: legacy_service:generate_rsa_identity
+      services.peer_registry: legacy_service:peer_registry
       services.rpc_call_factory: legacy_service:rpc_call_factory
       services.rpc_endpoint_factory: legacy_service:rpc_endpoint_factory

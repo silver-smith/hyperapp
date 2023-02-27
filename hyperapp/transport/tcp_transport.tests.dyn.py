@@ -1,17 +1,18 @@
 import logging
-import queue
 from contextlib import contextmanager
 
 from hyperapp.common.htypes.packet_coders import packet_coders
 
 from .services import (
     bundler,
+    fn_to_ref,
     generate_rsa_identity,
     endpoint_registry,
     module_dir_list,
     mosaic,
     python_object_creg,
     route_table,
+    rpc_endpoint_factory,
     subprocess_running,
     )
 from .code.tcp_tests_call_back import call_back
@@ -52,28 +53,32 @@ def subprocess(process_name, master_identity):
             module_dir_list,
             process_code_module_list,
             rpc_endpoint,
-            identity,
+            master_identity,
             process_name,
         ) as process:
         yield process
 
 
+def my_callback(message):
+    log.info("Callback with: %r", message)
+
+
 def test_tcp_call():
+    log.info("Test TCP call")
     master_identity = generate_rsa_identity(fast=True)
     master_peer_ref = mosaic.put(master_identity.peer.piece)
 
-    request_queue = queue.Queue()
-    endpoint_registry.register(master_identity, Endpoint(request_queue))
+    tcp_master_identity = generate_rsa_identity(fast=True)
+    tcp_master_peer_ref = mosaic.put(tcp_master_identity.peer.piece)
+
+    callback_ref = fn_to_ref(call_back)
+    my_callback_ref = fn_to_ref(my_callback)
+    log.info("Child callback: %r, my callback: %r", callback_ref, my_callback_ref)
 
     server = tcp_server_factory()
     log.info("Tcp route: %r", server.route)
-    route_table.add_route(master_peer_ref, server.route)
-
-    master_peer_bundle = bundler([master_peer_ref]).bundle
-    master_peer_bundle_cdr = packet_coders.encode('cdr', master_peer_bundle)
+    route_table.add_route(tcp_master_peer_ref, server.route)
 
     with subprocess('test-tcp-send', master_identity) as process:
-        log.info("Waiting for request.")
-        request = request_queue.get(timeout=20)
-        log.info("Got request: %s", request)
-        assert request.receiver_identity.piece == master_identity.piece
+        callback_call = process.rpc_call(callback_ref)
+        callback_call(tcp_master_peer_ref=tcp_master_peer_ref, master_fn_ref=my_callback_ref)
