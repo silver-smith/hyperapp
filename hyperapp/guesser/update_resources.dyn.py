@@ -265,6 +265,8 @@ class SourceFile:
         tests_services = set()
         tests_code = set()
         for imp in import_set:
+            if imp[-1] == 'shape':
+                imp = imp[:-1]  # Revert pycharm debugger mangle.
             if len(imp) < 2:
                 continue
             kind, name, *_ = imp
@@ -414,7 +416,7 @@ class SourceFile:
                 function=mosaic.put(attribute),
                 )
             import_list.append(
-                htypes.python_module.import_rec(f'tested.service.{service_name}', mosaic.put(service)))
+                htypes.python_module.import_rec(f'tested.services.{service_name}', mosaic.put(service)))
             name_to_recorder[provider.module_name] = import_recorder
 
         return (name_to_recorder, import_list)
