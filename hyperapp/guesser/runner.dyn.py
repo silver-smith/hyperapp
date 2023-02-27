@@ -64,7 +64,7 @@ def _iter_attributes(object):
 def get_resource_type(resource_ref):
     log.info("Get type for resource ref: %s", resource_ref)
     value = python_object_creg.invite(resource_ref)
-    log.info("Resource value: %s", resource_ref)
+    log.info("Resource value: %s", value)
 
     if value is None:
         return htypes.inspect.none_t()
