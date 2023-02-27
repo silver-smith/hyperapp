@@ -20,21 +20,22 @@ _log = logging.getLogger(__name__)
 
 class SubProcess:
 
-    def __init__(self, rpc_endpoint, identity, peer):
+    def __init__(self, rpc_endpoint, identity, peer, timeout_sec):
         self._rpc_endpoint = rpc_endpoint
         self._identity = identity
         self._peer = peer
+        self._timeout_sec = timeout_sec
 
     def rpc_call(self, servant_fn_ref):
         return rpc_call_factory(
-            self._rpc_endpoint, self._peer, servant_fn_ref, self._identity)
+            self._rpc_endpoint, self._peer, servant_fn_ref, self._identity, self._timeout_sec)
 
     def proxy(self, servant_ref):
-        return RpcProxy(self._rpc_endpoint, self._identity, self._peer, servant_ref)
+        return RpcProxy(self._rpc_endpoint, self._identity, self._peer, servant_ref, self._timeout_sec)
 
 
 @contextmanager
-def subprocess_running(module_dir_list, code_module_list, rpc_endpoint, identity, process_name):
+def subprocess_running(module_dir_list, code_module_list, rpc_endpoint, identity, process_name, timeout_sec=10):
     peer_ref = mosaic.put(identity.peer.piece)
     peer_ref_cdr_list = [packet_coders.encode('cdr', peer_ref)]
 
@@ -69,4 +70,4 @@ def subprocess_running(module_dir_list, code_module_list, rpc_endpoint, identity
         runner_peer = peer_registry.invite(runner_peer_ref)
         _log.info("Got runner signal: peer=%s", runner_peer)
 
-        yield SubProcess(rpc_endpoint, identity, runner_peer)
+        yield SubProcess(rpc_endpoint, identity, runner_peer, timeout_sec)

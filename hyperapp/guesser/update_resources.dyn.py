@@ -449,7 +449,7 @@ class SourceFile:
                     raise RuntimeError(f"Some parameter fixtures are missing for {self.name} {attr_path_str}: {missing_params}")
                 else:
                     # All are missing - guess this function is not intended to be tested using fixture parameters.
-                    _log.warning("Pparameter fixtures are missing for %s %s: %s", self.name, attr_path_str, missing_params)
+                    _log.warning("Parameter fixtures are missing for %s %s: %s", self.name, attr_path_str, missing_params)
                     return (None, None)
             function_res = htypes.partial.partial(
                 function=mosaic.put(attr_res),
@@ -706,7 +706,7 @@ process_code_module_list = [
 
 
 @contextmanager
-def subprocess(process_name, additional_dir_list):
+def subprocess(process_name, additional_dir_list, rpc_timeout):
     identity = generate_rsa_identity(fast=True)
     rpc_endpoint = rpc_endpoint_factory()
     endpoint_registry.register(identity, rpc_endpoint)
@@ -716,6 +716,7 @@ def subprocess(process_name, additional_dir_list):
             rpc_endpoint,
             identity,
             process_name,
+            timeout_sec=rpc_timeout,
         ) as process:
         yield process
 
@@ -756,8 +757,10 @@ def service_provider_modules(file_dict, want_up_to_date=True, want_fixtures=Fals
         service: file
         for module_name, file in file_dict.items()
         if (not file.is_legacy_module
+            and file.deps
             and (not want_up_to_date or file.up_to_date)
-            and (want_fixtures or not file.is_fixtures))
+            and (want_fixtures or not file.is_fixtures)
+            )
         for service in file.deps.provides_services
         }
 
@@ -859,7 +862,7 @@ def resource_saver(resource_module, path, source_hash, generator_hash):
     resource_module.save_as(path, source_hash, generator_hash)
 
 
-def update_resources(generator_ref, subdir_list, root_dirs, module_list, process_name='update-resources-runner', saver=resource_saver):
+def update_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_timeout=10, process_name='update-resources-runner', saver=resource_saver):
     resource_dir_list = [hyperapp_dir / d for d in subdir_list] + root_dirs
     resource_registry = resource_registry_factory()
 
@@ -877,7 +880,7 @@ def update_resources(generator_ref, subdir_list, root_dirs, module_list, process
 
     tested_module_imports = {}  # module name -> type import tuple set
 
-    with subprocess(process_name, resource_dir_list) as process:
+    with subprocess(process_name, resource_dir_list, rpc_timeout) as process:
 
         file_dict = collect_source_files(generator_ref, subdir_list, root_dirs, resource_registry)
 

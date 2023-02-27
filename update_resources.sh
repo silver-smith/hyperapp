@@ -8,4 +8,4 @@ cd "$( dirname "$0" )"
 
 set -x
 
-./update_resources.py "$@"
+./update_resources.py --rpc-timeout=5 "$@"
