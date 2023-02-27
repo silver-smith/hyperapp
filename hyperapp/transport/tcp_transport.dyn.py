@@ -17,7 +17,7 @@ from .services import (
     stop_signal,
     unbundler,
     )
-from .code.tcp import address_to_str, has_full_tcp_packet, decode_tcp_packet, encode_tcp_packet
+from .code.tcp_utils import address_to_str, has_full_tcp_packet, decode_tcp_packet, encode_tcp_packet
 
 log = logging.getLogger(__name__)
 

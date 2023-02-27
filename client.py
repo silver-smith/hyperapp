@@ -67,7 +67,7 @@ code_module_list = [
     # 'client.wiki_text_sample',
     # 'client.local_server',
     'transport.rsa_identity',
-    'async.transport.tcp',
+    'transport.async_tcp_transport',
     # 'client.list_service',
     # 'client.live_list_service',
     # 'client.tree_service',

@@ -5,7 +5,7 @@ from functools import partial
 from hyperapp.common.module import Module
 
 from . import htypes
-from .tcp import address_to_str, has_full_tcp_packet, decode_tcp_packet, encode_tcp_packet
+from .tcp_utils import address_to_str, has_full_tcp_packet, decode_tcp_packet, encode_tcp_packet
 
 log = logging.getLogger(__name__)
 

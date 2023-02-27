@@ -93,7 +93,7 @@ def echo_set_up(services, htypes):
             'async.test.event_loop',
             'async.async_main',
             # 'sync.transport.tcp',  # tcp_transport.route is required registered at sync route_registry.
-            'async.transport.tcp',
+            'transport.async_tcp_transport',
             'common.lcs',
             'common.lcs_service',
             'resource.legacy_type',

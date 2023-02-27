@@ -23,7 +23,7 @@ def code_module_list():
         'sync.transport.route_table',
         'sync.transport.endpoint',
         'sync.subprocess',
-        'sync.transport.tcp',
+        # 'sync.transport.tcp',
         ]
 
 
@@ -71,7 +71,7 @@ def test_tcp_send(services):
         code_module_list=[
             'async.test.event_loop',
             'async.async_main',
-            'async.transport.tcp',
+            'transport.async_tcp_transport',
             'async.transport.test.send',
             ] + common_subprocess_module_list,
         config={
@@ -103,10 +103,10 @@ def test_tcp_echo(services):
         'subprocess',
         module_dir_list=[*services.module_dir_list, TEST_DIR, ASYNC_TEST_DIR],
         code_module_list=[
-            'sync.transport.tcp',  # tcp_transport.route is required registered at sync route_registry.
+            'transport.async_tcp_transport',  # tcp_transport.route is required registered at sync route_registry.
             'async.test.event_loop',
             'async.async_main',
-            'async.transport.tcp',
+            'transport.async_tcp_transport',
             'async.transport.test.echo',
             ] + common_subprocess_module_list,
         config={

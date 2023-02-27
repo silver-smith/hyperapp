@@ -20,7 +20,7 @@ def code_module_list():
         'sync.transport.route_table',
         'sync.transport.endpoint',
         'sync.subprocess',
-        'sync.transport.tcp',
+        # 'sync.transport.tcp',
         ]
 
 
@@ -66,7 +66,7 @@ def test_tcp_send(services):
         'subprocess',
         module_dir_list=[*services.module_dir_list, Path(__file__).parent],
         code_module_list=common_subprocess_module_list + [
-            'sync.transport.tcp',
+            # 'sync.transport.tcp',
             'sync.transport.test.send',
             ],
         config={
@@ -98,7 +98,7 @@ def test_tcp_echo(services):
         'subprocess',
         module_dir_list=[*services.module_dir_list, Path(__file__).parent],
         code_module_list=common_subprocess_module_list + [
-            'sync.transport.tcp',
+            # 'sync.transport.tcp',
             'sync.transport.test.echo',
             ],
         config={
