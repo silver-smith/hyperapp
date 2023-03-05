@@ -378,12 +378,9 @@ class SourceFile:
                 htypes.python_module.import_rec(f'code.{name}', mosaic.put(module)))
 
         for service_name in self.deps.wants_services:
-            try:
-                provider = service_providers[service_name]
-            except KeyError:
-                service = resource_registry['legacy_service', service_name]
-            else:
-                service = resource_registry[provider.module_name, f'{service_name}.service']
+            service = service_resource(resource_registry, service_providers, service_name)
+            if service is None:
+                raise RuntimeError(f"Provider deps for service {service_name!r} is not yet ready")
             import_list.append(
                 htypes.python_module.import_rec(f'services.{service_name}', mosaic.put(service)))
 
@@ -767,6 +764,18 @@ def service_provider_modules(file_dict, want_up_to_date=True, want_fixtures=Fals
         }
 
 
+def service_resource(resource_registry, service_providers, service_name):
+    try:
+        provider = service_providers[service_name]
+    except KeyError:
+        try:
+            return resource_registry['legacy_service', service_name]
+        except KeyError:
+            return None  # Provider module deps are not yet ready?
+    else:
+        return resource_registry[provider.module_name, f'{service_name}.service']
+
+
 def collect_deps(resource_registry, file_dict):
     _log.info("Collect dependencies")
 
@@ -844,7 +853,8 @@ def init_deps(resource_registry, process, type_res_list, file_dict):
         file.init_deps(resource_registry, process, type_res_list, file_dict)
 
 
-def ready_for_construction_files(file_dict, deps):
+def ready_for_construction_files(resource_registry, file_dict, deps):
+    service_providers = service_provider_modules(file_dict, want_up_to_date=False)
     for module_name, file in sorted(file_dict.items()):
         if file.is_legacy_module:
             continue
@@ -856,6 +866,14 @@ def ready_for_construction_files(file_dict, deps):
             ]
         if not_ready_deps:
             _log.info("Deps are not ready for %s: %s", module_name, ", ".join(not_ready_deps))
+            continue
+        services_are_ready = True
+        for service_name in file.deps.wants_services:
+            service = service_resource(resource_registry, service_providers, service_name)
+            if service is None:
+                _log.info("Service provider deps are not ready for %s: %s", module_name, service_name)
+                services_are_ready = False
+        if not services_are_ready:
             continue
         yield file
 
@@ -893,7 +911,7 @@ def update_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_tim
             init_deps(resource_registry, process, type_res_list, file_dict)
             deps = collect_deps(resource_registry, file_dict)
             ready_files = list(sorted(
-                ready_for_construction_files(file_dict, deps), key=attrgetter('module_name')))
+                ready_for_construction_files(resource_registry, file_dict, deps), key=attrgetter('module_name')))
             ready_module_names = [f.module_name for f in ready_files]
             _log.info("Ready for construction: %s", ", ".join(ready_module_names))
             if module_list:
