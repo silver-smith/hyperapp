@@ -45,6 +45,8 @@ import:
 - legacy_type.piece_ref:piece_ref
 - legacy_type.python_module:python_module
 - legacy_type.python_module:import_rec
+- legacy_type.update_resources:source_dep
+- legacy_type.update_resources:module_deps
 - resource.constructor_creg:constructor_creg.service
 - sync.subprocess_context:subprocess_running.service
 
@@ -88,6 +90,8 @@ definitions:
       htypes.partial.partial: legacy_type.partial:partial
       htypes.python_module.python_module: legacy_type.python_module:python_module
       htypes.python_module.import_rec: legacy_type.python_module:import_rec
+      htypes.update_resources.source_dep: legacy_type.update_resources:source_dep
+      htypes.update_resources.module_deps: legacy_type.update_resources:module_deps
       services.builtin_types_as_dict: legacy_service:builtin_types_as_dict
       services.code_module_loader: legacy_service:code_module_loader
       services.collect_attributes_ref: collect_attributes_ref

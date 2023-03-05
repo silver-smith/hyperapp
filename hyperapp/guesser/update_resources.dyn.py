@@ -7,8 +7,7 @@ from operator import attrgetter
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 
-from hyperapp.common.htypes import HException
-from hyperapp.common.ref import hash_sha512
+from hyperapp.common.htypes import HException, ref_str
 
 from . import htypes
 from .services import (
@@ -66,7 +65,9 @@ class SourceFile:
         self.name = source_path.name[:-len('.dyn.py')]
         self.module_name = str(source_path.relative_to(root_dir).with_name(self.name)).replace('/', '.')
         self.resources_path = source_path.with_name(self.name + '.resources.yaml')
-        self.deps = None
+        self.deps = None  # None if up_to_date.
+        self.dep_modules = None  # None if up_to_date.
+        self.tests_modules = None  # Only for tests.
         self.source_info = None
         self.resource_module = None
         self.is_manually_generated = None
@@ -78,6 +79,10 @@ class SourceFile:
     def up_to_date(self):
         if self.is_legacy_module:
             return True
+        if self.is_tests:
+            if self.tests_modules is None:
+                return False
+            return all(f.up_to_date for f in self.tests_modules)
         return self.resource_module is not None
 
     @cached_property
@@ -102,12 +107,11 @@ class SourceFile:
         else:
             return (self.module_name, f'{self.name}.module')
 
-    def set_resource_module(self, resource_registry, resource_module):
+    def _set_resource_module(self, resource_registry, resource_module):
         self.resource_module = resource_module
-        self.deps = self.get_resource_module_deps()
         resource_registry.set_module(self.module_name, self.resource_module)
 
-    def init_resource_module(self, resource_registry):
+    def init_resource_module(self, resource_registry, file_dict):
         if self.is_legacy_module:
             return
         if not self.resources_path.exists():
@@ -115,41 +119,93 @@ class SourceFile:
             return
         resource_module = resource_module_factory(resource_registry, self.module_name, self.resources_path)
         self.is_manually_generated = not resource_module.is_auto_generated
+        deps = self._get_resource_module_deps(resource_module)
         if self.is_manually_generated:
             _log.info("%s: manually generated", self.module_name)
-        elif not self.check_up_to_date(resource_module):
-            return
-        self.set_resource_module(resource_registry, resource_module)
+        else:
+            dep_modules = self._collect_dep_modules(resource_registry, file_dict, deps)
+            if dep_modules is None:
+                return  # Service provider deps are not yet ready.
+            if not self._check_up_to_date(resource_module, dep_modules):
+                return
+            self.dep_modules = dep_modules
+        self.deps = deps
+        self._set_resource_module(resource_registry, resource_module)
 
-    def invalidate_resource_module(self, resource_registry):
-        if self.is_legacy_module or self.is_manually_generated:
-            return
-        self.resource_module = None
-        self.deps = None
-        resource_registry.remove_module(self.module_name)
-
-    def check_up_to_date(self, resource_module):
-        if not resource_module.source_hash:
-            _log.info("%s: no source hash", self.module_name)
+    def _check_up_to_date(self, resource_module, dep_modules):
+        if not resource_module.source_ref_str:
+            _log.info("%s: no source ref", self.module_name)
             return False
-        source_hash = hash_sha512(self.source_path.read_bytes())
-        if resource_module.source_hash != source_hash:
-            _log.info("%s: changed", self.module_name)
+        module_deps_record = self._make_module_deps_record(dep_modules)
+        source_ref = mosaic.put(module_deps_record)
+        if resource_module.source_ref_str != ref_str(source_ref):
+            _log.info("%s: sources changed", self.module_name)
             return False
-        if not resource_module.generator_hash:
-            _log.info("%s: no generator hash", self.module_name)
+        if not resource_module.generator_ref_str:
+            _log.info("%s: no generator ref", self.module_name)
             return False
-        if resource_module.generator_hash != self._generator_ref.hash:
+        if resource_module.generator_ref_str != ref_str(self._generator_ref):
             _log.info("%s: generator changed", self.module_name)
             return False
         _log.info("%s: up to date", self.module_name)
         return True
 
-    def get_resource_module_deps(self):
+    @property
+    def ready_for_construction(self):
+        if self.up_to_date:
+            return False
+        if self.dep_modules is None:
+            return False
+        return all(f.up_to_date for f in self.dep_modules)
+
+    @cached_property
+    def source_dep_record(self):
+        source_ref = mosaic.put(self.source_path.read_bytes())
+        return htypes.update_resources.source_dep(self.module_name, source_ref)
+
+    # Returns None if provider deps for wanted services are not yet ready.
+    def _collect_dep_modules(self, resource_registry, file_dict, deps):
+        assert not self.is_legacy_module
+        code_providers = code_provider_modules(file_dict)
+        service_providers = service_provider_modules(file_dict, want_up_to_date=False)
+        dep_list = []
+        for code_name in deps.wants_code:
+            try:
+                provider = code_providers[code_name]
+            except KeyError:
+                raise RuntimeError(f"Module {self.module_name!r} wants code module {code_name!r}, but no one provides it")
+            _log.info("%s wants code %r from: %s", self.module_name, code_name, provider.module_name)
+            dep_list.append(provider)
+        for service_name in deps.wants_services:
+            if is_legacy_service(resource_registry, service_name):
+                continue
+            try:
+                provider = service_providers[service_name]
+            except KeyError:
+                _log.info("%s: provider deps for service %r is not yet ready", self.module_name, service_name)
+                return None
+            _log.info("%s wants service %r from: %s", self.module_name, service_name, provider.module_name)
+            dep_list.append(provider)
+        prefix = self.module_name.split('.')
+        for file in file_dict.values():
+            name_l = file.module_name.split('.')
+            if name_l[:len(prefix)] != prefix:
+                continue
+            if len(name_l) != len(prefix) + 1:
+                continue
+            # Fixture, tests or aux file dep.
+            _log.info("%s wants fixtures, tests or aux resources from: %s", self.module_name, file.module_name)
+            dep_list.append(file)
+        return dep_list
+
+    def _make_module_deps_record(self, dep_modules):
+        return htypes.update_resources.module_deps([f.source_dep_record for f in dep_modules])
+
+    def _get_resource_module_deps(self, resource_module):
         uses_modules = set()
         wants_services = set()
         wants_code = set()
-        for module_name, var_name in self.resource_module.used_imports:
+        for module_name, var_name in resource_module.used_imports:
             uses_modules.add(module_name)
             l = var_name.split('.')
             if len(l) == 2 and l[1] == 'service':
@@ -157,7 +213,7 @@ class SourceFile:
             if len(l) > 1 and l[-1] == 'module':
                 wants_code.add('.'.join(l[:-1]))
         return DepsInfo(
-            provides_services=self.resource_module.provided_services,
+            provides_services=resource_module.provided_services,
             uses_modules=uses_modules,
             wants_services=wants_services,
             wants_code=wants_code,
@@ -165,23 +221,23 @@ class SourceFile:
             tests_code=set(),
             )
 
-    # Can we load this resource module? Can we use it's code_module_pair?
-    def deps_up_to_date(self, file_dict, code_providers):
-        if self.is_legacy_module:
-            return True
-        if not self.up_to_date:
-            return False
-        for module_name in self.deps.uses_modules:
-            if module_name.split('.')[0] in {'legacy_type', 'legacy_module', 'legacy_service'}:
-                continue
-            file = file_dict[module_name]
-            if not file.deps_up_to_date(file_dict, code_providers):
-                return False
-        for name in self.deps.wants_code:
-            provider = code_providers[name]
-            if not provider.deps_up_to_date(file_dict, code_providers):
-                return False
-        return True
+    # # Can we load this resource module? Can we use it's code_module_pair?
+    # def deps_up_to_date(self, file_dict, code_providers):
+    #     if self.is_legacy_module:
+    #         return True
+    #     if not self.up_to_date:
+    #         return False
+    #     for module_name in self.deps.uses_modules:
+    #         if module_name.split('.')[0] in {'legacy_type', 'legacy_module', 'legacy_service'}:
+    #             continue
+    #         file = file_dict[module_name]
+    #         if not file.deps_up_to_date(file_dict, code_providers):
+    #             return False
+    #     for name in self.deps.wants_code:
+    #         provider = code_providers[name]
+    #         if not provider.deps_up_to_date(file_dict, code_providers):
+    #             return False
+    #     return True
 
     def _make_module_res(self, import_list):
         return htypes.python_module.python_module(
@@ -238,7 +294,7 @@ class SourceFile:
         for file in file_dict.values():
             if file.is_fixtures or file.is_tests:
                 continue
-            if not file.deps_up_to_date(file_dict, code_providers):
+            if not file.up_to_date:
                 continue
             code_res = resource_registry[file.code_module_pair]
             resource_list.append(
@@ -253,10 +309,10 @@ class SourceFile:
         import_recorder, import_recorder_ref = self._prepare_import_recorder(process, resource_list)
 
         module_res = self._make_module_res([
-                htypes.python_module.import_rec('htypes.*', import_recorder_ref),
-                htypes.python_module.import_rec('services.*', import_recorder_ref),
-                htypes.python_module.import_rec('code.*', import_recorder_ref),
-                ])
+            htypes.python_module.import_rec('htypes.*', import_recorder_ref),
+            htypes.python_module.import_rec('services.*', import_recorder_ref),
+            htypes.python_module.import_rec('code.*', import_recorder_ref),
+            ])
         return (import_recorder, module_res)
 
     def _imports_to_deps(self, import_set, provides_services):
@@ -349,15 +405,29 @@ class SourceFile:
         return (deps_info, source_info)
 
     def init_deps(self, resource_registry, process, type_res_list, file_dict):
-        if self.is_legacy_module or self.deps:
+        if self.is_legacy_module or self.up_to_date:
             return
-        if self.up_to_date:
-            self.deps = self.get_resource_module_deps()
-        else:
+        if not self.deps:
             (import_recorder, import_discoverer, module_res) = self._discover_module_res(
                 resource_registry, type_res_list, process)
             self.deps, self.source_info = self.parse_source(
                 import_recorder, import_discoverer, module_res, process, fail_on_incomplete=False)
+        if self.dep_modules is None:
+            # Recheck service providers, deps for some may become ready.
+            self.dep_modules = self._collect_dep_modules(resource_registry, file_dict, self.deps)
+        if self.is_tests and self.tests_modules is None:
+            code_providers = code_provider_modules(file_dict)
+            service_providers = service_provider_modules(file_dict, want_up_to_date=False)
+            tests_modules = {
+                code_providers[name]
+                for name in self.deps.tests_code
+                }
+            for service_name in self.deps.tests_services:
+                try:
+                    tests_modules.add(service_providers[service_name])
+                except KeyError:
+                    return  #  Provider module deps are not yet ready?
+            self.tests_modules = tests_modules
 
     @staticmethod
     def fixture_service_provider_modules(file):
@@ -554,8 +624,9 @@ class SourceFile:
         if not self.source_info:
             import_recorder, collect_module_res = self.recorder_module_res(
                 resource_registry, type_res_list, process, file_dict)
-            self.deps, self.source_info = self.parse_source(
+            deps, self.source_info = self.parse_source(
                 import_recorder, None, collect_module_res, process, fail_on_incomplete=True)
+            assert deps == self.deps
 
         service_providers = service_provider_modules(file_dict)
         if fixtures_file:
@@ -685,14 +756,16 @@ class SourceFile:
             self._construct_object_impl(process, custom_types, resource_module, fixtures_file, module_res, name, object_info)
         self.call_attr_constructors(custom_types, resource_module, module_res)
 
-        self.set_resource_module(resource_registry, resource_module)
+        self._set_resource_module(resource_registry, resource_module)
 
         if self.is_tests:
             return  # Tests should not produce resources.
 
-        source_hash = hash_sha512(self.source_path.read_bytes())
+        dep_modules = self._collect_dep_modules(resource_registry, file_dict, self.deps)
+        module_deps_record = self._make_module_deps_record(dep_modules)
+        source_ref = mosaic.put(module_deps_record)
         _log.info("Write %s: %s", self.name, self.resources_path)
-        saver(resource_module, self.resources_path, source_hash, self._generator_ref.hash)
+        saver(resource_module, self.resources_path, ref_str(source_ref), ref_str(self._generator_ref))
 
 
 process_code_module_list = [
@@ -764,6 +837,10 @@ def service_provider_modules(file_dict, want_up_to_date=True, want_fixtures=Fals
         }
 
 
+def is_legacy_service(resource_registry, service_name):
+    return ('legacy_service', service_name) in resource_registry
+
+
 def service_resource(resource_registry, service_providers, service_name):
     try:
         provider = service_providers[service_name]
@@ -776,59 +853,6 @@ def service_resource(resource_registry, service_providers, service_name):
         return resource_registry[provider.module_name, f'{service_name}.service']
 
 
-def collect_deps(resource_registry, file_dict):
-    _log.info("Collect dependencies")
-
-    code_providers = code_provider_modules(file_dict)
-    service_providers = service_provider_modules(file_dict, want_up_to_date=False)
-
-    deps = defaultdict(set)  # module_name -> module_name list
-
-    for module_name, file in file_dict.items():
-        if file.is_legacy_module:
-            continue
-        for code_name in file.deps.wants_code:
-            try:
-                provider = code_providers[code_name]
-            except KeyError:
-                raise RuntimeError(f"Module {file.module_name!r} wants code module {code_name!r}, but no one provides it")
-            _log.info("%s wants code %r from: %s", module_name, code_name, provider.module_name)
-            deps[module_name].add(provider.module_name)
-        for service in file.deps.wants_services:
-            try:
-                provider = service_providers[service]
-            except KeyError:
-                continue  # Legacy service.
-            _log.info("%s wants service %r from: %s", module_name, service, provider.module_name)
-            deps[module_name].add(provider.module_name)
-        base_name = '.'.join(module_name.split('.')[:-1])
-        if base_name in file_dict and not file_dict[base_name].is_legacy_module:
-            deps[base_name].add(module_name)  # Add fixture deps.
-
-    # Invalidate resource modules having outdated deps.
-    while True:
-        have_removed_modules = False
-        for module_name, dep_set in deps.items():
-            file = file_dict[module_name]
-            if file.is_manually_generated or not file.up_to_date:
-                continue
-            have_unready_deps = False
-            for dep_module_name in dep_set:
-                if not file_dict[dep_module_name].up_to_date:
-                    _log.info("Resource module %s dep %s is not ready", module_name, dep_module_name)
-                    have_unready_deps = True
-            if have_unready_deps:
-                file.invalidate_resource_module(resource_registry)
-                have_removed_modules = True
-        if not have_removed_modules:
-            break
-
-    for module_name, dep_set in sorted(deps.items()):
-        _log.info("Dep: %s -> %s", module_name, ', '.join(dep_set))
-
-    return deps
-
-
 def collect_source_files(generator_ref, subdir_list, root_dirs, resource_registry):
     file_dict = {}
 
@@ -836,15 +860,15 @@ def collect_source_files(generator_ref, subdir_list, root_dirs, resource_registr
         for path in dir.rglob('*.dyn.py'):
             if 'test' in path.relative_to(root).parts:
                 continue
-            source_file = SourceFile(generator_ref, root, path)
-            source_file.init_resource_module(resource_registry)
-            file_dict[source_file.module_name] = source_file
+            file = SourceFile(generator_ref, root, path)
+            file_dict[file.module_name] = file
 
     for subdir in subdir_list:
         add_source_files(hyperapp_dir, hyperapp_dir / subdir)
     for root in root_dirs:
         add_source_files(root, root)
-
+    for file in file_dict.values():
+        file.init_resource_module(resource_registry, file_dict)
     return file_dict
 
 
@@ -853,33 +877,8 @@ def init_deps(resource_registry, process, type_res_list, file_dict):
         file.init_deps(resource_registry, process, type_res_list, file_dict)
 
 
-def ready_for_construction_files(resource_registry, file_dict, deps):
-    service_providers = service_provider_modules(file_dict, want_up_to_date=False)
-    for module_name, file in sorted(file_dict.items()):
-        if file.is_legacy_module:
-            continue
-        if file.up_to_date:
-            continue
-        not_ready_deps = [
-            d for d in deps[module_name]
-            if not file_dict[d].up_to_date
-            ]
-        if not_ready_deps:
-            _log.info("Deps are not ready for %s: %s", module_name, ", ".join(not_ready_deps))
-            continue
-        services_are_ready = True
-        for service_name in file.deps.wants_services:
-            service = service_resource(resource_registry, service_providers, service_name)
-            if service is None:
-                _log.info("Service provider deps are not ready for %s: %s", module_name, service_name)
-                services_are_ready = False
-        if not services_are_ready:
-            continue
-        yield file
-
-
-def resource_saver(resource_module, path, source_hash, generator_hash):
-    resource_module.save_as(path, source_hash, generator_hash)
+def resource_saver(resource_module, path, source_ref_str, generator_ref_str):
+    resource_module.save_as(path, source_ref_str, generator_ref_str)
 
 
 def update_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_timeout=10, process_name='update-resources-runner', saver=resource_saver):
@@ -909,9 +908,7 @@ def update_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_tim
         while True:
             _log.info("****** Round #%d  %s", round, '*'*50)
             init_deps(resource_registry, process, type_res_list, file_dict)
-            deps = collect_deps(resource_registry, file_dict)
-            ready_files = list(sorted(
-                ready_for_construction_files(resource_registry, file_dict, deps), key=attrgetter('module_name')))
+            ready_files = [f for f in file_dict.values() if f.ready_for_construction]
             ready_module_names = [f.module_name for f in ready_files]
             _log.info("Ready for construction: %s", ", ".join(ready_module_names))
             if module_list:

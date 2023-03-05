@@ -18,6 +18,16 @@ class ResourceRegistry:
     def __getitem__(self, name_pair):
         return self.resolve(name_pair)
 
+    def __contains__(self, name_pair):
+        if name_pair in self._name_pair_to_piece:
+            return True
+        module_name, var_name = name_pair
+        try:
+            module = self._module_registry[module_name]
+        except KeyError:
+            raise RuntimeError(f"Error resolving {module_name}:{var_name}: Unknown module {module_name!r}")
+        return var_name in module
+
     # def __iter__(self):
     #     for module_name, module in self._module_registry.items():
     #         for var_name in module:
@@ -76,7 +86,7 @@ class ResourceRegistry:
             module = self._module_registry[module_name]
         except KeyError:
             raise RuntimeError(f"Error resolving {module_name}:{var_name}: Unknown module {module_name!r}")
-        piece = module[var_name]
+        piece = module[var_name]  # KeyError propagates here.
         self._name_pair_to_piece[name_pair] = piece
         self._piece_to_name_pair[piece] = name_pair
         return piece

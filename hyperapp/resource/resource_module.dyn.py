@@ -12,8 +12,8 @@ log = logging.getLogger(__name__)
 
 
 AUTO_GEN_LINE = '# Automatically generated file. Do not edit.'
-SOURCE_HASH_PREFIX = '# Source hash: '
-GENERATOR_HASH_PREFIX = '# Generator hash: '
+SOURCE_REF_PREFIX = '# Source ref: '
+GENERATOR_REF_PREFIX = '# Generator ref: '
 
 
 Definition = namedtuple('Definition', 'type value')
@@ -64,20 +64,18 @@ class ResourceModule:
         return len(lines) >= 1 and lines[0] == AUTO_GEN_LINE
 
     @cached_property
-    def source_hash(self):
+    def source_ref_str(self):
         lines = self._path.read_text().splitlines()
-        if len(lines) >= 2 and lines[1].startswith(SOURCE_HASH_PREFIX):
-            hex_hash = lines[1][len(SOURCE_HASH_PREFIX):]
-            return bytes.fromhex(hex_hash)
+        if len(lines) >= 2 and lines[1].startswith(SOURCE_REF_PREFIX):
+            return lines[1][len(SOURCE_REF_PREFIX):]
         else:
             return None
 
     @cached_property
-    def generator_hash(self):
+    def generator_ref_str(self):
         lines = self._path.read_text().splitlines()
-        if len(lines) >= 3 and lines[2].startswith(GENERATOR_HASH_PREFIX):
-            hex_hash = lines[2][len(GENERATOR_HASH_PREFIX):]
-            return bytes.fromhex(hex_hash)
+        if len(lines) >= 3 and lines[2].startswith(GENERATOR_REF_PREFIX):
+            return lines[2][len(GENERATOR_REF_PREFIX):]
         else:
             return None
 
@@ -171,12 +169,12 @@ class ResourceModule:
             raise RuntimeError(f"Attempt to save ethemeral resource module: {self._name}")
         self.save_as(self._path)
 
-    def save_as(self, path, source_hash, generator_hash):
+    def save_as(self, path, source_ref_str, generator_ref_str):
         yaml_text = yaml.dump(self.as_dict, sort_keys=False)
         lines = [
             AUTO_GEN_LINE,
-            SOURCE_HASH_PREFIX + source_hash.hex(),
-            GENERATOR_HASH_PREFIX + generator_hash.hex(),
+            SOURCE_REF_PREFIX + source_ref_str,
+            GENERATOR_REF_PREFIX + generator_ref_str,
             '',
             yaml_text,
             ]

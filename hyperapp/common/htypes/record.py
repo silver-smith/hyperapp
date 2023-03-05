@@ -19,6 +19,16 @@ def ref_repr(ref):
         return '%s:%s' % (ref.hash_algorithm, hash_hex)
 
 
+def ref_str(ref):
+    if ref is None:
+        return 'none'
+    if ref.hash_algorithm == 'phony':
+        return '%s:%s' % (ref.hash_algorithm, ref.hash.decode())
+    else:
+        hash_hex = codecs.encode(ref.hash, 'hex').decode()
+        return '%s:%s' % (ref.hash_algorithm, hash_hex)
+
+
 # This is copied and adjusted namedtuple implementation from collections module.
 
 # We want record instances have '_t' member, excluded from _asdict() results.
