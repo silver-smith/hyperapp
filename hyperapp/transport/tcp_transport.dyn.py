@@ -25,9 +25,7 @@ log = logging.getLogger(__name__)
 
 class Server:
 
-    def __init__(self, selector, connection_factory):
-        self._selector = selector
-        self._connection_factory = connection_factory
+    def __init__(self):
         self._listen_socket = socket.socket()
         self._actual_address = None
         self._listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -35,11 +33,11 @@ class Server:
     def __repr__(self):
         return f"<sync tcp Server:{address_to_str(self._actual_address)}>"
 
-    def start(self, bind_address):
+    def start(self, bind_address=None):
         self._listen_socket.bind(bind_address or ('localhost', 0))
         self._listen_socket.listen(100)
         self._listen_socket.setblocking(False)
-        self._selector.register(self._listen_socket, selectors.EVENT_READ, self._on_accept)
+        _selector.register(self._listen_socket, selectors.EVENT_READ, self._on_accept)
         self._actual_address = self._listen_socket.getsockname()
         log.info("%s: Listening.", self)
 
@@ -51,14 +49,13 @@ class Server:
         sock, address = listen_sock.accept()
         log.info("%s: Accepted connection from %s", self, address_to_str(address))
         sock.setblocking(False)
-        connection = self._connection_factory(address, sock)
-        self._selector.register(sock, selectors.EVENT_READ, connection.on_read)
+        connection = Connection(address, sock)
+        _selector.register(sock, selectors.EVENT_READ, connection.on_read)
 
 
 class Connection:
 
-    def __init__(self, selector, address, sock):
-        self._selector = selector
+    def __init__(self, address, sock):
         self._address = address
         self._socket = sock
         self._buffer = b''
@@ -96,7 +93,7 @@ class Connection:
                 self._buffer += data
                 self._process_buffer()
                 return
-        self._selector.unregister(sock)
+        _selector.unregister(sock)
         self._socket = None
 
     def _process_buffer(self):
@@ -120,18 +117,18 @@ class Connection:
 class Route:
 
     @classmethod
-    def from_piece(cls, piece, client_factory):
-        return cls((piece.host, piece.port), client_factory)
+    def from_piece(cls, piece):
+        return cls((piece.host, piece.port), is_local=False)
 
-    def __init__(self, address, client_factory=None):
-        self._client_factory = client_factory  # None for routes produced by this process.
+    def __init__(self, address, is_local):
+        self._is_local = is_local  # True for routes produced by this process.
         self._address = address
 
     def __repr__(self):
-        if self._client_factory:
-            suffix = ''
-        else:
+        if self._is_local:
             suffix = '/local'
+        else:
+            suffix = ''
         return f"<sync tcp Route:{address_to_str(self._address)}{suffix}>"
 
     @property
@@ -141,12 +138,12 @@ class Route:
 
     @property
     def available(self):
-        return self._client_factory is not None
+        return not self._is_local
 
     def send(self, parcel):
-        if not self._client_factory:
+        if self._is_local:
             raise RuntimeError("Can not send parcel using TCP to myself")
-        client = self._client_factory(self._address)
+        client = client_factory(self._address)
         client.send(parcel)
 
 
@@ -169,55 +166,60 @@ class IncomingConnectionRoute:
         self._connection.send(parcel)
 
 
-def selector_thread_main(selector, address_to_client):
+def selector_thread_main():
     log.info("TCP selector thread is started.")
     try:
         while not stop_signal.is_set():
-            event_list = selector.select(timeout=0.5)
+            event_list = _selector.select(timeout=0.5)
             for key, mask in event_list:
                 handler = key.data
                 handler(key.fileobj, mask)
-            for address, client in address_to_client.items():
+            for address, client in _address_to_client.items():
                 if client.closed:
                     log.debug("Remove client %s from cache", client)
-                    del address_to_client[address]
+                    del _address_to_client[address]
     except Exception as x:
         log.exception("TCP selector thread is failed:")
         failed(f"TCP selector thread is failed: {x}", x)
     log.info("TCP selector thread is finished.")
 
 
+def client_factory(address):
+    connection = _address_to_client.get(address)
+    if not connection:
+        sock = socket.socket()
+        sock.connect(address)
+        sock.setblocking(False)
+        connection = Connection(address, sock)
+        _address_to_client[address] = connection
+        _selector.register(sock, selectors.EVENT_READ, connection.on_read)
+    return connection
+
+
+def stop():
+    log.info("Stop TCP selector thread.")
+    _selector_thread.join()
+    log.info("TCP selector thread is stopped.")
+
+
 @mark.service
 def tcp_server_factory():
-    selector = selectors.DefaultSelector()
-    address_to_client = {}  # (host, port) -> Connection
-    selector_thread = threading.Thread(target=selector_thread_main, args=[selector, address_to_client])
-
-    def stop():
-        log.info("Stop TCP selector thread.")
-        selector_thread.join()
-        log.info("TCP selector thread is stopped.")
-
-    def connection_factory(address, sock):
-        sock.setblocking(False)
-        return Connection(selector, address, sock)
-
-    def client_factory(address):
-        connection = address_to_client.get(address)
-        if not connection:
-            sock = socket.socket()
-            sock.connect(address)
-            connection = connection_factory(address, sock)
-            address_to_client[address] = connection
-            selector.register(sock, selectors.EVENT_READ, connection.on_read)
-        return connection
-
     def server_factory(bind_address=None):
-        server = Server(selector, connection_factory)
+        server = Server()
         server.start(bind_address)
         return server
 
-    route_registry.register_actor(htypes.tcp_transport.route, Route.from_piece, client_factory)
-    selector_thread.start()
-    on_stop.append(stop)
     return server_factory
+
+
+@route_registry.actor(htypes.tcp_transport.route)
+def route_from_piece(piece):
+    return Route.from_piece(piece)
+
+
+_selector = selectors.DefaultSelector()
+_address_to_client = {}  # (host, port) -> Connection
+_selector_thread = threading.Thread(target=selector_thread_main)
+
+_selector_thread.start()
+on_stop.append(stop)
