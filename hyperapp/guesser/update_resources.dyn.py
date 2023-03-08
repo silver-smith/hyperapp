@@ -40,7 +40,7 @@ _log = logging.getLogger(__name__)
 
 
 SourceInfo = namedtuple('SourceInfo', 'import_name attr_list service_to_attr')
-DepsInfo = namedtuple('DepsInfo', 'provides_services uses_modules wants_services wants_code tests_services tests_code')
+DepsInfo = namedtuple('DepsInfo', 'uses_modules wants_services wants_code tests_services tests_code')
 ObjectInfo = namedtuple('ObjectInfo', 'dir get_result_t')
 
 
@@ -67,6 +67,7 @@ class SourceFile:
         self.resources_path = source_path.with_name(self.name + '.resources.yaml')
         self.deps = None  # None if up_to_date.
         self.dep_modules = None  # None if up_to_date.
+        self.provides_services = None
         self.tests_modules = None  # Only for tests.
         self.source_info = None
         self.resource_module = None
@@ -120,6 +121,7 @@ class SourceFile:
         resource_module = resource_module_factory(resource_registry, self.module_name, self.resources_path)
         self.is_manually_generated = not resource_module.is_auto_generated
         deps = self._get_resource_module_deps(resource_module)
+        provides_services = resource_module.provided_services
         if self.is_manually_generated:
             _log.info("%s: manually generated", self.module_name)
         else:
@@ -130,6 +132,7 @@ class SourceFile:
                 return
             self.dep_modules = dep_modules
         self.deps = deps
+        self.provides_services = provides_services
         self._set_resource_module(resource_registry, resource_module)
 
     def _check_up_to_date(self, resource_module, dep_modules):
@@ -213,7 +216,6 @@ class SourceFile:
             if len(l) > 1 and l[-1] == 'module':
                 wants_code.add('.'.join(l[:-1]))
         return DepsInfo(
-            provides_services=resource_module.provided_services,
             uses_modules=uses_modules,
             wants_services=wants_services,
             wants_code=wants_code,
@@ -301,7 +303,9 @@ class SourceFile:
                 htypes.import_recorder.resource(('code', file.name), mosaic.put(code_res)))
             if file.is_legacy_module:
                 continue
-            for service in file.deps.provides_services:
+            if file.provides_services is None:
+                continue
+            for service in file.provides_services:
                 service_res = resource_registry[file.module_name, f'{service}.service']
                 resource_list.append(
                     htypes.import_recorder.resource(('services', service), mosaic.put(service_res)))
@@ -315,7 +319,7 @@ class SourceFile:
             ])
         return (import_recorder, module_res)
 
-    def _imports_to_deps(self, import_set, provides_services):
+    def _imports_to_deps(self, import_set):
         wants_services = set()
         wants_code = set()
         tests_services = set()
@@ -351,7 +355,6 @@ class SourceFile:
         _log.info("Discovered import deps: tests_code: %s", tests_code)
 
         return DepsInfo(
-            provides_services=provides_services,
             uses_modules=set(),
             wants_services=wants_services,
             wants_code=wants_code,
@@ -384,14 +387,12 @@ class SourceFile:
             _log.info("Discovered import list: %s", discovered_imports)
             import_set |= set(discovered_imports)
 
-        provides_services = set()
         if object_attrs:
             service_to_attr = {}
             for attr in attr_list:
                 for ctr_ref in attr.constructors:
                     ctr = web.summon(ctr_ref)
                     if isinstance(ctr, htypes.attr_constructors.service):
-                        provides_services.add(ctr.name)
                         service_to_attr[ctr.name] = attr
             source_info = SourceInfo(
                 import_name=object_attrs.object_module,
@@ -401,20 +402,31 @@ class SourceFile:
         else:
             source_info = None
 
-        deps_info = self._imports_to_deps(import_set, provides_services)
+        deps_info = self._imports_to_deps(import_set)
         return (deps_info, source_info)
 
     def init_deps(self, resource_registry, process, type_res_list, file_dict):
         if self.is_legacy_module or self.up_to_date:
             return
         if not self.deps:
-            (import_recorder, import_discoverer, module_res) = self._discover_module_res(
+            import_recorder, import_discoverer, module_res = self._discover_module_res(
                 resource_registry, type_res_list, process)
             self.deps, self.source_info = self.parse_source(
                 import_recorder, import_discoverer, module_res, process, fail_on_incomplete=False)
         if self.dep_modules is None:
             # Recheck service providers, deps for some may become ready.
             self.dep_modules = self._collect_dep_modules(resource_registry, file_dict, self.deps)
+        if (self.provides_services is None
+            and self.dep_modules is not None
+            and all(f.up_to_date for f in self.dep_modules)
+            ):
+            if not self.source_info:
+                import_recorder, module_res = self.recorder_module_res(
+                    resource_registry, type_res_list, process, file_dict)
+                deps, self.source_info = self.parse_source(
+                    import_recorder, None, module_res, process, fail_on_incomplete=True)
+                assert deps == self.deps
+            self.provides_services = set(self.source_info.service_to_attr)
         if self.is_tests and self.tests_modules is None:
             code_providers = code_provider_modules(file_dict)
             service_providers = service_provider_modules(file_dict, want_up_to_date=False)
@@ -433,7 +445,7 @@ class SourceFile:
     def fixture_service_provider_modules(file):
         return {
             service: file
-            for service in file.deps.provides_services
+            for service in file.provides_services
             }
 
     def _make_import_list(self, resource_registry, file_dict, service_providers):
@@ -829,11 +841,11 @@ def service_provider_modules(file_dict, want_up_to_date=True, want_fixtures=Fals
         service: file
         for module_name, file in file_dict.items()
         if (not file.is_legacy_module
-            and file.deps
+            and file.provides_services is not None
             and (not want_up_to_date or file.up_to_date)
             and (want_fixtures or not file.is_fixtures)
             )
-        for service in file.deps.provides_services
+        for service in file.provides_services
         }
 
 

@@ -46,6 +46,9 @@ class ResourceModule:
         self._loaded_associations = associations
         self._load_from_file = load_from_file and path is not None
 
+    def __repr__(self):
+        return f"<ResourceModule {self._name}>"
+
     def __contains__(self, var_name):
         return var_name in self._definition_dict
 
