@@ -1,0 +1,34 @@
+# Automatically generated file. Do not edit.
+# Source ref: sha512:013d8aa86044f584d2208e922f28967d51b151d50a984366bc76f8d330e18c35e9256dd4be7f737ec62b6baf4d57e4a26f23bf00ec9523ba5f742662c670ccf9
+# Generator ref: sha512:07b4f79e45e7542b7b0652ad763d7e5d1d5ca897ced4ff328dd4530c6c208773d76ec39cb2e77aa68f4effc1347548cad89fe51c53f00e60ea8322add70d5145
+
+import:
+- common.mark:mark.service
+- legacy_service:failed
+- legacy_service:mosaic
+- legacy_service:on_stop
+- legacy_service:route_table
+- legacy_service:unbundler
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  endpoint.module:
+    _type: legacy_type.python_module:python_module
+    module_name: endpoint
+    file_name: endpoint.dyn.py
+    import_list:
+      services.failed: legacy_service:failed
+      services.mark: common.mark:mark.service
+      services.mosaic: legacy_service:mosaic
+      services.on_stop: legacy_service:on_stop
+      services.route_table: legacy_service:route_table
+      services.unbundler: legacy_service:unbundler
+  endpoint_registry:
+    _type: legacy_type.attribute:attribute
+    object: endpoint.module
+    attr_name: endpoint_registry
+  endpoint_registry.service:
+    _type: legacy_type.call:call
+    function: endpoint_registry

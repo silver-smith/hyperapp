@@ -1,0 +1,30 @@
+# Automatically generated file. Do not edit.
+# Source ref: sha512:fe0305c5273ed8b48e55fae92ca507a21dbf9c199b41bdbead8821e7ae6d8cebc08ce9169f144c2ef41ad3c1f8bc16d0a2b59f6fbbb7cd620af336cab8392215
+# Generator ref: sha512:07b4f79e45e7542b7b0652ad763d7e5d1d5ca897ced4ff328dd4530c6c208773d76ec39cb2e77aa68f4effc1347548cad89fe51c53f00e60ea8322add70d5145
+
+import:
+- common.dyn_code_registry:dyn_code_registry.module
+- common.mark:mark.service
+- legacy_service:types
+- legacy_service:web
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  route_registry:
+    _type: legacy_type.attribute:attribute
+    object: route_registry.module
+    attr_name: route_registry
+  route_registry.module:
+    _type: legacy_type.python_module:python_module
+    module_name: route_registry
+    file_name: route_registry.dyn.py
+    import_list:
+      code.dyn_code_registry: common.dyn_code_registry:dyn_code_registry.module
+      services.mark: common.mark:mark.service
+      services.types: legacy_service:types
+      services.web: legacy_service:web
+  route_registry.service:
+    _type: legacy_type.call:call
+    function: route_registry
