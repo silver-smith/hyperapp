@@ -282,8 +282,7 @@ class SourceFile:
         return (import_recorder, import_discoverer, module_res)
 
     # Module resource with import recorder for htypes.
-    def recorder_module_res(self, resource_registry, type_res_list, process, file_dict):
-        service_providers = service_provider_modules(file_dict)
+    def recorder_module_res(self, resource_registry, type_res_list, process, file_dict, service_providers):
         import_recorder, import_recorder_ref = self._prepare_import_recorder(process, type_res_list)
         module_res = self._make_module_res([
             *self._make_import_list(resource_registry, file_dict, service_providers),
@@ -388,20 +387,20 @@ class SourceFile:
         if self.dep_modules is None:
             # Recheck service providers, deps for some may become ready.
             self.dep_modules = self._collect_dep_modules(resource_registry, file_dict, self.deps)
+        service_providers = service_provider_modules(file_dict)
         if (self.provides_services is None
             and self.dep_modules is not None
             and all(f.up_to_date for f in self.dep_modules if not f.is_tests)
             ):
             if not self.source_info:
                 import_recorder, module_res = self.recorder_module_res(
-                    resource_registry, type_res_list, process, file_dict)
+                    resource_registry, type_res_list, process, file_dict, service_providers)
                 invalid_deps, self.source_info = self.parse_source(
                     import_recorder, None, module_res, process, fail_on_incomplete=True)
                 # deps are invalid due to recorder_module_res usage.
             self.provides_services = set(self.source_info.service_to_attr)
         if self.is_tests and self.tests_modules is None:
             code_providers = code_provider_modules(file_dict)
-            service_providers = service_provider_modules(file_dict, want_up_to_date=False)
             tests_modules = {
                 code_providers[name]
                 for name in self.deps.tests_code
@@ -414,7 +413,7 @@ class SourceFile:
             self.tests_modules = tests_modules
 
     @staticmethod
-    def fixture_service_provider_modules(file):
+    def module_service_provider_modules(file):
         return {
             service: file
             for service in file.provides_services
@@ -444,20 +443,21 @@ class SourceFile:
     def _make_tested_import_list(self, resource_registry, type_res_list, process, file_dict):
         code_providers = code_provider_modules(file_dict)
         service_providers = service_provider_modules(file_dict, want_up_to_date=False)
+        fixed_service_providers = {**service_providers, **self.module_service_provider_modules(self)}
 
         name_to_recorder = {}
         import_list = []
         for name in self.deps.tests_code:
             provider = code_providers[name]
             import_recorder, module_res = provider.recorder_module_res(
-                resource_registry, type_res_list, process, file_dict)
+                resource_registry, type_res_list, process, file_dict, fixed_service_providers)
             import_list.append(
                 htypes.python_module.import_rec(f'tested.code.{name}', mosaic.put(module_res)))
             name_to_recorder[provider.module_name] = import_recorder
         for service_name in self.deps.tests_services:
             provider = service_providers[service_name]
             import_recorder, module_res = provider.recorder_module_res(
-                resource_registry, type_res_list, process, file_dict)
+                resource_registry, type_res_list, process, file_dict, fixed_service_providers)
             service_attr = provider.source_info.service_to_attr[service_name]
             attribute = htypes.attribute.attribute(
                 object=mosaic.put(module_res),
@@ -605,15 +605,16 @@ class SourceFile:
     def _visit_module(self, process, resource_registry, custom_types, type_res_list, tested_module_imports, file_dict, resource_module, fixtures_file):
         _log.info("%s: Discover type imports", self.module_name)
 
+        service_providers = service_provider_modules(file_dict)
+        if fixtures_file:
+            service_providers.update(self.module_service_provider_modules(fixtures_file))
+
         if not self.source_info:
             import_recorder, collect_module_res = self.recorder_module_res(
-                resource_registry, type_res_list, process, file_dict)
+                resource_registry, type_res_list, process, file_dict, service_providers)
             invalid_deps, self.source_info = self.parse_source(
                 import_recorder, None, collect_module_res, process, fail_on_incomplete=True)
 
-        service_providers = service_provider_modules(file_dict)
-        if fixtures_file:
-            service_providers.update(self.fixture_service_provider_modules(fixtures_file))
         import_list = self._make_import_list(resource_registry, file_dict, service_providers)
 
         import_recorder, import_recorder_ref = self._prepare_import_recorder(process, type_res_list)
@@ -807,14 +808,15 @@ def code_provider_modules(file_dict):
         }
 
 
-def service_provider_modules(file_dict, want_up_to_date=True, want_fixtures=False):
+def service_provider_modules(file_dict, want_up_to_date=True):
     return {
         service: file
         for module_name, file in file_dict.items()
         if (not file.is_legacy_module
             and file.provides_services is not None
             and (not want_up_to_date or file.up_to_date)
-            and (want_fixtures or not file.is_fixtures)
+            and not file.is_fixtures
+            and not file.is_tests
             )
         for service in file.provides_services
         }
