@@ -69,6 +69,7 @@ class SourceFile:
         self.dep_modules = None  # None if up_to_date.
         self.provides_services = None
         self.tests_modules = None  # Only for tests.
+        self._was_run = False  # Only for tests.
         self.source_info = None
         self.resource_module = None
         self.is_manually_generated = None
@@ -83,7 +84,9 @@ class SourceFile:
         if self.is_tests:
             if self.tests_modules is None:
                 return False
-            return all(f.up_to_date for f in self.tests_modules)
+            if all(f.up_to_date for f in self.tests_modules):
+                return True
+            return self._was_run
         return self.resource_module is not None
 
     @cached_property
@@ -388,12 +391,12 @@ class SourceFile:
         if self.dep_modules is None:
             # Recheck service providers, deps for some may become ready.
             self.dep_modules = self._collect_dep_modules(resource_registry, file_dict, self.deps)
-        service_providers = service_provider_modules(file_dict)
         if (self.provides_services is None
             and self.dep_modules is not None
             and all(f.up_to_date for f in self.dep_modules if not f.is_tests)
             ):
             _log.info("%s: Collect provides_services", self.module_name)
+            service_providers = service_provider_modules(file_dict)
             if not self.source_info:
                 import_recorder, module_res = self.recorder_module_res(
                     resource_registry, type_res_list, process, file_dict, service_providers)
@@ -403,6 +406,7 @@ class SourceFile:
             self.provides_services = set(self.source_info.service_to_attr)
         if self.is_tests and self.tests_modules is None:
             code_providers = code_provider_modules(file_dict)
+            service_providers = service_provider_modules(file_dict, want_up_to_date=False)
             tests_modules = {
                 code_providers[name]
                 for name in self.deps.tests_code
@@ -745,6 +749,7 @@ class SourceFile:
         used_types |= tested_module_imports.get(self.module_name, set())
 
         if self.is_tests:
+            self._was_run = True
             return  # Tests should not produce resources.
 
         service_providers = service_provider_modules(file_dict)
