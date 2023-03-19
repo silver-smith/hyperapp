@@ -1,0 +1,2 @@
+sample_error = exception:
+  message: string

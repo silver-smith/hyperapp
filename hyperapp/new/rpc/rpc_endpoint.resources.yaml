@@ -1,6 +1,6 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:013d8aa86044f584d2208e922f28967d51b151d50a984366bc76f8d330e18c35e9256dd4be7f737ec62b6baf4d57e4a26f23bf00ec9523ba5f742662c670ccf9
-# Generator ref: sha512:07b4f79e45e7542b7b0652ad763d7e5d1d5ca897ced4ff328dd4530c6c208773d76ec39cb2e77aa68f4effc1347548cad89fe51c53f00e60ea8322add70d5145
+# Source ref: sha512:8841ba02d50469ed660ed1febdf27e043f8a1cb672d8ede4b7a1baa127097474a2f05962f8e55ff5e72bb25050abf9e7739ee77670321cdd662381b0917ce1cd
+# Generator ref: sha512:a4c50296b661e2892ad914d1f3cede9a4e00d526d1bd9a58d76151a8783265cc05ba71476ece57f6a8dd261b0706b350b9275b00cddfc648612165d3588f6e47
 
 import:
 - common.mark:mark.service
@@ -14,8 +14,11 @@ import:
 - legacy_type.call:call
 - legacy_type.python_module:python_module
 - legacy_type.rpc:error_response
+- legacy_type.rpc:param
 - legacy_type.rpc:request
 - legacy_type.rpc:response
+- legacy_type.rpc:server_error
+- legacy_type.rpc_endpoint_tests:sample_error
 - new.transport.transport:transport.service
 associations: []
 definitions:
@@ -25,8 +28,11 @@ definitions:
     file_name: rpc_endpoint.dyn.py
     import_list:
       htypes.rpc.error_response: legacy_type.rpc:error_response
+      htypes.rpc.param: legacy_type.rpc:param
       htypes.rpc.request: legacy_type.rpc:request
       htypes.rpc.response: legacy_type.rpc:response
+      htypes.rpc.server_error: legacy_type.rpc:server_error
+      htypes.rpc_endpoint_tests.sample_error: legacy_type.rpc_endpoint_tests:sample_error
       services.mark: common.mark:mark.service
       services.mosaic: legacy_service:mosaic
       services.on_stop: legacy_service:on_stop

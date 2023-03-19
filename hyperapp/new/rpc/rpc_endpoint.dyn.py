@@ -100,13 +100,10 @@ class RpcEndpoint:
                 p.name: mosaic.resolve_ref(p.value).value
                 for p in request.params
                 }
-            rpc_request = RpcRequest(transport_request.receiver_identity, sender)
+            rpc_request = RpcRequest(receiver_identity, sender)
             kw = params
             if 'request' in inspect.signature(servant_fn).parameters:
-                kw = {
-                    'request': rpc_request,
-                    **kw,
-                    }
+                kw = {**kw, 'request': rpc_request}
             log.info("Call rpc servant: %s (%s)", servant_fn, kw)
             result = servant_fn(**kw)
             log.info("Rpc servant %s call result: %s", servant_fn, result)
