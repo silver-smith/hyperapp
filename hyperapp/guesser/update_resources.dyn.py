@@ -97,7 +97,7 @@ class SourceFile:
 
     @cached_property
     def is_tests(self):
-        return self.name.endswith('.tests')
+        return self.name.split('.')[-1] == 'tests'
 
     @cached_property
     def code_module_pair(self):
@@ -380,6 +380,7 @@ class SourceFile:
         if self.is_legacy_module or self.up_to_date:
             return
         if not self.deps:
+            _log.info("%s: Collect deps", self.module_name)
             import_recorder, import_discoverer, module_res = self._discover_module_res(
                 resource_registry, type_res_list, process)
             self.deps, self.source_info = self.parse_source(
@@ -392,6 +393,7 @@ class SourceFile:
             and self.dep_modules is not None
             and all(f.up_to_date for f in self.dep_modules if not f.is_tests)
             ):
+            _log.info("%s: Collect provides_services", self.module_name)
             if not self.source_info:
                 import_recorder, module_res = self.recorder_module_res(
                     resource_registry, type_res_list, process, file_dict, service_providers)
@@ -440,24 +442,37 @@ class SourceFile:
         _log.info("Import list: %s", import_list)
         return import_list
 
-    def _make_tested_import_list(self, resource_registry, type_res_list, process, file_dict):
+    # def make_tested_module_res(self, resource_registry, type_res_list, process, file_dict, service_providers):
+    #     fixtures_file = file_dict.get(f'{self.module_name}.fixtures')
+    #     if fixtures_file:
+    #         fixed_service_providers = {
+    #             **service_providers,
+    #             **self.module_service_provider_modules(fixtures_file),
+    #             }
+    #     else:
+    #         fixed_service_providers = service_providers
+    #     import_recorder, module_res = self.recorder_module_res(
+    #         resource_registry, type_res_list, process, file_dict, fixed_service_providers)
+    #     return (import_recorder, module_res)
+
+    def _make_tested_import_list(self, resource_registry, type_res_list, process, file_dict, service_providers):
         code_providers = code_provider_modules(file_dict)
-        service_providers = service_provider_modules(file_dict, want_up_to_date=False)
-        fixed_service_providers = {**service_providers, **self.module_service_provider_modules(self)}
+        unready_service_providers = service_provider_modules(file_dict, want_up_to_date=False)
+        # fixed_service_providers = {**service_providers, **self.module_service_provider_modules(self)}
 
         name_to_recorder = {}
         import_list = []
         for name in self.deps.tests_code:
             provider = code_providers[name]
             import_recorder, module_res = provider.recorder_module_res(
-                resource_registry, type_res_list, process, file_dict, fixed_service_providers)
+                resource_registry, type_res_list, process, file_dict, service_providers)
             import_list.append(
                 htypes.python_module.import_rec(f'tested.code.{name}', mosaic.put(module_res)))
             name_to_recorder[provider.module_name] = import_recorder
         for service_name in self.deps.tests_services:
-            provider = service_providers[service_name]
+            provider = unready_service_providers[service_name]
             import_recorder, module_res = provider.recorder_module_res(
-                resource_registry, type_res_list, process, file_dict, fixed_service_providers)
+                resource_registry, type_res_list, process, file_dict, service_providers)
             service_attr = provider.source_info.service_to_attr[service_name]
             attribute = htypes.attribute.attribute(
                 object=mosaic.put(module_res),
@@ -619,7 +634,7 @@ class SourceFile:
 
         import_recorder, import_recorder_ref = self._prepare_import_recorder(process, type_res_list)
         name_to_recorder, tested_import_list = self._make_tested_import_list(
-            resource_registry, type_res_list, process, file_dict)
+            resource_registry, type_res_list, process, file_dict, service_providers)
 
         recorder_import_list = [
             *import_list,
@@ -713,7 +728,7 @@ class SourceFile:
             )
         resource_module.add_association(pyobj_association)
 
-    def call_attr_constructors(self, custom_types, resource_module, module_res):
+    def _call_attr_constructors(self, custom_types, resource_module, module_res):
         for attr in self.source_info.attr_list:
             for ctr_ref in attr.constructors:
                 constructor_creg.invite(ctr_ref, custom_types, resource_module, module_res, attr)
@@ -722,10 +737,15 @@ class SourceFile:
         resource_module = resource_module_factory(resource_registry, self.name)
         fixtures_file = file_dict.get(f'{self.module_name}.fixtures')
 
+        self._set_resource_module(resource_registry, resource_module)
+
         used_types, object_info_dict = self._visit_module(
             process, resource_registry, custom_types, type_res_list, tested_module_imports, file_dict, resource_module, fixtures_file)
         # Add types discovered by tests.
         used_types |= tested_module_imports.get(self.module_name, set())
+
+        if self.is_tests:
+            return  # Tests should not produce resources.
 
         service_providers = service_provider_modules(file_dict)
         import_list = [
@@ -738,12 +758,7 @@ class SourceFile:
 
         for name, object_info in object_info_dict.items():
             self._construct_object_impl(process, custom_types, resource_module, fixtures_file, module_res, name, object_info)
-        self.call_attr_constructors(custom_types, resource_module, module_res)
-
-        self._set_resource_module(resource_registry, resource_module)
-
-        if self.is_tests:
-            return  # Tests should not produce resources.
+        self._call_attr_constructors(custom_types, resource_module, module_res)
 
         dep_modules = self._collect_dep_modules(resource_registry, file_dict, self.deps)
         module_deps_record = self._make_module_deps_record(dep_modules)
