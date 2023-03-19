@@ -1,6 +1,5 @@
 from .services import (
     generate_rsa_identity,
-    mark,
     mosaic,
     )
 from .tested.services import rpc_call_factory
@@ -8,19 +7,8 @@ from .tested.services import rpc_call_factory
 
 class PhonyRpcEndpoint:
 
-    def wait_for_response(request_id, timeout_sec):
+    def wait_for_response(self, request_id, timeout_sec):
         return 'phony rpc response'
-
-
-class PhonyTransport:
-
-    def send(receiver, sender_identity, ref_list):
-        pass
-
-
-@mark.service
-def transport():
-    return PhonyTransport()
 
 
 def test_rpc_call_factory():
