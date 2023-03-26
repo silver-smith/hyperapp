@@ -205,7 +205,8 @@ class SourceFile:
         return dep_list
 
     def _make_module_deps_record(self, dep_modules):
-        return htypes.update_resources.module_deps([f.source_dep_record for f in dep_modules])
+        deps = [f.source_dep_record for f in dep_modules]
+        return htypes.update_resources.module_deps([self.source_dep_record, *deps])
 
     def _get_resource_module_deps(self, resource_module):
         uses_modules = set()
