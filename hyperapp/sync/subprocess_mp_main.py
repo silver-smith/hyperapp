@@ -40,7 +40,7 @@ def subprocess_main(process_name, connection, module_dir_list, code_module_list,
 @contextmanager
 def logging_inited(process_name):
     format = '%(asctime)s.%(msecs)03d %(name)-46s %(lineno)4d %(threadName)10s %(levelname)-8s  %(message)s'
-    datefmt = '%M:%S'
+    datefmt = '%H:%M:%S'
     handler = logging.FileHandler(f'/tmp/{process_name}.log', mode='w')
     handler.setFormatter(logging.Formatter(format, datefmt))
 
