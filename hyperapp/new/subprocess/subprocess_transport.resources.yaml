@@ -1,0 +1,42 @@
+# Automatically generated file. Do not edit.
+# Source ref: sha512:412ade934988e8f635113dcf0d36426944012519518f0d57532f6aceb382305d5a0c33754a90493315be42aca3558075e1abd8e36c9d528b9a0bb98d1beddcb5
+# Generator ref: sha512:54efce32d837a04f78c890e1d953dd22399590870e329c2c511441939d51580c8bcb4e219da13a3a02f5615129b8bb768e68d64a1adefc3875f259716a0fe628
+
+import:
+- common.mark:mark.service
+- legacy_service:bundler
+- legacy_service:failed
+- legacy_service:mosaic
+- legacy_service:on_stop
+- legacy_service:parcel_registry
+- legacy_service:route_table
+- legacy_service:stop_signal
+- legacy_service:unbundler
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.python_module:python_module
+- new.transport.transport:transport.service
+associations: []
+definitions:
+  add_server_connection:
+    _type: legacy_type.attribute:attribute
+    object: subprocess_transport.module
+    attr_name: add_server_connection
+  add_server_connection.service:
+    _type: legacy_type.call:call
+    function: add_server_connection
+  subprocess_transport.module:
+    _type: legacy_type.python_module:python_module
+    module_name: subprocess_transport
+    file_name: subprocess_transport.dyn.py
+    import_list:
+      services.bundler: legacy_service:bundler
+      services.failed: legacy_service:failed
+      services.mark: common.mark:mark.service
+      services.mosaic: legacy_service:mosaic
+      services.on_stop: legacy_service:on_stop
+      services.parcel_registry: legacy_service:parcel_registry
+      services.route_table: legacy_service:route_table
+      services.stop_signal: legacy_service:stop_signal
+      services.transport: new.transport.transport:transport.service
+      services.unbundler: legacy_service:unbundler
