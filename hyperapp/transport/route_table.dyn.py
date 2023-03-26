@@ -9,10 +9,10 @@ log = logging.getLogger(__name__)
 class RouteTable:
 
     def __init__(self):
-        self._peer2route = defaultdict(list)  # ref -> route list
+        self._peer2route = defaultdict(set)  # ref -> route set
 
     def add_route(self, peer_ref, route):
-        self._peer2route[peer_ref].append(route)
+        self._peer2route[peer_ref].add(route)
 
     def peer_route_list(self, peer_ref):
         return self._peer2route[peer_ref]
