@@ -1,14 +1,14 @@
 # Automatically generated file. Do not edit.
-# Source hash: a07d8b34d7ad4346b787d52a06a81a83061159593e842700d4d0230e0e800dd57148afa36cf89bfd4d31621d6e01f6055e6066793db5ce964aee02e6c8098aad
-# Generator hash: 475ad5c5b387be8be53f8b0db04ac1e8b24162a180fe9336320b09c55104a3ef287e0e771b5c38959112482f25f51e1785ecb8ccade920240bc38b14538d4a45
+# Source ref: sha512:997140c18477ba3f4903a74aa3404bfa8d2cad76471606f47793a5c3b4ad87ad2806275d512393ae3f94759e6ac237613d98ffc880faef2724996d216dcc023b
+# Generator ref: sha512:a4c50296b661e2892ad914d1f3cede9a4e00d526d1bd9a58d76151a8783265cc05ba71476ece57f6a8dd261b0706b350b9275b00cddfc648612165d3588f6e47
 
 import:
-- legacy_service:endpoint_registry
 - legacy_service:generate_rsa_identity
 - legacy_service:peer_registry
-- legacy_service:rpc_call_factory
 - legacy_service:rpc_endpoint_factory
 - legacy_type.python_module:python_module
+- new.rpc.rpc_call:rpc_call_factory.service
+- new.transport.endpoint:endpoint_registry.service
 associations: []
 definitions:
   tcp_tests_call_back.module:
@@ -16,8 +16,8 @@ definitions:
     module_name: tcp_tests_call_back
     file_name: tcp_tests_call_back.dyn.py
     import_list:
-      services.endpoint_registry: legacy_service:endpoint_registry
+      services.endpoint_registry: new.transport.endpoint:endpoint_registry.service
       services.generate_rsa_identity: legacy_service:generate_rsa_identity
       services.peer_registry: legacy_service:peer_registry
-      services.rpc_call_factory: legacy_service:rpc_call_factory
+      services.rpc_call_factory: new.rpc.rpc_call:rpc_call_factory.service
       services.rpc_endpoint_factory: legacy_service:rpc_endpoint_factory
