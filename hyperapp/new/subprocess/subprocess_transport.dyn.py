@@ -88,7 +88,7 @@ def _process_ready_connection(connection):
 
 def _server_thread_main():
     my_name = "Subprocess transport server thread"
-    log.info("%s is started.", my_name)
+    log.info("%s is started", my_name)
     try:
         while not stop_signal.is_set():
             all_connections = [_signal_connection_out, *_server_connections]
@@ -101,14 +101,14 @@ def _server_thread_main():
     except Exception as x:
         log.exception("%s is failed:", my_name)
         failed(f"{my_name} is failed: {x}", x)
-    log.info("%s is finished.", my_name)
+    log.info("%s is finished", my_name)
 
 
 def _stop():
     my_name = "Subprocess transport server thread"
-    log.info("Stop %s.", my_name)
+    log.info("Stop %s", my_name)
     _selector_thread.join()
-    log.info("%s is stopped.", my_name)
+    log.info("%s is stopped", my_name)
 
 
 _server_connections = {}  # connection -> ConnectionRec

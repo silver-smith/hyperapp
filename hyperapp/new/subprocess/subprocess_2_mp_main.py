@@ -4,7 +4,9 @@ import traceback
 import threading
 from contextlib import contextmanager
 
+from hyperapp.common.htypes import bundle_t
 from hyperapp.common import cdr_coders  # self-registering
+from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common.services import HYPERAPP_DIR, Services
 
 log = logging.getLogger(__name__)
@@ -18,6 +20,7 @@ module_dir_list = [
 code_module_list = [
     'common.lcs',
     'common.lcs_service',
+    'common.unbundler',
     'resource.resource_type',
     'resource.registry',
     'resource.resource_module',
@@ -58,22 +61,33 @@ def logging_inited(process_name):
         handler.close()
 
 
-def subprocess_main(process_name, connection):
+def subprocess_main(process_name, connection, main_fn_bundle_cdr):
     with logging_inited(process_name):
         try:
-            subprocess_main_safe(connection)
+            subprocess_main_safe(connection, main_fn_bundle_cdr)
         except Exception as x:
-            log.error("Exception in subprocess: %r", x)
+            log.error("Subprocess: Failed with exception: %r", x)
         connection.close()
 
 
-def subprocess_main_safe(connection):
+def subprocess_main_safe(connection, main_fn_bundle_cdr):
+    log.info("Subprocess: Init services.")
     services = Services(module_dir_list)
     services.init_services()
     services.init_modules(code_module_list)
     services.start_modules()
-    log.info("Running subprocess.")
+    log.info("Subprocess: Unpack main function.")
 
-    log.info("Stopping subprocess services.")
+    python_object_creg = services.python_object_creg
+    unbundler = services.unbundler
+
+    bundle = packet_coders.decode('cdr', main_fn_bundle_cdr, bundle_t)
+    unbundler.register_bundle(bundle)
+    main_fn = python_object_creg.invite(bundle.roots[0])
+
+    log.info("Subprocess: Run main function: %s", main_fn)
+    main_fn(connection)
+
+    log.info("Subprocess: Stopping services.")
     services.stop()
-    log.info("Subprocess services are stopped.")
+    log.info("Subprocess: Services are stopped. Exiting.")

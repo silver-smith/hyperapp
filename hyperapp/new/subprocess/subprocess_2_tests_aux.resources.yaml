@@ -1,0 +1,13 @@
+# Automatically generated file. Do not edit.
+# Source ref: sha512:c33df01023d7e8cb158b2ef6b02aff5470ad7ff79595e1ddb4b6decc785e15b1f3b65c26a8b5f034d6dc9830501a3397aa0f1b3372b3751704f6c74f20163679
+# Generator ref: sha512:54efce32d837a04f78c890e1d953dd22399590870e329c2c511441939d51580c8bcb4e219da13a3a02f5615129b8bb768e68d64a1adefc3875f259716a0fe628
+
+import:
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  subprocess_2_tests_aux.module:
+    _type: legacy_type.python_module:python_module
+    module_name: subprocess_2_tests_aux
+    file_name: subprocess_2_tests_aux.dyn.py
+    import_list: {}
