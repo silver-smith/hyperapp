@@ -1,0 +1,34 @@
+# Automatically generated file. Do not edit.
+# Source ref: sha512:1492a933360faf7f353a77cbb736670e9bbf8bd32fc25c2f5b50763e7abb10d9f4d25a1bb6c73352ca2d74c9d91a3920d0ed06f1d730b3bb8590fddccebe61ba
+# Generator ref: sha512:54efce32d837a04f78c890e1d953dd22399590870e329c2c511441939d51580c8bcb4e219da13a3a02f5615129b8bb768e68d64a1adefc3875f259716a0fe628
+
+import:
+- common.mark:mark.service
+- legacy_service:fn_to_ref
+- legacy_service:mosaic
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.partial:param
+- legacy_type.partial:partial
+- legacy_type.python_module:python_module
+- legacy_type.raw:raw
+associations: []
+definitions:
+  partial_ref:
+    _type: legacy_type.attribute:attribute
+    object: partial_ref.module
+    attr_name: partial_ref
+  partial_ref.module:
+    _type: legacy_type.python_module:python_module
+    module_name: partial_ref
+    file_name: partial_ref.dyn.py
+    import_list:
+      htypes.partial.param: legacy_type.partial:param
+      htypes.partial.partial: legacy_type.partial:partial
+      htypes.raw.raw: legacy_type.raw:raw
+      services.fn_to_ref: legacy_service:fn_to_ref
+      services.mark: common.mark:mark.service
+      services.mosaic: legacy_service:mosaic
+  partial_ref.service:
+    _type: legacy_type.call:call
+    function: partial_ref
