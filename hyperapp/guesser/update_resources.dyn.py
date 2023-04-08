@@ -158,11 +158,30 @@ class SourceFile:
 
     @property
     def ready_for_construction(self):
+        if not self.check_ready_for_construction(skip_tests=False):
+            return False
+        if self.is_tests:
+            # Check all deps for tested modules are ready.
+            if self.tests_modules is None:
+                return False
+            for tested_module in self.tests_modules:
+                # Tested module not ready if it tests are not ready, should skip tests check here.
+                if not tested_module.check_ready_for_construction(skip_tests=True):
+                    # Tested module deps are not yet ready.
+                    return False
+        return True
+
+    def check_ready_for_construction(self, skip_tests):
         if self.up_to_date:
             return False
         if self.dep_modules is None:
             return False
-        return all(f.up_to_date for f in self.dep_modules)
+        for f in self.dep_modules:
+            if skip_tests and f.is_tests:
+                continue
+            if not f.up_to_date:
+                return False
+        return True
 
     @cached_property
     def source_dep_record(self):
