@@ -227,7 +227,8 @@ class SourceFile:
         deps = [f.source_dep_record for f in dep_modules]
         return htypes.update_resources.module_deps([self.source_dep_record, *deps])
 
-    def _get_resource_module_deps(self, resource_module):
+    @staticmethod
+    def _get_resource_module_deps(resource_module):
         uses_modules = set()
         wants_services = set()
         wants_code = set()
@@ -245,24 +246,6 @@ class SourceFile:
             tests_services=set(),
             tests_code=set(),
             )
-
-    # # Can we load this resource module? Can we use it's code_module_pair?
-    # def deps_up_to_date(self, file_dict, code_providers):
-    #     if self.is_legacy_module:
-    #         return True
-    #     if not self.up_to_date:
-    #         return False
-    #     for module_name in self.deps.uses_modules:
-    #         if module_name.split('.')[0] in {'legacy_type', 'legacy_module', 'legacy_service'}:
-    #             continue
-    #         file = file_dict[module_name]
-    #         if not file.deps_up_to_date(file_dict, code_providers):
-    #             return False
-    #     for name in self.deps.wants_code:
-    #         provider = code_providers[name]
-    #         if not provider.deps_up_to_date(file_dict, code_providers):
-    #             return False
-    #     return True
 
     def _make_module_res(self, import_list):
         return htypes.python_module.python_module(
