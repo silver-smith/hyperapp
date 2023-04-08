@@ -1,15 +1,20 @@
 import logging
 
 from .services import (
+    endpoint_registry,
+    generate_rsa_identity,
     partial_ref,
+    rpc_endpoint_factory,
     )
-from .code.subprocess_2_tests_aux import process_main
-from .tested.services import subprocess_running_2
+from .tested.services import subprocess_rpc_server_running
 
 log = logging.getLogger(__name__)
 
 
-def test_subprocess():
-    main_ref = partial_ref(process_main, name='test-subprocess-main')
-    with subprocess_running_2('test-subprocess', main_ref) as process:
+def test_subprocess_rpc_server():
+    name = 'test-subprocess-rpc-server-main'
+    identity = generate_rsa_identity(fast=True)
+    rpc_endpoint = rpc_endpoint_factory()
+    endpoint_registry.register(identity, rpc_endpoint)
+    with subprocess_rpc_server_running(name, rpc_endpoint, identity) as process:
         log.info("Started %r", process)

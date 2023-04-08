@@ -1,6 +1,6 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:412ade934988e8f635113dcf0d36426944012519518f0d57532f6aceb382305d5a0c33754a90493315be42aca3558075e1abd8e36c9d528b9a0bb98d1beddcb5
-# Generator ref: sha512:54efce32d837a04f78c890e1d953dd22399590870e329c2c511441939d51580c8bcb4e219da13a3a02f5615129b8bb768e68d64a1adefc3875f259716a0fe628
+# Source ref: sha512:dac098b55864e26bf89a4883e57d7bc750d5307f7970464afdd1548c033039b8f10f2963a1f7d343412afc7e7ea2227ab10cab843f7218c221e0444f64817386
+# Generator ref: sha512:45be5b22c96f35c1baf2a365c294968148ddbcbb18cb8a7d5f53dce5b4a3fbbc7eee6cf0f519e34cbbbf301676cd9bdcba8558b84de8f527dd61afebd0dae356
 
 import:
 - common.mark:mark.service
@@ -11,11 +11,11 @@ import:
 - legacy_service:parcel_registry
 - legacy_service:route_table
 - legacy_service:stop_signal
+- legacy_service:transport
 - legacy_service:unbundler
 - legacy_type.attribute:attribute
 - legacy_type.call:call
 - legacy_type.python_module:python_module
-- new.transport.transport:transport.service
 associations: []
 definitions:
   add_server_connection:
@@ -38,5 +38,5 @@ definitions:
       services.parcel_registry: legacy_service:parcel_registry
       services.route_table: legacy_service:route_table
       services.stop_signal: legacy_service:stop_signal
-      services.transport: new.transport.transport:transport.service
+      services.transport: legacy_service:transport
       services.unbundler: legacy_service:unbundler

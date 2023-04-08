@@ -107,7 +107,7 @@ def _server_thread_main():
 def _stop():
     my_name = "Subprocess transport server thread"
     log.info("Stop %s", my_name)
-    _selector_thread.join()
+    _server_thread.join()
     log.info("%s is stopped", my_name)
 
 

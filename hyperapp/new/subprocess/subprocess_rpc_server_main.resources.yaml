@@ -1,0 +1,25 @@
+# Automatically generated file. Do not edit.
+# Source ref: sha512:0316b7463156295cfbbdaed031a91c52c8a320722534ac85153683946a9ca1780f59a20468af3836acf2169ab819df0112b0ef838301985916b7aa53e44b730b
+# Generator ref: sha512:45be5b22c96f35c1baf2a365c294968148ddbcbb18cb8a7d5f53dce5b4a3fbbc7eee6cf0f519e34cbbbf301676cd9bdcba8558b84de8f527dd61afebd0dae356
+
+import:
+- legacy_service:generate_rsa_identity
+- legacy_service:mosaic
+- legacy_service:peer_registry
+- legacy_service:rpc_call_factory
+- legacy_service:rpc_endpoint_factory
+- legacy_type.python_module:python_module
+- new.transport.endpoint:endpoint_registry.service
+associations: []
+definitions:
+  subprocess_rpc_server_main.module:
+    _type: legacy_type.python_module:python_module
+    module_name: subprocess_rpc_server_main
+    file_name: subprocess_rpc_server_main.dyn.py
+    import_list:
+      services.endpoint_registry: new.transport.endpoint:endpoint_registry.service
+      services.generate_rsa_identity: legacy_service:generate_rsa_identity
+      services.mosaic: legacy_service:mosaic
+      services.peer_registry: legacy_service:peer_registry
+      services.rpc_call_factory: legacy_service:rpc_call_factory
+      services.rpc_endpoint_factory: legacy_service:rpc_endpoint_factory
