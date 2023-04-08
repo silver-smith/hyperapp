@@ -24,9 +24,9 @@ class DiscovererObject:
         self._imported_set.add(resource_path)
         return DiscovererObject(resource_path, self._imported_set)
 
-    def __call__(self, fn):
+    def __call__(self, *args, **kw):
         path = '.'.join(self._prefix)
-        raise htypes.import_discoverer.using_incomplete_object(f"Attempt to use not-ready object {path} for: {fn}")
+        raise htypes.import_discoverer.using_incomplete_object(f"Attempt to use not-ready object {path} with: *{args}, **{kw}")
 
 
 class ImportDiscoverer(Finder):
