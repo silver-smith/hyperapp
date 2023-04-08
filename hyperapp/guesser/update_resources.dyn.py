@@ -199,14 +199,17 @@ class SourceFile:
                 provider = code_providers[code_name]
             except KeyError:
                 raise RuntimeError(f"Module {self.module_name!r} wants code module {code_name!r}, but no one provides it")
+            if provider.is_legacy_module:
+                continue
             _log.info("%s wants code %r from: %s", self.module_name, code_name, provider.module_name)
             dep_list.append(provider)
         for service_name in deps.wants_services:
-            if is_legacy_service(resource_registry, service_name):
-                continue
             try:
                 provider = service_providers[service_name]
             except KeyError:
+                # Resource services takes precedence over legacy ones.
+                if is_legacy_service(resource_registry, service_name):
+                    continue
                 _log.info("%s: provider deps for service %r is not yet ready", self.module_name, service_name)
                 return None
             _log.info("%s wants service %r from: %s", self.module_name, service_name, provider.module_name)
