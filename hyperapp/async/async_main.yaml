@@ -2,7 +2,5 @@ require:
   - event_loop_ctr
   - event_loop_dtr
 provide:
-  - on_start
-  - on_stop
   - async_stop_event
   - event_loop_holder

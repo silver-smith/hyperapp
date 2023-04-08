@@ -43,6 +43,7 @@ class Services(object):
         'type_module_loader',
         'code_module_loader',
         'module_registry',
+        'on_stop',
         'stop_signal',
     ]
 
