@@ -87,18 +87,6 @@ class SourceFile:
     def __repr__(self):
         return f"<SourceFile {self.module_name!r}>"
 
-    @property
-    def up_to_date(self):
-        if self.is_legacy_module:
-            return True
-        if self.is_tests:
-            if self.tests_modules is None:
-                return False
-            if all(f.up_to_date for f in self.tests_modules):
-                return True
-            return self._was_run
-        return self.resource_module is not None
-
     @cached_property
     def is_legacy_module(self):
         yaml_path = self.source_path.with_name(self.name + '.yaml')
@@ -111,6 +99,45 @@ class SourceFile:
     @cached_property
     def is_tests(self):
         return self.name.split('.')[-1] == 'tests'
+
+    @property
+    def up_to_date(self):
+        if self.is_legacy_module:
+            return True
+        if self.is_tests:
+            if self.tests_modules is None:
+                return False
+            if all(f.up_to_date for f in self.tests_modules):
+                return True
+            return self._was_run
+        return self.resource_module is not None
+
+    @property
+    def ready_for_construction(self):
+        if not self.check_ready_for_construction(skip_tests=False):
+            return False
+        if self.is_tests:
+            # Check all deps for tested modules are ready.
+            if self.tests_modules is None:
+                return False
+            for tested_module in self.tests_modules:
+                # Tested module not ready if it tests are not ready, should skip tests check here.
+                if not tested_module.check_ready_for_construction(skip_tests=True):
+                    # Tested module deps are not yet ready.
+                    return False
+        return True
+
+    def check_ready_for_construction(self, skip_tests):
+        if self.up_to_date:
+            return False
+        if self.dep_modules is None:
+            return False
+        for f in self.dep_modules:
+            if skip_tests and f.is_tests:
+                continue
+            if not f.up_to_date:
+                return False
+        return True
 
     @cached_property
     def code_module_pair(self):
@@ -164,33 +191,6 @@ class SourceFile:
             _log.info("%s: generator changed", self.module_name)
             return False
         _log.info("%s: up to date", self.module_name)
-        return True
-
-    @property
-    def ready_for_construction(self):
-        if not self.check_ready_for_construction(skip_tests=False):
-            return False
-        if self.is_tests:
-            # Check all deps for tested modules are ready.
-            if self.tests_modules is None:
-                return False
-            for tested_module in self.tests_modules:
-                # Tested module not ready if it tests are not ready, should skip tests check here.
-                if not tested_module.check_ready_for_construction(skip_tests=True):
-                    # Tested module deps are not yet ready.
-                    return False
-        return True
-
-    def check_ready_for_construction(self, skip_tests):
-        if self.up_to_date:
-            return False
-        if self.dep_modules is None:
-            return False
-        for f in self.dep_modules:
-            if skip_tests and f.is_tests:
-                continue
-            if not f.up_to_date:
-                return False
         return True
 
     @cached_property
