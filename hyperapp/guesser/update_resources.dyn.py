@@ -1,3 +1,4 @@
+import enum
 import logging
 from collections import defaultdict, namedtuple
 from contextlib import contextmanager
@@ -52,6 +53,13 @@ resource_services = [
 SourceInfo = namedtuple('SourceInfo', 'import_name attr_list service_to_attr')
 DepsInfo = namedtuple('DepsInfo', 'uses_modules wants_services wants_code tests_services tests_code')
 ObjectInfo = namedtuple('ObjectInfo', 'dir get_result_t')
+
+
+class ReadyStatus(enum.Enum):
+    Ready = enum.auto()
+    NotReady = enum.auto()
+    ServicesNotReady = enum.auto()
+    UpToDate = enum.auto()
 
 
 def pick_key_t(result_t, error_prefix):
@@ -114,30 +122,36 @@ class SourceFile:
 
     @property
     def ready_for_construction(self):
-        if not self.check_ready_for_construction(skip_tests=False):
-            return False
+        return self.ready_status == ReadyStatus.Ready
+
+    @property
+    def ready_status(self):
+        status = self.check_ready_status(skip_tests=False)
+        if status != ReadyStatus.Ready:
+            return status
         if self.is_tests:
             # Check all deps for tested modules are ready.
             if self.tests_modules is None:
-                return False
+                return ReadyStatus.ServicesNotReady
             for tested_module in self.tests_modules:
                 # Tested module not ready if it tests are not ready, should skip tests check here.
-                if not tested_module.check_ready_for_construction(skip_tests=True):
+                status = tested_module.check_ready_status(skip_tests=True)
+                if status != ReadyStatus.Ready:
                     # Tested module deps are not yet ready.
-                    return False
-        return True
+                    return status
+        return ReadyStatus.Ready
 
-    def check_ready_for_construction(self, skip_tests):
+    def check_ready_status(self, skip_tests):
         if self.up_to_date:
-            return False
+            return ReadyStatus.UpToDate
         if self.dep_modules is None:
-            return False
+            return ReadyStatus.ServicesNotReady
         for f in self.dep_modules:
             if skip_tests and f.is_tests:
                 continue
             if not f.up_to_date:
-                return False
-        return True
+                return ReadyStatus.NotReady
+        return ReadyStatus.Ready
 
     @cached_property
     def code_module_pair(self):
@@ -942,8 +956,12 @@ def update_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_tim
             _log.info("****** Round #%d  %s", round, '*'*50)
             init_deps(resource_registry, process, type_res_list, file_dict)
             ready_files = [f for f in file_dict.values() if f.ready_for_construction]
-            ready_module_names = [f.module_name for f in ready_files]
-            _log.info("Ready for construction: %s", ", ".join(ready_module_names))
+            waits_services = [f for f in file_dict.values() if f.ready_status == ReadyStatus.ServicesNotReady]
+            _log.info("Ready for construction: %s", ", ".join(f.module_name for f in ready_files))
+            _log.info("Waits services: %s", ", ".join(f.module_name for f in waits_services))
+            if not ready_files and waits_services:
+                round += 1
+                continue
             if module_list:
                 wanted_files = [f for f in ready_files if f.module_name in module_list]
             else:
