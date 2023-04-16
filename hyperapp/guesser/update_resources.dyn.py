@@ -289,9 +289,12 @@ class SourceFile:
     def _discover_module_res(self, resource_registry, type_res_list, process):
         resource_list = [*type_res_list]
 
-        mark_service = resource_registry['common.mark', 'mark.service']
-        resource_list.append(
-            htypes.import_recorder.resource(('services', 'mark'), mosaic.put(mark_service)))
+        resource_list += [
+            htypes.import_recorder.resource(('services', 'mark'), mosaic.put(
+                resource_registry['common.mark', 'mark.service'])),
+            htypes.import_recorder.resource(('services', 'on_stop'), mosaic.put(
+                resource_registry['legacy_service', 'on_stop'])),
+            ]
 
         import_recorder, import_recorder_ref = self._prepare_import_recorder(process, resource_list)
         import_discoverer, import_discoverer_ref = self._prepare_import_discoverer(process)
@@ -387,12 +390,14 @@ class SourceFile:
                     ctr = web.summon(ctr_ref)
                     if isinstance(ctr, htypes.attr_constructors.service):
                         service_to_attr[ctr.name] = attr
+                        _log.info("Discovered provided service: %r", ctr.name)
             source_info = SourceInfo(
                 import_name=object_attrs.object_module,
                 attr_list=attr_list,
                 service_to_attr=service_to_attr,
                 )
         else:
+            _log.info("Failed to load source info")
             source_info = None
 
         deps_info = self._imports_to_deps(import_set)
