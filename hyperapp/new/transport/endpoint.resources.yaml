@@ -1,17 +1,17 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:013d8aa86044f584d2208e922f28967d51b151d50a984366bc76f8d330e18c35e9256dd4be7f737ec62b6baf4d57e4a26f23bf00ec9523ba5f742662c670ccf9
-# Generator ref: sha512:07b4f79e45e7542b7b0652ad763d7e5d1d5ca897ced4ff328dd4530c6c208773d76ec39cb2e77aa68f4effc1347548cad89fe51c53f00e60ea8322add70d5145
+# Source ref: sha512:d88fad4b74a6c243d732b0981975a2a0fe34101b6df0fb6421e122b11c916300394078950cc3fa04db400b5eb1c7530ec717ab113eaf0a6232112b87dd2ab203
+# Generator ref: sha512:bb8b3364aff8ecd155a5de9cdf7387f77a111b71de7d810906ea87da21ec83e5f80394a7062a39e4f649fecbe992b81b98590f02f1a3f4ead87fecc1685251ec
 
 import:
 - common.mark:mark.service
 - legacy_service:failed
 - legacy_service:mosaic
 - legacy_service:on_stop
-- legacy_service:route_table
 - legacy_service:unbundler
 - legacy_type.attribute:attribute
 - legacy_type.call:call
 - legacy_type.python_module:python_module
+- new.transport.sync_route_table:route_table.service
 associations: []
 definitions:
   endpoint.module:
@@ -23,7 +23,7 @@ definitions:
       services.mark: common.mark:mark.service
       services.mosaic: legacy_service:mosaic
       services.on_stop: legacy_service:on_stop
-      services.route_table: legacy_service:route_table
+      services.route_table: new.transport.sync_route_table:route_table.service
       services.unbundler: legacy_service:unbundler
   endpoint_registry:
     _type: legacy_type.attribute:attribute

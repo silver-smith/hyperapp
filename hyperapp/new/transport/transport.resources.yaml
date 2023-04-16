@@ -1,16 +1,16 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:013d8aa86044f584d2208e922f28967d51b151d50a984366bc76f8d330e18c35e9256dd4be7f737ec62b6baf4d57e4a26f23bf00ec9523ba5f742662c670ccf9
-# Generator ref: sha512:07b4f79e45e7542b7b0652ad763d7e5d1d5ca897ced4ff328dd4530c6c208773d76ec39cb2e77aa68f4effc1347548cad89fe51c53f00e60ea8322add70d5145
+# Source ref: sha512:7298dcffdb103917d7dc3d07bbaf9566b081acae16defca925d3eabab3ecc8775c0783a2f6a6a4bc5defbd8ec001e63d8a204fcfa3ae69495c6b5d4e3cbf1879
+# Generator ref: sha512:89d3c5a1df409025f6869a0979ef1370b954416198e0fd084b5392c8449aa440a32f2efbfffe7228783608af22bf490ec685cda1da8e38f7d43c500657a6ef57
 
 import:
 - common.mark:mark.service
 - legacy_service:bundler
 - legacy_service:mosaic
-- legacy_service:route_table
 - legacy_type.attribute:attribute
 - legacy_type.call:call
 - legacy_type.python_module:python_module
 - new.transport.route_registry:route_registry.service
+- new.transport.sync_route_table:route_table.service
 associations: []
 definitions:
   transport:
@@ -26,7 +26,7 @@ definitions:
       services.mark: common.mark:mark.service
       services.mosaic: legacy_service:mosaic
       services.route_registry: new.transport.route_registry:route_registry.service
-      services.route_table: legacy_service:route_table
+      services.route_table: new.transport.sync_route_table:route_table.service
   transport.service:
     _type: legacy_type.call:call
     function: transport

@@ -1,6 +1,6 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:dac098b55864e26bf89a4883e57d7bc750d5307f7970464afdd1548c033039b8f10f2963a1f7d343412afc7e7ea2227ab10cab843f7218c221e0444f64817386
-# Generator ref: sha512:45be5b22c96f35c1baf2a365c294968148ddbcbb18cb8a7d5f53dce5b4a3fbbc7eee6cf0f519e34cbbbf301676cd9bdcba8558b84de8f527dd61afebd0dae356
+# Source ref: sha512:e16c8418779bcf703094f0cb3f37f452cd858df3c40633ba7ee8dcee895d78d5333bfa84140e890386e8f6666671cbe23bb158cebce931984831dc6f3e2edc93
+# Generator ref: sha512:89d3c5a1df409025f6869a0979ef1370b954416198e0fd084b5392c8449aa440a32f2efbfffe7228783608af22bf490ec685cda1da8e38f7d43c500657a6ef57
 
 import:
 - common.mark:mark.service
@@ -9,13 +9,13 @@ import:
 - legacy_service:mosaic
 - legacy_service:on_stop
 - legacy_service:parcel_registry
-- legacy_service:route_table
 - legacy_service:stop_signal
-- legacy_service:transport
 - legacy_service:unbundler
 - legacy_type.attribute:attribute
 - legacy_type.call:call
 - legacy_type.python_module:python_module
+- new.transport.sync_route_table:route_table.service
+- new.transport.transport:transport.service
 associations: []
 definitions:
   add_server_connection:
@@ -36,7 +36,7 @@ definitions:
       services.mosaic: legacy_service:mosaic
       services.on_stop: legacy_service:on_stop
       services.parcel_registry: legacy_service:parcel_registry
-      services.route_table: legacy_service:route_table
+      services.route_table: new.transport.sync_route_table:route_table.service
       services.stop_signal: legacy_service:stop_signal
-      services.transport: legacy_service:transport
+      services.transport: new.transport.transport:transport.service
       services.unbundler: legacy_service:unbundler

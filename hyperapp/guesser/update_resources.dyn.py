@@ -39,6 +39,16 @@ from .code.utils import camel_to_snake
 _log = logging.getLogger(__name__)
 
 
+# These services are provided by resources now. Do not try to pick them from legacy services.
+resource_services = [
+    'endpoint_registry',
+    'route_table',
+    'rpc_call_factory',
+    'rpc_endpoint_factory',
+    'sync_route_table',
+    'transport',
+    ]
+
 SourceInfo = namedtuple('SourceInfo', 'import_name attr_list service_to_attr')
 DepsInfo = namedtuple('DepsInfo', 'uses_modules wants_services wants_code tests_services tests_code')
 ObjectInfo = namedtuple('ObjectInfo', 'dir get_result_t')
@@ -849,6 +859,8 @@ def service_provider_modules(file_dict, want_up_to_date=True):
 
 
 def is_legacy_service(resource_registry, service_name):
+    if service_name in resource_services:
+        return False
     return ('legacy_service', service_name) in resource_registry
 
 

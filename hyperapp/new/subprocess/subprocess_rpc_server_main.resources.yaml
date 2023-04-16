@@ -1,14 +1,14 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:0316b7463156295cfbbdaed031a91c52c8a320722534ac85153683946a9ca1780f59a20468af3836acf2169ab819df0112b0ef838301985916b7aa53e44b730b
-# Generator ref: sha512:45be5b22c96f35c1baf2a365c294968148ddbcbb18cb8a7d5f53dce5b4a3fbbc7eee6cf0f519e34cbbbf301676cd9bdcba8558b84de8f527dd61afebd0dae356
+# Source ref: sha512:fab62ab13d85fa6a9f099962c3e124d2f01aed91c268e003ec0c923c24746840450dfd086e3779cf4ae69b1b99aa4afc033253b20b6d66c35081df0962f573a2
+# Generator ref: sha512:89d3c5a1df409025f6869a0979ef1370b954416198e0fd084b5392c8449aa440a32f2efbfffe7228783608af22bf490ec685cda1da8e38f7d43c500657a6ef57
 
 import:
 - legacy_service:generate_rsa_identity
 - legacy_service:mosaic
 - legacy_service:peer_registry
-- legacy_service:rpc_call_factory
-- legacy_service:rpc_endpoint_factory
 - legacy_type.python_module:python_module
+- new.rpc.rpc_call:rpc_call_factory.service
+- new.rpc.rpc_endpoint:rpc_endpoint_factory.service
 - new.transport.endpoint:endpoint_registry.service
 associations: []
 definitions:
@@ -21,5 +21,5 @@ definitions:
       services.generate_rsa_identity: legacy_service:generate_rsa_identity
       services.mosaic: legacy_service:mosaic
       services.peer_registry: legacy_service:peer_registry
-      services.rpc_call_factory: legacy_service:rpc_call_factory
-      services.rpc_endpoint_factory: legacy_service:rpc_endpoint_factory
+      services.rpc_call_factory: new.rpc.rpc_call:rpc_call_factory.service
+      services.rpc_endpoint_factory: new.rpc.rpc_endpoint:rpc_endpoint_factory.service
