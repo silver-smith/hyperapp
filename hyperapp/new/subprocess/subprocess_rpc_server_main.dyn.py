@@ -12,7 +12,7 @@ from .services import (
 log = logging.getLogger(__name__)
 
 
-def rpc_server_main(connection, name, master_peer_piece, master_servant_ref):
+def rpc_server_main(connection, name, master_peer_piece, master_servant_ref, subprocess_id):
     my_name = f"Subprocess rpc server {name}"
     log.info("%s: Init identity", my_name)
 
@@ -27,6 +27,6 @@ def rpc_server_main(connection, name, master_peer_piece, master_servant_ref):
     rpc_call = rpc_call_factory(rpc_endpoint, master_peer, master_servant_ref, my_identity, timeout_sec=20)
 
     log.info("%s: Calling callback %s", my_name, rpc_call)
-    rpc_call()
+    rpc_call(subprocess_id=subprocess_id)
 
     log.info("%s: Started", my_name)
