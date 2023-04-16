@@ -20,4 +20,4 @@ def test_rpc_call_factory():
         servant_ref=mosaic.put('phony servant'),
         sender_identity=sender_identity,
         )
-    rpc_call()
+    rpc_call(sample_param=12345)
