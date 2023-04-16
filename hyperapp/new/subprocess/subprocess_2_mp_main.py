@@ -15,6 +15,7 @@ log = logging.getLogger(__name__)
 module_dir_list = [
     HYPERAPP_DIR / 'common',
     HYPERAPP_DIR / 'resource',
+    HYPERAPP_DIR / 'transport',
     ]
 
 code_module_list = [
