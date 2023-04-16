@@ -407,6 +407,8 @@ class SourceFile:
         if self.dep_modules is None:
             # Recheck service providers, deps for some may become ready.
             self.dep_modules = self._collect_dep_modules(resource_registry, file_dict, self.deps)
+            # Now as service providers are ready, we can init resource module if it is up-to-date.
+            self.init_resource_module(resource_registry, file_dict)
         if (self.provides_services is None
             and self.dep_modules is not None
             and all(f.up_to_date for f in self.dep_modules if not f.is_tests)
