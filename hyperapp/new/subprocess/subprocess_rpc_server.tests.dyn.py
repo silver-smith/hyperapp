@@ -1,4 +1,5 @@
 import logging
+import time
 
 from .services import (
     endpoint_registry,
@@ -17,4 +18,7 @@ def test_subprocess_rpc_server():
     rpc_endpoint = rpc_endpoint_factory()
     endpoint_registry.register(identity, rpc_endpoint)
     with subprocess_rpc_server_running(name, rpc_endpoint, identity) as process:
-        log.info("Started %r", process)
+        log.info("Started: %r", process)
+        time.sleep(1)
+        log.info("Stopping: %r", process)
+    log.info("Stopped: %r", process)

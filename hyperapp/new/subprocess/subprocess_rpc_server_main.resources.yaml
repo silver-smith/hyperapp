@@ -1,6 +1,6 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:fab62ab13d85fa6a9f099962c3e124d2f01aed91c268e003ec0c923c24746840450dfd086e3779cf4ae69b1b99aa4afc033253b20b6d66c35081df0962f573a2
-# Generator ref: sha512:89d3c5a1df409025f6869a0979ef1370b954416198e0fd084b5392c8449aa440a32f2efbfffe7228783608af22bf490ec685cda1da8e38f7d43c500657a6ef57
+# Source ref: sha512:c75f8c63a0867f6480415a56614a7147fe4571cba1b5b902040990ba811d0b3e6dc14e44f551b78f83aa0ab7cacecc23028292e503c00e0cc609f1eed07cc583
+# Generator ref: sha512:3539a6f89f6c6979897637ebb1ae27dc8ff0b54dcf8c94656581849c1905b8c095f500872651ac1e0329af305cf2e2b785e73ac37eb5a8fbc5d92ea60db2910e
 
 import:
 - legacy_service:generate_rsa_identity
@@ -9,7 +9,10 @@ import:
 - legacy_type.python_module:python_module
 - new.rpc.rpc_call:rpc_call_factory.service
 - new.rpc.rpc_endpoint:rpc_endpoint_factory.service
+- new.subprocess.subprocess_transport:add_subprocess_server_connection.service
+- new.subprocess.subprocess_transport:subprocess_transport.module
 - new.transport.endpoint:endpoint_registry.service
+- new.transport.sync_route_table:route_table.service
 associations: []
 definitions:
   subprocess_rpc_server_main.module:
@@ -17,9 +20,12 @@ definitions:
     module_name: subprocess_rpc_server_main
     file_name: subprocess_rpc_server_main.dyn.py
     import_list:
+      code.subprocess_transport: new.subprocess.subprocess_transport:subprocess_transport.module
+      services.add_subprocess_server_connection: new.subprocess.subprocess_transport:add_subprocess_server_connection.service
       services.endpoint_registry: new.transport.endpoint:endpoint_registry.service
       services.generate_rsa_identity: legacy_service:generate_rsa_identity
       services.mosaic: legacy_service:mosaic
       services.peer_registry: legacy_service:peer_registry
+      services.route_table: new.transport.sync_route_table:route_table.service
       services.rpc_call_factory: new.rpc.rpc_call:rpc_call_factory.service
       services.rpc_endpoint_factory: new.rpc.rpc_endpoint:rpc_endpoint_factory.service

@@ -44,9 +44,10 @@ def subprocess_running_2():
         process = _mp_context.Process(target=subprocess_main, args=subprocess_args)
         process.start()
 
-        yield _Subprocess(parent_connection)
-
-        parent_connection.close()  # Signal child to stop.
-        process.join()
+        try:
+            yield _Subprocess(parent_connection)
+        finally:
+            parent_connection.close()  # Signal child to stop.
+            process.join()
 
     return _subprocess_running

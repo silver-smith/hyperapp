@@ -4,6 +4,7 @@ import threading
 from contextlib import contextmanager
 
 from .services import (
+    add_subprocess_server_connection,
     fn_to_ref,
     mark,
     partial_ref,
@@ -44,7 +45,11 @@ def subprocess_rpc_server_running():
             subprocess_id=subprocess_id,
         )
         with subprocess_running_2(name, main_ref) as process:
-            if not event.wait(timeout=3):
-                raise RuntimeError(f"Timed out waiting for subprocess #{subprocess_id} {name!r} (3 sec)")
-            yield _RpcServerProcess(process.connection)
+            connection = add_subprocess_server_connection(name, process.connection)
+            try:
+                if not event.wait(timeout=3):
+                    raise RuntimeError(f"Timed out waiting for subprocess #{subprocess_id} {name!r} (3 sec)")
+                yield _RpcServerProcess(process.connection)
+            finally:
+                connection.close()
     return _subprocess_rpc_server

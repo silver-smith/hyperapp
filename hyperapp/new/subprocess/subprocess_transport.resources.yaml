@@ -1,6 +1,6 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:e16c8418779bcf703094f0cb3f37f452cd858df3c40633ba7ee8dcee895d78d5333bfa84140e890386e8f6666671cbe23bb158cebce931984831dc6f3e2edc93
-# Generator ref: sha512:89d3c5a1df409025f6869a0979ef1370b954416198e0fd084b5392c8449aa440a32f2efbfffe7228783608af22bf490ec685cda1da8e38f7d43c500657a6ef57
+# Source ref: sha512:79ea0f8901e468909b52f37986241393a7170978ca43ca5ee9ca65c4c63cf7c8744bd1beeb047617a0f375c720b20cf4069ed495101f28647134870b5f95fbc0
+# Generator ref: sha512:3539a6f89f6c6979897637ebb1ae27dc8ff0b54dcf8c94656581849c1905b8c095f500872651ac1e0329af305cf2e2b785e73ac37eb5a8fbc5d92ea60db2910e
 
 import:
 - common.mark:mark.service
@@ -18,13 +18,13 @@ import:
 - new.transport.transport:transport.service
 associations: []
 definitions:
-  add_server_connection:
+  add_subprocess_server_connection:
     _type: legacy_type.attribute:attribute
     object: subprocess_transport.module
-    attr_name: add_server_connection
-  add_server_connection.service:
+    attr_name: add_subprocess_server_connection
+  add_subprocess_server_connection.service:
     _type: legacy_type.call:call
-    function: add_server_connection
+    function: add_subprocess_server_connection
   subprocess_transport.module:
     _type: legacy_type.python_module:python_module
     module_name: subprocess_transport

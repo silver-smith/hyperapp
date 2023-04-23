@@ -81,6 +81,7 @@ def subprocess_main_safe(connection, main_fn_bundle_cdr):
 
     python_object_creg = services.python_object_creg
     unbundler = services.unbundler
+    stop_signal = services.stop_signal
 
     bundle = packet_coders.decode('cdr', main_fn_bundle_cdr, bundle_t)
     unbundler.register_bundle(bundle)
@@ -91,5 +92,6 @@ def subprocess_main_safe(connection, main_fn_bundle_cdr):
     main_fn(connection)
 
     log.info("Subprocess: Stopping services.")
+    stop_signal.set()
     services.stop()
     log.info("Subprocess: Services are stopped. Exiting.")

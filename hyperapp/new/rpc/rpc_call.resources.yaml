@@ -1,6 +1,6 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:df1c62aebe6abe2ec6fb4decb7c4e5663a3d6c4f796438ab9a67ee9de2ecec4bc1821d5f58787e6a73fb6be697ed403b8d97e759129ce616240d24067942bb99
-# Generator ref: sha512:a4c50296b661e2892ad914d1f3cede9a4e00d526d1bd9a58d76151a8783265cc05ba71476ece57f6a8dd261b0706b350b9275b00cddfc648612165d3588f6e47
+# Source ref: sha512:e3883dbbdd17b9f5a2df6b716c878b437a77659cba9240e47739bdcdb9d41c95c53741a6e87feabb877c5fcbe6918b2af62fb064857b5563808ac722d69c360f
+# Generator ref: sha512:3539a6f89f6c6979897637ebb1ae27dc8ff0b54dcf8c94656581849c1905b8c095f500872651ac1e0329af305cf2e2b785e73ac37eb5a8fbc5d92ea60db2910e
 
 import:
 - common.mark:mark.service
@@ -9,6 +9,7 @@ import:
 - legacy_type.attribute:attribute
 - legacy_type.call:call
 - legacy_type.python_module:python_module
+- legacy_type.rpc:param
 - legacy_type.rpc:request
 - new.transport.transport:transport.service
 associations: []
@@ -18,6 +19,7 @@ definitions:
     module_name: rpc_call
     file_name: rpc_call.dyn.py
     import_list:
+      htypes.rpc.param: legacy_type.rpc:param
       htypes.rpc.request: legacy_type.rpc:request
       services.mark: common.mark:mark.service
       services.mosaic: legacy_service:mosaic
