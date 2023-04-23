@@ -79,5 +79,6 @@ def subprocess_main_safe(connection, module_dir_list, code_module_list, config):
     log.info("Running, waiting for stop signal.")
     services.subprocess_stop_event.wait()
     log.info("Got stop signal, stopping subprocess services.")
+    services.stop_signal.set()
     services.stop()
     log.info("Subprocess services are stopped.")
