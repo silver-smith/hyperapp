@@ -196,7 +196,7 @@ class SourceFile:
         module_deps_record = self._make_module_deps_record(dep_modules)
         source_ref = mosaic.put(module_deps_record)
         if resource_module.source_ref_str != ref_str(source_ref):
-            _log.info("%s: sources changed", self.module_name)
+            _log.info("%s: sources changed (%s)", self.module_name, [f.module_name for f in dep_modules])
             return False
         if not resource_module.generator_ref_str:
             _log.info("%s: no generator ref", self.module_name)
@@ -204,7 +204,7 @@ class SourceFile:
         if resource_module.generator_ref_str != ref_str(self._generator_ref):
             _log.info("%s: generator changed", self.module_name)
             return False
-        _log.info("%s: up to date", self.module_name)
+        _log.info("%s: up to date (%s)", self.module_name, [f.module_name for f in dep_modules])
         return True
 
     @cached_property
