@@ -1,7 +1,0 @@
-require:
-  - unbundler
-  - peer_registry
-  - generate_rsa_identity
-  - transport
-  - endpoint_registry
-  - subprocess_master_route

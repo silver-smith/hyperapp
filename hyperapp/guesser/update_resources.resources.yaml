@@ -4,7 +4,6 @@ import:
 - guesser.utils:utils.module
 - legacy_service:builtin_types_as_dict
 - legacy_service:code_module_loader
-- legacy_service:endpoint_registry
 - legacy_service:hyperapp_dir
 - legacy_service:generate_rsa_identity
 - legacy_service:legacy_module_resource_loader
@@ -16,7 +15,6 @@ import:
 - legacy_service:mosaic
 - legacy_service:resource_module_factory
 - legacy_service:resource_registry_factory
-- legacy_service:rpc_endpoint_factory
 - legacy_service:type_module_loader
 - legacy_service:types
 - legacy_service:web
@@ -48,7 +46,9 @@ import:
 - legacy_type.update_resources:source_dep
 - legacy_type.update_resources:module_deps
 - resource.constructor_creg:constructor_creg.service
-- sync.subprocess_context:subprocess_running.service
+- rpc.rpc_endpoint:rpc_endpoint_factory.service
+- transport.endpoint:endpoint_registry.service
+- subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
 
 definitions:
 
@@ -96,7 +96,7 @@ definitions:
       services.code_module_loader: legacy_service:code_module_loader
       services.collect_attributes_ref: collect_attributes_ref
       services.constructor_creg: resource.constructor_creg:constructor_creg.service
-      services.endpoint_registry: legacy_service:endpoint_registry
+      services.endpoint_registry: transport.endpoint:endpoint_registry.service
       services.hyperapp_dir: legacy_service:hyperapp_dir
       services.generate_rsa_identity: legacy_service:generate_rsa_identity
       services.get_resource_type_ref: get_resource_type_ref
@@ -109,8 +109,8 @@ definitions:
       services.mosaic: legacy_service:mosaic
       services.resource_module_factory: legacy_service:resource_module_factory
       services.resource_registry_factory: legacy_service:resource_registry_factory
-      services.rpc_endpoint_factory: legacy_service:rpc_endpoint_factory
-      services.subprocess_running: sync.subprocess_context:subprocess_running.service
+      services.rpc_endpoint_factory: rpc.rpc_endpoint:rpc_endpoint_factory.service
+      services.subprocess_rpc_server_running: subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
       services.type_module_loader: legacy_service:type_module_loader
       services.types: legacy_service:types
       services.web: legacy_service:web

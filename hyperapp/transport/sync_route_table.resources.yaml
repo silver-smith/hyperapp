@@ -1,0 +1,36 @@
+# Automatically generated file. Do not edit.
+# Source ref: sha512:10a8aea2c288e2dd9ff30fcbac888c51b1cbf60d6c67927551158115840153febba61eeacda04003fdf1695657c8998eca454a04f017e80cd236d5c49266f0b3
+# Generator ref: sha512:3539a6f89f6c6979897637ebb1ae27dc8ff0b54dcf8c94656581849c1905b8c095f500872651ac1e0329af305cf2e2b785e73ac37eb5a8fbc5d92ea60db2910e
+
+import:
+- common.mark:mark.service
+- legacy_module.transport:route_table
+- legacy_service:aux_bundler_hooks
+- legacy_service:aux_unbundler_hooks
+- legacy_service:mosaic
+- legacy_service:peer_registry
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.python_module:python_module
+- transport.route_registry:route_registry.service
+associations: []
+definitions:
+  route_table:
+    _type: legacy_type.attribute:attribute
+    object: sync_route_table.module
+    attr_name: route_table
+  route_table.service:
+    _type: legacy_type.call:call
+    function: route_table
+  sync_route_table.module:
+    _type: legacy_type.python_module:python_module
+    module_name: sync_route_table
+    file_name: sync_route_table.dyn.py
+    import_list:
+      code.route_table: legacy_module.transport:route_table
+      services.aux_bundler_hooks: legacy_service:aux_bundler_hooks
+      services.aux_unbundler_hooks: legacy_service:aux_unbundler_hooks
+      services.mark: common.mark:mark.service
+      services.mosaic: legacy_service:mosaic
+      services.peer_registry: legacy_service:peer_registry
+      services.route_registry: transport.route_registry:route_registry.service

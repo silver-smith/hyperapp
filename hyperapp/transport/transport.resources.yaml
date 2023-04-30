@@ -1,0 +1,32 @@
+# Automatically generated file. Do not edit.
+# Source ref: sha512:e1acdbd41d39abbb7cf27ce3163931a304f1c72024a810c49b932e1a5c2c66b0f74aff289155ab7fd653ee29b180671ecc64bd0e80e76cc3dee2cffcda573129
+# Generator ref: sha512:3539a6f89f6c6979897637ebb1ae27dc8ff0b54dcf8c94656581849c1905b8c095f500872651ac1e0329af305cf2e2b785e73ac37eb5a8fbc5d92ea60db2910e
+
+import:
+- common.mark:mark.service
+- legacy_service:bundler
+- legacy_service:mosaic
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.python_module:python_module
+- transport.route_registry:route_registry.service
+- transport.sync_route_table:route_table.service
+associations: []
+definitions:
+  transport:
+    _type: legacy_type.attribute:attribute
+    object: transport.module
+    attr_name: transport
+  transport.module:
+    _type: legacy_type.python_module:python_module
+    module_name: transport
+    file_name: transport.dyn.py
+    import_list:
+      services.bundler: legacy_service:bundler
+      services.mark: common.mark:mark.service
+      services.mosaic: legacy_service:mosaic
+      services.route_registry: transport.route_registry:route_registry.service
+      services.route_table: transport.sync_route_table:route_table.service
+  transport.service:
+    _type: legacy_type.call:call
+    function: transport

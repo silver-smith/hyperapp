@@ -1,0 +1,34 @@
+# Automatically generated file. Do not edit.
+# Source ref: sha512:e3883dbbdd17b9f5a2df6b716c878b437a77659cba9240e47739bdcdb9d41c95c53741a6e87feabb877c5fcbe6918b2af62fb064857b5563808ac722d69c360f
+# Generator ref: sha512:3539a6f89f6c6979897637ebb1ae27dc8ff0b54dcf8c94656581849c1905b8c095f500872651ac1e0329af305cf2e2b785e73ac37eb5a8fbc5d92ea60db2910e
+
+import:
+- common.mark:mark.service
+- legacy_service:mosaic
+- legacy_service:types
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.python_module:python_module
+- legacy_type.rpc:param
+- legacy_type.rpc:request
+- transport.transport:transport.service
+associations: []
+definitions:
+  rpc_call.module:
+    _type: legacy_type.python_module:python_module
+    module_name: rpc_call
+    file_name: rpc_call.dyn.py
+    import_list:
+      htypes.rpc.param: legacy_type.rpc:param
+      htypes.rpc.request: legacy_type.rpc:request
+      services.mark: common.mark:mark.service
+      services.mosaic: legacy_service:mosaic
+      services.transport: transport.transport:transport.service
+      services.types: legacy_service:types
+  rpc_call_factory:
+    _type: legacy_type.attribute:attribute
+    object: rpc_call.module
+    attr_name: rpc_call_factory
+  rpc_call_factory.service:
+    _type: legacy_type.call:call
+    function: rpc_call_factory

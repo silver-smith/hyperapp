@@ -1,6 +1,0 @@
-require:
-  - bundler
-  - route_registry
-  - route_table
-provide:
-  - transport

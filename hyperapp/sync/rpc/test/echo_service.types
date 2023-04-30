@@ -1,5 +1,0 @@
-
-master_servant = record
-
-test_error = exception:
-  message: string

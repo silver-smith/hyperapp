@@ -1,9 +1,0 @@
-import:
-  types:
-    rpc:
-      - param
-      - request
-require:
-  - transport
-provide:
-  - rpc_call_factory

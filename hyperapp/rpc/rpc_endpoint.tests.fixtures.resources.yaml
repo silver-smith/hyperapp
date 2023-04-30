@@ -1,0 +1,31 @@
+# Automatically generated file. Do not edit.
+# Source ref: sha512:5ba0403817a8fe0005cdc355abd9819cd9cc14d2f70d71f2a7ac95514bb2897a70d2809a6a4c4188542d740a53a4e311f203c23316cc89316f54d2daf0f08807
+# Generator ref: sha512:3539a6f89f6c6979897637ebb1ae27dc8ff0b54dcf8c94656581849c1905b8c095f500872651ac1e0329af305cf2e2b785e73ac37eb5a8fbc5d92ea60db2910e
+
+import:
+- common.mark:mark.service
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  python_object_creg:
+    _type: legacy_type.attribute:attribute
+    object: rpc_endpoint.tests.fixtures.module
+    attr_name: python_object_creg
+  python_object_creg.service:
+    _type: legacy_type.call:call
+    function: python_object_creg
+  rpc_endpoint.tests.fixtures.module:
+    _type: legacy_type.python_module:python_module
+    module_name: rpc_endpoint.tests.fixtures
+    file_name: rpc_endpoint.tests.fixtures.dyn.py
+    import_list:
+      services.mark: common.mark:mark.service
+  transport:
+    _type: legacy_type.attribute:attribute
+    object: rpc_endpoint.tests.fixtures.module
+    attr_name: transport
+  transport.service:
+    _type: legacy_type.call:call
+    function: transport

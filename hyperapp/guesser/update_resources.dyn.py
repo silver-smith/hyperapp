@@ -30,7 +30,7 @@ from .services import (
     resource_module_factory,
     resource_registry_factory,
     rpc_endpoint_factory,
-    subprocess_running,
+    subprocess_rpc_server_running,
     type_module_loader,
     types,
     web,
@@ -826,12 +826,10 @@ def subprocess(process_name, additional_dir_list, rpc_timeout):
     identity = generate_rsa_identity(fast=True)
     rpc_endpoint = rpc_endpoint_factory()
     endpoint_registry.register(identity, rpc_endpoint)
-    with subprocess_running(
-            [*module_dir_list, *additional_dir_list],
-            process_code_module_list,
+    with subprocess_rpc_server_running(
+            process_name,
             rpc_endpoint,
             identity,
-            process_name,
             timeout_sec=rpc_timeout,
         ) as process:
         yield process

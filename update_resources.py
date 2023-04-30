@@ -15,6 +15,8 @@ module_dir_list = [
     HYPERAPP_DIR / 'common',
     HYPERAPP_DIR / 'resource',
     HYPERAPP_DIR / 'transport',
+    HYPERAPP_DIR / 'rpc',
+    HYPERAPP_DIR / 'subprocess',
     HYPERAPP_DIR / 'sync',
     HYPERAPP_DIR / 'async',
     HYPERAPP_DIR / 'ui',

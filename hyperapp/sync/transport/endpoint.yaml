@@ -1,6 +1,0 @@
-require:
-  - failed
-  - unbundler
-  - route_table
-provide:
-  - endpoint_registry

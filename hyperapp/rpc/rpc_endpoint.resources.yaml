@@ -1,0 +1,50 @@
+# Automatically generated file. Do not edit.
+# Source ref: sha512:ca9bca46f3ec267f155d4bace8508c88b408fa6071bf18016e40b252e4a5033ad21aa1dde435922e5adfb9e12ca7f4959ce50c92161eddc6e683fde7f56bc0b3
+# Generator ref: sha512:3539a6f89f6c6979897637ebb1ae27dc8ff0b54dcf8c94656581849c1905b8c095f500872651ac1e0329af305cf2e2b785e73ac37eb5a8fbc5d92ea60db2910e
+
+import:
+- common.mark:mark.service
+- legacy_service:mosaic
+- legacy_service:on_stop
+- legacy_service:peer_registry
+- legacy_service:python_object_creg
+- legacy_service:types
+- legacy_service:web
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.python_module:python_module
+- legacy_type.rpc:error_response
+- legacy_type.rpc:param
+- legacy_type.rpc:request
+- legacy_type.rpc:response
+- legacy_type.rpc:server_error
+- legacy_type.rpc_endpoint_tests:sample_error
+- transport.transport:transport.service
+associations: []
+definitions:
+  rpc_endpoint.module:
+    _type: legacy_type.python_module:python_module
+    module_name: rpc_endpoint
+    file_name: rpc_endpoint.dyn.py
+    import_list:
+      htypes.rpc.error_response: legacy_type.rpc:error_response
+      htypes.rpc.param: legacy_type.rpc:param
+      htypes.rpc.request: legacy_type.rpc:request
+      htypes.rpc.response: legacy_type.rpc:response
+      htypes.rpc.server_error: legacy_type.rpc:server_error
+      htypes.rpc_endpoint_tests.sample_error: legacy_type.rpc_endpoint_tests:sample_error
+      services.mark: common.mark:mark.service
+      services.mosaic: legacy_service:mosaic
+      services.on_stop: legacy_service:on_stop
+      services.peer_registry: legacy_service:peer_registry
+      services.python_object_creg: legacy_service:python_object_creg
+      services.transport: transport.transport:transport.service
+      services.types: legacy_service:types
+      services.web: legacy_service:web
+  rpc_endpoint_factory:
+    _type: legacy_type.attribute:attribute
+    object: rpc_endpoint.module
+    attr_name: rpc_endpoint_factory
+  rpc_endpoint_factory.service:
+    _type: legacy_type.call:call
+    function: rpc_endpoint_factory
