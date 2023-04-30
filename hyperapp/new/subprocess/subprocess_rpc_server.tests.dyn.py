@@ -8,6 +8,7 @@ from .services import (
     rpc_endpoint_factory,
     )
 from .tested.services import subprocess_rpc_server_running
+from .code.subprocess_rpc_server_tests_aux import _callback
 
 log = logging.getLogger(__name__)
 
@@ -19,6 +20,9 @@ def test_subprocess_rpc_server():
     endpoint_registry.register(identity, rpc_endpoint)
     with subprocess_rpc_server_running(name, rpc_endpoint, identity) as process:
         log.info("Started: %r", process)
-        time.sleep(1)
+        call = process.rpc_call(_callback)
+        result = call()
+        assert result == 'ok'
         log.info("Stopping: %r", process)
     log.info("Stopped: %r", process)
+

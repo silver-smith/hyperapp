@@ -42,7 +42,7 @@ def rpc_server_main(connection, name, master_peer_piece, master_servant_ref, sub
     rpc_call = rpc_call_factory(rpc_endpoint, master_peer, master_servant_ref, my_identity, timeout_sec=20)
 
     log.info("%s: Calling callback %s", my_name, rpc_call)
-    rpc_call(subprocess_id=subprocess_id)
+    rpc_call(subprocess_id=subprocess_id, subprocess_peer=my_identity.peer.piece)
 
     log.info("%s: Started", my_name)
     _stop_signal.wait()

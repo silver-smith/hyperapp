@@ -1,13 +1,16 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:0e47dacb5cff14f71d31c3f933b79898c9738aeed8ed24f4bcc1004dd54e1a9208ce4396ee40ebe30ae4a479f1017c708b5e73c0348e03b0159a53789c4528e1
+# Source ref: sha512:1448dcc0e2911911971b48a48e4db7c3b7f9dbd08d48613a008faf943e509f6049e04f39fe1ce79c2c35d03315b9e1ef12e708fc1501a76f5b5a68047639e21c
 # Generator ref: sha512:3539a6f89f6c6979897637ebb1ae27dc8ff0b54dcf8c94656581849c1905b8c095f500872651ac1e0329af305cf2e2b785e73ac37eb5a8fbc5d92ea60db2910e
 
 import:
 - common.mark:mark.service
 - legacy_service:fn_to_ref
+- legacy_service:peer_registry
 - legacy_type.attribute:attribute
 - legacy_type.call:call
 - legacy_type.python_module:python_module
+- new.rpc.rpc_call:rpc_call_factory.service
+- new.rpc.rpc_proxy:rpc_proxy.module
 - new.subprocess.subprocess_2:subprocess_running_2.service
 - new.subprocess.subprocess_rpc_server_main:subprocess_rpc_server_main.module
 - new.subprocess.subprocess_transport:add_subprocess_server_connection.service
@@ -19,11 +22,14 @@ definitions:
     module_name: subprocess_rpc_server
     file_name: subprocess_rpc_server.dyn.py
     import_list:
+      code.rpc_proxy: new.rpc.rpc_proxy:rpc_proxy.module
       code.subprocess_rpc_server_main: new.subprocess.subprocess_rpc_server_main:subprocess_rpc_server_main.module
       services.add_subprocess_server_connection: new.subprocess.subprocess_transport:add_subprocess_server_connection.service
       services.fn_to_ref: legacy_service:fn_to_ref
       services.mark: common.mark:mark.service
       services.partial_ref: resource.partial_ref:partial_ref.service
+      services.peer_registry: legacy_service:peer_registry
+      services.rpc_call_factory: new.rpc.rpc_call:rpc_call_factory.service
       services.subprocess_running_2: new.subprocess.subprocess_2:subprocess_running_2.service
   subprocess_rpc_server_running:
     _type: legacy_type.attribute:attribute

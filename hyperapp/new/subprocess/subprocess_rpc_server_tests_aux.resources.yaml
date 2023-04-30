@@ -1,0 +1,13 @@
+# Automatically generated file. Do not edit.
+# Source ref: sha512:e307312c16693aca8c13a977d89b771cfb051761f8fd82a0266ac938f9dd86cdf326ae6fc928a3d62a9f8f0ea1efa31ee908044b0d4c3cedb9c225fff6dba834
+# Generator ref: sha512:3539a6f89f6c6979897637ebb1ae27dc8ff0b54dcf8c94656581849c1905b8c095f500872651ac1e0329af305cf2e2b785e73ac37eb5a8fbc5d92ea60db2910e
+
+import:
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  subprocess_rpc_server_tests_aux.module:
+    _type: legacy_type.python_module:python_module
+    module_name: subprocess_rpc_server_tests_aux
+    file_name: subprocess_rpc_server_tests_aux.dyn.py
+    import_list: {}
