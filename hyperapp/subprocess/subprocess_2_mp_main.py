@@ -15,7 +15,13 @@ log = logging.getLogger(__name__)
 module_dir_list = [
     HYPERAPP_DIR / 'common',
     HYPERAPP_DIR / 'resource',
+    HYPERAPP_DIR / 'sync',
+    HYPERAPP_DIR / 'rpc',
     HYPERAPP_DIR / 'transport',
+    HYPERAPP_DIR / 'subprocess',
+    HYPERAPP_DIR / 'guesser',
+    HYPERAPP_DIR / 'async',
+    HYPERAPP_DIR / 'ui',
     ]
 
 code_module_list = [
@@ -71,11 +77,25 @@ def subprocess_main(process_name, connection, main_fn_bundle_cdr):
         connection.close()
 
 
+additional_code_module_list = [
+    'resource.resource_module',
+    'resource.register_associations',
+    ]
+
+
+def init_meta_registry_association(resource_registry, python_object_creg):
+    resource = resource_registry['common.meta_registry_association', 'meta_registry_association.module']
+    module = python_object_creg.animate(resource)
+    module.init()
+
+
 def subprocess_main_safe(connection, main_fn_bundle_cdr):
     log.info("Subprocess: Init services.")
     services = Services(module_dir_list)
     services.init_services()
-    services.init_modules(code_module_list)
+    services.init_modules(code_module_list + additional_code_module_list)
+    init_meta_registry_association(services.resource_registry, services.python_object_creg)
+    services.register_associations(services.resource_registry)
     services.start_modules()
     log.info("Subprocess: Unpack main function. Bundle size: %.2f KB", len(main_fn_bundle_cdr)/1024)
 
