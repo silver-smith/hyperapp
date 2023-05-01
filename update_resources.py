@@ -80,6 +80,7 @@ def main():
         fn(fn_res, args.source_subdir, args.root_dir or [], args.module, args.rpc_timeout)
     finally:
         log.info("Stopping.")
+        services.stop_signal.set()
         services.stop()
 
 
