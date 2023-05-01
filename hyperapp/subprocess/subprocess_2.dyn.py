@@ -48,6 +48,8 @@ def subprocess_running_2():
             yield _Subprocess(parent_connection)
         finally:
             parent_connection.close()  # Signal child to stop.
+            log.info("Joining process.")
             process.join()
+            log.info("Joining process: done")
 
     return _subprocess_running
