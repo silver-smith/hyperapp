@@ -1,0 +1,28 @@
+# Automatically generated file. Do not edit.
+# Source ref: sha512:91cc0519e3aaa33a75fc1af7705cdf62be7aa8516f6ad04420900587439e19a8b43d56e3117672009280a8517ae2a83e44cd25f300bbb642a33ad60708cf0e21
+# Generator ref: sha512:aeb0adb4735acda832cff18f15108b7cc7e8a852633e289f6b5a7732d7348026996747a286503dd5beedb86cbb2850f843701b251fc42763d13e82e6eb0eb2c3
+
+import:
+- common.mark:mark.service
+- legacy_service:bundler
+- legacy_service:mosaic
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  subprocess.module:
+    _type: legacy_type.python_module:python_module
+    module_name: subprocess
+    file_name: subprocess.dyn.py
+    import_list:
+      services.bundler: legacy_service:bundler
+      services.mark: common.mark:mark.service
+      services.mosaic: legacy_service:mosaic
+  subprocess_running:
+    _type: legacy_type.attribute:attribute
+    object: subprocess.module
+    attr_name: subprocess_running
+  subprocess_running.service:
+    _type: legacy_type.call:call
+    function: subprocess_running

@@ -10,7 +10,7 @@ from .services import (
     partial_ref,
     peer_registry,
     rpc_call_factory,
-    subprocess_running_2,
+    subprocess_running,
     )
 from .code.subprocess_rpc_server_main import rpc_server_main
 from .code.rpc_proxy import RpcProxy
@@ -63,7 +63,7 @@ def subprocess_rpc_server_running():
             master_servant_ref=fn_to_ref(_rpc_subprocess_callback),
             subprocess_id=subprocess_id,
         )
-        with subprocess_running_2(name, main_ref) as process:
+        with subprocess_running(name, main_ref) as process:
             connection_rec = add_subprocess_server_connection(name, process.connection)
             try:
                 if not event.wait(timeout=3):

@@ -1,6 +1,6 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:9a1820d579507f8c9ac4c217e3a23a513f7997ddc48e983d21e220f0088081442d4742fce764a7502d0c361ad75ea962d7dfa484fbb903f3f0457d951445d752
-# Generator ref: sha512:3539a6f89f6c6979897637ebb1ae27dc8ff0b54dcf8c94656581849c1905b8c095f500872651ac1e0329af305cf2e2b785e73ac37eb5a8fbc5d92ea60db2910e
+# Source ref: sha512:40c5458ce812046b07e937fe0b107a2c9fd8a5997f895f65f20f5985b7fead25673668b5600bd8460701ffdebd23e57f99322d61fd8c7f134f4dac1a15b5144f
+# Generator ref: sha512:aeb0adb4735acda832cff18f15108b7cc7e8a852633e289f6b5a7732d7348026996747a286503dd5beedb86cbb2850f843701b251fc42763d13e82e6eb0eb2c3
 
 import:
 - common.mark:mark.service
@@ -9,12 +9,12 @@ import:
 - legacy_type.attribute:attribute
 - legacy_type.call:call
 - legacy_type.python_module:python_module
+- resource.partial_ref:partial_ref.service
 - rpc.rpc_call:rpc_call_factory.service
 - rpc.rpc_proxy:rpc_proxy.module
-- subprocess.subprocess_2:subprocess_running_2.service
+- subprocess.subprocess:subprocess_running.service
 - subprocess.subprocess_rpc_server_main:subprocess_rpc_server_main.module
 - subprocess.subprocess_transport:add_subprocess_server_connection.service
-- resource.partial_ref:partial_ref.service
 associations: []
 definitions:
   subprocess_rpc_server.module:
@@ -30,7 +30,7 @@ definitions:
       services.partial_ref: resource.partial_ref:partial_ref.service
       services.peer_registry: legacy_service:peer_registry
       services.rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
-      services.subprocess_running_2: subprocess.subprocess_2:subprocess_running_2.service
+      services.subprocess_running: subprocess.subprocess:subprocess_running.service
   subprocess_rpc_server_running:
     _type: legacy_type.attribute:attribute
     object: subprocess_rpc_server.module

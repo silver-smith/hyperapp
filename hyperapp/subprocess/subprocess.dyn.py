@@ -25,7 +25,7 @@ class _Subprocess:
 
 
 @mark.service
-def subprocess_running_2():
+def subprocess_running():
 
     @contextmanager
     def _subprocess_running(name, main_fn_ref):
@@ -33,7 +33,7 @@ def subprocess_running_2():
         source_dir = Path.cwd() / 'hyperapp/subprocess'
         subprocess_mp_main = source_dir / 'subprocess_mp_main.py'
         sys.path.append(str(source_dir))
-        module = __import__('subprocess_2_mp_main', level=0)
+        module = __import__('subprocess_mp_main', level=0)
         subprocess_main = module.subprocess_main
 
         bundle = bundler([main_fn_ref]).bundle
