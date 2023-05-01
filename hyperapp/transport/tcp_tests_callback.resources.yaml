@@ -1,6 +1,6 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:6ef37a6e223669b0949f9f680c8d327c5cf6998e919d083079b7bfa32edc4234765fbd0af43af34c6f03a3856aaceff6269ae5b8f249a2426b22e45539bd4c17
-# Generator ref: sha512:3539a6f89f6c6979897637ebb1ae27dc8ff0b54dcf8c94656581849c1905b8c095f500872651ac1e0329af305cf2e2b785e73ac37eb5a8fbc5d92ea60db2910e
+# Source ref: sha512:95275655639dfa703d110081c7c66c58898e74e9c9856a076b2ebbe98c6b2e9ae1b0d79472a3c542c88aaaad6facd139f91b5a2217cf282991b0e59e5966c522
+# Generator ref: sha512:18d0a627df22db354a3195ba1398702544d25e942695140d4b567414e4f094e8fa6cdc47bb6be62b27716d4cefaa58be9fb91df12dc8308ef2602af2916c05e6
 
 import:
 - legacy_service:generate_rsa_identity
@@ -11,10 +11,10 @@ import:
 - transport.endpoint:endpoint_registry.service
 associations: []
 definitions:
-  tcp_tests_call_back.module:
+  tcp_tests_callback.module:
     _type: legacy_type.python_module:python_module
-    module_name: tcp_tests_call_back
-    file_name: tcp_tests_call_back.dyn.py
+    module_name: tcp_tests_callback
+    file_name: tcp_tests_callback.dyn.py
     import_list:
       services.endpoint_registry: transport.endpoint:endpoint_registry.service
       services.generate_rsa_identity: legacy_service:generate_rsa_identity

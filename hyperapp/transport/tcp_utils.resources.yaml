@@ -1,0 +1,13 @@
+# Automatically generated file. Do not edit.
+# Source ref: sha512:57ffeeb4cb80fe697a93a39ceca6cb84547ae683a40ce4aea72c1d9a1b689f5b9ebf858ec20f63965976272947ddaba9f0e06e703d92feef699ae9f25b754adb
+# Generator ref: sha512:18d0a627df22db354a3195ba1398702544d25e942695140d4b567414e4f094e8fa6cdc47bb6be62b27716d4cefaa58be9fb91df12dc8308ef2602af2916c05e6
+
+import:
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  tcp_utils.module:
+    _type: legacy_type.python_module:python_module
+    module_name: tcp_utils
+    file_name: tcp_utils.dyn.py
+    import_list: {}
