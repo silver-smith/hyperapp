@@ -49,7 +49,7 @@ resource_services = [
     'transport',
     ]
 
-SourceInfo = namedtuple('SourceInfo', 'import_name attr_list service_to_attr')
+SourceInfo = namedtuple('SourceInfo', 'import_name attr_list service_to_attr used_types')
 DepsInfo = namedtuple('DepsInfo', 'uses_modules wants_services wants_code tests_services tests_code')
 ObjectInfo = namedtuple('ObjectInfo', 'dir get_result_t')
 
@@ -389,11 +389,11 @@ class SourceFile:
             _log.info("Collected attrs for %r, module %s: %s", self.module_name, object_attrs.object_module, attr_list)
 
         used_imports = import_recorder.used_imports()
-        _log.info("Used import list: %s", used_imports)
+        _log.info("%s: used import list: %s", self.module_name, used_imports)
         import_set = set(used_imports)
         if import_discoverer:
             discovered_imports = import_discoverer.discovered_imports()
-            _log.info("Discovered import list: %s", discovered_imports)
+            _log.info("%s: discovered import list: %s", self.module_name, discovered_imports)
             import_set |= set(discovered_imports)
 
         if object_attrs:
@@ -408,6 +408,7 @@ class SourceFile:
                 import_name=object_attrs.object_module,
                 attr_list=attr_list,
                 service_to_attr=service_to_attr,
+                used_types=self._imports_to_type_set(import_set),
                 )
         else:
             _log.info("Failed to load source info")
@@ -707,7 +708,7 @@ class SourceFile:
                 import_set = tested_module_imports.setdefault(module_name, set())
                 import_set |= imports
 
-        return (used_types, object_info_dict)
+        return (self.source_info.used_types | used_types, object_info_dict)
 
     @staticmethod
     def _types_import_list(type_res_list, used_types):
