@@ -59,7 +59,6 @@ class RpcEndpoint:
         registry.register_actor(htypes.rpc.request, self._handle_request)
         registry.register_actor(htypes.rpc.response, self._handle_response)
         registry.register_actor(htypes.rpc.error_response, self._handle_error_response)
-        _endpoint_list.append(self)
 
     def __repr__(self):
         return '<sync RpcEndpoint>'
@@ -146,7 +145,11 @@ class RpcEndpoint:
 
 @mark.service
 def rpc_endpoint_factory():
-    return RpcEndpoint
+    def _rpc_endpoint_factory():
+        endpoint = RpcEndpoint()
+        _endpoint_list.append(endpoint)
+        return endpoint
+    return _rpc_endpoint_factory
 
 
 def stop():
