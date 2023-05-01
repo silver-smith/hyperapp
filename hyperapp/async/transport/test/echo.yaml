@@ -1,6 +1,0 @@
-require:
-  - unbundler
-  - peer_registry
-  - generate_rsa_identity
-  - async_transport
-  - async_endpoint_registry

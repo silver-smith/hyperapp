@@ -1,6 +1,0 @@
-require:
-  - unbundler
-  - async_route_table
-provide:
-  - transport_log_callback_registry
-  - async_endpoint_registry
