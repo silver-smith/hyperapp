@@ -14,12 +14,10 @@ from . import htypes
 from .services import (
     builtin_types_as_dict,
     code_module_loader,
-    collect_attributes_ref,
     constructor_creg,
     endpoint_registry,
     hyperapp_dir,
     generate_rsa_identity,
-    get_resource_type_ref,
     legacy_module_resource_loader,
     legacy_service_resource_loader,
     legacy_type_resource_loader,
@@ -36,6 +34,7 @@ from .services import (
     web,
     )
 from .code.utils import camel_to_snake
+from .code import runner
 
 _log = logging.getLogger(__name__)
 
@@ -374,7 +373,7 @@ class SourceFile:
 
     def parse_source(self, import_recorder, import_discoverer, module_res, process, fail_on_incomplete):
         _log.debug("Collect attributes for: %r", self.module_name)
-        collect_attributes = process.rpc_call(collect_attributes_ref)
+        collect_attributes = process.rpc_call(runner.collect_attributes)
         try:
             object_attrs = collect_attributes(object_ref=mosaic.put(module_res))
         except HException as x:
@@ -576,7 +575,7 @@ class SourceFile:
         call_res = htypes.call.call(mosaic.put(function_res))
 
         _log.info("%s %s: Retrieving type: %s", self.name, attr_path_str, call_res)
-        get_resource_type = process.rpc_call(get_resource_type_ref)
+        get_resource_type = process.rpc_call(runner.get_resource_type)
         result_t = get_resource_type(resource_ref=mosaic.put(call_res))
         _log.info("%s %s type: %r", self.name, attr_path_str, result_t)
 
@@ -617,7 +616,7 @@ class SourceFile:
 
     def _visit_object(self, process, custom_types, resource_module, fixtures_file, object_name, object_res):
         _log.debug("Collect attributes for: %s.%s", self.module_name, object_name)
-        collect_attributes = process.rpc_call(collect_attributes_ref)
+        collect_attributes = process.rpc_call(runner.collect_attributes)
         object_attrs = collect_attributes(object_ref=mosaic.put(object_res))
 
         attr_list = [web.summon(ref) for ref in object_attrs.attr_list]
@@ -736,7 +735,7 @@ class SourceFile:
     # Assume that constructor attr.param_list == ['piece'] checked before.
     def _pick_and_check_piece_type(self, process, custom_types, fixtures_file, object_name):
         fixture = self._parameter_fixture(fixtures_file, [object_name, 'piece'])
-        get_resource_type = process.rpc_call(get_resource_type_ref)
+        get_resource_type = process.rpc_call(runner.get_resource_type)
         piece_t = get_resource_type(resource_ref=mosaic.put(fixture))
         _log.info("%s %s piece type: %r", self.name, object_name, piece_t)
         if not isinstance(piece_t, htypes.inspect.record_t):
