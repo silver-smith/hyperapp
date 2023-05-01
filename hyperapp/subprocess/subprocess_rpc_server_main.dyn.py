@@ -26,11 +26,11 @@ def rpc_server_main(connection, name, master_peer_piece, master_servant_ref, sub
     my_name = f"Subprocess rpc server {name}"
     log.info("%s: Init", my_name)
 
-    add_subprocess_server_connection(name, connection, on_eof=_stop)
+    add_subprocess_server_connection('master', connection, on_eof=_stop)
 
     master_peer = peer_registry.animate(master_peer_piece)
     master_peer_ref = mosaic.put(master_peer_piece)
-    route = SubprocessRoute(name, connection)
+    route = SubprocessRoute('master', connection)
     route_table.add_route(master_peer_ref, route)
 
     my_identity = generate_rsa_identity(fast=True)
