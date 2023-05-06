@@ -4,7 +4,6 @@ import:
 - legacy_type.attribute:attribute
 - legacy_type.code_registry:association
 - legacy_type.code_registry:constructor
-- legacy_type.meta_registry:meta_association
 - legacy_type.python_module:python_module
 
 associations:
