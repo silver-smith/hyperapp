@@ -39,9 +39,13 @@ class CodeRegistry:
         t = deduce_value_type(piece)
         return self._animate(t, piece, args, kw)
 
+    def _resolve_record(self, t):
+        return self._registry[t]
+
     def _animate(self, t, piece, args, kw):
-        rec = self._registry.get(t)
-        if not rec:
+        try:
+            rec = self._resolve_record(t)
+        except KeyError:
             raise RuntimeError(f"No code is registered for {self._produce_name}: {t!r}; piece: {piece}")
         _log.debug('Producing %s for %s of type %s using %s(%s/%s, %s/%s)',
                    self._produce_name, piece, t, rec.factory, rec.args, args, rec.kw, kw)

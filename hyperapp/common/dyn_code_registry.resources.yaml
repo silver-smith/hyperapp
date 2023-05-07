@@ -1,7 +1,10 @@
 import:
+- common.association_registry:association.service
+- common.association_registry:association_reg.service
 - common.mark:mark.module
 - legacy_service:mosaic
 - legacy_service:python_object_creg
+- legacy_service:web
 - legacy_type.attribute:attribute
 - legacy_type.code_registry:association
 - legacy_type.code_registry:constructor
@@ -23,8 +26,12 @@ definitions:
     import_list:
       code.mark: common.mark:mark.module
       htypes.code_registry.constructor: legacy_type.code_registry:constructor
+      htypes.code_registry.association: legacy_type.code_registry:association
+      services.association: common.association_registry:association.service
+      services.association_reg: common.association_registry:association_reg.service
       services.mosaic: legacy_service:mosaic
       services.python_object_creg: legacy_service:python_object_creg
+      services.web: legacy_service:web
 
   register:
     _type: legacy_type.attribute:attribute
