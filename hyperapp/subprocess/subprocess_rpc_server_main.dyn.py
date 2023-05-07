@@ -10,16 +10,15 @@ from .services import (
     route_table,
     rpc_call_factory,
     rpc_endpoint_factory,
+    stop_signal,
     )
 from .code.subprocess_transport import SubprocessRoute
 
 log = logging.getLogger(__name__)
 
-_stop_signal = threading.Event()
-
 
 def _stop():
-    _stop_signal.set()
+    stop_signal.set()
 
 
 def rpc_server_main(connection, name, master_peer_piece, master_servant_ref, subprocess_id):
@@ -45,5 +44,5 @@ def rpc_server_main(connection, name, master_peer_piece, master_servant_ref, sub
     rpc_call(subprocess_name=name, subprocess_id=subprocess_id, subprocess_peer=my_identity.peer.piece)
 
     log.info("%s: Started", my_name)
-    _stop_signal.wait()
+    stop_signal.wait()
     log.info("%s: Stopping", my_name)

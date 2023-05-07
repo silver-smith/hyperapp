@@ -1,11 +1,12 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:a60b554dd14375eeef903ed7690156c3f0526da5255f52445ecfba9bab0894f8a0361979253649f794273af51abb2520619c373927c589fe1a22af9224345954
-# Generator ref: sha512:aeb0adb4735acda832cff18f15108b7cc7e8a852633e289f6b5a7732d7348026996747a286503dd5beedb86cbb2850f843701b251fc42763d13e82e6eb0eb2c3
+# Source ref: sha512:db0b16d5dc52150572d5ce7d10af5508f48dc88c570cd4685daff8fb44af4555a890b1b5f0ae69842aa37b8f9357a30bd56b755e073d7f6b65e2daa2c2a7deba
+# Generator ref: sha512:7d5d9fb846f5cb5c4136c7aa4f74f60ded88d4f934b14f1992ab771bc3ea887c3a33b28e1fcc6d1d63b17440b60a7ae1640e292090402bcadeb75dfe38d4ce3e
 
 import:
 - legacy_service:generate_rsa_identity
 - legacy_service:mosaic
 - legacy_service:peer_registry
+- legacy_service:stop_signal
 - legacy_type.python_module:python_module
 - rpc.rpc_call:rpc_call_factory.service
 - rpc.rpc_endpoint:rpc_endpoint_factory.service
@@ -29,3 +30,4 @@ definitions:
       services.route_table: transport.sync_route_table:route_table.service
       services.rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
       services.rpc_endpoint_factory: rpc.rpc_endpoint:rpc_endpoint_factory.service
+      services.stop_signal: legacy_service:stop_signal
