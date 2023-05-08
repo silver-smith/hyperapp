@@ -19,9 +19,10 @@ _RefsAndBundle = namedtuple('_RefsAndBundle', 'ref_set bundle')
 
 class Bundler(Visitor):
 
-    def __init__(self, mosaic, types, aux_bundler_hooks):
+    def __init__(self, mosaic, types, association_reg, aux_bundler_hooks):
         self._mosaic = mosaic
         self._types = types
+        self._association_reg = association_reg
         self._aux_bundler_hooks = aux_bundler_hooks
         self._collected_ref_set = None
         self._collected_type_ref_set = None
@@ -90,9 +91,13 @@ class Bundler(Visitor):
         if t == ref_t:
             self._collected_ref_set.add(value)
 
-    def _collect_aux_refs(self, ref, t, object):
+    def _collect_aux_refs(self, ref, t, value):
+        for ass in self._association_reg.associations_for_base(value):
+            ass_ref = self._mosaic.put(ass)
+            self._collected_aux_set.add(ass_ref)
+            self._collected_ref_set.add(ass_ref)  # Should collect from these refs too.
         for hook in self._aux_bundler_hooks:
-            aux_ref_set = set(hook(ref, t, object) or [])
+            aux_ref_set = set(hook(ref, t, value) or [])
             self._collected_aux_set |= aux_ref_set
             self._collected_ref_set |= aux_ref_set  # Should collect from these refs too.
 
@@ -103,10 +108,11 @@ class ThisModule(Module):
         super().__init__(module_name, services, config)
         self._mosaic = services.mosaic
         self._types = services.types
+        self._association_reg = services.association_reg
         self._aux_bundler_hooks = []
         services.aux_bundler_hooks = self._aux_bundler_hooks
         services.bundler = self.bundler
 
     def bundler(self, ref_list, seen_refs=None):
-        bundler = Bundler(self._mosaic, self._types, self._aux_bundler_hooks)
+        bundler = Bundler(self._mosaic, self._types, self._association_reg, self._aux_bundler_hooks)
         return bundler.bundle(ref_list, seen_refs)

@@ -1,5 +1,5 @@
 import logging
-from collections import namedtuple
+from collections import defaultdict, namedtuple
 
 from .htypes.meta_association import meta_association
 
@@ -13,7 +13,7 @@ class AssociationRegistry:
 
     def __init__(self, meta_registry):
         self._meta_registry = meta_registry
-        self._base_to_meta_record = {}
+        self._base_to_meta_record = defaultdict(set)
         self._key_to_value = {}
 
     def register_association_list(self, ass_list):
@@ -32,9 +32,12 @@ class AssociationRegistry:
         if not rec:
             return  # Old-style registration function, registered directly.
         for base in rec.bases:
-            self._base_to_meta_record[base] = ass
+            self._base_to_meta_record[base].add(ass)
         for key, value in rec.key_to_value.items():
             self._key_to_value[key] = value
 
     def __getitem__(self, key):
         return self._key_to_value[key]
+
+    def associations_for_base(self, base):
+        return self._base_to_meta_record.get(base, [])
