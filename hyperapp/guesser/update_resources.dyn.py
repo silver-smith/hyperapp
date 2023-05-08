@@ -320,7 +320,7 @@ class SourceFile:
         return (import_recorder, import_discoverer, module_res)
 
     # Module resource with import recorder for htypes.
-    def recorder_module_res(self, resource_registry, type_res_list, process, file_dict, service_providers):
+    def type_recorder_module_res(self, resource_registry, type_res_list, process, file_dict, service_providers):
         import_recorder, import_recorder_ref = self._prepare_import_recorder(process, type_res_list)
         module_res = self._make_module_res([
             *self._make_import_list(resource_registry, file_dict, service_providers),
@@ -438,11 +438,11 @@ class SourceFile:
             _log.info("%s: Collect provides_services", self.module_name)
             service_providers = service_provider_modules(file_dict)
             if not self.source_info:
-                import_recorder, module_res = self.recorder_module_res(
+                import_recorder, module_res = self.type_recorder_module_res(
                     resource_registry, type_res_list, process, file_dict, service_providers)
                 invalid_deps, self.source_info = self.parse_source(
                     import_recorder, None, module_res, process, fail_on_incomplete=True)
-                # deps are invalid due to recorder_module_res usage.
+                # deps are invalid due to type_recorder_module_res usage.
             self.provides_services = set(self.source_info.service_to_attr)
         if self.is_tests and self.tests_modules is None:
             code_providers = code_provider_modules(file_dict)
@@ -495,7 +495,7 @@ class SourceFile:
     #             }
     #     else:
     #         fixed_service_providers = service_providers
-    #     import_recorder, module_res = self.recorder_module_res(
+    #     import_recorder, module_res = self.type_recorder_module_res(
     #         resource_registry, type_res_list, process, file_dict, fixed_service_providers)
     #     return (import_recorder, module_res)
 
@@ -508,14 +508,14 @@ class SourceFile:
         import_list = []
         for name in self.deps.tests_code:
             provider = code_providers[name]
-            import_recorder, module_res = provider.recorder_module_res(
+            import_recorder, module_res = provider.type_recorder_module_res(
                 resource_registry, type_res_list, process, file_dict, service_providers)
             import_list.append(
                 htypes.python_module.import_rec(f'tested.code.{name}', mosaic.put(module_res)))
             name_to_recorder[provider.module_name] = import_recorder
         for service_name in self.deps.tests_services:
             provider = unready_service_providers[service_name]
-            import_recorder, module_res = provider.recorder_module_res(
+            import_recorder, module_res = provider.type_recorder_module_res(
                 resource_registry, type_res_list, process, file_dict, service_providers)
             service_attr = provider.source_info.service_to_attr[service_name]
             attribute = htypes.attribute.attribute(
@@ -669,7 +669,7 @@ class SourceFile:
             service_providers.update(self.module_service_provider_modules(fixtures_file))
 
         if not self.source_info:
-            import_recorder, collect_module_res = self.recorder_module_res(
+            import_recorder, collect_module_res = self.type_recorder_module_res(
                 resource_registry, type_res_list, process, file_dict, service_providers)
             invalid_deps, self.source_info = self.parse_source(
                 import_recorder, None, collect_module_res, process, fail_on_incomplete=True)
