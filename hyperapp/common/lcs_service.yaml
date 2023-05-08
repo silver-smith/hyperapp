@@ -7,6 +7,5 @@ import:
   - common.lcs
 require:
 - aux_bundler_hooks
-- meta_registry
 provide:
 - lcs

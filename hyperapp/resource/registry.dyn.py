@@ -2,6 +2,9 @@ import inspect
 import logging
 from functools import partial
 
+from hyperapp.common.htypes.meta_association import meta_association
+from hyperapp.common.meta_association_type import MetaAssociationResourceType
+from hyperapp.common.meta_registry_association import register_meta_association
 from hyperapp.common.module import Module
 
 from . import htypes
@@ -41,7 +44,9 @@ class ThisModule(Module):
 
         services.resource_type_reg = {}  # resource_t -> ResourceType instance
         services.python_object_creg = CachedCodeRegistry('python_object', services.web, services.types)
+        register_meta_association(services.meta_registry, services.python_object_creg)
         services.fn_to_ref = partial(fn_to_ref, services.mosaic, services.python_object_creg)
         services.resource_type_producer = partial(resource_type_producer, services.resource_type_factory, services.resource_type_reg)
         services.meta_registry.register_actor(
             htypes.impl.python_object_association, register_python_object, services.python_object_creg)
+        services.resource_type_reg[meta_association] = MetaAssociationResourceType()

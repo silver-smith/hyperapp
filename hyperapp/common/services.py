@@ -16,6 +16,7 @@ from .type_system import TypeSystem
 from .code_module import register_code_module_types
 from .code_module_loader import CodeModuleRegistry, CodeModuleLoader
 from .code_registry import CodeRegistry
+from .association_registry import AssociationRegistry
 from .python_importer import PythonImporter
 from .module_registry import CodeModule, ModuleRegistry
 from .resource_dir import ResourceDir
@@ -31,6 +32,7 @@ class Services(object):
 
     builtin_services = [
         'services',
+        'association_reg',
         'builtin_services',
         'builtin_types',
         'hyperapp_dir',
@@ -42,6 +44,7 @@ class Services(object):
         'local_modules',
         'type_module_loader',
         'code_module_loader',
+        'meta_registry',
         'module_registry',
         'on_stop',
         'stop_signal',
@@ -67,6 +70,8 @@ class Services(object):
         self.web = Web(self.types)
         self.mosaic = Mosaic(self.types)
         self.types.init(self.builtin_types, self.mosaic)
+        self.meta_registry = CodeRegistry('meta', self.web, self.types)
+        self.association_reg = AssociationRegistry(self.meta_registry)
         self.module_ref_resolver = ModuleRefResolver(self.mosaic)
         self.web.add_source(self.mosaic)
         register_builtin_types(self.builtin_types, self.mosaic, self.types)

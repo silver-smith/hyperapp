@@ -1,10 +1,10 @@
 from functools import cached_property
 
 from hyperapp.common.code_registry import CodeRegistry
+from hyperapp.common.association_registry import Association
 
 from . import htypes
 from .services import (
-    association,
     association_reg,
     mosaic,
     python_object_creg,
@@ -16,7 +16,7 @@ from .code.mark import add_fn_module_constructor
 def register(piece):
     code_registry_svc_res = web.summon(piece.service)
     t = python_object_creg.invite(piece.type)
-    return association(
+    return Association(
         bases=[code_registry_svc_res, t],
         key_to_value={(code_registry_svc_res, t): piece.function},
         )

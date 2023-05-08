@@ -12,5 +12,4 @@ provide:
   - fn_to_ref
   - resource_type_producer
 require:
-  - meta_registry
   - resource_type_factory

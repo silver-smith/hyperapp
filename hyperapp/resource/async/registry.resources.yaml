@@ -1,0 +1,13 @@
+# Automatically generated file. Do not edit.
+# Source ref: sha512:fffd25fb3227556b43626d3f03ab09d498eddf8691dbe915c9cc413a63ec1dd15caf6c140f47ee7f2c82a3b3f46986f9122d08924d04032e425302443d91e425
+# Generator ref: sha512:59d7e67ce22ff8a549a29a35522d434ecd734707cb64e75143457d8e54e8cc418ea56b5af29c272eb06d3e33e16fe3a530765f451816d1ad0fc852d7392b5e0b
+
+import:
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  registry.module:
+    _type: legacy_type.python_module:python_module
+    module_name: registry
+    file_name: registry.dyn.py
+    import_list: {}

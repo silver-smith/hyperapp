@@ -79,14 +79,7 @@ def subprocess_main(process_name, connection, main_fn_bundle_cdr):
 
 additional_code_module_list = [
     'resource.resource_module',
-    'resource.register_associations',
     ]
-
-
-def init_meta_registry_association(resource_registry, python_object_creg):
-    resource = resource_registry['common.meta_registry_association', 'meta_registry_association.module']
-    module = python_object_creg.animate(resource)
-    module.init()
 
 
 def subprocess_main_safe(connection, main_fn_bundle_cdr):
@@ -94,8 +87,7 @@ def subprocess_main_safe(connection, main_fn_bundle_cdr):
     services = Services(module_dir_list)
     services.init_services()
     services.init_modules(code_module_list + additional_code_module_list)
-    init_meta_registry_association(services.resource_registry, services.python_object_creg)
-    services.register_associations(services.resource_registry)
+    services.association_reg.register_association_list(services.resource_registry.associations)
     services.start_modules()
     log.info("Subprocess: Unpack main function. Bundle size: %.2f KB", len(main_fn_bundle_cdr)/1024)
 

@@ -3,7 +3,6 @@ import:
     global_command:
       - global_command_association
 require:
-  - meta_registry
   - event_loop_holder
   - command_hub_list
 provide:

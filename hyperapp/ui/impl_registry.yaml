@@ -5,5 +5,4 @@ import:
 provide:
   - impl_registry
 require:
-  - meta_registry
   - python_object_creg
