@@ -580,15 +580,15 @@ class SourceFile:
 
         call_res = htypes.call.call(mosaic.put(function_res))
 
-        _log.info("%s %s: Retrieving type: %s", self.name, attr_path_str, call_res)
+        _log.info("Retrieving type for: %s %s; %s", self.name, attr_path_str, call_res)
         get_resource_type = process.rpc_call(runner.get_resource_type)
         result_t = get_resource_type(resource_ref=mosaic.put(call_res), use_associations=ass_list)
-        _log.info("%s %s type: %r", self.name, attr_path_str, result_t)
+        _log.info("Retrieved type for: %s %s: %r", self.name, attr_path_str, result_t)
 
         if isinstance(result_t, htypes.inspect.coroutine_t):
             async_run = htypes.async_run.async_run(mosaic.put(call_res))
             result_t = get_resource_type(resource_ref=mosaic.put(async_run), use_associations=ass_list)
-            _log.info("%s %s async call type: %r", self.name, attr_path_str, result_t)
+            _log.info("Retrieved async call type for: %s %s: %r", self.name, attr_path_str, result_t)
 
         return (call_res, result_t)
 
