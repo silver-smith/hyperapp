@@ -29,6 +29,7 @@ class RouteTable:
 
     def aux_ref_unbundler_hook(self, route_registry, ref, t, value):
         if t != htypes.transport.route_association:
-            return
+            return False
         route = route_registry.invite(value.route_ref)
         self.add_route(value.peer_ref, route)
+        return True

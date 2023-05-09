@@ -19,6 +19,9 @@ def register_service_provider(piece, web, peer_registry, service_provider_reg):
 def aux_unbundler_hook(web, peer_registry, service_provider_reg, ref, t, value):
     if t is htypes.impl.service_provider:
         register_service_provider(value, web, peer_registry, service_provider_reg)
+        return True
+    else:
+        return False
 
 
 class ThisModule(Module):

@@ -198,6 +198,7 @@ class LCSheet(LCSlice):
 
     def aux_unbundler_hook(self, ref, t, value):
         if t not in {htypes.lcs.lcs_association, htypes.lcs.lcs_set_association}:
-            return
+            return False
         dir, record = self._add_association(value, persist=False)
         log.info("LCS unbundle aux: %s -> %s", set(dir), record)
+        return True
