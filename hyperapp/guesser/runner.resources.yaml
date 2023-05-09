@@ -1,4 +1,5 @@
 import:
+  - legacy_service:association_reg
   - legacy_service:mosaic
   - legacy_service:types
   - legacy_service:python_object_creg
@@ -39,6 +40,7 @@ definitions:
       htypes.inspect.list_t: legacy_type.inspect:list_t
       htypes.inspect.empty_list_t: legacy_type.inspect:empty_list_t
       htypes.inspect.coroutine_t: legacy_type.inspect:coroutine_t
+      services.association_reg: legacy_service:association_reg
       services.mosaic: legacy_service:mosaic
       services.types: legacy_service:types
       services.python_object_creg: legacy_service:python_object_creg

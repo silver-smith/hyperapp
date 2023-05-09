@@ -517,11 +517,13 @@ class SourceFile:
             module_res = type_recorder_module_res(provider)
             import_list.append(
                 htypes.python_module.import_rec(f'tested.code.{name}', mosaic.put(module_res)))
+
+        ass_list = []
         for service_name in self.deps.tests_services:
             provider = unready_service_providers[service_name]
             module_res = type_recorder_module_res(provider)
             name_to_res = {}
-            ass_list = provider.call_attr_constructors(custom_types, name_to_res, module_res)
+            ass_list += provider.call_attr_constructors(custom_types, name_to_res, module_res)
             for name, resource in name_to_res.items():
                 if name.endswith('.service'):
                     sn, _ = name.rsplit('.', 1)
@@ -532,7 +534,7 @@ class SourceFile:
             import_list.append(
                 htypes.python_module.import_rec(f'tested.services.{service_name}', mosaic.put(resource)))
 
-        return (name_to_recorder, import_list)
+        return (name_to_recorder, import_list, ass_list)
 
     @staticmethod
     def _parameter_fixture(fixtures_file, path):
@@ -544,7 +546,7 @@ class SourceFile:
         except KeyError:
             return None
 
-    def _visit_function(self, process, fixtures_file, object_res, attr, path):
+    def _visit_function(self, process, fixtures_file, object_res, ass_list, attr, path):
         attr_path = [*path, attr.name]
         attr_path_str = '.'.join(attr_path)
         attr_res = htypes.attribute.attribute(
@@ -580,12 +582,12 @@ class SourceFile:
 
         _log.info("%s %s: Retrieving type: %s", self.name, attr_path_str, call_res)
         get_resource_type = process.rpc_call(runner.get_resource_type)
-        result_t = get_resource_type(resource_ref=mosaic.put(call_res))
+        result_t = get_resource_type(resource_ref=mosaic.put(call_res), use_associations=ass_list)
         _log.info("%s %s type: %r", self.name, attr_path_str, result_t)
 
         if isinstance(result_t, htypes.inspect.coroutine_t):
             async_run = htypes.async_run.async_run(mosaic.put(call_res))
-            result_t = get_resource_type(resource_ref=mosaic.put(async_run))
+            result_t = get_resource_type(resource_ref=mosaic.put(async_run), use_associations=ass_list)
             _log.info("%s %s async call type: %r", self.name, attr_path_str, result_t)
 
         return (call_res, result_t)
@@ -618,7 +620,7 @@ class SourceFile:
             )
         resource_module.add_association(association)
 
-    def _visit_object(self, process, custom_types, resource_module, fixtures_file, object_name, object_res):
+    def _visit_object(self, process, custom_types, resource_module, fixtures_file, ass_list, object_name, object_res):
         _log.debug("Collect attributes for: %s.%s", self.module_name, object_name)
         collect_attributes = process.rpc_call(runner.collect_attributes)
         object_attrs = collect_attributes(object_ref=mosaic.put(object_res))
@@ -634,24 +636,24 @@ class SourceFile:
         get_attr = next(attr for attr in attr_list if attr.name == 'get')
         if not isinstance(get_attr, htypes.inspect.fn_attr):
             raise RuntimeError(f"{self.name}: {object_name}.get should be a function")
-        _, get_result_t = self._visit_function(process, fixtures_file, object_res, get_attr, path=[object_name])
+        _, get_result_t = self._visit_function(process, fixtures_file, object_res, ass_list, get_attr, path=[object_name])
 
         for attr in attr_list:
             if attr.name == 'get':
                 continue
             if not isinstance(attr, htypes.inspect.fn_attr):
                 continue
-            _, result_t = self._visit_function(process, fixtures_file, object_res, attr, path=[object_name])
+            _, result_t = self._visit_function(process, fixtures_file, object_res, ass_list, attr, path=[object_name])
             self._construct_method_command(custom_types, resource_module, object_name, object_dir, attr)
 
         return ObjectInfo(object_dir, get_result_t)
 
-    def _visit_attribute(self, process, custom_types, resource_module, fixtures_file, module_res, attr):
+    def _visit_attribute(self, process, custom_types, resource_module, fixtures_file, module_res, ass_list, attr):
         if not isinstance(attr, htypes.inspect.fn_attr):
             return None
-        call_res, result_t = self._visit_function(process, fixtures_file, module_res, attr, path=[])
+        call_res, result_t = self._visit_function(process, fixtures_file, module_res, ass_list, attr, path=[])
         if list(attr.param_list) == ['piece'] and isinstance(result_t, htypes.inspect.object_t):
-            return self._visit_object(process, custom_types, resource_module, fixtures_file, attr.name, call_res)
+            return self._visit_object(process, custom_types, resource_module, fixtures_file, ass_list, attr.name, call_res)
 
     def _imports_to_type_set(self, import_set):
         used_types = set()
@@ -680,7 +682,7 @@ class SourceFile:
         import_list = self._make_import_list(resource_registry, file_dict, service_providers)
 
         import_recorder, import_recorder_ref = self._prepare_import_recorder(process, type_res_list)
-        name_to_recorder, tested_import_list = self._make_tested_import_list(
+        name_to_recorder, tested_import_list, ass_list = self._make_tested_import_list(
             resource_registry, custom_types, type_res_list, process, file_dict, service_providers)
 
         recorder_import_list = [
@@ -691,7 +693,7 @@ class SourceFile:
 
         object_info_dict = {}
         for attr in self.source_info.attr_list:
-            object_info = self._visit_attribute(process, custom_types, resource_module, fixtures_file, module_res, attr)
+            object_info = self._visit_attribute(process, custom_types, resource_module, fixtures_file, module_res, ass_list, attr)
             if object_info:
                 object_info_dict[attr.name] = object_info
 
@@ -740,7 +742,7 @@ class SourceFile:
     def _pick_and_check_piece_type(self, process, custom_types, fixtures_file, object_name):
         fixture = self._parameter_fixture(fixtures_file, [object_name, 'piece'])
         get_resource_type = process.rpc_call(runner.get_resource_type)
-        piece_t = get_resource_type(resource_ref=mosaic.put(fixture))
+        piece_t = get_resource_type(resource_ref=mosaic.put(fixture), use_associations=[])
         _log.info("%s %s piece type: %r", self.name, object_name, piece_t)
         if not isinstance(piece_t, htypes.inspect.record_t):
             raise RuntimeError(

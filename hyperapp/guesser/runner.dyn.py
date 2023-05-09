@@ -7,6 +7,7 @@ from hyperapp.common.htypes.deduce_value_type import DeduceTypeError, deduce_com
 
 from . import htypes
 from .services import (
+    association_reg,
     mosaic,
     types,
     python_object_creg,
@@ -61,7 +62,9 @@ def _iter_attributes(object):
             yield htypes.inspect.fn_attr(*args)
 
 
-def get_resource_type(resource_ref):
+def get_resource_type(resource_ref, use_associations):
+    association_reg.register_association_list(use_associations)
+
     log.info("Get type for resource ref: %s", resource_ref)
     value = python_object_creg.invite(resource_ref)
     log.info("Resource value: %s", value)
