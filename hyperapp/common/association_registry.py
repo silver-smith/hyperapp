@@ -36,6 +36,14 @@ class AssociationRegistry:
         for key, value in rec.key_to_value.items():
             self._key_to_value[key] = value
 
+    # TODO: Remove associations after use in runner.
+    # def remove_associations(self, ass_list):
+    #     for ass in ass_list:
+    #         for base, ass_set in self._base_to_meta_record:
+    #             self._base_to_meta_record[base] = ass_set - set(ass_list)
+    #         for key, value in list(self._key_to_value.items()):
+    #             if ???
+
     def __getitem__(self, key):
         return self._key_to_value[key]
 
