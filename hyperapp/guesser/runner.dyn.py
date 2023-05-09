@@ -67,7 +67,7 @@ def get_resource_type(resource_ref, use_associations):
 
     log.info("Get type for resource ref: %s", resource_ref)
     value = python_object_creg.invite(resource_ref)
-    log.info("Resource value: %s", value)
+    log.info("Resource value: %s", repr(value))
 
     if value is None:
         return htypes.inspect.none_t()
@@ -79,7 +79,7 @@ def get_resource_type(resource_ref, use_associations):
         log.info("Expanding generator: %r", value)
         value = list(value)
         
-    log.info("Get type for value: %r", value)
+    log.info("Get type for value: %s", repr(value))
     try:
         t = deduce_complex_value_type(mosaic, types, value)
     except DeduceTypeError:

@@ -50,5 +50,5 @@ class CodeRegistry:
         _log.debug('Producing %s for %s of type %s using %s(%s/%s, %s/%s)',
                    self._produce_name, piece, t, rec.factory, rec.args, args, rec.kw, kw)
         actor = rec.factory(piece, *args, *rec.args, **kw, **rec.kw)
-        _log.debug('Animated %s: %s to %s', self._produce_name, piece, actor)
+        _log.debug('Animated %s: %s to %s', self._produce_name, piece, str(actor))
         return actor
