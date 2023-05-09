@@ -503,20 +503,23 @@ class SourceFile:
         code_providers = code_provider_modules(file_dict)
         unready_service_providers = service_provider_modules(file_dict, want_up_to_date=False)
         # fixed_service_providers = {**service_providers, **self.module_service_provider_modules(self)}
-
         name_to_recorder = {}
+
+        def type_recorder_module_res(provider):
+            import_recorder, module_res = provider.type_recorder_module_res(
+                resource_registry, type_res_list, process, file_dict, service_providers)
+            name_to_recorder[provider.module_name] = import_recorder
+            return module_res
+
         import_list = []
         for name in self.deps.tests_code:
             provider = code_providers[name]
-            import_recorder, module_res = provider.type_recorder_module_res(
-                resource_registry, type_res_list, process, file_dict, service_providers)
+            module_res = type_recorder_module_res(provider)
             import_list.append(
                 htypes.python_module.import_rec(f'tested.code.{name}', mosaic.put(module_res)))
-            name_to_recorder[provider.module_name] = import_recorder
         for service_name in self.deps.tests_services:
             provider = unready_service_providers[service_name]
-            import_recorder, module_res = provider.type_recorder_module_res(
-                resource_registry, type_res_list, process, file_dict, service_providers)
+            module_res = type_recorder_module_res(provider)
             service_attr = provider.source_info.service_to_attr[service_name]
             attribute = htypes.attribute.attribute(
                 object=mosaic.put(module_res),
@@ -527,7 +530,6 @@ class SourceFile:
                 )
             import_list.append(
                 htypes.python_module.import_rec(f'tested.services.{service_name}', mosaic.put(service)))
-            name_to_recorder[provider.module_name] = import_recorder
 
         return (name_to_recorder, import_list)
 
