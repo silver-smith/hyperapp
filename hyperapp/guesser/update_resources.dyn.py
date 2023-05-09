@@ -49,7 +49,7 @@ resource_services = [
     'transport',
     ]
 
-SourceInfo = namedtuple('SourceInfo', 'import_name attr_list service_to_attr used_types')
+SourceInfo = namedtuple('SourceInfo', 'import_name attr_list provided_services used_types')
 DepsInfo = namedtuple('DepsInfo', 'uses_modules wants_services wants_code tests_services tests_code')
 ObjectInfo = namedtuple('ObjectInfo', 'dir get_result_t')
 
@@ -397,17 +397,17 @@ class SourceFile:
             import_set |= set(discovered_imports)
 
         if object_attrs:
-            service_to_attr = {}
+            provided_services = set()
             for attr in attr_list:
                 for ctr_ref in attr.constructors:
                     ctr = web.summon(ctr_ref)
                     if isinstance(ctr, htypes.attr_constructors.service):
-                        service_to_attr[ctr.name] = attr
+                        provided_services.add(ctr.name)
                         _log.info("Discovered provided service: %r", ctr.name)
             source_info = SourceInfo(
                 import_name=object_attrs.object_module,
                 attr_list=attr_list,
-                service_to_attr=service_to_attr,
+                provided_services=provided_services,
                 used_types=self._imports_to_type_set(import_set),
                 )
         else:
@@ -443,7 +443,7 @@ class SourceFile:
                 invalid_deps, self.source_info = self.parse_source(
                     import_recorder, None, module_res, process, fail_on_incomplete=True)
                 # deps are invalid due to type_recorder_module_res usage.
-            self.provides_services = set(self.source_info.service_to_attr)
+            self.provides_services = self.source_info.provided_services
         if self.is_tests and self.tests_modules is None:
             code_providers = code_provider_modules(file_dict)
             service_providers = service_provider_modules(file_dict, want_up_to_date=False)
