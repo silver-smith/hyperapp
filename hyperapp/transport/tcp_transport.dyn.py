@@ -166,7 +166,7 @@ class IncomingConnectionRoute:
         self._connection.send(parcel)
 
 
-def selector_thread_main():
+def _selector_thread_main():
     log.info("TCP selector thread is started.")
     try:
         while not stop_signal.is_set():
@@ -196,7 +196,7 @@ def client_factory(address):
     return connection
 
 
-def stop():
+def _stop():
     log.info("Stop TCP selector thread.")
     _selector_thread.join()
     log.info("TCP selector thread is stopped.")
@@ -219,7 +219,7 @@ def route_from_piece(piece):
 
 _selector = selectors.DefaultSelector()
 _address_to_client = {}  # (host, port) -> Connection
-_selector_thread = threading.Thread(target=selector_thread_main)
+_selector_thread = threading.Thread(target=_selector_thread_main)
 
 _selector_thread.start()
-on_stop.append(stop)
+on_stop.append(_stop)

@@ -1,0 +1,57 @@
+# Automatically generated file. Do not edit.
+# Source ref: sha512:0b57bb5e5247429ccd39c42a1b1f7f57cbb101c244bb6dd7118a2063ed568d00368eee92a2b2e60aa926353ba429cfea752d4f1e62f04d44ac979cd7f9001d27
+# Generator ref: sha512:e14013c89935d6aac50f455fdd5b1e16cee423ebb39405057cc895c8cfb5c58a377262ac2120a13c70190e42a0a64ae205ee2fd2f650265c82e47efb1cb3b811
+
+import:
+- common.mark:mark.service
+- legacy_service:bundler
+- legacy_service:failed
+- legacy_service:mosaic
+- legacy_service:on_stop
+- legacy_service:parcel_registry
+- legacy_service:stop_signal
+- legacy_service:unbundler
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.code_registry:association
+- legacy_type.python_module:python_module
+- legacy_type.tcp_transport:route
+- transport.route_registry:route_registry.service
+- transport.sync_route_table:route_table.service
+- transport.tcp_utils:tcp_utils.module
+- transport.transport:transport.service
+associations:
+- _type: legacy_type.code_registry:association
+  service: transport.route_registry:route_registry.service
+  type: legacy_type.tcp_transport:route
+  function: route_from_piece
+definitions:
+  route_from_piece:
+    _type: legacy_type.attribute:attribute
+    object: tcp_transport.module
+    attr_name: route_from_piece
+  tcp_server_factory:
+    _type: legacy_type.attribute:attribute
+    object: tcp_transport.module
+    attr_name: tcp_server_factory
+  tcp_server_factory.service:
+    _type: legacy_type.call:call
+    function: tcp_server_factory
+  tcp_transport.module:
+    _type: legacy_type.python_module:python_module
+    module_name: tcp_transport
+    file_name: tcp_transport.dyn.py
+    import_list:
+      code.tcp_utils: transport.tcp_utils:tcp_utils.module
+      htypes.tcp_transport.route: legacy_type.tcp_transport:route
+      services.bundler: legacy_service:bundler
+      services.failed: legacy_service:failed
+      services.mark: common.mark:mark.service
+      services.mosaic: legacy_service:mosaic
+      services.on_stop: legacy_service:on_stop
+      services.parcel_registry: legacy_service:parcel_registry
+      services.route_registry: transport.route_registry:route_registry.service
+      services.route_table: transport.sync_route_table:route_table.service
+      services.stop_signal: legacy_service:stop_signal
+      services.transport: transport.transport:transport.service
+      services.unbundler: legacy_service:unbundler
