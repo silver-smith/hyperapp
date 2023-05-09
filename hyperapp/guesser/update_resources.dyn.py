@@ -499,7 +499,7 @@ class SourceFile:
     #         resource_registry, type_res_list, process, file_dict, fixed_service_providers)
     #     return (import_recorder, module_res)
 
-    def _make_tested_import_list(self, resource_registry, type_res_list, process, file_dict, service_providers):
+    def _make_tested_import_list(self, resource_registry, custom_types, type_res_list, process, file_dict, service_providers):
         code_providers = code_provider_modules(file_dict)
         unready_service_providers = service_provider_modules(file_dict, want_up_to_date=False)
         # fixed_service_providers = {**service_providers, **self.module_service_provider_modules(self)}
@@ -520,16 +520,17 @@ class SourceFile:
         for service_name in self.deps.tests_services:
             provider = unready_service_providers[service_name]
             module_res = type_recorder_module_res(provider)
-            service_attr = provider.source_info.service_to_attr[service_name]
-            attribute = htypes.attribute.attribute(
-                object=mosaic.put(module_res),
-                attr_name=service_attr.name,
-                )
-            service = htypes.call.call(
-                function=mosaic.put(attribute),
-                )
+            name_to_res = {}
+            ass_list = provider.call_attr_constructors(custom_types, name_to_res, module_res)
+            for name, resource in name_to_res.items():
+                if name.endswith('.service'):
+                    sn, _ = name.rsplit('.', 1)
+                    if sn == service_name:
+                        break
+            else:
+                raise RuntimeError(f"{provider.module_name}: Service {service_name!r} was not created by it's constructor")
             import_list.append(
-                htypes.python_module.import_rec(f'tested.services.{service_name}', mosaic.put(service)))
+                htypes.python_module.import_rec(f'tested.services.{service_name}', mosaic.put(resource)))
 
         return (name_to_recorder, import_list)
 
@@ -680,7 +681,7 @@ class SourceFile:
 
         import_recorder, import_recorder_ref = self._prepare_import_recorder(process, type_res_list)
         name_to_recorder, tested_import_list = self._make_tested_import_list(
-            resource_registry, type_res_list, process, file_dict, service_providers)
+            resource_registry, custom_types, type_res_list, process, file_dict, service_providers)
 
         recorder_import_list = [
             *import_list,
@@ -774,12 +775,12 @@ class SourceFile:
             )
         resource_module.add_association(pyobj_association)
 
-    def _call_attr_constructors(self, custom_types, resource_module, module_res):
+    def call_attr_constructors(self, custom_types, resource_module, module_res):
+        ass_list = []
         for attr in self.source_info.attr_list:
             for ctr_ref in attr.constructors:
-                ass_list = constructor_creg.invite(ctr_ref, custom_types, resource_module, module_res, attr)
-                for ass in ass_list or []:
-                    resource_module.add_association(ass)
+                ass_list += constructor_creg.invite(ctr_ref, custom_types, resource_module, module_res, attr) or []
+        return ass_list
 
     def construct_resources(self, process, resource_registry, custom_types, type_res_list, tested_module_imports, file_dict, saver):
         resource_module = resource_module_factory(resource_registry, self.name)
@@ -807,7 +808,9 @@ class SourceFile:
 
         for name, object_info in object_info_dict.items():
             self._construct_object_impl(process, custom_types, resource_module, fixtures_file, module_res, name, object_info)
-        self._call_attr_constructors(custom_types, resource_module, module_res)
+        ass_list = self.call_attr_constructors(custom_types, resource_module, module_res)
+        for ass in ass_list:
+            resource_module.add_association(ass)
 
         dep_modules = self._collect_dep_modules(resource_registry, file_dict, self.deps)
         module_deps_record = self._make_module_deps_record(dep_modules)
