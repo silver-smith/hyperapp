@@ -10,6 +10,8 @@ TCP_BUNDLE_ENCODING = 'cdr'
 
 
 def address_to_str(address):
+    if address is None:
+        return 'None'
     host, port = address
     return f'{host}:{port}'
 
