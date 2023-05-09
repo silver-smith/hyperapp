@@ -1,6 +1,6 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:88e8917d817ca7660bb1e325d695759f2f1e9c6d9371d42f752f97bfe5de8742d4238b56575cad0186b08ca2f773e0e7d424e541ff4731b6dd0f1da8f521626e
-# Generator ref: sha512:2cb82f9071dd0464d94468763c39d814474c5d22becc1c311b9cdff5c76594a4eb07eb03005d66a03ddd73de8554f1fdeda9b2b3b043758b513dc1dd06bc226d
+# Source ref: sha512:b25cff91c75d43924f66d3de26c11b88d55edb395b07313c5b4b3ee6d1e782037a72d7309c39a003d44cab31880f67171c5e0190c2098d5fa2dbd4b5acb49f97
+# Generator ref: sha512:32ecddfd31aacb56861970afab09424d8944476013b4d20b3b720ce0de70140dab6229af89da212725119def78726e7d795ed81c03e6fc3dff1952ebce4d26b1
 
 import:
 - common.mark:mark.service
@@ -26,12 +26,12 @@ definitions:
   construct.module_res.parameter:
     _type: legacy_type.call:call
     function: module_res
+  construct.name_to_res.parameter:
+    _type: legacy_type.call:call
+    function: name_to_res
   construct.piece.parameter:
     _type: legacy_type.call:call
     function: piece
-  construct.resource_module.parameter:
-    _type: legacy_type.call:call
-    function: resource_module
   custom_types:
     _type: legacy_type.attribute:attribute
     object: object_command_ctr.fixtures.module
@@ -40,6 +40,10 @@ definitions:
     _type: legacy_type.attribute:attribute
     object: object_command_ctr.fixtures.module
     attr_name: module_res
+  name_to_res:
+    _type: legacy_type.attribute:attribute
+    object: object_command_ctr.fixtures.module
+    attr_name: name_to_res
   object_command_ctr.fixtures.module:
     _type: legacy_type.python_module:python_module
     module_name: object_command_ctr.fixtures
@@ -55,7 +59,3 @@ definitions:
     _type: legacy_type.attribute:attribute
     object: object_command_ctr.fixtures.module
     attr_name: piece
-  resource_module:
-    _type: legacy_type.attribute:attribute
-    object: object_command_ctr.fixtures.module
-    attr_name: resource_module

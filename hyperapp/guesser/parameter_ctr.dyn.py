@@ -7,14 +7,14 @@ from .services import (
 
 
 @constructor_creg.actor(htypes.attr_constructors.parameter)
-def construct(piece, custom_types, resource_module, module_res, attr):
+def construct(piece, custom_types, name_to_res, module_res, attr):
     attribute = htypes.attribute.attribute(
         object=mosaic.put(module_res),
         attr_name=attr.name,
         )
-    resource_module[attr.name] = attribute
+    name_to_res[attr.name] = attribute
     parameter = htypes.call.call(
         function=mosaic.put(attribute),
         )
     path_str = '.'.join(piece.path)
-    resource_module[f'{path_str}.parameter'] = parameter
+    name_to_res[f'{path_str}.parameter'] = parameter

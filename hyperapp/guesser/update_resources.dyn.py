@@ -777,7 +777,9 @@ class SourceFile:
     def _call_attr_constructors(self, custom_types, resource_module, module_res):
         for attr in self.source_info.attr_list:
             for ctr_ref in attr.constructors:
-                constructor_creg.invite(ctr_ref, custom_types, resource_module, module_res, attr)
+                ass_list = constructor_creg.invite(ctr_ref, custom_types, resource_module, module_res, attr)
+                for ass in ass_list or []:
+                    resource_module.add_association(ass)
 
     def construct_resources(self, process, resource_registry, custom_types, type_res_list, tested_module_imports, file_dict, saver):
         resource_module = resource_module_factory(resource_registry, self.name)

@@ -18,7 +18,7 @@ def custom_types():
 
 
 @mark.param.construct
-def resource_module():
+def name_to_res():
     registry = resource_registry_factory()
     module = resource_module_factory(registry, 'object_command_ctr_fixtures')
     module['sample_module'] = module_res()
