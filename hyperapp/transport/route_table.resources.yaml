@@ -1,0 +1,11 @@
+import:
+- legacy_type.python_module:python_module
+- legacy_type.transport:route_association
+
+definitions:
+  route_table.module:
+    _type: legacy_type.python_module:python_module
+    module_name: route_table
+    file_name: route_table.dyn.py
+    import_list:
+      htypes.transport.route_association: legacy_type.transport:route_association

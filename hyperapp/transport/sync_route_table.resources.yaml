@@ -1,10 +1,9 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:31f08cdf5e73fe834f00d1fbdb64fd997f7bca11b75d887c4541a688250b877e32c1a7fe98df85b9ac342d93dc16ac157cad98bf2b282573d1902d300172743e
-# Generator ref: sha512:e14013c89935d6aac50f455fdd5b1e16cee423ebb39405057cc895c8cfb5c58a377262ac2120a13c70190e42a0a64ae205ee2fd2f650265c82e47efb1cb3b811
+# Source ref: sha512:adc6af2ebab254990dcb5f138cc8a1e897ec948ee31b574691630caf0610f3a45fb2ea3219fcbc5ec99d08b3acd26d0f5b85c6ab24dee3134876a28585f37d62
+# Generator ref: sha512:105ead3126a6e95fcbbb595b9a7cbb66c71557d4215fb2ea952f3f75ced810e7692352d5df02d85c7e20ec95ae67b152f988f6db4126e0c86898f64c87fadeb9
 
 import:
 - common.mark:mark.service
-- legacy_module.transport:route_table
 - legacy_service:aux_bundler_hooks
 - legacy_service:aux_unbundler_hooks
 - legacy_service:mosaic
@@ -13,6 +12,7 @@ import:
 - legacy_type.call:call
 - legacy_type.python_module:python_module
 - transport.route_registry:route_registry.service
+- transport.route_table:route_table.module
 associations: []
 definitions:
   route_table:
@@ -27,7 +27,7 @@ definitions:
     module_name: sync_route_table
     file_name: sync_route_table.dyn.py
     import_list:
-      code.route_table: legacy_module.transport:route_table
+      code.route_table: transport.route_table:route_table.module
       services.aux_bundler_hooks: legacy_service:aux_bundler_hooks
       services.aux_unbundler_hooks: legacy_service:aux_unbundler_hooks
       services.mark: common.mark:mark.service

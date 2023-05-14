@@ -1,4 +1,0 @@
-import:
-  types:
-    transport:
-      - route_association
