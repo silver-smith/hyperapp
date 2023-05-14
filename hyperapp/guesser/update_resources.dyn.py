@@ -962,7 +962,7 @@ def update_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_tim
         while True:
             _log.info("****** Round #%d  %s", round, '*'*50)
             init_deps(resource_registry, process, type_res_list, file_dict)
-            ready_files = [f for f in file_dict.values() if f.ready_for_construction]
+            ready_files = sorted([f for f in file_dict.values() if f.ready_for_construction], key=attrgetter('module_name'))
             waits_services = [f for f in file_dict.values() if f.ready_status == ReadyStatus.ServicesNotReady]
             _log.info("Ready for construction: %s", ", ".join(f.module_name for f in ready_files))
             _log.info("Waits services: %s", ", ".join(f.module_name for f in waits_services))
