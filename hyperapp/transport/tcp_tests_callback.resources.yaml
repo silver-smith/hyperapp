@@ -1,14 +1,16 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:760cf713b730e1a31703d99da6dc2143077fd7c11be509bd072b9fc2d8ab4d1b0600b3af9998d7c1e7ace5e57c62366a283e520f1a822837a77a3e1124fe8786
-# Generator ref: sha512:e14013c89935d6aac50f455fdd5b1e16cee423ebb39405057cc895c8cfb5c58a377262ac2120a13c70190e42a0a64ae205ee2fd2f650265c82e47efb1cb3b811
+# Source ref: sha512:f4a04572d39fd1bf342468b6b10263205a7112ee998c3e25defcc80c0424392e040f3cc01b4002d2e35756114cc251dbc60f8aacc142fdab61254ddd50f950fc
+# Generator ref: sha512:ec037aa3b00639617b1f5fee91c2866a6681ac862b6136fa057533bfd4b3a9f1c2ccdd55b5210d98456fc69e1b3af9d3418c24264d870d0a43c2878cd37bb774
 
 import:
-- legacy_service:generate_rsa_identity
-- legacy_service:peer_registry
 - legacy_type.python_module:python_module
+- legacy_type.rsa_identity:rsa_parcel
+- legacy_type.rsa_identity:rsa_peer
 - rpc.rpc_call:rpc_call_factory.service
 - rpc.rpc_endpoint:rpc_endpoint_factory.service
 - transport.endpoint:endpoint_registry.service
+- transport.identity:peer_registry.service
+- transport.rsa_identity:generate_rsa_identity.service
 associations: []
 definitions:
   tcp_tests_callback.module:
@@ -16,8 +18,10 @@ definitions:
     module_name: tcp_tests_callback
     file_name: tcp_tests_callback.dyn.py
     import_list:
+      htypes.rsa_identity.rsa_parcel: legacy_type.rsa_identity:rsa_parcel
+      htypes.rsa_identity.rsa_peer: legacy_type.rsa_identity:rsa_peer
       services.endpoint_registry: transport.endpoint:endpoint_registry.service
-      services.generate_rsa_identity: legacy_service:generate_rsa_identity
-      services.peer_registry: legacy_service:peer_registry
+      services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
+      services.peer_registry: transport.identity:peer_registry.service
       services.rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
       services.rpc_endpoint_factory: rpc.rpc_endpoint:rpc_endpoint_factory.service

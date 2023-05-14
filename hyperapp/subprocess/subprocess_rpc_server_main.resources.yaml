@@ -1,18 +1,20 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:db0b16d5dc52150572d5ce7d10af5508f48dc88c570cd4685daff8fb44af4555a890b1b5f0ae69842aa37b8f9357a30bd56b755e073d7f6b65e2daa2c2a7deba
-# Generator ref: sha512:e14013c89935d6aac50f455fdd5b1e16cee423ebb39405057cc895c8cfb5c58a377262ac2120a13c70190e42a0a64ae205ee2fd2f650265c82e47efb1cb3b811
+# Source ref: sha512:acc580238f114f1fbe6dcc9fc1b804b7a5f6a0b626a536395f4c51e7008a474cc8ddaa64f3c8820a9e660bf94c24bb12c998aafe5604d9a22b38e5f3577d3b48
+# Generator ref: sha512:ec037aa3b00639617b1f5fee91c2866a6681ac862b6136fa057533bfd4b3a9f1c2ccdd55b5210d98456fc69e1b3af9d3418c24264d870d0a43c2878cd37bb774
 
 import:
-- legacy_service:generate_rsa_identity
 - legacy_service:mosaic
-- legacy_service:peer_registry
 - legacy_service:stop_signal
 - legacy_type.python_module:python_module
+- legacy_type.rsa_identity:rsa_parcel
+- legacy_type.rsa_identity:rsa_peer
 - rpc.rpc_call:rpc_call_factory.service
 - rpc.rpc_endpoint:rpc_endpoint_factory.service
 - subprocess.subprocess_transport:add_subprocess_server_connection.service
 - subprocess.subprocess_transport:subprocess_transport.module
 - transport.endpoint:endpoint_registry.service
+- transport.identity:peer_registry.service
+- transport.rsa_identity:generate_rsa_identity.service
 - transport.sync_route_table:route_table.service
 associations: []
 definitions:
@@ -22,11 +24,13 @@ definitions:
     file_name: subprocess_rpc_server_main.dyn.py
     import_list:
       code.subprocess_transport: subprocess.subprocess_transport:subprocess_transport.module
+      htypes.rsa_identity.rsa_parcel: legacy_type.rsa_identity:rsa_parcel
+      htypes.rsa_identity.rsa_peer: legacy_type.rsa_identity:rsa_peer
       services.add_subprocess_server_connection: subprocess.subprocess_transport:add_subprocess_server_connection.service
       services.endpoint_registry: transport.endpoint:endpoint_registry.service
-      services.generate_rsa_identity: legacy_service:generate_rsa_identity
+      services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
       services.mosaic: legacy_service:mosaic
-      services.peer_registry: legacy_service:peer_registry
+      services.peer_registry: transport.identity:peer_registry.service
       services.route_table: transport.sync_route_table:route_table.service
       services.rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
       services.rpc_endpoint_factory: rpc.rpc_endpoint:rpc_endpoint_factory.service

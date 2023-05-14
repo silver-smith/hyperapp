@@ -1,6 +1,6 @@
 # Automatically generated file. Do not edit.
 # Source ref: sha512:0b57bb5e5247429ccd39c42a1b1f7f57cbb101c244bb6dd7118a2063ed568d00368eee92a2b2e60aa926353ba429cfea752d4f1e62f04d44ac979cd7f9001d27
-# Generator ref: sha512:e14013c89935d6aac50f455fdd5b1e16cee423ebb39405057cc895c8cfb5c58a377262ac2120a13c70190e42a0a64ae205ee2fd2f650265c82e47efb1cb3b811
+# Generator ref: sha512:105ead3126a6e95fcbbb595b9a7cbb66c71557d4215fb2ea952f3f75ced810e7692352d5df02d85c7e20ec95ae67b152f988f6db4126e0c86898f64c87fadeb9
 
 import:
 - common.mark:mark.service
@@ -8,7 +8,7 @@ import:
 - legacy_service:failed
 - legacy_service:mosaic
 - legacy_service:on_stop
-- legacy_service:parcel_registry
+- transport.identity:parcel_registry.service
 - legacy_service:stop_signal
 - legacy_service:unbundler
 - legacy_type.attribute:attribute
@@ -49,7 +49,7 @@ definitions:
       services.mark: common.mark:mark.service
       services.mosaic: legacy_service:mosaic
       services.on_stop: legacy_service:on_stop
-      services.parcel_registry: legacy_service:parcel_registry
+      services.parcel_registry: transport.identity:parcel_registry.service
       services.route_registry: transport.route_registry:route_registry.service
       services.route_table: transport.sync_route_table:route_table.service
       services.stop_signal: legacy_service:stop_signal

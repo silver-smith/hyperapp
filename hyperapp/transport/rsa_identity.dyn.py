@@ -11,6 +11,14 @@ from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common.module import Module
 
 from . import htypes
+from .services import (
+    identity_registry,
+    mark,
+    mosaic,
+    parcel_registry,
+    peer_registry,
+    signature_registry,
+    )
 
 
 RSA_KEY_SIZE_SAFE = 4096  # Key size used when generating new identities. Slow.
@@ -21,21 +29,20 @@ BUNDLE_ENCODING = 'cdr'
 class RsaIdentity:
 
     @classmethod
-    def generate(cls, mosaic, fast=False):
+    def generate(cls, fast=False):
         private_key = rsa.generate_private_key(
             public_exponent=65537,
             key_size=RSA_KEY_SIZE_FAST if fast else RSA_KEY_SIZE_SAFE,
             backend=default_backend(),
         )
-        return cls(mosaic, private_key)
+        return cls(private_key)
 
     @classmethod
-    def from_piece(cls, piece, mosaic):
+    def from_piece(cls, piece):
         private_key = serialization.load_pem_private_key(piece.private_key_pem, password=None, backend=default_backend())
-        return cls(mosaic, private_key)
+        return cls(private_key)
 
-    def __init__(self, mosaic, private_key: rsa.RSAPrivateKeyWithSerialization):
-        self._mosaic = mosaic
+    def __init__(self, private_key: rsa.RSAPrivateKeyWithSerialization):
         self._private_key = private_key
 
     def __repr__(self):
@@ -53,7 +60,7 @@ class RsaIdentity:
 
     @cached_property
     def peer(self):
-        return RsaPeer(self._mosaic, self._private_key.public_key())
+        return RsaPeer(self._private_key.public_key())
 
     def sign(self, data):
         hash_algorithm = hashes.SHA256()
@@ -89,16 +96,15 @@ class RsaIdentity:
 class RsaPeer:
 
     @classmethod
-    def from_piece(cls, piece, mosaic):
-        return cls.from_public_key_pem(mosaic, piece.public_key_pem)
+    def from_piece(cls, piece):
+        return cls.from_public_key_pem(piece.public_key_pem)
 
     @classmethod
-    def from_public_key_pem(cls, mosaic, public_key_pem):
+    def from_public_key_pem(cls, public_key_pem):
         public_key = serialization.load_pem_public_key(public_key_pem, backend=default_backend())
-        return cls(mosaic, public_key)
+        return cls(public_key)
 
-    def __init__(self, mosaic, public_key: rsa.RSAPublicKey):
-        self._mosaic = mosaic
+    def __init__(self, public_key: rsa.RSAPublicKey):
         self._public_key = public_key
 
     def __repr__(self):
@@ -131,7 +137,6 @@ class RsaPeer:
                 ))
         signature = sender_identity.sign(encrypted_bundle)
         return RsaParcel(
-            self._mosaic,
             receiver=self,
             encrypted_fernet_key=encrypted_key,
             encrypted_bundle=encrypted_bundle,
@@ -142,8 +147,8 @@ class RsaPeer:
 class RsaSignature:
 
     @classmethod
-    def from_piece(cls, piece, mosaic):
-        signer = RsaPeer.from_public_key_pem(mosaic, piece.signer_public_key_pem)
+    def from_piece(cls, piece):
+        signer = RsaPeer.from_public_key_pem(piece.signer_public_key_pem)
         return cls(signer, piece.hash_algorithm, piece.padding, piece.signature)
 
     def __init__(self, signer, hash_algorithm, padding, signature):
@@ -169,13 +174,12 @@ class RsaSignature:
 class RsaParcel:
 
     @classmethod
-    def from_piece(cls, piece, mosaic, signature_registry):
+    def from_piece(cls, piece):
         signature = signature_registry.invite(piece.sender_signature_ref)
-        receiver = RsaPeer.from_public_key_pem(mosaic, piece.receiver_public_key_pem)
-        return cls(mosaic, receiver, piece.encrypted_fernet_key, piece.encrypted_bundle, signature)
+        receiver = RsaPeer.from_public_key_pem(piece.receiver_public_key_pem)
+        return cls(receiver, piece.encrypted_fernet_key, piece.encrypted_bundle, signature)
 
-    def __init__(self, mosaic, receiver, encrypted_fernet_key, encrypted_bundle, signature):
-        self._mosaic = mosaic
+    def __init__(self, receiver, encrypted_fernet_key, encrypted_bundle, signature):
         self._receiver = receiver
         self._encrypted_fernet_key = encrypted_fernet_key
         self._encrypted_bundle = encrypted_bundle
@@ -186,7 +190,7 @@ class RsaParcel:
 
     @property
     def piece(self):
-        signature_ref = self._mosaic.put(self._signature.piece)
+        signature_ref = mosaic.put(self._signature.piece)
         return htypes.rsa_identity.rsa_parcel(
             receiver_public_key_pem=self._receiver.public_key_pem,
             encrypted_fernet_key=self._encrypted_fernet_key,
@@ -211,20 +215,28 @@ class RsaParcel:
         return self._encrypted_bundle
 
 
-class ThisModule(Module):
+@mark.service
+def generate_rsa_identity():
+    def _generate_rsa_identity(fast=False):
+        return RsaIdentity.generate(fast)
+    return _generate_rsa_identity
 
-    def __init__(self, module_name, services, config):
-        super().__init__(module_name, services, config)
-        self._mosaic = services.mosaic
-        services.identity_registry.register_actor(
-            htypes.rsa_identity.rsa_identity, RsaIdentity.from_piece, services.mosaic)
-        services.peer_registry.register_actor(
-            htypes.rsa_identity.rsa_peer, RsaPeer.from_piece, services.mosaic)
-        services.signature_registry.register_actor(
-            htypes.rsa_identity.rsa_signature, RsaSignature.from_piece, services.mosaic)
-        services.parcel_registry.register_actor(
-            htypes.rsa_identity.rsa_parcel, RsaParcel.from_piece, services.mosaic, services.signature_registry)
-        services.generate_rsa_identity = self.generate_identity
 
-    def generate_identity(self, fast=False):
-        return RsaIdentity.generate(self._mosaic, fast)
+@identity_registry.actor(htypes.rsa_identity.rsa_identity)
+def rsa_identity_from_piece(piece):
+    return RsaIdentity.from_piece(piece)
+
+
+@peer_registry.actor(htypes.rsa_identity.rsa_peer)
+def rsa_peer_from_piece(piece):
+    return RsaPeer.from_piece(piece)
+
+
+@signature_registry.actor(htypes.rsa_identity.rsa_signature)
+def rsa_signature_from_piece(piece):
+    return RsaSignature.from_piece(piece)
+
+
+@parcel_registry.actor(htypes.rsa_identity.rsa_parcel)
+def rsa_parcel_from_piece(piece):
+    return RsaParcel.from_piece(piece)

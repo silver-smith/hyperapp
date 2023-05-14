@@ -1,12 +1,26 @@
-from hyperapp.common.code_registry import CodeRegistry
-from hyperapp.common.module import Module
+from .services import (
+    mark,
+    types,
+    web,
+    )
+from .code.dyn_code_registry import DynCodeRegistry
 
 
-class ThisModule(Module):
+@mark.service
+def identity_registry():
+    return DynCodeRegistry('identity', web, types)
 
-    def __init__(self, module_name, services, config):
-        super().__init__(module_name, services, config)
-        services.identity_registry = CodeRegistry('identity', services.web, services.types)
-        services.peer_registry = CodeRegistry('peer', services.web, services.types)
-        services.signature_registry = CodeRegistry('signature', services.web, services.types)
-        services.parcel_registry = CodeRegistry('parcel', services.web, services.types)
+
+@mark.service
+def peer_registry():
+    return DynCodeRegistry('peer', web, types)
+
+
+@mark.service
+def signature_registry():
+    return DynCodeRegistry('signature', web, types)
+
+
+@mark.service
+def parcel_registry():
+    return DynCodeRegistry('parcel', web, types)

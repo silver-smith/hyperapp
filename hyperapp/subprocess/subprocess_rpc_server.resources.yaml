@@ -1,20 +1,22 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:54d95a6be6bb0edcc357907af3c54aa68b391cf9c32cd053b8ac55dd0b285170bed382c23f522664381eb515972c0013aff7a8f5d26d1612a069d2b97c6087eb
-# Generator ref: sha512:e14013c89935d6aac50f455fdd5b1e16cee423ebb39405057cc895c8cfb5c58a377262ac2120a13c70190e42a0a64ae205ee2fd2f650265c82e47efb1cb3b811
+# Source ref: sha512:890aeff679a87b382e8359a031f6a6d24711a9f3cd56e7699b98fdba7aa882944ed0d127b7a939a4c2dc29690d4f508f94154c0ee7c958e3938c6ecff81e05c8
+# Generator ref: sha512:ec037aa3b00639617b1f5fee91c2866a6681ac862b6136fa057533bfd4b3a9f1c2ccdd55b5210d98456fc69e1b3af9d3418c24264d870d0a43c2878cd37bb774
 
 import:
 - common.mark:mark.service
 - legacy_service:fn_to_ref
-- legacy_service:peer_registry
 - legacy_type.attribute:attribute
 - legacy_type.call:call
 - legacy_type.python_module:python_module
+- legacy_type.rsa_identity:rsa_parcel
+- legacy_type.rsa_identity:rsa_peer
 - resource.partial_ref:partial_ref.service
 - rpc.rpc_call:rpc_call_factory.service
 - rpc.rpc_proxy:rpc_proxy.module
 - subprocess.subprocess:subprocess_running.service
 - subprocess.subprocess_rpc_server_main:subprocess_rpc_server_main.module
 - subprocess.subprocess_transport:add_subprocess_server_connection.service
+- transport.identity:peer_registry.service
 associations: []
 definitions:
   subprocess_rpc_server.module:
@@ -24,11 +26,13 @@ definitions:
     import_list:
       code.rpc_proxy: rpc.rpc_proxy:rpc_proxy.module
       code.subprocess_rpc_server_main: subprocess.subprocess_rpc_server_main:subprocess_rpc_server_main.module
+      htypes.rsa_identity.rsa_parcel: legacy_type.rsa_identity:rsa_parcel
+      htypes.rsa_identity.rsa_peer: legacy_type.rsa_identity:rsa_peer
       services.add_subprocess_server_connection: subprocess.subprocess_transport:add_subprocess_server_connection.service
       services.fn_to_ref: legacy_service:fn_to_ref
       services.mark: common.mark:mark.service
       services.partial_ref: resource.partial_ref:partial_ref.service
-      services.peer_registry: legacy_service:peer_registry
+      services.peer_registry: transport.identity:peer_registry.service
       services.rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
       services.subprocess_running: subprocess.subprocess:subprocess_running.service
   subprocess_rpc_server_running:

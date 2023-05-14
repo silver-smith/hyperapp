@@ -1,16 +1,16 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:adc6af2ebab254990dcb5f138cc8a1e897ec948ee31b574691630caf0610f3a45fb2ea3219fcbc5ec99d08b3acd26d0f5b85c6ab24dee3134876a28585f37d62
-# Generator ref: sha512:105ead3126a6e95fcbbb595b9a7cbb66c71557d4215fb2ea952f3f75ced810e7692352d5df02d85c7e20ec95ae67b152f988f6db4126e0c86898f64c87fadeb9
+# Source ref: sha512:525dbf8db29175ed9a475c2524227f3945404fc8ca82a96354fd8661106417673c2f00bad2aa4224c63389cecdd7c2cd9449545b807e70a30904acc6f86c8db4
+# Generator ref: sha512:5b357b3f8454b5c6b5173154caf84caaeb6e65c437b4d29fa7b4417fea114c97e8b6125d275ffc84a1749d96c27bab1bc50da6d6b75d723b459dc19abc2d1889
 
 import:
 - common.mark:mark.service
 - legacy_service:aux_bundler_hooks
 - legacy_service:aux_unbundler_hooks
 - legacy_service:mosaic
-- legacy_service:peer_registry
 - legacy_type.attribute:attribute
 - legacy_type.call:call
 - legacy_type.python_module:python_module
+- transport.identity:peer_registry.service
 - transport.route_registry:route_registry.service
 - transport.route_table:route_table.module
 associations: []
@@ -32,5 +32,5 @@ definitions:
       services.aux_unbundler_hooks: legacy_service:aux_unbundler_hooks
       services.mark: common.mark:mark.service
       services.mosaic: legacy_service:mosaic
-      services.peer_registry: legacy_service:peer_registry
+      services.peer_registry: transport.identity:peer_registry.service
       services.route_registry: transport.route_registry:route_registry.service

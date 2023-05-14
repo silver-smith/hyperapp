@@ -2,7 +2,7 @@ import:
   - legacy_module.resource.test.test_resources:sample_module
   - legacy_service:mosaic
   - legacy_service:web
-  - legacy_service:peer_registry
+  - transport.identity:peer_registry.service
   - legacy_service:rpc_call_factory
   - legacy_service:mock_identity
   - legacy_type.attribute:attribute
@@ -24,7 +24,7 @@ definitions:
     params:
       mosaic: legacy_service:mosaic
       web: legacy_service:web
-      peer_registry: legacy_service:peer_registry
+      peer_registry: transport.identity:peer_registry.service
       rpc_call_factory: legacy_service:rpc_call_factory
 
   sample_servant:

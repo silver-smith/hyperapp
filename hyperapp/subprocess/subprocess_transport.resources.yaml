@@ -1,6 +1,6 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:95e97b39b9562895344db2c45c1e937a37d8e1bacc812f501139b45a56c081d899668f9dd2fc8a5468f3871f4c81050640bab2965dd6b1991546139746d8983e
-# Generator ref: sha512:e14013c89935d6aac50f455fdd5b1e16cee423ebb39405057cc895c8cfb5c58a377262ac2120a13c70190e42a0a64ae205ee2fd2f650265c82e47efb1cb3b811
+# Source ref: sha512:fc37ea38b55ba1bf1cda95bed6bcba86f38059932307a8e6b1deba738d9b7bf43e6af0909d00e2f48def53ec9bd4a1d53b2c5f9f5b2fb4c9214c9377bbe50927
+# Generator ref: sha512:ec037aa3b00639617b1f5fee91c2866a6681ac862b6136fa057533bfd4b3a9f1c2ccdd55b5210d98456fc69e1b3af9d3418c24264d870d0a43c2878cd37bb774
 
 import:
 - common.mark:mark.service
@@ -8,12 +8,14 @@ import:
 - legacy_service:failed
 - legacy_service:mosaic
 - legacy_service:on_stop
-- legacy_service:parcel_registry
 - legacy_service:stop_signal
 - legacy_service:unbundler
 - legacy_type.attribute:attribute
 - legacy_type.call:call
 - legacy_type.python_module:python_module
+- legacy_type.rsa_identity:rsa_parcel
+- legacy_type.rsa_identity:rsa_peer
+- transport.identity:parcel_registry.service
 - transport.sync_route_table:route_table.service
 - transport.transport:transport.service
 associations: []
@@ -30,12 +32,14 @@ definitions:
     module_name: subprocess_transport
     file_name: subprocess_transport.dyn.py
     import_list:
+      htypes.rsa_identity.rsa_parcel: legacy_type.rsa_identity:rsa_parcel
+      htypes.rsa_identity.rsa_peer: legacy_type.rsa_identity:rsa_peer
       services.bundler: legacy_service:bundler
       services.failed: legacy_service:failed
       services.mark: common.mark:mark.service
       services.mosaic: legacy_service:mosaic
       services.on_stop: legacy_service:on_stop
-      services.parcel_registry: legacy_service:parcel_registry
+      services.parcel_registry: transport.identity:parcel_registry.service
       services.route_table: transport.sync_route_table:route_table.service
       services.stop_signal: legacy_service:stop_signal
       services.transport: transport.transport:transport.service

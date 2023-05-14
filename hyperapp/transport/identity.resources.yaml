@@ -1,0 +1,51 @@
+# Automatically generated file. Do not edit.
+# Source ref: sha512:5e31123ae15dd0bfcc6975108d8eca388b24375cc8355334862ed06b217c00c8b41bf850f6edcd58777f39e8ed71eedf00072f4cc923191c776bcac7a658b57d
+# Generator ref: sha512:5b357b3f8454b5c6b5173154caf84caaeb6e65c437b4d29fa7b4417fea114c97e8b6125d275ffc84a1749d96c27bab1bc50da6d6b75d723b459dc19abc2d1889
+
+import:
+- common.dyn_code_registry:dyn_code_registry.module
+- common.mark:mark.service
+- legacy_service:types
+- legacy_service:web
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  identity.module:
+    _type: legacy_type.python_module:python_module
+    module_name: identity
+    file_name: identity.dyn.py
+    import_list:
+      code.dyn_code_registry: common.dyn_code_registry:dyn_code_registry.module
+      services.mark: common.mark:mark.service
+      services.types: legacy_service:types
+      services.web: legacy_service:web
+  identity_registry:
+    _type: legacy_type.attribute:attribute
+    object: identity.module
+    attr_name: identity_registry
+  identity_registry.service:
+    _type: legacy_type.call:call
+    function: identity_registry
+  parcel_registry:
+    _type: legacy_type.attribute:attribute
+    object: identity.module
+    attr_name: parcel_registry
+  parcel_registry.service:
+    _type: legacy_type.call:call
+    function: parcel_registry
+  peer_registry:
+    _type: legacy_type.attribute:attribute
+    object: identity.module
+    attr_name: peer_registry
+  peer_registry.service:
+    _type: legacy_type.call:call
+    function: peer_registry
+  signature_registry:
+    _type: legacy_type.attribute:attribute
+    object: identity.module
+    attr_name: signature_registry
+  signature_registry.service:
+    _type: legacy_type.call:call
+    function: signature_registry

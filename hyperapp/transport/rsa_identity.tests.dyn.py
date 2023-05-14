@@ -2,39 +2,39 @@ from hyperapp.common.htypes import bundle_t
 from hyperapp.common import cdr_coders  # self-registering
 
 from .services import (
-    identity_registry_x,
+    identity_registry,
     mosaic,
-    parcel_registry_x,
-    peer_registry_x,
+    parcel_registry,
+    peer_registry,
     )
 from .tested.services import (
-    generate_rsa_identity_x,
+    generate_rsa_identity,
     )
 
 
 def test_rsa_identity():
-    identity = generate_rsa_identity_x(fast=True)
-    identity_2 = identity_registry_x.animate(identity.piece)
+    identity = generate_rsa_identity(fast=True)
+    identity_2 = identity_registry.animate(identity.piece)
     assert identity.piece == identity_2.piece
 
 
 def test_rsa_peer():
-    identity = generate_rsa_identity_x(fast=True)
+    identity = generate_rsa_identity(fast=True)
     peer_1 = identity.peer
-    peer_2 = peer_registry_x.animate(peer_1.piece)
+    peer_2 = peer_registry.animate(peer_1.piece)
     assert peer_1.piece == peer_2.piece
 
 
 def test_rsa_parcel():
-    sender_identity = generate_rsa_identity_x(fast=True)
-    receiver_identity = generate_rsa_identity_x(fast=True)
+    sender_identity = generate_rsa_identity(fast=True)
+    receiver_identity = generate_rsa_identity(fast=True)
 
     test_ref = mosaic.put(receiver_identity.peer.piece)
 
     bundle_1 = bundle_t(roots=(test_ref,), aux_roots=(), capsule_list=())
     parcel_1 = receiver_identity.peer.make_parcel(bundle_1, sender_identity)
 
-    parcel_2 = parcel_registry_x.animate(parcel_1.piece)
+    parcel_2 = parcel_registry.animate(parcel_1.piece)
     assert parcel_2.piece == parcel_1.piece
 
     assert receiver_identity.peer.piece == parcel_2.receiver.piece

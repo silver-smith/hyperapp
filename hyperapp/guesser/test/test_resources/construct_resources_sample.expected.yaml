@@ -1,7 +1,7 @@
 import:
 - common.mark:mark.service
 - legacy_service:mosaic
-- legacy_service:peer_registry
+- transport.identity:peer_registry.service
 - legacy_service:rpc_call_factory
 - legacy_service:web
 - legacy_type.attribute:attribute
@@ -77,7 +77,7 @@ definitions:
       htypes.construct_resources_sample.sample_item: legacy_type.construct_resources_sample:sample_item
       services.mark: common.mark:mark.service
       services.mosaic: legacy_service:mosaic
-      services.peer_registry: legacy_service:peer_registry
+      services.peer_registry: transport.identity:peer_registry.service
       services.rpc_call_factory: legacy_service:rpc_call_factory
       services.web: legacy_service:web
   object_commands_d:

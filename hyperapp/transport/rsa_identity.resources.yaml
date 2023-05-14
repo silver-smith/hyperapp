@@ -1,6 +1,6 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:5c471c10db717b52daaf26000cdd880e28b07fcdd6be8cb94b55579c13fc37c0c76c371fb58eacf42b45f869e480b216929704e78bc5f2e1f0e51955b1b6fd8c
-# Generator ref: sha512:105ead3126a6e95fcbbb595b9a7cbb66c71557d4215fb2ea952f3f75ced810e7692352d5df02d85c7e20ec95ae67b152f988f6db4126e0c86898f64c87fadeb9
+# Source ref: sha512:f2e6690540b9555ce5fe65d2a489a56e5d717a2417ec99ad73a248fde2b92d42f3fd146abae3aa576b33728dd034166afe8eaa0523388ea2053bfde0845cf213
+# Generator ref: sha512:5b357b3f8454b5c6b5173154caf84caaeb6e65c437b4d29fa7b4417fea114c97e8b6125d275ffc84a1749d96c27bab1bc50da6d6b75d723b459dc19abc2d1889
 
 import:
 - common.mark:mark.service
@@ -13,63 +13,63 @@ import:
 - legacy_type.rsa_identity:rsa_parcel
 - legacy_type.rsa_identity:rsa_peer
 - legacy_type.rsa_identity:rsa_signature
-- new.identity_x:identity_registry_x.service
-- new.identity_x:parcel_registry_x.service
-- new.identity_x:peer_registry_x.service
-- new.identity_x:signature_registry_x.service
+- transport.identity:identity_registry.service
+- transport.identity:parcel_registry.service
+- transport.identity:peer_registry.service
+- transport.identity:signature_registry.service
 associations:
 - _type: legacy_type.code_registry:association
-  service: new.identity_x:identity_registry_x.service
+  service: transport.identity:identity_registry.service
   type: legacy_type.rsa_identity:rsa_identity
   function: rsa_identity_from_piece
 - _type: legacy_type.code_registry:association
-  service: new.identity_x:parcel_registry_x.service
+  service: transport.identity:parcel_registry.service
   type: legacy_type.rsa_identity:rsa_parcel
   function: rsa_parcel_from_piece
 - _type: legacy_type.code_registry:association
-  service: new.identity_x:peer_registry_x.service
+  service: transport.identity:peer_registry.service
   type: legacy_type.rsa_identity:rsa_peer
   function: rsa_peer_from_piece
 - _type: legacy_type.code_registry:association
-  service: new.identity_x:signature_registry_x.service
+  service: transport.identity:signature_registry.service
   type: legacy_type.rsa_identity:rsa_signature
   function: rsa_signature_from_piece
 definitions:
-  generate_rsa_identity_x:
+  generate_rsa_identity:
     _type: legacy_type.attribute:attribute
-    object: rsa_identity_x.module
-    attr_name: generate_rsa_identity_x
-  generate_rsa_identity_x.service:
+    object: rsa_identity.module
+    attr_name: generate_rsa_identity
+  generate_rsa_identity.service:
     _type: legacy_type.call:call
-    function: generate_rsa_identity_x
-  rsa_identity_from_piece:
-    _type: legacy_type.attribute:attribute
-    object: rsa_identity_x.module
-    attr_name: rsa_identity_from_piece
-  rsa_identity_x.module:
+    function: generate_rsa_identity
+  rsa_identity.module:
     _type: legacy_type.python_module:python_module
-    module_name: rsa_identity_x
-    file_name: rsa_identity_x.dyn.py
+    module_name: rsa_identity
+    file_name: rsa_identity.dyn.py
     import_list:
       htypes.rsa_identity.rsa_identity: legacy_type.rsa_identity:rsa_identity
       htypes.rsa_identity.rsa_parcel: legacy_type.rsa_identity:rsa_parcel
       htypes.rsa_identity.rsa_peer: legacy_type.rsa_identity:rsa_peer
       htypes.rsa_identity.rsa_signature: legacy_type.rsa_identity:rsa_signature
-      services.identity_registry_x: new.identity_x:identity_registry_x.service
+      services.identity_registry: transport.identity:identity_registry.service
       services.mark: common.mark:mark.service
       services.mosaic: legacy_service:mosaic
-      services.parcel_registry_x: new.identity_x:parcel_registry_x.service
-      services.peer_registry_x: new.identity_x:peer_registry_x.service
-      services.signature_registry_x: new.identity_x:signature_registry_x.service
+      services.parcel_registry: transport.identity:parcel_registry.service
+      services.peer_registry: transport.identity:peer_registry.service
+      services.signature_registry: transport.identity:signature_registry.service
+  rsa_identity_from_piece:
+    _type: legacy_type.attribute:attribute
+    object: rsa_identity.module
+    attr_name: rsa_identity_from_piece
   rsa_parcel_from_piece:
     _type: legacy_type.attribute:attribute
-    object: rsa_identity_x.module
+    object: rsa_identity.module
     attr_name: rsa_parcel_from_piece
   rsa_peer_from_piece:
     _type: legacy_type.attribute:attribute
-    object: rsa_identity_x.module
+    object: rsa_identity.module
     attr_name: rsa_peer_from_piece
   rsa_signature_from_piece:
     _type: legacy_type.attribute:attribute
-    object: rsa_identity_x.module
+    object: rsa_identity.module
     attr_name: rsa_signature_from_piece
