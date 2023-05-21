@@ -1,6 +1,6 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:0b57bb5e5247429ccd39c42a1b1f7f57cbb101c244bb6dd7118a2063ed568d00368eee92a2b2e60aa926353ba429cfea752d4f1e62f04d44ac979cd7f9001d27
-# Generator ref: sha512:105ead3126a6e95fcbbb595b9a7cbb66c71557d4215fb2ea952f3f75ced810e7692352d5df02d85c7e20ec95ae67b152f988f6db4126e0c86898f64c87fadeb9
+# Source ref: sha512:b0fa0a7f888c3e415f2206c5f4fef6f7c423bf7235f2354ddc518690b5c5ebe7841bfcc9e1c0ca84c4f20d9fde4df0fef07cce9b03d3650b8e2203e598974ea2
+# Generator ref: sha512:f901da057e5922034b5f2bc9d5f01d05235c6f1f4438a69f6e5e057534f8cde77980c1a166b11aa80373a5ea0042e78f41f75e2cfcf7dbcec3cb2e1acc9f9c07
 
 import:
 - common.mark:mark.service
@@ -8,7 +8,6 @@ import:
 - legacy_service:failed
 - legacy_service:mosaic
 - legacy_service:on_stop
-- transport.identity:parcel_registry.service
 - legacy_service:stop_signal
 - legacy_service:unbundler
 - legacy_type.attribute:attribute
@@ -16,6 +15,7 @@ import:
 - legacy_type.code_registry:association
 - legacy_type.python_module:python_module
 - legacy_type.tcp_transport:route
+- transport.identity:parcel_registry.service
 - transport.route_registry:route_registry.service
 - transport.sync_route_table:route_table.service
 - transport.tcp_utils:tcp_utils.module
