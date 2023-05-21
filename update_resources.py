@@ -17,17 +17,12 @@ module_dir_list = [
     HYPERAPP_DIR / 'transport',
     HYPERAPP_DIR / 'rpc',
     HYPERAPP_DIR / 'subprocess',
-    HYPERAPP_DIR / 'sync',
-    HYPERAPP_DIR / 'async',
-    HYPERAPP_DIR / 'ui',
-    HYPERAPP_DIR / 'sample',
     HYPERAPP_DIR / 'guesser',
     HYPERAPP_DIR / 'command_line',
+    HYPERAPP_DIR / 'ui_types',
     ]
 
 code_module_list = [
-    'common.lcs',
-    'common.lcs_service',
     'resource.resource_type',
     'resource.registry',
     'resource.resource_module',
@@ -48,8 +43,6 @@ code_module_list = [
     'resource.map_service',
     'resource.python_module',
     'resource.raw',
-    'ui.impl_registry',
-    'ui.global_command_list',
     ]
 
 

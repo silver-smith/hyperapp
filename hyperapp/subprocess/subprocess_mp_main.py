@@ -20,13 +20,10 @@ module_dir_list = [
     HYPERAPP_DIR / 'transport',
     HYPERAPP_DIR / 'subprocess',
     HYPERAPP_DIR / 'guesser',
-    HYPERAPP_DIR / 'async',
-    HYPERAPP_DIR / 'ui',
+    HYPERAPP_DIR / 'ui_types',
     ]
 
 code_module_list = [
-    'common.lcs',
-    'common.lcs_service',
     'common.unbundler',
     'resource.resource_type',
     'resource.registry',
