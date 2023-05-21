@@ -54,6 +54,9 @@ class AssociationRegistry:
         if piece_list:
             self._update()
 
+    def __contains__(self, key):
+        return key in self._key_to_value
+
     def __getitem__(self, key):
         return self._key_to_value[key]
 

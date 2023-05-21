@@ -40,6 +40,11 @@ class DynCodeRegistry(CodeRegistry):
     def _my_resource(self):
         return python_object_creg.reverse_resolve(self)
 
+    def type_registered(self, t):
+        if super().type_registered(t):
+            return True
+        return (self._my_resource, t) in association_reg
+
     def _resolve_record(self, t):
         try:
             return super()._resolve_record(t)
