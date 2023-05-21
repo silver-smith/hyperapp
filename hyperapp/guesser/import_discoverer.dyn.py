@@ -7,10 +7,6 @@ from .services import (
 )
 
 
-class UsingIncompleteObject(HException):
-    pass
-
-
 class DiscovererObject:
 
     def __init__(self, prefix, imported_set):
