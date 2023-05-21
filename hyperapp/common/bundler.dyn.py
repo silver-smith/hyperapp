@@ -94,12 +94,15 @@ class Bundler(Visitor):
     def _collect_aux_refs(self, ref, t, value):
         for ass in self._association_reg.pieces_for_base(value):
             ass_ref = self._mosaic.put(ass)
+            log.debug("Bundle aux association %s: %s", ass_ref, ass)
             self._collected_aux_set.add(ass_ref)
             self._collected_ref_set.add(ass_ref)  # Should collect from these refs too.
         for hook in self._aux_bundler_hooks:
             aux_ref_set = set(hook(ref, t, value) or [])
-            self._collected_aux_set |= aux_ref_set
-            self._collected_ref_set |= aux_ref_set  # Should collect from these refs too.
+            if aux_ref_set:
+                log.debug("Bundle aux by hook %s %s %s: %s", hook, t, value, aux_ref_set)
+                self._collected_aux_set |= aux_ref_set
+                self._collected_ref_set |= aux_ref_set  # Should collect from these refs too.
 
 
 class ThisModule(Module):
