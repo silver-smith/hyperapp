@@ -181,7 +181,7 @@ class TRecord(Type):
         self._eq_key = (self._module_name, self._name, *self.fields.items())
 
     def __str__(self):
-        return f'TRecord({self.name!r})'
+        return f'{self.module_name}.{self.name}'
 
     def __repr__(self):
         fields = ', '.join("%s: %r" % (name, t) for name, t in self.fields.items())
