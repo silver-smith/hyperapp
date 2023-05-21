@@ -1,6 +1,6 @@
 # Automatically generated file. Do not edit.
 # Source ref: sha512:fc37ea38b55ba1bf1cda95bed6bcba86f38059932307a8e6b1deba738d9b7bf43e6af0909d00e2f48def53ec9bd4a1d53b2c5f9f5b2fb4c9214c9377bbe50927
-# Generator ref: sha512:ec037aa3b00639617b1f5fee91c2866a6681ac862b6136fa057533bfd4b3a9f1c2ccdd55b5210d98456fc69e1b3af9d3418c24264d870d0a43c2878cd37bb774
+# Generator ref: sha512:c3d1e810e280e99c9df83b40848b08785f544d89788c821e0727a7bcfb557299281bab9c5afff5c746a3867027625c71c0f67e1927df633e984622ca7f31d803
 
 import:
 - common.mark:mark.service
@@ -13,8 +13,6 @@ import:
 - legacy_type.attribute:attribute
 - legacy_type.call:call
 - legacy_type.python_module:python_module
-- legacy_type.rsa_identity:rsa_parcel
-- legacy_type.rsa_identity:rsa_peer
 - transport.identity:parcel_registry.service
 - transport.sync_route_table:route_table.service
 - transport.transport:transport.service
@@ -32,8 +30,6 @@ definitions:
     module_name: subprocess_transport
     file_name: subprocess_transport.dyn.py
     import_list:
-      htypes.rsa_identity.rsa_parcel: legacy_type.rsa_identity:rsa_parcel
-      htypes.rsa_identity.rsa_peer: legacy_type.rsa_identity:rsa_peer
       services.bundler: legacy_service:bundler
       services.failed: legacy_service:failed
       services.mark: common.mark:mark.service

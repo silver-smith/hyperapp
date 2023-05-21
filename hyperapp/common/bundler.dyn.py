@@ -92,7 +92,7 @@ class Bundler(Visitor):
             self._collected_ref_set.add(value)
 
     def _collect_aux_refs(self, ref, t, value):
-        for ass in self._association_reg.associations_for_base(value):
+        for ass in self._association_reg.pieces_for_base(value):
             ass_ref = self._mosaic.put(ass)
             self._collected_aux_set.add(ass_ref)
             self._collected_ref_set.add(ass_ref)  # Should collect from these refs too.
