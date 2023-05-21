@@ -1,10 +1,10 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:83d973317b33357143a1dcb7997d579a3b3888943faafc1effd9721e4343f79393331558aac2395a5cdba704f9226cda57620b07c1e56ecdd05f48889d24b98d
-# Generator ref: sha512:f901da057e5922034b5f2bc9d5f01d05235c6f1f4438a69f6e5e057534f8cde77980c1a166b11aa80373a5ea0042e78f41f75e2cfcf7dbcec3cb2e1acc9f9c07
+# Source ref: sha512:06798dbed703d095a247dd5f1c87c4a112fe29fb7a11a4b20219cdf97af30eee47168273965e539849d8a1f9274a90811f7484850e2596829c8c4b176a109c90
+# Generator ref: sha512:e4a04d9b1e22a575f59df03ef4f1aaa09409f5096ed5d9a7b27a72fa472f966c4fa4e517379373b5ebafc854e82f10cc487867c0940679b14b02eb0cff932a8d
 
 import:
+- common.failure:failed.service
 - common.mark:mark.service
-- legacy_service:failed
 - legacy_service:mosaic
 - legacy_service:on_stop
 - legacy_service:unbundler
@@ -19,7 +19,7 @@ definitions:
     module_name: endpoint
     file_name: endpoint.dyn.py
     import_list:
-      services.failed: legacy_service:failed
+      services.failed: common.failure:failed.service
       services.mark: common.mark:mark.service
       services.mosaic: legacy_service:mosaic
       services.on_stop: legacy_service:on_stop

@@ -1,11 +1,11 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:fc37ea38b55ba1bf1cda95bed6bcba86f38059932307a8e6b1deba738d9b7bf43e6af0909d00e2f48def53ec9bd4a1d53b2c5f9f5b2fb4c9214c9377bbe50927
-# Generator ref: sha512:f901da057e5922034b5f2bc9d5f01d05235c6f1f4438a69f6e5e057534f8cde77980c1a166b11aa80373a5ea0042e78f41f75e2cfcf7dbcec3cb2e1acc9f9c07
+# Source ref: sha512:df68fbf351f6527c13302ecb8b2344c29cb376207a6cd1acd2cf23a3c3ec1db4ac627fa523b46c1f040283d3e13159d3d75d3552ec6b7baf04193763f6293835
+# Generator ref: sha512:e4a04d9b1e22a575f59df03ef4f1aaa09409f5096ed5d9a7b27a72fa472f966c4fa4e517379373b5ebafc854e82f10cc487867c0940679b14b02eb0cff932a8d
 
 import:
+- common.failure:failed.service
 - common.mark:mark.service
 - legacy_service:bundler
-- legacy_service:failed
 - legacy_service:mosaic
 - legacy_service:on_stop
 - legacy_service:stop_signal
@@ -31,7 +31,7 @@ definitions:
     file_name: subprocess_transport.dyn.py
     import_list:
       services.bundler: legacy_service:bundler
-      services.failed: legacy_service:failed
+      services.failed: common.failure:failed.service
       services.mark: common.mark:mark.service
       services.mosaic: legacy_service:mosaic
       services.on_stop: legacy_service:on_stop

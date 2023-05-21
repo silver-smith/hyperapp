@@ -1,11 +1,11 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:b0fa0a7f888c3e415f2206c5f4fef6f7c423bf7235f2354ddc518690b5c5ebe7841bfcc9e1c0ca84c4f20d9fde4df0fef07cce9b03d3650b8e2203e598974ea2
-# Generator ref: sha512:f901da057e5922034b5f2bc9d5f01d05235c6f1f4438a69f6e5e057534f8cde77980c1a166b11aa80373a5ea0042e78f41f75e2cfcf7dbcec3cb2e1acc9f9c07
+# Source ref: sha512:08abc69a4413b6617d89e0dfd7b0b876e358ee2000b53dac5d59664026275143d5fbc11a442555a93350b15eff10c572d2ee2e82b63cd7f44d513a0d32b4b9ad
+# Generator ref: sha512:e4a04d9b1e22a575f59df03ef4f1aaa09409f5096ed5d9a7b27a72fa472f966c4fa4e517379373b5ebafc854e82f10cc487867c0940679b14b02eb0cff932a8d
 
 import:
+- common.failure:failed.service
 - common.mark:mark.service
 - legacy_service:bundler
-- legacy_service:failed
 - legacy_service:mosaic
 - legacy_service:on_stop
 - legacy_service:stop_signal
@@ -45,7 +45,7 @@ definitions:
       code.tcp_utils: transport.tcp_utils:tcp_utils.module
       htypes.tcp_transport.route: legacy_type.tcp_transport:route
       services.bundler: legacy_service:bundler
-      services.failed: legacy_service:failed
+      services.failed: common.failure:failed.service
       services.mark: common.mark:mark.service
       services.mosaic: legacy_service:mosaic
       services.on_stop: legacy_service:on_stop
