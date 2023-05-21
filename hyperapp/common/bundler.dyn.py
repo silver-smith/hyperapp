@@ -7,23 +7,27 @@ from hyperapp.common.util import is_list_inst
 from hyperapp.common.ref import decode_capsule, ref_repr
 from hyperapp.common.module import Module
 
-from .visitor import Visitor
+from .services import (
+    association_reg,
+    mark,
+    mosaic,
+    types,
+    )
+from .code.visitor import Visitor
 
 log = logging.getLogger(__name__)
 
+
 RECURSION_LIMIT = 100
 
-
 _RefsAndBundle = namedtuple('_RefsAndBundle', 'ref_set bundle')
+
+_aux_bundler_hooks = []
 
 
 class Bundler(Visitor):
 
-    def __init__(self, mosaic, types, association_reg, aux_bundler_hooks):
-        self._mosaic = mosaic
-        self._types = types
-        self._association_reg = association_reg
-        self._aux_bundler_hooks = aux_bundler_hooks
+    def __init__(self):
         self._collected_ref_set = None
         self._collected_type_ref_set = None
         self._collected_aux_set = set()
@@ -51,7 +55,7 @@ class Bundler(Visitor):
             for ref in ref_set:
                 if ref.hash_algorithm == 'phony':
                     continue
-                capsule = self._mosaic.get(ref)
+                capsule = mosaic.get(ref)
                 if capsule is None:
                     log.warning('Ref %s is failed to be resolved', ref_repr(ref))
                     missing_ref_count += 1
@@ -75,7 +79,7 @@ class Bundler(Visitor):
         return (processed_ref_set, list(type_capsule_set) + list(capsule_set))
 
     def _collect_refs_from_capsule(self, ref, capsule):
-        dc = decode_capsule(self._types, capsule)
+        dc = decode_capsule(types, capsule)
         log.debug('Collecting refs from %r:', dc.value)
         self._collected_ref_set = set()
         self._collect_refs_from_object(dc.t, dc.value)
@@ -92,12 +96,12 @@ class Bundler(Visitor):
             self._collected_ref_set.add(value)
 
     def _collect_aux_refs(self, ref, t, value):
-        for ass in self._association_reg.pieces_for_base(value):
-            ass_ref = self._mosaic.put(ass)
+        for ass in association_reg.pieces_for_base(value):
+            ass_ref = mosaic.put(ass)
             log.debug("Bundle aux association %s: %s", ass_ref, ass)
             self._collected_aux_set.add(ass_ref)
             self._collected_ref_set.add(ass_ref)  # Should collect from these refs too.
-        for hook in self._aux_bundler_hooks:
+        for hook in _aux_bundler_hooks:
             aux_ref_set = set(hook(ref, t, value) or [])
             if aux_ref_set:
                 log.debug("Bundle aux by hook %s %s %s: %s", hook, t, value, aux_ref_set)
@@ -105,17 +109,13 @@ class Bundler(Visitor):
                 self._collected_ref_set |= aux_ref_set  # Should collect from these refs too.
 
 
-class ThisModule(Module):
+@mark.service
+def aux_bundler_hooks():
+    return _aux_bundler_hooks
 
-    def __init__(self, module_name, services, config):
-        super().__init__(module_name, services, config)
-        self._mosaic = services.mosaic
-        self._types = services.types
-        self._association_reg = services.association_reg
-        self._aux_bundler_hooks = []
-        services.aux_bundler_hooks = self._aux_bundler_hooks
-        services.bundler = self.bundler
 
-    def bundler(self, ref_list, seen_refs=None):
-        bundler = Bundler(self._mosaic, self._types, self._association_reg, self._aux_bundler_hooks)
-        return bundler.bundle(ref_list, seen_refs)
+@mark.service
+def bundler():
+    def _bundle(ref_list, seen_refs=None):
+        return Bundler().bundle(ref_list, seen_refs)
+    return _bundle

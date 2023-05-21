@@ -1,10 +1,10 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:91cc0519e3aaa33a75fc1af7705cdf62be7aa8516f6ad04420900587439e19a8b43d56e3117672009280a8517ae2a83e44cd25f300bbb642a33ad60708cf0e21
-# Generator ref: sha512:f901da057e5922034b5f2bc9d5f01d05235c6f1f4438a69f6e5e057534f8cde77980c1a166b11aa80373a5ea0042e78f41f75e2cfcf7dbcec3cb2e1acc9f9c07
+# Source ref: sha512:6381ae44e1e73d6201ccb004a6c32d8c1329ad1f4f981cd80ed358279a5aea7e0946a0839834e64f17d9d15c0fc741b2b5591b8ed21831ab6f3946231a124ac3
+# Generator ref: sha512:06e5876d669fa1a7ed45e8cef927f162698b556634ffb34d291f5857c68d32fbe338510a6cfaaa4bb766eef315c5ea7cc78ded51d64ce665325c55c58ffd2401
 
 import:
+- common.bundler:bundler.service
 - common.mark:mark.service
-- legacy_service:bundler
 - legacy_service:mosaic
 - legacy_type.attribute:attribute
 - legacy_type.call:call
@@ -16,7 +16,7 @@ definitions:
     module_name: subprocess
     file_name: subprocess.dyn.py
     import_list:
-      services.bundler: legacy_service:bundler
+      services.bundler: common.bundler:bundler.service
       services.mark: common.mark:mark.service
       services.mosaic: legacy_service:mosaic
   subprocess_running:

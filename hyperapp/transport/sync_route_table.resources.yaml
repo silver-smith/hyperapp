@@ -1,10 +1,10 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:525dbf8db29175ed9a475c2524227f3945404fc8ca82a96354fd8661106417673c2f00bad2aa4224c63389cecdd7c2cd9449545b807e70a30904acc6f86c8db4
-# Generator ref: sha512:f901da057e5922034b5f2bc9d5f01d05235c6f1f4438a69f6e5e057534f8cde77980c1a166b11aa80373a5ea0042e78f41f75e2cfcf7dbcec3cb2e1acc9f9c07
+# Source ref: sha512:5030a9c5fbae0d8a5b3047f3bc8d6919152de63f521e72940dc9ebf55128a82c8e6cb03e7af238230370c40271c9960f5b27f18622c222f31461768e1f423311
+# Generator ref: sha512:e427cdb1e3198fd0697c47d1584c27841939addbec13934773db906f8d424d0981de113ae8d2a475692176a482cc1d6ea14ebf148e32b33df0b804501a91ce30
 
 import:
+- common.bundler:aux_bundler_hooks.service
 - common.mark:mark.service
-- legacy_service:aux_bundler_hooks
 - legacy_service:aux_unbundler_hooks
 - legacy_service:mosaic
 - legacy_type.attribute:attribute
@@ -28,7 +28,7 @@ definitions:
     file_name: sync_route_table.dyn.py
     import_list:
       code.route_table: transport.route_table:route_table.module
-      services.aux_bundler_hooks: legacy_service:aux_bundler_hooks
+      services.aux_bundler_hooks: common.bundler:aux_bundler_hooks.service
       services.aux_unbundler_hooks: legacy_service:aux_unbundler_hooks
       services.mark: common.mark:mark.service
       services.mosaic: legacy_service:mosaic

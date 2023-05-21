@@ -1,10 +1,10 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:ebcb3acd0182db2ddf2f7d9194482b2cd52b55427ffe96522dd55f885ec503edb95a3bcbc051fe4edf48d13201a9774b4577ff23aaefe2681020f6cdc7a5a848
-# Generator ref: sha512:f901da057e5922034b5f2bc9d5f01d05235c6f1f4438a69f6e5e057534f8cde77980c1a166b11aa80373a5ea0042e78f41f75e2cfcf7dbcec3cb2e1acc9f9c07
+# Source ref: sha512:32ed23f0b84ce7e5585ce43c0d6341bbcefdcfbda650ded7f45d0c82e2df8903d4313b02326e0651610babf9ee5334ab93e01c7c32bf7938f610d6555d22f80f
+# Generator ref: sha512:06e5876d669fa1a7ed45e8cef927f162698b556634ffb34d291f5857c68d32fbe338510a6cfaaa4bb766eef315c5ea7cc78ded51d64ce665325c55c58ffd2401
 
 import:
+- common.bundler:bundler.service
 - common.mark:mark.service
-- legacy_service:bundler
 - legacy_service:mosaic
 - legacy_type.attribute:attribute
 - legacy_type.call:call
@@ -22,7 +22,7 @@ definitions:
     module_name: transport
     file_name: transport.dyn.py
     import_list:
-      services.bundler: legacy_service:bundler
+      services.bundler: common.bundler:bundler.service
       services.mark: common.mark:mark.service
       services.mosaic: legacy_service:mosaic
       services.route_registry: transport.route_registry:route_registry.service

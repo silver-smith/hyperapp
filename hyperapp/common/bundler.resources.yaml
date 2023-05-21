@@ -1,0 +1,39 @@
+# Automatically generated file. Do not edit.
+# Source ref: sha512:d2b8072d358c64181c6a533c577398a89d83d618d0e2aa7ed513bf17f307bf090049aeb3236c9ee406da589bddb668c635cbe249a71e6ae9803795d52e1e1288
+# Generator ref: sha512:06e5876d669fa1a7ed45e8cef927f162698b556634ffb34d291f5857c68d32fbe338510a6cfaaa4bb766eef315c5ea7cc78ded51d64ce665325c55c58ffd2401
+
+import:
+- common.mark:mark.service
+- legacy_module.common:visitor
+- legacy_service:association_reg
+- legacy_service:mosaic
+- legacy_service:types
+- legacy_type.attribute:attribute
+- legacy_type.call:call
+- legacy_type.python_module:python_module
+associations: []
+definitions:
+  aux_bundler_hooks:
+    _type: legacy_type.attribute:attribute
+    object: bundler.module
+    attr_name: aux_bundler_hooks
+  aux_bundler_hooks.service:
+    _type: legacy_type.call:call
+    function: aux_bundler_hooks
+  bundler:
+    _type: legacy_type.attribute:attribute
+    object: bundler.module
+    attr_name: bundler
+  bundler.module:
+    _type: legacy_type.python_module:python_module
+    module_name: bundler
+    file_name: bundler.dyn.py
+    import_list:
+      code.visitor: legacy_module.common:visitor
+      services.association_reg: legacy_service:association_reg
+      services.mark: common.mark:mark.service
+      services.mosaic: legacy_service:mosaic
+      services.types: legacy_service:types
+  bundler.service:
+    _type: legacy_type.call:call
+    function: bundler
