@@ -2,7 +2,7 @@ import inspect
 import logging
 from types import ModuleType
 
-from hyperapp.common.htypes import TList, TRecord
+from hyperapp.common.htypes import HException, TList, TRecord
 from hyperapp.common.htypes.deduce_value_type import DeduceTypeError, deduce_complex_value_type
 
 from . import htypes
@@ -19,7 +19,22 @@ log = logging.getLogger(__name__)
 
 def collect_attributes(object_ref):
     log.info("Collect attributes: %s", object_ref)
-    object = python_object_creg.invite(object_ref)
+    try:
+        object = python_object_creg.invite(object_ref)
+    except HException as x:
+        raise
+    except RuntimeError as x:
+        original_error = x
+        while True:
+            if not original_error.__context__:
+                if (isinstance(original_error, TypeError)
+                    and str(original_error) == '__init__() takes 3 positional arguments but 4 were given'):
+                    # Class based on one imported from .code, which is DiscovererObject?
+                    raise htypes.import_discoverer.using_incomplete_object(
+                        "Suspected usage of incomplete base class for deriving from it")
+                else:
+                    raise
+            original_error = original_error.__context__
     attr_list = [
         mosaic.put(attr) for attr
         in _iter_attributes(object)

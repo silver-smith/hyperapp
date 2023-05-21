@@ -5,6 +5,7 @@ import:
   - legacy_service:python_object_creg
   - legacy_type.attribute:attribute
   - legacy_type.call:call
+  - legacy_type.import_discoverer:using_incomplete_object
   - legacy_type.inspect:attr
   - legacy_type.inspect:fn_attr
   - legacy_type.inspect:generator_fn_attr
@@ -28,6 +29,7 @@ definitions:
     module_name: runner
     file_name: runner.dyn.py
     import_list:
+      htypes.import_discoverer.using_incomplete_object: legacy_type.import_discoverer:using_incomplete_object
       htypes.inspect.attr: legacy_type.inspect:attr
       htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
       htypes.inspect.generator_fn_attr: legacy_type.inspect:generator_fn_attr

@@ -1,6 +1,0 @@
-import:
-  code:
-    - common.visitor
-provide:
-  - aux_bundler_hooks
-  - bundler
