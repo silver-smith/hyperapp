@@ -2,6 +2,7 @@ import logging
 import sys
 import threading
 from collections import namedtuple
+from functools import partial
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -21,6 +22,7 @@ from .python_importer import PythonImporter
 from .module_registry import CodeModule, ModuleRegistry
 from .resource_dir import ResourceDir
 from .unbundler import Unbundler
+from ..resource.resource_type import ResourceType
 
 log = logging.getLogger(__name__)
 
@@ -51,6 +53,7 @@ class Services(object):
         'stop_signal',
         'aux_unbundler_hooks',
         'unbundler',
+        'resource_type_factory',
     ]
 
     def __init__(self, module_dir_list, additional_resource_dirs=None):
@@ -91,6 +94,7 @@ class Services(object):
         self.python_importer.register_meta_hook()
         self.aux_unbundler_hooks = []
         self.unbundler = Unbundler(self.mosaic, self.association_reg, self.aux_unbundler_hooks)
+        self.resource_type_factory = partial(ResourceType, self.types, self.mosaic, self.web)
 
     def stop(self):
         log.info("Stop services.")

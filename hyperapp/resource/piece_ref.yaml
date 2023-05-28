@@ -5,5 +5,4 @@ import:
 provide:
   - resource.piece_ref
 require:
-  - resource_type_factory
   - python_object_creg

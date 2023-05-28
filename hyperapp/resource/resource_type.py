@@ -1,10 +1,9 @@
-from functools import cached_property, partial
+from functools import cached_property
 
 from hyperapp.common.htypes import ref_t, builtin_mt, name_wrapped_mt, list_mt, optional_mt, field_mt, record_mt
 from hyperapp.common.mapper import Mapper
 from hyperapp.common.dict_decoders import NamedPairsDictDecoder
 from hyperapp.common.dict_encoders import NamedPairsDictEncoder
-from hyperapp.common.module import Module
 
 
 class TypeToDefinitionMapper(Mapper):
@@ -188,11 +187,3 @@ class ResourceType:
     def to_dict(self, definition):
         encoder = NamedPairsDictEncoder()
         return encoder.encode(definition)
-
-
-class ThisModule(Module):
-
-    def __init__(self, module_name, services, config):
-        super().__init__(module_name, services, config)
-
-        services.resource_type_factory = partial(ResourceType, services.types, services.mosaic, services.web)
