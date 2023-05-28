@@ -29,7 +29,6 @@ code_module_list = [
     'resource.legacy_module',
     'resource.legacy_service',
     'resource.legacy_type',
-    'resource.attribute',
     'resource.python_module',
     ]
 
@@ -70,8 +69,18 @@ def subprocess_main_safe(connection, main_fn_bundle_cdr):
     services = Services(module_dir_list)
     services.init_services()
     services.init_modules(code_module_list + additional_code_module_list)
+
     # TODO: Remove loading resources after all code registries (or, at least python_object_creg) moved to dynamic/associations.
-    services.association_reg.register_association_list(services.resource_registry.associations)
+    association_reg = services.association_reg
+    resource_registry = services.resource_registry
+    python_object_creg = services.python_object_creg
+
+    attribute_t = python_object_creg.animate(resource_registry['legacy_type.attribute', 'attribute'])
+    attribute_module = python_object_creg.animate(resource_registry['resource.attribute', 'attribute.module'])
+    python_object_creg.register_actor(attribute_t, attribute_module.python_object)
+
+    association_reg.register_association_list(resource_registry.associations)
+
     services.start_modules()
     log.info("Subprocess: Unpack main function. Bundle size: %.2f KB", len(main_fn_bundle_cdr)/1024)
 

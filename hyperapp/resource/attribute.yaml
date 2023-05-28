@@ -1,6 +1,0 @@
-import:
-  types:
-    attribute:
-      - attribute
-provide:
-  - resource.attribute

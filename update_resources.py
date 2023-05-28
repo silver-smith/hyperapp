@@ -28,7 +28,6 @@ code_module_list = [
     'resource.legacy_module',
     'resource.legacy_service',
     'resource.legacy_type',
-    'resource.attribute',
     'resource.python_module',
     ]
 
@@ -58,8 +57,12 @@ def main():
         association_reg = services.association_reg
         python_object_creg = services.python_object_creg
 
-        fn_res = resource_registry['command_line.update_resources', 'update_resources']
+        attribute_t = python_object_creg.animate(resource_registry['legacy_type.attribute', 'attribute'])
+        attribute_module = python_object_creg.animate(resource_registry['resource.attribute', 'attribute.module'])
+        python_object_creg.register_actor(attribute_t, attribute_module.python_object)
+
         association_reg.register_association_list(resource_registry.associations)
+        fn_res = resource_registry['command_line.update_resources', 'update_resources']
         fn = python_object_creg.animate(fn_res)
         log.info("Update resources function: %r", fn)
         fn(fn_res, args.source_subdir, args.root_dir or [], args.module, args.rpc_timeout)
