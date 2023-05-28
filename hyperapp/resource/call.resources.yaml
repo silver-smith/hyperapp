@@ -1,0 +1,21 @@
+import:
+- legacy_service:python_object_creg
+- legacy_type.attribute:attribute
+- legacy_type.impl:python_object_association
+- legacy_type.python_module:python_module
+- legacy_type.call:call
+associations:
+- _type: legacy_type.impl:python_object_association
+  t: legacy_type.call:call
+  function: python_object
+definitions:
+  call.module:
+    _type: legacy_type.python_module:python_module
+    module_name: call
+    file_name: call.dyn.py
+    import_list:
+      services.python_object_creg: legacy_service:python_object_creg
+  python_object:
+    _type: legacy_type.attribute:attribute
+    object: call.module
+    attr_name: python_object

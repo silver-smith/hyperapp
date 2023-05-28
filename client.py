@@ -30,8 +30,6 @@ code_module_list = [
     'resource.attribute',
     'resource.partial',
     'resource.python_module',
-    'resource.call',
-    'resource.python_module',
     'common.lcs',
     'ui.impl_registry',
     'ui.global_command_list',

@@ -1,6 +1,0 @@
-import:
-  types:
-    call:
-      - call
-provide:
-  - resource.call
