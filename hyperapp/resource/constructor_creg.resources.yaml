@@ -1,6 +1,6 @@
 # Automatically generated file. Do not edit.
 # Source ref: sha512:50144490081878fcaf0a59c3282e97dc6d2a27be981310156ae9df23a97609e7766001b0b2172cf722a1ec35f9f9509b1ff03ac20e398ede57dc26c03fceaf1a
-# Generator ref: sha512:06e5876d669fa1a7ed45e8cef927f162698b556634ffb34d291f5857c68d32fbe338510a6cfaaa4bb766eef315c5ea7cc78ded51d64ce665325c55c58ffd2401
+# Generator ref: sha512:d1c9fe45bb85e851eefe6e620f6d0e793dc12881bdeb4147adc9be543fe76bf03e389ee728210a0ad1493863349da2d9b39c5089ae71953050d0047292e1844f
 
 import:
 - common.dyn_code_registry:dyn_code_registry.module
