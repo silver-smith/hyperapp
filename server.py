@@ -31,7 +31,6 @@ code_module_list = [
     'resource.legacy_service',
     'resource.legacy_type',
     'resource.attribute',
-    'resource.partial',
     'resource.python_module',
     'transport.rsa_identity',
     'ui.impl_registry',

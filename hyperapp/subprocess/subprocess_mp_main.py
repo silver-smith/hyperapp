@@ -30,7 +30,6 @@ code_module_list = [
     'resource.legacy_service',
     'resource.legacy_type',
     'resource.attribute',
-    'resource.partial',
     'resource.python_module',
     ]
 
