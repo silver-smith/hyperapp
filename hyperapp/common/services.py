@@ -20,6 +20,7 @@ from .association_registry import AssociationRegistry
 from .python_importer import PythonImporter
 from .module_registry import CodeModule, ModuleRegistry
 from .resource_dir import ResourceDir
+from .unbundler import Unbundler
 
 log = logging.getLogger(__name__)
 
@@ -48,6 +49,8 @@ class Services(object):
         'module_registry',
         'on_stop',
         'stop_signal',
+        'aux_unbundler_hooks',
+        'unbundler',
     ]
 
     def __init__(self, module_dir_list, additional_resource_dirs=None):
@@ -86,6 +89,8 @@ class Services(object):
         self._module_code_registry.register_actor(code_module_t, CodeModule.from_piece, self.types, self.web)
         self.module_registry = ModuleRegistry(self.mosaic, self.web, self.python_importer, self._module_code_registry, self.on_start)
         self.python_importer.register_meta_hook()
+        self.aux_unbundler_hooks = []
+        self.unbundler = Unbundler(self.mosaic, self.association_reg, self.aux_unbundler_hooks)
 
     def stop(self):
         log.info("Stop services.")

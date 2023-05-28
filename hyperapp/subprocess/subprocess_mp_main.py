@@ -24,7 +24,6 @@ module_dir_list = [
     ]
 
 code_module_list = [
-    'common.unbundler',
     'resource.resource_type',
     'resource.registry',
     'resource.resource_module',

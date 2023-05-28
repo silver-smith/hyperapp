@@ -2,12 +2,10 @@
 
 import logging
 
-from hyperapp.common.module import Module
-
 log = logging.getLogger(__name__)
 
 
-class Unbundler(object):
+class Unbundler:
 
     def __init__(self, mosaic, association_reg, aux_unbundler_hooks):
         self._mosaic = mosaic
@@ -27,12 +25,3 @@ class Unbundler(object):
                     handled_by_hook = True
             if not handled_by_hook:
                 self._association_reg.register_association(decoded_capsule.value)
-
-
-class ThisModule(Module):
-
-    def __init__(self, module_name, services, config):
-        super().__init__(module_name, services, config)
-        self._aux_unbundler_hooks = []
-        services.aux_unbundler_hooks = self._aux_unbundler_hooks
-        services.unbundler = Unbundler(services.mosaic, services.association_reg, self._aux_unbundler_hooks)
