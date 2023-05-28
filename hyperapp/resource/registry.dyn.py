@@ -5,10 +5,10 @@ from functools import partial
 from hyperapp.common.htypes.meta_association import meta_association
 from hyperapp.common.meta_association_type import MetaAssociationResourceType
 from hyperapp.common.meta_registry_association import register_meta_association
+from hyperapp.common.cached_code_registry import CachedCodeRegistry
 from hyperapp.common.module import Module
 
 from . import htypes
-from .cached_code_registry import CachedCodeRegistry
 
 _log = logging.getLogger(__name__)
 

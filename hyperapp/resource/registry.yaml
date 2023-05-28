@@ -4,8 +4,6 @@ import:
       - attribute
     impl:
       - python_object_association
-  code:
-    - common.cached_code_registry
 provide:
   - resource_type_reg
   - python_object_creg
