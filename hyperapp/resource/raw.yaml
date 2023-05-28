@@ -4,5 +4,3 @@ import:
       - raw
 provide:
   - resource.raw
-require:
-  - python_object_creg

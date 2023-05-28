@@ -3,4 +3,3 @@ provide:
   - resource.legacy_module
 require:
   - resource_registry
-  - python_object_creg

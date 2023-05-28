@@ -4,5 +4,3 @@ import:
       - call
 provide:
   - resource.call
-require:
-  - python_object_creg

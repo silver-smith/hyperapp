@@ -4,5 +4,3 @@ import:
       - piece_ref
 provide:
   - resource.piece_ref
-require:
-  - python_object_creg

@@ -17,12 +17,15 @@ from .type_system import TypeSystem
 from .code_module import register_code_module_types
 from .code_module_loader import CodeModuleRegistry, CodeModuleLoader
 from .code_registry import CodeRegistry
+from .cached_code_registry import CachedCodeRegistry
 from .association_registry import AssociationRegistry
 from .python_importer import PythonImporter
 from .module_registry import CodeModule, ModuleRegistry
 from .resource_dir import ResourceDir
 from .unbundler import Unbundler
 from ..resource.resource_type import ResourceType
+from ..resource.resource_type_producer import resource_type_producer
+from .meta_registry_association import register_meta_association
 
 log = logging.getLogger(__name__)
 
@@ -54,6 +57,9 @@ class Services(object):
         'aux_unbundler_hooks',
         'unbundler',
         'resource_type_factory',
+        'resource_type_reg',
+        'python_object_creg',
+        'resource_type_producer',
     ]
 
     def __init__(self, module_dir_list, additional_resource_dirs=None):
@@ -95,6 +101,10 @@ class Services(object):
         self.aux_unbundler_hooks = []
         self.unbundler = Unbundler(self.mosaic, self.association_reg, self.aux_unbundler_hooks)
         self.resource_type_factory = partial(ResourceType, self.types, self.mosaic, self.web)
+        self.resource_type_reg = {}  # resource_t -> ResourceType instance
+        self.python_object_creg = CachedCodeRegistry('python_object', self.web, self.types)
+        register_meta_association(self.meta_registry, self.python_object_creg)
+        self.resource_type_producer = partial(resource_type_producer, self.resource_type_factory, self.resource_type_reg)
 
     def stop(self):
         log.info("Stop services.")

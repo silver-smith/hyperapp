@@ -2,9 +2,7 @@ import:
   code:
   - resource.resource_registry
 require:
-- resource_type_producer
 - resource_registry
-- python_object_creg
 provide:
 - resource_module_factory
 - resource_loader

@@ -10,5 +10,3 @@ import:
 provide:
   - resource.map_service
   - piece_service_registry
-require:
-  - python_object_creg

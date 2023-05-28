@@ -3,5 +3,4 @@ import:
     impl:
       - object_command_impl
 require:
-  - python_object_creg
   - command_registry

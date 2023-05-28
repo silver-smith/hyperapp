@@ -7,5 +7,4 @@ import:
     impl:
       - list_spec
 require:
-  - python_object_creg
   - adapter_registry

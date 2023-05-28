@@ -14,7 +14,6 @@ import:
       - item
       - article
 require_code_modules:
-  - python_object_creg
   - resource.typed_piece
   - resource.map_service
   - piece_service_registry

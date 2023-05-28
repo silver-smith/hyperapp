@@ -6,5 +6,3 @@ import:
       - tree_service
 provide:
   - resource.tree_service
-require:
-  - python_object_creg

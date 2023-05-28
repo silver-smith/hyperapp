@@ -5,6 +5,5 @@ import:
     impl:
       - string_spec
 require:
-  - python_object_creg
   - impl_registry
   - adapter_registry

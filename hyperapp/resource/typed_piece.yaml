@@ -4,5 +4,3 @@ import:
       - typed_piece
 provide:
   - resource.typed_piece
-require:
-  - python_object_creg

@@ -4,5 +4,3 @@ import:
       - attribute
 provide:
   - resource.attribute
-require:
-  - python_object_creg

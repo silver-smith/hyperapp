@@ -6,5 +6,3 @@ import:
       - selector
 provide:
   - resource.selector
-require:
-  - python_object_creg

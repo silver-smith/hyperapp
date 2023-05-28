@@ -4,5 +4,3 @@ import:
       - async_run
 provide:
   - resource.async_run
-require:
-  - python_object_creg

@@ -6,5 +6,3 @@ import:
       - list_service
 provide:
   - resource.list_service
-require:
-  - python_object_creg

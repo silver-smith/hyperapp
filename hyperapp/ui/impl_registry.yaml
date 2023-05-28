@@ -4,5 +4,3 @@ import:
       - impl_association
 provide:
   - impl_registry
-require:
-  - python_object_creg

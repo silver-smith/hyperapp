@@ -6,5 +6,3 @@ import:
       - rpc_command
 provide:
   - resource.rpc_command
-require:
-  - python_object_creg

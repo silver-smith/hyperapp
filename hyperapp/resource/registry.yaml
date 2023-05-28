@@ -5,7 +5,4 @@ import:
     impl:
       - python_object_association
 provide:
-  - resource_type_reg
-  - python_object_creg
   - fn_to_ref
-  - resource_type_producer

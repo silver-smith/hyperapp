@@ -6,5 +6,3 @@ import:
       - rpc_callback
 provide:
   - resource.rpc_callback
-require:
-  - python_object_creg
