@@ -8,7 +8,7 @@ from hyperapp.common.htypes import (
     )
 
 
-class Visitor(object):
+class Visitor:
 
     def visit(self, t, value):
         self.dispatch(t, value)

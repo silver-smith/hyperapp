@@ -1,10 +1,10 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:d2b8072d358c64181c6a533c577398a89d83d618d0e2aa7ed513bf17f307bf090049aeb3236c9ee406da589bddb668c635cbe249a71e6ae9803795d52e1e1288
-# Generator ref: sha512:06e5876d669fa1a7ed45e8cef927f162698b556634ffb34d291f5857c68d32fbe338510a6cfaaa4bb766eef315c5ea7cc78ded51d64ce665325c55c58ffd2401
+# Source ref: sha512:4968e085a4d265988ae75968507876e1ac5bbac825a8ed5a26e5260099e571d1f48faba0c469fd278190ce13a910003f15f2bc2f9e909d28f9cb8e61bacb4b6c
+# Generator ref: sha512:18e2bc12f50707679143e40d04516b539cf20f37c7d400f1b3fe4bc00d3fab7eb07162d05132cb5ac036226d8ef4881c7c824e1b7679fcac7c5e789e9201f3ad
 
 import:
 - common.mark:mark.service
-- legacy_module.common:visitor
+- common.visitor:visitor.module
 - legacy_service:association_reg
 - legacy_service:mosaic
 - legacy_service:types
@@ -29,7 +29,7 @@ definitions:
     module_name: bundler
     file_name: bundler.dyn.py
     import_list:
-      code.visitor: legacy_module.common:visitor
+      code.visitor: common.visitor:visitor.module
       services.association_reg: legacy_service:association_reg
       services.mark: common.mark:mark.service
       services.mosaic: legacy_service:mosaic
