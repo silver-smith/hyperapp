@@ -1,0 +1,21 @@
+import:
+- legacy_service:web
+- legacy_type.attribute:attribute
+- legacy_type.impl:python_object_association
+- legacy_type.python_module:python_module
+- legacy_type.raw:raw
+associations:
+- _type: legacy_type.impl:python_object_association
+  t: legacy_type.raw:raw
+  function: python_object
+definitions:
+  raw.module:
+    _type: legacy_type.python_module:python_module
+    module_name: raw
+    file_name: raw.dyn.py
+    import_list:
+      services.web: legacy_service:web
+  python_object:
+    _type: legacy_type.attribute:attribute
+    object: raw.module
+    attr_name: python_object

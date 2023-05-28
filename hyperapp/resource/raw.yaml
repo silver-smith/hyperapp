@@ -1,6 +1,0 @@
-import:
-  types:
-    raw:
-      - raw
-provide:
-  - resource.raw

@@ -33,7 +33,6 @@ code_module_list = [
     'resource.partial',
     'resource.call',
     'resource.python_module',
-    'resource.raw',
     ]
 
 

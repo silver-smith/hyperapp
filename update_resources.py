@@ -30,7 +30,6 @@ code_module_list = [
     'resource.legacy_type',
     'resource.attribute',
     'resource.python_module',
-    'resource.raw',
     ]
 
 
