@@ -54,8 +54,13 @@ def main():
     log.info("Initialized.")
 
     try:
-        fn_res = services.resource_registry['command_line.update_resources', 'update_resources']
-        fn = services.python_object_creg.animate(fn_res)
+        resource_registry = services.resource_registry
+        association_reg = services.association_reg
+        python_object_creg = services.python_object_creg
+
+        fn_res = resource_registry['command_line.update_resources', 'update_resources']
+        association_reg.register_association_list(resource_registry.associations)
+        fn = python_object_creg.animate(fn_res)
         log.info("Update resources function: %r", fn)
         fn(fn_res, args.source_subdir, args.root_dir or [], args.module, args.rpc_timeout)
     finally:
