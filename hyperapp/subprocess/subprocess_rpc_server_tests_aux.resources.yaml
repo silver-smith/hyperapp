@@ -3,11 +3,11 @@
 # Generator ref: sha512:06e5876d669fa1a7ed45e8cef927f162698b556634ffb34d291f5857c68d32fbe338510a6cfaaa4bb766eef315c5ea7cc78ded51d64ce665325c55c58ffd2401
 
 import:
-- legacy_type.python_module:python_module
+- legacy_type.builtin:python_module
 associations: []
 definitions:
   subprocess_rpc_server_tests_aux.module:
-    _type: legacy_type.python_module:python_module
+    _type: legacy_type.builtin:python_module
     module_name: subprocess_rpc_server_tests_aux
     file_name: subprocess_rpc_server_tests_aux.dyn.py
     import_list: {}

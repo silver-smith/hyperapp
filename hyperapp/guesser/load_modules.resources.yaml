@@ -4,12 +4,12 @@ import:
   - legacy_service:local_types
   - legacy_service:type_module_loader
   - legacy_type.attribute:attribute
-  - legacy_type.python_module:python_module
+  - legacy_type.builtin:python_module
 
 definitions:
 
   load_modules.module:
-    _type: legacy_type.python_module:python_module
+    _type: legacy_type.builtin:python_module
     module_name: load_modules
     file_name: load_modules.dyn.py
     import_list:

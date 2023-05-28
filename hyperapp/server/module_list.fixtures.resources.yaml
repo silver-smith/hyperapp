@@ -7,7 +7,7 @@ import:
 - legacy_type.attribute:attribute
 - legacy_type.call:call
 - legacy_type.module_list:module_list
-- legacy_type.python_module:python_module
+- legacy_type.builtin:python_module
 associations: []
 definitions:
   ModuleList.open.current_key.parameter:
@@ -21,7 +21,7 @@ definitions:
     object: module_list.fixtures.module
     attr_name: current_key
   module_list.fixtures.module:
-    _type: legacy_type.python_module:python_module
+    _type: legacy_type.builtin:python_module
     module_name: module_list.fixtures
     file_name: module_list.fixtures.dyn.py
     import_list:

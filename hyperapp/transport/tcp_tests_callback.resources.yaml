@@ -3,7 +3,7 @@
 # Generator ref: sha512:06e5876d669fa1a7ed45e8cef927f162698b556634ffb34d291f5857c68d32fbe338510a6cfaaa4bb766eef315c5ea7cc78ded51d64ce665325c55c58ffd2401
 
 import:
-- legacy_type.python_module:python_module
+- legacy_type.builtin:python_module
 - rpc.rpc_call:rpc_call_factory.service
 - rpc.rpc_endpoint:rpc_endpoint_factory.service
 - transport.endpoint:endpoint_registry.service
@@ -12,7 +12,7 @@ import:
 associations: []
 definitions:
   tcp_tests_callback.module:
-    _type: legacy_type.python_module:python_module
+    _type: legacy_type.builtin:python_module
     module_name: tcp_tests_callback
     file_name: tcp_tests_callback.dyn.py
     import_list:

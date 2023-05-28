@@ -40,7 +40,6 @@ def code_module_list():
         'resource.attribute',
         'resource.partial',
         'resource.call',
-        'resource.python_module',
         'resource.list_service',
         'resource.test.test_resources.mock_identity',
         ]

@@ -28,7 +28,6 @@ code_module_list = [
     'resource.legacy_module',
     'resource.legacy_service',
     'resource.legacy_type',
-    'resource.python_module',
     ]
 
 

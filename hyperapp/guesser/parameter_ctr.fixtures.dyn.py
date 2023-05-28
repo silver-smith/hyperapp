@@ -28,7 +28,7 @@ def name_to_res():
 
 @mark.param.construct
 def module_res():
-    return htypes.python_module.python_module(
+    return htypes.builtin.python_module(
         module_name='sample_module',
         source='',
         file_path='/sample_module.dyn.py',

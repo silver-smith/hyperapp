@@ -7,7 +7,7 @@ import:
 - legacy_type.attribute:attribute
 - legacy_type.global_command:global_command_association
 - legacy_type.impl:global_command_impl
-- legacy_type.python_module:python_module
+- legacy_type.builtin:python_module
 - legacy_type.sample_list:open_sample_list_d
 - legacy_type.sample_list:sample_list
 associations:
@@ -25,7 +25,7 @@ definitions:
   open_sample_list_d:
     _type: legacy_type.sample_list:open_sample_list_d
   sample_list.module:
-    _type: legacy_type.python_module:python_module
+    _type: legacy_type.builtin:python_module
     module_name: sample_list
     file_name: sample_list.dyn.py
     import_list:

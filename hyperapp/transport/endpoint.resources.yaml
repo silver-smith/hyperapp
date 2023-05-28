@@ -9,13 +9,13 @@ import:
 - legacy_service:on_stop
 - legacy_service:unbundler
 - legacy_type.attribute:attribute
+- legacy_type.builtin:python_module
 - legacy_type.call:call
-- legacy_type.python_module:python_module
 - transport.sync_route_table:route_table.service
 associations: []
 definitions:
   endpoint.module:
-    _type: legacy_type.python_module:python_module
+    _type: legacy_type.builtin:python_module
     module_name: endpoint
     file_name: endpoint.dyn.py
     import_list:

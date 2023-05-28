@@ -1,7 +1,0 @@
-import:
-  types:
-    python_module:
-      - python_module
-      - import_rec
-      - python_module_def
-      - import_rec_def

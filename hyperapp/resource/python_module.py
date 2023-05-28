@@ -6,13 +6,11 @@ import yaml
 from collections import defaultdict
 from pathlib import Path
 
+from hyperapp.common.htypes.python_module import import_rec_t, python_module_t, import_rec_def_t, python_module_def_t
 from hyperapp.common.htypes import HException
 from hyperapp.common.dict_decoders import NamedPairsDictDecoder
 from hyperapp.common.dict_encoders import NamedPairsDictEncoder
 from hyperapp.common.python_importer import ROOT_PACKAGE, Finder
-from hyperapp.common.module import Module
-
-from . import htypes
 
 log = logging.getLogger(__name__)
 
@@ -20,8 +18,8 @@ log = logging.getLogger(__name__)
 class PythonModuleResourceType:
 
     name = 'python_module'
-    resource_t = htypes.python_module.python_module
-    definition_t = htypes.python_module.python_module_def
+    resource_t = python_module_t
+    definition_t = python_module_def_t
 
     def __str__(self):
         return self.name
@@ -39,14 +37,14 @@ class PythonModuleResourceType:
 
     def resolve(self, definition, resolver, resource_path):
         import_list = tuple(
-            htypes.python_module.import_rec(
+            import_rec_t(
                 full_name=rec.full_name,
                 resource=resolver(rec.resource),
                 )
             for rec in definition.import_list
             )
         source_path = resource_path / definition.file_name
-        return htypes.python_module.python_module(
+        return python_module_t(
             module_name=definition.module_name,
             source=source_path.read_text(),
             file_path=str(source_path),
@@ -55,13 +53,13 @@ class PythonModuleResourceType:
 
     def reverse_resolve(self, resource, resolver, resource_dir):
         import_list = tuple(
-            htypes.python_module.import_rec_def(
+            import_rec_def_t(
                 full_name=rec.full_name,
                 resource=resolver(rec.resource),
                 )
             for rec in resource.import_list
             )
-        return htypes.python_module.python_module_def(
+        return python_module_def_t(
             module_name=resource.module_name,
             file_name=str(Path(resource.file_path).name),
             import_list=import_list,
@@ -154,7 +152,7 @@ def sub_loader_dict(python_object_creg, import_list, root_module_name):
     return loader_dict
 
                 
-def python_object(piece, mosaic, python_importer, python_object_creg):
+def python_module_pyobj(piece, mosaic, python_importer, python_object_creg):
     module_name = make_module_name(mosaic, piece)
     if python_importer.module_imported(module_name):
         raise RuntimeError(f"Error: module {module_name} is aleady imported")
@@ -171,14 +169,3 @@ def python_object(piece, mosaic, python_importer, python_object_creg):
         raise
     except Exception as x:
         raise RuntimeError(f"Error importing module {piece.module_name!r}: {x}")
-            
-
-class ThisModule(Module):
-
-    def __init__(self, module_name, services, config):
-        super().__init__(module_name, services, config)
-
-        services.resource_type_reg[htypes.python_module.python_module] = PythonModuleResourceType()
-        services.python_object_creg.register_actor(
-            htypes.python_module.python_module, python_object,
-            services.mosaic, services.python_importer, services.python_object_creg)

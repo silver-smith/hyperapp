@@ -16,7 +16,7 @@ import:
 - legacy_type.impl:method_command_impl
 - legacy_type.impl:python_object_association
 - legacy_type.lcs:lcs_set_association
-- legacy_type.python_module:python_module
+- legacy_type.builtin:python_module
 - legacy_type.resources_view:association_item
 - legacy_type.resources_view:association_list
 - legacy_type.resources_view:association_list_d
@@ -159,7 +159,7 @@ definitions:
   resource_module_var_list_d:
     _type: legacy_type.resources_view:resource_module_var_list_d
   resources_view.module:
-    _type: legacy_type.python_module:python_module
+    _type: legacy_type.builtin:python_module
     module_name: resources_view
     file_name: resources_view.dyn.py
     import_list:

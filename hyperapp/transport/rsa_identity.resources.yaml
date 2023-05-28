@@ -6,9 +6,9 @@ import:
 - common.mark:mark.service
 - legacy_service:mosaic
 - legacy_type.attribute:attribute
+- legacy_type.builtin:python_module
 - legacy_type.call:call
 - legacy_type.code_registry:association
-- legacy_type.python_module:python_module
 - legacy_type.rsa_identity:rsa_identity
 - legacy_type.rsa_identity:rsa_parcel
 - legacy_type.rsa_identity:rsa_peer
@@ -43,7 +43,7 @@ definitions:
     _type: legacy_type.call:call
     function: generate_rsa_identity
   rsa_identity.module:
-    _type: legacy_type.python_module:python_module
+    _type: legacy_type.builtin:python_module
     module_name: rsa_identity
     file_name: rsa_identity.dyn.py
     import_list:

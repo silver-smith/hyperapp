@@ -6,7 +6,7 @@ import:
 - legacy_type.call:call
 - legacy_type.global_command_ctr:global_command_ctr
 - legacy_type.object_command_ctr:object_command_ctr
-- legacy_type.python_module:python_module
+- legacy_type.builtin:python_module
 - resource.constants:constants.module
 
 associations: []
@@ -14,7 +14,7 @@ associations: []
 definitions:
 
   mark.module:
-    _type: legacy_type.python_module:python_module
+    _type: legacy_type.builtin:python_module
     module_name: mark
     file_name: mark.dyn.py
     import_list:

@@ -6,8 +6,8 @@ import:
 - common.mark:mark.service
 - legacy_service:fn_to_ref
 - legacy_type.attribute:attribute
+- legacy_type.builtin:python_module
 - legacy_type.call:call
-- legacy_type.python_module:python_module
 - resource.partial_ref:partial_ref.service
 - rpc.rpc_call:rpc_call_factory.service
 - rpc.rpc_proxy:rpc_proxy.module
@@ -18,7 +18,7 @@ import:
 associations: []
 definitions:
   subprocess_rpc_server.module:
-    _type: legacy_type.python_module:python_module
+    _type: legacy_type.builtin:python_module
     module_name: subprocess_rpc_server
     file_name: subprocess_rpc_server.dyn.py
     import_list:

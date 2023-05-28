@@ -10,8 +10,8 @@ import:
 - legacy_service:types
 - legacy_service:web
 - legacy_type.attribute:attribute
+- legacy_type.builtin:python_module
 - legacy_type.call:call
-- legacy_type.python_module:python_module
 - legacy_type.rpc:error_response
 - legacy_type.rpc:param
 - legacy_type.rpc:request
@@ -23,7 +23,7 @@ import:
 associations: []
 definitions:
   rpc_endpoint.module:
-    _type: legacy_type.python_module:python_module
+    _type: legacy_type.builtin:python_module
     module_name: rpc_endpoint
     file_name: rpc_endpoint.dyn.py
     import_list:

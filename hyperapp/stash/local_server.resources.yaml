@@ -7,11 +7,11 @@ import:
 - legacy_service:file_bundle
 - legacy_type.attribute:attribute
 - legacy_type.call:call
-- legacy_type.python_module:python_module
+- legacy_type.builtin:python_module
 associations: []
 definitions:
   local_server.module:
-    _type: legacy_type.python_module:python_module
+    _type: legacy_type.builtin:python_module
     module_name: local_server
     file_name: local_server.dyn.py
     import_list:

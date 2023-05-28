@@ -61,12 +61,12 @@ def test_import_recorder():
     import_recorder_ref = mosaic.put(import_recorder_res)
 
     sample_module_path = TEST_RESOURCES_DIR / 'import_recorder_sample_module.dyn.py'
-    module_res = htypes.python_module.python_module(
+    module_res = htypes.builtin.python_module(
         module_name='import_recorder_sample_module',
         source=sample_module_path.read_text(),
         file_path=str(sample_module_path),
         import_list=[
-            htypes.python_module.import_rec('*', import_recorder_ref),
+            htypes.builtin.import_rec('*', import_recorder_ref),
             ],
         )
     module_ref = mosaic.put(module_res)
@@ -97,12 +97,12 @@ def test_import_discoverer():
     import_discoverer_ref = mosaic.put(import_discoverer_res)
 
     sample_module_path = TEST_RESOURCES_DIR / 'import_discoverer_sample_module.dyn.py'
-    module_res = htypes.python_module.python_module(
+    module_res = htypes.builtin.python_module(
         module_name='import_discoverer_sample_module',
         source=sample_module_path.read_text(),
         file_path=str(sample_module_path),
         import_list=[
-            htypes.python_module.import_rec('*', import_discoverer_ref),
+            htypes.builtin.import_rec('*', import_discoverer_ref),
             ],
         )
     module_ref = mosaic.put(module_res)
@@ -154,13 +154,13 @@ def test_combined():
     import_discoverer_ref = mosaic.put(import_discoverer_res)
 
     sample_module_path = TEST_RESOURCES_DIR / 'import_both_sample_module.dyn.py'
-    module_res = htypes.python_module.python_module(
+    module_res = htypes.builtin.python_module(
         module_name='import_both_sample_module',
         source=sample_module_path.read_text(),
         file_path=str(sample_module_path),
         import_list=[
-            htypes.python_module.import_rec('htypes.*', import_recorder_ref),
-            htypes.python_module.import_rec('*', import_discoverer_ref),
+            htypes.builtin.import_rec('htypes.*', import_recorder_ref),
+            htypes.builtin.import_rec('*', import_discoverer_ref),
             ],
         )
     module_ref = mosaic.put(module_res)

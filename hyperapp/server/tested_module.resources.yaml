@@ -3,12 +3,12 @@
 # Generator hash: 00eb0b682fa398c13d9d833a6e34fe72b6b0176c1b1ec131d644b022e0284b7e0a646315547603f05af5ff4b4d57d151cf4cf723fe776e0f402fa721c911724a
 
 import:
-- legacy_type.python_module:python_module
+- legacy_type.builtin:python_module
 - legacy_type.tested_module:two
 associations: []
 definitions:
   tested_module.module:
-    _type: legacy_type.python_module:python_module
+    _type: legacy_type.builtin:python_module
     module_name: tested_module
     file_name: tested_module.dyn.py
     import_list:

@@ -8,9 +8,9 @@ import:
 - legacy_service:resource_registry_factory
 - legacy_type.attr_constructors:service
 - legacy_type.attribute:attribute
+- legacy_type.builtin:python_module
 - legacy_type.call:call
 - legacy_type.inspect:attr
-- legacy_type.python_module:python_module
 associations: []
 definitions:
   attr:
@@ -49,13 +49,13 @@ definitions:
     object: service_ctr.fixtures.module
     attr_name: piece
   service_ctr.fixtures.module:
-    _type: legacy_type.python_module:python_module
+    _type: legacy_type.builtin:python_module
     module_name: service_ctr.fixtures
     file_name: service_ctr.fixtures.dyn.py
     import_list:
       htypes.attr_constructors.service: legacy_type.attr_constructors:service
+      htypes.builtin.python_module: legacy_type.builtin:python_module
       htypes.inspect.attr: legacy_type.inspect:attr
-      htypes.python_module.python_module: legacy_type.python_module:python_module
       services.mark: common.mark:mark.service
       services.resource_module_factory: legacy_service:resource_module_factory
       services.resource_registry_factory: legacy_service:resource_registry_factory

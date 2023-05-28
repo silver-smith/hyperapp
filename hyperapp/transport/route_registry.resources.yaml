@@ -8,8 +8,8 @@ import:
 - legacy_service:types
 - legacy_service:web
 - legacy_type.attribute:attribute
+- legacy_type.builtin:python_module
 - legacy_type.call:call
-- legacy_type.python_module:python_module
 associations: []
 definitions:
   route_registry:
@@ -17,7 +17,7 @@ definitions:
     object: route_registry.module
     attr_name: route_registry
   route_registry.module:
-    _type: legacy_type.python_module:python_module
+    _type: legacy_type.builtin:python_module
     module_name: route_registry
     file_name: route_registry.dyn.py
     import_list:

@@ -39,8 +39,8 @@ import:
 - legacy_type.legacy_type:type
 - legacy_type.partial:param
 - legacy_type.partial:partial
-- legacy_type.python_module:python_module
-- legacy_type.python_module:import_rec
+- legacy_type.builtin:python_module
+- legacy_type.builtin:import_rec
 - legacy_type.update_resources:source_dep
 - legacy_type.update_resources:module_deps
 - resource.constructor_creg:constructor_creg.service
@@ -53,7 +53,7 @@ import:
 definitions:
 
   update_resources.module:
-    _type: legacy_type.python_module:python_module
+    _type: legacy_type.builtin:python_module
     module_name: update_resources
     file_name: update_resources.dyn.py
     import_list:
@@ -81,8 +81,8 @@ definitions:
       htypes.legacy_type.type: legacy_type.legacy_type:type
       htypes.partial.param: legacy_type.partial:param
       htypes.partial.partial: legacy_type.partial:partial
-      htypes.python_module.python_module: legacy_type.python_module:python_module
-      htypes.python_module.import_rec: legacy_type.python_module:import_rec
+      htypes.builtin.python_module: legacy_type.builtin:python_module
+      htypes.builtin.import_rec: legacy_type.builtin:import_rec
       htypes.update_resources.source_dep: legacy_type.update_resources:source_dep
       htypes.update_resources.module_deps: legacy_type.update_resources:module_deps
       services.builtin_types_as_dict: legacy_service:builtin_types_as_dict

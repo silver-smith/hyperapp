@@ -8,7 +8,7 @@ import:
 - legacy_type.call:call
 - legacy_type.construct_resources_sample:sample
 - legacy_type.construct_resources_sample:sample_item
-- legacy_type.python_module:python_module
+- legacy_type.builtin:python_module
 associations: []
 definitions:
   SampleList.open.current_key.parameter:
@@ -18,7 +18,7 @@ definitions:
     _type: legacy_type.call:call
     function: piece_1
   construct_resources_sample.fixtures.module:
-    _type: legacy_type.python_module:python_module
+    _type: legacy_type.builtin:python_module
     module_name: construct_resources_sample.fixtures
     file_name: construct_resources_sample.fixtures.dyn.py
     import_list:

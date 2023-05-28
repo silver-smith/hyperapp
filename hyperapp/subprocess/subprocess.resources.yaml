@@ -7,12 +7,12 @@ import:
 - common.mark:mark.service
 - legacy_service:mosaic
 - legacy_type.attribute:attribute
+- legacy_type.builtin:python_module
 - legacy_type.call:call
-- legacy_type.python_module:python_module
 associations: []
 definitions:
   subprocess.module:
-    _type: legacy_type.python_module:python_module
+    _type: legacy_type.builtin:python_module
     module_name: subprocess
     file_name: subprocess.dyn.py
     import_list:

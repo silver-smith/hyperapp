@@ -2,13 +2,13 @@ import:
 - legacy_service:mosaic
 - legacy_service:resource_registry
 - legacy_type.attribute:attribute
-- legacy_type.python_module:python_module
+- legacy_type.builtin:python_module
 - guesser.update_resources:update_resources
 
 definitions:
 
   update_resources.module:
-    _type: legacy_type.python_module:python_module
+    _type: legacy_type.builtin:python_module
     module_name: update_resources
     file_name: update_resources.dyn.py
     import_list:

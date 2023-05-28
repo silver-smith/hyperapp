@@ -36,18 +36,17 @@ def code_module_list():
         'resource.registry',
         'resource.resource_module',
         'resource.legacy_type',
-        'resource.python_module',
         ]
 
 
 def test_definition_type(htypes, services):
-    resource_t = htypes.python_module.python_module
+    resource_t = htypes.builtin.python_module
     resource_type = services.resource_type_producer(resource_t)
-    assert resource_type.definition_t is htypes.python_module.python_module_def
+    assert resource_type.definition_t is htypes.builtin.python_module_def
 
 
 def test_from_dict(htypes, services):
-    resource_t = htypes.python_module.python_module
+    resource_t = htypes.builtin.python_module
     resource_type = services.resource_type_producer(resource_t)
     definition_dict = {
         'module_name': 'sample module',
@@ -62,13 +61,13 @@ def test_from_dict(htypes, services):
         module_name='sample module',
         file_name='sample_module.dyn.py',
         import_list=(
-            htypes.python_module.import_rec_def('some.used_1', 'some.resource_1'),
+            htypes.builtin.import_rec_def('some.used_1', 'some.resource_1'),
             ),
         )
 
 
 def test_resolve(htypes, services):
-    resource_t = htypes.python_module.python_module
+    resource_t = htypes.builtin.python_module
     resource_type = services.resource_type_producer(resource_t)
 
     names = {
@@ -82,8 +81,8 @@ def test_resolve(htypes, services):
         module_name='sample module',
         file_name='sample_module.dyn.py',
         import_list=(
-            htypes.python_module.import_rec_def('some.used_1', 'resource_1'),
-            htypes.python_module.import_rec_def('some.used_2', 'resource_2'),
+            htypes.builtin.import_rec_def('some.used_1', 'resource_1'),
+            htypes.builtin.import_rec_def('some.used_2', 'resource_2'),
             ),
         )
 
@@ -95,14 +94,14 @@ def test_resolve(htypes, services):
         source=TEST_RESOURCE_DIR.joinpath('sample_module.dyn.py').read_text(),
         file_path=str(TEST_RESOURCE_DIR / 'sample_module.dyn.py'),
         import_list=(
-            htypes.python_module.import_rec('some.used_1', names['resource_1']),
-            htypes.python_module.import_rec('some.used_2', names['resource_2']),
+            htypes.builtin.import_rec('some.used_1', names['resource_1']),
+            htypes.builtin.import_rec('some.used_2', names['resource_2']),
             ),
         )
 
 
 def test_reverse_resolve(htypes, services):
-    resource_t = htypes.python_module.python_module
+    resource_t = htypes.builtin.python_module
     resource_type = services.resource_type_producer(resource_t)
 
     names = {
@@ -120,8 +119,8 @@ def test_reverse_resolve(htypes, services):
         source=TEST_RESOURCE_DIR.joinpath('sample_module.dyn.py').read_text(),
         file_path=str(TEST_RESOURCE_DIR / 'sample_module.dyn.py'),
         import_list=(
-            htypes.python_module.import_rec('some.used_1', names['resource_1']),
-            htypes.python_module.import_rec('some.used_2', names['resource_2']),
+            htypes.builtin.import_rec('some.used_1', names['resource_1']),
+            htypes.builtin.import_rec('some.used_2', names['resource_2']),
             ),
         )
 
@@ -132,8 +131,8 @@ def test_reverse_resolve(htypes, services):
         module_name='sample module',
         file_name='sample_module.dyn.py',
         import_list=(
-            htypes.python_module.import_rec_def('some.used_1', 'resource_1'),
-            htypes.python_module.import_rec_def('some.used_2', 'resource_2'),
+            htypes.builtin.import_rec_def('some.used_1', 'resource_1'),
+            htypes.builtin.import_rec_def('some.used_2', 'resource_2'),
             ),
         )
 

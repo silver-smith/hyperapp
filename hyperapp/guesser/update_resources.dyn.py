@@ -277,7 +277,7 @@ class SourceFile:
             )
 
     def _make_module_res(self, import_list):
-        return htypes.python_module.python_module(
+        return htypes.builtin.python_module(
             module_name=self.name,
             source=self.source_path.read_text(),
             file_path=str(self.source_path),
@@ -313,9 +313,9 @@ class SourceFile:
         import_discoverer, import_discoverer_ref = self._prepare_import_discoverer(process)
 
         module_res = self._make_module_res([
-                htypes.python_module.import_rec('htypes.*', import_recorder_ref),
-                htypes.python_module.import_rec('services.*', import_recorder_ref),
-                htypes.python_module.import_rec('*', import_discoverer_ref),
+                htypes.builtin.import_rec('htypes.*', import_recorder_ref),
+                htypes.builtin.import_rec('services.*', import_recorder_ref),
+                htypes.builtin.import_rec('*', import_discoverer_ref),
                 ])
         return (import_recorder, import_discoverer, module_res)
 
@@ -324,7 +324,7 @@ class SourceFile:
         import_recorder, import_recorder_ref = self._prepare_import_recorder(process, type_res_list)
         module_res = self._make_module_res([
             *self._make_import_list(resource_registry, file_dict, service_providers),
-            htypes.python_module.import_rec('htypes.*', import_recorder_ref),
+            htypes.builtin.import_rec('htypes.*', import_recorder_ref),
             ])
         return (import_recorder, module_res)
 
@@ -474,14 +474,14 @@ class SourceFile:
             provider = code_providers[name]
             module = resource_registry[provider.code_module_pair]
             import_list.append(
-                htypes.python_module.import_rec(f'code.{name}', mosaic.put(module)))
+                htypes.builtin.import_rec(f'code.{name}', mosaic.put(module)))
 
         for service_name in self.deps.wants_services:
             service = service_resource(resource_registry, service_providers, service_name)
             if service is None:
                 raise RuntimeError(f"Provider deps for service {service_name!r} is not yet ready")
             import_list.append(
-                htypes.python_module.import_rec(f'services.{service_name}', mosaic.put(service)))
+                htypes.builtin.import_rec(f'services.{service_name}', mosaic.put(service)))
 
         _log.info("Import list: %s", import_list)
         return import_list
@@ -516,7 +516,7 @@ class SourceFile:
             provider = code_providers[name]
             module_res = type_recorder_module_res(provider)
             import_list.append(
-                htypes.python_module.import_rec(f'tested.code.{name}', mosaic.put(module_res)))
+                htypes.builtin.import_rec(f'tested.code.{name}', mosaic.put(module_res)))
 
         ass_list = []
         for service_name in self.deps.tests_services:
@@ -532,7 +532,7 @@ class SourceFile:
             else:
                 raise RuntimeError(f"{provider.module_name}: Service {service_name!r} was not created by it's constructor")
             import_list.append(
-                htypes.python_module.import_rec(f'tested.services.{service_name}', mosaic.put(resource)))
+                htypes.builtin.import_rec(f'tested.services.{service_name}', mosaic.put(resource)))
 
         return (name_to_recorder, import_list, ass_list)
 
@@ -687,7 +687,7 @@ class SourceFile:
 
         recorder_import_list = [
             *import_list,
-            htypes.python_module.import_rec('htypes.*', import_recorder_ref),
+            htypes.builtin.import_rec('htypes.*', import_recorder_ref),
             ]
         module_res = self._make_module_res([*tested_import_list, *recorder_import_list])
 
@@ -722,7 +722,7 @@ class SourceFile:
             for r in type_res_list
             }
         return {
-            htypes.python_module.import_rec(f'htypes.{pair[0]}.{pair[1]}', pair_to_resource_ref[pair])
+            htypes.builtin.import_rec(f'htypes.{pair[0]}.{pair[1]}', pair_to_resource_ref[pair])
             for pair in used_types
             }
 

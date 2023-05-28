@@ -6,7 +6,7 @@ import:
 - common.mark:mark.service
 - legacy_type.attribute:attribute
 - legacy_type.call:call
-- legacy_type.python_module:python_module
+- legacy_type.builtin:python_module
 - legacy_type.sample_list:sample_list
 associations: []
 definitions:
@@ -25,7 +25,7 @@ definitions:
     object: sample_list.fixtures.module
     attr_name: piece
   sample_list.fixtures.module:
-    _type: legacy_type.python_module:python_module
+    _type: legacy_type.builtin:python_module
     module_name: sample_list.fixtures
     file_name: sample_list.fixtures.dyn.py
     import_list:

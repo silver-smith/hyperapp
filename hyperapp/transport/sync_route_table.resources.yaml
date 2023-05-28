@@ -8,8 +8,8 @@ import:
 - legacy_service:aux_unbundler_hooks
 - legacy_service:mosaic
 - legacy_type.attribute:attribute
+- legacy_type.builtin:python_module
 - legacy_type.call:call
-- legacy_type.python_module:python_module
 - transport.identity:peer_registry.service
 - transport.route_registry:route_registry.service
 - transport.route_table:route_table.module
@@ -23,7 +23,7 @@ definitions:
     _type: legacy_type.call:call
     function: route_table
   sync_route_table.module:
-    _type: legacy_type.python_module:python_module
+    _type: legacy_type.builtin:python_module
     module_name: sync_route_table
     file_name: sync_route_table.dyn.py
     import_list:

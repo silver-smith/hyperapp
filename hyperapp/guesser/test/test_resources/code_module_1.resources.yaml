@@ -3,11 +3,11 @@
 # Generator hash: b3f425e1aaa2b556c749ae4baebcbe4f19085b075ad3691dd80ef0732535726d51a44ccc8b0b7fad9af94135610623941c36664604da7a286dad34c2fad02610
 
 import:
-- legacy_type.python_module:python_module
+- legacy_type.builtin:python_module
 associations: []
 definitions:
   code_module_1.module:
-    _type: legacy_type.python_module:python_module
+    _type: legacy_type.builtin:python_module
     module_name: code_module_1
     file_name: code_module_1.dyn.py
     import_list: {}
