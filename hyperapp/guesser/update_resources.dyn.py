@@ -824,7 +824,6 @@ class SourceFile:
 process_code_module_list = [
     'common.lcs',
     'common.lcs_service',
-    'resource.piece_ref',
     'ui.impl_registry',
     'ui.global_command_list',
     ]
