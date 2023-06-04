@@ -28,6 +28,11 @@ from ..resource.resource_type_producer import resource_type_producer
 from .meta_registry_association import register_meta_association
 from ..resource.python_module import PythonModuleResourceType, python_module_pyobj
 from .htypes.python_module import python_module_t
+from .meta_association_type import MetaAssociationResourceType
+from .pyobj_association_type import PyObjAssociationResourceType
+from ..resource.pyobj_meta import register_pyobj_meta
+from .htypes.meta_association import meta_association
+from .htypes.pyobj_association import python_object_association_t
 
 log = logging.getLogger(__name__)
 
@@ -107,6 +112,10 @@ class Services(object):
         self.python_object_creg = CachedCodeRegistry('python_object', self.web, self.types)
         register_meta_association(self.meta_registry, self.python_object_creg)
         self.resource_type_producer = partial(resource_type_producer, self.resource_type_factory, self.resource_type_reg)
+        self.resource_type_reg[meta_association] = MetaAssociationResourceType()
+        self.meta_registry.register_actor(
+            python_object_association_t, partial(register_pyobj_meta, self.python_object_creg))
+        self.resource_type_reg[python_object_association_t] = PyObjAssociationResourceType()
         self.resource_type_reg[python_module_t] = PythonModuleResourceType()
         self.python_object_creg.register_actor(
             python_module_t, python_module_pyobj, self.mosaic, self.python_importer, self.python_object_creg)

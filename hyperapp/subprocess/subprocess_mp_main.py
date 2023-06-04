@@ -24,7 +24,6 @@ module_dir_list = [
     ]
 
 code_module_list = [
-    'resource.registry',
     'resource.resource_module',
     'resource.legacy_module',
     'resource.legacy_service',

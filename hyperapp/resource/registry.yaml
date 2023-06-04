@@ -1,4 +1,0 @@
-import:
-  types:
-    impl:
-      - python_object_association

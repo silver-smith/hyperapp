@@ -16,6 +16,7 @@ from .hyper_ref import (
 from .meta_association import meta_association, meta_association_def
 from .python_module import import_rec_t, python_module_t, import_rec_def_t, python_module_def_t
 from .meta_type import list_mt
+from .pyobj_association import python_object_association_t, python_object_association_def_t
 
 log = logging.getLogger(__name__)
 
@@ -35,6 +36,8 @@ _builtin_type_list = [
     bundle_t,
     meta_association,
     meta_association_def,
+    python_object_association_t,
+    python_object_association_def_t,
     import_rec_t,
     python_module_t,
     import_rec_def_t,

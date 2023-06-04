@@ -14,7 +14,7 @@ import:
 - legacy_type.impl:impl_association
 - legacy_type.impl:list_spec
 - legacy_type.impl:method_command_impl
-- legacy_type.impl:python_object_association
+- legacy_type.builtin:python_object_association
 - legacy_type.lcs:lcs_set_association
 - legacy_type.builtin:python_module
 - legacy_type.resources_view:association_item
@@ -53,16 +53,16 @@ associations:
   piece_t: legacy_type.resources_view:resource_module_var_list
   ctr_fn: ResourceModuleVarList
   spec: ResourceModuleVarList.spec
-- _type: legacy_type.impl:python_object_association
+- _type: legacy_type.builtin:python_object_association
   t: legacy_type.resources_view:association_list
   function: AssociationList
-- _type: legacy_type.impl:python_object_association
+- _type: legacy_type.builtin:python_object_association
   t: legacy_type.resources_view:resource_module_association_list
   function: ResourceModuleAssociationList
-- _type: legacy_type.impl:python_object_association
+- _type: legacy_type.builtin:python_object_association
   t: legacy_type.resources_view:resource_module_list
   function: ResourceModuleList
-- _type: legacy_type.impl:python_object_association
+- _type: legacy_type.builtin:python_object_association
   t: legacy_type.resources_view:resource_module_var_list
   function: ResourceModuleVarList
 - _type: legacy_type.lcs:lcs_set_association

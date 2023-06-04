@@ -33,8 +33,3 @@ object_command_impl = record:
 global_command_impl = record:
   function: ref
   dir: ref
-
-
-python_object_association = record:
-  t: ref
-  function: ref

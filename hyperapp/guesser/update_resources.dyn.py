@@ -771,7 +771,7 @@ class SourceFile:
             )
         resource_module.add_association(impl_association)
 
-        pyobj_association = htypes.impl.python_object_association(
+        pyobj_association = htypes.builtin.python_object_association(
             t=mosaic.put(piece_t_res),
             function=mosaic.put(ctr_attribute),
             )
