@@ -1,6 +1,0 @@
-import:
-  types:
-    type_module_2:
-      - record_3
-  code:
-    - common.test.test_code_modules.subdir.import_from_code_module_sub

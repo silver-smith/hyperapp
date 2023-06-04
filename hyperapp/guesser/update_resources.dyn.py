@@ -13,14 +13,12 @@ from hyperapp.common.htypes import HException, ref_str
 from . import htypes
 from .services import (
     builtin_types_as_dict,
-    code_module_loader,
     constructor_creg,
     endpoint_registry,
     hyperapp_dir,
     generate_rsa_identity,
     legacy_service_resource_loader,
     legacy_type_resource_loader,
-    local_modules,
     local_types,
     module_dir_list,
     mosaic,
@@ -941,10 +939,6 @@ def update_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_tim
     legacy_type_modules = legacy_type_resource_loader(custom_types)
     add_legacy_types_to_cache(resource_registry, legacy_type_modules)
     resource_registry.update_modules(legacy_type_modules)
-
-    custom_modules = local_modules.copy()
-    code_module_loader.load_code_modules(custom_types, resource_dir_list, custom_modules)
-    _log.info("Custom modules: %s", ", ".join(custom_modules.by_name.keys()))
 
     resource_registry.set_module('legacy_service', legacy_service_resource_loader(resource_registry))
 

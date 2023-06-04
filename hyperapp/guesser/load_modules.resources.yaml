@@ -1,6 +1,4 @@
 import:
-  - legacy_service:code_module_loader
-  - legacy_service:local_modules
   - legacy_service:local_types
   - legacy_service:type_module_loader
   - legacy_type.attribute:attribute
@@ -13,8 +11,6 @@ definitions:
     module_name: load_modules
     file_name: load_modules.dyn.py
     import_list:
-      services.code_module_loader: legacy_service:code_module_loader
-      services.local_modules: legacy_service:local_modules
       services.local_types: legacy_service:local_types
       services.type_module_loader: legacy_service:type_module_loader
 

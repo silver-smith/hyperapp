@@ -54,7 +54,7 @@ def subprocess_main_safe(connection, main_fn_bundle_cdr):
     log.info("Subprocess: Init services.")
     services = Services(module_dir_list)
     services.init_services()
-    services.init_modules([])
+    services.load_type_modules()
 
     # TODO: Remove loading resources after all code registries (or, at least python_object_creg) moved to dynamic/associations.
     resource_dir_list = services.resource_dir_list
@@ -75,7 +75,6 @@ def subprocess_main_safe(connection, main_fn_bundle_cdr):
 
     association_reg.register_association_list(resource_registry.associations)
 
-    services.start_modules()
     log.info("Subprocess: Unpack main function. Bundle size: %.2f KB", len(main_fn_bundle_cdr)/1024)
 
     python_object_creg = services.python_object_creg

@@ -7,20 +7,15 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from .htypes import BuiltinTypeRegistry, register_builtin_types
-from .code_module import code_module_t
 from .ref import ref_repr
 from .mosaic import Mosaic
 from .web import Web
-from .module_ref_resolver import ModuleRefResolver
 from .type_module_loader import TypeModuleLoader
 from .type_system import TypeSystem
-from .code_module import register_code_module_types
-from .code_module_loader import CodeModuleRegistry, CodeModuleLoader
 from .code_registry import CodeRegistry
 from .cached_code_registry import CachedCodeRegistry
 from .association_registry import AssociationRegistry
 from .python_importer import PythonImporter
-from .module_registry import CodeModule, ModuleRegistry
 from .resource_dir import ResourceDir
 from .unbundler import Unbundler
 from ..resource.resource_type import ResourceType
@@ -60,11 +55,8 @@ class Services(object):
         'types',
         'web',
         'local_types',
-        'local_modules',
         'type_module_loader',
-        'code_module_loader',
         'meta_registry',
-        'module_registry',
         'on_stop',
         'stop_signal',
         'aux_unbundler_hooks',
@@ -90,7 +82,6 @@ class Services(object):
             *(additional_resource_dirs or []),
             ]
         self.module_dir_list = module_dir_list
-        self.on_start = []
         self.on_stop = []
         self.stop_signal = threading.Event()
         self._is_stopped = False
@@ -105,19 +96,11 @@ class Services(object):
         self.types.init(self.builtin_types, self.mosaic)
         self.meta_registry = CodeRegistry('meta', self.web, self.types)
         self.association_reg = AssociationRegistry(self.meta_registry)
-        self.module_ref_resolver = ModuleRefResolver(self.mosaic)
         self.web.add_source(self.mosaic)
         register_builtin_types(self.builtin_types, self.mosaic, self.types)
-        register_code_module_types(self.builtin_types, self.mosaic, self.types)
         self.local_types = {}  # module name -> name -> name_wrapped_mt ref.
-        # CodeModuleRegistry: by_name: name -> code_module_t, by_requirement: name -> code_module_t set.
-        self.local_modules = CodeModuleRegistry()
         self.type_module_loader = TypeModuleLoader(self.builtin_types, self.mosaic, self.types)
-        self.code_module_loader = CodeModuleLoader(self.hyperapp_dir, self.mosaic)
         self.python_importer = PythonImporter()
-        self._module_code_registry = CodeRegistry('module', self.web, self.types)
-        self._module_code_registry.register_actor(code_module_t, CodeModule.from_piece, self.types, self.web)
-        self.module_registry = ModuleRegistry(self.mosaic, self.web, self.python_importer, self._module_code_registry, self.on_start)
         self.python_importer.register_meta_hook()
         self.aux_unbundler_hooks = []
         self.unbundler = Unbundler(self.mosaic, self.association_reg, self.aux_unbundler_hooks)
@@ -169,27 +152,9 @@ class Services(object):
         self._is_stopped = True
         log.info("Services are stopped.")
 
-    def init_modules(self, code_module_list, config=None):
-        log.info("Init modules.")
-        try:
-            self.type_module_loader.load_type_modules(self.module_dir_list, self.local_types)
-            self._load_code_module_list(code_module_list, config or {})
-        except:
-            self.python_importer.unregister_meta_hook()
-            raise
-
-    def start_modules(self):
-        for start in self.on_start:
-            log.info("Call module start: %s", start)
-            start()
+    def load_type_modules(self):
+        log.info("Load type modules.")
+        self.type_module_loader.load_type_modules(self.module_dir_list, self.local_types)
 
     def unregister_import_meta_hook(self):
         self.python_importer.unregister_meta_hook()
-
-    def _load_code_module_list(self, module_name_list, config):
-        self.code_module_loader.load_code_modules(self.local_types, self.module_dir_list, self.local_modules)
-        module_list = [
-            self.local_modules.by_name[name]
-            for name in module_name_list
-            ]
-        self.module_registry.import_module_list(self, module_list, self.local_modules.by_requirement, config, start_modules=False)

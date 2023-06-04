@@ -3,11 +3,9 @@ import:
 - guesser.runner:get_resource_type
 - guesser.utils:utils.module
 - legacy_service:builtin_types_as_dict
-- legacy_service:code_module_loader
 - legacy_service:hyperapp_dir
 - legacy_service:legacy_service_resource_loader
 - legacy_service:legacy_type_resource_loader
-- legacy_service:local_modules
 - legacy_service:local_types
 - legacy_service:module_dir_list
 - legacy_service:mosaic
@@ -85,14 +83,12 @@ definitions:
       htypes.update_resources.source_dep: legacy_type.update_resources:source_dep
       htypes.update_resources.module_deps: legacy_type.update_resources:module_deps
       services.builtin_types_as_dict: legacy_service:builtin_types_as_dict
-      services.code_module_loader: legacy_service:code_module_loader
       services.constructor_creg: resource.constructor_creg:constructor_creg.service
       services.endpoint_registry: transport.endpoint:endpoint_registry.service
       services.hyperapp_dir: legacy_service:hyperapp_dir
       services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
       services.legacy_service_resource_loader: legacy_service:legacy_service_resource_loader
       services.legacy_type_resource_loader: legacy_service:legacy_type_resource_loader
-      services.local_modules: legacy_service:local_modules
       services.local_types: legacy_service:local_types
       services.module_dir_list: legacy_service:module_dir_list
       services.mosaic: legacy_service:mosaic

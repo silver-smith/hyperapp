@@ -38,8 +38,7 @@ def main():
 
     services = Services(module_dir_list)
     services.init_services()
-    services.init_modules([], config)
-    services.start_modules()
+    services.load_type_modules()
     log.info("Initialized.")
 
     try:

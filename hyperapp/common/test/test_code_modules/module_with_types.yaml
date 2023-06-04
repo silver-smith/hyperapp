@@ -1,5 +1,0 @@
-import:
-  types:
-    type_module_1:
-      - record_1
-      - record_2
