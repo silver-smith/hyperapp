@@ -27,8 +27,6 @@ code_module_list = [
     'common.dict_coders',  # Load json coders.
     'common.lcs',
     'common.lcs_service',
-    'resource.legacy_module',
-    'resource.legacy_service',
     'transport.rsa_identity',
     'ui.impl_registry',
     'ui.global_command_list',

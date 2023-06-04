@@ -1,4 +1,0 @@
-
-module_service = record:
-  name: string
-  module_ref: ref

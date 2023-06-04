@@ -23,11 +23,6 @@ module_dir_list = [
     HYPERAPP_DIR / 'ui_types',
     ]
 
-code_module_list = [
-    'resource.legacy_module',
-    'resource.legacy_service',
-    ]
-
 
 @contextmanager
 def logging_inited(process_name):
@@ -59,7 +54,7 @@ def subprocess_main_safe(connection, main_fn_bundle_cdr):
     log.info("Subprocess: Init services.")
     services = Services(module_dir_list)
     services.init_services()
-    services.init_modules(code_module_list)
+    services.init_modules([])
 
     # TODO: Remove loading resources after all code registries (or, at least python_object_creg) moved to dynamic/associations.
     resource_dir_list = services.resource_dir_list

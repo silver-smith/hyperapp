@@ -22,12 +22,6 @@ module_dir_list = [
     HYPERAPP_DIR / 'ui_types',
     ]
 
-code_module_list = [
-    'resource.legacy_module',
-    'resource.legacy_service',
-    ]
-
-
 def main():
     init_logging('update_resources')
 
@@ -44,7 +38,7 @@ def main():
 
     services = Services(module_dir_list)
     services.init_services()
-    services.init_modules(code_module_list, config)
+    services.init_modules([], config)
     services.start_modules()
     log.info("Initialized.")
 

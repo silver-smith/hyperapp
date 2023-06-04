@@ -18,7 +18,6 @@ from .services import (
     endpoint_registry,
     hyperapp_dir,
     generate_rsa_identity,
-    legacy_module_resource_loader,
     legacy_service_resource_loader,
     legacy_type_resource_loader,
     local_modules,
@@ -946,9 +945,8 @@ def update_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_tim
     custom_modules = local_modules.copy()
     code_module_loader.load_code_modules(custom_types, resource_dir_list, custom_modules)
     _log.info("Custom modules: %s", ", ".join(custom_modules.by_name.keys()))
-    resource_registry.update_modules(legacy_module_resource_loader(custom_modules))
 
-    resource_registry.set_module('legacy_service', legacy_service_resource_loader(resource_registry, custom_modules))
+    resource_registry.set_module('legacy_service', legacy_service_resource_loader(resource_registry))
 
     tested_module_imports = {}  # module name -> type import tuple set
 
