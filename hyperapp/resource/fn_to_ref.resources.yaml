@@ -1,0 +1,29 @@
+# Automatically generated file. Do not edit.
+# Source ref: sha512:8a8e1c375a48428083ed7fc3a526cf6f6ea32c45ce09a0f9f0d471217714d33ec31cae90ccfcd59d6a8a1feec0d9fea89e467c4f1103ae578c1aafde5d679d40
+# Generator ref: sha512:1041109d66d429a4c950c1900232b2dbb2d4cdaac715c2a699f740dad90d3a91fbc9f71bb828488eb518949e9e6261f2049f9b30a2641ab80bcf53e7e09f53c5
+
+import:
+- common.mark:mark.service
+- legacy_service:mosaic
+- legacy_service:python_object_creg
+- legacy_type.attribute:attribute
+- legacy_type.builtin:python_module
+- legacy_type.call:call
+associations: []
+definitions:
+  fn_to_ref:
+    _type: legacy_type.attribute:attribute
+    object: fn_to_ref.module
+    attr_name: fn_to_ref
+  fn_to_ref.module:
+    _type: legacy_type.builtin:python_module
+    module_name: fn_to_ref
+    file_name: fn_to_ref.dyn.py
+    import_list:
+      htypes.attribute.attribute: legacy_type.attribute:attribute
+      services.mark: common.mark:mark.service
+      services.mosaic: legacy_service:mosaic
+      services.python_object_creg: legacy_service:python_object_creg
+  fn_to_ref.service:
+    _type: legacy_type.call:call
+    function: fn_to_ref

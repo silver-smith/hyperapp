@@ -1,10 +1,9 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:738dceb251244fe156b9e372aa3ee66ed5b86e6c4a67293ab78ee9cba7fe73ccd602e571c0beff9e7eeda450994a744301dfdccc1e0cd7aea1671e99362f193f
-# Generator ref: sha512:d1c9fe45bb85e851eefe6e620f6d0e793dc12881bdeb4147adc9be543fe76bf03e389ee728210a0ad1493863349da2d9b39c5089ae71953050d0047292e1844f
+# Source ref: sha512:c3cffad4362e80ba58d9b600c95977acafbd4fc080a8915274b8d528f6603a98fa53fcfbda44b8e58d44f23b8b297239a57cbe56fdb1229bf00e7df1608c100f
+# Generator ref: sha512:1041109d66d429a4c950c1900232b2dbb2d4cdaac715c2a699f740dad90d3a91fbc9f71bb828488eb518949e9e6261f2049f9b30a2641ab80bcf53e7e09f53c5
 
 import:
 - common.mark:mark.service
-- legacy_service:fn_to_ref
 - legacy_service:mosaic
 - legacy_type.attribute:attribute
 - legacy_type.builtin:python_module
@@ -12,6 +11,7 @@ import:
 - legacy_type.partial:param
 - legacy_type.partial:partial
 - legacy_type.raw:raw
+- resource.fn_to_ref:fn_to_ref.service
 associations: []
 definitions:
   partial_ref:
@@ -26,7 +26,7 @@ definitions:
       htypes.partial.param: legacy_type.partial:param
       htypes.partial.partial: legacy_type.partial:partial
       htypes.raw.raw: legacy_type.raw:raw
-      services.fn_to_ref: legacy_service:fn_to_ref
+      services.fn_to_ref: resource.fn_to_ref:fn_to_ref.service
       services.mark: common.mark:mark.service
       services.mosaic: legacy_service:mosaic
   partial_ref.service:

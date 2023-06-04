@@ -1,8 +1,4 @@
 import:
   types:
-    attribute:
-      - attribute
     impl:
       - python_object_association
-provide:
-  - fn_to_ref

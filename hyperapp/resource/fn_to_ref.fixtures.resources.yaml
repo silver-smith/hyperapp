@@ -1,0 +1,24 @@
+# Automatically generated file. Do not edit.
+# Source ref: sha512:e3b7d1c485ebe7a4d2d71a09e2fa4823d791cd8648bfeb30e51057f1b70815183578974677f906efc0326150358f64ed5a2495a5cb287db5c5824d26f561c0d5
+# Generator ref: sha512:1041109d66d429a4c950c1900232b2dbb2d4cdaac715c2a699f740dad90d3a91fbc9f71bb828488eb518949e9e6261f2049f9b30a2641ab80bcf53e7e09f53c5
+
+import:
+- common.mark:mark.service
+- legacy_type.attribute:attribute
+- legacy_type.builtin:python_module
+- legacy_type.call:call
+associations: []
+definitions:
+  fn_to_ref.fixtures.module:
+    _type: legacy_type.builtin:python_module
+    module_name: fn_to_ref.fixtures
+    file_name: fn_to_ref.fixtures.dyn.py
+    import_list:
+      services.mark: common.mark:mark.service
+  python_object_creg:
+    _type: legacy_type.attribute:attribute
+    object: fn_to_ref.fixtures.module
+    attr_name: python_object_creg
+  python_object_creg.service:
+    _type: legacy_type.call:call
+    function: python_object_creg
