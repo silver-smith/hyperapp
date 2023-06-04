@@ -4,9 +4,8 @@ from collections import namedtuple
 from functools import cached_property, partial
 
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
+from hyperapp.resource.resource_registry import UnknownResourceName
 from hyperapp.common.module import Module
-
-from .resource_registry import UnknownResourceName
 
 log = logging.getLogger(__name__)
 

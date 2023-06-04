@@ -1,7 +1,3 @@
-from functools import partial
-
-from hyperapp.common.module import Module
-
 
 class UnknownResourceName(Exception):
     pass
@@ -96,12 +92,3 @@ class ResourceRegistry:
             return self._piece_to_name_pair[piece]
         except KeyError:
             raise RuntimeError(f"Not a known resource: {piece!r}")
-
-
-class ThisModule(Module):
-
-    def __init__(self, module_name, services, config):
-        super().__init__(module_name, services, config)
-
-        services.resource_registry_factory = partial(ResourceRegistry, services.mosaic)
-        services.resource_registry = services.resource_registry_factory()

@@ -33,6 +33,7 @@ from .pyobj_association_type import PyObjAssociationResourceType
 from ..resource.pyobj_meta import register_pyobj_meta
 from .htypes.meta_association import meta_association
 from .htypes.pyobj_association import python_object_association_t
+from ..resource.resource_registry import ResourceRegistry
 
 log = logging.getLogger(__name__)
 
@@ -67,6 +68,8 @@ class Services(object):
         'resource_type_reg',
         'python_object_creg',
         'resource_type_producer',
+        'resource_registry_factory',
+        'resource_registry',
     ]
 
     def __init__(self, module_dir_list, additional_resource_dirs=None):
@@ -119,6 +122,8 @@ class Services(object):
         self.resource_type_reg[python_module_t] = PythonModuleResourceType()
         self.python_object_creg.register_actor(
             python_module_t, python_module_pyobj, self.mosaic, self.python_importer, self.python_object_creg)
+        self.resource_registry_factory = partial(ResourceRegistry, self.mosaic)
+        self.resource_registry = self.resource_registry_factory()
 
     def stop(self):
         log.info("Stop services.")

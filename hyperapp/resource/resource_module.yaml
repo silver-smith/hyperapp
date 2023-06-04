@@ -1,8 +1,3 @@
-import:
-  code:
-  - resource.resource_registry
-require:
-- resource_registry
 provide:
 - resource_module_factory
 - resource_loader
