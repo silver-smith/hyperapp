@@ -21,7 +21,7 @@ def run_input_key_dialog():
 def _phony_command():
     dir_t = htypes.command_list_fixtures.sample_global_command_d
     dir_t_ref = types.reverse_resolve(dir_t)
-    dir_t_res = htypes.legacy_type.type(dir_t_ref)
+    dir_t_res = htypes.builtin.legacy_type(dir_t_ref)
     dir = htypes.call.call(mosaic.put(dir_t_res))
     return htypes.impl.global_command_impl(
         function=_null_ref,

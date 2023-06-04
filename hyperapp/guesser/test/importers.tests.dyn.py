@@ -47,10 +47,10 @@ def process_running():
 def test_import_recorder():
 
     sample_rec_ref = types.reverse_resolve(htypes.sample_types.sample_rec)
-    sample_rec_res = htypes.legacy_type.type(sample_rec_ref)
+    sample_rec_res = htypes.builtin.legacy_type(sample_rec_ref)
     sample_rec_res_ref = mosaic.put(sample_rec_res)
     another_rec_ref = types.reverse_resolve(htypes.sample_types.another_rec)
-    another_rec_res = htypes.legacy_type.type(another_rec_ref)
+    another_rec_res = htypes.builtin.legacy_type(another_rec_ref)
     another_rec_res_ref = mosaic.put(another_rec_res)
 
     resources = [
@@ -141,7 +141,7 @@ def test_import_discoverer():
 def test_combined():
 
     sample_rec_ref = types.reverse_resolve(htypes.sample_types.sample_rec)
-    sample_rec_res = htypes.legacy_type.type(sample_rec_ref)
+    sample_rec_res = htypes.builtin.legacy_type(sample_rec_ref)
     sample_rec_res_ref = mosaic.put(sample_rec_res)
 
     resources = [

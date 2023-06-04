@@ -729,7 +729,7 @@ class SourceFile:
     def _construct_list_spec(self, custom_types, resource_module, object_name, object_info):
         key_attribute, key_t_name = pick_key_t(object_info.get_result_t, error_prefix=f"{self.name} {object_name}")
         key_t_ref = custom_types[key_t_name.module][key_t_name.name]
-        key_t_res = htypes.legacy_type.type(key_t_ref)
+        key_t_res = htypes.builtin.legacy_type(key_t_ref)
         spec = htypes.impl.list_spec(
             key_attribute=key_attribute,
             key_t=mosaic.put(key_t_res),
@@ -748,7 +748,7 @@ class SourceFile:
             raise RuntimeError(
                 f"{self.module_name}: {object_name} 'piece' parameter: Expected record type, but got: {piece_t!r}")
         piece_t_ref = custom_types[piece_t.type.module][piece_t.type.name]
-        piece_t_res = htypes.legacy_type.type(piece_t_ref)
+        piece_t_res = htypes.builtin.legacy_type(piece_t_ref)
         return piece_t_res
 
     def _construct_object_impl(self, process, custom_types, resource_module, fixtures_file, module_res, object_name, object_info):
@@ -854,7 +854,7 @@ def legacy_type_resources(dir_list):
     resource_list = []
     for module_name, type_module in custom_types.items():
         for name, type_ref in type_module.items():
-            resource = htypes.legacy_type.type(type_ref)
+            resource = htypes.builtin.legacy_type(type_ref)
             resource_ref = mosaic.put(resource)
             resource_list.append(
                 htypes.import_recorder.resource(('htypes', module_name, name), resource_ref))

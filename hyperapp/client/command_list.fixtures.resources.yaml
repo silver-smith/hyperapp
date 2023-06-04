@@ -15,7 +15,7 @@ import:
 - legacy_type.command_list_fixtures:phony_d
 - legacy_type.command_list_fixtures:sample_global_command_d
 - legacy_type.impl:global_command_impl
-- legacy_type.legacy_type:type
+- legacy_type.builtin:legacy_type
 - legacy_type.builtin:python_module
 associations: []
 definitions:
@@ -66,7 +66,7 @@ definitions:
       htypes.command_list_fixtures.phony_d: legacy_type.command_list_fixtures:phony_d
       htypes.command_list_fixtures.sample_global_command_d: legacy_type.command_list_fixtures:sample_global_command_d
       htypes.impl.global_command_impl: legacy_type.impl:global_command_impl
-      htypes.legacy_type.type: legacy_type.legacy_type:type
+      htypes.builtin.legacy_type: legacy_type.builtin:legacy_type
       services.mark: common.mark:mark.service
       services.mosaic: legacy_service:mosaic
       services.types: legacy_service:types
