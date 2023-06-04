@@ -1,9 +1,7 @@
 import logging
 from collections import defaultdict
-from functools import partial
 
 from hyperapp.common.htypes.legacy_type import legacy_type_t
-from hyperapp.common.module import Module
 
 log = logging.getLogger(__name__)
 
@@ -63,22 +61,6 @@ def legacy_type_resource_loader(local_types):
     return name_to_module
 
 
-def python_object(piece, types):
+def legacy_type_pyobj(piece, types):
     return types.resolve(piece.type_ref)
 
-
-class ThisModule(Module):
-
-    def __init__(self, module_name, services, config):
-        super().__init__(module_name, services, config)
-
-        services.builtin_types_as_dict = partial(builtin_types_as_dict, services.types, services.builtin_types)
-        services.legacy_type_resource_loader = legacy_type_resource_loader
-
-        services.resource_registry.update_modules(
-            legacy_type_resource_loader(
-                services.builtin_types_as_dict()))
-        services.resource_registry.update_modules(
-            legacy_type_resource_loader(services.local_types))
-
-        services.python_object_creg.register_actor(legacy_type_t, python_object, services.types)

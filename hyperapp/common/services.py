@@ -35,6 +35,8 @@ from .htypes.meta_association import meta_association
 from .htypes.pyobj_association import python_object_association_t
 from ..resource.resource_registry import ResourceRegistry
 from ..resource.resource_module import ResourceModule, load_resource_modules, load_resource_modules_list
+from .htypes.legacy_type import legacy_type_t
+from ..resource.legacy_type import builtin_types_as_dict, legacy_type_resource_loader, legacy_type_pyobj
 
 log = logging.getLogger(__name__)
 
@@ -74,6 +76,8 @@ class Services(object):
         'resource_module_factory',
         'resource_loader',
         'resource_list_loader',
+        'builtin_types_as_dict',
+        'legacy_type_resource_loader',
     ]
 
     def __init__(self, module_dir_list, additional_resource_dirs=None):
@@ -142,6 +146,9 @@ class Services(object):
             load_resource_modules_list,
             self.resource_module_factory,
             )
+        self.builtin_types_as_dict = partial(builtin_types_as_dict, self.types, self.builtin_types)
+        self.legacy_type_resource_loader = legacy_type_resource_loader
+        self.python_object_creg.register_actor(legacy_type_t, legacy_type_pyobj, self.types)
 
     def stop(self):
         log.info("Stop services.")

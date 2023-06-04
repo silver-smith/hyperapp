@@ -26,7 +26,6 @@ code_module_list = [
     'client.client_lcs_service',
     'resource.legacy_module',
     'resource.legacy_service',
-    'resource.legacy_type',
     'common.lcs',
     'ui.impl_registry',
     'ui.global_command_list',

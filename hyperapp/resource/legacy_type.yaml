@@ -1,4 +1,0 @@
-provide:
-  - builtin_types_as_dict
-  - legacy_type_resource_loader
-  - resource.legacy_type

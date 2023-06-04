@@ -29,7 +29,6 @@ code_module_list = [
     'common.lcs_service',
     'resource.legacy_module',
     'resource.legacy_service',
-    'resource.legacy_type',
     'transport.rsa_identity',
     'ui.impl_registry',
     'ui.global_command_list',
