@@ -1,6 +1,6 @@
 # Automatically generated file. Do not edit.
 # Source ref: sha512:6381ae44e1e73d6201ccb004a6c32d8c1329ad1f4f981cd80ed358279a5aea7e0946a0839834e64f17d9d15c0fc741b2b5591b8ed21831ab6f3946231a124ac3
-# Generator ref: sha512:d1c9fe45bb85e851eefe6e620f6d0e793dc12881bdeb4147adc9be543fe76bf03e389ee728210a0ad1493863349da2d9b39c5089ae71953050d0047292e1844f
+# Generator ref: sha512:01eab1466adbc64ba736d9c69ff75d96e030c184f0de9af6b6120fb2dbac62d17e3742890a08841718ff33bec6b159c23b825d43d92e67fdc2d8f888cfdacad6
 
 import:
 - common.bundler:bundler.service

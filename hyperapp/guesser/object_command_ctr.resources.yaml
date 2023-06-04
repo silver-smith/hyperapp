@@ -1,6 +1,6 @@
 # Automatically generated file. Do not edit.
 # Source ref: sha512:05baa656b30f75b37cf2e9d616d8ec4ce25f65486b96ac285034378a0eb2a07fc8cb0b0daaa8479602b0739d1abf7ff98cefa2335b684f7df4823ad44f3c0ee8
-# Generator ref: sha512:d1c9fe45bb85e851eefe6e620f6d0e793dc12881bdeb4147adc9be543fe76bf03e389ee728210a0ad1493863349da2d9b39c5089ae71953050d0047292e1844f
+# Generator ref: sha512:01eab1466adbc64ba736d9c69ff75d96e030c184f0de9af6b6120fb2dbac62d17e3742890a08841718ff33bec6b159c23b825d43d92e67fdc2d8f888cfdacad6
 
 import:
 - guesser.utils:utils.module
