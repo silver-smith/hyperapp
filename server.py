@@ -33,7 +33,6 @@ code_module_list = [
     'transport.rsa_identity',
     'ui.impl_registry',
     'ui.global_command_list',
-    'resource.resource_module',
     'resource.register_associations',
     # 'server.sample_list',
     # 'server.sample_live_list',

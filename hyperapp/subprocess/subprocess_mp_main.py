@@ -24,7 +24,6 @@ module_dir_list = [
     ]
 
 code_module_list = [
-    'resource.resource_module',
     'resource.legacy_module',
     'resource.legacy_service',
     'resource.legacy_type',
@@ -57,21 +56,20 @@ def subprocess_main(process_name, connection, main_fn_bundle_cdr):
         connection.close()
 
 
-additional_code_module_list = [
-    'resource.resource_module',
-    ]
-
-
 def subprocess_main_safe(connection, main_fn_bundle_cdr):
     log.info("Subprocess: Init services.")
     services = Services(module_dir_list)
     services.init_services()
-    services.init_modules(code_module_list + additional_code_module_list)
+    services.init_modules(code_module_list)
 
     # TODO: Remove loading resources after all code registries (or, at least python_object_creg) moved to dynamic/associations.
-    association_reg = services.association_reg
+    resource_dir_list = services.resource_dir_list
     resource_registry = services.resource_registry
+    resource_list_loader = services.resource_list_loader
+    association_reg = services.association_reg
     python_object_creg = services.python_object_creg
+
+    resource_list_loader(resource_dir_list, resource_registry)
 
     attribute_t = python_object_creg.animate(resource_registry['legacy_type.attribute', 'attribute'])
     attribute_module = python_object_creg.animate(resource_registry['resource.attribute', 'attribute.module'])

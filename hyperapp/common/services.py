@@ -34,6 +34,7 @@ from ..resource.pyobj_meta import register_pyobj_meta
 from .htypes.meta_association import meta_association
 from .htypes.pyobj_association import python_object_association_t
 from ..resource.resource_registry import ResourceRegistry
+from ..resource.resource_module import ResourceModule, load_resource_modules, load_resource_modules_list
 
 log = logging.getLogger(__name__)
 
@@ -70,6 +71,9 @@ class Services(object):
         'resource_type_producer',
         'resource_registry_factory',
         'resource_registry',
+        'resource_module_factory',
+        'resource_loader',
+        'resource_list_loader',
     ]
 
     def __init__(self, module_dir_list, additional_resource_dirs=None):
@@ -124,6 +128,20 @@ class Services(object):
             python_module_t, python_module_pyobj, self.mosaic, self.python_importer, self.python_object_creg)
         self.resource_registry_factory = partial(ResourceRegistry, self.mosaic)
         self.resource_registry = self.resource_registry_factory()
+        self.resource_module_factory = partial(
+            ResourceModule,
+            self.mosaic,
+            self.resource_type_producer,
+            self.python_object_creg,
+        )
+        self.resource_loader = partial(
+            load_resource_modules,
+            self.resource_module_factory,
+            )
+        self.resource_list_loader = partial(
+            load_resource_modules_list,
+            self.resource_module_factory,
+            )
 
     def stop(self):
         log.info("Stop services.")

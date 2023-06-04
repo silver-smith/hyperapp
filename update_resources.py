@@ -23,7 +23,6 @@ module_dir_list = [
     ]
 
 code_module_list = [
-    'resource.resource_module',
     'resource.legacy_module',
     'resource.legacy_service',
     'resource.legacy_type',
@@ -51,9 +50,13 @@ def main():
     log.info("Initialized.")
 
     try:
+        resource_dir_list = services.resource_dir_list
         resource_registry = services.resource_registry
+        resource_list_loader = services.resource_list_loader
         association_reg = services.association_reg
         python_object_creg = services.python_object_creg
+
+        resource_list_loader(resource_dir_list, resource_registry)
 
         attribute_t = python_object_creg.animate(resource_registry['legacy_type.attribute', 'attribute'])
         attribute_module = python_object_creg.animate(resource_registry['resource.attribute', 'attribute.module'])

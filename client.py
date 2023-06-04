@@ -80,7 +80,6 @@ code_module_list = [
     # 'async.ui.local_code_module_list',
     # 'async.ui.transport_log',
     'resource.async.attribute',
-    'resource.resource_module',
     'resource.register_associations',
     ]
 

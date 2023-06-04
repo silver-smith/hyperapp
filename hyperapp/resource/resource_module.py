@@ -1,11 +1,10 @@
 import logging
 import yaml
 from collections import namedtuple
-from functools import cached_property, partial
+from functools import cached_property
 
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.resource.resource_registry import UnknownResourceName
-from hyperapp.common.module import Module
 
 log = logging.getLogger(__name__)
 
@@ -302,20 +301,6 @@ def load_resource_modules(resource_module_factory, resource_dir, resource_regist
         resource_registry.set_module(rp.name, resource_module_factory(resource_registry, rp.name, rp.path))
 
 
-class ThisModule(Module):
-
-    def __init__(self, module_name, services, config):
-        super().__init__(module_name, services, config)
-
-        services.resource_module_factory = resource_module_factory = partial(
-            ResourceModule,
-            services.mosaic,
-            services.resource_type_producer,
-            services.python_object_creg,
-        )
-        services.resource_loader = resource_loader = partial(
-            load_resource_modules,
-            resource_module_factory,
-            )
-        for resource_dir in services.resource_dir_list:
-            resource_loader(resource_dir, services.resource_registry)
+def load_resource_modules_list(resource_module_factory, resource_dir_list, resource_registry):
+    for resource_dir in resource_dir_list:
+        load_resource_modules(resource_module_factory, resource_dir, resource_registry)
