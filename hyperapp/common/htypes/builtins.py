@@ -18,6 +18,7 @@ from .python_module import import_rec_t, python_module_t, import_rec_def_t, pyth
 from .meta_type import list_mt
 from .pyobj_association import python_object_association_t, python_object_association_def_t
 from .legacy_type import legacy_type_t
+from .legacy_service import legacy_service_t
 
 log = logging.getLogger(__name__)
 
@@ -44,6 +45,7 @@ _builtin_type_list = [
     import_rec_def_t,
     python_module_def_t,
     legacy_type_t,
+    legacy_service_t,
     ]
 
 

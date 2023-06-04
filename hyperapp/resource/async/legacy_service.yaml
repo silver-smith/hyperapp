@@ -1,7 +1,6 @@
 import:
   types:
     legacy_service:
-      - builtin_service
       - module_service
   code:
     - resource.legacy_service

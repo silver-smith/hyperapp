@@ -2,6 +2,7 @@ import logging
 from collections import defaultdict
 from functools import partial
 
+from hyperapp.common.htypes.legacy_service import legacy_service_t
 from hyperapp.common.module import Module
 
 from . import htypes
@@ -46,7 +47,7 @@ def make_legacy_service_resource_module(mosaic, services, module_registry, built
     name_to_piece = {}
 
     for service_name in builtin_services:
-        piece = htypes.legacy_service.builtin_service(service_name)
+        piece = legacy_service_t(service_name)
         name_to_piece[service_name] = piece
         log.info("Builtin legacy service resource %r: %s", service_name, piece)
 
@@ -99,5 +100,5 @@ class ThisModule(Module):
             make_legacy_service_resource_module, services.mosaic, services, services.module_registry, services.builtin_services)
         services.resource_registry.set_module('legacy_service', loader(services.resource_registry, services.local_modules))
 
-        services.python_object_creg.register_actor(htypes.legacy_service.builtin_service, builtin_service_python_object, services)
+        services.python_object_creg.register_actor(legacy_service_t, builtin_service_python_object, services)
         services.python_object_creg.register_actor(htypes.legacy_service.module_service, module_service_python_object, services.python_object_creg, services)
