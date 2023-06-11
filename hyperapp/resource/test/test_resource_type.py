@@ -8,16 +8,13 @@ from hyperapp.common import cdr_coders  # self-registering
 
 log = logging.getLogger(__name__)
 
+pytest_plugins = [
+    'hyperapp.common.htypes.test.fixtures',
+    'hyperapp.common.test.services',
+    ]
 
-pytest_plugins = ['hyperapp.common.test.services']
 
-TEST_DIR = Path(__file__).parent.resolve()
 TEST_RESOURCES_DIR = Path(__file__).parent / 'test_resources'
-
-
-@pytest.fixture
-def additional_root_dirs():
-    return [TEST_RESOURCES_DIR]
 
 
 @pytest.fixture
@@ -28,23 +25,9 @@ def module_dir_list(default_module_dir_list):
         ]
 
 
-@pytest.fixture
-def code_module_list():
-    return [
-        'resource.resource_type',
-        'resource.legacy_module',
-        'resource.legacy_service',
-        'resource.legacy_type',
-        'resource.attribute',
-        'resource.partial',
-        'resource.call',
-        'resource.list_service',
-        ]
-
-
-def test_definition_type_partial(services, htypes):
+def test_definition_type_partial(resource_type_factory, htypes):
     resource_t = htypes.partial.partial
-    resource_type = services.resource_type_factory(resource_t)
+    resource_type = resource_type_factory(resource_t)
     log.info("definition_t: %r", resource_type.definition_t)
     assert resource_type.definition_t == TRecord('partial', 'partial_def', {
         'function': tString,
@@ -55,9 +38,9 @@ def test_definition_type_partial(services, htypes):
         })
 
 
-def test_definition_type_based(services, htypes):
+def test_definition_type_based(resource_type_factory, htypes):
     resource_t = htypes.test_resources.test_resource_t
-    resource_type = services.resource_type_factory(resource_t)
+    resource_type = resource_type_factory(resource_t)
     log.info("definition_t: %r", resource_type.definition_t)
     expected_base_t = TRecord('test_resources', 'test_resource_t_base_def', {
         'value': TOptional(tString),
@@ -68,15 +51,15 @@ def test_definition_type_based(services, htypes):
         }, base=expected_base_t)
 
 
-def test_mapper(services, htypes):
+def test_mapper(resource_type_factory, htypes):
     resource_t = htypes.partial.partial
-    resource_type = services.resource_type_factory(resource_t)
+    resource_type = resource_type_factory(resource_t)
     log.info("mapper: %r", resource_type._mapper)
 
 
-def test_from_dict_partial(services, htypes):
+def test_from_dict_partial(resource_type_factory, htypes):
     resource_t = htypes.partial.partial
-    resource_type = services.resource_type_factory(resource_t)
+    resource_type = resource_type_factory(resource_t)
     log.info("definition_t: %r", resource_type.definition_t)
     definition_dict = {
         'function': 'some_function',
@@ -97,9 +80,9 @@ def test_from_dict_partial(services, htypes):
         )
 
 
-def test_from_dict_based(services, htypes):
+def test_from_dict_based(resource_type_factory, htypes):
     resource_t = htypes.test_resources.test_resource_t
-    resource_type = services.resource_type_factory(resource_t)
+    resource_type = resource_type_factory(resource_t)
     log.info("definition_t: %r", resource_type.definition_t)
     definition_dict = {
         'value': 'some value',
@@ -113,9 +96,9 @@ def test_from_dict_based(services, htypes):
         )
 
 
-def test_to_dict_partial(services, htypes):
+def test_to_dict_partial(resource_type_factory, htypes):
     resource_t = htypes.partial.partial
-    resource_type = services.resource_type_factory(resource_t)
+    resource_type = resource_type_factory(resource_t)
     param_t = resource_type.definition_t.fields['params'].element_t
     definition = resource_type.definition_t(
         function='some_function',
@@ -135,9 +118,9 @@ def test_to_dict_partial(services, htypes):
         }
 
 
-def test_to_dict_based(services, htypes):
+def test_to_dict_based(resource_type_factory, htypes):
     resource_t = htypes.test_resources.test_resource_t
-    resource_type = services.resource_type_factory(resource_t)
+    resource_type = resource_type_factory(resource_t)
     definition = resource_type.definition_t(
         value='some value',
         other_value=('some other value 1', 'some other value 2'),
@@ -150,9 +133,9 @@ def test_to_dict_based(services, htypes):
         }
 
 
-def test_resolve_definition_partial(services, htypes):
+def test_resolve_definition_partial(mosaic, resource_type_factory, htypes):
     resource_t = htypes.partial.partial
-    resource_type = services.resource_type_factory(resource_t)
+    resource_type = resource_type_factory(resource_t)
     param_t = resource_type.definition_t.fields['params'].element_t
     definition = resource_type.definition_t(
         function='some_function',
@@ -162,9 +145,9 @@ def test_resolve_definition_partial(services, htypes):
             ),
         )
     names = {
-        'some_function': services.mosaic.put('some_function'),
-        'value_1': services.mosaic.put(111),
-        'value_2': services.mosaic.put(222),
+        'some_function': mosaic.put('some_function'),
+        'value_1': mosaic.put(111),
+        'value_2': mosaic.put(222),
         }
 
     def resolve_name(name):
@@ -181,17 +164,17 @@ def test_resolve_definition_partial(services, htypes):
     )
 
 
-def test_resolve_definition_based(services, htypes):
+def test_resolve_definition_based(mosaic, resource_type_factory, htypes):
     resource_t = htypes.test_resources.test_resource_t
-    resource_type = services.resource_type_factory(resource_t)
+    resource_type = resource_type_factory(resource_t)
     definition = resource_type.definition_t(
         value='some-value',
         other_value=('other-1', 'other-2'),
         )
     names = {
-        'some-value': services.mosaic.put('some value'),
-        'other-1': services.mosaic.put(111),
-        'other-2': services.mosaic.put(222),
+        'some-value': mosaic.put('some value'),
+        'other-1': mosaic.put(111),
+        'other-2': mosaic.put(222),
         }
 
     def resolve_name(name):
@@ -205,13 +188,13 @@ def test_resolve_definition_based(services, htypes):
     )
 
 
-def test_reverse_resolve_definition_partial(services, htypes):
+def test_reverse_resolve_definition_partial(mosaic, resource_type_factory, htypes):
     resource_t = htypes.partial.partial
-    resource_type = services.resource_type_factory(resource_t)
+    resource_type = resource_type_factory(resource_t)
     names = {
-        'some_function': services.mosaic.put('some_function'),
-        'value_1': services.mosaic.put(111),
-        'value_2': services.mosaic.put(222),
+        'some_function': mosaic.put('some_function'),
+        'value_1': mosaic.put(111),
+        'value_2': mosaic.put(222),
         }
     reverse_names = {
         value: key for key, value in names.items()
@@ -239,13 +222,13 @@ def test_reverse_resolve_definition_partial(services, htypes):
     )
 
 
-def test_reverse_resolve_definition_based(services, htypes):
+def test_reverse_resolve_definition_based(mosaic, resource_type_factory, htypes):
     resource_t = htypes.test_resources.test_resource_t
-    resource_type = services.resource_type_factory(resource_t)
+    resource_type = resource_type_factory(resource_t)
     names = {
-        'some-value': services.mosaic.put('some value'),
-        'other-1': services.mosaic.put(111),
-        'other-2': services.mosaic.put(222),
+        'some-value': mosaic.put('some value'),
+        'other-1': mosaic.put(111),
+        'other-2': mosaic.put(222),
         }
     reverse_names = {
         value: key for key, value in names.items()
@@ -267,9 +250,9 @@ def test_reverse_resolve_definition_based(services, htypes):
 
 
 # Inherited record result_t should also work.
-def test_resolve_definition_list_service(services, htypes):
+def test_resolve_definition_list_service(mosaic, resource_type_factory, htypes):
     resource_t = htypes.resource_service.list_service
-    resource_type = services.resource_type_factory(resource_t)
+    resource_type = resource_type_factory(resource_t)
     definition = resource_type.definition_t(
         identity='some_identity',
         function='some_function',
@@ -278,10 +261,10 @@ def test_resolve_definition_list_service(services, htypes):
         key_attribute='the_key',
         )
     names = {
-        'some_identity': services.mosaic.put('some_identity'),
-        'some_function': services.mosaic.put('some_function'),
-        'some_dir': services.mosaic.put('some_dir'),
-        'some_command': services.mosaic.put('some_command'),
+        'some_identity': mosaic.put('some_identity'),
+        'some_function': mosaic.put('some_function'),
+        'some_dir': mosaic.put('some_dir'),
+        'some_command': mosaic.put('some_command'),
         }
 
     def resolve_name(name):

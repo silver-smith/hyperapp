@@ -1,7 +1,6 @@
 import pytest
 
 from hyperapp.common.htypes import BuiltinTypeRegistry, register_builtin_types
-from hyperapp.common.code_module import register_code_module_types
 from hyperapp.common.mosaic import Mosaic
 from hyperapp.common.type_system import TypeSystem
 from hyperapp.common.web import Web
@@ -28,6 +27,4 @@ def mosaic(web, builtin_types, types):
     types.init(builtin_types, mosaic)
     web.add_source(mosaic)
     register_builtin_types(builtin_types, mosaic, types)
-    register_code_module_types(builtin_types, mosaic, types)
     return mosaic
-
