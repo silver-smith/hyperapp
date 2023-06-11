@@ -33,3 +33,8 @@ class AttributeResourceType:
             object=resolver(resource.object),
             attr_name=resource.attr_name,
             )
+
+
+def attribute_pyobj(piece, python_object_creg):
+    object = python_object_creg.invite(piece.object)
+    return getattr(object, piece.attr_name)

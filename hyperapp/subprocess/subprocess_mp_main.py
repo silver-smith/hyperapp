@@ -4,7 +4,6 @@ import traceback
 import threading
 from contextlib import contextmanager
 
-from hyperapp.common.htypes.attribute import attribute_t
 from hyperapp.common.htypes import bundle_t
 from hyperapp.common import cdr_coders  # self-registering
 from hyperapp.common.htypes.packet_coders import packet_coders
@@ -66,20 +65,15 @@ def subprocess_main_safe(connection, main_fn_bundle_cdr):
     local_types = services.local_types
     association_reg = services.association_reg
     python_object_creg = services.python_object_creg
+    unbundler = services.unbundler
+    stop_signal = services.stop_signal
 
     resource_list_loader(resource_dir_list, resource_registry)
     resource_registry.update_modules(legacy_type_resource_loader({**builtin_types_as_dict(), **local_types}))
 
-    attribute_module = python_object_creg.animate(resource_registry['resource.attribute', 'attribute.module'])
-    python_object_creg.register_actor(attribute_t, attribute_module.python_object)
-
     association_reg.register_association_list(resource_registry.associations)
 
     log.info("Subprocess: Unpack main function. Bundle size: %.2f KB", len(main_fn_bundle_cdr)/1024)
-
-    python_object_creg = services.python_object_creg
-    unbundler = services.unbundler
-    stop_signal = services.stop_signal
 
     bundle = packet_coders.decode('cdr', main_fn_bundle_cdr, bundle_t)
     unbundler.register_bundle(bundle)
