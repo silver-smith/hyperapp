@@ -15,6 +15,8 @@ class Unbundler:
     def register_bundle(self, bundle):
         for capsule in bundle.capsule_list:
             self._mosaic.register_capsule(capsule)
+        # Meta associations should be registered before others. So, collect association list first.
+        ass_list = []
         for aux_ref in bundle.aux_roots:
             decoded_capsule = self._mosaic.resolve_ref(aux_ref)
             log.debug("Unbundle aux: %s %s: %s", aux_ref, decoded_capsule.t, decoded_capsule.value)
@@ -24,4 +26,5 @@ class Unbundler:
                     log.debug("Unbundle aux: handled by hook: %s", hook)
                     handled_by_hook = True
             if not handled_by_hook:
-                self._association_reg.register_association(decoded_capsule.value)
+                ass_list.append(decoded_capsule.value)
+        self._association_reg.register_association_list(ass_list)
