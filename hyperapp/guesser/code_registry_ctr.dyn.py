@@ -5,7 +5,7 @@ from .services import (
 
 
 def construct(piece, custom_types, name_to_res, module_res, attr):
-    attribute = htypes.attribute.attribute(
+    attribute = htypes.builtin.attribute(
         object=mosaic.put(module_res),
         attr_name=attr.name,
         )

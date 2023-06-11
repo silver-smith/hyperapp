@@ -16,7 +16,7 @@ import:
 - legacy_service:web
 - legacy_type.async_run:async_run
 - legacy_type.attr_constructors:service
-- legacy_type.attribute:attribute
+- legacy_type.builtin:attribute
 - legacy_type.call:call
 - legacy_type.command:object_commands_d
 - legacy_type.impl:impl_association
@@ -58,7 +58,7 @@ definitions:
       code.runner: guesser.runner:runner.module
       htypes.async_run.async_run: legacy_type.async_run:async_run
       htypes.attr_constructors.service: legacy_type.attr_constructors:service
-      htypes.attribute.attribute: legacy_type.attribute:attribute
+      htypes.builtin.attribute: legacy_type.builtin:attribute
       htypes.call.call: legacy_type.call:call
       htypes.command.object_commands_d: legacy_type.command:object_commands_d
       htypes.impl.impl_association: legacy_type.impl:impl_association
@@ -101,6 +101,6 @@ definitions:
       services.web: legacy_service:web
 
   update_resources:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: update_resources.module
     attr_name: update_resources

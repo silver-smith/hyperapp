@@ -1,4 +1,0 @@
-
-attribute = record:
-  object: ref
-  attr_name: string

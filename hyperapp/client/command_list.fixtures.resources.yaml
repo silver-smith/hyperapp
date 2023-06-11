@@ -7,7 +7,7 @@ import:
 - legacy_module.async.ui:view_command
 - legacy_service:mosaic
 - legacy_service:types
-- legacy_type.attribute:attribute
+- legacy_type.builtin:attribute
 - legacy_type.call:call
 - legacy_type.command_list:global_command_list
 - legacy_type.command_list:object_command_list
@@ -47,7 +47,7 @@ definitions:
     _type: legacy_type.call:call
     function: current_item_4
   adapter_factory:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: command_list.fixtures.module
     attr_name: adapter_factory
   adapter_factory.service:
@@ -71,42 +71,42 @@ definitions:
       services.mosaic: legacy_service:mosaic
       services.types: legacy_service:types
   current_item:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: command_list.fixtures.module
     attr_name: current_item
   current_item_1:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: command_list.fixtures.module
     attr_name: current_item_1
   current_item_2:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: command_list.fixtures.module
     attr_name: current_item_2
   current_item_3:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: command_list.fixtures.module
     attr_name: current_item_3
   current_item_4:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: command_list.fixtures.module
     attr_name: current_item_4
   current_item_5:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: command_list.fixtures.module
     attr_name: current_item_5
   current_item_6:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: command_list.fixtures.module
     attr_name: current_item_6
   global_command_list:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: command_list.fixtures.module
     attr_name: global_command_list
   global_command_list.service:
     _type: legacy_type.call:call
     function: global_command_list
   object_commands_factory:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: command_list.fixtures.module
     attr_name: object_commands_factory
   object_commands_factory.service:
@@ -119,40 +119,40 @@ definitions:
     _type: legacy_type.call:call
     function: view_state
   piece:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: command_list.fixtures.module
     attr_name: piece
   piece_1:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: command_list.fixtures.module
     attr_name: piece_1
   piece_2:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: command_list.fixtures.module
     attr_name: piece_2
   piece_3:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: command_list.fixtures.module
     attr_name: piece_3
   piece_4:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: command_list.fixtures.module
     attr_name: piece_4
   root_view:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: command_list.fixtures.module
     attr_name: root_view
   root_view.service:
     _type: legacy_type.call:call
     function: root_view
   run_input_key_dialog:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: command_list.fixtures.module
     attr_name: run_input_key_dialog
   run_input_key_dialog.service:
     _type: legacy_type.call:call
     function: run_input_key_dialog
   view_state:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: command_list.fixtures.module
     attr_name: view_state

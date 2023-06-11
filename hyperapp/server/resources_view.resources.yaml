@@ -5,7 +5,7 @@
 import:
 - common.mark:mark.service
 - legacy_service:resource_registry
-- legacy_type.attribute:attribute
+- legacy_type.builtin:attribute
 - legacy_type.builtin:int
 - legacy_type.builtin:string
 - legacy_type.command:object_commands_d
@@ -77,7 +77,7 @@ associations:
   value: ResourceModuleList.variables.command
 definitions:
   AssociationList:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: resources_view.module
     attr_name: AssociationList
   AssociationList.spec:
@@ -86,7 +86,7 @@ definitions:
     key_t: legacy_type.builtin:int
     dir: association_list_d
   ResourceModuleAssociationList:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: resources_view.module
     attr_name: ResourceModuleAssociationList
   ResourceModuleAssociationList.spec:
@@ -95,7 +95,7 @@ definitions:
     key_t: legacy_type.builtin:int
     dir: resource_module_association_list_d
   ResourceModuleList:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: resources_view.module
     attr_name: ResourceModuleList
   ResourceModuleList.associations.command:
@@ -116,7 +116,7 @@ definitions:
     - current_key
     dir: resource_module_list_variables_d
   ResourceModuleVarList:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: resources_view.module
     attr_name: ResourceModuleVarList
   ResourceModuleVarList.spec:
@@ -129,7 +129,7 @@ definitions:
   object_commands_d:
     _type: legacy_type.command:object_commands_d
   open_association_list:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: resources_view.module
     attr_name: open_association_list
   open_association_list.command:
@@ -139,7 +139,7 @@ definitions:
   open_association_list_d:
     _type: legacy_type.resources_view:open_association_list_d
   open_resource_module_list:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: resources_view.module
     attr_name: open_resource_module_list
   open_resource_module_list.command:

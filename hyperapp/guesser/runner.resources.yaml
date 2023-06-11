@@ -3,7 +3,7 @@ import:
   - legacy_service:mosaic
   - legacy_service:types
   - legacy_service:python_object_creg
-  - legacy_type.attribute:attribute
+  - legacy_type.builtin:attribute
   - legacy_type.call:call
   - legacy_type.import_discoverer:using_incomplete_object
   - legacy_type.inspect:attr
@@ -49,11 +49,11 @@ definitions:
       constants: resource.constants:constants.module
 
   collect_attributes:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: runner.module
     attr_name: collect_attributes
 
   get_resource_type:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: runner.module
     attr_name: get_resource_type

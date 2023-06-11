@@ -15,7 +15,7 @@ def _sample_fn():
 
 def _phony_global_command():
     this_module_res = resource_registry['server.server_global_commands.fixtures', 'server_global_commands.fixtures.module']
-    fn_res = htypes.attribute.attribute(
+    fn_res = htypes.builtin.attribute(
         object=mosaic.put(this_module_res),
         attr_name='_sample_fn',
         )

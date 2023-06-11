@@ -123,7 +123,7 @@ class LiveListService(SimpleListObject):
         return self._key_attribute
 
     async def get_all_items(self):
-        diff_method_piece = htypes.attribute.attribute(
+        diff_method_piece = htypes.builtin.attribute(
             object=self._mosaic.put(self.piece),
             attr_name='process_diff',
             )

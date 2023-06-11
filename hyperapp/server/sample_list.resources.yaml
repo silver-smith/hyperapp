@@ -4,7 +4,7 @@
 
 import:
 - common.mark:mark.service
-- legacy_type.attribute:attribute
+- legacy_type.builtin:attribute
 - legacy_type.global_command:global_command_association
 - legacy_type.impl:global_command_impl
 - legacy_type.builtin:python_module
@@ -15,7 +15,7 @@ associations:
   command: open_sample_list.command
 definitions:
   open_sample_list:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: sample_list.module
     attr_name: open_sample_list
   open_sample_list.command:

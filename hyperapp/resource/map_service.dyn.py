@@ -12,7 +12,7 @@ def map_piece_to_service(mosaic, request, piece, service):
     if isinstance(service, htypes.map_service.record_service):
         identity = request.receiver_identity
         peer_ref = mosaic.put(identity.peer.piece)
-        get_fn = htypes.attribute.attribute(
+        get_fn = htypes.builtin.attribute(
             object=mosaic.put(piece),
             attr_name='get',
             )

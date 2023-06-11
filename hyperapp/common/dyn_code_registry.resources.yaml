@@ -4,7 +4,7 @@ import:
 - legacy_service:mosaic
 - legacy_service:python_object_creg
 - legacy_service:web
-- legacy_type.attribute:attribute
+- legacy_type.builtin:attribute
 - legacy_type.code_registry:association
 - legacy_type.code_registry:constructor
 - legacy_type.builtin:meta_association
@@ -31,6 +31,6 @@ definitions:
       services.web: legacy_service:web
 
   register:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: dyn_code_registry.module
     attr_name: register

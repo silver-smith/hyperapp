@@ -13,4 +13,4 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services, config)
 
-        services.python_object_acreg.register_actor(htypes.attribute.attribute, python_object, services.python_object_acreg)
+        services.python_object_acreg.register_actor(htypes.builtin.attribute, python_object, services.python_object_acreg)

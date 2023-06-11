@@ -63,4 +63,3 @@ def legacy_type_resource_loader(local_types):
 
 def legacy_type_pyobj(piece, types):
     return types.resolve(piece.type_ref)
-

@@ -8,7 +8,7 @@ import:
 - legacy_service:mosaic
 - legacy_service:on_stop
 - legacy_service:unbundler
-- legacy_type.attribute:attribute
+- legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.call:call
 - transport.sync_route_table:route_table.service
@@ -26,7 +26,7 @@ definitions:
       services.route_table: transport.sync_route_table:route_table.service
       services.unbundler: legacy_service:unbundler
   endpoint_registry:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: endpoint.module
     attr_name: endpoint_registry
   endpoint_registry.service:

@@ -4,7 +4,7 @@ import:
 - transport.identity:peer_registry.service
 - legacy_service:rpc_call_factory
 - legacy_service:web
-- legacy_type.attribute:attribute
+- legacy_type.builtin:attribute
 - legacy_type.builtin:int
 - legacy_type.command:object_commands_d
 - legacy_type.construct_resources_sample:sample
@@ -49,7 +49,7 @@ associations:
   value: SampleList.parent.command
 definitions:
   SampleList:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: construct_resources_sample.module
     attr_name: SampleList
   SampleList.open.command:
@@ -83,7 +83,7 @@ definitions:
   object_commands_d:
     _type: legacy_type.command:object_commands_d
   sample_global_command:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: construct_resources_sample.module
     attr_name: sample_global_command
   sample_global_command.command:
@@ -99,7 +99,7 @@ definitions:
   sample_list_parent_d:
     _type: legacy_type.construct_resources_sample:sample_list_parent_d
   sample_object_command:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: construct_resources_sample.module
     attr_name: sample_object_command
   sample_object_command.command:

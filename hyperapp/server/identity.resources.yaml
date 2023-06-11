@@ -7,7 +7,7 @@ import:
 - legacy_service:file_bundle
 - legacy_service:generate_rsa_identity
 - legacy_service:identity_registry
-- legacy_type.attribute:attribute
+- legacy_type.builtin:attribute
 - legacy_type.call:call
 - legacy_type.builtin:python_module
 associations: []
@@ -22,7 +22,7 @@ definitions:
       services.identity_registry: legacy_service:identity_registry
       services.mark: common.mark:mark.service
   server_identity:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: identity.module
     attr_name: server_identity
   server_identity.service:

@@ -81,11 +81,11 @@ def test_load(resource_registry):
 def test_set_attr(htypes, mosaic, resource_registry, resource_module_factory, compare):
     sample_module_2 = resource_registry['sample_module_2', 'sample_module_2.module']
     res_module = resource_module_factory(resource_registry, 'test_module')
-    res_module['sample_servant_2'] = htypes.attribute.attribute(
+    res_module['sample_servant_2'] = htypes.builtin.attribute(
         object=mosaic.put(sample_module_2),
         attr_name='sample_servant_2',
         )
-    assert res_module['sample_servant_2'] == htypes.attribute.attribute(
+    assert res_module['sample_servant_2'] == htypes.builtin.attribute(
         object=mosaic.put(sample_module_2),
         attr_name='sample_servant_2',
         )
@@ -95,7 +95,7 @@ def test_set_attr(htypes, mosaic, resource_registry, resource_module_factory, co
 def test_set_partial(htypes, mosaic, resource_registry, resource_module_factory, compare):
     sample_module_2 = resource_registry['sample_module_2', 'sample_module_2.module']
     res_module = resource_module_factory(resource_registry, 'test_module')
-    attr = htypes.attribute.attribute(
+    attr = htypes.builtin.attribute(
         object=mosaic.put(sample_module_2),
         attr_name='sample_servant_2',
         )

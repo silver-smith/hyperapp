@@ -1,6 +1,6 @@
 import:
   - legacy_service:python_object_creg
-  - legacy_type.attribute:attribute
+  - legacy_type.builtin:attribute
   - legacy_type.import_recorder:import_recorder
   - legacy_type.builtin:python_object_association
   - legacy_type.builtin:python_module
@@ -21,6 +21,6 @@ definitions:
       services.python_object_creg: legacy_service:python_object_creg
 
   ImportRecorder:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: import_recorder.module
     attr_name:  ImportRecorder

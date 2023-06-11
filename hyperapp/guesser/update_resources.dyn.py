@@ -546,7 +546,7 @@ class SourceFile:
     def _visit_function(self, process, fixtures_file, object_res, ass_list, attr, path):
         attr_path = [*path, attr.name]
         attr_path_str = '.'.join(attr_path)
-        attr_res = htypes.attribute.attribute(
+        attr_res = htypes.builtin.attribute(
             object=mosaic.put(object_res),
             attr_name=attr.name,
             )
@@ -755,7 +755,7 @@ class SourceFile:
         piece_t_res = self._pick_and_check_piece_type(process, custom_types, fixtures_file, object_name)
         spec = self._construct_list_spec(custom_types, resource_module, object_name, object_info)
 
-        ctr_attribute = htypes.attribute.attribute(
+        ctr_attribute = htypes.builtin.attribute(
             object=mosaic.put(module_res),
             attr_name=object_name,
             )

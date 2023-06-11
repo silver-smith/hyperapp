@@ -7,14 +7,14 @@ import:
 - legacy_service:local_types
 - legacy_service:resource_module_factory
 - legacy_service:resource_registry_factory
-- legacy_type.attribute:attribute
+- legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.call:call
 - legacy_type.inspect:attr
 associations: []
 definitions:
   attr:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: global_command_ctr.fixtures.module
     attr_name: attr
   construct.attr.parameter:
@@ -33,7 +33,7 @@ definitions:
     _type: legacy_type.call:call
     function: piece
   custom_types:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: global_command_ctr.fixtures.module
     attr_name: custom_types
   global_command_ctr.fixtures.module:
@@ -48,14 +48,14 @@ definitions:
       services.resource_module_factory: legacy_service:resource_module_factory
       services.resource_registry_factory: legacy_service:resource_registry_factory
   module_res:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: global_command_ctr.fixtures.module
     attr_name: module_res
   name_to_res:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: global_command_ctr.fixtures.module
     attr_name: name_to_res
   piece:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: global_command_ctr.fixtures.module
     attr_name: piece

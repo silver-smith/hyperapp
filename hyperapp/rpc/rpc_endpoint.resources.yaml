@@ -9,7 +9,7 @@ import:
 - legacy_service:python_object_creg
 - legacy_service:types
 - legacy_service:web
-- legacy_type.attribute:attribute
+- legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.call:call
 - legacy_type.rpc:error_response
@@ -42,7 +42,7 @@ definitions:
       services.types: legacy_service:types
       services.web: legacy_service:web
   rpc_endpoint_factory:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: rpc_endpoint.module
     attr_name: rpc_endpoint_factory
   rpc_endpoint_factory.service:

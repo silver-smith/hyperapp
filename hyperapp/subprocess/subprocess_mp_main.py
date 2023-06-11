@@ -4,6 +4,7 @@ import traceback
 import threading
 from contextlib import contextmanager
 
+from hyperapp.common.htypes.attribute import attribute_t
 from hyperapp.common.htypes import bundle_t
 from hyperapp.common import cdr_coders  # self-registering
 from hyperapp.common.htypes.packet_coders import packet_coders
@@ -69,7 +70,6 @@ def subprocess_main_safe(connection, main_fn_bundle_cdr):
     resource_list_loader(resource_dir_list, resource_registry)
     resource_registry.update_modules(legacy_type_resource_loader({**builtin_types_as_dict(), **local_types}))
 
-    attribute_t = python_object_creg.animate(resource_registry['legacy_type.attribute', 'attribute'])
     attribute_module = python_object_creg.animate(resource_registry['resource.attribute', 'attribute.module'])
     python_object_creg.register_actor(attribute_t, attribute_module.python_object)
 

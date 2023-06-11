@@ -4,7 +4,7 @@
 
 import:
 - common.mark:mark.service
-- legacy_type.attribute:attribute
+- legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.call:call
 - resource.fn_to_ref:fn_to_ref.service
@@ -32,7 +32,7 @@ definitions:
       services.rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
       services.subprocess_running: subprocess.subprocess:subprocess_running.service
   subprocess_rpc_server_running:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: subprocess_rpc_server.module
     attr_name: subprocess_rpc_server_running
   subprocess_rpc_server_running.service:

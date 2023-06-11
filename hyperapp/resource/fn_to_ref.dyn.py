@@ -14,7 +14,7 @@ def fn_to_ref():
     def _fn_to_ref(fn):
         module = inspect.getmodule(fn)
         module_res = python_object_creg.reverse_resolve(module)
-        fn_res = htypes.attribute.attribute(
+        fn_res = htypes.builtin.attribute(
             object=mosaic.put(module_res),
             attr_name=fn.__name__,
             )

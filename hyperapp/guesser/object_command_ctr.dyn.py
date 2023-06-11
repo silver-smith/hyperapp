@@ -15,7 +15,7 @@ def construct(piece, custom_types, name_to_res, module_res, attr):
     dir = dir_t()
     name_to_res[dir_name] = dir
 
-    attribute = htypes.attribute.attribute(
+    attribute = htypes.builtin.attribute(
         object=mosaic.put(module_res),
         attr_name=attr.name,
         )

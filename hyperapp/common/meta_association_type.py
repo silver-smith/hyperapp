@@ -30,6 +30,6 @@ class MetaAssociationResourceType:
 
     def reverse_resolve(self, resource, resolver, resource_dir):
         return meta_association_def(
-            t=resolver(definition.t),
-            fn=resolver(definition.fn),
+            t=resolver(resource.t),
+            fn=resolver(resource.fn),
             )

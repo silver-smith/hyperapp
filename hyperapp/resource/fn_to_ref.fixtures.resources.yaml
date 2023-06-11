@@ -4,7 +4,7 @@
 
 import:
 - common.mark:mark.service
-- legacy_type.attribute:attribute
+- legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.call:call
 associations: []
@@ -16,7 +16,7 @@ definitions:
     import_list:
       services.mark: common.mark:mark.service
   python_object_creg:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: fn_to_ref.fixtures.module
     attr_name: python_object_creg
   python_object_creg.service:

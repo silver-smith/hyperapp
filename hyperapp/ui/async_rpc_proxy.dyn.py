@@ -12,7 +12,7 @@ class AsyncRpcProxy:
         self._servant_ref = servant_ref
 
     def __getattr__(self, name):
-        fn_res = htypes.attribute.attribute(
+        fn_res = htypes.builtin.attribute(
             object=self._servant_ref,
             attr_name=name,
             )

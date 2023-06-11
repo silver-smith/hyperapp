@@ -4,6 +4,7 @@ import argparse
 import logging
 from pathlib import Path
 
+from hyperapp.common.htypes.attribute import attribute_t
 from hyperapp.common.init_logging import init_logging
 from hyperapp.common import cdr_coders  # register codec
 from hyperapp.common.services import HYPERAPP_DIR, Services
@@ -54,7 +55,6 @@ def main():
         resource_list_loader(resource_dir_list, resource_registry)
         resource_registry.update_modules(legacy_type_resource_loader({**builtin_types_as_dict(), **local_types}))
 
-        attribute_t = python_object_creg.animate(resource_registry['legacy_type.attribute', 'attribute'])
         attribute_module = python_object_creg.animate(resource_registry['resource.attribute', 'attribute.module'])
         python_object_creg.register_actor(attribute_t, attribute_module.python_object)
 

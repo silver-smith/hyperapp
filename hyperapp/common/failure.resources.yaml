@@ -6,13 +6,13 @@ import:
 - common.mark:mark.service
 - legacy_service:on_stop
 - legacy_service:stop_signal
-- legacy_type.attribute:attribute
+- legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.call:call
 associations: []
 definitions:
   failed:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: failure.module
     attr_name: failed
   failed.service:

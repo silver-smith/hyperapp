@@ -12,7 +12,7 @@ import:
 - legacy_service:root_view
 - legacy_service:run_input_key_dialog
 - legacy_service:web
-- legacy_type.attribute:attribute
+- legacy_type.builtin:attribute
 - legacy_type.builtin:string
 - legacy_type.command:command_shortcut_d
 - legacy_type.command:object_commands_d
@@ -104,7 +104,7 @@ associations:
   value: ViewCommandList.set_key_escape.command
 definitions:
   GlobalCommandList:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: command_list.module
     attr_name: GlobalCommandList
   GlobalCommandList.set_key.command:
@@ -125,7 +125,7 @@ definitions:
     key_t: legacy_type.builtin:string
     dir: global_command_list_d
   ObjectCommandList:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: command_list.module
     attr_name: ObjectCommandList
   ObjectCommandList.set_key.command:
@@ -146,7 +146,7 @@ definitions:
     key_t: legacy_type.builtin:string
     dir: object_command_list_d
   ViewCommandList:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: command_list.module
     attr_name: ViewCommandList
   ViewCommandList.set_key.command:
@@ -201,7 +201,7 @@ definitions:
   object_commands_d:
     _type: legacy_type.command:object_commands_d
   open_global_command_list:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: command_list.module
     attr_name: open_global_command_list
   open_global_command_list.command:
@@ -211,7 +211,7 @@ definitions:
   open_global_command_list_d:
     _type: legacy_type.command_list:open_global_command_list_d
   open_object_commands:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: command_list.module
     attr_name: open_object_commands
   open_object_commands.command:
@@ -224,7 +224,7 @@ definitions:
   open_object_commands_d:
     _type: legacy_type.command_list:open_object_commands_d
   open_view_command_list:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: command_list.module
     attr_name: open_view_command_list
   open_view_command_list.command:

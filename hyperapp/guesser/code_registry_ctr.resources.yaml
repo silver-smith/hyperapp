@@ -1,7 +1,7 @@
 import:
 - resource.constructor_creg:constructor_creg.service
 - legacy_service:mosaic
-- legacy_type.attribute:attribute
+- legacy_type.builtin:attribute
 - legacy_type.code_registry:association
 - legacy_type.code_registry:constructor
 - legacy_type.builtin:python_module
@@ -20,11 +20,11 @@ definitions:
     module_name: code_registry_ctr
     file_name: code_registry_ctr.dyn.py
     import_list:
-      htypes.attribute.attribute: legacy_type.attribute:attribute
+      htypes.builtin.attribute: legacy_type.builtin:attribute
       htypes.code_registry.association: legacy_type.code_registry:association
       services.mosaic: legacy_service:mosaic
 
   construct:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: code_registry_ctr.module
     attr_name: construct

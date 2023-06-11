@@ -8,7 +8,7 @@ import:
 - legacy_service:module_registry
 - legacy_service:mosaic
 - legacy_service:web
-- legacy_type.attribute:attribute
+- legacy_type.builtin:attribute
 - legacy_type.builtin:string
 - legacy_type.command:object_commands_d
 - legacy_type.global_command:global_command_association
@@ -47,7 +47,7 @@ associations:
   value: ModuleList.open.command
 definitions:
   ModuleList:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: module_list.module
     attr_name: ModuleList
   ModuleList.open.command:
@@ -80,7 +80,7 @@ definitions:
   object_commands_d:
     _type: legacy_type.command:object_commands_d
   open_available_module_list:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: module_list.module
     attr_name: open_available_module_list
   open_available_module_list.command:
@@ -90,7 +90,7 @@ definitions:
   open_available_module_list_d:
     _type: legacy_type.module_list:open_available_module_list_d
   open_imported_module_list:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: module_list.module
     attr_name: open_imported_module_list
   open_imported_module_list.command:
@@ -100,7 +100,7 @@ definitions:
   open_imported_module_list_d:
     _type: legacy_type.module_list:open_imported_module_list_d
   open_module_list:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: module_list.module
     attr_name: open_module_list
   open_module_list.command:

@@ -5,7 +5,7 @@ import:
   - transport.identity:peer_registry.service
   - legacy_service:rpc_call_factory
   - legacy_service:mock_identity
-  - legacy_type.attribute:attribute
+  - legacy_type.builtin:attribute
   - legacy_type.partial:partial
   - legacy_type.call:call
   - legacy_type.resource_service:list_service
@@ -14,7 +14,7 @@ import:
 definitions:
 
   sample_servant_factory:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: legacy_module.resource.test.test_resources:sample_module
     attr_name: sample_servant
 
@@ -32,7 +32,7 @@ definitions:
     function: sample_servant_partial
 
   servant_list:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: sample_servant
     attr_name: list
 

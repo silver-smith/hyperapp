@@ -3,7 +3,7 @@
 # Generator hash: 00eb0b682fa398c13d9d833a6e34fe72b6b0176c1b1ec131d644b022e0284b7e0a646315547603f05af5ff4b4d57d151cf4cf723fe776e0f402fa721c911724a
 
 import:
-- legacy_type.attribute:attribute
+- legacy_type.builtin:attribute
 - legacy_type.builtin:int
 - legacy_type.command:object_commands_d
 - legacy_type.impl:impl_association
@@ -31,7 +31,7 @@ associations:
   value: SampleList.open.command
 definitions:
   SampleList:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: sample_list.module
     attr_name: SampleList
   SampleList.open.command:

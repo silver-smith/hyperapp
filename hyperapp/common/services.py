@@ -34,6 +34,8 @@ from .htypes.legacy_type import legacy_type_t
 from ..resource.legacy_type import builtin_types_as_dict, legacy_type_resource_loader, legacy_type_pyobj
 from .htypes.legacy_service import legacy_service_t
 from ..resource.legacy_service import builtin_service_python_object, make_legacy_service_resource_module
+from .htypes.attribute import attribute_t
+from ..resource.attribute import AttributeResourceType
 
 log = logging.getLogger(__name__)
 
@@ -140,6 +142,7 @@ class Services(object):
         self.resource_registry.set_module(
             'legacy_service', self.legacy_service_resource_loader(self.resource_registry))
         self.python_object_creg.register_actor(legacy_service_t, builtin_service_python_object, self)
+        self.resource_type_reg[attribute_t] = AttributeResourceType()
 
     def stop(self):
         log.info("Stop services.")

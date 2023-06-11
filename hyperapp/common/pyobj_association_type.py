@@ -29,7 +29,7 @@ class PyObjAssociationResourceType:
             )
 
     def reverse_resolve(self, resource, resolver, resource_dir):
-        return python_object_association_def_(
-            t=resolver(definition.t),
-            function=resolver(definition.function),
+        return python_object_association_def_t(
+            t=resolver(resource.t),
+            function=resolver(resource.function),
             )

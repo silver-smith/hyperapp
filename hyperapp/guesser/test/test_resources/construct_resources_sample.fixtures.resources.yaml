@@ -4,7 +4,7 @@
 
 import:
 - common.mark:mark.service
-- legacy_type.attribute:attribute
+- legacy_type.builtin:attribute
 - legacy_type.call:call
 - legacy_type.construct_resources_sample:sample
 - legacy_type.construct_resources_sample:sample_item
@@ -26,19 +26,19 @@ definitions:
       htypes.construct_resources_sample.sample_item: legacy_type.construct_resources_sample:sample_item
       services.mark: common.mark:mark.service
   current_key:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: construct_resources_sample.fixtures.module
     attr_name: current_key
   piece:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: construct_resources_sample.fixtures.module
     attr_name: piece
   piece_1:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: construct_resources_sample.fixtures.module
     attr_name: piece_1
   piece_2:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: construct_resources_sample.fixtures.module
     attr_name: piece_2
   sample_object_command.piece.parameter:
@@ -48,6 +48,6 @@ definitions:
     _type: legacy_type.call:call
     function: view_state
   view_state:
-    _type: legacy_type.attribute:attribute
+    _type: legacy_type.builtin:attribute
     object: construct_resources_sample.fixtures.module
     attr_name: view_state
