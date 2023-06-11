@@ -42,7 +42,7 @@ def legacy_builtin_type_resource_loader(types, builtin_types):
     return name_to_module
 
 
-def builtin_types_as_dict(types, builtin_types):
+def convert_builtin_types_to_dict(types, builtin_types):
     name_to_module = defaultdict(dict)
     for t in builtin_types.values():
         type_ref = types.reverse_resolve(t)
@@ -51,7 +51,7 @@ def builtin_types_as_dict(types, builtin_types):
     return name_to_module
 
 
-def legacy_type_resource_loader(local_types):
+def load_legacy_type_resources(local_types):
     name_to_module = defaultdict(LegacyTypeResourceModule)
     for module_name, local_type_module in local_types.items():
         for name, type_ref in local_type_module.items():

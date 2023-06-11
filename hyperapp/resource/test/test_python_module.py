@@ -4,50 +4,51 @@ from pathlib import Path
 
 import pytest
 
+from hyperapp.common.htypes.python_module import python_module_t, python_module_def_t, import_rec_t, import_rec_def_t
+from hyperapp.resource.python_module import PythonModuleResourceType
 from hyperapp.common import cdr_coders  # self-registering
 
 log = logging.getLogger(__name__)
 
 
-pytest_plugins = ['hyperapp.common.test.services']
+pytest_plugins = [
+    'hyperapp.common.htypes.test.fixtures',
+    'hyperapp.common.test.services',
+    ]
 
 TEST_DIR = Path(__file__).parent.resolve()
-TEST_RESOURCE_DIR = TEST_DIR / 'test_resources'
-
-
-
-@pytest.fixture
-def additional_root_dirs():
-    return [TEST_RESOURCE_DIR]
+TEST_RESOURCES_DIR = TEST_DIR / 'test_resources'
 
 
 @pytest.fixture
 def module_dir_list(default_module_dir_list):
     return [
         *default_module_dir_list,
-        TEST_RESOURCE_DIR,
+        TEST_RESOURCES_DIR,
         ]
 
 
 @pytest.fixture
-def code_module_list():
-    return [
-        'resource.resource_type',
-        'resource.registry',
-        'resource.resource_module',
-        'resource.legacy_type',
-        ]
+def additional_resource_dirs():
+    return [TEST_RESOURCES_DIR]
 
 
-def test_definition_type(htypes, services):
-    resource_t = htypes.builtin.python_module
-    resource_type = services.resource_type_producer(resource_t)
-    assert resource_type.definition_t is htypes.builtin.python_module_def
+@pytest.fixture
+def resource_type_reg():
+    reg = {}
+    reg[python_module_t] = PythonModuleResourceType()
+    return reg
 
 
-def test_from_dict(htypes, services):
-    resource_t = htypes.builtin.python_module
-    resource_type = services.resource_type_producer(resource_t)
+def test_definition_type(resource_type_producer):
+    resource_t = python_module_t
+    resource_type = resource_type_producer(resource_t)
+    assert resource_type.definition_t is python_module_def_t
+
+
+def test_from_dict(resource_type_producer):
+    resource_t = python_module_t
+    resource_type = resource_type_producer(resource_t)
     definition_dict = {
         'module_name': 'sample module',
         'file_name': 'sample_module.dyn.py',
@@ -61,18 +62,18 @@ def test_from_dict(htypes, services):
         module_name='sample module',
         file_name='sample_module.dyn.py',
         import_list=(
-            htypes.builtin.import_rec_def('some.used_1', 'some.resource_1'),
+            import_rec_def_t('some.used_1', 'some.resource_1'),
             ),
         )
 
 
-def test_resolve(htypes, services):
-    resource_t = htypes.builtin.python_module
-    resource_type = services.resource_type_producer(resource_t)
+def test_resolve(mosaic, resource_type_producer):
+    resource_t = python_module_t
+    resource_type = resource_type_producer(resource_t)
 
     names = {
-        'resource_1': services.mosaic.put('resource 1'),
-        'resource_2': services.mosaic.put('resource 2'),
+        'resource_1': mosaic.put('resource 1'),
+        'resource_2': mosaic.put('resource 2'),
         }
     def resolve_name(name):
         return names[name]
@@ -81,32 +82,32 @@ def test_resolve(htypes, services):
         module_name='sample module',
         file_name='sample_module.dyn.py',
         import_list=(
-            htypes.builtin.import_rec_def('some.used_1', 'resource_1'),
-            htypes.builtin.import_rec_def('some.used_2', 'resource_2'),
+            import_rec_def_t('some.used_1', 'resource_1'),
+            import_rec_def_t('some.used_2', 'resource_2'),
             ),
         )
 
-    resource = resource_type.resolve(definition, resolve_name, TEST_RESOURCE_DIR)
+    resource = resource_type.resolve(definition, resolve_name, TEST_RESOURCES_DIR)
     log.info('Resolved resource: %r', resource)
 
     assert resource == resource_t(
         module_name='sample module',
-        source=TEST_RESOURCE_DIR.joinpath('sample_module.dyn.py').read_text(),
-        file_path=str(TEST_RESOURCE_DIR / 'sample_module.dyn.py'),
+        source=TEST_RESOURCES_DIR.joinpath('sample_module.dyn.py').read_text(),
+        file_path=str(TEST_RESOURCES_DIR / 'sample_module.dyn.py'),
         import_list=(
-            htypes.builtin.import_rec('some.used_1', names['resource_1']),
-            htypes.builtin.import_rec('some.used_2', names['resource_2']),
+            import_rec_t('some.used_1', names['resource_1']),
+            import_rec_t('some.used_2', names['resource_2']),
             ),
         )
 
 
-def test_reverse_resolve(htypes, services):
-    resource_t = htypes.builtin.python_module
-    resource_type = services.resource_type_producer(resource_t)
+def test_reverse_resolve(mosaic, resource_type_producer):
+    resource_t = python_module_t
+    resource_type = resource_type_producer(resource_t)
 
     names = {
-        'resource_1': services.mosaic.put('resource 1'),
-        'resource_2': services.mosaic.put('resource 2'),
+        'resource_1': mosaic.put('resource 1'),
+        'resource_2': mosaic.put('resource 2'),
         }
     reverse_names = {
         value: key for key, value in names.items()
@@ -116,38 +117,38 @@ def test_reverse_resolve(htypes, services):
 
     resource = resource_t(
         module_name='sample module',
-        source=TEST_RESOURCE_DIR.joinpath('sample_module.dyn.py').read_text(),
-        file_path=str(TEST_RESOURCE_DIR / 'sample_module.dyn.py'),
+        source=TEST_RESOURCES_DIR.joinpath('sample_module.dyn.py').read_text(),
+        file_path=str(TEST_RESOURCES_DIR / 'sample_module.dyn.py'),
         import_list=(
-            htypes.builtin.import_rec('some.used_1', names['resource_1']),
-            htypes.builtin.import_rec('some.used_2', names['resource_2']),
+            import_rec_t('some.used_1', names['resource_1']),
+            import_rec_t('some.used_2', names['resource_2']),
             ),
         )
 
-    definition = resource_type.reverse_resolve(resource, reverse_resolve_name, TEST_RESOURCE_DIR)
+    definition = resource_type.reverse_resolve(resource, reverse_resolve_name, TEST_RESOURCES_DIR)
     log.info('Resolved definition: %r', definition)
 
     assert definition == resource_type.definition_t(
         module_name='sample module',
         file_name='sample_module.dyn.py',
         import_list=(
-            htypes.builtin.import_rec_def('some.used_1', 'resource_1'),
-            htypes.builtin.import_rec_def('some.used_2', 'resource_2'),
+            import_rec_def_t('some.used_1', 'resource_1'),
+            import_rec_def_t('some.used_2', 'resource_2'),
             ),
         )
 
 
-def test_python_module_resource(services):
-    python_module_resource = services.resource_registry['sample_python_module', 'sample_python_module']
+def test_python_module_resource(resource_registry, python_object_creg):
+    python_module_resource = resource_registry['sample_python_module', 'sample_python_module']
     log.info("Loading python module: %r", python_module_resource)
-    python_module = services.python_object_creg.animate(python_module_resource)
+    python_module = python_object_creg.animate(python_module_resource)
     log.info("Python module: %r", python_module)
     assert python_module.value.key == 123
 
 
-def test_fixture(services):
-    fixture = services.resource_registry['sample_fixture.fixtures', 'sample_fixture']
+def test_fixture(resource_registry, python_object_creg):
+    fixture = resource_registry['sample_fixture.fixtures', 'sample_fixture']
     log.info("Sample fixture: %r", fixture)
-    python_module = services.python_object_creg.animate(fixture)
+    python_module = python_object_creg.animate(fixture)
     log.info("Python module: %r", python_module)
     log.info("Sample item: %r", python_module.sample_item)
