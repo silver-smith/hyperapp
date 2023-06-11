@@ -23,7 +23,7 @@ def test_instantiate():
         'some_str': 'foo',
         'some_int': 123,
         }
-    assert repr(rec_1) == "test_record(some_str='foo', some_int=123)"
+    assert repr(rec_1) == "test.test_record(some_str='foo', some_int=123)"
     assert rec_1._replace(some_int=456) == t(some_str='foo', some_int=456)
 
     rec_2 = t('foo', 123)
@@ -36,7 +36,7 @@ def test_instantiate_empty():
     rec_1 = t()
     assert list(rec_1) == []
     assert rec_1._asdict() == {}
-    assert repr(rec_1) == "test_record()"
+    assert repr(rec_1) == "test.test_record()"
 
     rec_2 = t()
     assert rec_1 == rec_2
@@ -47,12 +47,12 @@ def test_record_repr():
         'field_1': tString,
         'field_2': tInt,
         })
-    assert repr(t('abc', 123)) == "test(field_1='abc', field_2=123)"
+    assert repr(t('abc', 123)) == "test.test(field_1='abc', field_2=123)"
 
 
 def test_empty_record_repr():
     empty_t = TRecord('test', 'empty')
-    assert repr(empty_t()) == "empty()"
+    assert repr(empty_t()) == "test.empty()"
 
 
 def test_ref_str():

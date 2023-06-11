@@ -195,7 +195,7 @@ class TRecord(Type):
             _repr_template.format(name=name)
             for name in self.fields
             )
-        return f'self.__class__.__name__ + "({fields_format})" % self[:-1]'
+        return f'"{self.module_name}.{self.name}({fields_format})" % self[:-1]'
 
     def __hash__(self):
         return hash(self._eq_key)
