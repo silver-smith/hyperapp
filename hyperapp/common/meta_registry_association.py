@@ -1,18 +1,18 @@
+import logging
 from functools import partial
 
 from .htypes.meta_association import meta_association
 from .association_registry import Association
 
+log = logging.getLogger(__name__)
+
 
 def register_meta(meta_registry, python_object_creg, piece):
     t = python_object_creg.invite(piece.t)
-    fn = python_object_creg.invite(piece.fn)
-    meta_registry.register_actor(t, fn)
-    # Register manually because meta_registry does not support association_reg lookup.
-    # But also return base so that it would be bundled with registered type.
+    log.info("Register meta association: %s -> %s", t, piece.fn)
     return Association(
         bases=[t],
-        key_to_value={},
+        key_to_value={(meta_registry, t): piece.fn},
         )
 
 

@@ -113,8 +113,10 @@ def python_importer():
 
 
 @pytest.fixture
-def python_object_creg(types, mosaic, web, python_importer):
+def python_object_creg(types, mosaic, web, meta_registry, association_reg, python_importer):
     creg = CachedCodeRegistry('python_object', web, types)
+    meta_registry.init_registries(association_reg, creg)
+    creg.init_registries(association_reg, creg)
     creg.register_actor(python_module_t, python_module_pyobj, mosaic, python_importer, creg)
     creg.register_actor(legacy_type_t, legacy_type_pyobj, types)
     return creg

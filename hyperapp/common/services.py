@@ -109,6 +109,8 @@ class Services(object):
         self.resource_type_factory = partial(ResourceType, self.types, self.mosaic, self.web)
         self.resource_type_reg = {}  # resource_t -> ResourceType instance
         self.python_object_creg = CachedCodeRegistry('python_object', self.web, self.types)
+        self.meta_registry.init_registries(self.association_reg, self.python_object_creg)
+        self.python_object_creg.init_registries(self.association_reg, self.python_object_creg)
         register_meta_association(self.meta_registry, self.python_object_creg)
         self.resource_type_producer = partial(resource_type_producer, self.resource_type_factory, self.resource_type_reg)
         self.resource_type_reg[meta_association] = MetaAssociationResourceType()

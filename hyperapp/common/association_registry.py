@@ -33,6 +33,10 @@ class AssociationRegistry:
                 log.info("Register meta association: %r", ass)
                 if self._register_association(ass):
                     added_new.append(ass)
+        if added_new:
+            # May be required in following registrations.
+            self._update()
+            added_new = []
         for ass in ass_list:
             if not isinstance(ass, meta_association):
                 log.info("Register association: %r", ass)

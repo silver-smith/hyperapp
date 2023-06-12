@@ -18,7 +18,13 @@ class CodeRegistry:
         self._produce_name = produce_name
         self._web = web
         self._types = types
+        self._association_reg = None
+        self._python_object_creg = None
         self._registry = {}  # t -> _Rec
+
+    def init_registries(self, association_reg, python_object_creg):
+        self._association_reg = association_reg
+        self._python_object_creg = python_object_creg
 
     def type_registered(self, t):
         return t in self._registry
@@ -40,7 +46,18 @@ class CodeRegistry:
         return self._animate(t, piece, args, kw)
 
     def _resolve_record(self, t):
-        return self._registry[t]
+        try:
+            return self._registry[t]
+        except KeyError:
+            if not self._association_reg:
+                raise
+        fn_res = self._association_reg[self, t]
+        try:
+            fn = self._python_object_creg.invite(fn_res)
+            return self._Rec(fn, args=[], kw={})
+        except KeyError as x:
+            # Do not let KeyError out - it will be caught by superclass and incorrect error message will be produced.
+            raise RuntimeError(f"{self._produce_name}: Error resolving function for {t!r}, {fn_res}: {x}")
 
     def _animate(self, t, piece, args, kw):
         try:
