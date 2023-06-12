@@ -56,22 +56,9 @@ def subprocess_main_safe(connection, main_fn_bundle_cdr):
     services.init_services()
     services.load_type_modules()
 
-    # TODO: Remove loading resources after all code registries (or, at least python_object_creg) moved to dynamic/associations.
-    resource_dir_list = services.resource_dir_list
-    resource_registry = services.resource_registry
-    resource_list_loader = services.resource_list_loader
-    legacy_type_resource_loader = services.legacy_type_resource_loader
-    builtin_types_as_dict = services.builtin_types_as_dict
-    local_types = services.local_types
-    association_reg = services.association_reg
     python_object_creg = services.python_object_creg
     unbundler = services.unbundler
     stop_signal = services.stop_signal
-
-    resource_list_loader(resource_dir_list, resource_registry)
-    resource_registry.update_modules(legacy_type_resource_loader({**builtin_types_as_dict(), **local_types}))
-
-    association_reg.register_association_list(resource_registry.associations)
 
     log.info("Subprocess: Unpack main function. Bundle size: %.2f KB", len(main_fn_bundle_cdr)/1024)
 
