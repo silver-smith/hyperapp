@@ -26,7 +26,7 @@ from .htypes.python_module import python_module_t
 from .meta_association_type import MetaAssociationResourceType
 from .pyobj_association_type import PyObjAssociationResourceType
 from ..resource.pyobj_meta import register_pyobj_meta
-from .htypes.meta_association import meta_association
+from .htypes.meta_association import meta_association_t
 from .htypes.pyobj_association import python_object_association_t
 from ..resource.resource_registry import ResourceRegistry
 from ..resource.resource_module import ResourceModule, load_resource_modules, load_resource_modules_list
@@ -113,7 +113,7 @@ class Services(object):
         self.python_object_creg.init_registries(self.association_reg, self.python_object_creg)
         register_meta_association(self.meta_registry, self.python_object_creg)
         self.resource_type_producer = partial(resource_type_producer, self.resource_type_factory, self.resource_type_reg)
-        self.resource_type_reg[meta_association] = MetaAssociationResourceType()
+        self.resource_type_reg[meta_association_t] = MetaAssociationResourceType()
         self.meta_registry.register_actor(
             python_object_association_t, partial(register_pyobj_meta, self.python_object_creg))
         self.resource_type_reg[python_object_association_t] = PyObjAssociationResourceType()

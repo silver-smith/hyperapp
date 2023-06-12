@@ -1,7 +1,7 @@
 import logging
 from functools import partial
 
-from .htypes.meta_association import meta_association
+from .htypes.meta_association import meta_association_t
 from .association_registry import Association
 
 log = logging.getLogger(__name__)
@@ -18,6 +18,6 @@ def register_meta(meta_registry, python_object_creg, piece):
 
 def register_meta_association(meta_registry, python_object_creg):
     meta_registry.register_actor(
-        meta_association,
+        meta_association_t,
         partial(register_meta, meta_registry, python_object_creg),
         )

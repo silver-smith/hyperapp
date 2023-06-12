@@ -2,7 +2,7 @@ import logging
 from collections import defaultdict, namedtuple
 from contextlib import contextmanager
 
-from .htypes.meta_association import meta_association
+from .htypes.meta_association import meta_association_t
 
 log = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ class AssociationRegistry:
     def register_association_list(self, ass_list):
         added_new = []
         for ass in ass_list:
-            if isinstance(ass, meta_association):
+            if isinstance(ass, meta_association_t):
                 log.info("Register meta association: %r", ass)
                 if self._register_association(ass):
                     added_new.append(ass)
@@ -38,7 +38,7 @@ class AssociationRegistry:
             self._update()
             added_new = []
         for ass in ass_list:
-            if not isinstance(ass, meta_association):
+            if not isinstance(ass, meta_association_t):
                 log.info("Register association: %r", ass)
                 if self._register_association(ass):
                     added_new.append(ass)

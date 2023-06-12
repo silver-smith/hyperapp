@@ -4,7 +4,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from hyperapp.common.htypes.meta_association import meta_association
+from hyperapp.common.htypes.meta_association import meta_association_t
 from hyperapp.common.htypes.python_module import python_module_t
 from hyperapp.common.htypes.attribute import attribute_t
 from hyperapp.common.htypes.legacy_type import legacy_type_t
@@ -92,7 +92,7 @@ def resource_type_factory(types, mosaic, web):
 @pytest.fixture
 def resource_type_reg():
     reg = {}
-    reg[meta_association] = MetaAssociationResourceType()
+    reg[meta_association_t] = MetaAssociationResourceType()
     reg[python_module_t] = PythonModuleResourceType()
     reg[attribute_t] = AttributeResourceType()
     return reg

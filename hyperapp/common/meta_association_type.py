@@ -1,12 +1,12 @@
-from .htypes.meta_association import meta_association, meta_association_def
+from .htypes.meta_association import meta_association_t, meta_association_def_t
 from .dict_decoders import NamedPairsDictDecoder
 from .dict_encoders import NamedPairsDictEncoder
 
 
 class MetaAssociationResourceType:
 
-    resource_t = meta_association
-    definition_t = meta_association_def
+    resource_t = meta_association_t
+    definition_t = meta_association_def_t
 
     def __str__(self):
         return 'meta_association'
@@ -23,13 +23,13 @@ class MetaAssociationResourceType:
         return encoder.encode(definition)
 
     def resolve(self, definition, resolver, resource_dir):
-        return meta_association(
+        return meta_association_t(
             t=resolver(definition.t),
             fn=resolver(definition.fn),
             )
 
     def reverse_resolve(self, resource, resolver, resource_dir):
-        return meta_association_def(
+        return meta_association_def_t(
             t=resolver(resource.t),
             fn=resolver(resource.fn),
             )
