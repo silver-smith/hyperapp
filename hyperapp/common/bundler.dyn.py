@@ -96,11 +96,12 @@ class Bundler(Visitor):
             self._collected_ref_set.add(value)
 
     def _collect_aux_refs(self, ref, t, value):
-        for ass in association_reg.pieces_for_base(value):
-            ass_ref = mosaic.put(ass)
-            log.debug("Bundle aux association %s: %s", ass_ref, ass)
-            self._collected_aux_set.add(ass_ref)
-            self._collected_ref_set.add(ass_ref)  # Should collect from these refs too.
+        for obj in [t, value]:
+            for ass in association_reg.pieces_for_base(obj):
+                ass_ref = mosaic.put(ass)
+                log.debug("Bundle aux association %s: %s", ass_ref, ass)
+                self._collected_aux_set.add(ass_ref)
+                self._collected_ref_set.add(ass_ref)  # Should collect from these refs too.
         for hook in _aux_bundler_hooks:
             aux_ref_set = set(hook(ref, t, value) or [])
             if aux_ref_set:
