@@ -1,8 +1,9 @@
-from hyperapp.common.module import Module
+from .services import (
+    generate_rsa_identity,
+    mark,
+    )
 
 
-class ThisModule(Module):
-
-    def __init__(self, module_name, services, config):
-        super().__init__(module_name, services, config)
-        services.mock_identity = services.generate_rsa_identity(fast=True)
+@mark.service
+def mock_identity():
+    return generate_rsa_identity(fast=True)

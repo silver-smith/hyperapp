@@ -1,10 +1,10 @@
 import:
-  - legacy_module.resource.test.test_resources:sample_module
+  - sample_module:sample_module.module
   - legacy_service:mosaic
   - legacy_service:web
   - transport.identity:peer_registry.service
-  - legacy_service:rpc_call_factory
-  - legacy_service:mock_identity
+  - rpc.rpc_call:rpc_call_factory.service
+  - mock_identity:mock_identity.service
   - legacy_type.builtin:attribute
   - legacy_type.partial:partial
   - legacy_type.call:call
@@ -15,7 +15,7 @@ definitions:
 
   sample_servant_factory:
     _type: legacy_type.builtin:attribute
-    object: legacy_module.resource.test.test_resources:sample_module
+    object: sample_module:sample_module.module
     attr_name: sample_servant
 
   sample_servant_partial:
@@ -25,7 +25,7 @@ definitions:
       mosaic: legacy_service:mosaic
       web: legacy_service:web
       peer_registry: transport.identity:peer_registry.service
-      rpc_call_factory: legacy_service:rpc_call_factory
+      rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
 
   sample_servant:
     _type: legacy_type.call:call
@@ -41,7 +41,7 @@ definitions:
 
   sample_list_service:
     _type: legacy_type.resource_service:list_service
-    identity: legacy_service:mock_identity
+    identity: mock_identity:mock_identity.service
     function: servant_list
     dir: test_d
     commands: []

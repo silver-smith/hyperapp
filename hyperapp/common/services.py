@@ -138,7 +138,7 @@ class Services(object):
         self.legacy_type_resource_loader = load_legacy_type_resources
         self.python_object_creg.register_actor(legacy_type_t, legacy_type_pyobj, self.types)
         self.legacy_service_resource_loader = partial(
-            make_legacy_service_resource_module, self.mosaic, self, self.builtin_services)
+            make_legacy_service_resource_module, self.mosaic, self.builtin_services)
         self.resource_registry.set_module(
             'legacy_service', self.legacy_service_resource_loader(self.resource_registry))
         self.python_object_creg.register_actor(legacy_service_t, builtin_service_python_object, self)

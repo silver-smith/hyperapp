@@ -38,7 +38,7 @@ class LegacyServiceResourceModule:
             })
 
 
-def make_legacy_service_resource_module(mosaic, services, builtin_services, resource_registry):
+def make_legacy_service_resource_module(mosaic, builtin_services, resource_registry):
     name_to_piece = {}
 
     for service_name in builtin_services:

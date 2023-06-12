@@ -4,20 +4,20 @@ from pathlib import Path
 
 import pytest
 
+from hyperapp.common.htypes.attribute import attribute_t
+from hyperapp.common.htypes.legacy_service import legacy_service_t
 from hyperapp.common import cdr_coders  # self-registering
 
 log = logging.getLogger(__name__)
 
 
-pytest_plugins = ['hyperapp.common.test.services']
+pytest_plugins = [
+    'hyperapp.common.htypes.test.fixtures',
+    'hyperapp.common.test.services',
+    ]
 
 TEST_DIR = Path(__file__).parent.resolve()
 TEST_RESOURCES_DIR = Path(__file__).parent / 'test_resources'
-
-
-@pytest.fixture
-def additional_root_dirs():
-    return [TEST_RESOURCES_DIR]
 
 
 @pytest.fixture
@@ -29,35 +29,8 @@ def module_dir_list(default_module_dir_list):
 
 
 @pytest.fixture
-def code_module_list():
-    return [
-        'resource.resource_type',
-        'resource.registry',
-        'resource.resource_module',
-        'resource.legacy_module',
-        'resource.legacy_service',
-        'resource.legacy_type',
-        'resource.attribute',
-        'resource.partial',
-        'resource.call',
-        'resource.list_service',
-        'resource.test.test_resources.mock_identity',
-        ]
-
-
-@pytest.fixture
-def mosaic(services):
-    return services.mosaic
-
-
-@pytest.fixture
-def resource_registry(services):
-    return services.resource_registry
-
-
-@pytest.fixture
-def resource_module_factory(services):
-    return services.resource_module_factory
+def additional_resource_dirs():
+    return [TEST_RESOURCES_DIR]
 
 
 @pytest.fixture
@@ -78,14 +51,14 @@ def test_load(resource_registry):
     log.info("List service: %r", list_service)
 
 
-def test_set_attr(htypes, mosaic, resource_registry, resource_module_factory, compare):
+def test_set_attr(mosaic, resource_registry, resource_module_factory, compare):
     sample_module_2 = resource_registry['sample_module_2', 'sample_module_2.module']
     res_module = resource_module_factory(resource_registry, 'test_module')
-    res_module['sample_servant_2'] = htypes.builtin.attribute(
+    res_module['sample_servant_2'] = attribute_t(
         object=mosaic.put(sample_module_2),
         attr_name='sample_servant_2',
         )
-    assert res_module['sample_servant_2'] == htypes.builtin.attribute(
+    assert res_module['sample_servant_2'] == attribute_t(
         object=mosaic.put(sample_module_2),
         attr_name='sample_servant_2',
         )
@@ -95,15 +68,15 @@ def test_set_attr(htypes, mosaic, resource_registry, resource_module_factory, co
 def test_set_partial(htypes, mosaic, resource_registry, resource_module_factory, compare):
     sample_module_2 = resource_registry['sample_module_2', 'sample_module_2.module']
     res_module = resource_module_factory(resource_registry, 'test_module')
-    attr = htypes.builtin.attribute(
+    attr = attribute_t(
         object=mosaic.put(sample_module_2),
         attr_name='sample_servant_2',
         )
     partial = htypes.partial.partial(
         function=mosaic.put(attr),
         params=tuple([
-            htypes.partial.param('mosaic', mosaic.put(htypes.legacy_service.builtin_service('mosaic'))),
-            htypes.partial.param('web', mosaic.put(htypes.legacy_service.builtin_service('web'))),
+            htypes.partial.param('mosaic', mosaic.put(legacy_service_t('mosaic'))),
+            htypes.partial.param('web', mosaic.put(legacy_service_t('web'))),
             ]),
         )
     res_module['sample_servant_2'] = attr
