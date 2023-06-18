@@ -63,12 +63,12 @@ def subprocess_main_safe(connection, main_fn_bundle_cdr):
     log.info("Subprocess: Unpack main function. Bundle size: %.2f KB", len(main_fn_bundle_cdr)/1024)
 
     bundle = packet_coders.decode('cdr', main_fn_bundle_cdr, bundle_t)
-    unbundler.register_bundle(bundle)
+    received_refs = unbundler.register_bundle(bundle)
     main_fn_ref = bundle.roots[0]
     main_fn = python_object_creg.invite(main_fn_ref)
 
     log.info("Subprocess: Run main function %s: %s", main_fn_ref, main_fn)
-    main_fn(connection)
+    main_fn(connection, received_refs)
 
     log.info("Subprocess: Stopping services.")
     stop_signal.set()

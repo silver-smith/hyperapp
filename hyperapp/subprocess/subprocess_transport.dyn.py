@@ -24,9 +24,10 @@ log = logging.getLogger(__name__)
 
 class ConnectionRec:
 
-    def __init__(self, connection, name, on_eof=None, on_reset=None):
+    def __init__(self, connection, name, seen_refs, on_eof=None, on_reset=None):
         self._connection = connection
         self.name = name
+        self.seen_refs = seen_refs
         self.on_eof = on_eof or self._do_nothing
         self.on_reset = on_reset or self.on_eof
 
@@ -42,8 +43,9 @@ class ConnectionRec:
 
 class SubprocessRoute:
 
-    def __init__(self, name, connection):
+    def __init__(self, name, seen_refs, connection):
         self._name = name
+        self._seen_refs = seen_refs
         self._connection = connection
 
     @property
@@ -56,9 +58,10 @@ class SubprocessRoute:
 
     def send(self, parcel):
         parcel_ref = mosaic.put(parcel.piece)
-        parcel_bundle = bundler([parcel_ref]).bundle
-        bundle_cdr = packet_coders.encode('cdr', parcel_bundle)
-        log.info("Subprocess transport: send bundle to %r, %d bytes", self._name, len(bundle_cdr))
+        refs_and_bundle = bundler([parcel_ref], self._seen_refs)
+        self._seen_refs |= refs_and_bundle.ref_set
+        bundle_cdr = packet_coders.encode('cdr', refs_and_bundle.bundle)
+        log.info("Subprocess transport: send bundle to %r. Bundle size: %.2f KB", self._name, len(bundle_cdr)/1024)
         self._connection.send(bundle_cdr)
         log.debug("Subprocess %s: parcel is sent: %s", self._name, parcel_ref)
 
@@ -66,8 +69,8 @@ class SubprocessRoute:
 @mark.service
 def add_subprocess_server_connection():
 
-    def _add_subprocess_server_connection(name, connection, on_eof=None, on_reset=None):
-        rec = ConnectionRec(connection, name, on_eof, on_reset)
+    def _add_subprocess_server_connection(name, connection, seen_refs, on_eof=None, on_reset=None):
+        rec = ConnectionRec(connection, name, seen_refs, on_eof, on_reset)
         _server_connections[connection] = rec
         _signal_connection_in.send(None)  # Wake up server main.
         return rec
@@ -77,15 +80,16 @@ def add_subprocess_server_connection():
 
 def _process_parcel(connection, connection_rec, parcel):
     sender_ref = mosaic.put(parcel.sender.piece)
-    route = SubprocessRoute(connection_rec.name, connection)
+    route = SubprocessRoute(connection_rec.name, connection_rec.seen_refs, connection)
     route_table.add_route(sender_ref, route)
     transport.send_parcel(parcel)
 
 
 def _process_bundle(connection, connection_rec, data):
-    log.info("Subprocess transport: received bundle from %r, %d bytes", connection_rec.name, len(data))
+    log.info("Subprocess transport: received bundle from %r. Bundle size: %.2f KB", connection_rec.name, len(data)/1024)
     parcel_bundle = packet_coders.decode('cdr', data, bundle_t)
-    unbundler.register_bundle(parcel_bundle)
+    ref_set = unbundler.register_bundle(parcel_bundle)
+    connection_rec.seen_refs |= ref_set
     parcel_piece_ref = parcel_bundle.roots[0]
     parcel = parcel_registry.invite(parcel_piece_ref)
     _process_parcel(connection, connection_rec, parcel)

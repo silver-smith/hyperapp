@@ -64,7 +64,7 @@ def subprocess_rpc_server_running():
             subprocess_id=subprocess_id,
         )
         with subprocess_running(name, main_ref) as process:
-            connection_rec = add_subprocess_server_connection(name, process.connection)
+            connection_rec = add_subprocess_server_connection(name, process.connection, process.sent_refs)
             try:
                 if not event.wait(timeout=3):
                     raise RuntimeError(f"Timed out waiting for subprocess #{subprocess_id} {name!r} (3 sec)")
