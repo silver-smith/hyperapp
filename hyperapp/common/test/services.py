@@ -24,7 +24,7 @@ from hyperapp.resource.resource_module import ResourceModule, load_resource_modu
 from hyperapp.resource.python_module import PythonModuleResourceType, python_module_pyobj
 from hyperapp.resource.attribute import AttributeResourceType, attribute_pyobj
 from hyperapp.resource.legacy_type import convert_builtin_types_to_dict, load_legacy_type_resources, legacy_type_pyobj
-from hyperapp.resource.legacy_service import builtin_service_python_object, make_legacy_service_resource_module
+from hyperapp.resource.builtin_service import builtin_service_python_object, make_legacy_service_resource_module
 
 log = logging.getLogger(__name__)
 

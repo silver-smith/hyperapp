@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from hyperapp.common.htypes.attribute import attribute_t
-from hyperapp.common.htypes.legacy_service import legacy_service_t
+from hyperapp.common.htypes.builtin_service import legacy_service_t
 from hyperapp.common import cdr_coders  # self-registering
 
 log = logging.getLogger(__name__)

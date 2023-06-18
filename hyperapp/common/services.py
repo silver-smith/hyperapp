@@ -32,8 +32,8 @@ from ..resource.resource_registry import ResourceRegistry
 from ..resource.resource_module import ResourceModule, load_resource_modules, load_resource_modules_list
 from .htypes.legacy_type import legacy_type_t
 from ..resource.legacy_type import convert_builtin_types_to_dict, load_legacy_type_resources, legacy_type_pyobj
-from .htypes.legacy_service import legacy_service_t
-from ..resource.legacy_service import builtin_service_python_object, make_legacy_service_resource_module
+from .htypes.builtin_service import legacy_service_t
+from ..resource.builtin_service import builtin_service_python_object, make_legacy_service_resource_module
 from .htypes.attribute import attribute_t
 from ..resource.attribute import AttributeResourceType, attribute_pyobj
 
