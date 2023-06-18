@@ -195,7 +195,6 @@ class SourceFile:
             try:
                 provider = service_providers[service_name]
             except KeyError:
-                # Resource services takes precedence over legacy ones.
                 if is_builtin_service(resource_registry, service_name):
                     continue
                 _log.info("%s: provider deps for service %r is not yet ready", self.module_name, service_name)

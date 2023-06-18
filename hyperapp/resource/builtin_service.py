@@ -44,7 +44,7 @@ def make_builtin_service_resource_module(mosaic, builtin_services, resource_regi
     for service_name in builtin_services:
         piece = builtin_service_t(service_name)
         name_to_piece[service_name] = piece
-        log.info("Builtin legacy service resource %r: %s", service_name, piece)
+        log.info("Builtin service resource %r: %s", service_name, piece)
 
     for name, piece in name_to_piece.items():
         resource_registry.add_to_cache(('builtin_service', name), piece)
