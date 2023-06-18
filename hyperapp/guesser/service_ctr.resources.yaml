@@ -1,10 +1,10 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:5a52a8b5590942c63a778d2951a66adb7e3aa17eb91630f9bf560c4f302fee8b611d3417b02c8fd260116347cf7ecc33da3b5c71faa3cfd56a062f32b1065fa0
-# Generator ref: sha512:01eab1466adbc64ba736d9c69ff75d96e030c184f0de9af6b6120fb2dbac62d17e3742890a08841718ff33bec6b159c23b825d43d92e67fdc2d8f888cfdacad6
+# Source ref: sha512:8824e799f1cb63349839cce1f5c385ce96fba33f92d61f58bf22bd3002adfb9f1bfdcfb6d0fdcccad407499beaca14e06533578be6072a722afcb3406d293ad7
+# Generator ref: sha512:fbf64b5dbd4239c3af346cf492d8967428581931a5b1a3b5bd66356dbf0f1cab7de649564f5caee64c14854a58c357ea96b4368487f50599b53c225839740eeb
 
 import:
-- common.mark:mark.service
 - builtin_service:mosaic
+- common.mark:mark.service
 - legacy_type.attr_constructors:service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module

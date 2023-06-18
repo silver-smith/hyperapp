@@ -1,11 +1,11 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:05baa656b30f75b37cf2e9d616d8ec4ce25f65486b96ac285034378a0eb2a07fc8cb0b0daaa8479602b0739d1abf7ff98cefa2335b684f7df4823ad44f3c0ee8
-# Generator ref: sha512:01eab1466adbc64ba736d9c69ff75d96e030c184f0de9af6b6120fb2dbac62d17e3742890a08841718ff33bec6b159c23b825d43d92e67fdc2d8f888cfdacad6
+# Source ref: sha512:4bdcaaa14cd50e9b8f337e37b33a7666d0e11fe14508bb98d043b0b79a2edb8977aed93ef30651f7e2844284dc1384f22b0dbef2b53db369283baa28aa6fe5d3
+# Generator ref: sha512:fbf64b5dbd4239c3af346cf492d8967428581931a5b1a3b5bd66356dbf0f1cab7de649564f5caee64c14854a58c357ea96b4368487f50599b53c225839740eeb
 
 import:
-- guesser.utils:utils.module
 - builtin_service:mosaic
 - builtin_service:types
+- guesser.utils:utils.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.code_registry:association

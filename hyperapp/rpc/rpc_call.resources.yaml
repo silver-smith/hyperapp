@@ -1,11 +1,11 @@
 # Automatically generated file. Do not edit.
 # Source ref: sha512:fdd2e6518730558517a593f09928c8db6d02beb356d7a634818b8250945835777582a859f275ca1c2b6836c35c520f63487e54cae02f026a021ffcfc35269247
-# Generator ref: sha512:01eab1466adbc64ba736d9c69ff75d96e030c184f0de9af6b6120fb2dbac62d17e3742890a08841718ff33bec6b159c23b825d43d92e67fdc2d8f888cfdacad6
+# Generator ref: sha512:fbf64b5dbd4239c3af346cf492d8967428581931a5b1a3b5bd66356dbf0f1cab7de649564f5caee64c14854a58c357ea96b4368487f50599b53c225839740eeb
 
 import:
-- common.mark:mark.service
 - builtin_service:mosaic
 - builtin_service:types
+- common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.call:call

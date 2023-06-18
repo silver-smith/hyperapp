@@ -1,12 +1,12 @@
 # Automatically generated file. Do not edit.
 # Source ref: sha512:96a11445040a99498d9f1956f2a504abf46ca9d47cf92932abe56dded3cd8b37643bbc56b8ce3d209c0514787086e94264aac0a18a0e3b02ed36ec12e79e04bf
-# Generator ref: sha512:01eab1466adbc64ba736d9c69ff75d96e030c184f0de9af6b6120fb2dbac62d17e3742890a08841718ff33bec6b159c23b825d43d92e67fdc2d8f888cfdacad6
+# Generator ref: sha512:fbf64b5dbd4239c3af346cf492d8967428581931a5b1a3b5bd66356dbf0f1cab7de649564f5caee64c14854a58c357ea96b4368487f50599b53c225839740eeb
 
 import:
-- common.dyn_code_registry:dyn_code_registry.module
-- common.mark:mark.service
 - builtin_service:types
 - builtin_service:web
+- common.dyn_code_registry:dyn_code_registry.module
+- common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.call:call

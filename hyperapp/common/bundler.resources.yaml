@@ -1,13 +1,13 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:4968e085a4d265988ae75968507876e1ac5bbac825a8ed5a26e5260099e571d1f48faba0c469fd278190ce13a910003f15f2bc2f9e909d28f9cb8e61bacb4b6c
-# Generator ref: sha512:01eab1466adbc64ba736d9c69ff75d96e030c184f0de9af6b6120fb2dbac62d17e3742890a08841718ff33bec6b159c23b825d43d92e67fdc2d8f888cfdacad6
+# Source ref: sha512:abcd21dfffe71d887852ac2c62c30ea472d3cfe19554448659e6fbfeff9aedb393de36823dee7d12cb8d85deebe799842dc6b068a510f57a6c035b1e5037868f
+# Generator ref: sha512:fbf64b5dbd4239c3af346cf492d8967428581931a5b1a3b5bd66356dbf0f1cab7de649564f5caee64c14854a58c357ea96b4368487f50599b53c225839740eeb
 
 import:
-- common.mark:mark.service
-- common.visitor:visitor.module
 - builtin_service:association_reg
 - builtin_service:mosaic
 - builtin_service:types
+- common.mark:mark.service
+- common.visitor:visitor.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.call:call

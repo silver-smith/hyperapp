@@ -1,15 +1,15 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:8cdc501adbf8756d2a5e0f569b749c26114ef04b6f0184e9c3ea3e690a8f3698c66afeeb7cf952f13d3f6ba2ad6747362b9e419d661c6d51b84b9d465d207707
-# Generator ref: sha512:01eab1466adbc64ba736d9c69ff75d96e030c184f0de9af6b6120fb2dbac62d17e3742890a08841718ff33bec6b159c23b825d43d92e67fdc2d8f888cfdacad6
+# Source ref: sha512:ef753b401596e2ed434db7fcdc4ec0cf6bc7e97325e7dde81c7cd317574777e2578d6212d4999a59d05519c84171e1f2bd45b7ef9bde1fabe1fbc97e1a61ede0
+# Generator ref: sha512:fbf64b5dbd4239c3af346cf492d8967428581931a5b1a3b5bd66356dbf0f1cab7de649564f5caee64c14854a58c357ea96b4368487f50599b53c225839740eeb
 
 import:
-- common.bundler:bundler.service
-- common.failure:failed.service
-- common.mark:mark.service
 - builtin_service:mosaic
 - builtin_service:on_stop
 - builtin_service:stop_signal
 - builtin_service:unbundler
+- common.bundler:bundler.service
+- common.failure:failed.service
+- common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.call:call
