@@ -1,17 +1,17 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:8a7ba02eed405d8bf4b13e0b2ee576a1285133f1e8958407827ce10f6a479453f713b8730480b25fe2823719417f8d475462350ee7c66615a290db9d0ced3c89
-# Generator ref: sha512:fbf64b5dbd4239c3af346cf492d8967428581931a5b1a3b5bd66356dbf0f1cab7de649564f5caee64c14854a58c357ea96b4368487f50599b53c225839740eeb
+# Source ref: sha512:582de9a46ed6a6b4e770d6cb125932aee2805064fcb6f69671ee0bcfc4252cb055382de89c383d94592df1395f3fdc7fec3eadc53e80919958558fa4e13dac91
+# Generator ref: sha512:61bbcbfa7898546d7348f0fe55acde35ef87daf6b50d5cd8a3221791c2a20d420513e1f8788f1e497d0db265380ac17d0a5598c08caf1e273cba73000998e970
 
 import:
 - builtin_service:mosaic
 - builtin_service:types
-- rc.utils:utils.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.code_registry:association
 - legacy_type.global_command:global_command_association
 - legacy_type.global_command_ctr:global_command_ctr
 - legacy_type.impl:global_command_impl
+- rc.utils:utils.module
 - resource.constructor_creg:constructor_creg.service
 associations:
 - _type: legacy_type.code_registry:association
