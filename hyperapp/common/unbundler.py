@@ -13,8 +13,9 @@ class Unbundler:
         self._aux_unbundler_hooks = aux_unbundler_hooks
 
     def register_bundle(self, bundle):
+        ref_set = set()
         for capsule in bundle.capsule_list:
-            self._mosaic.register_capsule(capsule)
+            ref_set.add(self._mosaic.register_capsule(capsule))
         # Meta associations should be registered before others. So, collect association list first.
         ass_list = []
         for aux_ref in bundle.aux_roots:
@@ -28,3 +29,4 @@ class Unbundler:
             if not handled_by_hook:
                 ass_list.append(decoded_capsule.value)
         self._association_reg.register_association_list(ass_list)
+        return ref_set | set(bundle.aux_roots)

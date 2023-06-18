@@ -60,6 +60,7 @@ class Connection:
         self._socket = sock
         self._buffer = b''
         self._this_route = IncomingConnectionRoute(self)
+        self._seen_refs = set()
 
     def __repr__(self):
         return f"<sync tcp Connection from: {address_to_str(self._address)}>"
@@ -70,8 +71,9 @@ class Connection:
 
     def send(self, parcel):
         parcel_ref = mosaic.put(parcel.piece)
-        bundle = bundler([parcel_ref]).bundle
-        data = encode_tcp_packet(bundle)
+        refs_and_bundle = bundler([parcel_ref], self._seen_refs)
+        self._seen_refs |= refs_and_bundle.ref_set
+        data = encode_tcp_packet(refs_and_bundle.bundle)
         ofs = 0
         while ofs < len(data):
             sent_size = self._socket.send(data[ofs:])
@@ -105,7 +107,8 @@ class Connection:
     def _process_bundle(self, bundle):
         parcel_ref = bundle.roots[0]
         log.info("%s: Received bundle: parcel: %s", self, parcel_ref)
-        unbundler.register_bundle(bundle)
+        ref_set = unbundler.register_bundle(bundle)
+        self._seen_refs |= ref_set
         parcel = parcel_registry.invite(parcel_ref)
         sender_ref = mosaic.put(parcel.sender.piece)
         # Add route first - it may be used during parcel processing.
