@@ -36,16 +36,6 @@ from .code import runner
 _log = logging.getLogger(__name__)
 
 
-# These services are provided by resources now. Do not try to pick them from legacy services.
-resource_services = [
-    'endpoint_registry',
-    'route_table',
-    'rpc_call_factory',
-    'rpc_endpoint_factory',
-    'sync_route_table',
-    'transport',
-    ]
-
 SourceInfo = namedtuple('SourceInfo', 'import_name attr_list provided_services used_types')
 DepsInfo = namedtuple('DepsInfo', 'uses_modules wants_services wants_code tests_services tests_code')
 ObjectInfo = namedtuple('ObjectInfo', 'dir get_result_t')
@@ -92,11 +82,6 @@ class SourceFile:
         return f"<SourceFile {self.module_name!r}>"
 
     @cached_property
-    def is_legacy_module(self):
-        yaml_path = self.source_path.with_name(self.name + '.yaml')
-        return yaml_path.exists()
-
-    @cached_property
     def is_fixtures(self):
         return 'fixtures' in self.name.split('.')
 
@@ -106,8 +91,6 @@ class SourceFile:
 
     @property
     def up_to_date(self):
-        if self.is_legacy_module:
-            return True
         if self.is_tests:
             if self.tests_modules is None:
                 return False
@@ -149,29 +132,17 @@ class SourceFile:
                 return ReadyStatus.NotReady
         return ReadyStatus.Ready
 
-    @cached_property
-    def code_module_pair(self):
-        if self.is_legacy_module:
-            l = self.module_name.split('.')
-            package = '.'.join(l[:-1])
-            return (f'legacy_module.{package}', self.name)
-        else:
-            return (self.module_name, f'{self.name}.module')
-
     def _set_resource_module(self, resource_registry, resource_module):
         self.resource_module = resource_module
         resource_registry.set_module(self.module_name, self.resource_module)
 
     def init_resource_module(self, resource_registry, file_dict):
-        if self.is_legacy_module:
-            return
         if not self.resources_path.exists():
             self.is_manually_generated = False
             return
         resource_module = resource_module_factory(resource_registry, self.module_name, self.resources_path)
-        self.is_manually_generated = not resource_module.is_auto_generated
         deps = self._get_resource_module_deps(resource_module)
-        provides_services = resource_module.provided_services
+        self.is_manually_generated = not resource_module.is_auto_generated
         if self.is_manually_generated:
             _log.info("%s: manually generated", self.module_name)
         else:
@@ -182,7 +153,7 @@ class SourceFile:
                 return
             self.dep_modules = dep_modules
         self.deps = deps
-        self.provides_services = provides_services
+        self.provides_services = resource_module.provided_services
         self._set_resource_module(resource_registry, resource_module)
 
     def _check_up_to_date(self, resource_module, dep_modules):
@@ -210,7 +181,6 @@ class SourceFile:
 
     # Returns None if provider deps for wanted services are not yet ready.
     def _collect_dep_modules(self, resource_registry, file_dict, deps):
-        assert not self.is_legacy_module
         code_providers = code_provider_modules(file_dict)
         service_providers = service_provider_modules(file_dict, want_up_to_date=False)
         dep_list = []
@@ -219,8 +189,6 @@ class SourceFile:
                 provider = code_providers[code_name]
             except KeyError:
                 raise RuntimeError(f"Module {self.module_name!r} wants code module {code_name!r}, but no one provides it")
-            if provider.is_legacy_module:
-                continue
             _log.info("%s wants code %r from: %s", self.module_name, code_name, provider.module_name)
             dep_list.append(provider)
         for service_name in deps.wants_services:
@@ -228,7 +196,7 @@ class SourceFile:
                 provider = service_providers[service_name]
             except KeyError:
                 # Resource services takes precedence over legacy ones.
-                if is_legacy_service(resource_registry, service_name):
+                if is_builtin_service(resource_registry, service_name):
                     continue
                 _log.info("%s: provider deps for service %r is not yet ready", self.module_name, service_name)
                 return None
@@ -296,7 +264,7 @@ class SourceFile:
         return (import_discoverer, import_discoverer_ref)
 
     # Module resource with import discoverer.
-    def _discover_module_res(self, resource_registry, type_res_list, process):
+    def _discoverer_module_res(self, resource_registry, type_res_list, process):
         resource_list = [*type_res_list]
 
         resource_list += [
@@ -415,11 +383,11 @@ class SourceFile:
         return (deps_info, source_info)
 
     def init_deps(self, resource_registry, process, type_res_list, file_dict):
-        if self.is_legacy_module or self.up_to_date:
+        if self.up_to_date:
             return
         if not self.deps:
             _log.info("%s: Collect deps", self.module_name)
-            import_recorder, import_discoverer, module_res = self._discover_module_res(
+            import_recorder, import_discoverer, module_res = self._discoverer_module_res(
                 resource_registry, type_res_list, process)
             self.deps, self.source_info = self.parse_source(
                 import_recorder, import_discoverer, module_res, process, fail_on_incomplete=False)
@@ -469,7 +437,7 @@ class SourceFile:
 
         for name in self.deps.wants_code:
             provider = code_providers[name]
-            module = resource_registry[provider.code_module_pair]
+            module = resource_registry[provider.module_name, f'{provider.name}.module']
             import_list.append(
                 htypes.builtin.import_rec(f'code.{name}', mosaic.put(module)))
 
@@ -818,14 +786,6 @@ class SourceFile:
         saver(resource_module, self.resources_path, ref_str(source_ref), ref_str(self._generator_ref))
 
 
-process_code_module_list = [
-    'common.lcs',
-    'common.lcs_service',
-    'ui.impl_registry',
-    'ui.global_command_list',
-    ]
-
-
 @contextmanager
 def subprocess(process_name, additional_dir_list, rpc_timeout):
     identity = generate_rsa_identity(fast=True)
@@ -875,8 +835,7 @@ def service_provider_modules(file_dict, want_up_to_date=True):
     return {
         service: file
         for module_name, file in file_dict.items()
-        if (not file.is_legacy_module
-            and file.provides_services is not None
+        if (file.provides_services is not None
             and (not want_up_to_date or file.up_to_date)
             and not file.is_fixtures
             and not file.is_tests
@@ -885,9 +844,7 @@ def service_provider_modules(file_dict, want_up_to_date=True):
         }
 
 
-def is_legacy_service(resource_registry, service_name):
-    if service_name in resource_services:
-        return False
+def is_builtin_service(resource_registry, service_name):
     return ('legacy_service', service_name) in resource_registry
 
 
