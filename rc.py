@@ -42,6 +42,7 @@ def main():
     log.info("Initialized.")
 
     try:
+        mosaic = services.mosaic
         resource_dir_list = services.resource_dir_list
         resource_registry = services.resource_registry
         resource_list_loader = services.resource_list_loader
@@ -55,10 +56,10 @@ def main():
         resource_registry.update_modules(legacy_type_resource_loader({**builtin_types_as_dict(), **local_types}))
 
         association_reg.register_association_list(resource_registry.associations)
-        fn_res = resource_registry['command_line.rc', 'compile_resources']
+        fn_res = resource_registry['rc.rc', 'compile_resources']
+        fn_ref = mosaic.put(fn_res)
         fn = python_object_creg.animate(fn_res)
-        log.info("Compile resources function: %r", fn)
-        fn(fn_res, args.source_subdir, args.root_dir or [], args.module, args.rpc_timeout)
+        fn(fn_ref, args.source_subdir, args.root_dir or [], args.module, args.rpc_timeout)
     finally:
         log.info("Stopping.")
         services.stop_signal.set()

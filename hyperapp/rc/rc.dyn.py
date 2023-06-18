@@ -888,6 +888,8 @@ def resource_saver(resource_module, path, source_ref_str, generator_ref_str):
 
 
 def compile_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_timeout=10, process_name='rc-runner', saver=resource_saver):
+    _log.info("Compile resources at: %s, %s: %s", subdir_list, root_dirs, module_list)
+
     resource_dir_list = [hyperapp_dir / d for d in subdir_list] + root_dirs
     resource_registry = resource_registry_factory()
 
