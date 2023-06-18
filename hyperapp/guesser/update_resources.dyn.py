@@ -17,7 +17,7 @@ from .services import (
     endpoint_registry,
     hyperapp_dir,
     generate_rsa_identity,
-    legacy_service_resource_loader,
+    builtin_service_resource_loader,
     legacy_type_resource_loader,
     local_types,
     module_dir_list,
@@ -897,7 +897,7 @@ def update_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_tim
     add_legacy_types_to_cache(resource_registry, legacy_type_modules)
     resource_registry.update_modules(legacy_type_modules)
 
-    resource_registry.set_module('legacy_service', legacy_service_resource_loader(resource_registry))
+    resource_registry.set_module('legacy_service', builtin_service_resource_loader(resource_registry))
 
     tested_module_imports = {}  # module name -> type import tuple set
 

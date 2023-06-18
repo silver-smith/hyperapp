@@ -33,7 +33,7 @@ from ..resource.resource_module import ResourceModule, load_resource_modules, lo
 from .htypes.legacy_type import legacy_type_t
 from ..resource.legacy_type import convert_builtin_types_to_dict, load_legacy_type_resources, legacy_type_pyobj
 from .htypes.builtin_service import legacy_service_t
-from ..resource.builtin_service import builtin_service_python_object, make_legacy_service_resource_module
+from ..resource.builtin_service import builtin_service_python_object, make_builtin_service_resource_module
 from .htypes.attribute import attribute_t
 from ..resource.attribute import AttributeResourceType, attribute_pyobj
 
@@ -74,7 +74,7 @@ class Services(object):
         'resource_list_loader',
         'builtin_types_as_dict',
         'legacy_type_resource_loader',
-        'legacy_service_resource_loader',
+        'builtin_service_resource_loader',
     ]
 
     def __init__(self, module_dir_list, additional_resource_dirs=None):
@@ -139,10 +139,10 @@ class Services(object):
         self.builtin_types_as_dict = partial(convert_builtin_types_to_dict, self.types, self.builtin_types)
         self.legacy_type_resource_loader = load_legacy_type_resources
         self.python_object_creg.register_actor(legacy_type_t, legacy_type_pyobj, self.types)
-        self.legacy_service_resource_loader = partial(
-            make_legacy_service_resource_module, self.mosaic, self.builtin_services)
+        self.builtin_service_resource_loader = partial(
+            make_builtin_service_resource_module, self.mosaic, self.builtin_services)
         self.resource_registry.set_module(
-            'legacy_service', self.legacy_service_resource_loader(self.resource_registry))
+            'legacy_service', self.builtin_service_resource_loader(self.resource_registry))
         self.python_object_creg.register_actor(legacy_service_t, builtin_service_python_object, self)
         self.resource_type_reg[attribute_t] = AttributeResourceType()
         self.python_object_creg.register_actor(attribute_t, attribute_pyobj, self.python_object_creg)

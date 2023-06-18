@@ -5,7 +5,7 @@ from hyperapp.common.htypes.builtin_service import legacy_service_t
 log = logging.getLogger(__name__)
 
 
-class LegacyServiceResourceModule:
+class BuiltinServiceResourceModule:
 
     def __init__(self, name_to_piece):
         self._name_to_piece = name_to_piece
@@ -31,14 +31,14 @@ class LegacyServiceResourceModule:
         return set()
 
     def merge_with(self, other):
-        assert isinstance(other, LegacyServiceResourceModule)
-        return LegacyServiceResourceModule({
+        assert isinstance(other, BuiltinServiceResourceModule)
+        return BuiltinServiceResourceModule({
             **self._name_to_piece,
             **other._name_to_piece,
             })
 
 
-def make_legacy_service_resource_module(mosaic, builtin_services, resource_registry):
+def make_builtin_service_resource_module(mosaic, builtin_services, resource_registry):
     name_to_piece = {}
 
     for service_name in builtin_services:
@@ -48,7 +48,7 @@ def make_legacy_service_resource_module(mosaic, builtin_services, resource_regis
 
     for name, piece in name_to_piece.items():
         resource_registry.add_to_cache(('legacy_service', name), piece)
-    return LegacyServiceResourceModule(name_to_piece)
+    return BuiltinServiceResourceModule(name_to_piece)
 
 
 def builtin_service_python_object(piece, services):

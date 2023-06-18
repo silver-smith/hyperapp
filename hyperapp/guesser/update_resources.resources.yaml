@@ -4,7 +4,7 @@ import:
 - guesser.utils:utils.module
 - legacy_service:builtin_types_as_dict
 - legacy_service:hyperapp_dir
-- legacy_service:legacy_service_resource_loader
+- legacy_service:builtin_service_resource_loader
 - legacy_service:legacy_type_resource_loader
 - legacy_service:local_types
 - legacy_service:module_dir_list
@@ -87,7 +87,7 @@ definitions:
       services.endpoint_registry: transport.endpoint:endpoint_registry.service
       services.hyperapp_dir: legacy_service:hyperapp_dir
       services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
-      services.legacy_service_resource_loader: legacy_service:legacy_service_resource_loader
+      services.builtin_service_resource_loader: legacy_service:builtin_service_resource_loader
       services.legacy_type_resource_loader: legacy_service:legacy_type_resource_loader
       services.local_types: legacy_service:local_types
       services.module_dir_list: legacy_service:module_dir_list

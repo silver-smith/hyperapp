@@ -24,7 +24,7 @@ from hyperapp.resource.resource_module import ResourceModule, load_resource_modu
 from hyperapp.resource.python_module import PythonModuleResourceType, python_module_pyobj
 from hyperapp.resource.attribute import AttributeResourceType, attribute_pyobj
 from hyperapp.resource.legacy_type import convert_builtin_types_to_dict, load_legacy_type_resources, legacy_type_pyobj
-from hyperapp.resource.builtin_service import builtin_service_python_object, make_legacy_service_resource_module
+from hyperapp.resource.builtin_service import builtin_service_python_object, make_builtin_service_resource_module
 
 log = logging.getLogger(__name__)
 
@@ -179,7 +179,7 @@ def builtin_services(
         resource_list_loader,
         builtin_types_as_dict,
         legacy_type_resource_loader,
-        # legacy_service_resource_loader,
+        # builtin_service_resource_loader,
         ):
     return {
         'association_reg': association_reg,
@@ -207,13 +207,13 @@ def builtin_services(
         'resource_list_loader': resource_list_loader,
         'builtin_types_as_dict': builtin_types_as_dict,
         'legacy_type_resource_loader': legacy_type_resource_loader,
-        # 'legacy_service_resource_loader': legacy_service_resource_loader,
+        # 'builtin_service_resource_loader': builtin_service_resource_loader,
     }
 
 
 @pytest.fixture
-def legacy_service_resource_loader(mosaic, builtin_services):
-    return partial(make_legacy_service_resource_module, mosaic, builtin_services.keys())
+def builtin_service_resource_loader(mosaic, builtin_services):
+    return partial(make_builtin_service_resource_module, mosaic, builtin_services.keys())
 
 
 @pytest.fixture
@@ -223,11 +223,11 @@ def resource_registry(
         legacy_type_resource_loader,
         builtin_types_as_dict,
         local_types,
-        legacy_service_resource_loader,
+        builtin_service_resource_loader,
         resource_dir_list,
         ):
     registry = resource_registry_factory()
     resource_list_loader(resource_dir_list, registry)
     registry.update_modules(legacy_type_resource_loader({**builtin_types_as_dict(), **local_types}))
-    registry.set_module('legacy_service', legacy_service_resource_loader(registry))
+    registry.set_module('legacy_service', builtin_service_resource_loader(registry))
     return registry
