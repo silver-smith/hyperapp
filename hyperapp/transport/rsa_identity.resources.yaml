@@ -4,7 +4,7 @@
 
 import:
 - common.mark:mark.service
-- legacy_service:mosaic
+- builtin_service:mosaic
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.call:call
@@ -53,7 +53,7 @@ definitions:
       htypes.rsa_identity.rsa_signature: legacy_type.rsa_identity:rsa_signature
       services.identity_registry: transport.identity:identity_registry.service
       services.mark: common.mark:mark.service
-      services.mosaic: legacy_service:mosaic
+      services.mosaic: builtin_service:mosaic
       services.parcel_registry: transport.identity:parcel_registry.service
       services.peer_registry: transport.identity:peer_registry.service
       services.signature_registry: transport.identity:signature_registry.service

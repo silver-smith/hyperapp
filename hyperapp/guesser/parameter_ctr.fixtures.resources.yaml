@@ -4,8 +4,8 @@
 
 import:
 - common.mark:mark.service
-- legacy_service:resource_module_factory
-- legacy_service:resource_registry_factory
+- builtin_service:resource_module_factory
+- builtin_service:resource_registry_factory
 - legacy_type.attr_constructors:parameter
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
@@ -53,8 +53,8 @@ definitions:
       htypes.builtin.python_module: legacy_type.builtin:python_module
       htypes.inspect.attr: legacy_type.inspect:attr
       services.mark: common.mark:mark.service
-      services.resource_module_factory: legacy_service:resource_module_factory
-      services.resource_registry_factory: legacy_service:resource_registry_factory
+      services.resource_module_factory: builtin_service:resource_module_factory
+      services.resource_registry_factory: builtin_service:resource_registry_factory
   piece:
     _type: legacy_type.builtin:attribute
     object: parameter_ctr.fixtures.module

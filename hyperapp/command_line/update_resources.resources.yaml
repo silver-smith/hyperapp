@@ -1,6 +1,6 @@
 import:
-- legacy_service:mosaic
-- legacy_service:resource_registry
+- builtin_service:mosaic
+- builtin_service:resource_registry
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - guesser.update_resources:update_resources
@@ -12,9 +12,9 @@ definitions:
     module_name: update_resources
     file_name: update_resources.dyn.py
     import_list:
-      services.mosaic: legacy_service:mosaic
+      services.mosaic: builtin_service:mosaic
       services.update_resources: guesser.update_resources:update_resources
-      services.resource_registry: legacy_service:resource_registry
+      services.resource_registry: builtin_service:resource_registry
 
   update_resources:
     _type: legacy_type.builtin:attribute

@@ -1,5 +1,5 @@
 import:
-- legacy_service:mosaic
+- builtin_service:mosaic
 - legacy_type.attr_constructors:parameter
 - legacy_type.attr_constructors:service
 - legacy_type.builtin:attribute
@@ -23,7 +23,7 @@ definitions:
       htypes.global_command_ctr.global_command_ctr: legacy_type.global_command_ctr:global_command_ctr
       htypes.object_command_ctr.object_command_ctr: legacy_type.object_command_ctr:object_command_ctr
       code.constants: resource.constants:constants.module
-      services.mosaic: legacy_service:mosaic
+      services.mosaic: builtin_service:mosaic
 
   mark:
     _type: legacy_type.builtin:attribute

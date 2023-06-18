@@ -5,8 +5,8 @@
 import:
 - common.mark:mark.service
 - legacy_module.async.ui:view_command
-- legacy_service:mosaic
-- legacy_service:types
+- builtin_service:mosaic
+- builtin_service:types
 - legacy_type.builtin:attribute
 - legacy_type.call:call
 - legacy_type.command_list:global_command_list
@@ -68,8 +68,8 @@ definitions:
       htypes.impl.global_command_impl: legacy_type.impl:global_command_impl
       htypes.builtin.legacy_type: legacy_type.builtin:legacy_type
       services.mark: common.mark:mark.service
-      services.mosaic: legacy_service:mosaic
-      services.types: legacy_service:types
+      services.mosaic: builtin_service:mosaic
+      services.types: builtin_service:types
   current_item:
     _type: legacy_type.builtin:attribute
     object: command_list.fixtures.module

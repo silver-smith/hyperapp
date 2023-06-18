@@ -4,14 +4,14 @@
 
 import:
 - common.mark:mark.service
-- legacy_service:adapter_factory
-- legacy_service:global_command_list
-- legacy_service:lcs
-- legacy_service:mosaic
-- legacy_service:object_commands_factory
-- legacy_service:root_view
-- legacy_service:run_input_key_dialog
-- legacy_service:web
+- builtin_service:adapter_factory
+- builtin_service:global_command_list
+- builtin_service:lcs
+- builtin_service:mosaic
+- builtin_service:object_commands_factory
+- builtin_service:root_view
+- builtin_service:run_input_key_dialog
+- builtin_service:web
 - legacy_type.builtin:attribute
 - legacy_type.builtin:string
 - legacy_type.command:command_shortcut_d
@@ -177,15 +177,15 @@ definitions:
       htypes.command_list.object_command_list: legacy_type.command_list:object_command_list
       htypes.command_list.view_command_list: legacy_type.command_list:view_command_list
       htypes.command_list.view_item: legacy_type.command_list:view_item
-      services.adapter_factory: legacy_service:adapter_factory
-      services.global_command_list: legacy_service:global_command_list
-      services.lcs: legacy_service:lcs
+      services.adapter_factory: builtin_service:adapter_factory
+      services.global_command_list: builtin_service:global_command_list
+      services.lcs: builtin_service:lcs
       services.mark: common.mark:mark.service
-      services.mosaic: legacy_service:mosaic
-      services.object_commands_factory: legacy_service:object_commands_factory
-      services.root_view: legacy_service:root_view
-      services.run_input_key_dialog: legacy_service:run_input_key_dialog
-      services.web: legacy_service:web
+      services.mosaic: builtin_service:mosaic
+      services.object_commands_factory: builtin_service:object_commands_factory
+      services.root_view: builtin_service:root_view
+      services.run_input_key_dialog: builtin_service:run_input_key_dialog
+      services.web: builtin_service:web
   global_command_list_d:
     _type: legacy_type.command_list:global_command_list_d
   global_command_list_set_key_d:

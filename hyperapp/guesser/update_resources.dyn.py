@@ -271,7 +271,7 @@ class SourceFile:
             htypes.import_recorder.resource(('services', 'mark'), mosaic.put(
                 resource_registry['common.mark', 'mark.service'])),
             htypes.import_recorder.resource(('services', 'on_stop'), mosaic.put(
-                resource_registry['legacy_service', 'on_stop'])),
+                resource_registry['builtin_service', 'on_stop'])),
             ]
 
         import_recorder, import_recorder_ref = self._prepare_import_recorder(process, resource_list)
@@ -845,7 +845,7 @@ def service_provider_modules(file_dict, want_up_to_date=True):
 
 
 def is_builtin_service(resource_registry, service_name):
-    return ('legacy_service', service_name) in resource_registry
+    return ('builtin_service', service_name) in resource_registry
 
 
 def service_resource(resource_registry, service_providers, service_name):
@@ -853,7 +853,7 @@ def service_resource(resource_registry, service_providers, service_name):
         provider = service_providers[service_name]
     except KeyError:
         try:
-            return resource_registry['legacy_service', service_name]
+            return resource_registry['builtin_service', service_name]
         except KeyError:
             return None  # Provider module deps are not yet ready?
     else:
@@ -897,7 +897,7 @@ def update_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_tim
     add_legacy_types_to_cache(resource_registry, legacy_type_modules)
     resource_registry.update_modules(legacy_type_modules)
 
-    resource_registry.set_module('legacy_service', builtin_service_resource_loader(resource_registry))
+    resource_registry.set_module('builtin_service', builtin_service_resource_loader(resource_registry))
 
     tested_module_imports = {}  # module name -> type import tuple set
 

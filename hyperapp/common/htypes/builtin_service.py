@@ -5,6 +5,6 @@ from . import (
     )
 
 
-builtin_service_t = TRecord(BUILTIN_MODULE_NAME, 'legacy_service', {
+builtin_service_t = TRecord(BUILTIN_MODULE_NAME, 'builtin_service', {
     'name': tString,
     })

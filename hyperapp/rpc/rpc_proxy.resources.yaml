@@ -1,5 +1,5 @@
 import:
-  - legacy_service:mosaic
+  - builtin_service:mosaic
   - legacy_type.builtin:attribute
   - legacy_type.builtin:python_module
   - rpc.rpc_call:rpc_call_factory.service
@@ -12,5 +12,5 @@ definitions:
     file_name: rpc_proxy.dyn.py
     import_list:
       htypes.builtin.attribute: legacy_type.builtin:attribute
-      services.mosaic: legacy_service:mosaic
+      services.mosaic: builtin_service:mosaic
       services.rpc_call_factory: rpc.rpc_call:rpc_call_factory.service

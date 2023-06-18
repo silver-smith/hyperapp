@@ -4,9 +4,9 @@
 
 import:
 - common.mark:mark.service
-- legacy_service:local_types
-- legacy_service:resource_module_factory
-- legacy_service:resource_registry_factory
+- builtin_service:local_types
+- builtin_service:resource_module_factory
+- builtin_service:resource_registry_factory
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.call:call
@@ -43,10 +43,10 @@ definitions:
     import_list:
       htypes.builtin.python_module: legacy_type.builtin:python_module
       htypes.inspect.attr: legacy_type.inspect:attr
-      services.local_types: legacy_service:local_types
+      services.local_types: builtin_service:local_types
       services.mark: common.mark:mark.service
-      services.resource_module_factory: legacy_service:resource_module_factory
-      services.resource_registry_factory: legacy_service:resource_registry_factory
+      services.resource_module_factory: builtin_service:resource_module_factory
+      services.resource_registry_factory: builtin_service:resource_registry_factory
   module_res:
     _type: legacy_type.builtin:attribute
     object: global_command_ctr.fixtures.module

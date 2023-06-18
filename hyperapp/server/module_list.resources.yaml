@@ -4,10 +4,10 @@
 
 import:
 - common.mark:mark.service
-- legacy_service:local_modules
-- legacy_service:module_registry
-- legacy_service:mosaic
-- legacy_service:web
+- builtin_service:local_modules
+- builtin_service:module_registry
+- builtin_service:mosaic
+- builtin_service:web
 - legacy_type.builtin:attribute
 - legacy_type.builtin:string
 - legacy_type.command:object_commands_d
@@ -68,11 +68,11 @@ definitions:
     import_list:
       htypes.module_list.item: legacy_type.module_list:item
       htypes.module_list.module_list: legacy_type.module_list:module_list
-      services.local_modules: legacy_service:local_modules
+      services.local_modules: builtin_service:local_modules
       services.mark: common.mark:mark.service
-      services.module_registry: legacy_service:module_registry
-      services.mosaic: legacy_service:mosaic
-      services.web: legacy_service:web
+      services.module_registry: builtin_service:module_registry
+      services.mosaic: builtin_service:mosaic
+      services.web: builtin_service:web
   module_list_d:
     _type: legacy_type.module_list:module_list_d
   module_list_open_d:

@@ -4,7 +4,7 @@
 
 import:
 - common.mark:mark.service
-- legacy_service:mosaic
+- builtin_service:mosaic
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.call:call
@@ -28,7 +28,7 @@ definitions:
       htypes.raw.raw: legacy_type.raw:raw
       services.fn_to_ref: resource.fn_to_ref:fn_to_ref.service
       services.mark: common.mark:mark.service
-      services.mosaic: legacy_service:mosaic
+      services.mosaic: builtin_service:mosaic
   partial_ref.service:
     _type: legacy_type.call:call
     function: partial_ref

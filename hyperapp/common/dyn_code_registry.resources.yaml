@@ -1,9 +1,9 @@
 import:
 - common.mark:mark.module
-- legacy_service:association_reg
-- legacy_service:mosaic
-- legacy_service:python_object_creg
-- legacy_service:web
+- builtin_service:association_reg
+- builtin_service:mosaic
+- builtin_service:python_object_creg
+- builtin_service:web
 - legacy_type.builtin:attribute
 - legacy_type.code_registry:association
 - legacy_type.code_registry:constructor
@@ -25,10 +25,10 @@ definitions:
     import_list:
       code.mark: common.mark:mark.module
       htypes.code_registry.constructor: legacy_type.code_registry:constructor
-      services.association_reg: legacy_service:association_reg
-      services.mosaic: legacy_service:mosaic
-      services.python_object_creg: legacy_service:python_object_creg
-      services.web: legacy_service:web
+      services.association_reg: builtin_service:association_reg
+      services.mosaic: builtin_service:mosaic
+      services.python_object_creg: builtin_service:python_object_creg
+      services.web: builtin_service:web
 
   register:
     _type: legacy_type.builtin:attribute

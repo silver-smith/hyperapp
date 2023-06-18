@@ -1,6 +1,6 @@
 import:
-  - legacy_service:local_types
-  - legacy_service:type_module_loader
+  - builtin_service:local_types
+  - builtin_service:type_module_loader
   - legacy_type.builtin:attribute
   - legacy_type.builtin:python_module
 
@@ -11,8 +11,8 @@ definitions:
     module_name: load_modules
     file_name: load_modules.dyn.py
     import_list:
-      services.local_types: legacy_service:local_types
-      services.type_module_loader: legacy_service:type_module_loader
+      services.local_types: builtin_service:local_types
+      services.type_module_loader: builtin_service:type_module_loader
 
   load_additional_modules:
     _type: legacy_type.builtin:attribute

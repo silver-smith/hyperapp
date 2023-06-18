@@ -2,18 +2,18 @@ import:
 - guesser.runner:collect_attributes
 - guesser.runner:get_resource_type
 - guesser.utils:utils.module
-- legacy_service:builtin_types_as_dict
-- legacy_service:hyperapp_dir
-- legacy_service:builtin_service_resource_loader
-- legacy_service:legacy_type_resource_loader
-- legacy_service:local_types
-- legacy_service:module_dir_list
-- legacy_service:mosaic
-- legacy_service:resource_module_factory
-- legacy_service:resource_registry_factory
-- legacy_service:type_module_loader
-- legacy_service:types
-- legacy_service:web
+- builtin_service:builtin_types_as_dict
+- builtin_service:hyperapp_dir
+- builtin_service:builtin_service_resource_loader
+- builtin_service:legacy_type_resource_loader
+- builtin_service:local_types
+- builtin_service:module_dir_list
+- builtin_service:mosaic
+- builtin_service:resource_module_factory
+- builtin_service:resource_registry_factory
+- builtin_service:type_module_loader
+- builtin_service:types
+- builtin_service:web
 - legacy_type.async_run:async_run
 - legacy_type.attr_constructors:service
 - legacy_type.builtin:attribute
@@ -82,23 +82,23 @@ definitions:
       htypes.builtin.import_rec: legacy_type.builtin:import_rec
       htypes.update_resources.source_dep: legacy_type.update_resources:source_dep
       htypes.update_resources.module_deps: legacy_type.update_resources:module_deps
-      services.builtin_types_as_dict: legacy_service:builtin_types_as_dict
+      services.builtin_types_as_dict: builtin_service:builtin_types_as_dict
       services.constructor_creg: resource.constructor_creg:constructor_creg.service
       services.endpoint_registry: transport.endpoint:endpoint_registry.service
-      services.hyperapp_dir: legacy_service:hyperapp_dir
+      services.hyperapp_dir: builtin_service:hyperapp_dir
       services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
-      services.builtin_service_resource_loader: legacy_service:builtin_service_resource_loader
-      services.legacy_type_resource_loader: legacy_service:legacy_type_resource_loader
-      services.local_types: legacy_service:local_types
-      services.module_dir_list: legacy_service:module_dir_list
-      services.mosaic: legacy_service:mosaic
-      services.resource_module_factory: legacy_service:resource_module_factory
-      services.resource_registry_factory: legacy_service:resource_registry_factory
+      services.builtin_service_resource_loader: builtin_service:builtin_service_resource_loader
+      services.legacy_type_resource_loader: builtin_service:legacy_type_resource_loader
+      services.local_types: builtin_service:local_types
+      services.module_dir_list: builtin_service:module_dir_list
+      services.mosaic: builtin_service:mosaic
+      services.resource_module_factory: builtin_service:resource_module_factory
+      services.resource_registry_factory: builtin_service:resource_registry_factory
       services.rpc_endpoint_factory: rpc.rpc_endpoint:rpc_endpoint_factory.service
       services.subprocess_rpc_server_running: subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
-      services.type_module_loader: legacy_service:type_module_loader
-      services.types: legacy_service:types
-      services.web: legacy_service:web
+      services.type_module_loader: builtin_service:type_module_loader
+      services.types: builtin_service:types
+      services.web: builtin_service:web
 
   update_resources:
     _type: legacy_type.builtin:attribute

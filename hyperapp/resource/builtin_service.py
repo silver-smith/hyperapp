@@ -12,7 +12,7 @@ class BuiltinServiceResourceModule:
 
     @property
     def name(self):
-        return 'legacy_service'
+        return 'builtin_service'
 
     def __setitem__(self, name, service_piece):
         self._name_to_piece[name] = service_piece
@@ -47,7 +47,7 @@ def make_builtin_service_resource_module(mosaic, builtin_services, resource_regi
         log.info("Builtin legacy service resource %r: %s", service_name, piece)
 
     for name, piece in name_to_piece.items():
-        resource_registry.add_to_cache(('legacy_service', name), piece)
+        resource_registry.add_to_cache(('builtin_service', name), piece)
     return BuiltinServiceResourceModule(name_to_piece)
 
 

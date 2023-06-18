@@ -142,7 +142,7 @@ class Services(object):
         self.builtin_service_resource_loader = partial(
             make_builtin_service_resource_module, self.mosaic, self.builtin_services)
         self.resource_registry.set_module(
-            'legacy_service', self.builtin_service_resource_loader(self.resource_registry))
+            'builtin_service', self.builtin_service_resource_loader(self.resource_registry))
         self.python_object_creg.register_actor(builtin_service_t, builtin_service_python_object, self)
         self.resource_type_reg[attribute_t] = AttributeResourceType()
         self.python_object_creg.register_actor(attribute_t, attribute_pyobj, self.python_object_creg)

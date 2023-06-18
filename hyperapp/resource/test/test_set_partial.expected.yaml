@@ -1,6 +1,6 @@
 import:
-- legacy_service:mosaic
-- legacy_service:web
+- builtin_service:mosaic
+- builtin_service:web
 - legacy_type.builtin:attribute
 - legacy_type.partial:partial
 - sample_module_2:sample_module_2.module
@@ -14,5 +14,5 @@ definitions:
     _type: legacy_type.partial:partial
     function: sample_servant_2
     params:
-      mosaic: legacy_service:mosaic
-      web: legacy_service:web
+      mosaic: builtin_service:mosaic
+      web: builtin_service:web

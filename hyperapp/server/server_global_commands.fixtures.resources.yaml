@@ -4,9 +4,9 @@
 
 import:
 - common.mark:mark.service
-- legacy_service:mosaic
-- legacy_service:resource_registry
-- legacy_service:types
+- builtin_service:mosaic
+- builtin_service:resource_registry
+- builtin_service:types
 - legacy_type.builtin:attribute
 - legacy_type.call:call
 - legacy_type.impl:global_command_impl
@@ -57,6 +57,6 @@ definitions:
       htypes.server_global_commands.server_global_commands: legacy_type.server_global_commands:server_global_commands
       htypes.server_global_commands_fixtures.sample_global_command_d: legacy_type.server_global_commands_fixtures:sample_global_command_d
       services.mark: common.mark:mark.service
-      services.mosaic: legacy_service:mosaic
-      services.resource_registry: legacy_service:resource_registry
-      services.types: legacy_service:types
+      services.mosaic: builtin_service:mosaic
+      services.resource_registry: builtin_service:resource_registry
+      services.types: builtin_service:types

@@ -3,8 +3,8 @@
 # Generator ref: sha512:01eab1466adbc64ba736d9c69ff75d96e030c184f0de9af6b6120fb2dbac62d17e3742890a08841718ff33bec6b159c23b825d43d92e67fdc2d8f888cfdacad6
 
 import:
-- legacy_service:mosaic
-- legacy_service:stop_signal
+- builtin_service:mosaic
+- builtin_service:stop_signal
 - legacy_type.builtin:python_module
 - rpc.rpc_call:rpc_call_factory.service
 - rpc.rpc_endpoint:rpc_endpoint_factory.service
@@ -25,9 +25,9 @@ definitions:
       services.add_subprocess_server_connection: subprocess.subprocess_transport:add_subprocess_server_connection.service
       services.endpoint_registry: transport.endpoint:endpoint_registry.service
       services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
-      services.mosaic: legacy_service:mosaic
+      services.mosaic: builtin_service:mosaic
       services.peer_registry: transport.identity:peer_registry.service
       services.route_table: transport.sync_route_table:route_table.service
       services.rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
       services.rpc_endpoint_factory: rpc.rpc_endpoint:rpc_endpoint_factory.service
-      services.stop_signal: legacy_service:stop_signal
+      services.stop_signal: builtin_service:stop_signal

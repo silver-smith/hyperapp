@@ -5,8 +5,8 @@
 import:
 - common.dyn_code_registry:dyn_code_registry.module
 - common.mark:mark.service
-- legacy_service:types
-- legacy_service:web
+- builtin_service:types
+- builtin_service:web
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.call:call
@@ -19,8 +19,8 @@ definitions:
     import_list:
       code.dyn_code_registry: common.dyn_code_registry:dyn_code_registry.module
       services.mark: common.mark:mark.service
-      services.types: legacy_service:types
-      services.web: legacy_service:web
+      services.types: builtin_service:types
+      services.web: builtin_service:web
   identity_registry:
     _type: legacy_type.builtin:attribute
     object: identity.module

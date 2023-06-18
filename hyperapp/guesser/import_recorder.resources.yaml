@@ -1,5 +1,5 @@
 import:
-  - legacy_service:python_object_creg
+  - builtin_service:python_object_creg
   - legacy_type.builtin:attribute
   - legacy_type.import_recorder:import_recorder
   - legacy_type.builtin:python_object_association
@@ -18,7 +18,7 @@ definitions:
     module_name: import_recorder
     file_name: import_recorder.dyn.py
     import_list:
-      services.python_object_creg: legacy_service:python_object_creg
+      services.python_object_creg: builtin_service:python_object_creg
 
   ImportRecorder:
     _type: legacy_type.builtin:attribute

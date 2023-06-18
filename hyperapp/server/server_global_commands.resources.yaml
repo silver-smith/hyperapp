@@ -3,10 +3,10 @@
 # Generator hash: 00eb0b682fa398c13d9d833a6e34fe72b6b0176c1b1ec131d644b022e0284b7e0a646315547603f05af5ff4b4d57d151cf4cf723fe776e0f402fa721c911724a
 
 import:
-- legacy_service:global_command_list
-- legacy_service:python_object_creg
-- legacy_service:types
-- legacy_service:web
+- builtin_service:global_command_list
+- builtin_service:python_object_creg
+- builtin_service:types
+- builtin_service:web
 - legacy_type.builtin:attribute
 - legacy_type.builtin:string
 - legacy_type.command:object_commands_d
@@ -59,10 +59,10 @@ definitions:
     import_list:
       htypes.impl.global_command_impl: legacy_type.impl:global_command_impl
       htypes.server_global_commands.item: legacy_type.server_global_commands:item
-      services.global_command_list: legacy_service:global_command_list
-      services.python_object_creg: legacy_service:python_object_creg
-      services.types: legacy_service:types
-      services.web: legacy_service:web
+      services.global_command_list: builtin_service:global_command_list
+      services.python_object_creg: builtin_service:python_object_creg
+      services.types: builtin_service:types
+      services.web: builtin_service:web
   server_global_commands_d:
     _type: legacy_type.server_global_commands:server_global_commands_d
   server_global_commands_run_d:

@@ -4,7 +4,7 @@
 
 import:
 - common.mark:mark.service
-- legacy_service:resource_registry
+- builtin_service:resource_registry
 - legacy_type.builtin:attribute
 - legacy_type.builtin:int
 - legacy_type.builtin:string
@@ -171,4 +171,4 @@ definitions:
       htypes.resources_view.resource_module_var_list: legacy_type.resources_view:resource_module_var_list
       htypes.resources_view.var_item: legacy_type.resources_view:var_item
       services.mark: common.mark:mark.service
-      services.resource_registry: legacy_service:resource_registry
+      services.resource_registry: builtin_service:resource_registry

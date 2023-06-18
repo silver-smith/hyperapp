@@ -4,8 +4,8 @@
 
 import:
 - common.mark:mark.service
-- legacy_service:mosaic
-- legacy_service:types
+- builtin_service:mosaic
+- builtin_service:types
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.call:call
@@ -22,9 +22,9 @@ definitions:
       htypes.rpc.param: legacy_type.rpc:param
       htypes.rpc.request: legacy_type.rpc:request
       services.mark: common.mark:mark.service
-      services.mosaic: legacy_service:mosaic
+      services.mosaic: builtin_service:mosaic
       services.transport: transport.transport:transport.service
-      services.types: legacy_service:types
+      services.types: builtin_service:types
   rpc_call_factory:
     _type: legacy_type.builtin:attribute
     object: rpc_call.module

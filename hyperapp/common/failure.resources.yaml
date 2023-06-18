@@ -4,8 +4,8 @@
 
 import:
 - common.mark:mark.service
-- legacy_service:on_stop
-- legacy_service:stop_signal
+- builtin_service:on_stop
+- builtin_service:stop_signal
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.call:call
@@ -24,5 +24,5 @@ definitions:
     file_name: failure.dyn.py
     import_list:
       services.mark: common.mark:mark.service
-      services.on_stop: legacy_service:on_stop
-      services.stop_signal: legacy_service:stop_signal
+      services.on_stop: builtin_service:on_stop
+      services.stop_signal: builtin_service:stop_signal

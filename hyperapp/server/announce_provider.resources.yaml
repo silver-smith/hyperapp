@@ -4,8 +4,8 @@
 
 import:
 - common.bundler:aux_bundler_hooks.service
-- legacy_service:impl_registry
-- legacy_service:mosaic
+- builtin_service:impl_registry
+- builtin_service:mosaic
 - legacy_type.impl:service_provider
 - legacy_type.builtin:python_module
 - server.identity:server_identity.service
@@ -18,6 +18,6 @@ definitions:
     import_list:
       htypes.impl.service_provider: legacy_type.impl:service_provider
       services.aux_bundler_hooks: common.bundler:aux_bundler_hooks.service
-      services.impl_registry: legacy_service:impl_registry
-      services.mosaic: legacy_service:mosaic
+      services.impl_registry: builtin_service:impl_registry
+      services.mosaic: builtin_service:mosaic
       services.server_identity: server.identity:server_identity.service

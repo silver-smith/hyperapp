@@ -1,9 +1,9 @@
 import:
 - common.mark:mark.service
-- legacy_service:mosaic
+- builtin_service:mosaic
 - transport.identity:peer_registry.service
-- legacy_service:rpc_call_factory
-- legacy_service:web
+- builtin_service:rpc_call_factory
+- builtin_service:web
 - legacy_type.builtin:attribute
 - legacy_type.builtin:int
 - legacy_type.command:object_commands_d
@@ -76,10 +76,10 @@ definitions:
       htypes.construct_resources_sample.sample: legacy_type.construct_resources_sample:sample
       htypes.construct_resources_sample.sample_item: legacy_type.construct_resources_sample:sample_item
       services.mark: common.mark:mark.service
-      services.mosaic: legacy_service:mosaic
+      services.mosaic: builtin_service:mosaic
       services.peer_registry: transport.identity:peer_registry.service
-      services.rpc_call_factory: legacy_service:rpc_call_factory
-      services.web: legacy_service:web
+      services.rpc_call_factory: builtin_service:rpc_call_factory
+      services.web: builtin_service:web
   object_commands_d:
     _type: legacy_type.command:object_commands_d
   sample_global_command:
