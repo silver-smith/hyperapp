@@ -177,7 +177,7 @@ class SourceFile:
     @cached_property
     def source_dep_record(self):
         source_ref = mosaic.put(self.source_path.read_bytes())
-        return htypes.update_resources.source_dep(self.module_name, source_ref)
+        return htypes.rc.source_dep(self.module_name, source_ref)
 
     # Returns None if provider deps for wanted services are not yet ready.
     def _collect_dep_modules(self, resource_registry, file_dict, deps):
@@ -218,7 +218,7 @@ class SourceFile:
             f.source_dep_record for f in
             sorted([self, *dep_modules], key=attrgetter('module_name'))
             ]
-        return htypes.update_resources.module_deps(deps)
+        return htypes.rc.module_deps(deps)
 
     @staticmethod
     def _get_resource_module_deps(resource_module):
@@ -887,7 +887,7 @@ def resource_saver(resource_module, path, source_ref_str, generator_ref_str):
     resource_module.save_as(path, source_ref_str, generator_ref_str)
 
 
-def update_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_timeout=10, process_name='update-resources-runner', saver=resource_saver):
+def compile_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_timeout=10, process_name='rc-runner', saver=resource_saver):
     resource_dir_list = [hyperapp_dir / d for d in subdir_list] + root_dirs
     resource_registry = resource_registry_factory()
 

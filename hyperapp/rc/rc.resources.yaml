@@ -1,7 +1,7 @@
 import:
-- guesser.runner:collect_attributes
-- guesser.runner:get_resource_type
-- guesser.utils:utils.module
+- rc.runner:collect_attributes
+- rc.runner:get_resource_type
+- rc.utils:utils.module
 - builtin_service:builtin_types_as_dict
 - builtin_service:hyperapp_dir
 - builtin_service:builtin_service_resource_loader
@@ -38,24 +38,24 @@ import:
 - legacy_type.partial:partial
 - legacy_type.builtin:python_module
 - legacy_type.builtin:import_rec
-- legacy_type.update_resources:source_dep
-- legacy_type.update_resources:module_deps
+- legacy_type.rc:source_dep
+- legacy_type.rc:module_deps
 - resource.constructor_creg:constructor_creg.service
 - rpc.rpc_endpoint:rpc_endpoint_factory.service
 - transport.endpoint:endpoint_registry.service
 - transport.rsa_identity:generate_rsa_identity.service
 - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
-- guesser.runner:runner.module
+- rc.runner:runner.module
 
 definitions:
 
-  update_resources.module:
+  rc.module:
     _type: legacy_type.builtin:python_module
-    module_name: update_resources
-    file_name: update_resources.dyn.py
+    module_name: rc
+    file_name: rc.dyn.py
     import_list:
-      code.utils: guesser.utils:utils.module
-      code.runner: guesser.runner:runner.module
+      code.utils: rc.utils:utils.module
+      code.runner: rc.runner:runner.module
       htypes.async_run.async_run: legacy_type.async_run:async_run
       htypes.attr_constructors.service: legacy_type.attr_constructors:service
       htypes.builtin.attribute: legacy_type.builtin:attribute
@@ -80,8 +80,8 @@ definitions:
       htypes.partial.partial: legacy_type.partial:partial
       htypes.builtin.python_module: legacy_type.builtin:python_module
       htypes.builtin.import_rec: legacy_type.builtin:import_rec
-      htypes.update_resources.source_dep: legacy_type.update_resources:source_dep
-      htypes.update_resources.module_deps: legacy_type.update_resources:module_deps
+      htypes.rc.source_dep: legacy_type.rc:source_dep
+      htypes.rc.module_deps: legacy_type.rc:module_deps
       services.builtin_types_as_dict: builtin_service:builtin_types_as_dict
       services.constructor_creg: resource.constructor_creg:constructor_creg.service
       services.endpoint_registry: transport.endpoint:endpoint_registry.service
@@ -100,7 +100,7 @@ definitions:
       services.types: builtin_service:types
       services.web: builtin_service:web
 
-  update_resources:
+  compile_resources:
     _type: legacy_type.builtin:attribute
-    object: update_resources.module
-    attr_name: update_resources
+    object: rc.module
+    attr_name: compile_resources

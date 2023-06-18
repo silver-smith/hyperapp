@@ -3,20 +3,20 @@ import:
 - builtin_service:resource_registry
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- guesser.update_resources:update_resources
+- rc.rc:compile_resources
 
 definitions:
 
-  update_resources.module:
+  rc.module:
     _type: legacy_type.builtin:python_module
-    module_name: update_resources
-    file_name: update_resources.dyn.py
+    module_name: rc
+    file_name: rc.dyn.py
     import_list:
       services.mosaic: builtin_service:mosaic
-      services.update_resources: guesser.update_resources:update_resources
+      services.compile_resources: rc.rc:compile_resources
       services.resource_registry: builtin_service:resource_registry
 
-  update_resources:
+  compile_resources:
     _type: legacy_type.builtin:attribute
-    object: update_resources.module
-    attr_name: update_resources
+    object: rc.module
+    attr_name: compile_resources

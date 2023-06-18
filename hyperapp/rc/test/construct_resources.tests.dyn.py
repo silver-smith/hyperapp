@@ -6,7 +6,7 @@ from .services import (
     mosaic,
     resource_registry,
     )
-from .code.update_resources import update_resources
+from .code.rc import compile_resources
 
 log = logging.getLogger(__name__)
 
@@ -22,10 +22,10 @@ def test_construct():
         saved_dict.append(resource_module.as_dict)
 
     generator_ref = mosaic.put(
-        resource_registry['command_line.update_resources', 'update_resources'])
-    update_resources(
+        resource_registry['command_line.rc', 'compile_resources'])
+    compile_resources(
         generator_ref,
-        subdir_list=['common', 'resource', 'guesser'],
+        subdir_list=['common', 'resource', 'rc'],
         root_dirs=[TEST_RESOURCES_DIR],
         module_list=['construct_resources_sample'],
         process_name='construct-resources-test-runner',
