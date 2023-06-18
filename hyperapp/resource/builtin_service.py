@@ -1,6 +1,6 @@
 import logging
 
-from hyperapp.common.htypes.builtin_service import legacy_service_t
+from hyperapp.common.htypes.builtin_service import builtin_service_t
 
 log = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ def make_builtin_service_resource_module(mosaic, builtin_services, resource_regi
     name_to_piece = {}
 
     for service_name in builtin_services:
-        piece = legacy_service_t(service_name)
+        piece = builtin_service_t(service_name)
         name_to_piece[service_name] = piece
         log.info("Builtin legacy service resource %r: %s", service_name, piece)
 

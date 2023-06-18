@@ -32,7 +32,7 @@ from ..resource.resource_registry import ResourceRegistry
 from ..resource.resource_module import ResourceModule, load_resource_modules, load_resource_modules_list
 from .htypes.legacy_type import legacy_type_t
 from ..resource.legacy_type import convert_builtin_types_to_dict, load_legacy_type_resources, legacy_type_pyobj
-from .htypes.builtin_service import legacy_service_t
+from .htypes.builtin_service import builtin_service_t
 from ..resource.builtin_service import builtin_service_python_object, make_builtin_service_resource_module
 from .htypes.attribute import attribute_t
 from ..resource.attribute import AttributeResourceType, attribute_pyobj
@@ -143,7 +143,7 @@ class Services(object):
             make_builtin_service_resource_module, self.mosaic, self.builtin_services)
         self.resource_registry.set_module(
             'legacy_service', self.builtin_service_resource_loader(self.resource_registry))
-        self.python_object_creg.register_actor(legacy_service_t, builtin_service_python_object, self)
+        self.python_object_creg.register_actor(builtin_service_t, builtin_service_python_object, self)
         self.resource_type_reg[attribute_t] = AttributeResourceType()
         self.python_object_creg.register_actor(attribute_t, attribute_pyobj, self.python_object_creg)
 

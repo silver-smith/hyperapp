@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from hyperapp.common.htypes.attribute import attribute_t
-from hyperapp.common.htypes.builtin_service import legacy_service_t
+from hyperapp.common.htypes.builtin_service import builtin_service_t
 from hyperapp.common import cdr_coders  # self-registering
 
 log = logging.getLogger(__name__)
@@ -75,8 +75,8 @@ def test_set_partial(htypes, mosaic, resource_registry, resource_module_factory,
     partial = htypes.partial.partial(
         function=mosaic.put(attr),
         params=tuple([
-            htypes.partial.param('mosaic', mosaic.put(legacy_service_t('mosaic'))),
-            htypes.partial.param('web', mosaic.put(legacy_service_t('web'))),
+            htypes.partial.param('mosaic', mosaic.put(builtin_service_t('mosaic'))),
+            htypes.partial.param('web', mosaic.put(builtin_service_t('web'))),
             ]),
         )
     res_module['sample_servant_2'] = attr
