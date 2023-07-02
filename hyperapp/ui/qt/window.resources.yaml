@@ -1,10 +1,14 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:e700d1940516c836a4f3f3a10e7ce485cd2c6e2c2f8ecc670f58e0689ce36306c324c50d5174ee789719a07f2e5b1c4aa4f8cf2236015f1951cc038ea1290910
-# Generator ref: sha512:df7d3987d9c8981944fabf229a5315987826c778d938a41b7e191431f5d2a57bc44240b4acfa196a85466b33ab98a940f7b4493d84c3052f1ac265a71e1b2fcc
+# Source ref: sha512:6128ae9a57e523a2d3ea45e68876834e470ee351b0e85944486e3808044981b274fa45698b078d6a0f3338ce7a9dbbd6c6e0553d34b0caeac694292285d26204
+# Generator ref: sha512:c8895295a937d51f76f2286209807eca5b2a2b2e5f232d78025ef52549859dd1d8e57bf06b953ac3d92f3e54a731764c56f59122db90afc273cc416a5326e52f
 
 import:
 - legacy_type.builtin:python_module
+- legacy_type.command_pane:command_pane
+- legacy_type.menu_bar:menu_bar
 - legacy_type.window:pos
+- legacy_type.window:size
+- legacy_type.window:window
 associations: []
 definitions:
   window.module:
@@ -12,4 +16,8 @@ definitions:
     module_name: window
     file_name: window.dyn.py
     import_list:
+      htypes.command_pane.command_pane: legacy_type.command_pane:command_pane
+      htypes.menu_bar.menu_bar: legacy_type.menu_bar:menu_bar
       htypes.window.pos: legacy_type.window:pos
+      htypes.window.size: legacy_type.window:size
+      htypes.window.window: legacy_type.window:window
