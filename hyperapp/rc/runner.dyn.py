@@ -77,6 +77,49 @@ def _iter_attributes(object):
             yield htypes.inspect.fn_attr(*args)
 
 
+def _value_type(value):
+    if value is None:
+        return htypes.inspect.none_t()
+
+    if inspect.iscoroutine(value):
+        return htypes.inspect.coroutine_t()
+
+    log.info("Get type for value: %s", repr(value))
+    try:
+        t = deduce_complex_value_type(mosaic, types, value)
+    except DeduceTypeError:
+        log.info("Non-data type: %r", value.__class__.__name__)
+        return htypes.inspect.object_t(
+            class_name=value.__class__.__name__,
+            class_module=value.__class__.__module__,
+            )
+
+    log.info("Type is: %r", t)
+
+    if isinstance(t, TRecord):
+        type_name = htypes.inspect.type_name(t.module_name, t.name)
+        return htypes.inspect.record_t(
+            type=type_name,
+        )
+
+    if isinstance(t, TList) and not value:
+        return htypes.inspect.empty_list_t()
+
+    if isinstance(t, TList) and isinstance(t.element_t, TRecord):
+        element_list = []
+        for name, field_t in t.element_t.fields.items():
+            if not isinstance(field_t, TRecord):
+                # TODO: Just return meta type.
+                log.warning("Non-record list element fields are not supported (field %r): %s", name, field_t)
+                return None
+            type_name = htypes.inspect.type_name(field_t.module_name, field_t.name)
+            element = htypes.inspect.item_element(name, type_name)
+            element_list.append(element)
+        return htypes.inspect.list_t(
+            element_list=element_list,
+            )
+
+
 def get_resource_type(resource_ref, use_associations):
     log.info("Get type for resource ref: %s", resource_ref)
 
@@ -85,47 +128,8 @@ def get_resource_type(resource_ref, use_associations):
         value = python_object_creg.invite(resource_ref)
         log.info("Resource value: %s", repr(value))
 
-        if value is None:
-            return htypes.inspect.none_t()
-
-        if inspect.iscoroutine(value):
-            return htypes.inspect.coroutine_t()
-
         if inspect.isgenerator(value):
             log.info("Expanding generator: %r", value)
             value = list(value)
 
-        log.info("Get type for value: %s", repr(value))
-        try:
-            t = deduce_complex_value_type(mosaic, types, value)
-        except DeduceTypeError:
-            log.info("Non-data type: %r", value.__class__.__name__)
-            return htypes.inspect.object_t(
-                class_name=value.__class__.__name__,
-                class_module=value.__class__.__module__,
-                )
-
-        log.info("Type is: %r", t)
-
-        if isinstance(t, TRecord):
-            type_name = htypes.inspect.type_name(t.module_name, t.name)
-            return htypes.inspect.record_t(
-                type=type_name,
-            )
-
-        if isinstance(t, TList) and not value:
-            return htypes.inspect.empty_list_t()
-
-        if isinstance(t, TList) and isinstance(t.element_t, TRecord):
-            element_list = []
-            for name, field_t in t.element_t.fields.items():
-                if not isinstance(field_t, TRecord):
-                    # TODO: Just return meta type.
-                    log.warning("Non-record list element fields are not supported (field %r): %s", name, field_t)
-                    return None
-                type_name = htypes.inspect.type_name(field_t.module_name, field_t.name)
-                element = htypes.inspect.item_element(name, type_name)
-                element_list.append(element)
-            return htypes.inspect.list_t(
-                element_list=element_list,
-                )
+        return _value_type(value)
