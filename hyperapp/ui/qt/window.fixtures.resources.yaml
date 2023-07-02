@@ -1,0 +1,36 @@
+# Automatically generated file. Do not edit.
+# Source ref: sha512:50b7dd9827bfeeae82b13c7f3fb4e9f1c5ad115f69e62ccf954703d4a0bed6833b5b79d3fbee7ec5ee0d5a72d6960b11d4015114dbb7e59cb8320b7955b95f91
+# Generator ref: sha512:df7d3987d9c8981944fabf229a5315987826c778d938a41b7e191431f5d2a57bc44240b4acfa196a85466b33ab98a940f7b4493d84c3052f1ac265a71e1b2fcc
+
+import:
+- builtin_service:mosaic
+- common.mark:mark.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.call:call
+- legacy_type.command_pane:command_pane
+- legacy_type.menu_bar:menu_bar
+- legacy_type.window:pos
+- legacy_type.window:size
+- legacy_type.window:window
+associations: []
+definitions:
+  Window.piece.parameter:
+    _type: legacy_type.call:call
+    function: piece
+  piece:
+    _type: legacy_type.builtin:attribute
+    object: window.fixtures.module
+    attr_name: piece
+  window.fixtures.module:
+    _type: legacy_type.builtin:python_module
+    module_name: window.fixtures
+    file_name: window.fixtures.dyn.py
+    import_list:
+      htypes.command_pane.command_pane: legacy_type.command_pane:command_pane
+      htypes.menu_bar.menu_bar: legacy_type.menu_bar:menu_bar
+      htypes.window.pos: legacy_type.window:pos
+      htypes.window.size: legacy_type.window:size
+      htypes.window.window: legacy_type.window:window
+      services.mark: common.mark:mark.service
+      services.mosaic: builtin_service:mosaic
