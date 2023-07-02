@@ -1,5 +1,8 @@
 import inspect
 import logging
+import sys
+from contextlib import contextmanager
+from pathlib import Path
 from types import ModuleType
 
 from hyperapp.common.htypes import HException, TList, TRecord
@@ -8,6 +11,7 @@ from hyperapp.common.htypes.deduce_value_type import DeduceTypeError, deduce_com
 from . import htypes
 from .services import (
     association_reg,
+    hyperapp_dir,
     mosaic,
     types,
     python_object_creg,
@@ -120,13 +124,55 @@ def _value_type(value):
             )
 
 
-def get_resource_type(resource_ref, use_associations):
-    log.info("Get type for resource ref: %s", resource_ref)
+class Tracer:
+
+    def __init__(self, wanted_modules):
+        self._wanted_modules = set(wanted_modules)
+        self._original_tracer = None
+
+    def trace(self, frame, event, arg):
+        if self._original_tracer is not None:
+            # Used by debugger (but still does not work).
+            self._original_tracer(frame, event, arg)
+        if event != 'call':
+            return
+        path = frame.f_code.co_filename
+        suffix = '.dyn.py'
+        if not path.endswith(suffix):
+            return
+        path = Path(path)
+        if not path.is_relative_to(hyperapp_dir):
+            return
+        module = str(path.relative_to(hyperapp_dir))[:-len(suffix)].replace('/', '.')
+        if module not in self._wanted_modules:
+            return
+        code = frame.f_code
+        args = inspect.getargvalues(frame)
+        log.debug("Trace call: %s: %s / %s / %s", frame, args.args, args.varargs, args.keywords)
+        for n in dir(code):
+            if n.startswith('co_'):
+                log.debug("\t%s = %r", n, getattr(code, n))
+
+    @contextmanager
+    def tracing(self):
+        self._original_tracer = sys.gettrace()
+        sys.settrace(self.trace)
+        try:
+            yield
+        finally:
+            sys.settrace(self._original_tracer)
+            self._original_tracer = None
+
+
+def get_resource_type(resource_ref, use_associations, tested_modules):
+    log.info("Get type for resource ref: %s, tested modules: %s", resource_ref, tested_modules)
 
     with association_reg.associations_registered(use_associations):
 
-        value = python_object_creg.invite(resource_ref)
-        log.info("Resource value: %s", repr(value))
+        tracer = Tracer(tested_modules)
+        with tracer.tracing():
+            value = python_object_creg.invite(resource_ref)
+            log.info("Resource value: %s", repr(value))
 
         if inspect.isgenerator(value):
             log.info("Expanding generator: %r", value)

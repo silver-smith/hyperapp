@@ -1,5 +1,6 @@
 import:
   - builtin_service:association_reg
+  - builtin_service:hyperapp_dir
   - builtin_service:mosaic
   - builtin_service:types
   - builtin_service:python_object_creg
@@ -43,6 +44,7 @@ definitions:
       htypes.inspect.empty_list_t: legacy_type.inspect:empty_list_t
       htypes.inspect.coroutine_t: legacy_type.inspect:coroutine_t
       services.association_reg: builtin_service:association_reg
+      services.hyperapp_dir: builtin_service:hyperapp_dir
       services.mosaic: builtin_service:mosaic
       services.types: builtin_service:types
       services.python_object_creg: builtin_service:python_object_creg
