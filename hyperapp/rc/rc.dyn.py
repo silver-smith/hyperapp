@@ -624,7 +624,7 @@ class SourceFile:
         for imp in import_set:
             if len(imp) < 3:
                 continue
-            kind, module, name = imp
+            kind, module, name, *_ = imp
             if kind != 'htypes':
                 continue
             used_types.add((module, name))
