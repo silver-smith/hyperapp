@@ -14,6 +14,7 @@ import:
   - legacy_type.inspect:type_name
   - legacy_type.inspect:item_element
   - legacy_type.inspect:none_t
+  - legacy_type.inspect:primitive_t
   - legacy_type.inspect:object_t
   - legacy_type.inspect:record_t
   - legacy_type.inspect:list_t
@@ -38,6 +39,7 @@ definitions:
       htypes.inspect.type_name: legacy_type.inspect:type_name
       htypes.inspect.item_element: legacy_type.inspect:item_element
       htypes.inspect.none_t: legacy_type.inspect:none_t
+      htypes.inspect.primitive_t: legacy_type.inspect:primitive_t
       htypes.inspect.object_t: legacy_type.inspect:object_t
       htypes.inspect.record_t: legacy_type.inspect:record_t
       htypes.inspect.list_t: legacy_type.inspect:list_t

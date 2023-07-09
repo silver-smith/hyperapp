@@ -5,7 +5,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from types import ModuleType
 
-from hyperapp.common.htypes import HException, TList, TRecord
+from hyperapp.common.htypes import HException, TPrimitive, TList, TRecord
 from hyperapp.common.htypes.deduce_value_type import DeduceTypeError, deduce_complex_value_type, safe_repr
 
 from . import htypes
@@ -99,6 +99,9 @@ def _value_type(value):
             )
 
     log.info("Type is: %r", t)
+
+    if isinstance(t, TPrimitive):
+        return htypes.inspect.primitive_t(t.name)
 
     if isinstance(t, TRecord):
         type_name = htypes.inspect.type_name(t.module_name, t.name)

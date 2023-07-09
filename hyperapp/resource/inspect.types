@@ -27,6 +27,9 @@ item_element = record:
 
 none_t = record
 
+primitive_t = record:
+  name: string
+
 object_t = record:
   class_name: string
   class_module: string
