@@ -136,6 +136,7 @@ class Tracer:
     def trace(self, frame, event, arg):
         if self._original_tracer is not None:
             # Used by debugger (but still does not work).
+            # See also: pydevd.GetGlobalDebugger().
             self._original_tracer(frame, event, arg)
         if event != 'call':
             return
