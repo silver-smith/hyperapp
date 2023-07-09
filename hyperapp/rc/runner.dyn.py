@@ -98,7 +98,7 @@ def _value_type(value):
             class_module=value.__class__.__module__,
             )
 
-    log.info("Type is: %r", t)
+    log.info("Type for %s is: %r", safe_repr(value), t)
 
     if isinstance(t, TPrimitive):
         return htypes.inspect.primitive_t(t.name)
