@@ -127,7 +127,10 @@ def _value_type(value):
 class Tracer:
 
     def __init__(self, wanted_modules):
-        self._wanted_modules = set(wanted_modules)
+        self._wanted_paths = {
+            str(hyperapp_dir.joinpath(name.replace('.', '/') + '.dyn.py'))
+            for name in wanted_modules
+            }
         self._original_tracer = None
 
     def trace(self, frame, event, arg):
@@ -137,14 +140,7 @@ class Tracer:
         if event != 'call':
             return
         path = frame.f_code.co_filename
-        suffix = '.dyn.py'
-        if not path.endswith(suffix):
-            return
-        path = Path(path)
-        if not path.is_relative_to(hyperapp_dir):
-            return
-        module = str(path.relative_to(hyperapp_dir))[:-len(suffix)].replace('/', '.')
-        if module not in self._wanted_modules:
+        if not path in self._wanted_paths:
             return
         code = frame.f_code
         args = inspect.getargvalues(frame)
