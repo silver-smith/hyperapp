@@ -37,6 +37,10 @@ def safe_repr(obj):
         return f"__repr__ failed: {x}"
 
 
+def _is_named_tuple(value):
+    return all(hasattr(value, field) for field in ['_fields', '_field_defaults', '_replace', '_make'])
+
+
 def deduce_value_type(value):
     t = _primitive_types.get(type(value))
     if t:
@@ -44,7 +48,7 @@ def deduce_value_type(value):
     t = getattr(value, '_t', None)
     if isinstance(t, (TRecord, TException)):
         return t
-    if isinstance(value, (list, tuple)):
+    if isinstance(value, (list, tuple)) and not _is_named_tuple(value):
         if value:
             element_t = deduce_value_type(value[0])
         else:
@@ -70,6 +74,8 @@ def _deduce_list_type(mosaic, types, value):
 
 
 def deduce_complex_value_type(mosaic, types, value):
-    if isinstance(value, (list, tuple)) and not hasattr(value, '_t'):
+    if (isinstance(value, (list, tuple))
+        and not _is_named_tuple(value)
+        and not hasattr(value, '_t')):
         return _deduce_list_type(mosaic, types, value)
     return deduce_value_type(value)
