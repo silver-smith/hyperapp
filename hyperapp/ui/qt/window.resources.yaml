@@ -1,6 +1,4 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:6128ae9a57e523a2d3ea45e68876834e470ee351b0e85944486e3808044981b274fa45698b078d6a0f3338ce7a9dbbd6c6e0553d34b0caeac694292285d26204
-# Generator ref: sha512:c8895295a937d51f76f2286209807eca5b2a2b2e5f232d78025ef52549859dd1d8e57bf06b953ac3d92f3e54a731764c56f59122db90afc273cc416a5326e52f
 
 import:
 - legacy_type.builtin:python_module

@@ -1,6 +1,4 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:22392765196f5842f8c44795ae4ea98b213869bfc3f4cd8d3aa71f893bbeaeadbcb4344d6efb65f81bddb2877bbc666f31af087d58a62364b92ff6df94c0a063
-# Generator ref: sha512:df7d3987d9c8981944fabf229a5315987826c778d938a41b7e191431f5d2a57bc44240b4acfa196a85466b33ab98a940f7b4493d84c3052f1ac265a71e1b2fcc
 
 import:
 - builtin_service:mosaic

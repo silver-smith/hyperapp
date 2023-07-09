@@ -1,6 +1,4 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:3380babde6ec4b7d7a26d8268a07f2d3b721a7a78206d59be8d76518d0f53c9b816fca3f556cc9fd4f3c000409e85351aedd4649a011e76a4c10927521be0241
-# Generator ref: sha512:df7d3987d9c8981944fabf229a5315987826c778d938a41b7e191431f5d2a57bc44240b4acfa196a85466b33ab98a940f7b4493d84c3052f1ac265a71e1b2fcc
 
 import:
 - common.mark:mark.service

@@ -1,6 +1,4 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:8e8009e1ded83d49534abfa23a5b5a98ec70cb0a73c48b5cef27e8f332d599a672ff3af3e453e84e3f281e4bde2fd3d40f926e4b670aec3b9c0c361ce655961a
-# Generator ref: sha512:df7d3987d9c8981944fabf229a5315987826c778d938a41b7e191431f5d2a57bc44240b4acfa196a85466b33ab98a940f7b4493d84c3052f1ac265a71e1b2fcc
 
 import:
 - builtin_service:types

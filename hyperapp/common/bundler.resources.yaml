@@ -1,6 +1,4 @@
 # Automatically generated file. Do not edit.
-# Source ref: sha512:7624a948a794eada3c95590a86b1299035361da7aa9c93e20aa64aa201e07e9586de0d8faf8bbde927b312224f7e0827f77a66b906dfdf48383e16ded5248949
-# Generator ref: sha512:df7d3987d9c8981944fabf229a5315987826c778d938a41b7e191431f5d2a57bc44240b4acfa196a85466b33ab98a940f7b4493d84c3052f1ac265a71e1b2fcc
 
 import:
 - builtin_service:association_reg
