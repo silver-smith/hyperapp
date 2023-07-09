@@ -145,10 +145,17 @@ class Tracer:
             return
         code = frame.f_code
         args = inspect.getargvalues(frame)
-        log.debug("Trace call: %s: %s / %s / %s", frame, args.args, args.varargs, args.keywords)
-        for n in dir(code):
-            if n.startswith('co_'):
-                log.debug("\t%s = %r", n, getattr(code, n))
+        args_dict = {
+            name: self._safe_repr(args.locals[name])
+            for name in args.args
+            }
+        log.debug("Trace call: %s: %s", frame, repr(args_dict))
+
+    def _safe_repr(self, obj):
+        try:
+            return repr(obj)
+        except Exception as x:
+            return f"__repr__ failed: {x}"
 
     @contextmanager
     def tracing(self):
