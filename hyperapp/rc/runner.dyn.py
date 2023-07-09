@@ -150,12 +150,12 @@ class Tracer:
             name: safe_repr(args.locals[name])
             for name in args.args
             }
-        log.debug("Trace call: %s:%d %r: %s", module_name, code.co_firstlineno, code.co_name, repr(args_dict))
+        log.debug("Trace call: %s:%d %r: %s", module_name, code.co_firstlineno, code.co_qualname, repr(args_dict))
         args_types = {
             name: _value_type(args.locals[name])
             for name in args.args
             }
-        log.debug("Trace call: types: %s", repr(args_types))
+        log.info("Trace call types: %s:%d %r: %s", module_name, code.co_firstlineno, code.co_qualname, repr(args_types))
 
     @contextmanager
     def tracing(self):
