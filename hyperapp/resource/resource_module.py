@@ -10,9 +10,6 @@ log = logging.getLogger(__name__)
 
 
 AUTO_GEN_LINE = '# Automatically generated file. Do not edit.'
-SOURCE_REF_PREFIX = '# Source ref: '
-GENERATOR_REF_PREFIX = '# Generator ref: '
-
 
 Definition = namedtuple('Definition', 'type value')
 
@@ -66,19 +63,18 @@ class ResourceModule:
 
     @cached_property
     def source_ref_str(self):
-        lines = self._path.read_text().splitlines()
-        if len(lines) >= 2 and lines[1].startswith(SOURCE_REF_PREFIX):
-            return lines[1][len(SOURCE_REF_PREFIX):]
-        else:
-            return None
+        return self._read_hash_line(0)
 
     @cached_property
     def generator_ref_str(self):
-        lines = self._path.read_text().splitlines()
-        if len(lines) >= 3 and lines[2].startswith(GENERATOR_REF_PREFIX):
-            return lines[2][len(GENERATOR_REF_PREFIX):]
-        else:
+        return self._read_hash_line(1)
+
+    def _read_hash_line(self, idx):
+        path = self._hash_file_path(self._path)
+        if not path.exists():
             return None
+        lines = path.read_text().splitlines()
+        return lines[idx]
 
     def __setitem__(self, name, resource):
         log.info("%s: Set resource %r: %r", self._name, name, resource)
@@ -174,14 +170,17 @@ class ResourceModule:
         yaml_text = yaml.dump(self.as_dict, sort_keys=False)
         lines = [
             AUTO_GEN_LINE,
-            SOURCE_REF_PREFIX + source_ref_str,
-            GENERATOR_REF_PREFIX + generator_ref_str,
             '',
             yaml_text,
             ]
         path.write_text('\n'.join(lines))
+        hash_lines = [source_ref_str, generator_ref_str]
+        self._hash_file_path(path).write_text('\n'.join(hash_lines))
         self._path = path
         self._resource_dir = path.parent
+
+    def _hash_file_path(self, path):
+        return path.with_suffix('.hash')
 
     @property
     def as_dict(self):
