@@ -32,7 +32,7 @@ def collect_attributes(object_ref):
         while True:
             if not original_error.__context__:
                 if (isinstance(original_error, TypeError)
-                    and str(original_error) == '__init__() takes 3 positional arguments but 4 were given'):
+                    and str(original_error) == 'DiscovererObject.__init__() takes 3 positional arguments but 4 were given'):
                     # Class based on one imported from .code, which is DiscovererObject?
                     raise htypes.import_discoverer.using_incomplete_object(
                         "Suspected usage of incomplete base class for deriving from it")
