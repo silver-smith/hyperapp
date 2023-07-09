@@ -6,7 +6,7 @@ from pathlib import Path
 from types import ModuleType
 
 from hyperapp.common.htypes import HException, TList, TRecord
-from hyperapp.common.htypes.deduce_value_type import DeduceTypeError, deduce_complex_value_type
+from hyperapp.common.htypes.deduce_value_type import DeduceTypeError, deduce_complex_value_type, safe_repr
 
 from . import htypes
 from .services import (
@@ -88,7 +88,7 @@ def _value_type(value):
     if inspect.iscoroutine(value):
         return htypes.inspect.coroutine_t()
 
-    log.info("Get type for value: %s", repr(value))
+    log.debug("Get type for value: %s", safe_repr(value))
     try:
         t = deduce_complex_value_type(mosaic, types, value)
     except DeduceTypeError:
@@ -146,16 +146,15 @@ class Tracer:
         code = frame.f_code
         args = inspect.getargvalues(frame)
         args_dict = {
-            name: self._safe_repr(args.locals[name])
+            name: safe_repr(args.locals[name])
             for name in args.args
             }
         log.debug("Trace call: %s: %s", frame, repr(args_dict))
-
-    def _safe_repr(self, obj):
-        try:
-            return repr(obj)
-        except Exception as x:
-            return f"__repr__ failed: {x}"
+        args_types = {
+            name: _value_type(args.locals[name])
+            for name in args.args
+            }
+        log.debug("Trace call: types: %s", repr(args_types))
 
     @contextmanager
     def tracing(self):

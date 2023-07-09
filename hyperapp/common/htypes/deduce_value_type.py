@@ -29,6 +29,14 @@ _primitive_types = {
     }
 
 
+
+def safe_repr(obj):
+    try:
+        return repr(obj)
+    except Exception as x:
+        return f"__repr__ failed: {x}"
+
+
 def deduce_value_type(value):
     t = _primitive_types.get(type(value))
     if t:
@@ -42,7 +50,7 @@ def deduce_value_type(value):
         else:
             element_t = tNone
         return primitive_list_types[element_t]  # Use deduce_complex_value_type for non-primitive-element lists.
-    raise DeduceTypeError(f"Unable to deduce type for {value!r} (t: {t!r}). Use explicit type parameter.")
+    raise DeduceTypeError(f"Unable to deduce type for {safe_repr(value)} (t: {t!r}). Use explicit type parameter.")
 
 
 def _deduce_list_type(mosaic, types, value):
