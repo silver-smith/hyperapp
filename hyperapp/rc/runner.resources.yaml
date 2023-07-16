@@ -8,6 +8,8 @@ import:
   - legacy_type.call:call
   - legacy_type.import_discoverer:using_incomplete_object
   - legacy_type.inspect:attr
+  - legacy_type.inspect:call_param
+  - legacy_type.inspect:call_trace
   - legacy_type.inspect:fn_attr
   - legacy_type.inspect:generator_fn_attr
   - legacy_type.inspect:object_info
@@ -16,6 +18,7 @@ import:
   - legacy_type.inspect:none_t
   - legacy_type.inspect:primitive_t
   - legacy_type.inspect:object_t
+  - legacy_type.inspect:object_type_info
   - legacy_type.inspect:record_t
   - legacy_type.inspect:list_t
   - legacy_type.inspect:empty_list_t
@@ -33,6 +36,8 @@ definitions:
     import_list:
       htypes.import_discoverer.using_incomplete_object: legacy_type.import_discoverer:using_incomplete_object
       htypes.inspect.attr: legacy_type.inspect:attr
+      htypes.inspect.call_param: legacy_type.inspect:call_param
+      htypes.inspect.call_trace: legacy_type.inspect:call_trace
       htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
       htypes.inspect.generator_fn_attr: legacy_type.inspect:generator_fn_attr
       htypes.inspect.object_info: legacy_type.inspect:object_info
@@ -41,6 +46,7 @@ definitions:
       htypes.inspect.none_t: legacy_type.inspect:none_t
       htypes.inspect.primitive_t: legacy_type.inspect:primitive_t
       htypes.inspect.object_t: legacy_type.inspect:object_t
+      htypes.inspect.object_type_info: legacy_type.inspect:object_type_info
       htypes.inspect.record_t: legacy_type.inspect:record_t
       htypes.inspect.list_t: legacy_type.inspect:list_t
       htypes.inspect.empty_list_t: legacy_type.inspect:empty_list_t

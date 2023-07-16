@@ -135,6 +135,7 @@ class Tracer:
             for name in wanted_modules
             }
         self._original_tracer = None
+        self.calls = []
 
     def trace(self, frame, event, arg):
         if self._original_tracer is not None:
@@ -159,6 +160,18 @@ class Tracer:
             for name in args.args
             }
         log.info("Trace call types: %s:%d %r: %s", module_name, code.co_firstlineno, code.co_qualname, repr(args_types))
+        params = [
+            htypes.inspect.call_param(name, mosaic.put(t))
+            for name, t in args_types.items()
+            ]
+        self.calls.append(
+            htypes.inspect.call_trace(
+                module=module_name,
+                line_no=code.co_firstlineno,
+                fn_qual_name=code.co_qualname,
+                params=params,
+                )
+            )
 
     @contextmanager
     def tracing(self):
@@ -185,4 +198,8 @@ def get_resource_type(resource_ref, use_associations, tested_modules):
             log.info("Expanding generator: %r", value)
             value = list(value)
 
-        return _value_type(value)
+        t = _value_type(value)
+        return htypes.inspect.object_type_info(
+            t=mosaic.put(t),
+            calls=tracer.calls,
+            )

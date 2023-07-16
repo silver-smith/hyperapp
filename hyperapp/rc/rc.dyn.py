@@ -546,12 +546,14 @@ class SourceFile:
 
         _log.info("Retrieving type for: %s %s; %s", self.name, attr_path_str, call_res)
         get_resource_type = process.rpc_call(runner.get_resource_type)
-        result_t = get_resource_type(resource_ref=mosaic.put(call_res), use_associations=ass_list, tested_modules=tested_modules)
+        object_type_info = get_resource_type(resource_ref=mosaic.put(call_res), use_associations=ass_list, tested_modules=tested_modules)
+        result_t = web.summon(object_type_info.t)
         _log.info("Retrieved type for: %s %s: %r", self.name, attr_path_str, result_t)
 
         if isinstance(result_t, htypes.inspect.coroutine_t):
             async_run = htypes.async_run.async_run(mosaic.put(call_res))
-            result_t = get_resource_type(resource_ref=mosaic.put(async_run), use_associations=ass_list, tested_modules=tested_modules)
+            object_type_info = get_resource_type(resource_ref=mosaic.put(async_run), use_associations=ass_list, tested_modules=tested_modules)
+            result_t = web.summon(object_type_info.t)
             _log.info("Retrieved async call type for: %s %s: %r", self.name, attr_path_str, result_t)
 
         return (call_res, result_t)
@@ -707,7 +709,8 @@ class SourceFile:
     def _pick_and_check_piece_type(self, process, custom_types, fixtures_file, object_name):
         fixture = self._parameter_fixture(fixtures_file, [object_name, 'piece'])
         get_resource_type = process.rpc_call(runner.get_resource_type)
-        piece_t = get_resource_type(resource_ref=mosaic.put(fixture), use_associations=[], tested_modules=[])
+        object_type_info = get_resource_type(resource_ref=mosaic.put(fixture), use_associations=[], tested_modules=[])
+        piece_t = web.summon(object_type_info.t)
         _log.info("%s %s piece type: %r", self.name, object_name, piece_t)
         if not isinstance(piece_t, htypes.inspect.record_t):
             raise RuntimeError(

@@ -43,3 +43,18 @@ list_t = record:
 empty_list_t = record
 
 coroutine_t = record
+
+
+call_param = record:
+  name: string
+  t: ref
+
+call_trace = record:
+  module: string
+  line_no: int
+  fn_qual_name: string
+  params: call_param list
+
+object_type_info = record:
+  t: ref
+  calls: call_trace list
