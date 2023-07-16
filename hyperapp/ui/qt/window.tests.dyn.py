@@ -1,7 +1,7 @@
 from PySide6 import QtWidgets
 
 from . import htypes
-from .tested.code.window import Window
+from .tested.code.window import WindowCtl
 from .services import (
     mosaic,
     )
@@ -17,6 +17,7 @@ def test_window():
         )
     app = QtWidgets.QApplication()
     try:
-        w = Window(piece)
+        w = WindowCtl(piece)
+        w.construct_widget(ctx=None)
     finally:
         app.shutdown()
