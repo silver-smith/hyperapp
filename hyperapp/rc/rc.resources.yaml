@@ -14,7 +14,6 @@ import:
 - builtin_service:type_module_loader
 - builtin_service:types
 - builtin_service:web
-- legacy_type.async_run:async_run
 - legacy_type.attr_constructors:service
 - legacy_type.builtin:attribute
 - legacy_type.call:call
@@ -56,7 +55,6 @@ definitions:
     import_list:
       code.utils: rc.utils:utils.module
       code.runner: rc.runner:runner.module
-      htypes.async_run.async_run: legacy_type.async_run:async_run
       htypes.attr_constructors.service: legacy_type.attr_constructors:service
       htypes.builtin.attribute: legacy_type.builtin:attribute
       htypes.call.call: legacy_type.call:call

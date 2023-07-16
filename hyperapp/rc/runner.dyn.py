@@ -199,6 +199,12 @@ def get_resource_type(resource_ref, use_associations, tested_modules):
             value = list(value)
 
         t = _value_type(value)
+
+        if isinstance(t, htypes.inspect.coroutine_t):
+            assert 0, "TODO: Implement async run in runner"
+            async_run = htypes.async_run.async_run(mosaic.put(call_res))
+            return get_resource_type(mosaic.put(async_run), use_associations, tested_modules)
+
         return htypes.inspect.object_type_info(
             t=mosaic.put(t),
             calls=tracer.calls,

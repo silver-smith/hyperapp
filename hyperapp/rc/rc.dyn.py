@@ -556,13 +556,6 @@ class SourceFile:
         object_type_info = get_resource_type(resource_ref=mosaic.put(call_res), use_associations=ass_list, tested_modules=tested_modules)
         result_t = web.summon(object_type_info.t)
         _log.info("Retrieved type for: %s %s: %r", self.name, attr_path_str, result_t)
-
-        if isinstance(result_t, htypes.inspect.coroutine_t):
-            async_run = htypes.async_run.async_run(mosaic.put(call_res))
-            object_type_info = get_resource_type(resource_ref=mosaic.put(async_run), use_associations=ass_list, tested_modules=tested_modules)
-            result_t = web.summon(object_type_info.t)
-            _log.info("Retrieved async call type for: %s %s: %r", self.name, attr_path_str, result_t)
-
         return (call_res, result_t)
 
     def _construct_dir(self, custom_types, resource_module, name):
