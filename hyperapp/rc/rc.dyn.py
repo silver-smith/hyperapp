@@ -41,6 +41,13 @@ DepsInfo = namedtuple('DepsInfo', 'uses_modules wants_services wants_code tests_
 ObjectInfo = namedtuple('ObjectInfo', 'dir get_result_t')
 
 
+class TestResults:
+
+    def __init__(self):
+        self.type_import_set = set()
+        self.call_list = []
+
+
 class ReadyStatus(enum.Enum):
     Ready = enum.auto()
     NotReady = enum.auto()
@@ -632,7 +639,7 @@ class SourceFile:
             used_types.add((module, name))
         return used_types
 
-    def _visit_module(self, process, resource_registry, custom_types, type_res_list, tested_module_imports, file_dict, resource_module, fixtures_file):
+    def _visit_module(self, process, resource_registry, custom_types, type_res_list, test_results, file_dict, resource_module, fixtures_file):
         _log.info("%s: Discover type imports", self.module_name)
 
         service_providers = service_provider_modules(file_dict)
@@ -677,8 +684,7 @@ class SourceFile:
         if name_to_imports:
             _log.info("Discovered tested imports: %s", name_to_imports)
             for module_name, imports in name_to_imports.items():
-                import_set = tested_module_imports.setdefault(module_name, set())
-                import_set |= imports
+                test_results[module_name].type_import_set.update(imports)
 
         return (self.source_info.used_types | used_types, object_info_dict)
 
@@ -752,16 +758,16 @@ class SourceFile:
                 ass_list += constructor_creg.invite(ctr_ref, custom_types, resource_module, module_res, attr) or []
         return ass_list
 
-    def construct_resources(self, process, resource_registry, custom_types, type_res_list, tested_module_imports, file_dict, saver):
+    def construct_resources(self, process, resource_registry, custom_types, type_res_list, test_results, file_dict, saver):
         resource_module = resource_module_factory(resource_registry, self.name)
         fixtures_file = file_dict.get(f'{self.module_name}.fixtures')
 
         self._set_resource_module(resource_registry, resource_module)
 
         used_types, object_info_dict = self._visit_module(
-            process, resource_registry, custom_types, type_res_list, tested_module_imports, file_dict, resource_module, fixtures_file)
+            process, resource_registry, custom_types, type_res_list, test_results, file_dict, resource_module, fixtures_file)
         # Add types discovered by tests.
-        used_types |= tested_module_imports.get(self.module_name, set())
+        used_types |= test_results[self.module_name].type_import_set
 
         if self.is_tests:
             self._was_run = True
@@ -904,7 +910,7 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_ti
 
     resource_registry.set_module('builtin_service', builtin_service_resource_loader(resource_registry))
 
-    tested_module_imports = {}  # module name -> type import tuple set
+    test_results = defaultdict(TestResults)  # module name -> TestResults
 
     with subprocess(process_name, resource_dir_list, rpc_timeout) as process:
 
@@ -940,6 +946,6 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_ti
                     continue
                 _log.info("****** #%d Construct resources for: %s  %s", idx, file.module_name, '*'*50)
                 file.construct_resources(
-                    process, resource_registry, custom_types, type_res_list, tested_module_imports, file_dict, saver)
+                    process, resource_registry, custom_types, type_res_list, test_results, file_dict, saver)
                 idx += 1
             round += 1
