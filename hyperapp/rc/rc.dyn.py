@@ -649,8 +649,10 @@ class SourceFile:
         if not isinstance(attr, htypes.inspect.fn_attr):
             return None
         call_res, call_result = self._visit_function(process, fixtures_file, module_res, tested_modules, ass_list, attr, path=[])
+        object_info = None
         if list(attr.param_list) == ['piece'] and call_result and isinstance(call_result.t, htypes.inspect.object_t):
-            return self._visit_object(process, custom_types, resource_module, fixtures_file, ass_list, attr.name, call_res)
+            object_info = self._visit_object(process, custom_types, resource_module, fixtures_file, ass_list, attr.name, call_res)
+        return (call_result.calls if call_result else [], object_info)
 
     def _imports_to_type_set(self, import_set):
         used_types = set()
@@ -689,9 +691,11 @@ class SourceFile:
         module_res = self._make_module_res([*tested_import_list, *recorder_import_list])
 
         object_info_dict = {}
+        call_list = []
         for attr in self.source_info.attr_list:
-            object_info = self._visit_attribute(
+            calls, object_info = self._visit_attribute(
                 process, custom_types, resource_module, fixtures_file, module_res, list(name_to_recorder), ass_list, attr)
+            call_list += calls
             if object_info:
                 object_info_dict[attr.name] = object_info
 
@@ -709,6 +713,7 @@ class SourceFile:
             _log.info("Discovered tested imports: %s", name_to_imports)
             for module_name, imports in name_to_imports.items():
                 test_results[module_name].type_import_set.update(imports)
+                test_results[module_name].call_list.extend(call_list)
 
         return (self.source_info.used_types | used_types, object_info_dict)
 
