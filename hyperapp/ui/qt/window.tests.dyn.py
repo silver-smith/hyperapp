@@ -23,7 +23,7 @@ def test_window():
         )
     app = QtWidgets.QApplication()
     try:
-        w = AppCtl(app_layout)
+        w = AppCtl.from_piece(app_layout)
         w.construct_widget(app_state, ctx=None)
     finally:
         app.shutdown()

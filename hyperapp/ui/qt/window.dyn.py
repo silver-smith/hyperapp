@@ -11,8 +11,13 @@ DUP_OFFSET = htypes.window.pos(150, 50)
 
 class AppCtl:
 
-    def __init__(self, layout):
-        self._window_ctl = WindowCtl(layout.window_layout)
+    @classmethod
+    def from_piece(cls, layout):
+        window_ctl = WindowCtl(layout.window_layout)
+        return cls(window_ctl)
+
+    def __init__(self, window_ctl):
+        self._window_ctl = window_ctl
 
     def construct_widget(self, state, ctx):
         return [
@@ -24,7 +29,7 @@ class AppCtl:
 class WindowCtl:
 
     def __init__(self, layout):
-        super().__init__()
+        pass
 
     def construct_widget(self, state, ctx):
         w = QtWidgets.QMainWindow()
