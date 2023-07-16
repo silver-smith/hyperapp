@@ -7,12 +7,17 @@ size = record:
   w: int
   h: int
 
-window = record:
+layout = record:
   menu_bar_ref: ref
   command_pane_ref: ref
   central_view_ref: ref
+
+state = record:
   size: size
   pos: pos
 
-state = record:
-  window_list: window list
+app_layout = record:
+  window_layout: ref
+
+app_state = record:
+  window_list: ref list
