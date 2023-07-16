@@ -1,7 +1,9 @@
 import enum
 import logging
+import typing
 from collections import defaultdict, namedtuple
 from contextlib import contextmanager
+from dataclasses import dataclass
 from functools import cached_property
 from operator import attrgetter
 
@@ -46,6 +48,35 @@ class TestResults:
     def __init__(self):
         self.type_import_set = set()
         self.call_list = []
+
+
+@dataclass
+class CallTrace:
+
+    module_name: str
+    line_no: int
+    fn_qual_name: str
+    params: dict
+
+    @classmethod
+    def from_piece(cls, piece):
+        params = {
+            p.name: web.summon(p.t)
+            for p in piece.params
+            }
+        return cls(piece.module, piece.line_no, piece.fn_qual_name, params)
+
+
+@dataclass
+class FunctionCallResult:
+
+    t: typing.Any
+    calls: list[CallTrace]
+
+    @classmethod
+    def from_piece(cls, piece):
+        call_list = [CallTrace.from_piece(call) for call in piece.calls]
+        return cls(web.summon(piece.t), call_list)
 
 
 class ReadyStatus(enum.Enum):
@@ -554,9 +585,9 @@ class SourceFile:
         _log.info("Retrieving type for: %s %s; %s", self.name, attr_path_str, call_res)
         get_resource_type = process.rpc_call(runner.get_resource_type)
         object_type_info = get_resource_type(resource_ref=mosaic.put(call_res), use_associations=ass_list, tested_modules=tested_modules)
-        result_t = web.summon(object_type_info.t)
-        _log.info("Retrieved type for: %s %s: %r", self.name, attr_path_str, result_t)
-        return (call_res, result_t)
+        call_result = FunctionCallResult.from_piece(object_type_info)
+        _log.info("Retrieved type for: %s %s: %s; calls=%r", self.name, attr_path_str, call_result.t, call_result.calls)
+        return (call_res, call_result)
 
     def _construct_dir(self, custom_types, resource_module, name):
         dir_name = camel_to_snake(f'{name}_d')
@@ -602,23 +633,23 @@ class SourceFile:
         get_attr = next(attr for attr in attr_list if attr.name == 'get')
         if not isinstance(get_attr, htypes.inspect.fn_attr):
             raise RuntimeError(f"{self.name}: {object_name}.get should be a function")
-        _, get_result_t = self._visit_function(process, fixtures_file, object_res, [], ass_list, get_attr, path=[object_name])
+        _, call_result = self._visit_function(process, fixtures_file, object_res, [], ass_list, get_attr, path=[object_name])
 
         for attr in attr_list:
             if attr.name == 'get':
                 continue
             if not isinstance(attr, htypes.inspect.fn_attr):
                 continue
-            _, result_t = self._visit_function(process, fixtures_file, object_res, [], ass_list, attr, path=[object_name])
+            _ = self._visit_function(process, fixtures_file, object_res, [], ass_list, attr, path=[object_name])
             self._construct_method_command(custom_types, resource_module, object_name, object_dir, attr)
 
-        return ObjectInfo(object_dir, get_result_t)
+        return ObjectInfo(object_dir, call_result.t)
 
     def _visit_attribute(self, process, custom_types, resource_module, fixtures_file, module_res, tested_modules, ass_list, attr):
         if not isinstance(attr, htypes.inspect.fn_attr):
             return None
-        call_res, result_t = self._visit_function(process, fixtures_file, module_res, tested_modules, ass_list, attr, path=[])
-        if list(attr.param_list) == ['piece'] and isinstance(result_t, htypes.inspect.object_t):
+        call_res, call_result = self._visit_function(process, fixtures_file, module_res, tested_modules, ass_list, attr, path=[])
+        if list(attr.param_list) == ['piece'] and call_result and isinstance(call_result.t, htypes.inspect.object_t):
             return self._visit_object(process, custom_types, resource_module, fixtures_file, ass_list, attr.name, call_res)
 
     def _imports_to_type_set(self, import_set):
