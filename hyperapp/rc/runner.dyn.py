@@ -47,7 +47,7 @@ def collect_attributes(object_ref):
         object_module = object.__name__
     else:
         object_module = object.__module__
-    return htypes.inspect.object_attributes(object_module, attr_list)
+    return htypes.inspect.object_info(object_module, attr_list)
 
 
 def _iter_attributes(object):
