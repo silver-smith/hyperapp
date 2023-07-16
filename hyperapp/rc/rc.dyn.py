@@ -64,6 +64,7 @@ class CallTrace:
             p.name: web.summon(p.t)
             for p in piece.params
             }
+        _log.info("Call trace: %s:%d: %s (%s)", piece.module, piece.line_no, piece.fn_qual_name, params)
         return cls(piece.module, piece.line_no, piece.fn_qual_name, params)
 
 
