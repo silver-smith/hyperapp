@@ -13,7 +13,8 @@ class AppCtl:
 
     @classmethod
     def from_piece(cls, layout):
-        window_ctl = WindowCtl(layout.window_layout)
+        window_layout = web.summon(layout.window_layout)
+        window_ctl = WindowCtl.from_piece(window_layout)
         return cls(window_ctl)
 
     def __init__(self, window_ctl):
@@ -28,7 +29,11 @@ class AppCtl:
 
 class WindowCtl:
 
-    def __init__(self, layout):
+    @classmethod
+    def from_piece(cls, layout):
+        return cls()
+
+    def __init__(self):
         pass
 
     def construct_widget(self, state, ctx):
