@@ -40,7 +40,6 @@ _log = logging.getLogger(__name__)
 
 SourceInfo = namedtuple('SourceInfo', 'import_name attr_list provided_services used_types')
 DepsInfo = namedtuple('DepsInfo', 'uses_modules wants_services wants_code tests_services tests_code')
-ObjectInfo = namedtuple('ObjectInfo', 'dir get_result_t')
 
 
 class TestResults:
@@ -590,34 +589,6 @@ class SourceFile:
         _log.info("Retrieved type for: %s %s: %s; calls=%r", self.name, attr_path_str, call_result.t, call_result.calls)
         return (call_res, call_result)
 
-    def _construct_dir(self, custom_types, resource_module, name):
-        dir_name = camel_to_snake(f'{name}_d')
-        dir_t_ref = custom_types[self.name][dir_name]
-        dir_t = types.resolve(dir_t_ref)
-        dir = dir_t()
-        resource_module[dir_name] = dir
-        return dir
-
-    def _construct_method_command(self, custom_types, resource_module, object_name, object_dir, attr):
-        dir = self._construct_dir(custom_types, resource_module, f'{object_name}_{attr.name}')
-
-        command = htypes.impl.method_command_impl(
-            method=attr.name,
-            params=attr.param_list,
-            dir=mosaic.put(dir),
-            )
-        resource_module[f'{object_name}.{attr.name}.command'] = command
-
-        # Called for every command, but results with single resource.
-        object_commands_d = htypes.command.object_commands_d()
-        resource_module['object_commands_d'] = object_commands_d
-
-        association = htypes.lcs.lcs_set_association(
-            dir=(mosaic.put(object_dir), mosaic.put(object_commands_d)),
-            value=mosaic.put(command),
-            )
-        resource_module.add_association(association)
-
     def _visit_object(self, process, custom_types, resource_module, fixtures_file, ass_list, object_name, object_res):
         _log.debug("Collect attributes for: %s.%s", self.module_name, object_name)
         collect_attributes = process.rpc_call(runner.collect_attributes)
@@ -629,12 +600,10 @@ class SourceFile:
             _log.info("Object %s.%s does not have 'get' method; skipping", self.module_name, object_name)
             return None
 
-        object_dir = self._construct_dir(custom_types, resource_module, object_name)
-
         get_attr = next(attr for attr in attr_list if attr.name == 'get')
         if not isinstance(get_attr, htypes.inspect.fn_attr):
             raise RuntimeError(f"{self.name}: {object_name}.get should be a function")
-        _, call_result = self._visit_function(process, fixtures_file, object_res, [], ass_list, get_attr, path=[object_name])
+        _ = self._visit_function(process, fixtures_file, object_res, [], ass_list, get_attr, path=[object_name])
 
         for attr in attr_list:
             if attr.name == 'get':
@@ -642,18 +611,14 @@ class SourceFile:
             if not isinstance(attr, htypes.inspect.fn_attr):
                 continue
             _ = self._visit_function(process, fixtures_file, object_res, [], ass_list, attr, path=[object_name])
-            self._construct_method_command(custom_types, resource_module, object_name, object_dir, attr)
-
-        return ObjectInfo(object_dir, call_result.t)
 
     def _visit_attribute(self, process, custom_types, resource_module, fixtures_file, module_res, tested_modules, ass_list, attr):
         if not isinstance(attr, htypes.inspect.fn_attr):
             return None
         call_res, call_result = self._visit_function(process, fixtures_file, module_res, tested_modules, ass_list, attr, path=[])
-        object_info = None
         if list(attr.param_list) == ['piece'] and call_result and isinstance(call_result.t, htypes.inspect.object_t):
-            object_info = self._visit_object(process, custom_types, resource_module, fixtures_file, ass_list, attr.name, call_res)
-        return (call_result.calls if call_result else [], object_info)
+            self._visit_object(process, custom_types, resource_module, fixtures_file, ass_list, attr.name, call_res)
+        return call_result.calls if call_result else []
 
     def _imports_to_type_set(self, import_set):
         used_types = set()
@@ -691,14 +656,11 @@ class SourceFile:
             ]
         module_res = self._make_module_res([*tested_import_list, *recorder_import_list])
 
-        object_info_dict = {}
         call_list = []
         for attr in self.source_info.attr_list:
-            calls, object_info = self._visit_attribute(
+            calls = self._visit_attribute(
                 process, custom_types, resource_module, fixtures_file, module_res, list(name_to_recorder), ass_list, attr)
             call_list += calls
-            if object_info:
-                object_info_dict[attr.name] = object_info
 
         used_imports = import_recorder.used_imports()
         _log.info("Used import list: %s", used_imports)
@@ -716,7 +678,7 @@ class SourceFile:
                 test_results[module_name].type_import_set.update(imports)
                 test_results[module_name].call_list.extend(call_list)
 
-        return (self.source_info.used_types | used_types, object_info_dict)
+        return self.source_info.used_types | used_types
 
     @staticmethod
     def _types_import_list(type_res_list, used_types):
@@ -728,58 +690,6 @@ class SourceFile:
             htypes.builtin.import_rec(f'htypes.{pair[0]}.{pair[1]}', pair_to_resource_ref[pair])
             for pair in used_types
             }
-
-    def _construct_list_spec(self, custom_types, resource_module, object_name, object_info):
-        key_attribute, key_t_name = pick_key_t(object_info.get_result_t, error_prefix=f"{self.name} {object_name}")
-        key_t_ref = custom_types[key_t_name.module][key_t_name.name]
-        key_t_res = htypes.builtin.legacy_type(key_t_ref)
-        spec = htypes.impl.list_spec(
-            key_attribute=key_attribute,
-            key_t=mosaic.put(key_t_res),
-            dir=mosaic.put(object_info.dir),
-            )
-        resource_module[f'{object_name}.spec'] = spec
-        return spec
-
-    # Assume that constructor attr.param_list == ['piece'] checked before.
-    def _pick_and_check_piece_type(self, process, custom_types, fixtures_file, object_name):
-        fixture = self._parameter_fixture(fixtures_file, [object_name, 'piece'])
-        get_resource_type = process.rpc_call(runner.get_resource_type)
-        object_type_info = get_resource_type(resource_ref=mosaic.put(fixture), use_associations=[], tested_modules=[])
-        piece_t = web.summon(object_type_info.t)
-        _log.info("%s %s piece type: %r", self.name, object_name, piece_t)
-        if not isinstance(piece_t, htypes.inspect.record_t):
-            raise RuntimeError(
-                f"{self.module_name}: {object_name} 'piece' parameter: Expected record type, but got: {piece_t!r}")
-        piece_t_ref = custom_types[piece_t.type.module][piece_t.type.name]
-        piece_t_res = htypes.builtin.legacy_type(piece_t_ref)
-        return piece_t_res
-
-    def _construct_object_impl(self, process, custom_types, resource_module, fixtures_file, module_res, object_name, object_info):
-        if not isinstance(object_info.get_result_t, htypes.inspect.list_t):
-            raise RuntimeError(
-                f"{self.name}: Unsupported {object_name}.get method result type: {object_info.get_result_t!r}")
-        piece_t_res = self._pick_and_check_piece_type(process, custom_types, fixtures_file, object_name)
-        spec = self._construct_list_spec(custom_types, resource_module, object_name, object_info)
-
-        ctr_attribute = htypes.builtin.attribute(
-            object=mosaic.put(module_res),
-            attr_name=object_name,
-            )
-        resource_module[object_name] = ctr_attribute
-
-        impl_association = htypes.impl.impl_association(
-            piece_t=mosaic.put(piece_t_res),
-            ctr_fn=mosaic.put(ctr_attribute),
-            spec=mosaic.put(spec),
-            )
-        resource_module.add_association(impl_association)
-
-        pyobj_association = htypes.builtin.python_object_association(
-            t=mosaic.put(piece_t_res),
-            function=mosaic.put(ctr_attribute),
-            )
-        resource_module.add_association(pyobj_association)
 
     def call_attr_constructors(self, custom_types, resource_module, module_res):
         ass_list = []
@@ -794,7 +704,7 @@ class SourceFile:
 
         self._set_resource_module(resource_registry, resource_module)
 
-        used_types, object_info_dict = self._visit_module(
+        used_types = self._visit_module(
             process, resource_registry, custom_types, type_res_list, test_results, file_dict, resource_module, fixtures_file)
         # Add types discovered by tests.
         used_types |= test_results[self.module_name].type_import_set
@@ -812,8 +722,6 @@ class SourceFile:
         module_res = self._make_module_res(sorted(import_list))
         resource_module[f'{self.name}.module'] = module_res
 
-        for name, object_info in object_info_dict.items():
-            self._construct_object_impl(process, custom_types, resource_module, fixtures_file, module_res, name, object_info)
         ass_list = self.call_attr_constructors(custom_types, resource_module, module_res)
         for ass in ass_list:
             resource_module.add_association(ass)
