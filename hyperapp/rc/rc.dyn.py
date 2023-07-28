@@ -34,6 +34,7 @@ from .services import (
     )
 from .code.utils import camel_to_snake
 from .code import runner
+from .code import ui_ctl
 
 _log = logging.getLogger(__name__)
 
@@ -677,7 +678,10 @@ class SourceFile:
             _log.info("Discovered tested imports: %s", name_to_imports)
             for module_name, imports in name_to_imports.items():
                 test_results[module_name].type_import_set.update(imports)
-                test_results[module_name].call_list.extend(call_list)
+
+        if self.is_tests:
+            for call in call_list:
+                test_results[call.module_name].call_list.append(call)
 
         return self.source_info.used_types | used_types
 
@@ -709,6 +713,7 @@ class SourceFile:
             process, resource_registry, custom_types, type_res_list, test_results, file_dict, resource_module, fixtures_file)
         # Add types discovered by tests.
         used_types |= test_results[self.module_name].type_import_set
+        call_list = test_results[self.module_name].call_list
 
         if self.is_tests:
             self._was_run = True
@@ -723,7 +728,9 @@ class SourceFile:
         module_res = self._make_module_res(sorted(import_list))
         resource_module[f'{self.name}.module'] = module_res
 
-        ass_list = self.call_attr_constructors(custom_types, resource_module, module_res)
+        ass_list = ui_ctl.create_ui_resources(self.module_name, resource_module, call_list)
+
+        ass_list += self.call_attr_constructors(custom_types, resource_module, module_res)
         for ass in ass_list:
             resource_module.add_association(ass)
 

@@ -1,6 +1,7 @@
 import:
 - rc.runner:collect_attributes
 - rc.runner:get_resource_type
+- rc.ui_ctl:ui_ctl.module
 - rc.utils:utils.module
 - builtin_service:builtin_types_as_dict
 - builtin_service:hyperapp_dir
@@ -55,6 +56,7 @@ definitions:
     import_list:
       code.utils: rc.utils:utils.module
       code.runner: rc.runner:runner.module
+      code.ui_ctl: rc.ui_ctl:ui_ctl.module
       htypes.attr_constructors.service: legacy_type.attr_constructors:service
       htypes.builtin.attribute: legacy_type.builtin:attribute
       htypes.call.call: legacy_type.call:call

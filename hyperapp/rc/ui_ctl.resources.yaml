@@ -1,0 +1,11 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.builtin:python_module
+associations: []
+definitions:
+  ui_ctl.module:
+    _type: legacy_type.builtin:python_module
+    module_name: ui_ctl
+    file_name: ui_ctl.dyn.py
+    import_list: {}

@@ -1,0 +1,5 @@
+
+ctl_association = record:
+  piece_t: ref
+  ctr_fn: ref opt
+  command_methods: string list
