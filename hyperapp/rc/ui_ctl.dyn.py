@@ -3,8 +3,13 @@ from collections import defaultdict
 
 log = logging.getLogger(__name__)
 
+from . import htypes
+from .services import (
+    mosaic,
+    )
 
-def create_ui_resources(module_name, resource_registry, call_list):
+
+def create_ui_resources(module_name, resource_module, module_res, call_list):
     qname_to_trace = {}
     for trace in call_list:
         log.debug("Trace for %s %s: %s", module_name, trace.fn_qual_name, trace)
@@ -27,4 +32,14 @@ def create_ui_resources(module_name, resource_registry, call_list):
             # View constructor method.
             class_name, method_name = qname_l
             log.info("View constructor method: %s", qname)
+            class_attribute = htypes.builtin.attribute(
+                object=mosaic.put(module_res),
+                attr_name=class_name,
+            )
+            ctr_attribute = htypes.builtin.attribute(
+                object=mosaic.put(class_attribute),
+                attr_name=method_name,
+            )
+            resource_module[class_name] = class_attribute
+            resource_module[f'{class_name}.{method_name}'] = ctr_attribute
     return []
