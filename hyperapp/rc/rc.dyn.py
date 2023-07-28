@@ -728,7 +728,7 @@ class SourceFile:
         module_res = self._make_module_res(sorted(import_list))
         resource_module[f'{self.name}.module'] = module_res
 
-        ass_list = ui_ctl.create_ui_resources(self.module_name, resource_module, module_res, call_list)
+        ass_list = ui_ctl.create_ui_resources(custom_types, self.module_name, resource_module, module_res, call_list)
 
         ass_list += self.call_attr_constructors(custom_types, resource_module, module_res)
         for ass in ass_list:
