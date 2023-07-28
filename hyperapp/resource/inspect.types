@@ -53,6 +53,7 @@ call_trace = record:
   module: string
   line_no: int
   fn_qual_name: string
+  obj_type: string
   params: call_param list
 
 object_type_info = record:

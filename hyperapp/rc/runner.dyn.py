@@ -137,6 +137,21 @@ class Tracer:
         self._original_tracer = None
         self.calls = []
 
+    @staticmethod
+    def _pick_object(frame):
+        code = frame.f_code
+        if code.co_qualname.startswith(('<', '_')):
+            return None
+        l = code.co_qualname.split('.')
+        obj = frame.f_globals.get(l[0])
+        if obj is None:
+            return None  # It is a class and it is not yet created?
+        for n in l[1:]:
+            if n.startswith(('<', '_')):
+                return None
+            obj = inspect.getattr_static(obj, n)
+        return obj
+
     def trace(self, frame, event, arg):
         if self._original_tracer is not None:
             # Used by debugger (but still does not work).
@@ -149,6 +164,7 @@ class Tracer:
         if not module_name:
             return
         code = frame.f_code
+        obj = self._pick_object(frame)
         args = inspect.getargvalues(frame)
         args_dict = {
             name: safe_repr(args.locals[name])
@@ -169,6 +185,7 @@ class Tracer:
                 module=module_name,
                 line_no=code.co_firstlineno,
                 fn_qual_name=code.co_qualname,
+                obj_type=type(obj).__name__ if obj is not None else '',
                 params=params,
                 )
             )
