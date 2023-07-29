@@ -1,6 +1,8 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtin_service:association_reg
+- builtin_service:python_object_creg
 - builtin_service:types
 - builtin_service:web
 - common.dyn_code_registry:dyn_code_registry.module
@@ -23,6 +25,8 @@ definitions:
     file_name: ui_ctl_registry.dyn.py
     import_list:
       code.dyn_code_registry: common.dyn_code_registry:dyn_code_registry.module
+      services.association_reg: builtin_service:association_reg
       services.mark: common.mark:mark.service
+      services.python_object_creg: builtin_service:python_object_creg
       services.types: builtin_service:types
       services.web: builtin_service:web
