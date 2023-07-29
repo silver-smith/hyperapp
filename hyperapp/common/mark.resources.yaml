@@ -1,5 +1,7 @@
 import:
 - builtin_service:mosaic
+- builtin_service:python_object_creg
+- legacy_type.attr_constructors:meta_association
 - legacy_type.attr_constructors:parameter
 - legacy_type.attr_constructors:service
 - legacy_type.builtin:attribute
@@ -18,12 +20,14 @@ definitions:
     module_name: mark
     file_name: mark.dyn.py
     import_list:
+      htypes.attr_constructors.meta_association: legacy_type.attr_constructors:meta_association
       htypes.attr_constructors.parameter: legacy_type.attr_constructors:parameter
       htypes.attr_constructors.service: legacy_type.attr_constructors:service
       htypes.global_command_ctr.global_command_ctr: legacy_type.global_command_ctr:global_command_ctr
       htypes.object_command_ctr.object_command_ctr: legacy_type.object_command_ctr:object_command_ctr
       code.constants: resource.constants:constants.module
       services.mosaic: builtin_service:mosaic
+      services.python_object_creg: builtin_service:python_object_creg
 
   mark:
     _type: legacy_type.builtin:attribute
