@@ -29,7 +29,7 @@ class LegacyTypeResourceModule:
 
     @property
     def associations(self):
-        return set()
+        return []
 
 
 def legacy_builtin_type_resource_loader(types, builtin_types):

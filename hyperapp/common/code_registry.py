@@ -53,7 +53,7 @@ class CodeRegistry:
                 raise
         fn_res = self._association_reg[self, t]
         try:
-            fn = self._python_object_creg.invite(fn_res)
+            fn = self._python_object_creg.animate(fn_res)
             return self._Rec(fn, args=[], kw={})
         except KeyError as x:
             # Do not let KeyError out - it will be caught by superclass and incorrect error message will be produced.

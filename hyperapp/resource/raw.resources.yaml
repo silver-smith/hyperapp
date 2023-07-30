@@ -1,13 +1,19 @@
 import:
+- builtin_service:python_object_creg
 - builtin_service:web
 - legacy_type.builtin:attribute
-- legacy_type.builtin:python_object_association
 - legacy_type.builtin:python_module
 - legacy_type.raw:raw
+
 associations:
-- _type: legacy_type.builtin:python_object_association
-  t: legacy_type.raw:raw
-  function: python_object
+
+- bases:
+  - legacy_type.raw:raw
+  key:
+  - builtin_service:python_object_creg
+  - legacy_type.raw:raw
+  value: python_object
+
 definitions:
   raw.module:
     _type: legacy_type.builtin:python_module

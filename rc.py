@@ -56,6 +56,7 @@ def main():
         resource_list_loader(resource_dir_list, resource_registry)
         resource_registry.update_modules(legacy_type_resource_loader({**builtin_types_as_dict(), **local_types}))
 
+        association_reg.register_association_list(resource_registry.get_module('resource.call').associations)
         association_reg.register_association_list(resource_registry.associations)
         fn_res = resource_registry['rc.rc', 'compile_resources']
         fn_ref = mosaic.put(fn_res)

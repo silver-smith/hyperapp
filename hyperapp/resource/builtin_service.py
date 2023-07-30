@@ -28,7 +28,7 @@ class BuiltinServiceResourceModule:
 
     @property
     def associations(self):
-        return set()
+        return []
 
     def merge_with(self, other):
         assert isinstance(other, BuiltinServiceResourceModule)

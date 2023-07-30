@@ -13,6 +13,7 @@ from .hyper_ref import (
     capsule_t,
     bundle_t,
     )
+from .association import association_t
 from .meta_association import meta_association_t, meta_association_def_t
 from .python_module import import_rec_t, python_module_t, import_rec_def_t, python_module_def_t
 from .meta_type import list_mt
@@ -37,6 +38,7 @@ _builtin_type_list = [
     ref_t,
     capsule_t,
     bundle_t,
+    association_t,
     meta_association_t,
     meta_association_def_t,
     python_object_association_t,

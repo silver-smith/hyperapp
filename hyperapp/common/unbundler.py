@@ -2,14 +2,18 @@
 
 import logging
 
+from hyperapp.common.association_registry import Association
+
 log = logging.getLogger(__name__)
 
 
 class Unbundler:
 
-    def __init__(self, mosaic, association_reg, aux_unbundler_hooks):
+    def __init__(self, web, mosaic, association_reg, python_object_creg, aux_unbundler_hooks):
+        self._web = web
         self._mosaic = mosaic
         self._association_reg = association_reg
+        self._python_object_creg = python_object_creg
         self._aux_unbundler_hooks = aux_unbundler_hooks
 
     def register_bundle(self, bundle):
@@ -27,6 +31,17 @@ class Unbundler:
                     log.debug("Unbundle aux: handled by hook: %s", hook)
                     handled_by_hook = True
             if not handled_by_hook:
-                ass_list.append(decoded_capsule.value)
+                ass_list.append(self._piece_to_ass(decoded_capsule.value))
         self._association_reg.register_association_list(ass_list)
         return ref_set | set(bundle.aux_roots)
+
+    def _piece_to_ass(self, piece):
+        if len(piece.key) == 1:
+            key = self._python_object_creg.invite(piece.key[0])
+        else:
+            key = tuple(self._python_object_creg.invite(ref) for ref in piece.key)
+        return Association(
+            bases=[self._python_object_creg.invite(ref) for ref in piece.bases],
+            key=key,
+            value=self._web.summon(piece.value),
+            )

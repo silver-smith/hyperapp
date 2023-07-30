@@ -8,10 +8,13 @@ import:
 
 associations:
 
-- _type: legacy_type.code_registry:association
-  service: resource.constructor_creg:constructor_creg.service
-  type: legacy_type.code_registry:constructor
-  function: construct
+- bases:
+  - resource.constructor_creg:constructor_creg.service
+  - legacy_type.code_registry:constructor
+  key:
+  - resource.constructor_creg:constructor_creg.service
+  - legacy_type.code_registry:constructor
+  value: construct
 
 definitions:
 

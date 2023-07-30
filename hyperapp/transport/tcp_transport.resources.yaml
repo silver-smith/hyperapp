@@ -18,11 +18,7 @@ import:
 - transport.sync_route_table:route_table.service
 - transport.tcp_utils:tcp_utils.module
 - transport.transport:transport.service
-associations:
-- _type: legacy_type.code_registry:association
-  service: transport.route_registry:route_registry.service
-  type: legacy_type.tcp_transport:route
-  function: route_from_piece
+associations: []
 definitions:
   route_from_piece:
     _type: legacy_type.builtin:attribute

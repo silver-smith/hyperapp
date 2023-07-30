@@ -3,6 +3,7 @@ from datetime import datetime
 import logging
 
 from hyperapp.common.htypes import ref_t, bundle_t
+from hyperapp.common.htypes.association import association_t
 from hyperapp.common.util import is_list_inst
 from hyperapp.common.ref import decode_capsule, ref_repr
 from hyperapp.common.module import Module
@@ -11,6 +12,7 @@ from .services import (
     association_reg,
     mark,
     mosaic,
+    python_object_creg,
     types,
     )
 from .code.visitor import Visitor
@@ -97,9 +99,10 @@ class Bundler(Visitor):
 
     def _collect_aux_refs(self, ref, t, value):
         for obj in [t, value]:
-            for ass in association_reg.pieces_for_base(obj):
-                ass_ref = mosaic.put(ass)
-                log.debug("Bundle aux association %s: %s", ass_ref, ass)
+            for ass in association_reg.base_to_ass_list(obj):
+                piece = self._ass_to_piece(ass)
+                ass_ref = mosaic.put(piece)
+                log.debug("Bundle aux association %s: %s (%s)", ass_ref, ass, piece)
                 self._collected_aux_set.add(ass_ref)
                 self._collected_ref_set.add(ass_ref)  # Should collect from these refs too.
         for hook in _aux_bundler_hooks:
@@ -108,6 +111,23 @@ class Bundler(Visitor):
                 log.debug("Bundle aux by hook %s %s %s: %s", hook, t, value, aux_ref_set)
                 self._collected_aux_set |= aux_ref_set
                 self._collected_ref_set |= aux_ref_set  # Should collect from these refs too.
+
+    @staticmethod
+    def _ass_to_piece(ass):
+        def obj_to_ref(obj):
+            return mosaic.put(
+                python_object_creg.reverse_resolve(obj)
+            )
+
+        if isinstance(ass.key, tuple):
+            key = ass.key
+        else:
+            key = [ass.key]
+        return association_t(
+            bases=[obj_to_ref(obj) for obj in ass.bases],
+            key=[obj_to_ref(piece) for piece in key],
+            value=mosaic.put(ass.value),
+            )
 
 
 @mark.service

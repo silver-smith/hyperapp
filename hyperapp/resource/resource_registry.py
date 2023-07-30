@@ -38,10 +38,10 @@ class ResourceRegistry:
 
     @property
     def associations(self):
-        association_set = set()
+        association_list = []
         for module in self._module_registry.values():
-            association_set |= module.associations
-        return association_set
+            association_list += module.associations
+        return association_list
 
     def set_module(self, name, module):
         self._module_registry[name] = module

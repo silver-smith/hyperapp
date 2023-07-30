@@ -1,20 +1,23 @@
 import:
 - common.mark:mark.module
 - builtin_service:association_reg
+- builtin_service:meta_registry
 - builtin_service:mosaic
 - builtin_service:python_object_creg
 - builtin_service:web
 - legacy_type.builtin:attribute
 - legacy_type.code_registry:association
 - legacy_type.code_registry:constructor
-- legacy_type.builtin:meta_association
 - legacy_type.builtin:python_module
 
 associations:
 
-- _type: legacy_type.builtin:meta_association
-  t: legacy_type.code_registry:association
-  fn: register
+- bases:
+  - legacy_type.code_registry:association
+  key:
+  - builtin_service:meta_registry
+  - legacy_type.code_registry:association
+  value: register
 
 definitions:
 

@@ -97,7 +97,7 @@ class Services(object):
         self.mosaic = Mosaic(self.types)
         self.types.init(self.builtin_types, self.mosaic)
         self.meta_registry = CodeRegistry('meta', self.web, self.types)
-        self.association_reg = AssociationRegistry(self.meta_registry)
+        self.association_reg = AssociationRegistry()
         self.web.add_source(self.mosaic)
         register_builtin_types(self.builtin_types, self.mosaic, self.types)
         self.local_types = {}  # module name -> name -> name_wrapped_mt ref.
@@ -105,13 +105,13 @@ class Services(object):
         self.python_importer = PythonImporter()
         self.python_importer.register_meta_hook()
         self.aux_unbundler_hooks = []
-        self.unbundler = Unbundler(self.mosaic, self.association_reg, self.aux_unbundler_hooks)
         self.resource_type_factory = partial(ResourceType, self.types, self.mosaic, self.web)
         self.resource_type_reg = {}  # resource_t -> ResourceType instance
         self.python_object_creg = CachedCodeRegistry('python_object', self.web, self.types)
         self.meta_registry.init_registries(self.association_reg, self.python_object_creg)
         self.python_object_creg.init_registries(self.association_reg, self.python_object_creg)
         register_meta_association(self.meta_registry, self.python_object_creg)
+        self.unbundler = Unbundler(self.web, self.mosaic, self.association_reg, self.python_object_creg, self.aux_unbundler_hooks)
         self.resource_type_producer = partial(resource_type_producer, self.resource_type_factory, self.resource_type_reg)
         self.resource_type_reg[meta_association_t] = MetaAssociationResourceType()
         self.meta_registry.register_actor(
