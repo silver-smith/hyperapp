@@ -21,6 +21,7 @@ from .pyobj_association import python_object_association_t, python_object_associ
 from .legacy_type import legacy_type_t
 from .builtin_service import builtin_service_t
 from .attribute import attribute_t, attribute_def_t
+from .call import call_t, call_def_t
 
 log = logging.getLogger(__name__)
 
@@ -51,6 +52,8 @@ _builtin_type_list = [
     builtin_service_t,
     attribute_t,
     attribute_def_t,
+    call_t,
+    call_def_t,
     ]
 
 

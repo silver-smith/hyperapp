@@ -36,6 +36,8 @@ from .htypes.builtin_service import builtin_service_t
 from ..resource.builtin_service import builtin_service_python_object, make_builtin_service_resource_module
 from .htypes.attribute import attribute_t
 from ..resource.attribute import AttributeResourceType, attribute_pyobj
+from .htypes.call import call_t
+from ..resource.call import CallResourceType, call_pyobj
 
 log = logging.getLogger(__name__)
 
@@ -146,6 +148,8 @@ class Services(object):
         self.python_object_creg.register_actor(builtin_service_t, builtin_service_python_object, self)
         self.resource_type_reg[attribute_t] = AttributeResourceType()
         self.python_object_creg.register_actor(attribute_t, attribute_pyobj, self.python_object_creg)
+        self.resource_type_reg[call_t] = CallResourceType()
+        self.python_object_creg.register_actor(call_t, call_pyobj, self.python_object_creg)
 
     def stop(self):
         log.info("Stop services.")
