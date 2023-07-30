@@ -582,7 +582,7 @@ class SourceFile:
         else:
             function_res = attr_res
 
-        call_res = htypes.call.call(mosaic.put(function_res))
+        call_res = htypes.builtin.call(mosaic.put(function_res))
 
         _log.info("Retrieving type for: %s %s; %s", self.name, attr_path_str, call_res)
         get_resource_type = process.rpc_call(runner.get_resource_type)

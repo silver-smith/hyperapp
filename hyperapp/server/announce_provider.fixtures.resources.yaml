@@ -7,7 +7,7 @@ import:
 - builtin_service:generate_rsa_identity
 - builtin_service:mosaic
 - legacy_type.builtin:attribute
-- legacy_type.call:call
+- legacy_type.builtin:call
 - legacy_type.builtin:python_module
 associations: []
 definitions:
@@ -20,23 +20,23 @@ definitions:
       services.mark: common.mark:mark.service
       services.mosaic: builtin_service:mosaic
   aux_bundler_hook.ref.parameter:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: ref
   aux_bundler_hook.server_peer_ref.parameter:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: server_peer_ref
   aux_bundler_hook.t.parameter:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: t
   aux_bundler_hook.value.parameter:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: value
   impl_registry:
     _type: legacy_type.builtin:attribute
     object: announce_provider.fixtures.module
     attr_name: impl_registry
   impl_registry.service:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: impl_registry
   ref:
     _type: legacy_type.builtin:attribute

@@ -8,7 +8,7 @@ import:
 - builtin_service:generate_rsa_identity
 - builtin_service:identity_registry
 - legacy_type.builtin:attribute
-- legacy_type.call:call
+- legacy_type.builtin:call
 - legacy_type.builtin:python_module
 associations: []
 definitions:
@@ -26,5 +26,5 @@ definitions:
     object: identity.module
     attr_name: server_identity
   server_identity.service:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: server_identity

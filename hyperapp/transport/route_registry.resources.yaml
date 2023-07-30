@@ -7,7 +7,7 @@ import:
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.call:call
+- legacy_type.builtin:call
 associations: []
 definitions:
   route_registry:
@@ -24,5 +24,5 @@ definitions:
       services.types: builtin_service:types
       services.web: builtin_service:web
   route_registry.service:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: route_registry

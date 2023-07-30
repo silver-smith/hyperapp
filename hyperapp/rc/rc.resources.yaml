@@ -17,7 +17,7 @@ import:
 - builtin_service:web
 - legacy_type.attr_constructors:service
 - legacy_type.builtin:attribute
-- legacy_type.call:call
+- legacy_type.builtin:call
 - legacy_type.command:object_commands_d
 - legacy_type.impl:impl_association
 - legacy_type.impl:list_spec
@@ -59,7 +59,7 @@ definitions:
       code.ui_ctl: rc.ui_ctl:ui_ctl.module
       htypes.attr_constructors.service: legacy_type.attr_constructors:service
       htypes.builtin.attribute: legacy_type.builtin:attribute
-      htypes.call.call: legacy_type.call:call
+      htypes.builtin.call: legacy_type.builtin:call
       htypes.command.object_commands_d: legacy_type.command:object_commands_d
       htypes.impl.impl_association: legacy_type.impl:impl_association
       htypes.impl.list_spec: legacy_type.impl:list_spec

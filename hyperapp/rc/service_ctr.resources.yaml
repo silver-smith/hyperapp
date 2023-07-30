@@ -6,7 +6,7 @@ import:
 - legacy_type.attr_constructors:service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.call:call
+- legacy_type.builtin:call
 - resource.constructor_creg:constructor_creg.service
 associations:
 
@@ -30,7 +30,7 @@ definitions:
     import_list:
       htypes.attr_constructors.service: legacy_type.attr_constructors:service
       htypes.builtin.attribute: legacy_type.builtin:attribute
-      htypes.call.call: legacy_type.call:call
+      htypes.builtin.call: legacy_type.builtin:call
       services.constructor_creg: resource.constructor_creg:constructor_creg.service
       services.mark: common.mark:mark.service
       services.mosaic: builtin_service:mosaic

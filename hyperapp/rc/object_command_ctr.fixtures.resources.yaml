@@ -7,7 +7,7 @@ import:
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.call:call
+- legacy_type.builtin:call
 - legacy_type.inspect:fn_attr
 associations: []
 definitions:
@@ -16,19 +16,19 @@ definitions:
     object: object_command_ctr.fixtures.module
     attr_name: attr
   construct.attr.parameter:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: attr
   construct.custom_types.parameter:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: custom_types
   construct.module_res.parameter:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: module_res
   construct.name_to_res.parameter:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: name_to_res
   construct.piece.parameter:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: piece
   custom_types:
     _type: legacy_type.builtin:attribute

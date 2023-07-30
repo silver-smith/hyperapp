@@ -8,7 +8,7 @@ import:
 - builtin_service:resource_registry
 - builtin_service:types
 - legacy_type.builtin:attribute
-- legacy_type.call:call
+- legacy_type.builtin:call
 - legacy_type.impl:global_command_impl
 - legacy_type.builtin:python_module
 - legacy_type.server_global_commands:server_global_commands
@@ -16,10 +16,10 @@ import:
 associations: []
 definitions:
   ServerGlobalCommands.piece.parameter:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: piece_1
   ServerGlobalCommands.run.current_key.parameter:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: current_key
   current_key:
     _type: legacy_type.builtin:attribute
@@ -30,10 +30,10 @@ definitions:
     object: server_global_commands.fixtures.module
     attr_name: global_command_list
   global_command_list.service:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: global_command_list
   global_command_to_item.piece.parameter:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: piece_2
   piece:
     _type: legacy_type.builtin:attribute

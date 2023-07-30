@@ -7,7 +7,7 @@ import:
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.call:call
+- legacy_type.builtin:call
 associations: []
 definitions:
   identity.module:
@@ -24,26 +24,26 @@ definitions:
     object: identity.module
     attr_name: identity_registry
   identity_registry.service:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: identity_registry
   parcel_registry:
     _type: legacy_type.builtin:attribute
     object: identity.module
     attr_name: parcel_registry
   parcel_registry.service:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: parcel_registry
   peer_registry:
     _type: legacy_type.builtin:attribute
     object: identity.module
     attr_name: peer_registry
   peer_registry.service:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: peer_registry
   signature_registry:
     _type: legacy_type.builtin:attribute
     object: identity.module
     attr_name: signature_registry
   signature_registry.service:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: signature_registry

@@ -13,7 +13,7 @@ def construct(piece, custom_types, name_to_res, module_res, attr):
         attr_name=attr.name,
         )
     name_to_res[attr.name] = attribute
-    service = htypes.call.call(
+    service = htypes.builtin.call(
         function=mosaic.put(attribute),
         )
     name_to_res[f'{piece.name}.service'] = service

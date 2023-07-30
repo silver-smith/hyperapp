@@ -5,16 +5,16 @@
 import:
 - common.mark:mark.service
 - legacy_type.builtin:attribute
-- legacy_type.call:call
+- legacy_type.builtin:call
 - legacy_type.module_list:module_list
 - legacy_type.builtin:python_module
 associations: []
 definitions:
   ModuleList.open.current_key.parameter:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: current_key
   ModuleList.piece.parameter:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: piece
   current_key:
     _type: legacy_type.builtin:attribute

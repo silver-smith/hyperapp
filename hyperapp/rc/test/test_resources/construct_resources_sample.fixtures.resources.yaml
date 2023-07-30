@@ -5,17 +5,17 @@
 import:
 - common.mark:mark.service
 - legacy_type.builtin:attribute
-- legacy_type.call:call
+- legacy_type.builtin:call
 - legacy_type.construct_resources_sample:sample
 - legacy_type.construct_resources_sample:sample_item
 - legacy_type.builtin:python_module
 associations: []
 definitions:
   SampleList.open.current_key.parameter:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: current_key
   SampleList.piece.parameter:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: piece_1
   construct_resources_sample.fixtures.module:
     _type: legacy_type.builtin:python_module
@@ -42,10 +42,10 @@ definitions:
     object: construct_resources_sample.fixtures.module
     attr_name: piece_2
   sample_object_command.piece.parameter:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: piece_2
   sample_object_command.view_state.parameter:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: view_state
   view_state:
     _type: legacy_type.builtin:attribute

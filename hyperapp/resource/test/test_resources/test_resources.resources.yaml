@@ -7,7 +7,7 @@ import:
   - mock_identity:mock_identity.service
   - legacy_type.builtin:attribute
   - legacy_type.partial:partial
-  - legacy_type.call:call
+  - legacy_type.builtin:call
   - legacy_type.resource_service:list_service
   - legacy_type.test_resources:test_d
 
@@ -28,7 +28,7 @@ definitions:
       rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
 
   sample_servant:
-    _type: legacy_type.call:call
+    _type: legacy_type.builtin:call
     function: sample_servant_partial
 
   servant_list:
