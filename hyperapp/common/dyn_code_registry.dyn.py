@@ -1,5 +1,3 @@
-from functools import cached_property
-
 from hyperapp.common.code_registry import CodeRegistry
 from hyperapp.common.association_registry import Association
 
@@ -9,6 +7,7 @@ from .services import (
     mosaic,
     python_object_creg,
     web,
+    types,
     )
 from .code.mark import add_fn_module_constructor
 
@@ -24,6 +23,10 @@ def register(piece):
 
 class DynCodeRegistry(CodeRegistry):
 
+    def __init__(self, produce_name):
+        super().__init__(produce_name, web, types)
+        self.init_registries(association_reg, python_object_creg)
+
     def actor(self, t):
         def register(fn):
             type_res = python_object_creg.reverse_resolve(t)
@@ -36,23 +39,7 @@ class DynCodeRegistry(CodeRegistry):
 
         return register
 
-    @cached_property
-    def _my_resource(self):
-        return python_object_creg.reverse_resolve(self)
-
     def type_registered(self, t):
         if super().type_registered(t):
             return True
         return (self._my_resource, t) in association_reg
-
-    def _resolve_record(self, t):
-        try:
-            return super()._resolve_record(t)
-        except KeyError:
-            fn_res = association_reg[self._my_resource, t]
-            try:
-                fn = python_object_creg.invite(fn_res)
-                return self._Rec(fn, args=[], kw={})
-            except KeyError as x:
-                # Do not let KeyError out - it will be caught by superclass and incorrect error message will be produced.
-                raise RuntimeError(f"{self._produce_name}: Error resolving function for {t!r}, {fn_res}: {x}")

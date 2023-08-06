@@ -36,10 +36,9 @@ class Unbundler:
         return ref_set | set(bundle.aux_roots)
 
     def _piece_to_ass(self, piece):
+        key = tuple(self._web.summon(ref) for ref in piece.key)
         if len(piece.key) == 1:
-            key = self._python_object_creg.invite(piece.key[0])
-        else:
-            key = tuple(self._python_object_creg.invite(ref) for ref in piece.key)
+            [key] = key
         return Association(
             bases=[self._python_object_creg.invite(ref) for ref in piece.bases],
             key=key,

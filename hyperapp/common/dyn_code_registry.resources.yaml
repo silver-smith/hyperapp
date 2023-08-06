@@ -5,6 +5,7 @@ import:
 - builtin_service:mosaic
 - builtin_service:python_object_creg
 - builtin_service:web
+- builtin_service:types
 - legacy_type.builtin:attribute
 - legacy_type.code_registry:association
 - legacy_type.code_registry:constructor
@@ -32,6 +33,7 @@ definitions:
       services.mosaic: builtin_service:mosaic
       services.python_object_creg: builtin_service:python_object_creg
       services.web: builtin_service:web
+      services.types: builtin_service:types
 
   register:
     _type: legacy_type.builtin:attribute

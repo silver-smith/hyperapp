@@ -1,6 +1,7 @@
 import inspect
 import logging
 from collections import namedtuple
+from functools import cached_property
 
 from .htypes import ref_t
 from .htypes.deduce_value_type import deduce_value_type
@@ -25,6 +26,10 @@ class CodeRegistry:
     def init_registries(self, association_reg, python_object_creg):
         self._association_reg = association_reg
         self._python_object_creg = python_object_creg
+
+    @cached_property
+    def _my_resource(self):
+        return self._python_object_creg.reverse_resolve(self)
 
     def type_registered(self, t):
         return t in self._registry
@@ -51,7 +56,8 @@ class CodeRegistry:
         except KeyError:
             if not self._association_reg:
                 raise
-        fn_res = self._association_reg[self, t]
+        t_res = self._python_object_creg.reverse_resolve(t)
+        fn_res = self._association_reg[self._my_resource, t_res]
         try:
             fn = self._python_object_creg.animate(fn_res)
             return self._Rec(fn, args=[], kw={})

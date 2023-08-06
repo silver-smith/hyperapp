@@ -125,7 +125,7 @@ class Bundler(Visitor):
             key = [ass.key]
         return association_t(
             bases=[obj_to_ref(obj) for obj in ass.bases],
-            key=[obj_to_ref(piece) for piece in key],
+            key=[mosaic.put(piece) for piece in key],
             value=mosaic.put(ass.value),
             )
 

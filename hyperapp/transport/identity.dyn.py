@@ -1,26 +1,24 @@
 from .services import (
     mark,
-    types,
-    web,
     )
 from .code.dyn_code_registry import DynCodeRegistry
 
 
 @mark.service
 def identity_registry():
-    return DynCodeRegistry('identity', web, types)
+    return DynCodeRegistry('identity')
 
 
 @mark.service
 def peer_registry():
-    return DynCodeRegistry('peer', web, types)
+    return DynCodeRegistry('peer')
 
 
 @mark.service
 def signature_registry():
-    return DynCodeRegistry('signature', web, types)
+    return DynCodeRegistry('signature')
 
 
 @mark.service
 def parcel_registry():
-    return DynCodeRegistry('parcel', web, types)
+    return DynCodeRegistry('parcel')

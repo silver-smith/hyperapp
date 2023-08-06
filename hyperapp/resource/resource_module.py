@@ -250,9 +250,9 @@ class ResourceModule:
         ass_list = []
         for ass in self._loaded_associations:
             if isinstance(ass.key, list):
-                key = tuple(self._python_object_creg.animate(piece) for piece in ass.key)
+                key = tuple(ass.key)
             else:
-                key = self._python_object_creg.animate(ass.key)
+                key = ass.key
             ass_list.append(Association(
                 bases=[self._python_object_creg.animate(piece) for piece in ass.bases],
                 key=key,
