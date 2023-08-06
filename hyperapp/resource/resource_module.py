@@ -54,7 +54,7 @@ class ResourceModule:
             definition = self._definition_dict[var_name]
         except KeyError:
             raise KeyError(f"Resource module {self._name!r}: Unknown resource: {var_name!r}")
-        piece = definition.type.resolve(definition.value, self._resolve_name, self._resource_dir)
+        piece = definition.type.resolve(definition.value, self._resolve_name_to_ref, self._resource_dir)
         log.info("%s: Loaded resource %r: %s", self._name, var_name, piece)
         return piece
 
@@ -210,7 +210,7 @@ class ResourceModule:
         t = resource_type.resource_t
         return f'legacy_type.{t.module_name}:{t.name}'
 
-    def _resolve_name_to_piece(self, name):
+    def _resolve_name(self, name):
         if ':' in name:
             if name not in self._import_set:
                 raise RuntimeError(f"{self._name}: Full path is not in imports: {name!r}")
@@ -220,9 +220,8 @@ class ResourceModule:
             var_name = name
         return self._resource_registry[module_name, var_name]
 
-    def _resolve_name(self, name):
-        piece = self._resolve_name_to_piece(name)
-        return self._mosaic.put(piece)
+    def _resolve_name_to_ref(self, name):
+        return self._mosaic.put(self._resolve_name(name))
 
     def _resolve_ref(self, resource_ref):
         resource = self._mosaic.resolve_ref(resource_ref).value
@@ -299,7 +298,7 @@ class ResourceModule:
         except KeyError:
             raise RuntimeError(f"{self._name}: definition {name!r} has no '_type' attribute")
         resource_t_res = self._resolve_name(resource_t_name)
-        resource_t = self._python_object_creg.invite(resource_t_res)
+        resource_t = self._python_object_creg.animate(resource_t_res)
         t = self._resource_type_producer(resource_t)
         try:
             value = t.from_dict(data)
@@ -310,17 +309,17 @@ class ResourceModule:
     def _read_association(self, data):
         log.debug("%s: Load association: %s", self._name, data)
         bases = [
-            self._resolve_name_to_piece(base)
+            self._resolve_name(base)
             for base in data.get('bases', [])
             ]
         try:
             if isinstance(data['key'], str):
-                key = self._resolve_name_to_piece(data['key'])
+                key = self._resolve_name(data['key'])
             elif isinstance(data['key'], list):
-                key = [self._resolve_name_to_piece(n) for n in data['key']]
+                key = [self._resolve_name(n) for n in data['key']]
             else:
                 raise RuntimeError(f"{self._name}: Invalid association value: Expected string or list, but got: {data['key']}")
-            value = self._resolve_name_to_piece(data['value'])
+            value = self._resolve_name(data['value'])
         except KeyError as x:
             raise RuntimeError(f"{self._name}: Invalid association: Missing key: {x}. Value: {data}")
         return _Association(bases, key, value)
