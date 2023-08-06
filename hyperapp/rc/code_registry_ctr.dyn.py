@@ -1,6 +1,10 @@
+from hyperapp.common.association_registry import Association
+
 from . import htypes
 from .services import (
     mosaic,
+    python_object_creg,
+    web,
     )
 
 
@@ -9,10 +13,16 @@ def construct(piece, custom_types, name_to_res, module_res, attr):
         object=mosaic.put(module_res),
         attr_name=attr.name,
         )
-    name_to_res[attr.name] = attribute
-    association = htypes.code_registry.association(
-        service=piece.service,
-        type=piece.type,
-        function=mosaic.put(attribute),
+    association = Association(
+        bases=[
+            python_object_creg.invite(piece.service), 
+            python_object_creg.invite(piece.type),
+            ],
+        key=[
+            web.summon(piece.service),
+            web.summon(piece.type),
+            ],
+        value=attribute,
         )
+    name_to_res[attr.name] = attribute
     return [association]
