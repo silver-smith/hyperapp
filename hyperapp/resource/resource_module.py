@@ -115,6 +115,7 @@ class ResourceModule:
 
     def add_association(self, resource):
         log.info("%s: Add association: %r", self._name, resource)
+        assert 0, resource
         t, definition = self._resource_to_definition(resource)
         self.add_association_def(t, definition)
 
@@ -187,12 +188,11 @@ class ResourceModule:
 
     @property
     def as_dict(self):
-        assert 0
         return {
             'import': sorted(self._import_set),
             'associations': [
-                self._definition_as_dict(d)
-                for d in sorted(self._association_list)
+                self._association_as_dict(ass)
+                for ass in sorted(self._association_list)
                 ],
             'definitions': {
                 name: self._definition_as_dict(d)
@@ -205,6 +205,18 @@ class ResourceModule:
             '_type': self._resource_type_name(definition.type),
             **definition.type.to_dict(definition.value),
             }
+
+    def _association_as_dict(self, ass):
+        key = ass.key
+        if len(key) == 1:
+            [key] = key
+        d = {
+            'key': key,
+            'value': ass.value,
+            }
+        if ass.bases:
+            d['bases'] = ass.bases
+        return d
 
     def _resource_type_name(self, resource_type):
         t = resource_type.resource_t
@@ -246,22 +258,23 @@ class ResourceModule:
     @property
     def _association_list(self):
         self._ensure_loaded()
-        ass_list = []
-        for ass in self._loaded_associations:
-            if isinstance(ass.key, list):
-                key = tuple(ass.key)
-            else:
-                key = ass.key
-            ass_list.append(Association(
-                bases=[self._python_object_creg.animate(piece) for piece in ass.bases],
-                key=key,
-                value=ass.value,
-                ))
-        return ass_list
+        return self._loaded_associations
 
     @property
     def associations(self):
-        return self._association_list
+        ass_list = []
+        for ass in self._association_list:
+            bases, key, value = self._resolve_association(ass)
+            if len(key) == 1:
+                [key] = key
+            else:
+                key = tuple(key)
+            ass_list.append(Association(
+                bases=[self._python_object_creg.animate(piece) for piece in bases],
+                key=key,
+                value=value,
+                ))
+        return ass_list
 
     def _ensure_loaded(self):
         if self._loaded_definitions is None:
@@ -308,21 +321,26 @@ class ResourceModule:
 
     def _read_association(self, data):
         log.debug("%s: Load association: %s", self._name, data)
-        bases = [
-            self._resolve_name(base)
-            for base in data.get('bases', [])
-            ]
+        bases = data.get('bases', [])
         try:
-            if isinstance(data['key'], str):
-                key = self._resolve_name(data['key'])
-            elif isinstance(data['key'], list):
-                key = [self._resolve_name(n) for n in data['key']]
-            else:
-                raise RuntimeError(f"{self._name}: Invalid association value: Expected string or list, but got: {data['key']}")
-            value = self._resolve_name(data['value'])
+            key = data['key']
+            value = data['value']
         except KeyError as x:
             raise RuntimeError(f"{self._name}: Invalid association: Missing key: {x}. Value: {data}")
-        return _Association(bases, key, value)
+        if isinstance(key, str):
+            key = [key]
+        elif not isinstance(key, list):
+            raise RuntimeError(f"{self._name}: Invalid association value: Expected string or list, but got: {key}")
+        ass = _Association(bases, key, value)
+        _ = self._resolve_association(ass)
+        return ass
+
+    def _resolve_association(self, ass):
+        return (
+            [self._resolve_name(b) for b in ass.bases],
+            [self._resolve_name(n) for n in ass.key],
+            self._resolve_name(ass.value),
+            )
 
 
 def load_resource_modules(resource_module_factory, resource_dir, resource_registry):
