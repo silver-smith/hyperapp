@@ -113,11 +113,21 @@ class ResourceModule:
                 services.add(l[0])
         return services
 
-    def add_association(self, resource):
-        log.info("%s: Add association: %r", self._name, resource)
-        assert 0, resource
-        t, definition = self._resource_to_definition(resource)
-        self.add_association_def(t, definition)
+    def add_association(self, ass):
+        log.info("%s: Add association: %r", self._name, ass)
+        bases = [
+            self._python_object_creg.reverse_resolve(b)
+            for b in ass.bases
+            ]
+        key = ass.key
+        if type(key) not in {tuple, list}:
+            key = [key]
+        base_names = [self._reverse_resolve(b) for b in bases]
+        self._association_list.append(_Association(
+            bases=[self._reverse_resolve(b) for b in bases],
+            key=[self._reverse_resolve(k) for k in key],
+            value=self._reverse_resolve(ass.value),
+            ))
 
     def _resource_to_definition(self, resource):
         resource_t = deduce_value_type(resource)
@@ -210,13 +220,14 @@ class ResourceModule:
         key = ass.key
         if len(key) == 1:
             [key] = key
-        d = {
+        d = {}
+        if ass.bases:
+            d['bases'] = ass.bases
+        return {
+            **d,
             'key': key,
             'value': ass.value,
             }
-        if ass.bases:
-            d['bases'] = ass.bases
-        return d
 
     def _resource_type_name(self, resource_type):
         t = resource_type.resource_t
@@ -237,6 +248,9 @@ class ResourceModule:
 
     def _resolve_ref(self, resource_ref):
         resource = self._mosaic.resolve_ref(resource_ref).value
+        return self._reverse_resolve(resource)
+
+    def _reverse_resolve(self, resource):
         module_name, var_name = self._resource_registry.reverse_resolve(resource)
         if module_name == self._name:
             return var_name
