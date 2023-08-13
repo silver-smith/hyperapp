@@ -4,6 +4,7 @@ import:
   - builtin_service:mosaic
   - builtin_service:types
   - builtin_service:python_object_creg
+  - builtin_service:web
   - legacy_type.async_run:async_run
   - legacy_type.builtin:attribute
   - legacy_type.builtin:call
@@ -58,6 +59,7 @@ definitions:
       services.mosaic: builtin_service:mosaic
       services.types: builtin_service:types
       services.python_object_creg: builtin_service:python_object_creg
+      services.web: builtin_service:web
       constants: resource.constants:constants.module
 
   collect_attributes:

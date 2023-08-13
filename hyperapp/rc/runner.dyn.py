@@ -7,6 +7,7 @@ from types import ModuleType
 
 from hyperapp.common.htypes import HException, TPrimitive, TList, TRecord
 from hyperapp.common.htypes.deduce_value_type import DeduceTypeError, deduce_complex_value_type, safe_repr
+from hyperapp.common.association_registry import Association
 
 from . import htypes
 from .services import (
@@ -15,6 +16,7 @@ from .services import (
     mosaic,
     types,
     python_object_creg,
+    web,
     )
 from .constants import RESOURCE_NAMES_ATTR, RESOURCE_CTR_ATTR
 
@@ -202,9 +204,11 @@ class Tracer:
 
 
 def get_resource_type(resource_ref, use_associations, tested_modules):
+    associations = [Association.from_piece(piece, web, python_object_creg) for piece in use_associations]
+
     log.info("Get type for resource ref: %s, tested modules: %s", resource_ref, tested_modules)
 
-    with association_reg.associations_registered(use_associations):
+    with association_reg.associations_registered(associations):
 
         tracer = Tracer(tested_modules)
         with tracer.tracing():

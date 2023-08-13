@@ -10,6 +10,7 @@ import:
 - builtin_service:local_types
 - builtin_service:module_dir_list
 - builtin_service:mosaic
+- builtin_service:python_object_creg
 - builtin_service:resource_module_factory
 - builtin_service:resource_registry_factory
 - builtin_service:type_module_loader
@@ -92,6 +93,7 @@ definitions:
       services.local_types: builtin_service:local_types
       services.module_dir_list: builtin_service:module_dir_list
       services.mosaic: builtin_service:mosaic
+      services.python_object_creg: builtin_service:python_object_creg
       services.resource_module_factory: builtin_service:resource_module_factory
       services.resource_registry_factory: builtin_service:resource_registry_factory
       services.rpc_endpoint_factory: rpc.rpc_endpoint:rpc_endpoint_factory.service
