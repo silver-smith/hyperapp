@@ -1,0 +1,4 @@
+
+ui_ctl = record:
+  ctr_fn: ref
+  command_methods: string list

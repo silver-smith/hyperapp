@@ -1,10 +1,11 @@
 import:
 - builtin_service:mosaic
+- builtin_service:python_object_creg
 - legacy_type.builtin:attribute
 - legacy_type.builtin:legacy_type
 - legacy_type.builtin:python_module
 - legacy_type.inspect:record_t
-- legacy_type.ui:ctl_association
+- legacy_type.ui:ui_ctl
 associations: []
 definitions:
   ui_ctl.module:
@@ -15,5 +16,6 @@ definitions:
       htypes.builtin.attribute: legacy_type.builtin:attribute
       htypes.builtin.legacy_type: legacy_type.builtin:legacy_type
       htypes.inspect.record_t: legacy_type.inspect:record_t
-      htypes.ui.ctl_association: legacy_type.ui:ctl_association
+      htypes.ui.ui_ctl: legacy_type.ui:ui_ctl
       services.mosaic: builtin_service:mosaic
+      services.python_object_creg: builtin_service:python_object_creg

@@ -1,12 +1,15 @@
 import logging
 from collections import defaultdict
 
-log = logging.getLogger(__name__)
+from hyperapp.common.association_registry import Association
 
 from . import htypes
 from .services import (
     mosaic,
+    python_object_creg,
     )
+
+log = logging.getLogger(__name__)
 
 
 def construct_view_impl(custom_types, resource_module, module_res, piece_t, qname):
@@ -19,15 +22,20 @@ def construct_view_impl(custom_types, resource_module, module_res, piece_t, qnam
         object=mosaic.put(class_attribute),
         attr_name=method_name,
     )
-    resource_module[class_name] = class_attribute
-    resource_module[f'{class_name}.{method_name}'] = ctr_attribute
     piece_t_ref = custom_types[piece_t.type.module][piece_t.type.name]
     piece_t_res = htypes.builtin.legacy_type(piece_t_ref)
-    ctl_association = htypes.ui.ctl_association(
-        piece_t=mosaic.put(piece_t_res),
+    ui_ctl = htypes.ui.ui_ctl(
         ctr_fn=mosaic.put(ctr_attribute),
-        command_methods=[],
+        command_methods=(),
         )
+    ctl_association = Association(
+        bases=[python_object_creg.animate(piece_t_res)],
+        key=piece_t_res,
+        value=ui_ctl,
+        )
+    resource_module[class_name] = class_attribute
+    resource_module[f'{class_name}.{method_name}'] = ctr_attribute
+    resource_module[f'{class_name}.{method_name}.ctl'] = ui_ctl
     return [ctl_association]
 
 
