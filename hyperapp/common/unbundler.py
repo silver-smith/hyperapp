@@ -31,16 +31,7 @@ class Unbundler:
                     log.debug("Unbundle aux: handled by hook: %s", hook)
                     handled_by_hook = True
             if not handled_by_hook:
-                ass_list.append(self._piece_to_ass(decoded_capsule.value))
+                ass_list.append(
+                    Association.from_piece(decoded_capsule.value, self._web, self._python_object_creg))
         self._association_reg.register_association_list(ass_list)
         return ref_set | set(bundle.aux_roots)
-
-    def _piece_to_ass(self, piece):
-        key = tuple(self._web.summon(ref) for ref in piece.key)
-        if len(piece.key) == 1:
-            [key] = key
-        return Association(
-            bases=[self._python_object_creg.invite(ref) for ref in piece.bases],
-            key=key,
-            value=self._web.summon(piece.value),
-            )

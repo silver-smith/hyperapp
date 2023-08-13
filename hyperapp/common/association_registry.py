@@ -1,11 +1,46 @@
 import logging
-from collections import defaultdict, namedtuple
+from collections import defaultdict
 from contextlib import contextmanager
+from dataclasses import dataclass
+from typing import Any
+
+from hyperapp.common.htypes.association import association_t
 
 log = logging.getLogger(__name__)
 
 
-Association = namedtuple('Association', 'bases key value')
+@dataclass
+class Association:
+    bases: list[Any]
+    key: Any
+    value: Any
+
+    @classmethod
+    def from_piece(cls, piece, web, python_object_creg):
+        key = tuple(web.summon(ref) for ref in piece.key)
+        if len(piece.key) == 1:
+            [key] = key
+        return cls(
+            bases=[python_object_creg.invite(ref) for ref in piece.bases],
+            key=key,
+            value=web.summon(piece.value),
+            )
+
+    def to_piece(self, mosaic, python_object_creg):
+        def obj_to_ref(obj):
+            return mosaic.put(
+                python_object_creg.reverse_resolve(obj)
+            )
+
+        if isinstance(self.key, (tuple, list)):
+            key = self.key
+        else:
+            key = [self.key]
+        return association_t(
+            bases=[obj_to_ref(obj) for obj in self.bases],
+            key=[mosaic.put(piece) for piece in key],
+            value=mosaic.put(self.value),
+            )
 
 
 class AssociationRegistry:
