@@ -33,6 +33,7 @@ class BuiltinTypeRegistry:
     def register_builtin_mt(self, types, type_code_registry):
         # Register builtin_mt with phony ref - can not be registered as usual because of dependency loop.
         builtin_ref = phony_ref('BUILTIN_REF')
+        self._name_to_type[builtin_mt.name] = builtin_mt
         types.add_to_cache(builtin_ref, builtin_mt)
 
         type_code_registry.register_actor(builtin_mt, self.type_from_piece)
