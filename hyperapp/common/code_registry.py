@@ -32,7 +32,10 @@ class CodeRegistry:
         return self._python_object_creg.reverse_resolve(self)
 
     def type_registered(self, t):
-        return t in self._registry
+        if t in self._registry:
+            return True
+        t_res = self._python_object_creg.reverse_resolve(t)
+        return (self._my_resource, t_res) in self._association_reg
 
     def register_actor(self, t, factory, *args, **kw):
         assert not inspect.iscoroutinefunction(factory), f"Use client CodeRegistry for async factories: {factory!r}"

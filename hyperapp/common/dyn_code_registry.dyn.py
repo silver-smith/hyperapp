@@ -38,8 +38,3 @@ class DynCodeRegistry(CodeRegistry):
             return fn
 
         return register
-
-    def type_registered(self, t):
-        if super().type_registered(t):
-            return True
-        return (self._my_resource, t) in association_reg
