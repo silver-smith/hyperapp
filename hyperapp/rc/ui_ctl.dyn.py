@@ -49,10 +49,13 @@ def create_ui_resources(custom_types, module_name, resource_module, module_res, 
             qname_to_trace[trace.fn_qual_name] = trace
         else:
             if trace != prev_trace:
-                raise RuntimeError(f"Different traces for {trace.fn_qual_name}: {prev_trace} and {trace}")
+                qname_to_trace[trace.fn_qual_name] = None
+                log.warning("Different traces for %s: %s and %s", trace.fn_qual_name, prev_trace, trace)
 
     ass_list = []
     for qname, trace in qname_to_trace.items():
+        if trace is None:
+            continue  # Multiple trace variants found - do not consider.
         params = {**trace.params}
         if trace.obj_type == 'classmethod':
             # Remove first, 'cls', parameter.
