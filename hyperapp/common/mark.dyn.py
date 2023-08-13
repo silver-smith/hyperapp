@@ -4,7 +4,6 @@ from types import SimpleNamespace
 from . import htypes
 from .services import (
     mosaic,
-    python_object_creg,
     )
 from .code.constants import RESOURCE_CTR_ATTR
 
@@ -89,22 +88,10 @@ def object_command(fn):
     return fn
 
 
-def meta_association(t):
-    def register(fn):
-        type_res = python_object_creg.reverse_resolve(t)
-        ctr = htypes.attr_constructors.meta_association(
-            type=mosaic.put(type_res),
-            )
-        add_fn_module_constructor(fn, ctr)
-        return fn
-    return register
-
-
 def mark():
     return SimpleNamespace(
         param=ParamMarker(),
         service=ServiceMarker(),
         global_command=global_command,
         object_command=object_command,
-        meta_association=meta_association,
         )

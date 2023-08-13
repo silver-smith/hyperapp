@@ -4,6 +4,3 @@ service = record:
 
 parameter = record:
   path: string list
-
-meta_association = record:
-  type: ref
