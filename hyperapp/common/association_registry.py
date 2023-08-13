@@ -81,7 +81,7 @@ class AssociationRegistry:
                 pass
             else:
                 for base in ass.bases:
-                    self._base_to_ass[ass.base].remove(ass)
+                    self._base_to_ass[base].remove(ass)
 
     def __contains__(self, key):
         return key in self._key_to_value
