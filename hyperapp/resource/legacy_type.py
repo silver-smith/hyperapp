@@ -43,6 +43,13 @@ class LegacyTypeResourceModule:
 #     return name_to_module
 
 
+def add_builtin_types_to_pyobj_cache(types, builtin_types, python_object_creg):
+    for t in builtin_types.values():
+        type_ref = types.reverse_resolve(t)
+        type_piece = legacy_type_t(type_ref)
+        python_object_creg.add_to_cache(type_piece, t)
+
+
 def convert_builtin_types_to_dict(types, builtin_types):
     name_to_module = defaultdict(dict)
     for t in builtin_types.values():

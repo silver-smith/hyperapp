@@ -31,7 +31,12 @@ from .htypes.pyobj_association import python_object_association_t
 from ..resource.resource_registry import ResourceRegistry
 from ..resource.resource_module import ResourceModule, load_resource_modules, load_resource_modules_list
 from .htypes.legacy_type import legacy_type_t
-from ..resource.legacy_type import convert_builtin_types_to_dict, load_legacy_type_resources, legacy_type_pyobj
+from ..resource.legacy_type import (
+    add_builtin_types_to_pyobj_cache,
+    convert_builtin_types_to_dict,
+    load_legacy_type_resources,
+    legacy_type_pyobj,
+    )
 from .htypes.builtin_service import builtin_service_t
 from ..resource.builtin_service import builtin_service_python_object, make_builtin_service_resource_module
 from .htypes.attribute import attribute_t
@@ -140,6 +145,7 @@ class Services(object):
             )
         self.builtin_types_as_dict = partial(convert_builtin_types_to_dict, self.types, self.builtin_types)
         self.legacy_type_resource_loader = load_legacy_type_resources
+        add_builtin_types_to_pyobj_cache(self.types, self.builtin_types, self.python_object_creg)
         self.python_object_creg.register_actor(legacy_type_t, legacy_type_pyobj, self.types)
         self.builtin_service_resource_loader = partial(
             make_builtin_service_resource_module, self.mosaic, self.builtin_services)

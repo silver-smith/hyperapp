@@ -20,3 +20,7 @@ class CachedCodeRegistry(CodeRegistry):
 
     def reverse_resolve(self, actor):
         return self._reverse_cache[id(actor)]
+
+    def add_to_cache(self, piece, actor):
+        self._cache[piece] = actor
+        self._reverse_cache[id(actor)] = piece
