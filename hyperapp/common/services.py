@@ -13,7 +13,7 @@ from .web import Web
 from .type_module_loader import TypeModuleLoader
 from .type_system import TypeSystem
 from .code_registry import CodeRegistry
-from .cached_code_registry import CachedCodeRegistry
+from .pyobj_registry import PyObjRegistry
 from .association_registry import AssociationRegistry
 from .python_importer import PythonImporter
 from .resource_dir import ResourceDir
@@ -114,7 +114,7 @@ class Services(object):
         self.aux_unbundler_hooks = []
         self.resource_type_factory = partial(ResourceType, self.types, self.mosaic, self.web)
         self.resource_type_reg = {}  # resource_t -> ResourceType instance
-        self.python_object_creg = CachedCodeRegistry('python_object', self.web, self.types)
+        self.python_object_creg = PyObjRegistry('python_object', self.web, self.types)
         self.meta_registry.init_registries(self.association_reg, self.python_object_creg)
         self.python_object_creg.init_registries(self.association_reg, self.python_object_creg)
         register_meta_association(self.meta_registry, self.python_object_creg)
