@@ -2,6 +2,7 @@ import logging
 from collections import defaultdict
 
 from hyperapp.common.htypes.legacy_type import legacy_type_t
+from hyperapp.common.htypes.builtins import primitive_list_types, primitive_list_list_types
 
 log = logging.getLogger(__name__)
 
@@ -44,7 +45,11 @@ class LegacyTypeResourceModule:
 
 
 def add_builtin_types_to_pyobj_cache(types, builtin_types, python_object_creg):
-    for t in builtin_types.values():
+    for t in [
+            *builtin_types.values(),
+            *primitive_list_types.values(),
+            *primitive_list_list_types.values(),
+            ]:
         type_ref = types.reverse_resolve(t)
         type_piece = legacy_type_t(type_ref)
         python_object_creg.add_to_cache(type_piece, t)

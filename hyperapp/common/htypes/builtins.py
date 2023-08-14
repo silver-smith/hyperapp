@@ -26,7 +26,8 @@ from .call import call_t, call_def_t
 log = logging.getLogger(__name__)
 
 
-primitive_list_types = {}  # primitive t -> list t
+primitive_list_types = {}  # t -> list t
+primitive_list_list_types = {}  # t -> list list t
 
 _builtin_type_list = [
     # core
@@ -58,13 +59,19 @@ _builtin_type_list = [
 
 
 def register_builtin_types(builtin_types, mosaic, types):
+
+    def _list_type(element_t):
+        element_ref = types.reverse_resolve(element_t)
+        piece = list_mt(element_ref)
+        type_ref = mosaic.put(piece)
+        return types.resolve(type_ref)
+
     for t in _builtin_type_list:
         type_ref = builtin_types.register(mosaic, types, t)
     # Register list of builtin types
     for element_t in _builtin_type_list:
-        element_ref = types.reverse_resolve(element_t)
-        piece = list_mt(element_ref)
-        type_ref = mosaic.put(piece)
-        t = types.resolve(type_ref)
-        primitive_list_types[element_t] = t
-        log.debug("Registered builtin list type: %s -> %s", type_ref, t)
+        list_t = _list_type(element_t)
+        list_list_t = _list_type(list_t)
+        primitive_list_types[element_t] = list_t
+        primitive_list_list_types[element_t] = list_list_t
+        log.debug("Registered builtin list type: %s -> %s, %s", type_ref, list_t, list_list_t)
