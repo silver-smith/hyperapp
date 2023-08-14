@@ -13,11 +13,12 @@ from .code.mark import add_fn_module_constructor
 
 
 def register(piece):
+    assert 0  # Unused?
     code_registry_svc_res = web.summon(piece.service)
-    t = python_object_creg.invite(piece.type)
+    t_res = web.summon(piece.type)
     return Association(
-        bases=[code_registry_svc_res, t],
-        key_to_value={(code_registry_svc_res, t): piece.function},
+        bases=[code_registry_svc_res, t_res],
+        key_to_value={(code_registry_svc_res, t_res): piece.function},
         )
 
 

@@ -118,7 +118,7 @@ class Services(object):
         self.meta_registry.init_registries(self.association_reg, self.python_object_creg)
         self.python_object_creg.init_registries(self.association_reg, self.python_object_creg)
         register_meta_association(self.meta_registry, self.python_object_creg)
-        self.unbundler = Unbundler(self.web, self.mosaic, self.association_reg, self.python_object_creg, self.aux_unbundler_hooks)
+        self.unbundler = Unbundler(self.web, self.mosaic, self.association_reg, self.aux_unbundler_hooks)
         self.resource_type_producer = partial(resource_type_producer, self.resource_type_factory, self.resource_type_reg)
         self.resource_type_reg[meta_association_t] = MetaAssociationResourceType()
         self.meta_registry.register_actor(

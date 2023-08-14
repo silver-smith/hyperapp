@@ -3,7 +3,6 @@ from hyperapp.common.association_registry import Association
 from . import htypes
 from .services import (
     mosaic,
-    python_object_creg,
     web,
     )
 
@@ -15,8 +14,8 @@ def construct(piece, custom_types, name_to_res, module_res, attr):
         )
     association = Association(
         bases=[
-            python_object_creg.invite(piece.service), 
-            python_object_creg.invite(piece.type),
+            web.summon(piece.service), 
+            web.summon(piece.type),
             ],
         key=[
             web.summon(piece.service),

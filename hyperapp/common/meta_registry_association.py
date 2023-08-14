@@ -8,6 +8,7 @@ log = logging.getLogger(__name__)
 
 
 def register_meta(meta_registry, python_object_creg, piece):
+    assert 0  # Unused?
     t = python_object_creg.invite(piece.t)
     log.info("Register meta association: %s -> %s", t, piece.fn)
     return Association(

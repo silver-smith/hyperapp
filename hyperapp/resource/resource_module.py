@@ -115,16 +115,12 @@ class ResourceModule:
 
     def add_association(self, ass):
         log.info("%s: Add association: %r", self._name, ass)
-        bases = [
-            self._python_object_creg.reverse_resolve(b)
-            for b in ass.bases
-            ]
         key = ass.key
         if type(key) not in {tuple, list}:
             key = [key]
         base_names = [self._reverse_resolve(b) for b in bases]
         self._association_list.append(_Association(
-            bases=[self._reverse_resolve(b) for b in bases],
+            bases=[self._reverse_resolve(b) for b in ass.bases],
             key=[self._reverse_resolve(k) for k in key],
             value=self._reverse_resolve(ass.value),
             ))
@@ -284,7 +280,7 @@ class ResourceModule:
             else:
                 key = tuple(key)
             ass_list.append(Association(
-                bases=[self._python_object_creg.animate(piece) for piece in bases],
+                bases=bases,
                 key=key,
                 value=value,
                 ))

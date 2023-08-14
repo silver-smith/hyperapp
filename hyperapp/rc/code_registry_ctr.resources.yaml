@@ -1,7 +1,6 @@
 import:
 - resource.constructor_creg:constructor_creg.service
 - builtin_service:mosaic
-- builtin_service:python_object_creg
 - builtin_service:web
 - legacy_type.builtin:attribute
 - legacy_type.code_registry:constructor
@@ -26,7 +25,6 @@ definitions:
     import_list:
       htypes.builtin.attribute: legacy_type.builtin:attribute
       services.mosaic: builtin_service:mosaic
-      services.python_object_creg: builtin_service:python_object_creg
       services.web: builtin_service:web
 
   construct:

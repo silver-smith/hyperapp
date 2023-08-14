@@ -16,28 +16,23 @@ class Association:
     value: Any
 
     @classmethod
-    def from_piece(cls, piece, web, python_object_creg):
+    def from_piece(cls, piece, web):
         key = tuple(web.summon(ref) for ref in piece.key)
         if len(piece.key) == 1:
             [key] = key
         return cls(
-            bases=[python_object_creg.invite(ref) for ref in piece.bases],
+            bases=[web.summon(ref) for ref in piece.bases],
             key=key,
             value=web.summon(piece.value),
             )
 
-    def to_piece(self, mosaic, python_object_creg):
-        def obj_to_ref(obj):
-            return mosaic.put(
-                python_object_creg.reverse_resolve(obj)
-            )
-
+    def to_piece(self, mosaic):
         if type(self.key) in {tuple, list}:
             key = self.key
         else:
             key = [self.key]
         return association_t(
-            bases=[obj_to_ref(obj) for obj in self.bases],
+            bases=[mosaic.put(piece) for piece in self.bases],
             key=[mosaic.put(piece) for piece in key],
             value=mosaic.put(self.value),
             )

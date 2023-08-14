@@ -6,7 +6,6 @@ from hyperapp.common.association_registry import Association
 from . import htypes
 from .services import (
     mosaic,
-    python_object_creg,
     )
 
 log = logging.getLogger(__name__)
@@ -29,7 +28,7 @@ def construct_view_impl(custom_types, resource_module, module_res, piece_t, qnam
         command_methods=(),
         )
     ctl_association = Association(
-        bases=[python_object_creg.animate(piece_t_res)],
+        bases=[piece_t_res],
         key=piece_t_res,
         value=ui_ctl,
         )

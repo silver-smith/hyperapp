@@ -204,7 +204,7 @@ class Tracer:
 
 
 def get_resource_type(resource_ref, use_associations, tested_modules):
-    associations = [Association.from_piece(piece, web, python_object_creg) for piece in use_associations]
+    associations = [Association.from_piece(piece, web) for piece in use_associations]
 
     log.info("Get type for resource ref: %s, tested modules: %s", resource_ref, tested_modules)
 

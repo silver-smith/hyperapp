@@ -97,9 +97,10 @@ class Bundler(Visitor):
             self._collected_ref_set.add(value)
 
     def _collect_aux_refs(self, ref, t, value):
-        for obj in [t, value]:
+        t_res = python_object_creg.reverse_resolve(t)
+        for obj in [t_res, value]:
             for ass in association_reg.base_to_ass_list(obj):
-                piece = ass.to_piece(mosaic, python_object_creg)
+                piece = ass.to_piece(mosaic)
                 ass_ref = mosaic.put(piece)
                 log.debug("Bundle aux association %s: %s (%s)", ass_ref, ass, piece)
                 self._collected_aux_set.add(ass_ref)
