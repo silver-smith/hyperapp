@@ -1,35 +1,42 @@
 import logging
 from collections import defaultdict
 
-from . import htypes
+from hyperapp.common.association_registry import Association
+
+from .services import (
+    association_reg,
+    web,
+    )
 
 log = logging.getLogger(__name__)
 
 
 class RouteTable:
 
-    def __init__(self):
+    def __init__(self, route_registry):
+        self._route_registry = route_registry
         self._peer2route = defaultdict(set)  # ref -> route set
 
     def add_route(self, peer_ref, route):
         self._peer2route[peer_ref].add(route)
+        peer_piece = web.summon(peer_ref)
+        ass = Association(
+            bases=[peer_piece],
+            key=peer_piece,
+            value=route.piece,
+            )
+        association_reg.register_association(ass)
 
     def peer_route_list(self, peer_ref):
-        return self._peer2route[peer_ref]
-
-    def aux_bundler_hook(self, mosaic, peer_registry, ref, t, value):
-        if not peer_registry.type_registered(t):
-            return
-        for route in self.peer_route_list(ref):
-            piece = route.piece
-            if piece is not None:
-                route_ref = mosaic.put(piece)
-                route_association = htypes.transport.route_association(ref, route_ref)
-                yield mosaic.put(route_association)
-
-    def aux_ref_unbundler_hook(self, route_registry, ref, t, value):
-        if t != htypes.transport.route_association:
-            return False
-        route = route_registry.invite(value.route_ref)
-        self.add_route(value.peer_ref, route)
-        return True
+        try:
+            return self._peer2route[peer_ref]
+        except KeyError:
+            pass
+        peer_piece = web.summon(peer_ref)
+        try:
+            route_piece = association_reg[peer_piece]
+        except KeyError:
+            raise RuntimeError(f"No routes to {peer_piece}")
+        route = self._route_registry.animate(route_piece)
+        self._peer2route[peer_ref].add(route)
+        return set([route])

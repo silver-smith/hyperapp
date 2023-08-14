@@ -1,14 +1,10 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtin_service:aux_unbundler_hooks
-- builtin_service:mosaic
-- common.bundler:aux_bundler_hooks.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
-- transport.identity:peer_registry.service
 - transport.route_registry:route_registry.service
 - transport.route_table:route_table.module
 associations: []
@@ -26,9 +22,5 @@ definitions:
     file_name: sync_route_table.dyn.py
     import_list:
       code.route_table: transport.route_table:route_table.module
-      services.aux_bundler_hooks: common.bundler:aux_bundler_hooks.service
-      services.aux_unbundler_hooks: builtin_service:aux_unbundler_hooks
       services.mark: common.mark:mark.service
-      services.mosaic: builtin_service:mosaic
-      services.peer_registry: transport.identity:peer_registry.service
       services.route_registry: transport.route_registry:route_registry.service

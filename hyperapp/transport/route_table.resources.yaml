@@ -1,6 +1,7 @@
 import:
+- builtin_service:association_reg
+- builtin_service:web
 - legacy_type.builtin:python_module
-- legacy_type.transport:route_association
 
 definitions:
   route_table.module:
@@ -8,4 +9,5 @@ definitions:
     module_name: route_table
     file_name: route_table.dyn.py
     import_list:
-      htypes.transport.route_association: legacy_type.transport:route_association
+      services.association_reg: builtin_service:association_reg
+      services.web: builtin_service:web
