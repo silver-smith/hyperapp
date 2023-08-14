@@ -32,7 +32,7 @@ class Association:
                 python_object_creg.reverse_resolve(obj)
             )
 
-        if isinstance(self.key, (tuple, list)):
+        if type(self.key) in {tuple, list}:
             key = self.key
         else:
             key = [self.key]
