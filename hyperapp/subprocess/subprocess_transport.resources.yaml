@@ -9,8 +9,8 @@ import:
 - common.failure:failed.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
-- legacy_type.builtin:python_module
 - legacy_type.builtin:call
+- legacy_type.builtin:python_module
 - transport.identity:parcel_registry.service
 - transport.sync_route_table:route_table.service
 - transport.transport:transport.service

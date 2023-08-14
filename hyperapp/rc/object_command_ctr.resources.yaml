@@ -12,7 +12,6 @@ import:
 - rc.utils:utils.module
 - resource.constructor_creg:constructor_creg.service
 associations:
-
 - bases:
   - resource.constructor_creg:constructor_creg.service
   - legacy_type.object_command_ctr:object_command_ctr
@@ -20,7 +19,6 @@ associations:
   - resource.constructor_creg:constructor_creg.service
   - legacy_type.object_command_ctr:object_command_ctr
   value: construct
-
 definitions:
   construct:
     _type: legacy_type.builtin:attribute

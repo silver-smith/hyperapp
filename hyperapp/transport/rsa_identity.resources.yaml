@@ -4,8 +4,8 @@ import:
 - builtin_service:mosaic
 - common.mark:mark.service
 - legacy_type.builtin:attribute
-- legacy_type.builtin:python_module
 - legacy_type.builtin:call
+- legacy_type.builtin:python_module
 - legacy_type.rsa_identity:rsa_identity
 - legacy_type.rsa_identity:rsa_parcel
 - legacy_type.rsa_identity:rsa_peer
@@ -15,7 +15,6 @@ import:
 - transport.identity:peer_registry.service
 - transport.identity:signature_registry.service
 associations:
-
 - bases:
   - transport.identity:identity_registry.service
   - legacy_type.rsa_identity:rsa_identity
@@ -23,7 +22,6 @@ associations:
   - transport.identity:identity_registry.service
   - legacy_type.rsa_identity:rsa_identity
   value: rsa_identity_from_piece
-
 - bases:
   - transport.identity:parcel_registry.service
   - legacy_type.rsa_identity:rsa_parcel
@@ -31,7 +29,6 @@ associations:
   - transport.identity:parcel_registry.service
   - legacy_type.rsa_identity:rsa_parcel
   value: rsa_parcel_from_piece
-
 - bases:
   - transport.identity:peer_registry.service
   - legacy_type.rsa_identity:rsa_peer
@@ -39,7 +36,6 @@ associations:
   - transport.identity:peer_registry.service
   - legacy_type.rsa_identity:rsa_peer
   value: rsa_peer_from_piece
-
 - bases:
   - transport.identity:signature_registry.service
   - legacy_type.rsa_identity:rsa_signature
@@ -47,7 +43,6 @@ associations:
   - transport.identity:signature_registry.service
   - legacy_type.rsa_identity:rsa_signature
   value: rsa_signature_from_piece
-
 definitions:
   generate_rsa_identity:
     _type: legacy_type.builtin:attribute

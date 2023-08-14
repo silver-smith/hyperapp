@@ -5,8 +5,8 @@ import:
 - builtin_service:stop_signal
 - common.mark:mark.service
 - legacy_type.builtin:attribute
-- legacy_type.builtin:python_module
 - legacy_type.builtin:call
+- legacy_type.builtin:python_module
 associations: []
 definitions:
   failed:
