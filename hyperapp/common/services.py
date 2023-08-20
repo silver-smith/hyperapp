@@ -22,8 +22,6 @@ from ..resource.resource_type import ResourceType
 from ..resource.resource_type_producer import resource_type_producer
 from ..resource.python_module import PythonModuleResourceType, python_module_pyobj
 from .htypes.python_module import python_module_t
-from .pyobj_association_type import PyObjAssociationResourceType
-from .htypes.pyobj_association import python_object_association_t
 from ..resource.resource_registry import ResourceRegistry
 from ..resource.resource_module import ResourceModule, load_resource_modules, load_resource_modules_list
 from .htypes.legacy_type import legacy_type_t
@@ -114,7 +112,6 @@ class Services(object):
         self.python_object_creg.init_registries(self.association_reg, self.python_object_creg)
         self.unbundler = Unbundler(self.web, self.mosaic, self.association_reg)
         self.resource_type_producer = partial(resource_type_producer, self.resource_type_factory, self.resource_type_reg)
-        self.resource_type_reg[python_object_association_t] = PyObjAssociationResourceType()
         self.resource_type_reg[python_module_t] = PythonModuleResourceType()
         self.python_object_creg.register_actor(
             python_module_t, python_module_pyobj, self.mosaic, self.python_importer, self.python_object_creg)
