@@ -118,7 +118,6 @@ class ResourceModule:
         key = ass.key
         if type(key) not in {tuple, list}:
             key = [key]
-        base_names = [self._reverse_resolve(b) for b in bases]
         self._association_list.append(_Association(
             bases=[self._reverse_resolve(b) for b in ass.bases],
             key=[self._reverse_resolve(k) for k in key],

@@ -24,7 +24,6 @@ from .services import (
     local_types,
     module_dir_list,
     mosaic,
-    python_object_creg,
     resource_module_factory,
     resource_registry_factory,
     rpc_endpoint_factory,
@@ -589,7 +588,7 @@ class SourceFile:
         get_resource_type = process.rpc_call(runner.get_resource_type)
         object_type_info = get_resource_type(
             resource_ref=mosaic.put(call_res),
-            use_associations=[ass.to_piece(mosaic, python_object_creg) for ass in ass_list],
+            use_associations=[ass.to_piece(mosaic) for ass in ass_list],
             tested_modules=tested_modules,
             )
         call_result = FunctionCallResult.from_piece(object_type_info)
