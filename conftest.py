@@ -47,7 +47,7 @@ def pytest_fixture_post_finalizer(fixturedef):
     _log_separator('%s teardown' % fixturedef.argname)
 
 
-@pytest.mark.hookwrapper
+@pytest.hookimpl(hookwrapper=True)
 def pytest_pyfunc_call(pyfuncitem):
     event_loop = None
     for name in pyfuncitem._request.fixturenames:
