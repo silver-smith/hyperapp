@@ -1,4 +1,4 @@
-from .htypes import BUILTIN_MODULE_NAME, tString, tBinary, tDateTime, TList
+from .htypes import BUILTIN_MODULE_NAME, tString, tBinary, TList
 from .record import TRecord, ref_t
 
 
