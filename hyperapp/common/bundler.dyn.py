@@ -23,8 +23,6 @@ RECURSION_LIMIT = 100
 
 _RefsAndBundle = namedtuple('_RefsAndBundle', 'ref_set bundle')
 
-_aux_bundler_hooks = []
-
 
 class Bundler(Visitor):
 
@@ -105,17 +103,6 @@ class Bundler(Visitor):
                 log.debug("Bundle aux association %s: %s (%s)", ass_ref, ass, piece)
                 self._collected_aux_set.add(ass_ref)
                 self._collected_ref_set.add(ass_ref)  # Should collect from these refs too.
-        for hook in _aux_bundler_hooks:
-            aux_ref_set = set(hook(ref, t, value) or [])
-            if aux_ref_set:
-                log.debug("Bundle aux by hook %s %s %s: %s", hook, t, value, aux_ref_set)
-                self._collected_aux_set |= aux_ref_set
-                self._collected_ref_set |= aux_ref_set  # Should collect from these refs too.
-
-
-@mark.service
-def aux_bundler_hooks():
-    return _aux_bundler_hooks
 
 
 @mark.service

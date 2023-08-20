@@ -148,11 +148,6 @@ def builtin_types_as_dict(types, builtin_types):
 
 
 @pytest.fixture
-def aux_unbundler_hooks():
-    return []
-
-
-@pytest.fixture
 def builtin_services(
         association_reg,
         builtin_types,
@@ -166,7 +161,6 @@ def builtin_services(
         # meta_registry,
         # on_stop,
         # stop_signal,
-        aux_unbundler_hooks,
         # unbundler,
         resource_type_factory,
         resource_type_reg,
@@ -194,7 +188,6 @@ def builtin_services(
         # 'meta_registry': meta_registry,
         # 'on_stop': on_stop,
         # 'stop_signal': stop_signal,
-        'aux_unbundler_hooks': aux_unbundler_hooks,
         # 'unbundler': unbundler,
         'resource_type_factory': resource_type_factory,
         'resource_type_reg': resource_type_reg,

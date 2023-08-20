@@ -9,11 +9,10 @@ log = logging.getLogger(__name__)
 
 class Unbundler:
 
-    def __init__(self, web, mosaic, association_reg, aux_unbundler_hooks):
+    def __init__(self, web, mosaic, association_reg):
         self._web = web
         self._mosaic = mosaic
         self._association_reg = association_reg
-        self._aux_unbundler_hooks = aux_unbundler_hooks
 
     def register_bundle(self, bundle):
         ref_set = set()
@@ -24,13 +23,7 @@ class Unbundler:
         for aux_ref in bundle.aux_roots:
             decoded_capsule = self._mosaic.resolve_ref(aux_ref)
             log.debug("Unbundle aux: %s %s: %s", aux_ref, decoded_capsule.t, decoded_capsule.value)
-            handled_by_hook = False
-            for hook in self._aux_unbundler_hooks:
-                if hook(aux_ref, decoded_capsule.t, decoded_capsule.value):
-                    log.debug("Unbundle aux: handled by hook: %s", hook)
-                    handled_by_hook = True
-            if not handled_by_hook:
-                ass_list.append(
-                    Association.from_piece(decoded_capsule.value, self._web))
+            ass_list.append(
+                Association.from_piece(decoded_capsule.value, self._web))
         self._association_reg.register_association_list(ass_list)
         return ref_set | set(bundle.aux_roots)
