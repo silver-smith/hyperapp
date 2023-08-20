@@ -19,6 +19,8 @@ class RouteTable:
 
     def add_route(self, peer_ref, route):
         self._peer2route[peer_ref].add(route)
+        if route.piece is None:
+            return  # Local route.
         peer_piece = web.summon(peer_ref)
         ass = Association(
             bases=[peer_piece],
