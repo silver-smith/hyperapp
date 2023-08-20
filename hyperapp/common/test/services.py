@@ -7,6 +7,7 @@ import pytest
 from hyperapp.common.htypes.python_module import python_module_t
 from hyperapp.common.htypes.attribute import attribute_t
 from hyperapp.common.htypes.legacy_type import legacy_type_t
+from hyperapp.common.htypes.call import call_t
 from hyperapp.common.services import HYPERAPP_DIR
 from hyperapp.common.code_registry import CodeRegistry
 from hyperapp.common.cached_code_registry import CachedCodeRegistry
@@ -21,6 +22,7 @@ from hyperapp.resource.resource_registry import ResourceRegistry
 from hyperapp.resource.resource_module import ResourceModule, load_resource_modules_list
 from hyperapp.resource.python_module import PythonModuleResourceType, python_module_pyobj
 from hyperapp.resource.attribute import AttributeResourceType, attribute_pyobj
+from hyperapp.resource.call import CallResourceType, call_pyobj
 from hyperapp.resource.legacy_type import convert_builtin_types_to_dict, load_legacy_type_resources, legacy_type_pyobj
 from hyperapp.resource.builtin_service import builtin_service_python_object, make_builtin_service_resource_module
 
@@ -87,6 +89,7 @@ def resource_type_reg():
     reg = {}
     reg[python_module_t] = PythonModuleResourceType()
     reg[attribute_t] = AttributeResourceType()
+    reg[call_t] = CallResourceType()
     return reg
 
 
@@ -110,6 +113,9 @@ def python_object_creg(types, mosaic, web, association_reg, python_importer):
     creg.init_registries(association_reg, creg)
     creg.register_actor(python_module_t, python_module_pyobj, mosaic, python_importer, creg)
     creg.register_actor(legacy_type_t, legacy_type_pyobj, types)
+    # creg.register_actor(builtin_service_t, builtin_service_python_object, self)
+    creg.register_actor(attribute_t, attribute_pyobj, python_object_creg)
+    creg.register_actor(call_t, call_pyobj, python_object_creg)
     return creg
 
 
