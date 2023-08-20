@@ -6,6 +6,7 @@ import pytest
 
 from hyperapp.common.htypes.attribute import attribute_t
 from hyperapp.common.htypes.builtin_service import builtin_service_t
+from hyperapp.common.association_registry import Association
 from hyperapp.common import cdr_coders  # self-registering
 
 log = logging.getLogger(__name__)
@@ -85,12 +86,23 @@ def test_set_partial(htypes, mosaic, resource_registry, resource_module_factory,
     compare(res_module, 'test_set_partial')
 
 
-def test_add_association(htypes, mosaic, resource_registry, resource_module_factory, compare):
+def test_add_association(mosaic, resource_registry, resource_module_factory, compare):
     sample_module_2 = resource_registry['sample_module_2', 'sample_module_2.module']
-    association = htypes.sample_association.sample_association(
-        name='associated_name',
-        value=mosaic.put(sample_module_2),
+    key = attribute_t(
+        object=mosaic.put(sample_module_2),
+        attr_name='sample_key_attr',
+    )
+    value = attribute_t(
+        object=mosaic.put(sample_module_2),
+        attr_name='sample_value_attr',
+    )
+    ass = Association(
+        bases=[key],
+        key=key,
+        value=value,
         )
     res_module = resource_module_factory(resource_registry, 'test_module')
-    res_module.add_association(association)
+    res_module['sample_key'] = key
+    res_module['sample_value'] = value
+    res_module.add_association(ass)
     compare(res_module, 'test_add_association')

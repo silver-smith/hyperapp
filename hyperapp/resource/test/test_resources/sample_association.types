@@ -1,4 +1,0 @@
-
-sample_association = record:
-  name: string
-  value: ref

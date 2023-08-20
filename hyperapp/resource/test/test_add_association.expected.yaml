@@ -1,8 +1,17 @@
 import:
-- legacy_type.sample_association:sample_association
+- legacy_type.builtin:attribute
 - sample_module_2:sample_module_2.module
 associations:
-- _type: legacy_type.sample_association:sample_association
-  name: associated_name
-  value: sample_module_2:sample_module_2.module
-definitions: {}
+- bases:
+  - sample_key
+  key: sample_key
+  value: sample_value
+definitions:
+  sample_key:
+    _type: legacy_type.builtin:attribute
+    object: sample_module_2:sample_module_2.module
+    attr_name: sample_key_attr
+  sample_value:
+    _type: legacy_type.builtin:attribute
+    object: sample_module_2:sample_module_2.module
+    attr_name: sample_value_attr
