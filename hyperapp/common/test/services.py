@@ -120,7 +120,7 @@ def resource_registry_factory(mosaic):
 
 @pytest.fixture
 def resource_module_factory(mosaic, resource_type_producer, python_object_creg):
-    return partial(ResourceModule, mosaic, resource_type_producer)
+    return partial(ResourceModule, mosaic, resource_type_producer, python_object_creg)
 
 
 @pytest.fixture
