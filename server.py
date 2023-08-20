@@ -64,7 +64,6 @@ def main():
     python_object_creg = services.python_object_creg
     module = partial(load_module, resource_registry, python_object_creg)
 
-    module('common.meta_registry_association').init()
     services.register_associations(resource_registry)
 
     server = module('server.tcp_server').tcp_server(BIND_ADDRESS)

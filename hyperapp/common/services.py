@@ -20,13 +20,9 @@ from .resource_dir import ResourceDir
 from .unbundler import Unbundler
 from ..resource.resource_type import ResourceType
 from ..resource.resource_type_producer import resource_type_producer
-from .meta_registry_association import register_meta_association
 from ..resource.python_module import PythonModuleResourceType, python_module_pyobj
 from .htypes.python_module import python_module_t
-from .meta_association_type import MetaAssociationResourceType
 from .pyobj_association_type import PyObjAssociationResourceType
-from ..resource.pyobj_meta import register_pyobj_meta
-from .htypes.meta_association import meta_association_t
 from .htypes.pyobj_association import python_object_association_t
 from ..resource.resource_registry import ResourceRegistry
 from ..resource.resource_module import ResourceModule, load_resource_modules, load_resource_modules_list
@@ -69,7 +65,6 @@ class Services(object):
         'web',
         'local_types',
         'type_module_loader',
-        'meta_registry',
         'on_stop',
         'stop_signal',
         'unbundler',
@@ -106,7 +101,6 @@ class Services(object):
         self.web = Web(self.types)
         self.mosaic = Mosaic(self.types)
         self.types.init(self.builtin_types, self.mosaic)
-        self.meta_registry = CodeRegistry('meta', self.web, self.types)
         self.association_reg = AssociationRegistry()
         self.web.add_source(self.mosaic)
         register_builtin_types(self.builtin_types, self.mosaic, self.types)
@@ -117,14 +111,9 @@ class Services(object):
         self.resource_type_factory = partial(ResourceType, self.types, self.mosaic, self.web)
         self.resource_type_reg = {}  # resource_t -> ResourceType instance
         self.python_object_creg = PyObjRegistry('python_object', self.web, self.types)
-        self.meta_registry.init_registries(self.association_reg, self.python_object_creg)
         self.python_object_creg.init_registries(self.association_reg, self.python_object_creg)
-        register_meta_association(self.meta_registry, self.python_object_creg)
         self.unbundler = Unbundler(self.web, self.mosaic, self.association_reg)
         self.resource_type_producer = partial(resource_type_producer, self.resource_type_factory, self.resource_type_reg)
-        self.resource_type_reg[meta_association_t] = MetaAssociationResourceType()
-        self.meta_registry.register_actor(
-            python_object_association_t, partial(register_pyobj_meta, self.python_object_creg))
         self.resource_type_reg[python_object_association_t] = PyObjAssociationResourceType()
         self.resource_type_reg[python_module_t] = PythonModuleResourceType()
         self.python_object_creg.register_actor(

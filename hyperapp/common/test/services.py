@@ -4,7 +4,6 @@ from types import SimpleNamespace
 
 import pytest
 
-from hyperapp.common.htypes.meta_association import meta_association_t
 from hyperapp.common.htypes.python_module import python_module_t
 from hyperapp.common.htypes.attribute import attribute_t
 from hyperapp.common.htypes.legacy_type import legacy_type_t
@@ -15,7 +14,6 @@ from hyperapp.common.association_registry import AssociationRegistry
 from hyperapp.common.python_importer import PythonImporter
 from hyperapp.common.type_module_loader import TypeModuleLoader
 from hyperapp.common.resource_dir import ResourceDir
-from hyperapp.common.meta_association_type import MetaAssociationResourceType
 from hyperapp.common.test.hyper_types_namespace import HyperTypesNamespace
 from hyperapp.resource.resource_type import ResourceType
 from hyperapp.resource.resource_type_producer import resource_type_producer as resource_type_producer_fn
@@ -58,13 +56,8 @@ def resource_dir_list(hyperapp_dir, module_dir_list, additional_resource_dirs):
 
 
 @pytest.fixture
-def meta_registry(web, types):
-    return CodeRegistry('meta', web, types)
-
-
-@pytest.fixture
-def association_reg(meta_registry):
-    return AssociationRegistry(meta_registry)
+def association_reg():
+    return AssociationRegistry()
 
 
 @pytest.fixture
@@ -92,7 +85,6 @@ def resource_type_factory(types, mosaic, web):
 @pytest.fixture
 def resource_type_reg():
     reg = {}
-    reg[meta_association_t] = MetaAssociationResourceType()
     reg[python_module_t] = PythonModuleResourceType()
     reg[attribute_t] = AttributeResourceType()
     return reg
@@ -113,9 +105,8 @@ def python_importer():
 
 
 @pytest.fixture
-def python_object_creg(types, mosaic, web, meta_registry, association_reg, python_importer):
+def python_object_creg(types, mosaic, web, association_reg, python_importer):
     creg = CachedCodeRegistry('python_object', web, types)
-    meta_registry.init_registries(association_reg, creg)
     creg.init_registries(association_reg, creg)
     creg.register_actor(python_module_t, python_module_pyobj, mosaic, python_importer, creg)
     creg.register_actor(legacy_type_t, legacy_type_pyobj, types)
@@ -158,7 +149,6 @@ def builtin_services(
         web,
         local_types,
         type_module_loader,
-        # meta_registry,
         # on_stop,
         # stop_signal,
         # unbundler,
@@ -185,7 +175,6 @@ def builtin_services(
         'web': web,
         'local_types': local_types,
         'type_module_loader': type_module_loader,
-        # 'meta_registry': meta_registry,
         # 'on_stop': on_stop,
         # 'stop_signal': stop_signal,
         # 'unbundler': unbundler,

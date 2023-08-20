@@ -12,16 +12,6 @@ from .services import (
 from .code.mark import add_fn_module_constructor
 
 
-def register(piece):
-    assert 0  # Unused?
-    code_registry_svc_res = web.summon(piece.service)
-    t_res = web.summon(piece.type)
-    return Association(
-        bases=[code_registry_svc_res, t_res],
-        key_to_value={(code_registry_svc_res, t_res): piece.function},
-        )
-
-
 class DynCodeRegistry(CodeRegistry):
 
     def __init__(self, produce_name):
