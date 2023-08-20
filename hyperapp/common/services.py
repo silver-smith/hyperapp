@@ -38,7 +38,11 @@ from ..resource.legacy_type import (
     legacy_type_pyobj,
     )
 from .htypes.builtin_service import builtin_service_t
-from ..resource.builtin_service import builtin_service_python_object, make_builtin_service_resource_module
+from ..resource.builtin_service import (
+    add_builtin_services_to_pyobj_cache,
+    builtin_service_python_object,
+    make_builtin_service_resource_module,
+    )
 from .htypes.attribute import attribute_t
 from ..resource.attribute import AttributeResourceType, attribute_pyobj
 from .htypes.call import call_t
@@ -156,6 +160,7 @@ class Services(object):
         self.python_object_creg.register_actor(attribute_t, attribute_pyobj, self.python_object_creg)
         self.resource_type_reg[call_t] = CallResourceType()
         self.python_object_creg.register_actor(call_t, call_pyobj, self.python_object_creg)
+        add_builtin_services_to_pyobj_cache(self, self.builtin_services, self.python_object_creg)
 
     def stop(self):
         log.info("Stop services.")

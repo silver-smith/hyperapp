@@ -38,6 +38,13 @@ class BuiltinServiceResourceModule:
             })
 
 
+def add_builtin_services_to_pyobj_cache(services, builtin_services, python_object_creg):
+    for service_name in builtin_services:
+        piece = builtin_service_t(service_name)
+        service = getattr(services, service_name)
+        python_object_creg.add_to_cache(piece, service)
+
+
 def make_builtin_service_resource_module(mosaic, builtin_services, resource_registry):
     name_to_piece = {}
 
