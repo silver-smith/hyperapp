@@ -28,10 +28,9 @@ class RouteTable:
         association_reg.register_association(ass)
 
     def peer_route_list(self, peer_ref):
-        try:
-            return self._peer2route[peer_ref]
-        except KeyError:
-            pass
+        route_set = self._peer2route.get(peer_ref, [])
+        if route_set:
+            return route_set
         peer_piece = web.summon(peer_ref)
         try:
             route_piece = association_reg[peer_piece]
