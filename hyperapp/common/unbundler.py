@@ -20,9 +20,9 @@ class Unbundler:
             ref_set.add(self._mosaic.register_capsule(capsule))
         # Meta associations should be registered before others. So, collect association list first.
         ass_list = []
-        for aux_ref in bundle.associations:
-            decoded_capsule = self._mosaic.resolve_ref(aux_ref)
-            log.debug("Unbundle aux: %s %s: %s", aux_ref, decoded_capsule.t, decoded_capsule.value)
+        for ass_ref in bundle.associations:
+            decoded_capsule = self._mosaic.resolve_ref(ass_ref)
+            log.debug("Unbundle association: %s %s: %s", ass_ref, decoded_capsule.t, decoded_capsule.value)
             ass_list.append(
                 Association.from_piece(decoded_capsule.value, self._web))
         self._association_reg.register_association_list(ass_list)

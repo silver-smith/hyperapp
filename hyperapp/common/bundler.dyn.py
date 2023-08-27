@@ -29,7 +29,7 @@ class Bundler(Visitor):
     def __init__(self):
         self._collected_ref_set = None
         self._collected_type_ref_set = None
-        self._collected_aux_set = set()
+        self._collected_ass_set = set()
 
     def bundle(self, ref_list, seen_refs=None):
         assert is_list_inst(ref_list, ref_t), repr(ref_list)
@@ -37,7 +37,7 @@ class Bundler(Visitor):
         ref_set, capsule_list = self._collect_capsule_list(ref_list, seen_refs or [])
         bundle = bundle_t(
             roots=ref_list,
-            associations=list(self._collected_aux_set),
+            associations=list(self._collected_ass_set),
             capsule_list=capsule_list,
             )
         return _RefsAndBundle(ref_set, bundle)
@@ -82,7 +82,7 @@ class Bundler(Visitor):
         log.debug('Collecting refs from %r:', dc.value)
         self._collected_ref_set = set()
         self._collect_refs_from_object(dc.t, dc.value)
-        self._collect_aux_refs(ref, dc.t, dc.value)
+        self._collect_associations(ref, dc.t, dc.value)
         log.debug('Collected %d refs from %s %s: %s', len(self._collected_ref_set), dc.t, ref,
                  ', '.join(map(ref_repr, self._collected_ref_set)))
         return self._collected_ref_set
@@ -94,14 +94,14 @@ class Bundler(Visitor):
         if t == ref_t:
             self._collected_ref_set.add(value)
 
-    def _collect_aux_refs(self, ref, t, value):
+    def _collect_associations(self, ref, t, value):
         t_res = python_object_creg.reverse_resolve(t)
         for obj in [t_res, value]:
             for ass in association_reg.base_to_ass_list(obj):
                 piece = ass.to_piece(mosaic)
                 ass_ref = mosaic.put(piece)
-                log.debug("Bundle aux association %s: %s (%s)", ass_ref, ass, piece)
-                self._collected_aux_set.add(ass_ref)
+                log.debug("Bundle association %s: %s (%s)", ass_ref, ass, piece)
+                self._collected_ass_set.add(ass_ref)
                 self._collected_ref_set.add(ass_ref)  # Should collect from these refs too.
 
 
