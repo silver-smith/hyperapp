@@ -1,3 +1,5 @@
+from functools import cached_property
+
 from hyperapp.common.htypes import ref_t
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.common.ref import decode_capsule
@@ -18,6 +20,10 @@ class UiCtlRegistry:
 
     def __init__(self):
         self._cache = {}  # t -> actor
+
+    @cached_property
+    def _my_resource(self):
+        return pyobj_creg.reverse_resolve(self)
 
     def invite(self, ref, *args, **kw):
         assert isinstance(ref, ref_t), repr(ref)
@@ -45,11 +51,11 @@ class UiCtlRegistry:
             return self._cache[t]
         except KeyError:
             pass
-        fn_res = association_reg[self, t]
+        t_res = pyobj_creg.reverse_resolve(t)
+        fn_res = association_reg[self._my_resource, t_res]
         try:
             return pyobj_creg.invite(fn_res)
         except KeyError as x:
-            # Do not let KeyError out - it will be caught by superclass and incorrect error message will be produced.
             raise RuntimeError(f"{self._produce_name}: Error resolving function for {t!r}, {fn_res}: {x}")
 
 
