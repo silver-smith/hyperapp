@@ -5,13 +5,12 @@ import:
 - rc.utils:utils.module
 - builtin_service:builtin_types_as_dict
 - builtin_service:hyperapp_dir
-- builtin_service:builtin_service_resource_loader
 - builtin_service:legacy_type_resource_loader
 - builtin_service:local_types
 - builtin_service:module_dir_list
 - builtin_service:mosaic
 - builtin_service:resource_module_factory
-- builtin_service:resource_registry_factory
+- builtin_service:resource_registry
 - builtin_service:type_module_loader
 - builtin_service:types
 - builtin_service:web
@@ -85,13 +84,12 @@ definitions:
       services.endpoint_registry: transport.endpoint:endpoint_registry.service
       services.hyperapp_dir: builtin_service:hyperapp_dir
       services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
-      services.builtin_service_resource_loader: builtin_service:builtin_service_resource_loader
       services.legacy_type_resource_loader: builtin_service:legacy_type_resource_loader
       services.local_types: builtin_service:local_types
       services.module_dir_list: builtin_service:module_dir_list
       services.mosaic: builtin_service:mosaic
       services.resource_module_factory: builtin_service:resource_module_factory
-      services.resource_registry_factory: builtin_service:resource_registry_factory
+      services.resource_registry: builtin_service:resource_registry
       services.rpc_endpoint_factory: rpc.rpc_endpoint:rpc_endpoint_factory.service
       services.subprocess_rpc_server_running: subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
       services.type_module_loader: builtin_service:type_module_loader

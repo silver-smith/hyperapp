@@ -19,13 +19,12 @@ from .services import (
     endpoint_registry,
     hyperapp_dir,
     generate_rsa_identity,
-    builtin_service_resource_loader,
     legacy_type_resource_loader,
     local_types,
     module_dir_list,
     mosaic,
     resource_module_factory,
-    resource_registry_factory,
+    resource_registry,
     rpc_endpoint_factory,
     subprocess_rpc_server_running,
     type_module_loader,
@@ -172,21 +171,21 @@ class SourceFile:
                 return ReadyStatus.NotReady
         return ReadyStatus.Ready
 
-    def _set_resource_module(self, resource_registry, resource_module):
+    def _set_resource_module(self, custom_res_reg, resource_module):
         self.resource_module = resource_module
-        resource_registry.set_module(self.module_name, self.resource_module)
+        custom_res_reg.set_module(self.module_name, self.resource_module)
 
-    def init_resource_module(self, resource_registry, file_dict):
+    def init_resource_module(self, custom_res_reg, file_dict):
         if not self.resources_path.exists():
             self.is_manually_generated = False
             return
-        resource_module = resource_module_factory(resource_registry, self.module_name, self.resources_path)
+        resource_module = resource_module_factory(custom_res_reg, self.module_name, self.resources_path)
         deps = self._get_resource_module_deps(resource_module)
         self.is_manually_generated = not resource_module.is_auto_generated
         if self.is_manually_generated:
             _log.info("%s: manually generated", self.module_name)
         else:
-            dep_modules = self._collect_dep_modules(resource_registry, file_dict, deps)
+            dep_modules = self._collect_dep_modules(custom_res_reg, file_dict, deps)
             if dep_modules is None:
                 return  # Service provider deps are not yet ready.
             if not self._check_up_to_date(resource_module, dep_modules):
@@ -194,7 +193,7 @@ class SourceFile:
             self.dep_modules = dep_modules
         self.deps = deps
         self.provides_services = resource_module.provided_services
-        self._set_resource_module(resource_registry, resource_module)
+        self._set_resource_module(custom_res_reg, resource_module)
 
     def _check_up_to_date(self, resource_module, dep_modules):
         if not resource_module.source_ref_str:
@@ -220,7 +219,7 @@ class SourceFile:
         return htypes.rc.source_dep(self.module_name, source_ref)
 
     # Returns None if provider deps for wanted services are not yet ready.
-    def _collect_dep_modules(self, resource_registry, file_dict, deps):
+    def _collect_dep_modules(self, custom_res_reg, file_dict, deps):
         code_providers = code_provider_modules(file_dict)
         service_providers = service_provider_modules(file_dict, want_up_to_date=False)
         dep_list = []
@@ -235,7 +234,7 @@ class SourceFile:
             try:
                 provider = service_providers[service_name]
             except KeyError:
-                if is_builtin_service(resource_registry, service_name):
+                if is_builtin_service(custom_res_reg, service_name):
                     continue
                 _log.info("%s: provider deps for service %r is not yet ready", self.module_name, service_name)
                 return None
@@ -303,14 +302,14 @@ class SourceFile:
         return (import_discoverer, import_discoverer_ref)
 
     # Module resource with import discoverer.
-    def _discoverer_module_res(self, resource_registry, type_res_list, process):
+    def _discoverer_module_res(self, custom_res_reg, type_res_list, process):
         resource_list = [*type_res_list]
 
         resource_list += [
             htypes.import_recorder.resource(('services', 'mark'), mosaic.put(
-                resource_registry['common.mark', 'mark.service'])),
+                custom_res_reg['common.mark', 'mark.service'])),
             htypes.import_recorder.resource(('services', 'on_stop'), mosaic.put(
-                resource_registry['builtin_service', 'on_stop'])),
+                custom_res_reg['builtin_service', 'on_stop'])),
             ]
 
         import_recorder, import_recorder_ref = self._prepare_import_recorder(process, resource_list)
@@ -324,10 +323,10 @@ class SourceFile:
         return (import_recorder, import_discoverer, module_res)
 
     # Module resource with import recorder for htypes.
-    def type_recorder_module_res(self, resource_registry, type_res_list, process, file_dict, service_providers):
+    def type_recorder_module_res(self, custom_res_reg, type_res_list, process, file_dict, service_providers):
         import_recorder, import_recorder_ref = self._prepare_import_recorder(process, type_res_list)
         module_res = self._make_module_res([
-            *self._make_import_list(resource_registry, file_dict, service_providers),
+            *self._make_import_list(custom_res_reg, file_dict, service_providers),
             htypes.builtin.import_rec('htypes.*', import_recorder_ref),
             ])
         return (import_recorder, module_res)
@@ -421,20 +420,20 @@ class SourceFile:
         deps_info = self._imports_to_deps(import_set)
         return (deps_info, source_info)
 
-    def init_deps(self, resource_registry, process, type_res_list, file_dict):
+    def init_deps(self, custom_res_reg, process, type_res_list, file_dict):
         if self.up_to_date:
             return
         if not self.deps:
             _log.info("%s: Collect deps", self.module_name)
             import_recorder, import_discoverer, module_res = self._discoverer_module_res(
-                resource_registry, type_res_list, process)
+                custom_res_reg, type_res_list, process)
             self.deps, self.source_info = self.parse_source(
                 import_recorder, import_discoverer, module_res, process, fail_on_incomplete=False)
         if self.dep_modules is None:
             # Recheck service providers, deps for some may become ready.
-            self.dep_modules = self._collect_dep_modules(resource_registry, file_dict, self.deps)
+            self.dep_modules = self._collect_dep_modules(custom_res_reg, file_dict, self.deps)
             # Now as service providers are ready, we can init resource module if it is up-to-date.
-            self.init_resource_module(resource_registry, file_dict)
+            self.init_resource_module(custom_res_reg, file_dict)
         if (self.provides_services is None
             and self.dep_modules is not None
             and all(f.up_to_date for f in self.dep_modules if not f.is_tests)
@@ -443,7 +442,7 @@ class SourceFile:
             service_providers = service_provider_modules(file_dict)
             if not self.source_info:
                 import_recorder, module_res = self.type_recorder_module_res(
-                    resource_registry, type_res_list, process, file_dict, service_providers)
+                    custom_res_reg, type_res_list, process, file_dict, service_providers)
                 invalid_deps, self.source_info = self.parse_source(
                     import_recorder, None, module_res, process, fail_on_incomplete=True)
                 # deps are invalid due to type_recorder_module_res usage.
@@ -469,19 +468,19 @@ class SourceFile:
             for service in file.provides_services
             }
 
-    def _make_import_list(self, resource_registry, file_dict, service_providers):
+    def _make_import_list(self, custom_res_reg, file_dict, service_providers):
         code_providers = code_provider_modules(file_dict)
 
         import_list = []
 
         for name in self.deps.wants_code:
             provider = code_providers[name]
-            module = resource_registry[provider.module_name, f'{provider.name}.module']
+            module = custom_res_reg[provider.module_name, f'{provider.name}.module']
             import_list.append(
                 htypes.builtin.import_rec(f'code.{name}', mosaic.put(module)))
 
         for service_name in self.deps.wants_services:
-            service = service_resource(resource_registry, service_providers, service_name)
+            service = service_resource(custom_res_reg, service_providers, service_name)
             if service is None:
                 raise RuntimeError(f"Provider deps for service {service_name!r} is not yet ready")
             import_list.append(
@@ -490,7 +489,7 @@ class SourceFile:
         _log.info("Import list: %s", import_list)
         return import_list
 
-    # def make_tested_module_res(self, resource_registry, type_res_list, process, file_dict, service_providers):
+    # def make_tested_module_res(self, custom_res_reg, type_res_list, process, file_dict, service_providers):
     #     fixtures_file = file_dict.get(f'{self.module_name}.fixtures')
     #     if fixtures_file:
     #         fixed_service_providers = {
@@ -500,10 +499,10 @@ class SourceFile:
     #     else:
     #         fixed_service_providers = service_providers
     #     import_recorder, module_res = self.type_recorder_module_res(
-    #         resource_registry, type_res_list, process, file_dict, fixed_service_providers)
+    #         custom_res_reg, type_res_list, process, file_dict, fixed_service_providers)
     #     return (import_recorder, module_res)
 
-    def _make_tested_import_list(self, resource_registry, custom_types, type_res_list, process, file_dict, service_providers):
+    def _make_tested_import_list(self, custom_res_reg, custom_types, type_res_list, process, file_dict, service_providers):
         code_providers = code_provider_modules(file_dict)
         unready_service_providers = service_provider_modules(file_dict, want_up_to_date=False)
         # fixed_service_providers = {**service_providers, **self.module_service_provider_modules(self)}
@@ -511,7 +510,7 @@ class SourceFile:
 
         def type_recorder_module_res(provider):
             import_recorder, module_res = provider.type_recorder_module_res(
-                resource_registry, type_res_list, process, file_dict, service_providers)
+                custom_res_reg, type_res_list, process, file_dict, service_providers)
             name_to_recorder[provider.module_name] = import_recorder
             return module_res
 
@@ -637,7 +636,7 @@ class SourceFile:
             used_types.add((module, name))
         return used_types
 
-    def _visit_module(self, process, resource_registry, custom_types, type_res_list, test_results, file_dict, resource_module, fixtures_file):
+    def _visit_module(self, process, custom_res_reg, custom_types, type_res_list, test_results, file_dict, resource_module, fixtures_file):
         _log.info("%s: Discover type imports", self.module_name)
 
         service_providers = service_provider_modules(file_dict)
@@ -646,15 +645,15 @@ class SourceFile:
 
         if not self.source_info:
             import_recorder, collect_module_res = self.type_recorder_module_res(
-                resource_registry, type_res_list, process, file_dict, service_providers)
+                custom_res_reg, type_res_list, process, file_dict, service_providers)
             invalid_deps, self.source_info = self.parse_source(
                 import_recorder, None, collect_module_res, process, fail_on_incomplete=True)
 
-        import_list = self._make_import_list(resource_registry, file_dict, service_providers)
+        import_list = self._make_import_list(custom_res_reg, file_dict, service_providers)
 
         import_recorder, import_recorder_ref = self._prepare_import_recorder(process, type_res_list)
         name_to_recorder, tested_import_list, ass_list = self._make_tested_import_list(
-            resource_registry, custom_types, type_res_list, process, file_dict, service_providers)
+            custom_res_reg, custom_types, type_res_list, process, file_dict, service_providers)
 
         recorder_import_list = [
             *import_list,
@@ -707,14 +706,14 @@ class SourceFile:
                 ass_list += constructor_creg.invite(ctr_ref, custom_types, resource_module, module_res, attr) or []
         return ass_list
 
-    def construct_resources(self, process, resource_registry, custom_types, type_res_list, test_results, file_dict, saver):
-        resource_module = resource_module_factory(resource_registry, self.module_name)
+    def construct_resources(self, process, custom_res_reg, custom_types, type_res_list, test_results, file_dict, saver):
+        resource_module = resource_module_factory(custom_res_reg, self.module_name)
         fixtures_file = file_dict.get(f'{self.module_name}.fixtures')
 
-        self._set_resource_module(resource_registry, resource_module)
+        self._set_resource_module(custom_res_reg, resource_module)
 
         used_types = self._visit_module(
-            process, resource_registry, custom_types, type_res_list, test_results, file_dict, resource_module, fixtures_file)
+            process, custom_res_reg, custom_types, type_res_list, test_results, file_dict, resource_module, fixtures_file)
         # Add types discovered by tests.
         used_types |= test_results[self.module_name].type_import_set
         call_list = test_results[self.module_name].call_list
@@ -725,7 +724,7 @@ class SourceFile:
 
         service_providers = service_provider_modules(file_dict)
         import_list = [
-            *self._make_import_list(resource_registry, file_dict, service_providers),
+            *self._make_import_list(custom_res_reg, file_dict, service_providers),
             *self._types_import_list(type_res_list, used_types),
             ]
 
@@ -738,7 +737,7 @@ class SourceFile:
         for ass in ass_list:
             resource_module.add_association(ass)
 
-        dep_modules = self._collect_dep_modules(resource_registry, file_dict, self.deps)
+        dep_modules = self._collect_dep_modules(custom_res_reg, file_dict, self.deps)
         module_deps_record = self._make_module_deps_record(dep_modules)
         source_ref = mosaic.put(module_deps_record)
         _log.info("Write %s: %s", self.name, self.resources_path)
@@ -777,10 +776,10 @@ def legacy_type_resources(dir_list):
     return (custom_types, resource_list)
 
 
-def add_legacy_types_to_cache(resource_registry, legacy_type_modules):
+def add_legacy_types_to_cache(custom_res_reg, legacy_type_modules):
     for module_name, module in legacy_type_modules.items():
         for var_name in module:
-            resource_registry.add_to_cache((module_name, var_name), module[var_name])
+            custom_res_reg.add_to_cache((module_name, var_name), module[var_name])
 
 
 def code_provider_modules(file_dict):
@@ -803,23 +802,23 @@ def service_provider_modules(file_dict, want_up_to_date=True):
         }
 
 
-def is_builtin_service(resource_registry, service_name):
-    return ('builtin_service', service_name) in resource_registry
+def is_builtin_service(custom_res_reg, service_name):
+    return ('builtin_service', service_name) in custom_res_reg
 
 
-def service_resource(resource_registry, service_providers, service_name):
+def service_resource(custom_res_reg, service_providers, service_name):
     try:
         provider = service_providers[service_name]
     except KeyError:
         try:
-            return resource_registry['builtin_service', service_name]
+            return custom_res_reg['builtin_service', service_name]
         except KeyError:
             return None  # Provider module deps are not yet ready?
     else:
-        return resource_registry[provider.module_name, f'{service_name}.service']
+        return custom_res_reg[provider.module_name, f'{service_name}.service']
 
 
-def collect_source_files(generator_ref, subdir_list, root_dirs, resource_registry):
+def collect_source_files(generator_ref, subdir_list, root_dirs, custom_res_reg):
     file_dict = {}
 
     def add_source_files(root, dir):
@@ -834,13 +833,13 @@ def collect_source_files(generator_ref, subdir_list, root_dirs, resource_registr
     for root in root_dirs:
         add_source_files(root, root)
     for file in file_dict.values():
-        file.init_resource_module(resource_registry, file_dict)
+        file.init_resource_module(custom_res_reg, file_dict)
     return file_dict
 
 
-def init_deps(resource_registry, process, type_res_list, file_dict):
+def init_deps(custom_res_reg, process, type_res_list, file_dict):
     for file in file_dict.values():
-        file.init_deps(resource_registry, process, type_res_list, file_dict)
+        file.init_deps(custom_res_reg, process, type_res_list, file_dict)
 
 
 def resource_saver(resource_module, path, source_ref_str, generator_ref_str):
@@ -851,26 +850,24 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_ti
     _log.info("Compile resources at: %s, %s: %s", subdir_list, root_dirs, module_list)
 
     resource_dir_list = [hyperapp_dir / d for d in subdir_list] + root_dirs
-    resource_registry = resource_registry_factory()
+    custom_res_reg = resource_registry.clone()
 
     custom_types, type_res_list = legacy_type_resources(resource_dir_list)
     legacy_type_modules = legacy_type_resource_loader(custom_types)
-    add_legacy_types_to_cache(resource_registry, legacy_type_modules)
-    resource_registry.update_modules(legacy_type_modules)
-
-    resource_registry.set_module('builtin_service', builtin_service_resource_loader(resource_registry))
+    add_legacy_types_to_cache(custom_res_reg, legacy_type_modules)
+    custom_res_reg.update_modules(legacy_type_modules)
 
     test_results = defaultdict(TestResults)  # module name -> TestResults
 
     with subprocess(process_name, resource_dir_list, rpc_timeout) as process:
 
-        file_dict = collect_source_files(generator_ref, subdir_list, root_dirs, resource_registry)
+        file_dict = collect_source_files(generator_ref, subdir_list, root_dirs, custom_res_reg)
 
         round = 0
         idx = 0
         while True:
             _log.info("****** Round #%d  %s", round, '*'*50)
-            init_deps(resource_registry, process, type_res_list, file_dict)
+            init_deps(custom_res_reg, process, type_res_list, file_dict)
             ready_files = sorted([f for f in file_dict.values() if f.ready_for_construction], key=attrgetter('module_name'))
             waits_services = [f for f in file_dict.values() if f.ready_status == ReadyStatus.ServicesNotReady]
             _log.info("Ready for construction: %s", ", ".join(f.module_name for f in ready_files))
@@ -896,6 +893,6 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_ti
                     continue
                 _log.info("****** #%d Construct resources for: %s  %s", idx, file.module_name, '*'*50)
                 file.construct_resources(
-                    process, resource_registry, custom_types, type_res_list, test_results, file_dict, saver)
+                    process, custom_res_reg, custom_types, type_res_list, test_results, file_dict, saver)
                 idx += 1
             round += 1
