@@ -13,14 +13,19 @@ import:
 - legacy_type.window:pos
 - legacy_type.window:size
 - legacy_type.window:state
+- ui.ui_ctl_registry:ui_ctl_creg.service
 associations:
 - bases:
   - legacy_type.window:app_layout
-  key: legacy_type.window:app_layout
+  key:
+  - ui.ui_ctl_registry:ui_ctl_creg.service
+  - legacy_type.window:app_layout
   value: AppCtl.from_piece.ctl
 - bases:
   - legacy_type.window:layout
-  key: legacy_type.window:layout
+  key:
+  - ui.ui_ctl_registry:ui_ctl_creg.service
+  - legacy_type.window:layout
   value: WindowCtl.from_piece.ctl
 definitions:
   AppCtl:
