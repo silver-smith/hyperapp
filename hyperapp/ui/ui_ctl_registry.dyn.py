@@ -5,7 +5,7 @@ from hyperapp.common.ref import decode_capsule
 from .services import (
     association_reg,
     mark,
-    python_object_creg,
+    pyobj_creg,
     types,
     web,
     )
@@ -47,7 +47,7 @@ class UiCtlRegistry:
             pass
         fn_res = association_reg[self, t]
         try:
-            return python_object_creg.invite(fn_res)
+            return pyobj_creg.invite(fn_res)
         except KeyError as x:
             # Do not let KeyError out - it will be caught by superclass and incorrect error message will be produced.
             raise RuntimeError(f"{self._produce_name}: Error resolving function for {t!r}, {fn_res}: {x}")

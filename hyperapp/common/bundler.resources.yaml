@@ -3,7 +3,7 @@
 import:
 - builtin_service:association_reg
 - builtin_service:mosaic
-- builtin_service:python_object_creg
+- builtin_service:pyobj_creg
 - builtin_service:types
 - common.mark:mark.service
 - common.visitor:visitor.module
@@ -25,7 +25,7 @@ definitions:
       services.association_reg: builtin_service:association_reg
       services.mark: common.mark:mark.service
       services.mosaic: builtin_service:mosaic
-      services.python_object_creg: builtin_service:python_object_creg
+      services.pyobj_creg: builtin_service:pyobj_creg
       services.types: builtin_service:types
   bundler.service:
     _type: legacy_type.builtin:call

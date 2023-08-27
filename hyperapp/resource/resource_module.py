@@ -22,7 +22,7 @@ class ResourceModule:
             self,
             mosaic,
             resource_type_producer,
-            python_object_creg,
+            pyobj_creg,
             resource_registry,
             name,
             path=None,
@@ -34,7 +34,7 @@ class ResourceModule:
         self._mosaic = mosaic
         self._resource_type_producer = resource_type_producer
         self._resource_registry = resource_registry
-        self._python_object_creg = python_object_creg
+        self._pyobj_creg = pyobj_creg
         self._name = name
         self._path = path
         self._resource_dir = path.parent if path else None
@@ -141,7 +141,7 @@ class ResourceModule:
         return ResourceModule(
             mosaic=self._mosaic,
             resource_type_producer=self._resource_type_producer,
-            python_object_creg=self._python_object_creg,
+            pyobj_creg=self._pyobj_creg,
             resource_registry=self._resource_registry,
             name=f'{self._name}-with-{module.name}',
             path=self._path.with_name('dummy'),
@@ -320,7 +320,7 @@ class ResourceModule:
         except KeyError:
             raise RuntimeError(f"{self._name}: definition {name!r} has no '_type' attribute")
         resource_t_res = self._resolve_name(resource_t_name)
-        resource_t = self._python_object_creg.animate(resource_t_res)
+        resource_t = self._pyobj_creg.animate(resource_t_res)
         t = self._resource_type_producer(resource_t)
         try:
             value = t.from_dict(data)

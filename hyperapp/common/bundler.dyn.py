@@ -11,7 +11,7 @@ from .services import (
     association_reg,
     mark,
     mosaic,
-    python_object_creg,
+    pyobj_creg,
     types,
     )
 from .code.visitor import Visitor
@@ -95,7 +95,7 @@ class Bundler(Visitor):
             self._collected_ref_set.add(value)
 
     def _collect_associations(self, ref, t, value):
-        t_res = python_object_creg.reverse_resolve(t)
+        t_res = pyobj_creg.reverse_resolve(t)
         for obj in [t_res, value]:
             for ass in association_reg.base_to_ass_list(obj):
                 piece = ass.to_piece(mosaic)

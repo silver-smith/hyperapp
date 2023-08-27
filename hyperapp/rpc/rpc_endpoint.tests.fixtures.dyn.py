@@ -26,5 +26,5 @@ class PhonyPythonObjectCReg:
 
 
 @mark.service
-def python_object_creg():
+def pyobj_creg():
     return PhonyPythonObjectCReg()

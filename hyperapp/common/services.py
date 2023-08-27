@@ -68,7 +68,7 @@ class Services(object):
         'unbundler',
         'resource_type_factory',
         'resource_type_reg',
-        'python_object_creg',
+        'pyobj_creg',
         'resource_type_producer',
         'resource_registry_factory',
         'resource_registry',
@@ -108,20 +108,20 @@ class Services(object):
         self.python_importer.register_meta_hook()
         self.resource_type_factory = partial(ResourceType, self.types, self.mosaic, self.web)
         self.resource_type_reg = {}  # resource_t -> ResourceType instance
-        self.python_object_creg = PyObjRegistry('python_object', self.web, self.types)
-        self.python_object_creg.init_registries(self.association_reg, self.python_object_creg)
+        self.pyobj_creg = PyObjRegistry('python_object', self.web, self.types)
+        self.pyobj_creg.init_registries(self.association_reg, self.pyobj_creg)
         self.unbundler = Unbundler(self.web, self.mosaic, self.association_reg)
         self.resource_type_producer = partial(resource_type_producer, self.resource_type_factory, self.resource_type_reg)
         self.resource_type_reg[python_module_t] = PythonModuleResourceType()
-        self.python_object_creg.register_actor(
-            python_module_t, python_module_pyobj, self.mosaic, self.python_importer, self.python_object_creg)
+        self.pyobj_creg.register_actor(
+            python_module_t, python_module_pyobj, self.mosaic, self.python_importer, self.pyobj_creg)
         self.resource_registry_factory = partial(ResourceRegistry, self.mosaic)
         self.resource_registry = self.resource_registry_factory()
         self.resource_module_factory = partial(
             ResourceModule,
             self.mosaic,
             self.resource_type_producer,
-            self.python_object_creg,
+            self.pyobj_creg,
         )
         self.resource_loader = partial(
             load_resource_modules,
@@ -133,18 +133,18 @@ class Services(object):
             )
         self.builtin_types_as_dict = partial(convert_builtin_types_to_dict, self.types, self.builtin_types)
         self.legacy_type_resource_loader = load_legacy_type_resources
-        add_builtin_types_to_pyobj_cache(self.types, self.builtin_types, self.python_object_creg)
-        self.python_object_creg.register_actor(legacy_type_t, legacy_type_pyobj, self.types)
+        add_builtin_types_to_pyobj_cache(self.types, self.builtin_types, self.pyobj_creg)
+        self.pyobj_creg.register_actor(legacy_type_t, legacy_type_pyobj, self.types)
         self.builtin_service_resource_loader = partial(
             make_builtin_service_resource_module, self.mosaic, self.builtin_services)
         self.resource_registry.set_module(
             'builtin_service', self.builtin_service_resource_loader(self.resource_registry))
-        self.python_object_creg.register_actor(builtin_service_t, builtin_service_python_object, self)
+        self.pyobj_creg.register_actor(builtin_service_t, builtin_service_python_object, self)
         self.resource_type_reg[attribute_t] = AttributeResourceType()
-        self.python_object_creg.register_actor(attribute_t, attribute_pyobj, self.python_object_creg)
+        self.pyobj_creg.register_actor(attribute_t, attribute_pyobj, self.pyobj_creg)
         self.resource_type_reg[call_t] = CallResourceType()
-        self.python_object_creg.register_actor(call_t, call_pyobj, self.python_object_creg)
-        add_builtin_services_to_pyobj_cache(self, self.builtin_services, self.python_object_creg)
+        self.pyobj_creg.register_actor(call_t, call_pyobj, self.pyobj_creg)
+        add_builtin_services_to_pyobj_cache(self, self.builtin_services, self.pyobj_creg)
 
     def stop(self):
         log.info("Stop services.")

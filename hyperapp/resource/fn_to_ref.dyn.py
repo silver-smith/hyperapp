@@ -4,7 +4,7 @@ from . import htypes
 from .services import (
     mark,
     mosaic,
-    python_object_creg,
+    pyobj_creg,
     )
 
 
@@ -13,7 +13,7 @@ def fn_to_ref():
 
     def _fn_to_ref(fn):
         module = inspect.getmodule(fn)
-        module_res = python_object_creg.reverse_resolve(module)
+        module_res = pyobj_creg.reverse_resolve(module)
         fn_res = htypes.builtin.attribute(
             object=mosaic.put(module_res),
             attr_name=fn.__name__,

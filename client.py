@@ -42,14 +42,14 @@ def main():
         builtin_types_as_dict = services.builtin_types_as_dict
         local_types = services.local_types
         association_reg = services.association_reg
-        python_object_creg = services.python_object_creg
+        pyobj_creg = services.pyobj_creg
 
         resource_list_loader(resource_dir_list, resource_registry)
         resource_registry.update_modules(legacy_type_resource_loader({**builtin_types_as_dict(), **local_types}))
 
         association_reg.register_association_list(resource_registry.associations)
         client_module_res = resource_registry['client.client', 'client.module']
-        client_module = python_object_creg.animate(client_module_res)
+        client_module = pyobj_creg.animate(client_module_res)
         exit_code = client_module._main()
     finally:
         log.info("Stopping.")

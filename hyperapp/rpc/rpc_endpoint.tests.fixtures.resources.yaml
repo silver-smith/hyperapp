@@ -7,13 +7,13 @@ import:
 - legacy_type.builtin:python_module
 associations: []
 definitions:
-  python_object_creg:
+  pyobj_creg:
     _type: legacy_type.builtin:attribute
     object: rpc_endpoint.tests.fixtures.module
-    attr_name: python_object_creg
-  python_object_creg.service:
+    attr_name: pyobj_creg
+  pyobj_creg.service:
     _type: legacy_type.builtin:call
-    function: python_object_creg
+    function: pyobj_creg
   rpc_endpoint.tests.fixtures.module:
     _type: legacy_type.builtin:python_module
     module_name: rpc_endpoint.tests.fixtures

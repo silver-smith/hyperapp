@@ -8,7 +8,7 @@ from .services import (
     generate_rsa_identity,
     module_dir_list,
     mosaic,
-    python_object_creg,
+    pyobj_creg,
     rpc_endpoint_factory,
     types,
     web,
@@ -71,7 +71,7 @@ def test_import_recorder():
         )
     module_ref = mosaic.put(module_res)
 
-    collect_attributes_res = python_object_creg.reverse_resolve(collect_attributes)
+    collect_attributes_res = pyobj_creg.reverse_resolve(collect_attributes)
     collect_attributes_ref = mosaic.put(collect_attributes_res)
 
     with process_running() as process:
@@ -107,7 +107,7 @@ def test_import_discoverer():
         )
     module_ref = mosaic.put(module_res)
 
-    collect_attributes_res = python_object_creg.reverse_resolve(collect_attributes)
+    collect_attributes_res = pyobj_creg.reverse_resolve(collect_attributes)
     collect_attributes_ref = mosaic.put(collect_attributes_res)
 
     with process_running() as process:
@@ -165,7 +165,7 @@ def test_combined():
         )
     module_ref = mosaic.put(module_res)
 
-    collect_attributes_res = python_object_creg.reverse_resolve(collect_attributes)
+    collect_attributes_res = pyobj_creg.reverse_resolve(collect_attributes)
     collect_attributes_ref = mosaic.put(collect_attributes_res)
 
     with process_running() as process:

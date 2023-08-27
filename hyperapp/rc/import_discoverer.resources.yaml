@@ -1,5 +1,5 @@
 import:
-  - builtin_service:python_object_creg
+  - builtin_service:pyobj_creg
   - legacy_type.builtin:attribute
   - legacy_type.import_discoverer:import_discoverer
   - legacy_type.import_discoverer:using_incomplete_object
@@ -10,7 +10,7 @@ associations:
 - bases:
   - legacy_type.import_discoverer:import_discoverer
   key:
-  - builtin_service:python_object_creg
+  - builtin_service:pyobj_creg
   - legacy_type.import_discoverer:import_discoverer
   value: ImportDiscoverer
 
@@ -22,7 +22,7 @@ definitions:
     file_name: import_discoverer.dyn.py
     import_list:
       htypes.import_discoverer.using_incomplete_object: legacy_type.import_discoverer:using_incomplete_object
-      services.python_object_creg: builtin_service:python_object_creg
+      services.pyobj_creg: builtin_service:pyobj_creg
 
   ImportDiscoverer:
     _type: legacy_type.builtin:attribute

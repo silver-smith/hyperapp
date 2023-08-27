@@ -9,7 +9,6 @@ from .services import (
     endpoint_registry,
     module_dir_list,
     mosaic,
-    python_object_creg,
     route_table,
     rpc_endpoint_factory,
     subprocess_rpc_server_running,

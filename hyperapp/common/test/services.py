@@ -108,14 +108,14 @@ def python_importer():
 
 
 @pytest.fixture
-def python_object_creg(types, mosaic, web, association_reg, python_importer):
+def pyobj_creg(types, mosaic, web, association_reg, python_importer):
     creg = CachedCodeRegistry('python_object', web, types)
     creg.init_registries(association_reg, creg)
     creg.register_actor(python_module_t, python_module_pyobj, mosaic, python_importer, creg)
     creg.register_actor(legacy_type_t, legacy_type_pyobj, types)
     # creg.register_actor(builtin_service_t, builtin_service_python_object, self)
-    creg.register_actor(attribute_t, attribute_pyobj, python_object_creg)
-    creg.register_actor(call_t, call_pyobj, python_object_creg)
+    creg.register_actor(attribute_t, attribute_pyobj, pyobj_creg)
+    creg.register_actor(call_t, call_pyobj, pyobj_creg)
     return creg
 
 
@@ -125,8 +125,8 @@ def resource_registry_factory(mosaic):
 
 
 @pytest.fixture
-def resource_module_factory(mosaic, resource_type_producer, python_object_creg):
-    return partial(ResourceModule, mosaic, resource_type_producer, python_object_creg)
+def resource_module_factory(mosaic, resource_type_producer, pyobj_creg):
+    return partial(ResourceModule, mosaic, resource_type_producer, pyobj_creg)
 
 
 @pytest.fixture
@@ -160,7 +160,7 @@ def builtin_services(
         # unbundler,
         resource_type_factory,
         resource_type_reg,
-        python_object_creg,
+        pyobj_creg,
         resource_type_producer,
         resource_registry_factory,
         # resource_registry,
@@ -186,7 +186,7 @@ def builtin_services(
         # 'unbundler': unbundler,
         'resource_type_factory': resource_type_factory,
         'resource_type_reg': resource_type_reg,
-        'python_object_creg': python_object_creg,
+        'pyobj_creg': pyobj_creg,
         'resource_type_producer': resource_type_producer,
         'resource_registry_factory': resource_registry_factory,
         # 'resource_registry': resource_registry,

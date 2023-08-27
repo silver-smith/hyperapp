@@ -138,17 +138,17 @@ def test_reverse_resolve(mosaic, resource_type_producer):
         )
 
 
-def test_python_module_resource(resource_registry, python_object_creg):
+def test_python_module_resource(resource_registry, pyobj_creg):
     python_module_resource = resource_registry['sample_python_module', 'sample_python_module']
     log.info("Loading python module: %r", python_module_resource)
-    python_module = python_object_creg.animate(python_module_resource)
+    python_module = pyobj_creg.animate(python_module_resource)
     log.info("Python module: %r", python_module)
     assert python_module.value.key == 123
 
 
-def test_fixture(resource_registry, python_object_creg):
+def test_fixture(resource_registry, pyobj_creg):
     fixture = resource_registry['sample_fixture.fixtures', 'sample_fixture']
     log.info("Sample fixture: %r", fixture)
-    python_module = python_object_creg.animate(fixture)
+    python_module = pyobj_creg.animate(fixture)
     log.info("Python module: %r", python_module)
     log.info("Sample item: %r", python_module.sample_item)

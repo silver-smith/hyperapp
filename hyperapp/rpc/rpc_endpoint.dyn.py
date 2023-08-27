@@ -14,7 +14,7 @@ from .services import (
     mosaic,
     on_stop,
     peer_registry,
-    python_object_creg,
+    pyobj_creg,
     transport,
     types,
     web,
@@ -94,7 +94,7 @@ class RpcEndpoint:
         servant_fn = "<unknown servant>"
         try:
             log.debug("Resolve rpc servant: %s", request.servant_ref)
-            servant_fn = python_object_creg.invite(request.servant_ref)
+            servant_fn = pyobj_creg.invite(request.servant_ref)
             params = {
                 p.name: mosaic.resolve_ref(p.value).value
                 for p in request.params

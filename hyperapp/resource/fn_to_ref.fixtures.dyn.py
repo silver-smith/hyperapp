@@ -9,5 +9,5 @@ class _PhonyPyObjCReg:
 
 
 @mark.service
-def python_object_creg():
+def pyobj_creg():
     return _PhonyPyObjCReg()

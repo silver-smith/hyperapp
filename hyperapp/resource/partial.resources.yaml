@@ -1,5 +1,5 @@
 import:
-- builtin_service:python_object_creg
+- builtin_service:pyobj_creg
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.partial:partial
@@ -9,7 +9,7 @@ associations:
 - bases:
   - legacy_type.partial:partial
   key:
-  - builtin_service:python_object_creg
+  - builtin_service:pyobj_creg
   - legacy_type.partial:partial
   value: python_object
 
@@ -19,7 +19,7 @@ definitions:
     module_name: partial
     file_name: partial.dyn.py
     import_list:
-      services.python_object_creg: builtin_service:python_object_creg
+      services.pyobj_creg: builtin_service:pyobj_creg
   python_object:
     _type: legacy_type.builtin:attribute
     object: partial.module

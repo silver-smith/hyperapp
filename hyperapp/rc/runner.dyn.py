@@ -15,7 +15,7 @@ from .services import (
     hyperapp_dir,
     mosaic,
     types,
-    python_object_creg,
+    pyobj_creg,
     web,
     )
 from .constants import RESOURCE_NAMES_ATTR, RESOURCE_CTR_ATTR
@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 def collect_attributes(object_ref):
     log.info("Collect attributes: %s", object_ref)
     try:
-        object = python_object_creg.invite(object_ref)
+        object = pyobj_creg.invite(object_ref)
     except HException as x:
         raise
     except RuntimeError as x:
@@ -212,7 +212,7 @@ def get_resource_type(resource_ref, use_associations, tested_modules):
 
         tracer = Tracer(tested_modules)
         with tracer.tracing():
-            value = python_object_creg.invite(resource_ref)
+            value = pyobj_creg.invite(resource_ref)
             log.info("Resource value: %s", repr(value))
 
         if inspect.isgenerator(value):

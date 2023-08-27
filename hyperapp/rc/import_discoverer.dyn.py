@@ -3,7 +3,7 @@ from hyperapp.common.python_importer import Finder
 
 from . import htypes
 from .services import (
-    python_object_creg,
+    pyobj_creg,
 )
 
 

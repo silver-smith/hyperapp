@@ -3,7 +3,7 @@ import:
   - builtin_service:hyperapp_dir
   - builtin_service:mosaic
   - builtin_service:types
-  - builtin_service:python_object_creg
+  - builtin_service:pyobj_creg
   - builtin_service:web
   - legacy_type.async_run:async_run
   - legacy_type.builtin:attribute
@@ -58,7 +58,7 @@ definitions:
       services.hyperapp_dir: builtin_service:hyperapp_dir
       services.mosaic: builtin_service:mosaic
       services.types: builtin_service:types
-      services.python_object_creg: builtin_service:python_object_creg
+      services.pyobj_creg: builtin_service:pyobj_creg
       services.web: builtin_service:web
       constants: resource.constants:constants.module
 

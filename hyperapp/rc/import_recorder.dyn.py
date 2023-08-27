@@ -1,7 +1,7 @@
 from hyperapp.common.python_importer import Finder
 
 from .services import (
-    python_object_creg,
+    pyobj_creg,
     )
 
 
@@ -48,7 +48,7 @@ class RecorderObject:
 
     def _load_resource(self, resource_path_str, resource_ref):
         try:
-            return python_object_creg.invite(resource_ref)
+            return pyobj_creg.invite(resource_ref)
         except Exception as x:
             raise RuntimeError(f"Error importing {resource_path_str!r}: {x}")
 

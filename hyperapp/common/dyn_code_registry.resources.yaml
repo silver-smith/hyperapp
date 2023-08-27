@@ -2,7 +2,7 @@ import:
 - common.mark:mark.module
 - builtin_service:association_reg
 - builtin_service:mosaic
-- builtin_service:python_object_creg
+- builtin_service:pyobj_creg
 - builtin_service:web
 - builtin_service:types
 - legacy_type.builtin:attribute
@@ -21,6 +21,6 @@ definitions:
       htypes.code_registry.constructor: legacy_type.code_registry:constructor
       services.association_reg: builtin_service:association_reg
       services.mosaic: builtin_service:mosaic
-      services.python_object_creg: builtin_service:python_object_creg
+      services.pyobj_creg: builtin_service:pyobj_creg
       services.web: builtin_service:web
       services.types: builtin_service:types

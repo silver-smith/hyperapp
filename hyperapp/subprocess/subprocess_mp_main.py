@@ -56,7 +56,7 @@ def subprocess_main_safe(connection, main_fn_bundle_cdr):
     services.init_services()
     services.load_type_modules()
 
-    python_object_creg = services.python_object_creg
+    pyobj_creg = services.pyobj_creg
     unbundler = services.unbundler
     stop_signal = services.stop_signal
 
@@ -65,7 +65,7 @@ def subprocess_main_safe(connection, main_fn_bundle_cdr):
     bundle = packet_coders.decode('cdr', main_fn_bundle_cdr, bundle_t)
     received_refs = unbundler.register_bundle(bundle)
     main_fn_ref = bundle.roots[0]
-    main_fn = python_object_creg.invite(main_fn_ref)
+    main_fn = pyobj_creg.invite(main_fn_ref)
 
     log.info("Subprocess: Run main function %s: %s", main_fn_ref, main_fn)
     main_fn(connection, received_refs)

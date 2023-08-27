@@ -51,7 +51,7 @@ def main():
         builtin_types_as_dict = services.builtin_types_as_dict
         local_types = services.local_types
         association_reg = services.association_reg
-        python_object_creg = services.python_object_creg
+        pyobj_creg = services.pyobj_creg
 
         resource_list_loader(resource_dir_list, resource_registry)
         resource_registry.update_modules(legacy_type_resource_loader({**builtin_types_as_dict(), **local_types}))
@@ -59,7 +59,7 @@ def main():
         association_reg.register_association_list(resource_registry.associations)
         fn_res = resource_registry['rc.rc', 'compile_resources']
         fn_ref = mosaic.put(fn_res)
-        fn = python_object_creg.animate(fn_res)
+        fn = pyobj_creg.animate(fn_res)
         fn(fn_ref, args.source_subdir, args.root_dir or [], args.module, args.rpc_timeout)
     finally:
         log.info("Stopping.")

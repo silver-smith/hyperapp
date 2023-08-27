@@ -118,11 +118,11 @@ def make_module_name(mosaic, module):
     return f'{ROOT_PACKAGE}.{module_ref.hash_algorithm}_{hash_hex}'
 
 
-def sub_loader_dict(python_object_creg, import_list, root_module_name):
+def sub_loader_dict(pyobj_creg, import_list, root_module_name):
     loader_dict = {}
     module_dict = defaultdict(dict)
     for rec in import_list:
-        resource = python_object_creg.invite(rec.resource)
+        resource = pyobj_creg.invite(rec.resource)
         path = rec.full_name.split('.')
         if path[-1] == '*':
             # An auto importer.
@@ -152,7 +152,7 @@ def sub_loader_dict(python_object_creg, import_list, root_module_name):
     return loader_dict
 
                 
-def python_module_pyobj(piece, mosaic, python_importer, python_object_creg):
+def python_module_pyobj(piece, mosaic, python_importer, pyobj_creg):
     module_name = make_module_name(mosaic, piece)
     if python_importer.module_imported(module_name):
         raise RuntimeError(f"Error: module {module_name} is aleady imported")
@@ -164,7 +164,7 @@ def python_module_pyobj(piece, mosaic, python_importer, python_object_creg):
     try:
         return python_importer.import_module(
             module_name, root_loader,
-            sub_loader_dict=sub_loader_dict(python_object_creg, piece.import_list, module_name))
+            sub_loader_dict=sub_loader_dict(pyobj_creg, piece.import_list, module_name))
     except HException:
         raise
     except Exception as x:

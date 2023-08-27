@@ -33,6 +33,6 @@ class CallResourceType:
             )
 
 
-def call_pyobj(piece, python_object_creg):
-    fn = python_object_creg.invite(piece.function)
+def call_pyobj(piece, pyobj_creg):
+    fn = pyobj_creg.invite(piece.function)
     return fn()

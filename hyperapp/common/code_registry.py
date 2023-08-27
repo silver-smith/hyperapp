@@ -20,21 +20,21 @@ class CodeRegistry:
         self._web = web
         self._types = types
         self._association_reg = None
-        self._python_object_creg = None
+        self._pyobj_creg = None
         self._registry = {}  # t -> _Rec
 
-    def init_registries(self, association_reg, python_object_creg):
+    def init_registries(self, association_reg, pyobj_creg):
         self._association_reg = association_reg
-        self._python_object_creg = python_object_creg
+        self._pyobj_creg = pyobj_creg
 
     @cached_property
     def _my_resource(self):
-        return self._python_object_creg.reverse_resolve(self)
+        return self._pyobj_creg.reverse_resolve(self)
 
     def type_registered(self, t):
         if t in self._registry:
             return True
-        t_res = self._python_object_creg.reverse_resolve(t)
+        t_res = self._pyobj_creg.reverse_resolve(t)
         return (self._my_resource, t_res) in self._association_reg
 
     def register_actor(self, t, factory, *args, **kw):
@@ -59,10 +59,10 @@ class CodeRegistry:
         except KeyError:
             if not self._association_reg:
                 raise
-        t_res = self._python_object_creg.reverse_resolve(t)
+        t_res = self._pyobj_creg.reverse_resolve(t)
         fn_res = self._association_reg[self._my_resource, t_res]
         try:
-            fn = self._python_object_creg.animate(fn_res)
+            fn = self._pyobj_creg.animate(fn_res)
             return self._Rec(fn, args=[], kw={})
         except KeyError as x:
             # Do not let KeyError out - it will be caught by superclass and incorrect error message will be produced.

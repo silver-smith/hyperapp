@@ -42,10 +42,10 @@ code_module_list = [
 BIND_ADDRESS = ('localhost', 8080)
 
 
-def load_module(resource_registry, python_object_creg, module_name):
+def load_module(resource_registry, pyobj_creg, module_name):
     var_name = module_name.split('.')[-1] + '.module'
     module_res = resource_registry[module_name, var_name]
-    return python_object_creg.animate(module_res)
+    return pyobj_creg.animate(module_res)
 
 
 def main():
@@ -61,8 +61,8 @@ def main():
     services.start_modules()
 
     resource_registry = services.resource_registry
-    python_object_creg = services.python_object_creg
-    module = partial(load_module, resource_registry, python_object_creg)
+    pyobj_creg = services.pyobj_creg
+    module = partial(load_module, resource_registry, pyobj_creg)
 
     services.register_associations(resource_registry)
 

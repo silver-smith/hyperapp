@@ -2,7 +2,7 @@
 
 import:
 - builtin_service:mosaic
-- builtin_service:python_object_creg
+- builtin_service:pyobj_creg
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -21,7 +21,7 @@ definitions:
       htypes.builtin.attribute: legacy_type.builtin:attribute
       services.mark: common.mark:mark.service
       services.mosaic: builtin_service:mosaic
-      services.python_object_creg: builtin_service:python_object_creg
+      services.pyobj_creg: builtin_service:pyobj_creg
   fn_to_ref.service:
     _type: legacy_type.builtin:call
     function: fn_to_ref

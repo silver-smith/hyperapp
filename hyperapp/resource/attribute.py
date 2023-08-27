@@ -35,6 +35,6 @@ class AttributeResourceType:
             )
 
 
-def attribute_pyobj(piece, python_object_creg):
-    object = python_object_creg.invite(piece.object)
+def attribute_pyobj(piece, pyobj_creg):
+    object = pyobj_creg.invite(piece.object)
     return getattr(object, piece.attr_name)

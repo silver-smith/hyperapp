@@ -3,7 +3,7 @@
 import:
 - builtin_service:mosaic
 - builtin_service:on_stop
-- builtin_service:python_object_creg
+- builtin_service:pyobj_creg
 - builtin_service:types
 - builtin_service:web
 - common.mark:mark.service
@@ -35,7 +35,7 @@ definitions:
       services.mosaic: builtin_service:mosaic
       services.on_stop: builtin_service:on_stop
       services.peer_registry: transport.identity:peer_registry.service
-      services.python_object_creg: builtin_service:python_object_creg
+      services.pyobj_creg: builtin_service:pyobj_creg
       services.transport: transport.transport:transport.service
       services.types: builtin_service:types
       services.web: builtin_service:web
