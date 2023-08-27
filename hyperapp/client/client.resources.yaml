@@ -2,10 +2,12 @@
 
 import:
 - legacy_type.builtin:python_module
+- ui.ui_ctl_registry:ui_ctl_creg.service
 associations: []
 definitions:
   client.module:
     _type: legacy_type.builtin:python_module
     module_name: client
     file_name: client.dyn.py
-    import_list: {}
+    import_list:
+      services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service

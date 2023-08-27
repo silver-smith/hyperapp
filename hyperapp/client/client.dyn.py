@@ -1,5 +1,9 @@
 from PySide6 import QtWidgets
 
+from .services import (
+    ui_ctl_creg,
+    )
+
 
 def _main():
     app = QtWidgets.QApplication()
