@@ -34,7 +34,7 @@ from ..resource.legacy_type import (
 from .htypes.builtin_service import builtin_service_t
 from ..resource.builtin_service import (
     add_builtin_services_to_pyobj_cache,
-    builtin_service_python_object,
+    builtin_service_pyobj,
     make_builtin_service_resource_module,
     )
 from .htypes.attribute import attribute_t
@@ -108,7 +108,7 @@ class Services(object):
         self.python_importer.register_meta_hook()
         self.resource_type_factory = partial(ResourceType, self.types, self.mosaic, self.web)
         self.resource_type_reg = {}  # resource_t -> ResourceType instance
-        self.pyobj_creg = PyObjRegistry('python_object', self.web, self.types)
+        self.pyobj_creg = PyObjRegistry('pyobj', self.web, self.types)
         self.pyobj_creg.init_registries(self.association_reg, self.pyobj_creg)
         self.unbundler = Unbundler(self.web, self.mosaic, self.association_reg)
         self.resource_type_producer = partial(resource_type_producer, self.resource_type_factory, self.resource_type_reg)
@@ -139,7 +139,7 @@ class Services(object):
             make_builtin_service_resource_module, self.mosaic, self.builtin_services)
         self.resource_registry.set_module(
             'builtin_service', self.builtin_service_resource_loader(self.resource_registry))
-        self.pyobj_creg.register_actor(builtin_service_t, builtin_service_python_object, self)
+        self.pyobj_creg.register_actor(builtin_service_t, builtin_service_pyobj, self)
         self.resource_type_reg[attribute_t] = AttributeResourceType()
         self.pyobj_creg.register_actor(attribute_t, attribute_pyobj, self.pyobj_creg)
         self.resource_type_reg[call_t] = CallResourceType()

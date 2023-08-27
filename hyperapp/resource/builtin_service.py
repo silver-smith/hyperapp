@@ -58,5 +58,5 @@ def make_builtin_service_resource_module(mosaic, builtin_services, resource_regi
     return BuiltinServiceResourceModule(name_to_piece)
 
 
-def builtin_service_python_object(piece, services):
+def builtin_service_pyobj(piece, services):
     return getattr(services, piece.name)

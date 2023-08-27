@@ -24,7 +24,7 @@ from hyperapp.resource.python_module import PythonModuleResourceType, python_mod
 from hyperapp.resource.attribute import AttributeResourceType, attribute_pyobj
 from hyperapp.resource.call import CallResourceType, call_pyobj
 from hyperapp.resource.legacy_type import convert_builtin_types_to_dict, load_legacy_type_resources, legacy_type_pyobj
-from hyperapp.resource.builtin_service import builtin_service_python_object, make_builtin_service_resource_module
+from hyperapp.resource.builtin_service import builtin_service_pyobj, make_builtin_service_resource_module
 
 log = logging.getLogger(__name__)
 
@@ -109,11 +109,11 @@ def python_importer():
 
 @pytest.fixture
 def pyobj_creg(types, mosaic, web, association_reg, python_importer):
-    creg = CachedCodeRegistry('python_object', web, types)
+    creg = CachedCodeRegistry('pyobj', web, types)
     creg.init_registries(association_reg, creg)
     creg.register_actor(python_module_t, python_module_pyobj, mosaic, python_importer, creg)
     creg.register_actor(legacy_type_t, legacy_type_pyobj, types)
-    # creg.register_actor(builtin_service_t, builtin_service_python_object, self)
+    # creg.register_actor(builtin_service_t, builtin_service_pyobj, self)
     creg.register_actor(attribute_t, attribute_pyobj, pyobj_creg)
     creg.register_actor(call_t, call_pyobj, pyobj_creg)
     return creg
