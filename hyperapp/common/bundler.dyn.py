@@ -37,7 +37,7 @@ class Bundler(Visitor):
         ref_set, capsule_list = self._collect_capsule_list(ref_list, seen_refs or [])
         bundle = bundle_t(
             roots=ref_list,
-            aux_roots=list(self._collected_aux_set),
+            associations=list(self._collected_aux_set),
             capsule_list=capsule_list,
             )
         return _RefsAndBundle(ref_set, bundle)
