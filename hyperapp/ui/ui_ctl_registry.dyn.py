@@ -1,3 +1,4 @@
+import logging
 from functools import cached_property
 
 from hyperapp.common.htypes import ref_t
@@ -12,6 +13,8 @@ from .services import (
     web,
     )
 from .code.dyn_code_registry import DynCodeRegistry
+
+log = logging.getLogger(__name__)
 
 
 class UiCtlRegistry:
@@ -40,10 +43,10 @@ class UiCtlRegistry:
             factory = self._resolve_record(t)
         except KeyError:
             raise RuntimeError(f"No code is registered for {self._produce_name}: {t!r}; piece: {piece}")
-        _log.debug('Producing %s for %s of type %s using %s(%s, %s)',
+        log.debug('Producing %s for %s of type %s using %s(%s, %s)',
                    self._produce_name, piece, t, factory, args, kw)
         actor = factory(piece, *args, **kw)
-        _log.debug('Animated %s: %s to %s', self._produce_name, piece, str(actor))
+        log.debug('Animated %s: %s to %s', self._produce_name, piece, str(actor))
         return actor
 
     def _resolve_record(self, t):
@@ -52,9 +55,9 @@ class UiCtlRegistry:
         except KeyError:
             pass
         t_res = pyobj_creg.reverse_resolve(t)
-        fn_res = association_reg[self._my_resource, t_res]
+        ui_ctl = association_reg[self._my_resource, t_res]
         try:
-            return pyobj_creg.invite(fn_res)
+            return pyobj_creg.invite(ui_ctl.ctr_fn)
         except KeyError as x:
             raise RuntimeError(f"{self._produce_name}: Error resolving function for {t!r}, {fn_res}: {x}")
 
