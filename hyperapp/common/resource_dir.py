@@ -13,7 +13,6 @@ class ResourceDir:
             for d in sub_dirs or []
             ]
 
-
     def enum(self):
         if self._sub_dirs:
             for dir in self._sub_dirs:
