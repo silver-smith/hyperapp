@@ -1,7 +1,11 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtin_service:mosaic
 - legacy_type.builtin:python_module
+- legacy_type.command_pane:command_pane
+- legacy_type.menu_bar:menu_bar
+- legacy_type.window:layout
 - ui.ui_ctl_registry:ui_ctl_creg.service
 associations: []
 definitions:
@@ -10,4 +14,8 @@ definitions:
     module_name: client
     file_name: client.dyn.py
     import_list:
+      htypes.command_pane.command_pane: legacy_type.command_pane:command_pane
+      htypes.menu_bar.menu_bar: legacy_type.menu_bar:menu_bar
+      htypes.window.layout: legacy_type.window:layout
+      services.mosaic: builtin_service:mosaic
       services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
