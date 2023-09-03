@@ -708,7 +708,7 @@ class SourceFile:
         return ass_list
 
     def construct_resources(self, process, resource_registry, custom_types, type_res_list, test_results, file_dict, saver):
-        resource_module = resource_module_factory(resource_registry, self.name)
+        resource_module = resource_module_factory(resource_registry, self.module_name)
         fixtures_file = file_dict.get(f'{self.module_name}.fixtures')
 
         self._set_resource_module(resource_registry, resource_module)
