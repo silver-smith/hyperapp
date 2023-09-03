@@ -15,13 +15,20 @@ def make_window_layout():
         )
 
 
+def make_window_state():
+    return htypes.window.state(
+        size=htypes.window.size(200, 100),
+        pos=htypes.window.pos(1000, 500),
+        )
+
+
 def _main():
     app = QtWidgets.QApplication()
 
     window_layout = make_window_layout()
+    window_state = make_window_state()
     window_ctl = ui_ctl_creg.animate(window_layout)
-    window = window_ctl.construct_widget(None, None)
-    window.move(500, 100)
+    window = window_ctl.construct_widget(window_state, ctx=None)
     window.show()
 
     return app.exec()

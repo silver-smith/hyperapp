@@ -6,6 +6,9 @@ import:
 - legacy_type.command_pane:command_pane
 - legacy_type.menu_bar:menu_bar
 - legacy_type.window:layout
+- legacy_type.window:pos
+- legacy_type.window:size
+- legacy_type.window:state
 - ui.ui_ctl_registry:ui_ctl_creg.service
 associations: []
 definitions:
@@ -17,5 +20,8 @@ definitions:
       htypes.command_pane.command_pane: legacy_type.command_pane:command_pane
       htypes.menu_bar.menu_bar: legacy_type.menu_bar:menu_bar
       htypes.window.layout: legacy_type.window:layout
+      htypes.window.pos: legacy_type.window:pos
+      htypes.window.size: legacy_type.window:size
+      htypes.window.state: legacy_type.window:state
       services.mosaic: builtin_service:mosaic
       services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service

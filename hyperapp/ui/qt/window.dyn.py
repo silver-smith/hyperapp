@@ -39,6 +39,8 @@ class WindowCtl:
     def construct_widget(self, state, ctx):
         w = QtWidgets.QMainWindow()
         w.setCentralWidget(QtWidgets.QLabel("Hello!"))
+        w.move(state.pos.x, state.pos.y)
+        w.resize(state.size.w, state.size.h)
         return w
 
     def duplicate(self, widget):
