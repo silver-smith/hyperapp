@@ -5,7 +5,6 @@ from .services import (
     web,
     )
 
-
 DUP_OFFSET = htypes.window.pos(150, 50)
 
 
@@ -13,17 +12,19 @@ class AppCtl:
 
     @classmethod
     def from_piece(cls, layout):
-        window_layout = web.summon(layout.window_layout)
-        window_ctl = WindowCtl.from_piece(window_layout)
-        return cls(window_ctl)
+        window_ctl_list = [
+            WindowCtl.from_piece(web.summon(l))
+            for l in layout.window_list
+            ]
+        return cls(window_ctl_list)
 
-    def __init__(self, window_ctl):
-        self._window_ctl = window_ctl
+    def __init__(self, window_ctl_list):
+        self._window_ctl_list = window_ctl_list
 
     def construct_widget(self, state, ctx):
         return [
-            self._window_ctl.construct_widget(web.summon(ws), ctx)
-            for ws in state.window_list
+            ctl.construct_widget(web.summon(s), ctx)
+            for ctl, s in zip(self._window_ctl_list, state.window_list)
             ]
 
 

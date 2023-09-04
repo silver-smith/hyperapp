@@ -23,7 +23,9 @@ def make_window_state():
 
 
 def test_app():
-    app_layout = htypes.window.app_layout(mosaic.put(make_window_layout()))
+    app_layout = htypes.window.app_layout(
+        window_list=[mosaic.put(make_window_layout())],
+    )
     app_state = htypes.window.app_state(
         window_list=[mosaic.put(make_window_state())],
         )
