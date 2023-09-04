@@ -4,6 +4,7 @@ from types import SimpleNamespace
 from . import htypes
 from .services import (
     mosaic,
+    pyobj_creg,
     )
 from .code.constants import RESOURCE_CTR_ATTR
 
@@ -88,10 +89,21 @@ def object_command(fn):
     return fn
 
 
+def ui_command(t):
+    t_res = pyobj_creg.reverse_resolve(t)
+    t_ref = mosaic.put(t_res)
+    ctr = htypes.attr_constructors.ui_command_ctr(t_ref)
+    def _ui_command(fn):
+        add_fn_module_constructor(fn, ctr)
+        return fn
+    return _ui_command
+
+
 def mark():
     return SimpleNamespace(
         param=ParamMarker(),
         service=ServiceMarker(),
         global_command=global_command,
         object_command=object_command,
+        ui_command=ui_command,
         )

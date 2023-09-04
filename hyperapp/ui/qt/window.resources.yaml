@@ -1,6 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
+- common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command_pane:command_pane
@@ -42,3 +43,4 @@ definitions:
       htypes.window.pos: legacy_type.window:pos
       htypes.window.size: legacy_type.window:size
       htypes.window.state: legacy_type.window:state
+      services.mark: common.mark:mark.service

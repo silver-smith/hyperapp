@@ -4,3 +4,6 @@ service = record:
 
 parameter = record:
   path: string list
+
+ui_command_ctr = record:
+  t: ref

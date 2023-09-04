@@ -1,6 +1,7 @@
 from PySide6 import QtWidgets
 
 from . import htypes
+from .code.window import WindowCtl  # unused
 from .tested.code.application import AppCtl
 from .services import (
     mosaic,
