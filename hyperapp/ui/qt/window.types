@@ -15,9 +15,3 @@ layout = record:
 state = record:
   size: size
   pos: pos
-
-app_layout = record:
-  window_list: ref list
-
-app_state = record:
-  window_list: ref list

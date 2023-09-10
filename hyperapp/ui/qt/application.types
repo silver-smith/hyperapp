@@ -1,0 +1,6 @@
+
+layout = record:
+  window_list: ref list
+
+state = record:
+  window_list: ref list

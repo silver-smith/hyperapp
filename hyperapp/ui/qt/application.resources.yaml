@@ -2,13 +2,13 @@
 
 import:
 - builtin_service:web
+- legacy_type.application:layout
+- legacy_type.application:state
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command_pane:command_pane
 - legacy_type.menu_bar:menu_bar
 - legacy_type.ui:ui_ctl
-- legacy_type.window:app_layout
-- legacy_type.window:app_state
 - legacy_type.window:layout
 - legacy_type.window:pos
 - legacy_type.window:size
@@ -16,10 +16,10 @@ import:
 - ui.ui_ctl_registry:ui_ctl_creg.service
 associations:
 - bases:
-  - legacy_type.window:app_layout
+  - legacy_type.application:layout
   key:
   - ui.ui_ctl_registry:ui_ctl_creg.service
-  - legacy_type.window:app_layout
+  - legacy_type.application:layout
   value: AppCtl.from_piece.ctl
 definitions:
   AppCtl:
@@ -39,10 +39,10 @@ definitions:
     module_name: application
     file_name: application.dyn.py
     import_list:
+      htypes.application.layout: legacy_type.application:layout
+      htypes.application.state: legacy_type.application:state
       htypes.command_pane.command_pane: legacy_type.command_pane:command_pane
       htypes.menu_bar.menu_bar: legacy_type.menu_bar:menu_bar
-      htypes.window.app_layout: legacy_type.window:app_layout
-      htypes.window.app_state: legacy_type.window:app_state
       htypes.window.layout: legacy_type.window:layout
       htypes.window.pos: legacy_type.window:pos
       htypes.window.size: legacy_type.window:size

@@ -24,15 +24,15 @@ def make_window_state():
 
 
 def test_app():
-    app_layout = htypes.window.app_layout(
+    layout = htypes.application.layout(
         window_list=[mosaic.put(make_window_layout())],
     )
-    app_state = htypes.window.app_state(
+    state = htypes.application.state(
         window_list=[mosaic.put(make_window_state())],
         )
     app = QtWidgets.QApplication()
     try:
-        ctl = AppCtl.from_piece(app_layout)
-        widget = ctl.construct_widget(app_state, ctx=None)
+        ctl = AppCtl.from_piece(layout)
+        widget = ctl.construct_widget(state, ctx=None)
     finally:
         app.shutdown()
