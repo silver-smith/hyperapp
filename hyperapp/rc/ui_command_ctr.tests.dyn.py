@@ -4,8 +4,6 @@ from .services import (
     mark,
     mosaic,
     pyobj_creg,
-    resource_module_factory,
-    resource_registry_factory,
     )
 from .tested.code.ui_command_ctr import construct
 
@@ -17,16 +15,14 @@ def test_construct():
         file_path='/sample_module.dyn.py',
         import_list=(),
         )
-    registry = resource_registry_factory()
-    module = resource_module_factory(registry, 'ui_command_ctr_tests')
-    module['sample_module'] = module_res
     string_res = pyobj_creg.reverse_resolve(htypes.builtin.string)
+    name_to_res = {}
     construct(
         piece=htypes.attr_constructors.ui_command_ctr(
             t=mosaic.put(string_res),
             ),
         custom_types=local_types,
-        name_to_res=module,
+        name_to_res=name_to_res,
         module_res=module_res,
         attr=htypes.inspect.attr(
             name='sample_attr',
@@ -35,3 +31,4 @@ def test_construct():
             constructors=(),
             ),
         )
+    assert 'sample_attr' in name_to_res
