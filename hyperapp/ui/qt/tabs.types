@@ -1,0 +1,5 @@
+layout = record:
+  tab_list: ref list
+
+state = record:
+  current_tab: int

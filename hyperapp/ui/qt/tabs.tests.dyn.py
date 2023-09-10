@@ -1,0 +1,36 @@
+from PySide6 import QtWidgets
+
+from . import htypes
+from .tested.code.tabs import TabsCtl, duplicate
+from .services import (
+    mosaic,
+    )
+
+
+def make_layout():
+    return htypes.tabs.layout(
+        tab_list=[mosaic.put("Nothing is here")],
+        )
+
+
+def make_state():
+    return htypes.tabs.state(
+        current_tab=0,
+        )
+
+
+def test_tabs():
+    layout = make_layout()
+    state = make_state()
+    app = QtWidgets.QApplication()
+    try:
+        ctl = TabsCtl.from_piece(layout)
+        widget = ctl.construct_widget(state, ctx=None)
+    finally:
+        app.shutdown()
+
+
+def test_duplicate():
+    layout = make_layout()
+    state = make_state()
+    duplicate(layout, state)

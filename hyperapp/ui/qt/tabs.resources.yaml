@@ -1,0 +1,54 @@
+# Automatically generated file. Do not edit.
+
+import:
+- common.mark:mark.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:call
+- legacy_type.builtin:python_module
+- legacy_type.tabs:layout
+- legacy_type.tabs:state
+- legacy_type.ui:ui_command_d
+- legacy_type.ui:ui_ctl
+- ui.ui_ctl_registry:ui_ctl_creg.service
+associations:
+- bases:
+  - legacy_type.tabs:layout
+  key:
+  - ui.ui_ctl_registry:ui_ctl_creg.service
+  - legacy_type.tabs:layout
+  value: TabsCtl.from_piece.ctl
+- bases:
+  - legacy_type.ui:ui_command_d
+  - legacy_type.tabs:layout
+  key:
+  - legacy_type.ui:ui_command_d
+  - legacy_type.tabs:layout
+  value: duplicate
+definitions:
+  TabsCtl:
+    _type: legacy_type.builtin:attribute
+    object: tabs.module
+    attr_name: TabsCtl
+  TabsCtl.from_piece:
+    _type: legacy_type.builtin:attribute
+    object: TabsCtl
+    attr_name: from_piece
+  TabsCtl.from_piece.ctl:
+    _type: legacy_type.ui:ui_ctl
+    ctr_fn: TabsCtl.from_piece
+    command_methods: []
+  duplicate:
+    _type: legacy_type.builtin:attribute
+    object: tabs.module
+    attr_name: duplicate
+  tabs.module:
+    _type: legacy_type.builtin:python_module
+    module_name: tabs
+    file_name: tabs.dyn.py
+    import_list:
+      htypes.tabs.layout: legacy_type.tabs:layout
+      htypes.tabs.state: legacy_type.tabs:state
+      services.mark: common.mark:mark.service
+  ui_command_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:ui_command_d
