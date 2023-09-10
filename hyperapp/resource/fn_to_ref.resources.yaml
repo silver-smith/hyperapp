@@ -25,3 +25,10 @@ definitions:
   fn_to_ref.service:
     _type: legacy_type.builtin:call
     function: fn_to_ref
+  fn_to_res:
+    _type: legacy_type.builtin:attribute
+    object: fn_to_ref.module
+    attr_name: fn_to_res
+  fn_to_res.service:
+    _type: legacy_type.builtin:call
+    function: fn_to_res
