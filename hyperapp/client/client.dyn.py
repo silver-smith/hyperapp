@@ -7,28 +7,42 @@ from .services import (
     )
 
 
-def make_window_layout():
-    return htypes.window.layout(
+def make_layout():
+    tabs_layout = htypes.tabs.layout(
+        tab_list=[mosaic.put("Nothing is here")],
+        )
+    window_layout = htypes.window.layout(
         menu_bar_ref=mosaic.put(htypes.menu_bar.menu_bar()),
         command_pane_ref=mosaic.put(htypes.command_pane.command_pane()),
-        central_view_ref=mosaic.put('phony view'),
+        central_view_ref=mosaic.put(tabs_layout),
+        )
+    return htypes.application.layout(
+        window_list=[mosaic.put(window_layout)],
         )
 
 
-def make_window_state():
-    return htypes.window.state(
+def make_state():
+    tabs_state = htypes.tabs.state(
+        current_tab=0,
+        )
+    window_state = htypes.window.state(
         size=htypes.window.size(200, 100),
         pos=htypes.window.pos(1000, 500),
+        central_view_state=mosaic.put(tabs_state),
+        )
+    return htypes.application.state(
+        window_list=[mosaic.put(window_state)],
         )
 
 
 def _main():
     app = QtWidgets.QApplication()
 
-    window_layout = make_window_layout()
-    window_state = make_window_state()
-    window_ctl = ui_ctl_creg.animate(window_layout)
-    window = window_ctl.construct_widget(window_state, ctx=None)
-    window.show()
+    layout = make_layout()
+    state = make_state()
+    app_ctl = ui_ctl_creg.animate(layout)
+    window_list = app_ctl.construct_widget(state, ctx=None)
+    for window in window_list:
+        window.show()
 
     return app.exec()
