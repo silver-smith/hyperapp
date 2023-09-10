@@ -1,7 +1,7 @@
 from PySide6 import QtWidgets
 
 from . import htypes
-from .tested.code.window import WindowCtl, duplicate
+from .tested.code.window import WindowCtl
 from .services import (
     mosaic,
     )
@@ -31,9 +31,3 @@ def test_window():
         widget = ctl.construct_widget(state, ctx=None)
     finally:
         app.shutdown()
-
-
-def test_duplicate():
-    layout = make_window_layout()
-    state = make_window_state()
-    duplicate(layout, state)

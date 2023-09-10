@@ -27,8 +27,3 @@ class WindowCtl:
         w.move(state.pos.x, state.pos.y)
         w.resize(state.size.w, state.size.h)
         return w
-
-
-@mark.ui_command(htypes.window.layout)
-def duplicate(layout, state):
-    log.info("Duplicate window: %s / %s", layout, state)
