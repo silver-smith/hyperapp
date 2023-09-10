@@ -18,10 +18,10 @@ associations:
   - legacy_type.tabs:layout
   value: TabsCtl.from_piece.ctl
 - bases:
-  - legacy_type.ui:ui_command_d
+  - ui_command_d
   - legacy_type.tabs:layout
   key:
-  - legacy_type.ui:ui_command_d
+  - ui_command_d
   - legacy_type.tabs:layout
   value: duplicate
 definitions:

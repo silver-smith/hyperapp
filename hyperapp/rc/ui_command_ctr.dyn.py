@@ -24,11 +24,11 @@ def construct(piece, custom_types, name_to_res, module_res, attr):
         )
     association = Association(
         bases=[
-            dir_t_res,
+            dir_res,
             t_res,
             ],
         key=[
-            dir_t_res,
+            dir_res,
             t_res,
             ],
         value=attribute,
