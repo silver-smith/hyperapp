@@ -5,6 +5,7 @@ from PySide6 import QtWidgets
 from . import htypes
 from .services import (
     mark,
+    ui_command_factory,
     )
 
 log = logging.getLogger(__name__)
@@ -14,10 +15,11 @@ class TabsCtl:
 
     @classmethod
     def from_piece(cls, layout):
-        return cls()
+        commands = ui_command_factory(layout)
+        return cls(commands)
 
-    def __init__(self):
-        pass
+    def __init__(self, commands):
+        self._commands = commands
 
     def construct_widget(self, state, ctx):
         w = QtWidgets.QTabWidget()
