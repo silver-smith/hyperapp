@@ -6,6 +6,7 @@ from .tested.code.application import AppCtl
 from .services import (
     mosaic,
     )
+from .code.context import Context
 
 
 def make_layout():
@@ -38,11 +39,12 @@ def make_state():
 
 
 def test_app():
+    ctx = Context()
     layout = make_layout()
     state = make_state()
     app = QtWidgets.QApplication()
     try:
         ctl = AppCtl.from_piece(layout)
-        widget = ctl.construct_widget(state, ctx=None)
+        widget = ctl.construct_widget(state, ctx)
     finally:
         app.shutdown()

@@ -5,6 +5,7 @@ from .services import (
     mosaic,
     ui_ctl_creg,
     )
+from .code.context import Context
 
 
 def make_layout():
@@ -39,10 +40,11 @@ def make_state():
 def _main():
     app = QtWidgets.QApplication()
 
+    ctx = Context()
     layout = make_layout()
     state = make_state()
     app_ctl = ui_ctl_creg.animate(layout)
-    window_list = app_ctl.construct_widget(state, ctx=None)
+    window_list = app_ctl.construct_widget(state, ctx)
     for window in window_list:
         window.show()
 
