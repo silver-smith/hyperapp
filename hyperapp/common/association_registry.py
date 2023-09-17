@@ -41,7 +41,7 @@ class Association:
 class AssociationRegistry:
 
     def __init__(self):
-        self._key_to_value = {}
+        self._key_to_values = defaultdict(list)
         self._base_to_ass = defaultdict(list)
 
     @contextmanager
@@ -61,9 +61,9 @@ class AssociationRegistry:
         return added_new
     
     def register_association(self, ass):
-        if ass.key in self._key_to_value:
+        if ass.value in self._key_to_values.get(ass.key, []):
             return False  # Already registered.
-        self._key_to_value[ass.key] = ass.value
+        self._key_to_values[ass.key].append(ass.value)
         for base in ass.bases:
             self._base_to_ass[base].append(ass)
         return True
@@ -71,18 +71,26 @@ class AssociationRegistry:
     def remove_associations(self, ass_list):
         for ass in ass_list:
             try:
-                del self._key_to_value[ass.key]
-            except KeyError:
+                self._key_to_values.get(ass.key, []).remove(ass.value)
+            except ValueError:
                 pass
             else:
                 for base in ass.bases:
                     self._base_to_ass[base].remove(ass)
 
     def __contains__(self, key):
-        return key in self._key_to_value
+        return key in self._key_to_values
 
     def __getitem__(self, key):
-        return self._key_to_value[key]
+        values = self.get_all(key)
+        if len(values) == 0:
+            raise KeyError(key)
+        if len(values) > 1:
+            raise RuntimeError(f"Multiple values are registered for key {key!r}, while expected just one: {values}")
+        return values[0]
 
+    def get_all(self, key):
+        return self._key_to_values.get(key, [])
+        
     def base_to_ass_list(self, base):
         return self._base_to_ass.get(base, [])
