@@ -26,7 +26,7 @@ class TabsCtl:
         w.addTab(QtWidgets.QLabel("Hello!"), "First")
         return w
 
-    def widget_commands(self, widget):
+    def bind_commands(self, widget):
         return [command.bind(widget) for command in self._commands]
 
 

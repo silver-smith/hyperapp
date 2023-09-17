@@ -28,6 +28,7 @@ class WindowCtl:
         w = QtWidgets.QMainWindow()
         central_view_state = web.summon(state.central_view_state)
         central_widget = self._central_view_ctl.construct_widget(central_view_state, ctx)
+        commands = self._central_view_ctl.bind_commands(central_widget)
         w.setCentralWidget(central_widget)
         w.move(state.pos.x, state.pos.y)
         w.resize(state.size.w, state.size.h)
