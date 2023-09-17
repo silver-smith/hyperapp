@@ -45,9 +45,10 @@ class BoundUiCommand:
 def ui_command_factory():
     def _ui_command_factory(layout):
         layout_t = deduce_value_type(layout)
+        layout_t_res = pyobj_creg.reverse_resolve(layout_t)
         d_res = data_to_res(htypes.ui.ui_command_d())
         command_list = []
-        for fn_res in association_reg.get_all((d_res, layout_t)):
+        for fn_res in association_reg.get_all((d_res, layout_t_res)):
             fn = pyobj_creg.animate(fn_res)
             command_list.append(UnboundUiCommand(fn.__name__, layout, fn))
         return command_list
