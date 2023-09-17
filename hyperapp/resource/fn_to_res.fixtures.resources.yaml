@@ -7,15 +7,15 @@ import:
 - legacy_type.builtin:python_module
 associations: []
 definitions:
-  fn_to_ref.fixtures.module:
+  fn_to_res.fixtures.module:
     _type: legacy_type.builtin:python_module
-    module_name: fn_to_ref.fixtures
-    file_name: fn_to_ref.fixtures.dyn.py
+    module_name: fn_to_res.fixtures
+    file_name: fn_to_res.fixtures.dyn.py
     import_list:
       services.mark: common.mark:mark.service
   pyobj_creg:
     _type: legacy_type.builtin:attribute
-    object: fn_to_ref.fixtures.module
+    object: fn_to_res.fixtures.module
     attr_name: pyobj_creg
   pyobj_creg.service:
     _type: legacy_type.builtin:call

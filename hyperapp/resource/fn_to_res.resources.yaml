@@ -11,24 +11,24 @@ associations: []
 definitions:
   fn_to_ref:
     _type: legacy_type.builtin:attribute
-    object: fn_to_ref.module
+    object: fn_to_res.module
     attr_name: fn_to_ref
-  fn_to_ref.module:
-    _type: legacy_type.builtin:python_module
-    module_name: fn_to_ref
-    file_name: fn_to_ref.dyn.py
-    import_list:
-      htypes.builtin.attribute: legacy_type.builtin:attribute
-      services.mark: common.mark:mark.service
-      services.mosaic: builtin_service:mosaic
-      services.pyobj_creg: builtin_service:pyobj_creg
   fn_to_ref.service:
     _type: legacy_type.builtin:call
     function: fn_to_ref
   fn_to_res:
     _type: legacy_type.builtin:attribute
-    object: fn_to_ref.module
+    object: fn_to_res.module
     attr_name: fn_to_res
+  fn_to_res.module:
+    _type: legacy_type.builtin:python_module
+    module_name: fn_to_res
+    file_name: fn_to_res.dyn.py
+    import_list:
+      htypes.builtin.attribute: legacy_type.builtin:attribute
+      services.mark: common.mark:mark.service
+      services.mosaic: builtin_service:mosaic
+      services.pyobj_creg: builtin_service:pyobj_creg
   fn_to_res.service:
     _type: legacy_type.builtin:call
     function: fn_to_res

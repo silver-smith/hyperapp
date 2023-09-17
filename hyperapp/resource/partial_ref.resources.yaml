@@ -9,7 +9,7 @@ import:
 - legacy_type.partial:param
 - legacy_type.partial:partial
 - legacy_type.raw:raw
-- resource.fn_to_ref:fn_to_ref.service
+- resource.fn_to_res:fn_to_ref.service
 associations: []
 definitions:
   partial_ref:
@@ -24,7 +24,7 @@ definitions:
       htypes.partial.param: legacy_type.partial:param
       htypes.partial.partial: legacy_type.partial:partial
       htypes.raw.raw: legacy_type.raw:raw
-      services.fn_to_ref: resource.fn_to_ref:fn_to_ref.service
+      services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
       services.mark: common.mark:mark.service
       services.mosaic: builtin_service:mosaic
   partial_ref.service:
