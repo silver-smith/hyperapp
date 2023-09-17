@@ -23,9 +23,10 @@ def make_state():
         current_tab=0,
         )
     return htypes.window.state(
+        menu_bar_state=mosaic.put(htypes.menu_bar.state()),
+        central_view_state=mosaic.put(tabs_state),
         size=htypes.window.size(100, 100),
         pos=htypes.window.pos(10, 10),
-        central_view_state=mosaic.put(tabs_state),
         )
 
 

@@ -7,6 +7,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.command_pane:command_pane
 - legacy_type.menu_bar:layout
+- legacy_type.menu_bar:state
 - legacy_type.tabs:layout
 - legacy_type.tabs:state
 - legacy_type.window:layout
@@ -25,6 +26,7 @@ definitions:
       htypes.application.state: legacy_type.application:state
       htypes.command_pane.command_pane: legacy_type.command_pane:command_pane
       htypes.menu_bar.layout: legacy_type.menu_bar:layout
+      htypes.menu_bar.state: legacy_type.menu_bar:state
       htypes.tabs.layout: legacy_type.tabs:layout
       htypes.tabs.state: legacy_type.tabs:state
       htypes.window.layout: legacy_type.window:layout

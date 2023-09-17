@@ -13,6 +13,7 @@ layout = record:
   central_view_ref: ref
 
 state = record:
+  menu_bar_state: ref
   central_view_state: ref
   size: size
   pos: pos
