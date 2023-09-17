@@ -12,7 +12,7 @@ def make_layout():
         tab_list=[mosaic.put("Nothing is here")],
         )
     window_layout = htypes.window.layout(
-        menu_bar_ref=mosaic.put(htypes.menu_bar.menu_bar()),
+        menu_bar_ref=mosaic.put(htypes.menu_bar.layout()),
         command_pane_ref=mosaic.put(htypes.command_pane.command_pane()),
         central_view_ref=mosaic.put(tabs_layout),
         )

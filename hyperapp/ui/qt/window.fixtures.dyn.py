@@ -8,7 +8,7 @@ from .services import (
 @mark.param.Window
 def _piece():
     return htypes.window.window(
-        menu_bar_ref=mosaic.put(htypes.menu_bar.menu_bar()),
+        menu_bar_ref=mosaic.put(htypes.menu_bar.layout()),
         command_pane_ref=mosaic.put(htypes.command_pane.command_pane()),
         central_view_ref=mosaic.put('phony view'),
         size=htypes.window.size(100, 100),
