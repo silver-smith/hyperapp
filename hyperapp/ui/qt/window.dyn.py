@@ -28,11 +28,12 @@ class WindowCtl:
 
     def construct_widget(self, state, ctx):
         w = QtWidgets.QMainWindow()
-        menu_bar_state = web.summon(state.menu_bar_state)
         central_view_state = web.summon(state.central_view_state)
-        menu_bar = self._menu_bar_ctl.construct_widget(menu_bar_state, ctx)
+        menu_bar_state = web.summon(state.menu_bar_state)
         central_widget = self._central_view_ctl.construct_widget(central_view_state, ctx)
         commands = self._central_view_ctl.bind_commands(central_widget)
+        menu_ctx = ctx.clone_with(commands=commands)
+        menu_bar = self._menu_bar_ctl.construct_widget(menu_bar_state, menu_ctx)
         w.setMenuWidget(menu_bar)
         w.setCentralWidget(central_widget)
         w.move(state.pos.x, state.pos.y)

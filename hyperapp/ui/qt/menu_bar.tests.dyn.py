@@ -14,7 +14,7 @@ def make_state():
 
 
 def test_widget():
-    ctx = Context()
+    ctx = Context({'commands': []})
     layout = make_layout()
     state = make_state()
     app = QtWidgets.QApplication()

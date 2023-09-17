@@ -28,6 +28,8 @@ def test_tabs():
     try:
         ctl = TabsCtl.from_piece(layout)
         widget = ctl.construct_widget(state, ctx)
+        state = ctl.widget_state(widget)
+        assert state
     finally:
         app.shutdown()
 

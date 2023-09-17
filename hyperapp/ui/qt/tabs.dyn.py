@@ -15,16 +15,21 @@ class TabsCtl:
 
     @classmethod
     def from_piece(cls, layout):
-        commands = ui_command_factory(layout)
-        return cls(commands)
+        ctl = cls()
+        commands = ui_command_factory(layout, ctl)
+        ctl._commands = commands
+        return ctl
 
-    def __init__(self, commands):
-        self._commands = commands
+    def __init__(self):
+        self._commands = None
 
     def construct_widget(self, state, ctx):
         w = QtWidgets.QTabWidget()
         w.addTab(QtWidgets.QLabel("Hello!"), "First")
         return w
+
+    def widget_state(self, widget):
+        return htypes.tabs.state(current_tab=widget.currentIndex())
 
     def bind_commands(self, widget):
         return [command.bind(widget) for command in self._commands]
