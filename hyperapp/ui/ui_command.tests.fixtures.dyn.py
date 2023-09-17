@@ -1,4 +1,3 @@
-# from . import htypes
 from .services import (
     association_reg,
     fn_to_res,
@@ -7,7 +6,7 @@ from .services import (
     )
 
 
-def _sample_fn():
+def _sample_fn(layout, state):
     pass
 
 
