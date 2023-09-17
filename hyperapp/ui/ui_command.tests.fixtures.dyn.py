@@ -13,8 +13,8 @@ def _sample_fn():
 
 class PhonyAssociationRegistry:
 
-    def __getitem__(self, key):
-        return fn_to_res(_sample_fn)
+    def get_all(self, key):
+        return [fn_to_res(_sample_fn)]
 
 
 @mark.service
