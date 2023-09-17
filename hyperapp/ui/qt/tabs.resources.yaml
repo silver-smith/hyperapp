@@ -9,6 +9,7 @@ import:
 - legacy_type.tabs:state
 - legacy_type.ui:ui_command_d
 - legacy_type.ui:ui_ctl
+- ui.ui_command:ui_command_factory.service
 - ui.ui_ctl_registry:ui_ctl_creg.service
 associations:
 - bases:
@@ -49,6 +50,7 @@ definitions:
       htypes.tabs.layout: legacy_type.tabs:layout
       htypes.tabs.state: legacy_type.tabs:state
       services.mark: common.mark:mark.service
+      services.ui_command_factory: ui.ui_command:ui_command_factory.service
   ui_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:ui_command_d
