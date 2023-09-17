@@ -1,0 +1,28 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtin_service:mosaic
+- builtin_service:pyobj_creg
+- common.mark:mark.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:call
+- legacy_type.builtin:python_module
+- legacy_type.data_to_res_tests:sample_empty_record
+associations: []
+definitions:
+  data_to_res:
+    _type: legacy_type.builtin:attribute
+    object: data_to_res.module
+    attr_name: data_to_res
+  data_to_res.module:
+    _type: legacy_type.builtin:python_module
+    module_name: data_to_res
+    file_name: data_to_res.dyn.py
+    import_list:
+      htypes.data_to_res_tests.sample_empty_record: legacy_type.data_to_res_tests:sample_empty_record
+      services.mark: common.mark:mark.service
+      services.mosaic: builtin_service:mosaic
+      services.pyobj_creg: builtin_service:pyobj_creg
+  data_to_res.service:
+    _type: legacy_type.builtin:call
+    function: data_to_res
