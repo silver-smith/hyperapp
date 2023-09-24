@@ -7,6 +7,7 @@ from .services import (
     mark,
     ui_command_factory,
     )
+from .code.list_diff import ListDiff
 
 log = logging.getLogger(__name__)
 
@@ -38,3 +39,7 @@ class TabsCtl:
 @mark.ui_command(htypes.tabs.layout)
 def duplicate(layout, state):
     log.info("Duplicate tab: %s / %s", layout, state)
+    return ListDiff.insert(
+        idx=state.current_tab,
+        item=layout.tab_list[state.current_tab],
+        )

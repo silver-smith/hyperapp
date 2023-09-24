@@ -1,6 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
+- common.list_diff:list_diff.module
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -47,6 +48,7 @@ definitions:
     module_name: tabs
     file_name: tabs.dyn.py
     import_list:
+      code.list_diff: common.list_diff:list_diff.module
       htypes.tabs.layout: legacy_type.tabs:layout
       htypes.tabs.state: legacy_type.tabs:state
       services.mark: common.mark:mark.service
