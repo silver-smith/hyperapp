@@ -39,6 +39,15 @@ from .code import ui_ctl
 _log = logging.getLogger(__name__)
 
 
+subprocess_module_dir_list = [
+    hyperapp_dir / 'common',
+    hyperapp_dir / 'resource',
+    hyperapp_dir / 'transport',
+    hyperapp_dir / 'rpc',
+    hyperapp_dir / 'subprocess',
+    ]
+
+
 SourceInfo = namedtuple('SourceInfo', 'import_name attr_list provided_services used_types')
 DepsInfo = namedtuple('DepsInfo', 'uses_modules wants_services wants_code tests_services tests_code')
 
@@ -862,7 +871,7 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_ti
 
     test_results = defaultdict(TestResults)  # module name -> TestResults
 
-    with subprocess(process_name, resource_dir_list, rpc_timeout) as process:
+    with subprocess(process_name, subprocess_module_dir_list, rpc_timeout) as process:
 
         file_dict = collect_source_files(generator_ref, subdir_list, root_dirs, custom_res_reg)
 
