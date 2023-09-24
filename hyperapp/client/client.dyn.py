@@ -1,4 +1,7 @@
+import asyncio
+
 from PySide6 import QtWidgets
+from qasync import QEventLoop
 
 from . import htypes
 from .services import (
@@ -39,6 +42,8 @@ def make_state():
 
 def _main():
     app = QtWidgets.QApplication()
+    event_loop = QEventLoop(app)
+    asyncio.set_event_loop(event_loop)  # Should be set before any asyncio objects created.
 
     ctx = Context()
     layout = make_layout()
