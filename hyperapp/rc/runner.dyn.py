@@ -208,7 +208,7 @@ def get_resource_type(resource_ref, use_associations, tested_modules):
 
     log.info("Get type for resource ref: %s, tested modules: %s", resource_ref, tested_modules)
 
-    with association_reg.associations_registered(associations):
+    with association_reg.associations_registered(associations, override=True):
 
         tracer = Tracer(tested_modules)
         with tracer.tracing():

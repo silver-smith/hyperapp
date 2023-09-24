@@ -42,31 +42,42 @@ class AssociationRegistry:
 
     def __init__(self):
         self._key_to_values = defaultdict(list)
+        self._key_to_ass = defaultdict(list)
         self._base_to_ass = defaultdict(list)
 
     @contextmanager
-    def associations_registered(self, ass_list):
-        added_new = self.register_association_list(ass_list)
+    def associations_registered(self, ass_list, override):
+        added, overridden = self.register_association_list(ass_list, override)
         try:
             yield
         finally:
-            self.remove_associations(added_new)
+            self.remove_associations(added)
+            self.register_association_list(overridden)
 
-    def register_association_list(self, ass_list):
-        added_new = []
+    def register_association_list(self, ass_list, override=False):
+        added_list = []
+        overridden_list = []
         for ass in ass_list:
             log.info("Register association: %r", ass)
-            if self.register_association(ass):
-                added_new.append(ass)
-        return added_new
+            is_registered, overridden = self.register_association(ass, override)
+            if is_registered:
+                added_list.append(ass)
+                overridden_list += overridden
+        return (added_list, overridden_list)
     
-    def register_association(self, ass):
+    def register_association(self, ass, override=False):
         if ass.value in self._key_to_values.get(ass.key, []):
-            return False  # Already registered.
+            return (False, [])  # Already registered.
+        if override:
+            overridden = self._key_to_ass[ass.key]
+            self.remove_associations(overridden)
+        else:
+            overridden = []
         self._key_to_values[ass.key].append(ass.value)
+        self._key_to_ass[ass.key].append(ass)
         for base in ass.bases:
             self._base_to_ass[base].append(ass)
-        return True
+        return (True, overridden)
 
     def remove_associations(self, ass_list):
         for ass in ass_list:
@@ -75,6 +86,7 @@ class AssociationRegistry:
             except ValueError:
                 pass
             else:
+                self._key_to_ass[ass.key].remove(ass)
                 for base in ass.bases:
                     self._base_to_ass[base].remove(ass)
 
