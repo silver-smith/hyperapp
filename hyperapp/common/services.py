@@ -12,7 +12,6 @@ from .mosaic import Mosaic
 from .web import Web
 from .type_module_loader import TypeModuleLoader
 from .type_system import TypeSystem
-from .code_registry import CodeRegistry
 from .pyobj_registry import PyObjRegistry
 from .association_registry import AssociationRegistry
 from .python_importer import PythonImporter

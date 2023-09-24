@@ -9,7 +9,6 @@ from hyperapp.common.htypes.attribute import attribute_t
 from hyperapp.common.htypes.legacy_type import legacy_type_t
 from hyperapp.common.htypes.call import call_t
 from hyperapp.common.services import HYPERAPP_DIR
-from hyperapp.common.code_registry import CodeRegistry
 from hyperapp.common.cached_code_registry import CachedCodeRegistry
 from hyperapp.common.association_registry import AssociationRegistry
 from hyperapp.common.python_importer import PythonImporter
