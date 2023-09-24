@@ -23,6 +23,7 @@ module_dir_list = [
     HYPERAPP_DIR / 'ui',
     ]
 
+
 def main():
     init_logging('rc')
 
