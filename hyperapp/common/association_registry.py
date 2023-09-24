@@ -94,12 +94,16 @@ class AssociationRegistry:
         return key in self._key_to_values
 
     def __getitem__(self, key):
-        values = self.get_all(key)
-        if len(values) == 0:
+        value_list = self.get_all(key)
+        if len(value_list) == 0:
             raise KeyError(key)
-        if len(values) > 1:
-            raise RuntimeError(f"Multiple values are registered for key {key!r}, while expected just one: {values}")
-        return values[0]
+        if len(value_list) == 1:
+            return value_list[0]
+        value = value_list[0]
+        log.warning(
+            f"Picking random single value %r for key %r while multiple values are registered: %r",
+            value, key, value_list)
+        return value
 
     def get_all(self, key):
         return self._key_to_values.get(key, [])
