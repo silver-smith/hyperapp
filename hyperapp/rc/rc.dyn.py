@@ -14,6 +14,7 @@ from hyperapp.common.htypes import HException, ref_str
 
 from . import htypes
 from .services import (
+    builtin_service_resource_loader,
     builtin_types_as_dict,
     constructor_creg,
     endpoint_registry,
@@ -24,7 +25,7 @@ from .services import (
     module_dir_list,
     mosaic,
     resource_module_factory,
-    resource_registry,
+    resource_registry_factory,
     rpc_endpoint_factory,
     subprocess_rpc_server_running,
     type_module_loader,
@@ -850,12 +851,14 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_ti
     _log.info("Compile resources at: %s, %s: %s", subdir_list, root_dirs, module_list)
 
     resource_dir_list = [hyperapp_dir / d for d in subdir_list] + root_dirs
-    custom_res_reg = resource_registry.clone()
+    custom_res_reg = resource_registry_factory()
 
     custom_types, type_res_list = legacy_type_resources(resource_dir_list)
     legacy_type_modules = legacy_type_resource_loader(custom_types)
     add_legacy_types_to_cache(custom_res_reg, legacy_type_modules)
     custom_res_reg.update_modules(legacy_type_modules)
+
+    custom_res_reg.set_module('builtin_service', builtin_service_resource_loader(custom_res_reg))
 
     test_results = defaultdict(TestResults)  # module name -> TestResults
 
