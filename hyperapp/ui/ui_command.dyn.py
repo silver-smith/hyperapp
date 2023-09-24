@@ -39,7 +39,7 @@ class BoundUiCommand:
     def name(self):
         return self._name
 
-    def run(self, **kw):
+    async def run(self, **kw):
         widget = self._widget()
         if widget is None:
             log.warning("Not running UI command %r: Widget is gone", self._name)
