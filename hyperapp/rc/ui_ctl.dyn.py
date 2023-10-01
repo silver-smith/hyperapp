@@ -38,7 +38,9 @@ def construct_view_impl(custom_types, resource_module, module_res, piece_t, qnam
     resource_module[class_name] = class_attribute
     resource_module[f'{class_name}.{method_name}'] = ctr_attribute
     resource_module[f'{class_name}.{method_name}.ctl'] = ui_ctl
-    return [ctl_association]
+    # TODO: Reverse resolve for ui_ctl_creg at custom resource registry.
+    # return [ctl_association]
+    return []
 
 
 def create_ui_resources(custom_types, module_name, resource_module, module_res, call_list):
