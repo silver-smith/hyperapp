@@ -10,6 +10,7 @@ from .services import (
     partial_ref,
     peer_registry,
     rpc_call_factory,
+    rpc_submit_factory,
     subprocess_running,
     )
 from .code.subprocess_rpc_server_main import rpc_server_main
@@ -28,6 +29,11 @@ class _RpcServerProcess:
         self._rpc_endpoint = rpc_endpoint
         self._identity = identity
         self._timeout_sec = timeout_sec
+
+    def rpc_submit(self, servant_fn):
+        servant_fn_ref = fn_to_ref(servant_fn)
+        return rpc_submit_factory(
+            self._rpc_endpoint, self.peer, servant_fn_ref, self._identity)
 
     def rpc_call(self, servant_fn):
         servant_fn_ref = fn_to_ref(servant_fn)

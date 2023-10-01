@@ -8,6 +8,7 @@ import:
 - resource.fn_to_res:fn_to_ref.service
 - resource.partial_ref:partial_ref.service
 - rpc.rpc_call:rpc_call_factory.service
+- rpc.rpc_call:rpc_submit_factory.service
 - rpc.rpc_proxy:rpc_proxy.module
 - subprocess.subprocess:subprocess_running.service
 - subprocess.subprocess_rpc_server_main:subprocess_rpc_server_main.module
@@ -28,6 +29,7 @@ definitions:
       services.partial_ref: resource.partial_ref:partial_ref.service
       services.peer_registry: transport.identity:peer_registry.service
       services.rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
+      services.rpc_submit_factory: rpc.rpc_call:rpc_submit_factory.service
       services.subprocess_running: subprocess.subprocess:subprocess_running.service
   subprocess_rpc_server_running:
     _type: legacy_type.builtin:attribute
