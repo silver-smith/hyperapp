@@ -1,7 +1,0 @@
-
-column_d = record:
-  name: string
-
-column_visible_d = record
-
-column_list_d = record

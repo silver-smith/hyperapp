@@ -1,8 +1,0 @@
-import:
-  types:
-    resource_service:
-      - list_service
-    service:
-      - list_service
-provide:
-  - resource.list_service

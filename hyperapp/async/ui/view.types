@@ -1,8 +1,0 @@
-
-
-view_d = record:
-  type: string  # available, default, selected
-
-
-command_source_d = record:
-  command_dir: ref list

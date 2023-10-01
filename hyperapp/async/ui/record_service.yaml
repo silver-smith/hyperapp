@@ -1,6 +1,0 @@
-import:
-  types:
-    service:
-      - record_service
-  code:
-    - async.ui.record_object

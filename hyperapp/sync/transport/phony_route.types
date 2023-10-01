@@ -1,3 +1,0 @@
-
-phony_route = record:
-  id: int

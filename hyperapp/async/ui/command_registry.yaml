@@ -1,7 +1,0 @@
-import:
-  code:
-    - async.code_registry
-require:
-  - async_web
-provide:
-  - command_registry

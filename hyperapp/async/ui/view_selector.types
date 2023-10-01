@@ -1,9 +1,0 @@
-
-open_view_selector_command = record
-
-view_selector = record:
-  piece_ref: ref
-  origin_dir: ref list
-
-set_view_param_dir = record:
-  dir: ref list

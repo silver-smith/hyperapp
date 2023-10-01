@@ -1,7 +1,0 @@
-import:
-  types:
-    record_object:
-      - record_object_d
-      - record_field_d
-  code:
-    - async.ui.ui_object

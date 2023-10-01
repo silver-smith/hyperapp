@@ -1,8 +1,0 @@
-import:
-  types:
-    tree_object:
-      - tree_object_d
-      - int_state
-      - string_state
-  code:
-    - async.ui.ui_object

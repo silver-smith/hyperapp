@@ -1,9 +1,0 @@
-
-tree_view_sample_d = record
-tree_view_sample_article_d = record
-
-tree_view_sample_object = record
-
-tree_sample_article = record:
-  title: string
-  text: string

@@ -1,8 +1,0 @@
-import:
-  types:
-    resource_selector:
-      - selector
-    selector:
-      - selector
-provide:
-  - resource.selector

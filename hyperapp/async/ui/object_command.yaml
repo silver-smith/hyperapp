@@ -1,7 +1,0 @@
-import:
-  types:
-    command:
-      - builtin_object_command_d
-      - context_object_command_d
-require:
-  - command_registry

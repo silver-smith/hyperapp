@@ -1,9 +1,0 @@
-import:
-  types:
-    partial:
-      - param
-      - partial
-provide:
-  - resource.async.partial
-require:
-  - python_object_acreg

@@ -1,6 +1,0 @@
-
-sample_global_command_d = record
-phony_d = record
-
-phony_command = record:
-  dir: ref

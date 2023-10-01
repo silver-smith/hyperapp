@@ -1,9 +1,0 @@
-import:
-  types:
-    text:
-      - text_d
-    impl:
-      - string_spec
-require:
-  - impl_registry
-  - adapter_registry

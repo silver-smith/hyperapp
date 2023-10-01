@@ -1,6 +1,0 @@
-import:
-  types:
-    lcs:
-      - storage
-      - lcs_association
-      - lcs_set_association

@@ -1,5 +1,0 @@
-
-navigator = record:
-  current_piece_ref: ref
-  origin_dir: ref list
-  view_state_ref: ref opt

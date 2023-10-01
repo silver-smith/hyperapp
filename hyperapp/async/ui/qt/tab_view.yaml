@@ -1,9 +1,0 @@
-import:
-  types:
-    tab_view:
-    - state
-  code:
-    - async.ui.qt.view
-    - async.ui.command
-require:
-  - view_registry

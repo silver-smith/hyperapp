@@ -1,8 +1,0 @@
-import:
-  types:
-    resource_rpc_callback:
-      - rpc_callback
-    rpc_callback:
-      - rpc_callback
-provide:
-  - resource.rpc_callback

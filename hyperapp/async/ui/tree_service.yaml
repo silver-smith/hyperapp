@@ -1,6 +1,0 @@
-import:
-  types:
-    service:
-      - tree_service
-  code:
-    - async.ui.tree_object

@@ -1,9 +1,0 @@
-import:
-  types:
-    command:
-      - command_shortcut_d
-    menu_bar:
-      - menu_bar
-require:
-  - lcs
-  - view_registry

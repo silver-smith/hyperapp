@@ -1,8 +1,0 @@
-import:
-  types:
-    command:
-      - command_shortcut_d
-    command_pane:
-      - command_pane
-require:
-  - lcs

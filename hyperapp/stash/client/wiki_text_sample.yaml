@@ -1,8 +1,0 @@
-import:
-  types:
-    text:
-      - wiki_ref
-      - wiki_text
-  code:
-    - async.ui.command
-    - async.ui.module

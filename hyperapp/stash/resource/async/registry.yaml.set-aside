@@ -1,7 +1,0 @@
-import:
-  code:
-    - async.cached_async_code_registry
-provide:
-  - python_object_acreg
-require:
-  - async_web

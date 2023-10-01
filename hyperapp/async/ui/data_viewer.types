@@ -1,5 +1,0 @@
-
-data_viewer_d = record
-
-data_viewer = record:
-    data_ref: ref

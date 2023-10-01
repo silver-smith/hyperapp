@@ -1,6 +1,0 @@
-import:
-  types:
-    typed_piece:
-      - typed_piece
-provide:
-  - resource.typed_piece

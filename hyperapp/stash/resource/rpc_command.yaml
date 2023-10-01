@@ -1,8 +1,0 @@
-import:
-  types:
-    resource_rpc_command:
-      - rpc_command
-    rpc_command:
-      - rpc_command
-provide:
-  - resource.rpc_command

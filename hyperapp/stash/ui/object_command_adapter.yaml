@@ -1,6 +1,0 @@
-import:
-  types:
-    impl:
-      - object_command_impl
-require:
-  - command_registry

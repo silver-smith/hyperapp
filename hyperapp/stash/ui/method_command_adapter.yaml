@@ -1,6 +1,0 @@
-import:
-  types:
-    impl:
-      - method_command_impl
-require:
-  - command_registry

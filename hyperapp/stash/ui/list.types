@@ -1,8 +1,0 @@
-
-list_d = record
-
-int_state = record:
-  current_key: int
-
-string_state = record:
-  current_key: string

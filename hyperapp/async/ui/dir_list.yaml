@@ -1,7 +1,0 @@
-import:
-  types:
-    dir_list:
-      - dir_list_d
-      - dir_list
-require:
-  - object_registry

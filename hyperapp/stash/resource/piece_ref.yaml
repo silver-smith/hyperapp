@@ -1,6 +1,0 @@
-import:
-  types:
-    piece_ref:
-      - piece_ref
-provide:
-  - resource.piece_ref

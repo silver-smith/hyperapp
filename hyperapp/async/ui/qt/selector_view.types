@@ -1,5 +1,0 @@
-
-selector_view = record
-
-selector_view_state = record:
-  list_view_state_ref: ref

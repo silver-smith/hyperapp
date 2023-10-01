@@ -1,6 +1,0 @@
-require:
-  - async_rpc_endpoint_factory
-  - async_endpoint_registry
-  - client_identity
-provide:
-  - client_rpc_endpoint

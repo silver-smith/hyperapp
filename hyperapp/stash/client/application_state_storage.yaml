@@ -1,4 +1,0 @@
-require:
-  - file_bundle
-provide:
-  - application_state_storage

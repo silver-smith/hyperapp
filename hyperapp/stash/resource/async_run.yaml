@@ -1,6 +1,0 @@
-import:
-  types:
-    async_run:
-      - async_run
-provide:
-  - resource.async_run

@@ -1,3 +1,0 @@
-
-line_edit_view = record:
-  editable: bool

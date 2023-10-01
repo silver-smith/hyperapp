@@ -1,8 +1,0 @@
-import:
-  types:
-    attribute:
-      - attribute
-provide:
-  - resource.async.attribute
-require:
-  - python_object_acreg

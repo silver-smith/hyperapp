@@ -1,8 +1,0 @@
-import:
-  types:
-    resource_service:
-      - tree_service
-    service:
-      - tree_service
-provide:
-  - resource.tree_service

@@ -1,8 +1,0 @@
-import:
-  types:
-    call:
-      - call
-provide:
-  - resource.async.call
-require:
-  - python_object_acreg

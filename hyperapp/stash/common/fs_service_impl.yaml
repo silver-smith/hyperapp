@@ -1,5 +1,0 @@
-import:
-  types:
-    fs:
-      - fs_dir_row
-      - fs_dir_chunk

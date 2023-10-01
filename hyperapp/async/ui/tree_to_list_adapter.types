@@ -1,8 +1,0 @@
-
-tree_to_list_adapter_d = record
-
-tree_to_list_adapter = record:
-    base_ref: ref
-    path: string list
-
-tree_to_list_adapter_view = record
