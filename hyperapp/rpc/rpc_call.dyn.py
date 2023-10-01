@@ -1,5 +1,6 @@
 import logging
 import uuid
+from concurrent.futures import Future
 from functools import partial
 
 from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
@@ -37,9 +38,11 @@ def rpc_call_factory():
                 sender_peer_ref=sender_peer_ref,
                 )
             request_ref = mosaic.put(request)
+            future = Future()
+            rpc_endpoint.assign_future_to_request_id(request_id, future)
             log.info("Rpc call: %s %s (%s): send rpc request: %s", receiver_peer, servant_ref, kw, request)
             transport.send(receiver_peer, sender_identity, [request_ref])
-            result = rpc_endpoint.wait_for_response(request_id, timeout_sec)
+            result = future.result(timeout_sec)
             log.info("Rpc call: got result: %s", result)
             return result
 

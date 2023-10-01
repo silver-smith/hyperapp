@@ -23,37 +23,14 @@ from .services import (
 log = logging.getLogger(__name__)
 
 
-class TimeoutWaitingForResponse(Exception):
-    pass
-
-
 RpcRequest = namedtuple('RpcRequest', 'receiver_identity sender')
-
-
-class SuccessResponse:
-
-    def __init__(self, result):
-        self._result = result
-
-    def get_result(self):
-        return self._result
-
-
-class ErrorResponse:
-
-    def __init__(self, exception):
-        self._exception = exception
-
-    def get_result(self):
-        raise self._exception
 
 
 class RpcEndpoint:
 
     def __init__(self):
-        self._result_by_request_id = {}
+        self._future_by_request_id = {}
         self._response_lock = threading.Lock()
-        self._response_available = threading.Condition(self._response_lock)
         self._message_registry = registry = CodeRegistry('rpc_message', web, types)
         self._is_stopping = False
         registry.register_actor(htypes.rpc.request, self._handle_request)
@@ -67,21 +44,12 @@ class RpcEndpoint:
         log.info("Stop rpc endpoint")
         with self._response_lock:
             self._is_stopping = True
-            self._response_available.notify_all()
+            for future in self._future_by_request_id.values():
+                future.cancel()
 
-    def wait_for_response(self, request_id, timeout_sec=10):
-        log.debug("Wait for rpc response (timeout %s): %s", timeout_sec, request_id)
+    def assign_future_to_request_id(self, request_id, future):
         with self._response_lock:
-            while True:
-                if self._is_stopping:
-                    log.warning("Services are stopping, but we are still waiting for response for request: %s", request_id)
-                    raise RuntimeError("Services are stopping")
-                try:
-                    response = self._result_by_request_id.pop(request_id)
-                    return response.get_result()
-                except KeyError:
-                    if not self._response_available.wait(timeout_sec):
-                        raise TimeoutWaitingForResponse(f"Timed out waiting for response (timeout {timeout_sec} seconds)")
+            self._future_by_request_id[request_id] = future
 
     def process(self, request):
         log.debug("Received rpc message: %s", request)
@@ -132,15 +100,15 @@ class RpcEndpoint:
         log.debug("Process rpc response: %s", response)
         result = mosaic.resolve_ref(response.result_ref).value
         with self._response_lock:
-            self._result_by_request_id[response.request_id] = SuccessResponse(result)
-            self._response_available.notify_all()
+            future = self._future_by_request_id.pop(response.request_id)
+            future.set_result(result)
 
     def _handle_error_response(self, response, transport_request):
         exception = mosaic.resolve_ref(response.exception_ref).value
         log.info("Process rpc error response: %s", exception)
         with self._response_lock:
-            self._result_by_request_id[response.request_id] = ErrorResponse(exception)
-            self._response_available.notify_all()
+            future = self._future_by_request_id.pop(response.request_id)
+            future.set_exception(exception)
 
 
 @mark.service

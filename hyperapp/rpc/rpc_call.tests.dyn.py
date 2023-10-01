@@ -7,8 +7,8 @@ from .tested.services import rpc_call_factory
 
 class PhonyRpcEndpoint:
 
-    def wait_for_response(self, request_id, timeout_sec):
-        return 'phony rpc response'
+    def assign_future_to_request_id(self, request_id, future):
+        future.set_result('phony rpc response')
 
 
 def test_rpc_call_factory():
