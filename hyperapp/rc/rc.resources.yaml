@@ -1,50 +1,8 @@
 import:
-- rc.runner:collect_attributes
-- rc.runner:get_resource_type
-- rc.ui_ctl:ui_ctl.module
-- rc.utils:utils.module
-- builtin_service:builtin_types_as_dict
 - builtin_service:hyperapp_dir
-- builtin_service:builtin_service_resource_loader
-- builtin_service:legacy_type_resource_loader
-- builtin_service:local_types
-- builtin_service:module_dir_list
-- builtin_service:mosaic
-- builtin_service:resource_module_factory
-- builtin_service:resource_registry_factory
-- builtin_service:type_module_loader
-- builtin_service:types
-- builtin_service:web
-- legacy_type.attr_constructors:service
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
-- legacy_type.command:object_commands_d
-- legacy_type.impl:impl_association
-- legacy_type.impl:list_spec
-- legacy_type.impl:method_command_impl
-- legacy_type.import_discoverer:import_discoverer
-- legacy_type.import_discoverer:using_incomplete_object
-- legacy_type.import_recorder:import_recorder
-- legacy_type.import_recorder:resource
-- legacy_type.inspect:coroutine_t
-- legacy_type.inspect:fn_attr
-- legacy_type.inspect:list_t
-- legacy_type.inspect:object_t
-- legacy_type.inspect:record_t
-- legacy_type.lcs:lcs_set_association
-- legacy_type.builtin:legacy_type
-- legacy_type.partial:param
-- legacy_type.partial:partial
 - legacy_type.builtin:python_module
-- legacy_type.builtin:import_rec
-- legacy_type.rc:source_dep
-- legacy_type.rc:module_deps
-- resource.constructor_creg:constructor_creg.service
-- rpc.rpc_endpoint:rpc_endpoint_factory.service
-- transport.endpoint:endpoint_registry.service
-- transport.rsa_identity:generate_rsa_identity.service
-- subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
-- rc.runner:runner.module
+- rc.source_collector_task:source_collector_task.module
 
 definitions:
 
@@ -53,50 +11,8 @@ definitions:
     module_name: rc
     file_name: rc.dyn.py
     import_list:
-      code.utils: rc.utils:utils.module
-      code.runner: rc.runner:runner.module
-      code.ui_ctl: rc.ui_ctl:ui_ctl.module
-      htypes.attr_constructors.service: legacy_type.attr_constructors:service
-      htypes.builtin.attribute: legacy_type.builtin:attribute
-      htypes.builtin.call: legacy_type.builtin:call
-      htypes.command.object_commands_d: legacy_type.command:object_commands_d
-      htypes.impl.impl_association: legacy_type.impl:impl_association
-      htypes.impl.list_spec: legacy_type.impl:list_spec
-      htypes.impl.method_command_impl: legacy_type.impl:method_command_impl
-      htypes.import_discoverer.import_discoverer: legacy_type.import_discoverer:import_discoverer
-      htypes.import_discoverer.using_incomplete_object: legacy_type.import_discoverer:using_incomplete_object
-      htypes.import_recorder.import_recorder: legacy_type.import_recorder:import_recorder
-      htypes.import_recorder.resource: legacy_type.import_recorder:resource
-      htypes.inspect.coroutine_t: legacy_type.inspect:coroutine_t
-      htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
-      htypes.inspect.list_t: legacy_type.inspect:list_t
-      htypes.inspect.object_t: legacy_type.inspect:object_t
-      htypes.inspect.record_t: legacy_type.inspect:record_t
-      htypes.lcs.lcs_set_association: legacy_type.lcs:lcs_set_association
-      htypes.builtin.legacy_type: legacy_type.builtin:legacy_type
-      htypes.partial.param: legacy_type.partial:param
-      htypes.partial.partial: legacy_type.partial:partial
-      htypes.builtin.python_module: legacy_type.builtin:python_module
-      htypes.builtin.import_rec: legacy_type.builtin:import_rec
-      htypes.rc.source_dep: legacy_type.rc:source_dep
-      htypes.rc.module_deps: legacy_type.rc:module_deps
-      services.builtin_types_as_dict: builtin_service:builtin_types_as_dict
-      services.constructor_creg: resource.constructor_creg:constructor_creg.service
-      services.endpoint_registry: transport.endpoint:endpoint_registry.service
       services.hyperapp_dir: builtin_service:hyperapp_dir
-      services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
-      services.builtin_service_resource_loader: builtin_service:builtin_service_resource_loader
-      services.legacy_type_resource_loader: builtin_service:legacy_type_resource_loader
-      services.local_types: builtin_service:local_types
-      services.module_dir_list: builtin_service:module_dir_list
-      services.mosaic: builtin_service:mosaic
-      services.resource_module_factory: builtin_service:resource_module_factory
-      services.resource_registry_factory: builtin_service:resource_registry_factory
-      services.rpc_endpoint_factory: rpc.rpc_endpoint:rpc_endpoint_factory.service
-      services.subprocess_rpc_server_running: subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
-      services.type_module_loader: builtin_service:type_module_loader
-      services.types: builtin_service:types
-      services.web: builtin_service:web
+      code.source_collector_task: rc.source_collector_task:source_collector_task.module
 
   compile_resources:
     _type: legacy_type.builtin:attribute
