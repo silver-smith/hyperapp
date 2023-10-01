@@ -9,6 +9,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.rpc:param
 - legacy_type.rpc:request
+- legacy_type.rpc:server_error
 - transport.transport:transport.service
 associations: []
 definitions:
@@ -19,6 +20,7 @@ definitions:
     import_list:
       htypes.rpc.param: legacy_type.rpc:param
       htypes.rpc.request: legacy_type.rpc:request
+      htypes.rpc.server_error: legacy_type.rpc:server_error
       services.mark: common.mark:mark.service
       services.mosaic: builtin_service:mosaic
       services.transport: transport.transport:transport.service

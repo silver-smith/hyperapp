@@ -19,3 +19,4 @@ error_response = record:
 
 server_error = exception:
   message: string
+  traceback: string list

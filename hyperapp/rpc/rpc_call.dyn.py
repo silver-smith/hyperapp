@@ -3,6 +3,7 @@ import uuid
 from concurrent.futures import Future
 from functools import partial
 
+from hyperapp.common.htypes import HException
 from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 
 from . import htypes
@@ -57,7 +58,12 @@ def rpc_call_factory():
 
         def call(**kw):
             future = submit_factory(**kw)
-            result = future.result(timeout_sec)
+            try:
+                result = future.result(timeout_sec)
+            except HException as x:
+                if isinstance(x, htypes.rpc.server_error):
+                    log.error("Rpc call: got server error: %s\n%s", x.message, "".join(x.traceback))
+                raise
             log.info("Rpc call: got result: %s", result)
             return result
 

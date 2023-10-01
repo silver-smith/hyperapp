@@ -1,6 +1,7 @@
 import logging
 import inspect
 import threading
+import traceback
 from collections import namedtuple
 from functools import partial
 
@@ -87,8 +88,11 @@ class RpcEndpoint:
                 exception_ref=mosaic.put(x),
                 )
         except Exception as x:
-            exception = htypes.rpc.server_error(str(x))
-            log.exception("Rpc servant %s call error: %s", servant_fn, exception)
+            traceback_entries = traceback.format_tb(x.__traceback__)
+            exception = htypes.rpc.server_error(str(x), traceback_entries)
+            log.info(
+                "Rpc servant %s server error: %s\n%s",
+                servant_fn, exception.message, "".join(exception.traceback))
             response = htypes.rpc.error_response(
                 request_id=request.request_id,
                 exception_ref=mosaic.put(exception),
