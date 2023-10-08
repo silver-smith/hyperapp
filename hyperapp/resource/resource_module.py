@@ -46,6 +46,9 @@ class ResourceModule:
     def __repr__(self):
         return f"<ResourceModule {self._name}>"
 
+    def __iter__(self):
+        return iter(self._definition_dict)
+
     def __contains__(self, var_name):
         return var_name in self._definition_dict
 
@@ -57,6 +60,12 @@ class ResourceModule:
         piece = definition.type.resolve(definition.value, self._resolve_name_to_ref, self._resource_dir)
         log.info("%s: Loaded resource %r: %s", self._name, var_name, piece)
         return piece
+
+    def __setitem__(self, name, resource):
+        log.info("%s: Set resource %r: %r", self._name, name, resource)
+        t, definition = self._resource_to_definition(resource)
+        self.set_definition(name, t, definition)
+        self._resource_registry.add_to_cache((self._name, name), resource)
 
     @cached_property
     def is_auto_generated(self):
@@ -77,12 +86,6 @@ class ResourceModule:
             return None
         lines = path.read_text().splitlines()
         return lines[idx]
-
-    def __setitem__(self, name, resource):
-        log.info("%s: Set resource %r: %r", self._name, name, resource)
-        t, definition = self._resource_to_definition(resource)
-        self.set_definition(name, t, definition)
-        self._resource_registry.add_to_cache((self._name, name), resource)
 
     @property
     def used_imports(self):
@@ -129,9 +132,6 @@ class ResourceModule:
         t = self._resource_type_producer(resource_t)
         definition = t.reverse_resolve(resource, self._resolve_ref, self._resource_dir)
         return (t, definition)
-
-    def __iter__(self):
-        return iter(self._definition_dict)
 
     @property
     def name(self):
