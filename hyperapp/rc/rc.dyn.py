@@ -1,5 +1,5 @@
 import logging
-from collections import namedtuple
+from dataclasses import dataclass, field
 
 from .services import (
     hyperapp_dir,
@@ -10,7 +10,11 @@ from .code.source_collector_task import SourceCollectorTask
 _log = logging.getLogger(__name__)
 
 
-Graph = namedtuple('Graph', 'name_to_unit name_to_deps name_to_provides')
+@dataclass
+class Graph:
+    name_to_unit: dict = field(default_factory=dict)
+    name_to_deps: dict = field(default_factory=dict)
+    name_to_provides: dict = field(default_factory=dict)
 
 
 subprocess_module_dir_list = [

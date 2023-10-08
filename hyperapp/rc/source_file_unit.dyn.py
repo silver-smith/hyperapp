@@ -8,26 +8,27 @@ from .services import (
 log = logging.getLogger(__name__)
 
 
-DepsInfo = namedtuple('DepsInfo', 'uses_modules wants_services wants_code tests_services tests_code')
+ModuleInfo = namedtuple('ModuleInfo', 'use_modules want_services want_code test_services test_code provide_services')
 
 
-def _get_resource_module_deps(resource_module):
-    uses_modules = set()
-    wants_services = set()
-    wants_code = set()
+def _resource_module_to_module_info(resource_module):
+    use_modules = set()
+    want_services = set()
+    want_code = set()
     for module_name, var_name in resource_module.used_imports:
-        uses_modules.add(module_name)
+        use_modules.add(module_name)
         l = var_name.split('.')
         if len(l) == 2 and l[1] == 'service':
-            wants_services.add(l[0])
+            want_services.add(l[0])
         if len(l) > 1 and l[-1] == 'module':
-            wants_code.add('.'.join(l[:-1]))
-    return DepsInfo(
-        uses_modules=uses_modules,
-        wants_services=wants_services,
-        wants_code=wants_code,
-        tests_services=set(),
-        tests_code=set(),
+            want_code.add('.'.join(l[:-1]))
+    return ModuleInfo(
+        use_modules=use_modules,
+        want_services=want_services,
+        want_code=want_code,
+        test_services=set(),
+        test_code=set(),
+        provide_services=resource_module.provided_services,
         )
 
 
@@ -40,6 +41,7 @@ class SourceFileUnit:
         self.name = str(path.relative_to(root_dir).with_name(self._stem)).replace('/', '.')
         self._resources_path = path.with_name(self._stem + '.resources.yaml')
         self._resource_module = None
+        self._module_info = None
 
     def __repr__(self):
         return f"<SourceFileUnit {self.name!r}>"
@@ -54,8 +56,10 @@ class SourceFileUnit:
             ctx.resource_registry.set_module(self.name, self.resource_module)
             log.info("%s: manually generated", self.name)
             return
-        deps = _get_resource_module_deps(resource_module)
+        self._module_info = _resource_module_to_module_info(resource_module)
+        log.info("%s: module present: %s", self.name, self._module_info)
 
     @property
-    def is_up_to_date(self):
-        return False
+    def is_up_to_date(self, ctx):
+        if not resource_module.is_auto_generated:
+            return True
