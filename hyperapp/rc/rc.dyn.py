@@ -6,6 +6,7 @@ from .services import (
     )
 # from .code.make import Make
 from .code.source_collector_task import SourceCollectorTask
+from .code.process_pool import subprocess
 
 log = logging.getLogger(__name__)
 
@@ -15,15 +16,6 @@ class Graph:
     name_to_unit: dict = field(default_factory=dict)
     name_to_deps: dict = field(default_factory=dict)
     dep_to_provider: dict = field(default_factory=dict)
-
-
-subprocess_module_dir_list = [
-    hyperapp_dir / 'common',
-    hyperapp_dir / 'resource',
-    hyperapp_dir / 'transport',
-    hyperapp_dir / 'rpc',
-    hyperapp_dir / 'subprocess',
-    ]
 
 
 def compile_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_timeout=10):
@@ -39,6 +31,7 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_ti
     initial_task = SourceCollectorTask(generator_ref, hyperapp_dir, dir_list)
     # make.run(initial_task)
     task_list = initial_task.submit(graph)
-    for task in task_list:
-        log.info("Submit: %s", task)
-        task.submit(graph)
+    with subprocess('rc-driver', rpc_timeout) as process:
+        for task in task_list:
+            log.info("Submit: %s", task)
+            task.submit(graph)
