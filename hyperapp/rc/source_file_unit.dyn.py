@@ -1,5 +1,6 @@
 import logging
 from collections import namedtuple
+from functools import cached_property
 
 from .services import (
     resource_module_factory,
@@ -9,6 +10,7 @@ log = logging.getLogger(__name__)
 
 
 ModuleInfo = namedtuple('ModuleInfo', 'use_modules want_services want_code test_services test_code provide_services')
+ServiceDep = namedtuple('ServiceDep', 'service_name')
 
 
 def _resource_module_to_module_info(resource_module):
@@ -46,7 +48,11 @@ class SourceFileUnit:
     def __repr__(self):
         return f"<SourceFileUnit {self.name!r}>"
 
-    def init(self, ctx):
+    @cached_property
+    def is_fixtures(self):
+        return 'fixtures' in self.name.split('.')
+
+    def init(self, graph, ctx):
         if not self._resources_path.exists():
             log.info("%s: missing", self.name)
             return
@@ -58,6 +64,16 @@ class SourceFileUnit:
             return
         self._module_info = _resource_module_to_module_info(resource_module)
         log.info("%s: module present: %s", self.name, self._module_info)
+        if not self.is_fixtures:
+            for service_name in self._module_info.provide_services:
+                dep = ServiceDep(service_name)
+                try:
+                    provider = graph.dep_to_provider[dep]
+                except KeyError:
+                    pass
+                else:
+                    raise RuntimeError(f"More than one module provide service {service_name!r}: {provider!r} and {self!r}")
+                graph.dep_to_provider[dep] = self
 
     @property
     def is_up_to_date(self, ctx):

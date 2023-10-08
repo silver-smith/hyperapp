@@ -14,7 +14,7 @@ _log = logging.getLogger(__name__)
 class Graph:
     name_to_unit: dict = field(default_factory=dict)
     name_to_deps: dict = field(default_factory=dict)
-    name_to_provides: dict = field(default_factory=dict)
+    dep_to_provider: dict = field(default_factory=dict)
 
 
 subprocess_module_dir_list = [
@@ -38,4 +38,4 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_ti
     # make = Make()
     initial_task = SourceCollectorTask(generator_ref, hyperapp_dir, dir_list)
     # make.run(initial_task)
-    initial_task.submit()
+    initial_task.submit(graph)
