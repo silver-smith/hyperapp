@@ -1,7 +1,12 @@
+import logging
+
 from . import htypes
 from .services import (
     mosaic,
     )
+from .code import driver
+
+log = logging.getLogger(__name__)
 
 
 # Module resource with import discoverer.
@@ -40,6 +45,8 @@ class ImportTask:
     def __str__(self):
         return f"ImportTask({self._unit.name})"
 
-    def submit(self, graph):
+    def start(self, process, graph):
         module_res = _discoverer_module_res(self._ctx, self._unit)
-
+        log.debug("Import: %s", self._unit.name)
+        future = process.rpc_submit(driver.import_module)(module_ref=mosaic.put(module_res))
+        return future

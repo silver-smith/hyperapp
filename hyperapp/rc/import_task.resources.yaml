@@ -5,6 +5,7 @@ import:
 - legacy_type.import_discoverer:import_discoverer
 - legacy_type.import_recorder:import_recorder
 - legacy_type.import_recorder:resource
+- rc.driver:driver.module
 
 definitions:
 
@@ -18,3 +19,4 @@ definitions:
       htypes.import_recorder.resource: legacy_type.import_recorder:resource
       htypes.builtin.import_rec: legacy_type.builtin:import_rec
       services.mosaic: builtin_service:mosaic
+      code.driver: rc.driver:driver.module

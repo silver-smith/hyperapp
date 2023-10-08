@@ -30,8 +30,10 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_ti
     # make = Make()
     initial_task = SourceCollectorTask(generator_ref, hyperapp_dir, dir_list)
     # make.run(initial_task)
-    task_list = initial_task.submit(graph)
+    task_list = initial_task.run(graph)
     with subprocess('rc-driver', rpc_timeout) as process:
         for task in task_list:
             log.info("Submit: %s", task)
-            task.submit(graph)
+            future = task.start(process, graph)
+            result = future.result()
+            log.info("%s result: %r", task, result)

@@ -1,0 +1,12 @@
+import:
+  - builtin_service:pyobj_creg
+  - legacy_type.builtin:python_module
+
+definitions:
+
+  driver.module:
+    _type: legacy_type.builtin:python_module
+    module_name: driver
+    file_name: driver.dyn.py
+    import_list:
+      services.pyobj_creg: builtin_service:pyobj_creg
