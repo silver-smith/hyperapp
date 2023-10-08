@@ -1,5 +1,9 @@
+import logging
+
 from .code.custom_resource_registry import create_custom_resource_registry
 from .code.source_file_unit import SourceFileUnit
+
+log = logging.getLogger(__name__)
 
 
 class SourceCollectorTask:
@@ -11,6 +15,7 @@ class SourceCollectorTask:
 
     def submit(self, graph):
         ctx = create_custom_resource_registry(self._root_dir, self._dir_list)
+
         name_to_unit = {}
         for dir in self._dir_list:
             for path in dir.rglob('*.dyn.py'):
@@ -19,3 +24,9 @@ class SourceCollectorTask:
                 unit = SourceFileUnit(self._generator_ref, self._root_dir, path)
                 unit.init(graph, ctx)
                 name_to_unit[unit.name] = unit
+
+        for name, unit in name_to_unit.items():
+            if unit.is_up_to_date(graph):
+                log.info("%s: IS up-to-date", name)
+            else:
+                log.info("%s: is NOT up-to-date", name)
