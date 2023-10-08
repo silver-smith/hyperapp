@@ -11,6 +11,7 @@ from .services import (
     mosaic,
     resource_module_factory,
     )
+from .code.import_task import ImportTask
 
 log = logging.getLogger(__name__)
 
@@ -75,7 +76,11 @@ class SourceFileUnit:
 
     @cached_property
     def is_fixtures(self):
-        return 'fixtures' in self.name.split('.')
+        return 'fixtures' in self._stem.split('.')
+
+    @cached_property
+    def is_tests(self):
+        return self._stem.split('.')[-1] == 'tests'
 
     def init(self, graph, ctx):
         graph.dep_to_provider[CodeDep(self._stem)] = self
@@ -139,3 +144,14 @@ class SourceFileUnit:
     def source_dep_record(self):
         source_ref = mosaic.put(self._source_path.read_bytes())
         return htypes.rc.source_dep(self.name, source_ref)
+
+    def make_tasks(self, ctx):
+        return [ImportTask(ctx, self)]
+
+    def make_module_res(self, import_list):
+        return htypes.builtin.python_module(
+            module_name=self._stem,
+            source=self._source_path.read_text(),
+            file_path=str(self._source_path),
+            import_list=tuple(import_list),
+            )

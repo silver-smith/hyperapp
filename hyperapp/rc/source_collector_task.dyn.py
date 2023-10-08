@@ -25,8 +25,9 @@ class SourceCollectorTask:
                 unit.init(graph, ctx)
                 name_to_unit[unit.name] = unit
 
-        for name, unit in name_to_unit.items():
-            if unit.is_up_to_date(graph):
-                log.info("%s: IS up-to-date", name)
-            else:
-                log.info("%s: is NOT up-to-date", name)
+        outdated_units = [u for u in name_to_unit.values() if not u.is_up_to_date(graph)]
+        tasks = []
+        for unit in outdated_units:
+            if unit.is_tests:
+                tasks += unit.make_tasks(ctx)
+        return tasks
