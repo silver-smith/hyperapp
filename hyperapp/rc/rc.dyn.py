@@ -25,7 +25,11 @@ subprocess_module_dir_list = [
 def compile_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_timeout=10):
     _log.info("Compile resources at: %s, %s: %s", subdir_list, root_dirs, module_list)
 
-    dir_list = [hyperapp_dir / d for d in subdir_list]
+    if subdir_list:
+        dir_list = [hyperapp_dir / d for d in subdir_list]
+    else:
+        dir_list = [hyperapp_dir]
+
     graph = Graph({}, {}, {})
     # make = Make()
     initial_task = SourceCollectorTask(generator_ref, hyperapp_dir, dir_list)

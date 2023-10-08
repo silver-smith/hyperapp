@@ -31,7 +31,7 @@ def main():
     parser.add_argument('--root-dir', type=Path, nargs='*', help="Additional resource root dirs")
     parser.add_argument('--module', type=str, nargs='*', help="Select (narrow) modules to compile")
     parser.add_argument('--rpc-timeout', type=int, help="Timeout for RPC calls (seconds). Default is none")
-    parser.add_argument('source_subdir', type=str, nargs='+', help="Subdirs with source files")
+    parser.add_argument('source_subdir', type=str, nargs='*', help="Subdirs with source files")
     args = parser.parse_args()
 
     config = {
