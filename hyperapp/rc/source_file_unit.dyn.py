@@ -47,6 +47,7 @@ class SourceFileUnit:
         self._stem = path.name[:-len('.dyn.py')]
         self.name = str(path.relative_to(root_dir).with_name(self._stem)).replace('/', '.')
         self._resources_path = path.with_name(self._stem + '.resources.yaml')
+        self._current_source_ref_str = None
         self._resource_module = None
         self._module_info = None
 
@@ -61,29 +62,37 @@ class SourceFileUnit:
     def is_tests(self):
         return self._stem.split('.')[-1] == 'tests'
 
+    def _set_providers(self, graph, provide_services):
+        if self.is_fixtures or self.is_tests:
+            return
+        for service_name in provide_services:
+            dep = ServiceDep(service_name)
+            try:
+                provider = graph.dep_to_provider[dep]
+            except KeyError:
+                pass
+            else:
+                raise RuntimeError(f"More than one module provide service {service_name!r}: {provider!r} and {self!r}")
+            graph.dep_to_provider[dep] = self
+
     def init(self, graph, ctx):
         graph.dep_to_provider[CodeDep(self._stem)] = self
         if not self._resources_path.exists():
             log.info("%s: missing", self.name)
             return
         resource_module = resource_module_factory(ctx.resource_registry, self.name, self._resources_path)
-        self._resource_module = resource_module
-        self._module_info = _resource_module_to_module_info(resource_module)
-        log.info("%s: module info: %s", self.name, self._module_info)
-        graph.name_to_deps[self.name] = self._module_info.want_deps
-        if not self.is_fixtures:
-            for service_name in self._module_info.provide_services:
-                dep = ServiceDep(service_name)
-                try:
-                    provider = graph.dep_to_provider[dep]
-                except KeyError:
-                    pass
-                else:
-                    raise RuntimeError(f"More than one module provide service {service_name!r}: {provider!r} and {self!r}")
-                graph.dep_to_provider[dep] = self
         if not resource_module.is_auto_generated:
-            ctx.resource_registry.set_module(self.name, self._resource_module)
+            self._resource_module = resource_module
+            ctx.resource_registry.set_module(self.name, resource_module)
             log.info("%s: manually generated", self.name)
+            return
+        self._current_source_ref_str = resource_module.source_ref_str
+        module_info = _resource_module_to_module_info(resource_module)
+        if self._hash_matches(graph, module_info.want_deps):
+            self._resource_module = resource_module
+            ctx.resource_registry.set_module(self.name, resource_module)
+            self._set_providers(graph, resource_module.provided_services)
+            log.info("%s: Up-to-date, provides: %s", self.name, resource_module.provided_services)
 
     @property
     def deps(self):
@@ -91,26 +100,6 @@ class SourceFileUnit:
             return self._module_info.want_deps
         else:
             return set()
-
-    def is_up_to_date(self, graph):
-        if not self._resource_module:
-            return False
-        if not self._resource_module.is_auto_generated:
-            return True
-
-        dep_units = []
-        for dep in self.deps:
-            try:
-                module = graph.dep_to_provider[dep]
-            except KeyError:
-                log.info("%s: dep %s is missing", self.name, dep)
-                return False
-            if not module.is_up_to_date(graph):
-                log.info("%s: dep %s module %s is outdated", self.name, dep, module)
-                return False
-            dep_units.append(module)
-        source_ref = self._make_source_ref(dep_units)
-        return ref_str(source_ref) == self._resource_module.source_ref_str
 
     def _make_source_ref(self, dep_units):
         deps = [
@@ -123,6 +112,28 @@ class SourceFileUnit:
     def source_dep_record(self):
         source_ref = mosaic.put(self._source_path.read_bytes())
         return htypes.rc.source_dep(self.name, source_ref)
+
+    def _hash_matches(self, graph, deps):
+        if not self._current_source_ref_str:
+            return False
+        dep_units = []
+        for dep in deps:
+            try:
+                module = graph.dep_to_provider[dep]
+            except KeyError:
+                log.debug("%s: dep %s is missing", self.name, dep)
+                return False
+            if not module.is_up_to_date(graph):
+                log.debug("%s: dep %s module %s is outdated", self.name, dep, module)
+                return False
+            dep_units.append(module)
+        source_ref = self._make_source_ref(dep_units)
+        return ref_str(source_ref) == self._current_source_ref_str
+
+    def is_up_to_date(self, graph):
+        if self._resource_module:
+            return True
+        return self._hash_matches(graph, self.deps)
 
     def make_tasks(self, ctx):
         return [ImportTask(ctx, self)]
