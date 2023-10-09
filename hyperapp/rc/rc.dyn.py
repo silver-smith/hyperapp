@@ -18,7 +18,7 @@ class Graph:
     dep_to_provider: dict = field(default_factory=dict)
 
 
-def compile_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_timeout=10):
+def compile_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_timeout):
     log.info("Compile resources at: %s, %s: %s", subdir_list, root_dirs, module_list)
 
     if subdir_list:
