@@ -32,13 +32,13 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_ti
     # make = Make()
     initial_task = SourceCollectorTask(generator_ref, hyperapp_dir, dir_list)
     # make.run(initial_task)
-    ctx = initial_task.run(graph)
+    initial_task.run(graph)
     with subprocess('rc-driver', rpc_timeout) as process:
         task_list = []
         for unit in graph.name_to_unit.values():
             if unit.is_up_to_date(graph):
                 continue
-            task_list += unit.make_tasks(ctx)
+            task_list += unit.make_tasks()
         for task in task_list:
             log.info("Submit: %s", task)
             future = task.start(process, graph)

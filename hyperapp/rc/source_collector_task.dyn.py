@@ -21,9 +21,8 @@ class SourceCollectorTask:
             for path in dir.rglob('*.dyn.py'):
                 if 'test' in path.relative_to(self._root_dir).parts:
                     continue
-                unit = SourceFileUnit(self._generator_ref, self._root_dir, path)
-                unit.init(graph, ctx)
+                unit = SourceFileUnit(ctx, self._generator_ref, self._root_dir, path)
+                unit.init(graph)
                 name_to_unit[unit.name] = unit
 
         graph.name_to_unit.update(name_to_unit)
-        return ctx

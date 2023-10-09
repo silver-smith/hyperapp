@@ -41,7 +41,8 @@ def _resource_module_to_module_info(resource_module):
 
 class SourceFileUnit:
 
-    def __init__(self, generator_ref, root_dir, path):
+    def __init__(self, ctx, generator_ref, root_dir, path):
+        self._ctx = ctx
         self._generator_ref = generator_ref
         self._source_path = path
         self._stem = path.name[:-len('.dyn.py')]
@@ -75,22 +76,22 @@ class SourceFileUnit:
                 raise RuntimeError(f"More than one module provide service {service_name!r}: {provider!r} and {self!r}")
             graph.dep_to_provider[dep] = self
 
-    def init(self, graph, ctx):
+    def init(self, graph):
         graph.dep_to_provider[CodeDep(self._stem)] = self
         if not self._resources_path.exists():
             log.info("%s: missing", self.name)
             return
-        resource_module = resource_module_factory(ctx.resource_registry, self.name, self._resources_path)
+        resource_module = resource_module_factory(self._ctx.resource_registry, self.name, self._resources_path)
         if not resource_module.is_auto_generated:
             self._resource_module = resource_module
-            ctx.resource_registry.set_module(self.name, resource_module)
+            self._ctx.resource_registry.set_module(self.name, resource_module)
             log.info("%s: manually generated", self.name)
             return
         self._current_source_ref_str = resource_module.source_ref_str
         module_info = _resource_module_to_module_info(resource_module)
         if self._hash_matches(graph, module_info.want_deps):
             self._resource_module = resource_module
-            ctx.resource_registry.set_module(self.name, resource_module)
+            self._ctx.resource_registry.set_module(self.name, resource_module)
             self._set_providers(graph, resource_module.provided_services)
             log.info("%s: Up-to-date, provides: %s", self.name, resource_module.provided_services)
 
@@ -135,8 +136,8 @@ class SourceFileUnit:
             return True
         return self._hash_matches(graph, self.deps)
 
-    def make_tasks(self, ctx):
-        return [ImportTask(ctx, self)]
+    def make_tasks(self):
+        return [ImportTask(self._ctx, self)]
 
     def make_module_res(self, import_list):
         return htypes.builtin.python_module(
