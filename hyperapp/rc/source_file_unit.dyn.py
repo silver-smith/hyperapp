@@ -16,6 +16,9 @@ from .code.import_task import ImportTask
 log = logging.getLogger(__name__)
 
 
+ImportsInfo = namedtuple('ImportsInfo', 'used_types want_deps test_services test_code')
+
+
 def _enum_resource_module_deps(resource_module):
     for module_name, var_name in resource_module.used_imports:
         l = var_name.split('.')
@@ -24,6 +27,52 @@ def _enum_resource_module_deps(resource_module):
         if len(l) > 1 and l[-1] == 'module':
             code_name = '.'.join(l[:-1])
             yield CodeDep(code_name)
+
+
+def _imports_info(imports):
+    used_types = set()
+    want_deps = set()
+    test_services = set()
+    test_code = set()
+    for imp in imports:
+        if imp[-1] == 'shape':
+            imp = imp[:-1]  # Revert pycharm debugger mangle.
+        if len(imp) < 2:
+            continue
+        kind, name, *_ = imp
+        if kind == 'htypes':
+            if len(imp) < 3:
+                continue
+            _, type_module, type_name, *_ = imp
+            used_types.add((type_module, type_name))
+            continue
+        if kind == 'services':
+            want_deps.add(ServiceDep(name))
+            continue
+        if kind == 'code':
+            want_deps.add(CodeDep(name))
+            continue
+        if kind == 'tested':
+            if len(imp) < 3:
+                continue
+            _, kind, name, *_ = imp
+            if kind == 'services':
+                test_services.add(name)
+                continue
+            if kind == 'code':
+                test_code.add(name)
+                continue
+        raise RuntimeError(f"Unknown import kind %r: %s", kind, '.'.join(imp))
+    log.info("Discovered import deps: %s", want_deps)
+    log.info("Discovered test_services: %s", test_services)
+    log.info("Discovered test_code: %s", test_code)
+
+    return ImportsInfo(
+        used_types=used_types,
+        want_deps=want_deps,
+        test_services=test_services,
+        test_code=test_code,
+        )
 
 
 class SourceFileUnit:
@@ -37,7 +86,8 @@ class SourceFileUnit:
         self._resources_path = path.with_name(self._stem + '.resources.yaml')
         self._current_source_ref_str = None
         self._resource_module = None
-        self._module_info = None
+        self._deps = set()
+        self._import_set = set()
 
     def __repr__(self):
         return f"<SourceFileUnit {self.name!r}>"
@@ -49,6 +99,10 @@ class SourceFileUnit:
     @cached_property
     def is_tests(self):
         return self._stem.split('.')[-1] == 'tests'
+
+    @property
+    def deps(self):
+        return self._deps
 
     def _set_providers(self, graph, provide_services):
         if self.is_fixtures or self.is_tests:
@@ -81,13 +135,6 @@ class SourceFileUnit:
             self._ctx.resource_registry.set_module(self.name, resource_module)
             self._set_providers(graph, resource_module.provided_services)
             log.info("%s: Up-to-date, provides: %s", self.name, resource_module.provided_services)
-
-    @property
-    def deps(self):
-        if self._module_info:
-            return self._module_info.want_deps
-        else:
-            return set()
 
     def _make_source_ref(self, dep_units):
         deps = [
@@ -133,3 +180,8 @@ class SourceFileUnit:
             file_path=str(self._source_path),
             import_list=tuple(import_list),
             )
+
+    def set_imports(self, import_set):
+        self._import_set |= import_set
+        info = _imports_info(import_set)
+        self._deps |= info.want_deps
