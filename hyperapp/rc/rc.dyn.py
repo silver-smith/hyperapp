@@ -45,7 +45,7 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_ti
             try:
                 result = future.result()
                 log.info("%s result: %r", task, result)
-                task.process_result(result)
+                task.process_result(graph, result)
             except HException as x:
                 log.info("%s error: %r", task, x)
-                task.process_error(x)
+                task.process_error(graph, x)

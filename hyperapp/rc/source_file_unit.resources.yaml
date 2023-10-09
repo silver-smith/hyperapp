@@ -4,6 +4,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.rc:source_dep
 - legacy_type.rc:module_deps
+- rc.dep:dep.module
 - rc.import_task:import_task.module
 
 definitions:
@@ -18,4 +19,5 @@ definitions:
       htypes.rc.module_deps: legacy_type.rc:module_deps
       services.mosaic: builtin_service:mosaic
       services.resource_module_factory: builtin_service:resource_module_factory
+      code.dep: rc.dep:dep.module
       code.import_task: rc.import_task:import_task.module

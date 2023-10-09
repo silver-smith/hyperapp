@@ -1,6 +1,5 @@
 import logging
 from collections import namedtuple
-from dataclasses import dataclass
 from functools import cached_property
 from operator import attrgetter
 
@@ -11,33 +10,13 @@ from .services import (
     mosaic,
     resource_module_factory,
     )
+from .code.dep import ServiceDep, CodeDep
 from .code.import_task import ImportTask
 
 log = logging.getLogger(__name__)
 
 
 ModuleInfo = namedtuple('ModuleInfo', 'use_modules want_deps test_services test_code provide_services')
-
-@dataclass
-class ServiceDep:
-    service_name: str
-
-    def __eq__(self, rhs):
-        return type(rhs) is ServiceDep and rhs.service_name == self.service_name
-
-    def __hash__(self):
-        return hash((type(self), self.service_name))
-
-
-@dataclass
-class CodeDep:
-    code_name: str
-
-    def __eq__(self, rhs):
-        return type(rhs) is CodeDep and rhs.code_name == self.code_name
-
-    def __hash__(self):
-        return hash((type(self), self.code_name))
 
 
 def _resource_module_to_module_info(resource_module):

@@ -1,13 +1,18 @@
 import logging
+from collections import namedtuple
 
 from . import htypes
 from .services import (
     mosaic,
     web,
     )
+from .code.dep import ServiceDep, CodeDep
 from .code import driver
 
 log = logging.getLogger(__name__)
+
+
+DepsInfo = namedtuple('DepsInfo', 'want_deps test_services test_code')
 
 
 # Module resource with import discoverer.
@@ -37,6 +42,58 @@ def _discoverer_module_res(ctx, unit):
     return (recorders, module_res)
 
 
+def _imports_to_type_set(imports):
+    used_types = set()
+    for imp in imports:
+        if len(imp) < 3:
+            continue
+        kind, module, name, *_ = imp
+        if kind != 'htypes':
+            continue
+        used_types.add((module, name))
+    return used_types
+
+
+def _imports_to_deps(imports):
+    want_deps = set()
+    test_services = set()
+    test_code = set()
+    for imp in imports:
+        if imp[-1] == 'shape':
+            imp = imp[:-1]  # Revert pycharm debugger mangle.
+        if len(imp) < 2:
+            continue
+        kind, name, *_ = imp
+        if kind == 'htypes':
+            continue
+        if kind == 'services':
+            want_deps.add(ServiceDep(name))
+            continue
+        if kind == 'code':
+            want_deps.add(CodeDep(name))
+            continue
+        if kind == 'tested':
+            if len(imp) < 3:
+                continue
+            _, kind, name, *_ = imp
+            if kind == 'services':
+                test_services.add(name)
+                continue
+            if kind == 'code':
+                test_code.add(name)
+                continue
+        raise RuntimeError(f"Unknown import kind %r: %s", kind, '.'.join(imp))
+    log.info("Discovered import deps: %s", want_deps)
+    log.info("Discovered test_services: %s", test_services)
+    log.info("Discovered test_code: %s", test_code)
+
+    return DepsInfo(
+        want_deps=want_deps,
+        test_services=test_services,
+        test_code=test_code,
+        )
+
+
 class ImportTask:
 
     def __init__(self, ctx, module_unit):
@@ -58,12 +115,14 @@ class ImportTask:
             )
         return future
 
-    def process_result(self, result):
+    def process_result(self, graph, result):
         if result.error:
             error = web.summon(result.error)
             if not isinstance(error, htypes.import_discoverer.using_incomplete_object):
                 raise error
             log.info("Incomplete object: %s", error.message)
+        used_types = _imports_to_type_set(result.imports)
+        deps = _imports_to_deps(result.imports)
 
-    def process_error(self, exception):
+    def process_error(self, graph, exception):
         raise exception
