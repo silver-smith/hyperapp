@@ -3,6 +3,7 @@ import logging
 from . import htypes
 from .services import (
     mosaic,
+    web,
     )
 from .code import driver
 
@@ -26,13 +27,14 @@ def _discoverer_module_res(ctx, unit):
     import_recorder_ref = mosaic.put(import_recorder_res)
     import_discoverer_res = htypes.import_discoverer.import_discoverer()
     import_discoverer_ref = mosaic.put(import_discoverer_res)
+    recorders = [import_recorder_ref, import_discoverer_ref]
 
     module_res = unit.make_module_res([
             htypes.builtin.import_rec('htypes.*', import_recorder_ref),
             htypes.builtin.import_rec('services.*', import_recorder_ref),
             htypes.builtin.import_rec('*', import_discoverer_ref),
             ])
-    return module_res
+    return (recorders, module_res)
 
 
 class ImportTask:
@@ -48,15 +50,20 @@ class ImportTask:
         return f"ImportTask({self._unit.name})"
 
     def start(self, process, graph):
-        module_res = _discoverer_module_res(self._ctx, self._unit)
+        recorders, module_res = _discoverer_module_res(self._ctx, self._unit)
         log.debug("Import: %s", self._unit.name)
-        future = process.rpc_submit(driver.import_module)(module_ref=mosaic.put(module_res))
+        future = process.rpc_submit(driver.import_module)(
+            import_recorders=recorders,
+            module_ref=mosaic.put(module_res),
+            )
         return future
 
     def process_result(self, result):
-        pass
+        if result.error:
+            error = web.summon(result.error)
+            if not isinstance(error, htypes.import_discoverer.using_incomplete_object):
+                raise error
+            log.info("Incomplete object: %s", error.message)
 
     def process_error(self, exception):
-        if not isinstance(exception, htypes.import_discoverer.using_incomplete_object):
-            raise
-        log.info("Incomplete object: %s", exception.message)
+        raise exception

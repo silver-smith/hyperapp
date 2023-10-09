@@ -40,8 +40,8 @@ class ImportDiscoverer(Finder):
     def reset(self):
         self._imported_set.clear()
 
-    def discovered_imports(self):
-        return list(sorted(self._imported_set))
+    def used_imports(self):
+        return set(self._imported_set)
 
     def set_base_module_name(self, name):
         self._base_module_name = name

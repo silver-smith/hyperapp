@@ -11,6 +11,11 @@ fn_attr = record(attr):
 generator_fn_attr = record(fn_attr)
 
 
+imported_module_info = record:
+  imports: string list list
+  attr_list: ref list
+  error: ref opt
+
 object_info = record:
   object_module: string
   attr_list: ref list

@@ -75,7 +75,7 @@ class ImportRecorder(Finder):
         self._imported_set.clear()
 
     def used_imports(self):
-        return list(sorted(self._imported_set))
+        return set(self._imported_set)
 
     def set_base_module_name(self, name):
         self._base_module_name = name

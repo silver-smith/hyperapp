@@ -1,6 +1,12 @@
 import:
-  - builtin_service:pyobj_creg
-  - legacy_type.builtin:python_module
+- builtin_service:mosaic
+- builtin_service:pyobj_creg
+- legacy_type.builtin:python_module
+- legacy_type.inspect:attr
+- legacy_type.inspect:fn_attr
+- legacy_type.inspect:generator_fn_attr
+- legacy_type.inspect:imported_module_info
+- resource.constants:constants.module
 
 definitions:
 
@@ -9,4 +15,10 @@ definitions:
     module_name: driver
     file_name: driver.dyn.py
     import_list:
+      htypes.inspect.attr: legacy_type.inspect:attr
+      htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
+      htypes.inspect.generator_fn_attr: legacy_type.inspect:generator_fn_attr
+      htypes.inspect.imported_module_info: legacy_type.inspect:imported_module_info
+      services.mosaic: builtin_service:mosaic
       services.pyobj_creg: builtin_service:pyobj_creg
+      code.constants: resource.constants:constants.module
