@@ -16,27 +16,14 @@ from .code.import_task import ImportTask
 log = logging.getLogger(__name__)
 
 
-ModuleInfo = namedtuple('ModuleInfo', 'use_modules want_deps test_services test_code provide_services')
-
-
-def _resource_module_to_module_info(resource_module):
-    use_modules = set()
-    want_deps = set()
+def _enum_resource_module_deps(resource_module):
     for module_name, var_name in resource_module.used_imports:
-        use_modules.add(module_name)
         l = var_name.split('.')
         if len(l) == 2 and l[1] == 'service':
-            want_deps.add(ServiceDep(l[0]))
+            yield ServiceDep(l[0])
         if len(l) > 1 and l[-1] == 'module':
             code_name = '.'.join(l[:-1])
-            want_deps.add(CodeDep(code_name))
-    return ModuleInfo(
-        use_modules=use_modules,
-        want_deps=want_deps,
-        test_services=set(),
-        test_code=set(),
-        provide_services=resource_module.provided_services,
-        )
+            yield CodeDep(code_name)
 
 
 class SourceFileUnit:
@@ -88,8 +75,8 @@ class SourceFileUnit:
             log.info("%s: manually generated", self.name)
             return
         self._current_source_ref_str = resource_module.source_ref_str
-        module_info = _resource_module_to_module_info(resource_module)
-        if self._hash_matches(graph, module_info.want_deps):
+        deps = list(_enum_resource_module_deps(resource_module))
+        if self._hash_matches(graph, deps):
             self._resource_module = resource_module
             self._ctx.resource_registry.set_module(self.name, resource_module)
             self._set_providers(graph, resource_module.provided_services)
