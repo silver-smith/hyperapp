@@ -24,6 +24,10 @@ class DiscovererObject:
         path = '.'.join(self._prefix)
         raise htypes.import_discoverer.using_incomplete_object(f"Attempt to use not-ready object {path} with: *{args}, **{kw}")
 
+    def __mro_entries__(self, base):
+        path = '.'.join(self._prefix)
+        raise htypes.import_discoverer.using_incomplete_object(f"Attempt to inherit from not-ready class {path}")
+
 
 class ImportDiscoverer(Finder):
 
