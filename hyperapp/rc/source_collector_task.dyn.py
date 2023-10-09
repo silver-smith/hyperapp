@@ -25,9 +25,5 @@ class SourceCollectorTask:
                 unit.init(graph, ctx)
                 name_to_unit[unit.name] = unit
 
-        outdated_units = [u for u in name_to_unit.values() if not u.is_up_to_date(graph)]
-        tasks = []
-        for unit in outdated_units:
-            if unit.is_tests:
-                tasks += unit.make_tasks(ctx)
-        return tasks
+        graph.name_to_unit.update(name_to_unit)
+        return ctx
