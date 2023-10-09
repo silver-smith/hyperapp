@@ -1,6 +1,8 @@
 import logging
 from dataclasses import dataclass, field
 
+from hyperapp.common.htypes import HException
+
 from .services import (
     hyperapp_dir,
     )
@@ -40,5 +42,9 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_ti
         for task in task_list:
             log.info("Submit: %s", task)
             future = task.start(process, graph)
-            result = future.result()
+            try:
+                result = future.result()
+                task.process_result(result)
+            except HException as x:
+                task.process_error(x)
             log.info("%s result: %r", task, result)

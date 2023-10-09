@@ -50,3 +50,11 @@ class ImportTask:
         log.debug("Import: %s", self._unit.name)
         future = process.rpc_submit(driver.import_module)(module_ref=mosaic.put(module_res))
         return future
+
+    def process_result(self, result):
+        pass
+
+    def process_error(self, exception):
+        if not isinstance(exception, htypes.import_discoverer.using_incomplete_object):
+            raise
+        log.info("Incomplete object: %s", exception.message)
