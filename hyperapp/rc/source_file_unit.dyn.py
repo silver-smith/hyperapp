@@ -12,7 +12,7 @@ from .services import (
     web,
     )
 from .code.dep import ServiceDep, CodeDep
-from .code.import_task import ImportTask
+from .code.import_task import AttrEnumTask, ImportTask
 
 log = logging.getLogger(__name__)
 
