@@ -1,5 +1,5 @@
 import logging
-from dataclasses import dataclass, field
+from collections import defaultdict
 
 from hyperapp.common.htypes import HException
 
@@ -13,11 +13,12 @@ from .code.process_pool import subprocess
 log = logging.getLogger(__name__)
 
 
-@dataclass
 class Graph:
-    name_to_unit: dict = field(default_factory=dict)
-    name_to_deps: dict = field(default_factory=dict)
-    dep_to_provider: dict = field(default_factory=dict)
+
+    def __init__(self):
+        self.name_to_unit = {}
+        self.name_to_deps = defaultdict(set)
+        self.dep_to_provider = {}
 
 
 def compile_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_timeout):
@@ -28,7 +29,7 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_ti
     else:
         dir_list = [hyperapp_dir]
 
-    graph = Graph({}, {}, {})
+    graph = Graph()
     # make = Make()
     initial_task = SourceCollectorTask(generator_ref, hyperapp_dir, dir_list)
     # make.run(initial_task)

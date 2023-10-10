@@ -64,7 +64,7 @@ class ImportTask:
             if not isinstance(error, htypes.import_discoverer.using_incomplete_object):
                 raise error
             log.info("Incomplete object: %s", error.message)
-        self._unit.set_imports(set(result.imports))
+        self._unit.set_imports(graph, set(result.imports))
 
     def process_error(self, graph, exception):
         raise exception

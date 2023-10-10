@@ -86,8 +86,8 @@ class SourceFileUnit:
         self._resources_path = path.with_name(self._stem + '.resources.yaml')
         self._current_source_ref_str = None
         self._resource_module = None
-        self._deps = set()
         self._import_set = set()
+        self._deps = set()
 
     def __repr__(self):
         return f"<SourceFileUnit {self.name!r}>"
@@ -99,10 +99,6 @@ class SourceFileUnit:
     @cached_property
     def is_tests(self):
         return self._stem.split('.')[-1] == 'tests'
-
-    @property
-    def deps(self):
-        return self._deps
 
     def _set_providers(self, graph, provide_services):
         if self.is_fixtures or self.is_tests:
@@ -168,7 +164,7 @@ class SourceFileUnit:
     def is_up_to_date(self, graph):
         if self._resource_module:
             return True
-        return self._hash_matches(graph, self.deps)
+        return self._hash_matches(graph, self._deps)
 
     def make_tasks(self):
         return [ImportTask(self._ctx, self)]
@@ -181,7 +177,8 @@ class SourceFileUnit:
             import_list=tuple(import_list),
             )
 
-    def set_imports(self, import_set):
+    def set_imports(self, graph, import_set):
         self._import_set |= import_set
         info = _imports_info(import_set)
         self._deps |= info.want_deps
+        graph.name_to_deps[self.name] |= info.want_deps
