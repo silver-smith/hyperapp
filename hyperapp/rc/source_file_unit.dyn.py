@@ -87,7 +87,6 @@ class SourceFileUnit:
         self._current_source_ref_str = None
         self._resource_module = None
         self._import_set = None
-        self._deps = set()
 
     def __repr__(self):
         return f"<SourceFileUnit {self.name!r}>"
@@ -164,7 +163,7 @@ class SourceFileUnit:
     def is_up_to_date(self, graph):
         if self._resource_module:
             return True
-        return self._hash_matches(graph, self._deps)
+        return self._hash_matches(graph, graph.name_to_deps[self.name])
 
     def make_tasks(self):
         if self._import_set is None:
@@ -184,5 +183,4 @@ class SourceFileUnit:
     def set_imports(self, graph, import_set):
         self._import_set = import_set
         info = _imports_info(import_set)
-        self._deps |= info.want_deps
         graph.name_to_deps[self.name] |= info.want_deps
