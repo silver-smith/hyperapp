@@ -1,6 +1,8 @@
 import:
 - builtin_service:mosaic
 - builtin_service:resource_module_factory
+- builtin_service:web
+- legacy_type.attr_constructors:service
 - legacy_type.builtin:python_module
 - legacy_type.rc:source_dep
 - legacy_type.rc:module_deps
@@ -14,10 +16,12 @@ definitions:
     module_name: source_file_unit
     file_name: source_file_unit.dyn.py
     import_list:
+      htypes.attr_constructors.service: legacy_type.attr_constructors:service
       htypes.builtin.python_module: legacy_type.builtin:python_module
       htypes.rc.source_dep: legacy_type.rc:source_dep
       htypes.rc.module_deps: legacy_type.rc:module_deps
       services.mosaic: builtin_service:mosaic
       services.resource_module_factory: builtin_service:resource_module_factory
+      services.web: builtin_service:web
       code.dep: rc.dep:dep.module
       code.import_task: rc.import_task:import_task.module

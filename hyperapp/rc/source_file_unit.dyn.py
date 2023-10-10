@@ -9,6 +9,7 @@ from . import htypes
 from .services import (
     mosaic,
     resource_module_factory,
+    web,
     )
 from .code.dep import ServiceDep, CodeDep
 from .code.import_task import ImportTask
@@ -27,6 +28,14 @@ def _enum_resource_module_deps(resource_module):
         if len(l) > 1 and l[-1] == 'module':
             code_name = '.'.join(l[:-1])
             yield CodeDep(code_name)
+
+
+def _enum_provided_services(attr_list):
+    for attr in attr_list:
+        for ctr_ref in attr.constructors:
+            ctr = web.summon(ctr_ref)
+            if isinstance(ctr, htypes.attr_constructors.service):
+                yield ctr.name
 
 
 def _imports_info(imports):
@@ -191,3 +200,7 @@ class SourceFileUnit:
 
     def set_attributes(self, graph, attr_list):
         self._attr_list = attr_list
+        for service_name in _enum_provided_services(attr_list):
+            log.debug("%s: Discovered provided service: %r", self.name, service_name)
+            dep = ServiceDep(service_name)
+            graph.dep_to_provider[dep] = self
