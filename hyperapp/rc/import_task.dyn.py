@@ -49,7 +49,7 @@ class ImportTask:
     def __str__(self):
         return f"ImportTask({self._unit.name})"
 
-    def start(self, process, graph):
+    def start(self, process):
         recorders, module_res = _discoverer_module_res(self._ctx, self._unit)
         log.debug("Import: %s", self._unit.name)
         future = process.rpc_submit(driver.import_module)(

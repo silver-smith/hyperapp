@@ -86,7 +86,7 @@ class SourceFileUnit:
         self._resources_path = path.with_name(self._stem + '.resources.yaml')
         self._current_source_ref_str = None
         self._resource_module = None
-        self._import_set = set()
+        self._import_set = None
         self._deps = set()
 
     def __repr__(self):
@@ -167,7 +167,11 @@ class SourceFileUnit:
         return self._hash_matches(graph, self._deps)
 
     def make_tasks(self):
-        return [ImportTask(self._ctx, self)]
+        if self._import_set is None:
+            return [ImportTask(self._ctx, self)]
+        else:
+            # Already imported.
+            return []
 
     def make_module_res(self, import_list):
         return htypes.builtin.python_module(
@@ -178,7 +182,7 @@ class SourceFileUnit:
             )
 
     def set_imports(self, graph, import_set):
-        self._import_set |= import_set
+        self._import_set = import_set
         info = _imports_info(import_set)
         self._deps |= info.want_deps
         graph.name_to_deps[self.name] |= info.want_deps

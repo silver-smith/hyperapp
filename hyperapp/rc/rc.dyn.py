@@ -8,7 +8,7 @@ from .services import (
     )
 # from .code.make import Make
 from .code.source_collector_task import SourceCollectorTask
-from .code.process_pool import subprocess
+from .code.process_pool import process_pool_running
 
 log = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ class Graph:
         self.dep_to_provider = {}
 
 
-def compile_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_timeout):
+def compile_resources(generator_ref, subdir_list, root_dirs, module_list, process_count, rpc_timeout):
     log.info("Compile resources at: %s, %s: %s", subdir_list, root_dirs, module_list)
 
     if subdir_list:
@@ -34,15 +34,22 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, rpc_ti
     initial_task = SourceCollectorTask(generator_ref, hyperapp_dir, dir_list)
     # make.run(initial_task)
     initial_task.run(graph)
-    with subprocess('rc-driver', rpc_timeout) as process:
-        task_list = []
-        for unit in graph.name_to_unit.values():
-            if unit.is_up_to_date(graph):
-                continue
-            task_list += unit.make_tasks()
-        for task in task_list:
-            log.info("Submit: %s", task)
-            future = task.start(process, graph)
+    with process_pool_running(process_count, rpc_timeout) as pool:
+        task_to_unit = {}
+        while True:
+            for unit in graph.name_to_unit.values():
+                if unit in task_to_unit.values():
+                    continue  # No finished tasks for this unit yet.
+                if unit.is_up_to_date(graph):
+                    continue
+                for task in unit.make_tasks():
+                    log.info("Submit: %s", task)
+                    pool.submit(task)
+                    task_to_unit[task] = unit
+            if not task_to_unit and pool.task_count == 0:
+                break
+            task, future = pool.next_completed(timeout=rpc_timeout)
+            del task_to_unit[task]
             try:
                 result = future.result()
                 log.info("%s result: %r", task, result)
