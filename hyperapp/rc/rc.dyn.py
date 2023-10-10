@@ -54,7 +54,7 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, proces
                 if outdated_providers:
                     log.debug("%s: outdated providers: %s", unit, outdated_providers)
                     continue
-                for task in unit.make_tasks():
+                for task in unit.make_tasks(graph):
                     log.info("Submit: %s", task)
                     pool.submit(task)
                     task_to_unit[task] = unit

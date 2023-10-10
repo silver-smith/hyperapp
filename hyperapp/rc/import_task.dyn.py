@@ -37,14 +37,31 @@ def _discoverer_module_res(ctx, unit):
     return (recorders, module_res)
 
 
-class ImportTask:
+class TaskBase:
 
-    def __init__(self, ctx, module_unit):
+    def __init__(self, ctx, unit):
         self._ctx = ctx
-        self._unit = module_unit
+        self._unit = unit
 
     def __repr__(self):
         return f"<{self}>"
+
+    def process_result(self, graph, result):
+        self._unit.set_imports(graph, set(result.imports))
+        if result.error:
+            error = web.summon(result.error)
+            if not isinstance(error, htypes.import_discoverer.using_incomplete_object):
+                raise error
+            log.info("%s: Incomplete object: %s", self._unit.name, error.message)
+        else:
+            attr_list = [web.summon(ref) for ref in result.attr_list]
+            self._unit.set_attributes(graph, attr_list)
+
+    def process_error(self, graph, exception):
+        raise exception
+
+
+class ImportTask(TaskBase):
 
     def __str__(self):
         return f"ImportTask({self._unit.name})"
@@ -58,13 +75,16 @@ class ImportTask:
             )
         return future
 
-    def process_result(self, graph, result):
-        if result.error:
-            error = web.summon(result.error)
-            if not isinstance(error, htypes.import_discoverer.using_incomplete_object):
-                raise error
-            log.info("Incomplete object: %s", error.message)
-        self._unit.set_imports(graph, set(result.imports))
 
-    def process_error(self, graph, exception):
-        raise exception
+class AttrEnumTask(TaskBase):
+
+    def __init__(self, ctx, unit, graph):
+        self._ctx = ctx
+        self._unit = unit
+        self._graph = graph
+
+    def __str__(self):
+        return f"AttrEnumTask({self._unit.name})"
+
+    def start(self, process):
+        assert 0, self

@@ -87,6 +87,7 @@ class SourceFileUnit:
         self._current_source_ref_str = None
         self._resource_module = None
         self._import_set = None
+        self._attr_list = None
 
     def __repr__(self):
         return f"<SourceFileUnit {self.name!r}>"
@@ -165,11 +166,14 @@ class SourceFileUnit:
             return True
         return self._hash_matches(graph, graph.name_to_deps[self.name])
 
-    def make_tasks(self):
+    def make_tasks(self, graph):
         if self._import_set is None:
             return [ImportTask(self._ctx, self)]
+        elif self._attr_list is None:
+            # Got incomplete error when collecting attributes, retry with complete imports:
+            return [AttrEnumTask(self._ctx, self, graph)]
         else:
-            # Already imported.
+            # Already imported and attributes collected.
             return []
 
     def make_module_res(self, import_list):
@@ -184,3 +188,6 @@ class SourceFileUnit:
         self._import_set = import_set
         info = _imports_info(import_set)
         graph.name_to_deps[self.name] |= info.want_deps
+
+    def set_attributes(self, graph, attr_list):
+        self._attr_list = attr_list
