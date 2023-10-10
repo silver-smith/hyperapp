@@ -131,6 +131,7 @@ class SourceFileUnit:
         if not resource_module.is_auto_generated:
             self._resource_module = resource_module
             self._ctx.resource_registry.set_module(self.name, resource_module)
+            self._set_providers(graph, resource_module.provided_services)
             log.info("%s: manually generated", self.name)
             return
         self._current_source_ref_str = resource_module.source_ref_str
