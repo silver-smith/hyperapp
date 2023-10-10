@@ -1,7 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtin_service:mosaic
+- builtins:mosaic.service
 - common.context:context.module
 - legacy_type.application:layout
 - legacy_type.application:state
@@ -35,5 +35,5 @@ definitions:
       htypes.window.pos: legacy_type.window:pos
       htypes.window.size: legacy_type.window:size
       htypes.window.state: legacy_type.window:state
-      services.mosaic: builtin_service:mosaic
+      services.mosaic: builtins:mosaic.service
       services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service

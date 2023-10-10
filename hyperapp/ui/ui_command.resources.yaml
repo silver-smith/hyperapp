@@ -1,8 +1,8 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtin_service:association_reg
-- builtin_service:pyobj_creg
+- builtins:association_reg.service
+- builtins:pyobj_creg.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -17,10 +17,10 @@ definitions:
     file_name: ui_command.dyn.py
     import_list:
       htypes.ui.ui_command_d: legacy_type.ui:ui_command_d
-      services.association_reg: builtin_service:association_reg
+      services.association_reg: builtins:association_reg.service
       services.data_to_res: resource.data_to_res:data_to_res.service
       services.mark: common.mark:mark.service
-      services.pyobj_creg: builtin_service:pyobj_creg
+      services.pyobj_creg: builtins:pyobj_creg.service
   ui_command_factory:
     _type: legacy_type.builtin:attribute
     object: ui_command.module

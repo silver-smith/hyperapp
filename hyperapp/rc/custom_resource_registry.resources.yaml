@@ -1,11 +1,11 @@
 import:
-- builtin_service:builtin_service_resource_loader
-- builtin_service:builtin_types_as_dict
-- builtin_service:legacy_type_resource_loader
-- builtin_service:local_types
-- builtin_service:mosaic
-- builtin_service:resource_registry_factory
-- builtin_service:type_module_loader
+- builtins:builtin_service_resource_loader.service
+- builtins:builtin_types_as_dict.service
+- builtins:legacy_type_resource_loader.service
+- builtins:local_types.service
+- builtins:mosaic.service
+- builtins:resource_registry_factory.service
+- builtins:type_module_loader.service
 - legacy_type.builtin:legacy_type
 - legacy_type.builtin:python_module
 - legacy_type.import_recorder:resource
@@ -19,10 +19,10 @@ definitions:
     import_list:
       htypes.builtin.legacy_type: legacy_type.builtin:legacy_type
       htypes.import_recorder.resource: legacy_type.import_recorder:resource
-      services.builtin_service_resource_loader: builtin_service:builtin_service_resource_loader
-      services.builtin_types_as_dict: builtin_service:builtin_types_as_dict
-      services.legacy_type_resource_loader: builtin_service:legacy_type_resource_loader
-      services.local_types: builtin_service:local_types
-      services.mosaic: builtin_service:mosaic
-      services.resource_registry_factory: builtin_service:resource_registry_factory
-      services.type_module_loader: builtin_service:type_module_loader
+      services.builtin_service_resource_loader: builtins:builtin_service_resource_loader.service
+      services.builtin_types_as_dict: builtins:builtin_types_as_dict.service
+      services.legacy_type_resource_loader: builtins:legacy_type_resource_loader.service
+      services.local_types: builtins:local_types.service
+      services.mosaic: builtins:mosaic.service
+      services.resource_registry_factory: builtins:resource_registry_factory.service
+      services.type_module_loader: builtins:type_module_loader.service

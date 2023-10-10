@@ -1,7 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtin_service:web
+- builtins:web.service
 - legacy_type.application:layout
 - legacy_type.application:state
 - legacy_type.builtin:attribute
@@ -54,4 +54,4 @@ definitions:
       htypes.window.size: legacy_type.window:size
       htypes.window.state: legacy_type.window:state
       services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
-      services.web: builtin_service:web
+      services.web: builtins:web.service

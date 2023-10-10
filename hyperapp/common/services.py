@@ -137,7 +137,7 @@ class Services(object):
         self.builtin_service_resource_loader = partial(
             make_builtin_service_resource_module, self.mosaic, self.builtin_services)
         self.resource_registry.set_module(
-            'builtin_service', self.builtin_service_resource_loader(self.resource_registry))
+            'builtins', self.builtin_service_resource_loader(self.resource_registry))
         self.pyobj_creg.register_actor(builtin_service_t, builtin_service_pyobj, self)
         self.resource_type_reg[attribute_t] = AttributeResourceType()
         self.pyobj_creg.register_actor(attribute_t, attribute_pyobj, self.pyobj_creg)

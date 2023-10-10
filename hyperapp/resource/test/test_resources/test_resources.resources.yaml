@@ -1,7 +1,7 @@
 import:
   - sample_module:sample_module.module
-  - builtin_service:mosaic
-  - builtin_service:web
+  - builtins:mosaic.service
+  - builtins:web.service
   - transport.identity:peer_registry.service
   - rpc.rpc_call:rpc_call_factory.service
   - mock_identity:mock_identity.service
@@ -22,8 +22,8 @@ definitions:
     _type: legacy_type.partial:partial
     function: sample_servant_factory
     params:
-      mosaic: builtin_service:mosaic
-      web: builtin_service:web
+      mosaic: builtins:mosaic.service
+      web: builtins:web.service
       peer_registry: transport.identity:peer_registry.service
       rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
 

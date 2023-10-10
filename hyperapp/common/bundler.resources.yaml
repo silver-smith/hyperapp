@@ -1,10 +1,10 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtin_service:association_reg
-- builtin_service:mosaic
-- builtin_service:pyobj_creg
-- builtin_service:types
+- builtins:association_reg.service
+- builtins:mosaic.service
+- builtins:pyobj_creg.service
+- builtins:types.service
 - common.mark:mark.service
 - common.visitor:visitor.module
 - legacy_type.builtin:attribute
@@ -22,11 +22,11 @@ definitions:
     file_name: bundler.dyn.py
     import_list:
       code.visitor: common.visitor:visitor.module
-      services.association_reg: builtin_service:association_reg
+      services.association_reg: builtins:association_reg.service
       services.mark: common.mark:mark.service
-      services.mosaic: builtin_service:mosaic
-      services.pyobj_creg: builtin_service:pyobj_creg
-      services.types: builtin_service:types
+      services.mosaic: builtins:mosaic.service
+      services.pyobj_creg: builtins:pyobj_creg.service
+      services.types: builtins:types.service
   bundler.service:
     _type: legacy_type.builtin:call
     function: bundler

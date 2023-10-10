@@ -1,8 +1,8 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtin_service:on_stop
-- builtin_service:stop_signal
+- builtins:on_stop.service
+- builtins:stop_signal.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -22,5 +22,5 @@ definitions:
     file_name: failure.dyn.py
     import_list:
       services.mark: common.mark:mark.service
-      services.on_stop: builtin_service:on_stop
-      services.stop_signal: builtin_service:stop_signal
+      services.on_stop: builtins:on_stop.service
+      services.stop_signal: builtins:stop_signal.service

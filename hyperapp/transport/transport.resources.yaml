@@ -1,7 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtin_service:mosaic
+- builtins:mosaic.service
 - common.bundler:bundler.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
@@ -22,7 +22,7 @@ definitions:
     import_list:
       services.bundler: common.bundler:bundler.service
       services.mark: common.mark:mark.service
-      services.mosaic: builtin_service:mosaic
+      services.mosaic: builtins:mosaic.service
       services.route_registry: transport.route_registry:route_registry.service
       services.route_table: transport.sync_route_table:route_table.service
   transport.service:

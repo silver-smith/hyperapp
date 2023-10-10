@@ -1,8 +1,8 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtin_service:mosaic
-- builtin_service:pyobj_creg
+- builtins:mosaic.service
+- builtins:pyobj_creg.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -27,8 +27,8 @@ definitions:
     import_list:
       htypes.builtin.attribute: legacy_type.builtin:attribute
       services.mark: common.mark:mark.service
-      services.mosaic: builtin_service:mosaic
-      services.pyobj_creg: builtin_service:pyobj_creg
+      services.mosaic: builtins:mosaic.service
+      services.pyobj_creg: builtins:pyobj_creg.service
   fn_to_res.service:
     _type: legacy_type.builtin:call
     function: fn_to_res

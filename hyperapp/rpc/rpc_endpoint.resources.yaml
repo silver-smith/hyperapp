@@ -1,11 +1,11 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtin_service:mosaic
-- builtin_service:on_stop
-- builtin_service:pyobj_creg
-- builtin_service:types
-- builtin_service:web
+- builtins:mosaic.service
+- builtins:on_stop.service
+- builtins:pyobj_creg.service
+- builtins:types.service
+- builtins:web.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -32,13 +32,13 @@ definitions:
       htypes.rpc.server_error: legacy_type.rpc:server_error
       htypes.rpc_endpoint_tests.sample_error: legacy_type.rpc_endpoint_tests:sample_error
       services.mark: common.mark:mark.service
-      services.mosaic: builtin_service:mosaic
-      services.on_stop: builtin_service:on_stop
+      services.mosaic: builtins:mosaic.service
+      services.on_stop: builtins:on_stop.service
       services.peer_registry: transport.identity:peer_registry.service
-      services.pyobj_creg: builtin_service:pyobj_creg
+      services.pyobj_creg: builtins:pyobj_creg.service
       services.transport: transport.transport:transport.service
-      services.types: builtin_service:types
-      services.web: builtin_service:web
+      services.types: builtins:types.service
+      services.web: builtins:web.service
   rpc_endpoint_factory:
     _type: legacy_type.builtin:attribute
     object: rpc_endpoint.module

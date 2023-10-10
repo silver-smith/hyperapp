@@ -1,6 +1,6 @@
 import:
-- builtin_service:mosaic
-- builtin_service:web
+- builtins:mosaic.service
+- builtins:web.service
 - legacy_type.builtin:python_module
 - legacy_type.builtin:import_rec
 - legacy_type.import_discoverer:import_discoverer
@@ -21,6 +21,6 @@ definitions:
       htypes.import_discoverer.using_incomplete_object: legacy_type.import_discoverer:using_incomplete_object
       htypes.import_recorder.import_recorder: legacy_type.import_recorder:import_recorder
       htypes.import_recorder.resource: legacy_type.import_recorder:resource
-      services.mosaic: builtin_service:mosaic
-      services.web: builtin_service:web
+      services.mosaic: builtins:mosaic.service
+      services.web: builtins:web.service
       code.driver: rc.driver:driver.module

@@ -1,8 +1,8 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtin_service:association_reg
-- builtin_service:pyobj_creg
+- builtins:association_reg.service
+- builtins:pyobj_creg.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -22,7 +22,7 @@ definitions:
     module_name: ui_command.tests.fixtures
     file_name: ui_command.tests.fixtures.dyn.py
     import_list:
-      services.association_reg: builtin_service:association_reg
+      services.association_reg: builtins:association_reg.service
       services.fn_to_res: resource.fn_to_res:fn_to_res.service
       services.mark: common.mark:mark.service
-      services.pyobj_creg: builtin_service:pyobj_creg
+      services.pyobj_creg: builtins:pyobj_creg.service

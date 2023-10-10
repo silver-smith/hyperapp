@@ -1,10 +1,10 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtin_service:association_reg
-- builtin_service:pyobj_creg
-- builtin_service:types
-- builtin_service:web
+- builtins:association_reg.service
+- builtins:pyobj_creg.service
+- builtins:types.service
+- builtins:web.service
 - common.dyn_code_registry:dyn_code_registry.module
 - common.mark:mark.service
 - legacy_type.builtin:attribute
@@ -25,8 +25,8 @@ definitions:
     file_name: ui_ctl_registry.dyn.py
     import_list:
       code.dyn_code_registry: common.dyn_code_registry:dyn_code_registry.module
-      services.association_reg: builtin_service:association_reg
+      services.association_reg: builtins:association_reg.service
       services.mark: common.mark:mark.service
-      services.pyobj_creg: builtin_service:pyobj_creg
-      services.types: builtin_service:types
-      services.web: builtin_service:web
+      services.pyobj_creg: builtins:pyobj_creg.service
+      services.types: builtins:types.service
+      services.web: builtins:web.service

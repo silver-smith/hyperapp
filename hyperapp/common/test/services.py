@@ -216,5 +216,5 @@ def resource_registry(
     registry = resource_registry_factory()
     resource_list_loader(resource_dir_list, registry)
     registry.update_modules(legacy_type_resource_loader({**builtin_types_as_dict(), **local_types}))
-    registry.set_module('builtin_service', builtin_service_resource_loader(registry))
+    registry.set_module('builtins', builtin_service_resource_loader(registry))
     return registry

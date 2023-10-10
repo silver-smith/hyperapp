@@ -47,7 +47,7 @@ def create_custom_resource_registry(root_dir, dir_list):
     _add_legacy_types_to_cache(res_reg, legacy_type_modules)
     res_reg.update_modules(legacy_type_modules)
 
-    res_reg.set_module('builtin_service', builtin_service_resource_loader(res_reg))
+    res_reg.set_module('builtins', builtin_service_resource_loader(res_reg))
 
     return RcContext(
         resource_registry=res_reg,

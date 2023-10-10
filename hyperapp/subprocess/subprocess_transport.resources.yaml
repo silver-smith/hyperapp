@@ -1,10 +1,10 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtin_service:mosaic
-- builtin_service:on_stop
-- builtin_service:stop_signal
-- builtin_service:unbundler
+- builtins:mosaic.service
+- builtins:on_stop.service
+- builtins:stop_signal.service
+- builtins:unbundler.service
 - common.bundler:bundler.service
 - common.failure:failed.service
 - common.mark:mark.service
@@ -31,10 +31,10 @@ definitions:
       services.bundler: common.bundler:bundler.service
       services.failed: common.failure:failed.service
       services.mark: common.mark:mark.service
-      services.mosaic: builtin_service:mosaic
-      services.on_stop: builtin_service:on_stop
+      services.mosaic: builtins:mosaic.service
+      services.on_stop: builtins:on_stop.service
       services.parcel_registry: transport.identity:parcel_registry.service
       services.route_table: transport.sync_route_table:route_table.service
-      services.stop_signal: builtin_service:stop_signal
+      services.stop_signal: builtins:stop_signal.service
       services.transport: transport.transport:transport.service
-      services.unbundler: builtin_service:unbundler
+      services.unbundler: builtins:unbundler.service

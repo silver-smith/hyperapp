@@ -1,7 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtin_service:mosaic
+- builtins:mosaic.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -26,7 +26,7 @@ definitions:
       htypes.raw.raw: legacy_type.raw:raw
       services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
       services.mark: common.mark:mark.service
-      services.mosaic: builtin_service:mosaic
+      services.mosaic: builtins:mosaic.service
   partial_ref.service:
     _type: legacy_type.builtin:call
     function: partial_ref

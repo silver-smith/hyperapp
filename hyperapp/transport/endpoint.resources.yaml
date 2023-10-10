@@ -1,9 +1,9 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtin_service:mosaic
-- builtin_service:on_stop
-- builtin_service:unbundler
+- builtins:mosaic.service
+- builtins:on_stop.service
+- builtins:unbundler.service
 - common.failure:failed.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
@@ -19,10 +19,10 @@ definitions:
     import_list:
       services.failed: common.failure:failed.service
       services.mark: common.mark:mark.service
-      services.mosaic: builtin_service:mosaic
-      services.on_stop: builtin_service:on_stop
+      services.mosaic: builtins:mosaic.service
+      services.on_stop: builtins:on_stop.service
       services.route_table: transport.sync_route_table:route_table.service
-      services.unbundler: builtin_service:unbundler
+      services.unbundler: builtins:unbundler.service
   endpoint_registry:
     _type: legacy_type.builtin:attribute
     object: endpoint.module

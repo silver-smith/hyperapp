@@ -1,6 +1,6 @@
 import:
-- builtin_service:mosaic
-- builtin_service:pyobj_creg
+- builtins:mosaic.service
+- builtins:pyobj_creg.service
 - legacy_type.attr_constructors:parameter
 - legacy_type.attr_constructors:service
 - legacy_type.attr_constructors:ui_command_ctr
@@ -26,8 +26,8 @@ definitions:
       htypes.global_command_ctr.global_command_ctr: legacy_type.global_command_ctr:global_command_ctr
       htypes.object_command_ctr.object_command_ctr: legacy_type.object_command_ctr:object_command_ctr
       code.constants: resource.constants:constants.module
-      services.mosaic: builtin_service:mosaic
-      services.pyobj_creg: builtin_service:pyobj_creg
+      services.mosaic: builtins:mosaic.service
+      services.pyobj_creg: builtins:pyobj_creg.service
 
   mark:
     _type: legacy_type.builtin:attribute

@@ -1,7 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtin_service:mosaic
+- builtins:mosaic.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -62,7 +62,7 @@ definitions:
       htypes.rsa_identity.rsa_signature: legacy_type.rsa_identity:rsa_signature
       services.identity_registry: transport.identity:identity_registry.service
       services.mark: common.mark:mark.service
-      services.mosaic: builtin_service:mosaic
+      services.mosaic: builtins:mosaic.service
       services.parcel_registry: transport.identity:parcel_registry.service
       services.peer_registry: transport.identity:peer_registry.service
       services.signature_registry: transport.identity:signature_registry.service

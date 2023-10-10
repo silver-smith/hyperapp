@@ -18,9 +18,9 @@ def _discoverer_module_res(ctx, unit):
         htypes.import_recorder.resource(('services', 'mark'), mosaic.put(
             ctx.resource_registry['common.mark', 'mark.service'])),
         htypes.import_recorder.resource(('services', 'on_stop'), mosaic.put(
-            ctx.resource_registry['builtin_service', 'on_stop'])),
+            ctx.resource_registry['builtins', 'on_stop.service'])),
         htypes.import_recorder.resource(('services', 'stop_signal'), mosaic.put(
-            ctx.resource_registry['builtin_service', 'stop_signal'])),
+            ctx.resource_registry['builtins', 'stop_signal.service'])),
         ]
 
     import_recorder_res = htypes.import_recorder.import_recorder(resource_list)
