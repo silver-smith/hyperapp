@@ -1,6 +1,11 @@
 import logging
 
+from .services import (
+    builtin_services,
+    )
 from .code.custom_resource_registry import create_custom_resource_registry
+from .code.dep import ServiceDep
+from .code.builtins_unit import BuiltinsUnit
 from .code.source_file_unit import SourceFileUnit
 
 log = logging.getLogger(__name__)
@@ -15,6 +20,11 @@ class SourceCollectorTask:
 
     def run(self, graph):
         ctx = create_custom_resource_registry(self._root_dir, self._dir_list)
+
+        builtins_unit = BuiltinsUnit()
+        graph.name_to_unit['builtins'] = builtins_unit
+        for service_name in builtin_services:
+            graph.dep_to_provider[ServiceDep(service_name)] = builtins_unit
 
         name_to_unit = {}
         for dir in self._dir_list:

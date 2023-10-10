@@ -1,0 +1,10 @@
+import:
+- legacy_type.builtin:python_module
+
+definitions:
+
+  builtins_unit.module:
+    _type: legacy_type.builtin:python_module
+    module_name: builtins_unit
+    file_name: builtins_unit.dyn.py
+    import_list: []
