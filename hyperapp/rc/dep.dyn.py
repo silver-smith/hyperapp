@@ -14,6 +14,14 @@ class ServiceDep:
     def __hash__(self):
         return hash((type(self), self.service_name))
 
+    @property
+    def import_name(self):
+        return f'services.{self.service_name}'
+
+    @property
+    def resource_name(self):
+        return f'{self.service_name}.service'
+
 
 @dataclass
 class CodeDep:
@@ -27,3 +35,11 @@ class CodeDep:
 
     def __hash__(self):
         return hash((type(self), self.code_name))
+
+    @property
+    def import_name(self):
+        return f'code.{self.code_name}'
+
+    @property
+    def resource_name(self):
+        return f'{self.code_name}.module'

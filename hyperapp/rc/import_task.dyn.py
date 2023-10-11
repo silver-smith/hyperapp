@@ -37,6 +37,29 @@ def _discoverer_module_res(ctx, unit):
     return (recorders, module_res)
 
 
+def _enum_import_list(graph, dep_list):
+    for dep in dep_list:
+        provider = graph.dep_to_provider[dep]
+        resource = provider.provided_dep_resource(dep)
+        yield htypes.builtin.import_rec(dep.import_name, mosaic.put(resource))
+
+
+def _recorder_module_res(graph, ctx, unit):
+    resource_list = [*ctx.type_recorder_res_list]
+    import_recorder_res = htypes.import_recorder.import_recorder(resource_list)
+    import_recorder_ref = mosaic.put(import_recorder_res)
+    recorders = [import_recorder_ref]
+
+    deps = graph.name_to_deps[unit.name]
+    dep_imports_it = _enum_import_list(graph, deps)
+
+    module_res = unit.make_module_res([
+        htypes.builtin.import_rec('htypes.*', import_recorder_ref),
+        *dep_imports_it,
+        ])
+    return (recorders, module_res)
+
+
 class TaskBase:
 
     def __init__(self, ctx, unit):
@@ -87,4 +110,10 @@ class AttrEnumTask(TaskBase):
         return f"AttrEnumTask({self._unit.name})"
 
     def start(self, process):
-        assert 0, self
+        recorders, module_res = _recorder_module_res(self._graph, self._ctx, self._unit)
+        log.debug("Enum attributes: %s", self._unit.name)
+        future = process.rpc_submit(driver.import_module)(
+            import_recorders=recorders,
+            module_ref=mosaic.put(module_res),
+            )
+        return future

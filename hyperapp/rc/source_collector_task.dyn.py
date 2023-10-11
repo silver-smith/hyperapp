@@ -17,7 +17,7 @@ class SourceCollectorTask:
     def run(self, graph):
         ctx = create_custom_resource_registry(self._root_dir, self._dir_list)
 
-        builtins_unit = BuiltinsUnit()
+        builtins_unit = BuiltinsUnit(ctx)
         builtins_unit.init(graph)
 
         name_to_unit = {}

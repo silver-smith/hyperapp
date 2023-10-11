@@ -6,6 +6,9 @@ from .code.dep import ServiceDep
 
 class BuiltinsUnit:
 
+    def __init__(self, ctx):
+        self._ctx = ctx
+
     def init(self, graph):
         graph.name_to_unit['builtins'] = self
         for service_name in builtin_services:
@@ -21,6 +24,9 @@ class BuiltinsUnit:
     @property
     def is_tests(self):
         return False
+
+    def provided_dep_resource(self, dep):
+        return self._ctx.resource_registry['builtins', dep.resource_name]
 
     def is_up_to_date(self, graph):
         return True

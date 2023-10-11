@@ -121,6 +121,7 @@ class SourceFileUnit:
             else:
                 raise RuntimeError(f"More than one module provide service {service_name!r}: {provider!r} and {self!r}")
             graph.dep_to_provider[dep] = self
+            log.debug("%s: Provide service: %r", self.name, service_name)
 
     def init(self, graph):
         graph.dep_to_provider[CodeDep(self._stem)] = self
@@ -141,6 +142,9 @@ class SourceFileUnit:
             self._ctx.resource_registry.set_module(self.name, resource_module)
             self._set_providers(graph, resource_module.provided_services)
             log.info("%s: Up-to-date, provides: %s", self.name, resource_module.provided_services)
+
+    def provided_dep_resource(self, dep):
+        return self._ctx.resource_registry[self.name, dep.resource_name]
 
     def _make_source_ref(self, dep_units):
         deps = [
@@ -201,7 +205,4 @@ class SourceFileUnit:
 
     def set_attributes(self, graph, attr_list):
         self._attr_list = attr_list
-        for service_name in _enum_provided_services(attr_list):
-            log.debug("%s: Discovered provided service: %r", self.name, service_name)
-            dep = ServiceDep(service_name)
-            graph.dep_to_provider[dep] = self
+        self._set_providers(graph, _enum_provided_services(attr_list))
