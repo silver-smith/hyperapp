@@ -12,7 +12,7 @@ from .services import (
     web,
     )
 from .code.dep import CodeDep, FixturesDep, ServiceDep
-from .code.import_task import AttrEnumTask, ImportTask
+from .code.import_task import AttrCallTask, AttrEnumTask, ImportTask
 
 log = logging.getLogger(__name__)
 
@@ -96,7 +96,8 @@ class Unit:
         self._current_source_ref_str = None
         self._resource_module = None
         self._import_set = None
-        self._attr_list = None
+        self._attr_list = None  # inspect.attr|fn_attr|generator_fn_attr list
+        self._attr_called = False
 
     def __repr__(self):
         return f"<Unit {self.name!r}>"
@@ -178,14 +179,24 @@ class Unit:
             return True
         return self._hash_matches(graph, graph.name_to_deps[self.name])
 
+    def _fixtures_unit(self, graph):
+        return graph.dep_to_provider.get(FixturesDep(self.name))
+
     def make_tasks(self, graph):
         if self._import_set is None:
             return [ImportTask(self._ctx, self)]
         elif self._attr_list is None:
             # Got incomplete error when collecting attributes, retry with complete imports:
             return [AttrEnumTask(self._ctx, self, graph)]
+        elif not self._attr_called:
+            fixtures = self._fixtures_unit(graph)
+            return [
+                AttrCallTask(self._ctx, self, graph, fixtures, attr.name)
+                for attr in self._attr_list
+                if isinstance(attr, htypes.inspect.fn_attr)
+                ]
         else:
-            # Already imported and attributes collected.
+            # Already imported and attributes collected and called.
             return []
 
     def make_module_res(self, import_list):
@@ -196,17 +207,31 @@ class Unit:
             import_list=tuple(import_list),
             )
 
-    def set_imports(self, graph, import_set):
-        self._import_set = import_set
+    def _update_imports_deps(self, graph, import_set):
         info = _imports_info(import_set)
         graph.name_to_deps[self.name] |= info.want_deps
+
+    def set_imports(self, graph, import_set):
+        self._import_set = import_set
+        self._update_imports_deps(graph, import_set)
+
+    def add_imports(self, graph, import_set):
+        self._import_set |= import_set
+        self._update_imports_deps(graph, import_set)
 
     def set_attributes(self, graph, attr_list):
         self._attr_list = attr_list
         self._set_providers(graph, _enum_provided_services(attr_list))
 
+    def set_attr_called(self):
+        self._attr_called = True
+
 
 class FixturesUnit(Unit):
+
+    def __init__(self, ctx, generator_ref, root_dir, path):
+        super().__init__(ctx, generator_ref, root_dir, path)
+        self._provided_deps = set()
 
     def __repr__(self):
         return f"<FixturesUnit {self.name!r}>"
@@ -216,7 +241,9 @@ class FixturesUnit(Unit):
         return True
 
     def _set_providers(self, graph, provide_services):
-        pass
+        self._provided_deps = {
+            ServiceDep(service_name) for service_name in provide_services
+            }
 
     @cached_property
     def _target_unit_name(self):
@@ -226,7 +253,13 @@ class FixturesUnit(Unit):
 
     def init(self, graph):
         super().init(graph)
-        graph.name_to_deps[self._target_unit_name] = FixturesDep(self.name)
+        dep = FixturesDep(self._target_unit_name)
+        graph.name_to_deps[self._target_unit_name] = dep
+        graph.dep_to_provider[dep] = self
+
+    @property
+    def provided_deps(self):
+        return self._provided_deps
 
 
 class TestsUnit(Unit):
@@ -240,3 +273,8 @@ class TestsUnit(Unit):
 
     def _set_providers(self, graph, provide_services):
         pass
+
+    def make_tasks(self, graph):
+        if self._attr_list is not None:
+            return []  # Temporary suppress until tested.* imports are implemented
+        return super().make_tasks(graph)

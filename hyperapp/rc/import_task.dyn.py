@@ -37,21 +37,24 @@ def _discoverer_module_res(ctx, unit):
     return (recorders, module_res)
 
 
-def _enum_import_list(graph, dep_list):
+def _enum_import_list(graph, dep_list, fixtures_unit):
     for dep in dep_list:
-        provider = graph.dep_to_provider[dep]
+        if fixtures_unit and dep in fixtures_unit.provided_deps:
+            provider = fixtures_unit
+        else:
+            provider = graph.dep_to_provider[dep]
         resource = provider.provided_dep_resource(dep)
         yield htypes.builtin.import_rec(dep.import_name, mosaic.put(resource))
 
 
-def _recorder_module_res(graph, ctx, unit):
+def _recorder_module_res(graph, ctx, unit, fixtures_unit=None):
     resource_list = [*ctx.type_recorder_res_list]
     import_recorder_res = htypes.import_recorder.import_recorder(resource_list)
     import_recorder_ref = mosaic.put(import_recorder_res)
     recorders = [import_recorder_ref]
 
     deps = graph.name_to_deps[unit.name]
-    dep_imports_it = _enum_import_list(graph, deps)
+    dep_imports_it = _enum_import_list(graph, deps, fixtures_unit)
 
     module_res = unit.make_module_res([
         htypes.builtin.import_rec('htypes.*', import_recorder_ref),
@@ -117,3 +120,28 @@ class AttrEnumTask(TaskBase):
             module_ref=mosaic.put(module_res),
             )
         return future
+
+
+class AttrCallTask(TaskBase):
+
+    def __init__(self, ctx, unit, graph, fixtures, attr_name):
+        super().__init__(ctx, unit)
+        self._graph = graph
+        self._fixtures = fixtures
+        self._attr_name = attr_name
+
+    def __str__(self):
+        return f"AttrCallTask({self._unit.name}:{self._attr_name})"
+
+    def start(self, process):
+        recorders, module_res = _recorder_module_res(self._graph, self._ctx, self._unit, self._fixtures)
+        log.debug("Call attribute %s: %s", self._attr_name, self._unit.name)
+        future = process.rpc_submit(driver.import_module)(
+            import_recorders=recorders,
+            module_ref=mosaic.put(module_res),
+            )
+        return future
+
+    def process_result(self, graph, result):
+        self._unit.add_imports(graph, set(result.imports))
+        self._unit.set_attr_called()
