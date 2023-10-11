@@ -11,7 +11,7 @@ from .services import (
     resource_module_factory,
     web,
     )
-from .code.dep import ServiceDep, CodeDep
+from .code.dep import CodeDep, FixturesDep, ServiceDep
 from .code.import_task import AttrEnumTask, ImportTask
 
 log = logging.getLogger(__name__)
@@ -217,6 +217,16 @@ class FixturesUnit(Unit):
 
     def _set_providers(self, graph, provide_services):
         pass
+
+    @cached_property
+    def _target_unit_name(self):
+        l = self._stem.split('.')
+        assert l[-1] == 'fixtures'
+        return '.'.join(l[:-1])
+
+    def init(self, graph):
+        super().init(graph)
+        graph.name_to_deps[self._target_unit_name] = FixturesDep(self.name)
 
 
 class TestsUnit(Unit):

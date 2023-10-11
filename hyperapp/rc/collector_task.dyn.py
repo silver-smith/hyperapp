@@ -26,9 +26,9 @@ class CollectorTask:
                 if 'test' in path.relative_to(self._root_dir).parts:
                     continue
                 name_parts = path.name[:-len('.dyn.py')].split('.')
-                if 'fixtures' in name_parts:
+                if name_parts[-1] == 'fixtures':
                     unit = FixturesUnit(ctx, self._generator_ref, self._root_dir, path)
-                elif 'tests' in name_parts:
+                elif name_parts[-1] == 'tests':
                     unit = TestsUnit(ctx, self._generator_ref, self._root_dir, path)
                 else:
                     unit = Unit(ctx, self._generator_ref, self._root_dir, path)

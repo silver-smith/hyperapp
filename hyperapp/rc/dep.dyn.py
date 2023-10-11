@@ -14,6 +14,14 @@ class Dep(metaclass=ABCMeta):
     def key(self):
         pass
 
+    @property
+    def import_name(self):
+        return None
+
+    @property
+    def resource_name(self):
+        return None
+
 
 @dataclass(eq=False)
 class ServiceDep(Dep):
@@ -53,3 +61,27 @@ class CodeDep(Dep):
     @property
     def resource_name(self):
         return f'{self.code_name}.module'
+
+
+@dataclass(eq=False)
+class FixturesDep(Dep):
+    fixtures_unit_name: str
+
+    def __repr__(self):
+        return f"fixtures:{self.fixtures_unit_name}"
+
+    @property
+    def key(self):
+        return self.fixtures_unit_name
+
+
+@dataclass(eq=False)
+class TestsDep(Dep):
+    tests_unit_name: str
+
+    def __repr__(self):
+        return f"tests:{self.tests_unit_name}"
+
+    @property
+    def key(self):
+        return self.tests_unit_name
