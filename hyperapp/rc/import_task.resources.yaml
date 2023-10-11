@@ -7,7 +7,7 @@ import:
 - legacy_type.import_discoverer:using_incomplete_object
 - legacy_type.import_recorder:import_recorder
 - legacy_type.import_recorder:resource
-- rc.driver:driver.module
+- rc.import_driver:import_driver.module
 
 definitions:
 
@@ -23,4 +23,4 @@ definitions:
       htypes.import_recorder.resource: legacy_type.import_recorder:resource
       services.mosaic: builtins:mosaic.service
       services.web: builtins:web.service
-      code.driver: rc.driver:driver.module
+      code.import_driver: rc.import_driver:import_driver.module

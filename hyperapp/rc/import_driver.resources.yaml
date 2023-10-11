@@ -10,10 +10,10 @@ import:
 
 definitions:
 
-  driver.module:
+  import_driver.module:
     _type: legacy_type.builtin:python_module
-    module_name: driver
-    file_name: driver.dyn.py
+    module_name: import_driver
+    file_name: import_driver.dyn.py
     import_list:
       htypes.inspect.attr: legacy_type.inspect:attr
       htypes.inspect.fn_attr: legacy_type.inspect:fn_attr

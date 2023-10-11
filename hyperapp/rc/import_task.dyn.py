@@ -5,7 +5,7 @@ from .services import (
     mosaic,
     web,
     )
-from .code import driver
+from .code import import_driver
 
 log = logging.getLogger(__name__)
 
@@ -95,7 +95,7 @@ class ImportTask(TaskBase):
     def start(self, process):
         recorders, module_res = _discoverer_module_res(self._ctx, self._unit)
         log.debug("Import: %s", self._unit.name)
-        future = process.rpc_submit(driver.import_module)(
+        future = process.rpc_submit(import_driver.import_module)(
             import_recorders=recorders,
             module_ref=mosaic.put(module_res),
             )
@@ -115,7 +115,7 @@ class AttrEnumTask(TaskBase):
     def start(self, process):
         recorders, module_res = _recorder_module_res(self._graph, self._ctx, self._unit)
         log.debug("Enum attributes: %s", self._unit.name)
-        future = process.rpc_submit(driver.import_module)(
+        future = process.rpc_submit(import_driver.import_module)(
             import_recorders=recorders,
             module_ref=mosaic.put(module_res),
             )
@@ -136,7 +136,7 @@ class AttrCallTask(TaskBase):
     def start(self, process):
         recorders, module_res = _recorder_module_res(self._graph, self._ctx, self._unit, self._fixtures)
         log.debug("Call attribute %s: %s", self._attr_name, self._unit.name)
-        future = process.rpc_submit(driver.import_module)(
+        future = process.rpc_submit(import_driver.import_module)(
             import_recorders=recorders,
             module_ref=mosaic.put(module_res),
             )
