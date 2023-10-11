@@ -84,7 +84,7 @@ def _imports_info(imports):
         )
 
 
-class SourceFileUnit:
+class Unit:
 
     def __init__(self, ctx, generator_ref, root_dir, path):
         self._ctx = ctx
@@ -99,19 +99,17 @@ class SourceFileUnit:
         self._attr_list = None
 
     def __repr__(self):
-        return f"<SourceFileUnit {self.name!r}>"
+        return f"<Unit {self.name!r}>"
 
     @cached_property
     def is_fixtures(self):
-        return 'fixtures' in self._stem.split('.')
+        return False
 
     @cached_property
     def is_tests(self):
-        return self._stem.split('.')[-1] == 'tests'
+        return False
 
     def _set_providers(self, graph, provide_services):
-        if self.is_fixtures or self.is_tests:
-            return
         for service_name in provide_services:
             dep = ServiceDep(service_name)
             try:
@@ -206,3 +204,29 @@ class SourceFileUnit:
     def set_attributes(self, graph, attr_list):
         self._attr_list = attr_list
         self._set_providers(graph, _enum_provided_services(attr_list))
+
+
+class FixturesUnit(Unit):
+
+    def __repr__(self):
+        return f"<FixturesUnit {self.name!r}>"
+
+    @cached_property
+    def is_fixtures(self):
+        return True
+
+    def _set_providers(self, graph, provide_services):
+        pass
+
+
+class TestsUnit(Unit):
+
+    def __repr__(self):
+        return f"<TestsUnit {self.name!r}>"
+
+    @cached_property
+    def is_tests(self):
+        return True
+
+    def _set_providers(self, graph, provide_services):
+        pass
