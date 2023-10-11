@@ -1,7 +1,9 @@
 from abc import ABCMeta, abstractproperty
 from dataclasses import dataclass
+from functools import total_ordering
 
 
+@total_ordering
 class Dep(metaclass=ABCMeta):
 
     def __eq__(self, rhs):
@@ -9,6 +11,13 @@ class Dep(metaclass=ABCMeta):
 
     def __hash__(self):
         return hash((type(self), self.key))
+
+    def __lt__(self, rhs):
+        if self.__class__.__name__ < rhs.__class__.__name__:
+            return True
+        if self.__class__.__name__ > rhs.__class__.__name__:
+            return False
+        return self.key < rhs.key
 
     @abstractproperty
     def key(self):
