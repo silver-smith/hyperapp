@@ -7,7 +7,7 @@ from .code.source_file_unit import SourceFileUnit
 log = logging.getLogger(__name__)
 
 
-class SourceCollectorTask:
+class CollectorTask:
 
     def __init__(self, generator_ref, root_dir, dir_list):
         self._generator_ref = generator_ref

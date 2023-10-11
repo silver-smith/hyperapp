@@ -7,7 +7,7 @@ from .services import (
     hyperapp_dir,
     )
 # from .code.make import Make
-from .code.source_collector_task import SourceCollectorTask
+from .code.collector_task import CollectorTask
 from .code.process_pool import process_pool_running
 
 log = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, proces
 
     graph = Graph()
     # make = Make()
-    initial_task = SourceCollectorTask(generator_ref, hyperapp_dir, dir_list)
+    initial_task = CollectorTask(generator_ref, hyperapp_dir, dir_list)
     # make.run(initial_task)
     initial_task.run(graph)
     with process_pool_running(process_count, rpc_timeout) as pool:
