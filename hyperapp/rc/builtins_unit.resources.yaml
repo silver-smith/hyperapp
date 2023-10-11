@@ -1,5 +1,7 @@
 import:
+- builtins:builtin_services.service
 - legacy_type.builtin:python_module
+- rc.dep:dep.module
 
 definitions:
 
@@ -7,4 +9,6 @@ definitions:
     _type: legacy_type.builtin:python_module
     module_name: builtins_unit
     file_name: builtins_unit.dyn.py
-    import_list: []
+    import_list:
+      services.builtin_services: builtins:builtin_services.service
+      code.dep: rc.dep:dep.module
