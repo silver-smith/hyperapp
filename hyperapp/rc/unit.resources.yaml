@@ -11,10 +11,10 @@ import:
 
 definitions:
 
-  source_file_unit.module:
+  unit.module:
     _type: legacy_type.builtin:python_module
-    module_name: source_file_unit
-    file_name: source_file_unit.dyn.py
+    module_name: unit
+    file_name: unit.dyn.py
     import_list:
       htypes.attr_constructors.service: legacy_type.attr_constructors:service
       htypes.builtin.python_module: legacy_type.builtin:python_module

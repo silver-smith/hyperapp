@@ -2,7 +2,7 @@ import logging
 
 from .code.custom_resource_registry import create_custom_resource_registry
 from .code.builtins_unit import BuiltinsUnit
-from .code.source_file_unit import SourceFileUnit
+from .code.unit import SourceFileUnit
 
 log = logging.getLogger(__name__)
 
