@@ -1,0 +1,18 @@
+import:
+- builtins:mosaic.service
+- builtins:pyobj_creg.service
+- legacy_type.builtin:python_module
+- legacy_type.inspect:object_type_info
+- rc.tracer:tracer.module
+
+definitions:
+
+  call_driver.module:
+    _type: legacy_type.builtin:python_module
+    module_name: call_driver
+    file_name: call_driver.dyn.py
+    import_list:
+      htypes.inspect.object_type_info: legacy_type.inspect:object_type_info
+      services.mosaic: builtins:mosaic.service
+      services.pyobj_creg: builtins:pyobj_creg.service
+      code.tracer: rc.tracer:tracer.module

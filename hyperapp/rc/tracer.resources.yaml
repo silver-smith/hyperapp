@@ -1,0 +1,38 @@
+import:
+  - builtins:hyperapp_dir.service
+  - builtins:mosaic.service
+  - builtins:types.service
+  - legacy_type.inspect:call_param
+  - legacy_type.inspect:call_trace
+  - legacy_type.inspect:type_name
+  - legacy_type.inspect:item_element
+  - legacy_type.inspect:none_t
+  - legacy_type.inspect:primitive_t
+  - legacy_type.inspect:object_t
+  - legacy_type.inspect:record_t
+  - legacy_type.inspect:list_t
+  - legacy_type.inspect:empty_list_t
+  - legacy_type.inspect:coroutine_t
+  - legacy_type.builtin:python_module
+
+definitions:
+
+  tracer.module:
+    _type: legacy_type.builtin:python_module
+    module_name: tracer
+    file_name: tracer.dyn.py
+    import_list:
+      htypes.inspect.call_param: legacy_type.inspect:call_param
+      htypes.inspect.call_trace: legacy_type.inspect:call_trace
+      htypes.inspect.type_name: legacy_type.inspect:type_name
+      htypes.inspect.item_element: legacy_type.inspect:item_element
+      htypes.inspect.none_t: legacy_type.inspect:none_t
+      htypes.inspect.primitive_t: legacy_type.inspect:primitive_t
+      htypes.inspect.object_t: legacy_type.inspect:object_t
+      htypes.inspect.record_t: legacy_type.inspect:record_t
+      htypes.inspect.list_t: legacy_type.inspect:list_t
+      htypes.inspect.empty_list_t: legacy_type.inspect:empty_list_t
+      htypes.inspect.coroutine_t: legacy_type.inspect:coroutine_t
+      services.hyperapp_dir: builtins:hyperapp_dir.service
+      services.mosaic: builtins:mosaic.service
+      services.types: builtins:types.service

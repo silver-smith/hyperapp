@@ -5,7 +5,7 @@ from .services import (
     mosaic,
     web,
     )
-from .code import import_driver
+from .code import import_driver, call_driver
 
 log = logging.getLogger(__name__)
 
@@ -136,9 +136,14 @@ class AttrCallTask(TaskBase):
     def start(self, process):
         recorders, module_res = _recorder_module_res(self._graph, self._ctx, self._unit, self._fixtures)
         log.debug("Call attribute %s: %s", self._attr_name, self._unit.name)
-        future = process.rpc_submit(import_driver.import_module)(
+        attr_res = htypes.builtin.attribute(
+            object=mosaic.put(module_res),
+            attr_name=self._attr_name,
+            )
+        future = process.rpc_submit(call_driver.call_function)(
             import_recorders=recorders,
-            module_ref=mosaic.put(module_res),
+            fn_ref=mosaic.put(attr_res),
+            trace_modules=[],
             )
         return future
 
