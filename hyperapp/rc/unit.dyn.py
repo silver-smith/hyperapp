@@ -92,6 +92,7 @@ class Unit:
         self._generator_ref = generator_ref
         self._source_path = path
         self._stem = path.name[:-len('.dyn.py')]
+        self.code_name = self._stem
         rel_dir = path.parent.relative_to(root_dir)
         self._dir = str(rel_dir).replace('/', '.')
         self.name = f'{self._dir}.{self._stem}'
@@ -101,6 +102,7 @@ class Unit:
         self._import_set = None
         self._attr_list = None  # inspect.attr|fn_attr|generator_fn_attr list
         self._attr_called = False
+        self._tests = set()  # TestsUnit set
 
     def __repr__(self):
         return f"<Unit {self.name!r}>"
@@ -185,6 +187,10 @@ class Unit:
             return True
         return self._hash_matches(graph, graph.name_to_deps[self.name])
 
+    def add_test(self, unit):
+        self._tests.add(unit)
+        log.info("%s is tested by %s", self.name, unit.name)
+
     def _fixtures_unit(self, graph):
         return graph.dep_to_provider.get(FixturesDep(self.name))
 
@@ -224,6 +230,7 @@ class Unit:
     def _update_imports_deps(self, graph, import_set):
         info = _imports_info(import_set)
         graph.name_to_deps[self.name] |= info.want_deps
+        return info
 
     def set_imports(self, graph, import_set):
         self._import_set = import_set
@@ -278,6 +285,9 @@ class FixturesUnit(Unit):
 
 class TestsUnit(Unit):
 
+    def __init__(self, ctx, generator_ref, root_dir, path):
+        super().__init__(ctx, generator_ref, root_dir, path)
+
     def __repr__(self):
         return f"<TestsUnit {self.name!r}>"
 
@@ -292,3 +302,13 @@ class TestsUnit(Unit):
         if self._attr_list is not None:
             return []  # Temporary suppress until tested.* imports are implemented
         return super().make_tasks(graph)
+
+    def _update_imports_deps(self, graph, import_set):
+        info = super()._update_imports_deps(graph, import_set)
+        for name in info.test_code:
+            for unit in graph.name_to_unit.values():
+                if unit.code_name == name:
+                    unit.add_test(self)
+                    break
+            else:
+                raise RuntimeError(f"{self.name}: Unknown tested code module: {name}")

@@ -18,6 +18,10 @@ class BuiltinsUnit:
         return "<BuiltinsUnit>"
 
     @property
+    def code_name(self):
+        return None
+
+    @property
     def is_fixtures(self):
         return False
 
