@@ -34,7 +34,7 @@ class ImportTask(TaskBase):
         self._module_res = module_res
 
     def __str__(self):
-        return f"ImportTask({self._unit.name})"
+        return f"{self.__class__.__name__}({self._unit.name})"
 
     def start(self, process):
         log.debug("Import: %s", self._unit.name)
