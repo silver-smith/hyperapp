@@ -194,6 +194,20 @@ class Unit:
     def _fixtures_unit(self, graph):
         return graph.dep_to_provider.get(FixturesDep(self.name))
 
+    def _make_call_attr_tasks(self, graph):
+        fixtures = self._fixtures_unit(graph)
+        task_list = []
+        for attr in self._attr_list:
+            if not isinstance(attr, htypes.inspect.fn_attr):
+                continue
+            recorders_and_call_res = function_call_res(graph, self._ctx, self, fixtures, attr)
+            if not recorders_and_call_res:
+                continue  # No param fixtures.
+            recorders, call_res = recorders_and_call_res
+            task = AttrCallTask(self, attr.name, recorders, call_res)
+            task_list.append(task)
+        return task_list
+
     def make_tasks(self, graph):
         if self._import_set is None:
             recorders, module_res = discoverer_module_res(self._ctx, self)
@@ -203,18 +217,7 @@ class Unit:
             recorders, module_res = recorder_module_res(graph, self._ctx, self)
             return [AttrEnumTask(self, recorders, module_res)]
         elif not self._attr_called:
-            fixtures = self._fixtures_unit(graph)
-            task_list = []
-            for attr in self._attr_list:
-                if not isinstance(attr, htypes.inspect.fn_attr):
-                    continue
-                recorders_and_call_res = function_call_res(graph, self._ctx, self, fixtures, attr)
-                if not recorders_and_call_res:
-                    continue  # No param fixtures.
-                recorders, call_res = recorders_and_call_res
-                task = AttrCallTask(self, attr.name, recorders, call_res)
-                task_list.append(task)
-            return task_list
+            return self._make_call_attr_tasks(graph)
         else:
             # Already imported and attributes collected and called.
             return []
@@ -287,6 +290,7 @@ class TestsUnit(Unit):
 
     def __init__(self, ctx, generator_ref, root_dir, path):
         super().__init__(ctx, generator_ref, root_dir, path)
+        self._test_services = None  # str list
 
     def __repr__(self):
         return f"<TestsUnit {self.name!r}>"
@@ -298,10 +302,25 @@ class TestsUnit(Unit):
     def _set_providers(self, graph, provide_services):
         pass
 
-    def make_tasks(self, graph):
-        if self._attr_list is not None:
-            return []  # Temporary suppress until tested.* imports are implemented
-        return super().make_tasks(graph)
+    def _tested_services_modules(self, graph):
+        service_to_tested = {}
+        for service_name in self._test_services:
+            dep = ServiceDep(service_name)
+            provider = graph.dep_to_provider.get(dep)
+            if provider:
+                log.debug("%s: service %s provider: %s", self.name, service_name, provider)
+                service_to_tested[service_name] = provider
+            else:
+                log.debug("%s: service %s provider is not yet discovered", self.name, service_name)
+                return None
+        return service_to_tested
+
+    def _make_call_attr_tasks(self, graph):
+        service_modules = self._tested_services_modules(graph)
+        if service_modules is None:
+            return []
+        else:
+            return []
 
     def _update_imports_deps(self, graph, import_set):
         info = super()._update_imports_deps(graph, import_set)
@@ -312,3 +331,4 @@ class TestsUnit(Unit):
                     break
             else:
                 raise RuntimeError(f"{self.name}: Unknown tested code module: {name}")
+        self._test_services = info.test_services
