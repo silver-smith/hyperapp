@@ -13,6 +13,7 @@ from .services import (
     )
 from .code.dep import CodeDep, FixturesDep, ServiceDep
 from .code.import_task import AttrCallTask, AttrEnumTask, ImportTask
+from .code.scaffolds import discoverer_module_res, function_call_res, recorder_module_res
 
 log = logging.getLogger(__name__)
 
@@ -184,17 +185,25 @@ class Unit:
 
     def make_tasks(self, graph):
         if self._import_set is None:
-            return [ImportTask(self._ctx, self)]
+            recorders, module_res = discoverer_module_res(self._ctx, self)
+            return [ImportTask(self, recorders, module_res)]
         elif self._attr_list is None:
             # Got incomplete error when collecting attributes, retry with complete imports:
-            return [AttrEnumTask(self._ctx, self, graph)]
+            recorders, module_res = recorder_module_res(graph, self._ctx, self)
+            return [AttrEnumTask(self, recorders, module_res)]
         elif not self._attr_called:
             fixtures = self._fixtures_unit(graph)
-            return [
-                AttrCallTask(self._ctx, self, graph, fixtures, attr.name)
-                for attr in self._attr_list
-                if isinstance(attr, htypes.inspect.fn_attr)
-                ]
+            task_list = []
+            for attr in self._attr_list:
+                if not isinstance(attr, htypes.inspect.fn_attr):
+                    continue
+                recorders_and_call_res = function_call_res(graph, self._ctx, self, fixtures, attr)
+                if not recorders_and_call_res:
+                    continue  # No param fixtures.
+                recorders, call_res = recorders_and_call_res
+                task = AttrCallTask(self, attr.name, recorders, call_res)
+                task_list.append(task)
+            return task_list
         else:
             # Already imported and attributes collected and called.
             return []

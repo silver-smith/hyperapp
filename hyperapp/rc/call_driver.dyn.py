@@ -11,10 +11,10 @@ from .code.tracer import Tracer, value_type
 log = logging.getLogger(__name__)
 
 
-def call_function(import_recorders, fn_ref, trace_modules):
+def call_function(import_recorders, call_result_ref, trace_modules):
     tracer = Tracer(trace_modules)
     with tracer.tracing():
-        value = pyobj_creg.invite(fn_ref)
+        value = pyobj_creg.invite(call_result_ref)
         log.info("Resource value: %s", repr(value))
 
         if inspect.isgenerator(value):

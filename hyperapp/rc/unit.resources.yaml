@@ -8,6 +8,7 @@ import:
 - legacy_type.rc:source_dep
 - legacy_type.rc:module_deps
 - rc.dep:dep.module
+- rc.scaffolds:scaffolds.module
 - rc.import_task:import_task.module
 
 definitions:
@@ -27,3 +28,4 @@ definitions:
       services.web: builtins:web.service
       code.dep: rc.dep:dep.module
       code.import_task: rc.import_task:import_task.module
+      code.scaffolds: rc.scaffolds:scaffolds.module
