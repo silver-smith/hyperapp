@@ -84,6 +84,10 @@ class TaskBase:
             self._unit.set_attributes(graph, attr_list)
 
     def process_error(self, graph, exception):
+        log.error("Error returned from driver: %s", exception.message)
+        for line_list in exception.traceback:
+            for line in line_list.rstrip().splitlines():
+                log.error("\t%s", line)
         raise exception
 
 
