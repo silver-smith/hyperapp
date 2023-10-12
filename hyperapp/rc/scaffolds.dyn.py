@@ -1,7 +1,11 @@
+import logging
+
 from . import htypes
 from .services import (
     mosaic,
     )
+
+log = logging.getLogger(__name__)
 
 
 # Module resource with import discoverer.
@@ -58,6 +62,41 @@ def recorder_module_res(graph, ctx, unit, fixtures_unit=None):
     return (recorders, module_res)
 
 
+def _parameter_fixture(fixtures, path):
+    name = '.'.join([*path, 'parameter'])
+    try:
+        return fixtures.resource(name)
+    except KeyError:
+        return None
+
+
+# Warning: never tested yet.
+def _partial_res(unit, fixtures, attr, attr_res):
+    attr_path = [attr.name]
+    attr_path_str = '.'.join(attr_path)
+    kw = {
+        param: _parameter_fixture(fixtures, [*attr_path, param])
+        for param in attr.param_list
+        }
+    kw = {key: value for key, value in kw.items() if value is not None}
+    log.info("%s:%s: Parameter fixtures: %s", unit.name, attr_path_str, kw)
+    missing_params = ", ".join(sorted(set(attr.param_list) - set(kw)))
+    if missing_params:
+        if kw:
+            raise RuntimeError(f"Some parameter fixtures are missing for {unit.name}:{attr_path_str}: {missing_params}")
+        else:
+            # All are missing - guess this function is not intended to be tested using fixture parameters.
+            log.warning("Parameter fixtures are missing for %s:%s: %s; won't call", unit.name, attr_path_str, missing_params)
+            return None
+    return htypes.partial.partial(
+        function=mosaic.put(attr_res),
+        params=[
+            htypes.partial.param(name, mosaic.put(value))
+            for name, value in kw.items()
+            ],
+        )
+
+
 def function_call_res(graph, ctx, unit, fixtures, attr):
     recorders, module_res = recorder_module_res(graph, ctx, unit, fixtures)
     attr_res = htypes.builtin.attribute(
@@ -65,10 +104,12 @@ def function_call_res(graph, ctx, unit, fixtures, attr):
         attr_name=attr.name,
         )
     if attr.param_list:
-        return None
-        # function_res = _add_params_from_fixtures(fixtures)
-        # if function_res is None:
-        #     return None
+        if not fixtures:
+            log.warning("Fixtures module is missing for %s:%s parameters; won't call", unit.name, attr.name)
+            return None
+        function_res = _partial_res(unit, fixtures, attr, attr_res)
+        if not function_res:
+            return None
     else:
         function_res = attr_res
     call_res = htypes.builtin.call(mosaic.put(function_res))

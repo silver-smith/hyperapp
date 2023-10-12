@@ -7,6 +7,8 @@ import:
 - legacy_type.import_discoverer:import_discoverer
 - legacy_type.import_recorder:import_recorder
 - legacy_type.import_recorder:resource
+- legacy_type.partial:param
+- legacy_type.partial:partial
 
 definitions:
 
@@ -21,4 +23,6 @@ definitions:
       htypes.import_discoverer.import_discoverer: legacy_type.import_discoverer:import_discoverer
       htypes.import_recorder.import_recorder: legacy_type.import_recorder:import_recorder
       htypes.import_recorder.resource: legacy_type.import_recorder:resource
+      htypes.partial.param: legacy_type.partial:param
+      htypes.partial.partial: legacy_type.partial:partial
       services.mosaic: builtins:mosaic.service

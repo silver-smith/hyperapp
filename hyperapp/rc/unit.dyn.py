@@ -143,8 +143,11 @@ class Unit:
             self._set_providers(graph, resource_module.provided_services)
             log.info("%s: Up-to-date, provides: %s", self.name, resource_module.provided_services)
 
+    def resource(self, name):
+        return self._ctx.resource_registry[self.name, name]
+
     def provided_dep_resource(self, dep):
-        return self._ctx.resource_registry[self.name, dep.resource_name]
+        return self.resource(dep.resource_name)
 
     def _make_source_ref(self, dep_units):
         deps = [
