@@ -92,7 +92,9 @@ class Unit:
         self._generator_ref = generator_ref
         self._source_path = path
         self._stem = path.name[:-len('.dyn.py')]
-        self.name = str(path.relative_to(root_dir).with_name(self._stem)).replace('/', '.')
+        rel_dir = path.parent.relative_to(root_dir)
+        self._dir = str(rel_dir).replace('/', '.')
+        self.name = f'{self._dir}.{self._stem}'
         self._resources_path = path.with_name(self._stem + '.resources.yaml')
         self._current_source_ref_str = None
         self._resource_module = None
@@ -261,12 +263,12 @@ class FixturesUnit(Unit):
     def _target_unit_name(self):
         l = self._stem.split('.')
         assert l[-1] == 'fixtures'
-        return '.'.join(l[:-1])
+        return self._dir + '.' + '.'.join(l[:-1])
 
     def init(self, graph):
         super().init(graph)
         dep = FixturesDep(self._target_unit_name)
-        graph.name_to_deps[self._target_unit_name] = dep
+        graph.name_to_deps[self._target_unit_name].add(dep)
         graph.dep_to_provider[dep] = self
 
     @property
