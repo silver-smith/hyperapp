@@ -212,6 +212,16 @@ class Unit:
             return True
         return self._hash_matches(graph, graph.name_to_deps[self.name])
 
+    def deps_are_ready(self, graph):
+        for dep in graph.name_to_deps[self.name]:
+            try:
+                provider = graph.dep_to_provider[dep]
+            except KeyError:
+                return False
+            if not provider.is_up_to_date(graph):
+                return False
+        return True
+
     def add_test(self, unit):
         self._tests.add(unit)
         log.info("%s is tested by %s", self.name, unit.name)
@@ -237,15 +247,16 @@ class Unit:
         if self._import_set is None:
             recorders, module_res = discoverer_module_res(self._ctx, self)
             return [ImportTask(self, recorders, module_res)]
-        elif self._attr_list is None:
+        if not self.deps_are_ready(graph):
+            return []
+        if self._attr_list is None:
             # Got incomplete error when collecting attributes, retry with complete imports:
             recorders, module_res = recorder_module_res(graph, self._ctx, self)
             return [AttrEnumTask(self, recorders, module_res)]
-        elif not self._attr_called:
+        if not self._attr_called:
             return self._make_call_attr_tasks(graph)
-        else:
-            # Already imported and attributes collected and called.
-            return []
+        # Already imported and attributes collected and called.
+        return []
 
     def _update_imports_deps(self, graph, import_set):
         info = _imports_info(import_set)
@@ -337,9 +348,13 @@ class TestsUnit(FixturesDepsProviderUnit):
         return service_to_unit  # str -> unit
 
     def _make_call_attr_tasks(self, graph):
+        if not all(unit.deps_are_ready(graph) for unit in self._tested_units):
+            return []
         tested_service_to_unit = self._tested_services_modules(graph)
         if tested_service_to_unit is None:
             # Not all service providers are yet discovered.
+            return []
+        if not all(unit.deps_are_ready(graph) for unit in tested_service_to_unit.values()):
             return []
         task_list = []
         for attr in self._attr_list:
