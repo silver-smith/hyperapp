@@ -222,6 +222,16 @@ class Unit:
                 return False
         return True
 
+    def report_deps(self, graph):
+        for dep in graph.name_to_deps[self.name]:
+            try:
+                provider = graph.dep_to_provider[dep]
+            except KeyError:
+                log.info("%s: Dep %s has no provider", self.name, dep)
+            else:
+                if not provider.is_up_to_date(graph):
+                    log.info("%s: Dep %s provider %s is not ready", self.name, dep, provider)
+
     def add_test(self, unit):
         self._tests.add(unit)
         log.info("%s is tested by %s", self.name, unit.name)
@@ -330,6 +340,16 @@ class TestsUnit(FixturesDepsProviderUnit):
     @cached_property
     def is_tests(self):
         return True
+
+    def report_deps(self, graph):
+        super().report_deps(graph)
+        if self._tested_services is None:
+            log.info("%s: Tested service list is not yet discovered", self.name)
+        else:
+            for service_name in self._tested_services:
+                dep = ServiceDep(service_name)
+                if dep not in graph.dep_to_provider:
+                    log.info("%s: tested %s has no provider", self.name, dep)
 
     def _set_providers(self, graph, provide_services):
         pass

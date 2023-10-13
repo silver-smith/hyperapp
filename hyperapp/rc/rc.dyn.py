@@ -21,6 +21,21 @@ class Graph:
         self.dep_to_provider = {}
 
 
+def _report_not_compiled(graph):
+    for unit in graph.name_to_unit.values():
+        if unit.is_up_to_date(graph):
+            continue
+        log.info("Not compiled: %s", unit.name)
+        unit.report_deps(graph)
+
+
+def _dump_graph(graph):
+    for name, deps in sorted(graph.name_to_deps.items()):
+        log.debug("Deps for %s: %s", name, deps or '{}')
+    for dep, provider in sorted(graph.dep_to_provider.items()):
+        log.debug("Provider for %s: %s", dep, provider)
+
+
 def compile_resources(generator_ref, subdir_list, root_dirs, module_list, process_count, rpc_timeout):
     log.info("Compile resources at: %s, %s: %s", subdir_list, root_dirs, module_list)
 
@@ -70,8 +85,9 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, proces
                 except HException as x:
                     log.info("%s error: %r", task, x)
                     task.process_error(graph, x)
+
+        _report_not_compiled(graph)
+
     finally:
-        for name, deps in sorted(graph.name_to_deps.items()):
-            log.debug("Deps for %s: %s", name, deps or '{}')
-        for dep, provider in sorted(graph.dep_to_provider.items()):
-            log.debug("Provider for %s: %s", dep, provider)
+        _dump_graph(graph)
+
