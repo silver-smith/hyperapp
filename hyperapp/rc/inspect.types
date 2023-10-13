@@ -11,6 +11,10 @@ fn_attr = record(attr):
 generator_fn_attr = record(fn_attr)
 
 
+import_recorder = record:
+  module: string
+  recorder: ref
+
 object_info = record:
   object_module: string
   attr_list: ref list
@@ -56,12 +60,16 @@ call_trace = record:
   obj_type: string
   params: call_param list
 
+module_imports = record:
+  module: string
+  imports: string list list
+
 object_type_info = record:
   imports: string list list
   t: ref
   calls: call_trace list
 
 imported_module_info = record:
-  imports: string list list
+  imports: module_imports list
   attr_list: ref list
   error: ref opt

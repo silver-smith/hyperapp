@@ -1,6 +1,8 @@
 import inspect
 import logging
+from collections import defaultdict
 from types import ModuleType
+
 
 from hyperapp.common.htypes import HException
 
@@ -47,12 +49,13 @@ def _enum_attributes(object):
 
 def import_module(import_recorders, module_ref):
     log.info("Import module: %s", module_ref)
-    recorders = [
-        pyobj_creg.invite(ref)
-        for ref in import_recorders
-        ]
-    for rec in recorders:
-        rec.reset()
+
+    recorder_dict = defaultdict(list)
+    for rec in import_recorders:
+        recorder = pyobj_creg.invite(rec.recorder)
+        recorder.reset()
+        recorder_dict[rec.module].append(recorder)
+
     try:
         module = pyobj_creg.invite(module_ref)
     except HException as x:
@@ -64,12 +67,19 @@ def import_module(import_recorders, module_ref):
             in _enum_attributes(module)
             ]
         error = None
-    imports = set()
-    for rec in recorders:
-        imports |= rec.used_imports()
-    log.info("Used imports: %s", imports)
+
+    module_to_imports = defaultdict(set)
+    for module_name, recorder_list in recorder_dict.items():
+        for recorder in recorder_list:
+            module_to_imports[module_name] |= recorder.used_imports()
+    log.info("Used imports: %s", module_to_imports)
+    module_imports_list = [
+        htypes.inspect.module_imports(module_name, list(sorted(imports)))
+        for module_name, imports in module_to_imports.items()
+        ]
+
     return htypes.inspect.imported_module_info(
-        imports=list(sorted(imports)),
+        imports=module_imports_list,
         attr_list=attr_list,
         error=error,
         )

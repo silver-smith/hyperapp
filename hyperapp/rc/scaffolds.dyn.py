@@ -2,6 +2,7 @@ import logging
 
 from . import htypes
 from .services import (
+    constructor_creg,
     mosaic,
     )
 
@@ -25,7 +26,7 @@ def discoverer_module_res(ctx, unit):
     import_recorder_ref = mosaic.put(import_recorder_res)
     import_discoverer_res = htypes.import_discoverer.import_discoverer()
     import_discoverer_ref = mosaic.put(import_discoverer_res)
-    recorders = [import_recorder_ref, import_discoverer_ref]
+    recorders = {unit.name: [import_recorder_ref, import_discoverer_ref]}
 
     module_res = unit.make_module_res([
             htypes.builtin.import_rec('htypes.*', import_recorder_ref),
@@ -35,7 +36,7 @@ def discoverer_module_res(ctx, unit):
     return (recorders, module_res)
 
 
-def _enum_import_list(graph, dep_list, fixtures_unit):
+def _enum_dep_imports(graph, dep_list, fixtures_unit):
     for dep in dep_list:
         if fixtures_unit and dep in fixtures_unit.provided_deps:
             provider = fixtures_unit
@@ -46,20 +47,48 @@ def _enum_import_list(graph, dep_list, fixtures_unit):
 
 
 # Module resource with import recorder.
-def recorder_module_res(graph, ctx, unit, fixtures_unit=None):
+def recorder_module_res(graph, ctx, unit, fixtures_unit=None, import_list=None):
     resource_list = [*ctx.type_recorder_res_list]
     import_recorder_res = htypes.import_recorder.import_recorder(resource_list)
     import_recorder_ref = mosaic.put(import_recorder_res)
-    recorders = [import_recorder_ref]
+    recorders = {unit.name: [import_recorder_ref]}
 
     deps = graph.name_to_deps[unit.name]
-    dep_imports_it = _enum_import_list(graph, deps, fixtures_unit)
+    dep_imports_it = _enum_dep_imports(graph, deps, fixtures_unit)
 
     module_res = unit.make_module_res([
         htypes.builtin.import_rec('htypes.*', import_recorder_ref),
         *dep_imports_it,
+        *(import_list or []),
         ])
     return (recorders, module_res)
+
+
+def invite_attr_constructors(ctx, attr_list, module_res, name_to_res):
+    ass_list = []
+    for attr in attr_list:
+        for ctr_ref in attr.constructors:
+            ass_list += constructor_creg.invite(ctr_ref, ctx.types, name_to_res, module_res, attr) or []
+    return ass_list
+
+
+def tested_import_list(graph, ctx, test_unit, tested_units, tested_service_to_unit):
+    import_list = []
+    all_recorders = {}
+    for unit in tested_units:
+        recorders, module_res = recorder_module_res(graph, ctx, unit, fixtures_unit=test_unit)
+        all_recorders.update(recorders)
+        import_rec = htypes.builtin.import_rec(f'tested.code.{unit.code_name}', mosaic.put(module_res))
+        import_list.append(import_rec)
+    all_ass_list = []
+    for service_name, unit in tested_service_to_unit.items():
+        recorders, module_res = recorder_module_res(graph, ctx, unit, fixtures_unit=test_unit)
+        all_recorders.update(recorders)
+        ass_list, service_res = unit.pick_service_resource(module_res, service_name)
+        all_ass_list += ass_list
+        import_rec = htypes.builtin.import_rec(f'tested.services.{service_name}', mosaic.put(service_res))
+        import_list.append(import_rec)
+    return (all_recorders, all_ass_list, import_list)
 
 
 def _parameter_fixture(fixtures, path):
@@ -113,4 +142,17 @@ def function_call_res(graph, ctx, unit, fixtures, attr):
     else:
         function_res = attr_res
     call_res = htypes.builtin.call(mosaic.put(function_res))
+    return (recorders, call_res)
+
+
+def test_call_res(graph, ctx, unit, tested_units, tested_service_to_unit, attr):
+    recorders, ass_list, import_list = tested_import_list(graph, ctx, unit, tested_units, tested_service_to_unit)
+    unit_recorders, module_res = recorder_module_res(graph, ctx, unit, import_list=import_list)
+    attr_res = htypes.builtin.attribute(
+        object=mosaic.put(module_res),
+        attr_name=attr.name,
+        )
+    if attr.param_list:
+        raise RuntimeError(f"{unit.name}: Test {attr.name} wants parameters, but that's not supported")
+    call_res = htypes.builtin.call(mosaic.put(attr_res))
     return (recorders, call_res)

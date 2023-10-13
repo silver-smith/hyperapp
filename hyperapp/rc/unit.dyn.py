@@ -13,7 +13,13 @@ from .services import (
     )
 from .code.dep import CodeDep, FixturesDep, ServiceDep
 from .code.import_task import AttrCallTask, AttrEnumTask, ImportTask
-from .code.scaffolds import discoverer_module_res, function_call_res, recorder_module_res
+from .code.scaffolds import (
+    discoverer_module_res,
+    function_call_res,
+    invite_attr_constructors,
+    recorder_module_res,
+    test_call_res,
+    )
 
 log = logging.getLogger(__name__)
 
@@ -153,6 +159,25 @@ class Unit:
     def provided_dep_resource(self, dep):
         return self.resource(dep.resource_name)
 
+    def pick_service_resource(self, module_res, service_name):
+        assert self._attr_list is not None  # Not yet imported/attr enumerated.
+        name_to_res = {}
+        ass_list = invite_attr_constructors(self._ctx, self._attr_list, module_res, name_to_res)
+        for name, resource in name_to_res.items():
+            if name.endswith('.service'):
+                sn, _ = name.rsplit('.', 1)
+                if sn == service_name:
+                    return (ass_list, resource)
+        raise RuntimeError(f"{self}: Service {service_name!r} was not created by it's constructor")
+
+    def make_module_res(self, import_list):
+        return htypes.builtin.python_module(
+            module_name=self._stem,
+            source=self._source_path.read_text(),
+            file_path=str(self._source_path),
+            import_list=tuple(import_list),
+            )
+
     def _make_source_ref(self, dep_units):
         deps = [
             u.source_dep_record for u in
@@ -222,14 +247,6 @@ class Unit:
             # Already imported and attributes collected and called.
             return []
 
-    def make_module_res(self, import_list):
-        return htypes.builtin.python_module(
-            module_name=self._stem,
-            source=self._source_path.read_text(),
-            file_path=str(self._source_path),
-            import_list=tuple(import_list),
-            )
-
     def _update_imports_deps(self, graph, import_set):
         info = _imports_info(import_set)
         graph.name_to_deps[self.name] |= info.want_deps
@@ -251,11 +268,23 @@ class Unit:
         self._attr_called = True
 
 
-class FixturesUnit(Unit):
+class FixturesDepsProviderUnit(Unit):
 
     def __init__(self, ctx, generator_ref, root_dir, path):
         super().__init__(ctx, generator_ref, root_dir, path)
         self._provided_deps = set()
+
+    def _set_providers(self, graph, provide_services):
+        self._provided_deps = {
+            ServiceDep(service_name) for service_name in provide_services
+            }
+
+    @property
+    def provided_deps(self):
+        return self._provided_deps
+
+
+class FixturesUnit(FixturesDepsProviderUnit):
 
     def __repr__(self):
         return f"<FixturesUnit {self.name!r}>"
@@ -263,11 +292,6 @@ class FixturesUnit(Unit):
     @cached_property
     def is_fixtures(self):
         return True
-
-    def _set_providers(self, graph, provide_services):
-        self._provided_deps = {
-            ServiceDep(service_name) for service_name in provide_services
-            }
 
     @cached_property
     def _target_unit_name(self):
@@ -281,16 +305,13 @@ class FixturesUnit(Unit):
         graph.name_to_deps[self._target_unit_name].add(dep)
         graph.dep_to_provider[dep] = self
 
-    @property
-    def provided_deps(self):
-        return self._provided_deps
 
-
-class TestsUnit(Unit):
+class TestsUnit(FixturesDepsProviderUnit):
 
     def __init__(self, ctx, generator_ref, root_dir, path):
         super().__init__(ctx, generator_ref, root_dir, path)
-        self._test_services = None  # str list
+        self._tested_units = None  # Unit list
+        self._tested_services = None  # str list
 
     def __repr__(self):
         return f"<TestsUnit {self.name!r}>"
@@ -303,32 +324,43 @@ class TestsUnit(Unit):
         pass
 
     def _tested_services_modules(self, graph):
-        service_to_tested = {}
-        for service_name in self._test_services:
+        service_to_unit = {}
+        for service_name in self._tested_services:
             dep = ServiceDep(service_name)
             provider = graph.dep_to_provider.get(dep)
             if provider:
                 log.debug("%s: service %s provider: %s", self.name, service_name, provider)
-                service_to_tested[service_name] = provider
+                service_to_unit[service_name] = provider
             else:
                 log.debug("%s: service %s provider is not yet discovered", self.name, service_name)
                 return None
-        return service_to_tested
+        return service_to_unit  # str -> unit
 
     def _make_call_attr_tasks(self, graph):
-        service_modules = self._tested_services_modules(graph)
-        if service_modules is None:
+        tested_service_to_unit = self._tested_services_modules(graph)
+        if tested_service_to_unit is None:
+            # Not all service providers are yet discovered.
             return []
-        else:
-            return []
+        task_list = []
+        for attr in self._attr_list:
+            if not isinstance(attr, htypes.inspect.fn_attr):
+                continue
+            if not attr.name.startswith('test'):
+                continue
+            recorders, call_res = test_call_res(graph, self._ctx, self, self._tested_units, tested_service_to_unit, attr)
+            task = AttrCallTask(self, attr.name, recorders, call_res)
+            task_list.append(task)
+        return task_list
 
     def _update_imports_deps(self, graph, import_set):
         info = super()._update_imports_deps(graph, import_set)
+        self._tested_units = []
         for name in info.test_code:
             for unit in graph.name_to_unit.values():
                 if unit.code_name == name:
                     unit.add_test(self)
+                    self._tested_units.append(unit)
                     break
             else:
                 raise RuntimeError(f"{self.name}: Unknown tested code module: {name}")
-        self._test_services = info.test_services
+        self._tested_services = info.test_services

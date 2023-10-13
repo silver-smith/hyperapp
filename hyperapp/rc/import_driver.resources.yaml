@@ -6,6 +6,7 @@ import:
 - legacy_type.inspect:fn_attr
 - legacy_type.inspect:generator_fn_attr
 - legacy_type.inspect:imported_module_info
+- legacy_type.inspect:module_imports
 - resource.constants:constants.module
 
 definitions:
@@ -19,6 +20,7 @@ definitions:
       htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
       htypes.inspect.generator_fn_attr: legacy_type.inspect:generator_fn_attr
       htypes.inspect.imported_module_info: legacy_type.inspect:imported_module_info
+      htypes.inspect.module_imports: legacy_type.inspect:module_imports
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
       code.constants: resource.constants:constants.module

@@ -9,6 +9,7 @@ import:
 - legacy_type.import_recorder:resource
 - legacy_type.partial:param
 - legacy_type.partial:partial
+- resource.constructor_creg:constructor_creg.service
 
 definitions:
 
@@ -25,4 +26,5 @@ definitions:
       htypes.import_recorder.resource: legacy_type.import_recorder:resource
       htypes.partial.param: legacy_type.partial:param
       htypes.partial.partial: legacy_type.partial:partial
+      services.constructor_creg: resource.constructor_creg:constructor_creg.service
       services.mosaic: builtins:mosaic.service

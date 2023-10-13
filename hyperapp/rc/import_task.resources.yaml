@@ -4,6 +4,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.builtin:import_rec
 - legacy_type.import_discoverer:using_incomplete_object
+- legacy_type.inspect:import_recorder
 - rc.call_driver:call_driver.module
 - rc.import_driver:import_driver.module
 
@@ -15,6 +16,7 @@ definitions:
     file_name: import_task.dyn.py
     import_list:
       htypes.import_discoverer.using_incomplete_object: legacy_type.import_discoverer:using_incomplete_object
+      htypes.inspect.import_recorder: legacy_type.inspect:import_recorder
       services.mosaic: builtins:mosaic.service
       services.web: builtins:web.service
       code.call_driver: rc.call_driver:call_driver.module
