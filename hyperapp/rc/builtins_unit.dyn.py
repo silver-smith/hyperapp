@@ -34,3 +34,6 @@ class BuiltinsUnit:
 
     def is_up_to_date(self, graph):
         return True
+
+    def new_test_imports_discovered(self, graph):
+        pass

@@ -36,7 +36,7 @@ def discoverer_module_res(ctx, unit):
     return (recorders, module_res)
 
 
-def _enum_dep_imports(graph, dep_list, fixtures_unit):
+def enum_dep_imports(graph, dep_list, fixtures_unit=None):
     for dep in dep_list:
         if fixtures_unit and dep in fixtures_unit.provided_deps:
             provider = fixtures_unit
@@ -44,6 +44,13 @@ def _enum_dep_imports(graph, dep_list, fixtures_unit):
             provider = graph.dep_to_provider[dep]
         resource = provider.provided_dep_resource(dep)
         yield htypes.builtin.import_rec(dep.import_name, mosaic.put(resource))
+
+
+def types_import_list(ctx, import_set):
+    return {
+        htypes.builtin.import_rec(f'htypes.{pair[0]}.{pair[1]}', mosaic.put(pair_to_resource[pair]))
+        for pair in import_set
+        }
 
 
 # Module resource with import recorder.
@@ -54,7 +61,7 @@ def recorder_module_res(graph, ctx, unit, fixtures_unit=None, import_list=None):
     recorders = {unit.name: [import_recorder_ref]}
 
     deps = graph.name_to_deps[unit.name]
-    dep_imports_it = _enum_dep_imports(graph, deps, fixtures_unit)
+    dep_imports_it = enum_dep_imports(graph, deps, fixtures_unit)
 
     module_res = unit.make_module_res([
         htypes.builtin.import_rec('htypes.*', import_recorder_ref),

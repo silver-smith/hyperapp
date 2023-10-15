@@ -121,6 +121,10 @@ class Unit:
     def is_tests(self):
         return False
 
+    @property
+    def is_imports_discovered(self):
+        return self._import_set is not None
+
     def _set_providers(self, graph, provide_services):
         for service_name in provide_services:
             dep = ServiceDep(service_name)
@@ -288,6 +292,33 @@ class Unit:
     def set_attr_called(self):
         self._attr_called = True
 
+    def _construct(self, graph):
+        log.info("%s: Construct", self.name)
+        ass_list = invite_attr_constructors(self._ctx, self._attr_list, module_res, name_to_res)
+        module_res = self.make_module_res([
+            *types_import_list(self._import_set),
+            *enum_dep_imports(graph.name_to_deps[self.name]),
+            ])
+
+    def _all_tests_imports_discovered(self, graph):
+        for unit in graph.name_to_unit.values():
+            if unit.is_tests and not unit.is_imports_discovered:
+                return False
+        return True
+
+    def _construct_if_ready(self, graph):
+        if not self._all_tests_imports_discovered(graph):
+            return
+        if not self.deps_are_ready(graph):
+            return
+        for test in self._tests:
+            if not test.is_up_to_date(graph):
+                return
+        self._construct(graph)
+
+    def new_test_imports_discovered(self, graph):
+        self._construct_if_ready(graph)
+
 
 class FixturesDepsProviderUnit(Unit):
 
@@ -399,3 +430,5 @@ class TestsUnit(FixturesDepsProviderUnit):
             else:
                 raise RuntimeError(f"{self.name}: Unknown tested code module: {name}")
         self._tested_services = info.test_services
+        for unit in graph.name_to_unit.values():
+            unit.new_test_imports_discovered(graph)

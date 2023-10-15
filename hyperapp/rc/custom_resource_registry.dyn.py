@@ -12,7 +12,7 @@ from .services import (
     )
 
 
-RcContext = namedtuple('RcContext', 'resource_registry types type_recorder_res_list')
+RcContext = namedtuple('RcContext', 'resource_registry types type_recorder_res_list type_pair_to_resource')
 
 
 def _load_legacy_type_resources(dir_list):
@@ -24,13 +24,15 @@ def _load_legacy_type_resources(dir_list):
     type_module_loader.load_type_modules(dir_list, custom_types)
 
     resource_list = []
+    pair_to_resource = {}
     for module_name, type_module in custom_types.items():
         for name, type_ref in type_module.items():
             resource = htypes.builtin.legacy_type(type_ref)
             resource_ref = mosaic.put(resource)
             resource_list.append(
                 htypes.import_recorder.resource(('htypes', module_name, name), resource_ref))
-    return (custom_types, resource_list)
+            pair_to_resource[module_name, name] = resource
+    return (custom_types, resource_list, pair_to_resource)
 
 
 def _add_legacy_types_to_cache(res_reg, legacy_type_modules):
@@ -42,7 +44,7 @@ def _add_legacy_types_to_cache(res_reg, legacy_type_modules):
 def create_custom_resource_registry(root_dir, dir_list):
     res_reg = resource_registry_factory()
 
-    custom_types, type_recorder_res_list = _load_legacy_type_resources(dir_list)
+    custom_types, type_recorder_res_list, pair_to_resource = _load_legacy_type_resources(dir_list)
     legacy_type_modules = legacy_type_resource_loader(custom_types)
     _add_legacy_types_to_cache(res_reg, legacy_type_modules)
     res_reg.update_modules(legacy_type_modules)
@@ -53,4 +55,5 @@ def create_custom_resource_registry(root_dir, dir_list):
         resource_registry=res_reg,
         types=custom_types,
         type_recorder_res_list=type_recorder_res_list,
+        type_pair_to_resource=pair_to_resource,
         )
