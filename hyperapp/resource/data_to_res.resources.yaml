@@ -7,7 +7,6 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
-- legacy_type.data_to_res_tests:sample_empty_record
 associations: []
 definitions:
   data_to_res:
@@ -19,7 +18,6 @@ definitions:
     module_name: data_to_res
     file_name: data_to_res.dyn.py
     import_list:
-      htypes.data_to_res_tests.sample_empty_record: legacy_type.data_to_res_tests:sample_empty_record
       services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
