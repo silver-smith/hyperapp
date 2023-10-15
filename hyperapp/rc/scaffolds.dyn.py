@@ -48,7 +48,10 @@ def enum_dep_imports(graph, dep_list, fixtures_unit=None):
 
 def types_import_list(ctx, import_set):
     return {
-        htypes.builtin.import_rec(f'htypes.{pair[0]}.{pair[1]}', mosaic.put(pair_to_resource[pair]))
+        htypes.builtin.import_rec(
+            f'htypes.{pair[0]}.{pair[1]}',
+            mosaic.put(ctx.type_pair_to_resource[pair]),
+            )
         for pair in import_set
         }
 

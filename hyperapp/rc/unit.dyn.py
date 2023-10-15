@@ -15,10 +15,12 @@ from .code.dep import CodeDep, FixturesDep, ServiceDep
 from .code.task import AttrCallTask, AttrEnumTask, ImportTask
 from .code.scaffolds import (
     discoverer_module_res,
+    enum_dep_imports,
     function_call_res,
     invite_attr_constructors,
     recorder_module_res,
     test_call_res,
+    types_import_list,
     )
 
 log = logging.getLogger(__name__)
@@ -107,7 +109,7 @@ class Unit:
         self._resource_module = None
         self._import_set = None
         self._attr_list = None  # inspect.attr|fn_attr|generator_fn_attr list
-        self._attr_called = False
+        self._attr_called = None  # str set
         self._tests = set()  # TestsUnit set
 
     def __repr__(self):
@@ -269,7 +271,7 @@ class Unit:
             # Got incomplete error when collecting attributes, retry with complete imports:
             recorders, module_res = recorder_module_res(graph, self._ctx, self)
             return [AttrEnumTask(self, recorders, module_res)]
-        if not self._attr_called:
+        if self._attr_called is None:
             return self._make_call_attr_tasks(graph)
         # Already imported and attributes collected and called.
         return []
@@ -291,16 +293,22 @@ class Unit:
         self._attr_list = attr_list
         self._set_providers(graph, _enum_provided_services(attr_list))
 
-    def set_attr_called(self):
-        self._attr_called = True
+    def set_attr_called(self, graph, attr_name):
+        if self._attr_called is None:
+            self._attr_called = set()
+        self._attr_called.add(attr_name)
+        self._construct_if_ready(graph)
 
     def _construct(self, graph):
         log.info("%s: Construct", self.name)
-        ass_list = invite_attr_constructors(self._ctx, self._attr_list, module_res, name_to_res)
+        info = _imports_info(self._import_set)
         module_res = self.make_module_res([
-            *types_import_list(self._import_set),
-            *enum_dep_imports(graph.name_to_deps[self.name]),
+            *types_import_list(self._ctx, info.used_types),
+            *enum_dep_imports(graph, graph.name_to_deps[self.name]),
             ])
+        resource_module = resource_module_factory(self._ctx.resource_registry, self.name)
+        resource_module[f'{self.code_name}.module'] = module_res
+        ass_list = invite_attr_constructors(self._ctx, self._attr_list, module_res, resource_module)
 
     def _all_tests_imports_discovered(self, graph):
         for unit in graph.name_to_unit.values():
@@ -316,6 +324,10 @@ class Unit:
         for test in self._tests:
             if not test.is_up_to_date(graph):
                 return
+        if self._attr_called is None:
+            return
+        if self._attr_called < set(attr.name for attr in self._attr_list):
+            return
         self._construct(graph)
 
     def new_test_imports_discovered(self, graph):

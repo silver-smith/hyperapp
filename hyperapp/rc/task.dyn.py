@@ -104,7 +104,7 @@ class AttrCallTask(TaskBase):
         log.info("%s type: %s", self, web.summon(result.t))
         imports_dict = _module_import_list_to_dict(result.imports)
         self._add_units_imports(graph, imports_dict)
-        self._unit.set_attr_called()
+        self._unit.set_attr_called(graph, self._attr_name)
 
 
 class TestCallTask(AttrCallTask):
