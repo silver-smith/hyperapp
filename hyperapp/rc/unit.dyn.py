@@ -309,7 +309,7 @@ class Unit:
         self._construct_if_ready(graph)
 
     def _construct(self, graph):
-        log.info("%s: Construct", self.name)
+        log.info("Construct: %s", self.name)
         info = _imports_info(self._import_set)
         module_res = self.make_module_res(sorted([
             *types_import_list(self._ctx, info.used_types),
@@ -320,7 +320,7 @@ class Unit:
         ass_list = invite_attr_constructors(self._ctx, self._attr_list, module_res, resource_module)
         resource_module.add_association_list(ass_list)
         source_hash_str = self._deps_hash_str(graph, graph.name_to_deps[self.name])
-        log.info("Write %s: %s", self.name, self._resources_path)
+        log.info("Write: %s: %s", self.name, self._resources_path)
         resource_module.save_as(self._resources_path, source_hash_str, ref_str(self._generator_ref))
         self._resource_module = resource_module
         self._ctx.resource_registry.set_module(self.name, resource_module)
