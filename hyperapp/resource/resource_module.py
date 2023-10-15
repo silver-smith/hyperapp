@@ -116,6 +116,10 @@ class ResourceModule:
                 services.add(l[0])
         return services
 
+    def add_association_list(self, ass_list):
+        for ass in ass_list:
+            self.add_association(ass)
+
     def add_association(self, ass):
         log.info("%s: Add association: %r", self._name, ass)
         key = ass.key

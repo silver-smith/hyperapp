@@ -115,6 +115,10 @@ class Unit:
     def __repr__(self):
         return f"<Unit {self.name!r}>"
 
+    @property
+    def is_builtins(self):
+        return False
+
     @cached_property
     def is_fixtures(self):
         return False
@@ -196,9 +200,7 @@ class Unit:
         source_ref = mosaic.put(self._source_path.read_bytes())
         return htypes.rc.source_dep(self.name, source_ref)
 
-    def _hash_matches(self, graph, deps):
-        if not self._current_source_ref_str:
-            return False
+    def _deps_hash_str(self, graph, deps):
         dep_units = []
         for dep in deps:
             try:
@@ -206,12 +208,19 @@ class Unit:
             except KeyError:
                 log.debug("%s: dep %s is missing", self.name, dep)
                 return False
+            if module.is_builtins:
+                continue
             if not module.is_up_to_date(graph):
                 log.debug("%s: dep %s module %s is outdated", self.name, dep, module)
                 return False
             dep_units.append(module)
         source_ref = self._make_source_ref(dep_units)
-        return ref_str(source_ref) == self._current_source_ref_str
+        return ref_str(source_ref)
+
+    def _hash_matches(self, graph, deps):
+        if not self._current_source_ref_str:
+            return False
+        return self._deps_hash_str(graph, deps) == self._current_source_ref_str
 
     def is_up_to_date(self, graph):
         if self._resource_module:
@@ -309,6 +318,12 @@ class Unit:
         resource_module = resource_module_factory(self._ctx.resource_registry, self.name)
         resource_module[f'{self.code_name}.module'] = module_res
         ass_list = invite_attr_constructors(self._ctx, self._attr_list, module_res, resource_module)
+        resource_module.add_association_list(ass_list)
+        source_hash_str = self._deps_hash_str(graph, graph.name_to_deps[self.name])
+        log.info("Write %s: %s", self.name, self._resources_path)
+        resource_module.save_as(self._resources_path, source_hash_str, ref_str(self._generator_ref))
+        self._resource_module = resource_module
+        self._ctx.resource_registry.set_module(self.name, resource_module)
 
     def _all_tests_imports_discovered(self, graph):
         for unit in graph.name_to_unit.values():

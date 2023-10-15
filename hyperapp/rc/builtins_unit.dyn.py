@@ -22,6 +22,10 @@ class BuiltinsUnit:
         return None
 
     @property
+    def is_builtins(self):
+        return True
+
+    @property
     def is_fixtures(self):
         return False
 
