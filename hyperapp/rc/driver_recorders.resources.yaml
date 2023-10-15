@@ -1,0 +1,14 @@
+import:
+- builtins:pyobj_creg.service
+- legacy_type.builtin:python_module
+- legacy_type.inspect:module_imports
+
+definitions:
+
+  driver_recorders.module:
+    _type: legacy_type.builtin:python_module
+    module_name: driver_recorders
+    file_name: driver_recorders.dyn.py
+    import_list:
+      htypes.inspect.module_imports: legacy_type.inspect:module_imports
+      services.pyobj_creg: builtins:pyobj_creg.service

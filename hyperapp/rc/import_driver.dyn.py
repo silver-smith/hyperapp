@@ -1,6 +1,5 @@
 import inspect
 import logging
-from collections import defaultdict
 from types import ModuleType
 
 
@@ -12,6 +11,7 @@ from .services import (
     pyobj_creg,
     )
 from .code.constants import RESOURCE_NAMES_ATTR, RESOURCE_CTR_ATTR
+from .code.driver_recorders import ImportRecorders
 
 log = logging.getLogger(__name__)
 
@@ -50,14 +50,10 @@ def _enum_attributes(object):
 def import_module(import_recorders, module_ref):
     log.info("Import module: %s", module_ref)
 
-    recorder_dict = defaultdict(list)
-    for rec in import_recorders:
-        recorder = pyobj_creg.invite(rec.recorder)
-        recorder.reset()
-        recorder_dict[rec.module].append(recorder)
-
+    recorders = ImportRecorders(import_recorders)
     try:
-        module = pyobj_creg.invite(module_ref)
+        with recorders.recording():
+            module = pyobj_creg.invite(module_ref)
     except HException as x:
         attr_list = []
         error = mosaic.put(x)
@@ -68,18 +64,8 @@ def import_module(import_recorders, module_ref):
             ]
         error = None
 
-    module_to_imports = defaultdict(set)
-    for module_name, recorder_list in recorder_dict.items():
-        for recorder in recorder_list:
-            module_to_imports[module_name] |= recorder.used_imports()
-    log.info("Used imports: %s", module_to_imports)
-    module_imports_list = [
-        htypes.inspect.module_imports(module_name, list(sorted(imports)))
-        for module_name, imports in module_to_imports.items()
-        ]
-
     return htypes.inspect.imported_module_info(
-        imports=module_imports_list,
+        imports=recorders.module_imports_list,
         attr_list=attr_list,
         error=error,
         )
