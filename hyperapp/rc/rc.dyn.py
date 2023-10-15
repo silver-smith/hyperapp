@@ -58,18 +58,6 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, proces
                         continue  # No finished tasks for this unit yet.
                     if unit.is_up_to_date(graph):
                         continue
-                    deps = graph.name_to_deps[unit.name]
-                    unknown_deps = deps - set(graph.dep_to_provider)
-                    if unknown_deps:
-                        log.debug("%s: unknown deps: %s", unit, unknown_deps)
-                        continue
-                    outdated_providers = {
-                        graph.dep_to_provider[d] for d in deps
-                        if not graph.dep_to_provider[d].is_up_to_date(graph)
-                        }
-                    if outdated_providers:
-                        log.debug("%s: outdated providers: %s", unit, outdated_providers)
-                        continue
                     for task in unit.make_tasks(graph):
                         log.info("Submit: %s", task)
                         pool.submit(task)

@@ -221,8 +221,10 @@ class Unit:
             try:
                 provider = graph.dep_to_provider[dep]
             except KeyError:
+                log.debug("%s: dep %s provider is not yet known", self, dep)
                 return False
             if not provider.is_up_to_date(graph):
+                log.debug("%s: dep %s provider %s is outdated", self, dep, provider)
                 return False
         return True
 
