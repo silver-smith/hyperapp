@@ -10,10 +10,10 @@ import:
 
 definitions:
 
-  import_task.module:
+  task.module:
     _type: legacy_type.builtin:python_module
-    module_name: import_task
-    file_name: import_task.dyn.py
+    module_name: task
+    file_name: task.dyn.py
     import_list:
       htypes.import_discoverer.using_incomplete_object: legacy_type.import_discoverer:using_incomplete_object
       htypes.inspect.import_recorder: legacy_type.inspect:import_recorder

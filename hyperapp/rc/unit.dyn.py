@@ -12,7 +12,7 @@ from .services import (
     web,
     )
 from .code.dep import CodeDep, FixturesDep, ServiceDep
-from .code.import_task import AttrCallTask, AttrEnumTask, ImportTask
+from .code.task import AttrCallTask, AttrEnumTask, ImportTask
 from .code.scaffolds import (
     discoverer_module_res,
     function_call_res,

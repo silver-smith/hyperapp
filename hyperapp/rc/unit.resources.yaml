@@ -9,7 +9,7 @@ import:
 - legacy_type.rc:module_deps
 - rc.dep:dep.module
 - rc.scaffolds:scaffolds.module
-- rc.import_task:import_task.module
+- rc.task:task.module
 
 definitions:
 
@@ -27,5 +27,5 @@ definitions:
       services.resource_module_factory: builtins:resource_module_factory.service
       services.web: builtins:web.service
       code.dep: rc.dep:dep.module
-      code.import_task: rc.import_task:import_task.module
+      code.task: rc.task:task.module
       code.scaffolds: rc.scaffolds:scaffolds.module
