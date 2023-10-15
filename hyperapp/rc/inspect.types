@@ -65,7 +65,7 @@ module_imports = record:
   imports: string list list
 
 object_type_info = record:
-  imports: string list list
+  imports: module_imports list
   t: ref
   calls: call_trace list
 
