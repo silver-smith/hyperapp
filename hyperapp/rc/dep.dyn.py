@@ -31,6 +31,10 @@ class Dep(metaclass=ABCMeta):
     def resource_name(self):
         return None
 
+    @property
+    def should_be_imported(self):
+        return self.resource_name is not None
+
 
 @dataclass(eq=False)
 class ServiceDep(Dep):

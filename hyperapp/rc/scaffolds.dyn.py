@@ -38,6 +38,8 @@ def discoverer_module_res(ctx, unit):
 
 def enum_dep_imports(graph, dep_list, fixtures_unit=None):
     for dep in dep_list:
+        if not dep.should_be_imported:
+            continue
         if fixtures_unit and dep in fixtures_unit.provided_deps:
             provider = fixtures_unit
         else:
