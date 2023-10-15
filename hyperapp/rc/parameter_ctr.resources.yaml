@@ -1,0 +1,34 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:mosaic.service
+- common.mark:mark.service
+- legacy_type.attr_constructors:parameter
+- legacy_type.builtin:attribute
+- legacy_type.builtin:call
+- legacy_type.builtin:python_module
+- resource.constructor_creg:constructor_creg.service
+associations:
+- bases:
+  - resource.constructor_creg:constructor_creg.service
+  - legacy_type.attr_constructors:parameter
+  key:
+  - resource.constructor_creg:constructor_creg.service
+  - legacy_type.attr_constructors:parameter
+  value: construct
+definitions:
+  construct:
+    _type: legacy_type.builtin:attribute
+    object: parameter_ctr.module
+    attr_name: construct
+  parameter_ctr.module:
+    _type: legacy_type.builtin:python_module
+    module_name: parameter_ctr
+    file_name: parameter_ctr.dyn.py
+    import_list:
+      htypes.attr_constructors.parameter: legacy_type.attr_constructors:parameter
+      htypes.builtin.attribute: legacy_type.builtin:attribute
+      htypes.builtin.call: legacy_type.builtin:call
+      services.constructor_creg: resource.constructor_creg:constructor_creg.service
+      services.mark: common.mark:mark.service
+      services.mosaic: builtins:mosaic.service
