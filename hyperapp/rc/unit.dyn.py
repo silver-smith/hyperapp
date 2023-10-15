@@ -311,10 +311,10 @@ class Unit:
     def _construct(self, graph):
         log.info("%s: Construct", self.name)
         info = _imports_info(self._import_set)
-        module_res = self.make_module_res([
+        module_res = self.make_module_res(sorted([
             *types_import_list(self._ctx, info.used_types),
             *enum_dep_imports(graph, graph.name_to_deps[self.name]),
-            ])
+            ]))
         resource_module = resource_module_factory(self._ctx.resource_registry, self.name)
         resource_module[f'{self.code_name}.module'] = module_res
         ass_list = invite_attr_constructors(self._ctx, self._attr_list, module_res, resource_module)
