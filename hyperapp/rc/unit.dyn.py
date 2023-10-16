@@ -316,8 +316,8 @@ class Unit:
             recorders, module_res = recorder_module_res(self._graph, self._ctx, self)
             return [AttrEnumTask(self, recorders, module_res)]
         if self._attr_call_in_progress is None:
-            if self._attr_call_tasks is None:
-                self._attr_call_tasks = self._make_attr_call_tasks()
+            self._attr_call_tasks = self._make_attr_call_tasks()
+        if self._attr_call_tasks:
             return self._attr_call_tasks
         # Already imported and attributes collected and called.
         return []
