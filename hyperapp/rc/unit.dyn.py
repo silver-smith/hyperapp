@@ -198,7 +198,7 @@ class Unit:
 
     def _all_tests_imports_discovered(self):
         for unit in self._graph.name_to_unit.values():
-            if unit.is_tests and not unit.is_imports_discovered:
+            if unit.is_tests and not unit.is_up_to_date and not unit.is_imports_discovered:
                 return False
         return True
 
