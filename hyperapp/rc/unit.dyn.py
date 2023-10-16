@@ -220,6 +220,7 @@ class Unit:
             log.info("%s: Up-to-date, provides: %s", self.name, self._resource_module.provided_services)
         else:
             self._resource_module = None
+            log.info("%s: Outdated; deps: %s; tests: %s", self.name, deps, self._tests or '{}')
         self._resource_checked = True
 
     def resource(self, name):
