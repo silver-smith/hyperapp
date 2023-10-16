@@ -37,6 +37,7 @@ class BuiltinsUnit:
     def provided_dep_resource(self, dep):
         return self._ctx.resource_registry['builtins', dep.resource_name]
 
+    @property
     def is_up_to_date(self):
         return True
 
