@@ -23,10 +23,10 @@ class Graph:
 
 def _report_not_compiled(graph):
     for unit in graph.name_to_unit.values():
-        if unit.is_up_to_date(graph):
+        if unit.is_up_to_date():
             continue
         log.info("Not compiled: %s", unit.name)
-        unit.report_deps(graph)
+        unit.report_deps()
 
 
 def _dump_graph(graph):
@@ -56,9 +56,9 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, proces
                 for unit in graph.name_to_unit.values():
                     if unit in task_to_unit.values():
                         continue  # No finished tasks for this unit yet.
-                    if unit.is_up_to_date(graph):
+                    if unit.is_up_to_date():
                         continue
-                    for task in unit.make_tasks(graph):
+                    for task in unit.make_tasks():
                         log.info("Submit: %s", task)
                         pool.submit(task)
                         task_to_unit[task] = unit

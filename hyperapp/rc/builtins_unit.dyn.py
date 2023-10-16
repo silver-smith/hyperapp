@@ -6,13 +6,14 @@ from .code.dep import ServiceDep
 
 class BuiltinsUnit:
 
-    def __init__(self, ctx):
+    def __init__(self, graph, ctx):
+        self._graph = graph
         self._ctx = ctx
 
-    def init(self, graph):
-        graph.name_to_unit['builtins'] = self
+    def init(self):
+        self._graph.name_to_unit['builtins'] = self
         for service_name in builtin_services:
-            graph.dep_to_provider[ServiceDep(service_name)] = self
+            self._graph.dep_to_provider[ServiceDep(service_name)] = self
 
     def __repr__(self):
         return "<BuiltinsUnit>"
@@ -36,8 +37,8 @@ class BuiltinsUnit:
     def provided_dep_resource(self, dep):
         return self._ctx.resource_registry['builtins', dep.resource_name]
 
-    def is_up_to_date(self, graph):
+    def is_up_to_date(self):
         return True
 
-    def new_test_imports_discovered(self, graph):
+    def new_test_imports_discovered(self):
         pass

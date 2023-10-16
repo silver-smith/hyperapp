@@ -63,7 +63,7 @@ class ImportTask(TaskBase):
 
     def process_result(self, graph, result):
         imports_dict = _module_import_list_to_dict(result.imports)
-        self._unit.set_imports(graph, imports_dict[self._unit.name])
+        self._unit.set_imports(imports_dict[self._unit.name])
         if result.error:
             error = web.summon(result.error)
             if not isinstance(error, htypes.import_discoverer.using_incomplete_object):
@@ -71,7 +71,7 @@ class ImportTask(TaskBase):
             log.info("%s: Incomplete object: %s", self._unit.name, error.message)
         else:
             attr_list = [web.summon(ref) for ref in result.attr_list]
-            self._unit.set_attributes(graph, attr_list)
+            self._unit.set_attributes(attr_list)
 
 
 class AttrEnumTask(ImportTask):
@@ -98,13 +98,13 @@ class AttrCallTask(TaskBase):
         return future
 
     def _add_units_imports(self, graph, imports_dict):
-        self._unit.add_imports(graph, imports_dict[self._unit.name])
+        self._unit.add_imports(imports_dict[self._unit.name])
 
     def process_result(self, graph, result):
         log.info("%s type: %s", self, web.summon(result.t))
         imports_dict = _module_import_list_to_dict(result.imports)
         self._add_units_imports(graph, imports_dict)
-        self._unit.set_attr_called(graph, self._attr_name)
+        self._unit.set_attr_called(self._attr_name)
 
 
 class TestCallTask(AttrCallTask):
@@ -112,4 +112,4 @@ class TestCallTask(AttrCallTask):
     def _add_units_imports(self, graph, imports_dict):
         for name, imports in imports_dict.items():
             unit = graph.name_to_unit[name]
-            unit.add_imports(graph, imports)
+            unit.add_imports(imports)

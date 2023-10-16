@@ -95,7 +95,8 @@ def _imports_info(imports):
 
 class Unit:
 
-    def __init__(self, ctx, generator_ref, root_dir, path):
+    def __init__(self, graph, ctx, generator_ref, root_dir, path):
+        self._graph = graph
         self._ctx = ctx
         self._generator_ref = generator_ref
         self._source_path = path
@@ -131,20 +132,20 @@ class Unit:
     def is_imports_discovered(self):
         return self._import_set is not None
 
-    def _set_providers(self, graph, provide_services):
+    def _set_providers(self, provide_services):
         for service_name in provide_services:
             dep = ServiceDep(service_name)
             try:
-                provider = graph.dep_to_provider[dep]
+                provider = self._graph.dep_to_provider[dep]
             except KeyError:
                 pass
             else:
                 raise RuntimeError(f"More than one module provide service {service_name!r}: {provider!r} and {self!r}")
-            graph.dep_to_provider[dep] = self
+            self._graph.dep_to_provider[dep] = self
             log.debug("%s: Provide service: %r", self.name, service_name)
 
-    def init(self, graph):
-        graph.dep_to_provider[CodeDep(self._stem)] = self
+    def init(self):
+        self._graph.dep_to_provider[CodeDep(self._stem)] = self
         if not self._resources_path.exists():
             log.info("%s: missing", self.name)
             return
@@ -152,15 +153,15 @@ class Unit:
         if not resource_module.is_auto_generated:
             self._resource_module = resource_module
             self._ctx.resource_registry.set_module(self.name, resource_module)
-            self._set_providers(graph, resource_module.provided_services)
+            self._set_providers(resource_module.provided_services)
             log.info("%s: manually generated", self.name)
             return
         self._current_source_ref_str = resource_module.source_ref_str
         deps = list(_enum_resource_module_deps(resource_module))
-        if self._hash_matches(graph, deps):
+        if self._hash_matches(deps):
             self._resource_module = resource_module
             self._ctx.resource_registry.set_module(self.name, resource_module)
-            self._set_providers(graph, resource_module.provided_services)
+            self._set_providers(resource_module.provided_services)
             log.info("%s: Up-to-date, provides: %s", self.name, resource_module.provided_services)
 
     def resource(self, name):
@@ -200,69 +201,69 @@ class Unit:
         source_ref = mosaic.put(self._source_path.read_bytes())
         return htypes.rc.source_dep(self.name, source_ref)
 
-    def _deps_hash_str(self, graph, deps):
+    def _deps_hash_str(self, deps):
         dep_units = []
         for dep in deps:
             try:
-                module = graph.dep_to_provider[dep]
+                module = self._graph.dep_to_provider[dep]
             except KeyError:
                 log.debug("%s: dep %s is missing", self.name, dep)
                 return False
             if module.is_builtins:
                 continue
-            if not module.is_up_to_date(graph):
+            if not module.is_up_to_date():
                 log.debug("%s: dep %s module %s is outdated", self.name, dep, module)
                 return False
             dep_units.append(module)
         source_ref = self._make_source_ref(dep_units)
         return ref_str(source_ref)
 
-    def _hash_matches(self, graph, deps):
+    def _hash_matches(self, deps):
         if not self._current_source_ref_str:
             return False
-        return self._deps_hash_str(graph, deps) == self._current_source_ref_str
+        return self._deps_hash_str(deps) == self._current_source_ref_str
 
-    def is_up_to_date(self, graph):
+    def is_up_to_date(self):
         if self._resource_module:
             return True
-        return self._hash_matches(graph, graph.name_to_deps[self.name])
+        return self._hash_matches(self._graph.name_to_deps[self.name])
 
-    def deps_are_ready(self, graph):
-        for dep in graph.name_to_deps[self.name]:
+    def deps_are_ready(self):
+        for dep in self._graph.name_to_deps[self.name]:
             try:
-                provider = graph.dep_to_provider[dep]
+                provider = self._graph.dep_to_provider[dep]
             except KeyError:
                 log.debug("%s: dep %s provider is not yet known", self, dep)
                 return False
-            if not provider.is_up_to_date(graph):
+            if not provider.is_up_to_date():
                 log.debug("%s: dep %s provider %s is outdated", self, dep, provider)
                 return False
         return True
 
-    def report_deps(self, graph):
-        for dep in graph.name_to_deps[self.name]:
+    def report_deps(self):
+        for dep in self._graph.name_to_deps[self.name]:
             try:
-                provider = graph.dep_to_provider[dep]
+                provider = self._graph.dep_to_provider[dep]
             except KeyError:
                 log.info("%s: Dep %s has no provider", self.name, dep)
             else:
-                if not provider.is_up_to_date(graph):
+                if not provider.is_up_to_date():
                     log.info("%s: Dep %s provider %s is not ready", self.name, dep, provider)
 
     def add_test(self, unit):
         self._tests.add(unit)
         log.info("%s is tested by %s", self.name, unit.name)
 
-    def _fixtures_unit(self, graph):
-        return graph.dep_to_provider.get(FixturesDep(self.name))
+    def _fixtures_unit(self):
+        return self._graph.dep_to_provider.get(FixturesDep(self.name))
 
-    def _make_call_attr_tasks(self, graph):
-        fixtures = self._fixtures_unit(graph)
+    def _make_call_attr_tasks(self):
+        fixtures = self._fixtures_unit()
         task_list = []
         for attr in self._attr_list:
             if not isinstance(attr, htypes.inspect.fn_attr):
                 continue
-            recorders_and_call_res = function_call_res(graph, self._ctx, self, fixtures, attr)
+            recorders_and_call_res = function_call_res(self._graph, self._ctx, self, fixtures, attr)
             if not recorders_and_call_res:
                 continue  # No param fixtures.
             recorders, call_res = recorders_and_call_res
@@ -270,92 +271,92 @@ class Unit:
             task_list.append(task)
         return task_list
 
-    def make_tasks(self, graph):
+    def make_tasks(self):
         if self._import_set is None:
             recorders, module_res = discoverer_module_res(self._ctx, self)
             return [ImportTask(self, recorders, module_res)]
-        if not self.deps_are_ready(graph):
+        if not self.deps_are_ready():
             return []
         if self._attr_list is None:
             # Got incomplete error when collecting attributes, retry with complete imports:
-            recorders, module_res = recorder_module_res(graph, self._ctx, self)
+            recorders, module_res = recorder_module_res(self._graph, self._ctx, self)
             return [AttrEnumTask(self, recorders, module_res)]
         if self._attr_called is None:
-            return self._make_call_attr_tasks(graph)
+            return self._make_call_attr_tasks()
         # Already imported and attributes collected and called.
         return []
 
-    def _update_imports_deps(self, graph, import_set):
+    def _update_imports_deps(self, import_set):
         info = _imports_info(import_set)
-        graph.name_to_deps[self.name] |= info.want_deps
+        self._graph.name_to_deps[self.name] |= info.want_deps
         return info
 
-    def set_imports(self, graph, import_set):
+    def set_imports(self, import_set):
         self._import_set = import_set
-        self._update_imports_deps(graph, import_set)
+        self._update_imports_deps(import_set)
 
-    def add_imports(self, graph, import_set):
+    def add_imports(self, import_set):
         self._import_set |= import_set
-        self._update_imports_deps(graph, import_set)
+        self._update_imports_deps(import_set)
 
-    def set_attributes(self, graph, attr_list):
+    def set_attributes(self, attr_list):
         self._attr_list = attr_list
-        self._set_providers(graph, _enum_provided_services(attr_list))
+        self._set_providers(_enum_provided_services(attr_list))
 
-    def set_attr_called(self, graph, attr_name):
+    def set_attr_called(self, attr_name):
         if self._attr_called is None:
             self._attr_called = set()
         self._attr_called.add(attr_name)
-        self._construct_if_ready(graph)
+        self._construct_if_ready()
 
-    def _construct(self, graph):
+    def _construct(self):
         log.info("Construct: %s", self.name)
         info = _imports_info(self._import_set)
         module_res = self.make_module_res(sorted([
             *types_import_list(self._ctx, info.used_types),
-            *enum_dep_imports(graph, graph.name_to_deps[self.name]),
+            *enum_dep_imports(self._graph.name_to_deps[self.name]),
             ]))
         resource_module = resource_module_factory(self._ctx.resource_registry, self.name)
         resource_module[f'{self.code_name}.module'] = module_res
         ass_list = invite_attr_constructors(self._ctx, self._attr_list, module_res, resource_module)
         resource_module.add_association_list(ass_list)
-        source_hash_str = self._deps_hash_str(graph, graph.name_to_deps[self.name])
+        source_hash_str = self._deps_hash_str(self._graph.name_to_deps[self.name])
         log.info("Write: %s: %s", self.name, self._resources_path)
         resource_module.save_as(self._resources_path, source_hash_str, ref_str(self._generator_ref))
         self._resource_module = resource_module
         self._ctx.resource_registry.set_module(self.name, resource_module)
 
-    def _all_tests_imports_discovered(self, graph):
-        for unit in graph.name_to_unit.values():
+    def _all_tests_imports_discovered(self):
+        for unit in self._graph.name_to_unit.values():
             if unit.is_tests and not unit.is_imports_discovered:
                 return False
         return True
 
-    def _construct_if_ready(self, graph):
-        if not self._all_tests_imports_discovered(graph):
+    def _construct_if_ready(self):
+        if not self._all_tests_imports_discovered():
             return
-        if not self.deps_are_ready(graph):
+        if not self.deps_are_ready():
             return
         for test in self._tests:
-            if not test.is_up_to_date(graph):
+            if not test.is_up_to_date():
                 return
         if self._attr_called is None:
             return
         if self._attr_called < set(attr.name for attr in self._attr_list):
             return
-        self._construct(graph)
+        self._construct()
 
-    def new_test_imports_discovered(self, graph):
-        self._construct_if_ready(graph)
+    def new_test_imports_discovered(self):
+        self._construct_if_ready()
 
 
 class FixturesDepsProviderUnit(Unit):
 
-    def __init__(self, ctx, generator_ref, root_dir, path):
-        super().__init__(ctx, generator_ref, root_dir, path)
+    def __init__(self, graph, ctx, generator_ref, root_dir, path):
+        super().__init__(graph, ctx, generator_ref, root_dir, path)
         self._provided_deps = set()
 
-    def _set_providers(self, graph, provide_services):
+    def _set_providers(self, provide_services):
         self._provided_deps = {
             ServiceDep(service_name) for service_name in provide_services
             }
@@ -380,17 +381,17 @@ class FixturesUnit(FixturesDepsProviderUnit):
         assert l[-1] == 'fixtures'
         return self._dir + '.' + '.'.join(l[:-1])
 
-    def init(self, graph):
-        super().init(graph)
+    def init(self):
+        super().init()
         dep = FixturesDep(self._target_unit_name)
-        graph.name_to_deps[self._target_unit_name].add(dep)
-        graph.dep_to_provider[dep] = self
+        self._graph.name_to_deps[self._target_unit_name].add(dep)
+        self._graph.dep_to_provider[dep] = self
 
 
 class TestsUnit(FixturesDepsProviderUnit):
 
-    def __init__(self, ctx, generator_ref, root_dir, path):
-        super().__init__(ctx, generator_ref, root_dir, path)
+    def __init__(self, graph, ctx, generator_ref, root_dir, path):
+        super().__init__(graph, ctx, generator_ref, root_dir, path)
         self._tested_units = None  # Unit list
         self._tested_services = None  # str list
 
@@ -401,24 +402,24 @@ class TestsUnit(FixturesDepsProviderUnit):
     def is_tests(self):
         return True
 
-    def report_deps(self, graph):
-        super().report_deps(graph)
+    def report_deps(self):
+        super().report_deps()
         if self._tested_services is None:
             log.info("%s: Tested service list is not yet discovered", self.name)
         else:
             for service_name in self._tested_services:
                 dep = ServiceDep(service_name)
-                if dep not in graph.dep_to_provider:
+                if dep not in self._graph.dep_to_provider:
                     log.info("%s: tested %s has no provider", self.name, dep)
 
-    def _set_providers(self, graph, provide_services):
+    def _set_providers(self, provide_services):
         pass
 
-    def _tested_services_modules(self, graph):
+    def _tested_services_modules(self):
         service_to_unit = {}
         for service_name in self._tested_services:
             dep = ServiceDep(service_name)
-            provider = graph.dep_to_provider.get(dep)
+            provider = self._graph.dep_to_provider.get(dep)
             if provider:
                 log.debug("%s: service %s provider: %s", self.name, service_name, provider)
                 service_to_unit[service_name] = provider
@@ -427,14 +428,14 @@ class TestsUnit(FixturesDepsProviderUnit):
                 return None
         return service_to_unit  # str -> unit
 
-    def _make_call_attr_tasks(self, graph):
-        if not all(unit.deps_are_ready(graph) for unit in self._tested_units):
+    def _make_call_attr_tasks(self):
+        if not all(unit.deps_are_ready() for unit in self._tested_units):
             return []
-        tested_service_to_unit = self._tested_services_modules(graph)
+        tested_service_to_unit = self._tested_services_modules()
         if tested_service_to_unit is None:
             # Not all service providers are yet discovered.
             return []
-        if not all(unit.deps_are_ready(graph) for unit in tested_service_to_unit.values()):
+        if not all(unit.deps_are_ready() for unit in tested_service_to_unit.values()):
             return []
         task_list = []
         for attr in self._attr_list:
@@ -442,16 +443,16 @@ class TestsUnit(FixturesDepsProviderUnit):
                 continue
             if not attr.name.startswith('test'):
                 continue
-            recorders, call_res = test_call_res(graph, self._ctx, self, self._tested_units, tested_service_to_unit, attr)
+            recorders, call_res = test_call_res(self._graph, self._ctx, self, self._tested_units, tested_service_to_unit, attr)
             task = AttrCallTask(self, attr.name, recorders, call_res)
             task_list.append(task)
         return task_list
 
-    def _update_imports_deps(self, graph, import_set):
-        info = super()._update_imports_deps(graph, import_set)
+    def _update_imports_deps(self, import_set):
+        info = super()._update_imports_deps(import_set)
         self._tested_units = []
         for name in info.test_code:
-            for unit in graph.name_to_unit.values():
+            for unit in self._graph.name_to_unit.values():
                 if unit.code_name == name:
                     unit.add_test(self)
                     self._tested_units.append(unit)
@@ -459,5 +460,5 @@ class TestsUnit(FixturesDepsProviderUnit):
             else:
                 raise RuntimeError(f"{self.name}: Unknown tested code module: {name}")
         self._tested_services = info.test_services
-        for unit in graph.name_to_unit.values():
-            unit.new_test_imports_discovered(graph)
+        for unit in self._graph.name_to_unit.values():
+            unit.new_test_imports_discovered()
