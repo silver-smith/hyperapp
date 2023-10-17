@@ -26,17 +26,38 @@ from .code.scaffolds import (
 log = logging.getLogger(__name__)
 
 
-ImportsInfo = namedtuple('ImportsInfo', 'used_types want_deps test_services test_code')
+ResModuleInfo = namedtuple('DesModuleInfo', 'want_deps test_code test_services')
+ImportsInfo = namedtuple('ImportsInfo', 'used_types want_deps test_code test_services')
 
 
-def _enum_resource_module_deps(resource_module):
+def _resource_module_info(resource_module, code_module_name):
+    want_deps = set()
     for module_name, var_name in resource_module.used_imports:
         l = var_name.split('.')
         if len(l) == 2 and l[1] == 'service':
-            yield ServiceDep(l[0])
+            want_deps.add(ServiceDep(l[0]))
         if len(l) > 1 and l[-1] == 'module':
             code_name = '.'.join(l[:-1])
-            yield CodeDep(code_name)
+            want_deps.add(CodeDep(code_name))
+    test_code = set()
+    test_services = set()
+    import_list = resource_module.code_module_imports(code_module_name)
+    for name in import_list:
+        l = name.split('.')
+        if len(l) != 3:
+            continue
+        do, what, name = l
+        if do != 'tested':
+            continue
+        if what == 'code':
+            test_code.add(name)
+        if what == 'services':
+            test_services.add(name)
+    return ResModuleInfo(
+        want_deps=want_deps,
+        test_code=test_code,
+        test_services=test_services,
+        )
 
 
 def _enum_provided_services(attr_list):
@@ -50,8 +71,8 @@ def _enum_provided_services(attr_list):
 def _imports_info(imports):
     used_types = set()
     want_deps = set()
-    test_services = set()
     test_code = set()
+    test_services = set()
     for imp in imports:
         if imp[-1] == 'shape':
             imp = imp[:-1]  # Revert pycharm debugger mangle.
@@ -88,8 +109,8 @@ def _imports_info(imports):
     return ImportsInfo(
         used_types=used_types,
         want_deps=want_deps,
-        test_services=test_services,
         test_code=test_code,
+        test_services=test_services,
         )
 
 
@@ -134,7 +155,7 @@ class Unit:
     def is_imports_discovered(self):
         return self._import_set is not None
 
-    def _set_providers(self, provide_services):
+    def _set_service_providers(self, provide_services):
         if self._providers_are_set:
             return
         for service_name in provide_services:
@@ -147,6 +168,8 @@ class Unit:
                 raise RuntimeError(f"More than one module provide service {service_name!r}: {provider!r} and {self!r}")
             self._graph.dep_to_provider[dep] = self
             log.debug("%s: Provide service: %r", self.name, service_name)
+            for unit in self._graph.name_to_unit.values():
+                unit.new_service_provider_discovered(service_name, self)
         self._providers_are_set = True
 
     def init(self):
@@ -157,7 +180,7 @@ class Unit:
         self._resource_module = resource_module_factory(self._ctx.resource_registry, self.name, self._resources_path)
         if not self._resource_module.is_auto_generated:
             self._ctx.resource_registry.set_module(self.name, self._resource_module)
-            self._set_providers(self._resource_module.provided_services)
+            self._set_service_providers(self._resource_module.provided_services)
             self._resource_checked = True
             log.info("%s: manually generated", self.name)
             return
@@ -202,26 +225,27 @@ class Unit:
                 return False
         return True
 
-    def _all_tests_up_to_date(self):
+    def _all_tests_was_run(self):
         for test in self._tests:
-            if not test.is_up_to_date:
+            if not test.was_run:
                 return False
         return True
 
     def _check_resources_up_to_date(self):
-        if not self._all_tests_up_to_date():
+        if not self._all_tests_was_run():
             return
         if not self._resource_module:
             return
-        deps = list(_enum_resource_module_deps(self._resource_module))
-        if self._hash_matches(deps):
-            self._ctx.resource_registry.set_module(self.name, self._resource_module)
-            self._set_providers(self._resource_module.provided_services)
-            log.info("%s: Up-to-date, provides: %s", self.name, self._resource_module.provided_services)
-        else:
-            self._resource_module = None
-            log.info("%s: Outdated; deps: %s; tests: %s", self.name, deps, self._tests or '{}')
         self._resource_checked = True
+        info = _resource_module_info(self._resource_module, self.code_name)
+        if self._hash_matches(info.want_deps):
+            self._ctx.resource_registry.set_module(self.name, self._resource_module)
+            self._set_service_providers(self._resource_module.provided_services)
+            log.info("%s: Up-to-date, provides: %s", self.name, self._resource_module.provided_services)
+            return info
+        self._resource_module = None
+        log.info("%s: Outdated; deps: %s; tests: %s", self.name, info.want_deps, self._tests or '{}')
+        return None
 
     def resource(self, name):
         return self._ctx.resource_registry[self.name, name]
@@ -286,6 +310,10 @@ class Unit:
     def _fixtures_unit(self):
         return self._graph.dep_to_provider.get(FixturesDep(self.name))
 
+    @property
+    def _should_make_tasks(self):
+        return not self.is_up_to_date
+
     def _make_attr_call_tasks(self):
         self._attr_call_in_progress = set()
         fixtures = self._fixtures_unit()
@@ -305,7 +333,7 @@ class Unit:
     def make_tasks(self):
         if not self._resource_checked and self._all_tests_imports_discovered():
             self._check_resources_up_to_date()
-        if self.is_up_to_date:
+        if not self._should_make_tasks:
             return []
         if self._import_set is None:
             recorders, module_res = discoverer_module_res(self._ctx, self)
@@ -318,7 +346,7 @@ class Unit:
             return [AttrEnumTask(self, recorders, module_res)]
         if self._attr_call_in_progress is None:
             self._attr_call_tasks = self._make_attr_call_tasks()
-        if self._attr_call_tasks:
+        if self._attr_call_tasks and self._attr_call_in_progress:
             return self._attr_call_tasks
         # Already imported and attributes collected and called.
         return []
@@ -338,7 +366,7 @@ class Unit:
 
     def set_attributes(self, attr_list):
         self._attr_list = attr_list
-        self._set_providers(_enum_provided_services(attr_list))
+        self._set_service_providers(_enum_provided_services(attr_list))
         if not self.deps_up_to_date():
             return
         self._attr_call_tasks = self._make_attr_call_tasks()
@@ -369,7 +397,7 @@ class Unit:
     def _construct_if_ready(self):
         if not self.deps_up_to_date():
             return
-        if not self._all_tests_up_to_date():
+        if not self._all_tests_was_run():
             return
         if self._attr_call_in_progress is None or self._attr_call_in_progress:
             return
@@ -384,6 +412,9 @@ class Unit:
             return
         self._construct_if_ready()
 
+    def new_service_provider_discovered(self, service_name, provider):
+        pass
+
 
 class FixturesDepsProviderUnit(Unit):
 
@@ -391,7 +422,7 @@ class FixturesDepsProviderUnit(Unit):
         super().__init__(graph, ctx, generator_ref, root_dir, path)
         self._provided_deps = set()
 
-    def _set_providers(self, provide_services):
+    def _set_service_providers(self, provide_services):
         self._provided_deps = {
             ServiceDep(service_name) for service_name in provide_services
             }
@@ -429,6 +460,7 @@ class TestsUnit(FixturesDepsProviderUnit):
         super().__init__(graph, ctx, generator_ref, root_dir, path)
         self._tested_units = None  # Unit list
         self._tested_services = None  # str list
+        self._tested_service_to_unit = {}
 
     def __repr__(self):
         return f"<TestsUnit {self.name!r}>"
@@ -441,6 +473,10 @@ class TestsUnit(FixturesDepsProviderUnit):
         super().init()
         self._check_resources_up_to_date()  # Tests don't need other tests.
 
+    @property
+    def was_run(self):
+        return self._tested_units is not None
+
     def report_deps(self):
         super().report_deps()
         if self._tested_services is None:
@@ -451,27 +487,33 @@ class TestsUnit(FixturesDepsProviderUnit):
                 if dep not in self._graph.dep_to_provider:
                     log.info("%s: tested %s has no provider", self.name, dep)
 
-    def _set_providers(self, provide_services):
+    def _check_resources_up_to_date(self):
+        info = super()._check_resources_up_to_date()
+        if info:
+            self._tested_units = set()
+            for code_name in info.test_code:
+                unit = self._graph.unit_by_code_name(code_name)
+                unit.add_test(self)
+                self._tested_units.append(unit)
+            self._tested_services = info.test_services
+
+    def _set_service_providers(self, provide_services):
         pass
 
-    def _tested_services_modules(self):
-        service_to_unit = {}
-        for service_name in self._tested_services:
-            dep = ServiceDep(service_name)
-            provider = self._graph.dep_to_provider.get(dep)
-            if provider:
-                log.debug("%s: service %s provider: %s", self.name, service_name, provider)
-                service_to_unit[service_name] = provider
-            else:
-                log.debug("%s: service %s provider is not yet discovered", self.name, service_name)
-                return None
-        return service_to_unit  # str -> unit
+    def new_service_provider_discovered(self, service_name, provider):
+        if self._tested_services and service_name in self._tested_services:
+            self._tested_service_to_unit[service_name] = provider
+
+    @property
+    def _should_make_tasks(self):
+        if not self._all_tests_imports_discovered():
+            return False
+        return True
 
     def _make_attr_call_tasks(self):
         if not all(unit.deps_up_to_date() for unit in self._tested_units):
             return []
-        tested_service_to_unit = self._tested_services_modules()
-        if tested_service_to_unit is None:
+        if self._tested_services < set(self._tested_service_to_unit):
             # Not all service providers are yet discovered.
             return []
         if not all(unit.deps_up_to_date() for unit in tested_service_to_unit.values()):
@@ -483,7 +525,7 @@ class TestsUnit(FixturesDepsProviderUnit):
                 continue
             if not attr.name.startswith('test'):
                 continue
-            recorders, call_res = test_call_res(self._graph, self._ctx, self, self._tested_units, tested_service_to_unit, attr)
+            recorders, call_res = test_call_res(self._graph, self._ctx, self, self._tested_units, self._tested_service_to_unit, attr)
             task = AttrCallTask(self, attr.name, recorders, call_res)
             task_list.append(task)
             self._attr_call_in_progress.add(attr.name)
@@ -492,14 +534,10 @@ class TestsUnit(FixturesDepsProviderUnit):
     def _update_imports_deps(self, import_set):
         info = super()._update_imports_deps(import_set)
         self._tested_units = []
-        for name in info.test_code:
-            for unit in self._graph.name_to_unit.values():
-                if unit.code_name == name:
-                    unit.add_test(self)
-                    self._tested_units.append(unit)
-                    break
-            else:
-                raise RuntimeError(f"{self.name}: Unknown tested code module: {name}")
+        for code_name in info.test_code:
+            unit = self._graph.unit_by_code_name(code_name)
+            unit.add_test(self)
+            self._tested_units.append(unit)
         self._tested_services = info.test_services
         for unit in self._graph.name_to_unit.values():
             unit.new_test_imports_discovered()

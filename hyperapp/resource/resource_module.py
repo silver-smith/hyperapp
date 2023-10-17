@@ -101,6 +101,11 @@ class ResourceModule:
             module_set.add((module_name, var_name))
         return module_set
 
+    def code_module_imports(self, code_name):
+        assert self._loaded_definitions is None  # Not expecting it to be already loaded.
+        module_contents = self._module_contents
+        return list(module_contents['definitions'][f'{code_name}.module']['import_list'])
+
     @property
     def provided_services(self):
         services = set()

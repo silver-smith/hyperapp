@@ -43,3 +43,6 @@ class BuiltinsUnit:
 
     def new_test_imports_discovered(self):
         pass
+
+    def new_service_provider_discovered(self, service_name, provider):
+        pass

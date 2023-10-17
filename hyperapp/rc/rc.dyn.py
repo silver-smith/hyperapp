@@ -20,6 +20,12 @@ class Graph:
         self.name_to_deps = defaultdict(set)
         self.dep_to_provider = {}
 
+    def unit_by_code_name(self, code_name):
+        for unit in self.name_to_unit.values():
+            if unit.code_name == code_name:
+                return unit
+        raise RuntimeError(f"Unknown code module: {code_name}")
+
 
 def _report_not_compiled(graph):
     for unit in graph.name_to_unit.values():
