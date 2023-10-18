@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import ExitStack, contextmanager
 
 from .services import (
@@ -45,15 +46,19 @@ def process_pool_running(process_count, rpc_timeout):
     identity = generate_rsa_identity(fast=True)
     rpc_endpoint = rpc_endpoint_factory()
     endpoint_registry.register(identity, rpc_endpoint)
+
     with ExitStack() as stack:
-        process_list = [
-            stack.enter_context(
-                subprocess_rpc_server_running(
+
+        with ThreadPoolExecutor(max_workers=process_count) as executor:
+
+            def start_process(idx):
+                return stack.enter_context(subprocess_rpc_server_running(
                     f'rc-driver-{idx:02}',
                     rpc_endpoint,
                     identity,
                     timeout_sec=rpc_timeout,
                     ))
-            for idx in range(process_count)
-            ]
+
+            process_list = list(executor.map(start_process, range(process_count)))
+
         yield ProcessPool(process_list)
