@@ -42,8 +42,17 @@ def _dump_graph(graph):
         log.debug("Provider for %s: %s", dep, provider)
 
 
+
+async def _run_unit(unit, process_pool):
+    try:
+        return await unit.run(process_pool)
+    except Exception as x:
+        log.exception("Failed: %s", unit)
+        raise
+
+
 async def _main(graph, process_pool):
-    await asyncio.gather(*[unit.run(process_pool) for unit in graph.name_to_unit.values()])
+    await asyncio.gather(*[_run_unit(unit, process_pool) for unit in graph.name_to_unit.values()])
 
 
 def compile_resources(generator_ref, subdir_list, root_dirs, module_list, process_count, rpc_timeout):
