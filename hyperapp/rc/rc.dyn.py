@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from collections import defaultdict
 
@@ -41,6 +42,10 @@ def _dump_graph(graph):
         log.debug("Provider for %s: %s", dep, provider)
 
 
+async def _main(graph, process_pool):
+    await asyncio.gather(*[unit.run(process_pool) for unit in graph.name_to_unit.values()])
+
+
 def compile_resources(generator_ref, subdir_list, root_dirs, module_list, process_count, rpc_timeout):
     log.info("Compile resources at: %s, %s: %s", subdir_list, root_dirs, module_list)
 
@@ -53,31 +58,7 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, proces
     try:
         collect_units(hyperapp_dir, dir_list, generator_ref, graph)
         with process_pool_running(process_count, rpc_timeout) as pool:
-            task_to_unit = {}
-            while True:
-                for unit in graph.name_to_unit.values():
-                    if unit in task_to_unit.values():
-                        continue  # No finished tasks for this unit yet.
-                    if unit.is_up_to_date:
-                        continue
-                    for task in unit.make_tasks():
-                        log.info("Submit: %s", task)
-                        pool.submit(task)
-                        task_to_unit[task] = unit
-                if not task_to_unit and pool.task_count == 0:
-                    break
-                task, future = pool.next_completed(timeout=rpc_timeout)
-                del task_to_unit[task]
-                try:
-                    result = future.result()
-                    log.info("%s result: %r", task, result)
-                    task.process_result(graph, result)
-                except HException as x:
-                    log.info("%s error: %r", task, x)
-                    task.process_error(graph, x)
-
+            asyncio.run(_main(graph, pool))
         _report_not_compiled(graph)
-
     finally:
         _dump_graph(graph)
-

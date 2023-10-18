@@ -12,7 +12,6 @@ from .services import (
     web,
     )
 from .code.dep import CodeDep, FixturesDep, ServiceDep
-from .code.task import AttrCallTask, AttrEnumTask, ImportTask
 from .code.scaffolds import (
     discoverer_module_res,
     enum_dep_imports,
@@ -28,6 +27,22 @@ log = logging.getLogger(__name__)
 
 ResModuleInfo = namedtuple('DesModuleInfo', 'want_deps test_code test_services')
 ImportsInfo = namedtuple('ImportsInfo', 'used_types want_deps test_code test_services')
+
+
+def _recorder_piece_list(recorders):
+    piece_list = []
+    for module_name, recorder_list in recorders.items():
+        for rec in recorder_list:
+            import_recorder = htypes.inspect.import_recorder(module_name, rec)
+            piece_list.append(import_recorder)
+    return piece_list
+
+
+def _module_import_list_to_dict(module_import_list):
+    module_name_to_imports = defaultdict(set)
+    for rec in module_import_list:
+        module_name_to_imports[rec.module] |= set(rec.imports)
+    return module_name_to_imports
 
 
 def _resource_module_info(resource_module, code_module_name):
@@ -152,284 +167,30 @@ class Unit:
         return False
 
     @property
+    def is_up_to_date(self):
+        return False
+
+    @property
     def is_imports_discovered(self):
         return self._import_set is not None
 
-    def _set_service_providers(self, provide_services):
-        if self._providers_are_set:
-            return
-        for service_name in provide_services:
-            dep = ServiceDep(service_name)
-            try:
-                provider = self._graph.dep_to_provider[dep]
-            except KeyError:
-                pass
-            else:
-                raise RuntimeError(f"More than one module provide service {service_name!r}: {provider!r} and {self!r}")
-            self._graph.dep_to_provider[dep] = self
-            log.debug("%s: Provide service: %r", self.name, service_name)
-            for unit in self._graph.name_to_unit.values():
-                unit.new_service_provider_discovered(service_name, self)
-        self._providers_are_set = True
-
-    def init(self):
-        self._graph.dep_to_provider[CodeDep(self._stem)] = self
-        if not self._resources_path.exists():
-            log.info("%s: missing", self.name)
-            return
-        self._resource_module = resource_module_factory(self._ctx.resource_registry, self.name, self._resources_path)
-        if not self._resource_module.is_auto_generated:
-            self._ctx.resource_registry.set_module(self.name, self._resource_module)
-            self._set_service_providers(self._resource_module.provided_services)
-            self._resource_checked = True
-            log.info("%s: manually generated", self.name)
-            return
-
-    @cached_property
-    def source_dep_record(self):
-        source_ref = mosaic.put(self._source_path.read_bytes())
-        return htypes.rc.source_dep(self.name, source_ref)
-
-    def _make_source_ref(self, dep_units):
-        deps = [
-            u.source_dep_record for u in
-            sorted([self, *dep_units], key=attrgetter('name'))
-            ]
-        return mosaic.put(htypes.rc.module_deps(deps))
-
-    def _deps_hash_str(self, deps):
-        dep_units = set()
-        for dep in deps:
-            try:
-                module = self._graph.dep_to_provider[dep]
-            except KeyError:
-                log.debug("%s: dep %s is missing", self.name, dep)
-                return False
-            if module.is_builtins:
-                continue
-            if not module.is_up_to_date:
-                log.debug("%s: dep %s module %s is outdated", self.name, dep, module)
-                return False
-            dep_units.add(module)
-        source_ref = self._make_source_ref(dep_units | self._tests)
-        return ref_str(source_ref)
-
-    def _hash_matches(self, deps):
-        if not self._resource_module:
-            return False
-        return self._deps_hash_str(deps) == self._resource_module.source_ref_str
-
-    def _all_tests_imports_discovered(self):
-        for unit in self._graph.name_to_unit.values():
-            if unit.is_tests and not unit.is_up_to_date and not unit.is_imports_discovered:
-                return False
-        return True
-
-    def _all_tests_was_run(self):
-        for test in self._tests:
-            if not test.was_run:
-                return False
-        return True
-
-    def _check_resources_up_to_date(self):
-        if not self._all_tests_was_run():
-            return
-        if not self._resource_module:
-            return
-        self._resource_checked = True
-        info = _resource_module_info(self._resource_module, self.code_name)
-        if self._hash_matches(info.want_deps):
-            self._ctx.resource_registry.set_module(self.name, self._resource_module)
-            self._set_service_providers(self._resource_module.provided_services)
-            log.info("%s: Up-to-date, provides: %s", self.name, self._resource_module.provided_services)
-            return info
-        self._resource_module = None
-        log.info("%s: Outdated; deps: %s; tests: %s", self.name, info.want_deps, self._tests or '{}')
-        return None
-
-    def resource(self, name):
-        return self._ctx.resource_registry[self.name, name]
-
-    def provided_dep_resource(self, dep):
-        return self.resource(dep.resource_name)
-
-    def pick_service_resource(self, module_res, service_name):
-        assert self._attr_list is not None  # Not yet imported/attr enumerated.
-        name_to_res = {}
-        ass_list = invite_attr_constructors(self._ctx, self._attr_list, module_res, name_to_res)
-        for name, resource in name_to_res.items():
-            if name.endswith('.service'):
-                sn, _ = name.rsplit('.', 1)
-                if sn == service_name:
-                    return (ass_list, resource)
-        raise RuntimeError(f"{self}: Service {service_name!r} was not created by it's constructor")
-
-    def make_module_res(self, import_list):
-        return htypes.builtin.python_module(
-            module_name=self._stem,
-            source=self._source_path.read_text(),
-            file_path=str(self._source_path),
-            import_list=tuple(import_list),
-            )
-
-    @property
-    def is_up_to_date(self):
-        return self._resource_checked and self._resource_module is not None
-
-    @property
-    def _my_deps(self):
-        return self._graph.name_to_deps[self.name]
-
-    # Excluding tests for this unit.
-    def deps_up_to_date(self):
-        for dep in self._my_deps:
-            try:
-                provider = self._graph.dep_to_provider[dep]
-            except KeyError:
-                log.debug("%s: dep %s provider is not yet known", self, dep)
-                return False
-            if not provider.is_up_to_date:
-                log.debug("%s: dep %s provider %s is outdated", self, dep, provider)
-                return False
-        return True
-
     def report_deps(self):
-        for dep in self._my_deps:
-            try:
-                provider = self._graph.dep_to_provider[dep]
-            except KeyError:
-                log.info("%s: Dep %s has no provider", self.name, dep)
-            else:
-                if not provider.is_up_to_date:
-                    log.info("%s: Dep %s provider %s is not ready", self.name, dep, provider)
-
-    def add_test(self, unit):
-        self._tests.add(unit)
-        log.info("%s should be tested by %s", self.name, unit.name)
-
-    def _fixtures_unit(self):
-        return self._graph.dep_to_provider.get(FixturesDep(self.name))
-
-    @property
-    def _should_make_tasks(self):
-        return not self.is_up_to_date
-
-    def _make_attr_call_tasks(self):
-        self._attr_call_in_progress = set()
-        fixtures = self._fixtures_unit()
-        task_list = []
-        for attr in self._attr_list:
-            if not isinstance(attr, htypes.inspect.fn_attr):
-                continue
-            recorders_and_call_res = function_call_res(self._graph, self._ctx, self, fixtures, attr)
-            if not recorders_and_call_res:
-                continue  # No param fixtures.
-            recorders, call_res = recorders_and_call_res
-            task = AttrCallTask(self, attr.name, recorders, call_res)
-            task_list.append(task)
-            self._attr_call_in_progress.add(attr.name)
-        return task_list
-
-    def make_tasks(self):
-        if not self._resource_checked and self._all_tests_imports_discovered():
-            self._check_resources_up_to_date()
-        if not self._should_make_tasks:
-            return []
-        if self._import_set is None:
-            recorders, module_res = discoverer_module_res(self._ctx, self)
-            return [ImportTask(self, recorders, module_res)]
-        if not self.deps_up_to_date():
-            return []
-        if self._attr_list is None:
-            # Got incomplete error when collecting attributes, retry with complete imports:
-            recorders, module_res = recorder_module_res(self._graph, self._ctx, self)
-            return [AttrEnumTask(self, recorders, module_res)]
-        if self._attr_call_in_progress is None:
-            self._attr_call_tasks = self._make_attr_call_tasks()
-        if self._attr_call_tasks and self._attr_call_in_progress:
-            return self._attr_call_tasks
-        # Already imported and attributes collected and called.
-        return []
-
-    def _update_imports_deps(self, import_set):
-        info = _imports_info(import_set)
-        self._graph.name_to_deps[self.name] |= info.want_deps
-        return info
-
-    def set_imports(self, import_set):
-        self._import_set = import_set
-        self._update_imports_deps(import_set)
-
-    def add_imports(self, import_set):
-        self._import_set |= import_set
-        self._update_imports_deps(import_set)
-
-    def set_attributes(self, attr_list):
-        self._attr_list = attr_list
-        self._set_service_providers(_enum_provided_services(attr_list))
-        if not self.deps_up_to_date():
-            return
-        self._attr_call_tasks = self._make_attr_call_tasks()
-        if not self._attr_call_tasks:
-            self._construct_if_ready()
-
-    def set_attr_called(self, attr_name):
-        self._attr_call_in_progress.remove(attr_name)
-        self._construct_if_ready()
-
-    def _construct(self):
-        log.info("Construct: %s", self.name)
-        info = _imports_info(self._import_set)
-        module_res = self.make_module_res(sorted([
-            *types_import_list(self._ctx, info.used_types),
-            *enum_dep_imports(self._graph, self._my_deps),
-            ]))
-        resource_module = resource_module_factory(self._ctx.resource_registry, self.name)
-        resource_module[f'{self.code_name}.module'] = module_res
-        ass_list = invite_attr_constructors(self._ctx, self._attr_list, module_res, resource_module)
-        resource_module.add_association_list(ass_list)
-        source_hash_str = self._deps_hash_str(self._my_deps)
-        log.info("Write: %s: %s", self.name, self._resources_path)
-        resource_module.save_as(self._resources_path, source_hash_str, ref_str(self._generator_ref))
-        self._resource_module = resource_module
-        self._ctx.resource_registry.set_module(self.name, resource_module)
-
-    def _construct_if_ready(self):
-        if not self.deps_up_to_date():
-            return
-        if not self._all_tests_was_run():
-            return
-        if self._attr_call_in_progress is None or self._attr_call_in_progress:
-            return
-        self._construct()
-
-    def new_test_imports_discovered(self):
-        if not self._all_tests_imports_discovered():
-            return
-        if not self._resource_checked:
-            self._check_resources_up_to_date()
-        if self.is_up_to_date:
-            return
-        self._construct_if_ready()
-
-    def new_service_provider_discovered(self, service_name, provider):
         pass
+
+    async def run(self, process_pool):
+        log.info("Run: %s", self)
+        recorders, module_res = discoverer_module_res(self._ctx, self)
+        await process_pool.run(
+            import_driver.import_module,
+            import_recorders=_recorder_piece_list(recorders),
+            module_ref=mosaic.put(module_res),
+            )
 
 
 class FixturesDepsProviderUnit(Unit):
 
     def __init__(self, graph, ctx, generator_ref, root_dir, path):
         super().__init__(graph, ctx, generator_ref, root_dir, path)
-        self._provided_deps = set()
-
-    def _set_service_providers(self, provide_services):
-        self._provided_deps = {
-            ServiceDep(service_name) for service_name in provide_services
-            }
-
-    @property
-    def provided_deps(self):
-        return self._provided_deps
 
 
 class FixturesUnit(FixturesDepsProviderUnit):
@@ -441,26 +202,11 @@ class FixturesUnit(FixturesDepsProviderUnit):
     def is_fixtures(self):
         return True
 
-    @cached_property
-    def _target_unit_name(self):
-        l = self._stem.split('.')
-        assert l[-1] == 'fixtures'
-        return self._dir + '.' + '.'.join(l[:-1])
-
-    def init(self):
-        super().init()
-        dep = FixturesDep(self._target_unit_name)
-        self._graph.name_to_deps[self._target_unit_name].add(dep)
-        self._graph.dep_to_provider[dep] = self
-
 
 class TestsUnit(FixturesDepsProviderUnit):
 
     def __init__(self, graph, ctx, generator_ref, root_dir, path):
         super().__init__(graph, ctx, generator_ref, root_dir, path)
-        self._tested_units = None  # Unit list
-        self._tested_services = None  # str list
-        self._tested_service_to_unit = {}
 
     def __repr__(self):
         return f"<TestsUnit {self.name!r}>"
@@ -468,76 +214,3 @@ class TestsUnit(FixturesDepsProviderUnit):
     @cached_property
     def is_tests(self):
         return True
-
-    def init(self):
-        super().init()
-        self._check_resources_up_to_date()  # Tests don't need other tests.
-
-    @property
-    def was_run(self):
-        return self._tested_units is not None
-
-    def report_deps(self):
-        super().report_deps()
-        if self._tested_services is None:
-            log.info("%s: Tested service list is not yet discovered", self.name)
-        else:
-            for service_name in self._tested_services:
-                dep = ServiceDep(service_name)
-                if dep not in self._graph.dep_to_provider:
-                    log.info("%s: tested %s has no provider", self.name, dep)
-
-    def _check_resources_up_to_date(self):
-        info = super()._check_resources_up_to_date()
-        if info:
-            self._tested_units = set()
-            for code_name in info.test_code:
-                unit = self._graph.unit_by_code_name(code_name)
-                unit.add_test(self)
-                self._tested_units.append(unit)
-            self._tested_services = info.test_services
-
-    def _set_service_providers(self, provide_services):
-        pass
-
-    def new_service_provider_discovered(self, service_name, provider):
-        if self._tested_services and service_name in self._tested_services:
-            self._tested_service_to_unit[service_name] = provider
-
-    @property
-    def _should_make_tasks(self):
-        if not self._all_tests_imports_discovered():
-            return False
-        return True
-
-    def _make_attr_call_tasks(self):
-        if not all(unit.deps_up_to_date() for unit in self._tested_units):
-            return []
-        if self._tested_services < set(self._tested_service_to_unit):
-            # Not all service providers are yet discovered.
-            return []
-        if not all(unit.deps_up_to_date() for unit in tested_service_to_unit.values()):
-            return []
-        self._attr_call_in_progress = set()
-        task_list = []
-        for attr in self._attr_list:
-            if not isinstance(attr, htypes.inspect.fn_attr):
-                continue
-            if not attr.name.startswith('test'):
-                continue
-            recorders, call_res = test_call_res(self._graph, self._ctx, self, self._tested_units, self._tested_service_to_unit, attr)
-            task = AttrCallTask(self, attr.name, recorders, call_res)
-            task_list.append(task)
-            self._attr_call_in_progress.add(attr.name)
-        return task_list
-
-    def _update_imports_deps(self, import_set):
-        info = super()._update_imports_deps(import_set)
-        self._tested_units = []
-        for code_name in info.test_code:
-            unit = self._graph.unit_by_code_name(code_name)
-            unit.add_test(self)
-            self._tested_units.append(unit)
-        self._tested_services = info.test_services
-        for unit in self._graph.name_to_unit.values():
-            unit.new_test_imports_discovered()

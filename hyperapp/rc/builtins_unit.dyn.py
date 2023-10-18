@@ -46,3 +46,6 @@ class BuiltinsUnit:
 
     def new_service_provider_discovered(self, service_name, provider):
         pass
+
+    async def run(self, process_pool):
+        pass

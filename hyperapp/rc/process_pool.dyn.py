@@ -1,6 +1,5 @@
+import asyncio
 import logging
-from collections import namedtuple
-from concurrent.futures import as_completed
 from contextlib import ExitStack, contextmanager
 
 from .services import (
@@ -13,41 +12,32 @@ from .services import (
 log = logging.getLogger(__name__)
 
 
-
 class ProcessPool:
-
-    _TaskRec = namedtuple('TaskRec', 'process task')
 
     def __init__(self, process_list):
         self._process_list = process_list
         self._free_processes = process_list[:]
-        self._future_to_rec = {}
-        self._task_queue = []
+        self._process_available = asyncio.Condition()
 
-    @property
-    def task_count(self):
-        return len(self._future_to_rec) + len(self._task_queue)
+    async def _allocate_process(self):
+        async with self._process_available:
+            while not self._free_processes:
+                await self._process_available.wait()
+            return self._free_processes.pop()
 
-    def _start_task(self, task, process):
-        log.info("Start at #%d: %s", self._process_list.index(process), task)
-        future = task.start(process)
-        self._future_to_rec[future] = self._TaskRec(process, task)
+    async def _free_process(self, process):
+        async with self._process_available:
+            self._free_processes.append(process)
+            self._process_available.notify()
 
-    def submit(self, task):
-        if self._free_processes:
-            process = self._free_processes.pop()
-            self._start_task(task, process)
-        else:
-            self._task_queue.append(task)
-
-    def next_completed(self, timeout):
-        future = next(as_completed(self._future_to_rec, timeout))
-        rec = self._future_to_rec.pop(future)
-        if self._task_queue:
-            self._start_task(self._task_queue.pop(0), rec.process)
-        else:
-            self._free_processes.append(rec.process)
-        return (rec.task, future)
+    async def run(self, servant_fn, **kw):
+        process = await self._allocate_process()
+        log.info("Run at process #%d: %s(%s)", self._process_list.index(process), servant_fn, kw)
+        future = process.rpc_submit(servant_fn)(**kw)
+        try:
+            return await asyncio.wrap_future(future)
+        finally:
+            await self._free_process(process)
 
 
 @contextmanager

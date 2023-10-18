@@ -5,11 +5,11 @@ import:
 - legacy_type.attr_constructors:service
 - legacy_type.builtin:python_module
 - legacy_type.inspect:fn_attr
+- legacy_type.inspect:import_recorder
 - legacy_type.rc:source_dep
 - legacy_type.rc:module_deps
 - rc.dep:dep.module
 - rc.scaffolds:scaffolds.module
-- rc.task:task.module
 
 definitions:
 
@@ -21,11 +21,11 @@ definitions:
       htypes.attr_constructors.service: legacy_type.attr_constructors:service
       htypes.builtin.python_module: legacy_type.builtin:python_module
       htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
+      htypes.inspect.import_recorder: legacy_type.inspect:import_recorder
       htypes.rc.source_dep: legacy_type.rc:source_dep
       htypes.rc.module_deps: legacy_type.rc:module_deps
       services.mosaic: builtins:mosaic.service
       services.resource_module_factory: builtins:resource_module_factory.service
       services.web: builtins:web.service
       code.dep: rc.dep:dep.module
-      code.task: rc.task:task.module
       code.scaffolds: rc.scaffolds:scaffolds.module
