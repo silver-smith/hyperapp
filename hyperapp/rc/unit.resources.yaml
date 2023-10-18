@@ -8,7 +8,9 @@ import:
 - legacy_type.inspect:import_recorder
 - legacy_type.rc:source_dep
 - legacy_type.rc:module_deps
+- rc.call_driver:call_driver.module
 - rc.dep:dep.module
+- rc.import_driver:import_driver.module
 - rc.scaffolds:scaffolds.module
 
 definitions:
@@ -27,5 +29,7 @@ definitions:
       services.mosaic: builtins:mosaic.service
       services.resource_module_factory: builtins:resource_module_factory.service
       services.web: builtins:web.service
+      code.call_driver: rc.call_driver:call_driver.module
       code.dep: rc.dep:dep.module
+      code.import_driver: rc.import_driver:import_driver.module
       code.scaffolds: rc.scaffolds:scaffolds.module

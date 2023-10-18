@@ -12,6 +12,7 @@ from .services import (
     web,
     )
 from .code.dep import CodeDep, FixturesDep, ServiceDep
+from .code import import_driver, call_driver
 from .code.scaffolds import (
     discoverer_module_res,
     enum_dep_imports,
@@ -142,13 +143,8 @@ class Unit:
         self._dir = str(rel_dir).replace('/', '.')
         self.name = f'{self._dir}.{self._stem}'
         self._resources_path = path.with_name(self._stem + '.resources.yaml')
-        self._resource_checked = False
+        self._is_up_to_date = False
         self._resource_module = None
-        self._providers_are_set = False
-        self._import_set = None
-        self._attr_list = None  # inspect.attr|fn_attr|generator_fn_attr list
-        self._attr_call_tasks = None  # task list
-        self._attr_call_in_progress = None  # str set
         self._tests = set()  # TestsUnit set
 
     def __repr__(self):
@@ -168,7 +164,7 @@ class Unit:
 
     @property
     def is_up_to_date(self):
-        return False
+        return self._is_up_to_date
 
     @property
     def is_imports_discovered(self):
@@ -177,8 +173,32 @@ class Unit:
     def report_deps(self):
         pass
 
+    def init(self):
+        if not self._resources_path.exists():
+            return
+        self._resource_module = resource_module_factory(self._ctx.resource_registry, self.name, self._resources_path)
+        if self._resource_module.is_auto_generated:
+            return
+        self._ctx.resource_registry.set_module(self.name, self._resource_module)
+        self._set_service_providers(self._resource_module.provided_services)
+        self._is_up_to_date = True
+        log.info("%s: manually generated", self.name)
+
+    def _set_service_providers(self, provide_services):
+        pass
+
+    def make_module_res(self, import_list):
+        return htypes.builtin.python_module(
+            module_name=self._stem,
+            source=self._source_path.read_text(),
+            file_path=str(self._source_path),
+            import_list=tuple(import_list),
+            )
+
     async def run(self, process_pool):
         log.info("Run: %s", self)
+        if self._is_up_to_date:
+            return
         recorders, module_res = discoverer_module_res(self._ctx, self)
         await process_pool.run(
             import_driver.import_module,
@@ -214,3 +234,6 @@ class TestsUnit(FixturesDepsProviderUnit):
     @cached_property
     def is_tests(self):
         return True
+
+    async def run(self, process_pool):
+        log.info("Run: %s", self)

@@ -25,6 +25,7 @@ def collect_units(root_dir, dir_list, generator_ref, graph):
                 unit = TestsUnit(graph, ctx, generator_ref, root_dir, path)
             else:
                 unit = Unit(graph, ctx, generator_ref, root_dir, path)
+            unit.init()
             name_to_unit[unit.name] = unit
 
     graph.name_to_unit.update(name_to_unit)
