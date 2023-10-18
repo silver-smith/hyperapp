@@ -134,6 +134,7 @@ def _imports_info(imports):
 class Unit:
 
     _providers_changed = asyncio.Condition()
+    _test_targets_discovered = asyncio.Condition()
 
     def __init__(self, graph, ctx, generator_ref, root_dir, path):
         self._graph = graph
@@ -158,11 +159,11 @@ class Unit:
     def is_builtins(self):
         return False
 
-    @cached_property
+    @property
     def is_fixtures(self):
         return False
 
-    @cached_property
+    @property
     def is_tests(self):
         return False
 
@@ -200,7 +201,17 @@ class Unit:
             import_list=tuple(import_list),
             )
 
-    async def _wait_for_deps(self, dep_set):
+    async def _wait_for_all_test_targets(self):
+        async with self._test_targets_discovered:
+            while True:
+                for unit in self._graph.name_to_unit.values():
+                    if unit.is_tests and not unit.targets_discovered:
+                        break
+                else:
+                    return
+                await self._test_targets_discovered.wait()
+
+    async def _wait_for_deps(self, dep_set, want_up_to_date=True):
         async with self._providers_changed:
             while True:
                 for dep in dep_set:
@@ -209,11 +220,12 @@ class Unit:
                     except KeyError:
                         log.debug("%s: no provider for %s", self.name, dep)
                         break
-                    if not provider.is_up_to_date:
+                    if want_up_to_date and not provider.is_up_to_date:
                         log.debug("%s: provider %s for %s is outdated", self.name, provider, dep)
                         break
                 else:
                     return
+                await self._providers_changed.wait()
 
     async def _import_module(self, process_pool, recorders, module_res):
         result = await process_pool.run(
@@ -246,6 +258,10 @@ class Unit:
         log.info("Run: %s", self)
         if self._is_up_to_date:
             return
+        await self._wait_for_all_test_targets()
+
+    def add_test(self, test_unit):
+        self._tests.add(test_unit)
 
 
 class FixturesDepsProviderUnit(Unit):
@@ -259,7 +275,7 @@ class FixturesUnit(FixturesDepsProviderUnit):
     def __repr__(self):
         return f"<FixturesUnit {self.name!r}>"
 
-    @cached_property
+    @property
     def is_fixtures(self):
         return True
 
@@ -268,14 +284,29 @@ class TestsUnit(FixturesDepsProviderUnit):
 
     def __init__(self, graph, ctx, generator_ref, root_dir, path):
         super().__init__(graph, ctx, generator_ref, root_dir, path)
+        self._targets_discovered = False
 
     def __repr__(self):
         return f"<TestsUnit {self.name!r}>"
 
-    @cached_property
+    @property
     def is_tests(self):
         return True
+
+    @property
+    def targets_discovered(self):
+        return self._targets_discovered
 
     async def run(self, process_pool):
         log.info("Run: %s", self)
         info, attr_list = await self._discover_attributes(process_pool)
+        await self._wait_for_deps([ServiceDep(service_name) for service_name in info.test_services], want_up_to_date=False)
+        for code_name in info.test_code:
+            unit = self._graph.unit_by_code_name(code_name)
+            unit.add_test(self)
+        for service_name in info.test_services:
+            unit = self._graph.dep_to_provider[ServiceDep(service_name)]
+            unit.add_test(self)
+        self._targets_discovered = True
+        async with self._test_targets_discovered:
+            self._test_targets_discovered.notify_all()
