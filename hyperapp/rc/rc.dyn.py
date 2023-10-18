@@ -51,7 +51,8 @@ async def _run_unit(unit, process_pool):
 
 
 async def _main(graph, process_pool):
-    await asyncio.gather(*[_run_unit(unit, process_pool) for unit in graph.name_to_unit.values()])
+    unit_tasks = [_run_unit(unit, process_pool) for unit in graph.name_to_unit.values()]
+    await asyncio.gather(process_pool.check_for_deadlock(), *unit_tasks)
 
 
 def compile_resources(generator_ref, subdir_list, root_dirs, module_list, process_count, rpc_timeout):

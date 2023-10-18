@@ -40,6 +40,18 @@ class ProcessPool:
         finally:
             await self._free_process(process)
 
+    async def check_for_deadlock(self):
+        try:
+            async with asyncio.timeout(1) as timeout:
+                async with self._process_available:
+                    while True:
+                        if len(self._free_processes) < len(self._process_list):
+                            log.info("Deadlock check: reschedule to %s", asyncio.get_running_loop().time() + 1)
+                            timeout.reshedule(asyncio.get_running_loop().time() + 1)
+                        await self._process_available.wait()
+        except TimeoutError:
+            raise
+
 
 @contextmanager
 def process_pool_running(process_count, rpc_timeout):
