@@ -59,13 +59,12 @@ def types_import_list(ctx, import_set):
 
 
 # Module resource with import recorder.
-def recorder_module_res(graph, ctx, unit, fixtures_unit=None, import_list=None):
+def recorder_module_res(graph, ctx, unit, deps, fixtures_unit=None, import_list=None):
     resource_list = [*ctx.type_recorder_res_list]
     import_recorder_res = htypes.import_recorder.import_recorder(resource_list)
     import_recorder_ref = mosaic.put(import_recorder_res)
     recorders = {unit.name: [import_recorder_ref]}
 
-    deps = graph.name_to_deps[unit.name]
     dep_imports_it = enum_dep_imports(graph, deps, fixtures_unit)
 
     module_res = unit.make_module_res([

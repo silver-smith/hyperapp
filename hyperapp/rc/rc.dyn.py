@@ -17,7 +17,6 @@ class Graph:
 
     def __init__(self):
         self.name_to_unit = {}
-        self.name_to_deps = defaultdict(set)
         self.dep_to_provider = {}
 
     def unit_by_code_name(self, code_name):
@@ -36,8 +35,8 @@ def _report_not_compiled(graph):
 
 
 def _dump_graph(graph):
-    for name, deps in sorted(graph.name_to_deps.items()):
-        log.debug("Deps for %s: %s", name, deps or '{}')
+    # for name, deps in sorted(graph.name_to_deps.items()):
+    #     log.debug("Deps for %s: %s", name, deps or '{}')
     for dep, provider in sorted(graph.dep_to_provider.items()):
         log.debug("Provider for %s: %s", dep, provider)
 

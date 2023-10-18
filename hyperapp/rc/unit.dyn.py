@@ -1,5 +1,6 @@
+import asyncio
 import logging
-from collections import namedtuple
+from collections import defaultdict, namedtuple
 from functools import cached_property
 from operator import attrgetter
 
@@ -132,6 +133,8 @@ def _imports_info(imports):
 
 class Unit:
 
+    _providers_changed = asyncio.Condition()
+
     def __init__(self, graph, ctx, generator_ref, root_dir, path):
         self._graph = graph
         self._ctx = ctx
@@ -144,6 +147,7 @@ class Unit:
         self.name = f'{self._dir}.{self._stem}'
         self._resources_path = path.with_name(self._stem + '.resources.yaml')
         self._is_up_to_date = False
+        # self._deps = None
         self._resource_module = None
         self._tests = set()  # TestsUnit set
 
@@ -174,6 +178,7 @@ class Unit:
         pass
 
     def init(self):
+        self._graph.dep_to_provider[CodeDep(self.code_name)] = self
         if not self._resources_path.exists():
             return
         self._resource_module = resource_module_factory(self._ctx.resource_registry, self.name, self._resources_path)
@@ -195,16 +200,52 @@ class Unit:
             import_list=tuple(import_list),
             )
 
-    async def run(self, process_pool):
-        log.info("Run: %s", self)
-        if self._is_up_to_date:
-            return
-        recorders, module_res = discoverer_module_res(self._ctx, self)
-        await process_pool.run(
+    async def _wait_for_deps(self, dep_set):
+        async with self._providers_changed:
+            while True:
+                for dep in dep_set:
+                    try:
+                        provider = self._graph.dep_to_provider[dep]
+                    except KeyError:
+                        log.debug("%s: no provider for %s", self.name, dep)
+                        break
+                    if not provider.is_up_to_date:
+                        log.debug("%s: provider %s for %s is outdated", self.name, provider, dep)
+                        break
+                else:
+                    return
+
+    async def _import_module(self, process_pool, recorders, module_res):
+        result = await process_pool.run(
             import_driver.import_module,
             import_recorders=_recorder_piece_list(recorders),
             module_ref=mosaic.put(module_res),
             )
+        imports_dict = _module_import_list_to_dict(result.imports)
+        imports = imports_dict[self.name]
+        info = _imports_info(imports)
+        return (result, info)
+
+    async def _discover_attributes(self, process_pool):
+        log.info("%s: discover imports", self.name)
+        recorders, module_res = discoverer_module_res(self._ctx, self)
+        result, info = await self._import_module(process_pool, recorders, module_res)
+        while result.error:
+            error = web.summon(result.error)
+            if not isinstance(error, htypes.import_discoverer.using_incomplete_object):
+                raise error
+            log.info("%s: Incomplete object: %s", self.name, error.message)
+            await self._wait_for_deps(info.want_deps)
+            recorders, module_res = recorder_module_res(self._graph, self._ctx, self, info.want_deps)
+            log.info("%s: discover attributes", self.name)
+            result, info = await self._import_module(process_pool, recorders, module_res)
+        attr_list = [web.summon(ref) for ref in result.attr_list]
+        return info, attr_list
+
+    async def run(self, process_pool):
+        log.info("Run: %s", self)
+        if self._is_up_to_date:
+            return
 
 
 class FixturesDepsProviderUnit(Unit):
@@ -237,3 +278,4 @@ class TestsUnit(FixturesDepsProviderUnit):
 
     async def run(self, process_pool):
         log.info("Run: %s", self)
+        info, attr_list = await self._discover_attributes(process_pool)
