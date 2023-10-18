@@ -6,7 +6,7 @@ from hyperapp.common.htypes import HException
 from .services import (
     hyperapp_dir,
     )
-from .code.collector_task import CollectorTask
+from .code.collector import collect_units
 from .code.process_pool import process_pool_running
 
 log = logging.getLogger(__name__)
@@ -50,9 +50,8 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, proces
         dir_list = [hyperapp_dir]
 
     graph = Graph()
-    initial_task = CollectorTask(generator_ref, hyperapp_dir, dir_list)
     try:
-        initial_task.run(graph)
+        collect_units(hyperapp_dir, dir_list, generator_ref, graph)
         with process_pool_running(process_count, rpc_timeout) as pool:
             task_to_unit = {}
             while True:
