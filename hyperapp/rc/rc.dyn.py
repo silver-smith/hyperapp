@@ -45,7 +45,8 @@ def _dump_graph(graph):
 async def _run_unit(unit, process_pool):
     try:
         return await unit.run(process_pool)
-    except asyncio.CancelledError:
+    except asyncio.CancelledError as x:
+        x.__context__ = None
         log.exception("Cancelled: %s", unit)
     except Exception as x:
         log.exception("Failed: %s", unit)
