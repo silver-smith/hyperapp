@@ -77,8 +77,12 @@ class ResourceModule:
         return self._read_hash_line(0)
 
     @cached_property
-    def generator_ref_str(self):
+    def tests_ref_str(self):
         return self._read_hash_line(1)
+
+    @cached_property
+    def generator_ref_str(self):
+        return self._read_hash_line(2)
 
     def _read_hash_line(self, idx):
         path = self._hash_file_path(self._path)
@@ -179,12 +183,7 @@ class ResourceModule:
         self._association_list.add(Definition(resource_type, definition))
         self._import_set.add(self._resource_type_name(resource_type))
 
-    def save(self):
-        if self._path is None:
-            raise RuntimeError(f"Attempt to save ethemeral resource module: {self._name}")
-        self.save_as(self._path)
-
-    def save_as(self, path, source_ref_str, generator_ref_str):
+    def save_as(self, path, source_ref_str, tests_ref_str, generator_ref_str):
         yaml_text = yaml.dump(self.as_dict, sort_keys=False)
         lines = [
             AUTO_GEN_LINE,
@@ -192,7 +191,7 @@ class ResourceModule:
             yaml_text,
             ]
         path.write_text('\n'.join(lines))
-        hash_lines = [source_ref_str, generator_ref_str]
+        hash_lines = [source_ref_str, tests_ref_str, generator_ref_str]
         self._hash_file_path(path).write_text('\n'.join(hash_lines))
         self._path = path
         self._resource_dir = path.parent
