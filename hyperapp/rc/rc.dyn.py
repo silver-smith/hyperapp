@@ -50,6 +50,7 @@ async def _run_unit(unit, process_pool):
         x.__context__ = None
         if any('process_available.wait' in s for s in traceback.format_exception(x)):
             log.info("Waiting for a process: %s", unit)
+            raise RuntimeError(f"Unit {unit} is still waiting for a process")
         else:
             log.exception("Cancelled: %s", unit)
     except Exception as x:
