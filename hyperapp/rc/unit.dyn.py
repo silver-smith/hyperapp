@@ -226,11 +226,20 @@ class Unit:
             log.debug("%s: Provide service: %r", self.name, service_name)
         await _lock_and_notify_all(self._providers_changed)
 
+    async def _imports_discovered(self, info):
+        pass
+
     def init(self):
         self._graph.dep_to_provider[CodeDep(self.code_name)] = self
         if not self._resources_path.exists():
             return
         self._resource_module = resource_module_factory(self._ctx.resource_registry, self.name, self._resources_path)
+        if self._resource_module.is_auto_generated:
+            return
+        self._ctx.resource_registry.set_module(self.name, self._resource_module)
+        self._is_up_to_date = True
+        log.info("%s: manually generated", self.name)
+        return
 
     def make_module_res(self, import_list):
         return htypes.builtin.python_module(
@@ -260,9 +269,11 @@ class Unit:
                 await self._providers_changed.wait()
 
     async def _wait_for_deps(self, dep_set):
+        await self._wait_for_providers(dep_set)
         async with self._unit_constructed:
             while True:
-                outdated = [dep for dep in dep_set if not self._graph.dep_to_provider[dep].is_up_to_date]
+                providers = {self._graph.dep_to_provider[dep] for dep in dep_set}
+                outdated = [p for p in providers if not p.is_up_to_date]
                 if not outdated:
                     return
                 log.debug("%s: Outdated providers: %s", self.name, outdated)
@@ -283,6 +294,7 @@ class Unit:
         log.info("%s: discover imports", self.name)
         recorders, module_res = discoverer_module_res(self._ctx, self)
         result, info = await self._import_module(process_pool, recorders, module_res)
+        await self._imports_discovered(info)
         while result.error:
             error = web.summon(result.error)
             if not isinstance(error, htypes.import_discoverer.using_incomplete_object):
@@ -298,18 +310,17 @@ class Unit:
     async def run(self, process_pool):
         log.info("Run: %s", self)
         if not self._resource_module.is_auto_generated:
-            self._ctx.resource_registry.set_module(self.name, self._resource_module)
             await self._set_service_providers(self._resource_module.provided_services)
-            self._is_up_to_date = True
-            log.info("%s: manually generated", self.name)
             return
         info = _resource_module_info(self._resource_module, self.code_name)
         if self._deps_hash_str(info.want_deps) == self._resource_module.source_ref_str:
             await self._set_service_providers(self._resource_module.provided_services)
             log.info("%s: sources match", self.name)
+            await self._wait_for_all_test_targets()
         else:
             log.info("%s: sources does not match", self.name)
-        await self._wait_for_all_test_targets()
+            info, attr_list = await self._discover_attributes(process_pool)
+            await self._set_service_providers(_enum_provided_services(attr_list))
 
     def add_test(self, test_unit):
         self._tests.add(test_unit)
@@ -351,9 +362,7 @@ class TestsUnit(FixturesDepsProviderUnit):
     def targets_discovered(self):
         return self._targets_discovered
 
-    async def run(self, process_pool):
-        log.info("Run: %s", self)
-        info, attr_list = await self._discover_attributes(process_pool)
+    async def _imports_discovered(self, info):
         await self._wait_for_providers([ServiceDep(service_name) for service_name in info.test_services])
         for code_name in info.test_code:
             unit = self._graph.unit_by_code_name(code_name)
@@ -363,3 +372,7 @@ class TestsUnit(FixturesDepsProviderUnit):
             unit.add_test(self)
         self._targets_discovered = True
         await _lock_and_notify_all(self._test_targets_discovered)
+
+    async def run(self, process_pool):
+        log.info("Run: %s", self)
+        info, attr_list = await self._discover_attributes(process_pool)
