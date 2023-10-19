@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import traceback
 from collections import defaultdict
 
 from hyperapp.common.htypes import HException
@@ -47,7 +48,10 @@ async def _run_unit(unit, process_pool):
         return await unit.run(process_pool)
     except asyncio.CancelledError as x:
         x.__context__ = None
-        log.exception("Cancelled: %s", unit)
+        if any('process_available.wait' in s for s in traceback.format_exception(x)):
+            log.info("Waiting for a process: %s", unit)
+        else:
+            log.exception("Cancelled: %s", unit)
     except Exception as x:
         log.exception("Failed: %s", unit)
         raise
@@ -55,7 +59,10 @@ async def _run_unit(unit, process_pool):
 
 async def _main(graph, process_pool):
     unit_tasks = [_run_unit(unit, process_pool) for unit in graph.name_to_unit.values()]
-    await asyncio.gather(process_pool.check_for_deadlock(), *unit_tasks)
+    try:
+        await asyncio.gather(process_pool.check_for_deadlock(), *unit_tasks)
+    except TimeoutError:
+        log.error("Deadlocked")
 
 
 def compile_resources(generator_ref, subdir_list, root_dirs, module_list, process_count, rpc_timeout):
