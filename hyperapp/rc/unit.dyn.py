@@ -131,10 +131,16 @@ def _imports_info(imports):
         )
 
 
+async def _lock_and_notify_all(condition):
+    async with condition:
+        condition.notify_all()
+
+
 class Unit:
 
     _providers_changed = asyncio.Condition()
     _test_targets_discovered = asyncio.Condition()
+    _unit_constructed = asyncio.Condition()
 
     def __init__(self, graph, ctx, generator_ref, root_dir, path):
         self._graph = graph
@@ -178,20 +184,53 @@ class Unit:
     def report_deps(self):
         pass
 
+    @cached_property
+    def source_dep_record(self):
+        source_ref = mosaic.put(self._source_path.read_bytes())
+        return htypes.rc.source_dep(self.name, source_ref)
+
+    def _make_source_ref(self, dep_units):
+        deps = [
+            u.source_dep_record for u in
+            sorted([self, *dep_units], key=attrgetter('name'))
+            ]
+        return mosaic.put(htypes.rc.module_deps(deps))
+
+    def _deps_hash_str(self, dep_set):
+        dep_units = set()
+        for dep in dep_set:
+            try:
+                unit = self._graph.dep_to_provider[dep]
+            except KeyError:
+                log.debug("%s: dep %s is missing", self.name, dep)
+                return False
+            if unit.is_builtins:
+                continue
+            if not unit.is_up_to_date:
+                log.debug("%s: dep %s %s is outdated", self.name, dep, unit)
+                return False
+            dep_units.add(unit)
+        source_ref = self._make_source_ref(dep_units)
+        return ref_str(source_ref)
+
+    async def _set_service_providers(self, provide_services):
+        for service_name in provide_services:
+            dep = ServiceDep(service_name)
+            try:
+                provider = self._graph.dep_to_provider[dep]
+            except KeyError:
+                pass
+            else:
+                raise RuntimeError(f"More than one module provide service {service_name!r}: {provider!r} and {self!r}")
+            self._graph.dep_to_provider[dep] = self
+            log.debug("%s: Provide service: %r", self.name, service_name)
+        await _lock_and_notify_all(self._providers_changed)
+
     def init(self):
         self._graph.dep_to_provider[CodeDep(self.code_name)] = self
         if not self._resources_path.exists():
             return
         self._resource_module = resource_module_factory(self._ctx.resource_registry, self.name, self._resources_path)
-        if self._resource_module.is_auto_generated:
-            return
-        self._ctx.resource_registry.set_module(self.name, self._resource_module)
-        self._set_service_providers(self._resource_module.provided_services)
-        self._is_up_to_date = True
-        log.info("%s: manually generated", self.name)
-
-    def _set_service_providers(self, provide_services):
-        pass
 
     def make_module_res(self, import_list):
         return htypes.builtin.python_module(
@@ -211,21 +250,23 @@ class Unit:
                     return
                 await self._test_targets_discovered.wait()
 
-    async def _wait_for_deps(self, dep_set, want_up_to_date=True):
+    async def _wait_for_providers(self, dep_set):
         async with self._providers_changed:
             while True:
-                for dep in dep_set:
-                    try:
-                        provider = self._graph.dep_to_provider[dep]
-                    except KeyError:
-                        log.debug("%s: no provider for %s", self.name, dep)
-                        break
-                    if want_up_to_date and not provider.is_up_to_date:
-                        log.debug("%s: provider %s for %s is outdated", self.name, provider, dep)
-                        break
-                else:
+                unknown = [dep for dep in dep_set if dep not in self._graph.dep_to_provider]
+                if not unknown:
                     return
+                log.debug("%s: Unknown providers for deps: %s", self.name, unknown)
                 await self._providers_changed.wait()
+
+    async def _wait_for_deps(self, dep_set):
+        async with self._unit_constructed:
+            while True:
+                outdated = [dep for dep in dep_set if not self._graph.dep_to_provider[dep].is_up_to_date]
+                if not outdated:
+                    return
+                log.debug("%s: Outdated providers: %s", self.name, outdated)
+                await self._unit_constructed.wait()
 
     async def _import_module(self, process_pool, recorders, module_res):
         result = await process_pool.run(
@@ -256,8 +297,18 @@ class Unit:
 
     async def run(self, process_pool):
         log.info("Run: %s", self)
-        if self._is_up_to_date:
+        if not self._resource_module.is_auto_generated:
+            self._ctx.resource_registry.set_module(self.name, self._resource_module)
+            await self._set_service_providers(self._resource_module.provided_services)
+            self._is_up_to_date = True
+            log.info("%s: manually generated", self.name)
             return
+        info = _resource_module_info(self._resource_module, self.code_name)
+        if self._deps_hash_str(info.want_deps) == self._resource_module.source_ref_str:
+            await self._set_service_providers(self._resource_module.provided_services)
+            log.info("%s: sources match", self.name)
+        else:
+            log.info("%s: sources does not match", self.name)
         await self._wait_for_all_test_targets()
 
     def add_test(self, test_unit):
@@ -268,6 +319,9 @@ class FixturesDepsProviderUnit(Unit):
 
     def __init__(self, graph, ctx, generator_ref, root_dir, path):
         super().__init__(graph, ctx, generator_ref, root_dir, path)
+
+    async def _set_service_providers(self, provide_services):
+        pass
 
 
 class FixturesUnit(FixturesDepsProviderUnit):
@@ -300,7 +354,7 @@ class TestsUnit(FixturesDepsProviderUnit):
     async def run(self, process_pool):
         log.info("Run: %s", self)
         info, attr_list = await self._discover_attributes(process_pool)
-        await self._wait_for_deps([ServiceDep(service_name) for service_name in info.test_services], want_up_to_date=False)
+        await self._wait_for_providers([ServiceDep(service_name) for service_name in info.test_services])
         for code_name in info.test_code:
             unit = self._graph.unit_by_code_name(code_name)
             unit.add_test(self)
@@ -308,5 +362,4 @@ class TestsUnit(FixturesDepsProviderUnit):
             unit = self._graph.dep_to_provider[ServiceDep(service_name)]
             unit.add_test(self)
         self._targets_discovered = True
-        async with self._test_targets_discovered:
-            self._test_targets_discovered.notify_all()
+        await _lock_and_notify_all(self._test_targets_discovered)
