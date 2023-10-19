@@ -29,7 +29,7 @@ class ProcessPool:
     async def _free_process(self, process):
         async with self._process_available:
             self._free_processes.append(process)
-            self._process_available.notify()
+            self._process_available.notify_all()
 
     async def run(self, servant_fn, **kw):
         process = await self._allocate_process()
