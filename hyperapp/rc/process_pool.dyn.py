@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import time
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import ExitStack, contextmanager
 
@@ -44,12 +45,12 @@ class ProcessPool:
         try:
             async with asyncio.timeout(2) as timeout:
                 async with self._process_available:
+                    log.debug("Deadlock check: setup")
                     while True:
-                        if len(self._free_processes) < len(self._process_list):
-                            when = asyncio.get_running_loop().time() + 2
-                            log.info("Deadlock check: reschedule to %s", when)
-                            timeout.reshedule(when)
                         await self._process_available.wait()
+                        when = asyncio.get_running_loop().time() + 1
+                        log.debug("Deadlock check: reschedule to %s", when)
+                        timeout.reschedule(when)
         except TimeoutError:
             raise
 
