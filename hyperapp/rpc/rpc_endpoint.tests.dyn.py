@@ -5,6 +5,7 @@ from .services import (
     pyobj_creg,
     )
 from .code.endpoint import Request
+from .tested.code import rpc_endpoint
 from .tested.services import rpc_endpoint_factory
 
 

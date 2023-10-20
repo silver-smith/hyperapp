@@ -1,6 +1,7 @@
 from .services import (
     pyobj_creg,
     )
+from .tested.code import partial_ref
 from .tested.services import partial_ref
 
 

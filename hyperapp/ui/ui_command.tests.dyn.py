@@ -1,6 +1,5 @@
-from .tested.services import (
-    ui_command_factory,
-    )
+from .tested.code import ui_command
+from .tested.services import ui_command_factory
 
 
 class PhonyWidget:

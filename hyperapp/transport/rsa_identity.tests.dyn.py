@@ -7,9 +7,8 @@ from .services import (
     parcel_registry,
     peer_registry,
     )
-from .tested.services import (
-    generate_rsa_identity,
-    )
+from .tested.code import rsa_identity
+from .tested.services import generate_rsa_identity
 
 
 def test_rsa_identity():

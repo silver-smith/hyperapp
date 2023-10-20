@@ -7,6 +7,7 @@ from .services import (
     partial_ref,
     rpc_endpoint_factory,
     )
+from .tested.code import subprocess_rpc_server
 from .tested.services import subprocess_rpc_server_running
 from .code.subprocess_rpc_server_tests_aux import _callback
 

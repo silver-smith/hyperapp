@@ -1,9 +1,8 @@
 from .services import (
     mark,
     )
-from .tested.services import (
-    fn_to_ref,
-    )
+from .tested.code import fn_to_res
+from .tested.services import fn_to_ref
 
 
 class _PhonyPyObjCReg:

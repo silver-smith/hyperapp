@@ -1,7 +1,6 @@
 from . import htypes
-from .tested.services import (
-    data_to_res,
-    )
+from .tested.code import data_to_res
+from .tested.services import data_to_res
 
 
 def test_data_to_res():
