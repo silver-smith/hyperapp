@@ -154,9 +154,9 @@ class Unit:
         self.name = f'{self._dir}.{self._stem}'
         self._resources_path = path.with_name(self._stem + '.resources.yaml')
         self._is_up_to_date = False
-        # self._deps = None
         self._resource_module = None
         self._tests = set()  # TestsUnit set
+        self._used_types = set()
 
     def __repr__(self):
         return f"<Unit {self.name!r}>"
@@ -196,6 +196,16 @@ class Unit:
     def report_deps(self):
         pass
 
+    def resource(self, name):
+        return self._ctx.resource_registry[self.name, name]
+
+    def provided_dep_resource(self, dep):
+        return self.resource(dep.resource_name)
+
+    @property
+    def _deps(self):
+        return self._graph.name_to_deps[self.name]
+
     @cached_property
     def source_dep_record(self):
         source_ref = mosaic.put(self._source_path.read_bytes())
@@ -233,7 +243,10 @@ class Unit:
             except KeyError:
                 pass
             else:
-                raise RuntimeError(f"More than one module provide service {service_name!r}: {provider!r} and {self!r}")
+                if provider is not self:
+                    raise RuntimeError(f"More than one module provide service {service_name!r}: {provider!r} and {self!r}")
+                else:
+                    continue
             self._graph.dep_to_provider[dep] = self
             log.debug("%s: Provide service: %r", self.name, service_name)
         await _lock_and_notify_all(self._providers_changed)
@@ -300,12 +313,40 @@ class Unit:
             if not isinstance(error, htypes.import_discoverer.using_incomplete_object):
                 raise error
             log.info("%s: Incomplete object: %s", self.name, error.message)
-            await self._wait_for_deps(info.want_deps)
-            recorders, module_res = recorder_module_res(self._graph, self._ctx, self, info.want_deps)
+            await self._wait_for_deps(self._deps | info.want_deps)
+            recorders, module_res = recorder_module_res(self._graph, self._ctx, self, self._deps | info.want_deps)
             log.info("%s: discover attributes", self.name)
-            result, info = await self._import_module(process_pool, recorders, module_res)
+            # Once-imported module does not issue new import records from subsequent imports.
+            result, _ = await self._import_module(process_pool, recorders, module_res)
         attr_list = [web.summon(ref) for ref in result.attr_list]
         return info, attr_list
+
+    def _fixtures_unit(self):
+        return self._graph.dep_to_provider.get(FixturesDep(self.name))
+
+    async def _call_fn_attr(self, process_pool, recorders, call_res):
+        result = await process_pool.run(
+            call_driver.call_function,
+            import_recorders=_recorder_piece_list(recorders),
+            call_result_ref=mosaic.put(call_res),
+            trace_modules=[],
+            )
+        imports_dict = _module_import_list_to_dict(result.imports)
+        imports = imports_dict[self.name]
+        info = _imports_info(imports)
+        self.add_used_types(info.used_types)
+
+    async def _call_all_fn_attrs(self, process_pool, deps, attr_list):
+        fixtures = self._fixtures_unit()
+        async with asyncio.TaskGroup() as tg:
+            for attr in attr_list:
+                if not isinstance(attr, htypes.inspect.fn_attr):
+                    continue
+                recorders_and_call_res = function_call_res(self._graph, self._ctx, self, deps, fixtures, attr)
+                if not recorders_and_call_res:
+                    continue  # No param fixtures.
+                recorders, call_res = recorders_and_call_res
+                tg.create_task(self._call_fn_attr(process_pool, recorders, call_res))
 
     async def run(self, process_pool):
         log.info("Run: %s", self)
@@ -313,17 +354,27 @@ class Unit:
             await self._set_service_providers(self._resource_module.provided_services)
             return
         info = _resource_module_info(self._resource_module, self.code_name)
-        if self._deps_hash_str(info.want_deps) == self._resource_module.source_ref_str:
+        if self._deps_hash_str(self._deps | info.want_deps) == self._resource_module.source_ref_str:
             await self._set_service_providers(self._resource_module.provided_services)
             log.info("%s: sources match", self.name)
             await self._wait_for_all_test_targets()
+            if self._deps_hash_str(self._tests) == self._resource_module.tests_ref_str:
+                self._is_up_to_date = True
+                log.info("%s: tests match; up-to-date", self.name)
+                return
+            log.info("%s: tests do not match", self.name)
         else:
-            log.info("%s: sources does not match", self.name)
-            info, attr_list = await self._discover_attributes(process_pool)
-            await self._set_service_providers(_enum_provided_services(attr_list))
+            log.info("%s: sources do not match", self.name)
+        info, attr_list = await self._discover_attributes(process_pool)
+        await self._set_service_providers(_enum_provided_services(attr_list))
+        await self._wait_for_deps(self._deps | info.want_deps)
+        await self._call_all_fn_attrs(process_pool, self._deps | info.want_deps, attr_list)
 
     def add_test(self, test_unit):
         self._tests.add(test_unit)
+
+    def add_used_types(self, used_types):
+        self._used_types |= used_types
 
 
 class FixturesDepsProviderUnit(Unit):
@@ -344,12 +395,25 @@ class FixturesUnit(FixturesDepsProviderUnit):
     def is_fixtures(self):
         return True
 
+    @cached_property
+    def _target_unit_name(self):
+        l = self._stem.split('.')
+        assert l[-1] == 'fixtures'
+        return self._dir + '.' + '.'.join(l[:-1])
+
+    def init(self):
+        super().init()
+        dep = FixturesDep(self._target_unit_name)
+        self._graph.dep_to_provider[dep] = self
+        self._graph.name_to_deps[self._target_unit_name].add(dep)
+
 
 class TestsUnit(FixturesDepsProviderUnit):
 
     def __init__(self, graph, ctx, generator_ref, root_dir, path):
         super().__init__(graph, ctx, generator_ref, root_dir, path)
         self._targets_discovered = False
+        self._completed = False
 
     def __repr__(self):
         return f"<TestsUnit {self.name!r}>"
@@ -361,6 +425,10 @@ class TestsUnit(FixturesDepsProviderUnit):
     @property
     def targets_discovered(self):
         return self._targets_discovered
+
+    @property
+    def completed(self):
+        return self._completed
 
     async def _imports_discovered(self, info):
         for code_name in info.test_code:

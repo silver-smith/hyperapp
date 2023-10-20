@@ -137,8 +137,8 @@ def _partial_res(unit, fixtures, attr, attr_res):
         )
 
 
-def function_call_res(graph, ctx, unit, fixtures, attr):
-    recorders, module_res = recorder_module_res(graph, ctx, unit, fixtures)
+def function_call_res(graph, ctx, unit, deps, fixtures, attr):
+    recorders, module_res = recorder_module_res(graph, ctx, unit, deps, fixtures)
     attr_res = htypes.builtin.attribute(
         object=mosaic.put(module_res),
         attr_name=attr.name,

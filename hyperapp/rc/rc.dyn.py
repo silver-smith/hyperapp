@@ -19,6 +19,7 @@ class Graph:
     def __init__(self):
         self.name_to_unit = {}
         self.dep_to_provider = {}
+        self.name_to_deps = defaultdict(set)
 
     def unit_by_code_name(self, code_name):
         for unit in self.name_to_unit.values():
@@ -36,8 +37,8 @@ def _report_not_compiled(graph):
 
 
 def _dump_graph(graph):
-    # for name, deps in sorted(graph.name_to_deps.items()):
-    #     log.debug("Deps for %s: %s", name, deps or '{}')
+    for name, deps in sorted(graph.name_to_deps.items()):
+        log.debug("Deps for %s: %s", name, deps or '{}')
     for dep, provider in sorted(graph.dep_to_provider.items()):
         log.debug("Provider for %s: %s", dep, provider)
 
@@ -51,6 +52,8 @@ async def _run_unit(unit, process_pool):
         if any('process_available.wait' in s for s in traceback.format_exception(x)):
             log.info("Waiting for a process: %s", unit)
             raise RuntimeError(f"Unit {unit} is still waiting for a process")
+        elif any('unit_constructed.wait' in s for s in traceback.format_exception(x)):
+            log.exception("Waiting for a unit to be constructed: %s", unit)
         else:
             log.exception("Cancelled: %s", unit)
     except Exception as x:
