@@ -36,8 +36,8 @@ def discoverer_module_res(ctx, unit):
     return (recorders, module_res)
 
 
-def enum_dep_imports(graph, dep_list, fixtures_unit=None):
-    for dep in dep_list:
+def enum_dep_imports(graph, dep_set, fixtures_unit=None):
+    for dep in dep_set:
         if not dep.should_be_imported:
             continue
         if fixtures_unit and dep in fixtures_unit.provided_deps:
@@ -59,13 +59,13 @@ def types_import_list(ctx, import_set):
 
 
 # Module resource with import recorder.
-def recorder_module_res(graph, ctx, unit, deps, fixtures_unit=None, import_list=None):
+def recorder_module_res(graph, ctx, unit, fixtures_unit=None, import_list=None):
     resource_list = [*ctx.type_recorder_res_list]
     import_recorder_res = htypes.import_recorder.import_recorder(resource_list)
     import_recorder_ref = mosaic.put(import_recorder_res)
     recorders = {unit.name: [import_recorder_ref]}
 
-    dep_imports_it = enum_dep_imports(graph, deps, fixtures_unit)
+    dep_imports_it = enum_dep_imports(graph, unit.deps, fixtures_unit)
 
     module_res = unit.make_module_res([
         htypes.builtin.import_rec('htypes.*', import_recorder_ref),
@@ -137,8 +137,8 @@ def _partial_res(unit, fixtures, attr, attr_res):
         )
 
 
-def function_call_res(graph, ctx, unit, deps, fixtures, attr):
-    recorders, module_res = recorder_module_res(graph, ctx, unit, deps, fixtures)
+def function_call_res(graph, ctx, unit, fixtures, attr):
+    recorders, module_res = recorder_module_res(graph, ctx, unit, fixtures)
     attr_res = htypes.builtin.attribute(
         object=mosaic.put(module_res),
         attr_name=attr.name,

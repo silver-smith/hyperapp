@@ -66,7 +66,7 @@ async def _main(graph, process_pool):
     try:
         await asyncio.gather(process_pool.check_for_deadlock(), *unit_tasks)
     except TimeoutError:
-        log.error("Deadlocked")
+        log.error("Deadlocked\n")
 
 
 def compile_resources(generator_ref, subdir_list, root_dirs, module_list, process_count, rpc_timeout):

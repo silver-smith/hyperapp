@@ -156,6 +156,7 @@ class Unit:
         self._is_up_to_date = False
         self._resource_module = None
         self._tests = set()  # TestsUnit set
+        self._attr_list = None  # inspect.attr|fn_attr|generator_fn_attr list
         self._used_types = set()
 
     def __repr__(self):
@@ -203,7 +204,7 @@ class Unit:
         return self.resource(dep.resource_name)
 
     @property
-    def _deps(self):
+    def deps(self):
         return self._graph.name_to_deps[self.name]
 
     @cached_property
@@ -252,7 +253,7 @@ class Unit:
         await _lock_and_notify_all(self._providers_changed)
 
     async def _imports_discovered(self, info):
-        pass
+        self.deps.update(info.want_deps)
 
     def make_module_res(self, import_list):
         return htypes.builtin.python_module(
@@ -261,6 +262,17 @@ class Unit:
             file_path=str(self._source_path),
             import_list=tuple(import_list),
             )
+
+    def pick_service_resource(self, module_res, service_name):
+        assert self._attr_list is not None  # Not yet imported/attr enumerated.
+        name_to_res = {}
+        ass_list = invite_attr_constructors(self._ctx, self._attr_list, module_res, name_to_res)
+        for name, resource in name_to_res.items():
+            if name.endswith('.service'):
+                sn, _ = name.rsplit('.', 1)
+                if sn == service_name:
+                    return (ass_list, resource)
+        raise RuntimeError(f"{self}: Service {service_name!r} was not created by it's constructor")
 
     async def _wait_for_all_test_targets(self):
         async with self._test_targets_discovered:
@@ -313,8 +325,8 @@ class Unit:
             if not isinstance(error, htypes.import_discoverer.using_incomplete_object):
                 raise error
             log.info("%s: Incomplete object: %s", self.name, error.message)
-            await self._wait_for_deps(self._deps | info.want_deps)
-            recorders, module_res = recorder_module_res(self._graph, self._ctx, self, self._deps | info.want_deps)
+            await self._wait_for_deps(self.deps | info.want_deps)
+            recorders, module_res = recorder_module_res(self._graph, self._ctx, self)
             log.info("%s: discover attributes", self.name)
             # Once-imported module does not issue new import records from subsequent imports.
             result, _ = await self._import_module(process_pool, recorders, module_res)
@@ -324,7 +336,8 @@ class Unit:
     def _fixtures_unit(self):
         return self._graph.dep_to_provider.get(FixturesDep(self.name))
 
-    async def _call_fn_attr(self, process_pool, recorders, call_res):
+    async def _call_fn_attr(self, process_pool, attr_name, recorders, call_res):
+        log.info("%s: Call attribute: %s", self.name, attr_name)
         result = await process_pool.run(
             call_driver.call_function,
             import_recorders=_recorder_piece_list(recorders),
@@ -332,21 +345,22 @@ class Unit:
             trace_modules=[],
             )
         imports_dict = _module_import_list_to_dict(result.imports)
-        imports = imports_dict[self.name]
-        info = _imports_info(imports)
-        self.add_used_types(info.used_types)
+        for name, imports in imports_dict.items():
+            info = _imports_info(imports)
+            unit = self._graph.name_to_unit[name]
+            unit.add_used_types(info.used_types)
 
-    async def _call_all_fn_attrs(self, process_pool, deps, attr_list):
+    async def _call_all_fn_attrs(self, process_pool, attr_list):
         fixtures = self._fixtures_unit()
         async with asyncio.TaskGroup() as tg:
             for attr in attr_list:
                 if not isinstance(attr, htypes.inspect.fn_attr):
                     continue
-                recorders_and_call_res = function_call_res(self._graph, self._ctx, self, deps, fixtures, attr)
+                recorders_and_call_res = function_call_res(self._graph, self._ctx, self, fixtures, attr)
                 if not recorders_and_call_res:
                     continue  # No param fixtures.
                 recorders, call_res = recorders_and_call_res
-                tg.create_task(self._call_fn_attr(process_pool, recorders, call_res))
+                tg.create_task(self._call_fn_attr(process_pool, attr.name, recorders, call_res))
 
     async def run(self, process_pool):
         log.info("Run: %s", self)
@@ -354,7 +368,7 @@ class Unit:
             await self._set_service_providers(self._resource_module.provided_services)
             return
         info = _resource_module_info(self._resource_module, self.code_name)
-        if self._deps_hash_str(self._deps | info.want_deps) == self._resource_module.source_ref_str:
+        if self._deps_hash_str(self.deps) == self._resource_module.source_ref_str:
             await self._set_service_providers(self._resource_module.provided_services)
             log.info("%s: sources match", self.name)
             await self._wait_for_all_test_targets()
@@ -365,10 +379,10 @@ class Unit:
             log.info("%s: tests do not match", self.name)
         else:
             log.info("%s: sources do not match", self.name)
-        info, attr_list = await self._discover_attributes(process_pool)
-        await self._set_service_providers(_enum_provided_services(attr_list))
-        await self._wait_for_deps(self._deps | info.want_deps)
-        await self._call_all_fn_attrs(process_pool, self._deps | info.want_deps, attr_list)
+        info, self._attr_list = await self._discover_attributes(process_pool)
+        await self._set_service_providers(_enum_provided_services(self._attr_list))
+        await self._wait_for_deps(self.deps)
+        await self._call_all_fn_attrs(process_pool, self._attr_list)
 
     def add_test(self, test_unit):
         self._tests.add(test_unit)
@@ -381,9 +395,16 @@ class FixturesDepsProviderUnit(Unit):
 
     def __init__(self, graph, ctx, generator_ref, root_dir, path):
         super().__init__(graph, ctx, generator_ref, root_dir, path)
+        self._provided_deps = set()
 
     async def _set_service_providers(self, provide_services):
-        pass
+        self._provided_deps = {
+            ServiceDep(service_name) for service_name in provide_services
+            }
+
+    @property
+    def provided_deps(self):
+        return self._provided_deps
 
 
 class FixturesUnit(FixturesDepsProviderUnit):
@@ -414,6 +435,8 @@ class TestsUnit(FixturesDepsProviderUnit):
         super().__init__(graph, ctx, generator_ref, root_dir, path)
         self._targets_discovered = False
         self._completed = False
+        self._tested_units = None  # Unit list
+        self._tested_services = None  # str set
 
     def __repr__(self):
         return f"<TestsUnit {self.name!r}>"
@@ -431,12 +454,39 @@ class TestsUnit(FixturesDepsProviderUnit):
         return self._completed
 
     async def _imports_discovered(self, info):
+        await super()._imports_discovered(info)
+        self._tested_units = []
         for code_name in info.test_code:
             unit = self._graph.unit_by_code_name(code_name)
             unit.add_test(self)
+            self._tested_units.append(unit)
+        self._tested_services = info.test_services
         self._targets_discovered = True
         await _lock_and_notify_all(self._test_targets_discovered)
 
+    async def _call_tests(self, process_pool, attr_list):
+        tested_service_to_unit = {}
+        await self._wait_for_providers([ServiceDep(service_name) for service_name in self._tested_services])
+        await self._wait_for_deps(self.deps | {dep for unit in self._tested_units for dep in unit.deps})
+        for service_name in self._tested_services:
+            provider = self._graph.dep_to_provider[ServiceDep(service_name)]
+            if provider not in self._tested_units:
+                raise RuntimeError(f"Service {service_name!r} provider {provider} does not belong to tested code modules: {self._tested_units}")
+            tested_service_to_unit[service_name] = provider
+        async with asyncio.TaskGroup() as tg:
+            for attr in attr_list:
+                if not isinstance(attr, htypes.inspect.fn_attr):
+                    continue
+                if not attr.name.startswith('test'):
+                    continue
+                recorders, call_res = test_call_res(self._graph, self._ctx, self, self._tested_units, tested_service_to_unit, attr)
+                tg.create_task(self._call_fn_attr(process_pool, attr.name, recorders, call_res))
+
     async def run(self, process_pool):
         log.info("Run: %s", self)
+        if self._resource_module:
+            info = _resource_module_info(self._resource_module, self.code_name)
+            if self._deps_hash_str(self.deps | info.want_deps) == self._resource_module.source_ref_str:
+                log.info("%s: sources match", self.name)
         info, attr_list = await self._discover_attributes(process_pool)
+        await self._call_tests(process_pool, attr_list)
