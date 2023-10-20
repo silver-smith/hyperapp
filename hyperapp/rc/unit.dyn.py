@@ -181,6 +181,18 @@ class Unit:
     def is_imports_discovered(self):
         return self._import_set is not None
 
+    def init(self):
+        self._graph.dep_to_provider[CodeDep(self.code_name)] = self
+        if not self._resources_path.exists():
+            return
+        self._resource_module = resource_module_factory(self._ctx.resource_registry, self.name, self._resources_path)
+        if self._resource_module.is_auto_generated:
+            return
+        self._ctx.resource_registry.set_module(self.name, self._resource_module)
+        self._is_up_to_date = True
+        log.info("%s: manually generated", self.name)
+        return
+
     def report_deps(self):
         pass
 
@@ -228,18 +240,6 @@ class Unit:
 
     async def _imports_discovered(self, info):
         pass
-
-    def init(self):
-        self._graph.dep_to_provider[CodeDep(self.code_name)] = self
-        if not self._resources_path.exists():
-            return
-        self._resource_module = resource_module_factory(self._ctx.resource_registry, self.name, self._resources_path)
-        if self._resource_module.is_auto_generated:
-            return
-        self._ctx.resource_registry.set_module(self.name, self._resource_module)
-        self._is_up_to_date = True
-        log.info("%s: manually generated", self.name)
-        return
 
     def make_module_res(self, import_list):
         return htypes.builtin.python_module(
