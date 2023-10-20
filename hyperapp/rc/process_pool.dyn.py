@@ -4,6 +4,9 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import ExitStack, contextmanager
 
+from hyperapp.common.htypes import HException
+
+from . import htypes
 from .services import (
     endpoint_registry,
     generate_rsa_identity,
@@ -34,10 +37,20 @@ class ProcessPool:
 
     async def run(self, servant_fn, **kw):
         process = await self._allocate_process()
-        log.info("Run at process #%d: %s(%s)", self._process_list.index(process), servant_fn, kw)
+        process_idx = self._process_list.index(process)
+        log.info("Process #%d: run: %s(%s)", process_idx, servant_fn, kw)
         future = process.rpc_submit(servant_fn)(**kw)
         try:
-            return await asyncio.wrap_future(future)
+            result = await asyncio.wrap_future(future)
+            log.info("Process #%d: result: %s", process_idx, result)
+            return result
+        except HException as x:
+            if isinstance(x, htypes.rpc.server_error):
+                log.error("Process #%d: server error: %s", process_idx, x.message)
+                for entry in x.traceback:
+                    for line in entry.splitlines():
+                        log.error("%s", line)
+            raise
         finally:
             await self._free_process(process)
 
