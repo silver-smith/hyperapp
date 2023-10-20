@@ -363,12 +363,8 @@ class TestsUnit(FixturesDepsProviderUnit):
         return self._targets_discovered
 
     async def _imports_discovered(self, info):
-        await self._wait_for_providers([ServiceDep(service_name) for service_name in info.test_services])
         for code_name in info.test_code:
             unit = self._graph.unit_by_code_name(code_name)
-            unit.add_test(self)
-        for service_name in info.test_services:
-            unit = self._graph.dep_to_provider[ServiceDep(service_name)]
             unit.add_test(self)
         self._targets_discovered = True
         await _lock_and_notify_all(self._test_targets_discovered)
