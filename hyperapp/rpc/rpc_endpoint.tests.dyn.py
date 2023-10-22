@@ -1,12 +1,40 @@
 from . import htypes
 from .services import (
     generate_rsa_identity,
+    mark,
     mosaic,
     pyobj_creg,
     )
 from .code.endpoint import Request
 from .tested.code import rpc_endpoint
 from .tested.services import rpc_endpoint_factory
+
+class PhonyTransport:
+
+    def send(self, receiver, sender_identity, ref_list):
+        pass
+
+
+@mark.service
+def transport():
+    return PhonyTransport()
+
+
+class PhonyPythonObjectCReg:
+
+    def __init__(self):
+        self._phony_servant = None
+
+    def set_phony_servant(self, fn):
+        self._phony_servant = fn
+
+    def invite(self, servant_ref):
+        return self._phony_servant
+
+
+@mark.service
+def pyobj_creg():
+    return PhonyPythonObjectCReg()
 
 
 def _return_str_list(phony_param):

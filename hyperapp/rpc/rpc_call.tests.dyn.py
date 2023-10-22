@@ -1,9 +1,21 @@
 from .services import (
     generate_rsa_identity,
+    mark,
     mosaic,
     )
 from .tested.code import rpc_call
 from .tested.services import rpc_call_factory
+
+
+class PhonyTransport:
+
+    def send(self, receiver, sender_identity, ref_list):
+        pass
+
+
+@mark.service
+def transport():
+    return PhonyTransport()
 
 
 class PhonyRpcEndpoint:
