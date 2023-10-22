@@ -140,6 +140,7 @@ class Unit:
 
     _providers_changed = asyncio.Condition()
     _test_targets_discovered = asyncio.Condition()
+    _test_completed = asyncio.Condition()
     _unit_constructed = asyncio.Condition()
 
     def __init__(self, graph, ctx, generator_ref, root_dir, path):
@@ -304,6 +305,15 @@ class Unit:
                 log.debug("%s: Outdated providers: %s", self.name, outdated)
                 await self._unit_constructed.wait()
 
+    async def _wait_for_tests(self, unit_list):
+        async with self._test_completed:
+            while True:
+                not_completed = [u for u in unit_list if not u.test_completed]
+                if not not_completed:
+                    return
+                log.debug("%s: Waiting for tests: %s", self.name, not_completed)
+                await self._test_completed.wait()
+
     async def _import_module(self, process_pool, recorders, module_res):
         result = await process_pool.run(
             import_driver.import_module,
@@ -370,6 +380,7 @@ class Unit:
         info = _resource_module_info(self._resource_module, self.code_name)
         if self._deps_hash_str(self.deps) == self._resource_module.source_ref_str:
             await self._set_service_providers(self._resource_module.provided_services)
+            self.deps.update(info.want_deps)
             log.info("%s: sources match", self.name)
             await self._wait_for_all_test_targets()
             if self._deps_hash_str(self._tests) == self._resource_module.tests_ref_str:
@@ -383,6 +394,7 @@ class Unit:
         await self._set_service_providers(_enum_provided_services(self._attr_list))
         await self._wait_for_deps(self.deps)
         await self._call_all_fn_attrs(process_pool, self._attr_list)
+        await self._wait_for_tests(self._tests)
 
     def add_test(self, test_unit):
         self._tests.add(test_unit)
@@ -450,7 +462,7 @@ class TestsUnit(FixturesDepsProviderUnit):
         return self._targets_discovered
 
     @property
-    def completed(self):
+    def test_completed(self):
         return self._completed
 
     async def _imports_discovered(self, info):
@@ -487,6 +499,9 @@ class TestsUnit(FixturesDepsProviderUnit):
         if self._resource_module:
             info = _resource_module_info(self._resource_module, self.code_name)
             if self._deps_hash_str(self.deps | info.want_deps) == self._resource_module.source_ref_str:
+                self.deps.update(info.want_deps)
                 log.info("%s: sources match", self.name)
         info, attr_list = await self._discover_attributes(process_pool)
         await self._call_tests(process_pool, attr_list)
+        self._completed = True
+        await _lock_and_notify_all(self._test_completed)
