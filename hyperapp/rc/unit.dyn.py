@@ -138,7 +138,8 @@ async def _lock_and_notify_all(condition):
 
 class Unit:
 
-    _providers_changed = asyncio.Condition()
+    _providers_changed = asyncio.Condition()  # May be obsoleted by _deps_discovered.
+    _new_deps_discovered = asyncio.Condition()
     _test_targets_discovered = asyncio.Condition()
     _test_completed = asyncio.Condition()
     _unit_constructed = asyncio.Condition()
@@ -156,6 +157,7 @@ class Unit:
         self._resources_path = path.with_name(self._stem + '.resources.yaml')
         self._is_up_to_date = False
         self._resource_module = None
+        self._deps_discovered = False
         self._tests = set()  # TestsUnit set
         self._attr_list = None  # inspect.attr|fn_attr|generator_fn_attr list
         self._used_types = set()
@@ -203,6 +205,10 @@ class Unit:
 
     def provided_dep_resource(self, dep):
         return self.resource(dep.resource_name)
+
+    @property
+    def deps_discovered(self):
+        return self._deps_discovered
 
     @property
     def deps(self):
@@ -255,6 +261,8 @@ class Unit:
 
     async def _imports_discovered(self, info):
         self.deps.update(info.want_deps)
+        self._deps_discovered = True
+        await _lock_and_notify_all(self._new_deps_discovered)
 
     def make_module_res(self, import_list):
         return htypes.builtin.python_module(
@@ -293,6 +301,15 @@ class Unit:
                     return
                 log.debug("%s: Unknown providers for deps: %s", self.name, unknown)
                 await self._providers_changed.wait()
+
+    async def _wait_for_deps_discovered(self, units):
+        async with self._new_deps_discovered:
+            while True:
+                not_discovered = {u for u in units if not u.deps_discovered}
+                if not not_discovered:
+                    return
+                log.debug("%s: Deps not discovered: %s", self.name, not_discovered)
+                await self._new_deps_discovered.wait()
 
     async def _wait_for_deps(self, dep_set):
         await self._wait_for_providers(dep_set)
@@ -497,6 +514,7 @@ class TestsUnit(FixturesDepsProviderUnit):
 
     async def _call_tests(self, process_pool, attr_list):
         tested_service_to_unit = {}
+        await self._wait_for_deps_discovered(self._tested_units)
         await self._wait_for_providers([ServiceDep(service_name) for service_name in self._tested_services])
         await self._wait_for_deps(self.deps | {dep for unit in self._tested_units for dep in unit.deps})
         for service_name in self._tested_services:
