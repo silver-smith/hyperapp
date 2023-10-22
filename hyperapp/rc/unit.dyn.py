@@ -536,9 +536,11 @@ class TestsUnit(FixturesDepsProviderUnit):
         if self._resource_module:
             info = _resource_module_info(self._resource_module, self.code_name)
             if self._deps_hash_str(self.deps | info.want_deps) == self._resource_module.source_ref_str:
+                await self._set_service_providers(self._resource_module.provided_services)
                 self.deps.update(info.want_deps)
                 log.info("%s: sources match", self.name)
         info, attr_list = await self._discover_attributes(process_pool)
+        await self._set_service_providers(_enum_provided_services(attr_list))
         await self._call_tests(process_pool, attr_list)
         self._completed = True
         await _lock_and_notify_all(self._test_completed)
