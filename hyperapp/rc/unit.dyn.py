@@ -213,10 +213,10 @@ class Unit:
         source_ref = mosaic.put(self._source_path.read_bytes())
         return htypes.rc.source_dep(self.name, source_ref)
 
-    def _make_source_ref(self, dep_units):
+    def _make_source_ref(self, units):
         deps = [
             u.source_dep_record for u in
-            sorted([self, *dep_units], key=attrgetter('name'))
+            sorted(units, key=attrgetter('name'))
             ]
         return mosaic.put(htypes.rc.module_deps(deps))
 
@@ -234,7 +234,7 @@ class Unit:
                 log.debug("%s: dep %s %s is outdated", self.name, dep, unit)
                 return False
             dep_units.add(unit)
-        source_ref = self._make_source_ref(dep_units)
+        source_ref = self._make_source_ref([self, *dep_units])
         return ref_str(source_ref)
 
     async def _set_service_providers(self, provide_services):
@@ -372,6 +372,24 @@ class Unit:
                 recorders, call_res = recorders_and_call_res
                 tg.create_task(self._call_fn_attr(process_pool, attr.name, recorders, call_res))
 
+    async def _construct(self):
+        module_res = self.make_module_res(sorted([
+            *types_import_list(self._ctx, self._used_types),
+            *enum_dep_imports(self._graph, self.deps),
+            ]))
+        resource_module = resource_module_factory(self._ctx.resource_registry, self.name)
+        resource_module[f'{self.code_name}.module'] = module_res
+        ass_list = invite_attr_constructors(self._ctx, self._attr_list, module_res, resource_module)
+        resource_module.add_association_list(ass_list)
+        source_hash_str = self._deps_hash_str(self.deps)
+        tests_hash_str = ref_str(self._make_source_ref(self._tests))
+        log.info("Write: %s: %s", self.name, self._resources_path)
+        resource_module.save_as(self._resources_path, source_hash_str, tests_hash_str, ref_str(self._generator_ref))
+        self._resource_module = resource_module
+        self._ctx.resource_registry.set_module(self.name, resource_module)
+        self._is_up_to_date = True
+        await _lock_and_notify_all(self._unit_constructed)
+
     async def run(self, process_pool):
         log.info("Run: %s", self)
         if not self._resource_module.is_auto_generated:
@@ -395,6 +413,7 @@ class Unit:
         await self._wait_for_deps(self.deps)
         await self._call_all_fn_attrs(process_pool, self._attr_list)
         await self._wait_for_tests(self._tests)
+        await self._construct()
 
     def add_test(self, test_unit):
         self._tests.add(test_unit)
