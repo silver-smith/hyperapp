@@ -58,7 +58,7 @@ async def _run_unit(unit, process_pool):
             log.exception("Cancelled: %s", unit)
     except Exception as x:
         log.exception("Failed: %s", unit)
-        raise
+        raise RuntimeError(f"{unit}: {x}")
 
 
 async def _main(graph, process_pool):
