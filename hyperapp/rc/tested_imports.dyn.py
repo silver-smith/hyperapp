@@ -4,41 +4,32 @@ from hyperapp.common.python_importer import Finder
 from . import htypes
 
 
-class DiscovererObject:
+class TestedObject:
 
-    def __init__(self, prefix, imported_set):
+    def __init__(self, prefix):
         self._prefix = prefix
-        self._imported_set = imported_set
 
     def __getattr__(self, name):
         if name.startswith('_'):
             raise AttributeError(name)
         resource_path = (*self._prefix, name)
-        self._imported_set.add(resource_path)
-        return DiscovererObject(resource_path, self._imported_set)
+        return TestedObject(resource_path)
 
     def __call__(self, *args, **kw):
         path = '.'.join(self._prefix)
-        raise htypes.import_discoverer.using_incomplete_object(f"Attempt to use not-ready object {path} with: *{args}, **{kw}")
+        raise htypes.tested_imports.using_tested_object(f"Attempt to use tested object {path} with: *{args}, **{kw}")
 
     def __mro_entries__(self, base):
         path = '.'.join(self._prefix)
-        raise htypes.import_discoverer.using_incomplete_object(f"Attempt to inherit from not-ready class {path}")
+        raise htypes.tested_imports.using_tested_object(f"Attempt to inherit from tested class {path}")
 
 
-class ImportDiscoverer(Finder):
+class TestedImport(Finder):
 
     _is_package = True
 
     def __init__(self, piece):
         self._base_module_name = None
-        self._imported_set = set()
-
-    def reset(self):
-        self._imported_set.clear()
-
-    def used_imports(self):
-        return set(self._imported_set)
 
     def set_base_module_name(self, name):
         self._base_module_name = name
@@ -53,8 +44,7 @@ class ImportDiscoverer(Finder):
         assert spec.name.startswith(self._base_module_name + '.')
         rel_name = spec.name[len(self._base_module_name) + 1 :]
         name = tuple(rel_name.split('.'))
-        self._imported_set.add(name)
-        return DiscovererObject(name, self._imported_set)
+        return TestedObject(name)
 
     def exec_module(self, module):
         pass

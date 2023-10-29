@@ -83,25 +83,6 @@ def invite_attr_constructors(ctx, attr_list, module_res, name_to_res):
     return ass_list
 
 
-def tested_import_list(graph, ctx, test_unit, tested_units, tested_service_to_unit):
-    import_list = []
-    all_recorders = {}
-    for unit in tested_units:
-        recorders, module_res = recorder_module_res(graph, ctx, unit, fixtures_unit=test_unit)
-        all_recorders.update(recorders)
-        import_rec = htypes.builtin.import_rec(f'tested.code.{unit.code_name}', mosaic.put(module_res))
-        import_list.append(import_rec)
-    all_ass_list = []
-    for service_name, unit in tested_service_to_unit.items():
-        recorders, module_res = recorder_module_res(graph, ctx, unit, fixtures_unit=test_unit)
-        all_recorders.update(recorders)
-        ass_list, service_res = unit.pick_service_resource(module_res, service_name)
-        all_ass_list += ass_list
-        import_rec = htypes.builtin.import_rec(f'tested.services.{service_name}', mosaic.put(service_res))
-        import_list.append(import_rec)
-    return (all_recorders, all_ass_list, import_list)
-
-
 def _parameter_fixture(fixtures, path):
     name = '.'.join([*path, 'parameter'])
     try:
@@ -156,9 +137,31 @@ def function_call_res(graph, ctx, unit, fixtures, attr):
     return (recorders, call_res)
 
 
+# def tested_import_list(graph, ctx, test_unit, tested_units, tested_service_to_unit):
+#     import_list = []
+#     all_recorders = {}
+#     for unit in tested_units:
+#         recorders, module_res = recorder_module_res(graph, ctx, unit, fixtures_unit=test_unit)
+#         all_recorders.update(recorders)
+#         import_rec = htypes.builtin.import_rec(f'tested.code.{unit.code_name}', mosaic.put(module_res))
+#         import_list.append(import_rec)
+#     all_ass_list = []
+#     for service_name, unit in tested_service_to_unit.items():
+#         recorders, module_res = recorder_module_res(graph, ctx, unit, fixtures_unit=test_unit)
+#         all_recorders.update(recorders)
+#         ass_list, service_res = unit.pick_service_resource(module_res, service_name)
+#         all_ass_list += ass_list
+#         import_rec = htypes.builtin.import_rec(f'tested.services.{service_name}', mosaic.put(service_res))
+#         import_list.append(import_rec)
+#     return (all_recorders, all_ass_list, import_list)
+
+
 def test_call_res(graph, ctx, unit, tested_units, tested_service_to_unit, attr):
-    recorders, ass_list, import_list = tested_import_list(graph, ctx, unit, tested_units, tested_service_to_unit)
-    unit_recorders, module_res = recorder_module_res(graph, ctx, unit, import_list=import_list)
+    import_list = [
+        htypes.builtin.import_rec('tested.code.*', mosaic.put(htypes.tested_imports.tested_import())),
+        htypes.builtin.import_rec('tested.services.*', mosaic.put(htypes.tested_imports.tested_import())),
+        ]
+    recorders, module_res = recorder_module_res(graph, ctx, unit, import_list=import_list)
     attr_res = htypes.builtin.attribute(
         object=mosaic.put(module_res),
         attr_name=attr.name,
