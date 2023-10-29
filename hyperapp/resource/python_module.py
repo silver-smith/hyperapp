@@ -124,12 +124,10 @@ def sub_loader_dict(pyobj_creg, import_list, root_module_name):
     for rec in import_list:
         resource = pyobj_creg.invite(rec.resource)
         path = rec.full_name.split('.')
+        prefix_len = len(path)
         if path[-1] == '*':
-            # An auto importer.
-            module_name = rec.full_name
-            module_dict[module_name] = resource
-            continue
-        for i in range(len(path)):
+            prefix_len -= 1
+        for i in range(1, prefix_len):
             package_name = '.'.join(path[:i])
             if package_name not in loader_dict:
                 if package_name == 'htypes':
@@ -138,6 +136,11 @@ def sub_loader_dict(pyobj_creg, import_list, root_module_name):
                     loader_dict[package_name] = _PackageLoader()
             if path[0] == 'htypes' and i == 2:
                 loader_dict['htypes'].sub_module_list.append(f'{root_module_name}.{package_name}')
+        if path[-1] == '*':
+            # An auto importer.
+            module_name = rec.full_name
+            module_dict[module_name] = resource
+            continue
         if inspect.ismodule(resource):
             # This is code module import, resource is python module.
             module_dict[rec.full_name] = resource.__dict__
