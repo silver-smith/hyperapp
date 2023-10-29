@@ -5,6 +5,7 @@ import:
 - legacy_type.inspect:object_type_info
 - rc.driver_recorders:driver_recorders.module
 - rc.tracer:tracer.module
+- rc.tested_imports:tested_imports.module
 
 definitions:
 
@@ -18,3 +19,4 @@ definitions:
       services.pyobj_creg: builtins:pyobj_creg.service
       code.driver_recorders: rc.driver_recorders:driver_recorders.module
       code.tracer: rc.tracer:tracer.module
+      code.tested_imports: rc.tested_imports:tested_imports.module

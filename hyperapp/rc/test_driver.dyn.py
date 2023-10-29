@@ -8,6 +8,7 @@ from .services import (
     )
 from .code.driver_recorders import ImportRecorders
 from .code.tracer import Tracer, value_type
+from .code.tested_imports import TestedObject
 
 log = logging.getLogger(__name__)
 
@@ -18,7 +19,12 @@ def call_test(import_recorders, test_call_res, module_res, tested_services, trac
     with tracer.tracing():
         with recorders.recording():
             module = pyobj_creg.animate(module_res)
-            assert 0, tested_services
+            for rec in tested_services:
+                service = pyobj_creg.invite(rec.value)
+                setattr(module.tested.services, rec.name, service)
+                obj = getattr(module, rec.name, None)
+                if obj and isinstance(obj, TestedObject) and obj.path == ('tested', 'services', rec.name):
+                    setattr(module, rec.name, service)
             value = pyobj_creg.animate(test_call_res)
         log.info("Resource value: %s", repr(value))
 

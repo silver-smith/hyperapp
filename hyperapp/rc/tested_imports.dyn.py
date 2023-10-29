@@ -9,6 +9,10 @@ class TestedObject:
     def __init__(self, prefix):
         self._prefix = prefix
 
+    @property
+    def path(self):
+        return self._prefix
+
     def __getattr__(self, name):
         if name.startswith('_'):
             raise AttributeError(name)
