@@ -12,12 +12,14 @@ from .code.tracer import Tracer, value_type
 log = logging.getLogger(__name__)
 
 
-def call_test(import_recorders, call_result_ref, trace_modules):
+def call_test(import_recorders, test_call_res, module_res, tested_services, trace_modules):
     tracer = Tracer(trace_modules)
     recorders = ImportRecorders(import_recorders)
     with tracer.tracing():
         with recorders.recording():
-            value = pyobj_creg.invite(call_result_ref)
+            module = pyobj_creg.animate(module_res)
+            assert 0, tested_services
+            value = pyobj_creg.animate(test_call_res)
         log.info("Resource value: %s", repr(value))
 
         if inspect.isgenerator(value):

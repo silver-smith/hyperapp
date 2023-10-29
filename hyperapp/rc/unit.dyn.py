@@ -21,6 +21,7 @@ from .code.scaffolds import (
     invite_attr_constructors,
     recorder_module_res,
     test_call_res,
+    tested_services,
     types_import_list,
     )
 
@@ -497,7 +498,7 @@ class TestsUnit(FixturesDepsProviderUnit):
         return True
 
     def provided_dep_resource(self, dep):
-        pick_service_resource(module_res, service_name)
+        raise NotImplementedError()
 
     @property
     def targets_discovered(self):
@@ -518,17 +519,20 @@ class TestsUnit(FixturesDepsProviderUnit):
         self._targets_discovered = True
         await _lock_and_notify_all(self._test_targets_discovered)
 
-    async def _call_test(self, process_pool, attr_name, recorders, call_res):
+    async def _call_test(self, process_pool, attr_name, recorders, module_res, call_res, tested_service_to_unit):
         log.info("%s: Call test: %s", self.name, attr_name)
+        services_recorders, ass_list, tested_service_fields = tested_services(self._graph, self._ctx, self, module_res, tested_service_to_unit)
         result = await process_pool.run(
             test_driver.call_test,
             import_recorders=_recorder_piece_list(recorders),
-            call_result_ref=mosaic.put(call_res),
+            module_res=module_res,
+            test_call_res=call_res,
+            tested_services=tested_service_fields,
             trace_modules=[],
             )
         await self._handle_result_imports(result.imports)
 
-    async def _call_all_tests(self, process_pool, attr_list):
+    async def _call_all_tests(self, process_pool):
         tested_service_to_unit = {}
         await self._wait_for_deps_discovered(self._tested_units)
         await self._wait_for_providers([ServiceDep(service_name) for service_name in self._tested_services])
@@ -539,13 +543,13 @@ class TestsUnit(FixturesDepsProviderUnit):
                 raise RuntimeError(f"Service {service_name!r} provider {provider} does not belong to tested code modules: {self._tested_units}")
             tested_service_to_unit[service_name] = provider
         async with asyncio.TaskGroup() as tg:
-            for attr in attr_list:
+            for attr in self._attr_list:
                 if not isinstance(attr, htypes.inspect.fn_attr):
                     continue
                 if not attr.name.startswith('test'):
                     continue
-                recorders, call_res = test_call_res(self._graph, self._ctx, self, self._tested_units, tested_service_to_unit, attr)
-                tg.create_task(self._call_test(process_pool, attr.name, recorders, call_res))
+                recorders, module_res, call_res = test_call_res(self._graph, self._ctx, self, attr)
+                tg.create_task(self._call_test(process_pool, attr.name, recorders, module_res, call_res, tested_service_to_unit))
 
     async def run(self, process_pool):
         log.info("Run: %s", self)
@@ -555,8 +559,8 @@ class TestsUnit(FixturesDepsProviderUnit):
                 await self._set_service_providers(self._resource_module.provided_services)
                 self.deps.update(info.want_deps)
                 log.info("%s: sources match", self.name)
-        info, attr_list = await self._discover_attributes(process_pool)
-        await self._set_service_providers(_enum_provided_services(attr_list))
-        await self._call_all_tests(process_pool, attr_list)
+        info, self._attr_list = await self._discover_attributes(process_pool)
+        await self._set_service_providers(_enum_provided_services(self._attr_list))
+        await self._call_all_tests(process_pool)
         self._completed = True
         await _lock_and_notify_all(self._test_completed)

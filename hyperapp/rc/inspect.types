@@ -11,6 +11,10 @@ fn_attr = record(attr):
 generator_fn_attr = record(fn_attr)
 
 
+field = record:
+  name: string
+  value: ref
+
 import_recorder = record:
   module: string
   recorder: ref

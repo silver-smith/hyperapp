@@ -23,17 +23,20 @@ class Dep(metaclass=ABCMeta):
     def key(self):
         pass
 
+    @abstractproperty
+    def should_be_imported(self):
+        pass
+
     @property
     def import_name(self):
-        return None
+        raise NotImplementedError()
 
     @property
     def resource_name(self):
-        return None
+        raise NotImplementedError()
 
-    @property
-    def should_be_imported(self):
-        return self.resource_name is not None
+    def tested_override_resource(self, unit, module_res):
+        raise NotImplementedError()
 
 
 @dataclass(eq=False)
@@ -48,12 +51,20 @@ class ServiceDep(Dep):
         return self.service_name
 
     @property
+    def should_be_imported(self):
+        return True
+
+    @property
     def import_name(self):
         return f'services.{self.service_name}'
 
     @property
     def resource_name(self):
         return f'{self.service_name}.service'
+
+    def tested_override_resource(self, unit, module_res):
+        ass_list, res = unit.pick_service_resource(module_res, self.service_name)
+        return res
 
 
 @dataclass(eq=False)
@@ -68,12 +79,19 @@ class CodeDep(Dep):
         return self.code_name
 
     @property
+    def should_be_imported(self):
+        return True
+
+    @property
     def import_name(self):
         return f'code.{self.code_name}'
 
     @property
     def resource_name(self):
         return f'{self.code_name}.module'
+
+    def tested_override_resource(self, unit, module_res):
+        return module_res
 
 
 @dataclass(eq=False)
@@ -87,6 +105,10 @@ class FixturesDep(Dep):
     def key(self):
         return self.fixtures_unit_name
 
+    @property
+    def should_be_imported(self):
+        return False
+
 
 @dataclass(eq=False)
 class TestsDep(Dep):
@@ -98,3 +120,7 @@ class TestsDep(Dep):
     @property
     def key(self):
         return self.tests_unit_name
+
+    @property
+    def should_be_imported(self):
+        return False
