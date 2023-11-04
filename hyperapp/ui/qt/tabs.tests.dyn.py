@@ -1,7 +1,7 @@
 from PySide6 import QtWidgets
 
 from . import htypes
-from .tested.code.tabs import TabsCtl, duplicate
+from .tested.code import tabs
 from .services import (
     mosaic,
     )
@@ -26,7 +26,7 @@ def test_tabs():
     state = make_state()
     app = QtWidgets.QApplication()
     try:
-        ctl = TabsCtl.from_piece(layout)
+        ctl = tabs.TabsCtl.from_piece(layout)
         widget = ctl.construct_widget(state, ctx)
         state = ctl.widget_state(widget)
         assert state
@@ -37,4 +37,4 @@ def test_tabs():
 def test_duplicate():
     layout = make_layout()
     state = make_state()
-    duplicate(layout, state)
+    tabs.duplicate(layout, state)
