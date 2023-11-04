@@ -349,6 +349,7 @@ class Unit:
         recorders, module_res = discoverer_module_res(self._ctx, self)
         result, info = await self._import_module(process_pool, recorders, module_res)
         await self._imports_discovered(info)
+        await self._handle_result_imports(result.imports)
         while result.error:
             error = web.summon(result.error)
             if not isinstance(error, htypes.import_discoverer.using_incomplete_object):
@@ -359,6 +360,7 @@ class Unit:
             log.info("%s: discover attributes", self.name)
             # Once-imported module does not issue new import records from subsequent imports.
             result, _ = await self._import_module(process_pool, recorders, module_res)
+            await self._handle_result_imports(result.imports)
         attr_list = [web.summon(ref) for ref in result.attr_list]
         return info, attr_list
 
