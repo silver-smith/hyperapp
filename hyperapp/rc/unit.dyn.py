@@ -519,9 +519,10 @@ class TestsUnit(FixturesDepsProviderUnit):
         self._targets_discovered = True
         await _lock_and_notify_all(self._test_targets_discovered)
 
-    async def _call_test(self, process_pool, attr_name, recorders, module_res, call_res, tested_service_to_unit):
+    async def _call_test(self, process_pool, attr_name, test_recorders, module_res, call_res, tested_service_to_unit):
         log.info("%s: Call test: %s", self.name, attr_name)
         services_recorders, ass_list, tested_service_fields = tested_services(self._graph, self._ctx, self, module_res, tested_service_to_unit)
+        recorders = {**test_recorders, **services_recorders}
         result = await process_pool.run(
             test_driver.call_test,
             import_recorders=_recorder_piece_list(recorders),
