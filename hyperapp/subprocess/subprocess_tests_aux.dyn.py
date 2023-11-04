@@ -3,7 +3,7 @@ import logging
 log = logging.getLogger(__name__)
 
 
-def process_main(connection, name):
+def process_main(connection, received_refs, name):
     my_name = "Subprocess test main"
     log.info("%s: Started", my_name)
     try:
