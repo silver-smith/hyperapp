@@ -1,0 +1,10 @@
+import:
+- legacy_type.builtin:python_module
+
+definitions:
+
+  call_trace.module:
+    _type: legacy_type.builtin:python_module
+    module_name: call_trace
+    file_name: call_trace.dyn.py
+    import_list: []
