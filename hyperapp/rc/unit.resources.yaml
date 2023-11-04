@@ -10,6 +10,7 @@ import:
 - legacy_type.rc:source_dep
 - legacy_type.rc:module_deps
 - rc.call_driver:call_driver.module
+- rc.call_trace:call_trace.module
 - rc.dep:dep.module
 - rc.import_driver:import_driver.module
 - rc.scaffolds:scaffolds.module
@@ -33,6 +34,7 @@ definitions:
       services.resource_module_factory: builtins:resource_module_factory.service
       services.web: builtins:web.service
       code.call_driver: rc.call_driver:call_driver.module
+      code.call_trace: rc.call_trace:call_trace.module
       code.dep: rc.dep:dep.module
       code.import_driver: rc.import_driver:import_driver.module
       code.scaffolds: rc.scaffolds:scaffolds.module

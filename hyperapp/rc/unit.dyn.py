@@ -25,6 +25,7 @@ from .code.scaffolds import (
     tested_units,
     types_import_list,
     )
+from .code.call_trace import CallTrace
 
 log = logging.getLogger(__name__)
 
@@ -374,6 +375,9 @@ class Unit:
             unit = self._graph.name_to_unit[name]
             unit.add_used_types(info.used_types)
 
+    def _handle_result_calls(self, calls):
+        pass
+
     async def _call_fn_attr(self, process_pool, attr_name, recorders, call_res):
         log.info("%s: Call attribute: %s", self.name, attr_name)
         result = await process_pool.run(
@@ -383,6 +387,7 @@ class Unit:
             trace_modules=[self.name],
             )
         self._handle_result_imports(result.imports)
+        self._handle_result_calls(result.calls)
 
     async def _call_all_fn_attrs(self, process_pool, attr_list):
         fixtures = self._fixtures_unit()
@@ -537,6 +542,7 @@ class TestsUnit(FixturesDepsProviderUnit):
             trace_modules=[self.name] + [unit.name for unit in self._tested_units],
             )
         self._handle_result_imports(result.imports)
+        self._handle_result_calls(result.calls)
 
     async def _call_all_tests(self, process_pool):
         tested_service_to_unit = {}
