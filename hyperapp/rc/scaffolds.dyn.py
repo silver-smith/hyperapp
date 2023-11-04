@@ -30,9 +30,9 @@ def discoverer_module_res(ctx, unit):
             ctx.resource_registry['builtins', 'stop_signal.service'])),
         ]
 
-    import_recorder_res = htypes.import_recorder.import_recorder(resource_list)
+    import_recorder_res = htypes.import_recorder.import_recorder(unit.name, resource_list)
     import_recorder_ref = mosaic.put(import_recorder_res)
-    import_discoverer_res = htypes.import_discoverer.import_discoverer()
+    import_discoverer_res = htypes.import_discoverer.import_discoverer(unit.name)
     import_discoverer_ref = mosaic.put(import_discoverer_res)
     recorders = {unit.name: [import_recorder_ref, import_discoverer_ref]}
 
@@ -72,7 +72,7 @@ def types_import_list(ctx, import_set):
 # Module resource with import recorder.
 def recorder_module_res(graph, ctx, unit, fixtures_unit=None, fixtures_module_res=None, import_list=None):
     resource_list = [*ctx.type_recorder_res_list]
-    import_recorder_res = htypes.import_recorder.import_recorder(resource_list)
+    import_recorder_res = htypes.import_recorder.import_recorder(unit.name, resource_list)
     import_recorder_ref = mosaic.put(import_recorder_res)
     recorders = {unit.name: [import_recorder_ref]}
 

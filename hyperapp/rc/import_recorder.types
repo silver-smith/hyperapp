@@ -3,4 +3,5 @@ resource = record:
   resource: ref
 
 import_recorder = record:
+  id: string
   resources: resource list
