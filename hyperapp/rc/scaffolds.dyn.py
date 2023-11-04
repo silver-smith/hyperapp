@@ -167,7 +167,7 @@ def tested_units(graph, ctx, test_unit, fixtures_module_res, tested_units):
         all_recorders.update(recorders)
         field = htypes.inspect.field(unit.code_name, mosaic.put(module_res))
         field_list.append(field)
-    return (all_recorders, all_ass_list, import_list)
+    return (all_recorders, field_list)
 
 
 def tested_services(graph, ctx, test_unit, fixtures_module_res, tested_service_to_unit):

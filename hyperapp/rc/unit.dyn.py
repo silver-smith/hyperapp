@@ -22,6 +22,7 @@ from .code.scaffolds import (
     recorder_module_res,
     test_call_res,
     tested_services,
+    tested_units,
     types_import_list,
     )
 
@@ -521,13 +522,15 @@ class TestsUnit(FixturesDepsProviderUnit):
 
     async def _call_test(self, process_pool, attr_name, test_recorders, module_res, call_res, tested_service_to_unit):
         log.info("%s: Call test: %s", self.name, attr_name)
-        services_recorders, ass_list, tested_service_fields = tested_services(self._graph, self._ctx, self, module_res, tested_service_to_unit)
-        recorders = {**test_recorders, **services_recorders}
+        unit_recorders, tested_unit_fields = tested_units(self._graph, self._ctx, self, module_res, self._tested_units)
+        service_recorders, services_ass_list, tested_service_fields = tested_services(self._graph, self._ctx, self, module_res, tested_service_to_unit)
+        recorders = {**test_recorders, **unit_recorders, **service_recorders}
         result = await process_pool.run(
             test_driver.call_test,
             import_recorders=_recorder_piece_list(recorders),
             module_res=module_res,
             test_call_res=call_res,
+            tested_units=tested_unit_fields,
             tested_services=tested_service_fields,
             trace_modules=[],
             )

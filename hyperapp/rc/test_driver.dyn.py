@@ -13,12 +13,18 @@ from .code.tested_imports import TestedObject
 log = logging.getLogger(__name__)
 
 
-def call_test(import_recorders, test_call_res, module_res, tested_services, trace_modules):
+def call_test(import_recorders, test_call_res, module_res, tested_units, tested_services, trace_modules):
     tracer = Tracer(trace_modules)
     recorders = ImportRecorders(import_recorders)
     with tracer.tracing():
         with recorders.recording():
             module = pyobj_creg.animate(module_res)
+            for rec in tested_units:
+                code_module = pyobj_creg.invite(rec.value)
+                setattr(module.tested.code, rec.name, code_module)
+                obj = getattr(module, rec.name, None)
+                if obj and isinstance(obj, TestedObject) and obj.path == ('tested', 'code', rec.name):
+                    setattr(module, rec.name, code_module)
             for rec in tested_services:
                 service = pyobj_creg.invite(rec.value)
                 setattr(module.tested.services, rec.name, service)
