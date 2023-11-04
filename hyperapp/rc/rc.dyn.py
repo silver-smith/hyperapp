@@ -44,32 +44,35 @@ def _dump_graph(graph):
 
 
 
-async def _run_unit(unit, process_pool):
+async def _run_unit(unit, process_pool, show_traces):
+    if show_traces:
+        error_logger = log.exception
+    else:
+        error_logger = log.info
     try:
         return await unit.run(process_pool)
     except asyncio.CancelledError as x:
         x.__context__ = None
         if any('process_available.wait' in s for s in traceback.format_exception(x)):
-            log.info("Waiting for a process: %s", unit)
-            raise RuntimeError(f"Unit {unit} is still waiting for a process")
+            error_logger("Waiting for a process: %s", unit)
         elif any('unit_constructed.wait' in s for s in traceback.format_exception(x)):
-            log.exception("Waiting for a unit to be constructed: %s", unit)
+            error_logger("Waiting for a unit to be constructed: %s", unit)
         else:
-            log.exception("Cancelled: %s", unit)
+            error_logger("Cancelled: %s", unit)
     except Exception as x:
-        log.exception("Failed: %s", unit)
+        error_logger("Failed: %s: %s", unit, x)
         raise RuntimeError(f"{unit}: {x}")
 
 
-async def _main(graph, process_pool):
-    unit_tasks = [_run_unit(unit, process_pool) for unit in graph.name_to_unit.values()]
+async def _main(graph, process_pool, show_traces):
+    unit_tasks = [_run_unit(unit, process_pool, show_traces) for unit in graph.name_to_unit.values()]
     try:
         await asyncio.gather(process_pool.check_for_deadlock(), *unit_tasks)
     except TimeoutError:
         log.error("Deadlocked\n")
 
 
-def compile_resources(generator_ref, subdir_list, root_dirs, module_list, process_count, rpc_timeout):
+def compile_resources(generator_ref, subdir_list, root_dirs, module_list, process_count, show_traces, rpc_timeout):
     log.info("Compile resources at: %s, %s: %s", subdir_list, root_dirs, module_list)
 
     if subdir_list:
@@ -81,7 +84,7 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, proces
     try:
         collect_units(hyperapp_dir, dir_list, generator_ref, graph)
         with process_pool_running(process_count, rpc_timeout) as pool:
-            asyncio.run(_main(graph, pool))
+            asyncio.run(_main(graph, pool, show_traces))
         _report_not_compiled(graph)
     finally:
         _dump_graph(graph)
