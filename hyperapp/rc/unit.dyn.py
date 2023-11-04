@@ -349,7 +349,7 @@ class Unit:
         recorders, module_res = discoverer_module_res(self._ctx, self)
         result, info = await self._import_module(process_pool, recorders, module_res)
         await self._imports_discovered(info)
-        await self._handle_result_imports(result.imports)
+        self._handle_result_imports(result.imports)
         while result.error:
             error = web.summon(result.error)
             if not isinstance(error, htypes.import_discoverer.using_incomplete_object):
@@ -360,14 +360,14 @@ class Unit:
             log.info("%s: discover attributes", self.name)
             # Once-imported module does not issue new import records from subsequent imports.
             result, _ = await self._import_module(process_pool, recorders, module_res)
-            await self._handle_result_imports(result.imports)
+            self._handle_result_imports(result.imports)
         attr_list = [web.summon(ref) for ref in result.attr_list]
         return info, attr_list
 
     def _fixtures_unit(self):
         return self._graph.dep_to_provider.get(FixturesDep(self.name))
 
-    async def _handle_result_imports(self, result_imports):
+    def _handle_result_imports(self, result_imports):
         imports_dict = _module_import_list_to_dict(result_imports)
         for name, imports in imports_dict.items():
             info = _imports_info(imports)
@@ -380,9 +380,9 @@ class Unit:
             call_driver.call_function,
             import_recorders=_recorder_piece_list(recorders),
             call_result_ref=mosaic.put(call_res),
-            trace_modules=[],
+            trace_modules=[self.name],
             )
-        await self._handle_result_imports(result.imports)
+        self._handle_result_imports(result.imports)
 
     async def _call_all_fn_attrs(self, process_pool, attr_list):
         fixtures = self._fixtures_unit()
@@ -534,9 +534,9 @@ class TestsUnit(FixturesDepsProviderUnit):
             test_call_res=call_res,
             tested_units=tested_unit_fields,
             tested_services=tested_service_fields,
-            trace_modules=[],
+            trace_modules=[self.name] + [unit.name for unit in self._tested_units],
             )
-        await self._handle_result_imports(result.imports)
+        self._handle_result_imports(result.imports)
 
     async def _call_all_tests(self, process_pool):
         tested_service_to_unit = {}
