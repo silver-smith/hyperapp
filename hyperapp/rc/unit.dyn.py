@@ -53,27 +53,25 @@ def _module_import_list_to_dict(module_import_list):
 
 def _resource_module_info(resource_module, code_module_name):
     want_deps = set()
-    for module_name, var_name in resource_module.used_imports:
-        l = var_name.split('.')
-        if len(l) == 2 and l[1] == 'service':
-            want_deps.add(ServiceDep(l[0]))
-        if len(l) > 1 and l[-1] == 'module':
-            code_name = '.'.join(l[:-1])
-            want_deps.add(CodeDep(code_name))
     test_code = set()
     test_services = set()
     import_list = resource_module.code_module_imports(code_module_name)
     for name in import_list:
         l = name.split('.')
-        if len(l) != 3:
-            continue
-        do, what, name = l
-        if do != 'tested':
-            continue
-        if what == 'code':
-            test_code.add(name)
-        if what == 'services':
-            test_services.add(name)
+        if len(l) == 2:
+            what, name = l
+            if what == 'code':
+                want_deps.add(CodeDep(name))
+            if what == 'services':
+                want_deps.add(ServiceDep(name))
+        if len(l) == 3:
+            do, what, name = l
+            if do != 'tested':
+                continue
+            if what == 'code':
+                test_code.add(name)
+            if what == 'services':
+                test_services.add(name)
     return ResModuleInfo(
         want_deps=want_deps,
         test_code=test_code,
