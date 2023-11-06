@@ -11,11 +11,9 @@ import:
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.rpc:error_response
-- legacy_type.rpc:param
 - legacy_type.rpc:request
 - legacy_type.rpc:response
 - legacy_type.rpc:server_error
-- legacy_type.rpc_endpoint_tests:sample_error
 - transport.identity:peer_registry.service
 - transport.transport:transport.service
 associations: []
@@ -26,11 +24,9 @@ definitions:
     file_name: rpc_endpoint.dyn.py
     import_list:
       htypes.rpc.error_response: legacy_type.rpc:error_response
-      htypes.rpc.param: legacy_type.rpc:param
       htypes.rpc.request: legacy_type.rpc:request
       htypes.rpc.response: legacy_type.rpc:response
       htypes.rpc.server_error: legacy_type.rpc:server_error
-      htypes.rpc_endpoint_tests.sample_error: legacy_type.rpc_endpoint_tests:sample_error
       services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service
       services.on_stop: builtins:on_stop.service
