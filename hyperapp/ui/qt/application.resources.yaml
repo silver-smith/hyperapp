@@ -3,19 +3,9 @@
 import:
 - builtins:web.service
 - legacy_type.application:layout
-- legacy_type.application:state
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.command_pane:command_pane
-- legacy_type.menu_bar:layout
-- legacy_type.menu_bar:state
-- legacy_type.tabs:layout
-- legacy_type.tabs:state
 - legacy_type.ui:ui_ctl
-- legacy_type.window:layout
-- legacy_type.window:pos
-- legacy_type.window:size
-- legacy_type.window:state
 - ui.ui_ctl_registry:ui_ctl_creg.service
 associations:
 - bases:
@@ -42,16 +32,5 @@ definitions:
     module_name: application
     file_name: application.dyn.py
     import_list:
-      htypes.application.layout: legacy_type.application:layout
-      htypes.application.state: legacy_type.application:state
-      htypes.command_pane.command_pane: legacy_type.command_pane:command_pane
-      htypes.menu_bar.layout: legacy_type.menu_bar:layout
-      htypes.menu_bar.state: legacy_type.menu_bar:state
-      htypes.tabs.layout: legacy_type.tabs:layout
-      htypes.tabs.state: legacy_type.tabs:state
-      htypes.window.layout: legacy_type.window:layout
-      htypes.window.pos: legacy_type.window:pos
-      htypes.window.size: legacy_type.window:size
-      htypes.window.state: legacy_type.window:state
       services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
       services.web: builtins:web.service

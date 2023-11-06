@@ -1,4 +1,3 @@
-from . import htypes
 from .services import (
     ui_ctl_creg,
     web,
