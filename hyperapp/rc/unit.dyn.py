@@ -26,6 +26,7 @@ from .code.scaffolds import (
     types_import_list,
     )
 from .code.call_trace import CallTrace
+from .code import ui_ctl
 
 log = logging.getLogger(__name__)
 
@@ -163,6 +164,7 @@ class Unit:
         self._deps_discovered = False
         self._tests = set()  # TestsUnit set
         self._attr_list = None  # inspect.attr|fn_attr|generator_fn_attr list
+        self._call_list = []  # CallTrace list
         self._used_types = set()
 
     def __repr__(self):
@@ -375,8 +377,14 @@ class Unit:
             unit = self._graph.name_to_unit[name]
             unit.add_used_types(info.used_types)
 
-    def _handle_result_calls(self, calls):
-        pass
+    def _handle_result_calls(self, call_list):
+        name_to_calls = defaultdict(list)
+        for call in call_list:
+            trace = CallTrace.from_piece(call)
+            name_to_calls[trace.module_name].append(trace)
+        for name, calls in name_to_calls.items():
+            unit = self._graph.name_to_unit[name]
+            unit.add_calls(calls)
 
     async def _call_fn_attr(self, process_pool, attr_name, recorders, call_res):
         log.info("%s: Call attribute: %s", self.name, attr_name)
@@ -409,6 +417,7 @@ class Unit:
         resource_module = resource_module_factory(self._ctx.resource_registry, self.name)
         resource_module[f'{self.code_name}.module'] = module_res
         ass_list = invite_attr_constructors(self._ctx, self._attr_list, module_res, resource_module)
+        ass_list += ui_ctl.create_ui_resources(self._ctx, self.name, resource_module, module_res, self._call_list)
         resource_module.add_association_list(ass_list)
         source_hash_str = self._deps_hash_str(self.deps)
         tests_hash_str = ref_str(self._make_source_ref(self._tests))
@@ -449,6 +458,9 @@ class Unit:
 
     def add_used_types(self, used_types):
         self._used_types |= used_types
+
+    def add_calls(self, calls):
+        self._call_list += calls
 
 
 class FixturesDepsProviderUnit(Unit):
