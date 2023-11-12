@@ -441,6 +441,7 @@ class Unit:
             await self._wait_for_all_test_targets()
             if ref_str(self._make_sources_ref(self._tests)) == self._resource_module.tests_ref_str:
                 self._is_up_to_date = True
+                self._ctx.resource_registry.set_module(self.name, self._resource_module)
                 log.info("%s: tests match; up-to-date", self.name)
                 return
             log.info("%s: tests do not match", self.name)
