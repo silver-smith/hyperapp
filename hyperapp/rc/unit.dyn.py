@@ -142,6 +142,7 @@ class Unit:
 
     _providers_changed = asyncio.Condition()  # May be obsoleted by _deps_discovered.
     _new_deps_discovered = asyncio.Condition()
+    _attributes_discovered = asyncio.Condition()
     _test_targets_discovered = asyncio.Condition()
     _test_completed = asyncio.Condition()
     _unit_constructed = asyncio.Condition()
@@ -212,6 +213,10 @@ class Unit:
     @property
     def deps_discovered(self):
         return self._deps_discovered
+
+    @property
+    def attributes_discovered(self):
+        return self._attr_list is not None
 
     @property
     def deps(self):
@@ -442,6 +447,7 @@ class Unit:
         else:
             log.info("%s: sources do not match", self.name)
         info, self._attr_list = await self._discover_attributes(process_pool)
+        await _lock_and_notify_all(self._attributes_discovered)
         await self._set_service_providers(_enum_provided_services(self._attr_list))
         await self._wait_for_deps(self.deps)
         await self._call_all_fn_attrs(process_pool, self._attr_list)
@@ -534,6 +540,15 @@ class TestsUnit(FixturesDepsProviderUnit):
         self._targets_discovered = True
         await _lock_and_notify_all(self._test_targets_discovered)
 
+    async def _wait_for_attributes_discovered(self, unit_list):
+        async with self._attributes_discovered:
+            while True:
+                not_discovered = [u for u in unit_list if not u.attributes_discovered]
+                if not not_discovered:
+                    return
+                log.debug("%s: Waiting for attributes discovered: %s", self.name, not_discovered)
+                await self._attributes_discovered.wait()
+
     async def _call_test(self, process_pool, attr_name, test_recorders, module_res, call_res, tested_service_to_unit):
         log.info("%s: Call test: %s", self.name, attr_name)
         unit_recorders, tested_unit_fields = tested_units(self._graph, self._ctx, self, module_res, self._tested_units)
@@ -561,6 +576,7 @@ class TestsUnit(FixturesDepsProviderUnit):
             if provider not in self._tested_units:
                 raise RuntimeError(f"Service {service_name!r} provider {provider} does not belong to tested code modules: {self._tested_units}")
             tested_service_to_unit[service_name] = provider
+        await self._wait_for_attributes_discovered(tested_service_to_unit.values())
         async with asyncio.TaskGroup() as tg:
             for attr in self._attr_list:
                 if not isinstance(attr, htypes.inspect.fn_attr):
