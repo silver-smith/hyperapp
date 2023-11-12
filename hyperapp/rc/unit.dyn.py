@@ -229,19 +229,15 @@ class Unit:
             ]
         return mosaic.put(htypes.rc.module_deps(deps))
 
-    def _deps_hash_str(self, dep_set):
-        dep_units = set()
-        for dep in dep_set:
+    def _hash_str(self, deps=None, units=None):
+        dep_units = set(units or [])
+        for dep in deps or []:
             try:
                 unit = self._graph.dep_to_provider[dep]
             except KeyError:
-                log.debug("%s: dep %s is missing", self.name, dep)
-                return False
+                raise RuntimeError(f"{self.name}: Attempt to hash deps to not-yet-discovered dep: {dep}")
             if unit.is_builtins:
                 continue
-            if not unit.is_up_to_date:
-                log.debug("%s: dep %s %s is outdated", self.name, dep, unit)
-                return False
             dep_units.add(unit)
         source_ref = self._make_source_ref([self, *dep_units])
         return ref_str(source_ref)
@@ -417,7 +413,7 @@ class Unit:
         ass_list = invite_attr_constructors(self._ctx, self._attr_list, module_res, resource_module)
         ass_list += ui_ctl.create_ui_resources(self._ctx, self.name, resource_module, module_res, self._call_list)
         resource_module.add_association_list(ass_list)
-        source_hash_str = self._deps_hash_str(self.deps)
+        source_hash_str = self._hash_str(self.deps)
         tests_hash_str = ref_str(self._make_source_ref(self._tests))
         log.info("Write: %s: %s", self.name, self._resources_path)
         resource_module.save_as(self._resources_path, source_hash_str, tests_hash_str, ref_str(self._generator_ref))
@@ -432,12 +428,13 @@ class Unit:
             await self._set_service_providers(self._resource_module.provided_services)
             return
         info = _resource_module_info(self._resource_module, self.code_name)
-        if self._deps_hash_str(self.deps) == self._resource_module.source_ref_str:
+        await self._wait_for_providers(info.want_deps)
+        if self._hash_str(info.want_deps) == self._resource_module.source_ref_str:
             await self._set_service_providers(self._resource_module.provided_services)
             self.deps.update(info.want_deps)
             log.info("%s: sources match", self.name)
             await self._wait_for_all_test_targets()
-            if self._deps_hash_str(self._tests) == self._resource_module.tests_ref_str:
+            if self._hash_str(units=self._tests) == self._resource_module.tests_ref_str:
                 self._is_up_to_date = True
                 log.info("%s: tests match; up-to-date", self.name)
                 return
@@ -577,7 +574,7 @@ class TestsUnit(FixturesDepsProviderUnit):
         log.info("Run: %s", self)
         if self._resource_module:
             info = _resource_module_info(self._resource_module, self.code_name)
-            if self._deps_hash_str(self.deps | info.want_deps) == self._resource_module.source_ref_str:
+            if self._hash_str(self.deps | info.want_deps) == self._resource_module.source_ref_str:
                 await self._set_service_providers(self._resource_module.provided_services)
                 self.deps.update(info.want_deps)
                 log.info("%s: sources match", self.name)
