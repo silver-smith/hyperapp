@@ -434,7 +434,8 @@ class Unit:
             return
         info = _resource_module_info(self._resource_module, self.code_name)
         await self._wait_for_providers(info.want_deps)
-        if self._deps_hash_str(info.want_deps) == self._resource_module.source_ref_str:
+        # self.deps already contains fixtures deps.
+        if self._deps_hash_str(self.deps | info.want_deps) == self._resource_module.source_ref_str:
             await self._set_service_providers(self._resource_module.provided_services)
             self.deps.update(info.want_deps)
             log.info("%s: sources match", self.name)
