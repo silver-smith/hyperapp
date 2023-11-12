@@ -604,11 +604,22 @@ class TestsUnit(FixturesDepsProviderUnit):
                 tg.create_task(self._call_test(process_pool, attr.name, recorders, module_res, call_res, tested_service_to_unit))
 
     async def _construct(self):
-        module_res = self.make_module_res(sorted([
-            *types_import_list(self._ctx, self._used_types),
-            *enum_dep_imports(self._graph, self.deps),
-            ]))
         resource_module = resource_module_factory(self._ctx.resource_registry, self.name)
+        phony_resource = htypes.rc.phony()
+        tested_code_imports = [
+            htypes.builtin.import_rec(f'tested.code.{unit.code_name}', mosaic.put(phony_resource))
+            for unit in self._tested_units
+            ]
+        tested_services_imports = [
+            htypes.builtin.import_rec(f'tested.services.{service_name}', mosaic.put(phony_resource))
+            for service_name in self._tested_services
+            ]
+        module_res = self.make_module_res(sorted([
+            *enum_dep_imports(self._graph, self.deps),
+            *tested_code_imports,
+            *tested_services_imports,
+            ]))
+        resource_module['phony'] = phony_resource
         resource_module[f'{self.code_name}.module'] = module_res
         source_hash_str = self._deps_hash_str(self.deps)
         tests_hash_str = ''
