@@ -145,7 +145,7 @@ class Unit:
     _attributes_discovered = asyncio.Condition()
     _test_targets_discovered = asyncio.Condition()
     _test_completed = asyncio.Condition()
-    _unit_constructed = asyncio.Condition()
+    _unit_up_to_date = asyncio.Condition()
 
     def __init__(self, graph, ctx, generator_ref, root_dir, path):
         self._graph = graph
@@ -317,14 +317,14 @@ class Unit:
 
     async def _wait_for_deps(self, dep_set):
         await self._wait_for_providers(dep_set)
-        async with self._unit_constructed:
+        async with self._unit_up_to_date:
             while True:
                 providers = {self._graph.dep_to_provider[dep] for dep in dep_set}
                 outdated = [p for p in providers if not p.is_up_to_date]
                 if not outdated:
                     return
                 log.debug("%s: Outdated providers: %s", self.name, outdated)
-                await self._unit_constructed.wait()
+                await self._unit_up_to_date.wait()
 
     async def _wait_for_tests(self, unit_list):
         async with self._test_completed:
@@ -425,29 +425,33 @@ class Unit:
         self._resource_module = resource_module
         self._ctx.resource_registry.set_module(self.name, resource_module)
         self._is_up_to_date = True
-        await _lock_and_notify_all(self._unit_constructed)
+        await _lock_and_notify_all(self._unit_up_to_date)
 
     async def run(self, process_pool):
         log.info("Run: %s", self)
-        if not self._resource_module.is_auto_generated:
+        if self._resource_module and not self._resource_module.is_auto_generated:
             await self._set_service_providers(self._resource_module.provided_services)
             return
-        info = _resource_module_info(self._resource_module, self.code_name)
-        await self._wait_for_providers(info.want_deps)
-        # self.deps already contains fixtures deps.
-        if self._deps_hash_str(self.deps | info.want_deps) == self._resource_module.source_ref_str:
-            await self._set_service_providers(self._resource_module.provided_services)
-            self.deps.update(info.want_deps)
-            log.info("%s: sources match", self.name)
-            await self._wait_for_all_test_targets()
-            if ref_str(self._make_sources_ref(self._tests)) == self._resource_module.tests_ref_str:
-                self._is_up_to_date = True
-                self._ctx.resource_registry.set_module(self.name, self._resource_module)
-                log.info("%s: tests match; up-to-date", self.name)
-                return
-            log.info("%s: tests do not match", self.name)
+        if self._resource_module:
+            info = _resource_module_info(self._resource_module, self.code_name)
+            await self._wait_for_providers(info.want_deps)
+            # self.deps already contains fixtures deps.
+            if self._deps_hash_str(self.deps | info.want_deps) == self._resource_module.source_ref_str:
+                await self._set_service_providers(self._resource_module.provided_services)
+                self.deps.update(info.want_deps)
+                log.info("%s: sources match", self.name)
+                await self._wait_for_all_test_targets()
+                if ref_str(self._make_sources_ref(self._tests)) == self._resource_module.tests_ref_str:
+                    self._is_up_to_date = True
+                    self._ctx.resource_registry.set_module(self.name, self._resource_module)
+                    log.info("%s: tests match; up-to-date", self.name)
+                    await _lock_and_notify_all(self._unit_up_to_date)
+                    return
+                log.info("%s: tests do not match", self.name)
+            else:
+                log.info("%s: sources do not match", self.name)
         else:
-            log.info("%s: sources do not match", self.name)
+            log.info("%s: no resources yet", self.name)
         info, self._attr_list = await self._discover_attributes(process_pool)
         await _lock_and_notify_all(self._attributes_discovered)
         await self._set_service_providers(_enum_provided_services(self._attr_list))
@@ -596,6 +600,10 @@ class TestsUnit(FixturesDepsProviderUnit):
                 await self._set_service_providers(self._resource_module.provided_services)
                 self.deps.update(info.want_deps)
                 log.info("%s: sources match", self.name)
+            else:
+                log.info("%s: sources do not match", self.name)
+        else:
+            log.info("%s: no resources yet", self.name)
         info, self._attr_list = await self._discover_attributes(process_pool)
         await self._set_service_providers(_enum_provided_services(self._attr_list))
         await self._call_all_tests(process_pool)
