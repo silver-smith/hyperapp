@@ -182,6 +182,10 @@ class Unit:
         return False
 
     @property
+    def is_completed(self):
+        return self.is_up_to_date
+
+    @property
     def is_up_to_date(self):
         return self._is_up_to_date
 
@@ -445,6 +449,9 @@ class Unit:
                     self._is_up_to_date = True
                     self._ctx.resource_registry.set_module(self.name, self._resource_module)
                     log.info("%s: tests match; up-to-date", self.name)
+                    self._deps_discovered = True
+                    await _lock_and_notify_all(self._new_deps_discovered)
+                    await _lock_and_notify_all(self._attributes_discovered)
                     await _lock_and_notify_all(self._unit_up_to_date)
                     return
                 log.info("%s: tests do not match", self.name)
@@ -532,6 +539,10 @@ class TestsUnit(FixturesDepsProviderUnit):
         return self._targets_discovered
 
     @property
+    def is_completed(self):
+        return self.test_completed
+
+    @property
     def test_completed(self):
         return self._completed
 
@@ -592,6 +603,18 @@ class TestsUnit(FixturesDepsProviderUnit):
                 recorders, module_res, call_res = test_call_res(self._graph, self._ctx, self, attr)
                 tg.create_task(self._call_test(process_pool, attr.name, recorders, module_res, call_res, tested_service_to_unit))
 
+    async def _construct(self):
+        module_res = self.make_module_res(sorted([
+            *types_import_list(self._ctx, self._used_types),
+            *enum_dep_imports(self._graph, self.deps),
+            ]))
+        resource_module = resource_module_factory(self._ctx.resource_registry, self.name)
+        resource_module[f'{self.code_name}.module'] = module_res
+        source_hash_str = self._deps_hash_str(self.deps)
+        tests_hash_str = ''
+        log.info("Write: %s: %s", self.name, self._resources_path)
+        resource_module.save_as(self._resources_path, source_hash_str, tests_hash_str, ref_str(self._generator_ref))
+
     async def run(self, process_pool):
         log.info("Run: %s", self)
         if self._resource_module:
@@ -607,5 +630,6 @@ class TestsUnit(FixturesDepsProviderUnit):
         info, self._attr_list = await self._discover_attributes(process_pool)
         await self._set_service_providers(_enum_provided_services(self._attr_list))
         await self._call_all_tests(process_pool)
+        await self._construct()
         self._completed = True
         await _lock_and_notify_all(self._test_completed)
