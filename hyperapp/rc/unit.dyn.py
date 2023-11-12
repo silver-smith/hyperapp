@@ -227,16 +227,16 @@ class Unit:
         source_ref = mosaic.put(self._source_path.read_bytes())
         return htypes.rc.source_dep(self.name, source_ref)
 
-    def _make_source_ref(self, units):
+    def _make_sources_ref(self, units):
         deps = [
             u.source_dep_record for u in
             sorted(units, key=attrgetter('name'))
             ]
         return mosaic.put(htypes.rc.module_deps(deps))
 
-    def _hash_str(self, deps=None, units=None):
-        dep_units = set(units or [])
-        for dep in deps or []:
+    def _deps_hash_str(self, dep_set):
+        dep_units = set()
+        for dep in dep_set:
             try:
                 unit = self._graph.dep_to_provider[dep]
             except KeyError:
@@ -244,7 +244,7 @@ class Unit:
             if unit.is_builtins:
                 continue
             dep_units.add(unit)
-        source_ref = self._make_source_ref([self, *dep_units])
+        source_ref = self._make_sources_ref([self, *dep_units])
         return ref_str(source_ref)
 
     async def _set_service_providers(self, provide_services):
@@ -418,8 +418,8 @@ class Unit:
         ass_list = invite_attr_constructors(self._ctx, self._attr_list, module_res, resource_module)
         ass_list += ui_ctl.create_ui_resources(self._ctx, self.name, resource_module, module_res, self._call_list)
         resource_module.add_association_list(ass_list)
-        source_hash_str = self._hash_str(self.deps)
-        tests_hash_str = ref_str(self._make_source_ref(self._tests))
+        source_hash_str = self._deps_hash_str(self.deps)
+        tests_hash_str = ref_str(self._make_sources_ref(self._tests))
         log.info("Write: %s: %s", self.name, self._resources_path)
         resource_module.save_as(self._resources_path, source_hash_str, tests_hash_str, ref_str(self._generator_ref))
         self._resource_module = resource_module
@@ -434,12 +434,12 @@ class Unit:
             return
         info = _resource_module_info(self._resource_module, self.code_name)
         await self._wait_for_providers(info.want_deps)
-        if self._hash_str(info.want_deps) == self._resource_module.source_ref_str:
+        if self._deps_hash_str(info.want_deps) == self._resource_module.source_ref_str:
             await self._set_service_providers(self._resource_module.provided_services)
             self.deps.update(info.want_deps)
             log.info("%s: sources match", self.name)
             await self._wait_for_all_test_targets()
-            if self._hash_str(units=self._tests) == self._resource_module.tests_ref_str:
+            if ref_str(self._make_sources_ref(self._tests)) == self._resource_module.tests_ref_str:
                 self._is_up_to_date = True
                 log.info("%s: tests match; up-to-date", self.name)
                 return
@@ -590,7 +590,7 @@ class TestsUnit(FixturesDepsProviderUnit):
         log.info("Run: %s", self)
         if self._resource_module:
             info = _resource_module_info(self._resource_module, self.code_name)
-            if self._hash_str(self.deps | info.want_deps) == self._resource_module.source_ref_str:
+            if self._deps_hash_str(self.deps | info.want_deps) == self._resource_module.source_ref_str:
                 await self._set_service_providers(self._resource_module.provided_services)
                 self.deps.update(info.want_deps)
                 log.info("%s: sources match", self.name)
