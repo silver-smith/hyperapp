@@ -41,10 +41,6 @@ class BuiltinsUnit:
     def is_up_to_date(self):
         return True
 
-    @property
-    def is_completed(self):
-        return True
-
     def new_test_imports_discovered(self):
         pass
 

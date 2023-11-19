@@ -28,11 +28,11 @@ class Graph:
         raise RuntimeError(f"Unknown code module: {code_name}")
 
 
-def _report_not_completed(graph):
+def _report_outdated(graph):
     for unit in graph.name_to_unit.values():
-        if unit.is_completed:
+        if unit.is_up_to_date:
             continue
-        log.info("Not completed: %s", unit.name)
+        log.info("Outdated: %s", unit.name)
         unit.report_deps()
 
 
@@ -85,6 +85,6 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, proces
         collect_units(hyperapp_dir, dir_list, generator_ref, graph)
         with process_pool_running(process_count, rpc_timeout) as pool:
             asyncio.run(_main(graph, pool, show_traces))
-        _report_not_completed(graph)
+        _report_outdated(graph)
     finally:
         _dump_graph(graph)

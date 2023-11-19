@@ -198,10 +198,6 @@ class Unit:
         return False
 
     @property
-    def is_completed(self):
-        return self.is_up_to_date
-
-    @property
     def is_up_to_date(self):
         return self._is_up_to_date
 
@@ -567,10 +563,6 @@ class TestsUnit(FixturesDepsProviderUnit):
         return self._targets_discovered
 
     @property
-    def is_completed(self):
-        return self.test_completed
-
-    @property
     def test_completed(self):
         return self._completed
 
@@ -680,6 +672,7 @@ class TestsUnit(FixturesDepsProviderUnit):
                      self.name, ", ".join(u.name for u in outdated), ", ".join(u.name for u in self._tested_units - outdated))
             return False
         log.info("%s: all tested units are up-to-date: %s", self.name, ", ".join(u.name for u in self._tested_units))
+        self._is_up_to_date = True
         return True
 
     async def run(self, process_pool):
@@ -691,4 +684,5 @@ class TestsUnit(FixturesDepsProviderUnit):
         await self._call_all_tests(process_pool)
         await self._construct()
         self._completed = True
+        self._is_up_to_date = True
         await _lock_and_notify_all(self._test_completed)
