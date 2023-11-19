@@ -605,6 +605,7 @@ class TestsUnit(FixturesDepsProviderUnit):
 
     async def _call_all_tests(self, process_pool):
         tested_service_to_unit = {}
+        await self._wait_for_deps_discovered(self._tested_units)
         await self._wait_for_providers([ServiceDep(service_name) for service_name in self._tested_services])
         await self._wait_for_deps(self.deps | {dep for unit in self._tested_units for dep in unit.deps})
         for service_name in self._tested_services:
