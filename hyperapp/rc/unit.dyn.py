@@ -35,6 +35,10 @@ ResModuleInfo = namedtuple('DesModuleInfo', 'want_deps test_code test_services')
 ImportsInfo = namedtuple('ImportsInfo', 'used_types want_deps test_code test_services')
 
 
+def _unit_list_to_str(unit_list):
+    return ", ".join(unit.name for unit in unit_list)
+
+
 def _flatten_set(set_list):
     result = set()
     for s in set_list:
@@ -306,20 +310,22 @@ class Unit:
     async def _wait_for_all_test_targets(self):
         async with self._test_targets_discovered:
             while True:
-                for unit in self._graph.name_to_unit.values():
-                    if unit.is_tests and not unit.targets_discovered:
-                        break
-                else:
+                not_discovered = [
+                    unit for unit in self._graph.name_to_unit.values()
+                    if unit.is_tests and not unit.targets_discovered
+                    ]
+                if not not_discovered:
                     return
+                log.debug("%s: Tests not yet discovered: %s", self.name, _unit_list_to_str(not_discovered))
                 await self._test_targets_discovered.wait()
 
     async def _wait_for_providers(self, dep_set):
         async with self._providers_changed:
             while True:
-                unknown = [dep for dep in dep_set if dep not in self._graph.dep_to_provider]
+                unknown = [repr(dep) for dep in dep_set if dep not in self._graph.dep_to_provider]
                 if not unknown:
                     return
-                log.debug("%s: Unknown providers for deps: %s", self.name, unknown)
+                log.debug("%s: Unknown providers for deps: %s", self.name, ", ".join(unknown))
                 await self._providers_changed.wait()
 
     async def _wait_for_deps_discovered(self, units):
@@ -328,7 +334,7 @@ class Unit:
                 not_discovered = {u for u in units if not u.deps_discovered}
                 if not not_discovered:
                     return
-                log.debug("%s: Deps not discovered: %s", self.name, not_discovered)
+                log.debug("%s: Deps not discovered: %s", self.name, _unit_list_to_str(not_discovered))
                 await self._new_deps_discovered.wait()
 
     async def _wait_for_deps(self, dep_set):
@@ -339,7 +345,7 @@ class Unit:
                 outdated = [p for p in providers if not p.is_up_to_date]
                 if not outdated:
                     return
-                log.debug("%s: Outdated providers: %s", self.name, outdated)
+                log.debug("%s: Outdated providers: %s", self.name, _unit_list_to_str(outdated))
                 await self._unit_up_to_date.wait()
 
     async def _wait_for_tests(self, unit_list):
@@ -348,7 +354,7 @@ class Unit:
                 not_completed = [u for u in unit_list if not u.test_completed]
                 if not not_completed:
                     return
-                log.debug("%s: Waiting for tests: %s", self.name, not_completed)
+                log.debug("%s: Waiting for tests: %s", self.name, _unit_list_to_str(not_completed))
                 await self._test_completed.wait()
 
     async def _import_module(self, process_pool, recorders, module_res):
@@ -391,6 +397,7 @@ class Unit:
             info = _imports_info(imports)
             unit = self._graph.name_to_unit[name]
             unit.add_used_types(info.used_types)
+            log.debug("%s: discovered imports for %s: %s", self.name, name, info)
 
     def _handle_result_calls(self, call_list):
         name_to_calls = defaultdict(list)
@@ -483,6 +490,7 @@ class Unit:
         await self._set_service_providers(_enum_provided_services(self._attr_list))
         await self._wait_for_deps(self.deps)
         await self._call_all_fn_attrs(process_pool, self._attr_list)
+        await self._wait_for_all_test_targets()
         await self._wait_for_tests(self._tests)
         await self._construct()
 
@@ -575,6 +583,7 @@ class TestsUnit(FixturesDepsProviderUnit):
             self._tested_units.add(unit)
         self._tested_services = info.test_services
         self._targets_discovered = True
+        log.info("%s: test targets discovered: %s", self.name, _unit_list_to_str(self._tested_units))
         await _lock_and_notify_all(self._test_targets_discovered)
 
     async def _wait_for_attributes_discovered(self, unit_list):
@@ -583,7 +592,7 @@ class TestsUnit(FixturesDepsProviderUnit):
                 not_discovered = [u for u in unit_list if not u.attributes_discovered]
                 if not not_discovered:
                     return
-                log.debug("%s: Waiting for attributes discovered: %s", self.name, not_discovered)
+                log.debug("%s: Waiting for attributes discovered: %s", self.name, _unit_list_to_str(not_discovered))
                 await self._attributes_discovered.wait()
 
     async def _call_test(self, process_pool, attr_name, test_recorders, module_res, call_res, tested_service_to_unit):
@@ -670,9 +679,9 @@ class TestsUnit(FixturesDepsProviderUnit):
         outdated = {unit for unit in self._tested_units if not unit.is_up_to_date}
         if outdated:
             log.info("%s: outdated tested units: %s; up-to-date: %s",
-                     self.name, ", ".join(u.name for u in outdated), ", ".join(u.name for u in self._tested_units - outdated))
+                     self.name, _unit_list_to_str(u.name for u in outdated), _unit_list_to_str(u.name for u in self._tested_units - outdated))
             return False
-        log.info("%s: all tested units are up-to-date: %s", self.name, ", ".join(u.name for u in self._tested_units))
+        log.info("%s: all tested units are up-to-date: %s", self.name, _unit_list_to_str(u.name for u in self._tested_units))
         self._is_up_to_date = True
         return True
 
