@@ -35,6 +35,22 @@ ResModuleInfo = namedtuple('DesModuleInfo', 'want_deps test_code test_services')
 ImportsInfo = namedtuple('ImportsInfo', 'used_types want_deps test_code test_services')
 
 
+def _flatten_set(set_list):
+    result = set()
+    for s in set_list:
+        result |= s
+    return result
+
+
+def _sources_ref_str(units):
+    deps = [
+        u.source_dep_record for u in
+        sorted(units, key=attrgetter('name'))
+        ]
+    sources_ref = mosaic.put(htypes.rc.module_deps(deps))
+    return ref_str(sources_ref)
+
+
 def _recorder_piece_list(recorders):
     piece_list = []
     for module_name, recorder_list in recorders.items():
@@ -231,15 +247,8 @@ class Unit:
         source_ref = mosaic.put(self._source_path.read_bytes())
         return htypes.rc.source_dep(self.name, source_ref)
 
-    def _make_sources_ref(self, units):
-        deps = [
-            u.source_dep_record for u in
-            sorted(units, key=attrgetter('name'))
-            ]
-        return mosaic.put(htypes.rc.module_deps(deps))
-
-    def _deps_hash_str(self, dep_set):
-        dep_units = set()
+    def _deps_sources(self, dep_set):
+        unit_set = {self}
         for dep in dep_set:
             try:
                 unit = self._graph.dep_to_provider[dep]
@@ -247,9 +256,16 @@ class Unit:
                 raise RuntimeError(f"{self.name}: Attempt to hash deps to not-yet-discovered dep: {dep}")
             if unit.is_builtins:
                 continue
-            dep_units.add(unit)
-        source_ref = self._make_sources_ref([self, *dep_units])
-        return ref_str(source_ref)
+            unit_set.add(unit)
+        return unit_set
+
+    @property
+    def sources(self):
+        return self._deps_sources(self.deps)
+
+    @property
+    def _tested_sources(self):
+        return _flatten_set(t.tested_sources for t in self._tests)
 
     async def _set_service_providers(self, provide_services):
         for service_name in provide_services:
@@ -422,8 +438,8 @@ class Unit:
         ass_list = invite_attr_constructors(self._ctx, self._attr_list, module_res, resource_module)
         ass_list += ui_ctl.create_ui_resources(self._ctx, self.name, resource_module, module_res, self._call_list)
         resource_module.add_association_list(ass_list)
-        source_hash_str = self._deps_hash_str(self.deps)
-        tests_hash_str = ref_str(self._make_sources_ref(self._tests))
+        source_hash_str = _sources_ref_str(self.sources)
+        tests_hash_str = _sources_ref_str(self._tested_sources)
         log.info("Write: %s: %s", self.name, self._resources_path)
         resource_module.save_as(self._resources_path, source_hash_str, tests_hash_str, ref_str(self._generator_ref))
         self._resource_module = resource_module
@@ -431,34 +447,41 @@ class Unit:
         self._is_up_to_date = True
         await _lock_and_notify_all(self._unit_up_to_date)
 
+    async def _check_up_to_date(self):
+        if self._resource_module and not self._resource_module.is_auto_generated:
+            log.info("%s: manually created", self.name)
+            await self._set_service_providers(self._resource_module.provided_services)
+            return True
+        if not self._resource_module:
+            log.info("%s: no resources yet", self.name)
+            return False
+        info = _resource_module_info(self._resource_module, self.code_name)
+        await self._wait_for_providers(info.want_deps)
+        # self.deps already contains fixtures deps.
+        dep_sources = self._deps_sources(self.deps | info.want_deps)
+        if _sources_ref_str(dep_sources) != self._resource_module.source_ref_str:
+            log.info("%s: sources do not match", self.name)
+            return False
+        log.info("%s: sources match", self.name)
+        await self._set_service_providers(self._resource_module.provided_services)
+        self.deps.update(info.want_deps)
+        await self._wait_for_all_test_targets()
+        if _sources_ref_str(self._tested_sources) != self._resource_module.tests_ref_str:
+            log.info("%s: tests do not match", self.name)
+            return False
+        self._is_up_to_date = True
+        self._deps_discovered = True
+        await _lock_and_notify_all(self._new_deps_discovered)
+        self._ctx.resource_registry.set_module(self.name, self._resource_module)
+        log.info("%s: tests match; up-to-date", self.name)
+        await _lock_and_notify_all(self._attributes_discovered)
+        await _lock_and_notify_all(self._unit_up_to_date)
+        return True
+
     async def run(self, process_pool):
         log.info("Run: %s", self)
-        if self._resource_module and not self._resource_module.is_auto_generated:
-            await self._set_service_providers(self._resource_module.provided_services)
+        if await self._check_up_to_date():
             return
-        if self._resource_module:
-            info = _resource_module_info(self._resource_module, self.code_name)
-            await self._wait_for_providers(info.want_deps)
-            # self.deps already contains fixtures deps.
-            if self._deps_hash_str(self.deps | info.want_deps) == self._resource_module.source_ref_str:
-                await self._set_service_providers(self._resource_module.provided_services)
-                self.deps.update(info.want_deps)
-                log.info("%s: sources match", self.name)
-                await self._wait_for_all_test_targets()
-                if ref_str(self._make_sources_ref(self._tests)) == self._resource_module.tests_ref_str:
-                    self._is_up_to_date = True
-                    self._ctx.resource_registry.set_module(self.name, self._resource_module)
-                    log.info("%s: tests match; up-to-date", self.name)
-                    self._deps_discovered = True
-                    await _lock_and_notify_all(self._new_deps_discovered)
-                    await _lock_and_notify_all(self._attributes_discovered)
-                    await _lock_and_notify_all(self._unit_up_to_date)
-                    return
-                log.info("%s: tests do not match", self.name)
-            else:
-                log.info("%s: sources do not match", self.name)
-        else:
-            log.info("%s: no resources yet", self.name)
         info, self._attr_list = await self._discover_attributes(process_pool)
         await _lock_and_notify_all(self._attributes_discovered)
         await self._set_service_providers(_enum_provided_services(self._attr_list))
@@ -521,7 +544,7 @@ class TestsUnit(FixturesDepsProviderUnit):
         super().__init__(graph, ctx, generator_ref, root_dir, path)
         self._targets_discovered = False
         self._completed = False
-        self._tested_units = None  # Unit list
+        self._tested_units = None  # Unit set
         self._tested_services = None  # str set
 
     def __repr__(self):
@@ -533,6 +556,11 @@ class TestsUnit(FixturesDepsProviderUnit):
 
     def provided_dep_resource(self, dep):
         raise NotImplementedError()
+
+    @property
+    def tested_sources(self):
+        return _flatten_set(
+            [self.sources] + [unit.sources for unit in self._tested_units])
 
     @property
     def targets_discovered(self):
@@ -548,11 +576,11 @@ class TestsUnit(FixturesDepsProviderUnit):
 
     async def _imports_discovered(self, info):
         await super()._imports_discovered(info)
-        self._tested_units = []
+        self._tested_units = set()
         for code_name in info.test_code:
             unit = self._graph.unit_by_code_name(code_name)
             unit.add_test(self)
-            self._tested_units.append(unit)
+            self._tested_units.add(unit)
         self._tested_services = info.test_services
         self._targets_discovered = True
         await _lock_and_notify_all(self._test_targets_discovered)
@@ -585,7 +613,6 @@ class TestsUnit(FixturesDepsProviderUnit):
 
     async def _call_all_tests(self, process_pool):
         tested_service_to_unit = {}
-        await self._wait_for_deps_discovered(self._tested_units)
         await self._wait_for_providers([ServiceDep(service_name) for service_name in self._tested_services])
         await self._wait_for_deps(self.deps | {dep for unit in self._tested_units for dep in unit.deps})
         for service_name in self._tested_services:
@@ -621,23 +648,44 @@ class TestsUnit(FixturesDepsProviderUnit):
             ]))
         resource_module['phony'] = phony_resource
         resource_module[f'{self.code_name}.module'] = module_res
-        source_hash_str = self._deps_hash_str(self.deps)
+        source_hash_str = _sources_ref_str(self.sources)
         tests_hash_str = ''
         log.info("Write: %s: %s", self.name, self._resources_path)
         resource_module.save_as(self._resources_path, source_hash_str, tests_hash_str, ref_str(self._generator_ref))
 
+    async def _check_up_to_date(self):
+        if not self._resource_module:
+            log.info("%s: no resources yet", self.name)
+            return False
+        info = _resource_module_info(self._resource_module, self.code_name)
+        await self._wait_for_providers(self.deps | info.want_deps)
+        dep_sources = self._deps_sources(self.deps | info.want_deps)
+        if _sources_ref_str(dep_sources) != self._resource_module.source_ref_str:
+            log.info("%s: sources do not match", self.name)
+            return False
+        log.info("%s: sources match", self.name)
+        self._tested_units = set()
+        for code_name in info.test_code:
+            unit = self._graph.unit_by_code_name(code_name)
+            self._tested_units.add(unit)
+            unit.add_test(self)
+        await self._set_service_providers(self._resource_module.provided_services)
+        self.deps.update(info.want_deps)
+        self._targets_discovered = True
+        await _lock_and_notify_all(self._test_targets_discovered)
+        await self._wait_for_deps_discovered(self._tested_units)
+        outdated = {unit for unit in self._tested_units if not unit.is_up_to_date}
+        if outdated:
+            log.info("%s: outdated tested units: %s; up-to-date: %s",
+                     self.name, ", ".join(u.name for u in outdated), ", ".join(u.name for u in self._tested_units - outdated))
+            return False
+        log.info("%s: all tested units are up-to-date: %s", self.name, ", ".join(u.name for u in self._tested_units))
+        return True
+
     async def run(self, process_pool):
         log.info("Run: %s", self)
-        if self._resource_module:
-            info = _resource_module_info(self._resource_module, self.code_name)
-            if self._deps_hash_str(self.deps | info.want_deps) == self._resource_module.source_ref_str:
-                await self._set_service_providers(self._resource_module.provided_services)
-                self.deps.update(info.want_deps)
-                log.info("%s: sources match", self.name)
-            else:
-                log.info("%s: sources do not match", self.name)
-        else:
-            log.info("%s: no resources yet", self.name)
+        if await self._check_up_to_date():
+            return
         info, self._attr_list = await self._discover_attributes(process_pool)
         await self._set_service_providers(_enum_provided_services(self._attr_list))
         await self._call_all_tests(process_pool)
