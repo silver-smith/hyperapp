@@ -1,0 +1,21 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:mosaic.service
+- common.context:context.module
+- legacy_type.builtin:python_module
+- legacy_type.rc:phony
+- ui.qt.window:window.module
+associations: []
+definitions:
+  application.tests.module:
+    _type: legacy_type.builtin:python_module
+    module_name: application.tests
+    file_name: application.tests.dyn.py
+    import_list:
+      code.context: common.context:context.module
+      code.window: ui.qt.window:window.module
+      services.mosaic: builtins:mosaic.service
+      tested.code.application: phony
+  phony:
+    _type: legacy_type.rc:phony
