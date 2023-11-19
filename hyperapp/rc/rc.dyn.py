@@ -64,10 +64,17 @@ async def _run_unit(unit, process_pool, show_traces):
         raise RuntimeError(f"{unit}: {x}")
 
 
+async def run_tasks(tasks, deadlock_check):
+    await asyncio.gather(*tasks)
+    log.debug("Cancel deadlock check")
+    deadlock_check.cancel()
+
+
 async def _main(graph, process_pool, show_traces):
     unit_tasks = [_run_unit(unit, process_pool, show_traces) for unit in graph.name_to_unit.values()]
+    deadlock_check = asyncio.create_task(process_pool.check_for_deadlock())
     try:
-        await asyncio.gather(process_pool.check_for_deadlock(), *unit_tasks)
+        await asyncio.gather(deadlock_check, run_tasks(unit_tasks, deadlock_check))
     except TimeoutError:
         log.error("Deadlocked\n")
 
