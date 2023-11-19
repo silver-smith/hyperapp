@@ -214,7 +214,7 @@ class Unit:
             return
         self._ctx.resource_registry.set_module(self.name, self._resource_module)
         self._is_up_to_date = True
-        log.info("%s: manually generated", self.name)
+        log.debug("%s: manually created", self.name)
         return
 
     def report_deps(self):
@@ -475,7 +475,7 @@ class Unit:
         return True
 
     async def run(self, process_pool):
-        log.info("Run: %s", self)
+        log.info("Run: %s", self.name)
         if await self._check_up_to_date():
             return
         info, self._attr_list = await self._discover_attributes(process_pool)
@@ -676,7 +676,7 @@ class TestsUnit(FixturesDepsProviderUnit):
         return True
 
     async def run(self, process_pool):
-        log.info("Run: %s", self)
+        log.info("Run: %s", self.name)
         if await self._check_up_to_date():
             return
         info, self._attr_list = await self._discover_attributes(process_pool)
