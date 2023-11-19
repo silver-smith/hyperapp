@@ -260,7 +260,7 @@ class Unit:
         return self._deps_sources(self.deps)
 
     @property
-    def _tested_sources(self):
+    def _test_sources(self):
         return _flatten_set(t.tested_sources for t in self._tests)
 
     async def _set_service_providers(self, provide_services):
@@ -435,7 +435,7 @@ class Unit:
         ass_list += ui_ctl.create_ui_resources(self._ctx, self.name, resource_module, module_res, self._call_list)
         resource_module.add_association_list(ass_list)
         source_hash_str = _sources_ref_str(self.sources)
-        tests_hash_str = _sources_ref_str(self._tested_sources)
+        tests_hash_str = _sources_ref_str(self._test_sources)
         log.info("Write: %s: %s", self.name, self._resources_path)
         resource_module.save_as(self._resources_path, source_hash_str, tests_hash_str, ref_str(self._generator_ref))
         self._resource_module = resource_module
@@ -462,7 +462,7 @@ class Unit:
         await self._set_service_providers(self._resource_module.provided_services)
         self.deps.update(info.want_deps)
         await self._wait_for_all_test_targets()
-        if _sources_ref_str(self._tested_sources) != self._resource_module.tests_ref_str:
+        if _sources_ref_str(self._test_sources) != self._resource_module.tests_ref_str:
             log.info("%s: tests do not match", self.name)
             return False
         self._is_up_to_date = True
