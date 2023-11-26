@@ -492,6 +492,7 @@ class Unit:
         await self._call_all_fn_attrs(process_pool, self._attr_list)
         await self._wait_for_all_test_targets()
         await self._wait_for_tests(self._tests)
+
         await self._construct()
 
     def add_test(self, test_unit):
@@ -679,7 +680,7 @@ class TestsUnit(FixturesDepsProviderUnit):
         outdated = {unit for unit in self._tested_units if not unit.is_up_to_date}
         if outdated:
             log.info("%s: outdated tested units: %s; up-to-date: %s",
-                     self.name, _unit_list_to_str(u.name for u in outdated), _unit_list_to_str(u.name for u in self._tested_units - outdated))
+                     self.name, ", ".join(u.name for u in outdated), ", ".join({u.name for u in self._tested_units} - outdated))
             return False
         log.info("%s: all tested units are up-to-date: %s", self.name, _unit_list_to_str(u.name for u in self._tested_units))
         self._is_up_to_date = True
