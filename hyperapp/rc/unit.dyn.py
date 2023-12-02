@@ -31,7 +31,7 @@ from .code import ui_ctl
 log = logging.getLogger(__name__)
 
 
-ResModuleInfo = namedtuple('DesModuleInfo', 'want_deps test_code test_services')
+ResModuleInfo = namedtuple('DesModuleInfo', 'use_modules want_deps test_code test_services')
 ImportsInfo = namedtuple('ImportsInfo', 'used_types want_deps test_code test_services')
 
 
@@ -72,11 +72,16 @@ def _module_import_list_to_dict(module_import_list):
 
 
 def _resource_module_info(resource_module, code_module_name):
+    use_modules = set()
     want_deps = set()
     test_code = set()
     test_services = set()
     import_list = resource_module.code_module_imports(code_module_name)
-    for name in import_list:
+    for name, value in import_list.items():
+        if value != 'phony':
+            module_name, var_name = value.split(':')
+            if module_name != 'builtins' and not module_name.startswith('legacy_type.'):
+                use_modules.add(module_name)
         l = name.split('.')
         if len(l) == 2:
             what, name = l
@@ -93,6 +98,7 @@ def _resource_module_info(resource_module, code_module_name):
             if what == 'services':
                 test_services.add(name)
     return ResModuleInfo(
+        use_modules=use_modules,
         want_deps=want_deps,
         test_code=test_code,
         test_services=test_services,
@@ -661,8 +667,7 @@ class TestsUnit(FixturesDepsProviderUnit):
             log.info("%s: no resources yet", self.name)
             return False
         info = _resource_module_info(self._resource_module, self.code_name)
-        await self._wait_for_providers(self.deps | info.want_deps)
-        dep_sources = self._deps_sources(self.deps | info.want_deps)
+        dep_sources = {self} | {self._graph.name_to_unit[module_name] for module_name in info.use_modules}
         if _sources_ref_str(dep_sources) != self._resource_module.source_ref_str:
             log.info("%s: sources do not match", self.name)
             return False
