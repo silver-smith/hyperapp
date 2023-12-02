@@ -273,6 +273,10 @@ class Unit:
     def _test_sources(self):
         return _flatten_set(t.tested_sources for t in self._tests)
 
+    @property
+    def _test_sources_deps(self):
+        return _flatten_set(t.tested_sources_deps for t in self._tests)
+
     async def _set_service_providers(self, provide_services):
         for service_name in provide_services:
             dep = ServiceDep(service_name)
@@ -475,6 +479,7 @@ class Unit:
         await self._set_service_providers(self._resource_module.provided_services)
         self.deps.update(info.want_deps)
         await self._wait_for_all_test_targets()
+        await self._wait_for_providers(self._test_sources_deps)
         if _sources_ref_str(self._test_sources) != self._resource_module.tests_ref_str:
             log.info("%s: tests do not match", self.name)
             return False
@@ -567,6 +572,11 @@ class TestsUnit(FixturesDepsProviderUnit):
 
     def provided_dep_resource(self, dep):
         raise NotImplementedError()
+
+    @property
+    def tested_sources_deps(self):
+        return _flatten_set(
+            [self.deps] + [unit.deps for unit in self._tested_units])
 
     @property
     def tested_sources(self):
