@@ -687,7 +687,7 @@ class TestsUnit(FixturesDepsProviderUnit):
             log.info("%s: outdated tested units: %s; up-to-date: %s",
                      self.name, ", ".join(u.name for u in outdated), ", ".join({u.name for u in self._tested_units} - outdated))
             return False
-        log.info("%s: all tested units are up-to-date: %s", self.name, _unit_list_to_str(u.name for u in self._tested_units))
+        log.info("%s: all tested units are up-to-date: %s", self.name, _unit_list_to_str(self._tested_units))
         self._is_up_to_date = True
         return True
 
