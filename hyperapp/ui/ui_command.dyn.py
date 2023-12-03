@@ -22,18 +22,19 @@ class UnboundUiCommand:
         self._ctl = ctl
         self._fn = fn
 
-    def bind(self, widget):
-        return BoundUiCommand(self._name, self._layout, self._ctl, self._fn, widget)
+    def bind(self, widget, wrapper):
+        return BoundUiCommand(self._name, self._layout, self._ctl, self._fn, widget, wrapper)
 
 
 class BoundUiCommand:
 
-    def __init__(self, name, layout, ctl, fn, widget):
+    def __init__(self, name, layout, ctl, fn, widget, wrapper):
         self._name = name
         self._layout = layout
         self._ctl = ctl
         self._fn = fn
         self._widget = weakref.ref(widget)
+        self._wrapper = wrapper
 
     @property
     def name(self):
@@ -45,7 +46,8 @@ class BoundUiCommand:
             log.warning("Not running UI command %r: Widget is gone", self._name)
             return None
         state = self._ctl.widget_state(widget)
-        return self._fn(self._layout, state, **kw)
+        result = self._fn(self._layout, state, **kw)
+        self._wrapper(result)
 
 
 @mark.service

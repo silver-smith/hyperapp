@@ -1,4 +1,5 @@
 import logging
+from functools import partial
 
 from PySide6 import QtWidgets
 
@@ -31,7 +32,7 @@ class WindowCtl:
         central_view_state = web.summon(state.central_view_state)
         menu_bar_state = web.summon(state.menu_bar_state)
         central_widget = self._central_view_ctl.construct_widget(central_view_state, ctx)
-        commands = self._central_view_ctl.bind_commands(central_widget)
+        commands = self._central_view_ctl.bind_commands(central_widget, wrapper=partial(self._apply, central_widget))
         menu_ctx = ctx.clone_with(commands=commands)
         menu_bar = self._menu_bar_ctl.construct_widget(menu_bar_state, menu_ctx)
         w.setMenuWidget(menu_bar)
@@ -39,3 +40,7 @@ class WindowCtl:
         w.move(state.pos.x, state.pos.y)
         w.resize(state.size.w, state.size.h)
         return w
+
+    def _apply(self, widget, diff):
+        log.info("Window: apply: %s", diff)
+        self._central_view_ctl.apply(widget, diff)

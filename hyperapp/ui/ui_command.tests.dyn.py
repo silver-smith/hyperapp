@@ -37,4 +37,4 @@ def test_ui_command_factory():
     layout = "Nothing is here"
     command_list = ui_command_factory(layout, PhonyCtl())
     assert command_list
-    command_list[0].bind(PhonyWidget()).run()
+    command_list[0].bind(PhonyWidget(), wrapper=lambda x: x).run()

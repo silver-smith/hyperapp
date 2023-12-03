@@ -32,8 +32,12 @@ class TabsCtl:
     def widget_state(self, widget):
         return htypes.tabs.state(current_tab=widget.currentIndex())
 
-    def bind_commands(self, widget):
-        return [command.bind(widget) for command in self._commands]
+    def bind_commands(self, widget, wrapper):
+        return [command.bind(widget, wrapper) for command in self._commands]
+
+    def apply(self, widget, diff):
+        log.info("Tabs: apply: %s", diff)
+        widget.insertTab(diff.idx, QtWidgets.QLabel("Hello again!"), "Dup")
 
 
 @mark.ui_command(htypes.tabs.layout)
