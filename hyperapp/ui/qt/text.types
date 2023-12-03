@@ -1,0 +1,4 @@
+layout = record
+
+state = record:
+  text: string
