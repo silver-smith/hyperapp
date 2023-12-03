@@ -4,7 +4,7 @@ import:
 - builtins:mosaic.service
 - common.context:context.module
 - legacy_type.builtin:python_module
-- legacy_type.rc:phony
+- legacy_type.phony:phony
 - ui.qt.window:window.module
 associations: []
 definitions:
@@ -18,4 +18,4 @@ definitions:
       services.mosaic: builtins:mosaic.service
       tested.code.application: phony
   phony:
-    _type: legacy_type.rc:phony
+    _type: legacy_type.phony:phony

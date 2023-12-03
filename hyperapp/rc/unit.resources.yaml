@@ -10,7 +10,7 @@ import:
 - legacy_type.inspect:import_recorder
 - legacy_type.rc:source_dep
 - legacy_type.rc:module_deps
-- legacy_type.rc:phony
+- legacy_type.phony:phony
 - rc.call_driver:call_driver.module
 - rc.call_trace:call_trace.module
 - rc.dep:dep.module
@@ -34,7 +34,7 @@ definitions:
       htypes.inspect.import_recorder: legacy_type.inspect:import_recorder
       htypes.rc.source_dep: legacy_type.rc:source_dep
       htypes.rc.module_deps: legacy_type.rc:module_deps
-      htypes.rc.phony: legacy_type.rc:phony
+      htypes.phony.phony: legacy_type.phony:phony
       services.mosaic: builtins:mosaic.service
       services.resource_module_factory: builtins:resource_module_factory.service
       services.web: builtins:web.service

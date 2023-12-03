@@ -5,7 +5,7 @@ import:
 - builtins:mosaic.service
 - common.bundler:bundler.service
 - legacy_type.builtin:python_module
-- legacy_type.rc:phony
+- legacy_type.phony:phony
 - resource.fn_to_res:fn_to_ref.service
 - rpc.rpc_endpoint:rpc_endpoint_factory.service
 - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
@@ -16,7 +16,7 @@ import:
 associations: []
 definitions:
   phony:
-    _type: legacy_type.rc:phony
+    _type: legacy_type.phony:phony
   tcp_transport.tests.module:
     _type: legacy_type.builtin:python_module
     module_name: tcp_transport.tests

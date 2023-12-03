@@ -3,14 +3,14 @@
 import:
 - builtins:mosaic.service
 - legacy_type.builtin:python_module
-- legacy_type.rc:phony
+- legacy_type.phony:phony
 - transport.identity:identity_registry.service
 - transport.identity:parcel_registry.service
 - transport.identity:peer_registry.service
 associations: []
 definitions:
   phony:
-    _type: legacy_type.rc:phony
+    _type: legacy_type.phony:phony
   rsa_identity.tests.module:
     _type: legacy_type.builtin:python_module
     module_name: rsa_identity.tests

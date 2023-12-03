@@ -651,7 +651,7 @@ class TestsUnit(FixturesDepsProviderUnit):
 
     async def _construct(self):
         resource_module = resource_module_factory(self._ctx.resource_registry, self.name)
-        phony_resource = htypes.rc.phony()
+        phony_resource = htypes.phony.phony()
         tested_code_imports = [
             htypes.builtin.import_rec(f'tested.code.{unit.code_name}', mosaic.put(phony_resource))
             for unit in self._tested_units

@@ -3,7 +3,7 @@
 import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:python_module
-- legacy_type.rc:phony
+- legacy_type.phony:phony
 associations: []
 definitions:
   partial_ref.tests.module:
@@ -15,4 +15,4 @@ definitions:
       tested.code.partial_ref: phony
       tested.services.partial_ref: phony
   phony:
-    _type: legacy_type.rc:phony
+    _type: legacy_type.phony:phony
