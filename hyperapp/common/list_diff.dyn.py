@@ -12,3 +12,6 @@ class ListDiffInsert:
     def __init__(self, idx, item):
         self.idx = idx
         self.item = item
+
+    def __repr__(self):
+        return f"<ListDiffInsert: @#{self.idx}: {self.item}>"
