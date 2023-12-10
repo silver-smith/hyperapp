@@ -1,4 +1,5 @@
-layout = record
+view_layout = record
+edit_layout = record
 
 state = record:
   text: string

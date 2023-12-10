@@ -12,7 +12,7 @@ import:
 - legacy_type.tabs:layout
 - legacy_type.tabs:state
 - legacy_type.tabs:tab
-- legacy_type.text:layout
+- legacy_type.text:edit_layout
 - legacy_type.text:state
 - legacy_type.window:layout
 - legacy_type.window:pos
@@ -35,7 +35,7 @@ definitions:
       htypes.tabs.layout: legacy_type.tabs:layout
       htypes.tabs.state: legacy_type.tabs:state
       htypes.tabs.tab: legacy_type.tabs:tab
-      htypes.text.layout: legacy_type.text:layout
+      htypes.text.edit_layout: legacy_type.text:edit_layout
       htypes.text.state: legacy_type.text:state
       htypes.window.layout: legacy_type.window:layout
       htypes.window.pos: legacy_type.window:pos

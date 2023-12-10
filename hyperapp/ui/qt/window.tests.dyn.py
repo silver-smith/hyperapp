@@ -9,7 +9,7 @@ from .code.context import Context
 
 
 def make_layout():
-    text_layout = htypes.text.layout()
+    text_layout = htypes.text.view_layout()
     tabs_layout = htypes.tabs.layout(
         tabs=[htypes.tabs.tab("One", mosaic.put(text_layout))],
         )

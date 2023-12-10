@@ -12,7 +12,7 @@ from .code.context import Context
 
 
 def make_layout():
-    text_layout = htypes.text.layout()
+    text_layout = htypes.text.edit_layout()
     tabs_layout = htypes.tabs.layout(
         tabs=[
             htypes.tabs.tab("First", mosaic.put(text_layout)),
