@@ -9,8 +9,9 @@ from .code.context import Context
 
 
 def make_layout():
+    text_layout = htypes.text.layout()
     tabs_layout = htypes.tabs.layout(
-        tab_list=[mosaic.put("Nothing is here")],
+        tabs=[htypes.tabs.tab("One", mosaic.put(text_layout))],
         )
     return htypes.window.layout(
         menu_bar_ref=mosaic.put(htypes.menu_bar.layout()),
@@ -20,8 +21,10 @@ def make_layout():
 
 
 def make_state():
+    text_state = htypes.text.state("Sample text")
     tabs_state = htypes.tabs.state(
         current_tab=0,
+        tabs=[mosaic.put(text_state)],
         )
     return htypes.window.state(
         menu_bar_state=mosaic.put(htypes.menu_bar.state()),

@@ -44,9 +44,10 @@ class WindowCtl:
         w.resize(state.size.w, state.size.h)
         return w
 
-    def _apply(self, widget, diff):
-        log.info("Window: apply: %s", diff)
-        central_view_layout = self._central_view_ctl.apply(widget.centralWidget(), diff)
+    def _apply(self, widget, diffs):
+        layout_diff, state_diff = diffs
+        log.info("Window: apply: %s / %s", layout_diff, state_diff)
+        central_view_layout = self._central_view_ctl.apply(widget.centralWidget(), layout_diff, state_diff)
         commands = self._central_view_ctl.bind_commands(
             central_view_layout, widget.centralWidget(), wrapper=partial(self._apply, widget))
         self._menu_bar_ctl.set_commands(widget.menuWidget(), commands)

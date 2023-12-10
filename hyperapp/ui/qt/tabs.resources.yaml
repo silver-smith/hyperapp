@@ -1,6 +1,8 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:mosaic.service
+- builtins:web.service
 - common.list_diff:list_diff.module
 - common.mark:mark.service
 - legacy_type.builtin:attribute
@@ -52,7 +54,10 @@ definitions:
       htypes.tabs.layout: legacy_type.tabs:layout
       htypes.tabs.state: legacy_type.tabs:state
       services.mark: common.mark:mark.service
+      services.mosaic: builtins:mosaic.service
       services.ui_command_factory: ui.ui_command:ui_command_factory.service
+      services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
+      services.web: builtins:web.service
   ui_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:ui_command_d
