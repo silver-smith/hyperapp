@@ -306,6 +306,12 @@ class Unit:
             import_list=tuple(import_list),
             )
 
+    def attr_constructors_associations(self, module_res):
+        assert self._attr_list is not None  # Not yet imported/attr enumerated.
+        name_to_res = {}  # Not used.
+        ass_list = invite_attr_constructors(self._ctx, self._attr_list, module_res, name_to_res)
+        return ass_list
+
     def pick_service_resource(self, module_res, service_name):
         assert self._attr_list is not None  # Not yet imported/attr enumerated.
         name_to_res = {}
@@ -614,7 +620,7 @@ class TestsUnit(FixturesDepsProviderUnit):
 
     async def _call_test(self, process_pool, attr_name, test_recorders, module_res, call_res, tested_service_to_unit):
         log.info("%s: Call test: %s", self.name, attr_name)
-        unit_recorders, tested_unit_fields = tested_units(self._graph, self._ctx, self, module_res, self._tested_units)
+        unit_recorders, ass_list, tested_unit_fields = tested_units(self._graph, self._ctx, self, module_res, self._tested_units)
         service_recorders, services_ass_list, tested_service_fields = tested_services(self._graph, self._ctx, self, module_res, tested_service_to_unit)
         recorders = {**test_recorders, **unit_recorders, **service_recorders}
         result = await process_pool.run(
@@ -625,6 +631,7 @@ class TestsUnit(FixturesDepsProviderUnit):
             tested_units=tested_unit_fields,
             tested_services=tested_service_fields,
             trace_modules=[self.name] + [unit.name for unit in self._tested_units],
+            use_associations=[ass.to_piece(mosaic) for ass in ass_list],
             )
         self._handle_result_imports(result.imports)
         self._handle_result_calls(result.calls)

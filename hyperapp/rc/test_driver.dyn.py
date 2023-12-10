@@ -1,10 +1,14 @@
 import logging
 import inspect
 
+from hyperapp.common.association_registry import Association
+
 from . import htypes
 from .services import (
+    association_reg,
     mosaic,
     pyobj_creg,
+    web,
     )
 from .code.driver_recorders import ImportRecorders
 from .code.tracer import Tracer, value_type
@@ -13,30 +17,33 @@ from .code.tested_imports import TestedObject
 log = logging.getLogger(__name__)
 
 
-def call_test(import_recorders, test_call_res, module_res, tested_units, tested_services, trace_modules):
+def call_test(import_recorders, test_call_res, module_res, tested_units, tested_services, trace_modules, use_associations):
     tracer = Tracer(trace_modules)
     recorders = ImportRecorders(import_recorders)
-    with tracer.tracing():
-        with recorders.recording():
-            module = pyobj_creg.animate(module_res)
-            for rec in tested_units:
-                code_module = pyobj_creg.invite(rec.value)
-                setattr(module.tested.code, rec.name, code_module)
-                obj = getattr(module, rec.name, None)
-                if obj and isinstance(obj, TestedObject) and obj.path == ('tested', 'code', rec.name):
-                    setattr(module, rec.name, code_module)
-            for rec in tested_services:
-                service = pyobj_creg.invite(rec.value)
-                setattr(module.tested.services, rec.name, service)
-                obj = getattr(module, rec.name, None)
-                if obj and isinstance(obj, TestedObject) and obj.path == ('tested', 'services', rec.name):
-                    setattr(module, rec.name, service)
-            value = pyobj_creg.animate(test_call_res)
-        log.info("Resource value: %s", repr(value))
+    associations = [Association.from_piece(piece, web) for piece in use_associations]
 
-        if inspect.isgenerator(value):
-            log.info("Expanding generator: %r", value)
-            value = list(value)
+    with association_reg.associations_registered(associations, override=True):
+        with tracer.tracing():
+            with recorders.recording():
+                module = pyobj_creg.animate(module_res)
+                for rec in tested_units:
+                    code_module = pyobj_creg.invite(rec.value)
+                    setattr(module.tested.code, rec.name, code_module)
+                    obj = getattr(module, rec.name, None)
+                    if obj and isinstance(obj, TestedObject) and obj.path == ('tested', 'code', rec.name):
+                        setattr(module, rec.name, code_module)
+                for rec in tested_services:
+                    service = pyobj_creg.invite(rec.value)
+                    setattr(module.tested.services, rec.name, service)
+                    obj = getattr(module, rec.name, None)
+                    if obj and isinstance(obj, TestedObject) and obj.path == ('tested', 'services', rec.name):
+                        setattr(module, rec.name, service)
+                value = pyobj_creg.animate(test_call_res)
+            log.info("Resource value: %s", repr(value))
+
+            if inspect.isgenerator(value):
+                log.info("Expanding generator: %r", value)
+                value = list(value)
 
     t = value_type(value)
 

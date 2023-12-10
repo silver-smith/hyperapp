@@ -162,26 +162,28 @@ def function_call_res(graph, ctx, unit, fixtures, attr):
 def tested_units(graph, ctx, test_unit, fixtures_module_res, tested_units):
     field_list = []
     all_recorders = {}
+    ass_list = []
     for unit in tested_units:
         recorders, module_res = recorder_module_res(graph, ctx, unit, fixtures_unit=test_unit, fixtures_module_res=fixtures_module_res)
+        ass_list += unit.attr_constructors_associations(module_res)
         all_recorders.update(recorders)
         field = htypes.inspect.field(unit.code_name, mosaic.put(module_res))
         field_list.append(field)
-    return (all_recorders, field_list)
+    return (all_recorders, ass_list, field_list)
 
 
 def tested_services(graph, ctx, test_unit, fixtures_module_res, tested_service_to_unit):
     field_list = []
     all_recorders = {}
-    all_ass_list = []
+    ass_list = []
     for service_name, unit in tested_service_to_unit.items():
         recorders, module_res = recorder_module_res(graph, ctx, unit, fixtures_unit=test_unit, fixtures_module_res=fixtures_module_res)
         all_recorders.update(recorders)
-        ass_list, service_res = unit.pick_service_resource(module_res, service_name)
-        all_ass_list += ass_list
+        unit_ass_list, service_res = unit.pick_service_resource(module_res, service_name)
+        ass_list += unit_ass_list
         field = htypes.inspect.field(service_name, mosaic.put(service_res))
         field_list.append(field)
-    return (all_recorders, all_ass_list, field_list)
+    return (all_recorders, ass_list, field_list)
 
 
 def test_call_res(graph, ctx, unit, attr):
