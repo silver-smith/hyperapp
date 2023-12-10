@@ -20,11 +20,13 @@ class WindowCtl:
     @classmethod
     def from_piece(cls, layout):
         menu_bar_ctl = ui_ctl_creg.invite(layout.menu_bar_ref)
-        central_view_ctl = ui_ctl_creg.invite(layout.central_view_ref)
-        return cls(menu_bar_ctl, central_view_ctl)
+        central_view_layout = web.summon(layout.central_view_ref)
+        central_view_ctl = ui_ctl_creg.animate(central_view_layout)
+        return cls(menu_bar_ctl, central_view_layout, central_view_ctl)
 
-    def __init__(self, menu_bar_ctl, central_view_ctl):
+    def __init__(self, menu_bar_ctl, central_view_layout, central_view_ctl):
         self._menu_bar_ctl = menu_bar_ctl
+        self._central_view_layout = central_view_layout
         self._central_view_ctl = central_view_ctl
 
     def construct_widget(self, state, ctx):
@@ -32,9 +34,10 @@ class WindowCtl:
         central_view_state = web.summon(state.central_view_state)
         menu_bar_state = web.summon(state.menu_bar_state)
         central_widget = self._central_view_ctl.construct_widget(central_view_state, ctx)
-        commands = self._central_view_ctl.bind_commands(central_widget, wrapper=partial(self._apply, central_widget))
-        menu_ctx = ctx.clone_with(commands=commands)
-        menu_bar = self._menu_bar_ctl.construct_widget(menu_bar_state, menu_ctx)
+        menu_bar = self._menu_bar_ctl.construct_widget(menu_bar_state, ctx)
+        commands = self._central_view_ctl.bind_commands(
+            self._central_view_layout, central_widget, wrapper=partial(self._apply, w))
+        self._menu_bar_ctl.set_commands(menu_bar, commands)
         w.setMenuWidget(menu_bar)
         w.setCentralWidget(central_widget)
         w.move(state.pos.x, state.pos.y)
@@ -43,4 +46,8 @@ class WindowCtl:
 
     def _apply(self, widget, diff):
         log.info("Window: apply: %s", diff)
-        self._central_view_ctl.apply(widget, diff)
+        central_view_layout = self._central_view_ctl.apply(widget.centralWidget(), diff)
+        commands = self._central_view_ctl.bind_commands(
+            central_view_layout, widget.centralWidget(), wrapper=partial(self._apply, widget))
+        self._menu_bar_ctl.set_commands(widget.menuWidget(), commands)
+        self._central_view_layout = central_view_layout

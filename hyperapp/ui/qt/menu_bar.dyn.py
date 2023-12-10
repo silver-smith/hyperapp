@@ -17,12 +17,14 @@ class MenuBarCtl:
         pass
 
     def construct_widget(self, state, ctx):
-        w = QtWidgets.QMenuBar()
+        return QtWidgets.QMenuBar()
+
+    def set_commands(self, w, commands):
+        w.clear()
         menu = QtWidgets.QMenu('&All')
-        for command in ctx.commands:
+        for command in commands:
             self._add_action(menu, command)
         w.addMenu(menu)
-        return w
 
     def _add_action(self, menu, command):
         action = QtGui.QAction(command.name, menu)

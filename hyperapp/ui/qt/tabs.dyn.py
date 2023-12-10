@@ -16,12 +16,13 @@ class TabsCtl:
 
     @classmethod
     def from_piece(cls, layout):
-        ctl = cls()
+        ctl = cls(layout)
         commands = ui_command_factory(layout, ctl)
         ctl._commands = commands
         return ctl
 
-    def __init__(self):
+    def __init__(self, layout):
+        self._layout = layout
         self._commands = None
 
     def construct_widget(self, state, ctx):
@@ -32,12 +33,14 @@ class TabsCtl:
     def widget_state(self, widget):
         return htypes.tabs.state(current_tab=widget.currentIndex())
 
-    def bind_commands(self, widget, wrapper):
-        return [command.bind(widget, wrapper) for command in self._commands]
+    def bind_commands(self, layout, widget, wrapper):
+        return [command.bind(layout, widget, wrapper) for command in self._commands]
 
     def apply(self, widget, diff):
         log.info("Tabs: apply: %s", diff)
         widget.insertTab(diff.idx, QtWidgets.QLabel("Hello again!"), "Dup")
+        self._layout = htypes.tabs.layout(diff.apply(self._layout.tab_list))
+        return self._layout
 
 
 @mark.ui_command(htypes.tabs.layout)

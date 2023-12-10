@@ -16,23 +16,22 @@ log = logging.getLogger(__name__)
 
 class UnboundUiCommand:
 
-    def __init__(self, name, layout, ctl, fn):
+    def __init__(self, name, ctl, fn):
         self._name = name
-        self._layout = layout
         self._ctl = ctl
         self._fn = fn
 
-    def bind(self, widget, wrapper):
-        return BoundUiCommand(self._name, self._layout, self._ctl, self._fn, widget, wrapper)
+    def bind(self, layout, widget, wrapper):
+        return BoundUiCommand(self._name, self._ctl, self._fn, layout, widget, wrapper)
 
 
 class BoundUiCommand:
 
-    def __init__(self, name, layout, ctl, fn, widget, wrapper):
+    def __init__(self, name, ctl, fn, layout, widget, wrapper):
         self._name = name
-        self._layout = layout
         self._ctl = ctl
         self._fn = fn
+        self._layout = layout
         self._widget = weakref.ref(widget)
         self._wrapper = wrapper
 
@@ -59,6 +58,6 @@ def ui_command_factory():
         command_list = []
         for fn_res in association_reg.get_all((d_res, layout_t_res)):
             fn = pyobj_creg.animate(fn_res)
-            command_list.append(UnboundUiCommand(fn.__name__, layout, ctl, fn))
+            command_list.append(UnboundUiCommand(fn.__name__, ctl, fn))
         return command_list
     return _ui_command_factory
