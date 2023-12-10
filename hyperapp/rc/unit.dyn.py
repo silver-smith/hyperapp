@@ -646,7 +646,7 @@ class TestsUnit(FixturesDepsProviderUnit):
             if provider not in self._tested_units:
                 raise RuntimeError(f"Service {service_name!r} provider {provider} does not belong to tested code modules: {self._tested_units}")
             tested_service_to_unit[service_name] = provider
-        await self._wait_for_attributes_discovered(tested_service_to_unit.values())
+        await self._wait_for_attributes_discovered([*tested_service_to_unit.values(), *self._tested_units])
         async with asyncio.TaskGroup() as tg:
             for attr in self._attr_list:
                 if not isinstance(attr, htypes.inspect.fn_attr):
