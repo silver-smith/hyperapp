@@ -8,6 +8,7 @@ import:
 - legacy_type.ui:ui_ctl
 - legacy_type.window:layout
 - legacy_type.window:pos
+- ui.command_hub:command_hub.module
 - ui.ui_ctl_registry:ui_ctl_creg.service
 associations:
 - bases:
@@ -34,6 +35,7 @@ definitions:
     module_name: window
     file_name: window.dyn.py
     import_list:
+      code.command_hub: ui.command_hub:command_hub.module
       htypes.window.pos: legacy_type.window:pos
       services.mark: common.mark:mark.service
       services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service

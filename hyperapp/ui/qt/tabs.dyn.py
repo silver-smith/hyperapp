@@ -1,4 +1,5 @@
 import logging
+from functools import partial
 
 from PySide6 import QtWidgets
 
@@ -10,7 +11,7 @@ from .services import (
     ui_ctl_creg,
     web,
     )
-from .code.list_diff import ListDiff, ListDiffInsert
+from .code.list_diff import ListDiff, ListDiffInsert, ListDiffModify
 
 log = logging.getLogger(__name__)
 
@@ -39,6 +40,7 @@ class TabsCtl:
             tab_state = web.summon(state.tabs[idx])
             w = ctl.construct_widget(tab_state, ctx)
             tabs.addTab(w, label)
+        tabs.currentChanged.connect(partial(self._on_current_changed, ctx.command_hub, tabs))
         return tabs
 
     def widget_state(self, widget):
@@ -51,20 +53,32 @@ class TabsCtl:
         )
 
     def bind_commands(self, layout, widget, wrapper):
-        return [command.bind(layout, widget, wrapper) for command in self._commands]
+        idx = widget.currentIndex()
+        _, tab_ctl = self._tabs[idx]
+        tab_layout = web.summon(layout.tabs[idx].ctl)
+        tab_commands = tab_ctl.bind_commands(tab_layout, widget.widget(idx), partial(self._wrapper, wrapper, idx))
+        my_commands = [command.bind(layout, widget, wrapper) for command in self._commands]
+        return [*my_commands, *tab_commands]
 
-    def apply(self, widget, layout_diff, state_diff):
+    def _wrapper(self, wrapper, idx, diffs):
+        layout_diff, state_diff = diffs
+        return wrapper((ListDiffModify(idx, layout_diff), state_diff))
+
+    def apply(self, ctx, widget, layout_diff, state_diff):
         log.info("Tabs: apply: %s / %s", layout_diff, state_diff)
         if isinstance(layout_diff, ListDiffInsert):
             tab_ctl = ui_ctl_creg.invite(layout_diff.item.ctl)
             tab_state = web.summon(state_diff.item)
-            w = tab_ctl.construct_widget(tab_state, ctx=None)
+            w = tab_ctl.construct_widget(tab_state, ctx)
             widget.insertTab(layout_diff.idx, w, layout_diff.item.label)
             self._tabs.insert(layout_diff.idx, (layout_diff.item.label, tab_ctl))
             self._layout = htypes.tabs.layout(layout_diff.apply(self._layout.tabs))
             return self._layout
         else:
             raise NotImplementedError(f"Not implemented: tab.apply({layout_diff})")
+
+    def _on_current_changed(self, command_hub, widget, index):
+        log.info("Tabs: current changed for %s to %s", widget, index)
 
 
 @mark.ui_command(htypes.tabs.layout)

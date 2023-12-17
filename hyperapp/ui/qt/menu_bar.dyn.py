@@ -14,23 +14,35 @@ class MenuBarCtl:
         return cls()
 
     def __init__(self):
-        pass
+        self._menu_command_to_action = {}
 
     def construct_widget(self, state, ctx):
-        return QtWidgets.QMenuBar()
+        w =  QtWidgets.QMenuBar()
+        ctx.command_hub.subscribe(partial(self.commands_changed, w))
+        return w
 
     def set_commands(self, w, commands):
         w.clear()
+        self._command_to_action = {}
         menu = QtWidgets.QMenu('&All')
         for command in commands:
             self._add_action(menu, command)
         w.addMenu(menu)
+
+    def commands_changed(self, w, removed_commands, added_commands):
+        [menu_action] = w.actions()
+        menu = menu_action.menu()
+        for command in removed_commands:
+            menu.removeAction(self._menu_command_to_action[menu, command])
+        for command in added_commands:
+            self._add_action(menu, command)
 
     def _add_action(self, menu, command):
         action = QtGui.QAction(command.name, menu)
         action.triggered.connect(partial(self._run_command, command))
         action.setShortcut('Ctrl+Return')
         menu.addAction(action)
+        self._menu_command_to_action[menu, command] = action
 
     def _run_command(self, command):
         log.info("Run command: %r", command.name)

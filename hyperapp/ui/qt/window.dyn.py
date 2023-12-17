@@ -9,6 +9,7 @@ from .services import (
     ui_ctl_creg,
     web,
     )
+from .code.command_hub import CommandHub
 
 log = logging.getLogger(__name__)
 
@@ -30,13 +31,14 @@ class WindowCtl:
         self._central_view_ctl = central_view_ctl
 
     def construct_widget(self, state, ctx):
+        ctx = ctx.clone_with(command_hub=CommandHub())
         w = QtWidgets.QMainWindow()
         central_view_state = web.summon(state.central_view_state)
         menu_bar_state = web.summon(state.menu_bar_state)
         central_widget = self._central_view_ctl.construct_widget(central_view_state, ctx)
         menu_bar = self._menu_bar_ctl.construct_widget(menu_bar_state, ctx)
         commands = self._central_view_ctl.bind_commands(
-            self._central_view_layout, central_widget, wrapper=partial(self._apply, w))
+            self._central_view_layout, central_widget, wrapper=partial(self._apply, ctx, w))
         self._menu_bar_ctl.set_commands(menu_bar, commands)
         w.setMenuWidget(menu_bar)
         w.setCentralWidget(central_widget)
@@ -44,11 +46,11 @@ class WindowCtl:
         w.resize(state.size.w, state.size.h)
         return w
 
-    def _apply(self, widget, diffs):
+    def _apply(self, ctx, widget, diffs):
         layout_diff, state_diff = diffs
         log.info("Window: apply: %s / %s", layout_diff, state_diff)
-        central_view_layout = self._central_view_ctl.apply(widget.centralWidget(), layout_diff, state_diff)
+        central_view_layout = self._central_view_ctl.apply(ctx, widget.centralWidget(), layout_diff, state_diff)
         commands = self._central_view_ctl.bind_commands(
-            central_view_layout, widget.centralWidget(), wrapper=partial(self._apply, widget))
+            central_view_layout, widget.centralWidget(), wrapper=partial(self._apply, ctx, widget))
         self._menu_bar_ctl.set_commands(widget.menuWidget(), commands)
         self._central_view_layout = central_view_layout

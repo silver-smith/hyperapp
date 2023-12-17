@@ -1,8 +1,8 @@
 
 class Context:
 
-    def __init__(self, items=None):
-        self._items = items or {}
+    def __init__(self, items=None, **kw):
+        self._items = {**kw, **(items or {})}
 
     def __getattr__(self, name):
         if name.startswith('_'):

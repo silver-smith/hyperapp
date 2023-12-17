@@ -2,6 +2,7 @@ from PySide6 import QtWidgets
 
 from . import htypes
 from .code.context import Context
+from .tested.code import command_hub
 from .tested.code import menu_bar
 
 
@@ -14,7 +15,7 @@ def make_state():
 
 
 def test_widget():
-    ctx = Context({'commands': []})
+    ctx = Context(command_hub=command_hub.CommandHub())
     layout = make_layout()
     state = make_state()
     app = QtWidgets.QApplication()

@@ -6,6 +6,7 @@ from .services import (
     mosaic,
     )
 from .code.context import Context
+from .code.command_hub import CommandHub
 
 
 def make_layout():
@@ -25,7 +26,7 @@ def make_state():
 
 
 def test_tabs():
-    ctx = Context()
+    ctx = Context(command_hub=CommandHub())
     layout = make_layout()
     state = make_state()
     app = QtWidgets.QApplication()
@@ -39,7 +40,7 @@ def test_tabs():
 
 
 def test_duplicate():
-    ctx = Context()
+    ctx = Context(command_hub=CommandHub())
     layout = make_layout()
     state = make_state()
     app = QtWidgets.QApplication()
@@ -47,7 +48,7 @@ def test_duplicate():
         ctl = tabs.TabsCtl.from_piece(layout)
         widget = ctl.construct_widget(state, ctx)
         layout_diff, state_diff = tabs.duplicate(layout, state)
-        new_layout = ctl.apply(widget, layout_diff, state_diff)
+        new_layout = ctl.apply(ctx, widget, layout_diff, state_diff)
         assert len(new_layout.tabs) == 2
         assert new_layout.tabs[0] == layout.tabs[0]
         assert new_layout.tabs[0] == new_layout.tabs[1]
