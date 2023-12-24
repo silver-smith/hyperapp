@@ -10,6 +10,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.tabs:layout
 - legacy_type.tabs:state
+- legacy_type.tabs:tab
 - legacy_type.ui:ui_command_d
 - legacy_type.ui:ui_ctl
 - ui.ui_command:ui_command_factory.service
@@ -53,6 +54,7 @@ definitions:
       code.list_diff: common.list_diff:list_diff.module
       htypes.tabs.layout: legacy_type.tabs:layout
       htypes.tabs.state: legacy_type.tabs:state
+      htypes.tabs.tab: legacy_type.tabs:tab
       services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service
       services.ui_command_factory: ui.ui_command:ui_command_factory.service

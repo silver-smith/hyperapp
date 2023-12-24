@@ -22,6 +22,14 @@ class ListDiffInsert:
         result.insert(self.idx, self.item)
         return result
 
+    def insert(self, container, item):
+        assert type(container) in {list, tuple}, repr(container)
+        return [
+            *container[:self.idx],
+            item,
+            *container[self.idx:],
+            ]
+
 
 class ListDiffModify:
 
@@ -32,10 +40,10 @@ class ListDiffModify:
     def __repr__(self):
         return f"<ListDiffModify: @#{self.idx}: {self.item_diff}>"
 
-    def apply(self, value):
-        assert type(value) in {list, tuple}, repr(value)
+    def replace(self, container, item):
+        assert type(container) in {list, tuple}, repr(container)
         return [
-            *value[:self.idx],
-            self.item_diff.apply(value[self.idx]),
-            *value[self.idx + 1:],
+            *container[:self.idx],
+            item,
+            *container[self.idx + 1:],
             ]
