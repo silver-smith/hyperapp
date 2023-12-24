@@ -38,9 +38,10 @@ class MenuBarCtl:
             self._add_action(menu, command)
 
     def _add_action(self, menu, command):
+        idx = len(menu.actions()) + 1
         action = QtGui.QAction(command.name, menu)
         action.triggered.connect(partial(self._run_command, command))
-        action.setShortcut('Ctrl+Return')
+        action.setShortcut(f'f{idx}')
         menu.addAction(action)
         self._menu_command_to_action[menu, command] = action
 
