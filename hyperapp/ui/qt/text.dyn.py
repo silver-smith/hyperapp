@@ -14,13 +14,10 @@ class ViewTextCtl:
 
     @classmethod
     def from_piece(cls, layout):
-        ctl = cls()
-        commands = ui_command_factory(layout, ctl)
-        ctl._commands = commands
-        return ctl
+        return cls()
 
     def __init__(self):
-        self._commands = None
+        pass
 
     def construct_widget(self, state, ctx):
         w = QtWidgets.QTextBrowser()
@@ -30,21 +27,19 @@ class ViewTextCtl:
     def widget_state(self, widget):
         return htypes.text.state(text=widget.toPlainText())
 
-    def bind_commands(self, layout, widget, wrapper):
-        return [command.bind(layout, widget, wrapper) for command in self._commands]
+    def get_commands(self, layout, widget, wrapper):
+        commands = ui_command_factory(layout, self)
+        return [command.bind(layout, widget, wrapper) for command in commands]
 
 
 class EditTextCtl:
 
     @classmethod
     def from_piece(cls, layout):
-        ctl = cls()
-        commands = ui_command_factory(layout, ctl)
-        ctl._commands = commands
-        return ctl
+        return cls()
 
     def __init__(self):
-        self._commands = None
+        pass
 
     def construct_widget(self, state, ctx):
         w = QtWidgets.QTextEdit()
@@ -54,5 +49,6 @@ class EditTextCtl:
     def widget_state(self, widget):
         return htypes.text.state(text=widget.toPlainText())
 
-    def bind_commands(self, layout, widget, wrapper):
-        return [command.bind(layout, widget, wrapper) for command in self._commands]
+    def get_commands(self, layout, widget, wrapper):
+        commands = ui_command_factory(layout, self)
+        return [command.bind(layout, widget, wrapper) for command in commands]

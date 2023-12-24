@@ -24,10 +24,7 @@ class TabsCtl:
             (tab.label, ui_ctl_creg.invite(tab.ctl))
             for tab in layout.tabs
             ]
-        ctl = cls(layout, tabs)
-        commands = ui_command_factory(layout, ctl)
-        ctl._commands = commands
-        return ctl
+        return cls(layout, tabs)
 
     def __init__(self, layout, tabs):
         self._layout = layout
@@ -53,11 +50,13 @@ class TabsCtl:
                 ],
         )
 
-    def bind_commands(self, layout, widget, wrapper):
+    def get_commands(self, layout, widget, wrapper):
+        if self._commands is None:
+            self._commands = ui_command_factory(layout, self)
         idx = widget.currentIndex()
         _, tab_ctl = self._tabs[idx]
         tab_layout = web.summon(layout.tabs[idx].ctl)
-        tab_commands = tab_ctl.bind_commands(
+        tab_commands = tab_ctl.get_commands(
             tab_layout, widget.widget(idx), partial(self._wrapper, wrapper, idx))
         my_commands = [command.bind(layout, widget, wrapper) for command in self._commands]
         return [*my_commands, *tab_commands]
