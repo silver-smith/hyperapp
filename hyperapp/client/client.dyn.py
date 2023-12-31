@@ -6,17 +6,18 @@ from qasync import QEventLoop
 from . import htypes
 from .services import (
     mosaic,
+    visualizer,
     ui_ctl_creg,
     )
 from .code.context import Context
 
 
 def make_layout():
-    adapter_layout = htypes.str_adapter.static_str_adapter("Sample text")
-    text_layout = htypes.text.edit_layout(mosaic.put(adapter_layout))
+    text = "Sample text"
+    view_layout = visualizer(text)
     inner_tabs_layout = htypes.tabs.layout(
         tabs=[
-            htypes.tabs.tab("Inner", mosaic.put(text_layout)),
+            htypes.tabs.tab("Inner", mosaic.put(view_layout)),
             ],
         )
     outer_tabs_layout = htypes.tabs.layout(

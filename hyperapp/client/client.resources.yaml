@@ -9,17 +9,16 @@ import:
 - legacy_type.command_pane:command_pane
 - legacy_type.menu_bar:layout
 - legacy_type.menu_bar:state
-- legacy_type.str_adapter:static_str_adapter
 - legacy_type.tabs:layout
 - legacy_type.tabs:state
 - legacy_type.tabs:tab
-- legacy_type.text:edit_layout
 - legacy_type.text:state
 - legacy_type.window:layout
 - legacy_type.window:pos
 - legacy_type.window:size
 - legacy_type.window:state
 - ui.ui_ctl_registry:ui_ctl_creg.service
+- ui.visualizer:visualizer.service
 associations: []
 definitions:
   client.module:
@@ -33,11 +32,9 @@ definitions:
       htypes.command_pane.command_pane: legacy_type.command_pane:command_pane
       htypes.menu_bar.layout: legacy_type.menu_bar:layout
       htypes.menu_bar.state: legacy_type.menu_bar:state
-      htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
       htypes.tabs.layout: legacy_type.tabs:layout
       htypes.tabs.state: legacy_type.tabs:state
       htypes.tabs.tab: legacy_type.tabs:tab
-      htypes.text.edit_layout: legacy_type.text:edit_layout
       htypes.text.state: legacy_type.text:state
       htypes.window.layout: legacy_type.window:layout
       htypes.window.pos: legacy_type.window:pos
@@ -45,3 +42,4 @@ definitions:
       htypes.window.state: legacy_type.window:state
       services.mosaic: builtins:mosaic.service
       services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
+      services.visualizer: ui.visualizer:visualizer.service

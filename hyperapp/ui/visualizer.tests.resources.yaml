@@ -1,0 +1,16 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.builtin:python_module
+- legacy_type.phony:phony
+associations: []
+definitions:
+  phony:
+    _type: legacy_type.phony:phony
+  visualizer.tests.module:
+    _type: legacy_type.builtin:python_module
+    module_name: visualizer.tests
+    file_name: visualizer.tests.dyn.py
+    import_list:
+      tested.code.visualizer: phony
+      tested.services.visualizer: phony
