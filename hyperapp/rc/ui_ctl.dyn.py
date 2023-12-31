@@ -8,12 +8,17 @@ from .services import (
     mosaic,
     pyobj_creg,
     ui_ctl_creg,
+    ui_adapter_creg,
     )
 
 log = logging.getLogger(__name__)
 
 
-def construct_view_impl(ctx, resource_module, module_res, piece_t, qname):
+def construct_view_impl(ctx, module_name, resource_module, module_res, params, qname):
+    piece_t = params['layout']
+    if not isinstance(piece_t, htypes.inspect.record_t):
+        log.warning("%s.%s: layout parameter type is not a data record", module_name, qname)
+        return []
     log.info("Construct view implementation: %s: %s", resource_module.name, qname)
     class_name, method_name = qname.split('.')
     class_attribute = htypes.builtin.attribute(
@@ -42,6 +47,34 @@ def construct_view_impl(ctx, resource_module, module_res, piece_t, qname):
     return [ctl_association]
 
 
+def construct_adapter_impl(ctx, module_name, resource_module, module_res, params, qname):
+    piece_t = params['piece']
+    if not isinstance(piece_t, htypes.inspect.record_t):
+        log.warning("%s.%s: layout parameter type is not a data record", module_name, qname)
+        return []
+    log.info("Construct adapter implementation: %s: %s", resource_module.name, qname)
+    class_name, method_name = qname.split('.')
+    class_attribute = htypes.builtin.attribute(
+        object=mosaic.put(module_res),
+        attr_name=class_name,
+    )
+    ctr_attribute = htypes.builtin.attribute(
+        object=mosaic.put(class_attribute),
+        attr_name=method_name,
+    )
+    piece_t_ref = ctx.types[piece_t.type.module][piece_t.type.name]
+    piece_t_res = htypes.builtin.legacy_type(piece_t_ref)
+    ui_adapter_creg_res = pyobj_creg.reverse_resolve(ui_adapter_creg)
+    association = Association(
+        bases=[ui_adapter_creg_res, piece_t_res],
+        key=[ui_adapter_creg_res, piece_t_res],
+        value=ctr_attribute,
+        )
+    resource_module[class_name] = class_attribute
+    resource_module[f'{class_name}.{method_name}'] = ctr_attribute
+    return [association]
+
+
 def create_ui_resources(ctx, module_name, resource_module, module_res, call_list):
     qname_to_trace = {}
     for trace in call_list:
@@ -64,13 +97,8 @@ def create_ui_resources(ctx, module_name, resource_module, module_res, call_list
             # Remove first, 'cls', parameter.
             params.pop(list(params)[0])
         if len(qname.split('.')) == 2 and trace.obj_type in ('classmethod', 'staticmethod'):
-            if list(params) != ['layout']:
-                continue
-            piece_t = params['layout']
-            if not isinstance(piece_t, htypes.inspect.record_t):
-                log.warning("%s.%s: layout parameter type is not a data record", module_name, qname)
-                continue
-            # View constructor method.
-            log.info("View constructor method: %s", qname)
-            ass_list += construct_view_impl(ctx, resource_module, module_res, piece_t, qname)
+            if list(params) == ['layout']:
+                ass_list += construct_view_impl(ctx, module_name, resource_module, module_res, params, qname)
+            if list(params) == ['piece'] and 'Adapter' in qname:
+                ass_list += construct_adapter_impl(ctx, module_name, resource_module, module_res, params, qname)
     return ass_list

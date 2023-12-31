@@ -7,6 +7,7 @@ import:
 - legacy_type.inspect:record_t
 - legacy_type.ui:ui_ctl
 - ui.ui_ctl_registry:ui_ctl_creg.service
+- ui.ui_adapter_creg:ui_adapter_creg.service
 associations: []
 definitions:
   ui_ctl.module:
@@ -21,3 +22,4 @@ definitions:
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
       services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
+      services.ui_adapter_creg: ui.ui_adapter_creg:ui_adapter_creg.service
