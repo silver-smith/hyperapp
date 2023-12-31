@@ -8,18 +8,22 @@ from .services import (
 from .code.context import Context
 
 
+def make_adapter_layout():
+    return htypes.str_adapter.static_str_adapter("Sample text")
+
+
 def make_view_layout():
-    return htypes.text.view_layout()
+    adapter_layout = make_adapter_layout()
+    return htypes.text.view_layout(mosaic.put(adapter_layout))
 
 
 def make_edit_layout():
-    return htypes.text.edit_layout()
+    adapter_layout = make_adapter_layout()
+    return htypes.text.edit_layout(mosaic.put(adapter_layout))
 
 
 def make_state():
-    return htypes.text.state(
-        text="Sample text",
-        )
+    return htypes.text.state()
 
 
 def test_view_text():

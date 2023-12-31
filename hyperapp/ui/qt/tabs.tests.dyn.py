@@ -11,7 +11,8 @@ from .code.command_hub import CommandHub
 
 
 def make_inner_layout():
-    tab_layout = htypes.text.view_layout()
+    adapter_layout = htypes.str_adapter.static_str_adapter("Sample text")
+    tab_layout = htypes.text.view_layout(mosaic.put(adapter_layout))
     return htypes.tabs.layout(
         tabs=[
             htypes.tabs.tab("One", mosaic.put(tab_layout))],
@@ -26,7 +27,7 @@ def make_outer_layout(tab_layout):
 
 
 def make_inner_state():
-    tab_state = htypes.text.state("Some text")
+    tab_state = htypes.text.state()
     return htypes.tabs.state(
         current_tab=0,
         tabs=[mosaic.put(tab_state)],

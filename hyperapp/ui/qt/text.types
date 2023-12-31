@@ -1,5 +1,7 @@
-view_layout = record
-edit_layout = record
+view_layout = record:
+  adapter: ref
 
-state = record:
-  text: string
+edit_layout = record:
+  adapter: ref
+
+state = record

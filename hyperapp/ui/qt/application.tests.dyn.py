@@ -10,7 +10,8 @@ from .code.context import Context
 
 
 def make_layout():
-    text_layout = htypes.text.view_layout()
+    adapter_layout = htypes.str_adapter.static_str_adapter("Sample text")
+    text_layout = htypes.text.view_layout(mosaic.put(adapter_layout))
     tabs_layout = htypes.tabs.layout(
         tabs=[htypes.tabs.tab("One", mosaic.put(text_layout))],
         )
@@ -25,7 +26,7 @@ def make_layout():
 
 
 def make_state():
-    text_state = htypes.text.state("Sample text")
+    text_state = htypes.text.state()
     tabs_state = htypes.tabs.state(
         current_tab=0,
         tabs=[mosaic.put(text_state)],

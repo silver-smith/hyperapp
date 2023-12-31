@@ -7,6 +7,7 @@ import:
 - legacy_type.text:state
 - legacy_type.text:view_layout
 - legacy_type.ui:ui_ctl
+- ui.ui_adapter_creg:ui_adapter_creg.service
 - ui.ui_command:ui_command_factory.service
 - ui.ui_ctl_registry:ui_ctl_creg.service
 associations:
@@ -53,4 +54,5 @@ definitions:
     file_name: text.dyn.py
     import_list:
       htypes.text.state: legacy_type.text:state
+      services.ui_adapter_creg: ui.ui_adapter_creg:ui_adapter_creg.service
       services.ui_command_factory: ui.ui_command:ui_command_factory.service

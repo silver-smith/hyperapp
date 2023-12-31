@@ -9,6 +9,7 @@ import:
 - legacy_type.command_pane:command_pane
 - legacy_type.menu_bar:layout
 - legacy_type.menu_bar:state
+- legacy_type.str_adapter:static_str_adapter
 - legacy_type.tabs:layout
 - legacy_type.tabs:state
 - legacy_type.tabs:tab
@@ -32,6 +33,7 @@ definitions:
       htypes.command_pane.command_pane: legacy_type.command_pane:command_pane
       htypes.menu_bar.layout: legacy_type.menu_bar:layout
       htypes.menu_bar.state: legacy_type.menu_bar:state
+      htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
       htypes.tabs.layout: legacy_type.tabs:layout
       htypes.tabs.state: legacy_type.tabs:state
       htypes.tabs.tab: legacy_type.tabs:tab
