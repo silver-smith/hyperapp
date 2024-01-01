@@ -1,0 +1,40 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:mosaic.service
+- builtins:web.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.navigator:layout
+- legacy_type.navigator:state
+- legacy_type.ui:ui_ctl
+- ui.ui_ctl_registry:ui_ctl_creg.service
+associations:
+- bases:
+  - legacy_type.navigator:layout
+  key:
+  - ui.ui_ctl_registry:ui_ctl_creg.service
+  - legacy_type.navigator:layout
+  value: NavigatorCtl.from_piece.ctl
+definitions:
+  NavigatorCtl:
+    _type: legacy_type.builtin:attribute
+    object: navigator.module
+    attr_name: NavigatorCtl
+  NavigatorCtl.from_piece:
+    _type: legacy_type.builtin:attribute
+    object: NavigatorCtl
+    attr_name: from_piece
+  NavigatorCtl.from_piece.ctl:
+    _type: legacy_type.ui:ui_ctl
+    ctr_fn: NavigatorCtl.from_piece
+    command_methods: []
+  navigator.module:
+    _type: legacy_type.builtin:python_module
+    module_name: navigator
+    file_name: navigator.dyn.py
+    import_list:
+      htypes.navigator.state: legacy_type.navigator:state
+      services.mosaic: builtins:mosaic.service
+      services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
+      services.web: builtins:web.service

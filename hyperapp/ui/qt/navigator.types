@@ -1,0 +1,7 @@
+
+layout = record:
+  current_layout: ref
+
+
+state = record:
+  current_state: ref

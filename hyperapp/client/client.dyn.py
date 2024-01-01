@@ -15,9 +15,10 @@ from .code.context import Context
 def make_layout():
     text = "Sample text"
     view_layout = visualizer(text)
+    navigator_layout = htypes.navigator.layout(mosaic.put(view_layout))
     inner_tabs_layout = htypes.tabs.layout(
         tabs=[
-            htypes.tabs.tab("Inner", mosaic.put(view_layout)),
+            htypes.tabs.tab("Inner", mosaic.put(navigator_layout)),
             ],
         )
     outer_tabs_layout = htypes.tabs.layout(
@@ -37,9 +38,10 @@ def make_layout():
 
 def make_state():
     text_state = htypes.text.state()
+    navigator_state = htypes.navigator.state(mosaic.put(text_state))
     inner_tabs_state = htypes.tabs.state(
         current_tab=0,
-        tabs=[mosaic.put(text_state)],
+        tabs=[mosaic.put(navigator_state)],
         )
     outer_tabs_state = htypes.tabs.state(
         current_tab=0,
