@@ -9,6 +9,10 @@ from .code.command_hub import CommandHub
 from .tested.code import navigator
 
 
+def _wrapper(diffs):
+    return diffs
+
+
 def test_navigator():
     adapter_layout = htypes.str_adapter.static_str_adapter("Sample text")
     text_layout = htypes.text.view_layout(mosaic.put(adapter_layout))
@@ -23,5 +27,7 @@ def test_navigator():
         widget = ctl.construct_widget(state, ctx)
         state = ctl.widget_state(widget)
         assert state
+        commands = ctl.get_commands(layout, widget, _wrapper)
+        assert commands
     finally:
         app.shutdown()
