@@ -74,31 +74,27 @@ class NavigatorCtl:
         current_layout = visualizer(piece)
         layout_diff = htypes.navigator.open_new_diff(
             new_current=mosaic.put(current_layout),
-            prev=mosaic.put(layout),
             )
         return wrapper((layout_diff, None))
 
     async def _go_back(self, layout):
-        layout_diff = htypes.navigator.go_back_diff(
-            layout=layout.prev,
-            next=mosaic.put(layout)
-            )
+        layout_diff = htypes.navigator.go_back_diff()
         return (layout_diff, None)
 
-    def apply(self, ctx, widget, layout_diff, state_diff):
+    def apply(self, ctx, layout, widget, layout_diff, state_diff):
         log.info("Navigator: apply: %s / %s", layout_diff, state_diff)
         if isinstance(layout_diff, htypes.navigator.open_new_diff):
             layout = htypes.navigator.layout(
                 current_layout=layout_diff.new_current,
-                prev=layout_diff.prev,
+                prev=mosaic.put(layout),
                 next=None,
                 )
             return (layout, None)
         if isinstance(layout_diff, htypes.navigator.go_back_diff):
-            prev_layout = web.summon(layout_diff.layout)
+            prev_layout = web.summon(layout.prev)
             layout = htypes.navigator.layout(
                 current_layout=prev_layout.current_layout,
                 prev=prev_layout.prev,
-                next=layout_diff.next,
+                next=mosaic.put(layout),
                 )
             return (layout, None)

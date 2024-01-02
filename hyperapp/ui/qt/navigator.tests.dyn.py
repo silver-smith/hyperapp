@@ -46,6 +46,6 @@ def test_navigator():
         assert command_list
         for command in command_list:
             layout_diff, state_diff = asyncio.run(command.run())
-            ctl.apply(ctx, widget, layout_diff, state_diff)
+            ctl.apply(ctx, layout, widget, layout_diff, state_diff)
     finally:
         app.shutdown()

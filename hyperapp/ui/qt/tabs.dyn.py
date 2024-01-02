@@ -68,8 +68,8 @@ class TabsCtl:
             ListDiffModify(idx, state_diff),
             ))
 
-    def apply(self, ctx, widget, layout_diff, state_diff):
-        log.info("Tabs: apply: %s / %s", layout_diff, state_diff)
+    def apply(self, ctx, layout, widget, layout_diff, state_diff):
+        log.info("Tabs: apply: %s -> %s / %s", layout, layout_diff, state_diff)
         if isinstance(layout_diff, ListDiffInsert):
             idx = layout_diff.idx
             old_state = self.widget_state(widget)
@@ -90,8 +90,9 @@ class TabsCtl:
         if isinstance(layout_diff, ListDiffModify):
             idx = layout_diff.idx
             label, old_tab_ctl = self._tabs[idx]
+            old_tab_layout = web.summon(layout.tabs[idx].ctl)
             new_tab_layout, new_tab_state = old_tab_ctl.apply(
-                ctx, widget.widget(idx), layout_diff.item_diff, state_diff.item_diff)
+                ctx, old_tab_layout, widget.widget(idx), layout_diff.item_diff, state_diff.item_diff)
             new_tab_ctl = ui_ctl_creg.animate(new_tab_layout)
             w = new_tab_ctl.construct_widget(new_tab_state, ctx)
             widget.removeTab(idx)

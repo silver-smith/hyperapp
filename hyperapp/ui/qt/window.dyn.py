@@ -49,7 +49,8 @@ class WindowCtl:
     def _wrapper(self, ctx, widget, diffs):
         layout_diff, state_diff = diffs
         log.info("Window: apply: %s / %s", layout_diff, state_diff)
-        central_view_layout, central_view_state = self._central_view_ctl.apply(ctx, widget.centralWidget(), layout_diff, state_diff)
+        central_view_layout, central_view_state = self._central_view_ctl.apply(
+            ctx, self._central_view_layout, widget.centralWidget(), layout_diff, state_diff)
         commands = self._central_view_ctl.get_commands(
             central_view_layout, widget.centralWidget(), wrapper=partial(self._wrapper, ctx, widget))
         self._menu_bar_ctl.set_commands(widget.menuWidget(), commands)

@@ -64,7 +64,7 @@ def test_duplicate():
         ctl = tabs.TabsCtl.from_piece(layout)
         widget = ctl.construct_widget(state, ctx)
         layout_diff, state_diff = tabs.duplicate(layout, state)
-        new_layout, new_state = ctl.apply(ctx, widget, layout_diff, state_diff)
+        new_layout, new_state = ctl.apply(ctx, layout, widget, layout_diff, state_diff)
         assert len(new_layout.tabs) == 2
         assert new_layout.tabs[0] == layout.tabs[0]
         assert new_layout.tabs[0] == new_layout.tabs[1]
@@ -88,7 +88,8 @@ def test_modify():
             idx=0,
             diffs=(inner_layout_diff, inner_state_diff),
             )
-        new_outer_layout, new_outer_state = ctl.apply(ctx, widget, outer_layout_diff, outer_state_diff)
+        new_outer_layout, new_outer_state = ctl.apply(
+            ctx, outer_layout, widget, outer_layout_diff, outer_state_diff)
         assert len(new_outer_layout.tabs) == 1
         new_inner_layout = web.summon(new_outer_layout.tabs[0].ctl)
         assert len(new_inner_layout.tabs) == 2

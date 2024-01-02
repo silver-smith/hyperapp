@@ -12,10 +12,7 @@ state = record:
 
 open_new_diff = record:
   new_current: ref
-  prev: ref
 
-go_back_diff = record:
-  layout: ref
-  next: ref
+go_back_diff = record
 
 go_forward_diff = record
