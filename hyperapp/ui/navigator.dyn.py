@@ -32,8 +32,12 @@ class ModelCommand:
         return self._wrapper(result)
 
 
-async def open_some_text():
-    return "Some text"
+async def open_sample_text_1():
+    return "Sample text 1"
+
+
+async def open_sample_text_2():
+    return "Sample text 2"
 
 
 class NavigatorCtl:
@@ -62,8 +66,9 @@ class NavigatorCtl:
             )
 
     def get_commands(self, layout, widget, wrapper):
-        sample_command = ModelCommand(open_some_text, partial(self._wrapper, layout, wrapper))
-        commands = [sample_command]
+        sample_command_1 = ModelCommand(open_sample_text_1, partial(self._wrapper, layout, wrapper))
+        sample_command_2 = ModelCommand(open_sample_text_2, partial(self._wrapper, layout, wrapper))
+        commands = [sample_command_1, sample_command_2]
         if layout.prev:
             commands.append(ModelCommand(partial(self._go_back, layout), wrapper))
         return commands
