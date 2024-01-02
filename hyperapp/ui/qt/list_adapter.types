@@ -1,0 +1,3 @@
+
+static_list_adapter = record:
+  value: ref

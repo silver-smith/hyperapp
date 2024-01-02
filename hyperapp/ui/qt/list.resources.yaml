@@ -1,0 +1,35 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.list:layout
+- legacy_type.ui:ui_ctl
+- ui.ui_adapter_creg:ui_adapter_creg.service
+- ui.ui_ctl_registry:ui_ctl_creg.service
+associations:
+- bases:
+  - legacy_type.list:layout
+  key:
+  - ui.ui_ctl_registry:ui_ctl_creg.service
+  - legacy_type.list:layout
+  value: ListCtl.from_piece.ctl
+definitions:
+  ListCtl:
+    _type: legacy_type.builtin:attribute
+    object: list.module
+    attr_name: ListCtl
+  ListCtl.from_piece:
+    _type: legacy_type.builtin:attribute
+    object: ListCtl
+    attr_name: from_piece
+  ListCtl.from_piece.ctl:
+    _type: legacy_type.ui:ui_ctl
+    ctr_fn: ListCtl.from_piece
+    command_methods: []
+  list.module:
+    _type: legacy_type.builtin:python_module
+    module_name: list
+    file_name: list.dyn.py
+    import_list:
+      services.ui_adapter_creg: ui.ui_adapter_creg:ui_adapter_creg.service

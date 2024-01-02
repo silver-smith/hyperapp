@@ -40,6 +40,14 @@ async def open_sample_text_2():
     return "Sample text 2"
 
 
+async def open_sample_list():
+    return [
+        htypes.sample_list.item(1, "First"),
+        htypes.sample_list.item(2, "Second"),
+        htypes.sample_list.item(3, "Third"),
+        ]
+
+
 class NavigatorCtl:
 
     @classmethod
@@ -68,7 +76,8 @@ class NavigatorCtl:
     def get_commands(self, layout, widget, wrapper):
         sample_command_1 = ModelCommand(open_sample_text_1, partial(self._wrapper, layout, wrapper))
         sample_command_2 = ModelCommand(open_sample_text_2, partial(self._wrapper, layout, wrapper))
-        commands = [sample_command_1, sample_command_2]
+        sample_command_3 = ModelCommand(open_sample_list, partial(self._wrapper, layout, wrapper))
+        commands = [sample_command_1, sample_command_2, sample_command_3]
         if layout.prev:
             commands.append(ModelCommand(self._go_back, wrapper))
         if layout.next:

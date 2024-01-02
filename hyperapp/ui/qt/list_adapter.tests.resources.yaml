@@ -1,0 +1,19 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:mosaic.service
+- builtins:types.service
+- legacy_type.builtin:python_module
+- legacy_type.phony:phony
+associations: []
+definitions:
+  list_adapter.tests.module:
+    _type: legacy_type.builtin:python_module
+    module_name: list_adapter.tests
+    file_name: list_adapter.tests.dyn.py
+    import_list:
+      services.mosaic: builtins:mosaic.service
+      services.types: builtins:types.service
+      tested.code.list_adapter: phony
+  phony:
+    _type: legacy_type.phony:phony
