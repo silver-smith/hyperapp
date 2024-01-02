@@ -23,10 +23,15 @@ def test_navigator():
         prev=None,
         next=None,
         )
+    next_layout = htypes.navigator.layout(
+        current_layout=mosaic.put(text_layout),
+        prev=None,
+        next=None,
+        )
     layout = htypes.navigator.layout(
         current_layout=mosaic.put(text_layout),
         prev=mosaic.put(prev_layout),
-        next=None,
+        next=mosaic.put(next_layout),
         )
     tab_state = htypes.text.state()
     state = htypes.navigator.state(

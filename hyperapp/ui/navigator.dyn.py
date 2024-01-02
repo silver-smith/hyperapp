@@ -70,7 +70,9 @@ class NavigatorCtl:
         sample_command_2 = ModelCommand(open_sample_text_2, partial(self._wrapper, layout, wrapper))
         commands = [sample_command_1, sample_command_2]
         if layout.prev:
-            commands.append(ModelCommand(partial(self._go_back, layout), wrapper))
+            commands.append(ModelCommand(self._go_back, wrapper))
+        if layout.next:
+            commands.append(ModelCommand(self._go_forward, wrapper))
         return commands
 
     def _wrapper(self, layout, wrapper, piece):
@@ -82,8 +84,12 @@ class NavigatorCtl:
             )
         return wrapper((layout_diff, None))
 
-    async def _go_back(self, layout):
+    async def _go_back(self):
         layout_diff = htypes.navigator.go_back_diff()
+        return (layout_diff, None)
+
+    async def _go_forward(self):
+        layout_diff = htypes.navigator.go_forward_diff()
         return (layout_diff, None)
 
     def apply(self, ctx, layout, widget, layout_diff, state_diff):
@@ -103,3 +109,12 @@ class NavigatorCtl:
                 next=mosaic.put(layout),
                 )
             return (layout, None)
+        if isinstance(layout_diff, htypes.navigator.go_forward_diff):
+            next_layout = web.summon(layout.next)
+            layout = htypes.navigator.layout(
+                current_layout=next_layout.current_layout,
+                prev=mosaic.put(layout),
+                next=next_layout.next,
+                )
+            return (layout, None)
+        raise NotImplementedError(repr(layout_diff))
