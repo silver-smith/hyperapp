@@ -1,7 +1,21 @@
 
 layout = record:
   current_layout: ref
-
+  prev: ref opt
+  next: ref opt
 
 state = record:
   current_state: ref
+  prev: ref opt
+  next: ref opt
+
+
+open_new_diff = record:
+  new_current: ref
+  prev: ref
+
+go_back_diff = record:
+  layout: ref
+  next: ref
+
+go_forward_diff = record

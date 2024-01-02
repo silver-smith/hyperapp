@@ -20,7 +20,10 @@ class ModelCommand:
 
     @property
     def name(self):
-        return self._fn.__name__
+        fn = self._fn
+        if isinstance(fn, partial):
+            fn = fn.func
+        return fn.__name__
 
     async def run(self):
         log.info("Run: %s", self._fn)
@@ -44,24 +47,58 @@ class NavigatorCtl:
         self._current_ctl = current_ctl
 
     def construct_widget(self, state, ctx):
-        current_state = web.summon(state.current_state)
+        if state is not None:
+            current_state = web.summon(state.current_state)
+        else:
+            current_state = None
         return self._current_ctl.construct_widget(current_state, ctx)
 
     def widget_state(self, widget):
         current_state = self._current_ctl.widget_state(widget)
-        return htypes.navigator.state(mosaic.put(current_state))
+        return htypes.navigator.state(
+            current_state=mosaic.put(current_state),
+            prev=None,
+            next=None,
+            )
 
     def get_commands(self, layout, widget, wrapper):
-        command = ModelCommand(open_some_text, partial(self._wrapper, wrapper))
-        return [command]
+        sample_command = ModelCommand(open_some_text, partial(self._wrapper, layout, wrapper))
+        commands = [sample_command]
+        if layout.prev:
+            commands.append(ModelCommand(partial(self._go_back, layout), wrapper))
+        return commands
 
-    def _wrapper(self, wrapper, piece):
+    def _wrapper(self, layout, wrapper, piece):
         if piece is None:
             return None
-        layout = visualizer(piece)
-        # Navigator does not have specific diffs. It's diff is just a new layout.
-        return wrapper((layout, None))
+        current_layout = visualizer(piece)
+        layout_diff = htypes.navigator.open_new_diff(
+            new_current=mosaic.put(current_layout),
+            prev=mosaic.put(layout),
+            )
+        return wrapper((layout_diff, None))
+
+    async def _go_back(self, layout):
+        layout_diff = htypes.navigator.go_back_diff(
+            layout=layout.prev,
+            next=mosaic.put(layout)
+            )
+        return (layout_diff, None)
 
     def apply(self, ctx, widget, layout_diff, state_diff):
         log.info("Navigator: apply: %s / %s", layout_diff, state_diff)
-        return (layout_diff, state_diff)
+        if isinstance(layout_diff, htypes.navigator.open_new_diff):
+            layout = htypes.navigator.layout(
+                current_layout=layout_diff.new_current,
+                prev=layout_diff.prev,
+                next=None,
+                )
+            return (layout, None)
+        if isinstance(layout_diff, htypes.navigator.go_back_diff):
+            prev_layout = web.summon(layout_diff.layout)
+            layout = htypes.navigator.layout(
+                current_layout=prev_layout.current_layout,
+                prev=prev_layout.prev,
+                next=layout_diff.next,
+                )
+            return (layout, None)
