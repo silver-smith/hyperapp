@@ -489,11 +489,14 @@ class Unit:
         if _sources_ref_str(self._test_sources) != self._resource_module.tests_ref_str:
             log.info("%s: tests do not match", self.name)
             return False
-        self._is_up_to_date = True
-        self._deps_discovered = True
-        await _lock_and_notify_all(self._new_deps_discovered)
+        await self._wait_for_deps(self.deps)
         self._ctx.resource_registry.set_module(self.name, self._resource_module)
+        for name in self._resource_module:
+            self._resource_module[name]  # Load all definitions to name cache.
+        self._deps_discovered = True
+        self._is_up_to_date = True
         log.info("%s: tests match; up-to-date", self.name)
+        await _lock_and_notify_all(self._new_deps_discovered)
         await _lock_and_notify_all(self._attributes_discovered)
         await _lock_and_notify_all(self._unit_up_to_date)
         return True
