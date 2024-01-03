@@ -1,0 +1,13 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.builtin:python_module
+- legacy_type.sample_list:item
+associations: []
+definitions:
+  sample_list.module:
+    _type: legacy_type.builtin:python_module
+    module_name: sample_list
+    file_name: sample_list.dyn.py
+    import_list:
+      htypes.sample_list.item: legacy_type.sample_list:item

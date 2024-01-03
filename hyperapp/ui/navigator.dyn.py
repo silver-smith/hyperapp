@@ -32,20 +32,24 @@ class ModelCommand:
         return self._wrapper(result)
 
 
-async def open_sample_text_1():
+async def open_sample_static_text_1():
     return "Sample text 1"
 
 
-async def open_sample_text_2():
+async def open_sample_static_text_2():
     return "Sample text 2"
 
 
-async def open_sample_list():
+async def open_sample_static_list():
     return [
         htypes.sample_list.item(1, "First"),
         htypes.sample_list.item(2, "Second"),
         htypes.sample_list.item(3, "Third"),
         ]
+
+
+async def open_sample_fn_list():
+    return htypes.sample_list.sample_list()
 
 
 class NavigatorCtl:
@@ -74,10 +78,12 @@ class NavigatorCtl:
             )
 
     def get_commands(self, layout, widget, wrapper):
-        sample_command_1 = ModelCommand(open_sample_text_1, partial(self._wrapper, layout, wrapper))
-        sample_command_2 = ModelCommand(open_sample_text_2, partial(self._wrapper, layout, wrapper))
-        sample_command_3 = ModelCommand(open_sample_list, partial(self._wrapper, layout, wrapper))
-        commands = [sample_command_1, sample_command_2, sample_command_3]
+        commands = [
+            ModelCommand(open_sample_static_text_1, partial(self._wrapper, layout, wrapper)),
+            ModelCommand(open_sample_static_text_2, partial(self._wrapper, layout, wrapper)),
+            ModelCommand(open_sample_static_list, partial(self._wrapper, layout, wrapper)),
+            ModelCommand(open_sample_fn_list, partial(self._wrapper, layout, wrapper)),
+            ]
         if layout.prev:
             commands.append(ModelCommand(self._go_back, wrapper))
         if layout.next:

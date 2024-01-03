@@ -8,7 +8,7 @@ from .services import (
 from .tested.code import list_adapter
 
 
-def test_adapter():
+def test_static_adapter():
     value = [
         htypes.list_tests.item(1, "First"),
         htypes.list_tests.item(2, "Second"),
@@ -23,3 +23,15 @@ def test_adapter():
     assert adapter.column_title(1) == 'title'
     assert adapter.cell_data(1, 0) == 2
     assert adapter.cell_data(2, 1) == "Third"
+
+
+def test_fn_adapter():
+    list_piece = htypes.sample_list.sample_list()
+    adapter_piece = htypes.list_adapter.fn_list_adapter(mosaic.put(list_piece))
+    adapter = list_adapter.FnListAdapter.from_piece(adapter_piece)
+    assert adapter.column_count() == 2
+    assert adapter.row_count() == 3
+    assert adapter.column_title(0) == 'id'
+    assert adapter.column_title(1) == 'title'
+    assert adapter.cell_data(1, 0) == 2
+    assert adapter.cell_data(2, 1) == "Third sample"

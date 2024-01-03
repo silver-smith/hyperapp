@@ -15,3 +15,10 @@ def test_list():
         ]
     layout = visualizer(value)
     assert layout
+
+
+def test_sample_list():
+    piece = htypes.sample_list.sample_list()
+    layout = visualizer(piece)
+    assert layout
+

@@ -6,9 +6,18 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.list_adapter:fn_list_adapter
 - legacy_type.list_adapter:static_list_adapter
+- ui.sample_list:sample_list.module
 - ui.ui_adapter_creg:ui_adapter_creg.service
 associations:
+- bases:
+  - ui.ui_adapter_creg:ui_adapter_creg.service
+  - legacy_type.list_adapter:fn_list_adapter
+  key:
+  - ui.ui_adapter_creg:ui_adapter_creg.service
+  - legacy_type.list_adapter:fn_list_adapter
+  value: FnListAdapter.from_piece
 - bases:
   - ui.ui_adapter_creg:ui_adapter_creg.service
   - legacy_type.list_adapter:static_list_adapter
@@ -17,6 +26,14 @@ associations:
   - legacy_type.list_adapter:static_list_adapter
   value: StaticListAdapter.from_piece
 definitions:
+  FnListAdapter:
+    _type: legacy_type.builtin:attribute
+    object: list_adapter.module
+    attr_name: FnListAdapter
+  FnListAdapter.from_piece:
+    _type: legacy_type.builtin:attribute
+    object: FnListAdapter
+    attr_name: from_piece
   StaticListAdapter:
     _type: legacy_type.builtin:attribute
     object: list_adapter.module
@@ -30,6 +47,7 @@ definitions:
     module_name: list_adapter
     file_name: list_adapter.dyn.py
     import_list:
+      code.sample_list: ui.sample_list:sample_list.module
       services.mosaic: builtins:mosaic.service
       services.types: builtins:types.service
       services.web: builtins:web.service
