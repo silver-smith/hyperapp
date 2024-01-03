@@ -28,10 +28,6 @@ type_name = record:
   module: string
   name: string
 
-item_element = record:
-  name: string
-  type: type_name
-
 
 none_t = record
 
@@ -45,8 +41,8 @@ object_t = record:
 record_t = record:
   type: type_name
 
-list_t = record:
-  element_list: item_element list
+record_list_t = record:
+  record_type: type_name
 
 empty_list_t = record
 

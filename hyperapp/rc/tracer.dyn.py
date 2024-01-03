@@ -47,17 +47,9 @@ def value_type(value):
         return htypes.inspect.empty_list_t()
 
     if isinstance(t, TList) and isinstance(t.element_t, TRecord):
-        element_list = []
-        for name, field_t in t.element_t.fields.items():
-            if not isinstance(field_t, TRecord):
-                # TODO: Just return meta type.
-                log.warning("Non-record list element fields are not supported (field %r): %s", name, field_t)
-                return None
-            type_name = htypes.inspect.type_name(field_t.module_name, field_t.name)
-            element = htypes.inspect.item_element(name, type_name)
-            element_list.append(element)
-        return htypes.inspect.list_t(
-            element_list=element_list,
+        element_type_name = htypes.inspect.type_name(t.element_t.module_name, t.element_t.name)
+        return htypes.inspect.record_list_t(
+            record_type=element_type_name,
             )
 
 
