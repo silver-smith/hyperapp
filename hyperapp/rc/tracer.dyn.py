@@ -2,6 +2,7 @@ import inspect
 import logging
 import sys
 from contextlib import contextmanager
+from functools import partial
 
 from hyperapp.common.htypes import TPrimitive, TList, TRecord
 from hyperapp.common.htypes.deduce_value_type import DeduceTypeError, deduce_complex_value_type, safe_repr
@@ -82,30 +83,23 @@ class Tracer:
             obj = inspect.getattr_static(obj, n)
         return obj
 
-    def trace(self, frame, event, arg):
-        if self._original_tracer is not None:
-            # Used by debugger (but still does not work).
-            # See also: pydevd.GetGlobalDebugger().
-            self._original_tracer(frame, event, arg)
-        if event != 'call':
-            return
-        path = frame.f_code.co_filename
-        module_name = self._path_to_module.get(path)
-        if not module_name:
+    def trace_return(self, module_name, frame, event, arg):
+        if event != 'return':
             return
         code = frame.f_code
+        result_t = value_type(arg)
         obj = self._pick_object(frame)
         args = inspect.getargvalues(frame)
         args_dict = {
             name: safe_repr(args.locals[name])
             for name in args.args
             }
-        log.debug("Trace call: %s:%d %r: %s", module_name, code.co_firstlineno, code.co_qualname, repr(args_dict))
         args_types = {
             name: value_type(args.locals[name])
             for name in args.args
             }
-        log.info("Trace call types: %s:%d %r: %s", module_name, code.co_firstlineno, code.co_qualname, repr(args_types))
+        log.info("Trace call: %s:%d %r: %s -> [%s] %s",
+                 module_name, code.co_firstlineno, code.co_qualname, repr(args_types), result_t, repr(arg))
         params = [
             htypes.inspect.call_param(name, mosaic.put(t))
             for name, t in args_types.items()
@@ -117,8 +111,22 @@ class Tracer:
                 fn_qual_name=code.co_qualname,
                 obj_type=type(obj).__name__ if obj is not None else '',
                 params=params,
+                result_t=mosaic.put(result_t),
                 )
             )
+
+    def trace(self, frame, event, arg):
+        if self._original_tracer is not None:
+            # Used by debugger (but still does not work).
+            # See also: pydevd.GetGlobalDebugger().
+            self._original_tracer(frame, event, arg)
+        if event != 'call':
+            return
+        path = frame.f_code.co_filename
+        module_name = self._path_to_module.get(path)
+        if not module_name:
+            return
+        return partial(self.trace_return, module_name)
 
     @contextmanager
     def tracing(self):

@@ -59,6 +59,7 @@ call_trace = record:
   fn_qual_name: string
   obj_type: string
   params: call_param list
+  result_t: ref
 
 module_imports = record:
   module: string

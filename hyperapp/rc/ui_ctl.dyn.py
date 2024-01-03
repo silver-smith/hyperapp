@@ -76,22 +76,18 @@ def construct_adapter_impl(ctx, module_name, resource_module, module_res, params
 
 
 def create_ui_resources(ctx, module_name, resource_module, module_res, call_list):
-    qname_to_trace = {}
+    qname_to_traces = defaultdict(list)
     for trace in call_list:
         log.debug("Trace for %s %s: %s", module_name, trace.fn_qual_name, trace)
-        try:
-            prev_trace = qname_to_trace[trace.fn_qual_name]
-        except KeyError:
-            qname_to_trace[trace.fn_qual_name] = trace
-        else:
-            if trace != prev_trace:
-                qname_to_trace[trace.fn_qual_name] = None
-                log.warning("Different traces for %s: %s and %s", trace.fn_qual_name, prev_trace, trace)
+        qname_to_traces[trace.fn_qual_name].append(trace)
+    for trace_list in qname_to_traces.values():
+        for trace in trace_list[1:]:
+            if trace.params != trace_list[0].params:
+                log.warning("Different traces for %s: %s and %s", trace.fn_qual_name, trace_list[0], trace)
 
     ass_list = []
-    for qname, trace in qname_to_trace.items():
-        if trace is None:
-            continue  # Multiple trace variants found - do not consider.
+    for qname, trace_list in qname_to_traces.items():
+        trace = trace_list[0]
         params = {**trace.params}
         if trace.obj_type == 'classmethod':
             # Remove first, 'cls', parameter.
