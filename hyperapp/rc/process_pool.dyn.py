@@ -61,7 +61,7 @@ class ProcessPool:
                     log.debug("Deadlock check: setup")
                     while True:
                         await self._process_available.wait()
-                        when = asyncio.get_running_loop().time() + 3
+                        when = asyncio.get_running_loop().time() + 6
                         log.debug("Deadlock check: reschedule to %s", when)
                         timeout.reschedule(when)
         except asyncio.CancelledError:
