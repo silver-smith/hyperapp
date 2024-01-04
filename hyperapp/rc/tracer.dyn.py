@@ -42,6 +42,7 @@ class Tracer:
             str(hyperapp_dir.joinpath(name.replace('.', '/') + '.dyn.py')) : name
             for name in wanted_modules
             }
+        # Used by debugger. See also: pydevd.GetGlobalDebugger().
         self._original_tracer = None
         self._calls = []
 
@@ -65,6 +66,8 @@ class Tracer:
         return obj
 
     def trace_return(self, module_name, frame, event, arg):
+        if self._original_tracer is not None:
+            self._original_tracer(frame, event, arg)
         if event != 'return':
             return
         code = frame.f_code
@@ -98,15 +101,13 @@ class Tracer:
 
     def trace(self, frame, event, arg):
         if self._original_tracer is not None:
-            # Used by debugger (but still does not work).
-            # See also: pydevd.GetGlobalDebugger().
             self._original_tracer(frame, event, arg)
         if event != 'call':
-            return
+            return self._original_tracer
         path = frame.f_code.co_filename
         module_name = self._path_to_module.get(path)
         if not module_name:
-            return
+            return self._original_tracer
         return partial(self.trace_return, module_name)
 
     @contextmanager
