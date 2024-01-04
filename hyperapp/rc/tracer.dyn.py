@@ -17,41 +17,22 @@ log = logging.getLogger(__name__)
 
 
 def value_type(value):
-    if value is None:
-        return htypes.inspect.none_t()
-
-    if inspect.iscoroutine(value):
-        return htypes.inspect.coroutine_t()
-
     log.debug("Get type for value: %s", safe_repr(value))
     try:
         t = deduce_complex_value_type(mosaic, types, value)
     except DeduceTypeError:
         log.info("Non-data type: %r", value.__class__.__name__)
-        return htypes.inspect.object_t(
-            class_name=value.__class__.__name__,
-            class_module=value.__class__.__module__,
-            )
-
-    log.info("Type for %s is: %r", safe_repr(value), t)
-
-    if isinstance(t, TPrimitive):
-        return htypes.inspect.primitive_t(t.name)
-
-    if isinstance(t, TRecord):
-        type_name = htypes.inspect.type_name(t.module_name, t.name)
-        return htypes.inspect.record_t(
-            type=type_name,
-        )
-
-    if isinstance(t, TList) and not value:
-        return htypes.inspect.empty_list_t()
-
-    if isinstance(t, TList) and isinstance(t.element_t, TRecord):
-        element_type_name = htypes.inspect.type_name(t.element_t.module_name, t.element_t.name)
-        return htypes.inspect.record_list_t(
-            record_type=element_type_name,
-            )
+        if inspect.iscoroutine(value):
+            t = htypes.inspect.coroutine_t()
+        else:
+            t = htypes.inspect.object_t(
+                class_name=value.__class__.__name__,
+                class_module=value.__class__.__module__,
+                )
+        log.info("Type for %s is non-data: %r", safe_repr(value), t)
+        return t
+    t_ref = types.reverse_resolve(t)
+    return htypes.inspect.data_t(t_ref)
 
 
 class Tracer:

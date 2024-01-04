@@ -1,12 +1,14 @@
 import logging
 from collections import defaultdict
 
+from hyperapp.common.htypes import TRecord
 from hyperapp.common.association_registry import Association
 
 from . import htypes
 from .services import (
     mosaic,
     pyobj_creg,
+    types,
     ui_ctl_creg,
     ui_adapter_creg,
     )
@@ -14,9 +16,18 @@ from .services import (
 log = logging.getLogger(__name__)
 
 
+def _resolve_record_t(t_rec):
+    if not isinstance(t_rec, htypes.inspect.data_t):
+        return None
+    t = types.resolve(t_rec.t)
+    if not isinstance(t, TRecord):
+        return None
+    return t_rec.t
+
+
 def construct_view_impl(ctx, module_name, resource_module, module_res, params, qname):
-    piece_t = params['layout']
-    if not isinstance(piece_t, htypes.inspect.record_t):
+    piece_t_ref = _resolve_record_t(params['layout'])
+    if piece_t_ref is None:
         log.warning("%s.%s: layout parameter type is not a data record", module_name, qname)
         return []
     log.info("Construct view implementation: %s: %s", resource_module.name, qname)
@@ -29,7 +40,6 @@ def construct_view_impl(ctx, module_name, resource_module, module_res, params, q
         object=mosaic.put(class_attribute),
         attr_name=method_name,
     )
-    piece_t_ref = ctx.types[piece_t.type.module][piece_t.type.name]
     piece_t_res = htypes.builtin.legacy_type(piece_t_ref)
     ui_ctl = htypes.ui.ui_ctl(
         ctr_fn=mosaic.put(ctr_attribute),
@@ -48,8 +58,8 @@ def construct_view_impl(ctx, module_name, resource_module, module_res, params, q
 
 
 def construct_adapter_impl(ctx, module_name, resource_module, module_res, params, qname):
-    piece_t = params['piece']
-    if not isinstance(piece_t, htypes.inspect.record_t):
+    piece_t_ref = _resolve_record_t(params['piece'])
+    if piece_t_ref is None:
         log.warning("%s.%s: layout parameter type is not a data record", module_name, qname)
         return []
     log.info("Construct adapter implementation: %s: %s", resource_module.name, qname)
@@ -62,7 +72,6 @@ def construct_adapter_impl(ctx, module_name, resource_module, module_res, params
         object=mosaic.put(class_attribute),
         attr_name=method_name,
     )
-    piece_t_ref = ctx.types[piece_t.type.module][piece_t.type.name]
     piece_t_res = htypes.builtin.legacy_type(piece_t_ref)
     ui_adapter_creg_res = pyobj_creg.reverse_resolve(ui_adapter_creg)
     association = Association(

@@ -28,25 +28,14 @@ type_name = record:
   module: string
   name: string
 
-
-none_t = record
-
-primitive_t = record:
-  name: string
-
 object_t = record:
   class_name: string
   class_module: string
 
-record_t = record:
-  type: type_name
-
-record_list_t = record:
-  record_type: type_name
-
-empty_list_t = record
-
 coroutine_t = record
+
+data_t = record:
+  t: ref
 
 
 call_param = record:
