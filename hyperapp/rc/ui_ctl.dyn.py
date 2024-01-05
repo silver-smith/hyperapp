@@ -1,7 +1,7 @@
 import logging
 from collections import defaultdict
 
-from hyperapp.common.htypes import TRecord
+from hyperapp.common.htypes import TList, TRecord
 from hyperapp.common.association_registry import Association
 
 from . import htypes
@@ -25,7 +25,7 @@ def _resolve_record_t(t_rec):
     return t_rec.t
 
 
-def construct_view_impl(ctx, module_name, resource_module, module_res, params, qname):
+def construct_view_impl(ctx, module_name, resource_module, module_res, qname, params):
     piece_t_ref = _resolve_record_t(params['layout'])
     if piece_t_ref is None:
         log.warning("%s.%s: layout parameter type is not a data record", module_name, qname)
@@ -57,7 +57,7 @@ def construct_view_impl(ctx, module_name, resource_module, module_res, params, q
     return [ctl_association]
 
 
-def construct_adapter_impl(ctx, module_name, resource_module, module_res, params, qname):
+def construct_adapter_impl(ctx, module_name, resource_module, module_res, qname, params):
     piece_t_ref = _resolve_record_t(params['piece'])
     if piece_t_ref is None:
         log.warning("%s.%s: layout parameter type is not a data record", module_name, qname)
@@ -84,6 +84,46 @@ def construct_adapter_impl(ctx, module_name, resource_module, module_res, params
     return [association]
 
 
+def construct_fn_list_impl(ctx, module_name, resource_module, module_res, qname, params, result_t):
+    piece_t_ref = _resolve_record_t(params['piece'])
+    if piece_t_ref is None:
+        log.warning("%s.%s: layout parameter type is not a data record", module_name, qname)
+        return []
+    log.info("Construct fn list implementation: %s: %s", resource_module.name, qname)
+    fn_name = qname
+    fn_attribute = htypes.builtin.attribute(
+        object=mosaic.put(module_res),
+        attr_name=fn_name,
+    )
+    piece_t_res = htypes.builtin.legacy_type(piece_t_ref)
+    element_t_res = pyobj_creg.reverse_resolve(result_t.element_t)
+    ui_t = htypes.ui.list_ui_t(
+        element_t=mosaic.put(element_t_res),
+        )
+    impl = htypes.ui.fn_impl(
+        function=mosaic.put(fn_attribute),
+        )
+    model_d_res = pyobj_creg.reverse_resolve(htypes.ui.model_d)
+    model_d = htypes.builtin.call(
+        function=mosaic.put(model_d_res),
+        )
+    model = htypes.ui.model(
+        ui_t=mosaic.put(ui_t),
+        impl=mosaic.put(impl),
+        )
+    association = Association(
+        bases=[piece_t_res],
+        key=[model_d, piece_t_res],
+        value=model,
+        )
+    resource_module[fn_name] = fn_attribute
+    resource_module[f'{fn_name}.ui_t'] = ui_t
+    resource_module[f'{fn_name}.impl'] = impl
+    resource_module['model_d'] = model_d
+    resource_module[f'{fn_name}.model'] = model
+    return [association]
+
+
 def create_ui_resources(ctx, module_name, resource_module, module_res, call_list):
     qname_to_traces = defaultdict(list)
     for trace in call_list:
@@ -103,7 +143,13 @@ def create_ui_resources(ctx, module_name, resource_module, module_res, call_list
             params.pop(list(params)[0])
         if len(qname.split('.')) == 2 and trace.obj_type in ('classmethod', 'staticmethod'):
             if list(params) == ['layout']:
-                ass_list += construct_view_impl(ctx, module_name, resource_module, module_res, params, qname)
+                ass_list += construct_view_impl(ctx, module_name, resource_module, module_res, qname, params)
             if list(params) == ['piece'] and 'Adapter' in qname:
-                ass_list += construct_adapter_impl(ctx, module_name, resource_module, module_res, params, qname)
+                ass_list += construct_adapter_impl(ctx, module_name, resource_module, module_res, qname, params)
+        if len(qname.split('.')) == 1 and trace.obj_type == 'function':
+            if not isinstance(trace.result_t, htypes.inspect.data_t):
+                continue
+            result_t = types.resolve(trace.result_t.t)
+            if list(params) == ['piece'] and isinstance(result_t, TList):
+                ass_list += construct_fn_list_impl(ctx, module_name, resource_module, module_res, qname, params, result_t)
     return ass_list

@@ -4,3 +4,15 @@ ui_ctl = record:
   command_methods: string list
 
 ui_command_d = record
+model_d = record
+
+
+model = record:
+  ui_t: ref
+  impl: ref
+
+list_ui_t = record:
+  element_t: ref
+
+fn_impl = record:
+  function: ref
