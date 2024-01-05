@@ -2,9 +2,11 @@
 
 import:
 - builtins:mosaic.service
+- builtins:pyobj_creg.service
 - builtins:types.service
 - legacy_type.builtin:python_module
 - legacy_type.phony:phony
+- resource.fn_to_res:fn_to_ref.service
 associations: []
 definitions:
   list_adapter.tests.module:
@@ -12,7 +14,9 @@ definitions:
     module_name: list_adapter.tests
     file_name: list_adapter.tests.dyn.py
     import_list:
+      services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
       services.mosaic: builtins:mosaic.service
+      services.pyobj_creg: builtins:pyobj_creg.service
       services.types: builtins:types.service
       tested.code.list_adapter: phony
   phony:

@@ -3,10 +3,10 @@ from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 
 from .services import (
     mosaic,
+    pyobj_creg,
     types,
     web,
     )
-from .code.sample_list import sample_list
 
 
 class StaticListAdapter:
@@ -40,11 +40,11 @@ class FnListAdapter:
 
     @classmethod
     def from_piece(cls, piece):
-        object_piece = web.summon(piece.piece)
-        value = sample_list(piece)
-        list_t = deduce_complex_value_type(mosaic, types, value)
-        assert isinstance(list_t, TList), repr(list_t)
-        return cls(list_t.element_t, value)
+        model_piece = web.summon(piece.model_piece)
+        element_t = pyobj_creg.invite(piece.element_t)
+        fn = pyobj_creg.invite(piece.function)
+        value = fn(model_piece)
+        return cls(element_t, value)
 
     def __init__(self, item_t, value):
         self._item_t = item_t

@@ -1,8 +1,11 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:association_reg.service
 - builtins:mosaic.service
+- builtins:pyobj_creg.service
 - builtins:types.service
+- builtins:web.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -10,9 +13,12 @@ import:
 - legacy_type.list:layout
 - legacy_type.list_adapter:fn_list_adapter
 - legacy_type.list_adapter:static_list_adapter
-- legacy_type.sample_list:sample_list
 - legacy_type.str_adapter:static_str_adapter
 - legacy_type.text:edit_layout
+- legacy_type.ui:fn_impl
+- legacy_type.ui:list_ui_t
+- legacy_type.ui:model_d
+- resource.data_to_res:data_to_res.service
 associations: []
 definitions:
   visualizer:
@@ -27,12 +33,18 @@ definitions:
       htypes.list.layout: legacy_type.list:layout
       htypes.list_adapter.fn_list_adapter: legacy_type.list_adapter:fn_list_adapter
       htypes.list_adapter.static_list_adapter: legacy_type.list_adapter:static_list_adapter
-      htypes.sample_list.sample_list: legacy_type.sample_list:sample_list
       htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
       htypes.text.edit_layout: legacy_type.text:edit_layout
+      htypes.ui.fn_impl: legacy_type.ui:fn_impl
+      htypes.ui.list_ui_t: legacy_type.ui:list_ui_t
+      htypes.ui.model_d: legacy_type.ui:model_d
+      services.association_reg: builtins:association_reg.service
+      services.data_to_res: resource.data_to_res:data_to_res.service
       services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service
+      services.pyobj_creg: builtins:pyobj_creg.service
       services.types: builtins:types.service
+      services.web: builtins:web.service
   visualizer.service:
     _type: legacy_type.builtin:call
     function: visualizer

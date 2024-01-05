@@ -3,4 +3,6 @@ static_list_adapter = record:
   value: ref
 
 fn_list_adapter = record:
-  piece: ref
+  model_piece: ref
+  element_t: ref
+  function: ref
