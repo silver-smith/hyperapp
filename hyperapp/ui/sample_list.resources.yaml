@@ -7,10 +7,16 @@ import:
 - legacy_type.sample_list:item
 - legacy_type.sample_list:sample_list
 - legacy_type.ui:fn_impl
+- legacy_type.ui:global_model_command
+- legacy_type.ui:global_model_command_d
 - legacy_type.ui:list_ui_t
 - legacy_type.ui:model
 - legacy_type.ui:model_d
 associations:
+- bases:
+  - global_model_command_d
+  key: global_model_command_d
+  value: open_sample_fn_list.command
 - bases:
   - legacy_type.sample_list:sample_list
   key:
@@ -18,9 +24,19 @@ associations:
   - legacy_type.sample_list:sample_list
   value: sample_list.model
 definitions:
+  global_model_command_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:global_model_command_d
   model_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_d
+  open_sample_fn_list:
+    _type: legacy_type.builtin:attribute
+    object: sample_list.module
+    attr_name: open_sample_fn_list
+  open_sample_fn_list.command:
+    _type: legacy_type.ui:global_model_command
+    function: open_sample_fn_list
   sample_list:
     _type: legacy_type.builtin:attribute
     object: sample_list.module
@@ -38,6 +54,7 @@ definitions:
     file_name: sample_list.dyn.py
     import_list:
       htypes.sample_list.item: legacy_type.sample_list:item
+      htypes.sample_list.sample_list: legacy_type.sample_list:sample_list
   sample_list.ui_t:
     _type: legacy_type.ui:list_ui_t
     element_t: legacy_type.sample_list:item

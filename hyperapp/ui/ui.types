@@ -3,7 +3,10 @@ ui_ctl = record:
   ctr_fn: ref
   command_methods: string list
 
+
 ui_command_d = record
+model_command_d = record
+global_model_command_d = record
 model_d = record
 
 
@@ -15,4 +18,8 @@ list_ui_t = record:
   element_t: ref
 
 fn_impl = record:
+  function: ref
+
+
+global_model_command = record:
   function: ref

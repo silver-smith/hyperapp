@@ -93,9 +93,9 @@ class NavigatorCtl:
     def _wrapper(self, layout, wrapper, piece):
         if piece is None:
             return None
-        current_layout = visualizer(piece)
+        new_current_layout = visualizer(piece)
         layout_diff = htypes.navigator.open_new_diff(
-            new_current=mosaic.put(current_layout),
+            new_current=mosaic.put(new_current_layout),
             )
         return wrapper((layout_diff, None))
 

@@ -124,6 +124,31 @@ def construct_fn_list_impl(ctx, module_name, resource_module, module_res, qname,
     return [association]
 
 
+def construct_global_model_command(ctx, module_name, resource_module, module_res, qname):
+    log.info("Construct global model command: %s: %s", resource_module.name, qname)
+    fn_name = qname
+    fn_attribute = htypes.builtin.attribute(
+        object=mosaic.put(module_res),
+        attr_name=fn_name,
+    )
+    command = htypes.ui.global_model_command(
+        function=mosaic.put(fn_attribute),
+        )
+    global_model_command_d_res = pyobj_creg.reverse_resolve(htypes.ui.global_model_command_d)
+    global_model_command_d = htypes.builtin.call(
+        function=mosaic.put(global_model_command_d_res),
+        )
+    association = Association(
+        bases=[global_model_command_d],
+        key=[global_model_command_d],
+        value=command,
+        )
+    resource_module[fn_name] = fn_attribute
+    resource_module[f'{fn_name}.command'] = command
+    resource_module['global_model_command_d'] = global_model_command_d
+    return [association]
+
+
 def create_ui_resources(ctx, module_name, resource_module, module_res, call_list):
     qname_to_traces = defaultdict(list)
     for trace in call_list:
@@ -152,4 +177,6 @@ def create_ui_resources(ctx, module_name, resource_module, module_res, call_list
             result_t = types.resolve(trace.result_t.t)
             if list(params) == ['piece'] and isinstance(result_t, TList):
                 ass_list += construct_fn_list_impl(ctx, module_name, resource_module, module_res, qname, params, result_t)
+            if isinstance(result_t, TRecord) and not params:
+                ass_list += construct_global_model_command(ctx, module_name, resource_module, module_res, qname)
     return ass_list

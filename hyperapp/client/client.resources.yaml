@@ -5,6 +5,8 @@ import:
 - common.context:context.module
 - legacy_type.application:layout
 - legacy_type.application:state
+- legacy_type.builtin:attribute
+- legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.command_pane:command_pane
 - legacy_type.menu_bar:layout
@@ -15,13 +17,23 @@ import:
 - legacy_type.tabs:state
 - legacy_type.tabs:tab
 - legacy_type.text:state
+- legacy_type.ui:global_model_command
+- legacy_type.ui:global_model_command_d
 - legacy_type.window:layout
 - legacy_type.window:pos
 - legacy_type.window:size
 - legacy_type.window:state
 - ui.ui_ctl_registry:ui_ctl_creg.service
 - ui.visualizer:visualizer.service
-associations: []
+associations:
+- bases:
+  - global_model_command_d
+  key: global_model_command_d
+  value: make_layout.command
+- bases:
+  - global_model_command_d
+  key: global_model_command_d
+  value: make_state.command
 definitions:
   client.module:
     _type: legacy_type.builtin:python_module
@@ -47,3 +59,20 @@ definitions:
       services.mosaic: builtins:mosaic.service
       services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
       services.visualizer: ui.visualizer:visualizer.service
+  global_model_command_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:global_model_command_d
+  make_layout:
+    _type: legacy_type.builtin:attribute
+    object: client.module
+    attr_name: make_layout
+  make_layout.command:
+    _type: legacy_type.ui:global_model_command
+    function: make_layout
+  make_state:
+    _type: legacy_type.builtin:attribute
+    object: client.module
+    attr_name: make_state
+  make_state.command:
+    _type: legacy_type.ui:global_model_command
+    function: make_state
