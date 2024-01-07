@@ -4,15 +4,17 @@ from functools import partial
 from . import htypes
 from .services import (
     mosaic,
+    pyobj_creg,
     ui_ctl_creg,
     visualizer,
     web,
     )
+from .code.model_command import global_commands
 
 log = logging.getLogger(__name__)
 
 
-class ModelCommand:
+class _UiCommand:
 
     def __init__(self, fn, wrapper):
         self._fn = fn
@@ -48,10 +50,6 @@ async def open_sample_static_list():
         ]
 
 
-async def open_sample_fn_list():
-    return htypes.sample_list.sample_list()
-
-
 class NavigatorCtl:
 
     @classmethod
@@ -79,23 +77,23 @@ class NavigatorCtl:
 
     def get_commands(self, layout, widget, wrapper):
         commands = [
-            ModelCommand(open_sample_static_text_1, partial(self._wrapper, layout, wrapper)),
-            ModelCommand(open_sample_static_text_2, partial(self._wrapper, layout, wrapper)),
-            ModelCommand(open_sample_static_list, partial(self._wrapper, layout, wrapper)),
-            ModelCommand(open_sample_fn_list, partial(self._wrapper, layout, wrapper)),
+            pyobj_creg.invite(cmd, partial(self._wrapper, layout, wrapper))
+            for cmd in layout.commands
             ]
         if layout.prev:
-            commands.append(ModelCommand(self._go_back, wrapper))
+            commands.append(_UiCommand(self._go_back, wrapper))
         if layout.next:
-            commands.append(ModelCommand(self._go_forward, wrapper))
+            commands.append(_UiCommand(self._go_forward, wrapper))
         return commands
 
     def _wrapper(self, layout, wrapper, piece):
         if piece is None:
             return None
         new_current_layout = visualizer(piece)
+        commands = global_commands()
         layout_diff = htypes.navigator.open_new_diff(
             new_current=mosaic.put(new_current_layout),
+            commands=[mosaic.put(c) for c in commands],
             )
         return wrapper((layout_diff, None))
 
@@ -112,6 +110,7 @@ class NavigatorCtl:
         if isinstance(layout_diff, htypes.navigator.open_new_diff):
             layout = htypes.navigator.layout(
                 current_layout=layout_diff.new_current,
+                commands=layout_diff.commands,
                 prev=mosaic.put(layout),
                 next=None,
                 )
@@ -120,6 +119,7 @@ class NavigatorCtl:
             prev_layout = web.summon(layout.prev)
             layout = htypes.navigator.layout(
                 current_layout=prev_layout.current_layout,
+                commands=prev_layout.commands,
                 prev=prev_layout.prev,
                 next=mosaic.put(layout),
                 )
@@ -128,6 +128,7 @@ class NavigatorCtl:
             next_layout = web.summon(layout.next)
             layout = htypes.navigator.layout(
                 current_layout=next_layout.current_layout,
+                commands=next_layout.commands,
                 prev=mosaic.put(layout),
                 next=next_layout.next,
                 )

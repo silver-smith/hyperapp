@@ -23,6 +23,7 @@ import:
 - legacy_type.window:pos
 - legacy_type.window:size
 - legacy_type.window:state
+- ui.model_command:model_command.module
 - ui.ui_ctl_registry:ui_ctl_creg.service
 - ui.visualizer:visualizer.service
 associations:
@@ -41,6 +42,7 @@ definitions:
     file_name: client.dyn.py
     import_list:
       code.context: common.context:context.module
+      code.model_command: ui.model_command:model_command.module
       htypes.application.layout: legacy_type.application:layout
       htypes.application.state: legacy_type.application:state
       htypes.command_pane.command_pane: legacy_type.command_pane:command_pane

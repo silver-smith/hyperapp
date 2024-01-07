@@ -10,6 +10,7 @@ from .services import (
     ui_ctl_creg,
     )
 from .code.context import Context
+from .code.model_command import global_commands
 
 
 def make_layout():
@@ -17,6 +18,7 @@ def make_layout():
     view_layout = visualizer(text)
     navigator_layout = htypes.navigator.layout(
         current_layout=mosaic.put(view_layout),
+        commands=[mosaic.put(c) for c in global_commands()],
         prev=None,
         next=None,
         )

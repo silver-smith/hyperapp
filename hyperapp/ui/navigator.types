@@ -1,6 +1,7 @@
 
 layout = record:
   current_layout: ref
+  commands: ref list
   prev: ref opt
   next: ref opt
 
@@ -12,6 +13,7 @@ state = record:
 
 open_new_diff = record:
   new_current: ref
+  commands: ref list
 
 go_back_diff = record
 go_forward_diff = record
