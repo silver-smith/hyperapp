@@ -1,7 +1,7 @@
 import logging
 from collections import defaultdict
 
-from hyperapp.common.htypes import TList, TRecord
+from hyperapp.common.htypes import TList, TRecord, tString
 from hyperapp.common.association_registry import Association
 
 from . import htypes
@@ -177,6 +177,9 @@ def create_ui_resources(ctx, module_name, resource_module, module_res, call_list
             result_t = types.resolve(trace.result_t.t)
             if list(params) == ['piece'] and isinstance(result_t, TList):
                 ass_list += construct_fn_list_impl(ctx, module_name, resource_module, module_res, qname, params, result_t)
-            if isinstance(result_t, TRecord) and not params:
+            if not params and (
+                    isinstance(result_t, TRecord)
+                    or result_t is tString
+                    or isinstance(result_t, TList) and isinstance(result_t.element_t, TRecord)):
                 ass_list += construct_global_model_command(ctx, module_name, resource_module, module_res, qname)
     return ass_list
