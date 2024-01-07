@@ -13,7 +13,7 @@ from .services import (
     web,
     )
 from .code.dep import CodeDep, FixturesDep, ServiceDep
-from .code import import_driver, call_driver, test_driver
+from .code import import_driver, call_driver, htest_driver
 from .code.scaffolds import (
     discoverer_module_res,
     enum_dep_imports,
@@ -627,7 +627,7 @@ class TestsUnit(FixturesDepsProviderUnit):
         service_recorders, services_ass_list, tested_service_fields = tested_services(self._graph, self._ctx, self, module_res, tested_service_to_unit)
         recorders = {**test_recorders, **unit_recorders, **service_recorders}
         result = await process_pool.run(
-            test_driver.call_test,
+            htest_driver.call_test,
             import_recorders=_recorder_piece_list(recorders),
             module_res=module_res,
             test_call_res=call_res,

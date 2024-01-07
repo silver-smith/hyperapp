@@ -11,10 +11,10 @@ import:
 
 definitions:
 
-  test_driver.module:
+  htest_driver.module:
     _type: legacy_type.builtin:python_module
-    module_name: test_driver
-    file_name: test_driver.dyn.py
+    module_name: htest_driver
+    file_name: htest_driver.dyn.py
     import_list:
       htypes.inspect.object_type_info: legacy_type.inspect:object_type_info
       services.association_reg: builtins:association_reg.service
