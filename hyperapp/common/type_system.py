@@ -18,7 +18,7 @@ class TypeSystem(object):
         self._type2ref = {}  # reverse registry
 
     def init(self, builtin_types, mosaic):
-        self._type_code_registry = CodeRegistry('type', mosaic, self)
+        self._type_code_registry = CodeRegistry(mosaic, mosaic, self, None, None, 'type')
 
         builtin_types.register_builtin_mt(self, self._type_code_registry)
         register_builtin_meta_types(builtin_types, mosaic, self)

@@ -9,7 +9,8 @@ from hyperapp.common.htypes.attribute import attribute_t
 from hyperapp.common.htypes.legacy_type import legacy_type_t
 from hyperapp.common.htypes.call import call_t
 from hyperapp.common.services import HYPERAPP_DIR
-from hyperapp.common.cached_code_registry import CachedCodeRegistry
+from hyperapp.common.code_registry import CodeRegistry
+from hyperapp.common.pyobj_registry import PyObjRegistry
 from hyperapp.common.association_registry import AssociationRegistry
 from hyperapp.common.python_importer import PythonImporter
 from hyperapp.common.type_module_loader import TypeModuleLoader
@@ -108,8 +109,7 @@ def python_importer():
 
 @pytest.fixture
 def pyobj_creg(types, mosaic, web, association_reg, python_importer):
-    creg = CachedCodeRegistry('pyobj', web, types)
-    creg.init_registries(association_reg, creg)
+    creg = PyObjRegistry(mosaic, web, types, association_reg)
     creg.register_actor(python_module_t, python_module_pyobj, mosaic, python_importer, creg)
     creg.register_actor(legacy_type_t, legacy_type_pyobj, types)
     # creg.register_actor(builtin_service_t, builtin_service_pyobj, self)
@@ -144,9 +144,15 @@ def builtin_types_as_dict(types, builtin_types):
 
 
 @pytest.fixture
+def code_registry_ctr(mosaic, web, types, association_reg, pyobj_creg):
+    return partial(CodeRegistry, mosaic, web, types, association_reg, pyobj_creg)
+
+
+@pytest.fixture
 def builtin_services(
         association_reg,
         builtin_types,
+        code_registry_ctr,
         hyperapp_dir,
         module_dir_list,
         mosaic,
@@ -173,6 +179,7 @@ def builtin_services(
     return {
         'association_reg': association_reg,
         'builtin_types': builtin_types,
+        'code_registry_ctr': code_registry_ctr,
         'hyperapp_dir': hyperapp_dir,
         'module_dir_list': module_dir_list,
         'mosaic': mosaic,

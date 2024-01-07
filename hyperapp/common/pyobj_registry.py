@@ -4,6 +4,9 @@ from .cached_code_registry import CachedCodeRegistry
 
 class PyObjRegistry(CachedCodeRegistry):
 
+    def __init__(self, mosaic, web, types, association_reg):
+        super().__init__(mosaic, web, types, association_reg, self, 'pyobj')
+
     def reverse_resolve(self, actor):
         try:
             return super().reverse_resolve(actor)

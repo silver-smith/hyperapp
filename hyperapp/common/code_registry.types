@@ -3,8 +3,3 @@ association = record:
   service: ref
   type: ref
   function: ref
-
-
-constructor = record:
-  service: ref
-  type: ref

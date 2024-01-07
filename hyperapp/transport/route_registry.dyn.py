@@ -1,9 +1,9 @@
 from .services import (
+    code_registry_ctr,
     mark,
     )
-from .code.dyn_code_registry import DynCodeRegistry
 
 
 @mark.service
 def route_registry():
-    return DynCodeRegistry('sync_route')
+    return code_registry_ctr('sync_route')

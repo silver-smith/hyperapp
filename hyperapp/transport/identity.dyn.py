@@ -1,24 +1,24 @@
 from .services import (
+    code_registry_ctr,
     mark,
     )
-from .code.dyn_code_registry import DynCodeRegistry
 
 
 @mark.service
 def identity_registry():
-    return DynCodeRegistry('identity')
+    return code_registry_ctr('identity')
 
 
 @mark.service
 def peer_registry():
-    return DynCodeRegistry('peer')
+    return code_registry_ctr('peer')
 
 
 @mark.service
 def signature_registry():
-    return DynCodeRegistry('signature')
+    return code_registry_ctr('signature')
 
 
 @mark.service
 def parcel_registry():
-    return DynCodeRegistry('parcel')
+    return code_registry_ctr('parcel')

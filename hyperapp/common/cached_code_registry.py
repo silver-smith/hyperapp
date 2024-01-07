@@ -3,8 +3,8 @@ from hyperapp.common.code_registry import CodeRegistry
 
 class CachedCodeRegistry(CodeRegistry):
 
-    def __init__(self, produce_name, web, types):
-        super().__init__(produce_name, web, types)
+    def __init__(self, mosaic, web, types, association_reg, pyobj_creg, produce_name):
+        super().__init__(mosaic, web, types, association_reg, pyobj_creg, produce_name)
         self._cache = {}  # piece -> actor
         self._reverse_cache = {}  # actor id -> piece
 

@@ -5,7 +5,6 @@ import:
 - builtins:pyobj_creg.service
 - builtins:types.service
 - builtins:web.service
-- common.dyn_code_registry:dyn_code_registry.module
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -24,7 +23,6 @@ definitions:
     module_name: ui_ctl_registry
     file_name: ui_ctl_registry.dyn.py
     import_list:
-      code.dyn_code_registry: common.dyn_code_registry:dyn_code_registry.module
       services.association_reg: builtins:association_reg.service
       services.mark: common.mark:mark.service
       services.pyobj_creg: builtins:pyobj_creg.service

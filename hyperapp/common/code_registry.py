@@ -3,9 +3,10 @@ import logging
 from collections import namedtuple
 from functools import cached_property
 
-from .htypes import ref_t
+from .htypes import code_registry_ctr_t, ref_t
 from .htypes.deduce_value_type import deduce_value_type
 from .ref import decode_capsule
+from .resource_ctr import add_fn_module_constructor
 
 _log = logging.getLogger(__name__)
 
@@ -14,18 +15,27 @@ class CodeRegistry:
 
     _Rec = namedtuple('_Rec', 'factory args kw')
 
-    def __init__(self, produce_name, web, types):
+    def __init__(self, mosaic, web, types, association_reg, pyobj_creg, produce_name):
         super().__init__()
-        self._produce_name = produce_name
+        self._mosaic = mosaic
         self._web = web
         self._types = types
-        self._association_reg = None
-        self._pyobj_creg = None
-        self._registry = {}  # t -> _Rec
-
-    def init_registries(self, association_reg, pyobj_creg):
         self._association_reg = association_reg
         self._pyobj_creg = pyobj_creg
+        self._produce_name = produce_name
+        self._registry = {}  # t -> _Rec
+
+    def actor(self, t):
+        def register(fn):
+            type_res = self._pyobj_creg.reverse_resolve(t)
+            ctr = code_registry_ctr_t(
+                service=self._mosaic.put(self._my_resource),
+                type=self._mosaic.put(type_res),
+                )
+            add_fn_module_constructor(fn, self._mosaic.put(ctr))
+            return fn
+
+        return register
 
     @cached_property
     def _my_resource(self):

@@ -7,10 +7,10 @@ from functools import partial
 
 from hyperapp.common.htypes import HException
 from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
-from hyperapp.common.code_registry import CodeRegistry
 
 from . import htypes
 from .services import (
+    code_registry_ctr,
     mark,
     mosaic,
     on_stop,
@@ -18,7 +18,6 @@ from .services import (
     pyobj_creg,
     transport,
     types,
-    web,
     )
 
 log = logging.getLogger(__name__)
@@ -32,7 +31,7 @@ class RpcEndpoint:
     def __init__(self):
         self._future_by_request_id = {}
         self._response_lock = threading.Lock()
-        self._message_registry = registry = CodeRegistry('rpc_message', web, types)
+        self._message_registry = registry = code_registry_ctr('rpc_message')
         self._is_stopping = False
         registry.register_actor(htypes.rpc.request, self._handle_request)
         registry.register_actor(htypes.rpc.response, self._handle_response)

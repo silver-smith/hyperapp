@@ -12,7 +12,6 @@ from .services import (
     types,
     web,
     )
-from .code.dyn_code_registry import DynCodeRegistry
 
 log = logging.getLogger(__name__)
 

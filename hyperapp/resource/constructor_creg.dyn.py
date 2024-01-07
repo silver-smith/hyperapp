@@ -1,9 +1,9 @@
 from .services import (
+    code_registry_ctr,
     mark,
     )
-from .code.dyn_code_registry import DynCodeRegistry
 
 
 @mark.service
 def constructor_creg():
-    return DynCodeRegistry('resource_ctr')
+    return code_registry_ctr('resource_ctr')

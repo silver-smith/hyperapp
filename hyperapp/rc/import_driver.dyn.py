@@ -4,13 +4,14 @@ from types import ModuleType
 
 
 from hyperapp.common.htypes import HException
+from hyperapp.common.resource_ctr import RESOURCE_CTR_ATTR
 
 from . import htypes
 from .services import (
     mosaic,
     pyobj_creg,
     )
-from .code.constants import RESOURCE_NAMES_ATTR, RESOURCE_CTR_ATTR
+from .code.constants import RESOURCE_NAMES_ATTR
 from .code.driver_recorders import ImportRecorders
 
 log = logging.getLogger(__name__)

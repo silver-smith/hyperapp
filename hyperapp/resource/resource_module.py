@@ -310,7 +310,7 @@ class ResourceModule:
             try:
                 module_name, var_name = name.split(':')
                 self._resource_registry.check_has_name((module_name, var_name))
-            except UnknownResourceName as x:
+            except (UnknownResourceName, ValueError) as x:
                 raise RuntimeError(f"{self._name}: Importing {name!r}: {x}")
         for name, contents in module_contents.get('definitions', {}).items():
             self._loaded_definitions[name] = self._read_definition(name, contents)

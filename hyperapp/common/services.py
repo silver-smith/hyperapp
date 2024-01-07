@@ -12,6 +12,7 @@ from .mosaic import Mosaic
 from .web import Web
 from .type_module_loader import TypeModuleLoader
 from .type_system import TypeSystem
+from .code_registry import CodeRegistry
 from .pyobj_registry import PyObjRegistry
 from .association_registry import AssociationRegistry
 from .python_importer import PythonImporter
@@ -55,6 +56,7 @@ class Services(object):
         'association_reg',
         'builtin_services',
         'builtin_types',
+        'code_registry_ctr',
         'hyperapp_dir',
         'module_dir_list',
         'mosaic',
@@ -107,8 +109,7 @@ class Services(object):
         self.python_importer.register_meta_hook()
         self.resource_type_factory = partial(ResourceType, self.types, self.mosaic, self.web)
         self.resource_type_reg = {}  # resource_t -> ResourceType instance
-        self.pyobj_creg = PyObjRegistry('pyobj', self.web, self.types)
-        self.pyobj_creg.init_registries(self.association_reg, self.pyobj_creg)
+        self.pyobj_creg = PyObjRegistry(self.mosaic, self.web, self.types, self.association_reg)
         self.unbundler = Unbundler(self.web, self.mosaic, self.association_reg)
         self.resource_type_producer = partial(resource_type_producer, self.resource_type_factory, self.resource_type_reg)
         self.resource_type_reg[python_module_t] = PythonModuleResourceType()
@@ -143,6 +144,8 @@ class Services(object):
         self.pyobj_creg.register_actor(attribute_t, attribute_pyobj, self.pyobj_creg)
         self.resource_type_reg[call_t] = CallResourceType()
         self.pyobj_creg.register_actor(call_t, call_pyobj, self.pyobj_creg)
+        self.code_registry_ctr = partial(
+            CodeRegistry, self.mosaic, self.web, self.types, self.association_reg, self.pyobj_creg)
         add_builtin_services_to_pyobj_cache(self, self.builtin_services, self.pyobj_creg)
 
     def stop(self):

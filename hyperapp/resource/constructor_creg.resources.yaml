@@ -1,7 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
-- common.dyn_code_registry:dyn_code_registry.module
+- builtins:code_registry_ctr.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -17,7 +17,7 @@ definitions:
     module_name: constructor_creg
     file_name: constructor_creg.dyn.py
     import_list:
-      code.dyn_code_registry: common.dyn_code_registry:dyn_code_registry.module
+      services.code_registry_ctr: builtins:code_registry_ctr.service
       services.mark: common.mark:mark.service
   constructor_creg.service:
     _type: legacy_type.builtin:call

@@ -1,10 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtins:association_reg.service
-- builtins:mosaic.service
-- builtins:pyobj_creg.service
-- builtins:types.service
+- builtins:code_registry_ctr.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -20,11 +17,8 @@ definitions:
     module_name: ui_adapter_creg
     file_name: ui_adapter_creg.dyn.py
     import_list:
-      services.association_reg: builtins:association_reg.service
+      services.code_registry_ctr: builtins:code_registry_ctr.service
       services.mark: common.mark:mark.service
-      services.mosaic: builtins:mosaic.service
-      services.pyobj_creg: builtins:pyobj_creg.service
-      services.types: builtins:types.service
   ui_adapter_creg.service:
     _type: legacy_type.builtin:call
     function: ui_adapter_creg
