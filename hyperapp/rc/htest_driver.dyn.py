@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import inspect
 
@@ -25,6 +26,7 @@ def call_test(import_recorders, test_call_res, module_res, tested_units, tested_
     with association_reg.associations_registered(associations, override=True):
         with tracer.tracing():
             with recorders.recording():
+
                 module = pyobj_creg.animate(module_res)
                 for rec in tested_units:
                     code_module = pyobj_creg.invite(rec.value)
@@ -38,12 +40,18 @@ def call_test(import_recorders, test_call_res, module_res, tested_units, tested_
                     obj = getattr(module, rec.name, None)
                     if obj and isinstance(obj, TestedObject) and obj.path == ('tested', 'services', rec.name):
                         setattr(module, rec.name, service)
-                value = pyobj_creg.animate(test_call_res)
-            log.info("Resource value: %s", repr(value))
 
-            if inspect.isgenerator(value):
-                log.info("Expanding generator: %r", value)
-                value = list(value)
+                value = pyobj_creg.animate(test_call_res)
+
+                if inspect.isgenerator(value):
+                    log.info("Expanding generator: %r", value)
+                    value = list(value)
+
+                if inspect.iscoroutine(value):
+                    log.info("Expanding coroutine: %r", value)
+                    value = asyncio.run(value)
+
+            log.info("Resource value: %s", repr(value))
 
     t = value_type(value)
 

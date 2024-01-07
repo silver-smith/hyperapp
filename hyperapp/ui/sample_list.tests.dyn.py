@@ -1,5 +1,3 @@
-import asyncio
-
 from . import htypes
 from .tested.code import sample_list
 
@@ -9,6 +7,6 @@ def test_sample_list():
     assert value
 
 
-def test_open_sample_list_command():
-    piece = asyncio.run(sample_list.open_sample_fn_list())
+async def test_open_sample_list_command():
+    piece = await sample_list.open_sample_fn_list()
     assert isinstance(piece, htypes.sample_list.sample_list), repr(piece)
