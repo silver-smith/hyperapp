@@ -17,8 +17,8 @@ import:
 - legacy_type.tabs:state
 - legacy_type.tabs:tab
 - legacy_type.text:state
-- legacy_type.ui:global_model_command
 - legacy_type.ui:global_model_command_d
+- legacy_type.ui:model_command
 - legacy_type.window:layout
 - legacy_type.window:pos
 - legacy_type.window:size
@@ -69,12 +69,14 @@ definitions:
     object: client.module
     attr_name: make_layout
   make_layout.command:
-    _type: legacy_type.ui:global_model_command
+    _type: legacy_type.ui:model_command
     function: make_layout
+    params: []
   make_state:
     _type: legacy_type.builtin:attribute
     object: client.module
     attr_name: make_state
   make_state.command:
-    _type: legacy_type.ui:global_model_command
+    _type: legacy_type.ui:model_command
     function: make_state
+    params: []

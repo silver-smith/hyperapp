@@ -9,13 +9,9 @@ from .services import (
     visualizer,
     web,
     )
-from .code.model_command import ModelCommand, global_commands
+from .code.model_command import global_commands
 
 log = logging.getLogger(__name__)
-
-
-async def show_state(state):
-    return str(state)
 
 
 class _UiCommand:
@@ -73,7 +69,6 @@ class NavigatorCtl:
             commands.append(_UiCommand(self._go_back, wrapper))
         if layout.next:
             commands.append(_UiCommand(self._go_forward, wrapper))
-        commands.append(ModelCommand(show_state, self._current_ctl, widget, model_wrapper, params=['state']))
         return commands
 
     def _wrapper(self, layout, wrapper, piece):

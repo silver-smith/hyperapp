@@ -7,10 +7,10 @@ import:
 - legacy_type.sample_list:item
 - legacy_type.sample_list:sample_list
 - legacy_type.ui:fn_impl
-- legacy_type.ui:global_model_command
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:list_ui_t
 - legacy_type.ui:model
+- legacy_type.ui:model_command
 - legacy_type.ui:model_d
 associations:
 - bases:
@@ -35,8 +35,9 @@ definitions:
     object: sample_list.module
     attr_name: open_sample_fn_list
   open_sample_fn_list.command:
-    _type: legacy_type.ui:global_model_command
+    _type: legacy_type.ui:model_command
     function: open_sample_fn_list
+    params: []
   sample_list:
     _type: legacy_type.builtin:attribute
     object: sample_list.module

@@ -16,3 +16,7 @@ async def open_sample_static_list():
         htypes.sample_list.item(3, "Third"),
         ]
     return items
+
+
+async def show_state(state):
+    return str(state)

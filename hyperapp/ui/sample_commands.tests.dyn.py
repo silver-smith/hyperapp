@@ -14,3 +14,8 @@ async def test_open_sample_static_text_2():
 async def test_open_sample_static_list():
     list = await sample_commands.open_sample_static_list()
     assert list
+
+
+async def test_show_state():
+    value = await sample_commands.show_state(state="sample state")
+    assert value

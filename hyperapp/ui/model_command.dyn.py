@@ -12,12 +12,12 @@ log = logging.getLogger(__name__)
 
 class ModelCommand:
 
-    def __init__(self, fn, ctl, widget, wrapper, params=None):
+    def __init__(self, fn, params, ctl, widget, wrapper):
         self._fn = fn
+        self._params = params
         self._ctl = ctl
         self._widget = widget
         self._wrapper = wrapper
-        self._params = params or []
 
     @property
     def name(self):
@@ -33,10 +33,10 @@ class ModelCommand:
         return self._wrapper(result)
 
 
-@pyobj_creg.actor(htypes.ui.global_model_command)
+@pyobj_creg.actor(htypes.ui.model_command)
 def model_command_from_piece(piece, ctl, widget, wrapper):
     fn = pyobj_creg.invite(piece.function)
-    return ModelCommand(fn, ctl, widget, wrapper)
+    return ModelCommand(fn, piece.params, ctl, widget, wrapper)
 
 
 def global_commands():
