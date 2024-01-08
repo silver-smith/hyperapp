@@ -5,6 +5,7 @@ from . import htypes
 from .services import (
     association_reg,
     data_to_res,
+    model_command_creg,
     pyobj_creg,
     )
 
@@ -38,7 +39,7 @@ class ModelCommand:
         return self._wrapper(result)
 
 
-@pyobj_creg.actor(htypes.ui.model_command)
+@model_command_creg.actor(htypes.ui.model_command)
 def model_command_from_piece(piece, ctl, widget, wrapper):
     fn = pyobj_creg.invite(piece.function)
     return ModelCommand(fn, piece.params, ctl, widget, wrapper)

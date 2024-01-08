@@ -3,8 +3,8 @@ from functools import partial
 
 from . import htypes
 from .services import (
+    model_command_creg,
     mosaic,
-    pyobj_creg,
     ui_ctl_creg,
     visualizer,
     web,
@@ -62,7 +62,7 @@ class NavigatorCtl:
     def get_commands(self, layout, widget, wrapper):
         model_wrapper = partial(self._wrapper, layout, wrapper)
         commands = [
-            pyobj_creg.invite(cmd, self._current_ctl, widget, model_wrapper)
+            model_command_creg.invite(cmd, self._current_ctl, widget, model_wrapper)
             for cmd in layout.commands
             ]
         if layout.prev:
