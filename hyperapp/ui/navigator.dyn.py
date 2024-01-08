@@ -9,9 +9,13 @@ from .services import (
     visualizer,
     web,
     )
-from .code.model_command import global_commands
+from .code.model_command import ModelCommand, global_commands
 
 log = logging.getLogger(__name__)
+
+
+async def show_state(state):
+    return str(state)
 
 
 class _UiCommand:
@@ -60,14 +64,16 @@ class NavigatorCtl:
             )
 
     def get_commands(self, layout, widget, wrapper):
+        model_wrapper = partial(self._wrapper, layout, wrapper)
         commands = [
-            pyobj_creg.invite(cmd, partial(self._wrapper, layout, wrapper))
+            pyobj_creg.invite(cmd, self._current_ctl, widget, model_wrapper)
             for cmd in layout.commands
             ]
         if layout.prev:
             commands.append(_UiCommand(self._go_back, wrapper))
         if layout.next:
             commands.append(_UiCommand(self._go_forward, wrapper))
+        commands.append(ModelCommand(show_state, self._current_ctl, widget, model_wrapper, params=['state']))
         return commands
 
     def _wrapper(self, layout, wrapper, piece):
@@ -98,8 +104,7 @@ class NavigatorCtl:
                 prev=mosaic.put(layout),
                 next=None,
                 )
-            return (layout, None)
-        if isinstance(layout_diff, htypes.navigator.go_back_diff):
+        elif isinstance(layout_diff, htypes.navigator.go_back_diff):
             prev_layout = web.summon(layout.prev)
             layout = htypes.navigator.layout(
                 current_layout=prev_layout.current_layout,
@@ -107,8 +112,7 @@ class NavigatorCtl:
                 prev=prev_layout.prev,
                 next=mosaic.put(layout),
                 )
-            return (layout, None)
-        if isinstance(layout_diff, htypes.navigator.go_forward_diff):
+        elif isinstance(layout_diff, htypes.navigator.go_forward_diff):
             next_layout = web.summon(layout.next)
             layout = htypes.navigator.layout(
                 current_layout=next_layout.current_layout,
@@ -116,5 +120,7 @@ class NavigatorCtl:
                 prev=mosaic.put(layout),
                 next=next_layout.next,
                 )
-            return (layout, None)
-        raise NotImplementedError(repr(layout_diff))
+        else:
+            raise NotImplementedError(repr(layout_diff))
+        self._current_ctl = ui_ctl_creg.invite(layout.current_layout)
+        return (layout, None)

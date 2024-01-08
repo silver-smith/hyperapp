@@ -12,9 +12,12 @@ log = logging.getLogger(__name__)
 
 class ModelCommand:
 
-    def __init__(self, fn, wrapper):
+    def __init__(self, fn, ctl, widget, wrapper, params=None):
         self._fn = fn
+        self._ctl = ctl
+        self._widget = widget
         self._wrapper = wrapper
+        self._params = params or []
 
     @property
     def name(self):
@@ -22,15 +25,18 @@ class ModelCommand:
 
     async def run(self):
         log.info("Run: %s", self._fn)
-        result = await self._fn()
+        kw = {}
+        if 'state' in self._params:
+            kw['state'] = self._ctl.widget_state(self._widget)
+        result = await self._fn(**kw)
         log.info("Run result: %s -> %r", self._fn, result)
         return self._wrapper(result)
 
 
 @pyobj_creg.actor(htypes.ui.global_model_command)
-def model_command_from_piece(piece, wrapper):
+def model_command_from_piece(piece, ctl, widget, wrapper):
     fn = pyobj_creg.invite(piece.function)
-    return ModelCommand(fn, wrapper)
+    return ModelCommand(fn, ctl, widget, wrapper)
 
 
 def global_commands():
