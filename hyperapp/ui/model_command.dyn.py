@@ -1,4 +1,5 @@
 import logging
+import weakref
 
 from . import htypes
 from .services import (
@@ -16,7 +17,7 @@ class ModelCommand:
         self._fn = fn
         self._params = params
         self._ctl = ctl
-        self._widget = widget
+        self._widget = weakref.ref(widget)
         self._wrapper = wrapper
 
     @property
@@ -24,10 +25,14 @@ class ModelCommand:
         return self._fn.__name__
 
     async def run(self):
-        log.info("Run: %s", self._fn)
+        widget = self._widget()
+        if widget is None:
+            log.warning("Widget for command %s is gone; won't run", self._fn)
+            return
         kw = {}
         if 'state' in self._params:
-            kw['state'] = self._ctl.widget_state(self._widget)
+            kw['state'] = self._ctl.widget_state(widget)
+        log.info("Run: %s (%s)", self._fn, kw)
         result = await self._fn(**kw)
         log.info("Run result: %s -> %r", self._fn, result)
         return self._wrapper(result)
