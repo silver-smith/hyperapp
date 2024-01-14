@@ -58,6 +58,7 @@ class ListCtl:
         font_info = widget.fontInfo()
         widget.verticalHeader().setDefaultSectionSize(font_info.pixelSize() + ROW_HEIGHT_PADDING)
         widget.setCurrentIndex(widget.model().createIndex(0, 0))
+        widget.resizeColumnsToContents()
         return widget
 
     def widget_state(self, widget):
