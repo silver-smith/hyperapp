@@ -1,7 +1,7 @@
 import logging
 import weakref
 
-from hyperapp.common.htypes.deduce_value_type import deduce_value_type
+from hyperapp.common.htypes.deduce_value_type import DeduceTypeError, deduce_value_type
 
 from . import htypes
 from .services import (
@@ -63,7 +63,10 @@ def global_commands():
 
 
 def model_commands(piece):
-    t = deduce_value_type(piece)
+    try:
+        t = deduce_value_type(piece)
+    except DeduceTypeError:
+        return []
     t_res = pyobj_creg.reverse_resolve(t)
     d_res = data_to_res(htypes.ui.model_command_d())
     command_list = association_reg.get_all((d_res, t_res))

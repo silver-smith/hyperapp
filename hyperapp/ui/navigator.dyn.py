@@ -1,10 +1,13 @@
 import logging
 from functools import partial
 
+from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
+
 from . import htypes
 from .services import (
     model_command_creg,
     mosaic,
+    types,
     ui_ctl_creg,
     visualizer,
     web,
@@ -80,9 +83,10 @@ class NavigatorCtl:
             *global_commands(),
             *model_commands(piece),
             ]
+        piece_t = deduce_complex_value_type(mosaic, types, piece)
         layout_diff = htypes.navigator.open_new_diff(
             new_current=mosaic.put(new_current_layout),
-            new_model=mosaic.put(piece),
+            new_model=mosaic.put(piece, piece_t),
             commands=[mosaic.put(c) for c in commands],
             )
         return wrapper((layout_diff, None))
