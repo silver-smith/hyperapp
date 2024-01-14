@@ -5,8 +5,10 @@ import:
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.sample_list:item
+- legacy_type.sample_list:sample_list
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:model_command
+- legacy_type.ui:model_command_d
 associations:
 - bases:
   - global_model_command_d
@@ -24,10 +26,19 @@ associations:
   - global_model_command_d
   key: global_model_command_d
   value: show_state.command
+- bases:
+  - legacy_type.sample_list:sample_list
+  key:
+  - model_command_d
+  - legacy_type.sample_list:sample_list
+  value: sample_list_state.command
 definitions:
   global_model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:global_model_command_d
+  model_command_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:model_command_d
   open_sample_static_list:
     _type: legacy_type.builtin:attribute
     object: sample_commands.module
@@ -58,6 +69,15 @@ definitions:
     file_name: sample_commands.dyn.py
     import_list:
       htypes.sample_list.item: legacy_type.sample_list:item
+  sample_list_state:
+    _type: legacy_type.builtin:attribute
+    object: sample_commands.module
+    attr_name: sample_list_state
+  sample_list_state.command:
+    _type: legacy_type.ui:model_command
+    function: sample_list_state
+    params:
+    - state
   show_state:
     _type: legacy_type.builtin:attribute
     object: sample_commands.module

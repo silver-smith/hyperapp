@@ -20,3 +20,7 @@ async def open_sample_static_list():
 
 async def show_state(state):
     return str(state)
+
+
+async def sample_list_state(piece, state):
+    return f"Sample list state: {state}"

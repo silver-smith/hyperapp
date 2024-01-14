@@ -1,3 +1,4 @@
+from . import htypes
 from .tested.code import sample_commands
 
 
@@ -19,3 +20,8 @@ async def test_open_sample_static_list():
 async def test_show_state():
     value = await sample_commands.show_state(state="sample state")
     assert value
+
+
+async def test_sample_list_state():
+    value = await sample_commands.sample_list_state(
+        htypes.sample_list.sample_list(), state="sample list state")
