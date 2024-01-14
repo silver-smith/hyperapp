@@ -12,15 +12,16 @@ class CommandHub:
 
     def __init__(self):
         self._path_to_commands = defaultdict(list)
-        self._subscribers = WeakSet()
+        self._subscribers = set()  # todo: weakref, removed whan 'widget' argument of partial is gone.
 
     def subscribe(self, fn):
         self._subscribers.add(fn)
 
     def set_commands(self, path, new_commands):
+        path = tuple(path)
         removed_commands = set()
-        for command_path, command_list in self._path_to_commands.items():
-            if not _starts_with(command_list, path):
+        for command_path, command_list in list(self._path_to_commands.items()):
+            if not _starts_with(command_path, path):
                 continue
             removed_commands |= set(command_list)
             del self._path_to_commands[command_path]

@@ -32,17 +32,19 @@ class MenuBarCtl:
 
     def construct_widget(self, state, ctx):
         w =  QtWidgets.QMenuBar()
+        menu = QtWidgets.QMenu('&All')
+        w.addMenu(menu)
         ctx.command_hub.subscribe(partial(self.commands_changed, w))
         return w
 
     def set_commands(self, w, commands):
-        w.clear()
+        [menu_action] = w.actions()
+        menu = menu_action.menu()
+        menu.clear()
         self._used_shortcuts.clear()
         self._command_to_action = {}
-        menu = QtWidgets.QMenu('&All')
         for command in commands:
             self._add_action(menu, command)
-        w.addMenu(menu)
 
     def commands_changed(self, w, removed_commands, added_commands):
         [menu_action] = w.actions()
@@ -50,7 +52,10 @@ class MenuBarCtl:
         for command in removed_commands:
             action = self._menu_command_to_action[menu, command]
             menu.removeAction(action)
-            self._used_shortcuts.remove(action.shortcut())
+            try:
+                self._used_shortcuts.remove(action.shortcut().toString())
+            except KeyError:
+                pass
         for command in added_commands:
             self._add_action(menu, command)
 
@@ -63,7 +68,7 @@ class MenuBarCtl:
             for shortcut in shortcut_list:
                 if shortcut not in self._used_shortcuts:
                     action.setShortcut(shortcut)
-                    self._used_shortcuts.add(shortcut)
+                    self._used_shortcuts.add(shortcut.upper())
                     break
         menu.addAction(action)
         self._menu_command_to_action[menu, command] = action

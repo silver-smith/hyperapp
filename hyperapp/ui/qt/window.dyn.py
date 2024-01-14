@@ -18,6 +18,8 @@ DUP_OFFSET = htypes.window.pos(150, 50)
 
 class WindowCtl:
 
+    _widget_to_command_hub = {}  # todo: weak key dictionary.
+
     @classmethod
     def from_piece(cls, layout):
         menu_bar_ctl = ui_ctl_creg.invite(layout.menu_bar_ref)
@@ -31,7 +33,8 @@ class WindowCtl:
         self._central_view_ctl = central_view_ctl
 
     def construct_widget(self, state, ctx):
-        ctx = ctx.clone_with(command_hub=CommandHub())
+        command_hub = CommandHub()
+        ctx = ctx.clone_with(command_hub=command_hub)
         w = QtWidgets.QMainWindow()
         central_view_state = web.summon(state.central_view_state)
         menu_bar_state = web.summon(state.menu_bar_state)
@@ -39,19 +42,21 @@ class WindowCtl:
         menu_bar = self._menu_bar_ctl.construct_widget(menu_bar_state, ctx)
         commands = self._central_view_ctl.get_commands(
             self._central_view_layout, central_widget, wrapper=partial(self._wrapper, ctx, w))
-        self._menu_bar_ctl.set_commands(menu_bar, commands)
         w.setMenuWidget(menu_bar)
         w.setCentralWidget(central_widget)
         w.move(state.pos.x, state.pos.y)
         w.resize(state.size.w, state.size.h)
+        command_hub.set_commands([], commands)
+        self._widget_to_command_hub[w] = command_hub
         return w
 
     def _wrapper(self, ctx, widget, diffs):
         layout_diff, state_diff = diffs
         log.info("Window: apply: %s / %s", layout_diff, state_diff)
+        command_hub = self._widget_to_command_hub[widget]
         central_view_layout, central_view_state = self._central_view_ctl.apply(
             ctx, self._central_view_layout, widget.centralWidget(), layout_diff, state_diff)
         commands = self._central_view_ctl.get_commands(
             central_view_layout, widget.centralWidget(), wrapper=partial(self._wrapper, ctx, widget))
-        self._menu_bar_ctl.set_commands(widget.menuWidget(), commands)
+        command_hub.set_commands([], commands)
         self._central_view_layout = central_view_layout
