@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from .services import (
@@ -6,6 +8,9 @@ from .services import (
 
 
 ROW_HEIGHT_PADDING = 3  # same as default QTreeView padding
+
+
+ModelState = namedtuple('ModelState', 'current_idx')
 
 
 class _Model(QtCore.QAbstractTableModel):
@@ -57,6 +62,9 @@ class ListCtl:
 
     def widget_state(self, widget):
         return None
+
+    def model_state(self, widget):
+        return ModelState(current_idx=widget.currentIndex().row())
 
     def get_commands(self, layout, widget, wrapper):
         return []

@@ -32,7 +32,7 @@ class ModelCommand:
             return
         kw = {}
         if 'state' in self._params:
-            kw['state'] = self._ctl.widget_state(widget)
+            kw['state'] = self._ctl.model_state(widget)
         log.info("Run: %s (%s)", self._fn, kw)
         result = await self._fn(**kw)
         log.info("Run result: %s -> %r", self._fn, result)

@@ -54,6 +54,10 @@ class EditTextCtl:
         # return htypes.text.state(text=widget.toPlainText())
         return htypes.text.state()
 
+    def model_state(self, widget):
+        # return htypes.text.state(text=widget.toPlainText())
+        return htypes.text.state()
+
     def get_commands(self, layout, widget, wrapper):
         commands = ui_command_factory(layout, self)
         return [command.bind(layout, widget, wrapper) for command in commands]
