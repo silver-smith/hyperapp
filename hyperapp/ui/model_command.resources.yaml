@@ -4,12 +4,26 @@ import:
 - builtins:association_reg.service
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
+- legacy_type.builtin:call
+- legacy_type.builtin:none
 - legacy_type.builtin:python_module
+- legacy_type.model_command_tests:sample_model
+- legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
+- legacy_type.ui:list_ui_t
+- legacy_type.ui:model
 - legacy_type.ui:model_command
+- legacy_type.ui:model_command_d
+- legacy_type.ui:model_d
 - resource.data_to_res:data_to_res.service
 - ui.model_command_creg:model_command_creg.service
 associations:
+- bases:
+  - legacy_type.model_command_tests:sample_model
+  key:
+  - model_d
+  - legacy_type.model_command_tests:sample_model
+  value: model_commands.model
 - bases:
   - ui.model_command_creg:model_command_creg.service
   - legacy_type.ui:model_command
@@ -25,6 +39,7 @@ definitions:
     import_list:
       htypes.ui.global_model_command_d: legacy_type.ui:global_model_command_d
       htypes.ui.model_command: legacy_type.ui:model_command
+      htypes.ui.model_command_d: legacy_type.ui:model_command_d
       services.association_reg: builtins:association_reg.service
       services.data_to_res: resource.data_to_res:data_to_res.service
       services.model_command_creg: ui.model_command_creg:model_command_creg.service
@@ -33,3 +48,20 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: model_command.module
     attr_name: model_command_from_piece
+  model_commands:
+    _type: legacy_type.builtin:attribute
+    object: model_command.module
+    attr_name: model_commands
+  model_commands.impl:
+    _type: legacy_type.ui:fn_impl
+    function: model_commands
+  model_commands.model:
+    _type: legacy_type.ui:model
+    ui_t: model_commands.ui_t
+    impl: model_commands.impl
+  model_commands.ui_t:
+    _type: legacy_type.ui:list_ui_t
+    element_t: legacy_type.builtin:none
+  model_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:model_d

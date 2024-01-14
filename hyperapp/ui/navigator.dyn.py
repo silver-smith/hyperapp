@@ -9,7 +9,7 @@ from .services import (
     visualizer,
     web,
     )
-from .code.model_command import global_commands
+from .code.model_command import global_commands, model_commands
 
 log = logging.getLogger(__name__)
 
@@ -75,7 +75,10 @@ class NavigatorCtl:
         if piece is None:
             return None
         new_current_layout = visualizer(piece)
-        commands = global_commands()
+        commands = [
+            *global_commands(),
+            *model_commands(piece),
+            ]
         layout_diff = htypes.navigator.open_new_diff(
             new_current=mosaic.put(new_current_layout),
             commands=[mosaic.put(c) for c in commands],

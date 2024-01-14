@@ -1,6 +1,8 @@
 import logging
 import weakref
 
+from hyperapp.common.htypes.deduce_value_type import deduce_value_type
+
 from . import htypes
 from .services import (
     association_reg,
@@ -48,4 +50,12 @@ def model_command_from_piece(piece, ctl, widget, wrapper):
 def global_commands():
     d_res = data_to_res(htypes.ui.global_model_command_d())
     command_list = association_reg.get_all(d_res)
+    return command_list
+
+
+def model_commands(piece):
+    t = deduce_value_type(piece)
+    t_res = pyobj_creg.reverse_resolve(t)
+    d_res = data_to_res(htypes.ui.model_command_d())
+    command_list = association_reg.get_all((d_res, t_res))
     return command_list
