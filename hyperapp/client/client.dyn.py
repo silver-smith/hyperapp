@@ -18,6 +18,7 @@ def make_layout():
     view_layout = visualizer(text)
     navigator_layout = htypes.navigator.layout(
         current_layout=mosaic.put(view_layout),
+        current_model=mosaic.put(text),
         commands=[mosaic.put(c) for c in global_commands()],
         prev=None,
         next=None,

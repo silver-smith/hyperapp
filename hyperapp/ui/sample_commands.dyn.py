@@ -23,4 +23,4 @@ async def show_state(state):
 
 
 async def sample_list_state(piece, state):
-    return f"Sample list state: {state}"
+    return f"{piece} state: {state}"

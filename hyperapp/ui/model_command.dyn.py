@@ -16,10 +16,11 @@ log = logging.getLogger(__name__)
 
 class ModelCommand:
 
-    def __init__(self, fn, params, ctl, widget, wrapper):
+    def __init__(self, fn, params, ctl, model_piece, widget, wrapper):
         self._fn = fn
         self._params = params
         self._ctl = ctl
+        self._model_piece = model_piece
         self._widget = weakref.ref(widget)
         self._wrapper = wrapper
 
@@ -33,6 +34,8 @@ class ModelCommand:
             log.warning("Widget for command %s is gone; won't run", self._fn)
             return
         kw = {}
+        if 'piece' in self._params:
+            kw['piece'] = self._model_piece
         if 'state' in self._params:
             kw['state'] = self._ctl.model_state(widget)
         log.info("Run: %s (%s)", self._fn, kw)
@@ -42,9 +45,9 @@ class ModelCommand:
 
 
 @model_command_creg.actor(htypes.ui.model_command)
-def model_command_from_piece(piece, ctl, widget, wrapper):
+def model_command_from_piece(piece, ctl, model_piece, widget, wrapper):
     fn = pyobj_creg.invite(piece.function)
-    return ModelCommand(fn, piece.params, ctl, widget, wrapper)
+    return ModelCommand(fn, piece.params, ctl, model_piece, widget, wrapper)
 
 
 def global_commands():

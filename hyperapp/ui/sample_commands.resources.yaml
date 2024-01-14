@@ -77,6 +77,7 @@ definitions:
     _type: legacy_type.ui:model_command
     function: sample_list_state
     params:
+    - piece
     - state
   show_state:
     _type: legacy_type.builtin:attribute

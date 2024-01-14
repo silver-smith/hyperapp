@@ -61,8 +61,9 @@ class NavigatorCtl:
 
     def get_commands(self, layout, widget, wrapper):
         model_wrapper = partial(self._wrapper, layout, wrapper)
+        model_piece = web.summon(layout.current_model)
         commands = [
-            model_command_creg.invite(cmd, self._current_ctl, widget, model_wrapper)
+            model_command_creg.invite(cmd, self._current_ctl, model_piece, widget, model_wrapper)
             for cmd in layout.commands
             ]
         if layout.prev:
@@ -81,6 +82,7 @@ class NavigatorCtl:
             ]
         layout_diff = htypes.navigator.open_new_diff(
             new_current=mosaic.put(new_current_layout),
+            new_model=mosaic.put(piece),
             commands=[mosaic.put(c) for c in commands],
             )
         return wrapper((layout_diff, None))
@@ -98,6 +100,7 @@ class NavigatorCtl:
         if isinstance(layout_diff, htypes.navigator.open_new_diff):
             layout = htypes.navigator.layout(
                 current_layout=layout_diff.new_current,
+                current_model=layout_diff.new_model,
                 commands=layout_diff.commands,
                 prev=mosaic.put(layout),
                 next=None,
@@ -106,6 +109,7 @@ class NavigatorCtl:
             prev_layout = web.summon(layout.prev)
             layout = htypes.navigator.layout(
                 current_layout=prev_layout.current_layout,
+                current_model=prev_layout.current_model,
                 commands=prev_layout.commands,
                 prev=prev_layout.prev,
                 next=mosaic.put(layout),
@@ -114,6 +118,7 @@ class NavigatorCtl:
             next_layout = web.summon(layout.next)
             layout = htypes.navigator.layout(
                 current_layout=next_layout.current_layout,
+                current_model=next_layout.current_model,
                 commands=next_layout.commands,
                 prev=mosaic.put(layout),
                 next=next_layout.next,

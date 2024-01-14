@@ -217,5 +217,5 @@ def create_ui_resources(ctx, module_name, resource_module, module_res, call_list
                     if piece_t_ref is None:
                         log.warning("%s.%s: layout parameter type is not a data record", module_name, qname)
                         continue
-                    ass_list += construct_model_command(ctx, module_name, resource_module, module_res, qname, piece_t_ref, param_names[1:])
+                    ass_list += construct_model_command(ctx, module_name, resource_module, module_res, qname, piece_t_ref, param_names)
     return ass_list

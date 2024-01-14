@@ -20,18 +20,21 @@ def test_navigator():
     text_layout = htypes.text.view_layout(mosaic.put(adapter_layout))
     prev_layout = htypes.navigator.layout(
         current_layout=mosaic.put(text_layout),
+        current_model=mosaic.put("Sample piece"),
         commands=[],
         prev=None,
         next=None,
         )
     next_layout = htypes.navigator.layout(
         current_layout=mosaic.put(text_layout),
+        current_model=mosaic.put("Sample piece"),
         commands=[],
         prev=None,
         next=None,
         )
     layout = htypes.navigator.layout(
         current_layout=mosaic.put(text_layout),
+        current_model=mosaic.put("Sample piece"),
         commands=[],
         prev=mosaic.put(prev_layout),
         next=mosaic.put(next_layout),

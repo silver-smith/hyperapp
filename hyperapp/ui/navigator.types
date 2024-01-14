@@ -1,6 +1,7 @@
 
 layout = record:
   current_layout: ref
+  current_model: ref
   commands: ref list
   prev: ref opt
   next: ref opt
@@ -13,6 +14,7 @@ state = record:
 
 open_new_diff = record:
   new_current: ref
+  new_model: ref
   commands: ref list
 
 go_back_diff = record
