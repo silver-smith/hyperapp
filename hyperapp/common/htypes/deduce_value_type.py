@@ -53,7 +53,11 @@ def deduce_value_type(value):
             element_t = deduce_value_type(value[0])
         else:
             element_t = tNone
-        return primitive_list_types[element_t]  # Use deduce_complex_value_type for non-primitive-element lists.
+        try:
+            return primitive_list_types[element_t]
+        except KeyError:
+            # Use deduce_complex_value_type for non-primitive-element lists.
+            raise DeduceTypeError(f"Unable to deduce type for primitive {safe_repr(value)} (t: {t!r}).")
     raise DeduceTypeError(f"Unable to deduce type for {safe_repr(value)} (t: {t!r}). Use explicit type parameter.")
 
 
