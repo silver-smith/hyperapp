@@ -9,6 +9,7 @@ import:
 - legacy_type.inspect:data_t
 - legacy_type.ui:fn_impl
 - legacy_type.ui:model_command
+- legacy_type.ui:model_command_d
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:list_ui_t
 - legacy_type.ui:model
@@ -30,6 +31,7 @@ definitions:
       htypes.ui.list_ui_t: legacy_type.ui:list_ui_t
       htypes.ui.fn_impl: legacy_type.ui:fn_impl
       htypes.ui.model_command: legacy_type.ui:model_command
+      htypes.ui.model_command_d: legacy_type.ui:model_command_d
       htypes.ui.global_model_command_d: legacy_type.ui:global_model_command_d
       htypes.ui.model: legacy_type.ui:model
       htypes.ui.model_d: legacy_type.ui:model_d

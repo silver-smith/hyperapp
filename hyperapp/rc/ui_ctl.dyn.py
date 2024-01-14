@@ -124,7 +124,7 @@ def construct_fn_list_impl(ctx, module_name, resource_module, module_res, qname,
     return [association]
 
 
-def construct_model_command(ctx, module_name, resource_module, module_res, qname, params):
+def construct_global_model_command(ctx, module_name, resource_module, module_res, qname, params):
     log.info("Construct global model command: %s: %s", resource_module.name, qname)
     fn_name = qname
     fn_attribute = htypes.builtin.attribute(
@@ -147,6 +147,33 @@ def construct_model_command(ctx, module_name, resource_module, module_res, qname
     resource_module[fn_name] = fn_attribute
     resource_module[f'{fn_name}.command'] = command
     resource_module['global_model_command_d'] = global_model_command_d
+    return [association]
+
+
+def construct_model_command(ctx, module_name, resource_module, module_res, qname, piece_t_ref, params):
+    log.info("Construct model command: %s: %s", resource_module.name, qname)
+    fn_name = qname
+    fn_attribute = htypes.builtin.attribute(
+        object=mosaic.put(module_res),
+        attr_name=fn_name,
+    )
+    command = htypes.ui.model_command(
+        function=mosaic.put(fn_attribute),
+        params=tuple(params),
+        )
+    model_command_d_res = pyobj_creg.reverse_resolve(htypes.ui.model_command_d)
+    model_command_d = htypes.builtin.call(
+        function=mosaic.put(model_command_d_res),
+        )
+    piece_t_res = htypes.builtin.legacy_type(piece_t_ref)
+    association = Association(
+        bases=[piece_t_res],
+        key=[model_command_d, piece_t_res],
+        value=command,
+        )
+    resource_module[fn_name] = fn_attribute
+    resource_module[f'{fn_name}.command'] = command
+    resource_module['model_command_d'] = model_command_d
     return [association]
 
 
@@ -178,9 +205,17 @@ def create_ui_resources(ctx, module_name, resource_module, module_res, call_list
             result_t = types.resolve(trace.result_t.t)
             if list(params) == ['piece'] and isinstance(result_t, TList):
                 ass_list += construct_fn_list_impl(ctx, module_name, resource_module, module_res, qname, params, result_t)
-            if params.keys() <= {'state'} and (
-                    isinstance(result_t, TRecord)
+            if (isinstance(result_t, TRecord)
                     or result_t is tString
                     or isinstance(result_t, TList) and isinstance(result_t.element_t, TRecord)):
-                ass_list += construct_model_command(ctx, module_name, resource_module, module_res, qname, params)
+                # Return type suggests it can be a command.
+                if params.keys() <= {'state'}:
+                    ass_list += construct_global_model_command(ctx, module_name, resource_module, module_res, qname, params)
+                param_names = list(params)
+                if param_names[:1] == ['piece'] and set(param_names[1:]) <= {'state'}:
+                    piece_t_ref = _resolve_record_t(params['piece'])
+                    if piece_t_ref is None:
+                        log.warning("%s.%s: layout parameter type is not a data record", module_name, qname)
+                        continue
+                    ass_list += construct_model_command(ctx, module_name, resource_module, module_res, qname, piece_t_ref, param_names[1:])
     return ass_list
