@@ -34,10 +34,16 @@ class ModelCommand:
             log.warning("Widget for command %s is gone; won't run", self._fn)
             return
         kw = {}
-        if 'piece' in self._params:
+        params = [*self._params]
+        if params[:1] == ['piece']:
             kw['piece'] = self._model_piece
-        if 'state' in self._params:
-            kw['state'] = self._ctl.model_state(widget)
+            params.pop(0)
+        state = self._ctl.model_state(widget)
+        if params[:1] == ['state']:
+            kw['state'] = state
+            params.pop(0)
+        for name in params:
+            kw[name] = getattr(state, name)
         log.info("Run: %s (%s)", self._fn, kw)
         result = await self._fn(**kw)
         log.info("Run result: %s -> %r", self._fn, result)

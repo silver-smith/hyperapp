@@ -24,4 +24,4 @@ async def test_show_state():
 
 async def test_sample_list_state():
     value = await sample_commands.sample_list_state(
-        htypes.sample_list.sample_list(), state="sample list state")
+        htypes.sample_list.sample_list(), current_idx=11)

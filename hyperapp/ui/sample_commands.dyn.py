@@ -22,5 +22,5 @@ async def show_state(state):
     return str(state)
 
 
-async def sample_list_state(piece, state):
-    return f"{piece} state: {state}"
+async def sample_list_state(piece, current_idx):
+    return f"{piece} current idx: {current_idx}"

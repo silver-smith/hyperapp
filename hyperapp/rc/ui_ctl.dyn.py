@@ -212,7 +212,7 @@ def create_ui_resources(ctx, module_name, resource_module, module_res, call_list
                 if params.keys() <= {'state'}:
                     ass_list += construct_global_model_command(ctx, module_name, resource_module, module_res, qname, params)
                 param_names = list(params)
-                if param_names[:1] == ['piece'] and set(param_names[1:]) <= {'state'}:
+                if param_names[:1] == ['piece'] and set(param_names[1:]) <= {'state', 'current_idx'}:
                     piece_t_ref = _resolve_record_t(params['piece'])
                     if piece_t_ref is None:
                         log.warning("%s.%s: layout parameter type is not a data record", module_name, qname)

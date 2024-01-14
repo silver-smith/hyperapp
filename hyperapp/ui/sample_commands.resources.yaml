@@ -78,7 +78,7 @@ definitions:
     function: sample_list_state
     params:
     - piece
-    - state
+    - current_idx
   show_state:
     _type: legacy_type.builtin:attribute
     object: sample_commands.module
