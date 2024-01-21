@@ -4,6 +4,7 @@ import:
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:types.service
+- common.list_diff:list_diff.module
 - legacy_type.builtin:python_module
 - legacy_type.phony:phony
 - resource.fn_to_res:fn_to_ref.service
@@ -14,6 +15,7 @@ definitions:
     module_name: list_adapter.tests
     file_name: list_adapter.tests.dyn.py
     import_list:
+      code.list_diff: common.list_diff:list_diff.module
       services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service

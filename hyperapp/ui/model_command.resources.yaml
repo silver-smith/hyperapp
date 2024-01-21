@@ -55,6 +55,7 @@ definitions:
   model_commands.impl:
     _type: legacy_type.ui:fn_impl
     function: model_commands
+    want_feed: false
   model_commands.model:
     _type: legacy_type.ui:model
     ui_t: model_commands.ui_t

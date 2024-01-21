@@ -1,10 +1,15 @@
+import logging
 from collections import namedtuple
+from functools import partial
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from .services import (
     ui_adapter_creg,
     )
+from .code.list_diff import ListDiffAppend
+
+log = logging.getLogger(__name__)
 
 
 ROW_HEIGHT_PADDING = 3  # same as default QTreeView padding
@@ -18,6 +23,7 @@ class _Model(QtCore.QAbstractTableModel):
     def __init__(self, adapter):
         super().__init__()
         self._adapter = adapter
+        self._adapter.subscribe(self)
 
     # Qt methods  -------------------------------------------------------------------------------------------------------
 
@@ -37,6 +43,16 @@ class _Model(QtCore.QAbstractTableModel):
             return None
         return self._adapter.cell_data(index.row(), index.column())
 
+    # subscription  ----------------------------------------------------------------------------------------------------
+
+    def process_diff(self, diff):
+        log.info("List: process diff: %s", diff)
+        if not isinstance(diff, ListDiffAppend):
+            raise NotImplementedError(diff)
+        row_count = self._adapter.row_count()
+        self.beginInsertRows(QtCore.QModelIndex(), row_count - 1, row_count - 1)
+        self.endInsertRows()
+
 
 class ListCtl:
 
@@ -50,7 +66,8 @@ class ListCtl:
 
     def construct_widget(self, state, ctx):
         widget = QtWidgets.QTableView()
-        widget.setModel(_Model(self._adapter))
+        model = _Model(self._adapter)
+        widget.setModel(model)
         widget.verticalHeader().hide()
         widget.setShowGrid(False)
         widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
@@ -59,6 +76,8 @@ class ListCtl:
         widget.verticalHeader().setDefaultSectionSize(font_info.pixelSize() + ROW_HEIGHT_PADDING)
         widget.setCurrentIndex(widget.model().createIndex(0, 0))
         widget.resizeColumnsToContents()
+        # model.dataChanged.connect(partial(self._on_data_changed, widget))
+        model.rowsInserted.connect(partial(self._on_data_changed, widget))
         return widget
 
     def widget_state(self, widget):
@@ -69,3 +88,7 @@ class ListCtl:
 
     def get_commands(self, layout, widget, wrapper):
         return []
+
+    def _on_data_changed(self, widget, *args):
+        log.info("List: on_data_changed: %s: %s", widget, args)
+        widget.resizeColumnsToContents()

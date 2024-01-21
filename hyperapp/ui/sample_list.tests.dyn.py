@@ -1,4 +1,7 @@
+import asyncio
+
 from . import htypes
+from .code.list_diff import ListDiffAppend
 from .tested.code import sample_list
 
 
@@ -10,3 +13,27 @@ def test_sample_list():
 async def test_open_sample_list_command():
     piece = await sample_list.open_sample_fn_list()
     assert isinstance(piece, htypes.sample_list.sample_list), repr(piece)
+
+
+class MockFeed:
+
+    def __init__(self, queue):
+        self._queue = queue
+
+    def send(self, diff):
+        self._queue.put_nowait(diff)
+
+
+async def test_feed_sample_list():
+    queue = asyncio.Queue()
+    feed = MockFeed(queue)
+    value = sample_list.feed_sample_list(htypes.sample_list.feed_sample_list(), feed)
+    assert value
+    diff = await queue.get()
+    assert isinstance(diff, ListDiffAppend), repr(diff)
+
+
+async def test_open_feed_sample_list_command():
+    piece = await sample_list.open_feed_sample_fn_list()
+    assert isinstance(piece, htypes.sample_list.feed_sample_list), repr(piece)
+

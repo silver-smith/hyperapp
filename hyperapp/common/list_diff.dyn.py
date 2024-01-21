@@ -31,6 +31,15 @@ class ListDiffInsert:
             ]
 
 
+class ListDiffAppend:
+
+    def __init__(self, item):
+        self.item = item
+
+    def __repr__(self):
+        return f"<ListDiffAppend: {self.item}>"
+
+
 class ListDiffModify:
 
     def __init__(self, idx, item_diff):

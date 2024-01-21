@@ -102,6 +102,7 @@ def construct_fn_list_impl(ctx, module_name, resource_module, module_res, qname,
         )
     impl = htypes.ui.fn_impl(
         function=mosaic.put(fn_attribute),
+        want_feed='feed' in params,
         )
     model_d_res = pyobj_creg.reverse_resolve(htypes.ui.model_d)
     model_d = htypes.builtin.call(
@@ -203,7 +204,7 @@ def create_ui_resources(ctx, module_name, resource_module, module_res, call_list
             if not isinstance(trace.result_t, htypes.inspect.data_t):
                 continue
             result_t = types.resolve(trace.result_t.t)
-            if list(params) == ['piece'] and isinstance(result_t, TList):
+            if list(params) in [['piece'], ['piece', 'feed']] and isinstance(result_t, TList):
                 ass_list += construct_fn_list_impl(ctx, module_name, resource_module, module_res, qname, params, result_t)
             if (isinstance(result_t, TRecord)
                     or result_t is tString

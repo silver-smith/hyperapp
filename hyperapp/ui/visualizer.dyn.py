@@ -38,6 +38,7 @@ def visualizer():
                 model_piece=mosaic.put(value),
                 element_t=ui_t.element_t,
                 function=impl.function,
+                want_feed=impl.want_feed,
                 )
             return htypes.list.layout(mosaic.put(adapter_layout))
         raise NotImplementedError(f"Not supported model: {ui_t} / {impl}")
