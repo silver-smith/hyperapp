@@ -8,8 +8,8 @@ from pathlib import Path
 
 from hyperapp.common.htypes.python_module import import_rec_t, python_module_t, import_rec_def_t, python_module_def_t
 from hyperapp.common.htypes import HException
-from hyperapp.common.dict_decoders import NamedPairsDictDecoder
-from hyperapp.common.dict_encoders import NamedPairsDictEncoder
+from hyperapp.common.dict_decoder import NamedPairsDictDecoder
+from hyperapp.common.dict_encoder import NamedPairsDictEncoder
 from hyperapp.common.python_importer import ROOT_PACKAGE, Finder
 
 log = logging.getLogger(__name__)
