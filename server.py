@@ -16,27 +16,10 @@ module_dir_list = [
     HYPERAPP_DIR / 'common',
     HYPERAPP_DIR / 'resource',
     HYPERAPP_DIR / 'transport',
-    HYPERAPP_DIR / 'sync',
-    HYPERAPP_DIR / 'async',
+    HYPERAPP_DIR / 'rpc',
+    HYPERAPP_DIR / 'subprocess',
     HYPERAPP_DIR / 'ui',
-    HYPERAPP_DIR / 'sample',
     HYPERAPP_DIR / 'server',
-    ]
-
-code_module_list = [
-    'common.dict_coders',  # Load json coders.
-    'common.lcs',
-    'common.lcs_service',
-    'transport.rsa_identity',
-    'ui.impl_registry',
-    'ui.global_command_list',
-    'resource.register_associations',
-    # 'server.sample_list',
-    # 'server.sample_live_list',
-    # 'server.sample_tree',
-    # 'server.module_list',
-    # 'server.htest_module_list',
-    # 'server.htest_list',
     ]
 
 BIND_ADDRESS = ('localhost', 8080)
@@ -56,28 +39,34 @@ def main():
 
     services = Services(module_dir_list)
     services.init_services()
-    services.init_modules(code_module_list, config={})
+    services.load_type_modules()
+    log.info("Initialized.")
 
-    services.start_modules()
-
-    resource_registry = services.resource_registry
-    pyobj_creg = services.pyobj_creg
-    module = partial(load_module, resource_registry, pyobj_creg)
-
-    services.register_associations(resource_registry)
-
-    server = module('server.tcp_server').tcp_server(BIND_ADDRESS)
-    module('server.rpc_endpoint').init_server_rpc_endpoint()
-    module('server.announce_provider').init_server_provider_announcer()
-    module('server.init_local_server_ref').init_local_server_ref()
-
-    log.info("Server is started.")
     try:
-        services.stop_signal.wait()
-    except KeyboardInterrupt:
-        pass
-    log.info("Server is stopping.")
-    services.stop()
+        mosaic = services.mosaic
+        resource_dir_list = services.resource_dir_list
+        resource_registry = services.resource_registry
+        resource_list_loader = services.resource_list_loader
+        legacy_type_resource_loader = services.legacy_type_resource_loader
+        builtin_types_as_dict = services.builtin_types_as_dict
+        local_types = services.local_types
+        association_reg = services.association_reg
+        pyobj_creg = services.pyobj_creg
+
+        resource_list_loader(resource_dir_list, resource_registry)
+        resource_registry.update_modules(legacy_type_resource_loader({**builtin_types_as_dict(), **local_types}))
+
+        association_reg.register_association_list(resource_registry.associations)
+        server_module_res = resource_registry['server.server', 'server.module']
+        server_module = pyobj_creg.animate(server_module_res)
+        exit_code = server_module._main()
+    finally:
+        log.info("Stopping.")
+        services.stop_signal.set()
+        services.stop()
+    if exit_code != 0:
+        log.error("Application returned non-zero exit code: %d", exit_code)
+        sys.exit(exit_code)
 
 
 if __name__ == '__main__':
