@@ -58,15 +58,15 @@ class ListCtl:
 
     @classmethod
     def from_piece(cls, layout):
-        adapter = ui_adapter_creg.invite(layout.adapter)
-        return cls(adapter)
+        return cls(layout.adapter)
 
-    def __init__(self, adapter):
-        self._adapter = adapter
+    def __init__(self, adapter_piece):
+        self._adapter_piece = adapter_piece
 
     def construct_widget(self, state, ctx):
+        adapter = ui_adapter_creg.invite(self._adapter_piece, ctx)
         widget = QtWidgets.QTableView()
-        model = _Model(self._adapter)
+        model = _Model(adapter)
         widget.setModel(model)
         widget.verticalHeader().hide()
         widget.setShowGrid(False)

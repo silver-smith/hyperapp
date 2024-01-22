@@ -198,7 +198,7 @@ def create_ui_resources(ctx, module_name, resource_module, module_res, call_list
         if len(qname.split('.')) == 2 and trace.obj_type in ('classmethod', 'staticmethod'):
             if list(params) == ['layout']:
                 ass_list += construct_view_impl(ctx, module_name, resource_module, module_res, qname, params)
-            if list(params) == ['piece'] and 'Adapter' in qname:
+            if list(params) == ['piece', 'ctx'] and 'Adapter' in qname:
                 ass_list += construct_adapter_impl(ctx, module_name, resource_module, module_res, qname, params)
         if len(qname.split('.')) == 1 and trace.obj_type == 'function':
             if not isinstance(trace.result_t, htypes.inspect.data_t):

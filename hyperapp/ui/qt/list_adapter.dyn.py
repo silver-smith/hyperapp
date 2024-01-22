@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 class StaticListAdapter:
 
     @classmethod
-    def from_piece(cls, piece):
+    def from_piece(cls, piece, ctx):
         value = web.summon(piece.value)
         list_t = deduce_complex_value_type(mosaic, types, value)
         assert isinstance(list_t, TList), repr(list_t)
@@ -57,7 +57,7 @@ class _Feed:
 class FnListAdapter:
 
     @classmethod
-    def from_piece(cls, piece):
+    def from_piece(cls, piece, ctx):
         model_piece = web.summon(piece.model_piece)
         element_t = pyobj_creg.invite(piece.element_t)
         fn = pyobj_creg.invite(piece.function)

@@ -10,11 +10,13 @@ from .services import (
     pyobj_creg,
     types,
     )
+from .code.context import Context
 from .code.list_diff import ListDiffAppend
 from .tested.code import list_adapter
 
 
 def test_static_adapter():
+    ctx = Context()
     value = [
         htypes.list_tests.item(1, "First"),
         htypes.list_tests.item(2, "Second"),
@@ -22,7 +24,7 @@ def test_static_adapter():
         ]
     t = deduce_complex_value_type(mosaic, types, value)
     piece = htypes.list_adapter.static_list_adapter(mosaic.put(value, t))
-    adapter = list_adapter.StaticListAdapter.from_piece(piece)
+    adapter = list_adapter.StaticListAdapter.from_piece(piece, ctx)
     assert adapter.column_count() == 2
     assert adapter.row_count() == 3
     assert adapter.column_title(0) == 'id'
@@ -41,6 +43,7 @@ def sample_list_fn(piece):
 
 
 def test_fn_adapter():
+    ctx = Context()
     model_piece = htypes.list_adapter_tests.sample_list()
     adapter_piece = htypes.list_adapter.fn_list_adapter(
         model_piece=mosaic.put(model_piece),
@@ -48,7 +51,7 @@ def test_fn_adapter():
         function=fn_to_ref(sample_list_fn),
         want_feed=False,
         )
-    adapter = list_adapter.FnListAdapter.from_piece(adapter_piece)
+    adapter = list_adapter.FnListAdapter.from_piece(adapter_piece, ctx)
     assert adapter.column_count() == 2
     assert adapter.row_count() == 3
     assert adapter.column_title(0) == 'id'
@@ -83,6 +86,7 @@ def feed_sample_list_fn(piece, feed):
 
 
 async def test_feed_fn_adapter():
+    ctx = Context()
     model_piece = htypes.list_adapter_tests.sample_list()
     adapter_piece = htypes.list_adapter.fn_list_adapter(
         model_piece=mosaic.put(model_piece),
@@ -91,7 +95,7 @@ async def test_feed_fn_adapter():
         want_feed=True,
         )
 
-    adapter = list_adapter.FnListAdapter.from_piece(adapter_piece)
+    adapter = list_adapter.FnListAdapter.from_piece(adapter_piece, ctx)
     queue = asyncio.Queue()
     model = MockModel(queue)
     adapter.subscribe(model)
