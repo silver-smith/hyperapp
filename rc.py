@@ -19,7 +19,6 @@ module_dir_list = [
     HYPERAPP_DIR / 'subprocess',
     HYPERAPP_DIR / 'rc',
     HYPERAPP_DIR / 'command_line',
-    HYPERAPP_DIR / 'ui_types',
     HYPERAPP_DIR / 'ui',
     ]
 

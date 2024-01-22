@@ -20,7 +20,6 @@ module_dir_list = [
     HYPERAPP_DIR / 'transport',
     HYPERAPP_DIR / 'subprocess',
     HYPERAPP_DIR / 'rc',
-    HYPERAPP_DIR / 'ui_types',
     ]
 
 
