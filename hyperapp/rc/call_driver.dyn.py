@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import inspect
 
@@ -17,12 +18,18 @@ def call_function(import_recorders, call_result_ref, trace_modules):
     recorders = ImportRecorders(import_recorders)
     with tracer.tracing():
         with recorders.recording():
-            value = pyobj_creg.invite(call_result_ref)
-        log.info("Resource value: %s", repr(value))
 
-        if inspect.isgenerator(value):
-            log.info("Expanding generator: %r", value)
-            value = list(value)
+            value = pyobj_creg.invite(call_result_ref)
+
+            if inspect.isgenerator(value):
+                log.info("Expanding generator: %r", value)
+                value = list(value)
+
+            if inspect.iscoroutine(value):
+                log.info("Expanding coroutine: %r", value)
+                value = asyncio.run(value)
+
+            log.info("Resource value: %s", repr(value))
 
     t = value_type(value)
 
