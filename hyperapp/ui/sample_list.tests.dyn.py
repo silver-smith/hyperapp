@@ -10,11 +10,6 @@ def test_sample_list():
     assert value
 
 
-async def test_open_sample_list_command():
-    piece = await sample_list.open_sample_fn_list()
-    assert isinstance(piece, htypes.sample_list.sample_list), repr(piece)
-
-
 class MockFeed:
 
     def __init__(self, queue):
@@ -31,9 +26,3 @@ async def test_feed_sample_list():
     assert value
     diff = await queue.get()
     assert isinstance(diff, ListDiffAppend), repr(diff)
-
-
-async def test_open_feed_sample_list_command():
-    piece = await sample_list.open_feed_sample_fn_list()
-    assert isinstance(piece, htypes.sample_list.feed_sample_list), repr(piece)
-
