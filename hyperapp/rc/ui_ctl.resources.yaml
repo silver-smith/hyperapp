@@ -12,6 +12,7 @@ import:
 - legacy_type.ui:model_command_d
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:list_ui_t
+- legacy_type.ui:tree_ui_t
 - legacy_type.ui:model
 - legacy_type.ui:model_d
 - legacy_type.ui:ui_ctl
@@ -29,6 +30,7 @@ definitions:
       htypes.builtin.legacy_type: legacy_type.builtin:legacy_type
       htypes.inspect.data_t: legacy_type.inspect:data_t
       htypes.ui.list_ui_t: legacy_type.ui:list_ui_t
+      htypes.ui.tree_ui_t: legacy_type.ui:tree_ui_t
       htypes.ui.fn_impl: legacy_type.ui:fn_impl
       htypes.ui.model_command: legacy_type.ui:model_command
       htypes.ui.model_command_d: legacy_type.ui:model_command_d

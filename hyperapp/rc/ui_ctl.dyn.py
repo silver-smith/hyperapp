@@ -125,6 +125,53 @@ def construct_fn_list_impl(ctx, module_name, resource_module, module_res, qname,
     return [association]
 
 
+def construct_fn_tree_impl(ctx, module_name, resource_module, module_res, qname, params, result_t):
+    piece_t_ref = _resolve_record_t(params['piece'])
+    if piece_t_ref is None:
+        log.warning("%s.%s: layout parameter type is not a data record", module_name, qname)
+        return []
+    key_t_rec = params['parent_key']
+    if not isinstance(key_t_rec, htypes.inspect.data_t):
+        log.warning("%s.%s: parent_key parameter type is not a data", module_name, qname)
+        return []
+    log.info("Construct fn tree implementation: %s: %s", resource_module.name, qname)
+    fn_name = qname
+    fn_attribute = htypes.builtin.attribute(
+        object=mosaic.put(module_res),
+        attr_name=fn_name,
+    )
+    piece_t_res = htypes.builtin.legacy_type(piece_t_ref)
+    key_t_res = htypes.builtin.legacy_type(key_t_rec.t)
+    element_t_res = pyobj_creg.reverse_resolve(result_t.element_t)
+    ui_t = htypes.ui.tree_ui_t(
+        key_t=mosaic.put(key_t_res),
+        element_t=mosaic.put(element_t_res),
+        )
+    impl = htypes.ui.fn_impl(
+        function=mosaic.put(fn_attribute),
+        want_feed='feed' in params,
+        )
+    model_d_res = pyobj_creg.reverse_resolve(htypes.ui.model_d)
+    model_d = htypes.builtin.call(
+        function=mosaic.put(model_d_res),
+        )
+    model = htypes.ui.model(
+        ui_t=mosaic.put(ui_t),
+        impl=mosaic.put(impl),
+        )
+    association = Association(
+        bases=[piece_t_res],
+        key=[model_d, piece_t_res],
+        value=model,
+        )
+    resource_module[fn_name] = fn_attribute
+    resource_module[f'{fn_name}.ui_t'] = ui_t
+    resource_module[f'{fn_name}.impl'] = impl
+    resource_module['model_d'] = model_d
+    resource_module[f'{fn_name}.model'] = model
+    return [association]
+
+
 def construct_global_model_command(ctx, module_name, resource_module, module_res, qname, params):
     log.info("Construct global model command: %s: %s", resource_module.name, qname)
     fn_name = qname
@@ -206,6 +253,8 @@ def create_ui_resources(ctx, module_name, resource_module, module_res, call_list
             result_t = types.resolve(trace.result_t.t)
             if list(params) in [['piece'], ['piece', 'feed']] and isinstance(result_t, TList):
                 ass_list += construct_fn_list_impl(ctx, module_name, resource_module, module_res, qname, params, result_t)
+            if list(params) in [['piece', 'parent_key'], ['piece', 'feed', 'parent_key']] and isinstance(result_t, TList):
+                ass_list += construct_fn_tree_impl(ctx, module_name, resource_module, module_res, qname, params, result_t)
             if (isinstance(result_t, TRecord)
                     or result_t is tString
                     or isinstance(result_t, TList) and isinstance(result_t.element_t, TRecord)):

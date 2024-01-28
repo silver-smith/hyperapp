@@ -17,6 +17,10 @@ model = record:
 list_ui_t = record:
   element_t: ref
 
+tree_ui_t = record:
+  key_t: ref
+  element_t: ref
+
 fn_impl = record:
   function: ref
   want_feed: bool
