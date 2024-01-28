@@ -6,6 +6,7 @@ from .services import (
     mosaic,
     )
 from .code.context import Context
+from .code.command_hub import CommandHub
 
 
 def make_layout():
@@ -36,7 +37,8 @@ def make_state():
 
 
 def test_window():
-    ctx = Context()
+    command_hub = CommandHub()
+    ctx = Context(command_hub=command_hub)
     layout = make_layout()
     state = make_state()
     app = QtWidgets.QApplication()

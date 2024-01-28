@@ -9,7 +9,6 @@ from .services import (
     ui_ctl_creg,
     web,
     )
-from .code.command_hub import CommandHub
 
 log = logging.getLogger(__name__)
 
@@ -33,21 +32,15 @@ class WindowCtl:
         self._central_view_ctl = central_view_ctl
 
     def construct_widget(self, state, ctx):
-        command_hub = CommandHub()
-        ctx = ctx.clone_with(command_hub=command_hub)
         w = QtWidgets.QMainWindow()
         central_view_state = web.summon(state.central_view_state)
         menu_bar_state = web.summon(state.menu_bar_state)
         central_widget = self._central_view_ctl.construct_widget(central_view_state, ctx)
         menu_bar = self._menu_bar_ctl.construct_widget(menu_bar_state, ctx)
-        commands = self._central_view_ctl.get_commands(
-            self._central_view_layout, central_widget, wrapper=partial(self._wrapper, ctx, w))
         w.setMenuWidget(menu_bar)
         w.setCentralWidget(central_widget)
         w.move(state.pos.x, state.pos.y)
         w.resize(state.size.w, state.size.h)
-        command_hub.set_commands([], commands)
-        self._widget_to_command_hub[w] = command_hub
         return w
 
     def _wrapper(self, ctx, widget, diffs):

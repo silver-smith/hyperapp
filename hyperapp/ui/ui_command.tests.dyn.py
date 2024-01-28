@@ -1,7 +1,5 @@
 from .services import (
-    association_reg,
     fn_to_res,
-    pyobj_creg,
     mark,
     )
 from .tested.code import ui_command
@@ -23,18 +21,7 @@ def association_reg():
     return PhonyAssociationRegistry()
 
 
-class PhonyWidget:
-    pass
-
-
-class PhonyCtl:
-
-    def widget_state(self, widget):
-        return None
-
-
 def test_ui_command_factory():
-    layout = "Nothing is here"
-    command_list = ui_command_factory(layout, PhonyCtl())
-    assert command_list
-    command_list[0].bind(None, PhonyWidget(), wrapper=lambda x: x).run()
+    view_piece = "Nothing is here"
+    fn_res_list = ui_command_factory(view_piece)
+    assert fn_res_list

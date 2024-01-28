@@ -3,6 +3,7 @@
 import:
 - builtins:web.service
 - legacy_type.builtin:python_module
+- ui.command_hub:command_hub.module
 - ui.ui_ctl_registry:ui_ctl_creg.service
 associations: []
 definitions:
@@ -11,5 +12,6 @@ definitions:
     module_name: controller
     file_name: controller.dyn.py
     import_list:
+      code.command_hub: ui.command_hub:command_hub.module
       services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
       services.web: builtins:web.service
