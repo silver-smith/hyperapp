@@ -3,7 +3,7 @@
 class StaticStrAdapter:
 
     @classmethod
-    def from_piece(cls, piece):
+    def from_piece(cls, piece, ctx):
         return cls(piece.value)
 
     def __init__(self, text):
