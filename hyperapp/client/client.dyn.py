@@ -11,6 +11,7 @@ from .services import (
     )
 from .code.context import Context
 from .code.model_command import global_commands
+from .code.controller import Controller
 
 
 def make_layout():
@@ -38,7 +39,7 @@ def make_layout():
         command_pane_ref=mosaic.put(htypes.command_pane.command_pane()),
         central_view_ref=mosaic.put(outer_tabs_layout),
         )
-    return htypes.application.layout(
+    return htypes.root.view(
         window_list=[mosaic.put(window_layout)],
         )
 
@@ -64,7 +65,7 @@ def make_state():
         size=htypes.window.size(500, 300),
         pos=htypes.window.pos(1000, 500),
         )
-    return htypes.application.state(
+    return htypes.root.state(
         window_list=[mosaic.put(window_state)],
         )
 
@@ -77,9 +78,7 @@ def _main():
     ctx = Context()
     layout = make_layout()
     state = make_state()
-    app_ctl = ui_ctl_creg.animate(layout)
-    window_list = app_ctl.construct_widget(state, ctx)
-    for window in window_list:
-        window.show()
+    ctl = Controller(layout)
+    ctl.create_windows(state, ctx)
 
     return app.exec()

@@ -1,0 +1,15 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:web.service
+- legacy_type.builtin:python_module
+- ui.ui_ctl_registry:ui_ctl_creg.service
+associations: []
+definitions:
+  controller.module:
+    _type: legacy_type.builtin:python_module
+    module_name: controller
+    file_name: controller.dyn.py
+    import_list:
+      services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
+      services.web: builtins:web.service

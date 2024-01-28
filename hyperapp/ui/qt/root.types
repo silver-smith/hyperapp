@@ -1,5 +1,4 @@
-
-layout = record:
+view = record:
   window_list: ref list
 
 state = record:
