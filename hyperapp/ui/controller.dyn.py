@@ -51,3 +51,7 @@ class Controller:
         log.info("Apply diffs: %s / %s", layout_diff, state_diff)
         new_piece, new_state = view.apply(ctx, piece, widget, layout_diff, state_diff)
         log.info("Applied piece: %s / %s", new_piece, new_state)
+        new_view = ui_ctl_creg.animate(piece)
+        wrapper = partial(self._apply_diff_wrapper, ctx, command_hub, new_piece, new_view, widget)
+        commands = self._view_commands(new_piece, widget, wrappers=[wrapper])
+        command_hub.set_commands([], commands)
