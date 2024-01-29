@@ -15,48 +15,64 @@ def _wrapper(diffs):
     return diffs
 
 
-def test_navigator():
-    adapter_layout = htypes.str_adapter.static_str_adapter("Sample text")
-    text_layout = htypes.text.view_layout(mosaic.put(adapter_layout))
-    prev_layout = htypes.navigator.layout(
-        current_layout=mosaic.put(text_layout),
+def make_piece():
+    adapter_piece = htypes.str_adapter.static_str_adapter("Sample text")
+    text_piece = htypes.text.view_layout(mosaic.put(adapter_piece))
+    prev_piece = htypes.navigator.layout(
+        current_layout=mosaic.put(text_piece),
         current_model=mosaic.put("Sample piece"),
         commands=[],
         prev=None,
         next=None,
         )
-    next_layout = htypes.navigator.layout(
-        current_layout=mosaic.put(text_layout),
+    next_piece = htypes.navigator.layout(
+        current_layout=mosaic.put(text_piece),
         current_model=mosaic.put("Sample piece"),
         commands=[],
         prev=None,
         next=None,
         )
-    layout = htypes.navigator.layout(
-        current_layout=mosaic.put(text_layout),
+    piece = htypes.navigator.layout(
+        current_layout=mosaic.put(text_piece),
         current_model=mosaic.put("Sample piece"),
         commands=[],
-        prev=mosaic.put(prev_layout),
-        next=mosaic.put(next_layout),
+        prev=mosaic.put(prev_piece),
+        next=mosaic.put(next_piece),
         )
+    return piece
+
+
+def make_state():
     tab_state = htypes.text.state()
     state = htypes.navigator.state(
         current_state=mosaic.put(tab_state),
         prev=None,
         next=None,
         )
+    return state
 
+
+def test_navigator():
+    piece = make_piece()
+    state = make_state()
     app = QtWidgets.QApplication()
     try:
         ctx = Context(command_hub=CommandHub())
-        ctl = navigator.NavigatorCtl.from_piece(layout)
-        widget = ctl.construct_widget(state, ctx)
-        state = ctl.widget_state(widget)
+        view = navigator.NavigatorCtl.from_piece(piece)
+        widget = view.construct_widget(piece, state, ctx)
+        state = view.widget_state(piece, widget)
         assert state
-        command_list = ctl.get_commands(layout, widget, _wrapper)
-        assert command_list
-        for command in command_list:
-            layout_diff, state_diff = asyncio.run(command.run())
-            ctl.apply(ctx, layout, widget, layout_diff, state_diff)
     finally:
         app.shutdown()
+
+
+async def test_go_back_command():
+    piece = make_piece()
+    state = make_state()
+    await navigator.go_back(piece, state)
+
+
+async def test_go_forward_command():
+    piece = make_piece()
+    state = make_state()
+    await navigator.go_forward(piece, state)

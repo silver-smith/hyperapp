@@ -41,24 +41,24 @@ class NavigatorCtl:
 
     @classmethod
     def from_piece(cls, layout):
-        current_ctl = ui_ctl_creg.invite(layout.current_layout)
-        return cls(current_ctl)
+        return cls()
 
-    def __init__(self, current_ctl):
-        self._current_ctl = current_ctl
-
-    def construct_widget(self, state, ctx):
+    def construct_widget(self, piece, state, ctx):
+        current_piece = web.summon(piece.current_layout)
+        current_view = ui_ctl_creg.animate(current_piece)
         if state is not None:
             current_state = web.summon(state.current_state)
         else:
             current_state = None
-        return self._current_ctl.construct_widget(current_state, ctx)
+        return current_view.construct_widget(current_piece, current_state, ctx)
 
     def get_current(self, piece, widget):
         return None
 
-    def widget_state(self, widget):
-        current_state = self._current_ctl.widget_state(widget)
+    def widget_state(self, piece, widget):
+        current_piece = web.summon(piece.current_layout)
+        current_view = ui_ctl_creg.animate(current_piece)
+        current_state = current_view.widget_state(current_piece, widget)
         return htypes.navigator.state(
             current_state=mosaic.put(current_state),
             prev=None,
@@ -94,14 +94,6 @@ class NavigatorCtl:
             )
         return wrapper((layout_diff, None))
 
-    async def _go_back(self):
-        layout_diff = htypes.navigator.go_back_diff()
-        return (layout_diff, None)
-
-    async def _go_forward(self):
-        layout_diff = htypes.navigator.go_forward_diff()
-        return (layout_diff, None)
-
     def apply(self, ctx, layout, widget, layout_diff, state_diff):
         log.info("Navigator: apply: %s / %s", layout_diff, state_diff)
         if isinstance(layout_diff, htypes.navigator.open_new_diff):
@@ -134,3 +126,12 @@ class NavigatorCtl:
             raise NotImplementedError(repr(layout_diff))
         self._current_ctl = ui_ctl_creg.invite(layout.current_layout)
         return (layout, None)
+
+
+async def go_back(layout, state):
+    layout_diff = htypes.navigator.go_back_diff()
+    return (layout_diff, None)
+
+async def go_forward(layout, state):
+    layout_diff = htypes.navigator.go_forward_diff()
+    return (layout_diff, None)
