@@ -15,15 +15,15 @@ class ViewTextCtl:
 
     @classmethod
     def from_piece(cls, layout):
-        adapter = ui_adapter_creg.invite(layout.adapter)
-        return cls(adapter)
+        return cls(layout.adapter)
 
-    def __init__(self, adapter):
-        self._adapter = adapter
+    def __init__(self, adapter_piece):
+        self._adapter_piece = adapter_piece
 
     def construct_widget(self, state, ctx):
+        adapter = ui_adapter_creg.invite(self._adapter_piece, ctx)
         w = QtWidgets.QTextBrowser()
-        w.setPlainText(self._adapter.get_text())
+        w.setPlainText(adapter.get_text())
         return w
 
     def widget_state(self, widget):
@@ -39,15 +39,15 @@ class EditTextCtl:
 
     @classmethod
     def from_piece(cls, layout):
-        adapter = ui_adapter_creg.invite(layout.adapter)
-        return cls(adapter)
+        return cls(layout.adapter)
 
-    def __init__(self, adapter):
-        self._adapter = adapter
+    def __init__(self, adapter_piece):
+        self._adapter_piece = adapter_piece
 
     def construct_widget(self, state, ctx):
+        adapter = ui_adapter_creg.invite(self._adapter_piece, ctx)
         w = QtWidgets.QTextEdit()
-        w.setPlainText(self._adapter.get_text())
+        w.setPlainText(adapter.get_text())
         return w
 
     def widget_state(self, widget):
