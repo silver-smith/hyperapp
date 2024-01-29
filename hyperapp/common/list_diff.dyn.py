@@ -18,9 +18,7 @@ class ListDiffInsert:
 
     def apply(self, value):
         assert type(value) in {list, tuple}, repr(value)
-        result = [*value]
-        result.insert(self.idx, self.item)
-        return result
+        return self.insert(value, self.item)
 
     def insert(self, container, item):
         assert type(container) in {list, tuple}, repr(container)

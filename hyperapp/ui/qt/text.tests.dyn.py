@@ -28,13 +28,13 @@ def make_state():
 
 def test_view_text():
     ctx = Context()
-    layout = make_view_layout()
+    piece = make_view_layout()
     state = make_state()
     app = QtWidgets.QApplication()
     try:
-        ctl = text.ViewTextCtl.from_piece(layout)
-        widget = ctl.construct_widget(state, ctx)
-        state = ctl.widget_state(widget)
+        ctl = text.ViewTextCtl.from_piece(piece)
+        widget = ctl.construct_widget(piece, state, ctx)
+        state = ctl.widget_state(piece, widget)
         assert state
     finally:
         app.shutdown()
@@ -42,13 +42,13 @@ def test_view_text():
 
 def test_edit_text():
     ctx = Context()
-    layout = make_edit_layout()
+    piece = make_edit_layout()
     state = make_state()
     app = QtWidgets.QApplication()
     try:
-        ctl = text.EditTextCtl.from_piece(layout)
-        widget = ctl.construct_widget(state, ctx)
-        state = ctl.widget_state(widget)
+        ctl = text.EditTextCtl.from_piece(piece)
+        widget = ctl.construct_widget(piece, state, ctx)
+        state = ctl.widget_state(piece, widget)
         assert state
     finally:
         app.shutdown()

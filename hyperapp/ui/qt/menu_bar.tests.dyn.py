@@ -16,11 +16,13 @@ def make_state():
 
 def test_widget():
     ctx = Context(command_hub=command_hub.CommandHub())
-    layout = make_layout()
+    piece = make_layout()
     state = make_state()
     app = QtWidgets.QApplication()
     try:
-        ctl = menu_bar.MenuBarCtl.from_piece(layout)
-        widget = ctl.construct_widget(state, ctx)
+        view = menu_bar.MenuBarCtl.from_piece(piece)
+        widget = view.construct_widget(piece, state, ctx)
+        state = view.widget_state(piece, widget)
+        assert state
     finally:
         app.shutdown()

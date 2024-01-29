@@ -1,6 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:mosaic.service
 - builtins:web.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
@@ -8,6 +9,8 @@ import:
 - legacy_type.ui:ui_ctl
 - legacy_type.window:layout
 - legacy_type.window:pos
+- legacy_type.window:size
+- legacy_type.window:state
 - ui.ui_ctl_registry:ui_ctl_creg.service
 associations:
 - bases:
@@ -34,7 +37,11 @@ definitions:
     module_name: window
     file_name: window.dyn.py
     import_list:
+      htypes.window.layout: legacy_type.window:layout
       htypes.window.pos: legacy_type.window:pos
+      htypes.window.size: legacy_type.window:size
+      htypes.window.state: legacy_type.window:state
       services.mark: common.mark:mark.service
+      services.mosaic: builtins:mosaic.service
       services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
       services.web: builtins:web.service

@@ -24,8 +24,9 @@ class Controller:
         view = ui_ctl_creg.animate(piece)
         command_hub = CommandHub()
         window_ctx = ctx.clone_with(command_hub=command_hub)
-        widget = view.construct_widget(state, window_ctx)
-        commands = self._view_commands(piece, widget, wrappers=[])
+        widget = view.construct_widget(piece, state, window_ctx)
+        wrapper = partial(self._apply_diff_wrapper, window_ctx, command_hub, piece, view, widget)
+        commands = self._view_commands(piece, widget, wrappers=[wrapper])
         command_hub.set_commands([], commands)
         widget.show()
         return widget
@@ -41,3 +42,9 @@ class Controller:
         current_piece = web.summon(current_piece_ref)
         current_commands = self._view_commands(current_piece, current_widget, [*wrappers, view_wrapper])
         return [*commands, *current_commands]
+
+    def _apply_diff_wrapper(self, ctx, command_hub, piece, view, widget, diffs):
+        layout_diff, state_diff = diffs
+        log.info("Apply diffs: %s / %s", layout_diff, state_diff)
+        new_piece, new_state = view.apply(ctx, piece, widget, layout_diff, state_diff)
+        log.info("Applied piece: %s / %s", new_piece, new_state)

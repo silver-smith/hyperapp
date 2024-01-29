@@ -6,6 +6,7 @@ from PySide6 import QtWidgets
 from . import htypes
 from .services import (
     mark,
+    mosaic,
     ui_ctl_creg,
     web,
     )
@@ -21,23 +22,19 @@ class WindowCtl:
 
     @classmethod
     def from_piece(cls, layout):
-        menu_bar_ctl = ui_ctl_creg.invite(layout.menu_bar_ref)
-        central_view_layout = web.summon(layout.central_view_ref)
-        central_view_ctl = ui_ctl_creg.animate(central_view_layout)
-        return cls(menu_bar_ctl, central_view_layout, central_view_ctl)
+        return cls()
 
-    def __init__(self, menu_bar_ctl, central_view_layout, central_view_ctl):
-        self._menu_bar_ctl = menu_bar_ctl
-        self._central_view_layout = central_view_layout
-        self._central_view_ctl = central_view_ctl
-
-    def construct_widget(self, state, ctx):
+    def construct_widget(self, piece, state, ctx):
+        menu_bar_piece = web.summon(piece.menu_bar_ref)
+        central_view_piece = web.summon(piece.central_view_ref)
+        menu_bar_view = ui_ctl_creg.animate(menu_bar_piece)
+        central_view = ui_ctl_creg.animate(central_view_piece)
         w = QtWidgets.QMainWindow()
         central_view_state = web.summon(state.central_view_state)
         menu_bar_state = web.summon(state.menu_bar_state)
-        central_widget = self._central_view_ctl.construct_widget(central_view_state, ctx)
-        menu_bar = self._menu_bar_ctl.construct_widget(menu_bar_state, ctx)
-        w.setMenuWidget(menu_bar)
+        central_widget = central_view.construct_widget(central_view_piece, central_view_state, ctx)
+        menu_bar = menu_bar_view.construct_widget(menu_bar_piece, menu_bar_state, ctx)
+        w.setMenuBar(menu_bar)
         w.setCentralWidget(central_widget)
         w.move(state.pos.x, state.pos.y)
         w.resize(state.size.w, state.size.h)
@@ -49,13 +46,28 @@ class WindowCtl:
     def wrapper(self, widget, result):
         return result
 
-    def _wrapper(self, ctx, widget, diffs):
-        layout_diff, state_diff = diffs
-        log.info("Window: apply: %s / %s", layout_diff, state_diff)
-        command_hub = self._widget_to_command_hub[widget]
-        central_view_layout, central_view_state = self._central_view_ctl.apply(
-            ctx, self._central_view_layout, widget.centralWidget(), layout_diff, state_diff)
-        commands = self._central_view_ctl.get_commands(
-            central_view_layout, widget.centralWidget(), wrapper=partial(self._wrapper, ctx, widget))
-        command_hub.set_commands([], commands)
-        self._central_view_layout = central_view_layout
+    def widget_state(self, piece, widget):
+        menu_bar_piece = web.summon(piece.menu_bar_ref)
+        central_view_piece = web.summon(piece.central_view_ref)
+        menu_bar_view = ui_ctl_creg.animate(menu_bar_piece)
+        central_view = ui_ctl_creg.animate(central_view_piece)
+        menu_bar_state = menu_bar_view.widget_state(menu_bar_piece, widget.menuBar())
+        central_view_state = central_view.widget_state(central_view_piece, widget.centralWidget())
+        return htypes.window.state(
+            menu_bar_state=mosaic.put(menu_bar_state),
+            central_view_state=mosaic.put(central_view_state),
+            size=htypes.window.size(widget.width(), widget.height()),
+            pos=htypes.window.pos(widget.x(), widget.y()),
+            )
+
+    def apply(self, ctx, piece, widget, layout_diff, state_diff):
+        central_view_piece = web.summon(piece.central_view_ref)
+        central_view = ui_ctl_creg.animate(central_view_piece)
+        new_central_piece, new_central_state = central_view.apply(
+            ctx, central_view_piece, widget.centralWidget(), layout_diff, state_diff)
+        new_piece = htypes.window.layout(
+            menu_bar_ref=piece.menu_bar_ref,
+            command_pane_ref=piece.command_pane_ref,
+            central_view_ref=mosaic.put(new_central_piece),
+            )
+        return (new_piece, self.widget_state(piece, widget))

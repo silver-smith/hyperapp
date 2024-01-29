@@ -6,6 +6,8 @@ from PySide6 import QtGui, QtWidgets
 
 log = logging.getLogger(__name__)
 
+from . import htypes
+
 
 _hardcoded_shortcuts = {
     'back': ['Escape'],
@@ -31,12 +33,15 @@ class MenuBarCtl:
         self._menu_command_to_action = {}
         self._used_shortcuts = set()
 
-    def construct_widget(self, state, ctx):
+    def construct_widget(self, piece, state, ctx):
         w =  QtWidgets.QMenuBar()
         menu = QtWidgets.QMenu('&All')
         w.addMenu(menu)
         ctx.command_hub.subscribe(partial(self.commands_changed, w))
         return w
+
+    def widget_state(self, piece, widget):
+        return htypes.menu_bar.state()
 
     def set_commands(self, w, commands):
         [menu_action] = w.actions()

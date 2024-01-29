@@ -1,25 +1,29 @@
 from PySide6 import QtWidgets
 
 from . import htypes
-from .tested.code import window
 from .services import (
     mosaic,
+    web,
     )
 from .code.context import Context
 from .code.command_hub import CommandHub
+from .code.list_diff import ListDiff
+from .code import menu_bar  # Used implicitly
+from .tested.code import window
 
 
-def make_layout():
-    adapter_layout = htypes.str_adapter.static_str_adapter("Sample text")
-    text_layout = htypes.text.view_layout(mosaic.put(adapter_layout))
-    tabs_layout = htypes.tabs.layout(
-        tabs=[htypes.tabs.tab("One", mosaic.put(text_layout))],
+def make_piece():
+    adapter_piece = htypes.str_adapter.static_str_adapter("Sample text")
+    text_piece = htypes.text.view_layout(mosaic.put(adapter_piece))
+    tabs_piece = htypes.tabs.layout(
+        tabs=[htypes.tabs.tab("One", mosaic.put(text_piece))],
         )
-    return htypes.window.layout(
+    piece = htypes.window.layout(
         menu_bar_ref=mosaic.put(htypes.menu_bar.layout()),
         command_pane_ref=mosaic.put(htypes.command_pane.command_pane()),
-        central_view_ref=mosaic.put(tabs_layout),
+        central_view_ref=mosaic.put(tabs_piece),
         )
+    return (tabs_piece, piece)
 
 
 def make_state():
@@ -28,22 +32,41 @@ def make_state():
         current_tab=0,
         tabs=[mosaic.put(text_state)],
         )
-    return htypes.window.state(
+    state = htypes.window.state(
         menu_bar_state=mosaic.put(htypes.menu_bar.state()),
         central_view_state=mosaic.put(tabs_state),
         size=htypes.window.size(100, 100),
         pos=htypes.window.pos(10, 10),
         )
+    return (tabs_state, state)
 
 
-def test_window():
+def test_construct_widget():
     command_hub = CommandHub()
     ctx = Context(command_hub=command_hub)
-    layout = make_layout()
-    state = make_state()
+    tabs_piece, piece = make_piece()
+    tabs_state, state = make_state()
     app = QtWidgets.QApplication()
     try:
-        ctl = window.WindowCtl.from_piece(layout)
-        widget = ctl.construct_widget(state, ctx)
+        view = window.WindowCtl.from_piece(piece)
+        widget = view.construct_widget(piece, state, ctx)
+    finally:
+        app.shutdown()
+
+
+def test_apply_diff():
+    command_hub = CommandHub()
+    ctx = Context(command_hub=command_hub)
+    tabs_piece, piece = make_piece()
+    tabs_state, state = make_state()
+    app = QtWidgets.QApplication()
+    try:
+        view = window.WindowCtl.from_piece(piece)
+        widget = view.construct_widget(piece, state, ctx)
+        piece_diff = ListDiff.insert(1, tabs_piece.tabs[0])
+        state_diff = ListDiff.insert(1, tabs_state.tabs[0])
+        new_piece, new_state = view.apply(ctx, piece, widget, piece_diff, state_diff)
+        new_tabs_piece = web.summon(new_piece.central_view_ref)
+        assert len(new_tabs_piece.tabs) == 2
     finally:
         app.shutdown()

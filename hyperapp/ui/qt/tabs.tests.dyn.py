@@ -43,13 +43,13 @@ def make_outer_state(tab_state):
 
 def test_tabs():
     ctx = Context(command_hub=CommandHub())
-    layout = make_inner_layout()
+    piece = make_inner_layout()
     state = make_inner_state()
     app = QtWidgets.QApplication()
     try:
-        ctl = tabs.TabsCtl.from_piece(layout)
-        widget = ctl.construct_widget(state, ctx)
-        state = ctl.widget_state(widget)
+        view = tabs.TabsCtl.from_piece(piece)
+        widget = view.construct_widget(piece, state, ctx)
+        state = view.widget_state(piece, widget)
         assert state
     finally:
         app.shutdown()
@@ -57,43 +57,41 @@ def test_tabs():
 
 def test_duplicate():
     ctx = Context(command_hub=CommandHub())
-    layout = make_inner_layout()
+    piece = make_inner_layout()
     state = make_inner_state()
     app = QtWidgets.QApplication()
     try:
-        ctl = tabs.TabsCtl.from_piece(layout)
-        widget = ctl.construct_widget(state, ctx)
-        layout_diff, state_diff = tabs.duplicate(layout, state)
-        new_layout, new_state = ctl.apply(ctx, layout, widget, layout_diff, state_diff)
-        assert len(new_layout.tabs) == 2
-        assert new_layout.tabs[0] == layout.tabs[0]
-        assert new_layout.tabs[0] == new_layout.tabs[1]
+        view = tabs.TabsCtl.from_piece(piece)
+        widget = view.construct_widget(piece, state, ctx)
+        piece_diff, state_diff = tabs.duplicate(piece, state)
+        new_piece, new_state = view.apply(ctx, piece, widget, piece_diff, state_diff)
+        assert len(new_piece.tabs) == 2
+        assert new_piece.tabs[0] == piece.tabs[0]
+        assert new_piece.tabs[0] == new_piece.tabs[1]
     finally:
         app.shutdown()
 
 
 def test_modify():
     ctx = Context(command_hub=CommandHub())
-    inner_layout = make_inner_layout()
-    outer_layout = make_outer_layout(inner_layout)
+    inner_piece = make_inner_layout()
+    outer_piece = make_outer_layout(inner_piece)
     inner_state = make_inner_state()
     outer_state = make_outer_state(inner_state)
     app = QtWidgets.QApplication()
     try:
-        ctl = tabs.TabsCtl.from_piece(outer_layout)
-        widget = ctl.construct_widget(outer_state, ctx)
-        inner_layout_diff, inner_state_diff = tabs.duplicate(inner_layout, inner_state)
-        outer_layout_diff, outer_state_diff = ctl._wrapper(
-            wrapper=lambda x: x,
-            idx=0,
-            diffs=(inner_layout_diff, inner_state_diff),
+        view = tabs.TabsCtl.from_piece(outer_piece)
+        widget = view.construct_widget(outer_piece, outer_state, ctx)
+        inner_piece_diff, inner_state_diff = tabs.duplicate(inner_piece, inner_state)
+        outer_piece_diff, outer_state_diff = view.wrapper(
+            widget, (inner_piece_diff, inner_state_diff),
             )
-        new_outer_layout, new_outer_state = ctl.apply(
-            ctx, outer_layout, widget, outer_layout_diff, outer_state_diff)
-        assert len(new_outer_layout.tabs) == 1
-        new_inner_layout = web.summon(new_outer_layout.tabs[0].ctl)
-        assert len(new_inner_layout.tabs) == 2
-        assert new_inner_layout.tabs[0] == inner_layout.tabs[0]
-        assert new_inner_layout.tabs[0] == new_inner_layout.tabs[1]
+        new_outer_piece, new_outer_state = view.apply(
+            ctx, outer_piece, widget, outer_piece_diff, outer_state_diff)
+        assert len(new_outer_piece.tabs) == 1
+        new_inner_piece = web.summon(new_outer_piece.tabs[0].ctl)
+        assert len(new_inner_piece.tabs) == 2
+        assert new_inner_piece.tabs[0] == inner_piece.tabs[0]
+        assert new_inner_piece.tabs[0] == new_inner_piece.tabs[1]
     finally:
         app.shutdown()
