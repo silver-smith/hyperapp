@@ -67,7 +67,7 @@ class MenuBarCtl:
             if name not in command.name:
                 continue
             for shortcut in shortcut_list:
-                if shortcut not in self._used_shortcuts:
+                if shortcut.upper() not in self._used_shortcuts:
                     action.setShortcut(shortcut)
                     self._used_shortcuts.add(shortcut.upper())
                     break
