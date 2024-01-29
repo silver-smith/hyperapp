@@ -1,3 +1,4 @@
+import logging
 from functools import partial
 
 from .services import (
@@ -6,6 +7,8 @@ from .services import (
     web,
     )
 from .code.command_hub import CommandHub
+
+log = logging.getLogger(__name__)
 
 
 class Controller:
