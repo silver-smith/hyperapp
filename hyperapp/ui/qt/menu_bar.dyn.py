@@ -59,7 +59,7 @@ class MenuBarCtl:
             action = self._menu_command_to_action[menu, command]
             menu.removeAction(action)
             try:
-                self._used_shortcuts.remove(action.shortcut().toString())
+                self._used_shortcuts.remove(action.shortcut().toString().upper())
             except KeyError:
                 pass
         for command in added_commands:
