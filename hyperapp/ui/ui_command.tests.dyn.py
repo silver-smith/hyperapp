@@ -27,7 +27,7 @@ class PhonyWidget:
 
 class PhonyView:
 
-    def widget_state(self, widget):
+    def widget_state(self, piece, widget):
         return None
 
 
