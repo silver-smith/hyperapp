@@ -54,6 +54,9 @@ class NavigatorCtl:
             current_state = None
         return self._current_ctl.construct_widget(current_state, ctx)
 
+    def get_current(self, piece, widget):
+        return None
+
     def widget_state(self, widget):
         current_state = self._current_ctl.widget_state(widget)
         return htypes.navigator.state(

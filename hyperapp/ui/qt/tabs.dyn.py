@@ -41,6 +41,18 @@ class TabsCtl:
         tabs.currentChanged.connect(partial(self._on_current_changed, ctx.command_hub, tabs))
         return tabs
 
+    def get_current(self, piece, widget):
+        idx = widget.currentIndex()
+        return (piece.tabs[idx].ctl, widget.widget(idx))
+
+    def wrapper(self, widget, diffs):
+        layout_diff, state_diff = diffs
+        idx = widget.currentIndex()
+        return (
+            ListDiffModify(idx, layout_diff),
+            ListDiffModify(idx, state_diff),
+            )
+
     def widget_state(self, widget):
         return htypes.tabs.state(
             current_tab=widget.currentIndex(),

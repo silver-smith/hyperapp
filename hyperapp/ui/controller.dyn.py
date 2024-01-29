@@ -1,4 +1,7 @@
+from functools import partial
+
 from .services import (
+    ui_command_factory,
     ui_ctl_creg,
     web,
     )
@@ -12,18 +15,29 @@ class Controller:
         self._window_list = None
 
     def create_windows(self, state, ctx):
-        window_view_list = [
-            ui_ctl_creg.invite(piece)
-            for piece in self._root_piece.window_list
-            ]
         self._window_list = [
-            self._create_window(view, web.summon(s), ctx)
-            for view, s in zip(window_view_list, state.window_list)
+            self._create_window(web.summon(piece_ref), web.summon(state_ref), ctx)
+            for piece_ref, state_ref in zip(self._root_piece.window_list, state.window_list)
             ]
 
-    def _create_window(self, view, state, ctx):
+    def _create_window(self, piece, state, ctx):
+        view = ui_ctl_creg.animate(piece)
         command_hub = CommandHub()
         window_ctx = ctx.clone_with(command_hub=command_hub)
-        w = view.construct_widget(state, window_ctx)
-        w.show()
-        return w
+        widget = view.construct_widget(state, window_ctx)
+        commands = self._view_commands(piece, widget, wrappers=[])
+        command_hub.set_commands([], commands)
+        widget.show()
+        return widget
+
+    def _view_commands(self, piece, widget, wrappers):
+        view = ui_ctl_creg.animate(piece)
+        commands = ui_command_factory(piece, view, widget, wrappers)
+        current = view.get_current(piece, widget)
+        if not current:
+            return commands
+        view_wrapper = partial(view.wrapper, widget)
+        current_piece_ref, current_widget = current
+        current_piece = web.summon(current_piece_ref)
+        current_commands = self._view_commands(current_piece, current_widget, [*wrappers, view_wrapper])
+        return [*commands, *current_commands]

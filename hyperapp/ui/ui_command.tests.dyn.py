@@ -7,7 +7,7 @@ from .tested.services import ui_command_factory
 
 
 def _sample_fn(layout, state):
-    pass
+    return 123
 
 
 class PhonyAssociationRegistry:
@@ -21,7 +21,20 @@ def association_reg():
     return PhonyAssociationRegistry()
 
 
-def test_ui_command_factory():
+class PhonyWidget:
+    pass
+
+
+class PhonyView:
+
+    def widget_state(self, widget):
+        return None
+
+
+async def test_ui_command_factory():
     view_piece = "Nothing is here"
-    fn_res_list = ui_command_factory(view_piece)
-    assert fn_res_list
+    widget = PhonyWidget()  # Should hold ref to it.
+    command_list = ui_command_factory(view_piece, PhonyView(), widget, wrappers=[])
+    assert command_list
+    result = await command_list[0].run()
+    assert result == 123, repr(result)

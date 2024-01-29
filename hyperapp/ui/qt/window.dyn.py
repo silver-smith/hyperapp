@@ -43,6 +43,12 @@ class WindowCtl:
         w.resize(state.size.w, state.size.h)
         return w
 
+    def get_current(self, piece, widget):
+        return (piece.central_view_ref, widget.centralWidget())
+
+    def wrapper(self, widget, result):
+        return result
+
     def _wrapper(self, ctx, widget, diffs):
         layout_diff, state_diff = diffs
         log.info("Window: apply: %s / %s", layout_diff, state_diff)
