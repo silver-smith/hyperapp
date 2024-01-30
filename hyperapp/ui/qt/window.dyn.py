@@ -18,8 +18,6 @@ DUP_OFFSET = htypes.window.pos(150, 50)
 
 class WindowCtl:
 
-    _widget_to_command_hub = {}  # todo: weak key dictionary.
-
     @classmethod
     def from_piece(cls, layout):
         return cls()
