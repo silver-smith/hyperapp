@@ -10,7 +10,7 @@ from . import htypes
 
 
 _hardcoded_shortcuts = {
-    'back': ['Escape'],
+    'back': ['Esc'],
     'forward': ['Alt+Right'],
     'duplicate': ['Shift+f4', 'Ctrl+f4'],
     'static_text_1': ['f1'],
