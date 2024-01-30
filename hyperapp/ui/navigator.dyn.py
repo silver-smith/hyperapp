@@ -5,6 +5,7 @@ from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 
 from . import htypes
 from .services import (
+    mark,
     model_command_creg,
     mosaic,
     types,
@@ -128,10 +129,12 @@ class NavigatorCtl:
         return (layout, None)
 
 
-async def go_back(layout, state):
+@mark.ui_command(htypes.navigator.layout)
+def go_back(layout, state):
     layout_diff = htypes.navigator.go_back_diff()
     return (layout_diff, None)
 
-async def go_forward(layout, state):
+@mark.ui_command(htypes.navigator.layout)
+def go_forward(layout, state):
     layout_diff = htypes.navigator.go_forward_diff()
     return (layout_diff, None)

@@ -71,13 +71,13 @@ def test_navigator():
         app.shutdown()
 
 
-async def test_go_back_command():
+def test_go_back_command():
     piece = make_piece()
     state = make_state()
-    await navigator.go_back(piece, state)
+    navigator.go_back(piece, state)
 
 
-async def test_go_forward_command():
+def test_go_forward_command():
     piece = make_piece()
     state = make_state()
-    await navigator.go_forward(piece, state)
+    navigator.go_forward(piece, state)
