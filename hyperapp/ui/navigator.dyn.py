@@ -18,26 +18,6 @@ from .code.model_command import global_commands, model_commands
 log = logging.getLogger(__name__)
 
 
-class _UiCommand:
-
-    def __init__(self, fn, wrapper):
-        self._fn = fn
-        self._wrapper = wrapper
-
-    @property
-    def name(self):
-        fn = self._fn
-        if isinstance(fn, partial):
-            fn = fn.func
-        return fn.__name__
-
-    async def run(self):
-        log.info("Run: %s", self._fn)
-        result = await self._fn()
-        log.info("Run result: %s -> %r", self._fn, result)
-        return self._wrapper(result)
-
-
 class NavigatorCtl:
 
     @classmethod
@@ -125,7 +105,6 @@ class NavigatorCtl:
                 )
         else:
             raise NotImplementedError(repr(layout_diff))
-        self._current_ctl = ui_ctl_creg.invite(layout.current_layout)
         return (layout, None)
 
 
