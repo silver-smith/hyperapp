@@ -63,7 +63,7 @@ def test_navigator():
         state = view.widget_state(piece, widget)
         assert state
 
-        diffs = view._wrapper("Sample text")
+        diffs = view._model_wrapper("Sample text")
         piece_diff, state_diff = diffs
         assert len(diffs) == 2
         view.apply(ctx, piece, widget, piece_diff, state_diff)        

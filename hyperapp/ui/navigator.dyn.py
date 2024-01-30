@@ -51,7 +51,7 @@ class NavigatorCtl:
         current_view = ui_ctl_creg.invite(piece.current_layout)
         commands = [
             model_command_creg.invite(
-                cmd, current_view, model_piece, widget, [*wrappers, self._wrapper])
+                cmd, current_view, model_piece, widget, [*wrappers, self._model_wrapper])
             for cmd in piece.commands
             ]
         return commands
@@ -59,7 +59,7 @@ class NavigatorCtl:
     # def wrapper(self, widget, diffs):
     #     return diffs
 
-    def _wrapper(self, piece):
+    def _model_wrapper(self, piece):
         if piece is None:
             return None
         new_current_layout = visualizer(piece)
