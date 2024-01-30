@@ -11,7 +11,7 @@ from .services import (
 from .code.context import Context
 
 
-def make_adapter_layout():
+def make_adapter_piece():
     value = [
         htypes.list_tests.item(1, "First"),
         htypes.list_tests.item(2, "Second"),
@@ -20,20 +20,20 @@ def make_adapter_layout():
     return htypes.list_adapter.static_list_adapter(mosaic.put(value, t))
 
 
-def make_layout():
-    adapter_layout = make_adapter_layout()
-    return htypes.list.layout(mosaic.put(adapter_layout))
+def make_piece():
+    adapter_piece = make_adapter_piece()
+    return htypes.list.layout(mosaic.put(adapter_piece))
 
 
 def test_list():
     ctx = Context()
-    layout = make_layout()
+    piece = make_piece()
     state = None
     app = QtWidgets.QApplication()
     try:
-        ctl = list.ListCtl.from_piece(layout)
-        widget = ctl.construct_widget(state, ctx)
-        state = ctl.widget_state(widget)
+        ctl = list.ListCtl.from_piece(piece)
+        widget = ctl.construct_widget(piece, state, ctx)
+        state = ctl.widget_state(piece, widget)
         # assert state
     finally:
         app.shutdown()
