@@ -46,7 +46,7 @@ class Controller:
         current_piece_ref, current_widget = current
         current_piece = web.summon(current_piece_ref)
         current_commands = self._view_commands(current_piece, current_widget, [*wrappers, view_wrapper])
-        return [*commands, *current_commands]
+        return commands + current_commands
 
     def _apply_diff_wrapper(self, ctx, command_hub, piece, view, widget, diffs):
         layout_diff, state_diff = diffs
