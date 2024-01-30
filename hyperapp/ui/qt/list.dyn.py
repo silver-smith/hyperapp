@@ -58,13 +58,10 @@ class ListCtl:
 
     @classmethod
     def from_piece(cls, layout):
-        return cls(layout.adapter)
+        return cls()
 
-    def __init__(self, adapter_piece):
-        self._adapter_piece = adapter_piece
-
-    def construct_widget(self, state, ctx):
-        adapter = ui_adapter_creg.invite(self._adapter_piece, ctx)
+    def construct_widget(self, piece, state, ctx):
+        adapter = ui_adapter_creg.invite(piece.adapter, ctx)
         widget = QtWidgets.QTableView()
         model = _Model(adapter)
         widget.setModel(model)
@@ -80,14 +77,11 @@ class ListCtl:
         model.rowsInserted.connect(partial(self._on_data_changed, widget))
         return widget
 
-    def widget_state(self, widget):
+    def widget_state(self, piece, widget):
         return None
 
     def model_state(self, widget):
         return ModelState(current_idx=widget.currentIndex().row())
-
-    def get_commands(self, layout, widget, wrapper):
-        return []
 
     def _on_data_changed(self, widget, *args):
         log.info("List: on_data_changed: %s: %s", widget, args)

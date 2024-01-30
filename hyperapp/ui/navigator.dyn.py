@@ -65,20 +65,20 @@ class NavigatorCtl:
             next=None,
             )
 
-    def get_commands(self, layout, widget, wrapper):
-        model_wrapper = partial(self._wrapper, layout, wrapper)
-        model_piece = web.summon(layout.current_model)
+    def get_commands(self, piece, widget, wrappers):
+        model_piece = web.summon(piece.current_model)
+        current_view = ui_ctl_creg.invite(piece.current_layout)
         commands = [
-            model_command_creg.invite(cmd, self._current_ctl, model_piece, widget, model_wrapper)
-            for cmd in layout.commands
+            model_command_creg.invite(
+                cmd, current_view, model_piece, widget, [*wrappers, self._wrapper])
+            for cmd in piece.commands
             ]
-        if layout.prev:
-            commands.append(_UiCommand(self._go_back, wrapper))
-        if layout.next:
-            commands.append(_UiCommand(self._go_forward, wrapper))
         return commands
 
-    def _wrapper(self, layout, wrapper, piece):
+    # def wrapper(self, widget, diffs):
+    #     return diffs
+
+    def _wrapper(self, piece):
         if piece is None:
             return None
         new_current_layout = visualizer(piece)
@@ -90,9 +90,9 @@ class NavigatorCtl:
         layout_diff = htypes.navigator.open_new_diff(
             new_current=mosaic.put(new_current_layout),
             new_model=mosaic.put(piece, piece_t),
-            commands=[mosaic.put(c) for c in commands],
+            commands=[mosaic.put(cmd) for cmd in commands],
             )
-        return wrapper((layout_diff, None))
+        return (layout_diff, None)
 
     def apply(self, ctx, layout, widget, layout_diff, state_diff):
         log.info("Navigator: apply: %s / %s", layout_diff, state_diff)

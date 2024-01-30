@@ -37,6 +37,8 @@ class Controller:
     def _view_commands(self, piece, widget, wrappers):
         view = ui_ctl_creg.animate(piece)
         commands = ui_command_factory(piece, view, widget, wrappers)
+        if hasattr(view, 'get_commands'):
+            commands += view.get_commands(piece, widget, wrappers)
         current = view.get_current(piece, widget)
         if not current:
             return commands

@@ -16,13 +16,13 @@ log = logging.getLogger(__name__)
 
 class ModelCommand:
 
-    def __init__(self, fn, params, ctl, model_piece, widget, wrapper):
+    def __init__(self, fn, params, view, model_piece, widget, wrappers):
         self._fn = fn
         self._params = params
-        self._ctl = ctl
+        self._view = view
         self._model_piece = model_piece
         self._widget = weakref.ref(widget)
-        self._wrapper = wrapper
+        self._wrappers = wrappers
 
     @property
     def name(self):
@@ -38,22 +38,25 @@ class ModelCommand:
         if params[:1] == ['piece']:
             kw['piece'] = self._model_piece
             params.pop(0)
-        state = self._ctl.model_state(widget)
+        state = self._view.model_state(widget)
         if params[:1] == ['state']:
             kw['state'] = state
             params.pop(0)
         for name in params:
             kw[name] = getattr(state, name)
-        log.info("Run: %s (%s)", self._fn, kw)
+        log.info("Run model command: %r (%s)", self.name, kw)
         result = await self._fn(**kw)
-        log.info("Run result: %s -> %r", self._fn, result)
-        return self._wrapper(result)
+        log.info("Run model command %r result: [%s] %r", self.name, type(result), result)
+        for wrapper in reversed(self._wrappers):
+            result = wrapper(result)
+        log.info("Run model command %r wrapped result: [%s] %r", self.name, type(result), result)
+        return result
 
 
 @model_command_creg.actor(htypes.ui.model_command)
-def model_command_from_piece(piece, ctl, model_piece, widget, wrapper):
+def model_command_from_piece(piece, view, model_piece, widget, wrappers):
     fn = pyobj_creg.invite(piece.function)
-    return ModelCommand(fn, piece.params, ctl, model_piece, widget, wrapper)
+    return ModelCommand(fn, piece.params, view, model_piece, widget, wrappers)
 
 
 def global_commands():
