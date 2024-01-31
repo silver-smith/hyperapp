@@ -56,7 +56,7 @@ class ProcessPool:
 
     async def check_for_deadlock(self):
         try:
-            async with asyncio.timeout(2) as timeout:
+            async with asyncio.timeout(6) as timeout:
                 async with self._process_available:
                     log.debug("Deadlock check: setup")
                     while True:
