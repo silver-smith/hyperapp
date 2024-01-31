@@ -82,7 +82,8 @@ class FnListAdapter:
         return len(self._items)
 
     def cell_data(self, row, column):
-        return getattr(self._items[row], self._column_names[column])
+        item = self._items[row]
+        return getattr(item, self._column_names[column])
 
     def subscribe(self, model):
         self._subscribed_models.add(model)
