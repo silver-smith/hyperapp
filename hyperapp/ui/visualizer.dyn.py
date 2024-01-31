@@ -41,5 +41,14 @@ def visualizer():
                 want_feed=impl.want_feed,
                 )
             return htypes.list.layout(mosaic.put(adapter_layout))
+        if isinstance(ui_t, htypes.ui.tree_ui_t) and isinstance(impl, htypes.ui.fn_impl):
+            adapter_layout = htypes.tree_adapter.fn_index_tree_adapter(
+                model_piece=mosaic.put(value),
+                element_t=ui_t.element_t,
+                key_t=ui_t.key_t,
+                function=impl.function,
+                want_feed=impl.want_feed,
+                )
+            return htypes.tree.view(mosaic.put(adapter_layout))
         raise NotImplementedError(f"Not supported model: {ui_t} / {impl}")
     return fn

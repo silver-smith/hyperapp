@@ -17,6 +17,7 @@ _hardcoded_shortcuts = {
     'static_text_2': ['f2'],
     'static_list': ['f3'],
     'open_sample_fn_list': ['f4'],
+    'open_sample_fn_tree': ['f6'],
     'open_feed_sample_fn_list': ['f5'],
     'show_state': ['Ctrl+Return'],
     'sample_list_state': ['Return'],

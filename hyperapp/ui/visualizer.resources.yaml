@@ -15,9 +15,12 @@ import:
 - legacy_type.list_adapter:static_list_adapter
 - legacy_type.str_adapter:static_str_adapter
 - legacy_type.text:edit_layout
+- legacy_type.tree:view
+- legacy_type.tree_adapter:fn_index_tree_adapter
 - legacy_type.ui:fn_impl
 - legacy_type.ui:list_ui_t
 - legacy_type.ui:model_d
+- legacy_type.ui:tree_ui_t
 - resource.data_to_res:data_to_res.service
 associations: []
 definitions:
@@ -35,9 +38,12 @@ definitions:
       htypes.list_adapter.static_list_adapter: legacy_type.list_adapter:static_list_adapter
       htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
       htypes.text.edit_layout: legacy_type.text:edit_layout
+      htypes.tree.view: legacy_type.tree:view
+      htypes.tree_adapter.fn_index_tree_adapter: legacy_type.tree_adapter:fn_index_tree_adapter
       htypes.ui.fn_impl: legacy_type.ui:fn_impl
       htypes.ui.list_ui_t: legacy_type.ui:list_ui_t
       htypes.ui.model_d: legacy_type.ui:model_d
+      htypes.ui.tree_ui_t: legacy_type.ui:tree_ui_t
       services.association_reg: builtins:association_reg.service
       services.data_to_res: resource.data_to_res:data_to_res.service
       services.mark: common.mark:mark.service

@@ -6,10 +6,14 @@ from . import htypes
 
 
 def sample_tree(piece, parent_key):
+    if parent_key is None:
+        base = 0
+    else:
+        base = parent_key[-1]
     return [
-        htypes.sample_tree.item(parent_key + 1, "First sample"),
-        htypes.sample_tree.item(parent_key + 2, "Second sample"),
-        htypes.sample_tree.item(parent_key + 3, "Third sample"),
+        htypes.sample_tree.item(base*10 + 1, "First sample"),
+        htypes.sample_tree.item(base*10 + 2, "Second sample"),
+        htypes.sample_tree.item(base*10 + 3, "Third sample"),
         ]
 
 
@@ -26,10 +30,11 @@ def _send_diff(feed):
 def feed_sample_tree(piece, feed, parent_key):
     loop = asyncio.get_running_loop()
     loop.call_later(1, partial(_send_diff, feed))
+    base = parent_key or 0
     return [
-        htypes.sample_tree.item(parent_key + 1, "First sample"),
-        htypes.sample_tree.item(parent_key + 2, "Second sample"),
-        htypes.sample_tree.item(parent_key + 3, "Third sample"),
+        htypes.sample_tree.item(base*10 + 1, "First sample"),
+        htypes.sample_tree.item(base*10 + 2, "Second sample"),
+        htypes.sample_tree.item(base*10 + 3, "Third sample"),
         ]
 
 

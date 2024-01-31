@@ -22,3 +22,8 @@ def test_sample_list():
     layout = visualizer(piece)
     assert layout
 
+
+def test_sample_tree():
+    piece = htypes.sample_tree.sample_tree()
+    layout = visualizer(piece)
+    assert layout
