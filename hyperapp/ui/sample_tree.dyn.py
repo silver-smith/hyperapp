@@ -5,11 +5,11 @@ from . import htypes
 # from .code.tree_diff import TreeDiffAppend
 
 
-def sample_tree(piece, parent_key):
-    if parent_key is None:
-        base = 0
+def sample_tree(piece, parent):
+    if parent:
+        base = parent.id
     else:
-        base = parent_key[-1]
+        base = 0
     return [
         htypes.sample_tree.item(base*10 + 1, "First sample"),
         htypes.sample_tree.item(base*10 + 2, "Second sample"),
@@ -27,10 +27,13 @@ def _send_diff(feed):
     feed.send(None)
 
 
-def feed_sample_tree(piece, feed, parent_key):
+def feed_sample_tree(piece, feed, parent):
     loop = asyncio.get_running_loop()
     loop.call_later(1, partial(_send_diff, feed))
-    base = parent_key or 0
+    if parent:
+        base = parent.id
+    else:
+        base = 0
     return [
         htypes.sample_tree.item(base*10 + 1, "First sample"),
         htypes.sample_tree.item(base*10 + 2, "Second sample"),

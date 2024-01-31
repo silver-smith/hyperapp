@@ -130,9 +130,9 @@ def construct_fn_tree_impl(ctx, module_name, resource_module, module_res, qname,
     if piece_t_ref is None:
         log.warning("%s.%s: layout parameter type is not a data record", module_name, qname)
         return []
-    key_t_rec = params['parent_key']
+    key_t_rec = params['parent']
     if not isinstance(key_t_rec, htypes.inspect.data_t):
-        log.warning("%s.%s: parent_key parameter type is not a data", module_name, qname)
+        log.warning("%s.%s: parent parameter type is not a data", module_name, qname)
         return []
     log.info("Construct fn tree implementation: %s: %s", resource_module.name, qname)
     fn_name = qname
@@ -253,7 +253,7 @@ def create_ui_resources(ctx, module_name, resource_module, module_res, call_list
             result_t = types.resolve(trace.result_t.t)
             if list(params) in [['piece'], ['piece', 'feed']] and isinstance(result_t, TList):
                 ass_list += construct_fn_list_impl(ctx, module_name, resource_module, module_res, qname, params, result_t)
-            if list(params) in [['piece', 'parent_key'], ['piece', 'feed', 'parent_key']] and isinstance(result_t, TList):
+            if list(params) in [['piece', 'parent'], ['piece', 'feed', 'parent']] and isinstance(result_t, TList):
                 ass_list += construct_fn_tree_impl(ctx, module_name, resource_module, module_res, qname, params, result_t)
             if (isinstance(result_t, TRecord)
                     or result_t is tString

@@ -7,8 +7,8 @@ from .tested.code import sample_tree
 
 def test_sample_tree():
     piece = htypes.sample_tree.sample_tree()
-    parent_key = 100
-    value = sample_tree.sample_tree(piece, parent_key)
+    parent = htypes.sample_tree.item(100, "Some item")
+    value = sample_tree.sample_tree(piece, parent)
     assert value
 
 
@@ -25,8 +25,8 @@ async def test_feed_sample_tree():
     queue = asyncio.Queue()
     feed = MockFeed(queue)
     piece = htypes.sample_tree.feed_sample_tree()
-    parent_key = 100
-    value = sample_tree.feed_sample_tree(piece, feed, parent_key)
+    parent = htypes.sample_tree.item(100, "Some item")
+    value = sample_tree.feed_sample_tree(piece, feed, parent)
     assert value
     diff = await queue.get()
     # assert isinstance(diff, TreeDiffAppend), repr(diff)

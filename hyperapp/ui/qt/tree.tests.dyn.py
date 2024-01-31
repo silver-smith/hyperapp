@@ -14,9 +14,12 @@ from .code.context import Context
 from .tested.code import tree
 
 
-def _sample_tree_fn(piece, parent_key):
+def _sample_tree_fn(piece, parent):
     assert isinstance(piece, htypes.tree_adapter_tests.sample_tree), repr(piece)
-    base = parent_key or 0
+    if parent:
+        base = parent.id
+    else:
+        base = 0
     return [
         htypes.tree_tests.item(base*10 + 1, "First item"),
         htypes.tree_tests.item(base*10 + 2, "Second item"),

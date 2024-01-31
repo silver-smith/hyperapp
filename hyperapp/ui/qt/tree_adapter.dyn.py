@@ -26,7 +26,7 @@ class FnIndexTreeAdapter:
         self._want_feed = want_feed
         self._fn = fn
         self._column_names = sorted(self._item_t.fields)
-        self._id_to_item_list = {}
+        self._id_to_item = {}
         self._id_to_children_id_list = {}
         self._id_to_parent_id = {}
         self._id_counter = itertools.count(start=1)
@@ -39,27 +39,25 @@ class FnIndexTreeAdapter:
         return self._column_names[column]
 
     def row_id(self, parent_id, row):
-        try:
-            row_ids = self._id_to_children_id_list[parent_id]
-        except KeyError:
-            self._populate(parent_id)
-            row_ids = self._id_to_children_id_list[parent_id]
-        return row_ids[row]
+        return self._id_list(parent_id)[row]
 
     def parent_id(self, id):
-        if len(id) > 1:
-            return id[:-1]
+        if id == 0:
+            return 0
         else:
-            return None
+            return self._id_to_parent_id[id]
 
     def has_children(self, id):
         return self.row_count(id) > 0
 
     def row_count(self, parent_id):
-        return len(self._items(parent_id))
+        id_list = self._id_list(parent_id)
+        return len(id_list)
 
-    def cell_data(self, id, row, column):
-        item = self._items(id)[row]
+    def cell_data(self, parent_id, row, column):
+        id_list = self._id_list(parent_id)
+        id = id_list[row]
+        item = self._id_to_item[id]
         return getattr(item, self._column_names[column])
 
     def subscribe(self, model):
@@ -75,24 +73,27 @@ class FnIndexTreeAdapter:
     #     for model in self._subscribed_models:
     #         model.process_diff(diff)
 
-    def _items(self, parent_id):
+    def _id_list(self, parent_id):
         try:
-            return self._id_to_item_list[parent_id]
-        except IdError:
-            pass
-        self._populate(parent_id)
-        return self._id_to_item_list[parent_id]
+            return self._id_to_children_id_list[parent_id]
+        except KeyError:
+            return self._populate(parent_id)
+            return self._id_to_children_id_list[parent_id]
 
     def _populate(self, parent_id):
         kw = {}
         if self._want_feed:
             kw['feed'] = _Feed(self)
         if parent_id:
-            parent_item
-        items = self._fn(self._model_piece, parent_id, **kw)
-        self._id_to_item_list[parent_id] = items
-        self._id_to_children_id_list[parent_id] = [
-            next(self._id_counter)
-            for _ in items
-            ]
-        
+            parent_item = self._id_to_item[parent_id]  # Expecting upper level is already populated.
+        else:
+            parent_item = None
+        item_list = self._fn(self._model_piece, parent_item, **kw)
+        item_id_list = []
+        for item in item_list:
+            id = next(self._id_counter)
+            item_id_list.append(id)
+            self._id_to_item[id] = item
+            self._id_to_parent_id[id] = parent_id
+        self._id_to_children_id_list[parent_id] = item_id_list
+        return item_id_list

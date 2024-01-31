@@ -11,9 +11,12 @@ from .code.context import Context
 from .tested.code import tree_adapter
 
 
-def sample_tree_fn(piece, parent_key):
+def sample_tree_fn(piece, parent):
     assert isinstance(piece, htypes.tree_adapter_tests.sample_tree), repr(piece)
-    base = parent_key or 0
+    if parent:
+        base = parent.id
+    else:
+        base = 0
     return [
         htypes.tree_adapter_tests.item(base*10 + 1, "First item"),
         htypes.tree_adapter_tests.item(base*10 + 2, "Second item"),
@@ -35,7 +38,8 @@ def test_fn_adapter():
     assert adapter.column_count() == 2
     assert adapter.column_title(0) == 'id'
     assert adapter.column_title(1) == 'text'
-    assert adapter.row_count(None) == 3
-    assert adapter.cell_data(None, 1, 0) == 2
-    assert adapter.cell_data(None, 2, 1) == "Third item"
-    assert adapter.cell_data(1, 1, 0) == 12
+    assert adapter.row_count(0) == 3
+    assert adapter.cell_data(0, 1, 0) == 2
+    assert adapter.cell_data(0, 2, 1) == "Third item"
+    parent_id = adapter.row_id(0, 2)
+    assert adapter.cell_data(parent_id, 1, 0) == 32
