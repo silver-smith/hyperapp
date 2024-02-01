@@ -61,7 +61,7 @@ class _Model(QtCore.QAbstractItemModel):
         if role != QtCore.Qt.DisplayRole:
             return None
         id = index.internalId() or 0
-        return self._adapter.cell_data(id, index.row(), index.column())
+        return self._adapter.cell_data(id, index.column())
 
 
 class TreeView:

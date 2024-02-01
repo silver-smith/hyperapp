@@ -39,7 +39,8 @@ def test_fn_adapter():
     assert adapter.column_title(0) == 'id'
     assert adapter.column_title(1) == 'text'
     assert adapter.row_count(0) == 3
-    assert adapter.cell_data(0, 1, 0) == 2
-    assert adapter.cell_data(0, 2, 1) == "Third item"
-    parent_id = adapter.row_id(0, 2)
-    assert adapter.cell_data(parent_id, 1, 0) == 32
+    row_1_id = adapter.row_id(0, 1)
+    assert adapter.cell_data(row_1_id, 0) == 2
+    assert adapter.cell_data(row_1_id, 1) == "Second item"
+    row_2_id = adapter.row_id(row_1_id, 2)
+    assert adapter.cell_data(row_2_id, 0) == 23

@@ -54,9 +54,7 @@ class FnIndexTreeAdapter:
         id_list = self._id_list(parent_id)
         return len(id_list)
 
-    def cell_data(self, parent_id, row, column):
-        id_list = self._id_list(parent_id)
-        id = id_list[row]
+    def cell_data(self, id, column):
         item = self._id_to_item[id]
         return getattr(item, self._column_names[column])
 
