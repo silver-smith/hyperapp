@@ -105,7 +105,7 @@ class NavigatorCtl:
                 )
         else:
             raise NotImplementedError(repr(layout_diff))
-        return (layout, None)
+        return (layout, None, True)
 
 
 @mark.ui_command(htypes.navigator.layout)

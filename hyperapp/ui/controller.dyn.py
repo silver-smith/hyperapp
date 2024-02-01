@@ -51,8 +51,9 @@ class Controller:
     def _apply_diff_wrapper(self, ctx, command_hub, piece, view, widget, diffs):
         layout_diff, state_diff = diffs
         log.info("Apply diffs: %s / %s", layout_diff, state_diff)
-        new_piece, new_state = view.apply(ctx, piece, widget, layout_diff, state_diff)
+        new_piece, new_state, replace = view.apply(ctx, piece, widget, layout_diff, state_diff)
         log.info("Applied piece: %s / %s", new_piece, new_state)
+        assert not replace  # Not yet supported.
         new_view = ui_ctl_creg.animate(piece)
         wrapper = partial(self._apply_diff_wrapper, ctx, command_hub, new_piece, new_view, widget)
         commands = self._view_commands(new_piece, widget, wrappers=[wrapper])

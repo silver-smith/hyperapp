@@ -61,11 +61,12 @@ class WindowCtl:
     def apply(self, ctx, piece, widget, layout_diff, state_diff):
         central_view_piece = web.summon(piece.central_view_ref)
         central_view = ui_ctl_creg.animate(central_view_piece)
-        new_central_piece, new_central_state = central_view.apply(
+        new_central_piece, new_central_state, replace = central_view.apply(
             ctx, central_view_piece, widget.centralWidget(), layout_diff, state_diff)
+        assert not replace  # Not yet supported.
         new_piece = htypes.window.layout(
             menu_bar_ref=piece.menu_bar_ref,
             command_pane_ref=piece.command_pane_ref,
             central_view_ref=mosaic.put(new_central_piece),
             )
-        return (new_piece, self.widget_state(piece, widget))
+        return (new_piece, self.widget_state(piece, widget), False)

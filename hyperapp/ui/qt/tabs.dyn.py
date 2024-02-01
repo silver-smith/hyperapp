@@ -70,25 +70,26 @@ class TabsCtl:
             widget.insertTab(idx, w, layout_diff.item.label)
             widget.setCurrentIndex(idx)
             new_piece = htypes.tabs.layout(layout_diff.apply(piece.tabs))
-            return (new_piece, self.widget_state(new_piece, widget))
+            return (new_piece, self.widget_state(new_piece, widget), False)
         if isinstance(layout_diff, ListDiffModify):
             idx = layout_diff.idx
             old_tab_piece = web.summon(piece.tabs[idx].ctl)
             old_tab_view = ui_ctl_creg.animate(old_tab_piece)
             label = piece.tabs[idx].label
-            new_tab_piece, new_tab_state = old_tab_view.apply(
+            new_tab_piece, new_tab_state, replace = old_tab_view.apply(
                 ctx, old_tab_piece, widget.widget(idx), layout_diff.item_diff, state_diff.item_diff)
-            new_tab_view = ui_ctl_creg.animate(new_tab_piece)
-            w = new_tab_view.construct_widget(new_tab_piece, new_tab_state, ctx)
-            widget.removeTab(idx)
-            widget.insertTab(idx, w, label)
-            widget.setCurrentIndex(idx)
+            if replace:
+                new_tab_view = ui_ctl_creg.animate(new_tab_piece)
+                w = new_tab_view.construct_widget(new_tab_piece, new_tab_state, ctx)
+                widget.removeTab(idx)
+                widget.insertTab(idx, w, label)
+                widget.setCurrentIndex(idx)
             new_tabs = layout_diff.replace(
                 piece.tabs,
                 htypes.tabs.tab(label, mosaic.put(new_tab_piece)),
                 )
             new_piece = htypes.tabs.layout(new_tabs)
-            return (new_piece, self.widget_state(new_piece, widget))
+            return (new_piece, self.widget_state(new_piece, widget), False)
         else:
             raise NotImplementedError(f"Not implemented: tab.apply({layout_diff})")
 

@@ -64,7 +64,7 @@ def test_duplicate():
         view = tabs.TabsCtl.from_piece(piece)
         widget = view.construct_widget(piece, state, ctx)
         piece_diff, state_diff = tabs.duplicate(piece, state)
-        new_piece, new_state = view.apply(ctx, piece, widget, piece_diff, state_diff)
+        new_piece, new_state, replace = view.apply(ctx, piece, widget, piece_diff, state_diff)
         assert len(new_piece.tabs) == 2
         assert new_piece.tabs[0] == piece.tabs[0]
         assert new_piece.tabs[0] == new_piece.tabs[1]
@@ -86,7 +86,7 @@ def test_modify():
         outer_piece_diff, outer_state_diff = view.wrapper(
             widget, (inner_piece_diff, inner_state_diff),
             )
-        new_outer_piece, new_outer_state = view.apply(
+        new_outer_piece, new_outer_state, replace = view.apply(
             ctx, outer_piece, widget, outer_piece_diff, outer_state_diff)
         assert len(new_outer_piece.tabs) == 1
         new_inner_piece = web.summon(new_outer_piece.tabs[0].ctl)
