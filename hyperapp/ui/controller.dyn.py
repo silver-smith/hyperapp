@@ -13,14 +13,13 @@ log = logging.getLogger(__name__)
 
 class Controller:
 
-    def __init__(self, root_piece):
-        self._root_piece = root_piece
+    def __init__(self):
         self._window_list = None
 
-    def create_windows(self, state, ctx):
+    def create_windows(self, root_piece, state, ctx):
         self._window_list = [
             self._create_window(web.summon(piece_ref), web.summon(state_ref), ctx)
-            for piece_ref, state_ref in zip(self._root_piece.window_list, state.window_list)
+            for piece_ref, state_ref in zip(root_piece.window_list, state.window_list)
             ]
 
     def _create_window(self, piece, state, ctx):

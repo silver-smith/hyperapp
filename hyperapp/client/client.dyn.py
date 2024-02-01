@@ -16,31 +16,31 @@ from .code.controller import Controller
 
 def make_layout():
     text = "Sample text"
-    view_layout = visualizer(text)
-    navigator_layout = htypes.navigator.layout(
-        current_layout=mosaic.put(view_layout),
+    text_view = visualizer(text)
+    navigator_piece = htypes.navigator.layout(
+        current_layout=mosaic.put(text_view),
         current_model=mosaic.put(text),
         commands=[mosaic.put(c) for c in global_commands()],
         prev=None,
         next=None,
         )
-    inner_tabs_layout = htypes.tabs.layout(
+    inner_tabs_piece = htypes.tabs.layout(
         tabs=[
-            htypes.tabs.tab("Inner", mosaic.put(navigator_layout)),
+            htypes.tabs.tab("Inner", mosaic.put(navigator_piece)),
             ],
         )
-    outer_tabs_layout = htypes.tabs.layout(
+    outer_tabs_piece = htypes.tabs.layout(
         tabs=[
-            htypes.tabs.tab("Outer", mosaic.put(inner_tabs_layout)),
+            htypes.tabs.tab("Outer", mosaic.put(inner_tabs_piece)),
             ],
         )
-    window_layout = htypes.window.layout(
+    window_piece = htypes.window.layout(
         menu_bar_ref=mosaic.put(htypes.menu_bar.layout()),
         command_pane_ref=mosaic.put(htypes.command_pane.command_pane()),
-        central_view_ref=mosaic.put(outer_tabs_layout),
+        central_view_ref=mosaic.put(outer_tabs_piece),
         )
     return htypes.root.view(
-        window_list=[mosaic.put(window_layout)],
+        window_list=[mosaic.put(window_piece)],
         )
 
 
@@ -76,9 +76,9 @@ def _main():
     asyncio.set_event_loop(event_loop)  # Should be set before any asyncio objects created.
 
     ctx = Context()
-    layout = make_layout()
+    piece = make_layout()
     state = make_state()
-    ctl = Controller(layout)
-    ctl.create_windows(state, ctx)
+    ctl = Controller()
+    ctl.create_windows(piece, state, ctx)
 
     return app.exec()
