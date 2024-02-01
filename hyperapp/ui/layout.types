@@ -1,0 +1,4 @@
+view = record
+
+item = record:
+  name: string

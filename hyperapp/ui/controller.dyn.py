@@ -1,6 +1,7 @@
 import logging
 from functools import partial
 
+from . import htypes
 from .services import (
     ui_command_factory,
     ui_ctl_creg,
@@ -60,3 +61,17 @@ class Controller:
 
 
 controller = Controller()
+
+
+def layout_tree(piece, parent):
+    if parent is None:
+        return [
+            htypes.layout.item("First"),
+            htypes.layout.item("Second"),
+            ]
+    else:
+        return []
+
+
+async def open_layout_tree():
+    return htypes.layout.view()

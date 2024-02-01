@@ -1,0 +1,15 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.builtin:python_module
+- legacy_type.phony:phony
+associations: []
+definitions:
+  controller.tests.module:
+    _type: legacy_type.builtin:python_module
+    module_name: controller.tests
+    file_name: controller.tests.dyn.py
+    import_list:
+      tested.code.controller: phony
+  phony:
+    _type: legacy_type.phony:phony

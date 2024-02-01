@@ -13,6 +13,7 @@ _hardcoded_shortcuts = {
     'back': ['Esc'],
     'forward': ['Alt+Right'],
     'duplicate': ['Shift+f4', 'Ctrl+f4'],
+    'open_layout_tree': ['Alt+L'],
     'static_text_1': ['f1'],
     'static_text_2': ['f2'],
     'static_list': ['f3'],
