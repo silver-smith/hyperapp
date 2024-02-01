@@ -1,4 +1,6 @@
+import itertools
 import logging
+from collections import defaultdict
 from functools import partial
 
 from . import htypes
@@ -21,6 +23,7 @@ class Controller:
     def __init__(self):
         self._window_list = None
         self._root_piece = None
+        self._parent_id_to_items = None
 
     def create_windows(self, root_piece, state, ctx, show=True):
         self._root_piece = root_piece
@@ -66,11 +69,20 @@ class Controller:
         commands = self._view_commands(new_piece, widget, wrappers=[wrapper])
         command_hub.set_commands([], commands)
 
-    def view_items(self):
-        return [
-            htypes.layout.item(_name(web.summon(ref)))
-            for ref in self._root_piece.window_list
-            ]
+    def view_items(self, parent_id):
+        if self._parent_id_to_items is None:
+            self._populate_view_items()
+        return self._parent_id_to_items[parent_id]
+
+    def _populate_view_items(self):
+        counter = itertools.count(start=1)
+        self._parent_id_to_items = defaultdict(list)
+        items = []
+        for window_ref in self._root_piece.window_list:
+            window_piece = web.summon(window_ref)
+            id = next(counter)
+            items.append(htypes.layout.item(id, _name(window_piece)))
+        self._parent_id_to_items[0] = items
 
 
 controller = Controller()
@@ -78,9 +90,10 @@ controller = Controller()
 
 def layout_tree(piece, parent):
     if parent is None:
-        return controller.view_items()
+        parent_id = 0
     else:
-        return []
+        parent_id = parent.id
+    return controller.view_items(parent_id)
 
 
 async def open_layout_tree():

@@ -1,4 +1,5 @@
 view = record
 
 item = record:
+  id: int
   name: string
