@@ -11,7 +11,7 @@ from .services import (
     )
 from .code.context import Context
 from .code.model_command import global_commands
-from .code.controller import Controller
+from .code.controller import controller
 
 
 def make_layout():
@@ -78,7 +78,6 @@ def _main():
     ctx = Context()
     piece = make_layout()
     state = make_state()
-    ctl = Controller()
-    ctl.create_windows(piece, state, ctx)
+    controller.create_windows(piece, state, ctx)
 
     return app.exec()

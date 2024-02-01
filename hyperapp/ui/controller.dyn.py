@@ -57,3 +57,6 @@ class Controller:
         wrapper = partial(self._apply_diff_wrapper, ctx, command_hub, new_piece, new_view, widget)
         commands = self._view_commands(new_piece, widget, wrappers=[wrapper])
         command_hub.set_commands([], commands)
+
+
+controller = Controller()
