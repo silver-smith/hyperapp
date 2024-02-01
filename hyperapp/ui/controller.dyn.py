@@ -12,18 +12,24 @@ from .code.command_hub import CommandHub
 log = logging.getLogger(__name__)
 
 
+def _name(piece):
+    return str(piece._t)
+
+
 class Controller:
 
     def __init__(self):
         self._window_list = None
+        self._root_piece = None
 
-    def create_windows(self, root_piece, state, ctx):
+    def create_windows(self, root_piece, state, ctx, show=True):
+        self._root_piece = root_piece
         self._window_list = [
-            self._create_window(web.summon(piece_ref), web.summon(state_ref), ctx)
+            self._create_window(web.summon(piece_ref), web.summon(state_ref), ctx, show)
             for piece_ref, state_ref in zip(root_piece.window_list, state.window_list)
             ]
 
-    def _create_window(self, piece, state, ctx):
+    def _create_window(self, piece, state, ctx, show):
         view = ui_ctl_creg.animate(piece)
         command_hub = CommandHub()
         window_ctx = ctx.clone_with(command_hub=command_hub)
@@ -31,7 +37,8 @@ class Controller:
         wrapper = partial(self._apply_diff_wrapper, window_ctx, command_hub, piece, view, widget)
         commands = self._view_commands(piece, widget, wrappers=[wrapper])
         command_hub.set_commands([], commands)
-        widget.show()
+        if show:
+            widget.show()
         return widget
 
     def _view_commands(self, piece, widget, wrappers):
@@ -59,16 +66,19 @@ class Controller:
         commands = self._view_commands(new_piece, widget, wrappers=[wrapper])
         command_hub.set_commands([], commands)
 
+    def view_items(self):
+        return [
+            htypes.layout.item(_name(web.summon(ref)))
+            for ref in self._root_piece.window_list
+            ]
+
 
 controller = Controller()
 
 
 def layout_tree(piece, parent):
     if parent is None:
-        return [
-            htypes.layout.item("First"),
-            htypes.layout.item("Second"),
-            ]
+        return controller.view_items()
     else:
         return []
 
