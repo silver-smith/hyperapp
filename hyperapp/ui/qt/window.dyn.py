@@ -70,3 +70,9 @@ class WindowCtl:
             central_view_ref=mosaic.put(new_central_piece),
             )
         return (new_piece, self.widget_state(piece, widget), False)
+
+    def view_items(self, piece):
+        return [
+            piece.menu_bar_ref,
+            piece.central_view_ref,
+            ]

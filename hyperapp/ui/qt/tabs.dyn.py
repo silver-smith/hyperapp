@@ -93,6 +93,9 @@ class TabsCtl:
         else:
             raise NotImplementedError(f"Not implemented: tab.apply({layout_diff})")
 
+    def view_items(self, piece):
+        return [tab.ctl for tab in piece.tabs]
+
     def _on_current_changed(self, command_hub, widget, index):
         log.info("Tabs: current changed for %s to %s", widget, index)
 

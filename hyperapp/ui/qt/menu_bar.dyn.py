@@ -84,3 +84,6 @@ class MenuBarCtl:
     def _run_command(self, command):
         log.info("Run command: %r", command.name)
         asyncio.create_task(command.run())
+
+    def view_items(self, piece):
+        return []

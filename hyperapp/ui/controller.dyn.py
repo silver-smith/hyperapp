@@ -77,11 +77,23 @@ class Controller:
     def _populate_view_items(self):
         counter = itertools.count(start=1)
         self._parent_id_to_items = defaultdict(list)
+
+        def _populate(parent_id, piece):
+            view = ui_ctl_creg.animate(piece)
+            items = []
+            for ref in view.view_items(piece):
+                item_piece = web.summon(ref)
+                id = next(counter)
+                items.append(htypes.layout.item(id, _name(item_piece)))
+                _populate(id, item_piece)
+            self._parent_id_to_items[parent_id] = items
+
         items = []
         for window_ref in self._root_piece.window_list:
-            window_piece = web.summon(window_ref)
+            piece = web.summon(window_ref)
             id = next(counter)
-            items.append(htypes.layout.item(id, _name(window_piece)))
+            items.append(htypes.layout.item(id, _name(piece)))
+            _populate(id, piece)
         self._parent_id_to_items[0] = items
 
 

@@ -107,6 +107,9 @@ class NavigatorCtl:
             raise NotImplementedError(repr(layout_diff))
         return (layout, None, True)
 
+    def view_items(self, piece):
+        return []
+
 
 @mark.ui_command(htypes.navigator.layout)
 def go_back(layout, state):
