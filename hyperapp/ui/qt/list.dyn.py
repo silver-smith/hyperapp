@@ -54,6 +54,14 @@ class _Model(QtCore.QAbstractTableModel):
         self.endInsertRows()
 
 
+class _TableView(QtWidgets.QTableView):
+
+    def setVisible(self, visible):
+        super().setVisible(visible)
+        if visible:
+            self.setFocus()
+
+
 class ListCtl:
 
     @classmethod
@@ -62,7 +70,7 @@ class ListCtl:
 
     def construct_widget(self, piece, state, ctx):
         adapter = ui_adapter_creg.invite(piece.adapter, ctx)
-        widget = QtWidgets.QTableView()
+        widget = _TableView()
         model = _Model(adapter)
         widget.setModel(model)
         widget.verticalHeader().hide()

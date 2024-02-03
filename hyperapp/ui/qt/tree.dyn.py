@@ -59,6 +59,14 @@ class _Model(QtCore.QAbstractItemModel):
         return self._adapter.cell_data(id, index.column())
 
 
+class _TreeWidget(QtWidgets.QTreeView):
+
+    def setVisible(self, visible):
+        super().setVisible(visible)
+        if visible:
+            self.setFocus()
+
+
 class TreeView:
 
     @classmethod
@@ -67,7 +75,7 @@ class TreeView:
 
     def construct_widget(self, piece, state, ctx):
         adapter = ui_adapter_creg.invite(piece.adapter, ctx)
-        widget = QtWidgets.QTreeView()
+        widget = _TreeWidget()
         model = _Model(adapter)
         widget.setModel(model)
         widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
