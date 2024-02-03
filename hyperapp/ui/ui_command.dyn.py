@@ -37,6 +37,8 @@ class UiCommand:
         log.info("Run ui command: %r (%s, %s)", self._name, self._piece, state)
         result = self._fn(self._piece, state)
         log.info("Run ui command %r result: [%s] %r", self._name, type(result), result)
+        if result is None:
+            return None
         for wrapper in reversed(self._wrappers):
             result = wrapper(result)
         log.info("Run ui command %r wrapped result: [%s] %r", self._name, type(result), result)
