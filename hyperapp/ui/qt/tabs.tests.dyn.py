@@ -72,6 +72,36 @@ def test_duplicate():
         app.shutdown()
 
 
+def test_close():
+    adapter_layout = htypes.str_adapter.static_str_adapter("Sample text")
+    text_layout = htypes.text.view_layout(mosaic.put(adapter_layout))
+    piece = htypes.tabs.layout(
+        tabs=[
+            htypes.tabs.tab("One", mosaic.put(text_layout)),
+            htypes.tabs.tab("Two", mosaic.put(text_layout)),
+            ],
+        )
+    text_state = htypes.text.state()
+    state = htypes.tabs.state(
+        current_tab=0,
+        tabs=[
+            mosaic.put(text_state),
+            mosaic.put(text_state),
+            ],
+        )
+    ctx = Context(command_hub=CommandHub())
+    app = QtWidgets.QApplication()
+    try:
+        view = tabs.TabsCtl.from_piece(piece)
+        widget = view.construct_widget(piece, state, ctx)
+        piece_diff, state_diff = tabs.close_tab(piece, state)
+        new_piece, new_state, replace = view.apply(ctx, piece, widget, piece_diff, state_diff)
+        assert len(new_piece.tabs) == 1
+        assert new_piece.tabs[0] == piece.tabs[1]
+    finally:
+        app.shutdown()
+
+
 def test_modify():
     ctx = Context(command_hub=CommandHub())
     inner_piece = make_inner_layout()

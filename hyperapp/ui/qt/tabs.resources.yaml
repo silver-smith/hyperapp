@@ -28,6 +28,13 @@ associations:
   key:
   - ui_command_d
   - legacy_type.tabs:layout
+  value: close_tab
+- bases:
+  - ui_command_d
+  - legacy_type.tabs:layout
+  key:
+  - ui_command_d
+  - legacy_type.tabs:layout
   value: duplicate
 definitions:
   TabsCtl:
@@ -42,6 +49,10 @@ definitions:
     _type: legacy_type.ui:ui_ctl
     ctr_fn: TabsCtl.from_piece
     command_methods: []
+  close_tab:
+    _type: legacy_type.builtin:attribute
+    object: tabs.module
+    attr_name: close_tab
   duplicate:
     _type: legacy_type.builtin:attribute
     object: tabs.module

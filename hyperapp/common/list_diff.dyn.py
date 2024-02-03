@@ -6,6 +6,14 @@ class ListDiff:
     def insert(cls, idx, item):
         return ListDiffInsert(idx, item)
 
+    @classmethod
+    def remove(cls, idx):
+        return ListDiffRemove(idx)
+
+    @classmethod
+    def modify(cls, idx, item_diff):
+        return ListDiffModify(idx, item_diff)
+
 
 class ListDiffInsert:
 
@@ -26,6 +34,26 @@ class ListDiffInsert:
             *container[:self.idx],
             item,
             *container[self.idx:],
+            ]
+
+
+class ListDiffRemove:
+
+    def __init__(self, idx):
+        self.idx = idx
+
+    def __repr__(self):
+        return f"<ListDiffRemove: @#{self.idx}>"
+
+    def apply(self, value):
+        assert type(value) in {list, tuple}, repr(value)
+        return self.remove(value)
+
+    def remove(self, container):
+        assert type(container) in {list, tuple}, repr(container)
+        return [
+            *container[:self.idx],
+            *container[self.idx + 1:],
             ]
 
 

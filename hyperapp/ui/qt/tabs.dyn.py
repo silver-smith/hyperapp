@@ -11,7 +11,7 @@ from .services import (
     ui_ctl_creg,
     web,
     )
-from .code.list_diff import ListDiff, ListDiffInsert, ListDiffModify
+from .code.list_diff import ListDiff, ListDiffInsert, ListDiffModify, ListDiffRemove
 
 log = logging.getLogger(__name__)
 
@@ -42,8 +42,8 @@ class TabsCtl:
         layout_diff, state_diff = diffs
         idx = widget.currentIndex()
         return (
-            ListDiffModify(idx, layout_diff),
-            ListDiffModify(idx, state_diff),
+            ListDiff.modify(idx, layout_diff),
+            ListDiff.modify(idx, state_diff),
             )
 
     def widget_state(self, piece, widget):
@@ -90,6 +90,13 @@ class TabsCtl:
                 )
             new_piece = htypes.tabs.layout(new_tabs)
             return (new_piece, self.widget_state(new_piece, widget), False)
+        if isinstance(layout_diff, ListDiffRemove):
+            idx = layout_diff.idx
+            widget.removeTab(idx)
+            widget.setCurrentIndex(idx)
+            new_tabs = layout_diff.remove(piece.tabs)
+            new_piece = htypes.tabs.layout(new_tabs)
+            return (new_piece, self.widget_state(new_piece, widget), False)
         else:
             raise NotImplementedError(f"Not implemented: tab.apply({layout_diff})")
 
@@ -110,5 +117,20 @@ def duplicate(layout, state):
     state_diff = ListDiff.insert(
         idx=state.current_tab + 1,
         item=state.tabs[state.current_tab],
+        )
+    return (layout_diff, state_diff)
+
+
+@mark.ui_command(htypes.tabs.layout)
+def close_tab(layout, state):
+    log.info("Close tab: %s / %s", layout, state)
+    if len(layout.tabs) == 1:
+        log.info("Close tab: won't close last tab")
+        return None
+    layout_diff = ListDiff.remove(
+        idx=state.current_tab,
+        )
+    state_diff = ListDiff.remove(
+        idx=state.current_tab,
         )
     return (layout_diff, state_diff)
