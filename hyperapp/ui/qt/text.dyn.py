@@ -29,6 +29,9 @@ class ViewTextCtl:
         # return htypes.text.state(text=widget.toPlainText())
         return htypes.text.state()
 
+    def view_items(self, piece):
+        return []
+
 
 class EditTextCtl:
 
@@ -52,3 +55,6 @@ class EditTextCtl:
     def model_state(self, widget):
         # return htypes.text.state(text=widget.toPlainText())
         return htypes.text.state()
+
+    def view_items(self, piece):
+        return []
