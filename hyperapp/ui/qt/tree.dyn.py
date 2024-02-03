@@ -40,18 +40,13 @@ class _Model(QtCore.QAbstractItemModel):
     def parent(self, index):
         id = index.internalId() or 0
         parent_id = self._adapter.parent_id(id)
-        if parent_id is None:  # It already was parent.
+        if parent_id == 0:  # It already was parent.
             return QtCore.QModelIndex()
         return self.createIndex(0, 0, parent_id)
 
     def hasChildren(self, index):
         id = index.internalId() or 0
-        try:
-            return self._adapter.has_children(id)
-        except Exception as x:
-            # Causes Qt to segfault if propagated. (this suppression does not help).
-            log.exception("Error in tree adapter has_children method: %s", x)
-            return id is not None
+        return self._adapter.has_children(id)
 
     def rowCount(self, parent):
         parent_id = parent.internalId() or 0
