@@ -86,6 +86,9 @@ class TreeView:
         model.rowsInserted.connect(partial(self._on_data_changed, widget))
         return widget
 
+    def get_current(self, piece, widget):
+        return None
+
     def widget_state(self, piece, widget):
         return None
 

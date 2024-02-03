@@ -34,7 +34,7 @@ class NavigatorCtl:
         return current_view.construct_widget(current_piece, current_state, ctx)
 
     def get_current(self, piece, widget):
-        return None
+        return (piece.current_layout, widget)
 
     def widget_state(self, piece, widget):
         current_piece = web.summon(piece.current_layout)
@@ -56,8 +56,8 @@ class NavigatorCtl:
             ]
         return commands
 
-    # def wrapper(self, widget, diffs):
-    #     return diffs
+    def wrapper(self, widget, diffs):
+        return diffs
 
     def _model_wrapper(self, piece):
         if piece is None:
