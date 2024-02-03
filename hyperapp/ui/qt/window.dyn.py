@@ -69,7 +69,7 @@ class WindowCtl:
             command_pane_ref=piece.command_pane_ref,
             central_view_ref=mosaic.put(new_central_piece),
             )
-        return (new_piece, self.widget_state(piece, widget), False)
+        return (new_piece, self.widget_state(new_piece, widget), False)
 
     def view_items(self, piece):
         return [
