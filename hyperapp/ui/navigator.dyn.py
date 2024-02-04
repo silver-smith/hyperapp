@@ -34,7 +34,10 @@ class NavigatorCtl:
         return current_view.construct_widget(current_piece, current_state, ctx)
 
     def get_current(self, piece, widget):
-        return (piece.current_layout, widget)
+        return (0, piece.current_layout, widget)
+
+    def set_on_current_changed(self, widget, on_changed):
+        pass
 
     def widget_state(self, piece, widget):
         current_piece = web.summon(piece.current_layout)

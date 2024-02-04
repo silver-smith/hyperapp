@@ -88,6 +88,9 @@ class ListCtl:
     def get_current(self, piece, widget):
         return None
 
+    def set_on_current_changed(self, widget, on_changed):
+        pass
+
     def widget_state(self, piece, widget):
         return None
 

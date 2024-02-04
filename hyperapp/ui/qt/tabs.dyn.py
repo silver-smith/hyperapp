@@ -36,7 +36,11 @@ class TabsCtl:
 
     def get_current(self, piece, widget):
         idx = widget.currentIndex()
-        return (piece.tabs[idx].ctl, widget.widget(idx))
+        return (idx, piece.tabs[idx].ctl, widget.widget(idx))
+
+    def set_on_current_changed(self, widget, on_changed):
+        widget.currentChanged.disconnect()
+        widget.currentChanged.connect(lambda idx: on_changed())
 
     def wrapper(self, widget, diffs):
         layout_diff, state_diff = diffs

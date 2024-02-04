@@ -39,7 +39,10 @@ class WindowCtl:
         return w
 
     def get_current(self, piece, widget):
-        return (piece.central_view_ref, widget.centralWidget())
+        return (0, piece.central_view_ref, widget.centralWidget())
+
+    def set_on_current_changed(self, widget, on_changed):
+        pass
 
     def wrapper(self, widget, result):
         return result

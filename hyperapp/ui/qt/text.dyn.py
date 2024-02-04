@@ -25,6 +25,9 @@ class ViewTextCtl:
     def get_current(self, piece, widget):
         return None
 
+    def set_on_current_changed(self, widget, on_changed):
+        pass
+
     def widget_state(self, piece, widget):
         # return htypes.text.state(text=widget.toPlainText())
         return htypes.text.state()
@@ -47,6 +50,9 @@ class EditTextCtl:
 
     def get_current(self, piece, widget):
         return None
+
+    def set_on_current_changed(self, widget, on_changed):
+        pass
 
     def widget_state(self, piece, widget):
         # return htypes.text.state(text=widget.toPlainText())
