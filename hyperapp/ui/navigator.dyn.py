@@ -14,11 +14,12 @@ from .services import (
     web,
     )
 from .code.model_command import global_commands, model_commands
+from .code.view import View
 
 log = logging.getLogger(__name__)
 
 
-class NavigatorCtl:
+class NavigatorView(View):
 
     @classmethod
     def from_piece(cls, layout):
@@ -35,9 +36,6 @@ class NavigatorCtl:
 
     def get_current(self, piece, widget):
         return (0, piece.current_layout, widget)
-
-    def set_on_current_changed(self, widget, on_changed):
-        pass
 
     def widget_state(self, piece, widget):
         current_piece = web.summon(piece.current_layout)
@@ -58,9 +56,6 @@ class NavigatorCtl:
             for cmd in piece.commands
             ]
         return commands
-
-    def wrapper(self, widget, diffs):
-        return diffs
 
     def _model_wrapper(self, piece):
         if piece is None:
@@ -113,9 +108,6 @@ class NavigatorCtl:
         else:
             raise NotImplementedError(repr(layout_diff))
         return (layout, None, True)
-
-    def view_items(self, piece):
-        return []
 
 
 @mark.ui_command(htypes.navigator.layout)

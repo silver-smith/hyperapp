@@ -7,6 +7,7 @@ from PySide6 import QtGui, QtWidgets
 log = logging.getLogger(__name__)
 
 from . import htypes
+from .code.view import View
 
 
 _hardcoded_shortcuts = {
@@ -26,7 +27,7 @@ _hardcoded_shortcuts = {
     }
 
 
-class MenuBarCtl:
+class MenuBarView(View):
 
     @classmethod
     def from_piece(cls, layout):
@@ -68,6 +69,9 @@ class MenuBarCtl:
         for command in added_commands:
             self._add_action(menu, command)
 
+    def apply(self, ctx, piece, widget, layout_diff, state_diff):
+        raise NotImplementedError()
+
     def _add_action(self, menu, command):
         action = QtGui.QAction(command.name, menu)
         action.triggered.connect(partial(self._run_command, command))
@@ -85,6 +89,3 @@ class MenuBarCtl:
     def _run_command(self, command):
         log.info("Run command: %r", command.name)
         asyncio.create_task(command.run())
-
-    def view_items(self, piece):
-        return []

@@ -47,7 +47,7 @@ def test_tabs():
     state = make_inner_state()
     app = QtWidgets.QApplication()
     try:
-        view = tabs.TabsCtl.from_piece(piece)
+        view = tabs.TabsView.from_piece(piece)
         widget = view.construct_widget(piece, state, ctx)
         state = view.widget_state(piece, widget)
         assert state
@@ -61,7 +61,7 @@ def test_duplicate():
     state = make_inner_state()
     app = QtWidgets.QApplication()
     try:
-        view = tabs.TabsCtl.from_piece(piece)
+        view = tabs.TabsView.from_piece(piece)
         widget = view.construct_widget(piece, state, ctx)
         piece_diff, state_diff = tabs.duplicate(piece, state)
         new_piece, new_state, replace = view.apply(ctx, piece, widget, piece_diff, state_diff)
@@ -92,7 +92,7 @@ def test_close():
     ctx = Context(command_hub=CommandHub())
     app = QtWidgets.QApplication()
     try:
-        view = tabs.TabsCtl.from_piece(piece)
+        view = tabs.TabsView.from_piece(piece)
         widget = view.construct_widget(piece, state, ctx)
         piece_diff, state_diff = tabs.close_tab(piece, state)
         new_piece, new_state, replace = view.apply(ctx, piece, widget, piece_diff, state_diff)
@@ -110,7 +110,7 @@ def test_modify():
     outer_state = make_outer_state(inner_state)
     app = QtWidgets.QApplication()
     try:
-        view = tabs.TabsCtl.from_piece(outer_piece)
+        view = tabs.TabsView.from_piece(outer_piece)
         widget = view.construct_widget(outer_piece, outer_state, ctx)
         inner_piece_diff, inner_state_diff = tabs.duplicate(inner_piece, inner_state)
         outer_piece_diff, outer_state_diff = view.wrapper(

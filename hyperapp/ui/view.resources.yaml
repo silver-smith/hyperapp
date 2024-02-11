@@ -1,0 +1,11 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.builtin:python_module
+associations: []
+definitions:
+  view.module:
+    _type: legacy_type.builtin:python_module
+    module_name: view
+    file_name: view.dyn.py
+    import_list: {}

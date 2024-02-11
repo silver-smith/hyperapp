@@ -10,13 +10,14 @@ from .services import (
     ui_ctl_creg,
     web,
     )
+from .code.view import View
 
 log = logging.getLogger(__name__)
 
 DUP_OFFSET = htypes.window.pos(150, 50)
 
 
-class WindowCtl:
+class WindowView(View):
 
     @classmethod
     def from_piece(cls, layout):
@@ -40,12 +41,6 @@ class WindowCtl:
 
     def get_current(self, piece, widget):
         return (0, piece.central_view_ref, widget.centralWidget())
-
-    def set_on_current_changed(self, widget, on_changed):
-        pass
-
-    def wrapper(self, widget, result):
-        return result
 
     def widget_state(self, piece, widget):
         menu_bar_piece = web.summon(piece.menu_bar_ref)

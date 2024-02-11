@@ -7,29 +7,31 @@ import:
 - legacy_type.menu_bar:state
 - legacy_type.ui:ui_ctl
 - ui.ui_ctl_registry:ui_ctl_creg.service
+- ui.view:view.module
 associations:
 - bases:
   - legacy_type.menu_bar:layout
   key:
   - ui.ui_ctl_registry:ui_ctl_creg.service
   - legacy_type.menu_bar:layout
-  value: MenuBarCtl.from_piece.ctl
+  value: MenuBarView.from_piece.ctl
 definitions:
-  MenuBarCtl:
+  MenuBarView:
     _type: legacy_type.builtin:attribute
     object: menu_bar.module
-    attr_name: MenuBarCtl
-  MenuBarCtl.from_piece:
+    attr_name: MenuBarView
+  MenuBarView.from_piece:
     _type: legacy_type.builtin:attribute
-    object: MenuBarCtl
+    object: MenuBarView
     attr_name: from_piece
-  MenuBarCtl.from_piece.ctl:
+  MenuBarView.from_piece.ctl:
     _type: legacy_type.ui:ui_ctl
-    ctr_fn: MenuBarCtl.from_piece
+    ctr_fn: MenuBarView.from_piece
     command_methods: []
   menu_bar.module:
     _type: legacy_type.builtin:python_module
     module_name: menu_bar
     file_name: menu_bar.dyn.py
     import_list:
+      code.view: ui.view:view.module
       htypes.menu_bar.state: legacy_type.menu_bar:state

@@ -9,48 +9,50 @@ import:
 - legacy_type.ui:ui_ctl
 - ui.ui_adapter_creg:ui_adapter_creg.service
 - ui.ui_ctl_registry:ui_ctl_creg.service
+- ui.view:view.module
 associations:
 - bases:
   - legacy_type.text:edit_layout
   key:
   - ui.ui_ctl_registry:ui_ctl_creg.service
   - legacy_type.text:edit_layout
-  value: EditTextCtl.from_piece.ctl
+  value: EditTextView.from_piece.ctl
 - bases:
   - legacy_type.text:view_layout
   key:
   - ui.ui_ctl_registry:ui_ctl_creg.service
   - legacy_type.text:view_layout
-  value: ViewTextCtl.from_piece.ctl
+  value: ViewTextView.from_piece.ctl
 definitions:
-  EditTextCtl:
+  EditTextView:
     _type: legacy_type.builtin:attribute
     object: text.module
-    attr_name: EditTextCtl
-  EditTextCtl.from_piece:
+    attr_name: EditTextView
+  EditTextView.from_piece:
     _type: legacy_type.builtin:attribute
-    object: EditTextCtl
+    object: EditTextView
     attr_name: from_piece
-  EditTextCtl.from_piece.ctl:
+  EditTextView.from_piece.ctl:
     _type: legacy_type.ui:ui_ctl
-    ctr_fn: EditTextCtl.from_piece
+    ctr_fn: EditTextView.from_piece
     command_methods: []
-  ViewTextCtl:
+  ViewTextView:
     _type: legacy_type.builtin:attribute
     object: text.module
-    attr_name: ViewTextCtl
-  ViewTextCtl.from_piece:
+    attr_name: ViewTextView
+  ViewTextView.from_piece:
     _type: legacy_type.builtin:attribute
-    object: ViewTextCtl
+    object: ViewTextView
     attr_name: from_piece
-  ViewTextCtl.from_piece.ctl:
+  ViewTextView.from_piece.ctl:
     _type: legacy_type.ui:ui_ctl
-    ctr_fn: ViewTextCtl.from_piece
+    ctr_fn: ViewTextView.from_piece
     command_methods: []
   text.module:
     _type: legacy_type.builtin:python_module
     module_name: text
     file_name: text.dyn.py
     import_list:
+      code.view: ui.view:view.module
       htypes.text.state: legacy_type.text:state
       services.ui_adapter_creg: ui.ui_adapter_creg:ui_adapter_creg.service

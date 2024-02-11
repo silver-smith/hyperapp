@@ -12,31 +12,33 @@ import:
 - legacy_type.window:size
 - legacy_type.window:state
 - ui.ui_ctl_registry:ui_ctl_creg.service
+- ui.view:view.module
 associations:
 - bases:
   - legacy_type.window:layout
   key:
   - ui.ui_ctl_registry:ui_ctl_creg.service
   - legacy_type.window:layout
-  value: WindowCtl.from_piece.ctl
+  value: WindowView.from_piece.ctl
 definitions:
-  WindowCtl:
+  WindowView:
     _type: legacy_type.builtin:attribute
     object: window.module
-    attr_name: WindowCtl
-  WindowCtl.from_piece:
+    attr_name: WindowView
+  WindowView.from_piece:
     _type: legacy_type.builtin:attribute
-    object: WindowCtl
+    object: WindowView
     attr_name: from_piece
-  WindowCtl.from_piece.ctl:
+  WindowView.from_piece.ctl:
     _type: legacy_type.ui:ui_ctl
-    ctr_fn: WindowCtl.from_piece
+    ctr_fn: WindowView.from_piece
     command_methods: []
   window.module:
     _type: legacy_type.builtin:python_module
     module_name: window
     file_name: window.dyn.py
     import_list:
+      code.view: ui.view:view.module
       htypes.window.layout: legacy_type.window:layout
       htypes.window.pos: legacy_type.window:pos
       htypes.window.size: legacy_type.window:size

@@ -8,6 +8,7 @@ from .services import (
     ui_adapter_creg,
     )
 from .code.list_diff import ListDiffAppend
+from .code.view import View
 
 log = logging.getLogger(__name__)
 
@@ -62,7 +63,7 @@ class _TableView(QtWidgets.QTableView):
             self.setFocus()
 
 
-class ListCtl:
+class ListView(View):
 
     @classmethod
     def from_piece(cls, layout):
@@ -85,17 +86,14 @@ class ListCtl:
         model.rowsInserted.connect(partial(self._on_data_changed, widget))
         return widget
 
-    def get_current(self, piece, widget):
-        return None
-
-    def set_on_current_changed(self, widget, on_changed):
-        pass
-
     def widget_state(self, piece, widget):
         return None
 
     def model_state(self, widget):
         return ModelState(current_idx=widget.currentIndex().row())
+
+    def apply(self, ctx, piece, widget, layout_diff, state_diff):
+        raise NotImplementedError()
 
     def _on_data_changed(self, widget, *args):
         log.info("List: on_data_changed: %s: %s", widget, args)

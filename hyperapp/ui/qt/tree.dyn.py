@@ -7,6 +7,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 from .services import (
     ui_adapter_creg,
     )
+from .code.view import View
 
 log = logging.getLogger(__name__)
 
@@ -67,7 +68,7 @@ class _TreeWidget(QtWidgets.QTreeView):
             self.setFocus()
 
 
-class TreeView:
+class TreeView(View):
 
     @classmethod
     def from_piece(cls, layout):
@@ -86,17 +87,14 @@ class TreeView:
         model.rowsInserted.connect(partial(self._on_data_changed, widget))
         return widget
 
-    def get_current(self, piece, widget):
-        return None
-
-    def set_on_current_changed(self, widget, on_changed):
-        pass
-
     def widget_state(self, piece, widget):
         return None
 
     def model_state(self, widget):
         return ModelState(current_idx=widget.currentIndex().row())
+
+    def apply(self, ctx, piece, widget, layout_diff, state_diff):
+        raise NotImplementedError()
 
     def _on_data_changed(self, widget, *args):
         log.info("Tree: on_data_changed: %s: %s", widget, args)

@@ -48,7 +48,7 @@ def test_construct_widget():
     tabs_state, state = make_state()
     app = QtWidgets.QApplication()
     try:
-        view = window.WindowCtl.from_piece(piece)
+        view = window.WindowView.from_piece(piece)
         widget = view.construct_widget(piece, state, ctx)
     finally:
         app.shutdown()
@@ -61,7 +61,7 @@ def test_apply_diff():
     tabs_state, state = make_state()
     app = QtWidgets.QApplication()
     try:
-        view = window.WindowCtl.from_piece(piece)
+        view = window.WindowView.from_piece(piece)
         widget = view.construct_widget(piece, state, ctx)
         piece_diff = ListDiff.insert(1, tabs_piece.tabs[0])
         state_diff = ListDiff.insert(1, tabs_state.tabs[0])

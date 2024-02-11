@@ -15,13 +15,14 @@ import:
 - legacy_type.ui:ui_ctl
 - ui.ui_command:ui_command_factory.service
 - ui.ui_ctl_registry:ui_ctl_creg.service
+- ui.view:view.module
 associations:
 - bases:
   - legacy_type.tabs:layout
   key:
   - ui.ui_ctl_registry:ui_ctl_creg.service
   - legacy_type.tabs:layout
-  value: TabsCtl.from_piece.ctl
+  value: TabsView.from_piece.ctl
 - bases:
   - ui_command_d
   - legacy_type.tabs:layout
@@ -37,17 +38,17 @@ associations:
   - legacy_type.tabs:layout
   value: duplicate
 definitions:
-  TabsCtl:
+  TabsView:
     _type: legacy_type.builtin:attribute
     object: tabs.module
-    attr_name: TabsCtl
-  TabsCtl.from_piece:
+    attr_name: TabsView
+  TabsView.from_piece:
     _type: legacy_type.builtin:attribute
-    object: TabsCtl
+    object: TabsView
     attr_name: from_piece
-  TabsCtl.from_piece.ctl:
+  TabsView.from_piece.ctl:
     _type: legacy_type.ui:ui_ctl
-    ctr_fn: TabsCtl.from_piece
+    ctr_fn: TabsView.from_piece
     command_methods: []
   close_tab:
     _type: legacy_type.builtin:attribute
@@ -63,6 +64,7 @@ definitions:
     file_name: tabs.dyn.py
     import_list:
       code.list_diff: common.list_diff:list_diff.module
+      code.view: ui.view:view.module
       htypes.tabs.layout: legacy_type.tabs:layout
       htypes.tabs.state: legacy_type.tabs:state
       htypes.tabs.tab: legacy_type.tabs:tab

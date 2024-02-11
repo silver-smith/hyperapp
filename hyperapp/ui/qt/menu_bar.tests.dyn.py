@@ -2,7 +2,7 @@ from PySide6 import QtWidgets
 
 from . import htypes
 from .code.context import Context
-from .tested.code import command_hub
+from .code import command_hub
 from .tested.code import menu_bar
 
 
@@ -20,7 +20,7 @@ def test_widget():
     state = make_state()
     app = QtWidgets.QApplication()
     try:
-        view = menu_bar.MenuBarCtl.from_piece(piece)
+        view = menu_bar.MenuBarView.from_piece(piece)
         widget = view.construct_widget(piece, state, ctx)
         state = view.widget_state(piece, widget)
         assert state

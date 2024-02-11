@@ -58,7 +58,7 @@ def test_navigator():
     app = QtWidgets.QApplication()
     try:
         ctx = Context(command_hub=CommandHub())
-        view = navigator.NavigatorCtl.from_piece(piece)
+        view = navigator.NavigatorView.from_piece(piece)
         widget = view.construct_widget(piece, state, ctx)
         state = view.widget_state(piece, widget)
         assert state

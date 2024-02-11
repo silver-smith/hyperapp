@@ -18,6 +18,7 @@ import:
 - ui.model_command:model_command.module
 - ui.model_command_creg:model_command_creg.service
 - ui.ui_ctl_registry:ui_ctl_creg.service
+- ui.view:view.module
 - ui.visualizer:visualizer.service
 associations:
 - bases:
@@ -25,7 +26,7 @@ associations:
   key:
   - ui.ui_ctl_registry:ui_ctl_creg.service
   - legacy_type.navigator:layout
-  value: NavigatorCtl.from_piece.ctl
+  value: NavigatorView.from_piece.ctl
 - bases:
   - ui_command_d
   - legacy_type.navigator:layout
@@ -41,17 +42,17 @@ associations:
   - legacy_type.navigator:layout
   value: go_forward
 definitions:
-  NavigatorCtl:
+  NavigatorView:
     _type: legacy_type.builtin:attribute
     object: navigator.module
-    attr_name: NavigatorCtl
-  NavigatorCtl.from_piece:
+    attr_name: NavigatorView
+  NavigatorView.from_piece:
     _type: legacy_type.builtin:attribute
-    object: NavigatorCtl
+    object: NavigatorView
     attr_name: from_piece
-  NavigatorCtl.from_piece.ctl:
+  NavigatorView.from_piece.ctl:
     _type: legacy_type.ui:ui_ctl
-    ctr_fn: NavigatorCtl.from_piece
+    ctr_fn: NavigatorView.from_piece
     command_methods: []
   go_back:
     _type: legacy_type.builtin:attribute
@@ -67,6 +68,7 @@ definitions:
     file_name: navigator.dyn.py
     import_list:
       code.model_command: ui.model_command:model_command.module
+      code.view: ui.view:view.module
       htypes.navigator.go_back_diff: legacy_type.navigator:go_back_diff
       htypes.navigator.go_forward_diff: legacy_type.navigator:go_forward_diff
       htypes.navigator.layout: legacy_type.navigator:layout

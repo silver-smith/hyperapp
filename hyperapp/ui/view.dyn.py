@@ -1,0 +1,28 @@
+import abc
+
+
+class View(metaclass=abc.ABCMeta):
+
+    @abc.abstractmethod
+    def construct_widget(self, piece, state, ctx):
+        pass
+
+    def get_current(self, piece, widget):
+        return None
+
+    def set_on_current_changed(self, widget, on_changed):
+        pass
+
+    def wrapper(self, widget, result):
+        return result
+
+    @abc.abstractmethod
+    def widget_state(self, piece, widget):
+        pass
+
+    @abc.abstractmethod
+    def apply(self, ctx, piece, widget, layout_diff, state_diff):
+        pass
+
+    def view_items(self, piece):
+        return []

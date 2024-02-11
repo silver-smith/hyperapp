@@ -8,25 +8,26 @@ import:
 - legacy_type.ui:ui_ctl
 - ui.ui_adapter_creg:ui_adapter_creg.service
 - ui.ui_ctl_registry:ui_ctl_creg.service
+- ui.view:view.module
 associations:
 - bases:
   - legacy_type.list:layout
   key:
   - ui.ui_ctl_registry:ui_ctl_creg.service
   - legacy_type.list:layout
-  value: ListCtl.from_piece.ctl
+  value: ListView.from_piece.ctl
 definitions:
-  ListCtl:
+  ListView:
     _type: legacy_type.builtin:attribute
     object: list.module
-    attr_name: ListCtl
-  ListCtl.from_piece:
+    attr_name: ListView
+  ListView.from_piece:
     _type: legacy_type.builtin:attribute
-    object: ListCtl
+    object: ListView
     attr_name: from_piece
-  ListCtl.from_piece.ctl:
+  ListView.from_piece.ctl:
     _type: legacy_type.ui:ui_ctl
-    ctr_fn: ListCtl.from_piece
+    ctr_fn: ListView.from_piece
     command_methods: []
   list.module:
     _type: legacy_type.builtin:python_module
@@ -34,4 +35,5 @@ definitions:
     file_name: list.dyn.py
     import_list:
       code.list_diff: common.list_diff:list_diff.module
+      code.view: ui.view:view.module
       services.ui_adapter_creg: ui.ui_adapter_creg:ui_adapter_creg.service

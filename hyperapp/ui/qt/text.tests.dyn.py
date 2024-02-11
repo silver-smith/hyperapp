@@ -32,7 +32,7 @@ def test_view_text():
     state = make_state()
     app = QtWidgets.QApplication()
     try:
-        ctl = text.ViewTextCtl.from_piece(piece)
+        ctl = text.ViewTextView.from_piece(piece)
         widget = ctl.construct_widget(piece, state, ctx)
         state = ctl.widget_state(piece, widget)
         assert state
@@ -46,7 +46,7 @@ def test_edit_text():
     state = make_state()
     app = QtWidgets.QApplication()
     try:
-        ctl = text.EditTextCtl.from_piece(piece)
+        ctl = text.EditTextView.from_piece(piece)
         widget = ctl.construct_widget(piece, state, ctx)
         state = ctl.widget_state(piece, widget)
         assert state

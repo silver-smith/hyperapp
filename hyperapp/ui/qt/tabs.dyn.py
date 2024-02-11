@@ -12,11 +12,12 @@ from .services import (
     web,
     )
 from .code.list_diff import ListDiff, ListDiffInsert, ListDiffModify, ListDiffRemove
+from .code.view import View
 
 log = logging.getLogger(__name__)
 
 
-class TabsCtl:
+class TabsView(View):
 
     @classmethod
     def from_piece(cls, layout):
