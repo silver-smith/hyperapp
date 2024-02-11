@@ -80,8 +80,11 @@ class TabsCtl:
             old_tab_piece = web.summon(piece.tabs[idx].ctl)
             old_tab_view = ui_ctl_creg.animate(old_tab_piece)
             label = piece.tabs[idx].label
-            new_tab_piece, new_tab_state, replace = old_tab_view.apply(
+            result = old_tab_view.apply(
                 ctx, old_tab_piece, widget.widget(idx), layout_diff.item_diff, state_diff.item_diff)
+            if result is None:
+                return None
+            new_tab_piece, new_tab_state, replace = result
             if replace:
                 new_tab_view = ui_ctl_creg.animate(new_tab_piece)
                 w = new_tab_view.construct_widget(new_tab_piece, new_tab_state, ctx)

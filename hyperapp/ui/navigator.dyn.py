@@ -89,6 +89,8 @@ class NavigatorCtl:
                 next=None,
                 )
         elif isinstance(layout_diff, htypes.navigator.go_back_diff):
+            if not layout.prev:
+                return None
             prev_layout = web.summon(layout.prev)
             layout = htypes.navigator.layout(
                 current_layout=prev_layout.current_layout,
@@ -98,6 +100,8 @@ class NavigatorCtl:
                 next=mosaic.put(layout),
                 )
         elif isinstance(layout_diff, htypes.navigator.go_forward_diff):
+            if not layout.next:
+                return None
             next_layout = web.summon(layout.next)
             layout = htypes.navigator.layout(
                 current_layout=next_layout.current_layout,

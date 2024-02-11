@@ -64,8 +64,11 @@ class WindowCtl:
     def apply(self, ctx, piece, widget, layout_diff, state_diff):
         central_view_piece = web.summon(piece.central_view_ref)
         central_view = ui_ctl_creg.animate(central_view_piece)
-        new_central_piece, new_central_state, replace = central_view.apply(
+        result = central_view.apply(
             ctx, central_view_piece, widget.centralWidget(), layout_diff, state_diff)
+        if result is None:
+            return None
+        new_central_piece, new_central_state, replace = result
         assert not replace  # Not yet supported.
         new_piece = htypes.window.layout(
             menu_bar_ref=piece.menu_bar_ref,

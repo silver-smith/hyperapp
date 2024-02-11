@@ -86,7 +86,10 @@ class Controller:
         layout_diff, state_diff = diffs
         log.info("Apply diffs: %s / %s", layout_diff, state_diff)
         with self._without_callback():
-            new_piece, new_state, replace = view.apply(ctx, piece, widget, layout_diff, state_diff)
+            result = view.apply(ctx, piece, widget, layout_diff, state_diff)
+        if result is None:
+            return
+        new_piece, new_state, replace = result
         log.info("Applied piece: %s / %s", new_piece, new_state)
         assert not replace  # Not yet supported.
         new_view = ui_ctl_creg.animate(piece)
