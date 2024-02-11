@@ -44,6 +44,8 @@ def _enum_attributes(object):
         args = (name, value.__module__, resource_name, constructors, param_list)
         if inspect.isgeneratorfunction(value):
             yield htypes.inspect.generator_fn_attr(*args)
+        elif inspect.isclass(value):
+            yield htypes.inspect.class_attr(*args)
         else:
             yield htypes.inspect.fn_attr(*args)
 

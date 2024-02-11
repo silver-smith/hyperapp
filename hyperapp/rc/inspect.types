@@ -9,6 +9,7 @@ fn_attr = record(attr):
   param_list: string list
 
 generator_fn_attr = record(fn_attr)
+class_attr = record(fn_attr)
 
 
 field = record:

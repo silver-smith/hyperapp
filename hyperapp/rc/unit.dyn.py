@@ -441,6 +441,8 @@ class Unit:
             for attr in attr_list:
                 if not isinstance(attr, htypes.inspect.fn_attr):
                     continue
+                if isinstance(attr, htypes.inspect.class_attr):
+                    continue
                 recorders_and_call_res = function_call_res(self._graph, self._ctx, self, fixtures, attr)
                 if not recorders_and_call_res:
                     continue  # No param fixtures.
