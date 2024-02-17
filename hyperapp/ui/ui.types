@@ -6,6 +6,7 @@ ui_ctl = record:
 
 ui_command_d = record
 model_command_d = record
+model_command_enumerator_d = record
 global_model_command_d = record
 model_d = record
 
@@ -25,6 +26,10 @@ fn_impl = record:
   function: ref
   want_feed: bool
 
+
+model_command_enumerator = record:
+  function: ref
+  params: string list
 
 model_command = record:
   function: ref

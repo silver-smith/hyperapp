@@ -198,6 +198,33 @@ def construct_global_model_command(ctx, module_name, resource_module, module_res
     return [association]
 
 
+def construct_model_command_enumerator(ctx, module_name, resource_module, module_res, qname, piece_t_ref, params):
+    log.info("Construct model command enumerator: %s: %s", resource_module.name, qname)
+    fn_name = qname
+    fn_attribute = htypes.builtin.attribute(
+        object=mosaic.put(module_res),
+        attr_name=fn_name,
+    )
+    enumerator = htypes.ui.model_command_enumerator(
+        function=mosaic.put(fn_attribute),
+        params=tuple(params),
+        )
+    enumerator_d_res = pyobj_creg.reverse_resolve(htypes.ui.model_command_enumerator_d)
+    enumerator_d = htypes.builtin.call(
+        function=mosaic.put(enumerator_d_res),
+        )
+    piece_t_res = htypes.builtin.legacy_type(piece_t_ref)
+    association = Association(
+        bases=[piece_t_res],
+        key=[enumerator_d, piece_t_res],
+        value=enumerator,
+        )
+    resource_module[fn_name] = fn_attribute
+    resource_module[f'{fn_name}.enumerator'] = enumerator
+    resource_module['model_command_enumerator_d'] = enumerator_d
+    return [association]
+
+
 def construct_model_command(ctx, module_name, resource_module, module_res, qname, piece_t_ref, params):
     log.info("Construct model command: %s: %s", resource_module.name, qname)
     fn_name = qname
@@ -238,6 +265,13 @@ def _create_trace_resources(ctx, module_name, resource_module, module_res, qname
         if param_names == ['piece', 'ctx'] and 'Adapter' in qname:
             ass_list += construct_adapter_impl(ctx, module_name, resource_module, module_res, qname, params)
     if len(qname.split('.')) == 1 and trace.obj_type == 'function':
+        if (trace.result_t == htypes.inspect.object_t('list', 'builtins')
+                and param_names[:1] == ['piece'] and set(param_names[1:]) <= {'current_item'}):
+            piece_t_ref = _resolve_record_t(params['piece'])
+            if piece_t_ref is None:
+                log.warning("%s.%s: layout parameter type is not a data record", module_name, qname)
+                return ass_list
+            ass_list += construct_model_command_enumerator(ctx, module_name, resource_module, module_res, qname, piece_t_ref, param_names)
         if not isinstance(trace.result_t, htypes.inspect.data_t):
             return ass_list
         result_t = types.resolve(trace.result_t.t)
