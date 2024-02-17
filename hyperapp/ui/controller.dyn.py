@@ -44,30 +44,31 @@ class Controller:
         window_ctx = ctx.clone_with(command_hub=command_hub)
         widget = view.construct_widget(piece, state, window_ctx)
         wrapper = partial(self._apply_diff_wrapper, window_ctx, command_hub, piece, view, widget)
-        path_to_commands = self._view_commands(piece, widget, wrappers=[wrapper], path=[])
+        path_to_commands = self._view_commands(command_hub, piece, widget, wrappers=[wrapper], path=[])
         command_hub.set_commands(path_to_commands)
         if show:
             widget.show()
         return _Window(window_ctx, command_hub, piece, view, widget)
 
-    def _view_commands(self, piece, widget, wrappers, path):
+    def _view_commands(self, command_hub, piece, widget, wrappers, path):
         view = ui_ctl_creg.animate(piece)
         commands = [
             *ui_command_factory(piece, view, widget, wrappers),
             *view.get_commands(piece, widget, wrappers),
             ]
-        current = view.get_current(piece, widget)
+        view.set_on_state_changed(piece, widget, partial(self._on_state_changed, command_hub, piece, view, widget, wrappers, path))
         path_to_commands = {tuple(path): commands}
+        current = view.get_current(piece, widget)
         if not current:
             return path_to_commands
-        view.set_on_current_changed(widget, partial(self._on_current_changed, piece, view, widget, wrappers, path))
+        view.set_on_current_changed(widget, partial(self._on_current_changed, command_hub, piece, view, widget, wrappers, path))
         view_wrapper = partial(view.wrapper, widget)
         idx, current_piece_ref, current_widget = current
         current_piece = web.summon(current_piece_ref)
-        current_commands = self._view_commands(current_piece, current_widget, [*wrappers, view_wrapper], [*path, idx])
+        current_commands = self._view_commands(command_hub, current_piece, current_widget, [*wrappers, view_wrapper], [*path, idx])
         return {**path_to_commands, **current_commands}
 
-    def _on_current_changed(self, piece, view, widget, wrappers, path):
+    def _on_current_changed(self, command_hub, piece, view, widget, wrappers, path):
         if not self._run_callback:
             return
         current = view.get_current(piece, widget)
@@ -77,7 +78,15 @@ class Controller:
         view_wrapper = partial(view.wrapper, widget)
         idx, current_piece_ref, current_widget = current
         current_piece = web.summon(current_piece_ref)
-        current_commands = self._view_commands(current_piece, current_widget, [*wrappers, view_wrapper], [*path, idx])
+        current_commands = self._view_commands(command_hub, current_piece, current_widget, [*wrappers, view_wrapper], [*path, idx])
+        command_hub.set_commands(current_commands)
+
+    def _on_state_changed(self, command_hub, piece, view, widget, wrappers, path):
+        if not self._run_callback:
+            return
+        log.info("Controller: state changed for: (%s) %s/%s", path, piece, view)
+        commands = self._view_commands(command_hub, piece, widget, wrappers, path)
+        command_hub.set_commands(commands)
 
     @contextmanager
     def _without_callback(self):
@@ -99,7 +108,7 @@ class Controller:
         assert not replace  # Not yet supported.
         new_view = ui_ctl_creg.animate(piece)
         wrapper = partial(self._apply_diff_wrapper, ctx, command_hub, new_piece, new_view, widget)
-        path_to_commands = self._view_commands(new_piece, widget, wrappers=[wrapper], path=[])
+        path_to_commands = self._view_commands(command_hub, new_piece, widget, wrappers=[wrapper], path=[])
         command_hub.set_commands(path_to_commands)
 
     def view_items(self, item_id):
@@ -156,8 +165,9 @@ def layout_tree(piece, parent):
 
 
 def layout_tree_commands(piece, current_item):
-    log.info("Layout tree commands: %s", current_item)
-    return controller.item_commands(current_item.id)
+    commands = controller.item_commands(current_item.id)
+    log.info("Layout tree commands for %s: %s", current_item, commands)
+    return commands
 
 
 async def open_layout_tree():

@@ -37,6 +37,11 @@ class NavigatorView(View):
     def get_current(self, piece, widget):
         return (0, piece.current_layout, widget)
 
+    def set_on_state_changed(self, piece, widget, on_changed):
+        current_piece = web.summon(piece.current_layout)
+        current_view = ui_ctl_creg.animate(current_piece)
+        current_view.set_on_model_state_changed(widget, on_changed)
+
     def widget_state(self, piece, widget):
         current_piece = web.summon(piece.current_layout)
         current_view = ui_ctl_creg.animate(current_piece)

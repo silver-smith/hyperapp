@@ -17,6 +17,12 @@ class View(metaclass=abc.ABCMeta):
     def set_on_current_changed(self, widget, on_changed):
         pass
 
+    def set_on_state_changed(self, piece, widget, on_changed):
+        pass
+
+    def set_on_model_state_changed(self, widget, on_changed):
+        pass
+
     def wrapper(self, widget, result):
         return result
 
