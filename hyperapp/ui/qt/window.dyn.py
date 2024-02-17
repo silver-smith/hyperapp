@@ -10,7 +10,7 @@ from .services import (
     ui_ctl_creg,
     web,
     )
-from .code.view import View
+from .code.view import Item, View
 
 log = logging.getLogger(__name__)
 
@@ -72,8 +72,8 @@ class WindowView(View):
             )
         return (new_piece, self.widget_state(new_piece, widget), False)
 
-    def view_items(self, piece):
+    def items(self, piece, widget):
         return [
-            piece.menu_bar_ref,
-            piece.central_view_ref,
+            Item(piece.menu_bar_ref, widget.menuBar()),
+            Item(piece.central_view_ref, widget.centralWidget()),
             ]

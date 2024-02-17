@@ -1,4 +1,8 @@
 import abc
+from collections import namedtuple
+
+
+Item = namedtuple('Item', 'piece_ref widget')
 
 
 class View(metaclass=abc.ABCMeta):
@@ -20,9 +24,12 @@ class View(metaclass=abc.ABCMeta):
     def widget_state(self, piece, widget):
         pass
 
+    def get_commands(self, piece, widget, wrappers):
+        return []
+
     @abc.abstractmethod
     def apply(self, ctx, piece, widget, layout_diff, state_diff):
         pass
 
-    def view_items(self, piece):
+    def items(self, piece, widget):
         return []

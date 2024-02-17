@@ -1,6 +1,6 @@
 import itertools
 import logging
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 from contextlib import contextmanager
 from functools import partial
 
@@ -15,6 +15,9 @@ from .code.command_hub import CommandHub
 log = logging.getLogger(__name__)
 
 
+_Window = namedtuple('_Window', 'ctx command_hub piece view widget')
+
+
 def _name(piece):
     return str(piece._t)
 
@@ -24,7 +27,8 @@ class Controller:
     def __init__(self):
         self._window_list = None
         self._root_piece = None
-        self._parent_id_to_items = None
+        self._id_to_children = None
+        self._id_to_commands = None
         self._run_callback = True
 
     def create_windows(self, root_piece, state, ctx, show=True):
@@ -44,13 +48,14 @@ class Controller:
         command_hub.set_commands(path_to_commands)
         if show:
             widget.show()
-        return widget
+        return _Window(window_ctx, command_hub, piece, view, widget)
 
     def _view_commands(self, piece, widget, wrappers, path):
         view = ui_ctl_creg.animate(piece)
-        commands = ui_command_factory(piece, view, widget, wrappers)
-        if hasattr(view, 'get_commands'):
-            commands += view.get_commands(piece, widget, wrappers)
+        commands = [
+            *ui_command_factory(piece, view, widget, wrappers),
+            *view.get_commands(piece, widget, wrappers),
+            ]
         current = view.get_current(piece, widget)
         path_to_commands = {tuple(path): commands}
         if not current:
@@ -97,32 +102,46 @@ class Controller:
         path_to_commands = self._view_commands(new_piece, widget, wrappers=[wrapper], path=[])
         command_hub.set_commands(path_to_commands)
 
-    def view_items(self, parent_id):
-        if self._parent_id_to_items is None:
+    def view_items(self, item_id):
+        if self._id_to_children is None:
             self._populate_view_items()
-        return self._parent_id_to_items[parent_id]
+        return self._id_to_children.get(item_id, [])
+
+    def item_commands(self, item_id):
+        return self._id_to_commands.get(item_id, [])
 
     def _populate_view_items(self):
         counter = itertools.count(start=1)
-        self._parent_id_to_items = defaultdict(list)
+        self._id_to_children = {}
+        self._id_to_commands = {}
 
-        def _populate(parent_id, piece):
+        def _populate(item_id, piece, widget, wrappers, path):
             view = ui_ctl_creg.animate(piece)
+            commands = self._item_commands(piece, view, widget, wrappers, path)
+            self._id_to_commands[item_id] = commands
+            children_wrappers = [*wrappers, partial(view.wrapper, widget)]
             items = []
-            for ref in view.view_items(piece):
-                item_piece = web.summon(ref)
-                id = next(counter)
-                items.append(htypes.layout.item(id, _name(item_piece)))
-                _populate(id, item_piece)
-            self._parent_id_to_items[parent_id] = items
+            for idx, rec in enumerate(view.items(piece, widget)):
+                item_piece = web.summon(rec.piece_ref)
+                child_id = next(counter)
+                items.append(htypes.layout.item(child_id, _name(item_piece)))
+                _populate(child_id, item_piece, rec.widget, children_wrappers, [*path, idx])
+            self._id_to_children[item_id] = items
 
         items = []
-        for window_ref in self._root_piece.window_list:
-            piece = web.summon(window_ref)
+        for window in self._window_list:
             id = next(counter)
-            items.append(htypes.layout.item(id, _name(piece)))
-            _populate(id, piece)
-        self._parent_id_to_items[0] = items
+            wrapper = partial(
+                self._apply_diff_wrapper, window.ctx, window.command_hub, window.piece, window.view, window.widget)
+            items.append(htypes.layout.item(id, _name(window.piece)))
+            _populate(id, window.piece, window.widget, [wrapper], path=[])
+        self._id_to_children[0] = items
+
+    def _item_commands(self, piece, view, widget, wrappers, path):
+        return [
+            *ui_command_factory(piece, view, widget, wrappers),
+            *view.get_commands(piece, widget, wrappers),
+            ]
 
 
 controller = Controller()
@@ -134,6 +153,11 @@ def layout_tree(piece, parent):
     else:
         parent_id = parent.id
     return controller.view_items(parent_id)
+
+
+def layout_tree_commands(piece, current_item):
+    log.info("Layout tree commands: %s", current_item)
+    return controller.item_commands(current_item.id)
 
 
 async def open_layout_tree():

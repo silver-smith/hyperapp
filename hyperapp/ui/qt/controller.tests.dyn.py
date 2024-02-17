@@ -47,9 +47,25 @@ def test_layout_tree():
     try:
         controller.controller.create_windows(root_piece, root_state, ctx, show=False)
         piece = htypes.layout.view()
-        value = controller.layout_tree(piece, None)
-        assert value
+        items = controller.layout_tree(piece, None)
+        assert items
         parent = htypes.layout.item(1, "Some item")
         controller.layout_tree(piece, parent)
+    finally:
+        app.shutdown()
+
+
+def test_layout_tree_commands():
+    ctx = Context()
+    root_piece = make_piece()
+    root_state = make_state()
+    app = QtWidgets.QApplication()
+    try:
+        controller.controller.create_windows(root_piece, root_state, ctx, show=False)
+        piece = htypes.layout.view()
+        windows = controller.layout_tree(piece, None)
+        window_items = controller.layout_tree(piece, windows[0])
+        commands = controller.layout_tree_commands(piece, window_items[1])
+        assert commands
     finally:
         app.shutdown()

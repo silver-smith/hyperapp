@@ -12,7 +12,7 @@ from .services import (
     web,
     )
 from .code.list_diff import ListDiff, ListDiffInsert, ListDiffModify, ListDiffRemove
-from .code.view import View
+from .code.view import Item, View
 
 log = logging.getLogger(__name__)
 
@@ -108,8 +108,11 @@ class TabsView(View):
         else:
             raise NotImplementedError(f"Not implemented: tab.apply({layout_diff})")
 
-    def view_items(self, piece):
-        return [tab.ctl for tab in piece.tabs]
+    def items(self, piece, widget):
+        return [
+            Item(tab.ctl, widget.widget(idx))
+            for idx, tab in enumerate(piece.tabs)
+            ]
 
     def _on_current_changed(self, command_hub, widget, index):
         log.info("Tabs: current changed for %s to %s", widget, index)
