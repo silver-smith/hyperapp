@@ -12,6 +12,8 @@ import:
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:model
 - legacy_type.ui:model_command
+- legacy_type.ui:model_command_enumerator
+- legacy_type.ui:model_command_enumerator_d
 - legacy_type.ui:model_d
 - legacy_type.ui:tree_ui_t
 - ui.command_hub:command_hub.module
@@ -22,6 +24,12 @@ associations:
   - global_model_command_d
   key: global_model_command_d
   value: open_layout_tree.command
+- bases:
+  - legacy_type.layout:view
+  key:
+  - model_command_enumerator_d
+  - legacy_type.layout:view
+  value: layout_tree_commands.enumerator
 - bases:
   - legacy_type.layout:view
   key:
@@ -59,6 +67,19 @@ definitions:
     _type: legacy_type.ui:tree_ui_t
     key_t: legacy_type.builtin:none
     element_t: legacy_type.layout:item
+  layout_tree_commands:
+    _type: legacy_type.builtin:attribute
+    object: controller.module
+    attr_name: layout_tree_commands
+  layout_tree_commands.enumerator:
+    _type: legacy_type.ui:model_command_enumerator
+    function: layout_tree_commands
+    params:
+    - piece
+    - current_item
+  model_command_enumerator_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:model_command_enumerator_d
   model_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_d
