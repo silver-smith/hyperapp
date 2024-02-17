@@ -10,3 +10,8 @@ def test_global_commands():
 def test_model_commands():
     piece = htypes.model_command_tests.sample_model()
     commands = model_command.model_commands(piece)
+
+
+def test_enum_model_commands():
+    piece = htypes.model_command_tests.sample_model()
+    commands = list(model_command.enum_model_commands(piece, model_state=None))

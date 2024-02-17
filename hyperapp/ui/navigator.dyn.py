@@ -13,7 +13,7 @@ from .services import (
     visualizer,
     web,
     )
-from .code.model_command import global_commands, model_commands
+from .code.model_command import global_commands, model_commands, enum_model_commands
 from .code.view import View
 
 log = logging.getLogger(__name__)
@@ -55,7 +55,11 @@ class NavigatorView(View):
                 cmd, current_view, model_piece, widget, [*wrappers, self._model_wrapper])
             for cmd in piece.commands
             ]
-        return commands
+        state = current_view.model_state(widget)
+        return [
+            *commands,
+            *enum_model_commands(model_piece, state),
+            ]
 
     def _model_wrapper(self, piece):
         if piece is None:

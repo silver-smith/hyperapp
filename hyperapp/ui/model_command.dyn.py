@@ -74,3 +74,25 @@ def model_commands(piece):
     d_res = data_to_res(htypes.ui.model_command_d())
     command_list = association_reg.get_all((d_res, t_res))
     return command_list
+
+
+def enum_model_commands(piece, model_state):
+    try:
+        t = deduce_value_type(piece)
+    except DeduceTypeError:
+        return []
+    t_res = pyobj_creg.reverse_resolve(t)
+    d_res = data_to_res(htypes.ui.model_command_enumerator_d())
+    enumerator_list = association_reg.get_all((d_res, t_res))
+    for enumerator in enumerator_list:
+        fn = pyobj_creg.invite(enumerator.function)
+        params = set(enumerator.params)
+        kw = {}
+        if 'piece' in params:
+            kw['piece'] = piece
+            params.remove('piece')
+        kw.update({
+            name: getattr(model_state, name)
+            for name in params
+            })
+        yield from fn(**kw)
