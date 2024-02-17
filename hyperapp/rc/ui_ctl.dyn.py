@@ -225,6 +225,41 @@ def construct_model_command(ctx, module_name, resource_module, module_res, qname
     return [association]
 
 
+def _create_trace_resources(ctx, module_name, resource_module, module_res, qname, trace):
+    ass_list = []
+    params = {**trace.params}
+    if trace.obj_type == 'classmethod':
+        # Remove first, 'cls', parameter.
+        params.pop(list(params)[0])
+    param_names = list(params)
+    if len(qname.split('.')) == 2 and trace.obj_type in ('classmethod', 'staticmethod'):
+        if param_names == ['layout']:
+            ass_list += construct_view_impl(ctx, module_name, resource_module, module_res, qname, params)
+        if param_names == ['piece', 'ctx'] and 'Adapter' in qname:
+            ass_list += construct_adapter_impl(ctx, module_name, resource_module, module_res, qname, params)
+    if len(qname.split('.')) == 1 and trace.obj_type == 'function':
+        if not isinstance(trace.result_t, htypes.inspect.data_t):
+            return ass_list
+        result_t = types.resolve(trace.result_t.t)
+        if param_names in [['piece'], ['piece', 'feed']] and isinstance(result_t, TList):
+            ass_list += construct_fn_list_impl(ctx, module_name, resource_module, module_res, qname, params, result_t)
+        if param_names in [['piece', 'parent'], ['piece', 'feed', 'parent']] and isinstance(result_t, TList):
+            ass_list += construct_fn_tree_impl(ctx, module_name, resource_module, module_res, qname, params, result_t)
+        if (isinstance(result_t, TRecord)
+                or result_t is tString
+                or isinstance(result_t, TList) and isinstance(result_t.element_t, TRecord)):
+            # Return type suggests it can be a command.
+            if params.keys() <= {'state'}:
+                ass_list += construct_global_model_command(ctx, module_name, resource_module, module_res, qname, params)
+            if param_names[:1] == ['piece'] and set(param_names[1:]) <= {'state', 'current_idx'}:
+                piece_t_ref = _resolve_record_t(params['piece'])
+                if piece_t_ref is None:
+                    log.warning("%s.%s: layout parameter type is not a data record", module_name, qname)
+                    return ass_list
+                ass_list += construct_model_command(ctx, module_name, resource_module, module_res, qname, piece_t_ref, param_names)
+    return ass_list
+
+
 def create_ui_resources(ctx, module_name, resource_module, module_res, call_list):
     qname_to_traces = defaultdict(list)
     for trace in call_list:
@@ -238,34 +273,5 @@ def create_ui_resources(ctx, module_name, resource_module, module_res, call_list
     ass_list = []
     for qname, trace_list in qname_to_traces.items():
         trace = trace_list[0]
-        params = {**trace.params}
-        if trace.obj_type == 'classmethod':
-            # Remove first, 'cls', parameter.
-            params.pop(list(params)[0])
-        if len(qname.split('.')) == 2 and trace.obj_type in ('classmethod', 'staticmethod'):
-            if list(params) == ['layout']:
-                ass_list += construct_view_impl(ctx, module_name, resource_module, module_res, qname, params)
-            if list(params) == ['piece', 'ctx'] and 'Adapter' in qname:
-                ass_list += construct_adapter_impl(ctx, module_name, resource_module, module_res, qname, params)
-        if len(qname.split('.')) == 1 and trace.obj_type == 'function':
-            if not isinstance(trace.result_t, htypes.inspect.data_t):
-                continue
-            result_t = types.resolve(trace.result_t.t)
-            if list(params) in [['piece'], ['piece', 'feed']] and isinstance(result_t, TList):
-                ass_list += construct_fn_list_impl(ctx, module_name, resource_module, module_res, qname, params, result_t)
-            if list(params) in [['piece', 'parent'], ['piece', 'feed', 'parent']] and isinstance(result_t, TList):
-                ass_list += construct_fn_tree_impl(ctx, module_name, resource_module, module_res, qname, params, result_t)
-            if (isinstance(result_t, TRecord)
-                    or result_t is tString
-                    or isinstance(result_t, TList) and isinstance(result_t.element_t, TRecord)):
-                # Return type suggests it can be a command.
-                if params.keys() <= {'state'}:
-                    ass_list += construct_global_model_command(ctx, module_name, resource_module, module_res, qname, params)
-                param_names = list(params)
-                if param_names[:1] == ['piece'] and set(param_names[1:]) <= {'state', 'current_idx'}:
-                    piece_t_ref = _resolve_record_t(params['piece'])
-                    if piece_t_ref is None:
-                        log.warning("%s.%s: layout parameter type is not a data record", module_name, qname)
-                        continue
-                    ass_list += construct_model_command(ctx, module_name, resource_module, module_res, qname, piece_t_ref, param_names)
+        ass_list += _create_trace_resources(ctx, module_name, resource_module, module_res, qname, trace)
     return ass_list
