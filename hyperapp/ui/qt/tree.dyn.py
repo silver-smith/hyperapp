@@ -12,52 +12,52 @@ from .code.view import View
 log = logging.getLogger(__name__)
 
 
-ModelState = namedtuple('ModelState', 'current_idx')
+ModelState = namedtuple('ModelState', 'current_item')
 
 
 class _Model(QtCore.QAbstractItemModel):
 
     def __init__(self, adapter):
         super().__init__()
-        self._adapter = adapter
-        self._adapter.subscribe(self)
+        self.adapter = adapter
+        self.adapter.subscribe(self)
         self._id_to_index = {}
 
     # Qt methods  -------------------------------------------------------------------------------------------------------
 
     def columnCount(self, parent):
-        return self._adapter.column_count()
+        return self.adapter.column_count()
 
     def headerData(self, section, orient, role):
         if role == QtCore.Qt.DisplayRole and orient == QtCore.Qt.Orientation.Horizontal:
-            return self._adapter.column_title(section)
+            return self.adapter.column_title(section)
         return super().headerData(section, orient, role)
 
     def index(self, row, column, parent):
         parent_id = parent.internalId() or 0
-        id = self._adapter.row_id(parent_id, row)
+        id = self.adapter.row_id(parent_id, row)
         return self.createIndex(row, column, id)
 
     def parent(self, index):
         id = index.internalId() or 0
-        parent_id = self._adapter.parent_id(id)
+        parent_id = self.adapter.parent_id(id)
         if parent_id == 0:  # It already was parent.
             return QtCore.QModelIndex()
         return self.createIndex(0, 0, parent_id)
 
     def hasChildren(self, index):
         id = index.internalId() or 0
-        return self._adapter.has_children(id)
+        return self.adapter.has_children(id)
 
     def rowCount(self, parent):
         parent_id = parent.internalId() or 0
-        return self._adapter.row_count(parent_id)
+        return self.adapter.row_count(parent_id)
 
     def data(self, index, role):
         if role != QtCore.Qt.DisplayRole:
             return None
         id = index.internalId() or 0
-        return self._adapter.cell_data(id, index.column())
+        return self.adapter.cell_data(id, index.column())
 
 
 class _TreeWidget(QtWidgets.QTreeView):
@@ -91,7 +91,10 @@ class TreeView(View):
         return None
 
     def model_state(self, widget):
-        return ModelState(current_idx=widget.currentIndex().row())
+        adapter = widget.model().adapter
+        index = widget.currentIndex()
+        item = adapter.get_item(index.internalId())
+        return ModelState(current_item=item)
 
     def apply(self, ctx, piece, widget, layout_diff, state_diff):
         raise NotImplementedError()

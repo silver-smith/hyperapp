@@ -58,6 +58,9 @@ class FnIndexTreeAdapter:
         item = self._id_to_item[id]
         return getattr(item, self._column_names[column])
 
+    def get_item(self, id):
+        return self._id_to_item.get(id)
+
     def subscribe(self, model):
         self._subscribed_models.add(model)
 
