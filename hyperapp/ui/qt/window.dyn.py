@@ -40,7 +40,7 @@ class WindowView(View):
         return w
 
     def get_current(self, piece, widget):
-        return (0, piece.central_view_ref, widget.centralWidget())
+        return 1
 
     def widget_state(self, piece, widget):
         menu_bar_piece = web.summon(piece.menu_bar_ref)

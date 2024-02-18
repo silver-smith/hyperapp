@@ -36,8 +36,7 @@ class TabsView(View):
         return tabs
 
     def get_current(self, piece, widget):
-        idx = widget.currentIndex()
-        return (idx, piece.tabs[idx].ctl, widget.widget(idx))
+        return widget.currentIndex()
 
     def set_on_current_changed(self, widget, on_changed):
         widget.currentChanged.disconnect()
