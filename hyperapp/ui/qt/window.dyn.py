@@ -77,3 +77,17 @@ class WindowView(View):
             Item(piece.menu_bar_ref, widget.menuBar()),
             Item(piece.central_view_ref, widget.centralWidget()),
             ]
+
+
+@mark.ui_command(htypes.root.view)
+def duplicate_window(layout, state):
+    log.info("Duplicate window: %s / %s", layout, state)
+    layout_diff = ListDiff.insert(
+        idx=state.current + 1,
+        item=layout.window_list[state.current],
+        )
+    state_diff = ListDiff.insert(
+        idx=state.current + 1,
+        item=state.window_list[state.current],
+        )
+    return (layout_diff, state_diff)
