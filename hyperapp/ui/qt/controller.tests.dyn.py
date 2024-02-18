@@ -35,8 +35,10 @@ def make_state():
         size=htypes.window.size(100, 100),
         pos=htypes.window.pos(10, 10),
         )
-    return htypes.root.state([
-        mosaic.put(window_state)])
+    return htypes.root.state(
+        window_list=[mosaic.put(window_state)],
+        current=0,
+        )
 
 
 def test_layout_tree():

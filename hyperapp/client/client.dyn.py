@@ -67,6 +67,7 @@ def make_state():
         )
     return htypes.root.state(
         window_list=[mosaic.put(window_state)],
+        current=0,
         )
 
 
