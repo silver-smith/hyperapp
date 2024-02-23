@@ -1,5 +1,4 @@
 
-
 class ListDiff:
 
     @classmethod

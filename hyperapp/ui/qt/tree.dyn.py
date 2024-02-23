@@ -7,12 +7,14 @@ from PySide6 import QtCore, QtGui, QtWidgets
 from .services import (
     ui_adapter_creg,
     )
+from .code.tree_diff import TreeDiffAppend
 from .code.view import View
 
 log = logging.getLogger(__name__)
 
 
 ModelState = namedtuple('ModelState', 'current_item')
+VisualTreeDiffAppend = namedtuple('VisualTreeDiffAppend', 'parent_id')
 
 
 class _Model(QtCore.QAbstractItemModel):
@@ -58,6 +60,20 @@ class _Model(QtCore.QAbstractItemModel):
             return None
         id = index.internalId() or 0
         return self.adapter.cell_data(id, index.column())
+
+    # subscription  ----------------------------------------------------------------------------------------------------
+
+    def process_diff(self, diff):
+        log.info("Tree: process diff: %s", diff)
+        if not isinstance(diff, VisualTreeDiffAppend):
+            raise NotImplementedError(diff)
+        row_count = self.adapter.row_count(diff.parent_id)
+        if diff.parent_id:
+            index = self.createIndex(0, 0, diff.parent_id)
+        else:
+            index = QtCore.QModelIndex()
+        self.beginInsertRows(index, row_count - 1, row_count - 1)
+        self.endInsertRows()
 
 
 class _TreeWidget(QtWidgets.QTreeView):
@@ -114,4 +130,4 @@ class TreeView(View):
 
     def _on_data_changed(self, widget, *args):
         log.info("Tree: on_data_changed: %s: %s", widget, args)
-        widget.resizeColumnsToContents()
+        # widget.resizeColumnToContents(0)

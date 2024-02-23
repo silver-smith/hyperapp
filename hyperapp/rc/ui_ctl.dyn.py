@@ -277,7 +277,7 @@ def _create_trace_resources(ctx, module_name, resource_module, module_res, qname
         result_t = types.resolve(trace.result_t.t)
         if param_names in [['piece'], ['piece', 'feed']] and isinstance(result_t, TList):
             ass_list += construct_fn_list_impl(ctx, module_name, resource_module, module_res, qname, params, result_t)
-        if param_names in [['piece', 'parent'], ['piece', 'feed', 'parent']] and isinstance(result_t, TList):
+        if param_names in [['piece', 'parent'], ['piece', 'parent', 'feed']] and isinstance(result_t, TList):
             ass_list += construct_fn_tree_impl(ctx, module_name, resource_module, module_res, qname, params, result_t)
         if (isinstance(result_t, TRecord)
                 or result_t is tString

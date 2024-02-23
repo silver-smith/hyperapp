@@ -26,7 +26,7 @@ async def test_feed_sample_tree():
     feed = MockFeed(queue)
     piece = htypes.sample_tree.feed_sample_tree()
     parent = htypes.sample_tree.item(100, "Some item")
-    value = sample_tree.feed_sample_tree(piece, feed, parent)
+    value = sample_tree.feed_sample_tree(piece, parent, feed)
     assert value
     diff = await queue.get()
     # assert isinstance(diff, TreeDiffAppend), repr(diff)

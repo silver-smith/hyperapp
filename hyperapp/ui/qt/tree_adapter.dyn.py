@@ -6,9 +6,19 @@ from .services import (
     pyobj_creg,
     web,
     )
-# from .code.list_diff import ListDiffAppend
+from .code.tree_diff import TreeDiffAppend
+from .code.tree import VisualTreeDiffAppend
 
 log = logging.getLogger(__name__)
+
+
+class _Feed:
+
+    def __init__(self, adapter):
+        self._adapter = adapter
+
+    def send(self, diff):
+        self._adapter.send_diff(diff)
 
 
 class FnIndexTreeAdapter:
@@ -64,15 +74,22 @@ class FnIndexTreeAdapter:
     def subscribe(self, model):
         self._subscribed_models.add(model)
 
-    # def send_diff(self, diff):
-    #     log.info("List adapter: send diff: %s", diff)
-    #     if self._item_list is None:
-    #         self._populate()
-    #     if not isinstance(diff, ListDiffAppend):
-    #         raise NotImplementedError(diff)
-    #     self._item_list.append(diff.item)
-    #     for model in self._subscribed_models:
-    #         model.process_diff(diff)
+    def send_diff(self, diff):
+        log.info("Tree adapter: send diff: %s", diff)
+        if not isinstance(diff, TreeDiffAppend):
+            raise NotImplementedError(diff)
+        parent_id = 0
+        for idx in diff.path:
+            if parent_id not in self._id_to_children_id_list:
+                self._populate(parent_id)
+            parent_id = self._id_to_children_id_list[parent_id][idx]
+        item_id = next(self._id_counter)
+        self._id_to_item[item_id] = diff.item
+        self._id_to_parent_id[item_id] = parent_id
+        self._id_to_children_id_list[parent_id].append(item_id)
+        visual_diff = VisualTreeDiffAppend(parent_id)
+        for model in self._subscribed_models:
+            model.process_diff(visual_diff)
 
     def _id_list(self, parent_id):
         try:
@@ -90,6 +107,7 @@ class FnIndexTreeAdapter:
         else:
             parent_item = None
         item_list = self._fn(self._model_piece, parent_item, **kw)
+        log.info("Tree adapter: populated %s (%s, %s) -> %s", self._fn.__name__, self._model_piece, parent_item, item_list)
         item_id_list = []
         for item in item_list:
             id = next(self._id_counter)
