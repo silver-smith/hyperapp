@@ -15,9 +15,9 @@ from .code.command_hub import CommandHub
 log = logging.getLogger(__name__)
 
 
-_Item = namedtuple('_Item', 'id path ctx command_hub piece view widget wrappers commands children', defaults=([], []))
+_Item = namedtuple('_Item', 'id path ctx command_hub name piece view widget wrappers commands children', defaults=([], []))
 
-def _name(piece):
+def _description(piece):
     return str(piece._t)
 
 
@@ -53,12 +53,12 @@ class Controller:
     def _make_window_item(self, idx, window_ctx, command_hub, piece, view, widget):
         path = [idx]
         wrapper = partial(self._apply_diff, idx, window_ctx, command_hub, piece, view, widget)
-        item = self._populate_item(path, window_ctx, command_hub, piece, widget, [wrapper])
+        item = self._populate_item(path, window_ctx, command_hub, f"window#{idx}", piece, widget, [wrapper])
         path_to_commands = self._collect_item_commands(item)
         command_hub.set_commands(path_to_commands)
         return item
 
-    def _populate_item(self, path, ctx, command_hub, piece, widget, wrappers):
+    def _populate_item(self, path, ctx, command_hub, name, piece, widget, wrappers):
         item_id = next(self._counter)
         view = ui_ctl_creg.animate(piece)
         commands = self._make_item_commands(piece, view, widget, wrappers, path)
@@ -67,9 +67,9 @@ class Controller:
         for idx, rec in enumerate(view.items(piece, widget)):
             item_piece = web.summon(rec.piece_ref)
             child = self._populate_item(
-                [*path, idx], ctx, command_hub, item_piece, rec.widget, children_wrappers)
+                [*path, idx], ctx, command_hub, rec.name, item_piece, rec.widget, children_wrappers)
             children.append(child)
-        item = _Item(item_id, path, ctx, command_hub, piece, view, widget, wrappers, commands, children)
+        item = _Item(item_id, path, ctx, command_hub, name, piece, view, widget, wrappers, commands, children)
         self._id_to_item[item_id] = item
         view.set_on_state_changed(piece, widget, partial(self._on_state_changed, item))
         view.set_on_current_changed(widget, partial(self._on_current_changed, item))
@@ -136,7 +136,7 @@ class Controller:
             else:
                 item_list = []
         return [
-            htypes.layout.item(item.id, _name(item.piece))
+            htypes.layout.item(item.id, item.name, _description(item.piece))
             for item in item_list
             ]
 

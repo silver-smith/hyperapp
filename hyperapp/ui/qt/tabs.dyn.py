@@ -109,7 +109,7 @@ class TabsView(View):
 
     def items(self, piece, widget):
         return [
-            Item(tab.ctl, widget.widget(idx))
+            Item(tab.label, tab.ctl, widget.widget(idx))
             for idx, tab in enumerate(piece.tabs)
             ]
 

@@ -2,7 +2,7 @@ import abc
 from collections import namedtuple
 
 
-Item = namedtuple('Item', 'piece_ref widget')
+Item = namedtuple('Item', 'name piece_ref widget')
 
 
 class View(metaclass=abc.ABCMeta):

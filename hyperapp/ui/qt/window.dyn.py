@@ -74,8 +74,8 @@ class WindowView(View):
 
     def items(self, piece, widget):
         return [
-            Item(piece.menu_bar_ref, widget.menuBar()),
-            Item(piece.central_view_ref, widget.centralWidget()),
+            Item('menu bar', piece.menu_bar_ref, widget.menuBar()),
+            Item('central', piece.central_view_ref, widget.centralWidget()),
             ]
 
 

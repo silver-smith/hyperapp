@@ -3,3 +3,4 @@ view = record
 item = record:
   id: int
   name: string
+  description: string

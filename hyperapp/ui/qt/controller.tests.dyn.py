@@ -51,7 +51,7 @@ def test_layout_tree():
         piece = htypes.layout.view()
         items = controller.layout_tree(piece, None)
         assert items
-        parent = htypes.layout.item(1, "Some item")
+        parent = htypes.layout.item(1, "Some item", "Item description")
         controller.layout_tree(piece, parent)
     finally:
         app.shutdown()
