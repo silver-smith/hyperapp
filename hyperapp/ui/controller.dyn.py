@@ -52,7 +52,7 @@ class Controller:
     # And update window commands.
     def _make_window_item(self, idx, window_ctx, command_hub, piece, view, widget):
         path = [idx]
-        wrapper = partial(self._apply_diff_wrapper, idx, window_ctx, command_hub, piece, view, widget)
+        wrapper = partial(self._apply_diff, idx, window_ctx, command_hub, piece, view, widget)
         item = self._populate_item(path, window_ctx, command_hub, piece, widget, [wrapper])
         path_to_commands = self._collect_item_commands(item)
         command_hub.set_commands(path_to_commands)
@@ -112,7 +112,7 @@ class Controller:
         finally:
             self._run_callback = True
 
-    def _apply_diff_wrapper(self, idx, ctx, command_hub, piece, view, widget, diffs):
+    def _apply_diff(self, idx, ctx, command_hub, piece, view, widget, diffs):
         layout_diff, state_diff = diffs
         log.info("Apply diffs: %s / %s", layout_diff, state_diff)
         with self._without_callback():
