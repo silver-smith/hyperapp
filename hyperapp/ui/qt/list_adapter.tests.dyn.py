@@ -11,7 +11,7 @@ from .services import (
     types,
     )
 from .code.context import Context
-from .code.list_diff import ListDiffAppend
+from .code.list_diff import ListDiff
 from .tested.code import list_adapter
 
 
@@ -71,7 +71,7 @@ class MockModel:
 
 def _send_diff(feed):
     item = htypes.sample_list.item(44, "Sample item #4")
-    feed.send(ListDiffAppend(item))
+    feed.send(ListDiff.Append(item))
 
 
 def feed_sample_list_fn(piece, feed):
@@ -108,5 +108,5 @@ async def test_feed_fn_adapter():
     assert adapter.cell_data(2, 1) == "Third item"
 
     diff = await queue.get()
-    assert isinstance(diff, ListDiffAppend), repr(diff)
+    assert isinstance(diff, ListDiff.Append), repr(diff)
     assert diff.item.id == 44

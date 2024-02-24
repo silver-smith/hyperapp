@@ -10,7 +10,7 @@ from .services import (
     types,
     web,
     )
-from .code.list_diff import ListDiffAppend
+from .code.list_diff import ListDiff
 
 log = logging.getLogger(__name__)
 
@@ -92,7 +92,7 @@ class FnListAdapter:
         log.info("List adapter: send diff: %s", diff)
         if self._item_list is None:
             self._populate()
-        if not isinstance(diff, ListDiffAppend):
+        if not isinstance(diff, ListDiff.Append):
             raise NotImplementedError(diff)
         self._item_list.append(diff.item)
         for model in self._subscribed_models:

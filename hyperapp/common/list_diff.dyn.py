@@ -1,18 +1,4 @@
 
-class ListDiff:
-
-    @classmethod
-    def insert(cls, idx, item):
-        return ListDiffInsert(idx, item)
-
-    @classmethod
-    def remove(cls, idx):
-        return ListDiffRemove(idx)
-
-    @classmethod
-    def modify(cls, idx, item_diff):
-        return ListDiffModify(idx, item_diff)
-
 
 class ListDiffInsert:
 
@@ -81,3 +67,10 @@ class ListDiffModify:
             item,
             *container[self.idx + 1:],
             ]
+
+
+class ListDiff:
+    Insert = ListDiffInsert
+    Append = ListDiffAppend
+    Remove = ListDiffRemove
+    Modify = ListDiffModify

@@ -63,8 +63,8 @@ def test_apply_diff():
     try:
         view = window.WindowView.from_piece(piece)
         widget = view.construct_widget(piece, state, ctx)
-        piece_diff = ListDiff.insert(1, tabs_piece.tabs[0])
-        state_diff = ListDiff.insert(1, tabs_state.tabs[0])
+        piece_diff = ListDiff.Insert(1, tabs_piece.tabs[0])
+        state_diff = ListDiff.Insert(1, tabs_state.tabs[0])
         new_piece, new_state, replace = view.apply(ctx, piece, widget, piece_diff, state_diff)
         new_tabs_piece = web.summon(new_piece.central_view_ref)
         assert len(new_tabs_piece.tabs) == 2

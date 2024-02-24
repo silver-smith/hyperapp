@@ -7,7 +7,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 from .services import (
     ui_adapter_creg,
     )
-from .code.list_diff import ListDiffAppend
+from .code.list_diff import ListDiff
 from .code.view import View
 
 log = logging.getLogger(__name__)
@@ -48,7 +48,7 @@ class _Model(QtCore.QAbstractTableModel):
 
     def process_diff(self, diff):
         log.info("List: process diff: %s", diff)
-        if not isinstance(diff, ListDiffAppend):
+        if not isinstance(diff, ListDiff.Append):
             raise NotImplementedError(diff)
         row_count = self._adapter.row_count()
         self.beginInsertRows(QtCore.QModelIndex(), row_count - 1, row_count - 1)

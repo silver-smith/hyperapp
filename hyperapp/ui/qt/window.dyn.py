@@ -82,11 +82,11 @@ class WindowView(View):
 @mark.ui_command(htypes.root.view)
 def duplicate_window(layout, state):
     log.info("Duplicate window: %s / %s", layout, state)
-    layout_diff = ListDiff.insert(
+    layout_diff = ListDiff.Insert(
         idx=state.current + 1,
         item=layout.window_list[state.current],
         )
-    state_diff = ListDiff.insert(
+    state_diff = ListDiff.Insert(
         idx=state.current + 1,
         item=state.window_list[state.current],
         )

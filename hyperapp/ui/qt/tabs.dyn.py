@@ -11,7 +11,7 @@ from .services import (
     ui_ctl_creg,
     web,
     )
-from .code.list_diff import ListDiff, ListDiffInsert, ListDiffModify, ListDiffRemove
+from .code.list_diff import ListDiff
 from .code.view import Item, View
 
 log = logging.getLogger(__name__)
@@ -46,8 +46,8 @@ class TabsView(View):
         layout_diff, state_diff = diffs
         idx = widget.currentIndex()
         return (
-            ListDiff.modify(idx, layout_diff),
-            ListDiff.modify(idx, state_diff),
+            ListDiff.Modify(idx, layout_diff),
+            ListDiff.Modify(idx, state_diff),
             )
 
     def widget_state(self, piece, widget):
@@ -64,7 +64,7 @@ class TabsView(View):
 
     def apply(self, ctx, piece, widget, layout_diff, state_diff):
         log.info("Tabs: apply: %s -> %s / %s", piece, layout_diff, state_diff)
-        if isinstance(layout_diff, ListDiffInsert):
+        if isinstance(layout_diff, ListDiff.Insert):
             idx = layout_diff.idx
             old_state = self.widget_state(piece, widget)
             tab_piece = web.summon(layout_diff.item.ctl)
@@ -75,7 +75,7 @@ class TabsView(View):
             widget.setCurrentIndex(idx)
             new_piece = htypes.tabs.layout(layout_diff.apply(piece.tabs))
             return (new_piece, self.widget_state(new_piece, widget), False)
-        if isinstance(layout_diff, ListDiffModify):
+        if isinstance(layout_diff, ListDiff.Modify):
             idx = layout_diff.idx
             old_tab_piece = web.summon(piece.tabs[idx].ctl)
             old_tab_view = ui_ctl_creg.animate(old_tab_piece)
@@ -97,7 +97,7 @@ class TabsView(View):
                 )
             new_piece = htypes.tabs.layout(new_tabs)
             return (new_piece, self.widget_state(new_piece, widget), False)
-        if isinstance(layout_diff, ListDiffRemove):
+        if isinstance(layout_diff, ListDiff.Remove):
             idx = layout_diff.idx
             widget.removeTab(idx)
             widget.setCurrentIndex(idx)
@@ -120,11 +120,11 @@ class TabsView(View):
 @mark.ui_command(htypes.tabs.layout)
 def duplicate(layout, state):
     log.info("Duplicate tab: %s / %s", layout, state)
-    layout_diff = ListDiff.insert(
+    layout_diff = ListDiff.Insert(
         idx=state.current_tab + 1,
         item=layout.tabs[state.current_tab],
         )
-    state_diff = ListDiff.insert(
+    state_diff = ListDiff.Insert(
         idx=state.current_tab + 1,
         item=state.tabs[state.current_tab],
         )
@@ -137,10 +137,10 @@ def close_tab(layout, state):
     if len(layout.tabs) == 1:
         log.info("Close tab: won't close last tab")
         return None
-    layout_diff = ListDiff.remove(
+    layout_diff = ListDiff.Remove(
         idx=state.current_tab,
         )
-    state_diff = ListDiff.remove(
+    state_diff = ListDiff.Remove(
         idx=state.current_tab,
         )
     return (layout_diff, state_diff)

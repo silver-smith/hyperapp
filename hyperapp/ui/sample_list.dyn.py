@@ -2,7 +2,7 @@ import asyncio
 from functools import partial
 
 from . import htypes
-from .code.list_diff import ListDiffAppend
+from .code.list_diff import ListDiff
 
 
 def sample_list(piece):
@@ -19,7 +19,7 @@ async def open_sample_fn_list():
 
 def _send_diff(feed):
     item = htypes.sample_list.item(4, "Sample item #4")
-    feed.send(ListDiffAppend(item))
+    feed.send(ListDiff.Append(item))
 
 
 def feed_sample_list(piece, feed):
