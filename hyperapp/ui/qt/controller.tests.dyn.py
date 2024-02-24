@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from PySide6 import QtWidgets
 
 from . import htypes
@@ -39,6 +41,14 @@ def make_state():
         window_list=[mosaic.put(window_state)],
         current=0,
         )
+
+
+def test_root_view_widget_state():
+    ctl = Mock()
+    ctl.get_window_state_list.return_value = []
+    root_view = controller.RootView(ctl, window_idx=0)
+    state = root_view.widget_state(piece=None, widget=None)
+    assert isinstance(state, htypes.root.state)
 
 
 def test_layout_tree():

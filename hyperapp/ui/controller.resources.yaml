@@ -1,13 +1,16 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:mosaic.service
 - builtins:web.service
+- common.list_diff:list_diff.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:none
 - legacy_type.builtin:python_module
 - legacy_type.layout:item
 - legacy_type.layout:view
+- legacy_type.root:state
 - legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:model
@@ -19,6 +22,7 @@ import:
 - ui.command_hub:command_hub.module
 - ui.ui_command:ui_command_factory.service
 - ui.ui_ctl_registry:ui_ctl_creg.service
+- ui.view:view.module
 associations:
 - bases:
   - global_model_command_d
@@ -43,8 +47,12 @@ definitions:
     file_name: controller.dyn.py
     import_list:
       code.command_hub: ui.command_hub:command_hub.module
+      code.list_diff: common.list_diff:list_diff.module
+      code.view: ui.view:view.module
       htypes.layout.item: legacy_type.layout:item
       htypes.layout.view: legacy_type.layout:view
+      htypes.root.state: legacy_type.root:state
+      services.mosaic: builtins:mosaic.service
       services.ui_command_factory: ui.ui_command:ui_command_factory.service
       services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
       services.web: builtins:web.service

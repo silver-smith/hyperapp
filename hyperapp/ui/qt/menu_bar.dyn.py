@@ -15,6 +15,7 @@ _hardcoded_shortcuts = {
     'forward': ['Alt+Right'],
     'duplicate': ['Shift+t', 'Shift+f4'],
     'close_tab': ['Ctrl+t', 'Ctrl+f4'],
+    'duplicate_window': ['Alt+W'],
     'open_layout_tree': ['Alt+L'],
     'static_text_1': ['f1'],
     'static_text_2': ['f2'],

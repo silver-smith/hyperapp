@@ -6,10 +6,13 @@ from functools import partial
 
 from . import htypes
 from .services import (
+    mosaic,
     ui_command_factory,
     ui_ctl_creg,
     web,
     )
+from .code.list_diff import ListDiff
+from .code.view import View
 from .code.command_hub import CommandHub
 
 log = logging.getLogger(__name__)
@@ -17,8 +20,25 @@ log = logging.getLogger(__name__)
 
 _Item = namedtuple('_Item', 'id path ctx command_hub name piece view widget wrappers commands children', defaults=([], []))
 
+
 def _description(piece):
     return str(piece._t)
+
+
+class RootView(View):
+
+    def __init__(self, controller, window_idx):
+        self._controller = controller
+        self._window_idx = window_idx
+
+    def construct_widget(self, piece, state, ctx):
+        raise NotImplementedError()
+
+    def widget_state(self, piece, widget):
+        return htypes.root.state(self._controller.get_window_state_list(), self._window_idx)
+
+    def apply(self, ctx, piece, widget, layout_diff, state_diff):
+        raise NotImplementedError()
 
 
 class Controller:
@@ -26,17 +46,25 @@ class Controller:
     def __init__(self):
         self._window_items = None
         self._root_piece = None
+        self._root_ctx = None
         self._id_to_item = None
         self._run_callback = True
         self._counter = itertools.count(start=1)
 
     def create_windows(self, root_piece, state, ctx, show=True):
         self._root_piece = root_piece
+        self._root_ctx = ctx
         self._id_to_item = {}
         self._window_items = [
             self._create_window(idx, web.summon(piece_ref), web.summon(state_ref), ctx, show)
             for idx, (piece_ref, state_ref)
             in enumerate(zip(root_piece.window_list, state.window_list))
+            ]
+
+    def get_window_state_list(self):
+        return [
+            mosaic.put(item.view.widget_state(item.piece, item.widget))
+            for item in self._window_items
             ]
 
     def _create_window(self, idx, piece, state, ctx, show):
@@ -52,8 +80,11 @@ class Controller:
     # And update window commands.
     def _make_window_item(self, idx, window_ctx, command_hub, piece, view, widget):
         path = [idx]
-        wrapper = partial(self._apply_diff, idx, window_ctx, command_hub, piece, view, widget)
+        wrapper = partial(self._apply_window_diff, idx, window_ctx, command_hub, piece, view, widget)
         item = self._populate_item(path, window_ctx, command_hub, f"window#{idx}", piece, widget, [wrapper])
+        root_wrappers = [self._apply_root_diff]
+        root_commands = self._make_item_commands(self._root_piece, RootView(self, idx), widget, root_wrappers, path=[])
+        item.commands.extend(root_commands)
         path_to_commands = self._collect_item_commands(item)
         command_hub.set_commands(path_to_commands)
         return item
@@ -112,9 +143,9 @@ class Controller:
         finally:
             self._run_callback = True
 
-    def _apply_diff(self, idx, ctx, command_hub, piece, view, widget, diffs):
+    def _apply_window_diff(self, idx, ctx, command_hub, piece, view, widget, diffs):
         layout_diff, state_diff = diffs
-        log.info("Apply diffs: %s / %s", layout_diff, state_diff)
+        log.info("Apply window diffs: %s / %s", layout_diff, state_diff)
         with self._without_callback():
             result = view.apply(ctx, piece, widget, layout_diff, state_diff)
         if result is None:
@@ -125,6 +156,17 @@ class Controller:
         new_view = ui_ctl_creg.animate(new_piece)
         new_item = self._make_window_item(idx, ctx, command_hub, new_piece, new_view, widget)
         self._window_items[idx] = new_item
+
+    def _apply_root_diff(self, diffs):
+        layout_diff, state_diff = diffs
+        log.info("Apply root diffs: %s / %s", layout_diff, state_diff)
+        if isinstance(layout_diff, ListDiff.Insert):
+            piece = web.summon(layout_diff.item)
+            state = web.summon(state_diff.item)
+            item = self._create_window(layout_diff.idx, piece, state, self._root_ctx, show=True)
+            layout_diff.insert(self._window_items, item)
+        else:
+            raise NotImplementedError(layout_diff)
 
     def view_items(self, item_id):
         if item_id == 0:
