@@ -46,7 +46,8 @@ def make_state():
 def test_root_view_widget_state():
     ctl = Mock()
     ctl.get_window_state_list.return_value = []
-    root_view = controller.RootView(ctl, window_idx=0)
+    ctl.window_id_to_idx.return_value = 0
+    root_view = controller.RootView(ctl, window_item_id=0)
     state = root_view.widget_state(piece=None, widget=None)
     assert isinstance(state, htypes.root.state)
 

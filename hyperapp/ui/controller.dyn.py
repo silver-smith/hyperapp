@@ -27,15 +27,16 @@ def _description(piece):
 
 class RootView(View):
 
-    def __init__(self, controller, window_idx):
+    def __init__(self, controller, window_item_id):
         self._controller = controller
-        self._window_idx = window_idx
+        self._window_item_id = window_item_id
 
     def construct_widget(self, piece, state, ctx):
         raise NotImplementedError()
 
     def widget_state(self, piece, widget):
-        return htypes.root.state(self._controller.get_window_state_list(), self._window_idx)
+        current_idx = self._controller.window_id_to_idx(self._window_item_id)
+        return htypes.root.state(self._controller.get_window_state_list(), current_idx)
 
     def apply(self, ctx, piece, widget, layout_diff, state_diff):
         raise NotImplementedError()
@@ -56,9 +57,9 @@ class Controller:
         self._root_ctx = ctx
         self._id_to_item = {}
         self._window_items = [
-            self._create_window(idx, web.summon(piece_ref), web.summon(state_ref), ctx, show)
-            for idx, (piece_ref, state_ref)
-            in enumerate(zip(root_piece.window_list, state.window_list))
+            self._create_window(web.summon(piece_ref), web.summon(state_ref), ctx, show)
+            for piece_ref, state_ref
+            in zip(root_piece.window_list, state.window_list)
             ]
 
     def get_window_state_list(self):
@@ -67,38 +68,45 @@ class Controller:
             for item in self._window_items
             ]
 
-    def _create_window(self, idx, piece, state, ctx, show):
+    def window_id_to_idx(self, item_id):
+        for idx, item in enumerate(self._window_items):
+            if item.id == item_id:
+                return idx
+        raise RuntimeError(f"Unknown window item id: {item_id}")
+
+    def _create_window(self, piece, state, ctx, show):
         view = ui_ctl_creg.animate(piece)
         command_hub = CommandHub()
         window_ctx = ctx.clone_with(command_hub=command_hub)
         widget = view.construct_widget(piece, state, window_ctx)
-        item = self._make_window_item(idx, window_ctx, command_hub, piece, view, widget)
+        item = self._make_window_item(window_ctx, command_hub, piece, view, widget)
         if show:
             widget.show()
         return item
 
     # And update window commands.
-    def _make_window_item(self, idx, window_ctx, command_hub, piece, view, widget):
-        path = [idx]
-        wrapper = partial(self._apply_window_diff, idx, window_ctx, command_hub, piece, view, widget)
-        item = self._populate_item(path, window_ctx, command_hub, f"window#{idx}", piece, widget, [wrapper])
+    def _make_window_item(self, window_ctx, command_hub, piece, view, widget):
+        item_id = next(self._counter)
+        path = [item_id]
+        wrapper = partial(self._apply_window_diff, item_id, window_ctx, command_hub, piece, view, widget)
+        item = self._populate_item(item_id, path, window_ctx, command_hub, f"window#{item_id}", piece, widget, [wrapper])
         root_wrappers = [self._apply_root_diff]
-        root_commands = self._make_item_commands(self._root_piece, RootView(self, idx), widget, root_wrappers, path=[])
+        root_commands = self._make_item_commands(self._root_piece, RootView(self, item_id), widget, root_wrappers, path=[])
         item.commands.extend(root_commands)
         path_to_commands = self._collect_item_commands(item)
         command_hub.set_commands(path_to_commands)
         return item
 
-    def _populate_item(self, path, ctx, command_hub, name, piece, widget, wrappers):
-        item_id = next(self._counter)
+    def _populate_item(self, item_id, path, ctx, command_hub, name, piece, widget, wrappers):
         view = ui_ctl_creg.animate(piece)
         commands = self._make_item_commands(piece, view, widget, wrappers, path)
         children_wrappers = [*wrappers, partial(view.wrapper, widget)]
         children = []
         for idx, rec in enumerate(view.items(piece, widget)):
             item_piece = web.summon(rec.piece_ref)
+            child_id = next(self._counter)
             child = self._populate_item(
-                [*path, idx], ctx, command_hub, rec.name, item_piece, rec.widget, children_wrappers)
+                child_id, [*path, idx], ctx, command_hub, rec.name, item_piece, rec.widget, children_wrappers)
             children.append(child)
         item = _Item(item_id, path, ctx, command_hub, name, piece, view, widget, wrappers, commands, children)
         self._id_to_item[item_id] = item
@@ -143,9 +151,10 @@ class Controller:
         finally:
             self._run_callback = True
 
-    def _apply_window_diff(self, idx, ctx, command_hub, piece, view, widget, diffs):
+    def _apply_window_diff(self, item_id, ctx, command_hub, piece, view, widget, diffs):
         layout_diff, state_diff = diffs
         log.info("Apply window diffs: %s / %s", layout_diff, state_diff)
+        window_idx = self.window_id_to_idx(item_id)
         with self._without_callback():
             result = view.apply(ctx, piece, widget, layout_diff, state_diff)
         if result is None:
@@ -154,8 +163,8 @@ class Controller:
         log.info("Applied piece: %s / %s", new_piece, new_state)
         assert not replace  # Not yet supported.
         new_view = ui_ctl_creg.animate(new_piece)
-        new_item = self._make_window_item(idx, ctx, command_hub, new_piece, new_view, widget)
-        self._window_items[idx] = new_item
+        new_item = self._make_window_item(ctx, command_hub, new_piece, new_view, widget)
+        self._window_items[window_idx] = new_item
 
     def _apply_root_diff(self, diffs):
         layout_diff, state_diff = diffs
@@ -163,7 +172,7 @@ class Controller:
         if isinstance(layout_diff, ListDiff.Insert):
             piece = web.summon(layout_diff.item)
             state = web.summon(state_diff.item)
-            item = self._create_window(layout_diff.idx, piece, state, self._root_ctx, show=True)
+            item = self._create_window(piece, state, self._root_ctx, show=True)
             layout_diff.insert(self._window_items, item)
         else:
             raise NotImplementedError(layout_diff)
