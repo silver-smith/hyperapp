@@ -7,6 +7,7 @@ from .services import (
     mosaic,
     )
 from .code.context import Context
+from .code.list_diff import ListDiff
 from .tested.code import controller
 
 
@@ -50,6 +51,27 @@ def test_root_view_widget_state():
     root_view = controller.RootView(ctl, window_item_id=0)
     state = root_view.widget_state(piece=None, widget=None)
     assert isinstance(state, htypes.root.state)
+
+
+def test_apply_root_diff():
+    ctx = Context()
+    root_piece = make_piece()
+    root_state = make_state()
+    app = QtWidgets.QApplication()
+    try:
+        ctl = controller.controller
+        ctl.create_windows(root_piece, root_state, ctx, show=False)
+        layout_diff = ListDiff.Insert(
+            idx=0,
+            item=root_piece.window_list[0],
+            )
+        state_diff = ListDiff.Insert(
+            idx=0,
+            item=root_state.window_list[0],
+            )
+        ctl._apply_root_diff((layout_diff, state_diff))
+    finally:
+        app.shutdown()
 
 
 def test_layout_tree():

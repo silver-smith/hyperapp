@@ -172,8 +172,12 @@ class Controller:
         if isinstance(layout_diff, ListDiff.Insert):
             piece = web.summon(layout_diff.item)
             state = web.summon(state_diff.item)
+            # Used when creating root commands, should be before _create_window.
+            self._root_piece = htypes.root.view(
+                window_list=layout_diff.insert(self._root_piece.window_list, mosaic.put(piece)),
+                )
             item = self._create_window(piece, state, self._root_ctx, show=True)
-            layout_diff.insert(self._window_items, item)
+            self._window_items = layout_diff.insert(self._window_items, item)
         else:
             raise NotImplementedError(layout_diff)
 

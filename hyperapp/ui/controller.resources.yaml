@@ -11,6 +11,7 @@ import:
 - legacy_type.layout:item
 - legacy_type.layout:view
 - legacy_type.root:state
+- legacy_type.root:view
 - legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:model
@@ -52,6 +53,7 @@ definitions:
       htypes.layout.item: legacy_type.layout:item
       htypes.layout.view: legacy_type.layout:view
       htypes.root.state: legacy_type.root:state
+      htypes.root.view: legacy_type.root:view
       services.mosaic: builtins:mosaic.service
       services.ui_command_factory: ui.ui_command:ui_command_factory.service
       services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
