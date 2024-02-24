@@ -87,8 +87,18 @@ def duplicate_window(layout, state):
         idx=state.current + 1,
         item=layout.window_list[state.current],
         )
+    window_state = web.summon(state.window_list[state.current])
+    new_window_state = htypes.window.state(
+        menu_bar_state=window_state.menu_bar_state,
+        central_view_state=window_state.central_view_state,
+        size=window_state.size,
+        pos=htypes.window.pos(
+            x=window_state.pos.x + DUP_OFFSET.x,
+            y=window_state.pos.y + DUP_OFFSET.y,
+            ),
+        )
     state_diff = ListDiff.Insert(
         idx=state.current + 1,
-        item=state.window_list[state.current],
+        item=mosaic.put(new_window_state),
         )
     return (layout_diff, state_diff)

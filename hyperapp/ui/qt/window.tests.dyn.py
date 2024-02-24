@@ -70,3 +70,12 @@ def test_apply_diff():
         assert len(new_tabs_piece.tabs) == 2
     finally:
         app.shutdown()
+
+
+def test_duplicate_window():
+    tabs_piece, window_piece = make_piece()
+    tabs_state, window_state = make_state()
+    root_piece = htypes.root.view([mosaic.put(window_piece)])
+    root_state = htypes.root.state([mosaic.put(window_state)], 0)
+    diffs = window.duplicate_window(root_piece, root_state)
+    assert diffs
