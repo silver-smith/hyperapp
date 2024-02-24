@@ -23,7 +23,7 @@ async def open_sample_fn_tree():
 
 def _send_diff(path, base, feed, idx):
     item = htypes.sample_tree.item(base*10 + idx, f"Sample item #{idx}")
-    feed.send(TreeDiff.append(path, item))
+    feed.send(TreeDiff.Append(path, item))
     if idx < 9:
         loop = asyncio.get_running_loop()
         loop.call_later(1, partial(_send_diff, path, base, feed, idx + 1))

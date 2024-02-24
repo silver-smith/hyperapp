@@ -7,7 +7,6 @@ from PySide6 import QtCore, QtGui, QtWidgets
 from .services import (
     ui_adapter_creg,
     )
-from .code.tree_diff import TreeDiffAppend
 from .code.view import View
 
 log = logging.getLogger(__name__)

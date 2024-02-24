@@ -1,23 +1,4 @@
 
-class TreeDiff:
-
-    @classmethod
-    def insert(cls, path, item):
-        return TreeDiffInsert(path, item)
-
-    @classmethod
-    def append(cls, path, item):
-        return TreeDiffAppend(path, item)
-
-    @classmethod
-    def remove(cls, path):
-        return TreeDiffRemove(path)
-
-    @classmethod
-    def modify(cls, path, item_diff):
-        return TreeDiffModify(path, item_diff)
-
-
 class TreeDiffInsert:
 
     def __init__(self, path, item):
@@ -55,3 +36,10 @@ class TreeDiffModify:
 
     def __repr__(self):
         return f"<TreeDiffModify: @#{self.path}: {self.item_diff}>"
+
+
+class TreeDiff:
+    Insert = TreeDiffInsert
+    Append = TreeDiffAppend
+    Remove = TreeDiffRemove
+    Modify = TreeDiffModify

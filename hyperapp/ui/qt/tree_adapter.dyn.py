@@ -6,7 +6,7 @@ from .services import (
     pyobj_creg,
     web,
     )
-from .code.tree_diff import TreeDiffAppend
+from .code.tree_diff import TreeDiff
 from .code.tree import VisualTreeDiffAppend
 
 log = logging.getLogger(__name__)
@@ -76,7 +76,7 @@ class FnIndexTreeAdapter:
 
     def send_diff(self, diff):
         log.info("Tree adapter: send diff: %s", diff)
-        if not isinstance(diff, TreeDiffAppend):
+        if not isinstance(diff, TreeDiff.Append):
             raise NotImplementedError(diff)
         parent_id = 0
         for idx in diff.path:

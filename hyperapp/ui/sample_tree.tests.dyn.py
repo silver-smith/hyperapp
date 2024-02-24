@@ -1,7 +1,7 @@
 import asyncio
 
 from . import htypes
-# from .code.tree_diff import TreeDiffAppend
+# from .code.tree_diff import TreeDiff
 from .tested.code import sample_tree
 
 
@@ -29,4 +29,4 @@ async def test_feed_sample_tree():
     value = sample_tree.feed_sample_tree(piece, parent, feed)
     assert value
     diff = await queue.get()
-    # assert isinstance(diff, TreeDiffAppend), repr(diff)
+    # assert isinstance(diff, TreeDiff.Append), repr(diff)
