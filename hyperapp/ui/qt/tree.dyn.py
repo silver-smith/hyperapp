@@ -124,7 +124,7 @@ class _TreeWidget(QtWidgets.QTreeView):
 class TreeView(View):
 
     @classmethod
-    def from_piece(cls, layout):
+    def from_piece(cls, piece):
         return cls()
 
     def construct_widget(self, piece, state, ctx):

@@ -32,7 +32,7 @@ _hardcoded_shortcuts = {
 class MenuBarView(View):
 
     @classmethod
-    def from_piece(cls, layout):
+    def from_piece(cls, piece):
         return cls()
 
     def __init__(self):
