@@ -68,7 +68,6 @@ class WindowView(View):
         assert not replace  # Not yet supported.
         new_piece = htypes.window.layout(
             menu_bar_ref=piece.menu_bar_ref,
-            command_pane_ref=piece.command_pane_ref,
             central_view_ref=mosaic.put(new_central_piece),
             )
         return (new_piece, self.widget_state(new_piece, widget), False)

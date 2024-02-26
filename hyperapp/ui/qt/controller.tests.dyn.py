@@ -19,7 +19,6 @@ def make_piece():
         )
     window_piece = htypes.window.layout(
         menu_bar_ref=mosaic.put(htypes.menu_bar.layout()),
-        command_pane_ref=mosaic.put(htypes.command_pane.command_pane()),
         central_view_ref=mosaic.put(tabs_piece),
         )
     return htypes.root.view([

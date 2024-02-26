@@ -9,7 +9,6 @@ size = record:
 
 layout = record:
   menu_bar_ref: ref
-  command_pane_ref: ref
   central_view_ref: ref
 
 state = record:
