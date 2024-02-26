@@ -22,34 +22,40 @@ class WindowView(View):
 
     @classmethod
     def from_piece(cls, piece):
-        return cls()
+        menu_bar_view = ui_ctl_creg.invite(piece.menu_bar_ref)
+        central_view = ui_ctl_creg.invite(piece.central_view_ref)
+        return cls(menu_bar_view, central_view)
 
-    def construct_widget(self, piece, state, ctx):
-        menu_bar_piece = web.summon(piece.menu_bar_ref)
-        central_view_piece = web.summon(piece.central_view_ref)
-        menu_bar_view = ui_ctl_creg.animate(menu_bar_piece)
-        central_view = ui_ctl_creg.animate(central_view_piece)
+    def __init__(self, menu_bar_view, central_view):
+        super().__init__()
+        self._menu_bar_view = menu_bar_view
+        self._central_view = central_view
+
+    @property
+    def piece(self):
+        return htypes.window.layout(
+            menu_bar_ref=mosaic.put(self._menu_bar_view.piece),
+            central_view_ref=mosaic.put(self._central_view.piece),
+            )
+
+    def construct_widget(self, state, ctx):
         w = QtWidgets.QMainWindow()
         central_view_state = web.summon(state.central_view_state)
         menu_bar_state = web.summon(state.menu_bar_state)
-        central_widget = central_view.construct_widget(central_view_piece, central_view_state, ctx)
-        menu_bar = menu_bar_view.construct_widget(menu_bar_piece, menu_bar_state, ctx)
+        central_widget = self._central_view.construct_widget(central_view_state, ctx)
+        menu_bar = self._menu_bar_view.construct_widget(menu_bar_state, ctx)
         w.setMenuBar(menu_bar)
         w.setCentralWidget(central_widget)
         w.move(state.pos.x, state.pos.y)
         w.resize(state.size.w, state.size.h)
         return w
 
-    def get_current(self, piece, widget):
+    def get_current(self, widget):
         return 1
 
-    def widget_state(self, piece, widget):
-        menu_bar_piece = web.summon(piece.menu_bar_ref)
-        central_view_piece = web.summon(piece.central_view_ref)
-        menu_bar_view = ui_ctl_creg.animate(menu_bar_piece)
-        central_view = ui_ctl_creg.animate(central_view_piece)
-        menu_bar_state = menu_bar_view.widget_state(menu_bar_piece, widget.menuBar())
-        central_view_state = central_view.widget_state(central_view_piece, widget.centralWidget())
+    def widget_state(self, widget):
+        menu_bar_state = self._menu_bar_view.widget_state(widget.menuBar())
+        central_view_state = self._central_view.widget_state(widget.centralWidget())
         return htypes.window.state(
             menu_bar_state=mosaic.put(menu_bar_state),
             central_view_state=mosaic.put(central_view_state),
@@ -57,25 +63,18 @@ class WindowView(View):
             pos=htypes.window.pos(widget.x(), widget.y()),
             )
 
-    def apply(self, ctx, piece, widget, layout_diff, state_diff):
-        central_view_piece = web.summon(piece.central_view_ref)
-        central_view = ui_ctl_creg.animate(central_view_piece)
-        result = central_view.apply(
-            ctx, central_view_piece, widget.centralWidget(), layout_diff, state_diff)
+    def apply(self, ctx, widget, layout_diff, state_diff):
+        result = self._central_view.apply(ctx, widget.centralWidget(), layout_diff, state_diff)
         if result is None:
             return None
-        new_central_piece, new_central_state, replace = result
+        new_central_state, replace = result
         assert not replace  # Not yet supported.
-        new_piece = htypes.window.layout(
-            menu_bar_ref=piece.menu_bar_ref,
-            central_view_ref=mosaic.put(new_central_piece),
-            )
-        return (new_piece, self.widget_state(new_piece, widget), False)
+        return (self.widget_state(widget), False)
 
-    def items(self, piece, widget):
+    def items(self, widget):
         return [
-            Item('menu bar', piece.menu_bar_ref, widget.menuBar()),
-            Item('central', piece.central_view_ref, widget.centralWidget()),
+            Item('menu bar', self._menu_bar_view, widget.menuBar()),
+            Item('central', self._central_view, widget.centralWidget()),
             ]
 
 

@@ -31,9 +31,10 @@ def test_list():
     state = None
     app = QtWidgets.QApplication()
     try:
-        ctl = list.ListView.from_piece(piece)
-        widget = ctl.construct_widget(piece, state, ctx)
-        state = ctl.widget_state(piece, widget)
+        view = list.ListView.from_piece(piece)
+        widget = view.construct_widget(state, ctx)
+        assert view.piece
+        state = view.widget_state(widget)
         # assert state
     finally:
         app.shutdown()

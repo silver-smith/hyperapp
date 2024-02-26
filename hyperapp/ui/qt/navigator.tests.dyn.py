@@ -59,14 +59,14 @@ def test_navigator():
     try:
         ctx = Context(command_hub=CommandHub())
         view = navigator.NavigatorView.from_piece(piece)
-        widget = view.construct_widget(piece, state, ctx)
-        state = view.widget_state(piece, widget)
+        widget = view.construct_widget(state, ctx)
+        state = view.widget_state(widget)
         assert state
 
         diffs = view._model_wrapper("Sample text")
         piece_diff, state_diff = diffs
         assert len(diffs) == 2
-        view.apply(ctx, piece, widget, piece_diff, state_diff)        
+        view.apply(ctx, widget, piece_diff, state_diff)        
     finally:
         app.shutdown()
 

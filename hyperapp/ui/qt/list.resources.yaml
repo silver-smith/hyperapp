@@ -36,4 +36,5 @@ definitions:
     import_list:
       code.list_diff: common.list_diff:list_diff.module
       code.view: ui.view:view.module
+      htypes.list.layout: legacy_type.list:layout
       services.ui_adapter_creg: ui.ui_adapter_creg:ui_adapter_creg.service

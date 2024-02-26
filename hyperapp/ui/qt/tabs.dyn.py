@@ -1,4 +1,5 @@
 import logging
+from collections import namedtuple
 from functools import partial
 
 from PySide6 import QtWidgets
@@ -19,23 +20,42 @@ log = logging.getLogger(__name__)
 
 class TabsView(View):
 
+    _Tab = namedtuple('_Tab', 'view label')
+
     @classmethod
     def from_piece(cls, piece):
-        return cls()
+        tabs = [
+            cls._Tab(ui_ctl_creg.invite(rec.ctl), rec.label)
+            for rec in piece.tabs
+            ]
+        return cls(tabs)
 
-    def construct_widget(self, piece, state, ctx):
+    def __init__(self, tabs):
+        super().__init__()
+        self._tabs = tabs  # list[_Tab]
+
+    @property
+    def piece(self):
+        tabs = [
+            htypes.tabs.tab(
+                label=tab.label,
+                ctl=mosaic.put(tab.view.piece),
+                )
+            for tab in self._tabs
+            ]
+        return htypes.tabs.layout(tabs)
+
+    def construct_widget(self, state, ctx):
         tabs = QtWidgets.QTabWidget()
-        for idx, tab in enumerate(piece.tabs):
-            tab_piece = web.summon(tab.ctl)
-            tab_view = ui_ctl_creg.animate(tab_piece)
-            tab_state = web.summon(state.tabs[idx])
-            w = tab_view.construct_widget(tab_piece, tab_state, ctx)
+        for tab, tab_state_ref in zip(self._tabs, state.tabs):
+            tab_state = web.summon(tab_state_ref)
+            w = tab.view.construct_widget(tab_state, ctx)
             tabs.addTab(w, tab.label)
         tabs.setCurrentIndex(state.current_tab)
-        tabs.currentChanged.connect(partial(self._on_current_changed, ctx.command_hub, tabs))
+        tabs.currentChanged.connect(partial(self._on_current_changed, ctx.command_hub))
         return tabs
 
-    def get_current(self, piece, widget):
+    def get_current(self, widget):
         return widget.currentIndex()
 
     def set_on_current_changed(self, widget, on_changed):
@@ -50,67 +70,57 @@ class TabsView(View):
             ListDiff.Modify(idx, state_diff),
             )
 
-    def widget_state(self, piece, widget):
+    def widget_state(self, widget):
         tabs = []
-        for idx, tab in enumerate(piece.tabs):
-            tab_piece = web.summon(tab.ctl)
-            tab_view = ui_ctl_creg.animate(tab_piece)
-            tab_state = tab_view.widget_state(tab_piece, widget.widget(idx))
+        for idx, tab in enumerate(self._tabs):
+            tab_state = tab.view.widget_state(widget.widget(idx))
             tabs.append(mosaic.put(tab_state))
         return htypes.tabs.state(
             current_tab=widget.currentIndex(),
             tabs=tabs,
             )
 
-    def apply(self, ctx, piece, widget, layout_diff, state_diff):
-        log.info("Tabs: apply: %s -> %s / %s", piece, layout_diff, state_diff)
+    def apply(self, ctx, widget, layout_diff, state_diff):
+        log.info("Tabs: apply: %s / %s", layout_diff, state_diff)
         if isinstance(layout_diff, ListDiff.Insert):
             idx = layout_diff.idx
-            old_state = self.widget_state(piece, widget)
+            old_state = self.widget_state(widget)
             tab_piece = web.summon(layout_diff.item.ctl)
             tab_view = ui_ctl_creg.animate(tab_piece)
             tab_state = web.summon(state_diff.item)
-            w = tab_view.construct_widget(tab_piece, tab_state, ctx)
+            w = tab_view.construct_widget(tab_state, ctx)
+            new_tab = self._Tab(tab_view, layout_diff.item.label)
+            self._tabs = layout_diff.insert(self._tabs, new_tab)
             widget.insertTab(idx, w, layout_diff.item.label)
             widget.setCurrentIndex(idx)
-            new_piece = htypes.tabs.layout(layout_diff.apply(piece.tabs))
-            return (new_piece, self.widget_state(new_piece, widget), False)
+            return (self.widget_state(widget), False)
         if isinstance(layout_diff, ListDiff.Modify):
             idx = layout_diff.idx
-            old_tab_piece = web.summon(piece.tabs[idx].ctl)
-            old_tab_view = ui_ctl_creg.animate(old_tab_piece)
-            label = piece.tabs[idx].label
-            result = old_tab_view.apply(
-                ctx, old_tab_piece, widget.widget(idx), layout_diff.item_diff, state_diff.item_diff)
+            tab = self._tabs[idx]
+            result = tab.view.apply(
+                ctx, widget.widget(idx), layout_diff.item_diff, state_diff.item_diff)
             if result is None:
                 return None
-            new_tab_piece, new_tab_state, replace = result
+            new_tab_state, replace = result
             if replace:
-                new_tab_view = ui_ctl_creg.animate(new_tab_piece)
-                w = new_tab_view.construct_widget(new_tab_piece, new_tab_state, ctx)
+                w = tab.view.construct_widget(new_tab_state, ctx)
                 widget.removeTab(idx)
-                widget.insertTab(idx, w, label)
+                widget.insertTab(idx, w, tab.label)
                 widget.setCurrentIndex(idx)
-            new_tabs = layout_diff.replace(
-                piece.tabs,
-                htypes.tabs.tab(label, mosaic.put(new_tab_piece)),
-                )
-            new_piece = htypes.tabs.layout(new_tabs)
-            return (new_piece, self.widget_state(new_piece, widget), False)
+            return (self.widget_state(widget), False)
         if isinstance(layout_diff, ListDiff.Remove):
             idx = layout_diff.idx
             widget.removeTab(idx)
             widget.setCurrentIndex(idx)
-            new_tabs = layout_diff.remove(piece.tabs)
-            new_piece = htypes.tabs.layout(new_tabs)
-            return (new_piece, self.widget_state(new_piece, widget), False)
+            self._tabs = layout_diff.remove(self._tabs)
+            return (self.widget_state(widget), False)
         else:
             raise NotImplementedError(f"Not implemented: tab.apply({layout_diff})")
 
-    def items(self, piece, widget):
+    def items(self, widget):
         return [
-            Item(tab.label, tab.ctl, widget.widget(idx))
-            for idx, tab in enumerate(piece.tabs)
+            Item(tab.label, tab.view, widget.widget(idx))
+            for idx, tab in enumerate(self._tabs)
             ]
 
     def _on_current_changed(self, command_hub, widget, index):

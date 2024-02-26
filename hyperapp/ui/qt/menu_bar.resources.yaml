@@ -34,4 +34,5 @@ definitions:
     file_name: menu_bar.dyn.py
     import_list:
       code.view: ui.view:view.module
+      htypes.menu_bar.layout: legacy_type.menu_bar:layout
       htypes.menu_bar.state: legacy_type.menu_bar:state

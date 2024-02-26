@@ -39,14 +39,18 @@ class MenuBarView(View):
         self._menu_command_to_action = {}
         self._used_shortcuts = set()
 
-    def construct_widget(self, piece, state, ctx):
+    @property
+    def piece(self):
+        return htypes.menu_bar.layout()
+
+    def construct_widget(self, state, ctx):
         w =  QtWidgets.QMenuBar()
         menu = QtWidgets.QMenu('&All')
         w.addMenu(menu)
         ctx.command_hub.subscribe(partial(self.commands_changed, w))
         return w
 
-    def widget_state(self, piece, widget):
+    def widget_state(self, widget):
         return htypes.menu_bar.state()
 
     def set_commands(self, w, commands):
@@ -71,7 +75,7 @@ class MenuBarView(View):
         for command in added_commands:
             self._add_action(menu, command)
 
-    def apply(self, ctx, piece, widget, layout_diff, state_diff):
+    def apply(self, ctx, widget, layout_diff, state_diff):
         raise NotImplementedError()
 
     def _add_action(self, menu, command):

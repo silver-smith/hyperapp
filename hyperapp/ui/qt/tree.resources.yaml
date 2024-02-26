@@ -34,4 +34,5 @@ definitions:
     file_name: tree.dyn.py
     import_list:
       code.view: ui.view:view.module
+      htypes.tree.view: legacy_type.tree:view
       services.ui_adapter_creg: ui.ui_adapter_creg:ui_adapter_creg.service

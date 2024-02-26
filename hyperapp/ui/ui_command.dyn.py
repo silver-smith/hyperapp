@@ -33,7 +33,7 @@ class UiCommand:
         if widget is None:
             log.warning("Not running UI command %r: Widget is gone", self._name)
             return None
-        state = self._view.widget_state(self._piece, widget)
+        state = self._view.widget_state(widget)
         log.info("Run ui command: %r (%s, %s)", self._name, self._piece, state)
         result = self._fn(self._piece, state)
         log.info("Run ui command %r result: [%s] %r", self._name, type(result), result)

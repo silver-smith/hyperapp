@@ -4,6 +4,7 @@ from functools import partial
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
+from . import htypes
 from .services import (
     ui_adapter_creg,
     )
@@ -125,10 +126,18 @@ class TreeView(View):
 
     @classmethod
     def from_piece(cls, piece):
-        return cls()
+        return cls(piece.adapter)
 
-    def construct_widget(self, piece, state, ctx):
-        adapter = ui_adapter_creg.invite(piece.adapter, ctx)
+    def __init__(self, adapter_ref):
+        super().__init__()
+        self._adapter_ref = adapter_ref
+
+    @property
+    def piece(self):
+        return htypes.tree.view(self._adapter_ref)
+
+    def construct_widget(self, state, ctx):
+        adapter = ui_adapter_creg.invite(self._adapter_ref, ctx)
         widget = _TreeWidget()
         model = _Model(adapter)
         widget.setModel(model)
@@ -144,7 +153,7 @@ class TreeView(View):
     def set_on_model_state_changed(self, widget, on_changed):
         widget.on_current_changed = on_changed
 
-    def widget_state(self, piece, widget):
+    def widget_state(self, widget):
         return None
 
     def model_state(self, widget):
@@ -153,7 +162,7 @@ class TreeView(View):
         item = adapter.get_item(index.internalId())
         return ModelState(current_item=item)
 
-    def apply(self, ctx, piece, widget, layout_diff, state_diff):
+    def apply(self, ctx, widget, layout_diff, state_diff):
         raise NotImplementedError()
 
     def _on_data_changed(self, widget, *args):

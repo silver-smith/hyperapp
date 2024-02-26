@@ -21,8 +21,9 @@ def test_widget():
     app = QtWidgets.QApplication()
     try:
         view = menu_bar.MenuBarView.from_piece(piece)
-        widget = view.construct_widget(piece, state, ctx)
-        state = view.widget_state(piece, widget)
+        widget = view.construct_widget(state, ctx)
+        assert view.piece
+        state = view.widget_state(widget)
         assert state
     finally:
         app.shutdown()

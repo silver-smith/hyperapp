@@ -23,47 +23,60 @@ class NavigatorView(View):
 
     @classmethod
     def from_piece(cls, piece):
-        return cls()
+        current_view = ui_ctl_creg.invite(piece.current_layout)
+        current_model = web.summon(piece.current_model)
+        return cls(current_view, current_model, piece.commands, piece.prev, piece.next)
 
-    def construct_widget(self, piece, state, ctx):
-        current_piece = web.summon(piece.current_layout)
-        current_view = ui_ctl_creg.animate(current_piece)
+    def __init__(self, current_view, current_model, commands, prev, next):
+        super().__init__()
+        self._current_view = current_view
+        self._current_model = current_model  # piece
+        self._commands = commands  # ref list
+        self._prev = prev  # ref opt
+        self._next = next  # ref opt
+
+    @property
+    def piece(self):
+        model_t = deduce_complex_value_type(mosaic, types, self._current_model)
+        return htypes.navigator.layout(
+            current_layout=mosaic.put(self._current_view.piece),
+            current_model=mosaic.put(self._current_model, model_t),
+            commands=self._commands,
+            prev=self._prev,
+            next=self._next,
+            )
+            
+    def construct_widget(self, state, ctx):
         if state is not None:
             current_state = web.summon(state.current_state)
         else:
             current_state = None
-        return current_view.construct_widget(current_piece, current_state, ctx)
+        return self._current_view.construct_widget(current_state, ctx)
 
-    def get_current(self, piece, widget):
+    def get_current(self, widget):
         return 0
 
-    def set_on_state_changed(self, piece, widget, on_changed):
-        current_piece = web.summon(piece.current_layout)
-        current_view = ui_ctl_creg.animate(current_piece)
-        current_view.set_on_model_state_changed(widget, on_changed)
+    def set_on_state_changed(self, widget, on_changed):
+        self._current_view.set_on_model_state_changed(widget, on_changed)
 
-    def widget_state(self, piece, widget):
-        current_piece = web.summon(piece.current_layout)
-        current_view = ui_ctl_creg.animate(current_piece)
-        current_state = current_view.widget_state(current_piece, widget)
+    def widget_state(self, widget):
+        current_state = self._current_view.widget_state(widget)
         return htypes.navigator.state(
             current_state=mosaic.put(current_state),
             prev=None,
             next=None,
             )
 
-    def get_commands(self, piece, widget, wrappers):
-        model_piece = web.summon(piece.current_model)
-        current_view = ui_ctl_creg.invite(piece.current_layout)
+    def get_commands(self, widget, wrappers):
         commands = [
             model_command_creg.invite(
-                cmd, current_view, model_piece, widget, [*wrappers, self._model_wrapper])
-            for cmd in piece.commands
+                cmd, self._current_view, self._current_model, widget, [*wrappers, self._model_wrapper])
+            for cmd in self._commands
             ]
-        state = current_view.model_state(widget)
+        state = self._current_view.model_state(widget)
         return [
             *commands,
-            *enum_model_commands(model_piece, state),
+            *enum_model_commands(self._current_model, state),
             ]
 
     def _model_wrapper(self, piece):
@@ -82,47 +95,45 @@ class NavigatorView(View):
             )
         return (layout_diff, None)
 
-    def apply(self, ctx, layout, widget, layout_diff, state_diff):
+    def apply(self, ctx, widget, layout_diff, state_diff):
         log.info("Navigator: apply: %s / %s", layout_diff, state_diff)
         if isinstance(layout_diff, htypes.navigator.open_new_diff):
-            layout = htypes.navigator.layout(
-                current_layout=layout_diff.new_current,
-                current_model=layout_diff.new_model,
-                commands=layout_diff.commands,
-                prev=mosaic.put(layout),
-                next=None,
-                )
+            current_piece = self.piece
+            self._current_view = ui_ctl_creg.invite(layout_diff.new_current)
+            self._current_model = web.summon(layout_diff.new_model)
+            self._commands = layout_diff.commands
+            self._prev = mosaic.put(current_piece)
+            self._next = None
         elif isinstance(layout_diff, htypes.navigator.go_back_diff):
-            if not layout.prev:
+            if not self._prev:
                 return None
-            prev_layout = web.summon(layout.prev)
-            layout = htypes.navigator.layout(
-                current_layout=prev_layout.current_layout,
-                current_model=prev_layout.current_model,
-                commands=prev_layout.commands,
-                prev=prev_layout.prev,
-                next=mosaic.put(layout),
-                )
+            current_piece = self.piece
+            prev = web.summon(self._prev)
+            self._current_view = ui_ctl_creg.invite(prev.current_layout)
+            self._current_model = web.summon(prev.current_model)
+            self._commands = prev.commands
+            self._prev = prev.prev
+            self._next = mosaic.put(current_piece)
         elif isinstance(layout_diff, htypes.navigator.go_forward_diff):
-            if not layout.next:
+            if not self._next:
                 return None
-            next_layout = web.summon(layout.next)
-            layout = htypes.navigator.layout(
-                current_layout=next_layout.current_layout,
-                current_model=next_layout.current_model,
-                commands=next_layout.commands,
-                prev=mosaic.put(layout),
-                next=next_layout.next,
-                )
+            current_piece = self.piece
+            next = web.summon(self._next)
+            self._current_view = ui_ctl_creg.invite(next.current_layout)
+            self._current_model = web.summon(next.current_model)
+            self._commands = next.commands
+            self._prev = mosaic.put(current_piece)
+            self._next = next.next
         else:
             raise NotImplementedError(repr(layout_diff))
-        return (layout, None, True)
+        return (None, True)
 
 
 @mark.ui_command(htypes.navigator.layout)
 def go_back(layout, state):
     layout_diff = htypes.navigator.go_back_diff()
     return (layout_diff, None)
+
 
 @mark.ui_command(htypes.navigator.layout)
 def go_forward(layout, state):
