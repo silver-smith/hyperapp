@@ -91,6 +91,34 @@ class _TreeWidget(QtWidgets.QTreeView):
         super().setVisible(visible)
         if visible:
             self.setFocus()
+            self._initial_expand()
+
+    def _initial_expand(self):
+        def bottom(idx):
+            return self.visualRect(idx).bottom()
+
+        model = self.model()
+        root = self.rootIndex()
+        queue = [root]
+        lowest = None
+        row_height = None
+        height = self.size().height()
+        while queue:
+            index = queue.pop(0)
+            if index is not root and not row_height:
+                row_height = self.visualRect(index).height()
+            row_count = model.rowCount(index)
+            if not row_count:
+                continue
+            if lowest and row_height and bottom(lowest) + row_height * (row_count + 1) > height:
+                break
+            self.expand(index)
+            for row in range(row_count):
+                kid = model.index(row, 0, index)
+                queue.append(kid)
+            if not lowest or bottom(kid) > bottom(lowest):
+                lowest = kid
+        self.resizeColumnToContents(0)
 
 
 class TreeView(View):
@@ -106,6 +134,7 @@ class TreeView(View):
         widget.setModel(model)
         widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         widget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        widget.setUniformRowHeights(True)
         font_info = widget.fontInfo()
         # widget.setCurrentIndex(widget.model().createIndex(0, 0))
         # model.dataChanged.connect(partial(self._on_data_changed, widget))
