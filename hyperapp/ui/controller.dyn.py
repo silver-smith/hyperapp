@@ -194,6 +194,8 @@ class Controller:
             self._run_callback = True
 
     def _apply_window_diff(self, item_id, ctx, command_hub, view, widget, diffs):
+        if diffs is None:
+            return
         layout_diff, state_diff = diffs
         log.info("Apply window diffs: %s / %s", layout_diff, state_diff)
         window_idx = self.window_id_to_idx(item_id)

@@ -69,6 +69,8 @@ class TabsView(View):
         widget.currentChanged.connect(lambda idx: on_changed())
 
     def wrapper(self, widget, diffs):
+        if diffs is None:
+            return None
         layout_diff, state_diff = diffs
         idx = widget.currentIndex()
         return (
