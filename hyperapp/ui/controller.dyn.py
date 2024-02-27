@@ -132,7 +132,7 @@ class Controller:
 
     def _make_item_commands(self, view, widget, wrappers, path):
         return [
-            *ui_command_factory(view.piece, view, widget, wrappers),
+            *ui_command_factory(view, widget, wrappers),
             *view.get_commands(widget, wrappers),
             ]
 

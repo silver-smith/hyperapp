@@ -27,14 +27,17 @@ class PhonyWidget:
 
 class PhonyView:
 
+    @property
+    def piece(self):
+        return "Unused"
+
     def widget_state(self, widget):
         return None
 
 
 async def test_ui_command_factory():
-    view_piece = "Nothing is here"
     widget = PhonyWidget()  # Should hold ref to it.
-    command_list = ui_command_factory(view_piece, PhonyView(), widget, wrappers=[])
+    command_list = ui_command_factory(PhonyView(), widget, wrappers=[])
     assert command_list
     result = await command_list[0].run()
     assert result == 123, repr(result)
