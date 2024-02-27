@@ -53,7 +53,6 @@ class TabsView(View):
             w = tab.view.construct_widget(tab_state, ctx)
             tabs.addTab(w, tab.label)
         tabs.setCurrentIndex(state.current_tab)
-        tabs.currentChanged.connect(partial(self._on_current_changed, ctx.command_hub))
         return tabs
 
     def get_current(self, widget):
@@ -127,9 +126,6 @@ class TabsView(View):
             Item(tab.label, tab.view, widget.widget(idx))
             for idx, tab in enumerate(self._tabs)
             ]
-
-    def _on_current_changed(self, command_hub, widget, index):
-        log.info("Tabs: current changed for %s to %s", widget, index)
 
 
 @mark.ui_command(htypes.tabs.layout)
