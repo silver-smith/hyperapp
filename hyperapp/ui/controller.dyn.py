@@ -158,22 +158,25 @@ class Controller:
             child_id, old_child.path, old_child.ctx, old_child.command_hub, old_child.name, old_child.view, widget, old_child.wrappers)
         self._id_to_parent_item[child.id] = item
         item.children[idx] = child
+        self._update_item_commands(child)
+
+    def _update_item_commands(self, item):
+        path_to_commands = self._collect_item_commands(item)
+        item.command_hub.set_commands(path_to_commands)
 
     def _on_current_changed(self, item):
         if not self._run_callback:
             return
         idx = item.view.get_current(item.widget)
         log.info("Controller: current changed to #%d for: %s", idx, item)
-        path_to_commands = self._collect_item_commands(item.children[idx])
-        item.command_hub.set_commands(path_to_commands)
+        self._update_item_commands(item.children[idx])
 
     def _on_state_changed(self, item):
         if not self._run_callback:
             return
         log.info("Controller: state changed for: %s", item)
         item.commands[:] = self._make_item_commands(item.view, item.widget, item.wrappers, item.path)
-        path_to_commands = self._collect_item_commands(item)
-        item.command_hub.set_commands(path_to_commands)
+        self._update_item_commands(item)
 
     def _collect_item_commands(self, item):
         path_to_commands = {tuple(item.path): item.commands}
