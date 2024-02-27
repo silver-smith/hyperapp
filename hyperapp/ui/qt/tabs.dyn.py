@@ -62,7 +62,6 @@ class TabsView(View):
         self._on_child_changed = on_changed
 
     def set_on_current_changed(self, widget, on_changed):
-        widget.currentChanged.disconnect()
         widget.currentChanged.connect(lambda idx: on_changed())
 
     def wrapper(self, widget, diffs):
