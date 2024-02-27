@@ -7,12 +7,19 @@ Item = namedtuple('Item', 'name view widget')
 
 class View(metaclass=abc.ABCMeta):
 
+    @abc.abstractproperty
+    def piece(self):
+        pass
+
     @abc.abstractmethod
     def construct_widget(self, state, ctx):
         pass
 
     def get_current(self, widget):
         return 0
+
+    def set_on_child_changed(self, on_changed):
+        pass
 
     def set_on_current_changed(self, widget, on_changed):
         pass

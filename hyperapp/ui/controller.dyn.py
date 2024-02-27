@@ -125,8 +125,9 @@ class Controller:
             children.append(child)
         item = _Item(item_id, path, ctx, command_hub, name, view, widget, wrappers, commands, children)
         self._id_to_item[item_id] = item
-        view.set_on_state_changed(widget, partial(self._on_state_changed, item))
+        view.set_on_child_changed(partial(self._on_child_changed, item))
         view.set_on_current_changed(widget, partial(self._on_current_changed, item))
+        view.set_on_state_changed(widget, partial(self._on_state_changed, item))
         return item
 
     def _make_item_commands(self, view, widget, wrappers, path):
@@ -134,6 +135,14 @@ class Controller:
             *ui_command_factory(view.piece, view, widget, wrappers),
             *view.get_commands(widget, wrappers),
             ]
+
+    def _on_child_changed(self, item, idx, widget):
+        log.info("Child #%d changed for: %s", idx, item)
+        old_child = item.children[idx]
+        child_id = next(self._counter)
+        child = self._populate_item(
+            child_id, [*item.path, idx], item.ctx, item.command_hub, old_child.name, old_child.view, widget, item.wrappers)
+        item.children[idx] = child
 
     def _on_current_changed(self, item):
         if not self._run_callback:

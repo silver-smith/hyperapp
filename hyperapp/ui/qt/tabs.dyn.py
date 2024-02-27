@@ -33,6 +33,7 @@ class TabsView(View):
     def __init__(self, tabs):
         super().__init__()
         self._tabs = tabs  # list[_Tab]
+        self._on_child_changed = lambda idx, w: None
 
     @property
     def piece(self):
@@ -57,6 +58,9 @@ class TabsView(View):
 
     def get_current(self, widget):
         return widget.currentIndex()
+
+    def set_on_child_changed(self, on_changed):
+        self._on_child_changed = on_changed
 
     def set_on_current_changed(self, widget, on_changed):
         widget.currentChanged.disconnect()
@@ -107,6 +111,7 @@ class TabsView(View):
                 widget.removeTab(idx)
                 widget.insertTab(idx, w, tab.label)
                 widget.setCurrentIndex(idx)
+                self._on_child_changed(idx, w)
             return (self.widget_state(widget), False)
         if isinstance(layout_diff, ListDiff.Remove):
             idx = layout_diff.idx
