@@ -148,7 +148,7 @@ class Controller:
         if not self._run_callback:
             return
         idx = item.view.get_current(item.widget)
-        log.info("Controller: current changed for: %s -> %s", item, idx)
+        log.info("Controller: current changed to #%d for: %s", idx, item)
         path_to_commands = self._collect_item_commands(item.children[idx])
         item.command_hub.set_commands(path_to_commands)
 
