@@ -85,6 +85,9 @@ class FnListAdapter:
         item = self._items[row]
         return getattr(item, self._column_names[column])
 
+    def get_item(self, idx):
+        return self._items[idx]
+
     def subscribe(self, model):
         self._subscribed_models.add(model)
 

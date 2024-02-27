@@ -17,33 +17,33 @@ log = logging.getLogger(__name__)
 ROW_HEIGHT_PADDING = 3  # same as default QTreeView padding
 
 
-ModelState = namedtuple('ModelState', 'current_idx')
+ModelState = namedtuple('ModelState', 'current_idx current_item')
 
 
 class _Model(QtCore.QAbstractTableModel):
 
     def __init__(self, adapter):
         super().__init__()
-        self._adapter = adapter
-        self._adapter.subscribe(self)
+        self.adapter = adapter
+        self.adapter.subscribe(self)
 
     # Qt methods  -------------------------------------------------------------------------------------------------------
 
     def columnCount(self, parent):
-        return self._adapter.column_count()
+        return self.adapter.column_count()
 
     def headerData(self, section, orient, role):
         if role == QtCore.Qt.DisplayRole and orient == QtCore.Qt.Orientation.Horizontal:
-            return self._adapter.column_title(section)
+            return self.adapter.column_title(section)
         return super().headerData(section, orient, role)
 
     def rowCount(self, parent):
-        return self._adapter.row_count()
+        return self.adapter.row_count()
 
     def data(self, index, role):
         if role != QtCore.Qt.DisplayRole:
             return None
-        return self._adapter.cell_data(index.row(), index.column())
+        return self.adapter.cell_data(index.row(), index.column())
 
     # subscription  ----------------------------------------------------------------------------------------------------
 
@@ -51,7 +51,7 @@ class _Model(QtCore.QAbstractTableModel):
         log.info("List: process diff: %s", diff)
         if not isinstance(diff, ListDiff.Append):
             raise NotImplementedError(diff)
-        row_count = self._adapter.row_count()
+        row_count = self.adapter.row_count()
         self.beginInsertRows(QtCore.QModelIndex(), row_count - 1, row_count - 1)
         self.endInsertRows()
 
@@ -99,7 +99,13 @@ class ListView(View):
         return None
 
     def model_state(self, widget):
-        return ModelState(current_idx=widget.currentIndex().row())
+        adapter = widget.model().adapter
+        idx = widget.currentIndex().row()
+        if adapter.row_count():
+            current_item = adapter.get_item(idx)
+        else:
+            current_item = None
+        return ModelState(current_idx=idx, current_item=current_item)
 
     def apply(self, ctx, widget, layout_diff, state_diff):
         raise NotImplementedError()
