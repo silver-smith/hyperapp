@@ -249,7 +249,10 @@ def layout_tree(piece, parent):
 
 
 def layout_tree_commands(piece, current_item):
-    commands = controller.item_commands(current_item.id)
+    if current_item:
+        commands = controller.item_commands(current_item.id)
+    else:
+        commands = []
     log.info("Layout tree commands for %s: %s", current_item, commands)
     return commands
 
