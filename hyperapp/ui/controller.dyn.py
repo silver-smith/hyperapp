@@ -265,3 +265,12 @@ async def open_layout_item_commands(piece, current_item):
     log.info("Open layout item commands for: %s", current_item)
     if current_item:
         return htypes.layout.command_list(item_id=current_item.id)
+
+
+def layout_item_commands(piece):
+    command_list = [
+        htypes.layout.command_item(command.name)
+        for command in controller.item_commands(piece.item_id)
+        ]
+    log.info("Get layout item commands for %s: %s", piece, command_list)
+    return command_list

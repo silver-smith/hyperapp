@@ -8,3 +8,6 @@ item = record:
 
 command_list = record:
   item_id: int
+
+command_item = record:
+  name: string

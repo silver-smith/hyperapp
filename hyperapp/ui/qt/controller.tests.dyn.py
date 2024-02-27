@@ -111,3 +111,20 @@ async def test_open_layout_item_commands():
     item.id = 123
     result = await controller.open_layout_item_commands(piece, current_item=item)
     assert result
+
+
+def test_layout_item_commands():
+    ctx = Context()
+    root_piece = make_piece()
+    root_state = make_state()
+    app = QtWidgets.QApplication()
+    try:
+        controller.controller.create_windows(root_piece, root_state, ctx, show=False)
+        piece = htypes.layout.view()
+        windows = controller.layout_tree(piece, None)
+        window_items = controller.layout_tree(piece, windows[0])
+        item_id = window_items[1].id
+        commands = controller.layout_item_commands(htypes.layout.command_list(item_id))
+        assert commands
+    finally:
+        app.shutdown()
