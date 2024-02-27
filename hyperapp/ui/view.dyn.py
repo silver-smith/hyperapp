@@ -18,6 +18,9 @@ class View(metaclass=abc.ABCMeta):
     def get_current(self, widget):
         return 0
 
+    def set_on_item_changed(self, on_changed):
+        pass
+
     def set_on_child_changed(self, on_changed):
         pass
 

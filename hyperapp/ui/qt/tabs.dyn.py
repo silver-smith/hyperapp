@@ -33,6 +33,7 @@ class TabsView(View):
     def __init__(self, tabs):
         super().__init__()
         self._tabs = tabs  # list[_Tab]
+        self._on_item_changed = lambda: None
         self._on_child_changed = lambda idx, w: None
 
     @property
@@ -57,6 +58,9 @@ class TabsView(View):
 
     def get_current(self, widget):
         return widget.currentIndex()
+
+    def set_on_item_changed(self, on_changed):
+        self._on_item_changed = on_changed
 
     def set_on_child_changed(self, on_changed):
         self._on_child_changed = on_changed
@@ -95,6 +99,7 @@ class TabsView(View):
             self._tabs = layout_diff.insert(self._tabs, new_tab)
             widget.insertTab(idx, w, layout_diff.item.label)
             widget.setCurrentIndex(idx)
+            self._on_item_changed()
             return (self.widget_state(widget), False)
         if isinstance(layout_diff, ListDiff.Modify):
             idx = layout_diff.idx
@@ -116,6 +121,7 @@ class TabsView(View):
             widget.removeTab(idx)
             widget.setCurrentIndex(idx)
             self._tabs = layout_diff.remove(self._tabs)
+            self._on_item_changed()
             return (self.widget_state(widget), False)
         else:
             raise NotImplementedError(f"Not implemented: tab.apply({layout_diff})")
