@@ -128,3 +128,8 @@ def test_layout_item_commands():
         assert commands
     finally:
         app.shutdown()
+
+
+async def test_add_layout_command():
+    piece = htypes.layout.command_list(item_id=123)
+    result = await controller.add_layout_command(piece, current_item=None)

@@ -277,3 +277,7 @@ def layout_item_commands(piece):
         ]
     log.info("Get layout item commands for %s: %s", piece, command_list)
     return command_list
+
+
+async def add_layout_command(piece, current_item):
+    log.info("Add layout command for %s: %s", piece, current_item)

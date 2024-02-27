@@ -27,6 +27,7 @@ _hardcoded_shortcuts = {
     'show_state': ['Ctrl+Return'],
     'sample_list_state': ['Return'],
     'open_layout_item_commands': ['C'],
+    'add_layout_command': ['Insert'],
     }
 
 

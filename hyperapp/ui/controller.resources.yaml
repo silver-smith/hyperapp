@@ -38,6 +38,12 @@ associations:
   key:
   - model_command_d
   - legacy_type.layout:command_list
+  value: add_layout_command.command
+- bases:
+  - legacy_type.layout:command_list
+  key:
+  - model_command_d
+  - legacy_type.layout:command_list
   value: layout_item_commands.command
 - bases:
   - legacy_type.layout:command_list
@@ -64,6 +70,16 @@ associations:
   - legacy_type.layout:view
   value: layout_tree.model
 definitions:
+  add_layout_command:
+    _type: legacy_type.builtin:attribute
+    object: controller.module
+    attr_name: add_layout_command
+  add_layout_command.command:
+    _type: legacy_type.ui:model_command
+    function: add_layout_command
+    params:
+    - piece
+    - current_item
   controller.module:
     _type: legacy_type.builtin:python_module
     module_name: controller
