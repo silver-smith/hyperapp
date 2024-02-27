@@ -4,3 +4,7 @@ item = record:
   id: int
   name: string
   description: string
+
+
+command_list = record:
+  item_id: int

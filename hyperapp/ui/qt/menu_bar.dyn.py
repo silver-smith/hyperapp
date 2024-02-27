@@ -26,6 +26,7 @@ _hardcoded_shortcuts = {
     'open_feed_sample_fn_tree': ['Shift+f6'],
     'show_state': ['Ctrl+Return'],
     'sample_list_state': ['Return'],
+    'open_layout_item_commands': ['C'],
     }
 
 

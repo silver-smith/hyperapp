@@ -285,7 +285,7 @@ def _create_trace_resources(ctx, module_name, resource_module, module_res, qname
             # Return type suggests it can be a command.
             if params.keys() <= {'state'}:
                 ass_list += construct_global_model_command(ctx, module_name, resource_module, module_res, qname, params)
-            if param_names[:1] == ['piece'] and set(param_names[1:]) <= {'state', 'current_idx'}:
+            if param_names[:1] == ['piece'] and set(param_names[1:]) <= {'state', 'current_idx', 'current_item'}:
                 piece_t_ref = _resolve_record_t(params['piece'])
                 if piece_t_ref is None:
                     log.warning("%s.%s: layout parameter type is not a data record", module_name, qname)

@@ -103,3 +103,11 @@ def test_layout_tree_commands():
         assert commands
     finally:
         app.shutdown()
+
+
+async def test_open_layout_item_commands():
+    piece = htypes.layout.view()
+    item = Mock()
+    item.id = 123
+    result = await controller.open_layout_item_commands(piece, current_item=item)
+    assert result

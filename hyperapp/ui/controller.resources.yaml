@@ -8,6 +8,7 @@ import:
 - legacy_type.builtin:call
 - legacy_type.builtin:none
 - legacy_type.builtin:python_module
+- legacy_type.layout:command_list
 - legacy_type.layout:item
 - legacy_type.layout:view
 - legacy_type.root:state
@@ -16,6 +17,7 @@ import:
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:model
 - legacy_type.ui:model_command
+- legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_enumerator
 - legacy_type.ui:model_command_enumerator_d
 - legacy_type.ui:model_d
@@ -29,6 +31,12 @@ associations:
   - global_model_command_d
   key: global_model_command_d
   value: open_layout_tree.command
+- bases:
+  - legacy_type.layout:view
+  key:
+  - model_command_d
+  - legacy_type.layout:view
+  value: open_layout_item_commands.command
 - bases:
   - legacy_type.layout:view
   key:
@@ -50,6 +58,7 @@ definitions:
       code.command_hub: ui.command_hub:command_hub.module
       code.list_diff: common.list_diff:list_diff.module
       code.view: ui.view:view.module
+      htypes.layout.command_list: legacy_type.layout:command_list
       htypes.layout.item: legacy_type.layout:item
       htypes.layout.view: legacy_type.layout:view
       htypes.root.state: legacy_type.root:state
@@ -87,12 +96,25 @@ definitions:
     params:
     - piece
     - current_item
+  model_command_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:model_command_d
   model_command_enumerator_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_command_enumerator_d
   model_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_d
+  open_layout_item_commands:
+    _type: legacy_type.builtin:attribute
+    object: controller.module
+    attr_name: open_layout_item_commands
+  open_layout_item_commands.command:
+    _type: legacy_type.ui:model_command
+    function: open_layout_item_commands
+    params:
+    - piece
+    - current_item
   open_layout_tree:
     _type: legacy_type.builtin:attribute
     object: controller.module
