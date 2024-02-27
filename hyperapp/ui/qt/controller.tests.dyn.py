@@ -48,7 +48,7 @@ def test_root_view_widget_state():
     ctl.get_window_state_list.return_value = []
     ctl.window_id_to_idx.return_value = 0
     root_view = controller.RootView(ctl, window_item_id=0)
-    state = root_view.widget_state(piece=None, widget=None)
+    state = root_view.widget_state(widget=None)
     assert isinstance(state, htypes.root.state)
 
 
