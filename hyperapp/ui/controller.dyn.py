@@ -155,7 +155,7 @@ class Controller:
         old_child = item.children[idx]
         child_id = next(self._counter)
         child = self._populate_item(
-            child_id, [*item.path, idx], item.ctx, item.command_hub, old_child.name, old_child.view, widget, item.wrappers)
+            child_id, old_child.path, old_child.ctx, old_child.command_hub, old_child.name, old_child.view, widget, old_child.wrappers)
         self._id_to_parent_item[child.id] = item
         item.children[idx] = child
 
