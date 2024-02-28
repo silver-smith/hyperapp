@@ -4,6 +4,7 @@ from . import htypes
 from .services import (
     mark,
     ui_ctl_creg,
+    web,
     )
 from .code.list_diff import ListDiff
 from .code.wrapper_view import WrapperView
@@ -11,12 +12,22 @@ from .code.wrapper_view import WrapperView
 log = logging.getLogger(__name__)
 
 
+def tab_label(piece_ref):
+    piece = web.summon(piece_ref)
+    if isinstance(piece, htypes.navigator.layout):
+        piece = web.summon(piece.current_model)
+    return str(piece)[:40]
+
+
 class AutoTabsView(WrapperView):
 
     @classmethod
     def from_piece(cls, piece):
         tabs = [
-            htypes.tabs.tab(f'tab#{idx}', view_ref)
+            htypes.tabs.tab(
+                label=tab_label(view_ref),
+                ctl=view_ref,
+                )
             for idx, view_ref in enumerate(piece.tabs)
             ]
         base_piece = htypes.tabs.layout(tabs)
@@ -34,12 +45,17 @@ class AutoTabsView(WrapperView):
             base_layout_diff = ListDiff.Insert(
                 idx=layout_diff.idx,
                 item=htypes.tabs.tab(
-                    label=f'tab#{layout_diff.idx}',
+                    label=tab_label(layout_diff.item),
                     ctl=layout_diff.item,
                     ),
                 )
             return self._base.apply(ctx, widget, base_layout_diff, state_diff)
-        elif isinstance(layout_diff, (ListDiff.Modify, ListDiff.Remove)):
+        elif isinstance(layout_diff, ListDiff.Modify):
+            result = self._base.apply(ctx, widget, layout_diff, state_diff)
+            label = tab_label(self.piece.tabs[layout_diff.idx])
+            widget.setTabText(layout_diff.idx, label)
+            return result
+        elif isinstance(layout_diff, ListDiff.Remove):
             return self._base.apply(ctx, widget, layout_diff, state_diff)
         else:
             raise NotImplementedError(f"Not implemented: auto_tab.apply({layout_diff})")
