@@ -8,14 +8,15 @@ from .services import (
     )
 from .code.context import Context
 from .code.list_diff import ListDiff
+from .code.view import Diff
 from .tested.code import controller
 
 
 def make_piece():
     adapter_piece = htypes.str_adapter.static_str_adapter("Sample text")
     text_piece = htypes.text.view_layout(mosaic.put(adapter_piece))
-    tabs_piece = htypes.tabs.layout(
-        tabs=[htypes.tabs.tab("One", mosaic.put(text_piece))],
+    tabs_piece = htypes.auto_tabs.view(
+        tabs=[mosaic.put(text_piece)],
         )
     window_piece = htypes.window.layout(
         menu_bar_ref=mosaic.put(htypes.menu_bar.layout()),
@@ -60,15 +61,17 @@ def test_apply_root_diff():
     try:
         ctl = controller.controller
         ctl.create_windows(root_piece, root_state, ctx, show=False)
-        layout_diff = ListDiff.Insert(
-            idx=0,
-            item=root_piece.window_list[0],
+        diff = Diff(
+            piece=ListDiff.Insert(
+                idx=0,
+                item=root_piece.window_list[0],
+                ),
+            state=ListDiff.Insert(
+                idx=0,
+                item=root_state.window_list[0],
+                ),
             )
-        state_diff = ListDiff.Insert(
-            idx=0,
-            item=root_state.window_list[0],
-            )
-        ctl._apply_root_diff((layout_diff, state_diff))
+        ctl._apply_root_diff(diff)
     finally:
         app.shutdown()
 

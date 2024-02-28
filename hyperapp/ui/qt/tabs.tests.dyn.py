@@ -8,6 +8,7 @@ from .services import (
 from .code.list_diff import ListDiff
 from .code.context import Context
 from .code.command_hub import CommandHub
+from .code.view import Diff
 from .tested.code import tabs
 
 
@@ -58,15 +59,16 @@ def test_tabs():
 
 
 def duplicate(layout, state):
-    layout_diff = ListDiff.Insert(
-        idx=state.current_tab + 1,
-        item=layout.tabs[state.current_tab],
+    return Diff(
+        piece=ListDiff.Insert(
+            idx=state.current_tab + 1,
+            item=layout.tabs[state.current_tab],
+            ),
+        state=ListDiff.Insert(
+            idx=state.current_tab + 1,
+            item=state.tabs[state.current_tab],
+            ),
         )
-    state_diff = ListDiff.Insert(
-        idx=state.current_tab + 1,
-        item=state.tabs[state.current_tab],
-        )
-    return (layout_diff, state_diff)
 
 
 def test_duplicate():
@@ -77,8 +79,8 @@ def test_duplicate():
     try:
         view = tabs.TabsView.from_piece(piece)
         widget = view.construct_widget(state, ctx)
-        piece_diff, state_diff = duplicate(piece, state)
-        new_state, replace = view.apply(ctx, widget, piece_diff, state_diff)
+        diff = duplicate(piece, state)
+        new_state, replace = view.apply(ctx, widget, diff)
         assert len(view.piece.tabs) == 2
         assert view.piece.tabs[0] == piece.tabs[0]
         assert view.piece.tabs[0] == view.piece.tabs[1]
@@ -96,12 +98,9 @@ def test_modify():
     try:
         view = tabs.TabsView.from_piece(outer_piece)
         widget = view.construct_widget(outer_state, ctx)
-        inner_piece_diff, inner_state_diff = duplicate(inner_piece, inner_state)
-        outer_piece_diff, outer_state_diff = view.wrapper(
-            widget, (inner_piece_diff, inner_state_diff),
-            )
-        new_outer_state, replace = view.apply(
-            ctx, widget, outer_piece_diff, outer_state_diff)
+        inner_diff = duplicate(inner_piece, inner_state)
+        outer_diff = view.wrapper(widget, inner_diff)
+        new_outer_state, replace = view.apply(ctx, widget, outer_diff)
         assert len(view.piece.tabs) == 1
         new_inner_piece = web.summon(view.piece.tabs[0].ctl)
         assert len(new_inner_piece.tabs) == 2

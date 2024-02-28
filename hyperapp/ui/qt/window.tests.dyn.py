@@ -8,6 +8,7 @@ from .services import (
 from .code.context import Context
 from .code.command_hub import CommandHub
 from .code.list_diff import ListDiff
+from .code.view import Diff
 from .code import menu_bar  # Used implicitly
 from .tested.code import window
 
@@ -64,7 +65,7 @@ def test_apply_diff():
         widget = view.construct_widget(state, ctx)
         piece_diff = ListDiff.Insert(1, tabs_piece.tabs[0])
         state_diff = ListDiff.Insert(1, tabs_state.tabs[0])
-        new_state, replace = view.apply(ctx, widget, piece_diff, state_diff)
+        new_state, replace = view.apply(ctx, widget, Diff(piece_diff, state_diff))
         new_tabs_piece = web.summon(view.piece.central_view_ref)
         assert len(new_tabs_piece.tabs) == 2
     finally:
@@ -76,5 +77,5 @@ def test_duplicate_window():
     tabs_state, window_state = make_state()
     root_piece = htypes.root.view([mosaic.put(window_piece)])
     root_state = htypes.root.state([mosaic.put(window_state)], 0)
-    diffs = window.duplicate_window(root_piece, root_state)
-    assert diffs
+    diff = window.duplicate_window(root_piece, root_state)
+    assert diff

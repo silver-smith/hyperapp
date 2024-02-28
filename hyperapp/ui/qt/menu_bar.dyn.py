@@ -71,7 +71,7 @@ class MenuBarView(View):
         for command in added_commands:
             self._add_action(menu, command)
 
-    def apply(self, ctx, widget, layout_diff, state_diff):
+    def apply(self, ctx, widget, diff):
         raise NotImplementedError()
 
     def _add_action(self, menu, command):

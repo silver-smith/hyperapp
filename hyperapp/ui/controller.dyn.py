@@ -42,7 +42,7 @@ class RootView(View):
         current_idx = self._controller.window_id_to_idx(self._window_item_id)
         return htypes.root.state(self._controller.get_window_state_list(), current_idx)
 
-    def apply(self, ctx, widget, layout_diff, state_diff):
+    def apply(self, ctx, widget, diff):
         raise NotImplementedError()
 
 
@@ -193,32 +193,30 @@ class Controller:
         finally:
             self._run_callback = True
 
-    def _apply_window_diff(self, item_id, ctx, command_hub, view, widget, diffs):
-        if diffs is None:
+    def _apply_window_diff(self, item_id, ctx, command_hub, view, widget, diff):
+        if diff is None:
             return
-        layout_diff, state_diff = diffs
-        log.info("Apply window diffs: %s / %s", layout_diff, state_diff)
+        log.info("Apply window diff: %s", diff)
         window_idx = self.window_id_to_idx(item_id)
         with self._without_callback():
-            result = view.apply(ctx, widget, layout_diff, state_diff)
+            result = view.apply(ctx, widget, diff)
         if result is None:
             return
         new_state, replace = result
         log.info("Applied piece: %s / %s", new_state, replace)
         assert not replace  # Not yet supported.
 
-    def _apply_root_diff(self, diffs):
-        layout_diff, state_diff = diffs
-        log.info("Apply root diffs: %s / %s", layout_diff, state_diff)
-        if isinstance(layout_diff, ListDiff.Insert):
-            piece_ref = layout_diff.item
-            state_ref = state_diff.item
+    def _apply_root_diff(self, diff):
+        log.info("Apply root diff: %s", diff)
+        if isinstance(diff.piece, ListDiff.Insert):
+            piece_ref = diff.piece.item
+            state_ref = diff.state.item
             item = self._create_window(piece_ref, state_ref, self._root_ctx)
-            self._window_items = layout_diff.insert(self._window_items, item)
+            self._window_items = diff.piece.insert(self._window_items, item)
             self._set_window_commands(item)
             item.widget.show()
         else:
-            raise NotImplementedError(layout_diff)
+            raise NotImplementedError(diff.piece)
 
     def view_items(self, item_id):
         if item_id == 0:

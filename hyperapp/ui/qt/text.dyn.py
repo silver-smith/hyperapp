@@ -34,7 +34,7 @@ class ViewTextView(View):
         # return htypes.text.state(text=widget.toPlainText())
         return htypes.text.state()
 
-    def apply(self, ctx, widget, layout_diff, state_diff):
+    def apply(self, ctx, widget, diff):
         raise NotImplementedError()
 
 
@@ -65,5 +65,5 @@ class EditTextView(View):
         # return htypes.text.state(text=widget.toPlainText())
         return htypes.text.state()
 
-    def apply(self, ctx, widget, layout_diff, state_diff):
+    def apply(self, ctx, widget, diff):
         raise NotImplementedError()

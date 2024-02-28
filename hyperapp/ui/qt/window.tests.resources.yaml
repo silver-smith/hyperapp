@@ -9,6 +9,7 @@ import:
 - legacy_type.phony:phony
 - ui.command_hub:command_hub.module
 - ui.qt.menu_bar:menu_bar.module
+- ui.view:view.module
 associations: []
 definitions:
   phony:
@@ -22,6 +23,7 @@ definitions:
       code.context: common.context:context.module
       code.list_diff: common.list_diff:list_diff.module
       code.menu_bar: ui.qt.menu_bar:menu_bar.module
+      code.view: ui.view:view.module
       services.mosaic: builtins:mosaic.service
       services.web: builtins:web.service
       tested.code.window: phony

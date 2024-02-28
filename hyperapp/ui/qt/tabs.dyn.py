@@ -13,7 +13,7 @@ from .services import (
     web,
     )
 from .code.list_diff import ListDiff
-from .code.view import Item, View
+from .code.view import Diff, Item, View
 
 log = logging.getLogger(__name__)
 
@@ -68,14 +68,13 @@ class TabsView(View):
     def set_on_current_changed(self, widget, on_changed):
         widget.currentChanged.connect(lambda idx: on_changed())
 
-    def wrapper(self, widget, diffs):
-        if diffs is None:
+    def wrapper(self, widget, diff):
+        if diff is None:
             return None
-        layout_diff, state_diff = diffs
         idx = widget.currentIndex()
-        return (
-            ListDiff.Modify(idx, layout_diff),
-            ListDiff.Modify(idx, state_diff),
+        return Diff(
+            piece=ListDiff.Modify(idx, diff.piece),
+            state=ListDiff.Modify(idx, diff.state),
             )
 
     def widget_state(self, widget):
@@ -88,26 +87,27 @@ class TabsView(View):
             tabs=tabs,
             )
 
-    def apply(self, ctx, widget, layout_diff, state_diff):
-        log.info("Tabs: apply: %s / %s", layout_diff, state_diff)
-        if isinstance(layout_diff, ListDiff.Insert):
-            idx = layout_diff.idx
+    def apply(self, ctx, widget, diff):
+        log.info("Tabs: apply: %s", diff)
+        if isinstance(diff.piece, ListDiff.Insert):
+            idx = diff.piece.idx
             old_state = self.widget_state(widget)
-            tab_piece = web.summon(layout_diff.item.ctl)
+            tab_piece = web.summon(diff.piece.item.ctl)
             tab_view = ui_ctl_creg.animate(tab_piece)
-            tab_state = web.summon(state_diff.item)
+            tab_state = web.summon(diff.state.item)
             w = tab_view.construct_widget(tab_state, ctx)
-            new_tab = self._Tab(tab_view, layout_diff.item.label)
-            self._tabs = layout_diff.insert(self._tabs, new_tab)
-            widget.insertTab(idx, w, layout_diff.item.label)
+            new_tab = self._Tab(tab_view, diff.piece.item.label)
+            self._tabs = diff.piece.insert(self._tabs, new_tab)
+            widget.insertTab(idx, w, diff.piece.item.label)
             widget.setCurrentIndex(idx)
             self._on_item_changed()
             return (self.widget_state(widget), False)
-        elif isinstance(layout_diff, ListDiff.Modify):
-            idx = layout_diff.idx
+        elif isinstance(diff.piece, ListDiff.Modify):
+            idx = diff.piece.idx
             tab = self._tabs[idx]
+            child_diff = Diff(diff.piece.item_diff, diff.state.item_diff)
             result = tab.view.apply(
-                ctx, widget.widget(idx), layout_diff.item_diff, state_diff.item_diff)
+                ctx, widget.widget(idx), child_diff)
             if result is None:
                 return None
             new_tab_state, replace = result
@@ -118,15 +118,15 @@ class TabsView(View):
                 widget.setCurrentIndex(idx)
                 self._on_child_changed(idx, w)
             return (self.widget_state(widget), False)
-        elif isinstance(layout_diff, ListDiff.Remove):
-            idx = layout_diff.idx
+        elif isinstance(diff.piece, ListDiff.Remove):
+            idx = diff.piece.idx
             widget.removeTab(idx)
             widget.setCurrentIndex(idx)
-            self._tabs = layout_diff.remove(self._tabs)
+            self._tabs = diff.piece.remove(self._tabs)
             self._on_item_changed()
             return (self.widget_state(widget), False)
         else:
-            raise NotImplementedError(f"Not implemented: tab.apply({layout_diff})")
+            raise NotImplementedError(f"Not implemented: tab.apply({diff.piece})")
 
     def items(self, widget):
         return [

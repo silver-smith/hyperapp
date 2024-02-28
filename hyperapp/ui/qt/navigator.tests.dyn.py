@@ -11,8 +11,8 @@ from .code.command_hub import CommandHub
 from .tested.code import navigator
 
 
-def _wrapper(diffs):
-    return diffs
+def _wrapper(diff):
+    return diff
 
 
 def make_piece():
@@ -63,10 +63,8 @@ def test_navigator():
         state = view.widget_state(widget)
         assert state
 
-        diffs = view._model_wrapper("Sample text")
-        piece_diff, state_diff = diffs
-        assert len(diffs) == 2
-        view.apply(ctx, widget, piece_diff, state_diff)        
+        diff = view._model_wrapper("Sample text")
+        view.apply(ctx, widget, diff)
     finally:
         app.shutdown()
 

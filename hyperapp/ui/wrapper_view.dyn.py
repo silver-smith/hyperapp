@@ -22,14 +22,14 @@ class WrapperView(View):
     def set_on_current_changed(self, widget, on_changed):
         self._base.set_on_current_changed(widget, on_changed)
 
-    def wrapper(self, widget, diffs):
-        return self._base.wrapper(widget, diffs)
+    def wrapper(self, widget, diff):
+        return self._base.wrapper(widget, diff)
 
     def widget_state(self, widget):
         return self._base.widget_state(widget)
 
-    def apply(self, ctx, widget, layout_diff, state_diff):
-        return self._base.apply(ctx, widget, layout_diff, state_diff)
+    def apply(self, ctx, widget, diff):
+        return self._base.apply(ctx, widget, diff)
 
     def items(self, widget):
       return self._base.items(widget)

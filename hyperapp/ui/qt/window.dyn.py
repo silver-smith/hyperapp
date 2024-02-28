@@ -11,7 +11,7 @@ from .services import (
     web,
     )
 from .code.list_diff import ListDiff
-from .code.view import Item, View
+from .code.view import Diff, Item, View
 
 log = logging.getLogger(__name__)
 
@@ -63,8 +63,8 @@ class WindowView(View):
             pos=htypes.window.pos(widget.x(), widget.y()),
             )
 
-    def apply(self, ctx, widget, layout_diff, state_diff):
-        result = self._central_view.apply(ctx, widget.centralWidget(), layout_diff, state_diff)
+    def apply(self, ctx, widget, diff):
+        result = self._central_view.apply(ctx, widget.centralWidget(), diff)
         if result is None:
             return None
         new_central_state, replace = result
@@ -79,11 +79,11 @@ class WindowView(View):
 
 
 @mark.ui_command(htypes.root.view)
-def duplicate_window(layout, state):
-    log.info("Duplicate window: %s / %s", layout, state)
-    layout_diff = ListDiff.Insert(
+def duplicate_window(piece, state):
+    log.info("Duplicate window: %s / %s", piece, state)
+    diff_piece = ListDiff.Insert(
         idx=state.current + 1,
-        item=layout.window_list[state.current],
+        item=piece.window_list[state.current],
         )
     window_state = web.summon(state.window_list[state.current])
     new_window_state = htypes.window.state(
@@ -95,8 +95,8 @@ def duplicate_window(layout, state):
             y=window_state.pos.y + DUP_OFFSET.y,
             ),
         )
-    state_diff = ListDiff.Insert(
+    diff_state = ListDiff.Insert(
         idx=state.current + 1,
         item=mosaic.put(new_window_state),
         )
-    return (layout_diff, state_diff)
+    return Diff(diff_piece, diff_state)

@@ -162,7 +162,7 @@ class TreeView(View):
         item = adapter.get_item(index.internalId())
         return ModelState(current_item=item)
 
-    def apply(self, ctx, widget, layout_diff, state_diff):
+    def apply(self, ctx, widget, diff):
         raise NotImplementedError()
 
     def _on_data_changed(self, widget, *args):

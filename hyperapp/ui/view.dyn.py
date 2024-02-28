@@ -3,6 +3,7 @@ from collections import namedtuple
 
 
 Item = namedtuple('Item', 'name view widget')
+Diff = namedtuple('Diff', 'piece state', defaults=[None])
 
 
 class View(metaclass=abc.ABCMeta):
@@ -44,7 +45,7 @@ class View(metaclass=abc.ABCMeta):
         return []
 
     @abc.abstractmethod
-    def apply(self, ctx, widget, layout_diff, state_diff):
+    def apply(self, ctx, widget, diff):
         pass
 
     def items(self, widget):

@@ -14,7 +14,7 @@ from .services import (
     web,
     )
 from .code.model_command import global_commands, model_commands, enum_model_commands
-from .code.view import View
+from .code.view import Diff, View
 
 log = logging.getLogger(__name__)
 
@@ -88,23 +88,22 @@ class NavigatorView(View):
             *model_commands(piece),
             ]
         piece_t = deduce_complex_value_type(mosaic, types, piece)
-        layout_diff = htypes.navigator.open_new_diff(
+        return Diff(htypes.navigator.open_new_diff(
             new_current=mosaic.put(new_current_layout),
             new_model=mosaic.put(piece, piece_t),
             commands=[mosaic.put(cmd) for cmd in commands],
-            )
-        return (layout_diff, None)
+            ))
 
-    def apply(self, ctx, widget, layout_diff, state_diff):
-        log.info("Navigator: apply: %s / %s", layout_diff, state_diff)
-        if isinstance(layout_diff, htypes.navigator.open_new_diff):
+    def apply(self, ctx, widget, diff):
+        log.info("Navigator: apply: %s", diff)
+        if isinstance(diff.piece, htypes.navigator.open_new_diff):
             current_piece = self.piece
-            self._current_view = ui_ctl_creg.invite(layout_diff.new_current)
-            self._current_model = web.summon(layout_diff.new_model)
-            self._commands = layout_diff.commands
+            self._current_view = ui_ctl_creg.invite(diff.piece.new_current)
+            self._current_model = web.summon(diff.piece.new_model)
+            self._commands = diff.piece.commands
             self._prev = mosaic.put(current_piece)
             self._next = None
-        elif isinstance(layout_diff, htypes.navigator.go_back_diff):
+        elif isinstance(diff.piece, htypes.navigator.go_back_diff):
             if not self._prev:
                 return None
             current_piece = self.piece
@@ -114,7 +113,7 @@ class NavigatorView(View):
             self._commands = prev.commands
             self._prev = prev.prev
             self._next = mosaic.put(current_piece)
-        elif isinstance(layout_diff, htypes.navigator.go_forward_diff):
+        elif isinstance(diff.piece, htypes.navigator.go_forward_diff):
             if not self._next:
                 return None
             current_piece = self.piece
@@ -125,17 +124,15 @@ class NavigatorView(View):
             self._prev = mosaic.put(current_piece)
             self._next = next.next
         else:
-            raise NotImplementedError(repr(layout_diff))
+            raise NotImplementedError(repr(diff.piece))
         return (None, True)
 
 
 @mark.ui_command(htypes.navigator.layout)
 def go_back(layout, state):
-    layout_diff = htypes.navigator.go_back_diff()
-    return (layout_diff, None)
+    return Diff(htypes.navigator.go_back_diff())
 
 
 @mark.ui_command(htypes.navigator.layout)
 def go_forward(layout, state):
-    layout_diff = htypes.navigator.go_forward_diff()
-    return (layout_diff, None)
+    return Diff(htypes.navigator.go_forward_diff())

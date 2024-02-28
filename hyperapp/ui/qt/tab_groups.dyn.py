@@ -22,9 +22,9 @@ class TabGroupsView(WrapperView):
     def piece(self):
         return htypes.tab_groups.view(self._base.piece.tabs)
 
-    def apply(self, ctx, widget, layout_diff, state_diff):
-        log.info("TabGroups: apply: %s / %s", layout_diff, state_diff)
-        if isinstance(layout_diff, (ListDiff.Insert, ListDiff.Modify, ListDiff.Remove)):
-            return self._base.apply(ctx, widget, layout_diff, state_diff)
+    def apply(self, ctx, widget, diff):
+        log.info("TabGroups: apply: %s", diff)
+        if isinstance(diff.piece, (ListDiff.Insert, ListDiff.Modify, ListDiff.Remove)):
+            return self._base.apply(ctx, widget, diff)
         else:
-            raise NotImplementedError(f"Not implemented: tab_groups.apply({layout_diff})")
+            raise NotImplementedError(f"Not implemented: tab_groups.apply({diff.piece})")

@@ -14,6 +14,7 @@ import:
 - legacy_type.ui:ui_command_d
 - legacy_type.ui:ui_ctl
 - ui.ui_ctl_registry:ui_ctl_creg.service
+- ui.view:view.module
 - ui.wrapper_view:wrapper_view.module
 associations:
 - bases:
@@ -55,6 +56,7 @@ definitions:
     file_name: auto_tabs.dyn.py
     import_list:
       code.list_diff: common.list_diff:list_diff.module
+      code.view: ui.view:view.module
       code.wrapper_view: ui.wrapper_view:wrapper_view.module
       htypes.auto_tabs.view: legacy_type.auto_tabs:view
       htypes.navigator.layout: legacy_type.navigator:layout
