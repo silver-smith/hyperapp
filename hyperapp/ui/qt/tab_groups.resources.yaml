@@ -1,0 +1,41 @@
+# Automatically generated file. Do not edit.
+
+import:
+- common.list_diff:list_diff.module
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.tab_groups:view
+- legacy_type.tabs:layout
+- legacy_type.ui:ui_ctl
+- ui.ui_ctl_registry:ui_ctl_creg.service
+- ui.wrapper_view:wrapper_view.module
+associations:
+- bases:
+  - legacy_type.tab_groups:view
+  key:
+  - ui.ui_ctl_registry:ui_ctl_creg.service
+  - legacy_type.tab_groups:view
+  value: TabGroupsView.from_piece.ctl
+definitions:
+  TabGroupsView:
+    _type: legacy_type.builtin:attribute
+    object: tab_groups.module
+    attr_name: TabGroupsView
+  TabGroupsView.from_piece:
+    _type: legacy_type.builtin:attribute
+    object: TabGroupsView
+    attr_name: from_piece
+  TabGroupsView.from_piece.ctl:
+    _type: legacy_type.ui:ui_ctl
+    ctr_fn: TabGroupsView.from_piece
+    command_methods: []
+  tab_groups.module:
+    _type: legacy_type.builtin:python_module
+    module_name: tab_groups
+    file_name: tab_groups.dyn.py
+    import_list:
+      code.list_diff: common.list_diff:list_diff.module
+      code.wrapper_view: ui.wrapper_view:wrapper_view.module
+      htypes.tab_groups.view: legacy_type.tab_groups:view
+      htypes.tabs.layout: legacy_type.tabs:layout
+      services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service

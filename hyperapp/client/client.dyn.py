@@ -29,7 +29,7 @@ def make_layout():
             mosaic.put(navigator_piece),
             ],
         )
-    outer_tabs_piece = htypes.tabs.layout(
+    outer_tabs_piece = htypes.tab_groups.view(
         tabs=[
             htypes.tabs.tab("Outer", mosaic.put(inner_tabs_piece)),
             ],

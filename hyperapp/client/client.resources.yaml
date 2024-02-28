@@ -13,7 +13,7 @@ import:
 - legacy_type.navigator:state
 - legacy_type.root:state
 - legacy_type.root:view
-- legacy_type.tabs:layout
+- legacy_type.tab_groups:view
 - legacy_type.tabs:state
 - legacy_type.tabs:tab
 - legacy_type.text:state
@@ -52,7 +52,7 @@ definitions:
       htypes.navigator.state: legacy_type.navigator:state
       htypes.root.state: legacy_type.root:state
       htypes.root.view: legacy_type.root:view
-      htypes.tabs.layout: legacy_type.tabs:layout
+      htypes.tab_groups.view: legacy_type.tab_groups:view
       htypes.tabs.state: legacy_type.tabs:state
       htypes.tabs.tab: legacy_type.tabs:tab
       htypes.text.state: legacy_type.text:state
