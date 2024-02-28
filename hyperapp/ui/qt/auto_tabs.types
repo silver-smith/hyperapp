@@ -1,0 +1,2 @@
+view = record:
+  tabs: ref list

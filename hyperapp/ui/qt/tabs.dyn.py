@@ -103,7 +103,7 @@ class TabsView(View):
             widget.setCurrentIndex(idx)
             self._on_item_changed()
             return (self.widget_state(widget), False)
-        if isinstance(layout_diff, ListDiff.Modify):
+        elif isinstance(layout_diff, ListDiff.Modify):
             idx = layout_diff.idx
             tab = self._tabs[idx]
             result = tab.view.apply(
@@ -118,7 +118,7 @@ class TabsView(View):
                 widget.setCurrentIndex(idx)
                 self._on_child_changed(idx, w)
             return (self.widget_state(widget), False)
-        if isinstance(layout_diff, ListDiff.Remove):
+        elif isinstance(layout_diff, ListDiff.Remove):
             idx = layout_diff.idx
             widget.removeTab(idx)
             widget.setCurrentIndex(idx)
@@ -133,32 +133,3 @@ class TabsView(View):
             Item(tab.label, tab.view, widget.widget(idx))
             for idx, tab in enumerate(self._tabs)
             ]
-
-
-@mark.ui_command(htypes.tabs.layout)
-def duplicate(layout, state):
-    log.info("Duplicate tab: %s / %s", layout, state)
-    layout_diff = ListDiff.Insert(
-        idx=state.current_tab + 1,
-        item=layout.tabs[state.current_tab],
-        )
-    state_diff = ListDiff.Insert(
-        idx=state.current_tab + 1,
-        item=state.tabs[state.current_tab],
-        )
-    return (layout_diff, state_diff)
-
-
-@mark.ui_command(htypes.tabs.layout)
-def close_tab(layout, state):
-    log.info("Close tab: %s / %s", layout, state)
-    if len(layout.tabs) == 1:
-        log.info("Close tab: won't close last tab")
-        return None
-    layout_diff = ListDiff.Remove(
-        idx=state.current_tab,
-        )
-    state_diff = ListDiff.Remove(
-        idx=state.current_tab,
-        )
-    return (layout_diff, state_diff)

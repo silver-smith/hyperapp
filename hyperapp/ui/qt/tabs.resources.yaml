@@ -6,12 +6,10 @@ import:
 - common.list_diff:list_diff.module
 - common.mark:mark.service
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.tabs:layout
 - legacy_type.tabs:state
 - legacy_type.tabs:tab
-- legacy_type.ui:ui_command_d
 - legacy_type.ui:ui_ctl
 - ui.ui_command:ui_command_factory.service
 - ui.ui_ctl_registry:ui_ctl_creg.service
@@ -23,20 +21,6 @@ associations:
   - ui.ui_ctl_registry:ui_ctl_creg.service
   - legacy_type.tabs:layout
   value: TabsView.from_piece.ctl
-- bases:
-  - ui_command_d
-  - legacy_type.tabs:layout
-  key:
-  - ui_command_d
-  - legacy_type.tabs:layout
-  value: close_tab
-- bases:
-  - ui_command_d
-  - legacy_type.tabs:layout
-  key:
-  - ui_command_d
-  - legacy_type.tabs:layout
-  value: duplicate
 definitions:
   TabsView:
     _type: legacy_type.builtin:attribute
@@ -50,14 +34,6 @@ definitions:
     _type: legacy_type.ui:ui_ctl
     ctr_fn: TabsView.from_piece
     command_methods: []
-  close_tab:
-    _type: legacy_type.builtin:attribute
-    object: tabs.module
-    attr_name: close_tab
-  duplicate:
-    _type: legacy_type.builtin:attribute
-    object: tabs.module
-    attr_name: duplicate
   tabs.module:
     _type: legacy_type.builtin:python_module
     module_name: tabs
@@ -73,6 +49,3 @@ definitions:
       services.ui_command_factory: ui.ui_command:ui_command_factory.service
       services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
       services.web: builtins:web.service
-  ui_command_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:ui_command_d

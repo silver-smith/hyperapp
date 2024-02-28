@@ -1,13 +1,14 @@
 from PySide6 import QtWidgets
 
 from . import htypes
-from .tested.code import tabs
 from .services import (
     mosaic,
     web,
     )
+from .code.list_diff import ListDiff
 from .code.context import Context
 from .code.command_hub import CommandHub
+from .tested.code import tabs
 
 
 def make_inner_layout():
@@ -49,10 +50,23 @@ def test_tabs():
     try:
         view = tabs.TabsView.from_piece(piece)
         widget = view.construct_widget(state, ctx)
+        assert view.piece
         state = view.widget_state(widget)
         assert state
     finally:
         app.shutdown()
+
+
+def duplicate(layout, state):
+    layout_diff = ListDiff.Insert(
+        idx=state.current_tab + 1,
+        item=layout.tabs[state.current_tab],
+        )
+    state_diff = ListDiff.Insert(
+        idx=state.current_tab + 1,
+        item=state.tabs[state.current_tab],
+        )
+    return (layout_diff, state_diff)
 
 
 def test_duplicate():
@@ -63,41 +77,11 @@ def test_duplicate():
     try:
         view = tabs.TabsView.from_piece(piece)
         widget = view.construct_widget(state, ctx)
-        piece_diff, state_diff = tabs.duplicate(piece, state)
+        piece_diff, state_diff = duplicate(piece, state)
         new_state, replace = view.apply(ctx, widget, piece_diff, state_diff)
         assert len(view.piece.tabs) == 2
         assert view.piece.tabs[0] == piece.tabs[0]
         assert view.piece.tabs[0] == view.piece.tabs[1]
-    finally:
-        app.shutdown()
-
-
-def test_close():
-    adapter_layout = htypes.str_adapter.static_str_adapter("Sample text")
-    text_layout = htypes.text.view_layout(mosaic.put(adapter_layout))
-    piece = htypes.tabs.layout(
-        tabs=[
-            htypes.tabs.tab("One", mosaic.put(text_layout)),
-            htypes.tabs.tab("Two", mosaic.put(text_layout)),
-            ],
-        )
-    text_state = htypes.text.state()
-    state = htypes.tabs.state(
-        current_tab=0,
-        tabs=[
-            mosaic.put(text_state),
-            mosaic.put(text_state),
-            ],
-        )
-    ctx = Context(command_hub=CommandHub())
-    app = QtWidgets.QApplication()
-    try:
-        view = tabs.TabsView.from_piece(piece)
-        widget = view.construct_widget(state, ctx)
-        piece_diff, state_diff = tabs.close_tab(piece, state)
-        new_state, replace = view.apply(ctx, widget, piece_diff, state_diff)
-        assert len(view.piece.tabs) == 1
-        assert view.piece.tabs[0] == piece.tabs[1]
     finally:
         app.shutdown()
 
@@ -112,7 +96,7 @@ def test_modify():
     try:
         view = tabs.TabsView.from_piece(outer_piece)
         widget = view.construct_widget(outer_state, ctx)
-        inner_piece_diff, inner_state_diff = tabs.duplicate(inner_piece, inner_state)
+        inner_piece_diff, inner_state_diff = duplicate(inner_piece, inner_state)
         outer_piece_diff, outer_state_diff = view.wrapper(
             widget, (inner_piece_diff, inner_state_diff),
             )

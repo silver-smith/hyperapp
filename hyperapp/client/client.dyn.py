@@ -24,9 +24,9 @@ def make_layout():
         prev=None,
         next=None,
         )
-    inner_tabs_piece = htypes.tabs.layout(
+    inner_tabs_piece = htypes.auto_tabs.view(
         tabs=[
-            htypes.tabs.tab("Inner", mosaic.put(navigator_piece)),
+            mosaic.put(navigator_piece),
             ],
         )
     outer_tabs_piece = htypes.tabs.layout(

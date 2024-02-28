@@ -1,0 +1,72 @@
+# Automatically generated file. Do not edit.
+
+import:
+- common.list_diff:list_diff.module
+- common.mark:mark.service
+- legacy_type.auto_tabs:view
+- legacy_type.builtin:attribute
+- legacy_type.builtin:call
+- legacy_type.builtin:python_module
+- legacy_type.tabs:layout
+- legacy_type.tabs:tab
+- legacy_type.ui:ui_command_d
+- legacy_type.ui:ui_ctl
+- ui.ui_ctl_registry:ui_ctl_creg.service
+- ui.wrapper_view:wrapper_view.module
+associations:
+- bases:
+  - legacy_type.auto_tabs:view
+  key:
+  - ui.ui_ctl_registry:ui_ctl_creg.service
+  - legacy_type.auto_tabs:view
+  value: AutoTabsView.from_piece.ctl
+- bases:
+  - ui_command_d
+  - legacy_type.auto_tabs:view
+  key:
+  - ui_command_d
+  - legacy_type.auto_tabs:view
+  value: close_tab
+- bases:
+  - ui_command_d
+  - legacy_type.auto_tabs:view
+  key:
+  - ui_command_d
+  - legacy_type.auto_tabs:view
+  value: duplicate_tab
+definitions:
+  AutoTabsView:
+    _type: legacy_type.builtin:attribute
+    object: auto_tabs.module
+    attr_name: AutoTabsView
+  AutoTabsView.from_piece:
+    _type: legacy_type.builtin:attribute
+    object: AutoTabsView
+    attr_name: from_piece
+  AutoTabsView.from_piece.ctl:
+    _type: legacy_type.ui:ui_ctl
+    ctr_fn: AutoTabsView.from_piece
+    command_methods: []
+  auto_tabs.module:
+    _type: legacy_type.builtin:python_module
+    module_name: auto_tabs
+    file_name: auto_tabs.dyn.py
+    import_list:
+      code.list_diff: common.list_diff:list_diff.module
+      code.wrapper_view: ui.wrapper_view:wrapper_view.module
+      htypes.auto_tabs.view: legacy_type.auto_tabs:view
+      htypes.tabs.layout: legacy_type.tabs:layout
+      htypes.tabs.tab: legacy_type.tabs:tab
+      services.mark: common.mark:mark.service
+      services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
+  close_tab:
+    _type: legacy_type.builtin:attribute
+    object: auto_tabs.module
+    attr_name: close_tab
+  duplicate_tab:
+    _type: legacy_type.builtin:attribute
+    object: auto_tabs.module
+    attr_name: duplicate_tab
+  ui_command_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:ui_command_d

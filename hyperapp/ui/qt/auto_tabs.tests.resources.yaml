@@ -4,22 +4,20 @@ import:
 - builtins:mosaic.service
 - builtins:web.service
 - common.context:context.module
-- common.list_diff:list_diff.module
 - legacy_type.builtin:python_module
 - legacy_type.phony:phony
 - ui.command_hub:command_hub.module
 associations: []
 definitions:
-  phony:
-    _type: legacy_type.phony:phony
-  tabs.tests.module:
+  auto_tabs.tests.module:
     _type: legacy_type.builtin:python_module
-    module_name: tabs.tests
-    file_name: tabs.tests.dyn.py
+    module_name: auto_tabs.tests
+    file_name: auto_tabs.tests.dyn.py
     import_list:
       code.command_hub: ui.command_hub:command_hub.module
       code.context: common.context:context.module
-      code.list_diff: common.list_diff:list_diff.module
       services.mosaic: builtins:mosaic.service
       services.web: builtins:web.service
-      tested.code.tabs: phony
+      tested.code.auto_tabs: phony
+  phony:
+    _type: legacy_type.phony:phony
