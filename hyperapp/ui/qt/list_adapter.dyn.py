@@ -41,6 +41,9 @@ class StaticListAdapter:
     def cell_data(self, row, column):
         return getattr(self._value[row], self._column_names[column])
 
+    def get_item(self, idx):
+        return self._value[idx]
+
     def subscribe(self, model):
         pass
 
