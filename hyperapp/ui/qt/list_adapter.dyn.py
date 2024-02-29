@@ -1,3 +1,4 @@
+import abc
 import logging
 import weakref
 
@@ -6,7 +7,9 @@ from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 
 from .services import (
     mosaic,
+    peer_registry,
     pyobj_creg,
+    rpc_call_factory,
     types,
     web,
     )
@@ -57,20 +60,12 @@ class _Feed:
         self._adapter.send_diff(diff)
 
 
-class FnListAdapter:
+class FnListAdapterBase(metaclass=abc.ABCMeta):
 
-    @classmethod
-    def from_piece(cls, piece, ctx):
-        model_piece = web.summon(piece.model_piece)
-        element_t = pyobj_creg.invite(piece.element_t)
-        fn = pyobj_creg.invite(piece.function)
-        return cls(model_piece, element_t, piece.want_feed, fn)
-
-    def __init__(self, model_piece, item_t, want_feed, fn):
+    def __init__(self, model_piece, item_t, want_feed):
         self._model_piece = model_piece
         self._item_t = item_t
         self._want_feed = want_feed
-        self._fn = fn
         self._column_names = sorted(self._item_t.fields)
         self._item_list = None
         self._subscribed_models = weakref.WeakSet()
@@ -111,8 +106,51 @@ class FnListAdapter:
         self._populate()
         return self._item_list
 
+    @abc.abstractmethod
     def _populate(self):
-        kw = {}
+        pass
+
+
+class FnListAdapter(FnListAdapterBase):
+
+    @classmethod
+    def from_piece(cls, piece, ctx):
+        model_piece = web.summon(piece.model_piece)
+        element_t = pyobj_creg.invite(piece.element_t)
+        fn = pyobj_creg.invite(piece.function)
+        return cls(model_piece, element_t, piece.want_feed, fn)
+
+    def __init__(self, model_piece, item_t, want_feed, fn):
+        super().__init__(model_piece, item_t, want_feed)
+        self._fn = fn
+
+    def _populate(self):
+        kw = {'piece': self._model_piece}
         if self._want_feed:
             kw['feed'] = _Feed(self)
-        self._item_list = self._fn(self._model_piece, **kw)
+        self._item_list = self._fn(**kw)
+
+
+class RemoteFnListAdapter(FnListAdapterBase):
+
+    @classmethod
+    def from_piece(cls, piece, ctx):
+        model_piece = web.summon(piece.model_piece)
+        element_t = pyobj_creg.invite(piece.element_t)
+        remote_peer = peer_registry.invite(piece.remote_peer)
+        return cls(model_piece, element_t, piece.want_feed, piece.function, ctx.rpc_endpoint, ctx.identity, remote_peer)
+
+    def __init__(self, model_piece, item_t, want_feed, fn_res_ref, rpc_endpoint, identity, remote_peer):
+        super().__init__(model_piece, item_t, want_feed)
+        self._rpc_call = rpc_call_factory(
+            rpc_endpoint=rpc_endpoint,
+            receiver_peer=remote_peer,
+            servant_ref=fn_res_ref,
+            sender_identity=identity,
+            )
+
+    def _populate(self):
+        kw = {'piece': self._model_piece}
+        if self._want_feed:
+            kw['feed'] = _Feed(self)
+        self._item_list = self._rpc_call(**kw)

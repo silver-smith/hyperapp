@@ -9,7 +9,10 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.list_adapter:fn_list_adapter
+- legacy_type.list_adapter:remote_fn_list_adapter
 - legacy_type.list_adapter:static_list_adapter
+- rpc.rpc_call:rpc_call_factory.service
+- transport.identity:peer_registry.service
 - ui.ui_adapter_creg:ui_adapter_creg.service
 associations:
 - bases:
@@ -19,6 +22,13 @@ associations:
   - ui.ui_adapter_creg:ui_adapter_creg.service
   - legacy_type.list_adapter:fn_list_adapter
   value: FnListAdapter.from_piece
+- bases:
+  - ui.ui_adapter_creg:ui_adapter_creg.service
+  - legacy_type.list_adapter:remote_fn_list_adapter
+  key:
+  - ui.ui_adapter_creg:ui_adapter_creg.service
+  - legacy_type.list_adapter:remote_fn_list_adapter
+  value: RemoteFnListAdapter.from_piece
 - bases:
   - ui.ui_adapter_creg:ui_adapter_creg.service
   - legacy_type.list_adapter:static_list_adapter
@@ -35,6 +45,14 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: FnListAdapter
     attr_name: from_piece
+  RemoteFnListAdapter:
+    _type: legacy_type.builtin:attribute
+    object: list_adapter.module
+    attr_name: RemoteFnListAdapter
+  RemoteFnListAdapter.from_piece:
+    _type: legacy_type.builtin:attribute
+    object: RemoteFnListAdapter
+    attr_name: from_piece
   StaticListAdapter:
     _type: legacy_type.builtin:attribute
     object: list_adapter.module
@@ -50,6 +68,8 @@ definitions:
     import_list:
       code.list_diff: common.list_diff:list_diff.module
       services.mosaic: builtins:mosaic.service
+      services.peer_registry: transport.identity:peer_registry.service
       services.pyobj_creg: builtins:pyobj_creg.service
+      services.rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
       services.types: builtins:types.service
       services.web: builtins:web.service

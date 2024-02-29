@@ -7,3 +7,10 @@ fn_list_adapter = record:
   element_t: ref
   function: ref
   want_feed: bool
+
+remote_fn_list_adapter = record:
+  model_piece: ref
+  element_t: ref
+  function: ref
+  remote_peer: ref
+  want_feed: bool

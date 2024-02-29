@@ -1,18 +1,25 @@
 import asyncio
+import logging
 from functools import partial
 
 from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 
 from . import htypes
 from .services import (
+    endpoint_registry,
     fn_to_ref,
+    generate_rsa_identity,
     mosaic,
     pyobj_creg,
+    rpc_endpoint_factory,
+    subprocess_rpc_server_running,
     types,
     )
 from .code.context import Context
 from .code.list_diff import ListDiff
 from .tested.code import list_adapter
+
+log = logging.getLogger(__name__)
 
 
 def test_static_adapter():
@@ -36,6 +43,7 @@ def test_static_adapter():
 
 
 def sample_list_fn(piece):
+    log.info("Sample list fn: %s", piece)
     assert isinstance(piece, htypes.list_adapter_tests.sample_list), repr(piece)
     return [
         htypes.list_adapter_tests.item(11, "First item"),
@@ -76,7 +84,8 @@ def _send_diff(feed):
     feed.send(ListDiff.Append(item))
 
 
-def feed_sample_list_fn(piece, feed):
+def sample_feed_list_fn(piece, feed):
+    log.info("Sample feed list fn: %s", piece)
     assert isinstance(piece, htypes.list_adapter_tests.sample_list), repr(piece)
     loop = asyncio.get_running_loop()
     loop.call_soon(partial(_send_diff, feed))
@@ -93,7 +102,7 @@ async def test_feed_fn_adapter():
     adapter_piece = htypes.list_adapter.fn_list_adapter(
         model_piece=mosaic.put(model_piece),
         element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.list_adapter_tests.item)),
-        function=fn_to_ref(feed_sample_list_fn),
+        function=fn_to_ref(sample_feed_list_fn),
         want_feed=True,
         )
 
@@ -113,3 +122,37 @@ async def test_feed_fn_adapter():
     diff = await queue.get()
     assert isinstance(diff, ListDiff.Append), repr(diff)
     assert diff.item.id == 44
+
+
+def test_remote_fn_adapter():
+
+    identity = generate_rsa_identity(fast=True)
+    rpc_endpoint = rpc_endpoint_factory()
+    endpoint_registry.register(identity, rpc_endpoint)
+
+    ctx = Context(
+        identity=identity,
+        rpc_endpoint=rpc_endpoint,
+        )
+
+    subprocess_name = 'test-remote-fn-list-adapter-main'
+    with subprocess_rpc_server_running(subprocess_name, rpc_endpoint, identity) as process:
+        log.info("Started: %r", process)
+
+        model_piece = htypes.list_adapter_tests.sample_list()
+        adapter_piece = htypes.list_adapter.remote_fn_list_adapter(
+            model_piece=mosaic.put(model_piece),
+            element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.list_adapter_tests.item)),
+            function=fn_to_ref(sample_list_fn),
+            remote_peer=mosaic.put(process.peer.piece),
+            want_feed=False,
+            )
+        adapter = list_adapter.RemoteFnListAdapter.from_piece(adapter_piece, ctx)
+
+        assert adapter.column_count() == 2
+        assert adapter.column_title(0) == 'id'
+        assert adapter.column_title(1) == 'text'
+
+        assert adapter.row_count() == 3
+        assert adapter.cell_data(1, 0) == 22
+        assert adapter.cell_data(2, 1) == "Third item"
