@@ -5,7 +5,10 @@ from qasync import QEventLoop
 
 from . import htypes
 from .services import (
+    endpoint_registry,
+    generate_rsa_identity,
     mosaic,
+    rpc_endpoint_factory,
     visualizer,
     ui_ctl_creg,
     )
@@ -75,7 +78,14 @@ def _main():
     event_loop = QEventLoop(app)
     asyncio.set_event_loop(event_loop)  # Should be set before any asyncio objects created.
 
-    ctx = Context()
+    identity = generate_rsa_identity()
+    rpc_endpoint = rpc_endpoint_factory()
+    endpoint_registry.register(identity, rpc_endpoint)
+
+    ctx = Context(
+        identity=identity,
+        rpc_endpoint=rpc_endpoint,
+        )
     piece = make_layout()
     state = make_state()
     controller.create_windows(piece, state, ctx)

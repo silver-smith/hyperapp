@@ -23,6 +23,9 @@ import:
 - legacy_type.window:pos
 - legacy_type.window:size
 - legacy_type.window:state
+- rpc.rpc_endpoint:rpc_endpoint_factory.service
+- transport.endpoint:endpoint_registry.service
+- transport.rsa_identity:generate_rsa_identity.service
 - ui.controller:controller.module
 - ui.model_command:model_command.module
 - ui.ui_ctl_registry:ui_ctl_creg.service
@@ -60,7 +63,10 @@ definitions:
       htypes.window.pos: legacy_type.window:pos
       htypes.window.size: legacy_type.window:size
       htypes.window.state: legacy_type.window:state
+      services.endpoint_registry: transport.endpoint:endpoint_registry.service
+      services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
       services.mosaic: builtins:mosaic.service
+      services.rpc_endpoint_factory: rpc.rpc_endpoint:rpc_endpoint_factory.service
       services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
       services.visualizer: ui.visualizer:visualizer.service
   global_model_command_d:
