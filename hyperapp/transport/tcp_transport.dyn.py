@@ -132,7 +132,10 @@ class Route:
             suffix = '/local'
         else:
             suffix = ''
-        return f"<sync tcp Route:{address_to_str(self._address)}{suffix}>"
+        return f"<sync tcp Route:{self}{suffix}>"
+
+    def __str__(self):
+        return address_to_str(self._address)
 
     @property
     def piece(self):
