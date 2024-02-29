@@ -1,0 +1,15 @@
+# Automatically generated file. Do not edit.
+
+import:
+- common.file_bundle:file_bundle.service
+- legacy_type.builtin:python_module
+- transport.identity:peer_registry.service
+associations: []
+definitions:
+  local_server.module:
+    _type: legacy_type.builtin:python_module
+    module_name: local_server
+    file_name: local_server.dyn.py
+    import_list:
+      services.file_bundle: common.file_bundle:file_bundle.service
+      services.peer_registry: transport.identity:peer_registry.service
