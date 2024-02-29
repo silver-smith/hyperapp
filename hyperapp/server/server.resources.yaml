@@ -12,6 +12,7 @@ import:
 - transport.identity:peer_registry.service
 - transport.rsa_identity:generate_rsa_identity.service
 - transport.sync_route_table:route_table.service
+- transport.tcp_transport:tcp_server_factory.service
 associations: []
 definitions:
   server.module:
@@ -29,3 +30,4 @@ definitions:
       services.rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
       services.rpc_endpoint_factory: rpc.rpc_endpoint:rpc_endpoint_factory.service
       services.stop_signal: builtins:stop_signal.service
+      services.tcp_server_factory: transport.tcp_transport:tcp_server_factory.service

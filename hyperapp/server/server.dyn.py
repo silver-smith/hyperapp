@@ -14,6 +14,7 @@ from .services import (
     rpc_call_factory,
     rpc_endpoint_factory,
     stop_signal,
+    tcp_server_factory,
     )
 
 log = logging.getLogger(__name__)
@@ -34,7 +35,15 @@ def _main():
     rpc_endpoint = rpc_endpoint_factory()
     endpoint_registry.register(server_identity, rpc_endpoint)
 
-    log.info("Server: Started")
+    server = tcp_server_factory()
+    log.info("Tcp route: %r", server.route)
+    route_table.add_route(server_peer_ref, server.route)
+
+    peer_bundle = file_bundle(Path.home() / '.local/share/hyperapp/server/peer.json')
+    peer_bundle.save_piece(server_identity.peer.piece)
+    log.info("Server peer: saved to: %s", peer_bundle.path)
+
+    log.info("Server: Started at %s", server.route)
     try:
         stop_signal.wait()
     except KeyboardInterrupt:
