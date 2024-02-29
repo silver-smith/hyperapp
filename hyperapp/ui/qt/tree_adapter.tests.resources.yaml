@@ -4,9 +4,11 @@ import:
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - common.context:context.module
+- common.tree_diff:tree_diff.module
 - legacy_type.builtin:python_module
 - legacy_type.phony:phony
 - resource.fn_to_res:fn_to_ref.service
+- ui.qt.tree:tree.module
 associations: []
 definitions:
   phony:
@@ -17,6 +19,8 @@ definitions:
     file_name: tree_adapter.tests.dyn.py
     import_list:
       code.context: common.context:context.module
+      code.tree: ui.qt.tree:tree.module
+      code.tree_diff: common.tree_diff:tree_diff.module
       services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service

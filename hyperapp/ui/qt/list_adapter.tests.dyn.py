@@ -25,9 +25,11 @@ def test_static_adapter():
     t = deduce_complex_value_type(mosaic, types, value)
     piece = htypes.list_adapter.static_list_adapter(mosaic.put(value, t))
     adapter = list_adapter.StaticListAdapter.from_piece(piece, ctx)
+
     assert adapter.column_count() == 2
     assert adapter.column_title(0) == 'id'
     assert adapter.column_title(1) == 'title'
+
     assert adapter.row_count() == 3
     assert adapter.cell_data(1, 0) == 2
     assert adapter.cell_data(2, 1) == "Third"
@@ -103,6 +105,7 @@ async def test_feed_fn_adapter():
     assert adapter.column_count() == 2
     assert adapter.column_title(0) == 'id'
     assert adapter.column_title(1) == 'text'
+
     assert adapter.row_count() == 3
     assert adapter.cell_data(1, 0) == 22
     assert adapter.cell_data(2, 1) == "Third item"
