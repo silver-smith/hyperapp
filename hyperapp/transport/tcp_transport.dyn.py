@@ -180,7 +180,7 @@ def _selector_thread_main():
             for key, mask in event_list:
                 handler = key.data
                 handler(key.fileobj, mask)
-            for address, client in _address_to_client.items():
+            for address, client in list(_address_to_client.items()):
                 if client.is_closed:
                     log.debug("Remove client %s from cache", client)
                     del _address_to_client[address]
