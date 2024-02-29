@@ -30,6 +30,9 @@ class _RpcServerProcess:
         self._identity = identity
         self._timeout_sec = timeout_sec
 
+    def __repr__(self):
+        return f"<RpcServerProcess: {self.name}>"
+
     def rpc_submit(self, servant_fn):
         servant_fn_ref = fn_to_ref(servant_fn)
         return rpc_submit_factory(
