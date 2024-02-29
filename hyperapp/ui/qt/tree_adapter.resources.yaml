@@ -7,6 +7,9 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.tree_adapter:fn_index_tree_adapter
+- legacy_type.tree_adapter:remote_fn_index_tree_adapter
+- rpc.rpc_call:rpc_call_factory.service
+- transport.identity:peer_registry.service
 - ui.qt.tree:tree.module
 - ui.ui_adapter_creg:ui_adapter_creg.service
 associations:
@@ -17,6 +20,13 @@ associations:
   - ui.ui_adapter_creg:ui_adapter_creg.service
   - legacy_type.tree_adapter:fn_index_tree_adapter
   value: FnIndexTreeAdapter.from_piece
+- bases:
+  - ui.ui_adapter_creg:ui_adapter_creg.service
+  - legacy_type.tree_adapter:remote_fn_index_tree_adapter
+  key:
+  - ui.ui_adapter_creg:ui_adapter_creg.service
+  - legacy_type.tree_adapter:remote_fn_index_tree_adapter
+  value: RemoteFnIndexTreeAdapter.from_piece
 definitions:
   FnIndexTreeAdapter:
     _type: legacy_type.builtin:attribute
@@ -26,6 +36,14 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: FnIndexTreeAdapter
     attr_name: from_piece
+  RemoteFnIndexTreeAdapter:
+    _type: legacy_type.builtin:attribute
+    object: tree_adapter.module
+    attr_name: RemoteFnIndexTreeAdapter
+  RemoteFnIndexTreeAdapter.from_piece:
+    _type: legacy_type.builtin:attribute
+    object: RemoteFnIndexTreeAdapter
+    attr_name: from_piece
   tree_adapter.module:
     _type: legacy_type.builtin:python_module
     module_name: tree_adapter
@@ -33,5 +51,7 @@ definitions:
     import_list:
       code.tree: ui.qt.tree:tree.module
       code.tree_diff: common.tree_diff:tree_diff.module
+      services.peer_registry: transport.identity:peer_registry.service
       services.pyobj_creg: builtins:pyobj_creg.service
+      services.rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
       services.web: builtins:web.service

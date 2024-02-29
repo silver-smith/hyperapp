@@ -8,6 +8,10 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.phony:phony
 - resource.fn_to_res:fn_to_ref.service
+- rpc.rpc_endpoint:rpc_endpoint_factory.service
+- subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
+- transport.endpoint:endpoint_registry.service
+- transport.rsa_identity:generate_rsa_identity.service
 - ui.qt.tree:tree.module
 associations: []
 definitions:
@@ -21,7 +25,11 @@ definitions:
       code.context: common.context:context.module
       code.tree: ui.qt.tree:tree.module
       code.tree_diff: common.tree_diff:tree_diff.module
+      services.endpoint_registry: transport.endpoint:endpoint_registry.service
       services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
+      services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
+      services.rpc_endpoint_factory: rpc.rpc_endpoint:rpc_endpoint_factory.service
+      services.subprocess_rpc_server_running: subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
       tested.code.tree_adapter: phony

@@ -1,9 +1,12 @@
+import abc
 import itertools
 import logging
 import weakref
 
 from .services import (
+    peer_registry,
     pyobj_creg,
+    rpc_call_factory,
     web,
     )
 from .code.tree_diff import TreeDiff
@@ -21,20 +24,12 @@ class _Feed:
         self._adapter.send_diff(diff)
 
 
-class FnIndexTreeAdapter:
+class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
 
-    @classmethod
-    def from_piece(cls, piece, ctx):
-        model_piece = web.summon(piece.model_piece)
-        element_t = pyobj_creg.invite(piece.element_t)
-        fn = pyobj_creg.invite(piece.function)
-        return cls(model_piece, element_t, piece.want_feed, fn)
-
-    def __init__(self, model_piece, item_t, want_feed, fn):
+    def __init__(self, model_piece, item_t, want_feed):
         self._model_piece = model_piece
         self._item_t = item_t
         self._want_feed = want_feed
-        self._fn = fn
         self._column_names = sorted(self._item_t.fields)
         self._id_to_item = {}
         self._id_to_children_id_list = {}
@@ -99,15 +94,18 @@ class FnIndexTreeAdapter:
             return self._id_to_children_id_list[parent_id]
 
     def _populate(self, parent_id):
-        kw = {}
-        if self._want_feed:
-            kw['feed'] = _Feed(self)
         if parent_id:
             parent_item = self._id_to_item[parent_id]  # Expecting upper level is already populated.
         else:
             parent_item = None
-        item_list = self._fn(self._model_piece, parent_item, **kw)
-        log.info("Tree adapter: populated %s (%s, %s) -> %s", self._fn.__name__, self._model_piece, parent_item, item_list)
+        kw = {
+            'piece': self._model_piece,
+            'parent': parent_item,
+            }
+        if self._want_feed:
+            kw['feed'] = _Feed(self)
+        item_list = self._call_fn(**kw)
+        log.info("Tree adapter: populated (%s, %s) -> %s", self._model_piece, parent_item, item_list)
         item_id_list = []
         for item in item_list:
             id = next(self._id_counter)
@@ -116,3 +114,46 @@ class FnIndexTreeAdapter:
             self._id_to_parent_id[id] = parent_id
         self._id_to_children_id_list[parent_id] = item_id_list
         return item_id_list
+
+    @abc.abstractmethod
+    def _call_fn(self, **kw):
+        pass
+
+
+class FnIndexTreeAdapter(FnIndexTreeAdapterBase):
+
+    @classmethod
+    def from_piece(cls, piece, ctx):
+        model_piece = web.summon(piece.model_piece)
+        element_t = pyobj_creg.invite(piece.element_t)
+        fn = pyobj_creg.invite(piece.function)
+        return cls(model_piece, element_t, piece.want_feed, fn)
+
+    def __init__(self, model_piece, item_t, want_feed, fn):
+        super().__init__(model_piece, item_t, want_feed)
+        self._fn = fn
+
+    def _call_fn(self, **kw):
+        return self._fn(**kw)
+
+
+class RemoteFnIndexTreeAdapter(FnIndexTreeAdapterBase):
+
+    @classmethod
+    def from_piece(cls, piece, ctx):
+        model_piece = web.summon(piece.model_piece)
+        element_t = pyobj_creg.invite(piece.element_t)
+        remote_peer = peer_registry.invite(piece.remote_peer)
+        return cls(model_piece, element_t, piece.want_feed, piece.function, ctx.rpc_endpoint, ctx.identity, remote_peer)
+
+    def __init__(self, model_piece, item_t, want_feed, fn_res_ref, rpc_endpoint, identity, remote_peer):
+        super().__init__(model_piece, item_t, want_feed)
+        self._rpc_call = rpc_call_factory(
+            rpc_endpoint=rpc_endpoint,
+            receiver_peer=remote_peer,
+            servant_ref=fn_res_ref,
+            sender_identity=identity,
+            )
+
+    def _call_fn(self, **kw):
+        return self._rpc_call(**kw)
