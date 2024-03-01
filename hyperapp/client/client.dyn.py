@@ -20,29 +20,16 @@ from .code.controller import controller
 def make_layout():
     text = "Sample text"
     text_view = visualizer(text)
-    navigator = htypes.navigator.layout(
+    navigator_piece = htypes.navigator.layout(
         current_layout=mosaic.put(text_view),
         current_model=mosaic.put(text),
         commands=[mosaic.put(c) for c in global_commands()],
         prev=None,
         next=None,
         )
-    box_layout = htypes.box_layout.view(
-        direction='LeftToRight',
-        elements=[
-            htypes.box_layout.element(
-                view=mosaic.put(navigator),
-                stretch=1,
-                ),
-            htypes.box_layout.element(
-                view=mosaic.put(navigator),
-                stretch=1,
-                ),
-            ],
-        )
     inner_tabs_piece = htypes.auto_tabs.view(
         tabs=[
-            mosaic.put(box_layout),
+            mosaic.put(navigator_piece),
             ],
         )
     outer_tabs_piece = htypes.tab_groups.view(
@@ -66,16 +53,9 @@ def make_state():
         prev=None,
         next=None,
         )
-    box_layout_state = htypes.box_layout.state(
-        current=0,
-        elements=[
-            mosaic.put(navigator_state),
-            mosaic.put(navigator_state),
-            ],
-        )
     inner_tabs_state = htypes.tabs.state(
         current_tab=0,
-        tabs=[mosaic.put(box_layout_state)],
+        tabs=[mosaic.put(navigator_state)],
         )
     outer_tabs_state = htypes.tabs.state(
         current_tab=0,
