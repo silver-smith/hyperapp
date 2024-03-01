@@ -1,5 +1,6 @@
 import logging
 import threading
+from functools import partial
 
 from .services import (
     add_subprocess_server_connection,
@@ -17,15 +18,14 @@ from .code.subprocess_transport import SubprocessRoute
 log = logging.getLogger(__name__)
 
 
-def _stop():
+def _stop(rpc_endpoint):
+    rpc_endpoint.stop()
     stop_signal.set()
 
 
 def rpc_server_main(connection, received_refs, name, master_peer_piece, master_servant_ref, subprocess_id):
     my_name = f"Subprocess rpc server {name}"
     log.info("%s: Init", my_name)
-
-    add_subprocess_server_connection('master', connection, received_refs, on_eof=_stop)
 
     master_peer = peer_registry.animate(master_peer_piece)
     master_peer_ref = mosaic.put(master_peer_piece)
@@ -37,6 +37,9 @@ def rpc_server_main(connection, received_refs, name, master_peer_piece, master_s
 
     rpc_endpoint = rpc_endpoint_factory()
     endpoint_registry.register(my_identity, rpc_endpoint)
+
+    on_close = partial(_stop, rpc_endpoint)
+    add_subprocess_server_connection('master', connection, received_refs, on_eof=on_close, on_reset=on_close)
 
     rpc_call = rpc_call_factory(rpc_endpoint, master_peer, master_servant_ref, my_identity, timeout_sec=None)
 
