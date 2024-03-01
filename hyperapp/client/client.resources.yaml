@@ -4,6 +4,9 @@ import:
 - builtins:mosaic.service
 - common.context:context.module
 - legacy_type.auto_tabs:view
+- legacy_type.box_layout:element
+- legacy_type.box_layout:state
+- legacy_type.box_layout:view
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
@@ -49,6 +52,9 @@ definitions:
       code.controller: ui.controller:controller.module
       code.model_command: ui.model_command:model_command.module
       htypes.auto_tabs.view: legacy_type.auto_tabs:view
+      htypes.box_layout.element: legacy_type.box_layout:element
+      htypes.box_layout.state: legacy_type.box_layout:state
+      htypes.box_layout.view: legacy_type.box_layout:view
       htypes.menu_bar.layout: legacy_type.menu_bar:layout
       htypes.menu_bar.state: legacy_type.menu_bar:state
       htypes.navigator.layout: legacy_type.navigator:layout
