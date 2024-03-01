@@ -1,0 +1,12 @@
+
+element = record:
+  view: ref opt  # a stretch if none.
+  stretch: int
+
+view = record:
+  direction: string  # LeftToRight, TopToBottom, etc.
+  elements: element list
+
+state = record:
+  current: int
+  elements: ref list
