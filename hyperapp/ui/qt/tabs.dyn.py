@@ -56,6 +56,15 @@ class TabsView(View):
         tabs.setCurrentIndex(state.current_tab)
         return tabs
 
+    def replace_widget(self, ctx, widget, idx):
+        tab = self._tabs[idx]
+        state = None  # TODO: Navigator apply should return new state.
+        w = tab.view.construct_widget(state, ctx)
+        widget.removeTab(idx)
+        widget.insertTab(idx, w, tab.label)
+        widget.setCurrentIndex(idx)
+        self._on_child_changed(idx, w)
+
     def get_current(self, widget):
         return widget.currentIndex()
 
@@ -67,15 +76,6 @@ class TabsView(View):
 
     def set_on_current_changed(self, widget, on_changed):
         widget.currentChanged.connect(lambda idx: on_changed())
-
-    def wrapper(self, widget, diff):
-        if diff is None:
-            return None
-        idx = widget.currentIndex()
-        return Diff(
-            piece=ListDiff.Modify(idx, diff.piece),
-            state=ListDiff.Modify(idx, diff.state),
-            )
 
     def widget_state(self, widget):
         tabs = []
@@ -101,32 +101,15 @@ class TabsView(View):
             widget.insertTab(idx, w, diff.piece.item.label)
             widget.setCurrentIndex(idx)
             self._on_item_changed()
-            return (self.widget_state(widget), False)
-        elif isinstance(diff.piece, ListDiff.Modify):
-            idx = diff.piece.idx
-            tab = self._tabs[idx]
-            child_diff = Diff(diff.piece.item_diff, diff.state.item_diff)
-            result = tab.view.apply(
-                ctx, widget.widget(idx), child_diff)
-            if result is None:
-                return None
-            new_tab_state, replace = result
-            if replace:
-                w = tab.view.construct_widget(new_tab_state, ctx)
-                widget.removeTab(idx)
-                widget.insertTab(idx, w, tab.label)
-                widget.setCurrentIndex(idx)
-                self._on_child_changed(idx, w)
-            return (self.widget_state(widget), False)
         elif isinstance(diff.piece, ListDiff.Remove):
             idx = diff.piece.idx
             widget.removeTab(idx)
             widget.setCurrentIndex(idx)
             self._tabs = diff.piece.remove(self._tabs)
             self._on_item_changed()
-            return (self.widget_state(widget), False)
         else:
             raise NotImplementedError(f"Not implemented: tab.apply({diff.piece})")
+        return False
 
     def items(self, widget):
         return [

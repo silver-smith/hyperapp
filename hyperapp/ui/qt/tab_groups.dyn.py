@@ -24,7 +24,7 @@ class TabGroupsView(WrapperView):
 
     def apply(self, ctx, widget, diff):
         log.info("TabGroups: apply: %s", diff)
-        if isinstance(diff.piece, (ListDiff.Insert, ListDiff.Modify, ListDiff.Remove)):
+        if isinstance(diff.piece, (ListDiff.Insert, ListDiff.Remove)):
             return self._base.apply(ctx, widget, diff)
         else:
             raise NotImplementedError(f"Not implemented: tab_groups.apply({diff.piece})")

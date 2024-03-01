@@ -49,25 +49,10 @@ def test_construct_widget():
     app = QtWidgets.QApplication()
     try:
         view = window.WindowView.from_piece(piece)
+        assert view.piece
         widget = view.construct_widget(state, ctx)
-    finally:
-        app.shutdown()
-
-
-def test_apply_diff():
-    command_hub = CommandHub()
-    ctx = Context(command_hub=command_hub)
-    tabs_piece, piece = make_piece()
-    tabs_state, state = make_state()
-    app = QtWidgets.QApplication()
-    try:
-        view = window.WindowView.from_piece(piece)
-        widget = view.construct_widget(state, ctx)
-        piece_diff = ListDiff.Insert(1, tabs_piece.tabs[0])
-        state_diff = ListDiff.Insert(1, tabs_state.tabs[0])
-        new_state, replace = view.apply(ctx, widget, Diff(piece_diff, state_diff))
-        new_tabs_piece = web.summon(view.piece.central_view_ref)
-        assert len(new_tabs_piece.tabs) == 2
+        state = view.widget_state(widget)
+        assert state
     finally:
         app.shutdown()
 

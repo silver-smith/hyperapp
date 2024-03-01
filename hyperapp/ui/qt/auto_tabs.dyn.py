@@ -52,11 +52,6 @@ class AutoTabsView(WrapperView):
                 )
             base_diff = Diff(base_diff_piece, diff.state)
             return self._base.apply(ctx, widget, base_diff)
-        elif isinstance(diff.piece, ListDiff.Modify):
-            result = self._base.apply(ctx, widget, diff)
-            label = tab_label(self.piece.tabs[diff.piece.idx])
-            widget.setTabText(diff.piece.idx, label)
-            return result
         elif isinstance(diff.piece, ListDiff.Remove):
             return self._base.apply(ctx, widget, diff)
         else:

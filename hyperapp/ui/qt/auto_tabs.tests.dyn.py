@@ -50,7 +50,7 @@ def test_duplicate():
         view = auto_tabs.AutoTabsView.from_piece(piece)
         widget = view.construct_widget(state, ctx)
         diff = auto_tabs.duplicate_tab(piece, state)
-        new_state, replace = view.apply(ctx, widget, diff)
+        replace_widget = view.apply(ctx, widget, diff)
         assert len(view.piece.tabs) == 2
         assert view.piece.tabs[0] == piece.tabs[0]
         assert view.piece.tabs[0] == view.piece.tabs[1]
@@ -81,7 +81,7 @@ def test_close():
         view = auto_tabs.AutoTabsView.from_piece(piece)
         widget = view.construct_widget(state, ctx)
         diff = auto_tabs.close_tab(piece, state)
-        new_state, replace = view.apply(ctx, widget, diff)
+        replace_widget = view.apply(ctx, widget, diff)
         assert len(view.piece.tabs) == 1
         assert view.piece.tabs[0] == piece.tabs[1]
     finally:

@@ -10,6 +10,9 @@ class WrapperView(View):
     def construct_widget(self, state, ctx):
         return self._base.construct_widget(state, ctx)
 
+    def replace_widget(self, ctx, widget, idx):
+        self._base.replace_widget(ctx, widget, idx)
+
     def get_current(self, widget):
         return self._base.get_current(widget)
 
@@ -21,9 +24,6 @@ class WrapperView(View):
 
     def set_on_current_changed(self, widget, on_changed):
         self._base.set_on_current_changed(widget, on_changed)
-
-    def wrapper(self, widget, diff):
-        return self._base.wrapper(widget, diff)
 
     def widget_state(self, widget):
         return self._base.widget_state(widget)

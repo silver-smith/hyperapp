@@ -125,7 +125,7 @@ class NavigatorView(View):
             self._next = next.next
         else:
             raise NotImplementedError(repr(diff.piece))
-        return (None, True)
+        return True
 
 
 @mark.ui_command(htypes.navigator.layout)

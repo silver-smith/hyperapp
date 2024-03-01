@@ -16,6 +16,9 @@ class View(metaclass=abc.ABCMeta):
     def construct_widget(self, state, ctx):
         pass
 
+    def replace_widget(self, ctx, widget, idx):
+        pass
+
     def get_current(self, widget):
         return 0
 
@@ -33,9 +36,6 @@ class View(metaclass=abc.ABCMeta):
 
     def set_on_model_state_changed(self, widget, on_changed):
         pass
-
-    def wrapper(self, widget, result):
-        return result
 
     @abc.abstractmethod
     def widget_state(self, widget):

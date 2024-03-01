@@ -80,31 +80,9 @@ def test_duplicate():
         view = tabs.TabsView.from_piece(piece)
         widget = view.construct_widget(state, ctx)
         diff = duplicate(piece, state)
-        new_state, replace = view.apply(ctx, widget, diff)
+        replace_widget = view.apply(ctx, widget, diff)
         assert len(view.piece.tabs) == 2
         assert view.piece.tabs[0] == piece.tabs[0]
         assert view.piece.tabs[0] == view.piece.tabs[1]
-    finally:
-        app.shutdown()
-
-
-def test_modify():
-    ctx = Context(command_hub=CommandHub())
-    inner_piece = make_inner_layout()
-    outer_piece = make_outer_layout(inner_piece)
-    inner_state = make_inner_state()
-    outer_state = make_outer_state(inner_state)
-    app = QtWidgets.QApplication()
-    try:
-        view = tabs.TabsView.from_piece(outer_piece)
-        widget = view.construct_widget(outer_state, ctx)
-        inner_diff = duplicate(inner_piece, inner_state)
-        outer_diff = view.wrapper(widget, inner_diff)
-        new_outer_state, replace = view.apply(ctx, widget, outer_diff)
-        assert len(view.piece.tabs) == 1
-        new_inner_piece = web.summon(view.piece.tabs[0].ctl)
-        assert len(new_inner_piece.tabs) == 2
-        assert new_inner_piece.tabs[0] == inner_piece.tabs[0]
-        assert new_inner_piece.tabs[0] == new_inner_piece.tabs[1]
     finally:
         app.shutdown()

@@ -64,12 +64,7 @@ class WindowView(View):
             )
 
     def apply(self, ctx, widget, diff):
-        result = self._central_view.apply(ctx, widget.centralWidget(), diff)
-        if result is None:
-            return None
-        new_central_state, replace = result
-        assert not replace  # Not yet supported.
-        return (self.widget_state(widget), False)
+        raise NotImplementedError(f"Not implemented: window.apply({diff.piece})")
 
     def items(self, widget):
         return [

@@ -18,7 +18,7 @@ from .code.command_hub import CommandHub
 log = logging.getLogger(__name__)
 
 
-_Item = namedtuple('_Item', 'id path ctx command_hub name view widget wrappers commands children', defaults=([], []))
+_Item = namedtuple('_Item', 'id path ctx command_hub name view widget commands children', defaults=([], []))
 
 
 def _description(piece):
@@ -102,8 +102,8 @@ class Controller:
 
     def _set_window_commands(self, item):
         path_to_commands = self._collect_item_commands(item)
-        root_wrappers = [self._apply_root_diff]
-        root_commands = self._make_item_commands(RootView(self, item.id), item.widget, root_wrappers, path=[])
+        root_wrapper = self._apply_root_diff
+        root_commands = self._make_view_commands(RootView(self, item.id), item.widget, root_wrapper)
         path_to_commands = {
             (): root_commands,
             **path_to_commands,
@@ -113,19 +113,17 @@ class Controller:
     def _make_window_item(self, window_ctx, command_hub, view, widget):
         item_id = next(self._counter)
         path = [item_id]
-        wrapper = partial(self._apply_window_diff, item_id, window_ctx, command_hub, view, widget)
-        return self._populate_item(item_id, path, window_ctx, command_hub, f"window#{item_id}", view, widget, [wrapper])
+        return self._populate_item(item_id, path, window_ctx, command_hub, f"window#{item_id}", view, widget)
 
-    def _populate_item(self, item_id, path, ctx, command_hub, name, view, widget, wrappers):
-        commands = self._make_item_commands(view, widget, wrappers, path)
-        children_wrappers = [*wrappers, partial(view.wrapper, widget)]
+    def _populate_item(self, item_id, path, ctx, command_hub, name, view, widget):
+        commands = self._make_item_commands(item_id, view, widget)
         children = []
         for idx, rec in enumerate(view.items(widget)):
             child_id = next(self._counter)
             child = self._populate_item(
-                child_id, [*path, idx], ctx, command_hub, rec.name, rec.view, rec.widget, children_wrappers)
+                child_id, [*path, idx], ctx, command_hub, rec.name, rec.view, rec.widget)
             children.append(child)
-        item = _Item(item_id, path, ctx, command_hub, name, view, widget, wrappers, commands, children)
+        item = _Item(item_id, path, ctx, command_hub, name, view, widget, commands, children)
         for child in item.children:
             self._id_to_parent_item[child.id] = item
         self._id_to_item[item_id] = item
@@ -135,10 +133,14 @@ class Controller:
         view.set_on_state_changed(widget, partial(self._on_state_changed, item))
         return item
 
-    def _make_item_commands(self, view, widget, wrappers, path):
+    def _make_item_commands(self, item_id, view, widget):
+        wrapper = partial(self._apply_item_diff, item_id)
+        return self._make_view_commands(view, widget, wrapper)
+
+    def _make_view_commands(self, view, widget, wrapper):
         return [
-            *ui_command_factory(view, widget, wrappers),
-            *view.get_commands(widget, wrappers),
+            *ui_command_factory(view, widget, [wrapper]),
+            *view.get_commands(widget, [wrapper]),
             ]
 
     def _on_item_changed(self, item):
@@ -155,7 +157,7 @@ class Controller:
         old_child = item.children[idx]
         child_id = next(self._counter)
         child = self._populate_item(
-            child_id, old_child.path, old_child.ctx, old_child.command_hub, old_child.name, old_child.view, widget, old_child.wrappers)
+            child_id, old_child.path, old_child.ctx, old_child.command_hub, old_child.name, old_child.view, widget)
         self._id_to_parent_item[child.id] = item
         item.children[idx] = child
         self._update_item_commands(child)
@@ -175,7 +177,7 @@ class Controller:
         if not self._run_callback:
             return
         log.info("Controller: state changed for: %s", item)
-        item.commands[:] = self._make_item_commands(item.view, item.widget, item.wrappers, item.path)
+        item.commands[:] = self._make_item_commands(item.id, item.view, item.widget)
         self._update_item_commands(item)
 
     def _collect_item_commands(self, item):
@@ -193,18 +195,18 @@ class Controller:
         finally:
             self._run_callback = True
 
-    def _apply_window_diff(self, item_id, ctx, command_hub, view, widget, diff):
+    def _apply_item_diff(self, item_id, diff):
         if diff is None:
             return
-        log.info("Apply window diff: %s", diff)
-        window_idx = self.window_id_to_idx(item_id)
+        item = self._id_to_item[item_id]
+        log.info("Apply diff to item #%d @ %s: %s", item_id, item.path, diff)
         with self._without_callback():
-            result = view.apply(ctx, widget, diff)
-        if result is None:
-            return
-        new_state, replace = result
-        log.info("Applied piece: %s / %s", new_state, replace)
-        assert not replace  # Not yet supported.
+            replace_widget = item.view.apply(item.ctx, item.widget, diff)
+            log.info("Applied diff, should replace widget: %s", replace_widget)
+            if not replace_widget:
+                return
+            parent = self._id_to_parent_item[item_id]
+            parent.view.replace_widget(parent.ctx, parent.widget, item.path[-1])
 
     def _apply_root_diff(self, diff):
         log.info("Apply root diff: %s", diff)
