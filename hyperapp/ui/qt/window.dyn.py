@@ -63,9 +63,6 @@ class WindowView(View):
             pos=htypes.window.pos(widget.x(), widget.y()),
             )
 
-    def apply(self, ctx, widget, diff):
-        raise NotImplementedError(f"Not implemented: window.apply({diff.piece})")
-
     def items(self, widget):
         return [
             Item('menu bar', self._menu_bar_view, widget.menuBar()),

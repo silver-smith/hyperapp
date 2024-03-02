@@ -44,9 +44,8 @@ class View(metaclass=abc.ABCMeta):
     def get_commands(self, widget, wrappers):
         return []
 
-    @abc.abstractmethod
     def apply(self, ctx, widget, diff):
-        pass
+        raise NotImplementedError()
 
     def items(self, widget):
         return []

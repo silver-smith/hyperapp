@@ -107,9 +107,6 @@ class ListView(View):
             current_item = None
         return ModelState(current_idx=idx, current_item=current_item)
 
-    def apply(self, ctx, widget, diff):
-        raise NotImplementedError()
-
     def _on_data_changed(self, widget, *args):
         log.info("List: on_data_changed: %s: %s", widget, args)
         widget.resizeColumnsToContents()

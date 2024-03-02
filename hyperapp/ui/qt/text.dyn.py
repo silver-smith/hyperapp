@@ -34,9 +34,6 @@ class ViewTextView(View):
         # return htypes.text.state(text=widget.toPlainText())
         return htypes.text.state()
 
-    def apply(self, ctx, widget, diff):
-        raise NotImplementedError()
-
 
 class EditTextView(View):
 
@@ -64,6 +61,3 @@ class EditTextView(View):
     def model_state(self, widget):
         # return htypes.text.state(text=widget.toPlainText())
         return htypes.text.state()
-
-    def apply(self, ctx, widget, diff):
-        raise NotImplementedError()

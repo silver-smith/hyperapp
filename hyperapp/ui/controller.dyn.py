@@ -42,9 +42,6 @@ class RootView(View):
         current_idx = self._controller.window_id_to_idx(self._window_item_id)
         return htypes.root.state(self._controller.get_window_state_list(), current_idx)
 
-    def apply(self, ctx, widget, diff):
-        raise NotImplementedError()
-
 
 class Controller:
 

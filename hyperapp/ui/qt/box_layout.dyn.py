@@ -69,9 +69,6 @@ class BoxLayoutView(View):
             elements=elements,
             )
 
-    def apply(self, ctx, widget, diff):
-        assert 0  # TODO
-
     def items(self, widget):
         layout = widget.layout()
         return [
