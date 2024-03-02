@@ -203,7 +203,9 @@ class Controller:
             if not replace_widget:
                 return
             parent = self._id_to_parent_item[item_id]
-            parent.view.replace_widget(parent.ctx, parent.widget, item.path[-1])
+            child_idx = item.path[-1]
+            child_widget = parent.view.replace_widget(parent.ctx, parent.widget, child_idx)
+            self._replace_child_item(parent, child_idx, child_widget)
 
     def _apply_root_diff(self, diff):
         log.info("Apply root diff: %s", diff)

@@ -34,7 +34,6 @@ class TabsView(View):
         super().__init__()
         self._tabs = tabs  # list[_Tab]
         self._on_item_changed = lambda: None
-        self._on_child_changed = lambda idx, w: None
 
     @property
     def piece(self):
@@ -63,16 +62,13 @@ class TabsView(View):
         widget.removeTab(idx)
         widget.insertTab(idx, w, tab.label)
         widget.setCurrentIndex(idx)
-        self._on_child_changed(idx, w)
+        return w
 
     def get_current(self, widget):
         return widget.currentIndex()
 
     def set_on_item_changed(self, on_changed):
         self._on_item_changed = on_changed
-
-    def set_on_child_changed(self, on_changed):
-        self._on_child_changed = on_changed
 
     def set_on_current_changed(self, widget, on_changed):
         widget.currentChanged.connect(lambda idx: on_changed())
