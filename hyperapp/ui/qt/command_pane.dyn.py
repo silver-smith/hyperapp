@@ -1,7 +1,7 @@
 import logging
 from functools import partial
 
-from PySide6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from . import htypes
 from .code.view import Diff, Item, View
@@ -55,18 +55,11 @@ class CommandPaneView(View):
 
     def commands_changed(self, widget, removed_commands, added_commands):
         layout = widget.layout()
-        for idx in range(layout.count()):
-            button = layout.itemAt(idx).widget()
-            # TODO: Map command to buttons and remove only required.
-            button.deleteLater()
+        for command in removed_commands:
+            if command.name in _skip_commands:
+                continue
+            command.button.deleteLater()
         for command in added_commands:
             if command.name in _skip_commands:
                 continue
-            text = command.name
-            if command.shortcut:
-                text += f' ({command.shortcut})'
-            button = QtWidgets.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
-            button.pressed.connect(command.start)
-            # if command.shortcut:
-            #     button.setShortcut(command.shortcut)
-            layout.addWidget(button)
+            layout.addWidget(command.button)
