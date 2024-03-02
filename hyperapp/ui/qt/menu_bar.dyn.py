@@ -54,14 +54,6 @@ class MenuBarView(View):
     def widget_state(self, widget):
         return htypes.menu_bar.state()
 
-    def set_commands(self, w, commands):
-        [menu_action] = w.actions()
-        menu = menu_action.menu()
-        menu.clear()
-        self._command_to_action = {}
-        for command in commands:
-            self._add_action(menu, command)
-
     def commands_changed(self, w, removed_commands, added_commands):
         [menu_action] = w.actions()
         menu = menu_action.menu()
