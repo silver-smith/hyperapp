@@ -5,6 +5,7 @@ import:
 - common.list_diff:list_diff.module
 - common.mark:mark.service
 - legacy_type.auto_tabs:view
+- legacy_type.box_layout:view
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
@@ -59,6 +60,7 @@ definitions:
       code.view: ui.view:view.module
       code.wrapper_view: ui.wrapper_view:wrapper_view.module
       htypes.auto_tabs.view: legacy_type.auto_tabs:view
+      htypes.box_layout.view: legacy_type.box_layout:view
       htypes.navigator.layout: legacy_type.navigator:layout
       htypes.tabs.layout: legacy_type.tabs:layout
       htypes.tabs.tab: legacy_type.tabs:tab
