@@ -72,6 +72,6 @@ class BoxLayoutView(View):
     def items(self, widget):
         layout = widget.layout()
         return [
-            Item(f"Item#{idx}", elt.view, layout.itemAt(idx))
+            Item(f"Item#{idx}", elt.view, layout.itemAt(idx).widget())
             for idx, elt in enumerate(self._elements)
             ]
