@@ -1,2 +1,3 @@
 
-command_pane = record
+view = record
+state = record

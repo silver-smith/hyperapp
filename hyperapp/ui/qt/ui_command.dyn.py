@@ -55,13 +55,16 @@ class CommandBase:
     @cached_property
     def action(self):
         action = QtGui.QAction(self.name)
-        action.triggered.connect(self._start)
-        shortcut = _hardcoded_shortcuts.get(self.name)
-        if shortcut:
-            action.setShortcut(shortcut)
+        action.triggered.connect(self.start)
+        if self.shortcut:
+            action.setShortcut(self.shortcut)
         return action
 
-    def _start(self):
+    @property
+    def shortcut(self):
+        return _hardcoded_shortcuts.get(self.name)
+
+    def start(self):
         log.info("Start command: %r", self.name)
         asyncio.create_task(self.run())
 

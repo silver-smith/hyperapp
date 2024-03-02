@@ -1,0 +1,38 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.command_pane:state
+- legacy_type.command_pane:view
+- legacy_type.ui:ui_ctl
+- ui.ui_ctl_registry:ui_ctl_creg.service
+- ui.view:view.module
+associations:
+- bases:
+  - legacy_type.command_pane:view
+  key:
+  - ui.ui_ctl_registry:ui_ctl_creg.service
+  - legacy_type.command_pane:view
+  value: CommandPaneView.from_piece.ctl
+definitions:
+  CommandPaneView:
+    _type: legacy_type.builtin:attribute
+    object: command_pane.module
+    attr_name: CommandPaneView
+  CommandPaneView.from_piece:
+    _type: legacy_type.builtin:attribute
+    object: CommandPaneView
+    attr_name: from_piece
+  CommandPaneView.from_piece.ctl:
+    _type: legacy_type.ui:ui_ctl
+    ctr_fn: CommandPaneView.from_piece
+    command_methods: []
+  command_pane.module:
+    _type: legacy_type.builtin:python_module
+    module_name: command_pane
+    file_name: command_pane.dyn.py
+    import_list:
+      code.view: ui.view:view.module
+      htypes.command_pane.state: legacy_type.command_pane:state
+      htypes.command_pane.view: legacy_type.command_pane:view
