@@ -11,7 +11,7 @@ import:
 - legacy_type.tabs:state
 - legacy_type.tabs:tab
 - legacy_type.ui:ui_ctl
-- ui.ui_command:ui_command_factory.service
+- ui.qt.ui_command:ui_command_factory.service
 - ui.ui_ctl_registry:ui_ctl_creg.service
 - ui.view:view.module
 associations:
@@ -46,6 +46,6 @@ definitions:
       htypes.tabs.tab: legacy_type.tabs:tab
       services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service
-      services.ui_command_factory: ui.ui_command:ui_command_factory.service
+      services.ui_command_factory: ui.qt.ui_command:ui_command_factory.service
       services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
       services.web: builtins:web.service

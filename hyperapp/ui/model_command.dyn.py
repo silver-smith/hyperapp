@@ -10,23 +10,16 @@ from .services import (
     model_command_creg,
     pyobj_creg,
     )
-
+from .code.ui_command import CommandBase
 log = logging.getLogger(__name__)
 
 
-class ModelCommand:
+class ModelCommand(CommandBase):
 
-    def __init__(self, fn, params, view, model_piece, widget, wrappers):
-        self._fn = fn
+    def __init__(self, name, fn, params, view, model_piece, widget, wrappers):
+        super().__init__(name, fn, view, widget, wrappers)
         self._params = params
-        self._view = view
         self._model_piece = model_piece
-        self._widget = weakref.ref(widget)
-        self._wrappers = wrappers
-
-    @property
-    def name(self):
-        return self._fn.__name__
 
     async def run(self):
         widget = self._widget()
@@ -56,7 +49,8 @@ class ModelCommand:
 @model_command_creg.actor(htypes.ui.model_command)
 def model_command_from_piece(piece, view, model_piece, widget, wrappers):
     fn = pyobj_creg.invite(piece.function)
-    return ModelCommand(fn, piece.params, view, model_piece, widget, wrappers)
+    name = fn.__name__
+    return ModelCommand(name, fn, piece.params, view, model_piece, widget, wrappers)
 
 
 def global_commands():

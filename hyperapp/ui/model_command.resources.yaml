@@ -18,6 +18,7 @@ import:
 - legacy_type.ui:model_d
 - resource.data_to_res:data_to_res.service
 - ui.model_command_creg:model_command_creg.service
+- ui.qt.ui_command:ui_command.module
 associations:
 - bases:
   - legacy_type.model_command_tests:sample_model
@@ -38,6 +39,7 @@ definitions:
     module_name: model_command
     file_name: model_command.dyn.py
     import_list:
+      code.ui_command: ui.qt.ui_command:ui_command.module
       htypes.ui.global_model_command_d: legacy_type.ui:global_model_command_d
       htypes.ui.model_command: legacy_type.ui:model_command
       htypes.ui.model_command_d: legacy_type.ui:model_command_d

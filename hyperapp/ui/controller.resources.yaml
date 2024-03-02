@@ -25,7 +25,7 @@ import:
 - legacy_type.ui:model_d
 - legacy_type.ui:tree_ui_t
 - ui.command_hub:command_hub.module
-- ui.ui_command:ui_command_factory.service
+- ui.qt.ui_command:ui_command_factory.service
 - ui.ui_ctl_registry:ui_ctl_creg.service
 - ui.view:view.module
 associations:
@@ -95,7 +95,7 @@ definitions:
       htypes.root.state: legacy_type.root:state
       htypes.root.view: legacy_type.root:view
       services.mosaic: builtins:mosaic.service
-      services.ui_command_factory: ui.ui_command:ui_command_factory.service
+      services.ui_command_factory: ui.qt.ui_command:ui_command_factory.service
       services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
       services.web: builtins:web.service
   global_model_command_d:

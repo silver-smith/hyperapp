@@ -1,5 +1,9 @@
+import asyncio
 import logging
 import weakref
+from functools import cached_property
+
+from PySide6 import QtGui
 
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 
@@ -14,7 +18,28 @@ from .services import (
 log = logging.getLogger(__name__)
 
 
-class UiCommand:
+_hardcoded_shortcuts = {
+    'go_back': 'Esc',
+    'go_forward': 'Alt+Right',
+    'duplicate_tab': 'Shift+f4',
+    'close_tab': 'Ctrl+f4',
+    'duplicate_window': 'Alt+W',
+    'open_layout_tree': 'Alt+L',
+    'open_sample_static_text_1': 'f1',
+    'open_sample_static_text_2': 'f2',
+    'open_sample_static_list': 'f3',
+    'open_sample_fn_list': 'f4',
+    'open_sample_fn_tree': 'f6',
+    'open_feed_sample_fn_list': 'f5',
+    'open_feed_sample_fn_tree': 'Shift+f6',
+    'show_state': 'Ctrl+Return',
+    'sample_list_state': 'Return',
+    'open_layout_item_commands': 'C',
+    'add_layout_command': 'Insert',
+    }
+
+
+class CommandBase:
 
     def __init__(self, name, fn, view, widget, wrappers):
         self._name = name
@@ -26,6 +51,22 @@ class UiCommand:
     @property
     def name(self):
         return self._name
+
+    @cached_property
+    def action(self):
+        action = QtGui.QAction(self.name)
+        action.triggered.connect(self._start)
+        shortcut = _hardcoded_shortcuts.get(self.name)
+        if shortcut:
+            action.setShortcut(shortcut)
+        return action
+
+    def _start(self):
+        log.info("Start command: %r", self.name)
+        asyncio.create_task(self.run())
+
+
+class UiCommand(CommandBase):
 
     async def run(self):
         widget = self._widget()
