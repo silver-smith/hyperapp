@@ -53,9 +53,20 @@ class BoxLayoutView(View):
         layout.itemAt(state.current).widget().setFocus()
         return widget
 
+    def replace_widget(self, ctx, widget, idx):
+        elt = self._elements[idx]
+        state = None  # TODO: Navigator apply should return new state.
+        layout = widget.layout()
+        w = elt.view.construct_widget(state, ctx)
+        old_w = layout.itemAt(idx).widget()
+        layout.replaceWidget(old_w, w)
+        old_w.deleteLater()
+        return w
+
     def get_current(self, widget):
         layout = widget.layout()
-        return layout.count() - 1  # TODO
+        # return layout.count() - 1  # TODO
+        return 0
 
     def widget_state(self, widget):
         layout = widget.layout()
