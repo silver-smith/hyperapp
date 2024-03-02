@@ -9,6 +9,26 @@ from .code.view import Diff, Item, View
 log = logging.getLogger(__name__)
 
 
+_skip_commands = {
+    'duplicate_window',
+    'duplicate_tab',
+    'close_tab',
+    'go_back',
+    'go_forward',
+    'open_sample_static_text_1',
+    'open_sample_static_text_2',
+    'open_sample_static_list',
+    'open_sample_fn_list',
+    'open_feed_sample_fn_list',
+    'open_sample_fn_tree',
+    'open_feed_sample_fn_tree',
+    'open_layout_tree',
+    'make_layout',
+    'make_state',
+    'sample_list',
+    }
+
+
 class CommandPaneView(View):
 
     @classmethod
@@ -40,6 +60,8 @@ class CommandPaneView(View):
             # TODO: Map command to buttons and remove only required.
             button.deleteLater()
         for command in added_commands:
+            if command.name in _skip_commands:
+                continue
             text = command.name
             if command.shortcut:
                 text += f' ({command.shortcut})'
