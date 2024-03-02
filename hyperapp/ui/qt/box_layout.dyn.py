@@ -65,7 +65,11 @@ class BoxLayoutView(View):
 
     def get_current(self, widget):
         layout = widget.layout()
-        # return layout.count() - 1  # TODO
+        for idx in range(layout.count()):
+            w = layout.itemAt(idx).widget()
+            if not w.focusPolicy():  # Qt.NoFocus == 0
+                continue
+            return idx
         return 0
 
     def widget_state(self, widget):
