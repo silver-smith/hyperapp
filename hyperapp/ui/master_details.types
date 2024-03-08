@@ -1,0 +1,13 @@
+
+view = record:
+  model: ref
+  master_view: ref
+  details_command: ref
+  details_view: ref  # Initial view.
+  direction: string  # Same as in box_layout.
+  master_stretch: int
+  details_stretch: int
+
+state = record:
+  master_state: ref
+  details_state: ref

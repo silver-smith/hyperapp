@@ -1,0 +1,21 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:mosaic.service
+- common.context:context.module
+- legacy_type.builtin:python_module
+- legacy_type.phony:phony
+- resource.fn_to_res:fn_to_res.service
+associations: []
+definitions:
+  master_details.tests.module:
+    _type: legacy_type.builtin:python_module
+    module_name: master_details.tests
+    file_name: master_details.tests.dyn.py
+    import_list:
+      code.context: common.context:context.module
+      services.fn_to_res: resource.fn_to_res:fn_to_res.service
+      services.mosaic: builtins:mosaic.service
+      tested.code.master_details: phony
+  phony:
+    _type: legacy_type.phony:phony
