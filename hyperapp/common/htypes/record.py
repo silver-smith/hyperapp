@@ -232,7 +232,10 @@ class TRecord(Type):
             if not isinstance(value, t):
                 raise RuntimeError(f"{name}: expected {t}, but got: {value!r}")
         for name, value in kw.items():
-            t = self.fields[name]
+            try:
+                t = self.fields[name]
+            except KeyError:
+                raise RuntimeError(f"Missing record field: {name}")
             if not isinstance(value, t):
                 raise RuntimeError(f"{name}: expected {t}, but got: {value!r}")
 
