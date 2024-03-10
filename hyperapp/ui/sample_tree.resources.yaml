@@ -64,6 +64,7 @@ definitions:
     attr_name: open_feed_sample_fn_tree
   open_feed_sample_fn_tree.command:
     _type: legacy_type.ui:model_command
+    name: open_feed_sample_fn_tree
     function: open_feed_sample_fn_tree
     params: []
   open_sample_fn_tree:
@@ -72,6 +73,7 @@ definitions:
     attr_name: open_sample_fn_tree
   open_sample_fn_tree.command:
     _type: legacy_type.ui:model_command
+    name: open_sample_fn_tree
     function: open_sample_fn_tree
     params: []
   sample_tree:

@@ -45,6 +45,7 @@ definitions:
     attr_name: open_sample_static_list
   open_sample_static_list.command:
     _type: legacy_type.ui:model_command
+    name: open_sample_static_list
     function: open_sample_static_list
     params: []
   open_sample_static_text_1:
@@ -53,6 +54,7 @@ definitions:
     attr_name: open_sample_static_text_1
   open_sample_static_text_1.command:
     _type: legacy_type.ui:model_command
+    name: open_sample_static_text_1
     function: open_sample_static_text_1
     params: []
   open_sample_static_text_2:
@@ -61,6 +63,7 @@ definitions:
     attr_name: open_sample_static_text_2
   open_sample_static_text_2.command:
     _type: legacy_type.ui:model_command
+    name: open_sample_static_text_2
     function: open_sample_static_text_2
     params: []
   sample_commands.module:
@@ -75,6 +78,7 @@ definitions:
     attr_name: sample_list_state
   sample_list_state.command:
     _type: legacy_type.ui:model_command
+    name: sample_list_state
     function: sample_list_state
     params:
     - piece
@@ -85,6 +89,7 @@ definitions:
     attr_name: show_state
   show_state.command:
     _type: legacy_type.ui:model_command
+    name: show_state
     function: show_state
     params:
     - state

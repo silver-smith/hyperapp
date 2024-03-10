@@ -76,6 +76,7 @@ definitions:
     attr_name: add_layout_command
   add_layout_command.command:
     _type: legacy_type.ui:model_command
+    name: add_layout_command
     function: add_layout_command
     params:
     - piece
@@ -107,6 +108,7 @@ definitions:
     attr_name: layout_item_commands
   layout_item_commands.command:
     _type: legacy_type.ui:model_command
+    name: layout_item_commands
     function: layout_item_commands
     params:
     - piece
@@ -162,6 +164,7 @@ definitions:
     attr_name: open_layout_item_commands
   open_layout_item_commands.command:
     _type: legacy_type.ui:model_command
+    name: open_layout_item_commands
     function: open_layout_item_commands
     params:
     - piece
@@ -172,5 +175,6 @@ definitions:
     attr_name: open_layout_tree
   open_layout_tree.command:
     _type: legacy_type.ui:model_command
+    name: open_layout_tree
     function: open_layout_tree
     params: []

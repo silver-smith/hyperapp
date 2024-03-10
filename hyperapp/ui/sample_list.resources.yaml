@@ -73,6 +73,7 @@ definitions:
     attr_name: open_feed_sample_fn_list
   open_feed_sample_fn_list.command:
     _type: legacy_type.ui:model_command
+    name: open_feed_sample_fn_list
     function: open_feed_sample_fn_list
     params: []
   open_sample_fn_list:
@@ -81,6 +82,7 @@ definitions:
     attr_name: open_sample_fn_list
   open_sample_fn_list.command:
     _type: legacy_type.ui:model_command
+    name: open_sample_fn_list
     function: open_sample_fn_list
     params: []
   sample_list:
@@ -89,6 +91,7 @@ definitions:
     attr_name: sample_list
   sample_list.command:
     _type: legacy_type.ui:model_command
+    name: sample_list
     function: sample_list
     params:
     - piece

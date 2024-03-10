@@ -20,6 +20,7 @@ def make_piece():
     master = htypes.text.view_layout(mosaic.put(master_adapter))
     details = htypes.text.view_layout(mosaic.put(details_adapter))
     command = htypes.ui.model_command(
+        name='details',
         function=mosaic.put(fn_to_res(_details_command)),
         params=['piece'],
         )

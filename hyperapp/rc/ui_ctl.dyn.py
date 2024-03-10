@@ -180,6 +180,7 @@ def construct_global_model_command(ctx, module_name, resource_module, module_res
         attr_name=fn_name,
     )
     command = htypes.ui.model_command(
+        name=fn_name,
         function=mosaic.put(fn_attribute),
         params=tuple(params),
         )
@@ -233,6 +234,7 @@ def construct_model_command(ctx, module_name, resource_module, module_res, qname
         attr_name=fn_name,
     )
     command = htypes.ui.model_command(
+        name=fn_name,
         function=mosaic.put(fn_attribute),
         params=tuple(params),
         )
