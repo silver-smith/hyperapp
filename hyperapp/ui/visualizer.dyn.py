@@ -11,6 +11,7 @@ from .services import (
     types,
     web,
     )
+from .code.model_command import model_commands
 
 
 @mark.service
@@ -33,6 +34,7 @@ def visualizer():
             raise NotImplementedError(t)
         ui_t = web.summon(model.ui_t)
         impl = web.summon(model.impl)
+
         if isinstance(ui_t, htypes.ui.list_ui_t) and isinstance(impl, htypes.ui.fn_impl):
             adapter_layout = htypes.list_adapter.fn_list_adapter(
                 model_piece=mosaic.put(value),
@@ -40,7 +42,25 @@ def visualizer():
                 function=impl.function,
                 want_feed=impl.want_feed,
                 )
-            return htypes.list.layout(mosaic.put(adapter_layout))
+            view = htypes.list.layout(mosaic.put(adapter_layout))
+
+            if t is not htypes.sample_list.sample_list:
+                return view
+
+            command_list = model_commands(value)
+            command = next(cmd for cmd in command_list if cmd.name == 'sample_list_state')
+            details_adapter= htypes.str_adapter.static_str_adapter("Default details")
+            details = htypes.text.view_layout(mosaic.put(details_adapter))
+            return htypes.master_details.view(
+                model=mosaic.put(value),
+                master_view=mosaic.put(view),
+                details_command=mosaic.put(command),
+                details_view=mosaic.put(details),
+                direction='LeftToRight',
+                master_stretch=1,
+                details_stretch=1,
+                )
+
         if isinstance(ui_t, htypes.ui.tree_ui_t) and isinstance(impl, htypes.ui.fn_impl):
             adapter_layout = htypes.tree_adapter.fn_index_tree_adapter(
                 model_piece=mosaic.put(value),

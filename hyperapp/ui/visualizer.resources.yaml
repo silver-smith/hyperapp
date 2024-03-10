@@ -13,8 +13,11 @@ import:
 - legacy_type.list:layout
 - legacy_type.list_adapter:fn_list_adapter
 - legacy_type.list_adapter:static_list_adapter
+- legacy_type.master_details:view
+- legacy_type.sample_list:sample_list
 - legacy_type.str_adapter:static_str_adapter
 - legacy_type.text:edit_layout
+- legacy_type.text:view_layout
 - legacy_type.tree:view
 - legacy_type.tree_adapter:fn_index_tree_adapter
 - legacy_type.ui:fn_impl
@@ -22,6 +25,7 @@ import:
 - legacy_type.ui:model_d
 - legacy_type.ui:tree_ui_t
 - resource.data_to_res:data_to_res.service
+- ui.model_command:model_command.module
 associations: []
 definitions:
   visualizer:
@@ -33,11 +37,15 @@ definitions:
     module_name: visualizer
     file_name: visualizer.dyn.py
     import_list:
+      code.model_command: ui.model_command:model_command.module
       htypes.list.layout: legacy_type.list:layout
       htypes.list_adapter.fn_list_adapter: legacy_type.list_adapter:fn_list_adapter
       htypes.list_adapter.static_list_adapter: legacy_type.list_adapter:static_list_adapter
+      htypes.master_details.view: legacy_type.master_details:view
+      htypes.sample_list.sample_list: legacy_type.sample_list:sample_list
       htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
       htypes.text.edit_layout: legacy_type.text:edit_layout
+      htypes.text.view_layout: legacy_type.text:view_layout
       htypes.tree.view: legacy_type.tree:view
       htypes.tree_adapter.fn_index_tree_adapter: legacy_type.tree_adapter:fn_index_tree_adapter
       htypes.ui.fn_impl: legacy_type.ui:fn_impl
