@@ -12,7 +12,7 @@ from .services import (
     resource_module_factory,
     web,
     )
-from .code.dep import CodeDep, FixturesDep, ServiceDep
+from .code.dep import CodeDep, FixturesDep, ServiceDep, ModuleDep
 from .code import import_driver, call_driver, htest_driver
 from .code.scaffolds import (
     discoverer_module_res,
@@ -80,6 +80,9 @@ def _resource_module_info(resource_module, code_module_name):
     want_deps = set()
     test_code = set()
     test_services = set()
+    for module_name, var_name in resource_module.used_imports:
+        if module_name != 'builtins' and not module_name.startswith('legacy_type.'):
+            want_deps.add(ModuleDep(module_name))
     import_list = resource_module.code_module_imports(code_module_name)
     for name, value in import_list.items():
         if value != 'phony':
@@ -481,6 +484,7 @@ class Unit:
     async def _check_up_to_date(self):
         if self._resource_module and not self._resource_module.is_auto_generated:
             log.info("%s: manually created", self.name)
+            self._graph.dep_to_provider[ModuleDep(self.name)] = self
             await self._set_service_providers(self._resource_module.provided_services)
             return True
         if not self._resource_module:
@@ -494,6 +498,7 @@ class Unit:
             log.info("%s: sources do not match", self.name)
             return False
         log.info("%s: sources match", self.name)
+        self._graph.dep_to_provider[ModuleDep(self.name)] = self
         await self._set_service_providers(self._resource_module.provided_services)
         self.deps.update(info.want_deps)
         await self._wait_for_all_test_targets()
@@ -519,6 +524,7 @@ class Unit:
             return
         info, self._attr_list = await self._discover_attributes(process_pool)
         await _lock_and_notify_all(self._attributes_discovered)
+        self._graph.dep_to_provider[ModuleDep(self.name)] = self
         await self._set_service_providers(_enum_provided_services(self._attr_list))
         await self._wait_for_deps(self.deps)
         await self._call_all_fn_attrs(process_pool, self._attr_list)

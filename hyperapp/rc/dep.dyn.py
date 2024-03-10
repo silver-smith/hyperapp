@@ -124,3 +124,19 @@ class TestsDep(Dep):
     @property
     def should_be_imported(self):
         return False
+
+
+@dataclass(eq=False)
+class ModuleDep(Dep):
+    module_name: str
+
+    def __repr__(self):
+        return f"module:{self.module_name}"
+
+    @property
+    def key(self):
+        return self.module_name
+
+    @property
+    def should_be_imported(self):
+        return False
