@@ -10,6 +10,7 @@ from .services import (
     )
 from .code.collector import collect_units
 from .code.process_pool import process_pool_running
+from .code.unit import DeadlockError
 
 log = logging.getLogger(__name__)
 
@@ -51,6 +52,8 @@ async def _run_unit(unit, process_pool, show_traces):
         error_logger = log.info
     try:
         return await unit.run(process_pool)
+    except DeadlockError as x:
+        log.info("Deadlocked: %s: %s", unit.name, x)
     except asyncio.CancelledError as x:
         x.__context__ = None
         if any('process_available.wait' in s for s in traceback.format_exception(x)):

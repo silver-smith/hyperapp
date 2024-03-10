@@ -4,6 +4,7 @@ import:
 - legacy_type.builtin:python_module
 - rc.process_pool:process_pool.module
 - rc.collector:collector.module
+- rc.unit:unit.module
 
 definitions:
 
@@ -15,6 +16,7 @@ definitions:
       services.hyperapp_dir: builtins:hyperapp_dir.service
       code.collector: rc.collector:collector.module
       code.process_pool: rc.process_pool:process_pool.module
+      code.unit: rc.unit:unit.module
 
   compile_resources:
     _type: legacy_type.builtin:attribute

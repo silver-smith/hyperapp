@@ -31,6 +31,10 @@ from .code import ui_ctl
 log = logging.getLogger(__name__)
 
 
+class DeadlockError(RuntimeError):
+    pass
+
+
 ResModuleInfo = namedtuple('DesModuleInfo', 'use_modules want_deps test_code test_services')
 ImportsInfo = namedtuple('ImportsInfo', 'used_types want_deps test_code test_services')
 
@@ -342,7 +346,10 @@ class Unit:
                 if not unknown:
                     return
                 log.debug("%s: Unknown providers for deps: %s", self.name, ", ".join(unknown))
-                await self._providers_changed.wait()
+                try:
+                    await self._providers_changed.wait()
+                except asyncio.CancelledError:
+                    raise DeadlockError("Waiting providers for deps: {}".format(", ".join(unknown)))
 
     async def _wait_for_deps_discovered(self, units):
         async with self._new_deps_discovered:
@@ -351,7 +358,10 @@ class Unit:
                 if not not_discovered:
                     return
                 log.debug("%s: Deps not discovered: %s", self.name, _unit_list_to_str(not_discovered))
-                await self._new_deps_discovered.wait()
+                try:
+                    await self._new_deps_discovered.wait()
+                except asyncio.CancelledError:
+                    raise DeadlockError("Waiting for deps disccoverred: {}".format(_unit_list_to_str(not_discovered)))
 
     async def _wait_for_deps(self, dep_set):
         await self._wait_for_providers(dep_set)
