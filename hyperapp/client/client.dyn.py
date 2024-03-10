@@ -21,7 +21,7 @@ def make_piece():
     text = "Sample text"
     text_view = visualizer(text)
     navigator = htypes.navigator.view(
-        current_layout=mosaic.put(text_view),
+        current_view=mosaic.put(text_view),
         current_model=mosaic.put(text),
         commands=[mosaic.put(c) for c in global_commands()],
         prev=None,

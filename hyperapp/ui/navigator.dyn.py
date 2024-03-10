@@ -23,7 +23,7 @@ class NavigatorView(View):
 
     @classmethod
     def from_piece(cls, piece):
-        current_view = ui_ctl_creg.invite(piece.current_layout)
+        current_view = ui_ctl_creg.invite(piece.current_view)
         current_model = web.summon(piece.current_model)
         return cls(current_view, current_model, piece.commands, piece.prev, piece.next)
 
@@ -39,7 +39,7 @@ class NavigatorView(View):
     def piece(self):
         model_t = deduce_complex_value_type(mosaic, types, self._current_model)
         return htypes.navigator.view(
-            current_layout=mosaic.put(self._current_view.piece),
+            current_view=mosaic.put(self._current_view.piece),
             current_model=mosaic.put(self._current_model, model_t),
             commands=self._commands,
             prev=self._prev,
@@ -82,14 +82,14 @@ class NavigatorView(View):
     def _model_wrapper(self, piece):
         if piece is None:
             return None
-        new_current_layout = visualizer(piece)
+        new_current_view = visualizer(piece)
         commands = [
             *global_commands(),
             *model_commands(piece),
             ]
         piece_t = deduce_complex_value_type(mosaic, types, piece)
         return Diff(htypes.navigator.open_new_diff(
-            new_current=mosaic.put(new_current_layout),
+            new_current=mosaic.put(new_current_view),
             new_model=mosaic.put(piece, piece_t),
             commands=[mosaic.put(cmd) for cmd in commands],
             ))
@@ -108,7 +108,7 @@ class NavigatorView(View):
                 return None
             current_piece = self.piece
             prev = web.summon(self._prev)
-            self._current_view = ui_ctl_creg.invite(prev.current_layout)
+            self._current_view = ui_ctl_creg.invite(prev.current_view)
             self._current_model = web.summon(prev.current_model)
             self._commands = prev.commands
             self._prev = prev.prev
@@ -118,7 +118,7 @@ class NavigatorView(View):
                 return None
             current_piece = self.piece
             next = web.summon(self._next)
-            self._current_view = ui_ctl_creg.invite(next.current_layout)
+            self._current_view = ui_ctl_creg.invite(next.current_view)
             self._current_model = web.summon(next.current_model)
             self._commands = next.commands
             self._prev = mosaic.put(current_piece)

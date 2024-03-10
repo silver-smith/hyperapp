@@ -1,6 +1,6 @@
 
 view = record:
-  current_layout: ref
+  current_view: ref
   current_model: ref
   commands: ref list
   prev: ref opt

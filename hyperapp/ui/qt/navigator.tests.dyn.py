@@ -19,21 +19,21 @@ def make_piece():
     adapter_piece = htypes.str_adapter.static_str_adapter("Sample text")
     text_piece = htypes.text.readonly_view(mosaic.put(adapter_piece))
     prev_piece = htypes.navigator.view(
-        current_layout=mosaic.put(text_piece),
+        current_view=mosaic.put(text_piece),
         current_model=mosaic.put("Sample piece"),
         commands=[],
         prev=None,
         next=None,
         )
     next_piece = htypes.navigator.view(
-        current_layout=mosaic.put(text_piece),
+        current_view=mosaic.put(text_piece),
         current_model=mosaic.put("Sample piece"),
         commands=[],
         prev=None,
         next=None,
         )
     piece = htypes.navigator.view(
-        current_layout=mosaic.put(text_piece),
+        current_view=mosaic.put(text_piece),
         current_model=mosaic.put("Sample piece"),
         commands=[],
         prev=mosaic.put(prev_piece),
