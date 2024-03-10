@@ -90,3 +90,10 @@ class BoxLayoutView(View):
             Item(f"Item#{idx}", elt.view, layout.itemAt(idx).widget())
             for idx, elt in enumerate(self._elements)
             ]
+
+    def child_view(self, idx):
+        return self._elements[idx].view
+
+    def child_widget(self, widget, idx):
+        layout = widget.layout()
+        return layout.itemAt(idx).widget()

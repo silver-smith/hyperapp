@@ -75,3 +75,8 @@ class MasterDetailsView(WrapperView):
             master_state=base.elements[0],
             details_state=base.elements[1],
             )
+
+    def model_state(self, widget):
+        master_view = self._base.child_view(0)
+        master_widget = self._base.child_widget(widget, 0)
+        return master_view.model_state(master_widget)
