@@ -43,7 +43,7 @@ def make_state():
         )
 
 
-def test_box_layout():
+def test_master_details():
     ctx = Context()
     piece = make_piece()
     state = make_state()
