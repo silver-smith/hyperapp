@@ -22,7 +22,7 @@ class ViewTextView(View):
 
     @property
     def piece(self):
-        return htypes.text.view_layout(self._adapter_ref)
+        return htypes.text.readonly_view(self._adapter_ref)
 
     def construct_widget(self, state, ctx):
         adapter = ui_adapter_creg.invite(self._adapter_ref, ctx)

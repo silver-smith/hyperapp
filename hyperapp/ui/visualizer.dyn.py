@@ -50,7 +50,7 @@ def visualizer():
             command_list = model_commands(value)
             command = next(cmd for cmd in command_list if cmd.name == 'sample_list_state')
             details_adapter= htypes.str_adapter.static_str_adapter("Default details")
-            details = htypes.text.view_layout(mosaic.put(details_adapter))
+            details = htypes.text.readonly_view(mosaic.put(details_adapter))
             return htypes.master_details.view(
                 model=mosaic.put(value),
                 master_view=mosaic.put(view),

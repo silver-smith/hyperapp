@@ -10,8 +10,8 @@ from .tested.code import box_layout
 def make_piece():
     adapter_1 = htypes.str_adapter.static_str_adapter("Sample text 1")
     adapter_2 = htypes.str_adapter.static_str_adapter("Sample text 2")
-    text_1 = htypes.text.view_layout(mosaic.put(adapter_1))
-    text_2 = htypes.text.view_layout(mosaic.put(adapter_2))
+    text_1 = htypes.text.readonly_view(mosaic.put(adapter_1))
+    text_2 = htypes.text.readonly_view(mosaic.put(adapter_2))
     return htypes.box_layout.view(
         direction='LeftToRight',
         elements=[

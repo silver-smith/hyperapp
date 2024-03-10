@@ -14,7 +14,7 @@ def make_adapter():
 
 def make_view_piece():
     adapter_layout = make_adapter()
-    return htypes.text.view_layout(mosaic.put(adapter_layout))
+    return htypes.text.readonly_view(mosaic.put(adapter_layout))
 
 
 def make_edit_piece():

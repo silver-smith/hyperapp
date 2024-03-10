@@ -14,7 +14,7 @@ from .tested.code import controller
 
 def make_piece():
     adapter_piece = htypes.str_adapter.static_str_adapter("Sample text")
-    text_piece = htypes.text.view_layout(mosaic.put(adapter_piece))
+    text_piece = htypes.text.readonly_view(mosaic.put(adapter_piece))
     tabs_piece = htypes.auto_tabs.view(
         tabs=[mosaic.put(text_piece)],
         )

@@ -1,4 +1,4 @@
-view_layout = record:
+readonly_view = record:
   adapter: ref
 
 edit_layout = record:

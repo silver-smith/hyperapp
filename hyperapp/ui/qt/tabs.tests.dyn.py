@@ -14,7 +14,7 @@ from .tested.code import tabs
 
 def make_inner_piece():
     adapter = htypes.str_adapter.static_str_adapter("Sample text")
-    text = htypes.text.view_layout(mosaic.put(adapter))
+    text = htypes.text.readonly_view(mosaic.put(adapter))
     return htypes.tabs.view(
         tabs=[
             htypes.tabs.tab("One", mosaic.put(text))],

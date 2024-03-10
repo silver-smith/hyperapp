@@ -12,7 +12,7 @@ from .tested.code import auto_tabs
 
 def make_piece():
     adapter = htypes.str_adapter.static_str_adapter("Sample text")
-    text = htypes.text.view_layout(mosaic.put(adapter))
+    text = htypes.text.readonly_view(mosaic.put(adapter))
     return htypes.auto_tabs.view(
         tabs=[mosaic.put(text)],
         )
@@ -60,7 +60,7 @@ def test_duplicate():
 
 def test_close():
     adapter = htypes.str_adapter.static_str_adapter("Sample text")
-    text = htypes.text.view_layout(mosaic.put(adapter))
+    text = htypes.text.readonly_view(mosaic.put(adapter))
     piece = htypes.auto_tabs.view(
         tabs=[
             mosaic.put(text),

@@ -17,7 +17,7 @@ import:
 - legacy_type.sample_list:sample_list
 - legacy_type.str_adapter:static_str_adapter
 - legacy_type.text:edit_layout
-- legacy_type.text:view_layout
+- legacy_type.text:readonly_view
 - legacy_type.tree:view
 - legacy_type.tree_adapter:fn_index_tree_adapter
 - legacy_type.ui:fn_impl
@@ -45,7 +45,7 @@ definitions:
       htypes.sample_list.sample_list: legacy_type.sample_list:sample_list
       htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
       htypes.text.edit_layout: legacy_type.text:edit_layout
-      htypes.text.view_layout: legacy_type.text:view_layout
+      htypes.text.readonly_view: legacy_type.text:readonly_view
       htypes.tree.view: legacy_type.tree:view
       htypes.tree_adapter.fn_index_tree_adapter: legacy_type.tree_adapter:fn_index_tree_adapter
       htypes.ui.fn_impl: legacy_type.ui:fn_impl
