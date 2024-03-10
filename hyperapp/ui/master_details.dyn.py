@@ -53,10 +53,16 @@ class MasterDetailsView(WrapperView):
             )
 
     def construct_widget(self, state, ctx):
-        elements = [
-            state.master_state,
-            state.details_state,
-            ]
+        if state:
+            elements = [
+                state.master_state,
+                state.details_state,
+                ]
+        else:
+            elements = [
+                mosaic.put(None),
+                mosaic.put(None),
+                ]
         base_state = htypes.box_layout.state(
             current=0,
             elements=elements,
