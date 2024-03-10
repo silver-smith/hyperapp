@@ -17,7 +17,7 @@ def tab_label(piece_ref):
     piece = web.summon(piece_ref)
     if isinstance(piece, htypes.box_layout.view):
         piece = web.summon(piece.elements[0].view)
-    if isinstance(piece, htypes.navigator.layout):
+    if isinstance(piece, htypes.navigator.view):
         piece = web.summon(piece.current_model)
     return str(piece)[:40]
 

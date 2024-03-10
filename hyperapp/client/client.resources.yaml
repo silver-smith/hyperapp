@@ -14,8 +14,8 @@ import:
 - legacy_type.command_pane:view
 - legacy_type.menu_bar:layout
 - legacy_type.menu_bar:state
-- legacy_type.navigator:layout
 - legacy_type.navigator:state
+- legacy_type.navigator:view
 - legacy_type.root:state
 - legacy_type.root:view
 - legacy_type.tab_groups:view
@@ -61,8 +61,8 @@ definitions:
       htypes.command_pane.view: legacy_type.command_pane:view
       htypes.menu_bar.layout: legacy_type.menu_bar:layout
       htypes.menu_bar.state: legacy_type.menu_bar:state
-      htypes.navigator.layout: legacy_type.navigator:layout
       htypes.navigator.state: legacy_type.navigator:state
+      htypes.navigator.view: legacy_type.navigator:view
       htypes.root.state: legacy_type.root:state
       htypes.root.view: legacy_type.root:view
       htypes.tab_groups.view: legacy_type.tab_groups:view

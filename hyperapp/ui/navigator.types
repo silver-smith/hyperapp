@@ -1,5 +1,5 @@
 
-layout = record:
+view = record:
   current_layout: ref
   current_model: ref
   commands: ref list

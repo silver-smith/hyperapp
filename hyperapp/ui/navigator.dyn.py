@@ -38,7 +38,7 @@ class NavigatorView(View):
     @property
     def piece(self):
         model_t = deduce_complex_value_type(mosaic, types, self._current_model)
-        return htypes.navigator.layout(
+        return htypes.navigator.view(
             current_layout=mosaic.put(self._current_view.piece),
             current_model=mosaic.put(self._current_model, model_t),
             commands=self._commands,
@@ -128,11 +128,11 @@ class NavigatorView(View):
         return True
 
 
-@mark.ui_command(htypes.navigator.layout)
+@mark.ui_command(htypes.navigator.view)
 def go_back(layout, state):
     return Diff(htypes.navigator.go_back_diff())
 
 
-@mark.ui_command(htypes.navigator.layout)
+@mark.ui_command(htypes.navigator.view)
 def go_forward(layout, state):
     return Diff(htypes.navigator.go_forward_diff())
