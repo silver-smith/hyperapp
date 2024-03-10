@@ -265,20 +265,20 @@ async def open_layout_tree():
     return htypes.layout.view()
 
 
-async def open_layout_item_commands(piece, current_item):
-    log.info("Open layout item commands for: %s", current_item)
+async def open_view_item_commands(piece, current_item):
+    log.info("Open view item commands for: %s", current_item)
     if current_item:
         return htypes.layout.command_list(item_id=current_item.id)
 
 
-def layout_item_commands(piece):
+def view_item_commands(piece):
     command_list = [
         htypes.layout.command_item(command.name)
         for command in controller.item_commands(piece.item_id)
         ]
-    log.info("Get layout item commands for %s: %s", piece, command_list)
+    log.info("Get view item commands for %s: %s", piece, command_list)
     return command_list
 
 
-async def add_layout_command(piece, current_item):
-    log.info("Add layout command for %s: %s", piece, current_item)
+async def add_view_command(piece, current_item):
+    log.info("Add view command for %s: %s", piece, current_item)

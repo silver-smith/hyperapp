@@ -38,25 +38,25 @@ associations:
   key:
   - model_command_d
   - legacy_type.layout:command_list
-  value: add_layout_command.command
+  value: add_view_command.command
 - bases:
   - legacy_type.layout:command_list
   key:
   - model_command_d
   - legacy_type.layout:command_list
-  value: layout_item_commands.command
+  value: view_item_commands.command
 - bases:
   - legacy_type.layout:command_list
   key:
   - model_d
   - legacy_type.layout:command_list
-  value: layout_item_commands.model
+  value: view_item_commands.model
 - bases:
   - legacy_type.layout:view
   key:
   - model_command_d
   - legacy_type.layout:view
-  value: open_layout_item_commands.command
+  value: open_view_item_commands.command
 - bases:
   - legacy_type.layout:view
   key:
@@ -70,14 +70,14 @@ associations:
   - legacy_type.layout:view
   value: layout_tree.model
 definitions:
-  add_layout_command:
+  add_view_command:
     _type: legacy_type.builtin:attribute
     object: controller.module
-    attr_name: add_layout_command
-  add_layout_command.command:
+    attr_name: add_view_command
+  add_view_command.command:
     _type: legacy_type.ui:model_command
-    name: add_layout_command
-    function: add_layout_command
+    name: add_view_command
+    function: add_view_command
     params:
     - piece
     - current_item
@@ -102,27 +102,6 @@ definitions:
   global_model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:global_model_command_d
-  layout_item_commands:
-    _type: legacy_type.builtin:attribute
-    object: controller.module
-    attr_name: layout_item_commands
-  layout_item_commands.command:
-    _type: legacy_type.ui:model_command
-    name: layout_item_commands
-    function: layout_item_commands
-    params:
-    - piece
-  layout_item_commands.impl:
-    _type: legacy_type.ui:fn_impl
-    function: layout_item_commands
-    want_feed: false
-  layout_item_commands.model:
-    _type: legacy_type.ui:model
-    ui_t: layout_item_commands.ui_t
-    impl: layout_item_commands.impl
-  layout_item_commands.ui_t:
-    _type: legacy_type.ui:list_ui_t
-    element_t: legacy_type.layout:command_item
   layout_tree:
     _type: legacy_type.builtin:attribute
     object: controller.module
@@ -158,17 +137,6 @@ definitions:
   model_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_d
-  open_layout_item_commands:
-    _type: legacy_type.builtin:attribute
-    object: controller.module
-    attr_name: open_layout_item_commands
-  open_layout_item_commands.command:
-    _type: legacy_type.ui:model_command
-    name: open_layout_item_commands
-    function: open_layout_item_commands
-    params:
-    - piece
-    - current_item
   open_layout_tree:
     _type: legacy_type.builtin:attribute
     object: controller.module
@@ -178,3 +146,35 @@ definitions:
     name: open_layout_tree
     function: open_layout_tree
     params: []
+  open_view_item_commands:
+    _type: legacy_type.builtin:attribute
+    object: controller.module
+    attr_name: open_view_item_commands
+  open_view_item_commands.command:
+    _type: legacy_type.ui:model_command
+    name: open_view_item_commands
+    function: open_view_item_commands
+    params:
+    - piece
+    - current_item
+  view_item_commands:
+    _type: legacy_type.builtin:attribute
+    object: controller.module
+    attr_name: view_item_commands
+  view_item_commands.command:
+    _type: legacy_type.ui:model_command
+    name: view_item_commands
+    function: view_item_commands
+    params:
+    - piece
+  view_item_commands.impl:
+    _type: legacy_type.ui:fn_impl
+    function: view_item_commands
+    want_feed: false
+  view_item_commands.model:
+    _type: legacy_type.ui:model
+    ui_t: view_item_commands.ui_t
+    impl: view_item_commands.impl
+  view_item_commands.ui_t:
+    _type: legacy_type.ui:list_ui_t
+    element_t: legacy_type.layout:command_item

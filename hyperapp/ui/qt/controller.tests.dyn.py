@@ -108,15 +108,15 @@ def test_layout_tree_commands():
         app.shutdown()
 
 
-async def test_open_layout_item_commands():
+async def test_open_view_item_commands():
     piece = htypes.layout.view()
     item = Mock()
     item.id = 123
-    result = await controller.open_layout_item_commands(piece, current_item=item)
+    result = await controller.open_view_item_commands(piece, current_item=item)
     assert result
 
 
-def test_layout_item_commands():
+def test_view_item_commands():
     ctx = Context()
     root_piece = make_piece()
     root_state = make_state()
@@ -127,12 +127,12 @@ def test_layout_item_commands():
         windows = controller.layout_tree(piece, None)
         window_items = controller.layout_tree(piece, windows[0])
         item_id = window_items[1].id
-        commands = controller.layout_item_commands(htypes.layout.command_list(item_id))
+        commands = controller.view_item_commands(htypes.layout.command_list(item_id))
         assert commands
     finally:
         app.shutdown()
 
 
-async def test_add_layout_command():
+async def test_add_view_command():
     piece = htypes.layout.command_list(item_id=123)
-    result = await controller.add_layout_command(piece, current_item=None)
+    result = await controller.add_view_command(piece, current_item=None)
