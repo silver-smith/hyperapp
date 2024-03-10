@@ -8,17 +8,17 @@ from .services import (
 from .code.context import Context
 
 
-def make_adapter_layout():
+def make_adapter():
     return htypes.str_adapter.static_str_adapter("Sample text")
 
 
-def make_view_layout():
-    adapter_layout = make_adapter_layout()
+def make_view_piece():
+    adapter_layout = make_adapter()
     return htypes.text.view_layout(mosaic.put(adapter_layout))
 
 
-def make_edit_layout():
-    adapter_layout = make_adapter_layout()
+def make_edit_piece():
+    adapter_layout = make_adapter()
     return htypes.text.edit_layout(mosaic.put(adapter_layout))
 
 
@@ -28,7 +28,7 @@ def make_state():
 
 def test_view_text():
     ctx = Context()
-    piece = make_view_layout()
+    piece = make_view_piece()
     state = make_state()
     app = QtWidgets.QApplication()
     try:
@@ -43,7 +43,7 @@ def test_view_text():
 
 def test_edit_text():
     ctx = Context()
-    piece = make_edit_layout()
+    piece = make_edit_piece()
     state = make_state()
     app = QtWidgets.QApplication()
     try:
