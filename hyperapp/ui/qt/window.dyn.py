@@ -33,7 +33,7 @@ class WindowView(View):
 
     @property
     def piece(self):
-        return htypes.window.layout(
+        return htypes.window.view(
             menu_bar_ref=mosaic.put(self._menu_bar_view.piece),
             central_view_ref=mosaic.put(self._central_view.piece),
             )

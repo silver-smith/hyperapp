@@ -51,7 +51,7 @@ def make_layout():
             htypes.tabs.tab("Outer", mosaic.put(inner_tabs_piece)),
             ],
         )
-    window_piece = htypes.window.layout(
+    window_piece = htypes.window.view(
         menu_bar_ref=mosaic.put(htypes.menu_bar.layout()),
         central_view_ref=mosaic.put(outer_tabs_piece),
         )

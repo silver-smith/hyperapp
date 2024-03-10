@@ -24,10 +24,10 @@ import:
 - legacy_type.text:state
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:model_command
-- legacy_type.window:layout
 - legacy_type.window:pos
 - legacy_type.window:size
 - legacy_type.window:state
+- legacy_type.window:view
 - rpc.rpc_endpoint:rpc_endpoint_factory.service
 - transport.endpoint:endpoint_registry.service
 - transport.rsa_identity:generate_rsa_identity.service
@@ -69,10 +69,10 @@ definitions:
       htypes.tabs.state: legacy_type.tabs:state
       htypes.tabs.tab: legacy_type.tabs:tab
       htypes.text.state: legacy_type.text:state
-      htypes.window.layout: legacy_type.window:layout
       htypes.window.pos: legacy_type.window:pos
       htypes.window.size: legacy_type.window:size
       htypes.window.state: legacy_type.window:state
+      htypes.window.view: legacy_type.window:view
       services.endpoint_registry: transport.endpoint:endpoint_registry.service
       services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
       services.mosaic: builtins:mosaic.service

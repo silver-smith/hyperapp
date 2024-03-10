@@ -18,7 +18,7 @@ def make_piece():
     tabs_piece = htypes.auto_tabs.view(
         tabs=[mosaic.put(text_piece)],
         )
-    window_piece = htypes.window.layout(
+    window_piece = htypes.window.view(
         menu_bar_ref=mosaic.put(htypes.menu_bar.layout()),
         central_view_ref=mosaic.put(tabs_piece),
         )

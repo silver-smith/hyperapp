@@ -19,7 +19,7 @@ def make_piece():
     tabs_piece = htypes.tabs.layout(
         tabs=[htypes.tabs.tab("One", mosaic.put(text_piece))],
         )
-    piece = htypes.window.layout(
+    piece = htypes.window.view(
         menu_bar_ref=mosaic.put(htypes.menu_bar.layout()),
         central_view_ref=mosaic.put(tabs_piece),
         )

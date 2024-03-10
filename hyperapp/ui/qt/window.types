@@ -7,7 +7,7 @@ size = record:
   w: int
   h: int
 
-layout = record:
+view = record:
   menu_bar_ref: ref
   central_view_ref: ref
 

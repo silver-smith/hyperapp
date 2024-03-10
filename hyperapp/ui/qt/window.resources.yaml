@@ -11,18 +11,18 @@ import:
 - legacy_type.root:view
 - legacy_type.ui:ui_command_d
 - legacy_type.ui:ui_ctl
-- legacy_type.window:layout
 - legacy_type.window:pos
 - legacy_type.window:size
 - legacy_type.window:state
+- legacy_type.window:view
 - ui.ui_ctl_registry:ui_ctl_creg.service
 - ui.view:view.module
 associations:
 - bases:
-  - legacy_type.window:layout
+  - legacy_type.window:view
   key:
   - ui.ui_ctl_registry:ui_ctl_creg.service
-  - legacy_type.window:layout
+  - legacy_type.window:view
   value: WindowView.from_piece.ctl
 - bases:
   - ui_command_d
@@ -59,10 +59,10 @@ definitions:
       code.list_diff: common.list_diff:list_diff.module
       code.view: ui.view:view.module
       htypes.root.view: legacy_type.root:view
-      htypes.window.layout: legacy_type.window:layout
       htypes.window.pos: legacy_type.window:pos
       htypes.window.size: legacy_type.window:size
       htypes.window.state: legacy_type.window:state
+      htypes.window.view: legacy_type.window:view
       services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service
       services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
