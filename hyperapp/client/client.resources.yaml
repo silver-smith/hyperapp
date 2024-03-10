@@ -39,7 +39,7 @@ associations:
 - bases:
   - global_model_command_d
   key: global_model_command_d
-  value: make_layout.command
+  value: make_piece.command
 - bases:
   - global_model_command_d
   key: global_model_command_d
@@ -82,14 +82,14 @@ definitions:
   global_model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:global_model_command_d
-  make_layout:
+  make_piece:
     _type: legacy_type.builtin:attribute
     object: client.module
-    attr_name: make_layout
-  make_layout.command:
+    attr_name: make_piece
+  make_piece.command:
     _type: legacy_type.ui:model_command
-    name: make_layout
-    function: make_layout
+    name: make_piece
+    function: make_piece
     params: []
   make_state:
     _type: legacy_type.builtin:attribute

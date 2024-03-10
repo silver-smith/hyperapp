@@ -23,7 +23,7 @@ _skip_commands = {
     'open_sample_fn_tree',
     'open_feed_sample_fn_tree',
     'open_layout_tree',
-    'make_layout',
+    'make_piece',
     'make_state',
     'sample_list',
     }

@@ -17,7 +17,7 @@ from .code.model_command import global_commands
 from .code.controller import controller
 
 
-def make_layout():
+def make_piece():
     text = "Sample text"
     text_view = visualizer(text)
     navigator = htypes.navigator.view(
@@ -108,7 +108,7 @@ def _main():
         identity=identity,
         rpc_endpoint=rpc_endpoint,
         )
-    piece = make_layout()
+    piece = make_piece()
     state = make_state()
     controller.create_windows(piece, state, ctx)
 
