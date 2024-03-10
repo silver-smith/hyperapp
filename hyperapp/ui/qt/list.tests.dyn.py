@@ -22,7 +22,7 @@ def make_adapter_piece():
 
 def make_piece():
     adapter_piece = make_adapter_piece()
-    return htypes.list.layout(mosaic.put(adapter_piece))
+    return htypes.list.view(mosaic.put(adapter_piece))
 
 
 def test_list():

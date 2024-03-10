@@ -10,7 +10,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
-- legacy_type.list:layout
+- legacy_type.list:view
 - legacy_type.list_adapter:fn_list_adapter
 - legacy_type.list_adapter:static_list_adapter
 - legacy_type.master_details:view
@@ -38,7 +38,7 @@ definitions:
     file_name: visualizer.dyn.py
     import_list:
       code.model_command: ui.model_command:model_command.module
-      htypes.list.layout: legacy_type.list:layout
+      htypes.list.view: legacy_type.list:view
       htypes.list_adapter.fn_list_adapter: legacy_type.list_adapter:fn_list_adapter
       htypes.list_adapter.static_list_adapter: legacy_type.list_adapter:static_list_adapter
       htypes.master_details.view: legacy_type.master_details:view

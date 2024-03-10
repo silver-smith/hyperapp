@@ -24,7 +24,7 @@ def visualizer():
             return htypes.text.edit_layout(mosaic.put(adapter_layout))
         if isinstance(t, TList):
             adapter_layout = htypes.list_adapter.static_list_adapter(mosaic.put(value, t))
-            return htypes.list.layout(mosaic.put(adapter_layout))
+            return htypes.list.view(mosaic.put(adapter_layout))
 
         model_d_res = data_to_res(htypes.ui.model_d())
         t_res = pyobj_creg.reverse_resolve(t)
@@ -42,7 +42,7 @@ def visualizer():
                 function=impl.function,
                 want_feed=impl.want_feed,
                 )
-            view = htypes.list.layout(mosaic.put(adapter_layout))
+            view = htypes.list.view(mosaic.put(adapter_layout))
 
             if t is not htypes.sample_list.sample_list:
                 return view

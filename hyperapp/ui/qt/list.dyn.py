@@ -76,7 +76,7 @@ class ListView(View):
 
     @property
     def piece(self):
-        return htypes.list.layout(self._adapter_ref)
+        return htypes.list.view(self._adapter_ref)
 
     def construct_widget(self, state, ctx):
         adapter = ui_adapter_creg.invite(self._adapter_ref, ctx)
