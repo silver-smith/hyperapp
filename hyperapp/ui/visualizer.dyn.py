@@ -20,11 +20,11 @@ def visualizer():
         t = deduce_complex_value_type(mosaic, types, value)
 
         if t is tString:
-            adapter_layout = htypes.str_adapter.static_str_adapter(value)
-            return htypes.text.edit_view(mosaic.put(adapter_layout))
+            adapter = htypes.str_adapter.static_str_adapter(value)
+            return htypes.text.edit_view(mosaic.put(adapter))
         if isinstance(t, TList):
-            adapter_layout = htypes.list_adapter.static_list_adapter(mosaic.put(value, t))
-            return htypes.list.view(mosaic.put(adapter_layout))
+            adapter = htypes.list_adapter.static_list_adapter(mosaic.put(value, t))
+            return htypes.list.view(mosaic.put(adapter))
 
         model_d_res = data_to_res(htypes.ui.model_d())
         t_res = pyobj_creg.reverse_resolve(t)
@@ -36,13 +36,13 @@ def visualizer():
         impl = web.summon(model.impl)
 
         if isinstance(ui_t, htypes.ui.list_ui_t) and isinstance(impl, htypes.ui.fn_impl):
-            adapter_layout = htypes.list_adapter.fn_list_adapter(
+            adapter = htypes.list_adapter.fn_list_adapter(
                 model_piece=mosaic.put(value),
                 element_t=ui_t.element_t,
                 function=impl.function,
                 want_feed=impl.want_feed,
                 )
-            view = htypes.list.view(mosaic.put(adapter_layout))
+            view = htypes.list.view(mosaic.put(adapter))
 
             if t is not htypes.sample_list.sample_list:
                 return view
@@ -62,13 +62,13 @@ def visualizer():
                 )
 
         if isinstance(ui_t, htypes.ui.tree_ui_t) and isinstance(impl, htypes.ui.fn_impl):
-            adapter_layout = htypes.tree_adapter.fn_index_tree_adapter(
+            adapter = htypes.tree_adapter.fn_index_tree_adapter(
                 model_piece=mosaic.put(value),
                 element_t=ui_t.element_t,
                 key_t=ui_t.key_t,
                 function=impl.function,
                 want_feed=impl.want_feed,
                 )
-            return htypes.tree.view(mosaic.put(adapter_layout))
+            return htypes.tree.view(mosaic.put(adapter))
         raise NotImplementedError(f"Not supported model: {ui_t} / {impl}")
     return fn
