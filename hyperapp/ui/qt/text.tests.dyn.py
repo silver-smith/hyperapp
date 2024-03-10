@@ -13,13 +13,13 @@ def make_adapter():
 
 
 def make_view_piece():
-    adapter_layout = make_adapter()
-    return htypes.text.readonly_view(mosaic.put(adapter_layout))
+    adapter = make_adapter()
+    return htypes.text.readonly_view(mosaic.put(adapter))
 
 
 def make_edit_piece():
-    adapter_layout = make_adapter()
-    return htypes.text.edit_view(mosaic.put(adapter_layout))
+    adapter = make_adapter()
+    return htypes.text.edit_view(mosaic.put(adapter))
 
 
 def make_state():
