@@ -1,7 +1,7 @@
 readonly_view = record:
   adapter: ref
 
-edit_layout = record:
+edit_view = record:
   adapter: ref
 
 state = record

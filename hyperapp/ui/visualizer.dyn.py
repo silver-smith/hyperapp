@@ -21,7 +21,7 @@ def visualizer():
 
         if t is tString:
             adapter_layout = htypes.str_adapter.static_str_adapter(value)
-            return htypes.text.edit_layout(mosaic.put(adapter_layout))
+            return htypes.text.edit_view(mosaic.put(adapter_layout))
         if isinstance(t, TList):
             adapter_layout = htypes.list_adapter.static_list_adapter(mosaic.put(value, t))
             return htypes.list.view(mosaic.put(adapter_layout))

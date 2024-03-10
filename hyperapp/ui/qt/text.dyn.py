@@ -46,7 +46,7 @@ class EditTextView(View):
 
     @property
     def piece(self):
-        return htypes.text.edit_layout(self._adapter_ref)
+        return htypes.text.edit_view(self._adapter_ref)
 
     def construct_widget(self, state, ctx):
         adapter = ui_adapter_creg.invite(self._adapter_ref, ctx)

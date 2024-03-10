@@ -3,7 +3,7 @@
 import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.text:edit_layout
+- legacy_type.text:edit_view
 - legacy_type.text:readonly_view
 - legacy_type.text:state
 - legacy_type.ui:ui_ctl
@@ -12,10 +12,10 @@ import:
 - ui.view:view.module
 associations:
 - bases:
-  - legacy_type.text:edit_layout
+  - legacy_type.text:edit_view
   key:
   - ui.ui_ctl_registry:ui_ctl_creg.service
-  - legacy_type.text:edit_layout
+  - legacy_type.text:edit_view
   value: EditTextView.from_piece.ctl
 - bases:
   - legacy_type.text:readonly_view
@@ -54,7 +54,7 @@ definitions:
     file_name: text.dyn.py
     import_list:
       code.view: ui.view:view.module
-      htypes.text.edit_layout: legacy_type.text:edit_layout
+      htypes.text.edit_view: legacy_type.text:edit_view
       htypes.text.readonly_view: legacy_type.text:readonly_view
       htypes.text.state: legacy_type.text:state
       services.ui_adapter_creg: ui.ui_adapter_creg:ui_adapter_creg.service
