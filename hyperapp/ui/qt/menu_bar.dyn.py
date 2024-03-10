@@ -20,7 +20,7 @@ class MenuBarView(View):
 
     @property
     def piece(self):
-        return htypes.menu_bar.layout()
+        return htypes.menu_bar.view()
 
     def construct_widget(self, state, ctx):
         w =  QtWidgets.QMenuBar()

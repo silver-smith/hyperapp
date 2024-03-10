@@ -6,8 +6,8 @@ from .code import command_hub
 from .tested.code import menu_bar
 
 
-def make_layout():
-    return htypes.menu_bar.layout()
+def make_piece():
+    return htypes.menu_bar.view()
 
 
 def make_state():
@@ -16,7 +16,7 @@ def make_state():
 
 def test_widget():
     ctx = Context(command_hub=command_hub.CommandHub())
-    piece = make_layout()
+    piece = make_piece()
     state = make_state()
     app = QtWidgets.QApplication()
     try:
