@@ -14,7 +14,7 @@ class TabGroupsView(WrapperView):
 
     @classmethod
     def from_piece(cls, piece):
-        base_piece = htypes.tabs.layout(piece.tabs)
+        base_piece = htypes.tabs.view(piece.tabs)
         base = ui_ctl_creg.animate(base_piece)
         return cls(base)
 

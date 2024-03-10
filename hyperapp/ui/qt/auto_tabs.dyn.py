@@ -33,7 +33,7 @@ class AutoTabsView(WrapperView):
                 )
             for idx, view_ref in enumerate(piece.tabs)
             ]
-        base_piece = htypes.tabs.layout(tabs)
+        base_piece = htypes.tabs.view(tabs)
         base = ui_ctl_creg.animate(base_piece)
         return cls(base)
 

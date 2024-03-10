@@ -5,7 +5,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.tab_groups:view
-- legacy_type.tabs:layout
+- legacy_type.tabs:view
 - legacy_type.ui:ui_ctl
 - ui.ui_ctl_registry:ui_ctl_creg.service
 - ui.wrapper_view:wrapper_view.module
@@ -37,5 +37,5 @@ definitions:
       code.list_diff: common.list_diff:list_diff.module
       code.wrapper_view: ui.wrapper_view:wrapper_view.module
       htypes.tab_groups.view: legacy_type.tab_groups:view
-      htypes.tabs.layout: legacy_type.tabs:layout
+      htypes.tabs.view: legacy_type.tabs:view
       services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service

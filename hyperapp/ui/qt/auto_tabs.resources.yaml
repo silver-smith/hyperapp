@@ -10,8 +10,8 @@ import:
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.navigator:view
-- legacy_type.tabs:layout
 - legacy_type.tabs:tab
+- legacy_type.tabs:view
 - legacy_type.ui:ui_command_d
 - legacy_type.ui:ui_ctl
 - ui.ui_ctl_registry:ui_ctl_creg.service
@@ -62,8 +62,8 @@ definitions:
       htypes.auto_tabs.view: legacy_type.auto_tabs:view
       htypes.box_layout.view: legacy_type.box_layout:view
       htypes.navigator.view: legacy_type.navigator:view
-      htypes.tabs.layout: legacy_type.tabs:layout
       htypes.tabs.tab: legacy_type.tabs:tab
+      htypes.tabs.view: legacy_type.tabs:view
       services.mark: common.mark:mark.service
       services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
       services.web: builtins:web.service

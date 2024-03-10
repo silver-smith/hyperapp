@@ -2,7 +2,7 @@ tab = record:
   label: string
   ctl: ref
 
-layout = record:
+view = record:
   tabs: tab list
 
 state = record:

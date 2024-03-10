@@ -12,40 +12,40 @@ from .code.view import Diff
 from .tested.code import tabs
 
 
-def make_inner_layout():
-    adapter_layout = htypes.str_adapter.static_str_adapter("Sample text")
-    tab_layout = htypes.text.view_layout(mosaic.put(adapter_layout))
-    return htypes.tabs.layout(
+def make_inner_piece():
+    adapter = htypes.str_adapter.static_str_adapter("Sample text")
+    text = htypes.text.view_layout(mosaic.put(adapter))
+    return htypes.tabs.view(
         tabs=[
-            htypes.tabs.tab("One", mosaic.put(tab_layout))],
+            htypes.tabs.tab("One", mosaic.put(text))],
         )
 
 
-def make_outer_layout(tab_layout):
-    return htypes.tabs.layout(
+def make_outer_piece(inner_tab_view):
+    return htypes.tabs.view(
         tabs=[
-            htypes.tabs.tab("Inner", mosaic.put(tab_layout))],
+            htypes.tabs.tab("Inner", mosaic.put(inner_tab_view))],
         )
 
 
 def make_inner_state():
-    tab_state = htypes.text.state()
+    text_state = htypes.text.state()
     return htypes.tabs.state(
         current_tab=0,
-        tabs=[mosaic.put(tab_state)],
+        tabs=[mosaic.put(text_state)],
         )
 
 
-def make_outer_state(tab_state):
+def make_outer_state(inner_tab_state):
     return htypes.tabs.state(
         current_tab=0,
-        tabs=[mosaic.put(tab_state)],
+        tabs=[mosaic.put(inner_tab_state)],
         )
 
 
 def test_tabs():
     ctx = Context(command_hub=CommandHub())
-    piece = make_inner_layout()
+    piece = make_inner_piece()
     state = make_inner_state()
     app = QtWidgets.QApplication()
     try:
@@ -73,7 +73,7 @@ def duplicate(layout, state):
 
 def test_duplicate():
     ctx = Context(command_hub=CommandHub())
-    piece = make_inner_layout()
+    piece = make_inner_piece()
     state = make_inner_state()
     app = QtWidgets.QApplication()
     try:

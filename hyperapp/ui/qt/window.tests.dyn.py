@@ -16,7 +16,7 @@ from .tested.code import window
 def make_piece():
     adapter_piece = htypes.str_adapter.static_str_adapter("Sample text")
     text_piece = htypes.text.view_layout(mosaic.put(adapter_piece))
-    tabs_piece = htypes.tabs.layout(
+    tabs_piece = htypes.tabs.view(
         tabs=[htypes.tabs.tab("One", mosaic.put(text_piece))],
         )
     piece = htypes.window.view(

@@ -44,7 +44,7 @@ class TabsView(View):
                 )
             for tab in self._tabs
             ]
-        return htypes.tabs.layout(tabs)
+        return htypes.tabs.view(tabs)
 
     def construct_widget(self, state, ctx):
         tabs = QtWidgets.QTabWidget()
