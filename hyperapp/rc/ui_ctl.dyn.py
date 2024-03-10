@@ -28,7 +28,7 @@ def _resolve_record_t(t_rec):
 def construct_view_impl(ctx, module_name, resource_module, module_res, qname, params):
     piece_t_ref = _resolve_record_t(params['piece'])
     if piece_t_ref is None:
-        log.warning("%s.%s: layout parameter type is not a data record", module_name, qname)
+        log.warning("%s.%s: piece parameter type is not a data record", module_name, qname)
         return []
     log.info("Construct view implementation: %s: %s", resource_module.name, qname)
     class_name, method_name = qname.split('.')
@@ -60,7 +60,7 @@ def construct_view_impl(ctx, module_name, resource_module, module_res, qname, pa
 def construct_adapter_impl(ctx, module_name, resource_module, module_res, qname, params):
     piece_t_ref = _resolve_record_t(params['piece'])
     if piece_t_ref is None:
-        log.warning("%s.%s: layout parameter type is not a data record", module_name, qname)
+        log.warning("%s.%s: piece parameter type is not a data record", module_name, qname)
         return []
     log.info("Construct adapter implementation: %s: %s", resource_module.name, qname)
     class_name, method_name = qname.split('.')
@@ -87,7 +87,7 @@ def construct_adapter_impl(ctx, module_name, resource_module, module_res, qname,
 def construct_fn_list_impl(ctx, module_name, resource_module, module_res, qname, params, result_t):
     piece_t_ref = _resolve_record_t(params['piece'])
     if piece_t_ref is None:
-        log.warning("%s.%s: layout parameter type is not a data record", module_name, qname)
+        log.warning("%s.%s: piece parameter type is not a data record", module_name, qname)
         return []
     log.info("Construct fn list implementation: %s: %s", resource_module.name, qname)
     fn_name = qname
@@ -128,7 +128,7 @@ def construct_fn_list_impl(ctx, module_name, resource_module, module_res, qname,
 def construct_fn_tree_impl(ctx, module_name, resource_module, module_res, qname, params, result_t):
     piece_t_ref = _resolve_record_t(params['piece'])
     if piece_t_ref is None:
-        log.warning("%s.%s: layout parameter type is not a data record", module_name, qname)
+        log.warning("%s.%s: piece parameter type is not a data record", module_name, qname)
         return []
     key_t_rec = params['parent']
     if not isinstance(key_t_rec, htypes.inspect.data_t):
@@ -271,7 +271,7 @@ def _create_trace_resources(ctx, module_name, resource_module, module_res, qname
                 and param_names[:1] == ['piece'] and set(param_names[1:]) <= {'current_item'}):
             piece_t_ref = _resolve_record_t(params['piece'])
             if piece_t_ref is None:
-                log.warning("%s.%s: layout parameter type is not a data record", module_name, qname)
+                log.warning("%s.%s: piece parameter type is not a data record", module_name, qname)
                 return ass_list
             ass_list += construct_model_command_enumerator(ctx, module_name, resource_module, module_res, qname, piece_t_ref, param_names)
         if not isinstance(trace.result_t, htypes.inspect.data_t):
@@ -294,7 +294,7 @@ def _create_trace_resources(ctx, module_name, resource_module, module_res, qname
             if param_names[:1] == ['piece'] and set(param_names[1:]) <= {'state', 'current_idx', 'current_item'}:
                 piece_t_ref = _resolve_record_t(params['piece'])
                 if piece_t_ref is None:
-                    log.warning("%s.%s: layout parameter type is not a data record", module_name, qname)
+                    log.warning("%s.%s: piece parameter type is not a data record", module_name, qname)
                     return ass_list
                 ass_list += construct_model_command(ctx, module_name, resource_module, module_res, qname, piece_t_ref, param_names)
     return ass_list

@@ -6,7 +6,7 @@ from .tested.code import ui_command
 from .tested.services import ui_command_factory
 
 
-def _sample_fn(layout, state):
+def _sample_fn(piece, state):
     return 123
 
 

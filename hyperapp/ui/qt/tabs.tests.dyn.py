@@ -58,11 +58,11 @@ def test_tabs():
         app.shutdown()
 
 
-def duplicate(layout, state):
+def duplicate(piece, state):
     return Diff(
         piece=ListDiff.Insert(
             idx=state.current_tab + 1,
-            item=layout.tabs[state.current_tab],
+            item=piece.tabs[state.current_tab],
             ),
         state=ListDiff.Insert(
             idx=state.current_tab + 1,

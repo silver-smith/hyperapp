@@ -129,10 +129,10 @@ class NavigatorView(View):
 
 
 @mark.ui_command(htypes.navigator.view)
-def go_back(layout, state):
+def go_back(piece, state):
     return Diff(htypes.navigator.go_back_diff())
 
 
 @mark.ui_command(htypes.navigator.view)
-def go_forward(layout, state):
+def go_forward(piece, state):
     return Diff(htypes.navigator.go_forward_diff())
