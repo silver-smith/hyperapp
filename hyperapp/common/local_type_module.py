@@ -9,7 +9,8 @@ from .htypes import (
 
 type_import_t = TRecord(BUILTIN_MODULE_NAME, 'type_import', {
     'module_name': tString,
-    'name': tString,
+    'source_name': tString,
+    'target_name': tString,
     })
 
 type_def_t = TRecord(BUILTIN_MODULE_NAME, 'typedef', {

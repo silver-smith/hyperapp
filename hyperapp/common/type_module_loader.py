@@ -101,7 +101,7 @@ class TypeModuleLoader(object):
         for import_def in source.import_list:
             imported_module = self._resolve_module(
                 name_to_source, name_to_module, import_def.module_name, dep_stack)
-            local_name_dict[import_def.name] = imported_module[import_def.name]
+            local_name_dict[import_def.target_name] = imported_module[import_def.source_name]
         return local_name_dict
 
     def _map_module_names(self, name, source, local_name_dict):

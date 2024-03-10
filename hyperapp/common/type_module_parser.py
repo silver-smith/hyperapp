@@ -26,6 +26,7 @@ class ParseError(Exception):
 
 keywords = [
     'import',
+    'as',
     'from',
     'opt',
     'list',
@@ -110,10 +111,15 @@ class Grammar:
         p[0] = p[1]
 
 
-    def p_import_def(self, p):
+    def p_import_def_list(self, p):
         'import_def : FROM NAME IMPORT name_list'
-        p[0] = [type_import_t(p[2], name) for name in p[4]]
+        p[0] = [type_import_t(p[2], source_name=name, target_name=name) for name in p[4]]
         p.parser.known_name_set |= set(p[4])
+
+    def p_import_def_as(self, p):
+        'import_def : FROM NAME IMPORT NAME AS NAME'
+        p[0] = [type_import_t(p[2], source_name=p[4], target_name=p[6])]
+        p.parser.known_name_set.add(p[6])
 
     def p_name_list_1(self, p):
         'name_list : NAME'
