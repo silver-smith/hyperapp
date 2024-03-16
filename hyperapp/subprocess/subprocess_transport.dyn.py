@@ -147,7 +147,7 @@ def _stop():
 
 _server_connections = {}  # connection -> ConnectionRec
 _signal_connection_out, _signal_connection_in = multiprocessing.Pipe()
-_server_thread = threading.Thread(target=_server_thread_main)
+_server_thread = threading.Thread(target=_server_thread_main, name='SubpServer')
 
 _server_thread.start()
 on_stop.append(_stop)

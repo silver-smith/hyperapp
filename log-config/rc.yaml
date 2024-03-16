@@ -5,7 +5,7 @@ formatters:
   simple:
     format: '%(asctime)-15s  %(message).200s'
   full:
-    format: '%(asctime)-15s %(filename)-30s %(lineno)4d %(levelname)-8s %(message)s'
+    format: '%(asctime)-15s %(filename)-30s %(lineno)4d %(levelname)-8s %(threadName)-15s %(message)s'
   named:
     format: '%(asctime)-15s %(filename)-30s %(name)-30s %(lineno)4d %(levelname)-8s %(message)s'
 
