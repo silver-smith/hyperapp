@@ -173,10 +173,10 @@ class Controller:
         if not self._run_callback:
             return
         log.info("Controller: state changed for: %s", item)
-        parent = item.parent
-        while parent:
-            parent.view.child_state_changed(item.view, item.widget)
-            parent = parent.parent
+        item = item.parent
+        while item:
+            item.view.child_state_changed(item.widget)
+            item = item.parent
 
     def _collect_item_commands(self, item):
         path_to_commands = {tuple(item.path): item.commands}

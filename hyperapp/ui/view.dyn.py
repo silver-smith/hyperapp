@@ -22,7 +22,7 @@ class View(metaclass=abc.ABCMeta):
     def get_current(self, widget):
         return 0
 
-    def child_state_changed(self, view, widget):
+    def child_state_changed(self, widget):
         pass
 
     def set_on_commands_changed(self, on_changed):
