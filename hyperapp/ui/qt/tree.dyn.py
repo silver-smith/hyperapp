@@ -150,7 +150,7 @@ class TreeView(View):
         model.rowsInserted.connect(partial(self._on_data_changed, widget))
         return widget
 
-    def set_on_model_state_changed(self, widget, on_changed):
+    def set_on_state_changed(self, widget, on_changed):
         widget.on_current_changed = on_changed
 
     def widget_state(self, widget):

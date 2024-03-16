@@ -34,6 +34,7 @@ class NavigatorView(View):
         self._commands = commands  # ref list
         self._prev = prev  # ref opt
         self._next = next  # ref opt
+        self._on_commands_changed = lambda: None
 
     @property
     def piece(self):
@@ -56,8 +57,11 @@ class NavigatorView(View):
     def get_current(self, widget):
         return 0
 
-    def set_on_state_changed(self, widget, on_changed):
-        self._current_view.set_on_model_state_changed(widget, on_changed)
+    def child_state_changed(self, view, widget):
+        self._on_commands_changed()
+
+    def set_on_commands_changed(self, on_changed):
+        self._on_commands_changed = on_changed
 
     def widget_state(self, widget):
         current_state = self._current_view.widget_state(widget)
