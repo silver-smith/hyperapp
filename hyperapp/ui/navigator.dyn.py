@@ -57,7 +57,7 @@ class NavigatorView(View):
     def get_current(self, widget):
         return 0
 
-    def child_state_changed(self, widget):
+    async def child_state_changed(self, ctx, widget):
         self._on_commands_changed()
 
     def set_on_commands_changed(self, on_changed):

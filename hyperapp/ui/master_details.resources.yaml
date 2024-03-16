@@ -12,7 +12,9 @@ import:
 - legacy_type.master_details:state
 - legacy_type.master_details:view
 - legacy_type.ui:ui_ctl
+- ui.model_command_creg:model_command_creg.service
 - ui.ui_ctl_registry:ui_ctl_creg.service
+- ui.visualizer:visualizer.service
 - ui.wrapper_view:wrapper_view.module
 associations:
 - bases:
@@ -46,6 +48,8 @@ definitions:
       htypes.master_details.state: legacy_type.master_details:state
       htypes.master_details.view: legacy_type.master_details:view
       services.mark: common.mark:mark.service
+      services.model_command_creg: ui.model_command_creg:model_command_creg.service
       services.mosaic: builtins:mosaic.service
       services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
+      services.visualizer: ui.visualizer:visualizer.service
       services.web: builtins:web.service

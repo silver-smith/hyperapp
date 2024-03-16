@@ -1,3 +1,4 @@
+import asyncio
 import itertools
 import logging
 from collections import defaultdict, namedtuple
@@ -138,18 +139,18 @@ class Controller:
 
     def _on_item_changed(self, item):
         log.info("Item is changed: %s", item)
-        idx = parent.children.index(item)
-        self._replace_child_item(item.parent, idx, item.widget)
+        idx = item.parent.children.index(item)
+        self._replace_child_item(item.parent, idx, item.view, item.widget)
 
-    def _on_child_changed(self, item, idx, widget):
+    def _on_child_changed(self, item, idx, view, widget):
         log.info("Child #%d changed for: %s", idx, item)
-        self._replace_child_item(item, idx, widget)
+        self._replace_child_item(item, idx, view, widget)
 
-    def _replace_child_item(self, item, idx, widget):
+    def _replace_child_item(self, item, idx, view, widget):
         old_child = item.children[idx]
         child_id = next(self._counter)
         child = self._populate_item(
-            child_id, old_child.path, old_child.ctx, old_child.command_hub, old_child.name, old_child.view, widget, parent=item)
+            child_id, old_child.path, old_child.ctx, old_child.command_hub, old_child.name, view, widget, parent=item)
         item.children[idx] = child
         self._update_item_commands(child)
 
@@ -170,12 +171,15 @@ class Controller:
         self._update_item_commands(item)
 
     def _on_state_changed(self, item):
+        asyncio.create_task(self._on_state_changed_async(item))
+
+    async def _on_state_changed_async(self, item):
         if not self._run_callback:
             return
         log.info("Controller: state changed for: %s", item)
         item = item.parent
         while item:
-            item.view.child_state_changed(item.widget)
+            await item.view.child_state_changed(item.ctx, item.widget)
             item = item.parent
 
     def _collect_item_commands(self, item):
@@ -206,7 +210,7 @@ class Controller:
             parent = item.parent
             child_idx = item.path[-1]
             child_widget = parent.view.replace_widget(parent.ctx, parent.widget, child_idx)
-            self._replace_child_item(parent, child_idx, child_widget)
+            self._replace_child_item(parent, child_idx, item.view, child_widget)
 
     def _apply_root_diff(self, diff):
         log.info("Apply root diff: %s", diff)

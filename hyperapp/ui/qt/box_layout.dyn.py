@@ -32,6 +32,7 @@ class BoxLayoutView(View):
     def __init__(self, direction, elements):
         self._direction = direction
         self._elements = elements
+        self._on_child_changed = lambda idx, view, widget: None
 
     @property
     def piece(self):
@@ -72,6 +73,9 @@ class BoxLayoutView(View):
             return idx
         return 0
 
+    def set_on_child_changed(self, on_changed):
+        self._on_child_changed = on_changed
+
     def widget_state(self, widget):
         layout = widget.layout()
         elements = []
@@ -97,3 +101,8 @@ class BoxLayoutView(View):
     def child_widget(self, widget, idx):
         layout = widget.layout()
         return layout.itemAt(idx).widget()
+
+    def change_child(self, idx, view, widget):
+        self._elements[idx] = self._Element(view, self._elements[idx].stretch)
+        self.replace_widget(ctx, widget, idx)
+        self._on_child_changed(idx, view, widget)

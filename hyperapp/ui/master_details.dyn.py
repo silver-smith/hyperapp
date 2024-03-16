@@ -3,8 +3,10 @@ import logging
 from . import htypes
 from .services import (
     mark,
+    model_command_creg,
     mosaic,
     ui_ctl_creg,
+    visualizer,
     web,
     )
 from .code.wrapper_view import WrapperView
@@ -68,6 +70,19 @@ class MasterDetailsView(WrapperView):
             elements=elements,
             )
         return self._base.construct_widget(base_state, ctx)
+
+    async def child_state_changed(self, ctx, widget):
+        log.info("Master-details: child state changed: %s", widget)
+        master_view = self._base.child_view(0)
+        master_widget = self._base.child_widget(widget, 0)
+        command = model_command_creg.invite(
+            self._details_command, master_view, self._model_piece, master_widget, wrappers=[])
+        piece = await command.run()
+        log.info("Master-details: command result: %s", piece)
+        details_view_piece = visualizer(piece)
+        details_view = ui_ctl_creg.animate(details_view_piece)
+        details_widget = details_view.construct_widget(None, ctx)
+        self._base.change_child(0, details_view, details_widget)
 
     def widget_state(self, widget):
         base = self._base.widget_state(widget)
