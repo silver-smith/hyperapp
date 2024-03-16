@@ -14,7 +14,7 @@ from .services import (
     web,
     )
 from .code.model_command import global_commands, model_commands, enum_model_commands
-from .code.view import Diff, View
+from .code.view import Diff, Item, View
 
 log = logging.getLogger(__name__)
 
@@ -130,6 +130,9 @@ class NavigatorView(View):
         else:
             raise NotImplementedError(repr(diff.piece))
         return True
+
+    def items(self, widget):
+        return [Item('current', self._current_view, widget)]
 
 
 @mark.ui_command(htypes.navigator.view)
