@@ -36,8 +36,8 @@ def test_list():
     picker = ref_picker._t_to_picker(t)
     ref_1 = mosaic.put("Sample text 1")
     ref_2 = mosaic.put("Sample text 2")
-    assert set(picker.pick_refs([ref_1, ref_2])) == {ref_1, ref_2}
-    assert set(picker.pick_refs([])) == set()
+    assert set(picker.pick_refs((ref_1, ref_2))) == {ref_1, ref_2}
+    assert set(picker.pick_refs(())) == set()
 
 
 def test_record():
@@ -91,8 +91,8 @@ def test_combined():
     ref_1 = mosaic.put("Sample text 1")
     ref_2 = mosaic.put("Sample text 2")
     ref_3 = mosaic.put("Sample text 3")
-    assert set(picker.pick_refs(t(None, []))) == set()
-    assert set(picker.pick_refs(t(ref_1, [ref_2, ref_3]))) == {ref_1, ref_2, ref_3}
+    assert set(picker.pick_refs(t(None, ()))) == set()
+    assert set(picker.pick_refs(t(ref_1, (ref_2, ref_3)))) == {ref_1, ref_2, ref_3}
 
 
 def test_service():
@@ -107,5 +107,5 @@ def test_service():
     ref_1 = mosaic.put("Sample text 1")
     ref_2 = mosaic.put("Sample text 2")
     ref_3 = mosaic.put("Sample text 3")
-    assert set(pick_refs(t, t(None, []))) == set()
-    assert set(pick_refs(t, t(ref_1, [ref_2, ref_3]))) == {ref_1, ref_2, ref_3}
+    assert set(pick_refs(t, t(None, ()))) == set()
+    assert set(pick_refs(t, t(ref_1, (ref_2, ref_3)))) == {ref_1, ref_2, ref_3}

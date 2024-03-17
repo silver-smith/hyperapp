@@ -76,13 +76,19 @@ def _t_to_picker(t):
 @mark.service
 def pick_refs():
     t_to_picker = {}
+    value_to_refs = {}
 
     def picker(t, value):
+        try:
+            return value_to_refs[value]
+        except KeyError:
+            pass
         try:
             picker = t_to_picker[t]
         except KeyError:
             picker = t_to_picker[t] = _t_to_picker(t)
-        result = set(picker.pick_refs(value))
-        return result
+        refs = set(picker.pick_refs(value))
+        value_to_refs[value] = refs
+        return refs
 
     return picker
