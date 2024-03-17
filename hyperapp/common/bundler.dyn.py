@@ -11,10 +11,10 @@ from .services import (
     association_reg,
     mark,
     mosaic,
+    pick_refs,
     pyobj_creg,
     types,
     )
-from .code.visitor import Visitor
 
 log = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ RECURSION_LIMIT = 100
 _RefsAndBundle = namedtuple('_RefsAndBundle', 'ref_set bundle')
 
 
-class Bundler(Visitor):
+class Bundler:
 
     def __init__(self):
         self._collected_ref_set = None
@@ -88,11 +88,7 @@ class Bundler(Visitor):
         return self._collected_ref_set
 
     def _collect_refs_from_object(self, t, object):
-        self.visit(t, object)
-
-    def visit_record(self, t, value):
-        if t == ref_t:
-            self._collected_ref_set.add(value)
+        self._collected_ref_set |= pick_refs(t, object)
 
     def _collect_associations(self, ref, t, value):
         t_res = pyobj_creg.reverse_resolve(t)
