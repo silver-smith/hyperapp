@@ -1,3 +1,4 @@
+import logging
 from collections import namedtuple
 
 from PySide6 import QtWidgets
@@ -11,6 +12,8 @@ from .services import (
     )
 from .code.list_diff import ListDiff
 from .code.view import Diff, Item, View
+
+log = logging.getLogger(__name__)
 
 
 class BoxLayoutView(View):
@@ -95,14 +98,21 @@ class BoxLayoutView(View):
         layout = widget.layout()
         return layout.itemAt(idx).widget()
 
+    def apply(self, ctx, widget, diff):
+        log.info("Box layout: apply: %s", diff)
+        if isinstance(diff.piece, ListDiff.Replace):
+            idx = diff.piece.idx
+            view = ui_ctl_creg.animate(diff.piece.item)
+            self._elements[idx] = self._Element(view, self._elements[idx].stretch)
+            elt_widget = self.replace_widget(ctx, widget, idx)
+            self._ctl_hook.replace_item_element(idx, view, elt_widget)
+        else:
+            raise NotImplementedError(f"Not implemented: tab.apply({diff.piece})")
+        return False
+
     def child_view(self, idx):
         return self._elements[idx].view
 
     def child_widget(self, widget, idx):
         layout = widget.layout()
         return layout.itemAt(idx).widget()
-
-    def change_child(self, idx, view, widget):
-        self._elements[idx] = self._Element(view, self._elements[idx].stretch)
-        self.replace_widget(ctx, widget, idx)
-        self._ctl_hook.child_changed(idx, view, widget)

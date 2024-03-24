@@ -9,6 +9,8 @@ from .services import (
     visualizer,
     web,
     )
+from .code.list_diff import ListDiff
+from .code.view import Diff
 from .code.wrapper_view import WrapperView
 
 log = logging.getLogger(__name__)
@@ -80,9 +82,7 @@ class MasterDetailsView(WrapperView):
         piece = await command.run()
         log.info("Master-details: command result: %s", piece)
         details_view_piece = visualizer(piece)
-        details_view = ui_ctl_creg.animate(details_view_piece)
-        details_widget = details_view.construct_widget(None, ctx)
-        self._base.change_child(0, details_view, details_widget)
+        self._ctl_hook.apply_diff(Diff(ListDiff.Replace(1, details_view_piece)))
 
     def widget_state(self, widget):
         base = self._base.widget_state(widget)

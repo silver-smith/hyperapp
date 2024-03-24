@@ -3,6 +3,7 @@
 import:
 - builtins:mosaic.service
 - builtins:web.service
+- common.list_diff:list_diff.module
 - common.mark:mark.service
 - legacy_type.box_layout:element
 - legacy_type.box_layout:state
@@ -14,6 +15,7 @@ import:
 - legacy_type.ui:ui_ctl
 - ui.model_command_creg:model_command_creg.service
 - ui.ui_ctl_registry:ui_ctl_creg.service
+- ui.view:view.module
 - ui.visualizer:visualizer.service
 - ui.wrapper_view:wrapper_view.module
 associations:
@@ -41,6 +43,8 @@ definitions:
     module_name: master_details
     file_name: master_details.dyn.py
     import_list:
+      code.list_diff: common.list_diff:list_diff.module
+      code.view: ui.view:view.module
       code.wrapper_view: ui.wrapper_view:wrapper_view.module
       htypes.box_layout.element: legacy_type.box_layout:element
       htypes.box_layout.state: legacy_type.box_layout:state

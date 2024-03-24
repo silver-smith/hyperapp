@@ -79,8 +79,11 @@ class CtlHook:
     def state_changed(self):
         self._ctl.state_changed_hook(self._item)
 
-    def replace_item_element(self, idx, new_view):
-        self._ctl.replace_item_element_hook(self._item, idx, new_view)
+    def replace_item_element(self, idx, new_view, new_widget=None):
+        self._ctl.replace_item_element_hook(self._item, idx, new_view, new_widget)
+
+    def apply_diff(self, diff):
+        self._ctl.apply_diff_hook(self._item, diff)
 
 
 class Controller:
@@ -165,12 +168,12 @@ class Controller:
 
     def _set_item_widget(self, item, widget):
         item.widget = widget
-        item.commands = self._make_item_commands(item.id, item.view, widget)
+        item.commands = self._make_item_commands(item, item.view, widget)
         for idx, child in enumerate(item.children):
             self._set_item_widget(child, item.view.item_widget(widget, idx))
 
-    def _make_item_commands(self, item_id, view, widget):
-        wrapper = partial(self._apply_item_diff, item_id)
+    def _make_item_commands(self, item, view, widget):
+        wrapper = partial(self._apply_item_diff, item)
         return self._make_view_commands(view, widget, wrapper)
 
     def _make_view_commands(self, view, widget, wrapper):
@@ -178,15 +181,6 @@ class Controller:
             *ui_command_factory(view, widget, [wrapper]),
             *view.get_commands(widget, [wrapper]),
             ]
-
-    def item_changed_hook(self, item):
-        log.info("Item is changed: %s", item)
-        idx = item.parent.children.index(item)
-        self._replace_child_item(item.parent, idx, item.view, item.widget)
-
-    def child_changed_hook(self, item, idx, view, widget):
-        log.info("Child #%d changed for: %s", idx, item)
-        self._replace_child_item(item, idx, view, widget)
 
     def _replace_child_item_view(self, item, idx, view):
         old_child = item.children[idx]
@@ -205,6 +199,15 @@ class Controller:
         path_to_commands = self._collect_item_commands(item)
         item.command_hub.set_commands(path_to_commands)
 
+    def item_changed_hook(self, item):
+        log.info("Item is changed: %s", item)
+        idx = item.parent.children.index(item)
+        self._replace_child_item(item.parent, idx, item.view, item.widget)
+
+    def child_changed_hook(self, item, idx, view, widget):
+        log.info("Child #%d changed for: %s", idx, item)
+        self._replace_child_item(item, idx, view, widget)
+
     def current_changed_hook(self, item):
         if not self._run_callback:
             return
@@ -214,14 +217,20 @@ class Controller:
 
     def commands_changed_hook(self, item):
         log.info("Controller: commands changed for: %s", item)
-        item.commands[:] = self._make_item_commands(item.id, item.view, item.widget)
+        item.commands[:] = self._make_item_commands(item, item.view, item.widget)
         self._update_item_commands(item)
 
     def state_changed_hook(self, item):
         asyncio.create_task(self._on_state_changed_async(item))
 
-    def replace_item_element_hook(self, item, idx, new_view):
-        self._replace_child_item_view(item, idx, new_view)
+    def replace_item_element_hook(self, item, idx, new_view, new_widget):
+        child = self._replace_child_item_view(item, idx, new_view)
+        if new_widget:
+            self._set_item_widget(child, new_widget)
+            self._update_item_commands(child)
+
+    def apply_diff_hook(self, item, diff):
+        self._apply_item_diff(item, diff)
 
     async def _on_state_changed_async(self, item):
         if not self._run_callback:
@@ -247,11 +256,10 @@ class Controller:
         finally:
             self._run_callback = True
 
-    def _apply_item_diff(self, item_id, diff):
+    def _apply_item_diff(self, item, diff):
         if diff is None:
             return
-        item = self._id_to_item[item_id]
-        log.info("Apply diff to item #%d @ %s: %s", item_id, item.path, diff)
+        log.info("Apply diff to item #%d @ %s: %s", item.id, item.path, diff)
         with self._without_callback():
             replace_widget = item.view.apply(item.ctx, item.widget, diff)
             log.info("Applied diff, should replace widget: %s", replace_widget)
