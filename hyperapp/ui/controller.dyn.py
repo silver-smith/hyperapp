@@ -3,7 +3,9 @@ import itertools
 import logging
 from collections import defaultdict, namedtuple
 from contextlib import contextmanager
+from dataclasses import dataclass
 from functools import partial
+from typing import Any, Self
 
 from . import htypes
 from .services import (
@@ -12,6 +14,7 @@ from .services import (
     ui_ctl_creg,
     web,
     )
+from .code.context import Context
 from .code.list_diff import ListDiff
 from .code.view import View
 from .code.command_hub import CommandHub
@@ -19,7 +22,18 @@ from .code.command_hub import CommandHub
 log = logging.getLogger(__name__)
 
 
-_Item = namedtuple('_Item', 'id path parent ctx command_hub name view widget commands children')
+@dataclass
+class _Item:
+    id: int
+    path: list[int]
+    parent: Self | None
+    ctx: Context
+    command_hub: CommandHub
+    name: str
+    view: View
+    widget: Any
+    commands: list
+    children: list
 
 
 def _description(piece):
@@ -42,6 +56,31 @@ class RootView(View):
     def widget_state(self, widget):
         current_idx = self._controller.window_id_to_idx(self._window_item_id)
         return htypes.root.state(self._controller.get_window_state_list(), current_idx)
+
+
+class CtlHook:
+
+    def __init__(self, ctl, item):
+        self._ctl = ctl
+        self._item = item
+
+    def commands_changed(self):
+        self._ctl.commands_changed_hook(self._item)
+
+    def item_changed(self):
+        self._ctl.item_changed_hook(self._item)
+
+    def child_changed(self, idx, view, widget):
+        self._ctl.child_changed_hook(self._item, idx, view, widget)
+
+    def current_changed(self):
+        self._ctl.current_changed_hook(self._item)
+
+    def state_changed(self):
+        self._ctl.state_changed_hook(self._item)
+
+    def replace_item_element(self, idx, new_view):
+        self._ctl.replace_item_element_hook(self._item, idx, new_view)
 
 
 class Controller:
@@ -109,23 +148,26 @@ class Controller:
     def _make_window_item(self, window_ctx, command_hub, view, widget):
         item_id = next(self._counter)
         path = [item_id]
-        return self._populate_item(item_id, path, window_ctx, command_hub, f"window#{item_id}", view, widget)
+        item = self._populate_item(item_id, path, window_ctx, command_hub, f"window#{item_id}", view)
+        self._set_item_widget(item, widget)
+        return item
 
-    def _populate_item(self, item_id, path, ctx, command_hub, name, view, widget, parent=None):
-        commands = self._make_item_commands(item_id, view, widget)
-        item = _Item(item_id, path, parent, ctx, command_hub, name, view, widget, commands, children=[])
-        for idx, rec in enumerate(view.items(widget)):
+    def _populate_item(self, item_id, path, ctx, command_hub, name, view, parent=None):
+        item = _Item(item_id, path, parent, ctx, command_hub, name, view, widget=None, commands=None, children=[])
+        for idx, rec in enumerate(view.items()):
             child_id = next(self._counter)
             child = self._populate_item(
-                child_id, [*path, idx], ctx, command_hub, rec.name, rec.view, rec.widget, parent=item)
+                child_id, [*path, idx], ctx, command_hub, rec.name, rec.view, parent=item)
             item.children.append(child)
         self._id_to_item[item_id] = item
-        view.set_on_item_changed(partial(self._on_item_changed, item))
-        view.set_on_child_changed(partial(self._on_child_changed, item))
-        view.set_on_current_changed(widget, partial(self._on_current_changed, item))
-        view.set_on_commands_changed(partial(self._on_commands_changed, item))
-        view.set_on_state_changed(widget, partial(self._on_state_changed, item))
+        view.set_controller_hook(CtlHook(self, item))
         return item
+
+    def _set_item_widget(self, item, widget):
+        item.widget = widget
+        item.commands = self._make_item_commands(item.id, item.view, widget)
+        for idx, child in enumerate(item.children):
+            self._set_item_widget(child, item.view.item_widget(widget, idx))
 
     def _make_item_commands(self, item_id, view, widget):
         wrapper = partial(self._apply_item_diff, item_id)
@@ -137,41 +179,49 @@ class Controller:
             *view.get_commands(widget, [wrapper]),
             ]
 
-    def _on_item_changed(self, item):
+    def item_changed_hook(self, item):
         log.info("Item is changed: %s", item)
         idx = item.parent.children.index(item)
         self._replace_child_item(item.parent, idx, item.view, item.widget)
 
-    def _on_child_changed(self, item, idx, view, widget):
+    def child_changed_hook(self, item, idx, view, widget):
         log.info("Child #%d changed for: %s", idx, item)
         self._replace_child_item(item, idx, view, widget)
 
-    def _replace_child_item(self, item, idx, view, widget):
+    def _replace_child_item_view(self, item, idx, view):
         old_child = item.children[idx]
         child_id = next(self._counter)
         child = self._populate_item(
-            child_id, old_child.path, old_child.ctx, old_child.command_hub, old_child.name, view, widget, parent=item)
+            child_id, old_child.path, old_child.ctx, old_child.command_hub, old_child.name, view, parent=item)
         item.children[idx] = child
+        return child
+
+    def _replace_child_item(self, item, idx, view, widget):
+        child = self._replace_child_item_view(item, idx, view)
+        self._set_item_widget(child, widget)
         self._update_item_commands(child)
 
     def _update_item_commands(self, item):
         path_to_commands = self._collect_item_commands(item)
         item.command_hub.set_commands(path_to_commands)
 
-    def _on_current_changed(self, item):
+    def current_changed_hook(self, item):
         if not self._run_callback:
             return
         idx = item.view.get_current(item.widget)
         log.info("Controller: current changed to #%d for: %s", idx, item)
         self._update_item_commands(item.children[idx])
 
-    def _on_commands_changed(self, item):
+    def commands_changed_hook(self, item):
         log.info("Controller: commands changed for: %s", item)
         item.commands[:] = self._make_item_commands(item.id, item.view, item.widget)
         self._update_item_commands(item)
 
-    def _on_state_changed(self, item):
+    def state_changed_hook(self, item):
         asyncio.create_task(self._on_state_changed_async(item))
+
+    def replace_item_element_hook(self, item, idx, new_view):
+        self._replace_child_item_view(item, idx, new_view)
 
     async def _on_state_changed_async(self, item):
         if not self._run_callback:
@@ -209,8 +259,9 @@ class Controller:
                 return
             parent = item.parent
             child_idx = item.path[-1]
-            child_widget = parent.view.replace_widget(parent.ctx, parent.widget, child_idx)
-            self._replace_child_item(parent, child_idx, item.view, child_widget)
+            new_widget = parent.view.replace_widget(parent.ctx, parent.widget, child_idx)
+            self._set_item_widget(item, new_widget)
+            self._update_item_commands(item)
 
     def _apply_root_diff(self, diff):
         log.info("Apply root diff: %s", diff)

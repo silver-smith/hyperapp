@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from hyperapp.common.htypes import tInt
 from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 
@@ -50,6 +52,7 @@ def test_tree():
     app = QtWidgets.QApplication()
     try:
         view = tree.TreeView.from_piece(piece)
+        view.set_controller_hook(Mock())
         widget = view.construct_widget(state, ctx)
         assert view.piece
         state = view.widget_state(widget)

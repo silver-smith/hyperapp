@@ -63,11 +63,18 @@ class WindowView(View):
             pos=htypes.window.pos(widget.x(), widget.y()),
             )
 
-    def items(self, widget):
+    def items(self):
         return [
-            Item('menu bar', self._menu_bar_view, widget.menuBar()),
-            Item('central', self._central_view, widget.centralWidget()),
+            Item('menu bar', self._menu_bar_view),
+            Item('central', self._central_view),
             ]
+
+    def item_widget(self, widget, idx):
+        if idx == 0:
+            return widget.menuBar()
+        if idx == 1:
+            return widget.centralWidget()
+        return super().item_widget(widget, idx)
 
 
 @mark.ui_command(htypes.root.view)

@@ -34,7 +34,6 @@ class NavigatorView(View):
         self._commands = commands  # ref list
         self._prev = prev  # ref opt
         self._next = next  # ref opt
-        self._on_commands_changed = lambda: None
 
     @property
     def piece(self):
@@ -58,10 +57,7 @@ class NavigatorView(View):
         return 0
 
     async def child_state_changed(self, ctx, widget):
-        self._on_commands_changed()
-
-    def set_on_commands_changed(self, on_changed):
-        self._on_commands_changed = on_changed
+        self._ctl_hook.commands_changed()
 
     def widget_state(self, widget):
         current_state = self._current_view.widget_state(widget)
@@ -129,10 +125,16 @@ class NavigatorView(View):
             self._next = next.next
         else:
             raise NotImplementedError(repr(diff.piece))
+        self._ctl_hook.replace_item_element(0, self._current_view)
         return True
 
-    def items(self, widget):
-        return [Item('current', self._current_view, widget)]
+    def items(self):
+        return [Item('current', self._current_view)]
+
+    def item_widget(self, widget, idx):
+        if idx == 0:
+            return widget
+        return super().item_widget(widget, idx)
 
 
 @mark.ui_command(htypes.navigator.view)

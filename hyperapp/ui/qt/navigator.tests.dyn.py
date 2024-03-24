@@ -1,4 +1,5 @@
 import asyncio
+from unittest.mock import Mock
 
 from PySide6 import QtWidgets
 
@@ -59,6 +60,7 @@ def test_navigator():
     try:
         ctx = Context(command_hub=CommandHub())
         view = navigator.NavigatorView.from_piece(piece)
+        view.set_controller_hook(Mock())
         widget = view.construct_widget(state, ctx)
         state = view.widget_state(widget)
         assert state

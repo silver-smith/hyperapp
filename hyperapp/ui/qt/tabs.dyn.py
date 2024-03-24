@@ -33,7 +33,6 @@ class TabsView(View):
     def __init__(self, tabs):
         super().__init__()
         self._tabs = tabs  # list[_Tab]
-        self._on_item_changed = lambda: None
 
     @property
     def piece(self):
@@ -53,6 +52,7 @@ class TabsView(View):
             w = tab.view.construct_widget(tab_state, ctx)
             tabs.addTab(w, tab.label)
         tabs.setCurrentIndex(state.current_tab)
+        tabs.currentChanged.connect(lambda idx: self._ctl_hook.current_changed())
         return tabs
 
     def replace_widget(self, ctx, widget, idx):
@@ -66,12 +66,6 @@ class TabsView(View):
 
     def get_current(self, widget):
         return widget.currentIndex()
-
-    def set_on_item_changed(self, on_changed):
-        self._on_item_changed = on_changed
-
-    def set_on_current_changed(self, widget, on_changed):
-        widget.currentChanged.connect(lambda idx: on_changed())
 
     def widget_state(self, widget):
         tabs = []
@@ -96,19 +90,22 @@ class TabsView(View):
             self._tabs = diff.piece.insert(self._tabs, new_tab)
             widget.insertTab(idx, w, diff.piece.item.label)
             widget.setCurrentIndex(idx)
-            self._on_item_changed()
+            self._ctl_hook.item_changed()
         elif isinstance(diff.piece, ListDiff.Remove):
             idx = diff.piece.idx
             widget.removeTab(idx)
             widget.setCurrentIndex(idx)
             self._tabs = diff.piece.remove(self._tabs)
-            self._on_item_changed()
+            self._ctl_hook.item_changed()
         else:
             raise NotImplementedError(f"Not implemented: tab.apply({diff.piece})")
         return False
 
-    def items(self, widget):
+    def items(self):
         return [
-            Item(tab.label, tab.view, widget.widget(idx))
+            Item(tab.label, tab.view)
             for idx, tab in enumerate(self._tabs)
             ]
+
+    def item_widget(self, widget, idx):
+        return widget.widget(idx)

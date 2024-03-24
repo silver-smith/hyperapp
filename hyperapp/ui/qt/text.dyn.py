@@ -18,6 +18,7 @@ class ViewTextView(View):
         return cls(piece.adapter)
 
     def __init__(self, adapter_ref):
+        super().__init__()
         self._adapter_ref = adapter_ref
 
     @property
@@ -42,6 +43,7 @@ class EditTextView(View):
         return cls(piece.adapter)
 
     def __init__(self, adapter_ref):
+        super().__init__()
         self._adapter_ref = adapter_ref
 
     @property

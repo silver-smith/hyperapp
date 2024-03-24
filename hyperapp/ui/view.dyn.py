@@ -2,11 +2,17 @@ import abc
 from collections import namedtuple
 
 
-Item = namedtuple('Item', 'name view widget')
+Item = namedtuple('Item', 'name view')
 Diff = namedtuple('Diff', 'piece state', defaults=[None])
 
 
 class View(metaclass=abc.ABCMeta):
+
+    def __init__(self):
+        self._ctl_hook = None
+
+    def set_controller_hook(self, ctl_hook):
+        self._ctl_hook = ctl_hook
 
     @abc.abstractproperty
     def piece(self):
@@ -25,21 +31,6 @@ class View(metaclass=abc.ABCMeta):
     async def child_state_changed(self, ctx, widget):
         pass
 
-    def set_on_commands_changed(self, on_changed):
-        pass
-
-    def set_on_item_changed(self, on_changed):
-        pass
-
-    def set_on_child_changed(self, on_changed):
-        pass
-
-    def set_on_current_changed(self, widget, on_changed):
-        pass
-
-    def set_on_state_changed(self, widget, on_changed):
-        pass
-
     @abc.abstractmethod
     def widget_state(self, widget):
         pass
@@ -50,5 +41,8 @@ class View(metaclass=abc.ABCMeta):
     def apply(self, ctx, widget, diff):
         raise NotImplementedError()
 
-    def items(self, widget):
+    def items(self):
         return []
+
+    def item_widget(self, widget, idx):
+        raise RuntimeError(f"Unknown item: {idx}")

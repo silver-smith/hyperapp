@@ -78,14 +78,13 @@ class _Model(QtCore.QAbstractItemModel):
 
 class _TreeWidget(QtWidgets.QTreeView):
 
-    def __init__(self):
+    def __init__(self, on_state_changed):
         super().__init__()
-        self.on_current_changed = None
+        self._on_state_changed = on_state_changed
 
     def currentChanged(self, current, previous):
         result = super().currentChanged(current, previous)
-        if self.on_current_changed:
-            self.on_current_changed()
+        self._on_state_changed()
         return result
 
     def setVisible(self, visible):
@@ -138,7 +137,7 @@ class TreeView(View):
 
     def construct_widget(self, state, ctx):
         adapter = ui_adapter_creg.invite(self._adapter_ref, ctx)
-        widget = _TreeWidget()
+        widget = _TreeWidget(self._ctl_hook.state_changed)
         model = _Model(adapter)
         widget.setModel(model)
         widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
@@ -149,9 +148,6 @@ class TreeView(View):
         # model.dataChanged.connect(partial(self._on_data_changed, widget))
         model.rowsInserted.connect(partial(self._on_data_changed, widget))
         return widget
-
-    def set_on_state_changed(self, widget, on_changed):
-        widget.on_current_changed = on_changed
 
     def widget_state(self, widget):
         return None

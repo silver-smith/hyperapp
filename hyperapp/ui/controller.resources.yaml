@@ -3,6 +3,7 @@
 import:
 - builtins:mosaic.service
 - builtins:web.service
+- common.context:context.module
 - common.list_diff:list_diff.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -87,6 +88,7 @@ definitions:
     file_name: controller.dyn.py
     import_list:
       code.command_hub: ui.command_hub:command_hub.module
+      code.context: common.context:context.module
       code.list_diff: common.list_diff:list_diff.module
       code.view: ui.view:view.module
       htypes.layout.command_item: legacy_type.layout:command_item

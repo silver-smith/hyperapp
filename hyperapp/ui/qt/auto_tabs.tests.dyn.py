@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from PySide6 import QtWidgets
 
 from . import htypes
@@ -33,6 +35,7 @@ def test_tabs():
     app = QtWidgets.QApplication()
     try:
         view = auto_tabs.AutoTabsView.from_piece(piece)
+        view.set_controller_hook(Mock())
         widget = view.construct_widget(state, ctx)
         assert view.piece
         state = view.widget_state(widget)
@@ -48,6 +51,7 @@ def test_duplicate():
     app = QtWidgets.QApplication()
     try:
         view = auto_tabs.AutoTabsView.from_piece(piece)
+        view.set_controller_hook(Mock())
         widget = view.construct_widget(state, ctx)
         diff = auto_tabs.duplicate_tab(piece, state)
         replace_widget = view.apply(ctx, widget, diff)
@@ -79,6 +83,7 @@ def test_close():
     app = QtWidgets.QApplication()
     try:
         view = auto_tabs.AutoTabsView.from_piece(piece)
+        view.set_controller_hook(Mock())
         widget = view.construct_widget(state, ctx)
         diff = auto_tabs.close_tab(piece, state)
         replace_widget = view.apply(ctx, widget, diff)

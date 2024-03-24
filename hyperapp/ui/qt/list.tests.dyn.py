@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 
 from PySide6 import QtWidgets
@@ -32,6 +34,7 @@ def test_list():
     app = QtWidgets.QApplication()
     try:
         view = list.ListView.from_piece(piece)
+        view.set_controller_hook(Mock())
         widget = view.construct_widget(state, ctx)
         assert view.piece
         state = view.widget_state(widget)
