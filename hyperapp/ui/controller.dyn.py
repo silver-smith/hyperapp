@@ -79,6 +79,9 @@ class CtlHook:
     def state_changed(self):
         self._ctl.state_changed_hook(self._item)
 
+    def item_element_inserted(self, idx):
+        self._ctl.item_element_inserted(self._item, idx)
+
     def replace_item_element(self, idx, new_view, new_widget=None):
         self._ctl.replace_item_element_hook(self._item, idx, new_view, new_widget)
 
@@ -222,6 +225,15 @@ class Controller:
 
     def state_changed_hook(self, item):
         asyncio.create_task(self._on_state_changed_async(item))
+
+    def item_element_inserted(self, item, idx):
+        child_id = next(self._counter)
+        rec = item.view.items()[idx]
+        child = self._populate_item(
+            child_id, [*item.path, idx], item.ctx, item.command_hub, rec.name, rec.view, parent=item)
+        item.children.insert(idx, child)
+        self._set_item_widget(child, item.view.item_widget(item.widget, idx))
+        self._update_item_commands(child)
 
     def replace_item_element_hook(self, item, idx, new_view, new_widget):
         child = self._replace_child_item_view(item, idx, new_view)

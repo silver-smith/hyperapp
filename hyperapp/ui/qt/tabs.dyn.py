@@ -90,13 +90,13 @@ class TabsView(View):
             self._tabs = diff.piece.insert(self._tabs, new_tab)
             widget.insertTab(idx, w, diff.piece.item.label)
             widget.setCurrentIndex(idx)
-            self._ctl_hook.item_changed()
+            self._ctl_hook.item_element_inserted(idx)
         elif isinstance(diff.piece, ListDiff.Remove):
             idx = diff.piece.idx
             widget.removeTab(idx)
             widget.setCurrentIndex(idx)
             self._tabs = diff.piece.remove(self._tabs)
-            self._ctl_hook.item_changed()
+            self._ctl_hook.item_element_removed(idx)
         else:
             raise NotImplementedError(f"Not implemented: tab.apply({diff.piece})")
         return False
