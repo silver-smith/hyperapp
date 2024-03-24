@@ -76,7 +76,7 @@ class MasterDetailsView(WrapperView):
     async def child_state_changed(self, ctx, widget):
         log.info("Master-details: child state changed: %s", widget)
         master_view = self._base.child_view(0)
-        master_widget = self._base.child_widget(widget, 0)
+        master_widget = self._base.item_widget(widget, 0)
         command = model_command_creg.invite(
             self._details_command, master_view, self._model_piece, master_widget, wrappers=[])
         piece = await command.run()
@@ -93,5 +93,5 @@ class MasterDetailsView(WrapperView):
 
     def model_state(self, widget):
         master_view = self._base.child_view(0)
-        master_widget = self._base.child_widget(widget, 0)
+        master_widget = self._base.item_widget(widget, 0)
         return master_view.model_state(master_widget)

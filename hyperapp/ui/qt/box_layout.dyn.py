@@ -112,7 +112,3 @@ class BoxLayoutView(View):
 
     def child_view(self, idx):
         return self._elements[idx].view
-
-    def child_widget(self, widget, idx):
-        layout = widget.layout()
-        return layout.itemAt(idx).widget()
