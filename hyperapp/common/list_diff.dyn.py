@@ -1,4 +1,12 @@
 
+def replace(container, idx, item):
+    assert type(container) in {list, tuple}, repr(container)
+    return [
+        *container[:idx],
+        item,
+        *container[idx + 1:],
+        ]
+
 
 class ListDiffInsert:
 
@@ -51,6 +59,19 @@ class ListDiffAppend:
         return f"<ListDiffAppend: {self.item}>"
 
 
+class ListDiffReplace:
+
+    def __init__(self, idx, item):
+        self.idx = idx
+        self.item = item
+
+    def __repr__(self):
+        return f"<ListDiffReplace: @#{self.idx}: {self.item}>"
+
+    def replace(self, container, item):
+        return replace(container, self.idx, item)
+
+
 class ListDiffModify:
 
     def __init__(self, idx, item_diff):
@@ -61,16 +82,12 @@ class ListDiffModify:
         return f"<ListDiffModify: @#{self.idx}: {self.item_diff}>"
 
     def replace(self, container, item):
-        assert type(container) in {list, tuple}, repr(container)
-        return [
-            *container[:self.idx],
-            item,
-            *container[self.idx + 1:],
-            ]
+        return replace(container, self.idx, item)
 
 
 class ListDiff:
     Insert = ListDiffInsert
     Append = ListDiffAppend
     Remove = ListDiffRemove
+    Replace = ListDiffReplace
     Modify = ListDiffModify
