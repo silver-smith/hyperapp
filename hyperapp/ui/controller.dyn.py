@@ -172,6 +172,7 @@ class Controller:
     def _set_item_widget(self, item, widget):
         item.widget = widget
         item.commands = self._make_item_commands(item, item.view, widget)
+        item.view.init_widget(widget)
         for idx, child in enumerate(item.children):
             self._set_item_widget(child, item.view.item_widget(widget, idx))
 

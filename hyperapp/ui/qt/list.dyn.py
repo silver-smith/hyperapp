@@ -58,13 +58,14 @@ class _Model(QtCore.QAbstractTableModel):
 
 class _TableView(QtWidgets.QTableView):
 
-    def __init__(self, on_state_changed):
+    def __init__(self):
         super().__init__()
-        self._on_state_changed = on_state_changed
+        self.on_state_changed = None
 
     def currentChanged(self, current, previous):
         result = super().currentChanged(current, previous)
-        self._on_state_changed()
+        if self.on_state_changed:
+            self.on_state_changed()
         return result
 
     def setVisible(self, visible):
@@ -89,7 +90,7 @@ class ListView(View):
 
     def construct_widget(self, state, ctx):
         adapter = ui_adapter_creg.invite(self._adapter_ref, ctx)
-        widget = _TableView(self._ctl_hook.state_changed)
+        widget = _TableView()
         model = _Model(adapter)
         widget.setModel(model)
         widget.verticalHeader().hide()
@@ -103,6 +104,9 @@ class ListView(View):
         # model.dataChanged.connect(partial(self._on_data_changed, widget))
         model.rowsInserted.connect(partial(self._on_data_changed, widget))
         return widget
+
+    def init_widget(self, widget):
+        widget.on_state_changed = self._ctl_hook.state_changed
 
     def widget_state(self, widget):
         return None
