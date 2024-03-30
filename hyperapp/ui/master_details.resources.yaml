@@ -9,9 +9,11 @@ import:
 - legacy_type.box_layout:state
 - legacy_type.box_layout:view
 - legacy_type.builtin:attribute
+- legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.master_details:state
 - legacy_type.master_details:view
+- legacy_type.ui:ui_command_d
 - legacy_type.ui:ui_ctl
 - ui.model_command_creg:model_command_creg.service
 - ui.ui_ctl_registry:ui_ctl_creg.service
@@ -25,6 +27,13 @@ associations:
   - ui.ui_ctl_registry:ui_ctl_creg.service
   - legacy_type.master_details:view
   value: MasterDetailsView.from_piece.ctl
+- bases:
+  - ui_command_d
+  - legacy_type.master_details:view
+  key:
+  - ui_command_d
+  - legacy_type.master_details:view
+  value: unwrap_master_details
 definitions:
   MasterDetailsView:
     _type: legacy_type.builtin:attribute
@@ -57,3 +66,10 @@ definitions:
       services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
       services.visualizer: ui.visualizer:visualizer.service
       services.web: builtins:web.service
+  ui_command_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:ui_command_d
+  unwrap_master_details:
+    _type: legacy_type.builtin:attribute
+    object: master_details.module
+    attr_name: unwrap_master_details

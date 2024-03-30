@@ -36,6 +36,7 @@ _hardcoded_shortcuts = {
     'sample_list_state': 'Return',
     'open_view_item_commands': 'C',
     'add_view_command': 'Insert',
+    'unwrap_master_details': 'Ctrl+U',
     }
 
 

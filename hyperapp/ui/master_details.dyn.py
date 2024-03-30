@@ -95,3 +95,8 @@ class MasterDetailsView(WrapperView):
         master_view = self._base.child_view(0)
         master_widget = self._base.item_widget(widget, 0)
         return master_view.model_state(master_widget)
+
+
+@mark.ui_command(htypes.master_details.view)
+def unwrap_master_details(piece, state):
+    log.info("Unwrap master-details: %s / %s", piece, state)
