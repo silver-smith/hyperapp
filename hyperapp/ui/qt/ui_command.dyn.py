@@ -49,6 +49,9 @@ class CommandBase:
         self._widget = weakref.ref(widget)
         self._wrappers = wrappers
 
+    def __repr__(self):
+        return f"{self.__class__.__name__} '{self.name}': {id(self)}"
+
     @property
     def name(self):
         return self._name
