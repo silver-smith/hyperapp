@@ -17,7 +17,6 @@ from .services import (
 from .code.context import Context
 from .code.list_diff import ListDiff
 from .code.view import View
-from .code.command_hub import CommandHub
 
 log = logging.getLogger(__name__)
 
@@ -28,10 +27,10 @@ class _Item:
     path: list[int]
     parent: Self | None
     ctx: Context
-    command_hub: CommandHub
     name: str
     view: View
     focusable: bool
+    current_child_idx: int
     widget: Any
     commands: list
     children: list
@@ -136,35 +135,30 @@ class Controller:
     def _create_window(self, piece_ref, state_ref, ctx):
         view = ui_ctl_creg.invite(piece_ref)
         state = web.summon(state_ref)
-        command_hub = CommandHub()
-        window_ctx = ctx.clone_with(command_hub=command_hub)
-        widget = view.construct_widget(state, window_ctx)
-        item = self._make_window_item(window_ctx, command_hub, view, widget)
+        widget = view.construct_widget(state, ctx)
+        item = self._make_window_item(ctx, view, widget)
         return item
 
     def _set_window_commands(self, item):
-        path_to_commands = self._collect_item_commands(item)
+        commands = self._collect_item_commands(item)
         root_wrapper = self._apply_root_diff
-        root_commands = self._make_view_commands(RootView(self, item.id), item.widget, root_wrapper)
-        path_to_commands = {
-            (): root_commands,
-            **path_to_commands,
-            }
-        item.command_hub.set_commands(path_to_commands)
+        commands += self._make_view_commands(RootView(self, item.id), item.widget, root_wrapper)
+        self._update_item_commands(item, old_commands=[], new_commands=commands)
 
-    def _make_window_item(self, window_ctx, command_hub, view, widget):
+    def _make_window_item(self, window_ctx, view, widget):
         item_id = next(self._counter)
         path = [item_id]
-        item = self._populate_item(item_id, path, window_ctx, command_hub, f"window#{item_id}", view)
+        item = self._populate_item(item_id, path, window_ctx, f"window#{item_id}", view)
         self._set_item_widget(item, widget)
         return item
 
-    def _populate_item(self, item_id, path, ctx, command_hub, name, view, focusable=True, parent=None):
-        item = _Item(item_id, path, parent, ctx, command_hub, name, view, focusable, widget=None, commands=None, children=[])
+    def _populate_item(self, item_id, path, ctx, name, view, focusable=True, parent=None):
+        item = _Item(item_id, path, parent, ctx, name, view, focusable,
+                     current_child_idx=0, widget=None, commands=None, children=[])
         for idx, rec in enumerate(view.items()):
             child_id = next(self._counter)
             child = self._populate_item(
-                child_id, [*path, idx], ctx, command_hub, rec.name, rec.view, rec.focusable, parent=item)
+                child_id, [*path, idx], ctx, rec.name, rec.view, rec.focusable, parent=item)
             item.children.append(child)
         self._id_to_item[item_id] = item
         view.set_controller_hook(CtlHook(self, item))
@@ -173,6 +167,7 @@ class Controller:
     def _set_item_widget(self, item, widget):
         item.widget = widget
         item.commands = self._make_item_commands(item, item.view, widget)
+        item.current_child_idx = item.view.get_current(widget)
         item.view.init_widget(widget)
         for idx, child in enumerate(item.children):
             self._set_item_widget(child, item.view.item_widget(widget, idx))
@@ -191,18 +186,54 @@ class Controller:
         old_child = item.children[idx]
         child_id = next(self._counter)
         child = self._populate_item(
-            child_id, old_child.path, old_child.ctx, old_child.command_hub, old_child.name, view, old_child.focusable, parent=item)
+            child_id, old_child.path, old_child.ctx, old_child.name, view, old_child.focusable, parent=item)
         item.children[idx] = child
         return child
 
-    def _replace_child_item(self, item, idx, view, widget):
-        child = self._replace_child_item_view(item, idx, view)
-        self._set_item_widget(child, widget)
-        self._update_item_commands(child)
+    def _replace_child_item(self, parent, idx, child_view, child_widget):
+        old_child = parent.children[idx]
+        old_commands = self._collect_item_commands(old_child)
+        new_child = self._replace_child_item_view(parent, idx, child_view)
+        new_commands = self._collect_item_commands(new_child)
+        self._set_item_widget(new_child, child_widget)
+        self._update_item_commands(new_child, old_commands, new_commands)
 
-    def _update_item_commands(self, item):
-        path_to_commands = self._collect_item_commands(item)
-        item.command_hub.set_commands(path_to_commands)
+    def _update_parents_commands(self, item, old_commands, new_commands):
+
+        def update_item(item):
+            item.view.commands_changed(item.widget, old_commands, new_commands)
+
+        def update_parents(item):
+            update_item(item)
+            if not item.parent:
+                return
+            for sibling in item.parent.children:
+                if not sibling.focusable:
+                    # Update commands for aux views - command pane and menu bar are such views
+                    update_item(sibling)
+            update_parents(item.parent)
+
+        update_parents(item)
+
+    def _update_children_commands(self, item, old_commands, new_commands):
+
+        def update_children(parent):
+            for item in parent.children:
+                item.view.commands_changed(item.widget, old_commands, new_commands)
+                update_children(item)
+
+        update_children(item)
+
+    def _update_item_commands(self, item, old_commands, new_commands):
+        self._update_children_commands(item, old_commands, new_commands)
+        self._update_parents_commands(item, old_commands, new_commands)
+
+    def _collect_item_commands(self, item):
+        commands = item.commands
+        if item.children:
+            idx = item.view.get_current(item.widget)
+            commands = [*commands, *self._collect_item_commands(item.children[idx])]
+        return commands
 
     def item_changed_hook(self, item):
         log.info("Item is changed: %s", item)
@@ -216,32 +247,42 @@ class Controller:
     def current_changed_hook(self, item):
         if not self._run_callback:
             return
-        idx = item.view.get_current(item.widget)
-        log.info("Controller: current changed to #%d for: %s", idx, item)
-        self._update_item_commands(item.children[idx])
+        new_idx = item.view.get_current(item.widget)
+        log.info("Controller: current changed: #%d -> #%d for: %s", item.current_child_idx, new_idx, item)
+        old_commands = self._collect_item_commands(item.children[item.current_child_idx])
+        new_commands = self._collect_item_commands(item.children[new_idx])
+        item.current_child_idx = new_idx
+        self._update_parents_commands(item, old_commands, new_commands)
 
     def commands_changed_hook(self, item):
         log.info("Controller: commands changed for: %s", item)
-        item.commands[:] = self._make_item_commands(item, item.view, item.widget)
-        self._update_item_commands(item)
+        old_commands = item.commands
+        new_commands = self._make_item_commands(item, item.view, item.widget)
+        item.commands = new_commands
+        self._update_item_commands(item, old_commands, new_commands)
 
     def state_changed_hook(self, item):
         asyncio.create_task(self._on_state_changed_async(item))
 
-    def item_element_inserted(self, item, idx):
+    def item_element_inserted(self, parent, idx):
+        old_commands = self._collect_item_commands(parent.children[parent.current_child_idx])
         child_id = next(self._counter)
-        rec = item.view.items()[idx]
+        rec = parent.view.items()[idx]
         child = self._populate_item(
-            child_id, [*item.path, idx], item.ctx, item.command_hub, rec.name, rec.view, rec.focusable, parent=item)
-        item.children.insert(idx, child)
-        self._set_item_widget(child, item.view.item_widget(item.widget, idx))
-        self._update_item_commands(child)
+            child_id, [*parent.path, idx], parent.ctx, rec.name, rec.view, rec.focusable, parent=parent)
+        parent.children.insert(idx, child)
+        self._set_item_widget(child, parent.view.item_widget(parent.widget, idx))
+        new_commands = self._collect_item_commands(child)
+        self._update_parents_commands(parent, old_commands, new_commands)
+        self._update_children_commands(child, [], new_commands)
 
-    def replace_item_element_hook(self, item, idx, new_view, new_widget):
-        child = self._replace_child_item_view(item, idx, new_view)
+    def replace_item_element_hook(self, parent, idx, new_view, new_widget):
+        old_commands = self._collect_item_commands(parent.children[idx])
+        new_child = self._replace_child_item_view(parent, idx, new_view)
         if new_widget:
-            self._set_item_widget(child, new_widget)
-            self._update_item_commands(child)
+            self._set_item_widget(new_child, new_widget)
+            new_commands = self._collect_item_commands(new_child)
+            self._update_item_commands(new_child, old_commands, new_commands)
 
     def apply_diff_hook(self, item, diff):
         self._apply_item_diff(item, diff)
@@ -254,13 +295,6 @@ class Controller:
         while item:
             await item.view.child_state_changed(item.ctx, item.widget)
             item = item.parent
-
-    def _collect_item_commands(self, item):
-        path_to_commands = {tuple(item.path): item.commands}
-        if item.children:
-            idx = item.view.get_current(item.widget)
-            path_to_commands.update(self._collect_item_commands(item.children[idx]))
-        return path_to_commands
         
     @contextmanager
     def _without_callback(self):
@@ -275,15 +309,18 @@ class Controller:
             return
         log.info("Apply diff to item #%d @ %s: %s", item.id, item.path, diff)
         with self._without_callback():
+            old_commands = self._collect_item_commands(item)
             replace_widget = item.view.apply(item.ctx, item.widget, diff)
             log.info("Applied diff, should replace widget: %s", replace_widget)
             if not replace_widget:
+                item.current_child_idx = item.view.get_current(item.widget)
                 return
             parent = item.parent
             child_idx = item.path[-1]
             new_widget = parent.view.replace_widget(parent.ctx, parent.widget, child_idx)
             self._set_item_widget(item, new_widget)
-            self._update_item_commands(item)
+            new_commands = self._collect_item_commands(item)
+            self._update_item_commands(item, old_commands, new_commands)
 
     def _apply_root_diff(self, diff):
         log.info("Apply root diff: %s", diff)

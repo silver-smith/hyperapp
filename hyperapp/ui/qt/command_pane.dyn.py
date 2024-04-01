@@ -47,7 +47,6 @@ class CommandPaneView(View):
         layout = QtWidgets.QVBoxLayout(w, spacing=1)
         layout.setAlignment(QtCore.Qt.AlignTop)
         layout.setContentsMargins(2, 2, 2, 2)
-        ctx.command_hub.subscribe(partial(self.commands_changed, w))
         return w
 
     def widget_state(self, widget):

@@ -8,7 +8,6 @@ from .services import (
     web,
     )
 from .code.context import Context
-from .code.command_hub import CommandHub
 from .tested.code import auto_tabs
 
 
@@ -29,7 +28,7 @@ def make_state():
 
 
 def test_tabs():
-    ctx = Context(command_hub=CommandHub())
+    ctx = Context()
     piece = make_piece()
     state = make_state()
     app = QtWidgets.QApplication()
@@ -45,7 +44,7 @@ def test_tabs():
 
 
 def test_duplicate():
-    ctx = Context(command_hub=CommandHub())
+    ctx = Context()
     piece = make_piece()
     state = make_state()
     app = QtWidgets.QApplication()
@@ -79,7 +78,7 @@ def test_close():
             mosaic.put(text_state),
             ],
         )
-    ctx = Context(command_hub=CommandHub())
+    ctx = Context()
     app = QtWidgets.QApplication()
     try:
         view = auto_tabs.AutoTabsView.from_piece(piece)

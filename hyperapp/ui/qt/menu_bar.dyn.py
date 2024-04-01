@@ -26,7 +26,6 @@ class MenuBarView(View):
         w =  QtWidgets.QMenuBar()
         menu = QtWidgets.QMenu('&All')
         w.addMenu(menu)
-        ctx.command_hub.subscribe(partial(self.commands_changed, w))
         return w
 
     def widget_state(self, widget):

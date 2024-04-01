@@ -9,7 +9,6 @@ from .services import (
     )
 from .code.list_diff import ListDiff
 from .code.context import Context
-from .code.command_hub import CommandHub
 from .code.view import Diff
 from .tested.code import tabs
 
@@ -46,7 +45,7 @@ def make_outer_state(inner_tab_state):
 
 
 def test_tabs():
-    ctx = Context(command_hub=CommandHub())
+    ctx = Context()
     piece = make_inner_piece()
     state = make_inner_state()
     app = QtWidgets.QApplication()
@@ -75,7 +74,7 @@ def duplicate(piece, state):
 
 
 def test_duplicate():
-    ctx = Context(command_hub=CommandHub())
+    ctx = Context()
     piece = make_inner_piece()
     state = make_inner_state()
     app = QtWidgets.QApplication()

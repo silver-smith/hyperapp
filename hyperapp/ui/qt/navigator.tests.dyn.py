@@ -8,7 +8,6 @@ from .services import (
     mosaic,
     )
 from .code.context import Context
-from .code.command_hub import CommandHub
 from .tested.code import navigator
 
 
@@ -58,7 +57,7 @@ def test_navigator():
     state = make_state()
     app = QtWidgets.QApplication()
     try:
-        ctx = Context(command_hub=CommandHub())
+        ctx = Context()
         view = navigator.NavigatorView.from_piece(piece)
         view.set_controller_hook(Mock())
         widget = view.construct_widget(state, ctx)

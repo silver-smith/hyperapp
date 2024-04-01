@@ -7,7 +7,6 @@ import:
 - common.list_diff:list_diff.module
 - legacy_type.builtin:python_module
 - legacy_type.phony:phony
-- ui.command_hub:command_hub.module
 - ui.qt.menu_bar:menu_bar.module
 - ui.view:view.module
 associations: []
@@ -19,7 +18,6 @@ definitions:
     module_name: window.tests
     file_name: window.tests.dyn.py
     import_list:
-      code.command_hub: ui.command_hub:command_hub.module
       code.context: common.context:context.module
       code.list_diff: common.list_diff:list_diff.module
       code.menu_bar: ui.qt.menu_bar:menu_bar.module

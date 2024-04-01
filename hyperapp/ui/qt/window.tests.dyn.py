@@ -6,7 +6,6 @@ from .services import (
     web,
     )
 from .code.context import Context
-from .code.command_hub import CommandHub
 from .code.list_diff import ListDiff
 from .code.view import Diff
 from .code import menu_bar  # Used implicitly
@@ -42,8 +41,7 @@ def make_state():
 
 
 def test_construct_widget():
-    command_hub = CommandHub()
-    ctx = Context(command_hub=command_hub)
+    ctx = Context()
     tabs_piece, piece = make_piece()
     tabs_state, state = make_state()
     app = QtWidgets.QApplication()

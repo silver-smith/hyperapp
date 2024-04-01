@@ -25,7 +25,6 @@ import:
 - legacy_type.ui:model_command_enumerator_d
 - legacy_type.ui:model_d
 - legacy_type.ui:tree_ui_t
-- ui.command_hub:command_hub.module
 - ui.qt.ui_command:ui_command_factory.service
 - ui.ui_ctl_registry:ui_ctl_creg.service
 - ui.view:view.module
@@ -87,7 +86,6 @@ definitions:
     module_name: controller
     file_name: controller.dyn.py
     import_list:
-      code.command_hub: ui.command_hub:command_hub.module
       code.context: common.context:context.module
       code.list_diff: common.list_diff:list_diff.module
       code.view: ui.view:view.module

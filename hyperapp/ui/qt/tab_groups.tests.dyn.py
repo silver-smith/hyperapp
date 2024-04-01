@@ -5,7 +5,6 @@ from .services import (
     mosaic,
     )
 from .code.context import Context
-from .code.command_hub import CommandHub
 from .tested.code import tab_groups
 
 
@@ -26,7 +25,7 @@ def make_state():
 
 
 def test_tabs():
-    ctx = Context(command_hub=CommandHub())
+    ctx = Context()
     piece = make_piece()
     state = make_state()
     app = QtWidgets.QApplication()

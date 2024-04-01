@@ -49,3 +49,6 @@ class View(metaclass=abc.ABCMeta):
 
     def item_widget(self, widget, idx):
         raise RuntimeError(f"Unknown item: {idx}")
+
+    def commands_changed(self, w, removed_commands, added_commands):
+        pass

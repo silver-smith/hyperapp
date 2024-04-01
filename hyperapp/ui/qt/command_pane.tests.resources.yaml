@@ -4,7 +4,6 @@ import:
 - common.context:context.module
 - legacy_type.builtin:python_module
 - legacy_type.phony:phony
-- ui.command_hub:command_hub.module
 associations: []
 definitions:
   command_pane.tests.module:
@@ -12,7 +11,6 @@ definitions:
     module_name: command_pane.tests
     file_name: command_pane.tests.dyn.py
     import_list:
-      code.command_hub: ui.command_hub:command_hub.module
       code.context: common.context:context.module
       tested.code.command_pane: phony
   phony:
