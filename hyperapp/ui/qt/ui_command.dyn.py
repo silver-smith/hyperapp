@@ -50,7 +50,7 @@ class CommandBase:
         self._wrappers = wrappers
 
     def __repr__(self):
-        return f"{self.__class__.__name__} '{self.name}': {id(self)}"
+        return f"{self.__class__.__name__} #{hex(id(self))[-6:]}: {self.name}"
 
     @property
     def name(self):
