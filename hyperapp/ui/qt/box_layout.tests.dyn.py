@@ -17,10 +17,12 @@ def make_piece():
         elements=[
             htypes.box_layout.element(
                 view=mosaic.put(text_1),
+                focusable=True,
                 stretch=1,
                 ),
             htypes.box_layout.element(
                 view=mosaic.put(text_2),
+                focusable=False,
                 stretch=2,
                 ),
             ],

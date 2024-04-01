@@ -3,6 +3,7 @@ view = record
 item = record:
   id: int
   name: string
+  focusable: bool
   description: string
 
 

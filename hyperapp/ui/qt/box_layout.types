@@ -1,6 +1,7 @@
 
 element = record:
   view: ref opt  # a stretch if none.
+  focusable: bool
   stretch: int
 
 view = record:

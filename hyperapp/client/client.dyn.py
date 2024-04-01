@@ -33,10 +33,12 @@ def make_piece():
         elements=[
             htypes.box_layout.element(
                 view=mosaic.put(navigator),
+                focusable=True,
                 stretch=1,
                 ),
             htypes.box_layout.element(
                 view=mosaic.put(command_pane),
+                focusable=False,
                 stretch=1,
                 ),
             ],

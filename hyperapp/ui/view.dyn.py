@@ -2,7 +2,7 @@ import abc
 from collections import namedtuple
 
 
-Item = namedtuple('Item', 'name view')
+Item = namedtuple('Item', 'name view focusable', defaults=[True])
 Diff = namedtuple('Diff', 'piece state', defaults=[None])
 
 

@@ -23,10 +23,12 @@ class MasterDetailsView(WrapperView):
         elements = [
             htypes.box_layout.element(
                 view=piece.master_view,
+                focusable=True,
                 stretch=piece.master_stretch,
                 ),
             htypes.box_layout.element(
                 view=piece.details_view,
+                focusable=False,
                 stretch=piece.details_stretch,
                 ),
             ]

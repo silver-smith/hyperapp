@@ -18,13 +18,14 @@ log = logging.getLogger(__name__)
 
 class BoxLayoutView(View):
 
-    _Element = namedtuple('_Element', 'view stretch')
+    _Element = namedtuple('_Element', 'view focusable stretch')
 
     @classmethod
     def from_piece(cls, piece):
         elements = [
             cls._Element(
                 view=ui_ctl_creg.invite(elt.view) if elt.view else None,
+                focusable=elt.focusable,
                 stretch=elt.stretch,
                 )
             for elt in piece.elements
@@ -42,6 +43,7 @@ class BoxLayoutView(View):
         elements = [
             htypes.box_layout.element(
                 view=mosaic.put(elt.view.piece),
+                focusable=elt.focusable,
                 stretch=elt.stretch,
                 )
             for elt in self._elements
@@ -90,7 +92,7 @@ class BoxLayoutView(View):
 
     def items(self):
         return [
-            Item(f"Item#{idx}", elt.view)
+            Item(f"Item#{idx}", elt.view, focusable=elt.focusable)
             for idx, elt in enumerate(self._elements)
             ]
 
@@ -103,7 +105,8 @@ class BoxLayoutView(View):
         if isinstance(diff.piece, ListDiff.Replace):
             idx = diff.piece.idx
             view = ui_ctl_creg.animate(diff.piece.item)
-            self._elements[idx] = self._Element(view, self._elements[idx].stretch)
+            old_elt = self._elements[idx]
+            self._elements[idx] = self._Element(view, old_elt.focusable, old_elt.stretch)
             elt_widget = self.replace_widget(ctx, widget, idx)
             self._ctl_hook.replace_item_element(idx, view, elt_widget)
         else:

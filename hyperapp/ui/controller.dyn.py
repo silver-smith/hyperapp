@@ -31,6 +31,7 @@ class _Item:
     command_hub: CommandHub
     name: str
     view: View
+    focusable: bool
     widget: Any
     commands: list
     children: list
@@ -158,12 +159,12 @@ class Controller:
         self._set_item_widget(item, widget)
         return item
 
-    def _populate_item(self, item_id, path, ctx, command_hub, name, view, parent=None):
-        item = _Item(item_id, path, parent, ctx, command_hub, name, view, widget=None, commands=None, children=[])
+    def _populate_item(self, item_id, path, ctx, command_hub, name, view, focusable=True, parent=None):
+        item = _Item(item_id, path, parent, ctx, command_hub, name, view, focusable, widget=None, commands=None, children=[])
         for idx, rec in enumerate(view.items()):
             child_id = next(self._counter)
             child = self._populate_item(
-                child_id, [*path, idx], ctx, command_hub, rec.name, rec.view, parent=item)
+                child_id, [*path, idx], ctx, command_hub, rec.name, rec.view, rec.focusable, parent=item)
             item.children.append(child)
         self._id_to_item[item_id] = item
         view.set_controller_hook(CtlHook(self, item))
@@ -190,7 +191,7 @@ class Controller:
         old_child = item.children[idx]
         child_id = next(self._counter)
         child = self._populate_item(
-            child_id, old_child.path, old_child.ctx, old_child.command_hub, old_child.name, view, parent=item)
+            child_id, old_child.path, old_child.ctx, old_child.command_hub, old_child.name, view, old_child.focusable, parent=item)
         item.children[idx] = child
         return child
 
@@ -231,7 +232,7 @@ class Controller:
         child_id = next(self._counter)
         rec = item.view.items()[idx]
         child = self._populate_item(
-            child_id, [*item.path, idx], item.ctx, item.command_hub, rec.name, rec.view, parent=item)
+            child_id, [*item.path, idx], item.ctx, item.command_hub, rec.name, rec.view, rec.focusable, parent=item)
         item.children.insert(idx, child)
         self._set_item_widget(child, item.view.item_widget(item.widget, idx))
         self._update_item_commands(child)
@@ -306,7 +307,7 @@ class Controller:
             else:
                 item_list = []
         return [
-            htypes.layout.item(item.id, item.name, _description(item.view.piece))
+            htypes.layout.item(item.id, item.name, item.focusable, _description(item.view.piece))
             for item in item_list
             ]
 
