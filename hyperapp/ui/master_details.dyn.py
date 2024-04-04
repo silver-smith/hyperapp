@@ -10,7 +10,7 @@ from .services import (
     web,
     )
 from .code.list_diff import ListDiff
-from .code.view import Diff
+from .code.view import Diff, ReplaceViewDiff
 from .code.wrapper_view import WrapperView
 
 log = logging.getLogger(__name__)
@@ -102,3 +102,6 @@ class MasterDetailsView(WrapperView):
 @mark.ui_command(htypes.master_details.view)
 def unwrap_master_details(piece, state):
     log.info("Unwrap master-details: %s / %s", piece, state)
+    master_view = web.summon(piece.master_view)
+    master_state = web.summon(state.master_state)
+    return Diff(ReplaceViewDiff(master_view), master_state)

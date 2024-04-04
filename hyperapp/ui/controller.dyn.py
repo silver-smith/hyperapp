@@ -16,7 +16,7 @@ from .services import (
     )
 from .code.context import Context
 from .code.list_diff import ListDiff
-from .code.view import View
+from .code.view import View, ReplaceViewDiff
 
 log = logging.getLogger(__name__)
 
@@ -143,7 +143,7 @@ class Controller:
         commands = self._collect_item_commands(item)
         root_wrapper = self._apply_root_diff
         commands += self._make_view_commands(RootView(self, item.id), item.widget, root_wrapper)
-        self._update_item_commands(item, old_commands=[], new_commands=commands)
+        self._update_aux_children_commands(item, old_commands=[], new_commands=commands)
 
     def _make_window_item(self, window_ctx, view, widget):
         item_id = next(self._counter)
@@ -169,8 +169,15 @@ class Controller:
         item.commands = self._make_item_commands(item, item.view, widget)
         item.current_child_idx = item.view.get_current(widget)
         item.view.init_widget(widget)
+        current_child_commands = []
         for idx, child in enumerate(item.children):
-            self._set_item_widget(child, item.view.item_widget(widget, idx))
+            commands = self._set_item_widget(child, item.view.item_widget(widget, idx))
+            if idx == item.current_child_idx:
+                current_child_commands = commands
+        sub_commands = item.commands + current_child_commands
+        item.view.commands_changed(widget, [], sub_commands)
+        self._update_aux_children_commands(item, [], sub_commands)
+        return sub_commands
 
     def _make_item_commands(self, item, view, widget):
         wrapper = partial(self._apply_item_diff, item)
@@ -182,12 +189,12 @@ class Controller:
             *view.get_commands(widget, [wrapper]),
             ]
 
-    def _replace_child_item_view(self, item, idx, view):
-        old_child = item.children[idx]
+    def _replace_child_item_view(self, parent, idx, child_view):
+        old_child = parent.children[idx]
         child_id = next(self._counter)
         child = self._populate_item(
-            child_id, old_child.path, old_child.ctx, old_child.name, view, old_child.focusable, parent=item)
-        item.children[idx] = child
+            child_id, old_child.path, old_child.ctx, old_child.name, child_view, old_child.focusable, parent=parent)
+        parent.children[idx] = child
         return child
 
     def _replace_child_item(self, parent, idx, child_view, child_widget):
@@ -219,6 +226,17 @@ class Controller:
 
         def update_children(parent):
             for item in parent.children:
+                item.view.commands_changed(item.widget, old_commands, new_commands)
+                update_children(item)
+
+        update_children(item)
+
+    def _update_aux_children_commands(self, item, old_commands, new_commands):
+
+        def update_children(parent):
+            for item in parent.children:
+                if item.focusable:
+                    continue
                 item.view.commands_changed(item.widget, old_commands, new_commands)
                 update_children(item)
 
@@ -310,7 +328,10 @@ class Controller:
         log.info("Apply diff to item #%d @ %s: %s", item.id, item.path, diff)
         with self._without_callback():
             old_commands = self._collect_item_commands(item)
-            replace_widget = item.view.apply(item.ctx, item.widget, diff)
+            if isinstance(diff.piece, ReplaceViewDiff):
+                replace_widget = self._apply_replace_view_diff(item, diff)
+            else:
+                replace_widget = item.view.apply(item.ctx, item.widget, diff)
             log.info("Applied diff, should replace widget: %s", replace_widget)
             if not replace_widget:
                 item.current_child_idx = item.view.get_current(item.widget)
@@ -321,6 +342,19 @@ class Controller:
             self._set_item_widget(item, new_widget)
             new_commands = self._collect_item_commands(item)
             self._update_item_commands(item, old_commands, new_commands)
+
+    def _apply_replace_view_diff(self, item, diff):
+        log.info("Replace view: %s", diff)
+        idx = self._find_parent_idx(item)
+        view = ui_ctl_creg.animate(diff.piece.piece)
+        self._replace_child_item_view(item.parent, idx, view)
+        return True
+
+    def _find_parent_idx(self, item):
+        for idx, kid in enumerate(item.parent.children):
+            if kid is item:
+                return idx
+        raise RuntimeError(f"item {item} is not present in it's parent children")
 
     def _apply_root_diff(self, diff):
         log.info("Apply root diff: %s", diff)

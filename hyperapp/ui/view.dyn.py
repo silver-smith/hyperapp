@@ -4,6 +4,7 @@ from collections import namedtuple
 
 Item = namedtuple('Item', 'name view focusable', defaults=[True])
 Diff = namedtuple('Diff', 'piece state', defaults=[None])
+ReplaceViewDiff = namedtuple('ReplaceViewDiff', 'piece')
 
 
 class View(metaclass=abc.ABCMeta):
@@ -26,7 +27,7 @@ class View(metaclass=abc.ABCMeta):
         pass
 
     def replace_widget(self, ctx, widget, idx):
-        pass
+        raise NotImplementedError(self.__class__)
 
     def get_current(self, widget):
         return 0

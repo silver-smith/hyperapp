@@ -53,6 +53,12 @@ class NavigatorView(View):
             current_state = None
         return self._current_view.construct_widget(current_state, ctx)
 
+    def replace_widget(self, ctx, widget, idx):
+        assert idx == 0
+        state = None
+        w = self._current_view.construct_widget(state, ctx)
+        return w
+
     def get_current(self, widget):
         return 0
 
