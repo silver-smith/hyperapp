@@ -9,6 +9,13 @@ from . import htypes
 from .code.view import View
 
 
+class MenuBar(QtWidgets.QMenuBar):
+
+    def __init__(self):
+        super().__init__()
+        self._command_to_action = {}
+
+
 class MenuBarView(View):
 
     @classmethod
@@ -23,7 +30,7 @@ class MenuBarView(View):
         return htypes.menu_bar.view()
 
     def construct_widget(self, state, ctx):
-        w =  QtWidgets.QMenuBar()
+        w = MenuBar()
         menu = QtWidgets.QMenu('&All')
         w.addMenu(menu)
         return w
@@ -35,6 +42,10 @@ class MenuBarView(View):
         [menu_action] = w.actions()
         menu = menu_action.menu()
         for command in removed_commands:
-            menu.removeAction(command.action)
+            action = w._command_to_action[command]
+            menu.removeAction(action)
         for command in added_commands:
-            menu.addAction(command.action)
+            action = command.make_action()
+            menu.addAction(action)
+            w._command_to_action[command] = action
+        pass

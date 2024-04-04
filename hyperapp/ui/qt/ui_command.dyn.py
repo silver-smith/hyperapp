@@ -56,8 +56,7 @@ class CommandBase:
     def name(self):
         return self._name
 
-    @cached_property
-    def action(self):
+    def make_action(self):
         action = QtGui.QAction(self.name)
         action.triggered.connect(self._start)
         if self.shortcut:
