@@ -59,15 +59,12 @@ class BoxLayoutView(View):
         layout.itemAt(state.current).widget().setFocus()
         return widget
 
-    def replace_widget(self, ctx, widget, idx):
+    def replace_child_widget(self, widget, idx, new_child_widget):
         elt = self._elements[idx]
-        state = None  # TODO: Navigator apply should return new state.
         layout = widget.layout()
-        w = elt.view.construct_widget(state, ctx)
         old_w = layout.itemAt(idx).widget()
-        layout.replaceWidget(old_w, w)
+        layout.replaceWidget(old_w, new_child_widget)
         old_w.deleteLater()
-        return w
 
     def get_current(self, widget):
         layout = widget.layout()
@@ -107,11 +104,11 @@ class BoxLayoutView(View):
             view = ui_ctl_creg.animate(diff.piece.item)
             old_elt = self._elements[idx]
             self._elements[idx] = self._Element(view, old_elt.focusable, old_elt.stretch)
-            elt_widget = self.replace_widget(ctx, widget, idx)
+            elt_widget = view.construct_widget(None, ctx)
+            self.replace_child_widget(widget, idx, elt_widget)
             self._ctl_hook.replace_item_element(idx, view, elt_widget)
         else:
             raise NotImplementedError(f"Not implemented: tab.apply({diff.piece})")
-        return False
 
     def child_view(self, idx):
         return self._elements[idx].view

@@ -26,7 +26,7 @@ class View(metaclass=abc.ABCMeta):
     def init_widget(self, widget):
         pass
 
-    def replace_widget(self, ctx, widget, idx):
+    def replace_child_widget(self, widget, idx, new_child_widget):
         raise NotImplementedError(self.__class__)
 
     def get_current(self, widget):

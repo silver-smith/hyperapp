@@ -14,8 +14,8 @@ class WrapperView(View):
     def construct_widget(self, state, ctx):
         return self._base.construct_widget(state, ctx)
 
-    def replace_widget(self, ctx, widget, idx):
-        self._base.replace_widget(ctx, widget, idx)
+    def replace_child_widget(self, widget, idx, new_child_widget):
+        self._base.replace_child_widget(widget, idx, new_child_widget)
 
     def get_current(self, widget):
         return self._base.get_current(widget)

@@ -85,6 +85,9 @@ class CtlHook:
     def replace_item_element(self, idx, new_view, new_widget=None):
         self._ctl.replace_item_element_hook(self._item, idx, new_view, new_widget)
 
+    def replace_parent_widget(self, new_widget):
+        self._ctl.replace_parent_widget_hook(self._item, new_widget)
+
     def apply_diff(self, diff):
         self._ctl.apply_diff_hook(self._item, diff)
 
@@ -302,6 +305,15 @@ class Controller:
             new_commands = self._collect_item_commands(new_child)
             self._update_item_commands(new_child, old_commands, new_commands)
 
+    def replace_parent_widget_hook(self, item, new_widget):
+        parent = item.parent
+        child_idx = item.path[-1]
+        old_commands = self._collect_item_commands(item)
+        parent.view.replace_child_widget(parent.widget, child_idx, new_widget)
+        self._set_item_widget(item, new_widget)
+        new_commands = self._collect_item_commands(item)
+        self._update_item_commands(item, old_commands, new_commands)
+
     def apply_diff_hook(self, item, diff):
         self._apply_item_diff(item, diff)
 
@@ -327,28 +339,17 @@ class Controller:
             return
         log.info("Apply diff to item #%d @ %s: %s", item.id, item.path, diff)
         with self._without_callback():
-            old_commands = self._collect_item_commands(item)
             if isinstance(diff.piece, ReplaceViewDiff):
-                replace_widget = self._apply_replace_view_diff(item, diff)
+                self._apply_replace_view_diff(item, diff)
             else:
-                replace_widget = item.view.apply(item.ctx, item.widget, diff)
-            log.info("Applied diff, should replace widget: %s", replace_widget)
-            if not replace_widget:
-                item.current_child_idx = item.view.get_current(item.widget)
-                return
-            parent = item.parent
-            child_idx = item.path[-1]
-            new_widget = parent.view.replace_widget(parent.ctx, parent.widget, child_idx)
-            self._set_item_widget(item, new_widget)
-            new_commands = self._collect_item_commands(item)
-            self._update_item_commands(item, old_commands, new_commands)
+                item.view.apply(item.ctx, item.widget, diff)
+            item.current_child_idx = item.view.get_current(item.widget)
 
     def _apply_replace_view_diff(self, item, diff):
         log.info("Replace view: %s", diff)
         idx = self._find_parent_idx(item)
         view = ui_ctl_creg.animate(diff.piece.piece)
         self._replace_child_item_view(item.parent, idx, view)
-        return True
 
     def _find_parent_idx(self, item):
         for idx, kid in enumerate(item.parent.children):

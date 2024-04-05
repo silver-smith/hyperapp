@@ -83,7 +83,7 @@ def test_duplicate():
         view.set_controller_hook(Mock())
         widget = view.construct_widget(state, ctx)
         diff = duplicate(piece, state)
-        replace_widget = view.apply(ctx, widget, diff)
+        view.apply(ctx, widget, diff)
         assert len(view.piece.tabs) == 2
         assert view.piece.tabs[0] == piece.tabs[0]
         assert view.piece.tabs[0] == view.piece.tabs[1]

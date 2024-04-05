@@ -55,14 +55,11 @@ class TabsView(View):
         tabs.currentChanged.connect(lambda idx: self._ctl_hook.current_changed())
         return tabs
 
-    def replace_widget(self, ctx, widget, idx):
+    def replace_child_widget(self, widget, idx, new_child_widget):
         tab = self._tabs[idx]
-        state = None  # TODO: Navigator apply should return new state.
-        w = tab.view.construct_widget(state, ctx)
         widget.removeTab(idx)
-        widget.insertTab(idx, w, tab.label)
+        widget.insertTab(idx, new_child_widget, tab.label)
         widget.setCurrentIndex(idx)
-        return w
 
     def get_current(self, widget):
         return widget.currentIndex()
@@ -99,7 +96,6 @@ class TabsView(View):
             self._ctl_hook.item_element_removed(idx)
         else:
             raise NotImplementedError(f"Not implemented: tab.apply({diff.piece})")
-        return False
 
     def items(self):
         return [
