@@ -28,7 +28,6 @@ class Bundler:
 
     def __init__(self):
         self._collected_ref_set = None
-        self._collected_type_ref_set = None
         self._collected_ass_set = set()
 
     def bundle(self, ref_list, seen_refs=None):
@@ -43,7 +42,7 @@ class Bundler:
         return _RefsAndBundle(ref_set, bundle)
 
     def _collect_capsule_list(self, ref_list, seen_refs):
-        self._collected_type_ref_set = set()
+        collected_type_ref_set = set()
         capsule_set = set()
         type_capsule_set = set()
         missing_ref_count = 0
@@ -59,11 +58,11 @@ class Bundler:
                     log.warning('Ref %s is failed to be resolved', ref_repr(ref))
                     missing_ref_count += 1
                     continue
-                if ref in self._collected_type_ref_set:
+                if ref in collected_type_ref_set:
                     type_capsule_set.add(capsule)
                 else:
                     capsule_set.add(capsule)
-                self._collected_type_ref_set.add(capsule.type_ref)
+                collected_type_ref_set.add(capsule.type_ref)
                 new_ref_set.add(capsule.type_ref)
                 new_ref_set |= self._collect_refs_from_capsule(ref, capsule)
                 processed_ref_set.add(ref)
