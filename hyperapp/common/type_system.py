@@ -17,8 +17,8 @@ class TypeSystem(object):
         self._ref2type_cache = {}  # we should resolve same ref to same instance, not a duplicate
         self._type2ref = {}  # reverse registry
 
-    def init(self, builtin_types, mosaic):
-        self._type_code_registry = CodeRegistry(mosaic, mosaic, self, None, None, 'type')
+    def init(self, builtin_types, mosaic, web):
+        self._type_code_registry = CodeRegistry(mosaic, web, self, None, None, 'type')
 
         builtin_types.register_builtin_mt(self, self._type_code_registry)
         register_builtin_meta_types(builtin_types, mosaic, self)

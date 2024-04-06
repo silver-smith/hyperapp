@@ -24,7 +24,7 @@ def web(types):
 @pytest.fixture
 def mosaic(web, builtin_types, types):
     mosaic = Mosaic(types)
-    types.init(builtin_types, mosaic)
+    types.init(builtin_types, mosaic, web)
     web.add_source(mosaic)
     register_builtin_types(builtin_types, mosaic, types)
     return mosaic
