@@ -27,7 +27,6 @@ _RefsAndBundle = namedtuple('_RefsAndBundle', 'ref_set bundle')
 class Bundler:
 
     def __init__(self):
-        self._collected_ref_set = None
         self._collected_ass_set = set()
 
     def bundle(self, ref_list, seen_refs=None):
@@ -79,17 +78,15 @@ class Bundler:
     def _collect_refs_from_capsule(self, ref, capsule):
         dc = decode_capsule(types, capsule)
         log.debug('Collecting refs from %r:', dc.value)
-        self._collected_ref_set = set()
-        self._collect_refs_from_object(dc.t, dc.value)
-        self._collect_associations(ref, dc.t, dc.value)
-        log.debug('Collected %d refs from %s %s: %s', len(self._collected_ref_set), dc.t, ref,
-                 ', '.join(map(ref_repr, self._collected_ref_set)))
-        return self._collected_ref_set
-
-    def _collect_refs_from_object(self, t, object):
-        self._collected_ref_set |= pick_refs(t, object)
+        ref_set = set()
+        ref_set |= pick_refs(dc.t, dc.value)
+        ref_set |= self._collect_associations(ref, dc.t, dc.value)
+        log.debug('Collected %d refs from %s %s: %s', len(ref_set), dc.t, ref,
+                 ', '.join(map(ref_repr, ref_set)))
+        return ref_set
 
     def _collect_associations(self, ref, t, value):
+        ref_set = set()
         t_res = pyobj_creg.reverse_resolve(t)
         for obj in [t_res, value]:
             for ass in association_reg.base_to_ass_list(obj):
@@ -97,7 +94,8 @@ class Bundler:
                 ass_ref = mosaic.put(piece)
                 log.debug("Bundle association %s: %s (%s)", ass_ref, ass, piece)
                 self._collected_ass_set.add(ass_ref)
-                self._collected_ref_set.add(ass_ref)  # Should collect from these refs too.
+                ref_set.add(ass_ref)  # Should collect from these refs too.
+        return ref_set
 
 
 @mark.service
