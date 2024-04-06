@@ -21,13 +21,13 @@ def _rpc_submit_factory(rpc_endpoint, receiver_peer, servant_ref, sender_identit
     sender_peer_ref = mosaic.put(sender_identity.peer.piece)
 
     def submit(**kw):
-        params = [
+        params = tuple(
             htypes.rpc.param(
                 name=name,
                 value=mosaic.put(value, deduce_complex_value_type(mosaic, types, value)),
                 )
             for name, value in kw.items()
-            ]
+            )
         request_id = str(uuid.uuid4())
         request = htypes.rpc.request(
             request_id=request_id,

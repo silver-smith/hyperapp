@@ -21,7 +21,7 @@ class Association:
         if len(piece.key) == 1:
             [key] = key
         return cls(
-            bases=[web.summon(ref) for ref in piece.bases],
+            bases=tuple(web.summon(ref) for ref in piece.bases),
             key=key,
             value=web.summon(piece.value),
             )
@@ -32,8 +32,8 @@ class Association:
         else:
             key = [self.key]
         return association_t(
-            bases=[mosaic.put(piece) for piece in self.bases],
-            key=[mosaic.put(piece) for piece in key],
+            bases=tuple(mosaic.put(piece) for piece in self.bases),
+            key=tuple(mosaic.put(piece) for piece in key),
             value=mosaic.put(self.value),
             )
 

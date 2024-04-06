@@ -173,7 +173,7 @@ class Grammar:
             base_ref = p.parser.mosaic.put(base_mt)
         else:
             base_ref = None
-        p[0] = record_mt(base_ref, [])
+        p[0] = record_mt(base_ref, ())
 
     def p_record_def_2(self, p):
         'record_def : RECORD record_base_name_def COLON BLOCK_BEGIN field_list BLOCK_END'
@@ -182,7 +182,7 @@ class Grammar:
             base = p.parser.mosaic.put(name_mt(base_name))
         else:
             base = None
-        p[0] = record_mt(base, p[5])
+        p[0] = record_mt(base, tuple(p[5]))
 
     def p_record_base_name_def_1(self, p):
         'record_base_name_def : empty'
@@ -201,7 +201,7 @@ class Grammar:
             base_ref = p.parser.mosaic.put(base_mt)
         else:
             base_ref = None
-        p[0] = exception_mt(base_ref, [])
+        p[0] = exception_mt(base_ref, ())
 
     def p_exception_def_2(self, p):
         'exception_def : EXCEPTION exception_base_name_def COLON BLOCK_BEGIN field_list BLOCK_END'
@@ -210,7 +210,7 @@ class Grammar:
             base = p.parser.mosaic.put(name_mt(base_name))
         else:
             base = None
-        p[0] = exception_mt(base, p[5])
+        p[0] = exception_mt(base, tuple(p[5]))
 
     def p_exception_base_name_def_1(self, p):
         'exception_base_name_def : empty'

@@ -19,16 +19,16 @@ def invite_attr_constructors(ctx, attr_list, module_res, name_to_res):
 
 # Module resource with import discoverer.
 def discoverer_module_res(ctx, unit):
-    resource_list = [*ctx.type_recorder_res_list]
+    resource_list = (*ctx.type_recorder_res_list,)
 
-    resource_list += [
+    resource_list += (
         htypes.import_recorder.resource(('services', 'mark'), mosaic.put(
             ctx.resource_registry['common.mark', 'mark.service'])),
         htypes.import_recorder.resource(('services', 'on_stop'), mosaic.put(
             ctx.resource_registry['builtins', 'on_stop.service'])),
         htypes.import_recorder.resource(('services', 'stop_signal'), mosaic.put(
             ctx.resource_registry['builtins', 'stop_signal.service'])),
-        ]
+        )
 
     import_recorder_res = htypes.import_recorder.import_recorder(unit.name, resource_list)
     import_recorder_ref = mosaic.put(import_recorder_res)

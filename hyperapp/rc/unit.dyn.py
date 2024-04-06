@@ -51,10 +51,10 @@ def _flatten_set(set_list):
 
 
 def _sources_ref_str(units):
-    deps = [
+    deps = tuple(
         u.source_dep_record for u in
         sorted(units, key=attrgetter('name'))
-        ]
+        )
     sources_ref = mosaic.put(htypes.rc.module_deps(deps))
     return ref_str(sources_ref)
 
@@ -65,7 +65,7 @@ def _recorder_piece_list(recorders):
         for rec in recorder_list:
             import_recorder = htypes.inspect.import_recorder(module_name, rec)
             piece_list.append(import_recorder)
-    return piece_list
+    return tuple(piece_list)
 
 
 def _module_import_list_to_dict(module_import_list):
