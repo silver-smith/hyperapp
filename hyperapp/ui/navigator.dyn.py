@@ -53,9 +53,6 @@ class NavigatorView(View):
             current_state = None
         return self._current_view.construct_widget(current_state, ctx)
 
-    def replace_child_widget(self, widget, idx, new_child_widget):
-        assert idx == 0
-
     def get_current(self, widget):
         return 0
 
@@ -132,6 +129,12 @@ class NavigatorView(View):
         new_widget = self.construct_widget(state, ctx)
         self._ctl_hook.replace_item_element(0, self._current_view, new_widget)
         self._ctl_hook.replace_parent_widget(new_widget)
+
+    def replace_child_item(self, widget, idx, new_child_view, new_child_widget):
+        assert idx == 0
+        self._current_view = new_child_view
+        # self._commands = []  # TODO
+        self._ctl_hook.replace_parent_widget(new_child_widget)
 
     def items(self):
         return [Item('current', self._current_view)]

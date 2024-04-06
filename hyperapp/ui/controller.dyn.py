@@ -204,8 +204,8 @@ class Controller:
         old_child = parent.children[idx]
         old_commands = self._collect_item_commands(old_child)
         new_child = self._replace_child_item_view(parent, idx, child_view)
-        new_commands = self._collect_item_commands(new_child)
         self._set_item_widget(new_child, child_widget)
+        new_commands = self._collect_item_commands(new_child)
         self._update_item_commands(new_child, old_commands, new_commands)
 
     def _update_parents_commands(self, item, old_commands, new_commands):
@@ -347,9 +347,12 @@ class Controller:
 
     def _apply_replace_view_diff(self, item, diff):
         log.info("Replace view: %s", diff)
+        parent = item.parent
         idx = self._find_parent_idx(item)
-        view = ui_ctl_creg.animate(diff.piece.piece)
-        self._replace_child_item_view(item.parent, idx, view)
+        new_view = ui_ctl_creg.animate(diff.piece.piece)
+        new_widget = new_view.construct_widget(diff.state, item.ctx)
+        parent.view.replace_child_item(parent.widget, idx, new_view, new_widget)
+        self._replace_child_item(parent, idx, new_view, new_widget)
 
     def _find_parent_idx(self, item):
         for idx, kid in enumerate(item.parent.children):
