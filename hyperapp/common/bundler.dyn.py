@@ -57,9 +57,8 @@ class Bundler:
 
     def _collect_capsule_list(self, ref_list, seen_refs):
         result = RefAndAssSet()
-        collected_type_ref_set = set()
-        capsule_set = set()
-        type_capsule_set = set()
+        type_ref_set = set()
+        ref_to_capsule = {}
         missing_ref_count = 0
         processed_ref_set = set(seen_refs)
         ref_set = set(ref_list)
@@ -73,11 +72,8 @@ class Bundler:
                     log.warning('Ref %s is failed to be resolved', ref_repr(ref))
                     missing_ref_count += 1
                     continue
-                if ref in collected_type_ref_set:
-                    type_capsule_set.add(capsule)
-                else:
-                    capsule_set.add(capsule)
-                collected_type_ref_set.add(capsule.type_ref)
+                ref_to_capsule[ref] = capsule
+                type_ref_set.add(capsule.type_ref)
                 new_ref_set.add(capsule.type_ref)
                 collected = self._collect_refs_from_capsule(ref, capsule)
                 new_ref_set |= collected.refs
@@ -91,8 +87,18 @@ class Bundler:
         if missing_ref_count:
             log.warning('Failed to resolve %d refs', missing_ref_count)
         result.refs = processed_ref_set
-        # types should come first, or receiver won't be able to decode
-        return (result, list(type_capsule_set) + list(capsule_set))
+        # Types should come first, or unbundler won't be able to decode capsules.
+        type_capsules = [
+            capsule for ref, capsule
+            in ref_to_capsule.items()
+            if ref in type_ref_set
+            ]
+        other_capsules = [
+            capsule for ref, capsule
+            in ref_to_capsule.items()
+            if ref not in type_ref_set
+            ]
+        return (result, type_capsules + other_capsules)
 
     def _collect_refs_from_capsule(self, ref, capsule):
         dc = decode_capsule(types, capsule)
