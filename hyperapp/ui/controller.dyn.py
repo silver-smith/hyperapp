@@ -283,7 +283,7 @@ class Controller:
         self._update_item_commands(item, old_commands, new_commands)
 
     def state_changed_hook(self, item):
-        asyncio.create_task(self._on_state_changed_async(item))
+        asyncio.create_task(self._state_changed_async(item))
 
     def item_element_inserted(self, parent, idx):
         old_commands = self._collect_item_commands(parent.children[parent.current_child_idx])
@@ -317,7 +317,7 @@ class Controller:
     def apply_diff_hook(self, item, diff):
         self._apply_item_diff(item, diff)
 
-    async def _on_state_changed_async(self, item):
+    async def _state_changed_async(self, item):
         if not self._run_callback:
             return
         log.info("Controller: state changed for: %s", item)
