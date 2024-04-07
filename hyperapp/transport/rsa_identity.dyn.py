@@ -8,7 +8,6 @@ from cryptography.hazmat.primitives.asymmetric import rsa, padding
 
 from hyperapp.common.htypes import bundle_t
 from hyperapp.common.htypes.packet_coders import packet_coders
-from hyperapp.common.module import Module
 
 from . import htypes
 from .services import (
