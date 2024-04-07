@@ -1,4 +1,4 @@
-from collections import namedtuple
+from collections import defaultdict, namedtuple
 from datetime import datetime
 import logging
 
@@ -26,17 +26,33 @@ _RefsAndBundle = namedtuple('_RefsAndBundle', 'ref_set bundle')
 
 class RefAndAssSet:
 
-    def __init__(self):
-        self.refs = set()
-        self.asss = set()
+    def __init__(self, refs=None, asss=None):
+        self.refs = refs or set()
+        self.asss = asss or set()
 
     def __or__(self, rhs):
-        result = RefAndAssSet()
-        result.refs |= self.refs
-        result.refs |= rhs.refs
-        result.asss |= self.asss
-        result.asss |= rhs.asss
-        return result
+        return RefAndAssSet(
+            refs=self.refs | rhs.refs,
+            asss=self.asss | rhs.asss,
+            )
+
+
+def _sort_deps(ref_set, dep_set):
+    result = []
+    visited = set()
+
+    def visit(ref):
+        if ref in visited:
+            return
+        for dep in dep_set[ref]:
+            visit(dep)
+        result.append(ref)
+        visited.add(ref)
+
+    for ref in ref_set:
+        visit(ref)
+
+    return result
 
 
 class Bundler:
@@ -57,8 +73,8 @@ class Bundler:
 
     def _collect_capsule_list(self, ref_list, seen_refs):
         result = RefAndAssSet()
-        type_ref_set = set()
         ref_to_capsule = {}
+        deps = defaultdict(set)
         missing_ref_count = 0
         processed_ref_set = set(seen_refs)
         ref_set = set(ref_list)
@@ -73,11 +89,11 @@ class Bundler:
                     missing_ref_count += 1
                     continue
                 ref_to_capsule[ref] = capsule
-                type_ref_set.add(capsule.type_ref)
                 new_ref_set.add(capsule.type_ref)
                 collected = self._collect_refs_from_capsule(ref, capsule)
-                new_ref_set |= collected.refs
+                new_ref_set |= collected.refs | collected.asss
                 result.asss |= collected.asss
+                deps[ref] |= collected.refs | {capsule.type_ref}
                 processed_ref_set.add(ref)
             ref_set = new_ref_set - processed_ref_set
             if not ref_set:
@@ -88,38 +104,32 @@ class Bundler:
             log.warning('Failed to resolve %d refs', missing_ref_count)
         result.refs = processed_ref_set
         # Types should come first, or unbundler won't be able to decode capsules.
-        type_capsules = [
-            capsule for ref, capsule
-            in ref_to_capsule.items()
-            if ref in type_ref_set
+        sorted_refs = _sort_deps(ref_to_capsule, deps)
+        capsules = [
+            ref_to_capsule[ref]
+            for ref in sorted_refs
+            if ref in ref_to_capsule
             ]
-        other_capsules = [
-            capsule for ref, capsule
-            in ref_to_capsule.items()
-            if ref not in type_ref_set
-            ]
-        return (result, type_capsules + other_capsules)
+        return (result, capsules)
 
     def _collect_refs_from_capsule(self, ref, capsule):
         dc = decode_capsule(types, capsule)
         log.debug('Collecting refs from %r:', dc.value)
-        result = RefAndAssSet()
-        result.refs |= pick_refs(dc.t, dc.value)
-        result |= self._collect_associations(ref, dc.t, dc.value)
-        log.debug('Collected %d refs from %s %s: %s', len(result.refs), dc.t, ref,
-                 ', '.join(map(ref_repr, result.refs)))
-        return result
+        refs = pick_refs(dc.t, dc.value)
+        asss = self._collect_associations(ref, dc.t, dc.value)
+        log.debug('Collected %d refs from %s %s: %s', len(refs), dc.t, ref,
+                 ', '.join(map(ref_repr, refs)))
+        return RefAndAssSet(refs, asss)
 
     def _collect_associations(self, ref, t, value):
-        result = RefAndAssSet()
+        result = set()
         t_res = pyobj_creg.reverse_resolve(t)
         for obj in [t_res, value]:
             for ass in association_reg.base_to_ass_list(obj):
                 piece = ass.to_piece(mosaic)
                 ass_ref = mosaic.put(piece)
                 log.debug("Bundle association %s: %s (%s)", ass_ref, ass, piece)
-                result.asss.add(ass_ref)
-                result.refs.add(ass_ref)  # Should collect from these refs too.
+                result.add(ass_ref)
         return result
 
 
