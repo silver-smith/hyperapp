@@ -57,11 +57,11 @@ def test_list_opt(types, mosaic):
 def test_record(types, mosaic):
     string_list_mt = list_mt(mosaic.put(builtin_mt('string')))
     bool_opt_mt = optional_mt(mosaic.put(builtin_mt('bool')))
-    piece = record_mt(None, [
+    piece = record_mt(None, (
         field_mt('int_field', mosaic.put(builtin_mt('int'))),
         field_mt('string_list_field', mosaic.put(string_list_mt)),
         field_mt('bool_optional_field', mosaic.put(bool_opt_mt)),
-        ])
+        ))
     module_name = 'test'
     name = 'some_test_record'
     named_piece = name_wrapped_mt(module_name, name, mosaic.put(piece))
@@ -74,14 +74,14 @@ def test_record(types, mosaic):
 
 
 def test_based_record(types, mosaic):
-    base_piece = record_mt(None, [
+    base_piece = record_mt(None, (
         field_mt('int_field', mosaic.put(builtin_mt('int'))),
-        ])
+        ))
     named_base_piece = name_wrapped_mt('test', 'some_base_record', mosaic.put(base_piece))
     named_base_ref = mosaic.put(named_base_piece)
-    piece = record_mt(named_base_ref, [
+    piece = record_mt(named_base_ref, (
         field_mt('string_field', mosaic.put(builtin_mt('string'))),
-        ])
+        ))
     module_name = 'test'
     name = 'some_test_record'
     named_piece = name_wrapped_mt(module_name, name, mosaic.put(piece))
@@ -93,7 +93,7 @@ def test_based_record(types, mosaic):
 
 
 def test_empty_record(types, mosaic):
-    piece = record_mt(None, [])
+    piece = record_mt(None, ())
 
     name_1 = 'record_1'
     named_piece_1 = name_wrapped_mt('test', name_1, mosaic.put(piece))
@@ -109,11 +109,11 @@ def test_empty_record(types, mosaic):
 def test_exception(types, mosaic):
     string_list_mt = list_mt(mosaic.put(builtin_mt('string')))
     bool_opt_mt = optional_mt(mosaic.put(builtin_mt('bool')))
-    piece = exception_mt(None, [
+    piece = exception_mt(None, (
         field_mt('int_field', mosaic.put(builtin_mt('int'))),
         field_mt('string_list_field', mosaic.put(string_list_mt)),
         field_mt('bool_optional_field', mosaic.put(bool_opt_mt)),
-        ])
+        ))
     module_name = 'test'
     name = 'some_test_exception'
     named_piece = name_wrapped_mt(module_name, name, mosaic.put(piece))
@@ -126,14 +126,14 @@ def test_exception(types, mosaic):
 
 
 def test_based_exception(types, mosaic):
-    base_piece = exception_mt(None, [
+    base_piece = exception_mt(None, (
         field_mt('int_field', mosaic.put(builtin_mt('int'))),
-        ])
+        ))
     named_base_piece = name_wrapped_mt('test', 'some_base_exception', mosaic.put(base_piece))
     named_base_ref = mosaic.put(named_base_piece)
-    piece = exception_mt(named_base_ref, [
+    piece = exception_mt(named_base_ref, (
         field_mt('string_field', mosaic.put(builtin_mt('string'))),
-        ])
+        ))
     module_name = 'test'
     name = 'some_test_exception'
     named_piece = name_wrapped_mt(module_name, name, mosaic.put(piece))
@@ -145,7 +145,7 @@ def test_based_exception(types, mosaic):
 
 
 def test_empty_exception(types, mosaic):
-    piece = exception_mt(None, [])
+    piece = exception_mt(None, ())
 
     name_1 = 'exception_1'
     named_piece_1 = name_wrapped_mt('test', name_1, mosaic.put(piece))
