@@ -21,21 +21,21 @@ def make_piece():
     prev_piece = htypes.navigator.view(
         current_view=mosaic.put(text_piece),
         current_model=mosaic.put("Sample piece"),
-        commands=[],
+        commands=(),
         prev=None,
         next=None,
         )
     next_piece = htypes.navigator.view(
         current_view=mosaic.put(text_piece),
         current_model=mosaic.put("Sample piece"),
-        commands=[],
+        commands=(),
         prev=None,
         next=None,
         )
     piece = htypes.navigator.view(
         current_view=mosaic.put(text_piece),
         current_model=mosaic.put("Sample piece"),
-        commands=[],
+        commands=(),
         prev=mosaic.put(prev_piece),
         next=mosaic.put(next_piece),
         )

@@ -36,13 +36,13 @@ class TabsView(View):
 
     @property
     def piece(self):
-        tabs = [
+        tabs = tuple(
             htypes.tabs.tab(
                 label=tab.label,
                 ctl=mosaic.put(tab.view.piece),
                 )
             for tab in self._tabs
-            ]
+            )
         return htypes.tabs.view(tabs)
 
     def construct_widget(self, state, ctx):
@@ -71,7 +71,7 @@ class TabsView(View):
             tabs.append(mosaic.put(tab_state))
         return htypes.tabs.state(
             current_tab=widget.currentIndex(),
-            tabs=tabs,
+            tabs=tuple(tabs),
             )
 
     def apply(self, ctx, widget, diff):

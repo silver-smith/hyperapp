@@ -48,7 +48,7 @@ class Tracer:
 
     @property
     def calls(self):
-        return self._calls
+        return tuple(self._calls)
 
     @staticmethod
     def _pick_object(frame):
@@ -84,10 +84,10 @@ class Tracer:
             }
         log.info("Trace call: %s:%d %r: %s -> [%s] %s",
                  module_name, code.co_firstlineno, code.co_qualname, repr(args_types), result_t, repr(arg))
-        params = [
+        params = tuple(
             htypes.inspect.call_param(name, mosaic.put(t))
             for name, t in args_types.items()
-            ]
+            )
         self._calls.append(
             htypes.inspect.call_trace(
                 module=module_name,

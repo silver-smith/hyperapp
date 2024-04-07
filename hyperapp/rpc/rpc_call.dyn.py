@@ -17,6 +17,13 @@ from .services import (
 log = logging.getLogger(__name__)
 
 
+def _param_value_to_ref(value):
+    t = deduce_complex_value_type(mosaic, types, value)
+    if type(value) is list:
+        value = tuple(value)
+    return mosaic.put(value, t)
+
+
 def _rpc_submit_factory(rpc_endpoint, receiver_peer, servant_ref, sender_identity):
     sender_peer_ref = mosaic.put(sender_identity.peer.piece)
 
@@ -24,7 +31,7 @@ def _rpc_submit_factory(rpc_endpoint, receiver_peer, servant_ref, sender_identit
         params = tuple(
             htypes.rpc.param(
                 name=name,
-                value=mosaic.put(value, deduce_complex_value_type(mosaic, types, value)),
+                value=_param_value_to_ref(value),
                 )
             for name, value in kw.items()
             )

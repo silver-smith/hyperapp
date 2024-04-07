@@ -39,7 +39,7 @@ class AutoTabsView(WrapperView):
 
     @property
     def piece(self):
-        tabs = [tab.ctl for tab in self._base.piece.tabs]
+        tabs = tuple(tab.ctl for tab in self._base.piece.tabs)
         return htypes.auto_tabs.view(tabs)
 
     def apply(self, ctx, widget, diff):

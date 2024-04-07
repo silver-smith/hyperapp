@@ -29,10 +29,10 @@ class ImportRecorders:
             for recorder in recorder_list:
                 module_to_imports[module_name] |= recorder.used_imports()
         log.info("Used imports: %s", module_to_imports)
-        self.module_imports_list = [
-            htypes.inspect.module_imports(module_name, list(sorted(imports)))
+        self.module_imports_list = tuple(
+            htypes.inspect.module_imports(module_name, tuple(sorted(imports)))
             for module_name, imports in module_to_imports.items()
-            ]
+            )
 
     @contextmanager
     def recording(self):

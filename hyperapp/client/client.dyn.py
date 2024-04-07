@@ -23,14 +23,14 @@ def make_piece():
     navigator = htypes.navigator.view(
         current_view=mosaic.put(text_view),
         current_model=mosaic.put(text),
-        commands=[mosaic.put(c) for c in global_commands()],
+        commands=tuple(mosaic.put(c) for c in global_commands()),
         prev=None,
         next=None,
         )
     command_pane = htypes.command_pane.view()
     box_layout = htypes.box_layout.view(
         direction='LeftToRight',
-        elements=[
+        elements=(
             htypes.box_layout.element(
                 view=mosaic.put(navigator),
                 focusable=True,
@@ -41,24 +41,24 @@ def make_piece():
                 focusable=False,
                 stretch=1,
                 ),
-            ],
+            ),
         )
     inner_tabs_piece = htypes.auto_tabs.view(
-        tabs=[
+        tabs=(
             mosaic.put(box_layout),
-            ],
+            ),
         )
     outer_tabs_piece = htypes.tab_groups.view(
-        tabs=[
+        tabs=(
             htypes.tabs.tab("Outer", mosaic.put(inner_tabs_piece)),
-            ],
+            ),
         )
     window_piece = htypes.window.view(
         menu_bar_ref=mosaic.put(htypes.menu_bar.view()),
         central_view_ref=mosaic.put(outer_tabs_piece),
         )
     return htypes.root.view(
-        window_list=[mosaic.put(window_piece)],
+        window_list=(mosaic.put(window_piece),),
         )
 
 
@@ -72,18 +72,18 @@ def make_state():
     command_pane_state = htypes.command_pane.state()
     box_layout_state = htypes.box_layout.state(
         current=0,
-        elements=[
+        elements=(
             mosaic.put(navigator_state),
             mosaic.put(command_pane_state),
-            ],
+            ),
         )
     inner_tabs_state = htypes.tabs.state(
         current_tab=0,
-        tabs=[mosaic.put(box_layout_state)],
+        tabs=(mosaic.put(box_layout_state),),
         )
     outer_tabs_state = htypes.tabs.state(
         current_tab=0,
-        tabs=[mosaic.put(inner_tabs_state)],
+        tabs=(mosaic.put(inner_tabs_state),),
         )
     window_state = htypes.window.state(
         menu_bar_state=mosaic.put(htypes.menu_bar.state()),
@@ -92,7 +92,7 @@ def make_state():
         pos=htypes.window.pos(1000, 500),
         )
     return htypes.root.state(
-        window_list=[mosaic.put(window_state)],
+        window_list=(mosaic.put(window_state),),
         current=0,
         )
 

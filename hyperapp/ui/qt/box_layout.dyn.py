@@ -40,14 +40,14 @@ class BoxLayoutView(View):
 
     @property
     def piece(self):
-        elements = [
+        elements = tuple(
             htypes.box_layout.element(
                 view=mosaic.put(elt.view.piece),
                 focusable=elt.focusable,
                 stretch=elt.stretch,
                 )
             for elt in self._elements
-            ]
+            )
         return htypes.box_layout.view(self._direction.name, elements)
 
     def construct_widget(self, state, ctx):
@@ -84,7 +84,7 @@ class BoxLayoutView(View):
             elements.append(mosaic.put(elt_state))
         return htypes.box_layout.state(
             current=layout.count() - 1,  # TODO
-            elements=elements,
+            elements=tuple(elements),
             )
 
     def items(self):

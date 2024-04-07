@@ -14,10 +14,10 @@ from .code.context import Context
 
 
 def make_adapter_piece():
-    value = [
+    value = (
         htypes.list_tests.item(1, "First"),
         htypes.list_tests.item(2, "Second"),
-        ]
+        )
     t = deduce_complex_value_type(mosaic, types, value)
     return htypes.list_adapter.static_list_adapter(mosaic.put(value, t))
 

@@ -24,11 +24,11 @@ log = logging.getLogger(__name__)
 
 def test_static_adapter():
     ctx = Context()
-    value = [
+    value = (
         htypes.list_tests.item(1, "First"),
         htypes.list_tests.item(2, "Second"),
         htypes.list_tests.item(3, "Third"),
-        ]
+        )
     t = deduce_complex_value_type(mosaic, types, value)
     piece = htypes.list_adapter.static_list_adapter(mosaic.put(value, t))
     adapter = list_adapter.StaticListAdapter.from_piece(piece, ctx)

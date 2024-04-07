@@ -24,7 +24,7 @@ def _enum_attributes(object):
         if name.startswith('_'):
             continue
         resource_name = name_to_res_name.get(name)
-        constructors = name_to_ctr_list.get(name, [])
+        constructors = tuple(name_to_ctr_list.get(name, []))
         value = getattr(object, name)
         if not resource_name:
             if not hasattr(value, '__module__'):
@@ -40,7 +40,7 @@ def _enum_attributes(object):
             if 'no signature found for builtin type' in str(x):
                 continue
             raise
-        param_list = list(signature.parameters.keys())
+        param_list = tuple(signature.parameters.keys())
         args = (name, value.__module__, resource_name, constructors, param_list)
         if inspect.isgeneratorfunction(value):
             yield htypes.inspect.generator_fn_attr(*args)
@@ -58,13 +58,13 @@ def import_module(import_recorders, module_ref):
         with recorders.recording():
             module = pyobj_creg.invite(module_ref)
     except HException as x:
-        attr_list = []
+        attr_list = ()
         error = mosaic.put(x)
     else:
-        attr_list = [
+        attr_list = tuple(
             mosaic.put(attr) for attr
             in _enum_attributes(module)
-            ]
+            )
         error = None
 
     return htypes.inspect.imported_module_info(

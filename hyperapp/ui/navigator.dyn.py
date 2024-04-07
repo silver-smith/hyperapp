@@ -82,6 +82,8 @@ class NavigatorView(View):
     def _model_wrapper(self, piece):
         if piece is None:
             return None
+        if type(piece) is list:
+            piece = tuple(piece)
         new_current_view = visualizer(piece)
         commands = [
             *global_commands(),
@@ -91,7 +93,7 @@ class NavigatorView(View):
         return Diff(htypes.navigator.open_new_diff(
             new_current=mosaic.put(new_current_view),
             new_model=mosaic.put(piece, piece_t),
-            commands=[mosaic.put(cmd) for cmd in commands],
+            commands=tuple(mosaic.put(cmd) for cmd in commands),
             ))
 
     def apply(self, ctx, widget, diff):

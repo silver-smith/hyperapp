@@ -74,6 +74,8 @@ class RpcEndpoint:
             log.info("Call rpc servant: %s (%s)", servant_fn, kw)
             result = servant_fn(**kw)
             log.info("Rpc servant %s call result: %s", servant_fn, result)
+            if type(result) is list:
+                result = tuple(result)
             result_t = deduce_complex_value_type(mosaic, types, result)
             result_ref = mosaic.put(result, result_t)
             response = htypes.rpc.response(
@@ -87,7 +89,7 @@ class RpcEndpoint:
                 exception_ref=mosaic.put(x),
                 )
         except Exception as x:
-            traceback_entries = traceback.format_tb(x.__traceback__)
+            traceback_entries = tuple(traceback.format_tb(x.__traceback__))
             exception = htypes.rpc.server_error(str(x), traceback_entries)
             log.info(
                 "Rpc servant %s server error: %s\n%s",
