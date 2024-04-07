@@ -37,6 +37,8 @@ class Mosaic:
     def put(self, piece, t=None):
         try:
             return self._piece_to_ref[piece]
+        except TypeError as x:
+            raise RuntimeError(f"{x}: {piece}")
         except KeyError:
             pass
         t = t or deduce_value_type(piece)
