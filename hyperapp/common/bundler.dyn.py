@@ -4,8 +4,7 @@ import logging
 
 from hyperapp.common.htypes import ref_t, bundle_t
 from hyperapp.common.util import is_list_inst
-from hyperapp.common.ref import decode_capsule, ref_repr
-from hyperapp.common.module import Module
+from hyperapp.common.ref import ref_repr
 
 from .services import (
     association_reg,
@@ -83,17 +82,17 @@ class Bundler:
             for ref in ref_set:
                 if ref.hash_algorithm == 'phony':
                     continue
-                capsule = mosaic.get(ref)
-                if capsule is None:
+                rec = mosaic.resolve_ref(ref)
+                if rec is None:
                     log.warning('Ref %s is failed to be resolved', ref_repr(ref))
                     missing_ref_count += 1
                     continue
-                ref_to_capsule[ref] = capsule
-                new_ref_set.add(capsule.type_ref)
-                collected = self._collect_refs_from_capsule(ref, capsule)
+                ref_to_capsule[ref] = rec.capsule
+                new_ref_set.add(rec.type_ref)
+                collected = self._collect_refs_from_capsule(ref, rec)
                 new_ref_set |= collected.refs | collected.asss
                 result.asss |= collected.asss
-                deps[ref] |= collected.refs | {capsule.type_ref}
+                deps[ref] |= collected.refs | {rec.type_ref}
                 processed_ref_set.add(ref)
             ref_set = new_ref_set - processed_ref_set
             if not ref_set:
@@ -112,12 +111,11 @@ class Bundler:
             ]
         return (result, capsules)
 
-    def _collect_refs_from_capsule(self, ref, capsule):
-        dc = decode_capsule(types, capsule)
-        log.debug('Collecting refs from %r:', dc.value)
-        refs = pick_refs(dc.t, dc.value)
-        asss = self._collect_associations(ref, dc.t, dc.value)
-        log.debug('Collected %d refs from %s %s: %s', len(refs), dc.t, ref,
+    def _collect_refs_from_capsule(self, ref, rec):
+        log.debug('Collecting refs from %r:', rec.value)
+        refs = pick_refs(rec.t, rec.value)
+        asss = self._collect_associations(ref, rec.t, rec.value)
+        log.debug('Collected %d refs from %s %s: %s', len(refs), rec.t, ref,
                  ', '.join(map(ref_repr, refs)))
         return RefAndAssSet(refs, asss)
 
