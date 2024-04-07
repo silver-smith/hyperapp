@@ -13,11 +13,10 @@ log = logging.getLogger(__name__)
 
 class Mosaic:
 
-    _Rec = namedtuple('_Rec', 'type_ref t value')
+    _Rec = namedtuple('_Rec', 'capsule type_ref t value')
 
     def __init__(self, types):
         self._types = types
-        self._ref_to_capsule = {}  # ref -> capsule
         self._ref_to_rec = {}  # ref -> _Rec
         self._piece_to_ref = {}
 
@@ -25,13 +24,13 @@ class Mosaic:
         assert isinstance(capsule, capsule_t), repr(capsule)
         ref = make_ref(capsule)
         log.debug('Registering ref %s for capsule of type %s', ref, capsule.type_ref)
-        existing_capsule = self._ref_to_capsule.get(ref)
-        if existing_capsule:
+        rec = self._ref_to_rec.get(ref)
+        if rec:
             log.debug('  (already exists)')
-            assert capsule == existing_capsule, repr((existing_capsule, capsule))  # new capsule does not match existing one
+            assert capsule == rec.capsule, repr((rec.capsule, capsule))  # new capsule does not match existing one
+            return
         dc = decode_capsule(self._types, capsule)
-        self._ref_to_capsule[ref] = capsule
-        self._ref_to_rec[ref] = self._Rec(dc.type_ref, dc.t, dc.value)
+        self._ref_to_rec[ref] = self._Rec(capsule, dc.type_ref, dc.t, dc.value)
         self._piece_to_ref[dc.value] = ref
         return ref
 
@@ -53,17 +52,18 @@ class Mosaic:
         return self.put(piece, t)
 
     def get(self, ref):
-        return self._ref_to_capsule.get(ref)
+        rec = self._ref_to_rec.get(ref)
+        if rec:
+            return rec.capsule
+        else:
+            return None
 
     # Alias for web source.
     def pull(self, ref):
         return self.get(ref)
 
-    def resolve_ref(self, ref, expected_type=None) -> DecodedCapsule:
+    def resolve_ref(self, ref, expected_type=None):
         try:
             return self._ref_to_rec[ref]
         except KeyError:
-            pass
-        capsule = self.get(ref)
-        assert capsule is not None, f"Unknown ref: {ref}"
-        return decode_capsule(self._types, capsule, expected_type)
+            raise RuntimeError(f"Unknown ref: {ref}")
