@@ -65,7 +65,7 @@ class ParamMarker:
             attr_name = f'{name}_{idx}'
             setattr(module, attr_name, fn)
         ctr = htypes.attr_constructors.parameter(
-            path=[*self._path, fn.__name__],
+            path=(*self._path, fn.__name__),
             )
         add_constructor(module, attr_name, mosaic.put(ctr))
         return fn

@@ -9,10 +9,10 @@ def test_text():
 
 
 def test_list():
-    value = [
+    value = (
         htypes.list_tests.item(1, "First"),
         htypes.list_tests.item(2, "Second"),
-        ]
+        )
     layout = visualizer(value)
     assert layout
 

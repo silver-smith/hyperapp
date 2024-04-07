@@ -26,13 +26,13 @@ class AutoTabsView(WrapperView):
 
     @classmethod
     def from_piece(cls, piece):
-        tabs = [
+        tabs = tuple(
             htypes.tabs.tab(
                 label=tab_label(view_ref),
                 ctl=view_ref,
                 )
             for idx, view_ref in enumerate(piece.tabs)
-            ]
+            )
         base_piece = htypes.tabs.view(tabs)
         base = ui_ctl_creg.animate(base_piece)
         return cls(base)

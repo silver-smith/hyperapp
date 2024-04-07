@@ -16,21 +16,22 @@ def make_piece():
     adapter_piece = htypes.str_adapter.static_str_adapter("Sample text")
     text_piece = htypes.text.readonly_view(mosaic.put(adapter_piece))
     tabs_piece = htypes.auto_tabs.view(
-        tabs=[mosaic.put(text_piece)],
+        tabs=(mosaic.put(text_piece),),
         )
     window_piece = htypes.window.view(
         menu_bar_ref=mosaic.put(htypes.menu_bar.view()),
         central_view_ref=mosaic.put(tabs_piece),
         )
-    return htypes.root.view([
-        mosaic.put(window_piece)])
+    return htypes.root.view((
+        mosaic.put(window_piece),
+        ))
 
 
 def make_state():
     text_state = htypes.text.state()
     tabs_state = htypes.tabs.state(
         current_tab=0,
-        tabs=[mosaic.put(text_state)],
+        tabs=(mosaic.put(text_state),),
         )
     window_state = htypes.window.state(
         menu_bar_state=mosaic.put(htypes.menu_bar.state()),
@@ -39,7 +40,7 @@ def make_state():
         pos=htypes.window.pos(10, 10),
         )
     return htypes.root.state(
-        window_list=[mosaic.put(window_state)],
+        window_list=(mosaic.put(window_state),),
         current=0,
         )
 

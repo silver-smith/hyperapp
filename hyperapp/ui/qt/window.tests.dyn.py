@@ -16,7 +16,7 @@ def make_piece():
     adapter_piece = htypes.str_adapter.static_str_adapter("Sample text")
     text_piece = htypes.text.readonly_view(mosaic.put(adapter_piece))
     tabs_piece = htypes.tabs.view(
-        tabs=[htypes.tabs.tab("One", mosaic.put(text_piece))],
+        tabs=(htypes.tabs.tab("One", mosaic.put(text_piece)),),
         )
     piece = htypes.window.view(
         menu_bar_ref=mosaic.put(htypes.menu_bar.view()),
@@ -29,7 +29,7 @@ def make_state():
     text_state = htypes.text.state()
     tabs_state = htypes.tabs.state(
         current_tab=0,
-        tabs=[mosaic.put(text_state)],
+        tabs=(mosaic.put(text_state),),
         )
     state = htypes.window.state(
         menu_bar_state=mosaic.put(htypes.menu_bar.state()),
@@ -58,7 +58,7 @@ def test_construct_widget():
 def test_duplicate_window():
     tabs_piece, window_piece = make_piece()
     tabs_state, window_state = make_state()
-    root_piece = htypes.root.view([mosaic.put(window_piece)])
-    root_state = htypes.root.state([mosaic.put(window_state)], 0)
+    root_piece = htypes.root.view((mosaic.put(window_piece),))
+    root_state = htypes.root.state((mosaic.put(window_state),), 0)
     diff = window.duplicate_window(root_piece, root_state)
     assert diff

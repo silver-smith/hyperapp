@@ -22,7 +22,7 @@ def make_piece():
     command = htypes.ui.model_command(
         name='details',
         function=mosaic.put(fn_to_res(_details_command)),
-        params=['piece'],
+        params=('piece',),
         )
     return htypes.master_details.view(
         model=mosaic.put(model),
@@ -38,8 +38,8 @@ def make_piece():
 def make_state():
     text_state = htypes.text.state()
     return htypes.master_details.state(
-        master_state=(mosaic.put(text_state)),
-        details_state=(mosaic.put(text_state)),
+        master_state=mosaic.put(text_state),
+        details_state=mosaic.put(text_state),
         )
 
 

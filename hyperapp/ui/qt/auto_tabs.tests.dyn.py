@@ -15,7 +15,7 @@ def make_piece():
     adapter = htypes.str_adapter.static_str_adapter("Sample text")
     text = htypes.text.readonly_view(mosaic.put(adapter))
     return htypes.auto_tabs.view(
-        tabs=[mosaic.put(text)],
+        tabs=(mosaic.put(text),),
         )
 
 
@@ -23,7 +23,7 @@ def make_state():
     text_state = htypes.text.state()
     return htypes.tabs.state(
         current_tab=0,
-        tabs=[mosaic.put(text_state)],
+        tabs=(mosaic.put(text_state),),
         )
 
 
@@ -65,18 +65,18 @@ def test_close():
     adapter = htypes.str_adapter.static_str_adapter("Sample text")
     text = htypes.text.readonly_view(mosaic.put(adapter))
     piece = htypes.auto_tabs.view(
-        tabs=[
+        tabs=(
             mosaic.put(text),
             mosaic.put(text),
-            ],
+            ),
         )
     text_state = htypes.text.state()
     state = htypes.tabs.state(
         current_tab=0,
-        tabs=[
+        tabs=(
             mosaic.put(text_state),
             mosaic.put(text_state),
-            ],
+            ),
         )
     ctx = Context()
     app = QtWidgets.QApplication()

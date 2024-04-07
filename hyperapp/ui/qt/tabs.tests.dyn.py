@@ -17,15 +17,17 @@ def make_inner_piece():
     adapter = htypes.str_adapter.static_str_adapter("Sample text")
     text = htypes.text.readonly_view(mosaic.put(adapter))
     return htypes.tabs.view(
-        tabs=[
-            htypes.tabs.tab("One", mosaic.put(text))],
+        tabs=(
+            htypes.tabs.tab("One", mosaic.put(text)),
+            ),
         )
 
 
 def make_outer_piece(inner_tab_view):
     return htypes.tabs.view(
-        tabs=[
-            htypes.tabs.tab("Inner", mosaic.put(inner_tab_view))],
+        tabs=(
+            htypes.tabs.tab("Inner", mosaic.put(inner_tab_view)),
+            ),
         )
 
 
@@ -33,14 +35,14 @@ def make_inner_state():
     text_state = htypes.text.state()
     return htypes.tabs.state(
         current_tab=0,
-        tabs=[mosaic.put(text_state)],
+        tabs=(mosaic.put(text_state),),
         )
 
 
 def make_outer_state(inner_tab_state):
     return htypes.tabs.state(
         current_tab=0,
-        tabs=[mosaic.put(inner_tab_state)],
+        tabs=(mosaic.put(inner_tab_state),),
         )
 
 

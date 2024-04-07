@@ -114,10 +114,10 @@ def _partial_res(unit, fixtures, attr, attr_res):
             return None
     return htypes.partial.partial(
         function=mosaic.put(attr_res),
-        params=[
+        params=tuple(
             htypes.partial.param(name, mosaic.put(value))
             for name, value in kw.items()
-            ],
+            ),
         )
 
 
