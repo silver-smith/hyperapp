@@ -13,8 +13,9 @@ class RefResolveFailure(Exception):
 
 class Web(object):
 
-    def __init__(self, types):
+    def __init__(self, types, mosaic):
         self._types = types
+        self._mosaic = mosaic
         self._sources = []
 
     def add_source(self, source):
@@ -22,7 +23,7 @@ class Web(object):
 
     def pull(self, ref):
         _log.debug('Resolving ref: %s', ref)
-        for source in self._sources:
+        for source in [self._mosaic] + self._sources:
             capsule = source.pull(ref)
             if capsule:
                 _log.debug('Ref %s is resolved to capsule, type %s', ref, capsule.type_ref)
@@ -30,7 +31,14 @@ class Web(object):
         raise RefResolveFailure(ref)
 
     def summon(self, ref, expected_type=None):
+        try:
+            rec = self._mosaic.resolve_ref(ref)
+        except KeyError:
+            pass
+        else:
+            return rec.value
         capsule = self.pull(ref)
+        # Following code is actually dead.
         t = self._types.resolve(capsule.type_ref)
         if expected_type:
             assert t is expected_type, (t, expected_type)

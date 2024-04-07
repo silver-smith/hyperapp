@@ -72,4 +72,4 @@ class Mosaic:
         try:
             return self._ref_to_rec[ref]
         except KeyError:
-            raise RuntimeError(f"Unknown ref: {ref}")
+            raise KeyError(f"Unknown ref: {ref}")

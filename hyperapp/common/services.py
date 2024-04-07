@@ -97,11 +97,10 @@ class Services(object):
         self.services = self  # Allows resources to access services itself.
         self.builtin_types = BuiltinTypeRegistry()
         self.types = TypeSystem()
-        self.web = Web(self.types)
         self.mosaic = Mosaic(self.types)
+        self.web = Web(self.types, self.mosaic)
         self.types.init(self.builtin_types, self.mosaic, self.web)
         self.association_reg = AssociationRegistry()
-        self.web.add_source(self.mosaic)
         register_builtin_types(self.builtin_types, self.mosaic, self.types)
         self.local_types = {}  # module name -> name -> name_wrapped_mt ref.
         self.type_module_loader = TypeModuleLoader(self.builtin_types, self.mosaic, self.types)

@@ -17,14 +17,21 @@ def types():
 
 
 @pytest.fixture
-def web(types):
-    return Web(types)
+def mosaic_and_web(builtin_types, types):
+    mosaic = Mosaic(types)
+    web = Web(types, mosaic)
+    types.init(builtin_types, mosaic, web)
+    register_builtin_types(builtin_types, mosaic, types)
+    return (mosaic, web)
 
 
 @pytest.fixture
-def mosaic(web, builtin_types, types):
-    mosaic = Mosaic(types)
-    types.init(builtin_types, mosaic, web)
-    web.add_source(mosaic)
-    register_builtin_types(builtin_types, mosaic, types)
+def mosaic(mosaic_and_web):
+    mosaic, web = mosaic_and_web
     return mosaic
+
+
+@pytest.fixture
+def web(mosaic_and_web):
+    mosaic, web = mosaic_and_web
+    return web
