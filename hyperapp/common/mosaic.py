@@ -30,9 +30,12 @@ class Mosaic:
             assert capsule == rec.capsule, repr((rec.capsule, capsule))  # new capsule does not match existing one
             return
         dc = decode_capsule(self._types, capsule)
-        self._ref_to_rec[ref] = self._Rec(capsule, dc.type_ref, dc.t, dc.value)
-        self._piece_to_ref[dc.value] = ref
+        self._register_capsule(ref, capsule, dc.type_ref, dc.t, dc.value)
         return ref
+
+    def _register_capsule(self, ref, capsule, type_ref, t, piece):
+        self._ref_to_rec[ref] = self._Rec(capsule, type_ref, t, piece)
+        self._piece_to_ref[piece] = ref
 
     def put(self, piece, t=None):
         try:
@@ -44,7 +47,8 @@ class Mosaic:
         t = t or deduce_value_type(piece)
         log.debug('Registering piece %r: %s', t.name, piece)
         capsule = make_capsule(self._types, piece, t)
-        ref = self.register_capsule(capsule)
+        ref = make_ref(capsule)
+        self._register_capsule(ref, capsule, capsule.type_ref, t, piece)
         log.debug('Registered piece %s (type: %s): %r', ref, capsule.type_ref, piece)
         return ref
 
