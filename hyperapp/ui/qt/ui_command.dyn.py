@@ -63,8 +63,7 @@ class CommandBase:
             action.setShortcut(self.shortcut)
         return action
 
-    @cached_property
-    def button(self):
+    def make_button(self):
         text = self.name
         if self.shortcut:
             text += f' ({self.shortcut})'

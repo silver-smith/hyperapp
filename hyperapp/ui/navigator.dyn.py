@@ -132,7 +132,7 @@ class NavigatorView(View):
         self._ctl_hook.replace_item_element(0, self._current_view, new_widget)
         self._ctl_hook.replace_parent_widget(new_widget)
 
-    def replace_child_item(self, widget, idx, new_child_view, new_child_widget):
+    def replace_child(self, widget, idx, new_child_view, new_child_widget):
         assert idx == 0
         self._current_view = new_child_view
         # self._commands = []  # TODO

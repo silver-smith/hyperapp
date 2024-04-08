@@ -38,14 +38,14 @@ class MenuBarView(View):
     def widget_state(self, widget):
         return htypes.menu_bar.state()
 
-    def commands_changed(self, w, removed_commands, added_commands):
+    def set_commands(self, w, commands):
         [menu_action] = w.actions()
         menu = menu_action.menu()
-        for command in removed_commands:
-            action = w._command_to_action[command]
+        removed_commands = set(w._command_to_action) - set(commands)
+        for cmd in removed_commands:
+            action = w._command_to_action.pop(cmd)
             menu.removeAction(action)
-        for command in added_commands:
-            action = command.make_action()
+        for cmd in commands:
+            action = cmd.make_action()
             menu.addAction(action)
-            w._command_to_action[command] = action
-        pass
+            w._command_to_action[cmd] = action

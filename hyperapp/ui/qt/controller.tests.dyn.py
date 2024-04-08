@@ -45,11 +45,11 @@ def make_state():
         )
 
 
+# Visit htypes.root.state type.
 def test_root_view_widget_state():
-    ctl = Mock()
-    ctl.get_window_state_list.return_value = []
-    ctl.window_id_to_idx.return_value = 0
-    root_view = controller.RootView(ctl, window_item_id=0)
+    item = Mock(id=0)
+    item.view.widget_state.return_value = 'mock widget state'
+    root_view = controller.RootView([item], window_item_id=0)
     state = root_view.widget_state(widget=None)
     assert isinstance(state, htypes.root.state)
 
@@ -72,7 +72,7 @@ def test_apply_root_diff():
                 item=root_state.window_list[0],
                 ),
             )
-        ctl._apply_root_diff(diff)
+        ctl._window_items[0]._apply_diff(diff)
     finally:
         app.shutdown()
 

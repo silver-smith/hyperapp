@@ -29,6 +29,13 @@ _skip_commands = {
     }
 
 
+class CommandPane(QtWidgets.QWidget):
+
+    def __init__(self):
+        super().__init__()
+        self._command_to_button = {}
+
+
 class CommandPaneView(View):
 
     @classmethod
@@ -43,7 +50,7 @@ class CommandPaneView(View):
         return htypes.command_pane.view()
 
     def construct_widget(self, state, ctx):
-        w = QtWidgets.QWidget()
+        w = CommandPane()
         layout = QtWidgets.QVBoxLayout(w, spacing=1)
         layout.setAlignment(QtCore.Qt.AlignTop)
         layout.setContentsMargins(2, 2, 2, 2)
@@ -52,13 +59,16 @@ class CommandPaneView(View):
     def widget_state(self, widget):
         return htypes.command_pane.state()
 
-    def commands_changed(self, widget, removed_commands, added_commands):
+    def set_commands(self, widget, commands):
         layout = widget.layout()
-        for command in removed_commands:
-            if command.name in _skip_commands:
+        removed_commands = set(widget._command_to_button) - set(commands)
+        new_commands = set(commands) - set(widget._command_to_button)
+        for cmd in removed_commands:
+            button = widget._command_to_button.pop(cmd)
+            button.deleteLater()
+        for cmd in new_commands:
+            if cmd.name in _skip_commands:
                 continue
-            command.button.deleteLater()
-        for command in added_commands:
-            if command.name in _skip_commands:
-                continue
-            layout.addWidget(command.button)
+            button = cmd.make_button()
+            layout.addWidget(button)
+            widget._command_to_button[cmd] = button
