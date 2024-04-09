@@ -14,7 +14,7 @@ associations:
   key:
   - ui.ui_ctl_registry:ui_ctl_creg.service
   - legacy_type.command_pane:view
-  value: CommandPaneView.from_piece.ctl
+  value: CommandPaneView.from_piece.view
 definitions:
   CommandPaneView:
     _type: legacy_type.builtin:attribute
@@ -24,7 +24,7 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: CommandPaneView
     attr_name: from_piece
-  CommandPaneView.from_piece.ctl:
+  CommandPaneView.from_piece.view:
     _type: legacy_type.ui:view
     ctr_fn: CommandPaneView.from_piece
     command_methods: []

@@ -23,7 +23,7 @@ associations:
   key:
   - ui.ui_ctl_registry:ui_ctl_creg.service
   - legacy_type.auto_tabs:view
-  value: AutoTabsView.from_piece.ctl
+  value: AutoTabsView.from_piece.view
 - bases:
   - ui_command_d
   - legacy_type.auto_tabs:view
@@ -47,7 +47,7 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: AutoTabsView
     attr_name: from_piece
-  AutoTabsView.from_piece.ctl:
+  AutoTabsView.from_piece.view:
     _type: legacy_type.ui:view
     ctr_fn: AutoTabsView.from_piece
     command_methods: []

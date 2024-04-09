@@ -15,7 +15,7 @@ associations:
   key:
   - ui.ui_ctl_registry:ui_ctl_creg.service
   - legacy_type.tab_groups:view
-  value: TabGroupsView.from_piece.ctl
+  value: TabGroupsView.from_piece.view
 definitions:
   TabGroupsView:
     _type: legacy_type.builtin:attribute
@@ -25,7 +25,7 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: TabGroupsView
     attr_name: from_piece
-  TabGroupsView.from_piece.ctl:
+  TabGroupsView.from_piece.view:
     _type: legacy_type.ui:view
     ctr_fn: TabGroupsView.from_piece
     command_methods: []

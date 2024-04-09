@@ -19,7 +19,7 @@ associations:
   key:
   - ui.ui_ctl_registry:ui_ctl_creg.service
   - legacy_type.box_layout:view
-  value: BoxLayoutView.from_piece.ctl
+  value: BoxLayoutView.from_piece.view
 definitions:
   BoxLayoutView:
     _type: legacy_type.builtin:attribute
@@ -29,7 +29,7 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: BoxLayoutView
     attr_name: from_piece
-  BoxLayoutView.from_piece.ctl:
+  BoxLayoutView.from_piece.view:
     _type: legacy_type.ui:view
     ctr_fn: BoxLayoutView.from_piece
     command_methods: []

@@ -20,7 +20,7 @@ associations:
   key:
   - ui.ui_ctl_registry:ui_ctl_creg.service
   - legacy_type.tabs:view
-  value: TabsView.from_piece.ctl
+  value: TabsView.from_piece.view
 definitions:
   TabsView:
     _type: legacy_type.builtin:attribute
@@ -30,7 +30,7 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: TabsView
     attr_name: from_piece
-  TabsView.from_piece.ctl:
+  TabsView.from_piece.view:
     _type: legacy_type.ui:view
     ctr_fn: TabsView.from_piece
     command_methods: []

@@ -23,7 +23,7 @@ associations:
   key:
   - ui.ui_ctl_registry:ui_ctl_creg.service
   - legacy_type.window:view
-  value: WindowView.from_piece.ctl
+  value: WindowView.from_piece.view
 - bases:
   - ui_command_d
   - legacy_type.root:view
@@ -40,7 +40,7 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: WindowView
     attr_name: from_piece
-  WindowView.from_piece.ctl:
+  WindowView.from_piece.view:
     _type: legacy_type.ui:view
     ctr_fn: WindowView.from_piece
     command_methods: []

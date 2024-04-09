@@ -53,7 +53,7 @@ def construct_view_impl(ctx, module_name, resource_module, module_res, qname, pa
         )
     resource_module[class_name] = class_attribute
     resource_module[f'{class_name}.{method_name}'] = ctr_attribute
-    resource_module[f'{class_name}.{method_name}.ctl'] = view
+    resource_module[f'{class_name}.{method_name}.view'] = view
     return [ctl_association]
 
 

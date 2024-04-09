@@ -14,7 +14,7 @@ associations:
   key:
   - ui.ui_ctl_registry:ui_ctl_creg.service
   - legacy_type.tree:view
-  value: TreeView.from_piece.ctl
+  value: TreeView.from_piece.view
 definitions:
   TreeView:
     _type: legacy_type.builtin:attribute
@@ -24,7 +24,7 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: TreeView
     attr_name: from_piece
-  TreeView.from_piece.ctl:
+  TreeView.from_piece.view:
     _type: legacy_type.ui:view
     ctr_fn: TreeView.from_piece
     command_methods: []

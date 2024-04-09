@@ -14,7 +14,7 @@ associations:
   key:
   - ui.ui_ctl_registry:ui_ctl_creg.service
   - legacy_type.menu_bar:view
-  value: MenuBarView.from_piece.ctl
+  value: MenuBarView.from_piece.view
 definitions:
   MenuBarView:
     _type: legacy_type.builtin:attribute
@@ -24,7 +24,7 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: MenuBarView
     attr_name: from_piece
-  MenuBarView.from_piece.ctl:
+  MenuBarView.from_piece.view:
     _type: legacy_type.ui:view
     ctr_fn: MenuBarView.from_piece
     command_methods: []

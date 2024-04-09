@@ -15,7 +15,7 @@ associations:
   key:
   - ui.ui_ctl_registry:ui_ctl_creg.service
   - legacy_type.list:view
-  value: ListView.from_piece.ctl
+  value: ListView.from_piece.view
 definitions:
   ListView:
     _type: legacy_type.builtin:attribute
@@ -25,7 +25,7 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: ListView
     attr_name: from_piece
-  ListView.from_piece.ctl:
+  ListView.from_piece.view:
     _type: legacy_type.ui:view
     ctr_fn: ListView.from_piece
     command_methods: []

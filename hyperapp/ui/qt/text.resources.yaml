@@ -16,13 +16,13 @@ associations:
   key:
   - ui.ui_ctl_registry:ui_ctl_creg.service
   - legacy_type.text:edit_view
-  value: EditTextView.from_piece.ctl
+  value: EditTextView.from_piece.view
 - bases:
   - legacy_type.text:readonly_view
   key:
   - ui.ui_ctl_registry:ui_ctl_creg.service
   - legacy_type.text:readonly_view
-  value: ViewTextView.from_piece.ctl
+  value: ViewTextView.from_piece.view
 definitions:
   EditTextView:
     _type: legacy_type.builtin:attribute
@@ -32,7 +32,7 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: EditTextView
     attr_name: from_piece
-  EditTextView.from_piece.ctl:
+  EditTextView.from_piece.view:
     _type: legacy_type.ui:view
     ctr_fn: EditTextView.from_piece
     command_methods: []
@@ -44,7 +44,7 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: ViewTextView
     attr_name: from_piece
-  ViewTextView.from_piece.ctl:
+  ViewTextView.from_piece.view:
     _type: legacy_type.ui:view
     ctr_fn: ViewTextView.from_piece
     command_methods: []

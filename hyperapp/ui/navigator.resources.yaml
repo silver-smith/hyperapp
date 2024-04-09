@@ -26,7 +26,7 @@ associations:
   key:
   - ui.ui_ctl_registry:ui_ctl_creg.service
   - legacy_type.navigator:view
-  value: NavigatorView.from_piece.ctl
+  value: NavigatorView.from_piece.view
 - bases:
   - ui_command_d
   - legacy_type.navigator:view
@@ -50,7 +50,7 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: NavigatorView
     attr_name: from_piece
-  NavigatorView.from_piece.ctl:
+  NavigatorView.from_piece.view:
     _type: legacy_type.ui:view
     ctr_fn: NavigatorView.from_piece
     command_methods: []
