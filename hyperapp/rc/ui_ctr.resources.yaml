@@ -23,10 +23,10 @@ import:
 - ui.ui_adapter_creg:ui_adapter_creg.service
 associations: []
 definitions:
-  ui_ctl.module:
+  ui_ctr.module:
     _type: legacy_type.builtin:python_module
-    module_name: ui_ctl
-    file_name: ui_ctl.dyn.py
+    module_name: ui_ctr
+    file_name: ui_ctr.dyn.py
     import_list:
       htypes.builtin.attribute: legacy_type.builtin:attribute
       htypes.builtin.call: legacy_type.builtin:call

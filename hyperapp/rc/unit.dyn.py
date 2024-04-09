@@ -26,7 +26,7 @@ from .code.scaffolds import (
     types_import_list,
     )
 from .code.call_trace import CallTrace
-from .code import ui_ctl
+from .code import ui_ctr
 
 log = logging.getLogger(__name__)
 
@@ -470,7 +470,7 @@ class Unit:
         resource_module = resource_module_factory(self._ctx.resource_registry, self.name)
         resource_module[f'{self.code_name}.module'] = module_res
         ass_list = invite_attr_constructors(self._ctx, self._attr_list, module_res, resource_module)
-        ass_list += ui_ctl.create_ui_resources(self._ctx, self.name, resource_module, module_res, self._call_list)
+        ass_list += ui_ctr.create_ui_resources(self._ctx, self.name, resource_module, module_res, self._call_list)
         resource_module.add_association_list(ass_list)
         source_hash_str = _sources_ref_str(self.sources)
         tests_hash_str = _sources_ref_str(self._test_sources)

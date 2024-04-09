@@ -18,7 +18,7 @@ import:
 - rc.import_driver:import_driver.module
 - rc.scaffolds:scaffolds.module
 - rc.htest_driver:htest_driver.module
-- rc.ui_ctl:ui_ctl.module
+- rc.ui_ctr:ui_ctr.module
 
 definitions:
 
@@ -46,4 +46,4 @@ definitions:
       code.import_driver: rc.import_driver:import_driver.module
       code.scaffolds: rc.scaffolds:scaffolds.module
       code.htest_driver: rc.htest_driver:htest_driver.module
-      code.ui_ctl: rc.ui_ctl:ui_ctl.module
+      code.ui_ctr: rc.ui_ctr:ui_ctr.module
