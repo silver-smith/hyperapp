@@ -5,7 +5,7 @@ from .services import (
     mark,
     model_command_creg,
     mosaic,
-    ui_ctl_creg,
+    view_creg,
     visualizer,
     web,
     )
@@ -37,7 +37,7 @@ class MasterDetailsView(WrapperView):
             elements=elements,
             )
         model = web.summon(piece.model)
-        base = ui_ctl_creg.animate(base_piece)
+        base = view_creg.animate(base_piece)
         return cls(base, model, piece.details_command)
 
     def __init__(self, base_view, model_piece, details_command):

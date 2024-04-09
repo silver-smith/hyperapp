@@ -7,7 +7,7 @@ from . import htypes
 from .services import (
     mark,
     mosaic,
-    ui_ctl_creg,
+    view_creg,
     web,
     )
 from .code.list_diff import ListDiff
@@ -24,7 +24,7 @@ class BoxLayoutView(View):
     def from_piece(cls, piece):
         elements = [
             cls._Element(
-                view=ui_ctl_creg.invite(elt.view) if elt.view else None,
+                view=view_creg.invite(elt.view) if elt.view else None,
                 focusable=elt.focusable,
                 stretch=elt.stretch,
                 )
@@ -101,7 +101,7 @@ class BoxLayoutView(View):
         log.info("Box layout: apply: %s", diff)
         if isinstance(diff.piece, ListDiff.Replace):
             idx = diff.piece.idx
-            view = ui_ctl_creg.animate(diff.piece.item)
+            view = view_creg.animate(diff.piece.item)
             old_elt = self._elements[idx]
             self._elements[idx] = self._Element(view, old_elt.focusable, old_elt.stretch)
             elt_widget = view.construct_widget(None, ctx)

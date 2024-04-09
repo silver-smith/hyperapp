@@ -15,13 +15,13 @@ import:
 - legacy_type.window:size
 - legacy_type.window:state
 - legacy_type.window:view
-- ui.ui_ctl_registry:ui_ctl_creg.service
 - ui.view:view.module
+- ui.view_registry:view_creg.service
 associations:
 - bases:
   - legacy_type.window:view
   key:
-  - ui.ui_ctl_registry:ui_ctl_creg.service
+  - ui.view_registry:view_creg.service
   - legacy_type.window:view
   value: WindowView.from_piece.view
 - bases:
@@ -65,5 +65,5 @@ definitions:
       htypes.window.view: legacy_type.window:view
       services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service
-      services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
+      services.view_creg: ui.view_registry:view_creg.service
       services.web: builtins:web.service

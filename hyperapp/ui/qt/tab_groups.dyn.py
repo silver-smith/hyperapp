@@ -2,7 +2,7 @@ import logging
 
 from . import htypes
 from .services import (
-    ui_ctl_creg,
+    view_creg,
     )
 from .code.list_diff import ListDiff
 from .code.wrapper_view import WrapperView
@@ -15,7 +15,7 @@ class TabGroupsView(WrapperView):
     @classmethod
     def from_piece(cls, piece):
         base_piece = htypes.tabs.view(piece.tabs)
-        base = ui_ctl_creg.animate(base_piece)
+        base = view_creg.animate(base_piece)
         return cls(base)
 
     @property

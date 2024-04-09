@@ -3,7 +3,7 @@ import logging
 from . import htypes
 from .services import (
     mark,
-    ui_ctl_creg,
+    view_creg,
     web,
     )
 from .code.list_diff import ListDiff
@@ -34,7 +34,7 @@ class AutoTabsView(WrapperView):
             for idx, view_ref in enumerate(piece.tabs)
             )
         base_piece = htypes.tabs.view(tabs)
-        base = ui_ctl_creg.animate(base_piece)
+        base = view_creg.animate(base_piece)
         return cls(base)
 
     @property

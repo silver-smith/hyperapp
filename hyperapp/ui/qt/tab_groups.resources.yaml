@@ -7,13 +7,13 @@ import:
 - legacy_type.tab_groups:view
 - legacy_type.tabs:view
 - legacy_type.ui:view
-- ui.ui_ctl_registry:ui_ctl_creg.service
+- ui.view_registry:view_creg.service
 - ui.wrapper_view:wrapper_view.module
 associations:
 - bases:
   - legacy_type.tab_groups:view
   key:
-  - ui.ui_ctl_registry:ui_ctl_creg.service
+  - ui.view_registry:view_creg.service
   - legacy_type.tab_groups:view
   value: TabGroupsView.from_piece.view
 definitions:
@@ -38,4 +38,4 @@ definitions:
       code.wrapper_view: ui.wrapper_view:wrapper_view.module
       htypes.tab_groups.view: legacy_type.tab_groups:view
       htypes.tabs.view: legacy_type.tabs:view
-      services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
+      services.view_creg: ui.view_registry:view_creg.service

@@ -17,14 +17,14 @@ import:
 - legacy_type.ui:view
 - ui.model_command:model_command.module
 - ui.model_command_creg:model_command_creg.service
-- ui.ui_ctl_registry:ui_ctl_creg.service
 - ui.view:view.module
+- ui.view_registry:view_creg.service
 - ui.visualizer:visualizer.service
 associations:
 - bases:
   - legacy_type.navigator:view
   key:
-  - ui.ui_ctl_registry:ui_ctl_creg.service
+  - ui.view_registry:view_creg.service
   - legacy_type.navigator:view
   value: NavigatorView.from_piece.view
 - bases:
@@ -78,7 +78,7 @@ definitions:
       services.model_command_creg: ui.model_command_creg:model_command_creg.service
       services.mosaic: builtins:mosaic.service
       services.types: builtins:types.service
-      services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
+      services.view_creg: ui.view_registry:view_creg.service
       services.visualizer: ui.visualizer:visualizer.service
       services.web: builtins:web.service
   ui_command_d:

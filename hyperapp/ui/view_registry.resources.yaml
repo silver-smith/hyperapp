@@ -11,17 +11,17 @@ import:
 - legacy_type.builtin:python_module
 associations: []
 definitions:
-  ui_ctl_creg:
+  view_creg:
     _type: legacy_type.builtin:attribute
-    object: ui_ctl_registry.module
-    attr_name: ui_ctl_creg
-  ui_ctl_creg.service:
+    object: view_registry.module
+    attr_name: view_creg
+  view_creg.service:
     _type: legacy_type.builtin:call
-    function: ui_ctl_creg
-  ui_ctl_registry.module:
+    function: view_creg
+  view_registry.module:
     _type: legacy_type.builtin:python_module
-    module_name: ui_ctl_registry
-    file_name: ui_ctl_registry.dyn.py
+    module_name: view_registry
+    file_name: view_registry.dyn.py
     import_list:
       services.association_reg: builtins:association_reg.service
       services.mark: common.mark:mark.service

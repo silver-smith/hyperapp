@@ -9,7 +9,7 @@ from .services import (
     mark,
     mosaic,
     ui_command_factory,
-    ui_ctl_creg,
+    view_creg,
     web,
     )
 from .code.list_diff import ListDiff
@@ -25,7 +25,7 @@ class TabsView(View):
     @classmethod
     def from_piece(cls, piece):
         tabs = [
-            cls._Tab(ui_ctl_creg.invite(rec.ctl), rec.label)
+            cls._Tab(view_creg.invite(rec.ctl), rec.label)
             for rec in piece.tabs
             ]
         return cls(tabs)
@@ -80,7 +80,7 @@ class TabsView(View):
             idx = diff.piece.idx
             old_state = self.widget_state(widget)
             tab_piece = web.summon(diff.piece.item.ctl)
-            tab_view = ui_ctl_creg.animate(tab_piece)
+            tab_view = view_creg.animate(tab_piece)
             tab_state = web.summon(diff.state.item)
             w = tab_view.construct_widget(tab_state, ctx)
             new_tab = self._Tab(tab_view, diff.piece.item.label)

@@ -9,7 +9,7 @@ from .services import (
     mosaic,
     pyobj_creg,
     types,
-    ui_ctl_creg,
+    view_creg,
     ui_adapter_creg,
     )
 
@@ -45,10 +45,10 @@ def construct_view_impl(ctx, module_name, resource_module, module_res, qname, pa
         ctr_fn=mosaic.put(ctr_attribute),
         command_methods=(),
         )
-    ui_ctl_creg_res = pyobj_creg.reverse_resolve(ui_ctl_creg)
+    view_creg_res = pyobj_creg.reverse_resolve(view_creg)
     ctl_association = Association(
         bases=[piece_t_res],
-        key=[ui_ctl_creg_res, piece_t_res],
+        key=[view_creg_res, piece_t_res],
         value=view,
         )
     resource_module[class_name] = class_attribute

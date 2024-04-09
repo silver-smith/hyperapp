@@ -12,13 +12,13 @@ import:
 - legacy_type.tabs:view
 - legacy_type.ui:view
 - ui.qt.ui_command:ui_command_factory.service
-- ui.ui_ctl_registry:ui_ctl_creg.service
 - ui.view:view.module
+- ui.view_registry:view_creg.service
 associations:
 - bases:
   - legacy_type.tabs:view
   key:
-  - ui.ui_ctl_registry:ui_ctl_creg.service
+  - ui.view_registry:view_creg.service
   - legacy_type.tabs:view
   value: TabsView.from_piece.view
 definitions:
@@ -47,5 +47,5 @@ definitions:
       services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service
       services.ui_command_factory: ui.qt.ui_command:ui_command_factory.service
-      services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
+      services.view_creg: ui.view_registry:view_creg.service
       services.web: builtins:web.service

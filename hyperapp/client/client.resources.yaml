@@ -33,7 +33,7 @@ import:
 - transport.rsa_identity:generate_rsa_identity.service
 - ui.controller:controller.module
 - ui.model_command:model_command.module
-- ui.ui_ctl_registry:ui_ctl_creg.service
+- ui.view_registry:view_creg.service
 - ui.visualizer:visualizer.service
 associations:
 - bases:
@@ -77,7 +77,7 @@ definitions:
       services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
       services.mosaic: builtins:mosaic.service
       services.rpc_endpoint_factory: rpc.rpc_endpoint:rpc_endpoint_factory.service
-      services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
+      services.view_creg: ui.view_registry:view_creg.service
       services.visualizer: ui.visualizer:visualizer.service
   global_model_command_d:
     _type: legacy_type.builtin:call

@@ -14,14 +14,14 @@ import:
 - legacy_type.tabs:view
 - legacy_type.ui:ui_command_d
 - legacy_type.ui:view
-- ui.ui_ctl_registry:ui_ctl_creg.service
 - ui.view:view.module
+- ui.view_registry:view_creg.service
 - ui.wrapper_view:wrapper_view.module
 associations:
 - bases:
   - legacy_type.auto_tabs:view
   key:
-  - ui.ui_ctl_registry:ui_ctl_creg.service
+  - ui.view_registry:view_creg.service
   - legacy_type.auto_tabs:view
   value: AutoTabsView.from_piece.view
 - bases:
@@ -65,7 +65,7 @@ definitions:
       htypes.tabs.tab: legacy_type.tabs:tab
       htypes.tabs.view: legacy_type.tabs:view
       services.mark: common.mark:mark.service
-      services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
+      services.view_creg: ui.view_registry:view_creg.service
       services.web: builtins:web.service
   close_tab:
     _type: legacy_type.builtin:attribute

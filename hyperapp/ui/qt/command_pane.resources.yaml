@@ -6,13 +6,13 @@ import:
 - legacy_type.command_pane:state
 - legacy_type.command_pane:view
 - legacy_type.ui:view
-- ui.ui_ctl_registry:ui_ctl_creg.service
 - ui.view:view.module
+- ui.view_registry:view_creg.service
 associations:
 - bases:
   - legacy_type.command_pane:view
   key:
-  - ui.ui_ctl_registry:ui_ctl_creg.service
+  - ui.view_registry:view_creg.service
   - legacy_type.command_pane:view
   value: CommandPaneView.from_piece.view
 definitions:

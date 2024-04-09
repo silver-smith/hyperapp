@@ -11,7 +11,7 @@ from . import htypes
 from .services import (
     mosaic,
     ui_command_factory,
-    ui_ctl_creg,
+    view_creg,
     web,
     )
 from .code.context import Context
@@ -121,7 +121,7 @@ class _Item:
         self._children = None
         parent = self.parent
         idx = self.idx
-        new_view = ui_ctl_creg.animate(diff.piece.piece)
+        new_view = view_creg.animate(diff.piece.piece)
         new_widget = new_view.construct_widget(diff.state, self.ctx)
         parent.view.replace_child(parent.widget, idx, new_view, new_widget)
 
@@ -204,7 +204,7 @@ class _WindowItem(_Item):
 
     @classmethod
     def from_refs(cls, counter, callback_flag, id_to_item, ctx, window_items, view_ref, state_ref):
-        view = ui_ctl_creg.invite(view_ref)
+        view = view_creg.invite(view_ref)
         state = web.summon(state_ref)
         item_id = next(counter)
         widget = view.construct_widget(state, ctx)

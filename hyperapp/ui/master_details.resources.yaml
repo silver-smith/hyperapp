@@ -16,15 +16,15 @@ import:
 - legacy_type.ui:ui_command_d
 - legacy_type.ui:view
 - ui.model_command_creg:model_command_creg.service
-- ui.ui_ctl_registry:ui_ctl_creg.service
 - ui.view:view.module
+- ui.view_registry:view_creg.service
 - ui.visualizer:visualizer.service
 - ui.wrapper_view:wrapper_view.module
 associations:
 - bases:
   - legacy_type.master_details:view
   key:
-  - ui.ui_ctl_registry:ui_ctl_creg.service
+  - ui.view_registry:view_creg.service
   - legacy_type.master_details:view
   value: MasterDetailsView.from_piece.view
 - bases:
@@ -63,7 +63,7 @@ definitions:
       services.mark: common.mark:mark.service
       services.model_command_creg: ui.model_command_creg:model_command_creg.service
       services.mosaic: builtins:mosaic.service
-      services.ui_ctl_creg: ui.ui_ctl_registry:ui_ctl_creg.service
+      services.view_creg: ui.view_registry:view_creg.service
       services.visualizer: ui.visualizer:visualizer.service
       services.web: builtins:web.service
   ui_command_d:

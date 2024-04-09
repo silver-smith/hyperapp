@@ -10,7 +10,7 @@ from .services import (
     mosaic,
     rpc_endpoint_factory,
     visualizer,
-    ui_ctl_creg,
+    view_creg,
     )
 from .code.context import Context
 from .code.model_command import global_commands

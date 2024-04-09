@@ -7,7 +7,7 @@ from . import htypes
 from .services import (
     mark,
     mosaic,
-    ui_ctl_creg,
+    view_creg,
     web,
     )
 from .code.list_diff import ListDiff
@@ -22,8 +22,8 @@ class WindowView(View):
 
     @classmethod
     def from_piece(cls, piece):
-        menu_bar_view = ui_ctl_creg.invite(piece.menu_bar_ref)
-        central_view = ui_ctl_creg.invite(piece.central_view_ref)
+        menu_bar_view = view_creg.invite(piece.menu_bar_ref)
+        central_view = view_creg.invite(piece.central_view_ref)
         return cls(menu_bar_view, central_view)
 
     def __init__(self, menu_bar_view, central_view):

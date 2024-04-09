@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 
 class UiCtlRegistry:
 
-    _produce_name = 'ui_ctl'
+    _produce_name = 'view'
 
     def __init__(self):
         self._cache = {}  # t -> actor
@@ -62,5 +62,5 @@ class UiCtlRegistry:
 
 
 @mark.service
-def ui_ctl_creg():
+def view_creg():
     return UiCtlRegistry()
