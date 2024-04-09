@@ -6,7 +6,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.tab_groups:view
 - legacy_type.tabs:view
-- legacy_type.ui:ui_ctl
+- legacy_type.ui:view
 - ui.ui_ctl_registry:ui_ctl_creg.service
 - ui.wrapper_view:wrapper_view.module
 associations:
@@ -26,7 +26,7 @@ definitions:
     object: TabGroupsView
     attr_name: from_piece
   TabGroupsView.from_piece.ctl:
-    _type: legacy_type.ui:ui_ctl
+    _type: legacy_type.ui:view
     ctr_fn: TabGroupsView.from_piece
     command_methods: []
   tab_groups.module:

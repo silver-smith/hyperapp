@@ -14,7 +14,7 @@ import:
 - legacy_type.master_details:state
 - legacy_type.master_details:view
 - legacy_type.ui:ui_command_d
-- legacy_type.ui:ui_ctl
+- legacy_type.ui:view
 - ui.model_command_creg:model_command_creg.service
 - ui.ui_ctl_registry:ui_ctl_creg.service
 - ui.view:view.module
@@ -44,7 +44,7 @@ definitions:
     object: MasterDetailsView
     attr_name: from_piece
   MasterDetailsView.from_piece.ctl:
-    _type: legacy_type.ui:ui_ctl
+    _type: legacy_type.ui:view
     ctr_fn: MasterDetailsView.from_piece
     command_methods: []
   master_details.module:

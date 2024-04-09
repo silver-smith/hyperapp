@@ -14,7 +14,7 @@ import:
 - legacy_type.navigator:state
 - legacy_type.navigator:view
 - legacy_type.ui:ui_command_d
-- legacy_type.ui:ui_ctl
+- legacy_type.ui:view
 - ui.model_command:model_command.module
 - ui.model_command_creg:model_command_creg.service
 - ui.ui_ctl_registry:ui_ctl_creg.service
@@ -51,7 +51,7 @@ definitions:
     object: NavigatorView
     attr_name: from_piece
   NavigatorView.from_piece.ctl:
-    _type: legacy_type.ui:ui_ctl
+    _type: legacy_type.ui:view
     ctr_fn: NavigatorView.from_piece
     command_methods: []
   go_back:

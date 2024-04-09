@@ -10,7 +10,7 @@ import:
 - legacy_type.tabs:state
 - legacy_type.tabs:tab
 - legacy_type.tabs:view
-- legacy_type.ui:ui_ctl
+- legacy_type.ui:view
 - ui.qt.ui_command:ui_command_factory.service
 - ui.ui_ctl_registry:ui_ctl_creg.service
 - ui.view:view.module
@@ -31,7 +31,7 @@ definitions:
     object: TabsView
     attr_name: from_piece
   TabsView.from_piece.ctl:
-    _type: legacy_type.ui:ui_ctl
+    _type: legacy_type.ui:view
     ctr_fn: TabsView.from_piece
     command_methods: []
   tabs.module:

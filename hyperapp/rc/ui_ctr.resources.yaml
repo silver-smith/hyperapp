@@ -18,7 +18,7 @@ import:
 - legacy_type.ui:tree_ui_t
 - legacy_type.ui:model
 - legacy_type.ui:model_d
-- legacy_type.ui:ui_ctl
+- legacy_type.ui:view
 - ui.ui_ctl_registry:ui_ctl_creg.service
 - ui.ui_adapter_creg:ui_adapter_creg.service
 associations: []
@@ -43,7 +43,7 @@ definitions:
       htypes.ui.global_model_command_d: legacy_type.ui:global_model_command_d
       htypes.ui.model: legacy_type.ui:model
       htypes.ui.model_d: legacy_type.ui:model_d
-      htypes.ui.ui_ctl: legacy_type.ui:ui_ctl
+      htypes.ui.view: legacy_type.ui:view
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
       services.types: builtins:types.service

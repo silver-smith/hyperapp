@@ -13,7 +13,7 @@ import:
 - legacy_type.tabs:tab
 - legacy_type.tabs:view
 - legacy_type.ui:ui_command_d
-- legacy_type.ui:ui_ctl
+- legacy_type.ui:view
 - ui.ui_ctl_registry:ui_ctl_creg.service
 - ui.view:view.module
 - ui.wrapper_view:wrapper_view.module
@@ -48,7 +48,7 @@ definitions:
     object: AutoTabsView
     attr_name: from_piece
   AutoTabsView.from_piece.ctl:
-    _type: legacy_type.ui:ui_ctl
+    _type: legacy_type.ui:view
     ctr_fn: AutoTabsView.from_piece
     command_methods: []
   auto_tabs.module:

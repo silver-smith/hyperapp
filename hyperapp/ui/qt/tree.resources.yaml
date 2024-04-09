@@ -4,7 +4,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.tree:view
-- legacy_type.ui:ui_ctl
+- legacy_type.ui:view
 - ui.ui_adapter_creg:ui_adapter_creg.service
 - ui.ui_ctl_registry:ui_ctl_creg.service
 - ui.view:view.module
@@ -25,7 +25,7 @@ definitions:
     object: TreeView
     attr_name: from_piece
   TreeView.from_piece.ctl:
-    _type: legacy_type.ui:ui_ctl
+    _type: legacy_type.ui:view
     ctr_fn: TreeView.from_piece
     command_methods: []
   tree.module:

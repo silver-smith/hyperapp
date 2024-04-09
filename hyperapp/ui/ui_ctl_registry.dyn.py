@@ -54,9 +54,9 @@ class UiCtlRegistry:
         except KeyError:
             pass
         t_res = pyobj_creg.reverse_resolve(t)
-        ui_ctl = association_reg[self._my_resource, t_res]
+        view = association_reg[self._my_resource, t_res]
         try:
-            return pyobj_creg.invite(ui_ctl.ctr_fn)
+            return pyobj_creg.invite(view.ctr_fn)
         except KeyError as x:
             raise RuntimeError(f"{self._produce_name}: Error resolving function for {t!r}, {fn_res}: {x}")
 

@@ -10,7 +10,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.root:view
 - legacy_type.ui:ui_command_d
-- legacy_type.ui:ui_ctl
+- legacy_type.ui:view
 - legacy_type.window:pos
 - legacy_type.window:size
 - legacy_type.window:state
@@ -41,7 +41,7 @@ definitions:
     object: WindowView
     attr_name: from_piece
   WindowView.from_piece.ctl:
-    _type: legacy_type.ui:ui_ctl
+    _type: legacy_type.ui:view
     ctr_fn: WindowView.from_piece
     command_methods: []
   duplicate_window:
