@@ -105,3 +105,8 @@ def unwrap_master_details(piece, state):
     master_view = web.summon(piece.master_view)
     master_state = web.summon(state.master_state)
     return Diff(ReplaceViewDiff(master_view), master_state)
+
+
+@mark.ui_command
+def wrap_master_details(piece, state):
+    log.info("Wrap master-details: %s / %s", piece, state)

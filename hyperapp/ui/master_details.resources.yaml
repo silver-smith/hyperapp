@@ -14,6 +14,7 @@ import:
 - legacy_type.master_details:state
 - legacy_type.master_details:view
 - legacy_type.ui:ui_command_d
+- legacy_type.ui:universal_ui_command_d
 - legacy_type.ui:view
 - ui.model_command_creg:model_command_creg.service
 - ui.view:view.module
@@ -34,6 +35,10 @@ associations:
   - ui_command_d
   - legacy_type.master_details:view
   value: unwrap_master_details
+- bases:
+  - universal_ui_command_d
+  key: universal_ui_command_d
+  value: wrap_master_details
 definitions:
   MasterDetailsView:
     _type: legacy_type.builtin:attribute
@@ -69,7 +74,14 @@ definitions:
   ui_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:ui_command_d
+  universal_ui_command_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:universal_ui_command_d
   unwrap_master_details:
     _type: legacy_type.builtin:attribute
     object: master_details.module
     attr_name: unwrap_master_details
+  wrap_master_details:
+    _type: legacy_type.builtin:attribute
+    object: master_details.module
+    attr_name: wrap_master_details
