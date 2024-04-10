@@ -12,7 +12,10 @@ import:
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.master_details:state
+- legacy_type.master_details:unwrap_master_details_d
 - legacy_type.master_details:view
+- legacy_type.master_details:wrap_master_details_d
+- legacy_type.ui:ui_command
 - legacy_type.ui:ui_command_d
 - legacy_type.ui:universal_ui_command_d
 - legacy_type.ui:view
@@ -34,11 +37,11 @@ associations:
   key:
   - ui_command_d
   - legacy_type.master_details:view
-  value: unwrap_master_details
+  value: unwrap_master_details.ui_command
 - bases:
   - universal_ui_command_d
   key: universal_ui_command_d
-  value: wrap_master_details
+  value: wrap_master_details.ui_command
 definitions:
   MasterDetailsView:
     _type: legacy_type.builtin:attribute
@@ -81,7 +84,21 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: master_details.module
     attr_name: unwrap_master_details
+  unwrap_master_details.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.master_details:unwrap_master_details_d
+  unwrap_master_details.ui_command:
+    _type: legacy_type.ui:ui_command
+    d: unwrap_master_details.d
+    function: unwrap_master_details
   wrap_master_details:
     _type: legacy_type.builtin:attribute
     object: master_details.module
     attr_name: wrap_master_details
+  wrap_master_details.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.master_details:wrap_master_details_d
+  wrap_master_details.ui_command:
+    _type: legacy_type.ui:ui_command
+    d: wrap_master_details.d
+    function: wrap_master_details

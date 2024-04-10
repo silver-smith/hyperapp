@@ -8,11 +8,14 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.navigator:go_back_d
 - legacy_type.navigator:go_back_diff
+- legacy_type.navigator:go_forward_d
 - legacy_type.navigator:go_forward_diff
 - legacy_type.navigator:open_new_diff
 - legacy_type.navigator:state
 - legacy_type.navigator:view
+- legacy_type.ui:ui_command
 - legacy_type.ui:ui_command_d
 - legacy_type.ui:view
 - ui.model_command:model_command.module
@@ -33,14 +36,14 @@ associations:
   key:
   - ui_command_d
   - legacy_type.navigator:view
-  value: go_back
+  value: go_back.ui_command
 - bases:
   - ui_command_d
   - legacy_type.navigator:view
   key:
   - ui_command_d
   - legacy_type.navigator:view
-  value: go_forward
+  value: go_forward.ui_command
 definitions:
   NavigatorView:
     _type: legacy_type.builtin:attribute
@@ -58,10 +61,24 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: navigator.module
     attr_name: go_back
+  go_back.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.navigator:go_back_d
+  go_back.ui_command:
+    _type: legacy_type.ui:ui_command
+    d: go_back.d
+    function: go_back
   go_forward:
     _type: legacy_type.builtin:attribute
     object: navigator.module
     attr_name: go_forward
+  go_forward.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.navigator:go_forward_d
+  go_forward.ui_command:
+    _type: legacy_type.ui:ui_command
+    d: go_forward.d
+    function: go_forward
   navigator.module:
     _type: legacy_type.builtin:python_module
     module_name: navigator

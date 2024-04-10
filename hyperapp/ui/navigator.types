@@ -12,6 +12,9 @@ state = record:
   next: ref opt
 
 
+go_back_d = record
+go_forward_d = record
+
 open_new_diff = record:
   new_current: ref
   new_model: ref

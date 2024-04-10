@@ -4,6 +4,8 @@ import:
 - builtins:web.service
 - common.list_diff:list_diff.module
 - common.mark:mark.service
+- legacy_type.auto_tabs:close_tab_d
+- legacy_type.auto_tabs:duplicate_tab_d
 - legacy_type.auto_tabs:view
 - legacy_type.box_layout:view
 - legacy_type.builtin:attribute
@@ -12,6 +14,7 @@ import:
 - legacy_type.navigator:view
 - legacy_type.tabs:tab
 - legacy_type.tabs:view
+- legacy_type.ui:ui_command
 - legacy_type.ui:ui_command_d
 - legacy_type.ui:view
 - ui.view:view.module
@@ -30,14 +33,14 @@ associations:
   key:
   - ui_command_d
   - legacy_type.auto_tabs:view
-  value: close_tab
+  value: close_tab.ui_command
 - bases:
   - ui_command_d
   - legacy_type.auto_tabs:view
   key:
   - ui_command_d
   - legacy_type.auto_tabs:view
-  value: duplicate_tab
+  value: duplicate_tab.ui_command
 definitions:
   AutoTabsView:
     _type: legacy_type.builtin:attribute
@@ -71,10 +74,24 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: auto_tabs.module
     attr_name: close_tab
+  close_tab.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.auto_tabs:close_tab_d
+  close_tab.ui_command:
+    _type: legacy_type.ui:ui_command
+    d: close_tab.d
+    function: close_tab
   duplicate_tab:
     _type: legacy_type.builtin:attribute
     object: auto_tabs.module
     attr_name: duplicate_tab
+  duplicate_tab.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.auto_tabs:duplicate_tab_d
+  duplicate_tab.ui_command:
+    _type: legacy_type.ui:ui_command
+    d: duplicate_tab.d
+    function: duplicate_tab
   ui_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:ui_command_d

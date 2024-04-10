@@ -1,3 +1,4 @@
+duplicate_window_d = record
 
 pos = record:
   x: int

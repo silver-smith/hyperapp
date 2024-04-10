@@ -1,2 +1,5 @@
+close_tab_d = record
+duplicate_tab_d = record
+
 view = record:
   tabs: ref list

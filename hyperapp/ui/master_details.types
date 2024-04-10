@@ -1,3 +1,5 @@
+unwrap_master_details_d = record
+wrap_master_details_d = record
 
 view = record:
   model: ref
