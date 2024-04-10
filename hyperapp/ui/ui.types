@@ -38,6 +38,7 @@ model_command_enumerator = record:
   params: string list
 
 model_command = record:
+  d: ref
   name: string
   function: ref
   params: string list

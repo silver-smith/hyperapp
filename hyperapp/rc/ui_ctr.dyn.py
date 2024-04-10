@@ -6,6 +6,7 @@ from hyperapp.common.association_registry import Association
 
 from . import htypes
 from .services import (
+    data_to_res,
     mosaic,
     pyobj_creg,
     types,
@@ -172,6 +173,16 @@ def construct_fn_tree_impl(ctx, module_name, resource_module, module_res, qname,
     return [association]
 
 
+def _make_command_d_res(ctx, module_res, fn_name):
+    d_attr = fn_name + '_d'
+    try:
+        command_d_ref = ctx.types[module_res.module_name][d_attr]
+    except KeyError:
+        raise RuntimeError(f"Create directory type: {module_res.module_name}.{d_attr}")
+    command_d_t = types.resolve(command_d_ref)
+    return data_to_res(command_d_t())
+
+
 def construct_global_model_command(ctx, module_name, resource_module, module_res, qname, params):
     log.info("Construct global model command: %s: %s", resource_module.name, qname)
     fn_name = qname
@@ -179,7 +190,9 @@ def construct_global_model_command(ctx, module_name, resource_module, module_res
         object=mosaic.put(module_res),
         attr_name=fn_name,
     )
+    command_d_res = _make_command_d_res(ctx, module_res, fn_name)
     command = htypes.ui.model_command(
+        d=mosaic.put(command_d_res),
         name=fn_name,
         function=mosaic.put(fn_attribute),
         params=tuple(params),
@@ -194,6 +207,7 @@ def construct_global_model_command(ctx, module_name, resource_module, module_res
         value=command,
         )
     resource_module[fn_name] = fn_attribute
+    resource_module[f'{fn_name}.d'] = command_d_res
     resource_module[f'{fn_name}.command'] = command
     resource_module['global_model_command_d'] = global_model_command_d
     return [association]
@@ -233,7 +247,9 @@ def construct_model_command(ctx, module_name, resource_module, module_res, qname
         object=mosaic.put(module_res),
         attr_name=fn_name,
     )
+    command_d_res = _make_command_d_res(ctx, module_res, fn_name)
     command = htypes.ui.model_command(
+        d=mosaic.put(command_d_res),
         name=fn_name,
         function=mosaic.put(fn_attribute),
         params=tuple(params),
@@ -249,6 +265,7 @@ def construct_model_command(ctx, module_name, resource_module, module_res, qname
         value=command,
         )
     resource_module[fn_name] = fn_attribute
+    resource_module[f'{fn_name}.d'] = command_d_res
     resource_module[f'{fn_name}.command'] = command
     resource_module['model_command_d'] = model_command_d
     return [association]
