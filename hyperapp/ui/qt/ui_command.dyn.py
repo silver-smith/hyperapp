@@ -109,13 +109,13 @@ def ui_command_factory():
         piece_t_res = pyobj_creg.reverse_resolve(piece_t)
         d_res = data_to_res(htypes.ui.ui_command_d())
         universal_d_res = data_to_res(htypes.ui.universal_ui_command_d())
-        fn_res_list = [
+        command_rec_list = [
             *association_reg.get_all((d_res, piece_t_res)),
             *association_reg.get_all(universal_d_res),
             ]
         command_list = []
-        for fn_res in fn_res_list:
-            fn = pyobj_creg.animate(fn_res)
+        for command_rec in command_rec_list:
+            fn = pyobj_creg.invite(command_rec.function)
             command_list.append(UiCommand(fn.__name__, fn, view, widget, wrappers))
         return command_list
     return _ui_command_factory
