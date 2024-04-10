@@ -7,6 +7,10 @@ view = record:
 ui_command_d = record
 universal_ui_command_d = record
 
+ui_command = record:
+  d: ref
+  function: ref
+
 model_command_d = record
 model_command_enumerator_d = record
 global_model_command_d = record

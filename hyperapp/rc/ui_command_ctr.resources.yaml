@@ -9,6 +9,7 @@ import:
 - legacy_type.attr_constructors:universal_ui_command_ctr
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.ui:ui_command
 - legacy_type.ui:ui_command_d
 - legacy_type.ui:universal_ui_command_d
 - rc.utils:utils.module
@@ -47,6 +48,7 @@ definitions:
       htypes.attr_constructors.ui_command_ctr: legacy_type.attr_constructors:ui_command_ctr
       htypes.attr_constructors.universal_ui_command_ctr: legacy_type.attr_constructors:universal_ui_command_ctr
       htypes.builtin.attribute: legacy_type.builtin:attribute
+      htypes.ui.ui_command: legacy_type.ui:ui_command
       htypes.ui.ui_command_d: legacy_type.ui:ui_command_d
       htypes.ui.universal_ui_command_d: legacy_type.ui:universal_ui_command_d
       services.constructor_creg: resource.constructor_creg:constructor_creg.service
