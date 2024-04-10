@@ -16,8 +16,8 @@ log = logging.getLogger(__name__)
 
 class ModelCommand(CommandBase):
 
-    def __init__(self, name, fn, params, view, model_piece, widget, wrappers):
-        super().__init__(name, fn, view, widget, wrappers)
+    def __init__(self, name, d, fn, params, view, model_piece, widget, wrappers):
+        super().__init__(name, d, fn, view, widget, wrappers)
         self._params = params
         self._model_piece = model_piece
 
@@ -48,8 +48,9 @@ class ModelCommand(CommandBase):
 
 @model_command_creg.actor(htypes.ui.model_command)
 def model_command_from_piece(piece, view, model_piece, widget, wrappers):
+    command_d = pyobj_creg.invite(piece.d)
     fn = pyobj_creg.invite(piece.function)
-    return ModelCommand(piece.name, fn, piece.params, view, model_piece, widget, wrappers)
+    return ModelCommand(piece.name, command_d, fn, piece.params, view, model_piece, widget, wrappers)
 
 
 def global_commands():

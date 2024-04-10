@@ -42,8 +42,9 @@ _hardcoded_shortcuts = {
 
 class CommandBase:
 
-    def __init__(self, name, fn, view, widget, wrappers):
+    def __init__(self, name, d, fn, view, widget, wrappers):
         self._name = name
+        self._d = d
         self._fn = fn
         self._view = view
         self._widget = weakref.ref(widget)
@@ -51,6 +52,10 @@ class CommandBase:
 
     def __repr__(self):
         return f"{self.__class__.__name__} #{hex(id(self))[-6:]}: {self.name}"
+
+    @property
+    def d(self):
+        return self._d
 
     @property
     def name(self):
@@ -115,7 +120,8 @@ def ui_command_factory():
             ]
         command_list = []
         for command_rec in command_rec_list:
+            command_d = pyobj_creg.invite(command_rec.d)
             fn = pyobj_creg.invite(command_rec.function)
-            command_list.append(UiCommand(fn.__name__, fn, view, widget, wrappers))
+            command_list.append(UiCommand(fn.__name__, {command_d}, fn, view, widget, wrappers))
         return command_list
     return _ui_command_factory
