@@ -4,6 +4,11 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.sample_commands:open_sample_static_list_d
+- legacy_type.sample_commands:open_sample_static_text_1_d
+- legacy_type.sample_commands:open_sample_static_text_2_d
+- legacy_type.sample_commands:sample_list_state_d
+- legacy_type.sample_commands:show_state_d
 - legacy_type.sample_list:item
 - legacy_type.sample_list:sample_list
 - legacy_type.ui:global_model_command_d
@@ -45,27 +50,39 @@ definitions:
     attr_name: open_sample_static_list
   open_sample_static_list.command:
     _type: legacy_type.ui:model_command
+    d: open_sample_static_list.d
     name: open_sample_static_list
     function: open_sample_static_list
     params: []
+  open_sample_static_list.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.sample_commands:open_sample_static_list_d
   open_sample_static_text_1:
     _type: legacy_type.builtin:attribute
     object: sample_commands.module
     attr_name: open_sample_static_text_1
   open_sample_static_text_1.command:
     _type: legacy_type.ui:model_command
+    d: open_sample_static_text_1.d
     name: open_sample_static_text_1
     function: open_sample_static_text_1
     params: []
+  open_sample_static_text_1.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.sample_commands:open_sample_static_text_1_d
   open_sample_static_text_2:
     _type: legacy_type.builtin:attribute
     object: sample_commands.module
     attr_name: open_sample_static_text_2
   open_sample_static_text_2.command:
     _type: legacy_type.ui:model_command
+    d: open_sample_static_text_2.d
     name: open_sample_static_text_2
     function: open_sample_static_text_2
     params: []
+  open_sample_static_text_2.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.sample_commands:open_sample_static_text_2_d
   sample_commands.module:
     _type: legacy_type.builtin:python_module
     module_name: sample_commands
@@ -78,18 +95,26 @@ definitions:
     attr_name: sample_list_state
   sample_list_state.command:
     _type: legacy_type.ui:model_command
+    d: sample_list_state.d
     name: sample_list_state
     function: sample_list_state
     params:
     - piece
     - current_idx
+  sample_list_state.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.sample_commands:sample_list_state_d
   show_state:
     _type: legacy_type.builtin:attribute
     object: sample_commands.module
     attr_name: show_state
   show_state.command:
     _type: legacy_type.ui:model_command
+    d: show_state.d
     name: show_state
     function: show_state
     params:
     - state
+  show_state.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.sample_commands:show_state_d

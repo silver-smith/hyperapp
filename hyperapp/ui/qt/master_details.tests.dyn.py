@@ -2,6 +2,7 @@ from PySide6 import QtWidgets
 
 from . import htypes
 from .services import (
+    data_to_res,
     fn_to_res,
     mosaic,
     )
@@ -20,6 +21,7 @@ def make_piece():
     master = htypes.text.readonly_view(mosaic.put(master_adapter))
     details = htypes.text.readonly_view(mosaic.put(details_adapter))
     command = htypes.ui.model_command(
+        d=mosaic.put(data_to_res(htypes.master_details_tests.sample_details_command_d())),
         name='details',
         function=mosaic.put(fn_to_res(_details_command)),
         params=('piece',),

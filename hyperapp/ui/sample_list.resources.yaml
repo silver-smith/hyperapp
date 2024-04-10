@@ -7,7 +7,10 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.sample_list:feed_sample_list
 - legacy_type.sample_list:item
+- legacy_type.sample_list:open_feed_sample_fn_list_d
+- legacy_type.sample_list:open_sample_fn_list_d
 - legacy_type.sample_list:sample_list
+- legacy_type.sample_list:sample_list_d
 - legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:list_ui_t
@@ -73,28 +76,40 @@ definitions:
     attr_name: open_feed_sample_fn_list
   open_feed_sample_fn_list.command:
     _type: legacy_type.ui:model_command
+    d: open_feed_sample_fn_list.d
     name: open_feed_sample_fn_list
     function: open_feed_sample_fn_list
     params: []
+  open_feed_sample_fn_list.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.sample_list:open_feed_sample_fn_list_d
   open_sample_fn_list:
     _type: legacy_type.builtin:attribute
     object: sample_list.module
     attr_name: open_sample_fn_list
   open_sample_fn_list.command:
     _type: legacy_type.ui:model_command
+    d: open_sample_fn_list.d
     name: open_sample_fn_list
     function: open_sample_fn_list
     params: []
+  open_sample_fn_list.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.sample_list:open_sample_fn_list_d
   sample_list:
     _type: legacy_type.builtin:attribute
     object: sample_list.module
     attr_name: sample_list
   sample_list.command:
     _type: legacy_type.ui:model_command
+    d: sample_list.d
     name: sample_list
     function: sample_list
     params:
     - piece
+  sample_list.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.sample_list:sample_list_d
   sample_list.impl:
     _type: legacy_type.ui:fn_impl
     function: sample_list

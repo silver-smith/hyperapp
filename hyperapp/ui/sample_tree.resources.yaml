@@ -7,6 +7,8 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.sample_tree:feed_sample_tree
 - legacy_type.sample_tree:item
+- legacy_type.sample_tree:open_feed_sample_fn_tree_d
+- legacy_type.sample_tree:open_sample_fn_tree_d
 - legacy_type.sample_tree:sample_tree
 - legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
@@ -64,18 +66,26 @@ definitions:
     attr_name: open_feed_sample_fn_tree
   open_feed_sample_fn_tree.command:
     _type: legacy_type.ui:model_command
+    d: open_feed_sample_fn_tree.d
     name: open_feed_sample_fn_tree
     function: open_feed_sample_fn_tree
     params: []
+  open_feed_sample_fn_tree.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.sample_tree:open_feed_sample_fn_tree_d
   open_sample_fn_tree:
     _type: legacy_type.builtin:attribute
     object: sample_tree.module
     attr_name: open_sample_fn_tree
   open_sample_fn_tree.command:
     _type: legacy_type.ui:model_command
+    d: open_sample_fn_tree.d
     name: open_sample_fn_tree
     function: open_sample_fn_tree
     params: []
+  open_sample_fn_tree.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.sample_tree:open_sample_fn_tree_d
   sample_tree:
     _type: legacy_type.builtin:attribute
     object: sample_tree.module

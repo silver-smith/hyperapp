@@ -1,0 +1,4 @@
+open_layout_tree_d = record
+add_view_command_d = record
+open_view_item_commands_d = record
+view_item_commands_d = record

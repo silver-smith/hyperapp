@@ -5,6 +5,7 @@ import:
 - common.context:context.module
 - legacy_type.builtin:python_module
 - legacy_type.phony:phony
+- resource.data_to_res:data_to_res.service
 - resource.fn_to_res:fn_to_res.service
 associations: []
 definitions:
@@ -14,6 +15,7 @@ definitions:
     file_name: master_details.tests.dyn.py
     import_list:
       code.context: common.context:context.module
+      services.data_to_res: resource.data_to_res:data_to_res.service
       services.fn_to_res: resource.fn_to_res:fn_to_res.service
       services.mosaic: builtins:mosaic.service
       tested.code.master_details: phony

@@ -1,8 +1,10 @@
+open_feed_sample_fn_list_d = record
+open_sample_fn_list_d = record
+sample_list_d = record
 
 item = record:
   id: int
   title: string
-
 
 sample_list = record
 feed_sample_list = record

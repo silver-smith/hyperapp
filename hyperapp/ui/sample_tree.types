@@ -1,8 +1,9 @@
+open_feed_sample_fn_tree_d = record
+open_sample_fn_tree_d = record
 
 item = record:
   id: int
   title: string
-
 
 sample_tree = record
 feed_sample_tree = record

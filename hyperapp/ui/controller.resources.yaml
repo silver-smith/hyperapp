@@ -9,6 +9,10 @@ import:
 - legacy_type.builtin:call
 - legacy_type.builtin:none
 - legacy_type.builtin:python_module
+- legacy_type.controller:add_view_command_d
+- legacy_type.controller:open_layout_tree_d
+- legacy_type.controller:open_view_item_commands_d
+- legacy_type.controller:view_item_commands_d
 - legacy_type.layout:command_item
 - legacy_type.layout:command_list
 - legacy_type.layout:item
@@ -76,11 +80,15 @@ definitions:
     attr_name: add_view_command
   add_view_command.command:
     _type: legacy_type.ui:model_command
+    d: add_view_command.d
     name: add_view_command
     function: add_view_command
     params:
     - piece
     - current_item
+  add_view_command.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.controller:add_view_command_d
   controller.module:
     _type: legacy_type.builtin:python_module
     module_name: controller
@@ -143,30 +151,42 @@ definitions:
     attr_name: open_layout_tree
   open_layout_tree.command:
     _type: legacy_type.ui:model_command
+    d: open_layout_tree.d
     name: open_layout_tree
     function: open_layout_tree
     params: []
+  open_layout_tree.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.controller:open_layout_tree_d
   open_view_item_commands:
     _type: legacy_type.builtin:attribute
     object: controller.module
     attr_name: open_view_item_commands
   open_view_item_commands.command:
     _type: legacy_type.ui:model_command
+    d: open_view_item_commands.d
     name: open_view_item_commands
     function: open_view_item_commands
     params:
     - piece
     - current_item
+  open_view_item_commands.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.controller:open_view_item_commands_d
   view_item_commands:
     _type: legacy_type.builtin:attribute
     object: controller.module
     attr_name: view_item_commands
   view_item_commands.command:
     _type: legacy_type.ui:model_command
+    d: view_item_commands.d
     name: view_item_commands
     function: view_item_commands
     params:
     - piece
+  view_item_commands.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.controller:view_item_commands_d
   view_item_commands.impl:
     _type: legacy_type.ui:fn_impl
     function: view_item_commands
