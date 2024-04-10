@@ -1,6 +1,7 @@
 import inspect
 from types import SimpleNamespace
 
+from hyperapp.common.htypes import Type
 from hyperapp.common.resource_ctr import (
     RESOURCE_CTR_ATTR,
     add_constructor,
@@ -83,14 +84,21 @@ def object_command(fn):
     return fn
 
 
-def ui_command(t):
-    t_res = pyobj_creg.reverse_resolve(t)
-    t_ref = mosaic.put(t_res)
-    ctr = htypes.attr_constructors.ui_command_ctr(t_ref)
-    def _ui_command(fn):
-        add_fn_module_constructor(fn, mosaic.put(ctr))
-        return fn
-    return _ui_command
+def ui_command(fn_or_t):
+    if isinstance(fn_or_t, Type):  # Parameterized version.
+        t_res = pyobj_creg.reverse_resolve(fn_or_t)
+        t_ref = mosaic.put(t_res)
+        ctr = htypes.attr_constructors.ui_command_ctr(t_ref)
+
+        def _ui_command(fn):
+            add_fn_module_constructor(fn, mosaic.put(ctr))
+            return fn
+
+        return _ui_command
+    else:  # Non-parameterized version.
+        ctr = htypes.attr_constructors.universal_ui_command_ctr()
+        add_fn_module_constructor(fn_or_t, mosaic.put(ctr))
+        return fn_or_t
 
 
 def mark():

@@ -7,3 +7,5 @@ parameter = record:
 
 ui_command_ctr = record:
   t: ref
+
+universal_ui_command_ctr = record

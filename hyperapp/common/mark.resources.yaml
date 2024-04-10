@@ -4,6 +4,7 @@ import:
 - legacy_type.attr_constructors:parameter
 - legacy_type.attr_constructors:service
 - legacy_type.attr_constructors:ui_command_ctr
+- legacy_type.attr_constructors:universal_ui_command_ctr
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.global_command_ctr:global_command_ctr
@@ -23,6 +24,7 @@ definitions:
       htypes.attr_constructors.parameter: legacy_type.attr_constructors:parameter
       htypes.attr_constructors.service: legacy_type.attr_constructors:service
       htypes.attr_constructors.ui_command_ctr: legacy_type.attr_constructors:ui_command_ctr
+      htypes.attr_constructors.universal_ui_command_ctr: legacy_type.attr_constructors:universal_ui_command_ctr
       htypes.global_command_ctr.global_command_ctr: legacy_type.global_command_ctr:global_command_ctr
       htypes.object_command_ctr.object_command_ctr: legacy_type.object_command_ctr:object_command_ctr
       code.constants: resource.constants:constants.module
