@@ -8,7 +8,6 @@ from . import htypes
 from .services import (
     mark,
     mosaic,
-    ui_command_factory,
     view_creg,
     web,
     )
