@@ -2,4 +2,5 @@ open_sample_static_list_d = record
 open_sample_static_text_1_d = record
 open_sample_static_text_2_d = record
 sample_list_state_d = record
+sample_tree_info_d = record
 show_state_d = record

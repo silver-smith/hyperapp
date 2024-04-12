@@ -24,3 +24,7 @@ async def show_state(state):
 
 async def sample_list_state(piece, current_idx):
     return f"{piece} current idx: {current_idx}"
+
+
+async def sample_tree_info(piece):
+    return f"Sample tree piece: {piece}"

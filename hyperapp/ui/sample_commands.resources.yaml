@@ -8,9 +8,11 @@ import:
 - legacy_type.sample_commands:open_sample_static_text_1_d
 - legacy_type.sample_commands:open_sample_static_text_2_d
 - legacy_type.sample_commands:sample_list_state_d
+- legacy_type.sample_commands:sample_tree_info_d
 - legacy_type.sample_commands:show_state_d
 - legacy_type.sample_list:item
 - legacy_type.sample_list:sample_list
+- legacy_type.sample_tree:sample_tree
 - legacy_type.ui:context_model_command_kind_d
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:global_model_command_kind_d
@@ -40,6 +42,12 @@ associations:
   - model_command_d
   - legacy_type.sample_list:sample_list
   value: sample_list_state.command
+- bases:
+  - legacy_type.sample_tree:sample_tree
+  key:
+  - model_command_d
+  - legacy_type.sample_tree:sample_tree
+  value: sample_tree_info.command
 definitions:
   context_model_command_kind_d:
     _type: legacy_type.builtin:call
@@ -128,6 +136,22 @@ definitions:
   sample_list_state.d:
     _type: legacy_type.builtin:call
     function: legacy_type.sample_commands:sample_list_state_d
+  sample_tree_info:
+    _type: legacy_type.builtin:attribute
+    object: sample_commands.module
+    attr_name: sample_tree_info
+  sample_tree_info.command:
+    _type: legacy_type.ui:model_command
+    d:
+    - sample_tree_info.d
+    - model_command_kind_d
+    name: sample_tree_info
+    function: sample_tree_info
+    params:
+    - piece
+  sample_tree_info.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.sample_commands:sample_tree_info_d
   show_state:
     _type: legacy_type.builtin:attribute
     object: sample_commands.module

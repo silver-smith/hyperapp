@@ -25,3 +25,8 @@ async def test_show_state():
 async def test_sample_list_state():
     value = await sample_commands.sample_list_state(
         htypes.sample_list.sample_list(), current_idx=11)
+
+
+async def test_sample_tree_info():
+    value = await sample_commands.sample_tree_info(
+        htypes.sample_tree.sample_tree())
