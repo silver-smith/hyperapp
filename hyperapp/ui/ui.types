@@ -19,6 +19,7 @@ model_d = record
 
 # selector for command's `.d` property
 model_command_kind_d = record
+context_model_command_kind_d = record
 global_model_command_kind_d = record
 
 model = record:

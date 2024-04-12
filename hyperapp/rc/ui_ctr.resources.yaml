@@ -9,6 +9,7 @@ import:
 - legacy_type.inspect:data_t
 - legacy_type.inspect:object_t
 - legacy_type.ui:fn_impl
+- legacy_type.ui:context_model_command_kind_d
 - legacy_type.ui:model_command
 - legacy_type.ui:model_command_enumerator
 - legacy_type.ui:model_command_d
@@ -38,6 +39,7 @@ definitions:
       htypes.ui.list_ui_t: legacy_type.ui:list_ui_t
       htypes.ui.tree_ui_t: legacy_type.ui:tree_ui_t
       htypes.ui.fn_impl: legacy_type.ui:fn_impl
+      htypes.ui.context_model_command_kind_d: legacy_type.ui:context_model_command_kind_d
       htypes.ui.model_command: legacy_type.ui:model_command
       htypes.ui.model_command_enumerator: legacy_type.ui:model_command_enumerator
       htypes.ui.model_command_enumerator_d: legacy_type.ui:model_command_enumerator_d

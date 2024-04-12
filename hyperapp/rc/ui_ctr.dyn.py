@@ -183,6 +183,13 @@ def _make_command_d_res(ctx, module_res, fn_name):
     return data_to_res(command_d_t())
 
 
+def _make_d_instance_res(t):
+    t_res = pyobj_creg.reverse_resolve(t)
+    return htypes.builtin.call(
+        function=mosaic.put(t_res),
+        )
+
+
 def construct_global_model_command(ctx, module_name, resource_module, module_res, qname, params):
     log.info("Construct global model command: %s: %s", resource_module.name, qname)
     fn_name = qname
@@ -191,30 +198,34 @@ def construct_global_model_command(ctx, module_name, resource_module, module_res
         attr_name=fn_name,
     )
     command_d_res = _make_command_d_res(ctx, module_res, fn_name)
-    global_model_command_kind_d_res = pyobj_creg.reverse_resolve(htypes.ui.global_model_command_kind_d)
-    global_model_command_kind_d = htypes.builtin.call(
-        function=mosaic.put(global_model_command_kind_d_res),
+    context_model_command_kind_d_res = _make_d_instance_res(htypes.ui.context_model_command_kind_d)
+    global_model_command_kind_d_res = _make_d_instance_res(htypes.ui.global_model_command_kind_d)
+    d = (
+        mosaic.put(command_d_res),
+        mosaic.put(global_model_command_kind_d_res),
         )
+    has_context = 'state' in params
+    if has_context:
+        d = (*d, mosaic.put(context_model_command_kind_d_res))
     command = htypes.ui.model_command(
-        d=(mosaic.put(command_d_res), mosaic.put(global_model_command_kind_d)),
+        d=d,
         name=fn_name,
         function=mosaic.put(fn_attribute),
         params=tuple(params),
         )
-    global_model_command_d_res = pyobj_creg.reverse_resolve(htypes.ui.global_model_command_d)
-    global_model_command_d = htypes.builtin.call(
-        function=mosaic.put(global_model_command_d_res),
-        )
+    global_model_command_d_res = _make_d_instance_res(htypes.ui.global_model_command_d)
     association = Association(
-        bases=[global_model_command_d],
-        key=[global_model_command_d],
+        bases=[global_model_command_d_res],
+        key=[global_model_command_d_res],
         value=command,
         )
     resource_module[fn_name] = fn_attribute
     resource_module[f'{fn_name}.d'] = command_d_res
-    resource_module['global_model_command_kind_d'] = global_model_command_kind_d
-    resource_module['global_model_command_d'] = global_model_command_d
+    if has_context:
+        resource_module['context_model_command_kind_d'] = context_model_command_kind_d_res
+    resource_module['global_model_command_kind_d'] = global_model_command_kind_d_res
     resource_module[f'{fn_name}.command'] = command
+    resource_module['global_model_command_d'] = global_model_command_d_res
     return [association]
 
 

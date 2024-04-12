@@ -11,6 +11,7 @@ import:
 - legacy_type.sample_commands:show_state_d
 - legacy_type.sample_list:item
 - legacy_type.sample_list:sample_list
+- legacy_type.ui:context_model_command_kind_d
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:global_model_command_kind_d
 - legacy_type.ui:model_command
@@ -39,6 +40,9 @@ associations:
   - legacy_type.sample_list:sample_list
   value: sample_list_state.command
 definitions:
+  context_model_command_kind_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:context_model_command_kind_d
   global_model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:global_model_command_d
@@ -124,6 +128,7 @@ definitions:
     d:
     - show_state.d
     - global_model_command_kind_d
+    - context_model_command_kind_d
     name: show_state
     function: show_state
     params:
