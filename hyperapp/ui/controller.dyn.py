@@ -117,10 +117,10 @@ class _Item:
             self._current_child_idx = None
 
     def _apply_replace_view_diff(self, diff):
-        log.info("Replace view: %s", diff)
-        self._children = None
+        log.info("Replace view @%s: %s", self, diff)
         parent = self.parent
         idx = self.idx
+        parent._children = None
         new_view = view_creg.animate(diff.piece.piece)
         new_widget = new_view.construct_widget(diff.state, self.ctx)
         parent.view.replace_child(parent.widget, idx, new_view, new_widget)
