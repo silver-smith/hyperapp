@@ -264,26 +264,32 @@ def construct_model_command(ctx, module_name, resource_module, module_res, qname
         attr_name=fn_name,
     )
     command_d_res = _make_command_d_res(ctx, module_res, fn_name)
+    context_model_command_kind_d_res = _make_d_instance_res(htypes.ui.context_model_command_kind_d)
+    d = (
+        mosaic.put(command_d_res),
+        )
+    has_context = set(params) & {'state', 'current_idx', 'current_item'}
+    if has_context:
+        d = (*d, mosaic.put(context_model_command_kind_d_res))
     command = htypes.ui.model_command(
-        d=(mosaic.put(command_d_res),),
+        d=d,
         name=fn_name,
         function=mosaic.put(fn_attribute),
         params=tuple(params),
         )
-    model_command_d_res = pyobj_creg.reverse_resolve(htypes.ui.model_command_d)
-    model_command_d = htypes.builtin.call(
-        function=mosaic.put(model_command_d_res),
-        )
+    model_command_d_res = _make_d_instance_res(htypes.ui.model_command_d)
     piece_t_res = htypes.builtin.legacy_type(piece_t_ref)
     association = Association(
         bases=[piece_t_res],
-        key=[model_command_d, piece_t_res],
+        key=[model_command_d_res, piece_t_res],
         value=command,
         )
     resource_module[fn_name] = fn_attribute
     resource_module[f'{fn_name}.d'] = command_d_res
+    if has_context:
+        resource_module['context_model_command_kind_d'] = context_model_command_kind_d_res
     resource_module[f'{fn_name}.command'] = command
-    resource_module['model_command_d'] = model_command_d
+    resource_module['model_command_d'] = model_command_d_res
     return [association]
 
 

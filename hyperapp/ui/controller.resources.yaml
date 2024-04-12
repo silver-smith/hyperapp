@@ -19,6 +19,7 @@ import:
 - legacy_type.layout:view
 - legacy_type.root:state
 - legacy_type.root:view
+- legacy_type.ui:context_model_command_kind_d
 - legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:global_model_command_kind_d
@@ -83,6 +84,7 @@ definitions:
     _type: legacy_type.ui:model_command
     d:
     - add_view_command.d
+    - context_model_command_kind_d
     name: add_view_command
     function: add_view_command
     params:
@@ -91,6 +93,9 @@ definitions:
   add_view_command.d:
     _type: legacy_type.builtin:call
     function: legacy_type.controller:add_view_command_d
+  context_model_command_kind_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:context_model_command_kind_d
   controller.module:
     _type: legacy_type.builtin:python_module
     module_name: controller
@@ -173,6 +178,7 @@ definitions:
     _type: legacy_type.ui:model_command
     d:
     - open_view_item_commands.d
+    - context_model_command_kind_d
     name: open_view_item_commands
     function: open_view_item_commands
     params:

@@ -111,6 +111,7 @@ definitions:
     _type: legacy_type.ui:model_command
     d:
     - sample_list_state.d
+    - context_model_command_kind_d
     name: sample_list_state
     function: sample_list_state
     params:
