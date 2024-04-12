@@ -13,6 +13,7 @@ import:
 - legacy_type.sample_list:sample_list_d
 - legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
+- legacy_type.ui:global_model_command_kind_d
 - legacy_type.ui:list_ui_t
 - legacy_type.ui:model
 - legacy_type.ui:model_command
@@ -64,6 +65,9 @@ definitions:
   global_model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:global_model_command_d
+  global_model_command_kind_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:global_model_command_kind_d
   model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_command_d
@@ -76,7 +80,9 @@ definitions:
     attr_name: open_feed_sample_fn_list
   open_feed_sample_fn_list.command:
     _type: legacy_type.ui:model_command
-    d: open_feed_sample_fn_list.d
+    d:
+    - open_feed_sample_fn_list.d
+    - global_model_command_kind_d
     name: open_feed_sample_fn_list
     function: open_feed_sample_fn_list
     params: []
@@ -89,7 +95,9 @@ definitions:
     attr_name: open_sample_fn_list
   open_sample_fn_list.command:
     _type: legacy_type.ui:model_command
-    d: open_sample_fn_list.d
+    d:
+    - open_sample_fn_list.d
+    - global_model_command_kind_d
     name: open_sample_fn_list
     function: open_sample_fn_list
     params: []
@@ -102,7 +110,8 @@ definitions:
     attr_name: sample_list
   sample_list.command:
     _type: legacy_type.ui:model_command
-    d: sample_list.d
+    d:
+    - sample_list.d
     name: sample_list
     function: sample_list
     params:

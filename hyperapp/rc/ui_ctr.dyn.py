@@ -191,8 +191,12 @@ def construct_global_model_command(ctx, module_name, resource_module, module_res
         attr_name=fn_name,
     )
     command_d_res = _make_command_d_res(ctx, module_res, fn_name)
+    global_model_command_kind_d_res = pyobj_creg.reverse_resolve(htypes.ui.global_model_command_kind_d)
+    global_model_command_kind_d = htypes.builtin.call(
+        function=mosaic.put(global_model_command_kind_d_res),
+        )
     command = htypes.ui.model_command(
-        d=mosaic.put(command_d_res),
+        d=(mosaic.put(command_d_res), mosaic.put(global_model_command_kind_d)),
         name=fn_name,
         function=mosaic.put(fn_attribute),
         params=tuple(params),
@@ -208,8 +212,9 @@ def construct_global_model_command(ctx, module_name, resource_module, module_res
         )
     resource_module[fn_name] = fn_attribute
     resource_module[f'{fn_name}.d'] = command_d_res
-    resource_module[f'{fn_name}.command'] = command
+    resource_module['global_model_command_kind_d'] = global_model_command_kind_d
     resource_module['global_model_command_d'] = global_model_command_d
+    resource_module[f'{fn_name}.command'] = command
     return [association]
 
 
@@ -249,7 +254,7 @@ def construct_model_command(ctx, module_name, resource_module, module_res, qname
     )
     command_d_res = _make_command_d_res(ctx, module_res, fn_name)
     command = htypes.ui.model_command(
-        d=mosaic.put(command_d_res),
+        d=(mosaic.put(command_d_res),),
         name=fn_name,
         function=mosaic.put(fn_attribute),
         params=tuple(params),

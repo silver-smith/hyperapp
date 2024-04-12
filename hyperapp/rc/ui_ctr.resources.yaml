@@ -13,6 +13,7 @@ import:
 - legacy_type.ui:model_command_enumerator
 - legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_enumerator_d
+- legacy_type.ui:global_model_command_kind_d
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:list_ui_t
 - legacy_type.ui:tree_ui_t
@@ -41,6 +42,7 @@ definitions:
       htypes.ui.model_command_enumerator: legacy_type.ui:model_command_enumerator
       htypes.ui.model_command_enumerator_d: legacy_type.ui:model_command_enumerator_d
       htypes.ui.model_command_d: legacy_type.ui:model_command_d
+      htypes.ui.global_model_command_kind_d: legacy_type.ui:global_model_command_kind_d
       htypes.ui.global_model_command_d: legacy_type.ui:global_model_command_d
       htypes.ui.model: legacy_type.ui:model
       htypes.ui.model_d: legacy_type.ui:model_d

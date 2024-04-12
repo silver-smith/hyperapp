@@ -21,6 +21,7 @@ import:
 - legacy_type.root:view
 - legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
+- legacy_type.ui:global_model_command_kind_d
 - legacy_type.ui:list_ui_t
 - legacy_type.ui:model
 - legacy_type.ui:model_command
@@ -80,7 +81,8 @@ definitions:
     attr_name: add_view_command
   add_view_command.command:
     _type: legacy_type.ui:model_command
-    d: add_view_command.d
+    d:
+    - add_view_command.d
     name: add_view_command
     function: add_view_command
     params:
@@ -110,6 +112,9 @@ definitions:
   global_model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:global_model_command_d
+  global_model_command_kind_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:global_model_command_kind_d
   layout_tree:
     _type: legacy_type.builtin:attribute
     object: controller.module
@@ -151,7 +156,9 @@ definitions:
     attr_name: open_layout_tree
   open_layout_tree.command:
     _type: legacy_type.ui:model_command
-    d: open_layout_tree.d
+    d:
+    - open_layout_tree.d
+    - global_model_command_kind_d
     name: open_layout_tree
     function: open_layout_tree
     params: []
@@ -164,7 +171,8 @@ definitions:
     attr_name: open_view_item_commands
   open_view_item_commands.command:
     _type: legacy_type.ui:model_command
-    d: open_view_item_commands.d
+    d:
+    - open_view_item_commands.d
     name: open_view_item_commands
     function: open_view_item_commands
     params:
@@ -179,7 +187,8 @@ definitions:
     attr_name: view_item_commands
   view_item_commands.command:
     _type: legacy_type.ui:model_command
-    d: view_item_commands.d
+    d:
+    - view_item_commands.d
     name: view_item_commands
     function: view_item_commands
     params:

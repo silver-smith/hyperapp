@@ -19,6 +19,7 @@ model_d = record
 
 # selector for command's `.d` property
 model_command_kind_d = record
+global_model_command_kind_d = record
 
 model = record:
   ui_t: ref
@@ -41,7 +42,7 @@ model_command_enumerator = record:
   params: string list
 
 model_command = record:
-  d: ref
+  d: ref list
   name: string
   function: ref
   params: string list

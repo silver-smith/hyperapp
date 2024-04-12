@@ -25,6 +25,7 @@ import:
 - legacy_type.tabs:tab
 - legacy_type.text:state
 - legacy_type.ui:global_model_command_d
+- legacy_type.ui:global_model_command_kind_d
 - legacy_type.ui:model_command
 - legacy_type.window:pos
 - legacy_type.window:size
@@ -84,13 +85,18 @@ definitions:
   global_model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:global_model_command_d
+  global_model_command_kind_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:global_model_command_kind_d
   make_piece:
     _type: legacy_type.builtin:attribute
     object: client.module
     attr_name: make_piece
   make_piece.command:
     _type: legacy_type.ui:model_command
-    d: make_piece.d
+    d:
+    - make_piece.d
+    - global_model_command_kind_d
     name: make_piece
     function: make_piece
     params: []
@@ -103,7 +109,9 @@ definitions:
     attr_name: make_state
   make_state.command:
     _type: legacy_type.ui:model_command
-    d: make_state.d
+    d:
+    - make_state.d
+    - global_model_command_kind_d
     name: make_state
     function: make_state
     params: []
