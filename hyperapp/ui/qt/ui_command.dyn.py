@@ -89,6 +89,16 @@ class CommandBase:
 
 class UiCommand(CommandBase):
 
+    def clone_with_d(self, d):
+        return UiCommand(
+            name=self._name,
+            d={*self._d, d},
+            fn=self._fn,
+            view=self._view,
+            widget=self._widget(),
+            wrappers=self._wrappers,
+            )
+
     async def run(self):
         widget = self._widget()
         if widget is None:

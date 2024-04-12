@@ -21,6 +21,18 @@ class ModelCommand(CommandBase):
         self._params = params
         self._model_piece = model_piece
 
+    def clone_with_d(self, d):
+        return ModelCommand(
+            name=self._name,
+            d={*self._d, d},
+            fn=self._fn,
+            params=self._params,
+            view=self._view,
+            model_piece=self._model_piece,
+            widget=self._widget(),
+            wrappers=self._wrappers,
+            )
+
     async def run(self):
         widget = self._widget()
         if widget is None:
