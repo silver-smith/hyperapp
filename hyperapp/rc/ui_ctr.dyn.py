@@ -198,10 +198,12 @@ def construct_global_model_command(ctx, module_name, resource_module, module_res
         attr_name=fn_name,
     )
     command_d_res = _make_command_d_res(ctx, module_res, fn_name)
+    model_command_kind_d_res = _make_d_instance_res(htypes.ui.model_command_kind_d)
     context_model_command_kind_d_res = _make_d_instance_res(htypes.ui.context_model_command_kind_d)
     global_model_command_kind_d_res = _make_d_instance_res(htypes.ui.global_model_command_kind_d)
     d = (
         mosaic.put(command_d_res),
+        mosaic.put(model_command_kind_d_res),
         mosaic.put(global_model_command_kind_d_res),
         )
     has_context = 'state' in params
@@ -223,6 +225,7 @@ def construct_global_model_command(ctx, module_name, resource_module, module_res
     resource_module[f'{fn_name}.d'] = command_d_res
     if has_context:
         resource_module['context_model_command_kind_d'] = context_model_command_kind_d_res
+    resource_module['model_command_kind_d'] = model_command_kind_d_res
     resource_module['global_model_command_kind_d'] = global_model_command_kind_d_res
     resource_module[f'{fn_name}.command'] = command
     resource_module['global_model_command_d'] = global_model_command_d_res
@@ -264,9 +267,11 @@ def construct_model_command(ctx, module_name, resource_module, module_res, qname
         attr_name=fn_name,
     )
     command_d_res = _make_command_d_res(ctx, module_res, fn_name)
+    model_command_kind_d_res = _make_d_instance_res(htypes.ui.model_command_kind_d)
     context_model_command_kind_d_res = _make_d_instance_res(htypes.ui.context_model_command_kind_d)
     d = (
         mosaic.put(command_d_res),
+        mosaic.put(model_command_kind_d_res),
         )
     has_context = set(params) & {'state', 'current_idx', 'current_item'}
     if has_context:
@@ -288,6 +293,7 @@ def construct_model_command(ctx, module_name, resource_module, module_res, qname
     resource_module[f'{fn_name}.d'] = command_d_res
     if has_context:
         resource_module['context_model_command_kind_d'] = context_model_command_kind_d_res
+    resource_module['model_command_kind_d'] = model_command_kind_d_res
     resource_module[f'{fn_name}.command'] = command
     resource_module['model_command_d'] = model_command_d_res
     return [association]

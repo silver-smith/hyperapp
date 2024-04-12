@@ -29,6 +29,7 @@ import:
 - legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_enumerator
 - legacy_type.ui:model_command_enumerator_d
+- legacy_type.ui:model_command_kind_d
 - legacy_type.ui:model_d
 - legacy_type.ui:tree_ui_t
 - ui.qt.ui_command:ui_command_factory.service
@@ -84,6 +85,7 @@ definitions:
     _type: legacy_type.ui:model_command
     d:
     - add_view_command.d
+    - model_command_kind_d
     - context_model_command_kind_d
     name: add_view_command
     function: add_view_command
@@ -153,6 +155,9 @@ definitions:
   model_command_enumerator_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_command_enumerator_d
+  model_command_kind_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:model_command_kind_d
   model_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_d
@@ -164,6 +169,7 @@ definitions:
     _type: legacy_type.ui:model_command
     d:
     - open_layout_tree.d
+    - model_command_kind_d
     - global_model_command_kind_d
     name: open_layout_tree
     function: open_layout_tree
@@ -179,6 +185,7 @@ definitions:
     _type: legacy_type.ui:model_command
     d:
     - open_view_item_commands.d
+    - model_command_kind_d
     - context_model_command_kind_d
     name: open_view_item_commands
     function: open_view_item_commands
@@ -196,6 +203,7 @@ definitions:
     _type: legacy_type.ui:model_command
     d:
     - view_item_commands.d
+    - model_command_kind_d
     name: view_item_commands
     function: view_item_commands
     params:

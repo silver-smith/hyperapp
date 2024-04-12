@@ -16,6 +16,7 @@ import:
 - legacy_type.ui:global_model_command_kind_d
 - legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
+- legacy_type.ui:model_command_kind_d
 associations:
 - bases:
   - global_model_command_d
@@ -52,6 +53,9 @@ definitions:
   model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_command_d
+  model_command_kind_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:model_command_kind_d
   open_sample_static_list:
     _type: legacy_type.builtin:attribute
     object: sample_commands.module
@@ -60,6 +64,7 @@ definitions:
     _type: legacy_type.ui:model_command
     d:
     - open_sample_static_list.d
+    - model_command_kind_d
     - global_model_command_kind_d
     name: open_sample_static_list
     function: open_sample_static_list
@@ -75,6 +80,7 @@ definitions:
     _type: legacy_type.ui:model_command
     d:
     - open_sample_static_text_1.d
+    - model_command_kind_d
     - global_model_command_kind_d
     name: open_sample_static_text_1
     function: open_sample_static_text_1
@@ -90,6 +96,7 @@ definitions:
     _type: legacy_type.ui:model_command
     d:
     - open_sample_static_text_2.d
+    - model_command_kind_d
     - global_model_command_kind_d
     name: open_sample_static_text_2
     function: open_sample_static_text_2
@@ -111,6 +118,7 @@ definitions:
     _type: legacy_type.ui:model_command
     d:
     - sample_list_state.d
+    - model_command_kind_d
     - context_model_command_kind_d
     name: sample_list_state
     function: sample_list_state
@@ -128,6 +136,7 @@ definitions:
     _type: legacy_type.ui:model_command
     d:
     - show_state.d
+    - model_command_kind_d
     - global_model_command_kind_d
     - context_model_command_kind_d
     name: show_state

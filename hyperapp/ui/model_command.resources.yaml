@@ -15,7 +15,6 @@ import:
 - legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_enumerator_d
-- legacy_type.ui:model_command_kind_d
 - legacy_type.ui:model_d
 - resource.data_to_res:data_to_res.service
 - ui.model_command_creg:model_command_creg.service
@@ -45,7 +44,6 @@ definitions:
       htypes.ui.model_command: legacy_type.ui:model_command
       htypes.ui.model_command_d: legacy_type.ui:model_command_d
       htypes.ui.model_command_enumerator_d: legacy_type.ui:model_command_enumerator_d
-      htypes.ui.model_command_kind_d: legacy_type.ui:model_command_kind_d
       services.association_reg: builtins:association_reg.service
       services.data_to_res: resource.data_to_res:data_to_res.service
       services.model_command_creg: ui.model_command_creg:model_command_creg.service

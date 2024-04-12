@@ -15,6 +15,7 @@ import:
 - legacy_type.ui:global_model_command_kind_d
 - legacy_type.ui:model
 - legacy_type.ui:model_command
+- legacy_type.ui:model_command_kind_d
 - legacy_type.ui:model_d
 - legacy_type.ui:tree_ui_t
 associations:
@@ -61,6 +62,9 @@ definitions:
   global_model_command_kind_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:global_model_command_kind_d
+  model_command_kind_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:model_command_kind_d
   model_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_d
@@ -72,6 +76,7 @@ definitions:
     _type: legacy_type.ui:model_command
     d:
     - open_feed_sample_fn_tree.d
+    - model_command_kind_d
     - global_model_command_kind_d
     name: open_feed_sample_fn_tree
     function: open_feed_sample_fn_tree
@@ -87,6 +92,7 @@ definitions:
     _type: legacy_type.ui:model_command
     d:
     - open_sample_fn_tree.d
+    - model_command_kind_d
     - global_model_command_kind_d
     name: open_sample_fn_tree
     function: open_sample_fn_tree

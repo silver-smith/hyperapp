@@ -27,6 +27,7 @@ import:
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:global_model_command_kind_d
 - legacy_type.ui:model_command
+- legacy_type.ui:model_command_kind_d
 - legacy_type.window:pos
 - legacy_type.window:size
 - legacy_type.window:state
@@ -96,6 +97,7 @@ definitions:
     _type: legacy_type.ui:model_command
     d:
     - make_piece.d
+    - model_command_kind_d
     - global_model_command_kind_d
     name: make_piece
     function: make_piece
@@ -111,6 +113,7 @@ definitions:
     _type: legacy_type.ui:model_command
     d:
     - make_state.d
+    - model_command_kind_d
     - global_model_command_kind_d
     name: make_state
     function: make_state
@@ -118,3 +121,6 @@ definitions:
   make_state.d:
     _type: legacy_type.builtin:call
     function: legacy_type.client:make_state_d
+  model_command_kind_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:model_command_kind_d
