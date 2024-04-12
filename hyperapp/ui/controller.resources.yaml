@@ -110,6 +110,7 @@ definitions:
       htypes.layout.view: legacy_type.layout:view
       htypes.root.state: legacy_type.root:state
       htypes.root.view: legacy_type.root:view
+      htypes.ui.context_model_command_kind_d: legacy_type.ui:context_model_command_kind_d
       services.mosaic: builtins:mosaic.service
       services.ui_command_factory: ui.qt.ui_command:ui_command_factory.service
       services.view_creg: ui.view_registry:view_creg.service

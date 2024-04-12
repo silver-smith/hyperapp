@@ -350,8 +350,13 @@ def layout_tree(piece, parent):
 
 
 def layout_tree_commands(piece, current_item):
+    context_kind_d = htypes.ui.context_model_command_kind_d()
     if current_item:
-        commands = controller.item_commands(current_item.id)
+        commands = [
+            cmd.clone_with_d(context_kind_d)
+            for cmd
+            in controller.item_commands(current_item.id)
+            ]
     else:
         commands = []
     log.info("Layout tree commands for %s: %s", current_item, commands)
