@@ -49,8 +49,9 @@ class ModelCommand(CommandBase):
 @model_command_creg.actor(htypes.ui.model_command)
 def model_command_from_piece(piece, view, model_piece, widget, wrappers):
     command_d = pyobj_creg.invite(piece.d)
+    d = {command_d, htypes.ui.model_command_kind_d()}
     fn = pyobj_creg.invite(piece.function)
-    return ModelCommand(piece.name, command_d, fn, piece.params, view, model_piece, widget, wrappers)
+    return ModelCommand(piece.name, d, fn, piece.params, view, model_piece, widget, wrappers)
 
 
 def global_commands():

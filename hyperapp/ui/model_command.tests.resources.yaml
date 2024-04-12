@@ -1,8 +1,11 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:mosaic.service
 - legacy_type.builtin:python_module
 - legacy_type.phony:phony
+- resource.data_to_res:data_to_res.service
+- resource.fn_to_res:fn_to_res.service
 associations: []
 definitions:
   model_command.tests.module:
@@ -10,6 +13,9 @@ definitions:
     module_name: model_command.tests
     file_name: model_command.tests.dyn.py
     import_list:
+      services.data_to_res: resource.data_to_res:data_to_res.service
+      services.fn_to_res: resource.fn_to_res:fn_to_res.service
+      services.mosaic: builtins:mosaic.service
       tested.code.model_command: phony
   phony:
     _type: legacy_type.phony:phony
