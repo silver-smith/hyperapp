@@ -68,14 +68,14 @@ class CommandBase:
             action.setShortcut(self.shortcut)
         return action
 
-    def make_button(self):
+    def make_button(self, add_shortcut):
         text = self.name
         if self.shortcut:
             text += f' ({self.shortcut})'
         button = QtWidgets.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
         button.pressed.connect(self._start)
-        # if self.shortcut:
-        #     button.setShortcut(self.shortcut)
+        if add_shortcut and self.shortcut:
+            button.setShortcut(self.shortcut)
         return button
 
     @property

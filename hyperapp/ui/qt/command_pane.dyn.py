@@ -57,6 +57,8 @@ class CommandPaneView(View):
             button = widget._command_to_button.pop(cmd)
             button.deleteLater()
         for cmd in new_commands:
-            button = cmd.make_button()
+            # All except context commands are present at menu bar;
+            # avoid setting shortcut to prevent ambigous ones.
+            button = cmd.make_button(add_shortcut=cmd.d & context_d)
             layout.addWidget(button)
             widget._command_to_button[cmd] = button
