@@ -5,6 +5,9 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.menu_bar:state
 - legacy_type.menu_bar:view
+- legacy_type.ui:context_model_command_kind_d
+- legacy_type.ui:global_model_command_kind_d
+- legacy_type.ui:model_command_kind_d
 - legacy_type.ui:view
 - ui.view:view.module
 - ui.view_registry:view_creg.service
@@ -36,3 +39,6 @@ definitions:
       code.view: ui.view:view.module
       htypes.menu_bar.state: legacy_type.menu_bar:state
       htypes.menu_bar.view: legacy_type.menu_bar:view
+      htypes.ui.context_model_command_kind_d: legacy_type.ui:context_model_command_kind_d
+      htypes.ui.global_model_command_kind_d: legacy_type.ui:global_model_command_kind_d
+      htypes.ui.model_command_kind_d: legacy_type.ui:model_command_kind_d

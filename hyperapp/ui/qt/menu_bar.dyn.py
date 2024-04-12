@@ -1,5 +1,4 @@
 import logging
-from functools import partial
 
 from PySide6 import QtWidgets
 
@@ -31,21 +30,34 @@ class MenuBarView(View):
 
     def construct_widget(self, state, ctx):
         w = MenuBar()
-        menu = QtWidgets.QMenu('&All')
-        w.addMenu(menu)
+        w.addMenu(QtWidgets.QMenu('&Global'))
+        w.addMenu(QtWidgets.QMenu('&View'))
+        w.addMenu(QtWidgets.QMenu('&Current'))
         return w
 
     def widget_state(self, widget):
         return htypes.menu_bar.state()
 
     def set_commands(self, w, commands):
-        [menu_action] = w.actions()
-        menu = menu_action.menu()
+        model_d = {htypes.ui.model_command_kind_d()}
+        context_d = {htypes.ui.context_model_command_kind_d()}
+        global_d = {htypes.ui.global_model_command_kind_d()}
+        global_menu, view_menu, current_menu = [
+            action.menu() for action in w.actions()
+            ]
         removed_commands = set(w._command_to_action) - set(commands)
         for cmd in removed_commands:
             action = w._command_to_action.pop(cmd)
-            menu.removeAction(action)
+            global_menu.removeAction(action)
         for cmd in commands:
+            if cmd.d & context_d:
+                continue
+            if cmd.d & global_d:
+                menu = global_menu
+            elif cmd.d & model_d:
+                menu = current_menu
+            else:
+                menu = view_menu
             action = cmd.make_action()
             menu.addAction(action)
             w._command_to_action[cmd] = action

@@ -24,5 +24,6 @@ def test_widget():
         assert view.piece
         state = view.widget_state(widget)
         assert state
+        view.set_commands(widget, [])
     finally:
         app.shutdown()
