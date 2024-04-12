@@ -41,10 +41,15 @@ class CommandPaneView(View):
 
     def set_commands(self, widget, commands):
         layout = widget.layout()
-        filter_d = htypes.ui.model_command_kind_d()
+        model_d = {htypes.ui.model_command_kind_d()}
+        context_d = {htypes.ui.context_model_command_kind_d()}
+        global_d = {htypes.ui.global_model_command_kind_d()}
         wanted_commands = {
             cmd for cmd in commands
-            if filter_d in cmd.d
+            if (
+                    cmd.d & model_d and not (cmd.d & global_d)
+                    or cmd.d & context_d
+                )
             }
         removed_commands = set(widget._command_to_button) - wanted_commands
         new_commands = wanted_commands - set(widget._command_to_button)
