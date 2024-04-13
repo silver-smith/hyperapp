@@ -14,6 +14,7 @@ import:
 - legacy_type.ui:view
 - legacy_type.window:duplicate_window_d
 - legacy_type.window:pos
+- legacy_type.window:quit_d
 - legacy_type.window:size
 - legacy_type.window:state
 - legacy_type.window:view
@@ -33,6 +34,13 @@ associations:
   - ui_command_d
   - legacy_type.root:view
   value: duplicate_window.ui_command
+- bases:
+  - ui_command_d
+  - legacy_type.root:view
+  key:
+  - ui_command_d
+  - legacy_type.root:view
+  value: quit.ui_command
 definitions:
   WindowView:
     _type: legacy_type.builtin:attribute
@@ -57,6 +65,17 @@ definitions:
     _type: legacy_type.ui:ui_command
     d: duplicate_window.d
     function: duplicate_window
+  quit:
+    _type: legacy_type.builtin:attribute
+    object: window.module
+    attr_name: quit
+  quit.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.window:quit_d
+  quit.ui_command:
+    _type: legacy_type.ui:ui_command
+    d: quit.d
+    function: quit
   ui_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:ui_command_d

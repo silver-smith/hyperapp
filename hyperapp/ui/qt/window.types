@@ -1,4 +1,5 @@
 duplicate_window_d = record
+quit_d = record
 
 pos = record:
   x: int

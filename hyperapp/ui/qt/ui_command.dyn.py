@@ -21,6 +21,7 @@ log = logging.getLogger(__name__)
 _hardcoded_shortcuts = {
     'go_back': 'Esc',
     'go_forward': 'Alt+Right',
+    'quit': 'Alt+Q',
     'duplicate_tab': 'Shift+f4',
     'close_tab': 'Ctrl+f4',
     'duplicate_window': 'Alt+W',

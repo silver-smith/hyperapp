@@ -99,3 +99,8 @@ def duplicate_window(piece, state):
         item=mosaic.put(new_window_state),
         )
     return Diff(diff_piece, diff_state)
+
+
+@mark.ui_command(htypes.root.view)
+def quit(piece, state):
+    QtWidgets.QApplication.quit()
