@@ -32,6 +32,12 @@ class View(metaclass=abc.ABCMeta):
     def get_current(self, widget):
         return 0
 
+    def get_model(self):
+        return None
+
+    def model_changed(self, widget, model):
+        pass
+
     async def child_state_changed(self, ctx, widget):
         pass
 

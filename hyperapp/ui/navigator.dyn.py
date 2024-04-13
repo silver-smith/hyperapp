@@ -56,6 +56,9 @@ class NavigatorView(View):
     def get_current(self, widget):
         return 0
 
+    def get_model(self):
+        return self._current_model
+
     async def child_state_changed(self, ctx, widget):
         self._ctl_hook.commands_changed()
 

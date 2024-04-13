@@ -125,6 +125,37 @@ class _Item:
         new_widget = new_view.construct_widget(diff.state, self.ctx)
         parent.view.replace_child(parent.widget, idx, new_view, new_widget)
 
+    def update_model(self):
+
+        def visit_item(item, model):
+            item_model = item.view.get_model()
+            if item_model is not None:
+                model = item_model
+            else:
+                item.view.model_changed(item.widget, model)
+            for kid in item.children:
+                if not kid.focusable:
+                    kid.view.model_changed(kid.widget, model)
+            return model
+
+        def visit_item_and_children(item):
+            if item.children:
+                model = visit_item_and_children(item.children[item.current_child_idx])
+            else:
+                model = None
+            return visit_item(item, model)
+
+        def visit_parents(item, model):
+            if not item.parent:
+                return
+            if item.parent.current_child_idx != item.idx:
+                return
+            model = visit_item(item.parent, model)
+            visit_parents(item.parent, model)
+
+        model = visit_item_and_children(self)
+        visit_parents(self, model)
+
     def update_commands(self):
 
         def visit_item(item, commands):
@@ -166,6 +197,7 @@ class _Item:
         log.info("Controller: current changed: %s", self)
         self._current_child_idx = None
         self.update_commands()
+        self.update_model()
 
     def commands_changed_hook(self):
         log.info("Controller: commands changed for: %s", self)
@@ -176,6 +208,7 @@ class _Item:
         self._children = None
         self._current_child_idx = None
         self.update_commands()
+        self.update_model()
 
     def apply_diff_hook(self, diff):
         self._apply_diff(diff)
@@ -195,6 +228,7 @@ class _Item:
         self._widget = None
         self._commands = None
         self.update_commands()
+        self.update_model()
 
 
 @dataclass(repr=False)
@@ -226,6 +260,7 @@ class _WindowItem(_Item):
             item = self.from_refs(self._counter, self._callback_flag, self._id_to_item, self.ctx, self._window_items, piece_ref, state_ref)
             self._window_items.insert(diff.piece.idx, item)
             item.update_commands()
+            item.update_model()
             item.widget.show()
         else:
             raise NotImplementedError(diff.piece)
@@ -312,6 +347,7 @@ class Controller:
             item = _WindowItem.from_refs(
                 self._counter, self._callback_flag, self._id_to_item, ctx, self._window_items, piece_ref, state_ref)
             item.update_commands()
+            item.update_model()
             if show:
                 item.widget.show()
             self._window_items.append(item)
