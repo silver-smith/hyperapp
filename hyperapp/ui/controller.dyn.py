@@ -219,7 +219,8 @@ class _Item:
         log.info("Controller: state changed for: %s", self)
         item = self.parent
         while item:
-            await item.view.child_state_changed(item.ctx, item.widget)
+            if item.view:
+                await item.view.child_state_changed(item.ctx, item.widget)
             item = item.parent
 
     def replace_parent_widget_hook(self, new_widget):
@@ -234,36 +235,66 @@ class _Item:
 @dataclass(repr=False)
 class _WindowItem(_Item):
 
-    _window_items: list[Self] = None
-
     @classmethod
-    def from_refs(cls, counter, callback_flag, id_to_item, ctx, window_items, view_ref, state_ref):
+    def from_refs(cls, counter, callback_flag, id_to_item, ctx, parent, view_ref, state_ref):
         view = view_creg.invite(view_ref)
         state = web.summon(state_ref)
         item_id = next(counter)
         widget = view.construct_widget(state, ctx)
-        self = cls(counter, callback_flag, id_to_item, item_id, [item_id], None, ctx, f"window#{item_id}", view,
-                   focusable=True, _window_items=window_items, _widget=widget)
+        self = cls(counter, callback_flag, id_to_item, item_id, [item_id], parent, ctx, f"window#{item_id}", view,
+                   focusable=True, _widget=widget)
         self._widget = widget
         self.view.set_controller_hook(CtlHook(self))
         id_to_item[item_id] = self
         return self
 
     def _make_commands(self):
-        return self._make_view_commands(view=RootView(self._window_items, self.id))
+        return self._make_view_commands(view=RootView(self.parent.children, self.id))
 
     def _apply_diff(self, diff):
         log.info("Apply root diff: %s", diff)
         if isinstance(diff.piece, ListDiff.Insert):
             piece_ref = diff.piece.item
             state_ref = diff.state.item
-            item = self.from_refs(self._counter, self._callback_flag, self._id_to_item, self.ctx, self._window_items, piece_ref, state_ref)
-            self._window_items.insert(diff.piece.idx, item)
+            item = self.from_refs(
+                self._counter, self._callback_flag, self._id_to_item, self.ctx, self.parent, piece_ref, state_ref)
+            self.parent._children.insert(diff.piece.idx, item)
             item.update_commands()
             item.update_model()
             item.widget.show()
         else:
             raise NotImplementedError(diff.piece)
+
+
+@dataclass(repr=False)
+class _RootItem(_Item):
+
+    @classmethod
+    def from_piece(cls, counter, callback_flag, id_to_item, ctx, piece, state, show):
+        item_id = 0
+        self = cls(counter, callback_flag, id_to_item, item_id, [], None, ctx, "root",
+                   view=None, focusable=False)
+        self._children = [
+            _WindowItem.from_refs(
+                counter, callback_flag, id_to_item, ctx, self, piece_ref, state_ref)
+            for piece_ref, state_ref
+            in zip(piece.window_list, state.window_list)
+            ]
+        id_to_item[item_id] = self
+        for item in self._children:
+            item.update_commands()
+            item.update_model()
+            if show:
+                item.widget.show()
+        return self
+
+    @property
+    def children(self):
+        return self._children
+
+    @property
+    def current_child_idx(self):
+        return None
 
 
 def _description(piece):
@@ -338,29 +369,21 @@ class Controller:
         self._id_to_item = None
         self._callback_flag = CallbackFlag()
         self._counter = itertools.count(start=1)
+        self._root_item = None
 
     def create_windows(self, root_piece, state, ctx, show=True):
         self._root_ctx = ctx
         self._window_items = []
         self._id_to_item = {}
-        for piece_ref, state_ref in zip(root_piece.window_list, state.window_list):
-            item = _WindowItem.from_refs(
-                self._counter, self._callback_flag, self._id_to_item, ctx, self._window_items, piece_ref, state_ref)
-            item.update_commands()
-            item.update_model()
-            if show:
-                item.widget.show()
-            self._window_items.append(item)
+        self._root_item = _RootItem.from_piece(
+            self._counter, self._callback_flag, self._id_to_item, ctx, root_piece, state, show)
 
     def view_items(self, item_id):
-        if item_id == 0:
-            item_list = self._window_items
+        item = self._id_to_item.get(item_id)
+        if item:
+            item_list = item.children
         else:
-            item = self._id_to_item.get(item_id)
-            if item:
-                item_list = item.children
-            else:
-                item_list = []
+            item_list = []
         return [
             htypes.layout.item(item.id, item.name, item.focusable, _description(item.view.piece))
             for item in item_list

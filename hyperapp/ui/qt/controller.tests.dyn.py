@@ -72,7 +72,7 @@ def test_apply_root_diff():
                 item=root_state.window_list[0],
                 ),
             )
-        ctl._window_items[0]._apply_diff(diff)
+        ctl._root_item.children[0]._apply_diff(diff)
     finally:
         app.shutdown()
 
