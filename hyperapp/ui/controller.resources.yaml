@@ -4,7 +4,6 @@ import:
 - builtins:mosaic.service
 - builtins:web.service
 - common.context:context.module
-- common.file_bundle:file_bundle.service
 - common.list_diff:list_diff.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -116,7 +115,6 @@ definitions:
       htypes.root.state: legacy_type.root:state
       htypes.root.view: legacy_type.root:view
       htypes.ui.context_model_command_kind_d: legacy_type.ui:context_model_command_kind_d
-      services.file_bundle: common.file_bundle:file_bundle.service
       services.mosaic: builtins:mosaic.service
       services.ui_command_factory: ui.qt.ui_command:ui_command_factory.service
       services.view_creg: ui.view_registry:view_creg.service

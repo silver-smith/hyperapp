@@ -5,14 +5,12 @@ from collections import defaultdict, namedtuple
 from contextlib import contextmanager
 from dataclasses import dataclass
 from functools import partial
-from pathlib import Path
 from typing import Any, Self
 
 from hyperapp.common import dict_coders  # register codec
 
 from . import htypes
 from .services import (
-    file_bundle,
     mosaic,
     ui_command_factory,
     view_creg,
@@ -23,9 +21,6 @@ from .code.list_diff import ListDiff
 from .code.view import View, ReplaceViewDiff
 
 log = logging.getLogger(__name__)
-
-
-ui_layout_bundle = file_bundle(Path.home() / '.local/share/hyperapp/client/layout.json')
 
 
 class CallbackFlag:
@@ -286,24 +281,27 @@ class _WindowItem(_Item):
 @dataclass(repr=False)
 class _RootItem(_Item):
 
+    _layout_bundle: Any = None
+
     @classmethod
-    def from_piece(cls, counter, callback_flag, id_to_item, ctx, piece, state, show):
+    def from_piece(cls, counter, callback_flag, id_to_item, ctx, layout_bundle, layout):
         item_id = 0
         self = cls(counter, callback_flag, id_to_item, item_id, [], None, ctx, "root",
-                   view=None, focusable=False)
+                   view=None, focusable=False, _layout_bundle=layout_bundle)
         self._children = [
             _WindowItem.from_refs(
                 counter, callback_flag, id_to_item, ctx, self, piece_ref, state_ref)
             for piece_ref, state_ref
-            in zip(piece.window_list, state.window_list)
+            in zip(layout.piece.window_list, layout.state.window_list)
             ]
         id_to_item[item_id] = self
+        return self
+
+    def show(self):
         for item in self._children:
             item.update_commands()
             item.update_model()
-            if show:
-                item.widget.show()
-        return self
+            item.widget.show()
 
     @property
     def children(self):
@@ -319,7 +317,7 @@ class _RootItem(_Item):
             piece=view.piece,
             state=view.widget_state(),
             )
-        ui_layout_bundle.save_piece(layout)
+        self._layout_bundle.save_piece(layout)
 
 
 def _description(piece):
@@ -388,27 +386,33 @@ class CtlHook:
 
 class Controller:
 
-    def __init__(self):
-        self._window_items = None
-        self._root_ctx = None
-        self._id_to_item = None
+    instance = None
+
+    @classmethod
+    @contextmanager
+    def running(cls, layout_bundle, default_layout, ctx, show):
+        cls.instance = self = cls(layout_bundle, default_layout, ctx)
+        try:
+            if show:
+                self.show()
+            yield self
+        finally:
+            cls.instance = None
+
+    def __init__(self, layout_bundle, default_layout, ctx):
+        self._root_ctx = ctx
+        self._id_to_item = {}
         self._callback_flag = CallbackFlag()
         self._counter = itertools.count(start=1)
-        self._root_item = None
-
-    def create_windows(self, default_piece, default_state, ctx, show=True):
-        self._root_ctx = ctx
-        self._window_items = []
-        self._id_to_item = {}
         try:
-            layout = ui_layout_bundle.load_piece()
-            piece = layout.piece
-            state = layout.state
+            layout = layout_bundle.load_piece()
         except FileNotFoundError:
-            piece = default_piece
-            state = default_state
+            layout = default_layout
         self._root_item = _RootItem.from_piece(
-            self._counter, self._callback_flag, self._id_to_item, ctx, piece, state, show)
+            self._counter, self._callback_flag, self._id_to_item, ctx, layout_bundle, layout)
+
+    def show(self):
+        self._root_item.show()
 
     def view_items(self, item_id):
         item = self._id_to_item.get(item_id)
@@ -429,15 +433,12 @@ class Controller:
             return []
 
 
-controller = Controller()
-
-
 def layout_tree(piece, parent):
     if parent is None:
         parent_id = 0
     else:
         parent_id = parent.id
-    return controller.view_items(parent_id)
+    return Controller.instance.view_items(parent_id)
 
 
 def layout_tree_commands(piece, current_item):
@@ -446,7 +447,7 @@ def layout_tree_commands(piece, current_item):
         commands = [
             cmd.clone_with_d(context_kind_d)
             for cmd
-            in controller.item_commands(current_item.id)
+            in Controller.instance.item_commands(current_item.id)
             ]
     else:
         commands = []
@@ -467,7 +468,7 @@ async def open_view_item_commands(piece, current_item):
 def view_item_commands(piece):
     command_list = [
         htypes.layout.command_item(command.name)
-        for command in controller.item_commands(piece.item_id)
+        for command in Controller.instance.item_commands(piece.item_id)
         ]
     log.info("Get view item commands for %s: %s", piece, command_list)
     return command_list

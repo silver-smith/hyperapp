@@ -1,4 +1,5 @@
 import asyncio
+from pathlib import Path
 
 from PySide6 import QtWidgets
 from qasync import QEventLoop
@@ -6,6 +7,7 @@ from qasync import QEventLoop
 from . import htypes
 from .services import (
     endpoint_registry,
+    file_bundle,
     generate_rsa_identity,
     mosaic,
     rpc_endpoint_factory,
@@ -14,10 +16,13 @@ from .services import (
     )
 from .code.context import Context
 from .code.model_command import global_commands
-from .code.controller import controller
+from .code.controller import Controller
 
 
-def make_piece():
+layout_path = Path.home() / '.local/share/hyperapp/client/layout.json'
+
+
+def make_default_piece():
     text = "Sample text"
     text_view = visualizer(text)
     navigator = htypes.navigator.view(
@@ -62,7 +67,7 @@ def make_piece():
         )
 
 
-def make_state():
+def make_default_state():
     text_state = htypes.text.state()
     navigator_state = htypes.navigator.state(
         current_state=mosaic.put(text_state),
@@ -97,6 +102,13 @@ def make_state():
         )
 
 
+def make_default_layout():
+    return htypes.root.layout(
+        piece=make_default_piece(),
+        state=make_default_state(),
+        )
+
+
 def _main():
     app = QtWidgets.QApplication()
     event_loop = QEventLoop(app)
@@ -110,8 +122,8 @@ def _main():
         identity=identity,
         rpc_endpoint=rpc_endpoint,
         )
-    piece = make_piece()
-    state = make_state()
-    controller.create_windows(piece, state, ctx)
+    default_layout = make_default_layout()
+    layout_bundle = file_bundle(layout_path)
 
-    return app.exec()
+    with Controller.running(layout_bundle, default_layout, ctx, show=True):
+        return app.exec()

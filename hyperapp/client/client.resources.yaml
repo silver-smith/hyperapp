@@ -3,6 +3,7 @@
 import:
 - builtins:mosaic.service
 - common.context:context.module
+- common.file_bundle:file_bundle.service
 - legacy_type.auto_tabs:view
 - legacy_type.box_layout:element
 - legacy_type.box_layout:state
@@ -10,14 +11,16 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
-- legacy_type.client:make_piece_d
-- legacy_type.client:make_state_d
+- legacy_type.client:make_default_layout_d
+- legacy_type.client:make_default_piece_d
+- legacy_type.client:make_default_state_d
 - legacy_type.command_pane:state
 - legacy_type.command_pane:view
 - legacy_type.menu_bar:state
 - legacy_type.menu_bar:view
 - legacy_type.navigator:state
 - legacy_type.navigator:view
+- legacy_type.root:layout
 - legacy_type.root:state
 - legacy_type.root:view
 - legacy_type.tab_groups:view
@@ -43,11 +46,15 @@ associations:
 - bases:
   - global_model_command_d
   key: global_model_command_d
-  value: make_piece.command
+  value: make_default_layout.command
 - bases:
   - global_model_command_d
   key: global_model_command_d
-  value: make_state.command
+  value: make_default_piece.command
+- bases:
+  - global_model_command_d
+  key: global_model_command_d
+  value: make_default_state.command
 definitions:
   client.module:
     _type: legacy_type.builtin:python_module
@@ -67,6 +74,7 @@ definitions:
       htypes.menu_bar.view: legacy_type.menu_bar:view
       htypes.navigator.state: legacy_type.navigator:state
       htypes.navigator.view: legacy_type.navigator:view
+      htypes.root.layout: legacy_type.root:layout
       htypes.root.state: legacy_type.root:state
       htypes.root.view: legacy_type.root:view
       htypes.tab_groups.view: legacy_type.tab_groups:view
@@ -78,6 +86,7 @@ definitions:
       htypes.window.state: legacy_type.window:state
       htypes.window.view: legacy_type.window:view
       services.endpoint_registry: transport.endpoint:endpoint_registry.service
+      services.file_bundle: common.file_bundle:file_bundle.service
       services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
       services.mosaic: builtins:mosaic.service
       services.rpc_endpoint_factory: rpc.rpc_endpoint:rpc_endpoint_factory.service
@@ -89,38 +98,54 @@ definitions:
   global_model_command_kind_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:global_model_command_kind_d
-  make_piece:
+  make_default_layout:
     _type: legacy_type.builtin:attribute
     object: client.module
-    attr_name: make_piece
-  make_piece.command:
+    attr_name: make_default_layout
+  make_default_layout.command:
     _type: legacy_type.ui:model_command
     d:
-    - make_piece.d
+    - make_default_layout.d
     - model_command_kind_d
     - global_model_command_kind_d
-    name: make_piece
-    function: make_piece
+    name: make_default_layout
+    function: make_default_layout
     params: []
-  make_piece.d:
+  make_default_layout.d:
     _type: legacy_type.builtin:call
-    function: legacy_type.client:make_piece_d
-  make_state:
+    function: legacy_type.client:make_default_layout_d
+  make_default_piece:
     _type: legacy_type.builtin:attribute
     object: client.module
-    attr_name: make_state
-  make_state.command:
+    attr_name: make_default_piece
+  make_default_piece.command:
     _type: legacy_type.ui:model_command
     d:
-    - make_state.d
+    - make_default_piece.d
     - model_command_kind_d
     - global_model_command_kind_d
-    name: make_state
-    function: make_state
+    name: make_default_piece
+    function: make_default_piece
     params: []
-  make_state.d:
+  make_default_piece.d:
     _type: legacy_type.builtin:call
-    function: legacy_type.client:make_state_d
+    function: legacy_type.client:make_default_piece_d
+  make_default_state:
+    _type: legacy_type.builtin:attribute
+    object: client.module
+    attr_name: make_default_state
+  make_default_state.command:
+    _type: legacy_type.ui:model_command
+    d:
+    - make_default_state.d
+    - model_command_kind_d
+    - global_model_command_kind_d
+    name: make_default_state
+    function: make_default_state
+    params: []
+  make_default_state.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.client:make_default_state_d
   model_command_kind_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_command_kind_d
