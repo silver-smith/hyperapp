@@ -13,13 +13,17 @@ from .code.wrapper_view import WrapperView
 log = logging.getLogger(__name__)
 
 
-def tab_label(piece_ref):
-    piece = web.summon(piece_ref)
+def tab_piece_label(piece):
     if isinstance(piece, htypes.box_layout.view):
         piece = web.summon(piece.elements[0].view)
     if isinstance(piece, htypes.navigator.view):
         piece = web.summon(piece.current_model)
     return str(piece)[:40]
+
+
+def tab_piece_ref_label(piece_ref):
+    piece = web.summon(piece_ref)
+    return tab_piece_label(piece)
 
 
 class AutoTabsView(WrapperView):
@@ -28,7 +32,7 @@ class AutoTabsView(WrapperView):
     def from_piece(cls, piece):
         tabs = tuple(
             htypes.tabs.tab(
-                label=tab_label(view_ref),
+                label=tab_piece_ref_label(view_ref),
                 ctl=view_ref,
                 )
             for idx, view_ref in enumerate(piece.tabs)
@@ -42,13 +46,19 @@ class AutoTabsView(WrapperView):
         tabs = tuple(tab.ctl for tab in self._base.piece.tabs)
         return htypes.auto_tabs.view(tabs)
 
+    def model_changed(self, widget, model):
+        idx = self._base.get_current(widget)
+        item = self._base.items()[idx]
+        text = tab_piece_label(item.view.piece)
+        self._base.set_tab_text(widget, idx, text)
+
     def apply(self, ctx, widget, diff):
         log.info("AutoTabs: apply: %s", diff)
         if isinstance(diff.piece, ListDiff.Insert):
             base_diff_piece = ListDiff.Insert(
                 idx=diff.piece.idx,
                 item=htypes.tabs.tab(
-                    label=tab_label(diff.piece.item),
+                    label=tab_piece_ref_label(diff.piece.item),
                     ctl=diff.piece.item,
                     ),
                 )

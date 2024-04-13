@@ -6,6 +6,7 @@ import:
 - common.mark:mark.service
 - legacy_type.auto_tabs:close_tab_d
 - legacy_type.auto_tabs:duplicate_tab_d
+- legacy_type.auto_tabs:tab_piece_label_d
 - legacy_type.auto_tabs:view
 - legacy_type.box_layout:view
 - legacy_type.builtin:attribute
@@ -14,6 +15,10 @@ import:
 - legacy_type.navigator:view
 - legacy_type.tabs:tab
 - legacy_type.tabs:view
+- legacy_type.text:readonly_view
+- legacy_type.ui:model_command
+- legacy_type.ui:model_command_d
+- legacy_type.ui:model_command_kind_d
 - legacy_type.ui:ui_command
 - legacy_type.ui:ui_command_d
 - legacy_type.ui:view
@@ -27,6 +32,12 @@ associations:
   - ui.view_registry:view_creg.service
   - legacy_type.auto_tabs:view
   value: AutoTabsView.from_piece.view
+- bases:
+  - legacy_type.text:readonly_view
+  key:
+  - model_command_d
+  - legacy_type.text:readonly_view
+  value: tab_piece_label.command
 - bases:
   - ui_command_d
   - legacy_type.auto_tabs:view
@@ -92,6 +103,28 @@ definitions:
     _type: legacy_type.ui:ui_command
     d: duplicate_tab.d
     function: duplicate_tab
+  model_command_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:model_command_d
+  model_command_kind_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:model_command_kind_d
+  tab_piece_label:
+    _type: legacy_type.builtin:attribute
+    object: auto_tabs.module
+    attr_name: tab_piece_label
+  tab_piece_label.command:
+    _type: legacy_type.ui:model_command
+    d:
+    - tab_piece_label.d
+    - model_command_kind_d
+    name: tab_piece_label
+    function: tab_piece_label
+    params:
+    - piece
+  tab_piece_label.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.auto_tabs:tab_piece_label_d
   ui_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:ui_command_d

@@ -104,3 +104,6 @@ class TabsView(View):
 
     def item_widget(self, widget, idx):
         return widget.widget(idx)
+
+    def set_tab_text(self, widget, idx, text):
+        widget.setTabText(idx, text)
