@@ -4,3 +4,7 @@ view = record:
 state = record:
   window_list: ref list
   current: int
+
+layout = record:
+  piece: view
+  state: state

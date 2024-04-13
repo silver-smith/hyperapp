@@ -5,10 +5,14 @@ from collections import defaultdict, namedtuple
 from contextlib import contextmanager
 from dataclasses import dataclass
 from functools import partial
+from pathlib import Path
 from typing import Any, Self
+
+from hyperapp.common import dict_coders  # register codec
 
 from . import htypes
 from .services import (
+    file_bundle,
     mosaic,
     ui_command_factory,
     view_creg,
@@ -19,6 +23,9 @@ from .code.list_diff import ListDiff
 from .code.view import View, ReplaceViewDiff
 
 log = logging.getLogger(__name__)
+
+
+ui_layout_bundle = file_bundle(Path.home() / '.local/share/hyperapp/client/layout.json')
 
 
 class CallbackFlag:
@@ -198,6 +205,7 @@ class _Item:
         self._current_child_idx = None
         self.update_commands()
         self.update_model()
+        self.save_state()
 
     def commands_changed_hook(self):
         log.info("Controller: commands changed for: %s", self)
@@ -209,6 +217,7 @@ class _Item:
         self._current_child_idx = None
         self.update_commands()
         self.update_model()
+        self.save_state()
 
     def apply_diff_hook(self, diff):
         self._apply_diff(diff)
@@ -230,6 +239,10 @@ class _Item:
         self._commands = None
         self.update_commands()
         self.update_model()
+        self.save_state()
+
+    def save_state(self):
+        self.parent.save_state()
 
 
 @dataclass(repr=False)
@@ -261,9 +274,13 @@ class _WindowItem(_Item):
             self.parent._children.insert(diff.piece.idx, item)
             item.update_commands()
             item.update_model()
+            self.save_state()
             item.widget.show()
         else:
             raise NotImplementedError(diff.piece)
+
+    def save_state(self):
+        self.parent.save_state(current_window=self)
 
 
 @dataclass(repr=False)
@@ -296,6 +313,14 @@ class _RootItem(_Item):
     def current_child_idx(self):
         return None
 
+    def save_state(self, current_window):
+        view = RootView(self.children, current_window.id)
+        layout = htypes.root.layout(
+            piece=view.piece,
+            state=view.widget_state(),
+            )
+        ui_layout_bundle.save_piece(layout)
+
 
 def _description(piece):
     return str(piece._t)
@@ -310,20 +335,20 @@ class RootView(View):
     @property
     def piece(self):
         return htypes.root.view(
-            window_list=[
+            window_list=tuple(
                 mosaic.put(item.view.piece)
                 for item in self._window_items
-                ],
+                ),
             )
 
     def construct_widget(self, state, ctx):
         raise NotImplementedError()
 
-    def widget_state(self, widget):
-        window_list = [
+    def widget_state(self, widget=None):
+        window_list = tuple(
             mosaic.put(item.view.widget_state(item.widget))
             for item in self._window_items
-            ]
+            )
         current_idx = self._window_id_to_idx(self._window_item_id)
         return htypes.root.state(window_list, current_idx)
 
@@ -371,12 +396,19 @@ class Controller:
         self._counter = itertools.count(start=1)
         self._root_item = None
 
-    def create_windows(self, root_piece, state, ctx, show=True):
+    def create_windows(self, default_piece, default_state, ctx, show=True):
         self._root_ctx = ctx
         self._window_items = []
         self._id_to_item = {}
+        try:
+            layout = ui_layout_bundle.load_piece()
+            piece = layout.piece
+            state = layout.state
+        except FileNotFoundError:
+            piece = default_piece
+            state = default_state
         self._root_item = _RootItem.from_piece(
-            self._counter, self._callback_flag, self._id_to_item, ctx, root_piece, state, show)
+            self._counter, self._callback_flag, self._id_to_item, ctx, piece, state, show)
 
     def view_items(self, item_id):
         item = self._id_to_item.get(item_id)
