@@ -75,7 +75,7 @@ def test_apply_root_diff():
     default_layout = make_default_layout()
     app = QtWidgets.QApplication()
     try:
-        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx, show=False) as ctl:
+        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx) as ctl:
             diff = Diff(
                 piece=ListDiff.Insert(
                     idx=0,
@@ -96,7 +96,7 @@ def test_layout_tree():
     default_layout = make_default_layout()
     app = QtWidgets.QApplication()
     try:
-        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx, show=False):
+        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx):
             piece = htypes.layout.view()
             items = controller.layout_tree(piece, None)
             assert items
@@ -111,7 +111,7 @@ def test_layout_tree_commands():
     default_layout = make_default_layout()
     app = QtWidgets.QApplication()
     try:
-        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx, show=False):
+        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx):
             piece = htypes.layout.view()
             windows = controller.layout_tree(piece, None)
             window_items = controller.layout_tree(piece, windows[0])
@@ -134,7 +134,7 @@ def test_view_item_commands():
     default_layout = make_default_layout()
     app = QtWidgets.QApplication()
     try:
-        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx, show=False):
+        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx):
             piece = htypes.layout.view()
             windows = controller.layout_tree(piece, None)
             window_items = controller.layout_tree(piece, windows[0])

@@ -399,8 +399,8 @@ class Controller:
 
     @classmethod
     @contextmanager
-    def running(cls, layout_bundle, default_layout, ctx, show):
-        cls.instance = self = cls(layout_bundle, default_layout, ctx)
+    def running(cls, layout_bundle, default_layout, ctx, show=False, load_state=False):
+        cls.instance = self = cls(layout_bundle, default_layout, ctx, load_state)
         try:
             if show:
                 self.show()
@@ -408,15 +408,17 @@ class Controller:
         finally:
             cls.instance = None
 
-    def __init__(self, layout_bundle, default_layout, ctx):
+    def __init__(self, layout_bundle, default_layout, ctx, load_state):
         self._root_ctx = ctx
         self._id_to_item = {}
         self._callback_flag = CallbackFlag()
         self._counter = itertools.count(start=1)
-        try:
-            layout = layout_bundle.load_piece()
-        except FileNotFoundError:
-            layout = default_layout
+        layout = default_layout
+        if load_state:
+            try:
+                layout = layout_bundle.load_piece()
+            except FileNotFoundError:
+                pass
         self._root_item = _RootItem.from_piece(
             self._counter, self._callback_flag, self._id_to_item, ctx, layout_bundle, layout)
 

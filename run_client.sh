@@ -10,6 +10,6 @@ rm /tmp/client*.log || true
 
 cd $(dirname $0)
 
-./client.py
+./client.py "$@"
 
 # tail -n500 /tmp/client-info.log

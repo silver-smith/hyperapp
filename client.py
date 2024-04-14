@@ -26,6 +26,7 @@ def main():
     init_logging('client')
 
     parser = argparse.ArgumentParser(description='Hyperapp client')
+    parser.add_argument('--clean', '-c', action='store_true', help="Do not load stored layout state")
     args = parser.parse_args()
 
     services = Services(module_dir_list)
@@ -50,7 +51,7 @@ def main():
         association_reg.register_association_list(resource_registry.associations)
         client_module_res = resource_registry['client.client', 'client.module']
         client_module = pyobj_creg.animate(client_module_res)
-        exit_code = client_module._main()
+        exit_code = client_module._main(load_state=not args.clean)
     finally:
         log.info("Stopping.")
         services.stop_signal.set()

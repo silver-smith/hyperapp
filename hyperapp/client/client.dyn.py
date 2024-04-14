@@ -109,7 +109,7 @@ def make_default_layout():
         )
 
 
-def _main():
+def _main(load_state):
     app = QtWidgets.QApplication()
     event_loop = QEventLoop(app)
     asyncio.set_event_loop(event_loop)  # Should be set before any asyncio objects created.
@@ -125,5 +125,5 @@ def _main():
     default_layout = make_default_layout()
     layout_bundle = file_bundle(layout_path)
 
-    with Controller.running(layout_bundle, default_layout, ctx, show=True):
+    with Controller.running(layout_bundle, default_layout, ctx, show=True, load_state=load_state):
         return app.exec()
