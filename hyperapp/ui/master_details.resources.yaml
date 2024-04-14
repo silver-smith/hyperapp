@@ -91,6 +91,9 @@ definitions:
     _type: legacy_type.ui:ui_command
     d: unwrap_master_details.d
     function: unwrap_master_details
+    params:
+    - piece
+    - state
   wrap_master_details:
     _type: legacy_type.builtin:attribute
     object: master_details.module
@@ -102,3 +105,6 @@ definitions:
     _type: legacy_type.ui:ui_command
     d: wrap_master_details.d
     function: wrap_master_details
+    params:
+    - piece
+    - state

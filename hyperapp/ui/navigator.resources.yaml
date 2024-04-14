@@ -68,6 +68,9 @@ definitions:
     _type: legacy_type.ui:ui_command
     d: go_back.d
     function: go_back
+    params:
+    - piece
+    - state
   go_forward:
     _type: legacy_type.builtin:attribute
     object: navigator.module
@@ -79,6 +82,9 @@ definitions:
     _type: legacy_type.ui:ui_command
     d: go_forward.d
     function: go_forward
+    params:
+    - piece
+    - state
   navigator.module:
     _type: legacy_type.builtin:python_module
     module_name: navigator

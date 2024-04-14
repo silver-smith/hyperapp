@@ -34,6 +34,7 @@ def construct_ui_command(piece, custom_types, name_to_res, module_res, attr):
     command = htypes.ui.ui_command(
         d=mosaic.put(command_d_res),
         function=mosaic.put(attribute),
+        params=piece.params,
         )
     association = Association(
         bases=[dir_res, t_res],
@@ -58,6 +59,7 @@ def construct_universal_ui_command(piece, custom_types, name_to_res, module_res,
     command = htypes.ui.ui_command(
         d=mosaic.put(command_d_res),
         function=mosaic.put(attribute),
+        params=piece.params,
         )
     association = Association(
         bases=[dir_res],

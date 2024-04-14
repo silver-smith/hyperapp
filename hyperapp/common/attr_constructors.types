@@ -7,5 +7,7 @@ parameter = record:
 
 ui_command_ctr = record:
   t: ref
+  params: string list
 
-universal_ui_command_ctr = record
+universal_ui_command_ctr = record:
+  params: string list

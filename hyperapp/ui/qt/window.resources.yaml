@@ -65,6 +65,9 @@ definitions:
     _type: legacy_type.ui:ui_command
     d: duplicate_window.d
     function: duplicate_window
+    params:
+    - piece
+    - state
   quit:
     _type: legacy_type.builtin:attribute
     object: window.module
@@ -76,6 +79,9 @@ definitions:
     _type: legacy_type.ui:ui_command
     d: quit.d
     function: quit
+    params:
+    - piece
+    - state
   ui_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:ui_command_d

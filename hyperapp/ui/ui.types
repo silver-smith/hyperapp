@@ -10,6 +10,7 @@ universal_ui_command_d = record
 ui_command = record:
   d: ref
   function: ref
+  params: string list
 
 # selectors for command associations.
 model_command_d = record

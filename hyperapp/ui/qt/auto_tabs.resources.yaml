@@ -92,6 +92,9 @@ definitions:
     _type: legacy_type.ui:ui_command
     d: close_tab.d
     function: close_tab
+    params:
+    - piece
+    - state
   duplicate_tab:
     _type: legacy_type.builtin:attribute
     object: auto_tabs.module
@@ -103,6 +106,9 @@ definitions:
     _type: legacy_type.ui:ui_command
     d: duplicate_tab.d
     function: duplicate_tab
+    params:
+    - piece
+    - state
   model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_command_d

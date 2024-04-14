@@ -88,15 +88,17 @@ def ui_command(fn_or_t):
     if isinstance(fn_or_t, Type):  # Parameterized version.
         t_res = pyobj_creg.reverse_resolve(fn_or_t)
         t_ref = mosaic.put(t_res)
-        ctr = htypes.attr_constructors.ui_command_ctr(t_ref)
 
         def _ui_command(fn):
+            params = tuple(inspect.signature(fn).parameters)
+            ctr = htypes.attr_constructors.ui_command_ctr(t_ref, params)
             add_fn_module_constructor(fn, mosaic.put(ctr))
             return fn
 
         return _ui_command
     else:  # Non-parameterized version.
-        ctr = htypes.attr_constructors.universal_ui_command_ctr()
+        params = tuple(inspect.signature(fn_or_t).parameters)
+        ctr = htypes.attr_constructors.universal_ui_command_ctr(params)
         add_fn_module_constructor(fn_or_t, mosaic.put(ctr))
         return fn_or_t
 
