@@ -22,8 +22,8 @@ async def test_show_state():
     assert value
 
 
-async def test_sample_list_state():
-    value = await sample_commands.sample_list_state(
+async def test_sample_list_details():
+    value = await sample_commands.details(
         htypes.sample_list.sample_list(), current_idx=11)
 
 

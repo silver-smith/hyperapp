@@ -48,7 +48,7 @@ def visualizer():
                 return view
 
             command_list = model_command_factory(value)
-            command = next(cmd for cmd in command_list if cmd.name == 'sample_list_state')
+            command = next(cmd for cmd in command_list if cmd.name == 'details')
             details_adapter = htypes.str_adapter.static_str_adapter("Default details")
             details = htypes.text.readonly_view(mosaic.put(details_adapter))
             return htypes.master_details.view(
