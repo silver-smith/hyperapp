@@ -1,4 +1,5 @@
 import asyncio
+import inspect
 import logging
 import weakref
 from functools import cached_property
@@ -43,10 +44,12 @@ _hardcoded_shortcuts = {
 
 class CommandBase:
 
-    def __init__(self, name, d, fn, view, widget, wrappers):
+    def __init__(self, name, d, fn, params, model, view, widget, wrappers):
         self._name = name
         self._d = d
         self._fn = fn
+        self._params = set(params)
+        self._model = model  # piece
         self._view = view
         self._widget = weakref.ref(widget)
         self._wrappers = wrappers
@@ -61,6 +64,18 @@ class CommandBase:
     @property
     def name(self):
         return self._name
+
+    def clone_with_d(self, d):
+        return self.__class__(
+            name=self._name,
+            d={*self._d, d},
+            fn=self._fn,
+            params=self._params,
+            model=self._model,
+            view=self._view,
+            widget=self._widget(),
+            wrappers=self._wrappers,
+            )
 
     def make_action(self):
         action = QtGui.QAction(self.name)
@@ -87,40 +102,51 @@ class CommandBase:
         log.info("Start command: %r", self.name)
         asyncio.create_task(self.run())
 
+    @property
+    def enabled(self):
+        return set(self.params) >= self._params
 
-class UiCommand(CommandBase):
-
-    def clone_with_d(self, d):
-        return UiCommand(
-            name=self._name,
-            d={*self._d, d},
-            fn=self._fn,
-            view=self._view,
-            widget=self._widget(),
-            wrappers=self._wrappers,
-            )
+    @property
+    def disabled_reason(self):
+        params = ", ".join(self._params - set(self.params))
+        return f"Params not ready: {params}"
 
     async def run(self):
-        widget = self._widget()
-        if widget is None:
-            log.warning("Not running UI command %r: Widget is gone", self._name)
-            return None
-        piece = self._view.piece
-        state = self._view.widget_state(widget)
-        log.info("Run ui command: %r (%s, %s)", self._name, piece, state)
-        result = self._fn(piece, state)
-        log.info("Run ui command %r result: [%s] %r", self._name, type(result), result)
+        if not self.enabled:
+            log.warning("%s: Disabled: %s", self.name, self.disabled_reason)
+            return
+        kw = {name: value for name, value in self.params.items() if name in self._params}
+        log.info("Run command: %r (%s)", self.name, kw)
+        result = self._fn(**kw)
+        if inspect.iscoroutinefunction(self._fn):
+            result = await result
+        log.info("Run command %r result: [%s] %r", self.name, type(result), result)
         if result is None:
             return None
         for wrapper in reversed(self._wrappers):
             result = wrapper(result)
-        log.info("Run ui command %r wrapped result: [%s] %r", self._name, type(result), result)
+        log.info("Run command %r wrapped result: [%s] %r", self.name, type(result), result)
         return result
+
+
+class UiCommand(CommandBase):
+
+    @property
+    def params(self):
+        params = {
+            'piece': self._view.piece,
+            }
+        widget = self._widget()
+        if widget is not None:
+            params['state'] = self._view.widget_state(widget)
+        if self._model is not None:
+            params['model'] = self._model
+        return params
 
 
 @mark.service
 def ui_command_factory():
-    def _ui_command_factory(view, widget, wrappers):
+    def _ui_command_factory(model, view, widget, wrappers):
         piece_t = deduce_value_type(view.piece)
         piece_t_res = pyobj_creg.reverse_resolve(piece_t)
         d_res = data_to_res(htypes.ui.ui_command_d())
@@ -133,6 +159,6 @@ def ui_command_factory():
         for command_rec in command_rec_list:
             command_d = pyobj_creg.invite(command_rec.d)
             fn = pyobj_creg.invite(command_rec.function)
-            command_list.append(UiCommand(fn.__name__, {command_d}, fn, view, widget, wrappers))
+            command_list.append(UiCommand(fn.__name__, {command_d}, fn, command_rec.params, model, view, widget, wrappers))
         return command_list
     return _ui_command_factory

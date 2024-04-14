@@ -89,6 +89,15 @@ class _Item:
         return self._widget
 
     @property
+    def model(self):
+        model = self.view.get_model()
+        if model is not None:
+            return model
+        if not self.children:
+            return None
+        return self.children[self.current_child_idx].model
+
+    @property
     def commands(self):
         if self._commands is None:
             self._commands = self._make_commands()
@@ -100,7 +109,7 @@ class _Item:
     def _make_view_commands(self, view):
         wrapper = self._apply_diff
         return [
-            *ui_command_factory(view, self.widget, [wrapper]),
+            *ui_command_factory(self.model, view, self.widget, [wrapper]),
             *view.get_commands(self.widget, [wrapper]),
             ]
 

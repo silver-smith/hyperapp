@@ -46,8 +46,9 @@ class PhonyView:
 
 
 async def test_ui_command_factory():
+    model = None
     widget = PhonyWidget()  # Should hold ref to it.
-    command_list = ui_command_factory(PhonyView(), widget, wrappers=[])
+    command_list = ui_command_factory(model, PhonyView(), widget, wrappers=[])
     assert command_list
     result = await command_list[0].run()
     assert result == 123, repr(result)
