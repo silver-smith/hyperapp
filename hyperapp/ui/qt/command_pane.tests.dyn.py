@@ -11,7 +11,7 @@ def test_widget():
     state = htypes.command_pane.state()
     app = QtWidgets.QApplication()
     try:
-        view = command_pane.CommandPaneView.from_piece(piece)
+        view = command_pane.CommandPaneView.from_piece(piece, ctx)
         widget = view.construct_widget(state, ctx)
         assert view.piece
         state = view.widget_state(widget)

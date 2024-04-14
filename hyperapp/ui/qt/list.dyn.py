@@ -77,21 +77,22 @@ class _TableView(QtWidgets.QTableView):
 class ListView(View):
 
     @classmethod
-    def from_piece(cls, piece):
-        return cls(piece.adapter)
+    def from_piece(cls, piece, ctx):
+        adapter = ui_adapter_creg.invite(piece.adapter, ctx)
+        return cls(piece.adapter, adapter)
 
-    def __init__(self, adapter_ref):
+    def __init__(self, adapter_ref, adapter):
         super().__init__()
         self._adapter_ref = adapter_ref
+        self._adapter = adapter
 
     @property
     def piece(self):
         return htypes.list.view(self._adapter_ref)
 
     def construct_widget(self, state, ctx):
-        adapter = ui_adapter_creg.invite(self._adapter_ref, ctx)
         widget = _TableView()
-        model = _Model(adapter)
+        model = _Model(self._adapter)
         widget.setModel(model)
         widget.verticalHeader().hide()
         widget.setShowGrid(False)
@@ -112,10 +113,9 @@ class ListView(View):
         return None
 
     def model_state(self, widget):
-        adapter = widget.model().adapter
         idx = widget.currentIndex().row()
-        if adapter.row_count():
-            current_item = adapter.get_item(idx)
+        if self._adapter.row_count():
+            current_item = self._adapter.get_item(idx)
         else:
             current_item = None
         return ModelState(current_idx=idx, current_item=current_item)

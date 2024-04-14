@@ -46,7 +46,7 @@ def test_box_layout():
     state = make_state()
     app = QtWidgets.QApplication()
     try:
-        view = box_layout.BoxLayoutView.from_piece(piece)
+        view = box_layout.BoxLayoutView.from_piece(piece, ctx)
         widget = view.construct_widget(state, ctx)
         assert view.piece
         state = view.widget_state(widget)

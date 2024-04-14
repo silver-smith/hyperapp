@@ -13,9 +13,9 @@ log = logging.getLogger(__name__)
 class TabGroupsView(WrapperView):
 
     @classmethod
-    def from_piece(cls, piece):
+    def from_piece(cls, piece, ctx):
         base_piece = htypes.tabs.view(piece.tabs)
-        base = view_creg.animate(base_piece)
+        base = view_creg.animate(base_piece, ctx)
         return cls(base)
 
     @property

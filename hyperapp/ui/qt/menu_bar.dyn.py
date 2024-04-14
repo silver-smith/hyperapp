@@ -18,7 +18,7 @@ class MenuBar(QtWidgets.QMenuBar):
 class MenuBarView(View):
 
     @classmethod
-    def from_piece(cls, piece):
+    def from_piece(cls, piece, ctx):
         return cls()
 
     def __init__(self):

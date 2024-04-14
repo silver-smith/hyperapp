@@ -51,7 +51,7 @@ def test_master_details():
     state = make_state()
     app = QtWidgets.QApplication()
     try:
-        view = master_details.MasterDetailsView.from_piece(piece)
+        view = master_details.MasterDetailsView.from_piece(piece, ctx)
         widget = view.construct_widget(state, ctx)
         assert view.piece
         state = view.widget_state(widget)

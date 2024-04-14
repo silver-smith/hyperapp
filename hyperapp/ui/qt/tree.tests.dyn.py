@@ -51,7 +51,7 @@ def test_tree():
     state = None
     app = QtWidgets.QApplication()
     try:
-        view = tree.TreeView.from_piece(piece)
+        view = tree.TreeView.from_piece(piece, ctx)
         view.set_controller_hook(Mock())
         widget = view.construct_widget(state, ctx)
         assert view.piece

@@ -33,7 +33,7 @@ def test_tabs():
     state = make_state()
     app = QtWidgets.QApplication()
     try:
-        view = auto_tabs.AutoTabsView.from_piece(piece)
+        view = auto_tabs.AutoTabsView.from_piece(piece, ctx)
         view.set_controller_hook(Mock())
         widget = view.construct_widget(state, ctx)
         assert view.piece
@@ -49,7 +49,7 @@ def test_duplicate():
     state = make_state()
     app = QtWidgets.QApplication()
     try:
-        view = auto_tabs.AutoTabsView.from_piece(piece)
+        view = auto_tabs.AutoTabsView.from_piece(piece, ctx)
         view.set_controller_hook(Mock())
         widget = view.construct_widget(state, ctx)
         diff = auto_tabs.duplicate_tab(piece, state)
@@ -81,7 +81,7 @@ def test_close():
     ctx = Context()
     app = QtWidgets.QApplication()
     try:
-        view = auto_tabs.AutoTabsView.from_piece(piece)
+        view = auto_tabs.AutoTabsView.from_piece(piece, ctx)
         view.set_controller_hook(Mock())
         widget = view.construct_widget(state, ctx)
         diff = auto_tabs.close_tab(piece, state)

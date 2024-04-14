@@ -52,7 +52,7 @@ def test_tabs():
     state = make_inner_state()
     app = QtWidgets.QApplication()
     try:
-        view = tabs.TabsView.from_piece(piece)
+        view = tabs.TabsView.from_piece(piece, ctx)
         view.set_controller_hook(Mock())
         widget = view.construct_widget(state, ctx)
         assert view.piece
@@ -81,7 +81,7 @@ def test_duplicate():
     state = make_inner_state()
     app = QtWidgets.QApplication()
     try:
-        view = tabs.TabsView.from_piece(piece)
+        view = tabs.TabsView.from_piece(piece, ctx)
         view.set_controller_hook(Mock())
         widget = view.construct_widget(state, ctx)
         diff = duplicate(piece, state)

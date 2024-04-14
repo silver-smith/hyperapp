@@ -14,21 +14,22 @@ log = logging.getLogger(__name__)
 class ViewTextView(View):
 
     @classmethod
-    def from_piece(cls, piece):
-        return cls(piece.adapter)
+    def from_piece(cls, piece, ctx):
+        adapter = ui_adapter_creg.invite(piece.adapter, ctx)
+        return cls(piece.adapter, adapter)
 
-    def __init__(self, adapter_ref):
+    def __init__(self, adapter_ref, adapter):
         super().__init__()
         self._adapter_ref = adapter_ref
+        self._adapter = adapter
 
     @property
     def piece(self):
         return htypes.text.readonly_view(self._adapter_ref)
 
     def construct_widget(self, state, ctx):
-        adapter = ui_adapter_creg.invite(self._adapter_ref, ctx)
         w = QtWidgets.QTextBrowser()
-        w.setPlainText(adapter.get_text())
+        w.setPlainText(self._adapter.get_text())
         return w
 
     def widget_state(self, widget):
@@ -39,21 +40,22 @@ class ViewTextView(View):
 class EditTextView(View):
 
     @classmethod
-    def from_piece(cls, piece):
-        return cls(piece.adapter)
+    def from_piece(cls, piece, ctx):
+        adapter = ui_adapter_creg.invite(piece.adapter, ctx)
+        return cls(piece.adapter, adapter)
 
-    def __init__(self, adapter_ref):
+    def __init__(self, adapter_ref, adapter):
         super().__init__()
         self._adapter_ref = adapter_ref
+        self._adapter = adapter
 
     @property
     def piece(self):
         return htypes.text.edit_view(self._adapter_ref)
 
     def construct_widget(self, state, ctx):
-        adapter = ui_adapter_creg.invite(self._adapter_ref, ctx)
         w = QtWidgets.QTextEdit()
-        w.setPlainText(adapter.get_text())
+        w.setPlainText(self._adapter.get_text())
         return w
 
     def widget_state(self, widget):

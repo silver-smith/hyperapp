@@ -58,7 +58,7 @@ def test_navigator():
     app = QtWidgets.QApplication()
     try:
         ctx = Context()
-        view = navigator.NavigatorView.from_piece(piece)
+        view = navigator.NavigatorView.from_piece(piece, ctx)
         view.set_controller_hook(Mock())
         widget = view.construct_widget(state, ctx)
         state = view.widget_state(widget)

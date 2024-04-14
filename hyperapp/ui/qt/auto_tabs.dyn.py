@@ -29,7 +29,7 @@ def tab_piece_ref_label(piece_ref):
 class AutoTabsView(WrapperView):
 
     @classmethod
-    def from_piece(cls, piece):
+    def from_piece(cls, piece, ctx):
         tabs = tuple(
             htypes.tabs.tab(
                 label=tab_piece_ref_label(view_ref),
@@ -38,7 +38,7 @@ class AutoTabsView(WrapperView):
             for idx, view_ref in enumerate(piece.tabs)
             )
         base_piece = htypes.tabs.view(tabs)
-        base = view_creg.animate(base_piece)
+        base = view_creg.animate(base_piece, ctx)
         return cls(base)
 
     @property

@@ -22,8 +22,8 @@ log = logging.getLogger(__name__)
 class NavigatorView(View):
 
     @classmethod
-    def from_piece(cls, piece):
-        current_view = view_creg.invite(piece.current_view)
+    def from_piece(cls, piece, ctx):
+        current_view = view_creg.invite(piece.current_view, ctx)
         current_model = web.summon(piece.current_model)
         return cls(current_view, current_model, piece.commands, piece.prev, piece.next)
 
@@ -103,7 +103,7 @@ class NavigatorView(View):
         log.info("Navigator: apply: %s", diff)
         if isinstance(diff.piece, htypes.navigator.open_new_diff):
             current_piece = self.piece
-            self._current_view = view_creg.invite(diff.piece.new_current)
+            self._current_view = view_creg.invite(diff.piece.new_current, ctx)
             self._current_model = web.summon(diff.piece.new_model)
             self._commands = diff.piece.commands
             self._prev = mosaic.put(current_piece)
@@ -113,7 +113,7 @@ class NavigatorView(View):
                 return None
             current_piece = self.piece
             prev = web.summon(self._prev)
-            self._current_view = view_creg.invite(prev.current_view)
+            self._current_view = view_creg.invite(prev.current_view, ctx)
             self._current_model = web.summon(prev.current_model)
             self._commands = prev.commands
             self._prev = prev.prev
@@ -123,7 +123,7 @@ class NavigatorView(View):
                 return None
             current_piece = self.piece
             next = web.summon(self._next)
-            self._current_view = view_creg.invite(next.current_view)
+            self._current_view = view_creg.invite(next.current_view, ctx)
             self._current_model = web.summon(next.current_model)
             self._commands = next.commands
             self._prev = mosaic.put(current_piece)

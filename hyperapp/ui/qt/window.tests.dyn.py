@@ -46,7 +46,7 @@ def test_construct_widget():
     tabs_state, state = make_state()
     app = QtWidgets.QApplication()
     try:
-        view = window.WindowView.from_piece(piece)
+        view = window.WindowView.from_piece(piece, ctx)
         assert view.piece
         widget = view.construct_widget(state, ctx)
         state = view.widget_state(widget)

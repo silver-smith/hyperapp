@@ -307,7 +307,7 @@ def _create_trace_resources(ctx, module_name, resource_module, module_res, qname
         params.pop(list(params)[0])
     param_names = list(params)
     if len(qname.split('.')) == 2 and trace.obj_type in ('classmethod', 'staticmethod'):
-        if param_names == ['piece'] and 'View' in qname:
+        if param_names == ['piece', 'ctx'] and 'View' in qname:
             ass_list += construct_view_impl(ctx, module_name, resource_module, module_res, qname, params)
         if param_names == ['piece', 'ctx'] and 'Adapter' in qname:
             ass_list += construct_adapter_impl(ctx, module_name, resource_module, module_res, qname, params)

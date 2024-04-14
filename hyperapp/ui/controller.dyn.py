@@ -132,7 +132,7 @@ class _Item:
         parent = self.parent
         idx = self.idx
         parent._children = None
-        new_view = view_creg.animate(diff.piece.piece)
+        new_view = view_creg.animate(diff.piece.piece, self.ctx)
         new_widget = new_view.construct_widget(diff.state, self.ctx)
         parent.view.replace_child(parent.widget, idx, new_view, new_widget)
 
@@ -254,7 +254,7 @@ class _WindowItem(_Item):
 
     @classmethod
     def from_refs(cls, counter, callback_flag, id_to_item, ctx, parent, view_ref, state_ref):
-        view = view_creg.invite(view_ref)
+        view = view_creg.invite(view_ref, ctx)
         state = web.summon(state_ref)
         item_id = next(counter)
         widget = view.construct_widget(state, ctx)

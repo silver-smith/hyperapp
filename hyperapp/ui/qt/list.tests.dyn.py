@@ -33,7 +33,7 @@ def test_list():
     state = None
     app = QtWidgets.QApplication()
     try:
-        view = list.ListView.from_piece(piece)
+        view = list.ListView.from_piece(piece, ctx)
         view.set_controller_hook(Mock())
         widget = view.construct_widget(state, ctx)
         assert view.piece

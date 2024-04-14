@@ -19,7 +19,7 @@ def test_widget():
     state = make_state()
     app = QtWidgets.QApplication()
     try:
-        view = menu_bar.MenuBarView.from_piece(piece)
+        view = menu_bar.MenuBarView.from_piece(piece, ctx)
         widget = view.construct_widget(state, ctx)
         assert view.piece
         state = view.widget_state(widget)

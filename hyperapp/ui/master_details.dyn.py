@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 class MasterDetailsView(WrapperView):
     
     @classmethod
-    def from_piece(cls, piece):
+    def from_piece(cls, piece, ctx):
         elements = [
             htypes.box_layout.element(
                 view=piece.master_view,
@@ -37,7 +37,7 @@ class MasterDetailsView(WrapperView):
             elements=elements,
             )
         model = web.summon(piece.model)
-        base = view_creg.animate(base_piece)
+        base = view_creg.animate(base_piece, ctx)
         return cls(base, model, piece.details_command)
 
     def __init__(self, base_view, model_piece, details_command):

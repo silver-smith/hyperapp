@@ -21,9 +21,9 @@ DUP_OFFSET = htypes.window.pos(150, 50)
 class WindowView(View):
 
     @classmethod
-    def from_piece(cls, piece):
-        menu_bar_view = view_creg.invite(piece.menu_bar_ref)
-        central_view = view_creg.invite(piece.central_view_ref)
+    def from_piece(cls, piece, ctx):
+        menu_bar_view = view_creg.invite(piece.menu_bar_ref, ctx)
+        central_view = view_creg.invite(piece.central_view_ref, ctx)
         return cls(menu_bar_view, central_view)
 
     def __init__(self, menu_bar_view, central_view):

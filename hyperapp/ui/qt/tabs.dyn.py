@@ -22,9 +22,9 @@ class TabsView(View):
     _Tab = namedtuple('_Tab', 'view label')
 
     @classmethod
-    def from_piece(cls, piece):
+    def from_piece(cls, piece, ctx):
         tabs = [
-            cls._Tab(view_creg.invite(rec.ctl), rec.label)
+            cls._Tab(view_creg.invite(rec.ctl, ctx), rec.label)
             for rec in piece.tabs
             ]
         return cls(tabs)
@@ -79,7 +79,7 @@ class TabsView(View):
             idx = diff.piece.idx
             old_state = self.widget_state(widget)
             tab_piece = web.summon(diff.piece.item.ctl)
-            tab_view = view_creg.animate(tab_piece)
+            tab_view = view_creg.animate(tab_piece, ctx)
             tab_state = web.summon(diff.state.item)
             w = tab_view.construct_widget(tab_state, ctx)
             new_tab = self._Tab(tab_view, diff.piece.item.label)
