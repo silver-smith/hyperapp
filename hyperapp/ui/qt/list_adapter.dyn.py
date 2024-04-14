@@ -32,6 +32,10 @@ class StaticListAdapter:
         self._value = value  # record list.
         self._column_names = sorted(self._item_t.fields)
 
+    @property
+    def model(self):
+        return self._value
+
     def column_count(self):
         return len(self._item_t.fields)
 
@@ -69,6 +73,10 @@ class FnListAdapterBase(metaclass=abc.ABCMeta):
         self._column_names = sorted(self._item_t.fields)
         self._item_list = None
         self._subscribed_models = weakref.WeakSet()
+
+    @property
+    def model(self):
+        return self._model_piece
 
     def column_count(self):
         return len(self._item_t.fields)

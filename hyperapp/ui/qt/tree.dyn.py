@@ -157,6 +157,9 @@ class TreeView(View):
     def widget_state(self, widget):
         return None
 
+    def get_model(self):
+        return self._adapter.model
+
     def model_state(self, widget):
         index = widget.currentIndex()
         item = self._adapter.get_item(index.internalId())

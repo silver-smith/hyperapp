@@ -90,12 +90,7 @@ class _Item:
 
     @property
     def model(self):
-        model = self.view.get_model()
-        if model is not None:
-            return model
-        if not self.children:
-            return None
-        return self.children[self.current_child_idx].model
+        return self.view.get_model()
 
     @property
     def commands(self):

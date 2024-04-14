@@ -112,6 +112,9 @@ class ListView(View):
     def widget_state(self, widget):
         return None
 
+    def get_model(self):
+        return self._adapter.model
+
     def model_state(self, widget):
         idx = widget.currentIndex().row()
         if self._adapter.row_count():

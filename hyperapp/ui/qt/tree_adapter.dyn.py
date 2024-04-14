@@ -37,6 +37,10 @@ class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
         self._id_counter = itertools.count(start=1)
         self._subscribed_models = weakref.WeakSet()
 
+    @property
+    def model(self):
+        return self._model_piece
+
     def column_count(self):
         return len(self._item_t.fields)
 

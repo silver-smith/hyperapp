@@ -36,6 +36,9 @@ class ViewTextView(View):
         # return htypes.text.state(text=widget.toPlainText())
         return htypes.text.state()
 
+    def get_model(self):
+        return self._adapter.model
+
 
 class EditTextView(View):
 
@@ -65,3 +68,6 @@ class EditTextView(View):
     def model_state(self, widget):
         # return htypes.text.state(text=widget.toPlainText())
         return htypes.text.state()
+
+    def get_model(self):
+        return self._adapter.model
