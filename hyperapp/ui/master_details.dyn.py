@@ -4,6 +4,7 @@ from . import htypes
 from .services import (
     mark,
     model_command_creg,
+    model_command_factory,
     mosaic,
     view_creg,
     visualizer,
@@ -83,6 +84,8 @@ class MasterDetailsView(WrapperView):
             self._details_command, master_view, self._model_piece, master_widget, wrappers=[])
         piece = await command.run()
         log.info("Master-details: command result: %s", piece)
+        if type(piece) is list:
+            piece = tuple(piece)
         details_view_piece = visualizer(piece)
         self._ctl_hook.apply_diff(Diff(ListDiff.Replace(1, details_view_piece)))
 
@@ -107,6 +110,33 @@ def unwrap_master_details(piece, state):
     return Diff(ReplaceViewDiff(master_view), master_state)
 
 
+def _pick_command(model):
+    command_list = model_command_factory(model)
+    name_to_cmd = {
+        cmd.name: cmd for cmd in command_list
+        }
+    preffered_names = ['open', 'details']
+    for name in preffered_names:
+        try:
+            return name_to_cmd[name]
+        except KeyError:
+            pass
+    return command_list[0]
+
+
 @mark.ui_command
-def wrap_master_details(piece, state):
-    log.info("Wrap master-details: %s / %s", piece, state)
+def wrap_master_details(model, piece, state):
+    log.info("Wrap master-details: %s/ %s / %s", model, piece, state)
+    command = _pick_command(model)
+    details_adapter = htypes.str_adapter.static_str_adapter("")
+    details = htypes.text.readonly_view(mosaic.put(details_adapter))
+    view = htypes.master_details.view(
+        model=mosaic.put(model),
+        master_view=mosaic.put(piece),
+        details_command=mosaic.put(command),
+        details_view=mosaic.put(details),
+        direction='LeftToRight',
+        master_stretch=1,
+        details_stretch=1,
+        )
+    return Diff(ReplaceViewDiff(view))

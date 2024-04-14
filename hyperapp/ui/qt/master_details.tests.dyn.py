@@ -4,14 +4,24 @@ from . import htypes
 from .services import (
     data_to_res,
     fn_to_res,
+    mark,
     mosaic,
     )
 from .code.context import Context
 from .tested.code import master_details
 
 
-def _details_command(piece):
+def _details_command_impl(piece):
     return f"Details for: {piece}"
+
+
+def _details_command():
+    return htypes.ui.model_command(
+        d=(mosaic.put(data_to_res(htypes.master_details_tests.sample_details_command_d())),),
+        name='details',
+        function=mosaic.put(fn_to_res(_details_command_impl)),
+        params=('piece',),
+        )
 
 
 def make_piece():
@@ -20,12 +30,7 @@ def make_piece():
     details_adapter= htypes.str_adapter.static_str_adapter("Sample details")
     master = htypes.text.readonly_view(mosaic.put(master_adapter))
     details = htypes.text.readonly_view(mosaic.put(details_adapter))
-    command = htypes.ui.model_command(
-        d=(mosaic.put(data_to_res(htypes.master_details_tests.sample_details_command_d())),),
-        name='details',
-        function=mosaic.put(fn_to_res(_details_command)),
-        params=('piece',),
-        )
+    command = _details_command()
     return htypes.master_details.view(
         model=mosaic.put(model),
         master_view=mosaic.put(master),
@@ -58,3 +63,18 @@ def test_master_details():
         assert state
     finally:
         app.shutdown()
+
+
+@mark.service
+def model_command_factory():
+    def _factory(model):
+        return [_details_command()]
+    return _factory
+
+
+def test_wrap_master_details():
+    model = "Sample model"
+    piece = "Dummy view piece"
+    state = None
+    diff = master_details.wrap_master_details(model, piece, state)
+    assert diff

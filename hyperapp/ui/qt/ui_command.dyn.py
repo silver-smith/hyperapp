@@ -39,6 +39,7 @@ _hardcoded_shortcuts = {
     'open_view_item_commands': 'C',
     'add_view_command': 'Insert',
     'unwrap_master_details': 'Ctrl+U',
+    'wrap_master_details': 'Ctrl+W',
     }
 
 
