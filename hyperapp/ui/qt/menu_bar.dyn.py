@@ -30,9 +30,8 @@ class MenuBarView(View):
 
     def construct_widget(self, state, ctx):
         w = MenuBar()
-        w.addMenu(QtWidgets.QMenu('&Global'))
-        w.addMenu(QtWidgets.QMenu('&View'))
-        w.addMenu(QtWidgets.QMenu('&Current'))
+        for text in ['&Global', '&View', '&Current']:
+            w.addMenu(QtWidgets.QMenu(text, toolTipsVisible=True))
         return w
 
     def widget_state(self, widget):

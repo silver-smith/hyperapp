@@ -78,20 +78,25 @@ class CommandBase:
             )
 
     def make_action(self):
-        action = QtGui.QAction(self.name)
+        action = QtGui.QAction(self.name, enabled=self.enabled)
         action.triggered.connect(self._start)
         if self.shortcut:
             action.setShortcut(self.shortcut)
+        if not self.enabled:
+            action.setToolTip(self.disabled_reason)
         return action
 
     def make_button(self, add_shortcut):
         text = self.name
         if self.shortcut:
             text += f' ({self.shortcut})'
-        button = QtWidgets.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
+        button = QtWidgets.QPushButton(
+            text, focusPolicy=QtCore.Qt.NoFocus, enabled=self.enabled)
         button.pressed.connect(self._start)
         if add_shortcut and self.shortcut:
             button.setShortcut(self.shortcut)
+        if not self.enabled:
+            button.setToolTip(self.disabled_reason)
         return button
 
     @property
