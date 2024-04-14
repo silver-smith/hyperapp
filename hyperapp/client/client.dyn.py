@@ -9,13 +9,13 @@ from .services import (
     endpoint_registry,
     file_bundle,
     generate_rsa_identity,
+    global_commands,
     mosaic,
     rpc_endpoint_factory,
     visualizer,
     view_creg,
     )
 from .code.context import Context
-from .code.model_command import global_commands
 from .code.controller import Controller
 
 

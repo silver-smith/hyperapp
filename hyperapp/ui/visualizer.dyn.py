@@ -6,12 +6,12 @@ from .services import (
     association_reg,
     data_to_res,
     mark,
+    model_command_factory,
     mosaic,
     pyobj_creg,
     types,
     web,
     )
-from .code.model_command import model_commands
 
 
 @mark.service
@@ -47,7 +47,7 @@ def visualizer():
             if t is not htypes.sample_list.sample_list:
                 return view
 
-            command_list = model_commands(value)
+            command_list = model_command_factory(value)
             command = next(cmd for cmd in command_list if cmd.name == 'sample_list_state')
             details_adapter = htypes.str_adapter.static_str_adapter("Default details")
             details = htypes.text.readonly_view(mosaic.put(details_adapter))

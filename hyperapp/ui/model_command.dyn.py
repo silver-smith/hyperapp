@@ -7,6 +7,7 @@ from . import htypes
 from .services import (
     association_reg,
     data_to_res,
+    mark,
     model_command_creg,
     pyobj_creg,
     )
@@ -40,40 +41,55 @@ def model_command_from_piece(piece, view, model_piece, widget, wrappers):
     return ModelCommand(piece.name, command_d, fn, piece.params, model_piece, view, widget, wrappers)
 
 
+@mark.service
 def global_commands():
-    d_res = data_to_res(htypes.ui.global_model_command_d())
-    command_list = association_reg.get_all(d_res)
-    return command_list
+
+    def _global_commands():
+        d_res = data_to_res(htypes.ui.global_model_command_d())
+        command_list = association_reg.get_all(d_res)
+        return command_list
+
+    return _global_commands
 
 
-def model_commands(piece):
-    try:
-        t = deduce_value_type(piece)
-    except DeduceTypeError:
-        return []
-    t_res = pyobj_creg.reverse_resolve(t)
-    d_res = data_to_res(htypes.ui.model_command_d())
-    command_list = association_reg.get_all((d_res, t_res))
-    return command_list
+@mark.service
+def model_command_factory():
+
+    def _model_commands(piece):
+        try:
+            t = deduce_value_type(piece)
+        except DeduceTypeError:
+            return []
+        t_res = pyobj_creg.reverse_resolve(t)
+        d_res = data_to_res(htypes.ui.model_command_d())
+        command_list = association_reg.get_all((d_res, t_res))
+        return command_list
+
+    return _model_commands
 
 
-def enum_model_commands(piece, model_state):
-    try:
-        t = deduce_value_type(piece)
-    except DeduceTypeError:
-        return []
-    t_res = pyobj_creg.reverse_resolve(t)
-    d_res = data_to_res(htypes.ui.model_command_enumerator_d())
-    enumerator_list = association_reg.get_all((d_res, t_res))
-    for enumerator in enumerator_list:
-        fn = pyobj_creg.invite(enumerator.function)
-        params = set(enumerator.params)
-        kw = {}
-        if 'piece' in params:
-            kw['piece'] = piece
-            params.remove('piece')
-        kw.update({
-            name: getattr(model_state, name)
-            for name in params
-            })
-        yield from fn(**kw)
+@mark.service
+def enum_model_commands():
+
+    def _enum_model_commands(piece, model_state):
+        try:
+            t = deduce_value_type(piece)
+        except DeduceTypeError:
+            return []
+        t_res = pyobj_creg.reverse_resolve(t)
+        d_res = data_to_res(htypes.ui.model_command_enumerator_d())
+        enumerator_list = association_reg.get_all((d_res, t_res))
+        for enumerator in enumerator_list:
+            fn = pyobj_creg.invite(enumerator.function)
+            params = set(enumerator.params)
+            kw = {}
+            if 'piece' in params:
+                kw['piece'] = piece
+                params.remove('piece')
+            kw.update({
+                name: getattr(model_state, name)
+                for name in params
+                })
+            yield from fn(**kw)
+
+    return _enum_model_commands

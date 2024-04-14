@@ -5,15 +5,18 @@ from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 
 from . import htypes
 from .services import (
+    enum_model_commands,
+    global_commands,
     mark,
     model_command_creg,
+    model_command_factory,
     mosaic,
     types,
     view_creg,
     visualizer,
     web,
     )
-from .code.model_command import global_commands, model_commands, enum_model_commands
+
 from .code.view import Diff, Item, View
 
 log = logging.getLogger(__name__)
@@ -87,7 +90,7 @@ class NavigatorView(View):
         new_current_view = visualizer(piece)
         commands = [
             *global_commands(),
-            *model_commands(piece),
+            *model_command_factory(piece),
             ]
         piece_t = deduce_complex_value_type(mosaic, types, piece)
         return Diff(htypes.navigator.open_new_diff(

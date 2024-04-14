@@ -17,5 +17,8 @@ definitions:
       services.fn_to_res: resource.fn_to_res:fn_to_res.service
       services.mosaic: builtins:mosaic.service
       tested.code.model_command: phony
+      tested.services.enum_model_commands: phony
+      tested.services.global_commands: phony
+      tested.services.model_command_factory: phony
   phony:
     _type: legacy_type.phony:phony

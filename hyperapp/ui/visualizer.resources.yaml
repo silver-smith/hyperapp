@@ -25,7 +25,7 @@ import:
 - legacy_type.ui:model_d
 - legacy_type.ui:tree_ui_t
 - resource.data_to_res:data_to_res.service
-- ui.model_command:model_command.module
+- ui.model_command:model_command_factory.service
 associations: []
 definitions:
   visualizer:
@@ -37,7 +37,6 @@ definitions:
     module_name: visualizer
     file_name: visualizer.dyn.py
     import_list:
-      code.model_command: ui.model_command:model_command.module
       htypes.list.view: legacy_type.list:view
       htypes.list_adapter.fn_list_adapter: legacy_type.list_adapter:fn_list_adapter
       htypes.list_adapter.static_list_adapter: legacy_type.list_adapter:static_list_adapter
@@ -55,6 +54,7 @@ definitions:
       services.association_reg: builtins:association_reg.service
       services.data_to_res: resource.data_to_res:data_to_res.service
       services.mark: common.mark:mark.service
+      services.model_command_factory: ui.model_command:model_command_factory.service
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
       services.types: builtins:types.service

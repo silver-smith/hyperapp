@@ -7,21 +7,26 @@ from .services import (
     mosaic,
     )
 from .tested.code import model_command
+from .tested.services import (
+    enum_model_commands,
+    global_commands,
+    model_command_factory,
+    )
 
 
 def test_global_commands():
-    commands = model_command.global_commands()
+    commands = global_commands()
     # assert commands
 
 
-def test_model_commands():
+def test_model_command_factory():
     piece = htypes.model_command_tests.sample_model()
-    commands = model_command.model_commands(piece)
+    commands = model_command_factory(piece)
 
 
 def test_enum_model_commands():
     piece = htypes.model_command_tests.sample_model()
-    commands = list(model_command.enum_model_commands(piece, model_state=None))
+    commands = list(enum_model_commands(piece, model_state=None))
 
 
 def _sample_fn():

@@ -39,7 +39,7 @@ import:
 - transport.endpoint:endpoint_registry.service
 - transport.rsa_identity:generate_rsa_identity.service
 - ui.controller:controller.module
-- ui.model_command:model_command.module
+- ui.model_command:global_commands.service
 - ui.view_registry:view_creg.service
 - ui.visualizer:visualizer.service
 associations:
@@ -63,7 +63,6 @@ definitions:
     import_list:
       code.context: common.context:context.module
       code.controller: ui.controller:controller.module
-      code.model_command: ui.model_command:model_command.module
       htypes.auto_tabs.view: legacy_type.auto_tabs:view
       htypes.box_layout.element: legacy_type.box_layout:element
       htypes.box_layout.state: legacy_type.box_layout:state
@@ -88,6 +87,7 @@ definitions:
       services.endpoint_registry: transport.endpoint:endpoint_registry.service
       services.file_bundle: common.file_bundle:file_bundle.service
       services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
+      services.global_commands: ui.model_command:global_commands.service
       services.mosaic: builtins:mosaic.service
       services.rpc_endpoint_factory: rpc.rpc_endpoint:rpc_endpoint_factory.service
       services.view_creg: ui.view_registry:view_creg.service
