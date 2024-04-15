@@ -11,6 +11,7 @@ def test_move_tab_to_new_group():
     inner_tabs_piece = htypes.auto_tabs.view(
         tabs=(
             mosaic.put(text_piece),
+            mosaic.put(text_piece),
             ),
         )
     outer_tabs_piece = htypes.tabs.view(
@@ -21,7 +22,10 @@ def test_move_tab_to_new_group():
     text_state = htypes.text.state()
     inner_tabs_state = htypes.tabs.state(
         current_tab=0,
-        tabs=(mosaic.put(text_state),),
+        tabs=(
+            mosaic.put(text_state),
+            mosaic.put(text_state),
+            ),
         )
     outer_tabs_state = htypes.tabs.state(
         current_tab=0,
