@@ -92,7 +92,7 @@ class TabsView(View):
             widget.removeTab(idx)
             widget.setCurrentIndex(idx)
             self._tabs = diff.piece.remove(self._tabs)
-            self._ctl_hook.item_element_removed(idx)
+            self._ctl_hook.element_removed(idx)
         else:
             raise NotImplementedError(f"Not implemented: tab.apply({diff.piece})")
 

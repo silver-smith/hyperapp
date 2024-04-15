@@ -227,6 +227,13 @@ class _Item:
         self.update_model()
         self.save_state()
 
+    def element_removed_hook(self, idx):
+        self._children = None
+        self._current_child_idx = None
+        self.update_commands()
+        self.update_model()
+        self.save_state()
+
     def apply_diff_hook(self, diff):
         self._apply_diff(diff)
 
@@ -388,6 +395,9 @@ class CtlHook:
 
     def element_inserted(self, idx):
         self._item.element_inserted_hook(idx)
+
+    def element_removed(self, idx):
+        self._item.element_removed_hook(idx)
 
     def replace_item_element(self, idx, new_view, new_widget=None):
         self._item.replace_item_element_hook(idx, new_view, new_widget)
