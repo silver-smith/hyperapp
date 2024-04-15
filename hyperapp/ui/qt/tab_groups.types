@@ -1,3 +1,0 @@
-from tabs import view as tabs_view
-
-view = record(tabs_view)

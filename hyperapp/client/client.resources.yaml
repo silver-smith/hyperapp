@@ -23,9 +23,9 @@ import:
 - legacy_type.root:layout
 - legacy_type.root:state
 - legacy_type.root:view
-- legacy_type.tab_groups:view
 - legacy_type.tabs:state
 - legacy_type.tabs:tab
+- legacy_type.tabs:view
 - legacy_type.text:state
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:global_model_command_kind_d
@@ -76,9 +76,9 @@ definitions:
       htypes.root.layout: legacy_type.root:layout
       htypes.root.state: legacy_type.root:state
       htypes.root.view: legacy_type.root:view
-      htypes.tab_groups.view: legacy_type.tab_groups:view
       htypes.tabs.state: legacy_type.tabs:state
       htypes.tabs.tab: legacy_type.tabs:tab
+      htypes.tabs.view: legacy_type.tabs:view
       htypes.text.state: legacy_type.text:state
       htypes.window.pos: legacy_type.window:pos
       htypes.window.size: legacy_type.window:size

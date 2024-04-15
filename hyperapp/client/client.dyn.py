@@ -53,7 +53,7 @@ def make_default_piece():
             mosaic.put(box_layout),
             ),
         )
-    outer_tabs_piece = htypes.tab_groups.view(
+    outer_tabs_piece = htypes.tabs.view(
         tabs=(
             htypes.tabs.tab("Outer", mosaic.put(inner_tabs_piece)),
             ),
