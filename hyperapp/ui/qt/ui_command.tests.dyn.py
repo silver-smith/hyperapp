@@ -20,6 +20,7 @@ class PhonyAssociationRegistry:
         fn_res = fn_to_res(_sample_fn)
         command = htypes.ui.ui_command(
             d=mosaic.put(command_d_res),
+            name='sample_command',
             function=mosaic.put(fn_res),
             params=('piece', 'state'),
             )

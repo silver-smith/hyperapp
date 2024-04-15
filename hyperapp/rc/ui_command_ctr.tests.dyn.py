@@ -20,6 +20,7 @@ def test_construct_ui_command():
     ui_command_ctr.construct_ui_command(
         piece=htypes.attr_constructors.ui_command_ctr(
             t=mosaic.put(string_res),
+            name='sample_command',
             params=('piece', 'state'),
             ),
         custom_types=local_types,
@@ -45,6 +46,7 @@ def test_construct_univeral_ui_command():
     name_to_res = {}
     ui_command_ctr.construct_universal_ui_command(
         piece=htypes.attr_constructors.universal_ui_command_ctr(
+            name='sample_command',
             params=('piece', 'state'),
             ),
         custom_types=local_types,

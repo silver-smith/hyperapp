@@ -9,6 +9,7 @@ universal_ui_command_d = record
 
 ui_command = record:
   d: ref
+  name: string
   function: ref
   params: string list
 

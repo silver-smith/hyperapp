@@ -96,6 +96,7 @@ definitions:
   unwrap_master_details.ui_command:
     _type: legacy_type.ui:ui_command
     d: unwrap_master_details.d
+    name: unwrap_master_details
     function: unwrap_master_details
     params:
     - piece
@@ -110,6 +111,7 @@ definitions:
   wrap_master_details.ui_command:
     _type: legacy_type.ui:ui_command
     d: wrap_master_details.d
+    name: wrap_master_details
     function: wrap_master_details
     params:
     - model

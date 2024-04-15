@@ -90,15 +90,17 @@ def ui_command(fn_or_t):
         t_ref = mosaic.put(t_res)
 
         def _ui_command(fn):
+            name = fn.__name__
             params = tuple(inspect.signature(fn).parameters)
-            ctr = htypes.attr_constructors.ui_command_ctr(t_ref, params)
+            ctr = htypes.attr_constructors.ui_command_ctr(t_ref, name, params)
             add_fn_module_constructor(fn, mosaic.put(ctr))
             return fn
 
         return _ui_command
     else:  # Non-parameterized version.
+        name = fn_or_t.__name__
         params = tuple(inspect.signature(fn_or_t).parameters)
-        ctr = htypes.attr_constructors.universal_ui_command_ctr(params)
+        ctr = htypes.attr_constructors.universal_ui_command_ctr(name, params)
         add_fn_module_constructor(fn_or_t, mosaic.put(ctr))
         return fn_or_t
 

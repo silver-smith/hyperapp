@@ -69,6 +69,7 @@ definitions:
   go_back.ui_command:
     _type: legacy_type.ui:ui_command
     d: go_back.d
+    name: go_back
     function: go_back
     params:
     - piece
@@ -83,6 +84,7 @@ definitions:
   go_forward.ui_command:
     _type: legacy_type.ui:ui_command
     d: go_forward.d
+    name: go_forward
     function: go_forward
     params:
     - piece

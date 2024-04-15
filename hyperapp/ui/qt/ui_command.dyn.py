@@ -165,6 +165,6 @@ def ui_command_factory():
         for command_rec in command_rec_list:
             command_d = pyobj_creg.invite(command_rec.d)
             fn = pyobj_creg.invite(command_rec.function)
-            command_list.append(UiCommand(fn.__name__, {command_d}, fn, command_rec.params, model, view, widget, wrappers))
+            command_list.append(UiCommand(command_rec.name, {command_d}, fn, command_rec.params, model, view, widget, wrappers))
         return command_list
     return _ui_command_factory
