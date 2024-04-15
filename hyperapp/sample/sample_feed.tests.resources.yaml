@@ -1,0 +1,17 @@
+# Automatically generated file. Do not edit.
+
+import:
+- common.mark:mark.service
+- legacy_type.builtin:python_module
+- legacy_type.phony:phony
+associations: []
+definitions:
+  phony:
+    _type: legacy_type.phony:phony
+  sample_feed.tests.module:
+    _type: legacy_type.builtin:python_module
+    module_name: sample_feed.tests
+    file_name: sample_feed.tests.dyn.py
+    import_list:
+      services.mark: common.mark:mark.service
+      tested.code.sample_feed: phony

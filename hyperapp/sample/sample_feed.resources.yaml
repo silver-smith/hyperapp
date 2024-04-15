@@ -1,0 +1,52 @@
+# Automatically generated file. Do not edit.
+
+import:
+- common.list_diff:list_diff.module
+- legacy_type.builtin:attribute
+- legacy_type.builtin:call
+- legacy_type.builtin:python_module
+- legacy_type.sample_feed:sample_feed
+- legacy_type.sample_feed:schedule_sample_feed_d
+- legacy_type.sample_list:item
+- legacy_type.ui:model_command
+- legacy_type.ui:model_command_d
+- legacy_type.ui:model_command_kind_d
+- ui.feed_creg:feed_creg.service
+associations:
+- bases:
+  - legacy_type.sample_feed:sample_feed
+  key:
+  - model_command_d
+  - legacy_type.sample_feed:sample_feed
+  value: schedule_sample_feed.command
+definitions:
+  model_command_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:model_command_d
+  model_command_kind_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:model_command_kind_d
+  sample_feed.module:
+    _type: legacy_type.builtin:python_module
+    module_name: sample_feed
+    file_name: sample_feed.dyn.py
+    import_list:
+      code.list_diff: common.list_diff:list_diff.module
+      htypes.sample_list.item: legacy_type.sample_list:item
+      services.feed_creg: ui.feed_creg:feed_creg.service
+  schedule_sample_feed:
+    _type: legacy_type.builtin:attribute
+    object: sample_feed.module
+    attr_name: schedule_sample_feed
+  schedule_sample_feed.command:
+    _type: legacy_type.ui:model_command
+    d:
+    - schedule_sample_feed.d
+    - model_command_kind_d
+    name: schedule_sample_feed
+    function: schedule_sample_feed
+    params:
+    - piece
+  schedule_sample_feed.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.sample_feed:schedule_sample_feed_d
