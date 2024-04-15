@@ -23,6 +23,15 @@ from .code.view import View, ReplaceViewDiff
 log = logging.getLogger(__name__)
 
 
+def _ensure_diff_list(diffs):
+    if diffs is None:
+        return []
+    if type(diffs) is list:
+        return diffs
+    else:
+        return [diffs]
+
+
 class CallbackFlag:
 
     def __init__(self):
@@ -111,16 +120,16 @@ class _Item:
     def get_child_widget(self, idx):
         return self.view.item_widget(self.widget, idx)
 
-    def _apply_diff(self, diff):
-        if diff is None:
-            return
-        log.info("Apply diff to item #%d @ %s: %s", self.id, self.path, diff)
+    def _apply_diff(self, diffs):
+        diff_list = _ensure_diff_list(diffs)
         with self._callback_flag.disabled():
-            if isinstance(diff.piece, ReplaceViewDiff):
-                self._apply_replace_view_diff(diff)
-            else:
-                self.view.apply(self.ctx, self.widget, diff)
-            self._current_child_idx = None
+            for diff in diff_list:
+                log.info("Apply diff to item #%d @ %s: %s", self.id, self.path, diff)
+                if isinstance(diff.piece, ReplaceViewDiff):
+                    self._apply_replace_view_diff(diff)
+                else:
+                    self.view.apply(self.ctx, self.widget, diff)
+                self._current_child_idx = None
 
     def _apply_replace_view_diff(self, diff):
         log.info("Replace view @%s: %s", self, diff)
@@ -263,20 +272,22 @@ class _WindowItem(_Item):
     def _make_commands(self):
         return self._make_view_commands(view=RootView(self.parent.children, self.id))
 
-    def _apply_diff(self, diff):
-        log.info("Apply root diff: %s", diff)
-        if isinstance(diff.piece, ListDiff.Insert):
-            piece_ref = diff.piece.item
-            state_ref = diff.state.item
-            item = self.from_refs(
-                self._counter, self._callback_flag, self._id_to_item, self.ctx, self.parent, piece_ref, state_ref)
-            self.parent._children.insert(diff.piece.idx, item)
-            item.update_commands()
-            item.update_model()
-            self.save_state()
-            item.widget.show()
-        else:
-            raise NotImplementedError(diff.piece)
+    def _apply_diff(self, diffs):
+        diff_list = _ensure_diff_list(diffs)
+        for diff in diff_list:
+            log.info("Apply root diff: %s", diff)
+            if isinstance(diff.piece, ListDiff.Insert):
+                piece_ref = diff.piece.item
+                state_ref = diff.state.item
+                item = self.from_refs(
+                    self._counter, self._callback_flag, self._id_to_item, self.ctx, self.parent, piece_ref, state_ref)
+                self.parent._children.insert(diff.piece.idx, item)
+                item.update_commands()
+                item.update_model()
+                self.save_state()
+                item.widget.show()
+            else:
+                raise NotImplementedError(diff.piece)
 
     def save_state(self):
         self.parent.save_state(current_window=self)
