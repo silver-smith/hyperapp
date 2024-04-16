@@ -2,7 +2,6 @@
 attr = record:
   name: string
   module: string opt
-  resource_name: string opt
   constructors: ref list
 
 fn_attr = record(attr):

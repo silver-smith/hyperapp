@@ -11,28 +11,24 @@ from .services import (
     mosaic,
     pyobj_creg,
     )
-from .code.constants import RESOURCE_NAMES_ATTR
 from .code.driver_recorders import ImportRecorders
 
 log = logging.getLogger(__name__)
 
 
 def _enum_attributes(object):
-    name_to_res_name = getattr(object, RESOURCE_NAMES_ATTR, {})
     name_to_ctr_list = getattr(object, RESOURCE_CTR_ATTR, {})
     for name in dir(object):
         if name.startswith('_'):
             continue
-        resource_name = name_to_res_name.get(name)
         constructors = tuple(name_to_ctr_list.get(name, []))
         value = getattr(object, name)
-        if not resource_name:
-            if not hasattr(value, '__module__'):
-                continue  # 'partial' does not have it; may be others too.
-            if type(object) is ModuleType and value.__module__ != object.__name__:
-                continue  # Skip functions imported from other modules.
+        if not hasattr(value, '__module__'):
+            continue  # 'partial' does not have it; may be others too.
+        if type(object) is ModuleType and value.__module__ != object.__name__:
+            continue  # Skip functions imported from other modules.
         if not callable(value):
-            yield htypes.inspect.attr(name, getattr(value, '__module__', None), resource_name, constructors)
+            yield htypes.inspect.attr(name, getattr(value, '__module__', None), constructors)
             continue
         try:
             signature = inspect.signature(value)
@@ -41,7 +37,7 @@ def _enum_attributes(object):
                 continue
             raise
         param_list = tuple(signature.parameters.keys())
-        args = (name, value.__module__, resource_name, constructors, param_list)
+        args = (name, value.__module__, constructors, param_list)
         if inspect.isgeneratorfunction(value):
             yield htypes.inspect.generator_fn_attr(*args)
         elif inspect.isclass(value):

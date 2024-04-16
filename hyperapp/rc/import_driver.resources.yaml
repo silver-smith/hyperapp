@@ -7,7 +7,6 @@ import:
 - legacy_type.inspect:fn_attr
 - legacy_type.inspect:generator_fn_attr
 - legacy_type.inspect:imported_module_info
-- resource.constants:constants.module
 - rc.driver_recorders:driver_recorders.module
 
 definitions:
@@ -24,5 +23,4 @@ definitions:
       htypes.inspect.imported_module_info: legacy_type.inspect:imported_module_info
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
-      code.constants: resource.constants:constants.module
       code.driver_recorders: rc.driver_recorders:driver_recorders.module

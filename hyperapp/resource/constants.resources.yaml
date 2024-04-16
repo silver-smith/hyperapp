@@ -1,9 +1,0 @@
-import:
-- legacy_type.builtin:python_module
-associations: []
-definitions:
-  constants.module:
-    _type: legacy_type.builtin:python_module
-    module_name: constants
-    file_name: constants.dyn.py
-    import_list: {}

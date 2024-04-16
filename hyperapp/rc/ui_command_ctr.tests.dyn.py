@@ -29,7 +29,6 @@ def test_construct_ui_command():
         attr=htypes.inspect.attr(
             name='sample_command',
             module=None,
-            resource_name=None,
             constructors=(),
             ),
         )
@@ -55,7 +54,6 @@ def test_construct_univeral_ui_command():
         attr=htypes.inspect.attr(
             name='sample_command',
             module=None,
-            resource_name=None,
             constructors=(),
             ),
         )

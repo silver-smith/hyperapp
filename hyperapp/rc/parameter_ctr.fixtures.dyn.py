@@ -41,6 +41,5 @@ def attr():
     return htypes.inspect.attr(
         name='sample_attr',
         module=None,
-        resource_name=None,
         constructors=(),
         )
