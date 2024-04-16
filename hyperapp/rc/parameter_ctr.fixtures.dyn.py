@@ -8,7 +8,7 @@ from .services import (
 
 @mark.param.construct
 def piece():
-    return htypes.attr_constructors.parameter(
+    return htypes.rc_constructors.parameter(
         path=('some_function', 'param'),
         )
 

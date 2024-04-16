@@ -6,7 +6,7 @@ from .services import (
     )
 
 
-@constructor_creg.actor(htypes.attr_constructors.parameter)
+@constructor_creg.actor(htypes.rc_constructors.parameter)
 def construct(piece, custom_types, name_to_res, module_res, attr):
     attribute = htypes.builtin.attribute(
         object=mosaic.put(module_res),

@@ -22,7 +22,7 @@ def _make_command_d_res(custom_types, module_res, attr):
     return data_to_res(command_d_t())
 
 
-@constructor_creg.actor(htypes.attr_constructors.ui_command_ctr)
+@constructor_creg.actor(htypes.rc_constructors.ui_command_ctr)
 def construct_ui_command(piece, custom_types, name_to_res, module_res, attr):
     dir_res = data_to_res(htypes.ui.ui_command_d())
     t_res = web.summon(piece.t)
@@ -49,7 +49,7 @@ def construct_ui_command(piece, custom_types, name_to_res, module_res, attr):
     return [association]
 
 
-@constructor_creg.actor(htypes.attr_constructors.universal_ui_command_ctr)
+@constructor_creg.actor(htypes.rc_constructors.universal_ui_command_ctr)
 def construct_universal_ui_command(piece, custom_types, name_to_res, module_res, attr):
     dir_res = data_to_res(htypes.ui.universal_ui_command_d())
     attribute = htypes.builtin.attribute(

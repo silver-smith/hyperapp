@@ -116,7 +116,7 @@ def _enum_provided_services(attr_list):
     for attr in attr_list:
         for ctr_ref in attr.constructors:
             ctr = web.summon(ctr_ref)
-            if isinstance(ctr, htypes.attr_constructors.service):
+            if isinstance(ctr, htypes.rc_constructors.service):
                 yield ctr.name
 
 

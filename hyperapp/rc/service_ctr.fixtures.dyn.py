@@ -8,7 +8,7 @@ from .services import (
 
 @mark.param.construct
 def piece():
-    return htypes.attr_constructors.service(
+    return htypes.rc_constructors.service(
         name='sample_service',
         )
 

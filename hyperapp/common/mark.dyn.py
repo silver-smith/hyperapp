@@ -25,7 +25,7 @@ def _copy_constructors(module, source_name, target_name):
 class ServiceMarker:
 
     def __call__(self, fn):
-        ctr = htypes.attr_constructors.service(
+        ctr = htypes.rc_constructors.service(
             name=fn.__name__,
             )
         add_fn_module_constructor(fn, mosaic.put(ctr))
@@ -65,7 +65,7 @@ class ParamMarker:
                 idx += 1
             attr_name = f'{name}_{idx}'
             setattr(module, attr_name, fn)
-        ctr = htypes.attr_constructors.parameter(
+        ctr = htypes.rc_constructors.parameter(
             path=(*self._path, fn.__name__),
             )
         add_attr_constructor(module, attr_name, mosaic.put(ctr))
@@ -92,7 +92,7 @@ def ui_command(fn_or_t):
         def _ui_command(fn):
             name = fn.__name__
             params = tuple(inspect.signature(fn).parameters)
-            ctr = htypes.attr_constructors.ui_command_ctr(t_ref, name, params)
+            ctr = htypes.rc_constructors.ui_command_ctr(t_ref, name, params)
             add_fn_module_constructor(fn, mosaic.put(ctr))
             return fn
 
@@ -100,7 +100,7 @@ def ui_command(fn_or_t):
     else:  # Non-parameterized version.
         name = fn_or_t.__name__
         params = tuple(inspect.signature(fn_or_t).parameters)
-        ctr = htypes.attr_constructors.universal_ui_command_ctr(name, params)
+        ctr = htypes.rc_constructors.universal_ui_command_ctr(name, params)
         add_fn_module_constructor(fn_or_t, mosaic.put(ctr))
         return fn_or_t
 
