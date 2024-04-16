@@ -1,7 +1,7 @@
 import inspect
 
 
-RESOURCE_ATTR_CTR_NAME = '__resource_constructors__'
+RESOURCE_ATTR_CTR_NAME = '__attr_resource_constructors__'
 
 
 def add_attr_constructor(module, fn_name, ctr_ref):
