@@ -19,6 +19,7 @@ from .code.scaffolds import (
     enum_dep_imports,
     function_call_res,
     invite_attr_constructors,
+    invite_module_constructors,
     recorder_module_res,
     test_call_res,
     tested_services,
@@ -198,6 +199,7 @@ class Unit:
         self._attr_list = None  # inspect.attr|fn_attr|generator_fn_attr list
         self._call_list = []  # CallTrace list
         self._used_types = set()
+        self._module_constructors = []
 
     def __repr__(self):
         return f"<Unit {self.name!r}>"
@@ -437,6 +439,11 @@ class Unit:
             unit = self._graph.name_to_unit[name]
             unit.add_calls(calls)
 
+    def _handle_module_constructors(self, ctrs_list):
+        for rec in ctrs_list:
+            unit = self._graph.name_to_unit[rec.module]
+            unit.add_module_constructors(rec.constructors)
+
     async def _call_fn_attr(self, process_pool, attr_name, recorders, module_res, call_res):
         log.info("%s: Call attribute: %s", self.name, attr_name)
         result = await process_pool.run(
@@ -471,7 +478,8 @@ class Unit:
             ]))
         resource_module = resource_module_factory(self._ctx.resource_registry, self.name)
         resource_module[f'{self.code_name}.module'] = module_res
-        ass_list = invite_attr_constructors(self._ctx, self._attr_list, module_res, resource_module)
+        ass_list = invite_module_constructors(self._ctx, self._module_constructors, module_res, resource_module)
+        ass_list += invite_attr_constructors(self._ctx, self._attr_list, module_res, resource_module)
         ass_list += ui_ctr.create_ui_resources(self._ctx, self.name, resource_module, module_res, self._call_list)
         resource_module.add_association_list(ass_list)
         source_hash_str = _sources_ref_str(self.sources)
@@ -543,6 +551,9 @@ class Unit:
 
     def add_calls(self, calls):
         self._call_list += calls
+
+    def add_module_constructors(self, ctr_list):
+        self._module_constructors += ctr_list
 
 
 class FixturesDepsProviderUnit(Unit):
@@ -658,6 +669,7 @@ class TestsUnit(FixturesDepsProviderUnit):
             )
         self._handle_result_imports(result.imports)
         self._handle_result_calls(result.calls)
+        self._handle_module_constructors(result.tested_constructors)
 
     async def _call_all_tests(self, process_pool):
         tested_service_to_unit = {}

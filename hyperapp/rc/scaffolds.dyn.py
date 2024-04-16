@@ -17,6 +17,13 @@ def invite_attr_constructors(ctx, attr_list, module_res, name_to_res):
     return ass_list
 
 
+def invite_module_constructors(ctx, ctr_list, module_res, name_to_res):
+    ass_list = []
+    for ctr_ref in ctr_list:
+        ass_list += constructor_creg.invite(ctr_ref, ctx.types, name_to_res, module_res) or []
+    return ass_list
+
+
 # Module resource with import discoverer.
 def discoverer_module_res(ctx, unit):
     resource_list = (*ctx.type_recorder_res_list,)
