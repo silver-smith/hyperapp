@@ -13,3 +13,6 @@ ui_command_ctr = record:
 universal_ui_command_ctr = record:
   name: string
   params: string list
+
+list_feed_ctr = record:
+  element_t: ref

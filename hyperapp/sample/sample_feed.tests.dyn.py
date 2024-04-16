@@ -4,7 +4,7 @@ import weakref
 from functools import partial
 
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
-
+from hyperapp.common.resource_ctr import add_caller_module_constructor
 from . import htypes
 from .services import (
     mark,
@@ -29,6 +29,9 @@ class Feed:
     def send(self, diff):
         log.info("Feed: send: %s", diff)
         self._deduce_and_store_type(diff)
+        if self.type:
+            ctr = htypes.rc_constructors.list_feed_ctr(self.type.element_t)
+            add_caller_module_constructor(2, mosaic.put(ctr))
         for subscriber in self._subscribers:
             subscriber(diff)
 

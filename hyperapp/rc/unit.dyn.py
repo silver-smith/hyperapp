@@ -437,11 +437,13 @@ class Unit:
             unit = self._graph.name_to_unit[name]
             unit.add_calls(calls)
 
-    async def _call_fn_attr(self, process_pool, attr_name, recorders, call_res):
+    async def _call_fn_attr(self, process_pool, attr_name, recorders, module_res, call_res):
         log.info("%s: Call attribute: %s", self.name, attr_name)
         result = await process_pool.run(
             call_driver.call_function,
             import_recorders=_recorder_piece_list(recorders),
+            module_name=self.name,
+            module_res=module_res,
             call_result_ref=mosaic.put(call_res),
             trace_modules=[self.name],
             )
@@ -456,11 +458,11 @@ class Unit:
                     continue
                 if isinstance(attr, htypes.inspect.class_attr):
                     continue
-                recorders_and_call_res = function_call_res(self._graph, self._ctx, self, fixtures, attr)
-                if not recorders_and_call_res:
+                call_res_record = function_call_res(self._graph, self._ctx, self, fixtures, attr)
+                if not call_res_record:
                     continue  # No param fixtures.
-                recorders, call_res = recorders_and_call_res
-                tg.create_task(self._call_fn_attr(process_pool, attr.name, recorders, call_res))
+                recorders, module_res, call_res = call_res_record
+                tg.create_task(self._call_fn_attr(process_pool, attr.name, recorders, module_res, call_res))
 
     async def _construct(self):
         module_res = self.make_module_res(sorted([

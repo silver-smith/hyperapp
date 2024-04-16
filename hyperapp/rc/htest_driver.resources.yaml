@@ -4,6 +4,7 @@ import:
 - builtins:pyobj_creg.service
 - builtins:web.service
 - legacy_type.builtin:python_module
+- legacy_type.inspect:module_constructors
 - legacy_type.inspect:object_type_info
 - rc.driver_recorders:driver_recorders.module
 - rc.tracer:tracer.module
@@ -16,6 +17,7 @@ definitions:
     module_name: htest_driver
     file_name: htest_driver.dyn.py
     import_list:
+      htypes.inspect.module_constructors: legacy_type.inspect:module_constructors
       htypes.inspect.object_type_info: legacy_type.inspect:object_type_info
       services.association_reg: builtins:association_reg.service
       services.mosaic: builtins:mosaic.service

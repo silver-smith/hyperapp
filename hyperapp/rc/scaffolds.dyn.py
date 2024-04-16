@@ -137,7 +137,7 @@ def function_call_res(graph, ctx, unit, fixtures, attr):
     else:
         function_res = attr_res
     call_res = htypes.builtin.call(mosaic.put(function_res))
-    return (recorders, call_res)
+    return (recorders, module_res, call_res)
 
 
 # def tested_import_list(graph, ctx, test_unit, tested_units, tested_service_to_unit):
@@ -167,7 +167,7 @@ def tested_units(graph, ctx, test_unit, fixtures_module_res, tested_units):
         recorders, module_res = recorder_module_res(graph, ctx, unit, fixtures_unit=test_unit, fixtures_module_res=fixtures_module_res)
         ass_list += unit.attr_constructors_associations(module_res)
         all_recorders.update(recorders)
-        field = htypes.inspect.field(unit.code_name, mosaic.put(module_res))
+        field = htypes.inspect.tested_unit(unit.name, unit.code_name, mosaic.put(module_res))
         field_list.append(field)
     return (all_recorders, ass_list, field_list)
 

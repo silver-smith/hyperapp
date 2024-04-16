@@ -5,6 +5,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.builtin:import_rec
 - legacy_type.inspect:field
+- legacy_type.inspect:tested_unit
 - legacy_type.import_discoverer:import_discoverer
 - legacy_type.import_recorder:import_recorder
 - legacy_type.import_recorder:resource
@@ -24,6 +25,7 @@ definitions:
       htypes.builtin.call: legacy_type.builtin:call
       htypes.builtin.import_rec: legacy_type.builtin:import_rec
       htypes.inspect.field: legacy_type.inspect:field
+      htypes.inspect.tested_unit: legacy_type.inspect:tested_unit
       htypes.import_discoverer.import_discoverer: legacy_type.import_discoverer:import_discoverer
       htypes.import_recorder.import_recorder: legacy_type.import_recorder:import_recorder
       htypes.import_recorder.resource: legacy_type.import_recorder:resource
