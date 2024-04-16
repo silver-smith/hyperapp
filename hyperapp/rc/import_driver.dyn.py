@@ -4,7 +4,7 @@ from types import ModuleType
 
 
 from hyperapp.common.htypes import HException
-from hyperapp.common.resource_ctr import RESOURCE_CTR_ATTR
+from hyperapp.common.resource_ctr import RESOURCE_ATTR_CTR_NAME
 
 from . import htypes
 from .services import (
@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 
 
 def _enum_attributes(object):
-    name_to_ctr_list = getattr(object, RESOURCE_CTR_ATTR, {})
+    name_to_ctr_list = getattr(object, RESOURCE_ATTR_CTR_NAME, {})
     for name in dir(object):
         if name.startswith('_'):
             continue

@@ -3,8 +3,8 @@ from types import SimpleNamespace
 
 from hyperapp.common.htypes import Type
 from hyperapp.common.resource_ctr import (
-    RESOURCE_CTR_ATTR,
-    add_constructor,
+    RESOURCE_ATTR_CTR_NAME,
+    add_attr_constructor,
     add_fn_module_constructor,
     )
 
@@ -16,7 +16,7 @@ from .services import (
 
 
 def _copy_constructors(module, source_name, target_name):
-    ctr_dict = module.__dict__.setdefault(RESOURCE_CTR_ATTR, {})
+    ctr_dict = module.__dict__.setdefault(RESOURCE_ATTR_CTR_NAME, {})
     source_ctr_list = ctr_dict.setdefault(source_name, [])
     target_ctr_list = ctr_dict.setdefault(target_name, [])
     target_ctr_list += source_ctr_list
@@ -68,7 +68,7 @@ class ParamMarker:
         ctr = htypes.attr_constructors.parameter(
             path=(*self._path, fn.__name__),
             )
-        add_constructor(module, attr_name, mosaic.put(ctr))
+        add_attr_constructor(module, attr_name, mosaic.put(ctr))
         return fn
 
 
