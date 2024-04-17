@@ -9,7 +9,7 @@ from . import htypes
 from .services import (
     mark,
     mosaic,
-    types,
+    pyobj_creg,
     )
 from .code.list_diff import ListDiff
 from .tested.code import sample_feed
@@ -19,7 +19,8 @@ log = logging.getLogger(__name__)
 
 class Feed:
 
-    def __init__(self):
+    def __init__(self, piece_t):
+        self._piece_t = piece_t
         self.type = None
         self._subscribers = weakref.WeakSet()
 
@@ -30,7 +31,11 @@ class Feed:
         log.info("Feed: send: %s", diff)
         self._deduce_and_store_type(diff)
         if self.type:
-            ctr = htypes.rc_constructors.list_feed_ctr(self.type.element_t)
+            piece_t_res = pyobj_creg.reverse_resolve(self._piece_t)
+            ctr = htypes.rc_constructors.list_feed_ctr(
+                t=mosaic.put(piece_t_res),
+                element_t=self.type.element_t,
+                )
             add_caller_module_constructor(2, mosaic.put(ctr))
         for subscriber in self._subscribers:
             subscriber(diff)
@@ -42,8 +47,8 @@ class Feed:
                 ListDiff.Replace,
                 )):
             element_t = deduce_value_type(diff.item)
-            element_t_ref = types.reverse_resolve(element_t)
-            feed = htypes.ui.list_feed(element_t_ref)
+            element_t_res = pyobj_creg.reverse_resolve(element_t)
+            feed = htypes.ui.list_feed(mosaic.put(element_t_res))
             if self.type:
                 if feed != self.type:
                     raise RuntimeError(f"Attempt to send different diff types to a feed: {self.type} and {feed}")
@@ -72,7 +77,8 @@ class FeedDiscoverer:
             return self._piece_to_feed[piece]
         except KeyError:
             pass
-        feed = Feed()
+        piece_t = deduce_value_type(piece)
+        feed = Feed(piece_t)
         self._piece_to_feed[piece] = feed
         return feed
 
@@ -100,8 +106,8 @@ async def test_sample_feed():
     async with asyncio.timeout(5):
         await event.wait()
 
-    element_t_ref = types.reverse_resolve(htypes.sample_list.item)
-    expected_type = htypes.ui.list_feed(element_t_ref)
+    element_t_res = pyobj_creg.reverse_resolve(htypes.sample_list.item)
+    expected_type = htypes.ui.list_feed(mosaic.put(element_t_res))
     log.info("Feed type: %s", feed.type)
     log.info("Expected feed type: %s", expected_type)
     assert feed.type == expected_type

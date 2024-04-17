@@ -8,11 +8,20 @@ import:
 - legacy_type.sample_feed:sample_feed
 - legacy_type.sample_feed:schedule_sample_feed_d
 - legacy_type.sample_list:item
+- legacy_type.ui:feed_d
+- legacy_type.ui:list_feed
 - legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_kind_d
 - ui.feed_creg:feed_creg.service
 associations:
+- bases:
+  - feed_d
+  - legacy_type.sample_feed:sample_feed
+  key:
+  - feed_d
+  - legacy_type.sample_feed:sample_feed
+  value: sample_feed_sample_feed.list_feed
 - bases:
   - legacy_type.sample_feed:sample_feed
   key:
@@ -20,6 +29,9 @@ associations:
   - legacy_type.sample_feed:sample_feed
   value: schedule_sample_feed.command
 definitions:
+  feed_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:feed_d
   model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_command_d
@@ -34,6 +46,9 @@ definitions:
       code.list_diff: common.list_diff:list_diff.module
       htypes.sample_list.item: legacy_type.sample_list:item
       services.feed_creg: ui.feed_creg:feed_creg.service
+  sample_feed_sample_feed.list_feed:
+    _type: legacy_type.ui:list_feed
+    element_t: legacy_type.sample_list:item
   schedule_sample_feed:
     _type: legacy_type.builtin:attribute
     object: sample_feed.module
