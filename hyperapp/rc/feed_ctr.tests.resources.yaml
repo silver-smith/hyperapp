@@ -1,0 +1,21 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:local_types.service
+- builtins:mosaic.service
+- builtins:pyobj_creg.service
+- legacy_type.builtin:python_module
+- legacy_type.phony:phony
+associations: []
+definitions:
+  feed_ctr.tests.module:
+    _type: legacy_type.builtin:python_module
+    module_name: feed_ctr.tests
+    file_name: feed_ctr.tests.dyn.py
+    import_list:
+      services.local_types: builtins:local_types.service
+      services.mosaic: builtins:mosaic.service
+      services.pyobj_creg: builtins:pyobj_creg.service
+      tested.code.feed_ctr: phony
+  phony:
+    _type: legacy_type.phony:phony
