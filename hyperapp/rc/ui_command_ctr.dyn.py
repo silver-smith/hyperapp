@@ -5,7 +5,6 @@ from .services import (
     constructor_creg,
     data_to_res,
     mosaic,
-    pyobj_creg,
     types,
     web,
   )
