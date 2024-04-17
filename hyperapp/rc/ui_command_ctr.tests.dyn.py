@@ -1,7 +1,6 @@
 from . import htypes
 from .services import (
     local_types,
-    mark,
     mosaic,
     pyobj_creg,
     )
