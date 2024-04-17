@@ -15,6 +15,7 @@ from .services import (
 from .code.dep import CodeDep, FixturesDep, ServiceDep, ModuleDep
 from .code import import_driver, call_driver, htest_driver
 from .code.scaffolds import (
+    FixturesUnitRec,
     discoverer_module_res,
     enum_dep_imports,
     function_call_res,
@@ -167,6 +168,13 @@ def _imports_info(imports):
         )
 
 
+def common_fixtures_deps(want_deps):
+    if ServiceDep('feed_creg') in want_deps:
+        return {ModuleDep('rc.common.fixtures')}
+    else:
+        return set()
+
+
 async def _lock_and_notify_all(condition):
     async with condition:
         condition.notify_all()
@@ -285,6 +293,11 @@ class Unit:
     @property
     def _test_sources_deps(self):
         return _flatten_set(t.tested_sources_deps for t in self._tests)
+
+    @property
+    def _common_fixtures_rec(self):
+        unit = self._graph.name_to_unit['rc.common.fixtures']
+        return FixturesUnitRec(unit, use_for_parameters=False)
 
     async def _set_service_providers(self, provide_services):
         for service_name in provide_services:
@@ -417,7 +430,8 @@ class Unit:
                 raise error
             log.info("%s: Incomplete object: %s", self.name, error.message)
             await self._wait_for_deps(self.deps | info.want_deps)
-            recorders, module_res = recorder_module_res(self._graph, self._ctx, self)
+            fixtures = self._fixtures_recs()
+            recorders, module_res = recorder_module_res(self._graph, self._ctx, self, fixtures)
             log.info("%s: discover attributes", self.name)
             # Once-imported module does not issue new import records from subsequent imports.
             result, _ = await self._import_module(process_pool, recorders, module_res)
@@ -425,8 +439,12 @@ class Unit:
         attr_list = [web.summon(ref) for ref in result.attr_list]
         return info, attr_list
 
-    def _fixtures_unit(self):
-        return self._graph.dep_to_provider.get(FixturesDep(self.name))
+    def _fixtures_recs(self):
+        fixtures = [self._common_fixtures_rec]
+        unit = self._graph.dep_to_provider.get(FixturesDep(self.name))
+        if unit:
+            fixtures.append(FixturesUnitRec(unit))
+        return fixtures
 
     def _handle_result_imports(self, result_imports):
         imports_dict = _module_import_list_to_dict(result_imports)
@@ -464,7 +482,7 @@ class Unit:
         self._handle_result_calls(result.calls)
 
     async def _call_all_fn_attrs(self, process_pool, attr_list):
-        fixtures = self._fixtures_unit()
+        fixtures = self._fixtures_recs()
         async with asyncio.TaskGroup() as tg:
             for attr in attr_list:
                 if not isinstance(attr, htypes.inspect.fn_attr):
@@ -507,16 +525,17 @@ class Unit:
             log.info("%s: no resources yet", self.name)
             return False
         info = _resource_module_info(self._resource_module, self.code_name)
-        await self._wait_for_providers(info.want_deps)
+        want_deps = info.want_deps | common_fixtures_deps(info.want_deps)
+        await self._wait_for_providers(want_deps)
         # self.deps already contains fixtures deps.
-        dep_sources = self._deps_sources(self.deps | info.want_deps)
+        self.deps.update(want_deps)
+        dep_sources = self._deps_sources(self.deps)
         if _sources_ref_str(dep_sources) != self._resource_module.source_ref_str:
             log.info("%s: sources do not match", self.name)
             return False
         log.info("%s: sources match", self.name)
         self._graph.dep_to_provider[ModuleDep(self.name)] = self
         await self._set_service_providers(self._resource_module.provided_services)
-        self.deps.update(info.want_deps)
         await self._wait_for_all_test_targets()
         await self._wait_for_providers(self._test_sources_deps)
         if _sources_ref_str(self._test_sources) != self._resource_module.tests_ref_str:
@@ -616,6 +635,10 @@ class TestsUnit(FixturesDepsProviderUnit):
     def is_tests(self):
         return True
 
+    def init(self):
+        super().init()
+        self.deps.add(FixturesDep('rc.common'))
+
     def provided_dep_resource(self, dep):
         raise NotImplementedError()
 
@@ -649,10 +672,10 @@ class TestsUnit(FixturesDepsProviderUnit):
         log.info("%s: test targets discovered: %s", self.name, _unit_list_to_str(self._tested_units))
         await _lock_and_notify_all(self._test_targets_discovered)
 
-    async def _wait_for_attributes_discovered(self, unit_list):
+    async def _wait_for_attributes_discovered(self, unit_set):
         async with self._attributes_discovered:
             while True:
-                not_discovered = [u for u in unit_list if not u.attributes_discovered]
+                not_discovered = [u for u in unit_set if not u.attributes_discovered]
                 if not not_discovered:
                     return
                 log.debug("%s: Waiting for attributes discovered: %s", self.name, _unit_list_to_str(not_discovered))
@@ -661,15 +684,16 @@ class TestsUnit(FixturesDepsProviderUnit):
                 except asyncio.CancelledError:
                     raise DeadlockError("Waiting for attributes be discovered: {}".format(_unit_list_to_str(not_discovered)))
 
-    async def _call_test(self, process_pool, attr_name, test_recorders, module_res, call_res, tested_service_to_unit):
+    async def _call_test(self, process_pool, attr_name, test_recorders, test_module_res, call_res, tested_service_to_unit):
         log.info("%s: Call test: %s", self.name, attr_name)
-        unit_recorders, ass_list, tested_unit_fields = tested_units(self._graph, self._ctx, self, module_res, self._tested_units)
-        service_recorders, services_ass_list, tested_service_fields = tested_services(self._graph, self._ctx, self, module_res, tested_service_to_unit)
+        fixtures = [self._common_fixtures_rec, FixturesUnitRec(self, test_module_res)]
+        unit_recorders, ass_list, tested_unit_fields = tested_units(self._graph, self._ctx, fixtures, self._tested_units)
+        service_recorders, services_ass_list, tested_service_fields = tested_services(self._graph, self._ctx, fixtures, tested_service_to_unit)
         recorders = {**test_recorders, **unit_recorders, **service_recorders}
         result = await process_pool.run(
             htest_driver.call_test,
             import_recorders=_recorder_piece_list(recorders),
-            module_res=module_res,
+            module_res=test_module_res,
             test_call_res=call_res,
             tested_units=tested_unit_fields,
             tested_services=tested_service_fields,
@@ -690,15 +714,16 @@ class TestsUnit(FixturesDepsProviderUnit):
             if provider not in self._tested_units:
                 raise RuntimeError(f"Service {service_name!r} provider {provider} does not belong to tested code modules: {self._tested_units}")
             tested_service_to_unit[service_name] = provider
-        await self._wait_for_attributes_discovered([*tested_service_to_unit.values(), *self._tested_units])
+        await self._wait_for_attributes_discovered({*tested_service_to_unit.values(), *self._tested_units})
         async with asyncio.TaskGroup() as tg:
             for attr in self._attr_list:
                 if not isinstance(attr, htypes.inspect.fn_attr):
                     continue
                 if not attr.name.startswith('test'):
                     continue
-                recorders, module_res, call_res = test_call_res(self._graph, self._ctx, self, attr)
-                tg.create_task(self._call_test(process_pool, attr.name, recorders, module_res, call_res, tested_service_to_unit))
+                fixtures = [self._common_fixtures_rec]
+                recorders, test_module_res, call_res = test_call_res(self._graph, self._ctx, self, fixtures, attr)
+                tg.create_task(self._call_test(process_pool, attr.name, recorders, test_module_res, call_res, tested_service_to_unit))
 
     async def _construct(self):
         resource_module = resource_module_factory(self._ctx.resource_registry, self.name)
@@ -728,6 +753,7 @@ class TestsUnit(FixturesDepsProviderUnit):
             log.info("%s: no resources yet", self.name)
             return False
         info = _resource_module_info(self._resource_module, self.code_name)
+        # Do not wait for dep providers here because they in turn wait for tests be discovered.
         dep_sources = {self} | {self._graph.name_to_unit[module_name] for module_name in info.use_modules}
         if _sources_ref_str(dep_sources) != self._resource_module.source_ref_str:
             log.info("%s: sources do not match", self.name)
@@ -739,7 +765,8 @@ class TestsUnit(FixturesDepsProviderUnit):
             self._tested_units.add(unit)
             unit.add_test(self)
         await self._set_service_providers(self._resource_module.provided_services)
-        self.deps.update(info.want_deps)
+        want_deps = info.want_deps | common_fixtures_deps(info.want_deps)
+        self.deps.update(want_deps)
         self._targets_discovered = True
         await _lock_and_notify_all(self._test_targets_discovered)
         await self._wait_for_deps_discovered(self._tested_units)

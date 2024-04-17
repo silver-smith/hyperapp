@@ -20,7 +20,7 @@ class Graph:
     def __init__(self):
         self.name_to_unit = {}
         self.dep_to_provider = {}
-        self.name_to_deps = defaultdict(set)
+        self.name_to_deps = defaultdict(set)  # full unit name -> Dep.
 
     def unit_by_code_name(self, code_name):
         for unit in self.name_to_unit.values():

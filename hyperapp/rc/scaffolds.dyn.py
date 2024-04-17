@@ -51,17 +51,36 @@ def discoverer_module_res(ctx, unit):
     return (recorders, module_res)
 
 
-def enum_dep_imports(graph, dep_set, fixtures_unit=None, fixtures_module_res=None):
+class FixturesUnitRec:
+
+    def __init__(self, unit, module_res=None, use_for_parameters=True):
+        self._unit = unit
+        self._module_res = module_res
+        self.use_for_parameters = use_for_parameters
+
+    def resource(self, name):
+        return self._unit.resource(name)
+
+    def provides_dep(self, dep):
+        return dep in self._unit.provided_deps
+
+    def dep_resource(self, dep):
+        if self._module_res:  # Incomplete module, this is recorder module resource.
+            return dep.tested_override_resource(self._unit, self._module_res)
+        else:
+            return self._unit.provided_dep_resource(dep)
+
+
+def enum_dep_imports(graph, dep_set, fixtures=None):
     for dep in dep_set:
         if not dep.should_be_imported:
             continue
-        if fixtures_module_res and dep in fixtures_unit.provided_deps:
-            resource = dep.tested_override_resource(fixtures_unit, fixtures_module_res)
+        for rec in fixtures or []:
+            if rec.provides_dep(dep):
+                resource = rec.dep_resource(dep)
+                break
         else:
-            if fixtures_unit and dep in fixtures_unit.provided_deps:
-                provider = fixtures_unit
-            else:
-                provider = graph.dep_to_provider[dep]
+            provider = graph.dep_to_provider[dep]
             resource = provider.provided_dep_resource(dep)
         yield htypes.builtin.import_rec(dep.import_name, mosaic.put(resource))
 
@@ -77,13 +96,13 @@ def types_import_list(ctx, import_set):
 
 
 # Module resource with import recorder.
-def recorder_module_res(graph, ctx, unit, fixtures_unit=None, fixtures_module_res=None, import_list=None):
+def recorder_module_res(graph, ctx, unit, fixtures, import_list=None):
     resource_list = tuple(ctx.type_recorder_res_list)
     import_recorder_res = htypes.import_recorder.import_recorder(unit.name, resource_list)
     import_recorder_ref = mosaic.put(import_recorder_res)
     recorders = {unit.name: [import_recorder_ref]}
 
-    dep_imports_it = enum_dep_imports(graph, unit.deps, fixtures_unit, fixtures_module_res)
+    dep_imports_it = enum_dep_imports(graph, unit.deps, fixtures)
 
     module_res = unit.make_module_res([
         htypes.builtin.import_rec('htypes.*', import_recorder_ref),
@@ -95,10 +114,14 @@ def recorder_module_res(graph, ctx, unit, fixtures_unit=None, fixtures_module_re
 
 def _parameter_fixture(fixtures, path):
     name = '.'.join([*path, 'parameter'])
-    try:
-        return fixtures.resource(name)
-    except KeyError:
-        return None
+    for rec in fixtures:
+        if not rec.use_for_parameters:
+            continue
+        try:
+            return rec.resource(name)
+        except KeyError:
+            pass
+    return None
 
 
 # Warning: never tested yet.
@@ -166,12 +189,12 @@ def function_call_res(graph, ctx, unit, fixtures, attr):
 #     return (all_recorders, all_ass_list, import_list)
 
 
-def tested_units(graph, ctx, test_unit, fixtures_module_res, tested_units):
+def tested_units(graph, ctx, fixtures, tested_units):
     field_list = []
     all_recorders = {}
     ass_list = []
     for unit in tested_units:
-        recorders, module_res = recorder_module_res(graph, ctx, unit, fixtures_unit=test_unit, fixtures_module_res=fixtures_module_res)
+        recorders, module_res = recorder_module_res(graph, ctx, unit, fixtures)
         ass_list += unit.attr_constructors_associations(module_res)
         all_recorders.update(recorders)
         field = htypes.inspect.tested_unit(unit.name, unit.code_name, mosaic.put(module_res))
@@ -179,12 +202,12 @@ def tested_units(graph, ctx, test_unit, fixtures_module_res, tested_units):
     return (all_recorders, ass_list, field_list)
 
 
-def tested_services(graph, ctx, test_unit, fixtures_module_res, tested_service_to_unit):
+def tested_services(graph, ctx, fixtures, tested_service_to_unit):
     field_list = []
     all_recorders = {}
     ass_list = []
     for service_name, unit in tested_service_to_unit.items():
-        recorders, module_res = recorder_module_res(graph, ctx, unit, fixtures_unit=test_unit, fixtures_module_res=fixtures_module_res)
+        recorders, module_res = recorder_module_res(graph, ctx, unit, fixtures)
         all_recorders.update(recorders)
         unit_ass_list, service_res = unit.pick_service_resource(module_res, service_name)
         ass_list += unit_ass_list
@@ -193,12 +216,12 @@ def tested_services(graph, ctx, test_unit, fixtures_module_res, tested_service_t
     return (all_recorders, ass_list, field_list)
 
 
-def test_call_res(graph, ctx, unit, attr):
+def test_call_res(graph, ctx, unit, fixtures, attr):
     import_list = [
         htypes.builtin.import_rec('tested.code.*', mosaic.put(htypes.tested_imports.tested_import())),
         htypes.builtin.import_rec('tested.services.*', mosaic.put(htypes.tested_imports.tested_import())),
         ]
-    recorders, module_res = recorder_module_res(graph, ctx, unit, import_list=import_list)
+    recorders, module_res = recorder_module_res(graph, ctx, unit, fixtures, import_list=import_list)
     attr_res = htypes.builtin.attribute(
         object=mosaic.put(module_res),
         attr_name=attr.name,
