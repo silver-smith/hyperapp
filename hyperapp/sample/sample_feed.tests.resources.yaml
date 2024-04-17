@@ -7,6 +7,7 @@ import:
 - common.mark:mark.service
 - legacy_type.builtin:python_module
 - legacy_type.phony:phony
+- ui.feed_creg:feed_creg.service
 associations: []
 definitions:
   phony:
@@ -17,6 +18,7 @@ definitions:
     file_name: sample_feed.tests.dyn.py
     import_list:
       code.list_diff: common.list_diff:list_diff.module
+      services.feed_creg: ui.feed_creg:feed_creg.service
       services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
