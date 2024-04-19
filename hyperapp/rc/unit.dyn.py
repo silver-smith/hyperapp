@@ -342,7 +342,10 @@ class Unit:
                 if not not_discovered:
                     return
                 log.debug("%s: Tests not yet discovered: %s", self.name, _unit_list_to_str(not_discovered))
-                await self._test_targets_discovered.wait()
+                try:
+                    await self._test_targets_discovered.wait()
+                except asyncio.CancelledError:
+                    raise DeadlockError("Waiting for test targets be discovered: {}".format(_unit_list_to_str((not_discovered))))
 
     async def _wait_for_providers(self, dep_set):
         async with self._providers_changed:
@@ -366,7 +369,7 @@ class Unit:
                 try:
                     await self._new_deps_discovered.wait()
                 except asyncio.CancelledError:
-                    raise DeadlockError("Waiting for deps disccoverred: {}".format(_unit_list_to_str(not_discovered)))
+                    raise DeadlockError("Waiting for deps discovered: {}".format(_unit_list_to_str(not_discovered)))
 
     async def _wait_for_deps(self, dep_set):
         await self._wait_for_providers(dep_set)
@@ -377,7 +380,10 @@ class Unit:
                 if not outdated:
                     return
                 log.debug("%s: Outdated providers: %s", self.name, _unit_list_to_str(outdated))
-                await self._unit_up_to_date.wait()
+                try:
+                    await self._unit_up_to_date.wait()
+                except asyncio.CancelledError:
+                    raise DeadlockError("Waiting for deps providers be up-to-date: {}".format(_unit_list_to_str(outdated)))
 
     async def _wait_for_tests(self, unit_list):
         async with self._test_completed:
@@ -650,7 +656,10 @@ class TestsUnit(FixturesDepsProviderUnit):
                 if not not_discovered:
                     return
                 log.debug("%s: Waiting for attributes discovered: %s", self.name, _unit_list_to_str(not_discovered))
-                await self._attributes_discovered.wait()
+                try:
+                    await self._attributes_discovered.wait()
+                except asyncio.CancelledError:
+                    raise DeadlockError("Waiting for attributes be discovered: {}".format(_unit_list_to_str(not_discovered)))
 
     async def _call_test(self, process_pool, attr_name, test_recorders, module_res, call_res, tested_service_to_unit):
         log.info("%s: Call test: %s", self.name, attr_name)

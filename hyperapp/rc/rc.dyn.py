@@ -56,22 +56,7 @@ async def _run_unit(unit, process_pool, show_traces):
         log.info("Deadlocked: %s: %s", unit.name, x)
     except asyncio.CancelledError as x:
         x.__context__ = None
-        if any('process_available.wait' in s for s in traceback.format_exception(x)):
-            error_logger("Waiting for a process: %s", unit)
-        elif any('unit_constructed.wait' in s for s in traceback.format_exception(x)):
-            error_logger("Waiting for a unit to be constructed: %s", unit)
-        elif any('providers_changed.wait' in s for s in traceback.format_exception(x)):
-            error_logger("Waiting for a provider: %s", unit)
-        elif any('new_deps_discovered.wait' in s for s in traceback.format_exception(x)):
-            error_logger("Waiting for new deps discovered: %s", unit)
-        elif any('unit_up_to_date.wait' in s for s in traceback.format_exception(x)):
-            error_logger("Waiting for a unit to be up-to-date: %s", unit)
-        elif any('attributes_discovered.wait' in s for s in traceback.format_exception(x)):
-            error_logger("Waiting for attributes discovered: %s", unit)
-        elif any('test_completed.wait' in s for s in traceback.format_exception(x)):
-            error_logger("Waiting for tests completed: %s", unit)
-        else:
-            error_logger("Cancelled: %s", unit)
+        error_logger("Cancelled: %s", unit)
     except Exception as x:
         error_logger("Failed: %s: %s", unit, x)
         raise RuntimeError(f"{unit}: {x}")
