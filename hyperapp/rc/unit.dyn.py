@@ -234,6 +234,7 @@ class Unit:
 
     def init(self):
         self._graph.dep_to_provider[CodeDep(self.code_name)] = self
+        self._graph.dep_to_provider[ModuleDep(self.name)] = self
         if not self._resources_path.exists():
             return
         self._resource_module = resource_module_factory(self._ctx.resource_registry, self.name, self._resources_path)
@@ -518,7 +519,6 @@ class Unit:
     async def _check_up_to_date(self):
         if self._resource_module and not self._resource_module.is_auto_generated:
             log.info("%s: manually created", self.name)
-            self._graph.dep_to_provider[ModuleDep(self.name)] = self
             await self._set_service_providers(self._resource_module.provided_services)
             return True
         if not self._resource_module:
@@ -534,7 +534,6 @@ class Unit:
             log.info("%s: sources do not match", self.name)
             return False
         log.info("%s: sources match", self.name)
-        self._graph.dep_to_provider[ModuleDep(self.name)] = self
         await self._set_service_providers(self._resource_module.provided_services)
         await self._wait_for_all_test_targets()
         await self._wait_for_providers(self._test_sources_deps)
