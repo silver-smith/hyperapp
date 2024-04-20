@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import weakref
 from functools import partial
@@ -21,18 +20,10 @@ log = logging.getLogger(__name__)
 
 async def test_sample_feed():
     piece = htypes.sample_feed.sample_feed()
-
     feed = feed_creg.animate(piece)
-    event = asyncio.Event()
 
-    def on_diff(diff):
-        event.set()
-
-    feed.subscribe(on_diff)
     await sample_feed.schedule_sample_feed(piece)
-
-    async with asyncio.timeout(5):
-        await event.wait()
+    await feed.wait_for_diffs(count=1)
 
     element_t_res = pyobj_creg.reverse_resolve(htypes.sample_list.item)
     expected_type = htypes.ui.list_feed(mosaic.put(element_t_res))

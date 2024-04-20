@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import weakref
 
@@ -21,13 +22,15 @@ class Feed:
         self._piece_t = piece_t
         self.type = None
         self._subscribers = weakref.WeakSet()
+        self._got_diff = asyncio.Condition()
+        self._got_diff_count = 0
 
     def subscribe(self, subscriber):
         self._subscribers.add(subscriber)
 
-    def send(self, diff):
+    async def send(self, diff):
         log.info("Feed: send: %s", diff)
-        self._deduce_and_store_type(diff)
+        await self._deduce_and_store_type(diff)
         if self.type:
             piece_t_res = pyobj_creg.reverse_resolve(self._piece_t)
             ctr = htypes.rc_constructors.list_feed_ctr(
@@ -38,7 +41,13 @@ class Feed:
         for subscriber in self._subscribers:
             subscriber(diff)
 
-    def _deduce_and_store_type(self, diff):
+    async def wait_for_diffs(self, count, timeout=5):
+        async with self._got_diff:
+            while self._got_diff_count < count:
+                async with asyncio.timeout(5):
+                    await self._got_diff.wait()
+
+    async def _deduce_and_store_type(self, diff):
         if isinstance(diff, (
                 ListDiff.Insert,
                 ListDiff.Append,
@@ -53,15 +62,17 @@ class Feed:
             else:
                 self.type = feed
                 log.info("Feed: Deduced feed type: %s [%s]", self.type, element_t)
-            return
-        if self.type and isinstance(diff, (
+        elif self.type and isinstance(diff, (
                 ListDiff.Remove,
                 ListDiff.Modify,
                 )):
             if not isinstance(self.type, htypes.ui.list_feed):
                 raise RuntimeError(f"Attempt to send different diff types to a feed: {self.type} and list diff ({diff})")
-            return
-        raise NotImplementedError(f"Not implemented: feed detection for diff: {diff}")
+        else:
+            raise NotImplementedError(f"Not implemented: feed detection for diff: {diff}")
+        async with self._got_diff:
+            self._got_diff_count += 1
+            self._got_diff.notify_all()
 
 
 class FeedDiscoverer:
