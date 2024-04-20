@@ -420,7 +420,7 @@ class Unit:
         return (result, info)
 
     async def _discover_attributes(self, process_pool):
-        log.info("%s: discover imports", self.name)
+        log.info("%s: importing (discover imports and attributes)", self.name)
         recorders, module_res = discoverer_module_res(self._ctx, self)
         result, info = await self._import_module(process_pool, recorders, module_res)
         await self._imports_discovered(info)
