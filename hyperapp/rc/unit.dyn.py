@@ -529,8 +529,7 @@ class Unit:
         await self._wait_for_providers(want_deps)
         # self.deps already contains fixtures deps.
         self.deps.update(want_deps)
-        dep_sources = self._deps_sources(self.deps)
-        if _sources_ref_str(dep_sources) != self._resource_module.source_ref_str:
+        if _sources_ref_str(self.sources) != self._resource_module.source_ref_str:
             log.info("%s: sources do not match", self.name)
             return False
         log.info("%s: sources match", self.name)
