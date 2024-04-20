@@ -642,6 +642,12 @@ class TestsUnit(FixturesDepsProviderUnit):
         raise NotImplementedError()
 
     @property
+    def sources(self):
+        # Do not wait for dep providers here because they in turn wait for tests be discovered.
+        deps = {d for d in self.deps if isinstance(d, ModuleDep)}
+        return self._deps_sources(deps)
+
+    @property
     def tested_sources_deps(self):
         return _flatten_set(
             [self.deps] + [unit.deps for unit in self._tested_units])
@@ -707,7 +713,8 @@ class TestsUnit(FixturesDepsProviderUnit):
         tested_service_to_unit = {}
         await self._wait_for_deps_discovered(self._tested_units)
         await self._wait_for_providers([ServiceDep(service_name) for service_name in self._tested_services])
-        await self._wait_for_deps(self.deps | {dep for unit in self._tested_units for dep in unit.deps})
+        want_deps = self.deps | common_fixtures_deps(self.deps) | {dep for unit in self._tested_units for dep in unit.deps}
+        await self._wait_for_deps(want_deps)
         for service_name in self._tested_services:
             provider = self._graph.dep_to_provider[ServiceDep(service_name)]
             if provider not in self._tested_units:
@@ -752,9 +759,8 @@ class TestsUnit(FixturesDepsProviderUnit):
             log.info("%s: no resources yet", self.name)
             return False
         info = _resource_module_info(self._resource_module, self.code_name)
-        # Do not wait for dep providers here because they in turn wait for tests be discovered.
-        dep_sources = {self} | {self._graph.name_to_unit[module_name] for module_name in info.use_modules}
-        if _sources_ref_str(dep_sources) != self._resource_module.source_ref_str:
+        self.deps.update(info.want_deps)
+        if _sources_ref_str(self.sources) != self._resource_module.source_ref_str:
             log.info("%s: sources do not match", self.name)
             return False
         log.info("%s: sources match", self.name)
@@ -764,8 +770,6 @@ class TestsUnit(FixturesDepsProviderUnit):
             self._tested_units.add(unit)
             unit.add_test(self)
         await self._set_service_providers(self._resource_module.provided_services)
-        want_deps = info.want_deps | common_fixtures_deps(info.want_deps)
-        self.deps.update(want_deps)
         self._targets_discovered = True
         await _lock_and_notify_all(self._test_targets_discovered)
         await self._wait_for_deps_discovered(self._tested_units)
