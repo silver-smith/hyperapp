@@ -21,6 +21,7 @@ class Feed:
     def __init__(self, piece_t):
         self._piece_t = piece_t
         self.type = None
+        self._constructor_added = False
         self._subscribers = weakref.WeakSet()
         self._got_diff = asyncio.Condition()
         self._got_diff_count = 0
@@ -31,13 +32,14 @@ class Feed:
     async def send(self, diff):
         log.info("Feed: send: %s", diff)
         await self._deduce_and_store_type(diff)
-        if self.type:
+        if self.type and not self._constructor_added:
             piece_t_res = pyobj_creg.reverse_resolve(self._piece_t)
             ctr = htypes.rc_constructors.list_feed_ctr(
                 t=mosaic.put(piece_t_res),
                 element_t=self.type.element_t,
                 )
             add_caller_module_constructor(2, mosaic.put(ctr))
+            self._constructor_added = True
         for subscriber in self._subscribers:
             subscriber(diff)
 
