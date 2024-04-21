@@ -26,8 +26,16 @@ class Association:
             value=web.summon(piece.value),
             )
 
+    def __init__(self, bases, key, value):
+        self.bases = bases
+        if type(key) is list:
+            self.key = tuple(key)
+        else:
+            self.key = key
+        self.value = value
+
     def to_piece(self, mosaic):
-        if type(self.key) in {tuple, list}:
+        if type(self.key) is tuple:
             key = self.key
         else:
             key = [self.key]
@@ -36,6 +44,9 @@ class Association:
             key=tuple(mosaic.put(piece) for piece in key),
             value=mosaic.put(self.value),
             )
+
+    def __hash__(self):
+        return hash(self.key)
 
 
 class AssociationRegistry:

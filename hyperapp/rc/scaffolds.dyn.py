@@ -10,18 +10,18 @@ log = logging.getLogger(__name__)
 
 
 def invite_attr_constructors(ctx, attr_list, module_res, name_to_res):
-    ass_list = []
+    ass_set = set()
     for attr in attr_list:
         for ctr_ref in attr.constructors:
-            ass_list += constructor_creg.invite(ctr_ref, ctx.types, name_to_res, module_res, attr) or []
-    return ass_list
+            ass_set |= set(constructor_creg.invite(ctr_ref, ctx.types, name_to_res, module_res, attr) or [])
+    return ass_set
 
 
 def invite_module_constructors(ctx, ctr_list, module_res, name_to_res):
-    ass_list = []
+    ass_set = set()
     for ctr_ref in ctr_list:
-        ass_list += constructor_creg.invite(ctr_ref, ctx.types, name_to_res, module_res) or []
-    return ass_list
+        ass_set |= set(constructor_creg.invite(ctr_ref, ctx.types, name_to_res, module_res) or [])
+    return ass_set
 
 
 # Module resource with import discoverer.
@@ -192,28 +192,28 @@ def function_call_res(graph, ctx, unit, fixtures, attr):
 def tested_units(graph, ctx, fixtures, tested_units):
     field_list = []
     all_recorders = {}
-    ass_list = []
+    ass_set = set()
     for unit in tested_units:
         recorders, module_res = recorder_module_res(graph, ctx, unit, fixtures)
-        ass_list += unit.attr_constructors_associations(module_res)
+        ass_set |= unit.attr_constructors_associations(module_res)
         all_recorders.update(recorders)
         field = htypes.inspect.tested_unit(unit.name, unit.code_name, mosaic.put(module_res))
         field_list.append(field)
-    return (all_recorders, ass_list, field_list)
+    return (all_recorders, ass_set, field_list)
 
 
 def tested_services(graph, ctx, fixtures, tested_service_to_unit):
     field_list = []
     all_recorders = {}
-    ass_list = []
+    ass_set = set()
     for service_name, unit in tested_service_to_unit.items():
         recorders, module_res = recorder_module_res(graph, ctx, unit, fixtures)
         all_recorders.update(recorders)
-        unit_ass_list, service_res = unit.pick_service_resource(module_res, service_name)
-        ass_list += unit_ass_list
+        unit_ass_set, service_res = unit.pick_service_resource(module_res, service_name)
+        ass_set |= unit_ass_set
         field = htypes.inspect.field(service_name, mosaic.put(service_res))
         field_list.append(field)
-    return (all_recorders, ass_list, field_list)
+    return (all_recorders, ass_set, field_list)
 
 
 def test_call_res(graph, ctx, unit, fixtures, attr):

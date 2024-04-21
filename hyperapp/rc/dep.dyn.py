@@ -63,7 +63,7 @@ class ServiceDep(Dep):
         return f'{self.service_name}.service'
 
     def tested_override_resource(self, unit, module_res):
-        ass_list, res = unit.pick_service_resource(module_res, self.service_name)
+        ass_set, res = unit.pick_service_resource(module_res, self.service_name)
         return res
 
 

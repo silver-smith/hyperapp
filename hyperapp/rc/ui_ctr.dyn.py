@@ -30,7 +30,7 @@ def construct_view_impl(ctx, module_name, resource_module, module_res, qname, pa
     piece_t_ref = _resolve_record_t(params['piece'])
     if piece_t_ref is None:
         log.warning("%s.%s: piece parameter type is not a data record", module_name, qname)
-        return []
+        return set()
     log.info("Construct view implementation: %s: %s", resource_module.name, qname)
     class_name, method_name = qname.split('.')
     class_attribute = htypes.builtin.attribute(
@@ -55,14 +55,14 @@ def construct_view_impl(ctx, module_name, resource_module, module_res, qname, pa
     resource_module[class_name] = class_attribute
     resource_module[f'{class_name}.{method_name}'] = ctr_attribute
     resource_module[f'{class_name}.{method_name}.view'] = view
-    return [ctl_association]
+    return {ctl_association}
 
 
 def construct_adapter_impl(ctx, module_name, resource_module, module_res, qname, params):
     piece_t_ref = _resolve_record_t(params['piece'])
     if piece_t_ref is None:
         log.warning("%s.%s: piece parameter type is not a data record", module_name, qname)
-        return []
+        return set()
     log.info("Construct adapter implementation: %s: %s", resource_module.name, qname)
     class_name, method_name = qname.split('.')
     class_attribute = htypes.builtin.attribute(
@@ -82,14 +82,14 @@ def construct_adapter_impl(ctx, module_name, resource_module, module_res, qname,
         )
     resource_module[class_name] = class_attribute
     resource_module[f'{class_name}.{method_name}'] = ctr_attribute
-    return [association]
+    return {association}
 
 
 def construct_fn_list_impl(ctx, module_name, resource_module, module_res, qname, params, result_t):
     piece_t_ref = _resolve_record_t(params['piece'])
     if piece_t_ref is None:
         log.warning("%s.%s: piece parameter type is not a data record", module_name, qname)
-        return []
+        return set()
     log.info("Construct fn list implementation: %s: %s", resource_module.name, qname)
     fn_name = qname
     fn_attribute = htypes.builtin.attribute(
@@ -123,18 +123,18 @@ def construct_fn_list_impl(ctx, module_name, resource_module, module_res, qname,
     resource_module[f'{fn_name}.impl'] = impl
     resource_module['model_d'] = model_d
     resource_module[f'{fn_name}.model'] = model
-    return [association]
+    return {association}
 
 
 def construct_fn_tree_impl(ctx, module_name, resource_module, module_res, qname, params, result_t):
     piece_t_ref = _resolve_record_t(params['piece'])
     if piece_t_ref is None:
         log.warning("%s.%s: piece parameter type is not a data record", module_name, qname)
-        return []
+        return set()
     key_t_rec = params['parent']
     if not isinstance(key_t_rec, htypes.inspect.data_t):
         log.warning("%s.%s: parent parameter type is not a data", module_name, qname)
-        return []
+        return set()
     log.info("Construct fn tree implementation: %s: %s", resource_module.name, qname)
     fn_name = qname
     fn_attribute = htypes.builtin.attribute(
@@ -170,7 +170,7 @@ def construct_fn_tree_impl(ctx, module_name, resource_module, module_res, qname,
     resource_module[f'{fn_name}.impl'] = impl
     resource_module['model_d'] = model_d
     resource_module[f'{fn_name}.model'] = model
-    return [association]
+    return {association}
 
 
 def _make_command_d_res(ctx, module_res, fn_name):
@@ -229,7 +229,7 @@ def construct_global_model_command(ctx, module_name, resource_module, module_res
     resource_module['global_model_command_kind_d'] = global_model_command_kind_d_res
     resource_module[f'{fn_name}.command'] = command
     resource_module['global_model_command_d'] = global_model_command_d_res
-    return [association]
+    return {association}
 
 
 def construct_model_command_enumerator(ctx, module_name, resource_module, module_res, qname, piece_t_ref, params):
@@ -256,7 +256,7 @@ def construct_model_command_enumerator(ctx, module_name, resource_module, module
     resource_module[fn_name] = fn_attribute
     resource_module[f'{fn_name}.enumerator'] = enumerator
     resource_module['model_command_enumerator_d'] = enumerator_d
-    return [association]
+    return {association}
 
 
 def construct_model_command(ctx, module_name, resource_module, module_res, qname, piece_t_ref, params):
@@ -296,11 +296,11 @@ def construct_model_command(ctx, module_name, resource_module, module_res, qname
     resource_module['model_command_kind_d'] = model_command_kind_d_res
     resource_module[f'{fn_name}.command'] = command
     resource_module['model_command_d'] = model_command_d_res
-    return [association]
+    return {association}
 
 
 def _create_trace_resources(ctx, module_name, resource_module, module_res, qname, trace):
-    ass_list = []
+    ass_set = set()
     params = {**trace.params}
     if trace.obj_type == 'classmethod':
         # Remove first, 'cls', parameter.
@@ -308,30 +308,30 @@ def _create_trace_resources(ctx, module_name, resource_module, module_res, qname
     param_names = list(params)
     if len(qname.split('.')) == 2 and trace.obj_type in ('classmethod', 'staticmethod'):
         if param_names == ['piece', 'ctx'] and 'View' in qname:
-            ass_list += construct_view_impl(ctx, module_name, resource_module, module_res, qname, params)
+            ass_set |= construct_view_impl(ctx, module_name, resource_module, module_res, qname, params)
         if param_names == ['piece', 'ctx'] and 'Adapter' in qname:
-            ass_list += construct_adapter_impl(ctx, module_name, resource_module, module_res, qname, params)
+            ass_set |= construct_adapter_impl(ctx, module_name, resource_module, module_res, qname, params)
     if len(qname.split('.')) == 1 and trace.obj_type == 'function':
         if (trace.result_t == htypes.inspect.object_t('list', 'builtins')
                 and param_names[:1] == ['piece'] and set(param_names[1:]) <= {'current_item'}):
             piece_t_ref = _resolve_record_t(params['piece'])
             if piece_t_ref is None:
                 log.warning("%s.%s: piece parameter type is not a data record", module_name, qname)
-                return ass_list
-            ass_list += construct_model_command_enumerator(ctx, module_name, resource_module, module_res, qname, piece_t_ref, param_names)
+                return ass_set
+            ass_set |= construct_model_command_enumerator(ctx, module_name, resource_module, module_res, qname, piece_t_ref, param_names)
         if not isinstance(trace.result_t, htypes.inspect.data_t):
-            return ass_list
+            return ass_set
         result_t = types.resolve(trace.result_t.t)
         if param_names in [['piece'], ['piece', 'feed']] and isinstance(result_t, TList):
-            ass_list += construct_fn_list_impl(ctx, module_name, resource_module, module_res, qname, params, result_t)
+            ass_set |= construct_fn_list_impl(ctx, module_name, resource_module, module_res, qname, params, result_t)
         if param_names in [['piece', 'parent'], ['piece', 'parent', 'feed']] and isinstance(result_t, TList):
-            ass_list += construct_fn_tree_impl(ctx, module_name, resource_module, module_res, qname, params, result_t)
+            ass_set |= construct_fn_tree_impl(ctx, module_name, resource_module, module_res, qname, params, result_t)
         if (isinstance(result_t, TRecord)
                 or result_t is tString
                 or isinstance(result_t, TList) and isinstance(result_t.element_t, TRecord)):
             # Return type suggests it can be a command.
             if params.keys() <= {'state'}:
-                ass_list += construct_global_model_command(ctx, module_name, resource_module, module_res, qname, params)
+                ass_set |= construct_global_model_command(ctx, module_name, resource_module, module_res, qname, params)
         if (isinstance(result_t, TRecord)
                 or result_t is tString
                 or isinstance(result_t, TList) and isinstance(result_t.element_t, TRecord)
@@ -340,9 +340,9 @@ def _create_trace_resources(ctx, module_name, resource_module, module_res, qname
                 piece_t_ref = _resolve_record_t(params['piece'])
                 if piece_t_ref is None:
                     log.warning("%s.%s: piece parameter type is not a data record", module_name, qname)
-                    return ass_list
-                ass_list += construct_model_command(ctx, module_name, resource_module, module_res, qname, piece_t_ref, param_names)
-    return ass_list
+                    return ass_set
+                ass_set |= construct_model_command(ctx, module_name, resource_module, module_res, qname, piece_t_ref, param_names)
+    return ass_set
 
 
 def create_ui_resources(ctx, module_name, resource_module, module_res, call_list):
@@ -355,8 +355,8 @@ def create_ui_resources(ctx, module_name, resource_module, module_res, call_list
             if trace.params != trace_list[0].params:
                 log.warning("Different traces for %s: %s and %s", trace.fn_qual_name, trace_list[0], trace)
 
-    ass_list = []
+    ass_set = set()
     for qname, trace_list in qname_to_traces.items():
         trace = trace_list[0]
-        ass_list += _create_trace_resources(ctx, module_name, resource_module, module_res, qname, trace)
-    return ass_list
+        ass_set |= _create_trace_resources(ctx, module_name, resource_module, module_res, qname, trace)
+    return ass_set

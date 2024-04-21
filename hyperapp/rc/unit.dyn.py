@@ -332,18 +332,18 @@ class Unit:
     def attr_constructors_associations(self, module_res):
         assert self._attr_list is not None  # Not yet imported/attr enumerated.
         name_to_res = {}  # Not used.
-        ass_list = invite_attr_constructors(self._ctx, self._attr_list, module_res, name_to_res)
-        return ass_list
+        ass_set = invite_attr_constructors(self._ctx, self._attr_list, module_res, name_to_res)
+        return ass_set
 
     def pick_service_resource(self, module_res, service_name):
         assert self._attr_list is not None  # Not yet imported/attr enumerated.
         name_to_res = {}
-        ass_list = invite_attr_constructors(self._ctx, self._attr_list, module_res, name_to_res)
+        ass_set = invite_attr_constructors(self._ctx, self._attr_list, module_res, name_to_res)
         for name, resource in name_to_res.items():
             if name.endswith('.service'):
                 sn, _ = name.rsplit('.', 1)
                 if sn == service_name:
-                    return (ass_list, resource)
+                    return (ass_set, resource)
         raise RuntimeError(f"{self}: Service {service_name!r} was not created by it's constructor")
 
     async def _wait_for_all_test_targets(self):
@@ -503,10 +503,10 @@ class Unit:
             ]))
         resource_module = resource_module_factory(self._ctx.resource_registry, self.name)
         resource_module[f'{self.code_name}.module'] = module_res
-        ass_list = invite_module_constructors(self._ctx, self._module_constructors, module_res, resource_module)
-        ass_list += invite_attr_constructors(self._ctx, self._attr_list, module_res, resource_module)
-        ass_list += ui_ctr.create_ui_resources(self._ctx, self.name, resource_module, module_res, self._call_list)
-        resource_module.add_association_list(ass_list)
+        ass_set = invite_module_constructors(self._ctx, self._module_constructors, module_res, resource_module)
+        ass_set |= invite_attr_constructors(self._ctx, self._attr_list, module_res, resource_module)
+        ass_set |= ui_ctr.create_ui_resources(self._ctx, self.name, resource_module, module_res, self._call_list)
+        resource_module.add_association_list(ass_set)
         source_hash_str = _sources_ref_str(self.sources)
         tests_hash_str = _sources_ref_str(self._test_sources)
         log.info("Write: %s: %s", self.name, self._resources_path)
@@ -691,8 +691,10 @@ class TestsUnit(FixturesDepsProviderUnit):
     async def _call_test(self, process_pool, attr_name, test_recorders, test_module_res, call_res, tested_service_to_unit):
         log.info("%s: Call test: %s", self.name, attr_name)
         fixtures = [self._common_fixtures_rec, FixturesUnitRec(self, test_module_res)]
-        unit_recorders, ass_list, tested_unit_fields = tested_units(self._graph, self._ctx, fixtures, self._tested_units)
-        service_recorders, services_ass_list, tested_service_fields = tested_services(self._graph, self._ctx, fixtures, tested_service_to_unit)
+        unit_recorders, ass_set, tested_unit_fields = tested_units(
+            self._graph, self._ctx, fixtures, self._tested_units)
+        service_recorders, unused_services_ass_set, tested_service_fields = tested_services(
+            self._graph, self._ctx, fixtures, tested_service_to_unit)
         recorders = {**test_recorders, **unit_recorders, **service_recorders}
         result = await process_pool.run(
             htest_driver.call_test,
@@ -702,7 +704,7 @@ class TestsUnit(FixturesDepsProviderUnit):
             tested_units=tested_unit_fields,
             tested_services=tested_service_fields,
             trace_modules=[self.name] + [unit.name for unit in self._tested_units],
-            use_associations=[ass.to_piece(mosaic) for ass in ass_list],
+            use_associations=[ass.to_piece(mosaic) for ass in ass_set],
             )
         self._handle_result_imports(result.imports)
         self._handle_result_calls(result.calls)
