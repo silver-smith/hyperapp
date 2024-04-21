@@ -1,5 +1,6 @@
 import logging
 import multiprocessing
+import struct
 import threading
 from collections import namedtuple
 
@@ -22,6 +23,16 @@ from .services import (
 log = logging.getLogger(__name__)
 
 
+# packet data size
+HEADER_FORMAT = '!Q'
+HEADER_SIZE = struct.calcsize(HEADER_FORMAT)
+
+
+def encode_packet(data):
+    header = struct.pack(HEADER_FORMAT, len(data))
+    return header + data
+
+
 class ConnectionRec:
 
     def __init__(self, connection, name, seen_refs, on_eof=None, on_reset=None):
@@ -30,6 +41,7 @@ class ConnectionRec:
         self.seen_refs = seen_refs
         self.on_eof = on_eof or self._do_nothing
         self.on_reset = on_reset or self.on_eof
+        self._buffer = b''
 
     def _do_nothing(self):
         pass
@@ -39,6 +51,25 @@ class ConnectionRec:
         del _server_connections[self._connection]
         self._connection.close()
         _signal_connection_in.send(None)  # Wake up server main.
+
+    def read(self):
+        self._buffer += self._connection.recv()
+        if self._has_full_packet():
+            return self._pop_packet()
+        else:
+            return None
+
+    def _has_full_packet(self):
+        if len(self._buffer) < HEADER_SIZE:
+            return False
+        [size] = struct.unpack(HEADER_FORMAT, self._buffer[:HEADER_SIZE])
+        return len(self._buffer) >= HEADER_SIZE + size
+
+    def _pop_packet(self):
+        [size] = struct.unpack(HEADER_FORMAT, self._buffer[:HEADER_SIZE])
+        packet_data = self._buffer[HEADER_SIZE : HEADER_SIZE + size]
+        self._buffer = self._buffer[HEADER_SIZE + size:]
+        return packet_data
 
 
 class SubprocessRoute:
@@ -62,7 +93,7 @@ class SubprocessRoute:
         self._seen_refs |= refs_and_bundle.ref_set
         bundle_cdr = packet_coders.encode('cdr', refs_and_bundle.bundle)
         log.info("Subprocess transport: send bundle to %r. Bundle size: %.2f KB", self._name, len(bundle_cdr)/1024)
-        self._connection.send(bundle_cdr)
+        self._connection.send(encode_packet(bundle_cdr))
         log.debug("Subprocess %s: parcel is sent: %s", self._name, parcel_ref)
 
 
@@ -98,7 +129,7 @@ def _process_bundle(connection, connection_rec, data):
 def _process_ready_connection(connection):
     rec = _server_connections[connection]
     try:
-        data = connection.recv()
+        data = rec.read()
     except EOFError as x:
         log.info("Subprocess connection %s was closed by the other side: %s", rec.name, x)
         rec.on_eof()
@@ -106,6 +137,8 @@ def _process_ready_connection(connection):
         log.warning("Subprocess connection %s was reset by the other side: %s", rec.name, x)
         rec.on_reset()
     else:
+        if data is None:
+            return  # Partial packet is received.
         try:
             _process_bundle(connection, rec, data)
             return  # Keep connection.
