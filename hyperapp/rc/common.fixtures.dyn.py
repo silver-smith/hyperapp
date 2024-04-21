@@ -11,6 +11,7 @@ from .services import (
     mosaic,
     pyobj_creg,
     )
+from .services import feed_creg as true_feed_creg
 from .code.list_diff import ListDiff
 
 log = logging.getLogger(__name__)
@@ -30,7 +31,7 @@ class Feed:
         self._subscribers.add(subscriber)
 
     async def send(self, diff):
-        log.info("Feed: send: %s", diff)
+        log.info("Feed fixture: send: %s", diff)
         await self._deduce_and_store_type(diff)
         if self.type and not self._constructor_added:
             piece_t_res = pyobj_creg.reverse_resolve(self._piece_t)
@@ -81,6 +82,9 @@ class FeedDiscoverer:
 
     def __init__(self):
         self._piece_to_feed = {}
+
+    def actor(self, t):
+        return true_feed_creg.actor(t)
 
     def animate(self, piece):
         log.info("Discovered feed piece: %s", piece)
