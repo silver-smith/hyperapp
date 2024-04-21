@@ -4,6 +4,7 @@ import:
 - common.list_diff:list_diff.module
 - legacy_type.builtin:python_module
 - legacy_type.phony:phony
+- ui.feed_creg:feed_creg.service
 associations: []
 definitions:
   phony:
@@ -14,4 +15,5 @@ definitions:
     file_name: sample_list.tests.dyn.py
     import_list:
       code.list_diff: common.list_diff:list_diff.module
+      services.feed_creg: ui.feed_creg:feed_creg.service
       tested.code.sample_list: phony

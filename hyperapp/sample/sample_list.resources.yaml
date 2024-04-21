@@ -11,9 +11,11 @@ import:
 - legacy_type.sample_list:open_sample_fn_list_d
 - legacy_type.sample_list:sample_list
 - legacy_type.sample_list:sample_list_d
+- legacy_type.ui:feed_d
 - legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:global_model_command_kind_d
+- legacy_type.ui:list_feed
 - legacy_type.ui:list_ui_t
 - legacy_type.ui:model
 - legacy_type.ui:model_command
@@ -21,6 +23,13 @@ import:
 - legacy_type.ui:model_command_kind_d
 - legacy_type.ui:model_d
 associations:
+- bases:
+  - feed_d
+  - legacy_type.sample_list:feed_sample_list
+  key:
+  - feed_d
+  - legacy_type.sample_list:feed_sample_list
+  value: sample_list_feed_sample_list.list_feed
 - bases:
   - global_model_command_d
   key: global_model_command_d
@@ -48,6 +57,9 @@ associations:
   - legacy_type.sample_list:sample_list
   value: sample_list.model
 definitions:
+  feed_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:feed_d
   feed_sample_list:
     _type: legacy_type.builtin:attribute
     object: sample_list.module
@@ -145,4 +157,7 @@ definitions:
       htypes.sample_list.sample_list: legacy_type.sample_list:sample_list
   sample_list.ui_t:
     _type: legacy_type.ui:list_ui_t
+    element_t: legacy_type.sample_list:item
+  sample_list_feed_sample_list.list_feed:
+    _type: legacy_type.ui:list_feed
     element_t: legacy_type.sample_list:item
