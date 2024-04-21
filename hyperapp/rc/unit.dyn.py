@@ -406,7 +406,10 @@ class Unit:
                 if not not_completed:
                     return
                 log.debug("%s: Waiting for tests: %s", self.name, _unit_list_to_str(not_completed))
-                await self._test_completed.wait()
+                try:
+                    await self._test_completed.wait()
+                except asyncio.CancelledError:
+                    raise DeadlockError("Waiting for tests to be completed: {}".format(_unit_list_to_str(not_completed)))
 
     async def _import_module(self, process_pool, recorders, module_res):
         result = await process_pool.run(
