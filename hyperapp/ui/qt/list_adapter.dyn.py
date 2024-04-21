@@ -6,6 +6,7 @@ from hyperapp.common.htypes import TList
 from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 
 from .services import (
+    feed_creg,
     mosaic,
     peer_registry,
     pyobj_creg,
@@ -33,6 +34,10 @@ class StaticListAdapter:
         self._column_names = sorted(self._item_t.fields)
 
     @property
+    def feed(self):
+        return None
+
+    @property
     def model(self):
         return self._value
 
@@ -55,15 +60,6 @@ class StaticListAdapter:
         pass
 
 
-class _Feed:
-
-    def __init__(self, adapter):
-        self._adapter = adapter
-
-    def send(self, diff):
-        self._adapter.send_diff(diff)
-
-
 class FnListAdapterBase(metaclass=abc.ABCMeta):
 
     def __init__(self, model_piece, item_t, want_feed):
@@ -72,7 +68,11 @@ class FnListAdapterBase(metaclass=abc.ABCMeta):
         self._want_feed = want_feed
         self._column_names = sorted(self._item_t.fields)
         self._item_list = None
-        self._subscribed_models = weakref.WeakSet()
+        if want_feed:
+            self.feed = feed_creg.animate(model_piece)
+            self.feed.subscribe(self)
+        else:
+            self.feed = None
 
     @property
     def model(self):
@@ -94,18 +94,13 @@ class FnListAdapterBase(metaclass=abc.ABCMeta):
     def get_item(self, idx):
         return self._items[idx]
 
-    def subscribe(self, model):
-        self._subscribed_models.add(model)
-
-    def send_diff(self, diff):
-        log.info("List adapter: send diff: %s", diff)
+    def process_diff(self, diff):
+        log.info("List adapter: process diff: %s", diff)
         if self._item_list is None:
             self._populate()
         if not isinstance(diff, ListDiff.Append):
             raise NotImplementedError(diff)
         self._item_list.append(diff.item)
-        for model in self._subscribed_models:
-            model.process_diff(diff)
 
     @property
     def _items(self):
@@ -135,7 +130,7 @@ class FnListAdapter(FnListAdapterBase):
     def _populate(self):
         kw = {'piece': self._model_piece}
         if self._want_feed:
-            kw['feed'] = _Feed(self)
+            kw['feed'] = self.feed
         self._item_list = self._fn(**kw)
 
 
@@ -160,5 +155,5 @@ class RemoteFnListAdapter(FnListAdapterBase):
     def _populate(self):
         kw = {'piece': self._model_piece}
         if self._want_feed:
-            kw['feed'] = _Feed(self)
+            kw['feed'] = self.feed
         self._item_list = self._rpc_call(**kw)

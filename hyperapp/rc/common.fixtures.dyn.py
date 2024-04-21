@@ -42,7 +42,7 @@ class Feed:
             add_caller_module_constructor(2, mosaic.put(ctr))
             self._constructor_added = True
         for subscriber in self._subscribers:
-            subscriber(diff)
+            subscriber.process_diff(diff)
 
     async def wait_for_diffs(self, count, timeout=5):
         async with self._got_diff:

@@ -70,7 +70,7 @@ def test_fn_adapter():
     assert adapter.cell_data(2, 1) == "Third item"
 
 
-class MockModel:
+class Subscriber:
 
     def __init__(self, queue):
         self._queue = queue
@@ -79,16 +79,15 @@ class MockModel:
         self._queue.put_nowait(diff)
 
 
-def _send_diff(feed):
+async def _send_diff(feed):
     item = htypes.sample_list.item(44, "Sample item #4")
-    feed.send(ListDiff.Append(item))
+    await feed.send(ListDiff.Append(item))
 
 
 def sample_feed_list_fn(piece, feed):
     log.info("Sample feed list fn: %s", piece)
     assert isinstance(piece, htypes.list_adapter_tests.sample_list), repr(piece)
-    loop = asyncio.get_running_loop()
-    loop.call_soon(partial(_send_diff, feed))
+    asyncio.create_task(_send_diff(feed))
     return [
         htypes.list_adapter_tests.item(11, "First item"),
         htypes.list_adapter_tests.item(22, "Second item"),
@@ -108,8 +107,8 @@ async def test_feed_fn_adapter():
 
     adapter = list_adapter.FnListAdapter.from_piece(adapter_piece, ctx)
     queue = asyncio.Queue()
-    model = MockModel(queue)
-    adapter.subscribe(model)
+    subscriber = Subscriber(queue)
+    adapter.feed.subscribe(subscriber)
 
     assert adapter.column_count() == 2
     assert adapter.column_title(0) == 'id'
