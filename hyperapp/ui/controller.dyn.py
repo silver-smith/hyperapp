@@ -223,12 +223,19 @@ class _Item:
         self._commands = None
         self.update_commands()
 
+    # Should be on stack for proper module for feed constructor be picked up.
+    async def _send_model_diff(self, model_diff):
+        await self._feed.send(model_diff)
+
     def element_inserted_hook(self, idx):
         self._children = None
         self._current_child_idx = None
         self.update_commands()
         self.update_model()
         self.save_state()
+        item = self.children[idx]
+        model_diff = TreeDiff.Insert(item.path, item.model_item)
+        asyncio.create_task(self._send_model_diff(model_diff))
 
     def element_removed_hook(self, idx):
         self._children = None
@@ -285,10 +292,6 @@ class _WindowItem(_Item):
 
     def _make_commands(self):
         return self._make_view_commands(view=RootView(self.parent.children, self.id))
-
-    # Should be on stack for proper module for feed constructor be picked up.
-    async def _send_model_diff(self, model_diff):
-        await self._feed.send(model_diff)
 
     def _apply_diff(self, diffs, show=True):
         diff_list = _ensure_diff_list(diffs)
