@@ -60,7 +60,7 @@ def test_fn_adapter():
     assert adapter.cell_data(row_2_id, 0) == 23
 
 
-class MockModel:
+class Subscriber:
 
     def __init__(self, queue):
         self._queue = queue
@@ -69,9 +69,9 @@ class MockModel:
         self._queue.put_nowait(diff)
 
 
-def _send_diff(feed, path, base):
+async def _send_diff(feed, path, base):
     item = htypes.tree_adapter_tests.item(base*10 + 4, "Forth item")
-    feed.send(TreeDiff.Append(path, item))
+    await feed.send(TreeDiff.Append(path, item))
 
 
 def sample_feed_tree_fn(piece, parent, feed):
@@ -86,8 +86,7 @@ def sample_feed_tree_fn(piece, parent, feed):
     while i:
         path = [i % 10 - 1, *path]
         i = i // 10
-    loop = asyncio.get_running_loop()
-    loop.call_soon(partial(_send_diff, feed, path, base))
+    asyncio.create_task(_send_diff(feed, path, base))
     return [
         htypes.tree_adapter_tests.item(base*10 + 1, "First item"),
         htypes.tree_adapter_tests.item(base*10 + 2, "Second item"),
@@ -108,8 +107,8 @@ async def test_feed_fn_adapter():
 
     adapter = tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, ctx)
     queue = asyncio.Queue()
-    model = MockModel(queue)
-    adapter.subscribe(model)
+    subscriber = Subscriber(queue)
+    adapter.subscribe(subscriber)
 
     assert adapter.column_count() == 2
     assert adapter.column_title(0) == 'id'

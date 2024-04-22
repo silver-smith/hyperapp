@@ -10,6 +10,7 @@ import:
 - legacy_type.tree_adapter:remote_fn_index_tree_adapter
 - rpc.rpc_call:rpc_call_factory.service
 - transport.identity:peer_registry.service
+- ui.feed:feed_factory.service
 - ui.qt.tree:tree.module
 - ui.ui_adapter_creg:ui_adapter_creg.service
 associations:
@@ -51,6 +52,7 @@ definitions:
     import_list:
       code.tree: ui.qt.tree:tree.module
       code.tree_diff: common.tree_diff:tree_diff.module
+      services.feed_factory: ui.feed:feed_factory.service
       services.peer_registry: transport.identity:peer_registry.service
       services.pyobj_creg: builtins:pyobj_creg.service
       services.rpc_call_factory: rpc.rpc_call:rpc_call_factory.service

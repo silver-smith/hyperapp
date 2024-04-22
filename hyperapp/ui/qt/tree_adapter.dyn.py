@@ -4,6 +4,7 @@ import logging
 import weakref
 
 from .services import (
+    feed_factory,
     peer_registry,
     pyobj_creg,
     rpc_call_factory,
@@ -13,15 +14,6 @@ from .code.tree_diff import TreeDiff
 from .code.tree import VisualTreeDiffAppend
 
 log = logging.getLogger(__name__)
-
-
-class _Feed:
-
-    def __init__(self, adapter):
-        self._adapter = adapter
-
-    def send(self, diff):
-        self._adapter.send_diff(diff)
 
 
 class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
@@ -35,7 +27,15 @@ class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
         self._id_to_children_id_list = {}
         self._id_to_parent_id = {}
         self._id_counter = itertools.count(start=1)
-        self._subscribed_models = weakref.WeakSet()
+        self._subscribers = weakref.WeakSet()
+        if want_feed:
+            self._feed = feed_factory(model_piece)
+            self._feed.subscribe(self)
+        else:
+            self._feed = None
+
+    def subscribe(self, subscriber):
+        self._subscribers.add(subscriber)
 
     @property
     def model(self):
@@ -70,11 +70,8 @@ class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
     def get_item(self, id):
         return self._id_to_item.get(id)
 
-    def subscribe(self, model):
-        self._subscribed_models.add(model)
-
-    def send_diff(self, diff):
-        log.info("Tree adapter: send diff: %s", diff)
+    def process_diff(self, diff):
+        log.info("Tree adapter: process diff: %s", diff)
         if not isinstance(diff, TreeDiff.Append):
             raise NotImplementedError(diff)
         parent_id = 0
@@ -87,8 +84,8 @@ class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
         self._id_to_parent_id[item_id] = parent_id
         self._id_to_children_id_list[parent_id].append(item_id)
         visual_diff = VisualTreeDiffAppend(parent_id)
-        for model in self._subscribed_models:
-            model.process_diff(visual_diff)
+        for subscriber in self._subscribers:
+            subscriber.process_diff(visual_diff)
 
     def _id_list(self, parent_id):
         try:
@@ -107,7 +104,7 @@ class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
             'parent': parent_item,
             }
         if self._want_feed:
-            kw['feed'] = _Feed(self)
+            kw['feed'] = self._feed
         item_list = self._call_fn(**kw)
         log.info("Tree adapter: populated (%s, %s) -> %s", self._model_piece, parent_item, item_list)
         item_id_list = []
