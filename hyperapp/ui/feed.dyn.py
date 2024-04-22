@@ -15,7 +15,7 @@ from .services import (
 log = logging.getLogger(__name__)
 
 
-class ListFeed:
+class Feed:
 
     @classmethod
     def from_piece(cls, piece):
@@ -33,9 +33,22 @@ class ListFeed:
             subscriber.process_diff(diff)
 
 
+class ListFeed(Feed):
+    pass
+
+
+class IndexTreeFeed(Feed):
+    pass
+
+
 @feed_creg.actor(htypes.ui.list_feed)
 def list_feed_from_piece(piece):
     return ListFeed.from_piece(piece)
+
+
+@feed_creg.actor(htypes.ui.index_tree_feed)
+def index_tree_feed_from_piece(piece):
+    return IndexTreeFeed.from_piece(piece)
 
 
 class FeedFactory:

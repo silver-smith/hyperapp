@@ -17,3 +17,7 @@ universal_ui_command_ctr = record:
 list_feed_ctr = record:
   t: ref
   element_t: ref
+
+index_tree_feed_ctr = record:
+  t: ref
+  element_t: ref

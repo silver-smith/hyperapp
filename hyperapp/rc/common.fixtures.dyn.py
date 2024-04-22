@@ -12,6 +12,7 @@ from .services import (
     pyobj_creg,
     )
 from .code.list_diff import ListDiff
+from .code.tree_diff import TreeDiff
 
 log = logging.getLogger(__name__)
 
@@ -20,25 +21,21 @@ class FeedDiscoverer:
 
     def __init__(self, piece_t):
         self._piece_t = piece_t
-        self.type = None
+        self.ctr = None
         self._constructor_added = False
         self._subscribers = weakref.WeakSet()
         self._got_diff = asyncio.Condition()
         self._got_diff_count = 0
+        self._piece_t_res = pyobj_creg.reverse_resolve(self._piece_t)
 
     def subscribe(self, subscriber):
         self._subscribers.add(subscriber)
 
     async def send(self, diff):
         log.info("Feed discoverer: send: %s", diff)
-        await self._deduce_and_store_type(diff)
-        if self.type and not self._constructor_added:
-            piece_t_res = pyobj_creg.reverse_resolve(self._piece_t)
-            ctr = htypes.rc_constructors.list_feed_ctr(
-                t=mosaic.put(piece_t_res),
-                element_t=self.type.element_t,
-                )
-            add_caller_module_constructor(2, mosaic.put(ctr))
+        await self._deduce_and_store_ctr(diff)
+        if self.ctr and not self._constructor_added:
+            add_caller_module_constructor(2, mosaic.put(self.ctr))
             self._constructor_added = True
         for subscriber in self._subscribers:
             subscriber.process_diff(diff)
@@ -49,7 +46,7 @@ class FeedDiscoverer:
                 async with asyncio.timeout(5):
                     await self._got_diff.wait()
 
-    async def _deduce_and_store_type(self, diff):
+    async def _deduce_and_store_ctr(self, diff):
         if isinstance(diff, (
                 ListDiff.Insert,
                 ListDiff.Append,
@@ -57,19 +54,44 @@ class FeedDiscoverer:
                 )):
             element_t = deduce_value_type(diff.item)
             element_t_res = pyobj_creg.reverse_resolve(element_t)
-            feed = htypes.ui.list_feed(mosaic.put(element_t_res))
-            if self.type:
-                if feed != self.type:
-                    raise RuntimeError(f"Attempt to send different diff types to a feed: {self.type} and {feed}")
+            ctr = htypes.rc_constructors.list_feed_ctr(
+                t=mosaic.put(self._piece_t_res),
+                element_t=mosaic.put(element_t_res),
+                )
+            if self.ctr:
+                if ctr != self.ctr:
+                    raise RuntimeError(f"Attempt to send different diff types to a feed: {self.ctr} and {ctr}")
             else:
-                self.type = feed
-                log.info("Feed: Deduced feed type: %s [%s]", self.type, element_t)
-        elif self.type and isinstance(diff, (
+                self.ctr = ctr
+                log.info("Feed: Deduced feed type: %s [%s]", self.ctr, element_t)
+        elif self.ctr and isinstance(diff, (
                 ListDiff.Remove,
                 ListDiff.Modify,
                 )):
-            if not isinstance(self.type, htypes.ui.list_feed):
-                raise RuntimeError(f"Attempt to send different diff types to a feed: {self.type} and list diff ({diff})")
+            if not isinstance(self.ctr, htypes.rc_constructors.list_feed_ctr):
+                raise RuntimeError(f"Attempt to send different diff types to a feed: {self.ctr} and list diff ({diff})")
+        elif isinstance(diff, (
+                TreeDiff.Insert,
+                TreeDiff.Append,
+                )):
+            element_t = deduce_value_type(diff.item)
+            element_t_res = pyobj_creg.reverse_resolve(element_t)
+            ctr = htypes.rc_constructors.index_tree_feed_ctr(
+                t=mosaic.put(self._piece_t_res),
+                element_t=mosaic.put(element_t_res),
+                )
+            if self.ctr:
+                if ctr != self.ctr:
+                    raise RuntimeError(f"Attempt to send different diff types to a feed: {self.ctr} and {feed}")
+            else:
+                self.ctr = ctr
+                log.info("Feed: Deduced feed type: %s [%s]", self.ctr, element_t)
+        elif self.ctr and isinstance(diff, (
+                TreeDiff.Remove,
+                TreeDiff.Modify,
+                )):
+            if not isinstance(self.ctr, htypes.rc_constructors.index_tree_feed_ctr):
+                raise RuntimeError(f"Attempt to send different diff types to a feed: {self.ctr} and tree diff ({diff})")
         else:
             raise NotImplementedError(f"Not implemented: feed detection for diff: {diff}")
         async with self._got_diff:

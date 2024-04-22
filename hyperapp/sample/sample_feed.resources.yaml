@@ -2,13 +2,18 @@
 
 import:
 - common.list_diff:list_diff.module
+- common.tree_diff:tree_diff.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
-- legacy_type.sample_feed:sample_feed
-- legacy_type.sample_feed:schedule_sample_feed_d
+- legacy_type.sample_feed:sample_list_feed
+- legacy_type.sample_feed:sample_tree_feed
+- legacy_type.sample_feed:schedule_sample_list_feed_d
+- legacy_type.sample_feed:schedule_sample_tree_feed_d
 - legacy_type.sample_list:item
+- legacy_type.sample_tree:item
 - legacy_type.ui:feed_d
+- legacy_type.ui:index_tree_feed
 - legacy_type.ui:list_feed
 - legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
@@ -17,17 +22,30 @@ import:
 associations:
 - bases:
   - feed_d
-  - legacy_type.sample_feed:sample_feed
+  - legacy_type.sample_feed:sample_list_feed
   key:
   - feed_d
-  - legacy_type.sample_feed:sample_feed
-  value: sample_feed_sample_feed.list_feed
+  - legacy_type.sample_feed:sample_list_feed
+  value: sample_feed_sample_list_feed.list_feed
 - bases:
-  - legacy_type.sample_feed:sample_feed
+  - feed_d
+  - legacy_type.sample_feed:sample_tree_feed
+  key:
+  - feed_d
+  - legacy_type.sample_feed:sample_tree_feed
+  value: sample_feed_sample_tree_feed.index_tree_feed
+- bases:
+  - legacy_type.sample_feed:sample_list_feed
   key:
   - model_command_d
-  - legacy_type.sample_feed:sample_feed
-  value: schedule_sample_feed.command
+  - legacy_type.sample_feed:sample_list_feed
+  value: schedule_sample_list_feed.command
+- bases:
+  - legacy_type.sample_feed:sample_tree_feed
+  key:
+  - model_command_d
+  - legacy_type.sample_feed:sample_tree_feed
+  value: schedule_sample_tree_feed.command
 definitions:
   feed_d:
     _type: legacy_type.builtin:call
@@ -44,24 +62,45 @@ definitions:
     file_name: sample_feed.dyn.py
     import_list:
       code.list_diff: common.list_diff:list_diff.module
+      code.tree_diff: common.tree_diff:tree_diff.module
       htypes.sample_list.item: legacy_type.sample_list:item
+      htypes.sample_tree.item: legacy_type.sample_tree:item
       services.feed_factory: ui.feed:feed_factory.service
-  sample_feed_sample_feed.list_feed:
+  sample_feed_sample_list_feed.list_feed:
     _type: legacy_type.ui:list_feed
     element_t: legacy_type.sample_list:item
-  schedule_sample_feed:
+  sample_feed_sample_tree_feed.index_tree_feed:
+    _type: legacy_type.ui:index_tree_feed
+    element_t: legacy_type.sample_tree:item
+  schedule_sample_list_feed:
     _type: legacy_type.builtin:attribute
     object: sample_feed.module
-    attr_name: schedule_sample_feed
-  schedule_sample_feed.command:
+    attr_name: schedule_sample_list_feed
+  schedule_sample_list_feed.command:
     _type: legacy_type.ui:model_command
     d:
-    - schedule_sample_feed.d
+    - schedule_sample_list_feed.d
     - model_command_kind_d
-    name: schedule_sample_feed
-    function: schedule_sample_feed
+    name: schedule_sample_list_feed
+    function: schedule_sample_list_feed
     params:
     - piece
-  schedule_sample_feed.d:
+  schedule_sample_list_feed.d:
     _type: legacy_type.builtin:call
-    function: legacy_type.sample_feed:schedule_sample_feed_d
+    function: legacy_type.sample_feed:schedule_sample_list_feed_d
+  schedule_sample_tree_feed:
+    _type: legacy_type.builtin:attribute
+    object: sample_feed.module
+    attr_name: schedule_sample_tree_feed
+  schedule_sample_tree_feed.command:
+    _type: legacy_type.ui:model_command
+    d:
+    - schedule_sample_tree_feed.d
+    - model_command_kind_d
+    name: schedule_sample_tree_feed
+    function: schedule_sample_tree_feed
+    params:
+    - piece
+  schedule_sample_tree_feed.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.sample_feed:schedule_sample_tree_feed_d

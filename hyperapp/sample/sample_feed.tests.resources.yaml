@@ -5,6 +5,7 @@ import:
 - builtins:pyobj_creg.service
 - common.list_diff:list_diff.module
 - common.mark:mark.service
+- common.tree_diff:tree_diff.module
 - legacy_type.builtin:python_module
 - legacy_type.phony:phony
 - ui.feed:feed_factory.service
@@ -18,6 +19,7 @@ definitions:
     file_name: sample_feed.tests.dyn.py
     import_list:
       code.list_diff: common.list_diff:list_diff.module
+      code.tree_diff: common.tree_diff:tree_diff.module
       services.feed_factory: ui.feed:feed_factory.service
       services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service

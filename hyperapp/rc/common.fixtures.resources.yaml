@@ -3,11 +3,12 @@ import:
 - builtins:pyobj_creg.service
 - common.list_diff:list_diff.module
 - common.mark:mark.service
+- common.tree_diff:tree_diff.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.rc_constructors:list_feed_ctr
-- legacy_type.ui:list_feed
+- legacy_type.rc_constructors:index_tree_feed_ctr
 associations: []
 definitions:
   common.fixtures.module:
@@ -16,8 +17,9 @@ definitions:
     file_name: common.fixtures.dyn.py
     import_list:
       code.list_diff: common.list_diff:list_diff.module
+      code.tree_diff: common.tree_diff:tree_diff.module
       htypes.rc_constructors.list_feed_ctr: legacy_type.rc_constructors:list_feed_ctr
-      htypes.ui.list_feed: legacy_type.ui:list_feed
+      htypes.rc_constructors.index_tree_feed_ctr: legacy_type.rc_constructors:index_tree_feed_ctr
       services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service

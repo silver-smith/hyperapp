@@ -24,9 +24,13 @@ model_command_kind_d = record
 context_model_command_kind_d = record
 global_model_command_kind_d = record
 
+
 feed_d = record
 
 list_feed = record:
+  element_t: ref
+
+index_tree_feed = record:
   element_t: ref
 
 
