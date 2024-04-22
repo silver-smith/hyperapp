@@ -68,11 +68,15 @@ class FnListAdapterBase(metaclass=abc.ABCMeta):
         self._want_feed = want_feed
         self._column_names = sorted(self._item_t.fields)
         self._item_list = None
+        self._subscribers = weakref.WeakSet()
         if want_feed:
             self.feed = feed_factory(model_piece)
             self.feed.subscribe(self)
         else:
             self.feed = None
+
+    def subscribe(self, subscriber):
+        self._subscribers.add(subscriber)
 
     @property
     def model(self):
@@ -101,6 +105,8 @@ class FnListAdapterBase(metaclass=abc.ABCMeta):
         if not isinstance(diff, ListDiff.Append):
             raise NotImplementedError(diff)
         self._item_list.append(diff.item)
+        for subscriber in self._subscribers:
+            subscriber.process_diff(diff)
 
     @property
     def _items(self):

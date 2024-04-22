@@ -25,8 +25,7 @@ class _Model(QtCore.QAbstractTableModel):
     def __init__(self, adapter):
         super().__init__()
         self.adapter = adapter
-        if adapter.feed:
-            adapter.feed.subscribe(self)
+        self.adapter.subscribe(self)
 
     # Qt methods  -------------------------------------------------------------------------------------------------------
 
