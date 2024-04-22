@@ -17,6 +17,7 @@ async def open_sample_fn_list():
 
 
 async def _send_diff(feed):
+    await asyncio.sleep(1)
     item = htypes.sample_list.item(4, "Sample item #4")
     await feed.send(ListDiff.Append(item))
 

@@ -10,7 +10,7 @@ from .services import (
     mark,
     mosaic,
     pyobj_creg,
-    feed_creg,
+    feed_factory,
     )
 from .code.list_diff import ListDiff
 from .tested.code import sample_feed
@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 
 async def test_sample_feed():
     piece = htypes.sample_feed.sample_feed()
-    feed = feed_creg.animate(piece)
+    feed = feed_factory(piece)
 
     await sample_feed.schedule_sample_feed(piece)
     await feed.wait_for_diffs(count=1)

@@ -3,7 +3,7 @@ import logging
 
 from . import htypes
 from .services import (
-    feed_creg,
+    feed_factory,
     )
 from .code.list_diff import ListDiff
 
@@ -17,5 +17,5 @@ async def _send_diff(feed):
 
 
 async def schedule_sample_feed(piece):
-    feed = feed_creg.animate(piece)
+    feed = feed_factory(piece)
     asyncio.create_task(_send_diff(feed))

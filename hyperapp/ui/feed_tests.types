@@ -1,0 +1,4 @@
+sample_feed = record
+
+sample_item = record:
+  attr: string

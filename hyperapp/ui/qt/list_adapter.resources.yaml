@@ -13,7 +13,7 @@ import:
 - legacy_type.list_adapter:static_list_adapter
 - rpc.rpc_call:rpc_call_factory.service
 - transport.identity:peer_registry.service
-- ui.feed_creg:feed_creg.service
+- ui.feed:feed_factory.service
 - ui.ui_adapter_creg:ui_adapter_creg.service
 associations:
 - bases:
@@ -68,7 +68,7 @@ definitions:
     file_name: list_adapter.dyn.py
     import_list:
       code.list_diff: common.list_diff:list_diff.module
-      services.feed_creg: ui.feed_creg:feed_creg.service
+      services.feed_factory: ui.feed:feed_factory.service
       services.mosaic: builtins:mosaic.service
       services.peer_registry: transport.identity:peer_registry.service
       services.pyobj_creg: builtins:pyobj_creg.service

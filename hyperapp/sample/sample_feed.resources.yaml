@@ -13,7 +13,7 @@ import:
 - legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_kind_d
-- ui.feed_creg:feed_creg.service
+- ui.feed:feed_factory.service
 associations:
 - bases:
   - feed_d
@@ -45,7 +45,7 @@ definitions:
     import_list:
       code.list_diff: common.list_diff:list_diff.module
       htypes.sample_list.item: legacy_type.sample_list:item
-      services.feed_creg: ui.feed_creg:feed_creg.service
+      services.feed_factory: ui.feed:feed_factory.service
   sample_feed_sample_feed.list_feed:
     _type: legacy_type.ui:list_feed
     element_t: legacy_type.sample_list:item

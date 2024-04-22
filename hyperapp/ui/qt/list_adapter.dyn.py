@@ -6,7 +6,7 @@ from hyperapp.common.htypes import TList
 from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 
 from .services import (
-    feed_creg,
+    feed_factory,
     mosaic,
     peer_registry,
     pyobj_creg,
@@ -69,7 +69,7 @@ class FnListAdapterBase(metaclass=abc.ABCMeta):
         self._column_names = sorted(self._item_t.fields)
         self._item_list = None
         if want_feed:
-            self.feed = feed_creg.animate(model_piece)
+            self.feed = feed_factory(model_piece)
             self.feed.subscribe(self)
         else:
             self.feed = None

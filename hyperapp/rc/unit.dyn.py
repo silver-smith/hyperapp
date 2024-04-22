@@ -169,7 +169,7 @@ def _imports_info(imports):
 
 
 def common_fixtures_deps(want_deps):
-    if ServiceDep('feed_creg') in want_deps:
+    if ServiceDep('feed_factory') in want_deps:
         return {ModuleDep('rc.common.fixtures')}
     else:
         return set()
