@@ -33,9 +33,8 @@ class StaticListAdapter:
         self._value = value  # record list.
         self._column_names = sorted(self._item_t.fields)
 
-    @property
-    def feed(self):
-        return None
+    def subscribe(self, model):
+        pass
 
     @property
     def model(self):
@@ -56,9 +55,6 @@ class StaticListAdapter:
     def get_item(self, idx):
         return self._value[idx]
 
-    def subscribe(self, model):
-        pass
-
 
 class FnListAdapterBase(metaclass=abc.ABCMeta):
 
@@ -70,10 +66,10 @@ class FnListAdapterBase(metaclass=abc.ABCMeta):
         self._item_list = None
         self._subscribers = weakref.WeakSet()
         if want_feed:
-            self.feed = feed_factory(model_piece)
-            self.feed.subscribe(self)
+            self._feed = feed_factory(model_piece)
+            self._feed.subscribe(self)
         else:
-            self.feed = None
+            self._feed = None
 
     def subscribe(self, subscriber):
         self._subscribers.add(subscriber)
@@ -136,7 +132,7 @@ class FnListAdapter(FnListAdapterBase):
     def _populate(self):
         kw = {'piece': self._model_piece}
         if self._want_feed:
-            kw['feed'] = self.feed
+            kw['feed'] = self._feed
         self._item_list = self._fn(**kw)
 
 
@@ -161,5 +157,5 @@ class RemoteFnListAdapter(FnListAdapterBase):
     def _populate(self):
         kw = {'piece': self._model_piece}
         if self._want_feed:
-            kw['feed'] = self.feed
+            kw['feed'] = self._feed
         self._item_list = self._rpc_call(**kw)

@@ -108,7 +108,7 @@ async def test_feed_fn_adapter():
     adapter = list_adapter.FnListAdapter.from_piece(adapter_piece, ctx)
     queue = asyncio.Queue()
     subscriber = Subscriber(queue)
-    adapter.feed.subscribe(subscriber)
+    adapter.subscribe(subscriber)
 
     assert adapter.column_count() == 2
     assert adapter.column_title(0) == 'id'
