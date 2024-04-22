@@ -10,15 +10,24 @@ import:
 - legacy_type.sample_tree:open_feed_sample_fn_tree_d
 - legacy_type.sample_tree:open_sample_fn_tree_d
 - legacy_type.sample_tree:sample_tree
+- legacy_type.ui:feed_d
 - legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:global_model_command_kind_d
+- legacy_type.ui:index_tree_feed
 - legacy_type.ui:model
 - legacy_type.ui:model_command
 - legacy_type.ui:model_command_kind_d
 - legacy_type.ui:model_d
 - legacy_type.ui:tree_ui_t
 associations:
+- bases:
+  - feed_d
+  - legacy_type.sample_tree:feed_sample_tree
+  key:
+  - feed_d
+  - legacy_type.sample_tree:feed_sample_tree
+  value: sample_tree_feed_sample_tree.index_tree_feed
 - bases:
   - global_model_command_d
   key: global_model_command_d
@@ -40,6 +49,9 @@ associations:
   - legacy_type.sample_tree:sample_tree
   value: sample_tree.model
 definitions:
+  feed_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:feed_d
   feed_sample_tree:
     _type: legacy_type.builtin:attribute
     object: sample_tree.module
@@ -124,4 +136,7 @@ definitions:
   sample_tree.ui_t:
     _type: legacy_type.ui:tree_ui_t
     key_t: legacy_type.sample_tree:item
+    element_t: legacy_type.sample_tree:item
+  sample_tree_feed_sample_tree.index_tree_feed:
+    _type: legacy_type.ui:index_tree_feed
     element_t: legacy_type.sample_tree:item

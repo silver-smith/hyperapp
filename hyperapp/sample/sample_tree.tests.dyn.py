@@ -1,7 +1,9 @@
 import asyncio
 
 from . import htypes
-# from .code.tree_diff import TreeDiff
+from .services import (
+    feed_factory,
+    )
 from .tested.code import sample_tree
 
 
@@ -12,21 +14,10 @@ def test_sample_tree():
     assert value
 
 
-class MockFeed:
-
-    def __init__(self, queue):
-        self._queue = queue
-
-    def send(self, diff):
-        self._queue.put_nowait(diff)
-
-
 async def test_feed_sample_tree():
-    queue = asyncio.Queue()
-    feed = MockFeed(queue)
     piece = htypes.sample_tree.feed_sample_tree()
+    feed = feed_factory(piece)
     parent = htypes.sample_tree.item(100, "Some item")
     value = sample_tree.feed_sample_tree(piece, parent, feed)
     assert value
-    diff = await queue.get()
-    # assert isinstance(diff, TreeDiff.Append), repr(diff)
+    await feed.wait_for_diffs(count=1)

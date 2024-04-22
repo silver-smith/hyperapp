@@ -3,6 +3,7 @@
 import:
 - legacy_type.builtin:python_module
 - legacy_type.phony:phony
+- ui.feed:feed_factory.service
 associations: []
 definitions:
   phony:
@@ -12,4 +13,5 @@ definitions:
     module_name: sample_tree.tests
     file_name: sample_tree.tests.dyn.py
     import_list:
+      services.feed_factory: ui.feed:feed_factory.service
       tested.code.sample_tree: phony

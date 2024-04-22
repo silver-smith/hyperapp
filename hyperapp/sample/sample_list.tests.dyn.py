@@ -4,7 +4,6 @@ from . import htypes
 from .services import (
     feed_factory,
     )
-from .code.list_diff import ListDiff
 from .tested.code import sample_list
 
 

@@ -21,12 +21,12 @@ async def open_sample_fn_tree():
     return htypes.sample_tree.sample_tree()
 
 
-def _send_diff(path, base, feed, idx):
+async def _send_diff(path, base, feed, idx):
+    await asyncio.sleep(1)
     item = htypes.sample_tree.item(base*10 + idx, f"Sample item #{idx}")
-    feed.send(TreeDiff.Append(path, item))
+    await feed.send(TreeDiff.Append(path, item))
     if idx < 9:
-        loop = asyncio.get_running_loop()
-        loop.call_later(1, partial(_send_diff, path, base, feed, idx + 1))
+        asyncio.create_task(_send_diff(path, base, feed, idx + 1))
 
 
 def feed_sample_tree(piece, parent, feed):
@@ -40,7 +40,7 @@ def feed_sample_tree(piece, parent, feed):
     while i:
         path = [i % 10 - 1, *path]
         i = i // 10
-    loop.call_later(1, partial(_send_diff, path, base, feed, 4))
+    asyncio.create_task(_send_diff(path, base, feed, 4))
     return [
         htypes.sample_tree.item(base*10 + 1, "First sample"),
         htypes.sample_tree.item(base*10 + 2, "Second sample"),
