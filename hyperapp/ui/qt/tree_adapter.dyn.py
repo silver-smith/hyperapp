@@ -11,7 +11,7 @@ from .services import (
     web,
     )
 from .code.tree_diff import TreeDiff
-from .code.tree import VisualTreeDiffAppend
+from .code.tree import VisualTreeDiffAppend, VisualTreeDiffInsert
 
 log = logging.getLogger(__name__)
 
@@ -28,11 +28,8 @@ class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
         self._id_to_parent_id = {}
         self._id_counter = itertools.count(start=1)
         self._subscribers = weakref.WeakSet()
-        if want_feed:
-            self._feed = feed_factory(model_piece)
-            self._feed.subscribe(self)
-        else:
-            self._feed = None
+        self._feed = feed_factory(model_piece)
+        self._feed.subscribe(self)
 
     def subscribe(self, subscriber):
         self._subscribers.add(subscriber)
@@ -72,18 +69,27 @@ class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
 
     def process_diff(self, diff):
         log.info("Tree adapter: process diff: %s", diff)
-        if not isinstance(diff, TreeDiff.Append):
+        if not isinstance(diff, (TreeDiff.Append, TreeDiff.Insert)):
             raise NotImplementedError(diff)
         parent_id = 0
-        for idx in diff.path:
+        if isinstance(diff, TreeDiff.Append):
+            parent_path = diff.path
+        else:
+            parent_path = diff.path[:-1]
+        for idx in parent_path:
             if parent_id not in self._id_to_children_id_list:
                 self._populate(parent_id)
             parent_id = self._id_to_children_id_list[parent_id][idx]
         item_id = next(self._id_counter)
         self._id_to_item[item_id] = diff.item
         self._id_to_parent_id[item_id] = parent_id
-        self._id_to_children_id_list[parent_id].append(item_id)
-        visual_diff = VisualTreeDiffAppend(parent_id)
+        if isinstance(diff, TreeDiff.Append):
+            self._id_to_children_id_list[parent_id].append(item_id)
+            visual_diff = VisualTreeDiffAppend(parent_id)
+        else:
+            idx = diff.path[-1]
+            self._id_to_children_id_list[parent_id].insert(idx, item_id)
+            visual_diff = VisualTreeDiffInsert(parent_id, idx)
         for subscriber in self._subscribers:
             subscriber.process_diff(visual_diff)
 

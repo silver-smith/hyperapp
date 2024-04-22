@@ -15,6 +15,7 @@ log = logging.getLogger(__name__)
 
 ModelState = namedtuple('ModelState', 'current_item')
 VisualTreeDiffAppend = namedtuple('VisualTreeDiffAppend', 'parent_id')
+VisualTreeDiffInsert = namedtuple('VisualTreeDiffInsert', 'parent_id idx')
 
 
 class _Model(QtCore.QAbstractItemModel):
@@ -65,14 +66,18 @@ class _Model(QtCore.QAbstractItemModel):
 
     def process_diff(self, diff):
         log.info("Tree: process diff: %s", diff)
-        if not isinstance(diff, VisualTreeDiffAppend):
+        if not isinstance(diff, (VisualTreeDiffAppend, VisualTreeDiffInsert)):
             raise NotImplementedError(diff)
         row_count = self.adapter.row_count(diff.parent_id)
         if diff.parent_id:
             index = self.createIndex(0, 0, diff.parent_id)
         else:
             index = QtCore.QModelIndex()
-        self.beginInsertRows(index, row_count - 1, row_count - 1)
+        if isinstance(diff, VisualTreeDiffAppend):
+            row = row_count
+        else:
+            row = diff.idx + 1
+        self.beginInsertRows(index, row, row)
         self.endInsertRows()
 
 
