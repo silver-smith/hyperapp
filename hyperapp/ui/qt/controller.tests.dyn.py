@@ -4,6 +4,7 @@ from PySide6 import QtWidgets
 
 from . import htypes
 from .services import (
+    feed_factory,
     mosaic,
     )
 from .code.context import Context
@@ -70,11 +71,12 @@ def test_root_view_widget_state():
     assert isinstance(state, htypes.root.state)
 
 
-def test_apply_root_diff():
+async def test_apply_root_diff():
     ctx = Context()
     default_layout = make_default_layout()
     app = QtWidgets.QApplication()
     try:
+        feed = feed_factory(htypes.layout.view())
         with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx) as ctl:
             diff = Diff(
                 piece=ListDiff.Insert(
@@ -86,7 +88,8 @@ def test_apply_root_diff():
                     item=default_layout.state.window_list[0],
                     ),
                 )
-            ctl._root_item.children[0]._apply_diff(diff)
+            ctl._root_item.children[0]._apply_diff(diff, show=False)
+            await feed.wait_for_diffs(count=1)
     finally:
         app.shutdown()
 

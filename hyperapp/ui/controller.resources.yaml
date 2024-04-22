@@ -5,6 +5,7 @@ import:
 - builtins:web.service
 - common.context:context.module
 - common.list_diff:list_diff.module
+- common.tree_diff:tree_diff.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:none
@@ -21,9 +22,11 @@ import:
 - legacy_type.root:state
 - legacy_type.root:view
 - legacy_type.ui:context_model_command_kind_d
+- legacy_type.ui:feed_d
 - legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:global_model_command_kind_d
+- legacy_type.ui:index_tree_feed
 - legacy_type.ui:list_ui_t
 - legacy_type.ui:model
 - legacy_type.ui:model_command
@@ -33,10 +36,18 @@ import:
 - legacy_type.ui:model_command_kind_d
 - legacy_type.ui:model_d
 - legacy_type.ui:tree_ui_t
+- ui.feed:feed_factory.service
 - ui.qt.ui_command:ui_command_factory.service
 - ui.view:view.module
 - ui.view_registry:view_creg.service
 associations:
+- bases:
+  - feed_d
+  - legacy_type.layout:view
+  key:
+  - feed_d
+  - legacy_type.layout:view
+  value: layout_view.index_tree_feed
 - bases:
   - global_model_command_d
   key: global_model_command_d
@@ -106,6 +117,7 @@ definitions:
     import_list:
       code.context: common.context:context.module
       code.list_diff: common.list_diff:list_diff.module
+      code.tree_diff: common.tree_diff:tree_diff.module
       code.view: ui.view:view.module
       htypes.layout.command_item: legacy_type.layout:command_item
       htypes.layout.command_list: legacy_type.layout:command_list
@@ -115,10 +127,14 @@ definitions:
       htypes.root.state: legacy_type.root:state
       htypes.root.view: legacy_type.root:view
       htypes.ui.context_model_command_kind_d: legacy_type.ui:context_model_command_kind_d
+      services.feed_factory: ui.feed:feed_factory.service
       services.mosaic: builtins:mosaic.service
       services.ui_command_factory: ui.qt.ui_command:ui_command_factory.service
       services.view_creg: ui.view_registry:view_creg.service
       services.web: builtins:web.service
+  feed_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:feed_d
   global_model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:global_model_command_d
@@ -151,6 +167,9 @@ definitions:
     params:
     - piece
     - current_item
+  layout_view.index_tree_feed:
+    _type: legacy_type.ui:index_tree_feed
+    element_t: legacy_type.layout:item
   model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_command_d

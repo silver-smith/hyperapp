@@ -11,6 +11,7 @@ from hyperapp.common import dict_coders  # register codec
 
 from . import htypes
 from .services import (
+    feed_factory,
     mosaic,
     ui_command_factory,
     view_creg,
@@ -18,6 +19,7 @@ from .services import (
     )
 from .code.context import Context
 from .code.list_diff import ListDiff
+from .code.tree_diff import TreeDiff
 from .code.view import View, ReplaceViewDiff
 
 log = logging.getLogger(__name__)
@@ -51,6 +53,7 @@ class _Item:
     _counter: itertools.count
     _callback_flag: CallbackFlag
     _id_to_item: dict[int, Self]
+    _feed: Any
 
     id: int
     path: list[int]
@@ -77,7 +80,7 @@ class _Item:
             self._children = []
             for idx, rec in enumerate(self.view.items()):
                 item_id = next(self._counter)
-                item = _Item(self._counter, self._callback_flag, self._id_to_item,
+                item = _Item(self._counter, self._callback_flag, self._id_to_item, self._feed,
                              item_id, [*self.path, idx], self, self.ctx, rec.name, rec.view, rec.focusable)
                 item.view.set_controller_hook(CtlHook(item))
                 self._children.append(item)
@@ -259,17 +262,21 @@ class _Item:
     def save_state(self):
         self.parent.save_state()
 
+    @property
+    def model_item(self):
+        return htypes.layout.item(self.id, self.name, self.focusable, _description(self.view.piece))
+
 
 @dataclass(repr=False)
 class _WindowItem(_Item):
 
     @classmethod
-    def from_refs(cls, counter, callback_flag, id_to_item, ctx, parent, view_ref, state_ref):
+    def from_refs(cls, counter, callback_flag, id_to_item, feed, ctx, parent, view_ref, state_ref):
         view = view_creg.invite(view_ref, ctx)
         state = web.summon(state_ref)
         item_id = next(counter)
         widget = view.construct_widget(state, ctx)
-        self = cls(counter, callback_flag, id_to_item, item_id, [item_id], parent, ctx, f"window#{item_id}", view,
+        self = cls(counter, callback_flag, id_to_item, feed, item_id, [item_id], parent, ctx, f"window#{item_id}", view,
                    focusable=True, _widget=widget)
         self._widget = widget
         self.view.set_controller_hook(CtlHook(self))
@@ -279,7 +286,11 @@ class _WindowItem(_Item):
     def _make_commands(self):
         return self._make_view_commands(view=RootView(self.parent.children, self.id))
 
-    def _apply_diff(self, diffs):
+    # Should be on stack for proper module for feed constructor be picked up.
+    async def _send_model_diff(self, model_diff):
+        await self._feed.send(model_diff)
+
+    def _apply_diff(self, diffs, show=True):
         diff_list = _ensure_diff_list(diffs)
         for diff in diff_list:
             log.info("Apply root diff: %s", diff)
@@ -287,12 +298,15 @@ class _WindowItem(_Item):
                 piece_ref = diff.piece.item
                 state_ref = diff.state.item
                 item = self.from_refs(
-                    self._counter, self._callback_flag, self._id_to_item, self.ctx, self.parent, piece_ref, state_ref)
+                    self._counter, self._callback_flag, self._id_to_item, self._feed, self.ctx, self.parent, piece_ref, state_ref)
                 self.parent._children.insert(diff.piece.idx, item)
                 item.update_commands()
                 item.update_model()
                 self.save_state()
-                item.widget.show()
+                if show:
+                    item.widget.show()
+                model_diff = TreeDiff.Insert(item.path, item.model_item)
+                asyncio.create_task(self._send_model_diff(model_diff))
             else:
                 raise NotImplementedError(diff.piece)
 
@@ -306,13 +320,13 @@ class _RootItem(_Item):
     _layout_bundle: Any = None
 
     @classmethod
-    def from_piece(cls, counter, callback_flag, id_to_item, ctx, layout_bundle, layout):
+    def from_piece(cls, counter, callback_flag, id_to_item, feed, ctx, layout_bundle, layout):
         item_id = 0
-        self = cls(counter, callback_flag, id_to_item, item_id, [], None, ctx, "root",
+        self = cls(counter, callback_flag, id_to_item, feed, item_id, [], None, ctx, "root",
                    view=None, focusable=False, _layout_bundle=layout_bundle)
         self._children = [
             _WindowItem.from_refs(
-                counter, callback_flag, id_to_item, ctx, self, piece_ref, state_ref)
+                counter, callback_flag, id_to_item, feed, ctx, self, piece_ref, state_ref)
             for piece_ref, state_ref
             in zip(layout.piece.window_list, layout.state.window_list)
             ]
@@ -429,6 +443,7 @@ class Controller:
         self._id_to_item = {}
         self._callback_flag = CallbackFlag()
         self._counter = itertools.count(start=1)
+        self._feed = feed_factory(htypes.layout.view())
         layout = default_layout
         if load_state:
             try:
@@ -436,7 +451,7 @@ class Controller:
             except FileNotFoundError:
                 pass
         self._root_item = _RootItem.from_piece(
-            self._counter, self._callback_flag, self._id_to_item, ctx, layout_bundle, layout)
+            self._counter, self._callback_flag, self._id_to_item, self._feed, ctx, layout_bundle, layout)
 
     def show(self):
         self._root_item.show()
@@ -447,10 +462,7 @@ class Controller:
             item_list = item.children
         else:
             item_list = []
-        return [
-            htypes.layout.item(item.id, item.name, item.focusable, _description(item.view.piece))
-            for item in item_list
-            ]
+        return [item.model_item for item in item_list]
 
     def item_commands(self, item_id):
         item = self._id_to_item.get(item_id)
