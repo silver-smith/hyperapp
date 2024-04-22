@@ -65,11 +65,12 @@ class FnListAdapterBase(metaclass=abc.ABCMeta):
         self._column_names = sorted(self._item_t.fields)
         self._item_list = None
         self._subscribers = weakref.WeakSet()
-        if want_feed:
+        try:
             self._feed = feed_factory(model_piece)
-            self._feed.subscribe(self)
-        else:
+        except KeyError:
             self._feed = None
+        else:
+            self._feed.subscribe(self)
 
     def subscribe(self, subscriber):
         self._subscribers.add(subscriber)

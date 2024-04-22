@@ -28,8 +28,12 @@ class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
         self._id_to_parent_id = {}
         self._id_counter = itertools.count(start=1)
         self._subscribers = weakref.WeakSet()
-        self._feed = feed_factory(model_piece)
-        self._feed.subscribe(self)
+        try:
+            self._feed = feed_factory(model_piece)
+        except KeyError:
+            self._feed = None
+        else:
+            self._feed.subscribe(self)
 
     def subscribe(self, subscriber):
         self._subscribers.add(subscriber)
