@@ -265,6 +265,8 @@ class _Item:
         self.update_commands()
         self.update_model()
         self.save_state()
+        model_diff = TreeDiff.Replace(self.path, self.model_item)
+        asyncio.create_task(self._send_model_diff(model_diff))
 
     def save_state(self):
         self.parent.save_state()
