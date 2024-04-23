@@ -56,7 +56,6 @@ class _Item:
     _feed: Any
 
     id: int
-    path: list[int]
     parent: Self | None
     ctx: Context
     name: str
@@ -68,11 +67,15 @@ class _Item:
     _children: list = None
 
     def __repr__(self):
-        return f"<{self.__class__.__name__.lstrip('_')} #{self.id} @{'/'.join(map(str, self.path))}: {self.view.__class__.__name__}>"
+        return f"<{self.__class__.__name__.lstrip('_')} #{self.id}: {self.view.__class__.__name__}>"
 
     @property
     def idx(self):
         return self.parent.children.index(self)
+
+    @property
+    def path(self):
+        return [*self.parent.path, self.idx]
 
     @property
     def children(self):
@@ -81,7 +84,7 @@ class _Item:
             for idx, rec in enumerate(self.view.items()):
                 item_id = next(self._counter)
                 item = _Item(self._counter, self._callback_flag, self._id_to_item, self._feed,
-                             item_id, [*self.path, idx], self, self.ctx, rec.name, rec.view, rec.focusable)
+                             item_id, self, self.ctx, rec.name, rec.view, rec.focusable)
                 item.view.set_controller_hook(CtlHook(item))
                 self._children.append(item)
                 self._id_to_item[item_id] = item
@@ -285,7 +288,7 @@ class _WindowItem(_Item):
         state = web.summon(state_ref)
         item_id = next(counter)
         widget = view.construct_widget(state, ctx)
-        self = cls(counter, callback_flag, id_to_item, feed, item_id, [item_id], parent, ctx, f"window#{item_id}", view,
+        self = cls(counter, callback_flag, id_to_item, feed, item_id, parent, ctx, f"window#{item_id}", view,
                    focusable=True, _widget=widget)
         self._widget = widget
         self.view.set_controller_hook(CtlHook(self))
@@ -327,7 +330,7 @@ class _RootItem(_Item):
     @classmethod
     def from_piece(cls, counter, callback_flag, id_to_item, feed, ctx, layout_bundle, layout):
         item_id = 0
-        self = cls(counter, callback_flag, id_to_item, feed, item_id, [], None, ctx, "root",
+        self = cls(counter, callback_flag, id_to_item, feed, item_id, None, ctx, "root",
                    view=None, focusable=False, _layout_bundle=layout_bundle)
         self._children = [
             _WindowItem.from_refs(
@@ -343,6 +346,10 @@ class _RootItem(_Item):
             item.update_commands()
             item.update_model()
             item.widget.show()
+
+    @property
+    def path(self):
+        return []
 
     @property
     def children(self):
