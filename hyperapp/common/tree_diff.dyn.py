@@ -28,6 +28,16 @@ class TreeDiffAppend:
         return f"<TreeDiffAppend: @#{self.path}: {self.item}>"
 
 
+class TreeDiffReplace:
+
+    def __init__(self, path, item):
+        self.path = path
+        self.item = item
+
+    def __repr__(self):
+        return f"<TreeDiffReplace: @#{self.path}: {self.item}>"
+
+
 class TreeDiffModify:
 
     def __init__(self, path, item_diff):
@@ -41,5 +51,6 @@ class TreeDiffModify:
 class TreeDiff:
     Insert = TreeDiffInsert
     Append = TreeDiffAppend
+    Replace = TreeDiffReplace
     Remove = TreeDiffRemove
     Modify = TreeDiffModify

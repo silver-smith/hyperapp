@@ -11,7 +11,7 @@ from .services import (
     web,
     )
 from .code.tree_diff import TreeDiff
-from .code.tree import VisualTreeDiffAppend, VisualTreeDiffInsert
+from .code.tree import VisualTreeDiffAppend, VisualTreeDiffInsert, VisualTreeDiffReplace
 
 log = logging.getLogger(__name__)
 
@@ -73,7 +73,7 @@ class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
 
     def process_diff(self, diff):
         log.info("Tree adapter: process diff: %s", diff)
-        if not isinstance(diff, (TreeDiff.Append, TreeDiff.Insert)):
+        if not isinstance(diff, (TreeDiff.Append, TreeDiff.Insert, TreeDiff.Replace)):
             raise NotImplementedError(diff)
         parent_id = 0
         if isinstance(diff, TreeDiff.Append):
@@ -92,8 +92,12 @@ class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
             visual_diff = VisualTreeDiffAppend(parent_id)
         else:
             idx = diff.path[-1]
-            self._id_to_children_id_list[parent_id].insert(idx, item_id)
-            visual_diff = VisualTreeDiffInsert(parent_id, idx)
+            if isinstance(diff, TreeDiff.Insert):
+                self._id_to_children_id_list[parent_id].insert(idx, item_id)
+                visual_diff = VisualTreeDiffInsert(parent_id, idx)
+            if isinstance(diff, TreeDiff.Replace):
+                self._id_to_children_id_list[parent_id][idx] = item_id
+                visual_diff = VisualTreeDiffReplace(parent_id, idx)
         for subscriber in self._subscribers:
             subscriber.process_diff(visual_diff)
 

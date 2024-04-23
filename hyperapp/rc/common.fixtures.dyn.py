@@ -73,6 +73,7 @@ class FeedDiscoverer:
         elif isinstance(diff, (
                 TreeDiff.Insert,
                 TreeDiff.Append,
+                TreeDiff.Replace,
                 )):
             element_t = deduce_value_type(diff.item)
             element_t_res = pyobj_creg.reverse_resolve(element_t)
