@@ -49,7 +49,10 @@ class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
         return self._column_names[column]
 
     def row_id(self, parent_id, row):
-        return self._id_list(parent_id)[row]
+        try:
+            return self._id_list(parent_id)[row]
+        except IndexError as x:
+            raise RuntimeError(f"{x}: {parent_id} / {row} : {self._id_to_children_id_list}")
 
     def parent_id(self, id):
         if id == 0:
@@ -75,28 +78,27 @@ class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
         log.info("Tree adapter: process diff: %s", diff)
         if not isinstance(diff, (TreeDiff.Append, TreeDiff.Insert, TreeDiff.Replace)):
             raise NotImplementedError(diff)
-        parent_id = 0
         if isinstance(diff, TreeDiff.Append):
             parent_path = diff.path
         else:
             parent_path = diff.path[:-1]
+        parent_id = 0
         for idx in parent_path:
-            if parent_id not in self._id_to_children_id_list:
-                self._populate(parent_id)
-            parent_id = self._id_to_children_id_list[parent_id][idx]
+            parent_id = self._id_list(parent_id)[idx]
+        item_id_list = self._id_list(parent_id)
         item_id = next(self._id_counter)
-        self._id_to_item[item_id] = diff.item
         self._id_to_parent_id[item_id] = parent_id
+        self._id_to_item[item_id] = diff.item
         if isinstance(diff, TreeDiff.Append):
-            self._id_to_children_id_list[parent_id].append(item_id)
+            item_id_list.append(item_id)
             visual_diff = VisualTreeDiffAppend(parent_id)
         else:
             idx = diff.path[-1]
             if isinstance(diff, TreeDiff.Insert):
-                self._id_to_children_id_list[parent_id].insert(idx, item_id)
+                item_id_list.insert(idx, item_id)
                 visual_diff = VisualTreeDiffInsert(parent_id, idx)
             if isinstance(diff, TreeDiff.Replace):
-                self._id_to_children_id_list[parent_id][idx] = item_id
+                item_id_list[idx] = item_id
                 visual_diff = VisualTreeDiffReplace(parent_id, idx)
         for subscriber in self._subscribers:
             subscriber.process_diff(visual_diff)
@@ -106,7 +108,6 @@ class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
             return self._id_to_children_id_list[parent_id]
         except KeyError:
             return self._populate(parent_id)
-            return self._id_to_children_id_list[parent_id]
 
     def _populate(self, parent_id):
         if parent_id:

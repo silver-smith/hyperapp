@@ -69,21 +69,21 @@ class _Model(QtCore.QAbstractItemModel):
         log.info("Tree: process diff: %s", diff)
         if not isinstance(diff, (VisualTreeDiffAppend, VisualTreeDiffInsert, VisualTreeDiffReplace)):
             raise NotImplementedError(diff)
-        row_count = self.adapter.row_count(diff.parent_id)
-        if diff.parent_id:
-            index = self.createIndex(0, 0, diff.parent_id)
-        else:
-            index = QtCore.QModelIndex()
         if isinstance(diff, VisualTreeDiffAppend):
-            row = row_count
+            row = self.adapter.row_count(diff.parent_id)
         else:
-            row = diff.idx + 1
+            row = diff.idx
+        if diff.parent_id:
+            parent_idx = self.createIndex(row + 1, 0, diff.parent_id)
+        else:
+            parent_idx = QtCore.QModelIndex()
+        # VisualTreeDiffReplace: self.dataChanged.emit does not cause qt to recheck rowCount.
+        log.info("Tree: insert rows: %s", parent_idx)
         if isinstance(diff, VisualTreeDiffReplace):
-            index = self.createIndex(row, 0)
-            self.dataChanged.emit(index, index)
-        else:
-            self.beginInsertRows(index, row, row)
-            self.endInsertRows()
+            self.beginRemoveRows(parent_idx, 0, 0)
+            self.endRemoveRows()
+        self.beginInsertRows(parent_idx, 0, 0)
+        self.endInsertRows()
 
 
 class _TreeWidget(QtWidgets.QTreeView):
