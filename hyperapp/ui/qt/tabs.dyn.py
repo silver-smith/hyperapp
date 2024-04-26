@@ -32,6 +32,7 @@ class TabsView(View):
     def __init__(self, tabs):
         super().__init__()
         self._tabs = tabs  # list[_Tab]
+        self._current_changed_hook_enabled = True
 
     @property
     def piece(self):
@@ -51,8 +52,12 @@ class TabsView(View):
             w = tab.view.construct_widget(tab_state, ctx)
             tabs.addTab(w, tab.label)
         tabs.setCurrentIndex(state.current_tab)
-        tabs.currentChanged.connect(lambda idx: self._ctl_hook.current_changed())
+        tabs.currentChanged.connect(self._call_current_changed_hook)
         return tabs
+
+    def _call_current_changed_hook(self):
+        if self._current_changed_hook_enabled:
+            self._ctl_hook.current_changed()
 
     def replace_child_widget(self, widget, idx, new_child_widget):
         tab = self._tabs[idx]
@@ -73,21 +78,29 @@ class TabsView(View):
             tabs=tuple(tabs),
             )
 
+    def current_tab(self, widget):
+        idx = widget.currentIndex()
+        return self._tabs[idx]
+
+    def current_widget(self, widget):
+        idx = widget.currentIndex()
+        return widget.widget(idx)
+
+    def insert_tab(self, ctx, widget, idx, label, tab_view, tab_state):
+        w = tab_view.construct_widget(tab_state, ctx)
+        new_tab = self._Tab(tab_view, label)
+        self._tabs.insert(idx, new_tab)
+        widget.insertTab(idx, w, label)
+        self._current_changed_hook_enabled = False
+        try:
+            widget.setCurrentIndex(idx)
+        finally:
+            self._current_changed_hook_enabled = True
+        self._ctl_hook.element_inserted(idx)
+
     def apply(self, ctx, widget, diff):
         log.info("Tabs: apply: %s", diff)
-        if isinstance(diff.piece, ListDiff.Insert):
-            idx = diff.piece.idx
-            old_state = self.widget_state(widget)
-            tab_piece = web.summon(diff.piece.item.ctl)
-            tab_view = view_creg.animate(tab_piece, ctx)
-            tab_state = web.summon(diff.state.item)
-            w = tab_view.construct_widget(tab_state, ctx)
-            new_tab = self._Tab(tab_view, diff.piece.item.label)
-            self._tabs = diff.piece.insert(self._tabs, new_tab)
-            widget.insertTab(idx, w, diff.piece.item.label)
-            widget.setCurrentIndex(idx)
-            self._ctl_hook.element_inserted(idx)
-        elif isinstance(diff.piece, ListDiff.Remove):
+        if isinstance(diff.piece, ListDiff.Remove):
             idx = diff.piece.idx
             widget.removeTab(idx)
             widget.setCurrentIndex(idx)

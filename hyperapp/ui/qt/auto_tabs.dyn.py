@@ -8,7 +8,7 @@ from .services import (
     )
 from .code.list_diff import ListDiff
 from .code.view import Diff
-from .code.wrapper_view import WrapperView
+from .code.tabs import TabsView
 
 log = logging.getLogger(__name__)
 
@@ -26,63 +26,42 @@ def tab_piece_ref_label(piece_ref):
     return tab_piece_label(piece)
 
 
-class AutoTabsView(WrapperView):
+class AutoTabsView(TabsView):
 
     @classmethod
     def from_piece(cls, piece, ctx):
-        tabs = tuple(
-            htypes.tabs.tab(
+        tabs = [
+            cls._Tab(
+                view=view_creg.invite(view_ref, ctx),
                 label=tab_piece_ref_label(view_ref),
-                ctl=view_ref,
                 )
-            for idx, view_ref in enumerate(piece.tabs)
-            )
-        base_piece = htypes.tabs.view(tabs)
-        base = view_creg.animate(base_piece, ctx)
-        return cls(base)
+            for view_ref in piece.tabs
+            ]
+        return cls(tabs)
 
     @property
     def piece(self):
-        tabs = tuple(tab.ctl for tab in self._base.piece.tabs)
+        tabs = tuple(tab.ctl for tab in super().piece.tabs)
         return htypes.auto_tabs.view(tabs)
 
     def model_changed(self, widget, model):
-        idx = self._base.get_current(widget)
-        item = self._base.items()[idx]
+        idx = super().get_current(widget)
+        item = super().items()[idx]
         text = tab_piece_label(item.view.piece)
-        self._base.set_tab_text(widget, idx, text)
+        super().set_tab_text(widget, idx, text)
 
-    def apply(self, ctx, widget, diff):
-        log.info("AutoTabs: apply: %s", diff)
-        if isinstance(diff.piece, ListDiff.Insert):
-            base_diff_piece = ListDiff.Insert(
-                idx=diff.piece.idx,
-                item=htypes.tabs.tab(
-                    label=tab_piece_ref_label(diff.piece.item),
-                    ctl=diff.piece.item,
-                    ),
-                )
-            base_diff = Diff(base_diff_piece, diff.state)
-            return self._base.apply(ctx, widget, base_diff)
-        elif isinstance(diff.piece, ListDiff.Remove):
-            return self._base.apply(ctx, widget, diff)
-        else:
-            raise NotImplementedError(f"Not implemented: auto_tab.apply({diff.piece})")
+    def insert_tab(self, ctx, widget, idx, tab_view, tab_state):
+        label = tab_piece_label(tab_view.piece)
+        super().insert_tab(ctx, widget, idx, label, tab_view, tab_state)
 
 
 @mark.ui_command(htypes.auto_tabs.view)
-def duplicate_tab(piece, state):
-    log.info("Duplicate tab: %s / %s", piece, state)
-    return Diff(
-        piece=ListDiff.Insert(
-            idx=state.current_tab + 1,
-            item=piece.tabs[state.current_tab],
-            ),
-        state=ListDiff.Insert(
-            idx=state.current_tab + 1,
-            item=state.tabs[state.current_tab],
-            ),
-        )
+def duplicate_tab(ctx, view, widget, state):
+    log.info("Duplicate tab: %s / %s", view, state)
+    current_view = view.current_tab(widget).view
+    current_widget = view.current_widget(widget)
+    tab_state = current_view.widget_state(current_widget)
+    view.insert_tab(ctx, widget, state.current_tab + 1, current_view, tab_state)
 
 
 @mark.ui_command(htypes.auto_tabs.view)

@@ -73,21 +73,3 @@ def duplicate(piece, state):
             item=state.tabs[state.current_tab],
             ),
         )
-
-
-def test_duplicate():
-    ctx = Context()
-    piece = make_inner_piece()
-    state = make_inner_state()
-    app = QtWidgets.QApplication()
-    try:
-        view = tabs.TabsView.from_piece(piece, ctx)
-        view.set_controller_hook(Mock())
-        widget = view.construct_widget(state, ctx)
-        diff = duplicate(piece, state)
-        view.apply(ctx, widget, diff)
-        assert len(view.piece.tabs) == 2
-        assert view.piece.tabs[0] == piece.tabs[0]
-        assert view.piece.tabs[0] == view.piece.tabs[1]
-    finally:
-        app.shutdown()

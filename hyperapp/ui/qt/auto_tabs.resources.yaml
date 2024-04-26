@@ -13,8 +13,6 @@ import:
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.navigator:view
-- legacy_type.tabs:tab
-- legacy_type.tabs:view
 - legacy_type.text:readonly_view
 - legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
@@ -22,6 +20,7 @@ import:
 - legacy_type.ui:ui_command
 - legacy_type.ui:ui_command_d
 - legacy_type.ui:view
+- ui.qt.tabs:tabs.module
 - ui.view:view.module
 - ui.view_registry:view_creg.service
 - ui.wrapper_view:wrapper_view.module
@@ -71,13 +70,12 @@ definitions:
     file_name: auto_tabs.dyn.py
     import_list:
       code.list_diff: common.list_diff:list_diff.module
+      code.tabs: ui.qt.tabs:tabs.module
       code.view: ui.view:view.module
       code.wrapper_view: ui.wrapper_view:wrapper_view.module
       htypes.auto_tabs.view: legacy_type.auto_tabs:view
       htypes.box_layout.view: legacy_type.box_layout:view
       htypes.navigator.view: legacy_type.navigator:view
-      htypes.tabs.tab: legacy_type.tabs:tab
-      htypes.tabs.view: legacy_type.tabs:view
       services.mark: common.mark:mark.service
       services.view_creg: ui.view_registry:view_creg.service
       services.web: builtins:web.service
@@ -109,7 +107,9 @@ definitions:
     name: duplicate_tab
     function: duplicate_tab
     params:
-    - piece
+    - ctx
+    - view
+    - widget
     - state
   model_command_d:
     _type: legacy_type.builtin:call
