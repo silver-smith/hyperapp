@@ -1,6 +1,7 @@
 import asyncio
 import itertools
 import logging
+import weakref
 from collections import defaultdict, namedtuple
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -119,9 +120,16 @@ class _Item:
     def _make_view_commands(self, view):
         wrapper = self._apply_diff
         return [
-            *ui_command_factory(self.model, view, self.widget, [wrapper]),
+            *ui_command_factory(view, self._command_context(view)),
             *view.get_commands(self.widget, [wrapper]),
             ]
+
+    def _command_context(self, view):
+        return self.ctx.clone_with(
+            view=view,
+            widget=weakref.ref(self.widget),
+            model=self.model,
+            )
 
     def get_child_widget(self, idx):
         return self.view.item_widget(self.widget, idx)

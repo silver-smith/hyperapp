@@ -11,3 +11,6 @@ class Context:
 
     def clone_with(self, **kw):
         return Context({**self._items, **kw})
+
+    def as_dict(self):
+        return self._items

@@ -46,15 +46,12 @@ _hardcoded_shortcuts = {
 
 class CommandBase:
 
-    def __init__(self, name, d, fn, params, model, view, widget, wrappers):
+    def __init__(self, name, d, fn, params, ctx):
         self._name = name
         self._d = d
         self._fn = fn
         self._params = set(params)
-        self._model = model  # piece
-        self._view = view
-        self._widget = weakref.ref(widget)
-        self._wrappers = wrappers
+        self._ctx = ctx
 
     def __repr__(self):
         return f"{self.__class__.__name__} #{hex(id(self))[-6:]}: {self.name}"
@@ -73,10 +70,7 @@ class CommandBase:
             d={*self._d, d},
             fn=self._fn,
             params=self._params,
-            model=self._model,
-            view=self._view,
-            widget=self._widget(),
-            wrappers=self._wrappers,
+            ctx=self._ctx,
             )
 
     def make_action(self):
@@ -120,40 +114,44 @@ class CommandBase:
 
     async def run(self):
         if not self.enabled:
-            log.warning("%s: Disabled: %s", self.name, self.disabled_reason)
-            return
+            raise RuntimeError(f"{self.name}: Disabled: {self.disabled_reason}")
         kw = {name: value for name, value in self.params.items() if name in self._params}
         log.info("Run command: %r (%s)", self.name, kw)
         result = self._fn(**kw)
         if inspect.iscoroutinefunction(self._fn):
             result = await result
         log.info("Run command %r result: [%s] %r", self.name, type(result), result)
-        if result is None:
-            return None
-        for wrapper in reversed(self._wrappers):
-            result = wrapper(result)
-        log.info("Run command %r wrapped result: [%s] %r", self.name, type(result), result)
         return result
-
-
-class UiCommand(CommandBase):
 
     @property
     def params(self):
         params = {
-            'piece': self._view.piece,
+            **self._ctx.as_dict(),
+            'ctx': self._ctx,
             }
-        widget = self._widget()
-        if widget is not None:
-            params['state'] = self._view.widget_state(widget)
-        if self._model is not None:
-            params['model'] = self._model
+        try:
+            view = self._ctx.view
+        except KeyError:
+            return params
+        # params['piece'] = view.piece
+        try:
+            widget = self._ctx.widget()
+        except KeyError:
+            return params
+        if widget is None:
+            raise RuntimeError(f"{self.name}: widget is gone")
+        params['widget'] = widget
+        params['state'] = view.widget_state(widget)
         return params
+
+
+class UiCommand(CommandBase):
+    pass
 
 
 @mark.service
 def ui_command_factory():
-    def _ui_command_factory(model, view, widget, wrappers):
+    def _ui_command_factory(view, ctx):
         piece_t = deduce_value_type(view.piece)
         piece_t_res = pyobj_creg.reverse_resolve(piece_t)
         d_res = data_to_res(htypes.ui.ui_command_d())
@@ -166,6 +164,6 @@ def ui_command_factory():
         for command_rec in command_rec_list:
             command_d = pyobj_creg.invite(command_rec.d)
             fn = pyobj_creg.invite(command_rec.function)
-            command_list.append(UiCommand(command_rec.name, {command_d}, fn, command_rec.params, model, view, widget, wrappers))
+            command_list.append(UiCommand(command_rec.name, {command_d}, fn, command_rec.params, ctx))
         return command_list
     return _ui_command_factory

@@ -1,3 +1,5 @@
+import weakref
+
 from . import htypes
 from .services import (
     data_to_res,
@@ -5,12 +7,13 @@ from .services import (
     mark,
     mosaic,
     )
+from .code.context import Context
 from .tested.code import ui_command
 from .tested.services import ui_command_factory
 
 
-def _sample_fn(piece, state):
-    return 123
+def _sample_fn(view, state):
+    return view.piece + state
 
 
 class PhonyAssociationRegistry:
@@ -22,7 +25,7 @@ class PhonyAssociationRegistry:
             d=mosaic.put(command_d_res),
             name='sample_command',
             function=mosaic.put(fn_res),
-            params=('piece', 'state'),
+            params=('view', 'state'),
             )
         return [command]
 
@@ -40,16 +43,20 @@ class PhonyView:
 
     @property
     def piece(self):
-        return "Unused"
+        return 23
 
     def widget_state(self, widget):
-        return None
+        return 100
 
 
 async def test_ui_command_factory():
-    model = None
+    view = PhonyView()
     widget = PhonyWidget()  # Should hold ref to it.
-    command_list = ui_command_factory(model, PhonyView(), widget, wrappers=[])
+    ctx = Context(
+        view=view,
+        widget=weakref.ref(widget),
+        )
+    command_list = ui_command_factory(view, ctx)
     assert command_list
     result = await command_list[0].run()
     assert result == 123, repr(result)

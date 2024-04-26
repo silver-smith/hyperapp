@@ -71,6 +71,7 @@ class NavigatorView(View):
             )
 
     def get_commands(self, widget, wrappers):
+        return []  # TODO
         commands = [
             model_command_creg.invite(
                 cmd, self._current_view, self._current_model, widget, [*wrappers, self._model_wrapper])

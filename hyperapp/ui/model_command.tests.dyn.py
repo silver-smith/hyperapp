@@ -6,6 +6,7 @@ from .services import (
     fn_to_res,
     mosaic,
     )
+from .code.context import Context
 from .tested.code import model_command
 from .tested.services import (
     enum_model_commands,
@@ -42,6 +43,6 @@ def test_model_command_ctr():
         function=mosaic.put(fn_res),
         params=(),
         )
-    command = model_command.model_command_from_piece(
-        piece, view=None, model_piece=None, widget=Mock(), wrappers=[])
+    ctx = Context()
+    command = model_command.model_command_from_piece(piece, ctx)
     assert isinstance(command, model_command.ModelCommand)
