@@ -2,7 +2,6 @@
 view = record:
   current_view: ref
   current_model: ref
-  commands: ref list
   prev: ref opt
   next: ref opt
 
@@ -14,11 +13,6 @@ state = record:
 
 go_back_d = record
 go_forward_d = record
-
-open_new_diff = record:
-  new_current: ref
-  new_model: ref
-  commands: ref list
 
 go_back_diff = record
 go_forward_diff = record

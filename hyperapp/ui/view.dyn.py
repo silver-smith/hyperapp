@@ -30,7 +30,11 @@ class View(metaclass=abc.ABCMeta):
         raise NotImplementedError(self.__class__)
 
     def get_current(self, widget):
-        return 0
+        return None
+
+    @property
+    def is_navigator(self):
+        return False
 
     def get_model(self):
         return None
@@ -44,9 +48,6 @@ class View(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def widget_state(self, widget):
         pass
-
-    def get_commands(self, widget, wrappers):
-        return []
 
     def apply(self, ctx, widget, diff):
         raise NotImplementedError()

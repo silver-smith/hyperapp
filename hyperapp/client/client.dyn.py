@@ -9,7 +9,6 @@ from .services import (
     endpoint_registry,
     file_bundle,
     generate_rsa_identity,
-    global_commands,
     mosaic,
     rpc_endpoint_factory,
     visualizer,
@@ -28,7 +27,6 @@ def make_default_piece():
     navigator = htypes.navigator.view(
         current_view=mosaic.put(text_view),
         current_model=mosaic.put(text),
-        commands=tuple(mosaic.put(c) for c in global_commands()),
         prev=None,
         next=None,
         )

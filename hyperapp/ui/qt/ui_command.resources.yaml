@@ -2,6 +2,7 @@
 
 import:
 - builtins:association_reg.service
+- builtins:mosaic.service
 - builtins:pyobj_creg.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
@@ -22,6 +23,7 @@ definitions:
       services.association_reg: builtins:association_reg.service
       services.data_to_res: resource.data_to_res:data_to_res.service
       services.mark: common.mark:mark.service
+      services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
   ui_command_factory:
     _type: legacy_type.builtin:attribute

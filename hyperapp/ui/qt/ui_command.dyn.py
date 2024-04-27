@@ -13,6 +13,7 @@ from .services import (
     association_reg,
     data_to_res,
     mark,
+    mosaic,
     pyobj_creg,
     )
 
@@ -46,12 +47,9 @@ _hardcoded_shortcuts = {
 
 class CommandBase:
 
-    def __init__(self, name, d, fn, params, ctx):
+    def __init__(self, name, d):
         self._name = name
         self._d = d
-        self._fn = fn
-        self._params = set(params)
-        self._ctx = ctx
 
     def __repr__(self):
         return f"{self.__class__.__name__} #{hex(id(self))[-6:]}: {self.name}"
@@ -63,15 +61,6 @@ class CommandBase:
     @property
     def name(self):
         return self._name
-
-    def clone_with_d(self, d):
-        return self.__class__(
-            name=self._name,
-            d={*self._d, d},
-            fn=self._fn,
-            params=self._params,
-            ctx=self._ctx,
-            )
 
     def make_action(self):
         action = QtGui.QAction(self.name, enabled=self.enabled)
@@ -115,6 +104,27 @@ class CommandBase:
     async def run(self):
         if not self.enabled:
             raise RuntimeError(f"{self.name}: Disabled: {self.disabled_reason}")
+        return await self._run()
+
+
+class FnCommandBase(CommandBase):
+
+    def __init__(self, name, d, ctx, fn, params):
+        super().__init__(name, d)
+        self._ctx = ctx
+        self._fn = fn
+        self._params = set(params)
+
+    def clone_with_d(self, d):
+        return self.__class__(
+            name=self._name,
+            d={*self._d, d},
+            ctx=self._ctx,
+            fn=self._fn,
+            params=self._params,
+            )
+
+    async def _run(self):
         kw = {name: value for name, value in self.params.items() if name in self._params}
         log.info("Run command: %r (%s)", self.name, kw)
         result = self._fn(**kw)
@@ -145,7 +155,7 @@ class CommandBase:
         return params
 
 
-class UiCommand(CommandBase):
+class UiCommand(FnCommandBase):
     pass
 
 
@@ -164,6 +174,6 @@ def ui_command_factory():
         for command_rec in command_rec_list:
             command_d = pyobj_creg.invite(command_rec.d)
             fn = pyobj_creg.invite(command_rec.function)
-            command_list.append(UiCommand(command_rec.name, {command_d}, fn, command_rec.params, ctx))
+            command_list.append(UiCommand(command_rec.name, {command_d}, ctx, fn, command_rec.params))
         return command_list
     return _ui_command_factory

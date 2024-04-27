@@ -21,21 +21,18 @@ def make_piece():
     prev_piece = htypes.navigator.view(
         current_view=mosaic.put(text_piece),
         current_model=mosaic.put("Sample piece"),
-        commands=(),
         prev=None,
         next=None,
         )
     next_piece = htypes.navigator.view(
         current_view=mosaic.put(text_piece),
         current_model=mosaic.put("Sample piece"),
-        commands=(),
         prev=None,
         next=None,
         )
     piece = htypes.navigator.view(
         current_view=mosaic.put(text_piece),
         current_model=mosaic.put("Sample piece"),
-        commands=(),
         prev=mosaic.put(prev_piece),
         next=mosaic.put(next_piece),
         )
@@ -61,11 +58,8 @@ def test_navigator():
         view = navigator.NavigatorView.from_piece(piece, ctx)
         view.set_controller_hook(Mock())
         widget = view.construct_widget(state, ctx)
-        state = view.widget_state(widget)
-        assert state
-
-        diff = view._model_wrapper("Sample text")
-        view.apply(ctx, widget, diff)
+        assert view.piece
+        assert view.widget_state(widget)
     finally:
         app.shutdown()
 

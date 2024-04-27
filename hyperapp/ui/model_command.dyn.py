@@ -11,11 +11,11 @@ from .services import (
     model_command_creg,
     pyobj_creg,
     )
-from .code.ui_command import CommandBase
+from .code.ui_command import FnCommandBase
 log = logging.getLogger(__name__)
 
 
-class ModelCommand(CommandBase):
+class ModelCommand(FnCommandBase):
 
     @property
     def params(self):
@@ -37,7 +37,7 @@ class ModelCommand(CommandBase):
 def model_command_from_piece(piece, ctx):
     command_d = {pyobj_creg.invite(d) for d in piece.d}
     fn = pyobj_creg.invite(piece.function)
-    return ModelCommand(piece.name, command_d, fn, piece.params, ctx)
+    return ModelCommand(piece.name, command_d, ctx, fn, piece.params)
 
 
 @mark.service

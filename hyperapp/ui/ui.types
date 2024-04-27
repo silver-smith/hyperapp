@@ -13,6 +13,11 @@ ui_command = record:
   function: ref
   params: string list
 
+model_ui_command = record:
+  d: ref
+  name: string
+  model_command: ref
+
 # selectors for command associations.
 model_command_d = record
 model_command_enumerator_d = record

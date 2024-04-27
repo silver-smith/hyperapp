@@ -15,6 +15,7 @@ from .services import (
     feed_factory,
     mosaic,
     ui_command_factory,
+    ui_model_command_factory,
     view_creg,
     web,
     )
@@ -98,6 +99,13 @@ class _Item:
         return self._current_child_idx
 
     @property
+    def current_child(self):
+        idx = self.current_child_idx
+        if idx is None:
+            return None
+        return self.children[idx]
+
+    @property
     def widget(self):
         if not self._widget:
             self._widget = self.parent.get_child_widget(self.idx)
@@ -109,17 +117,42 @@ class _Item:
         return self.view.get_model()
 
     @property
+    def navigator(self):
+
+        def parent_navigator(item):
+            if item.view and item.view.is_navigator:
+                return item.view
+            if not item.parent:
+                return None
+            return parent_navigator(item.parent)
+
+        def child_navigator(item):
+            child = item.current_child
+            if child is None:
+                return None
+            if child.view.is_navigator:
+                return child
+            return child_navigator(child)
+
+        navigator = parent_navigator(self)
+        if navigator:
+            return navigator
+        return child_navigator(self)
+
+    @property
     def commands(self):
         if self._commands is None:
             self._commands = self._make_commands()
         return self._commands
 
     def _make_commands(self):
-        wrapper = self._apply_diff
-        return [
-            *ui_command_factory(self.view, self._command_context()),
-            *self.view.get_commands(self.widget, [wrapper]),
-            ]
+        commands = ui_command_factory(self.view, self._command_context())
+        model = self.model
+        if model is None:
+            return commands
+        model_state = self.view.model_state(self.widget)
+        nav_ctx = self.ctx.clone_with(navigator=self.navigator)
+        return commands + ui_model_command_factory(model, model_state, nav_ctx)
 
     def _command_context(self):
         return self.ctx.clone_with(
@@ -163,7 +196,7 @@ class _Item:
 
         def visit_item_and_children(item):
             if item.children:
-                model = visit_item_and_children(item.children[item.current_child_idx])
+                model = visit_item_and_children(item.current_child)
             else:
                 model = None
             return visit_item(item, model)
@@ -193,7 +226,7 @@ class _Item:
 
         def visit_item_and_children(item):
             if item.children:
-                commands = visit_item_and_children(item.children[item.current_child_idx])
+                commands = visit_item_and_children(item.current_child)
             else:
                 commands = []
             commands = visit_item(item, commands)
