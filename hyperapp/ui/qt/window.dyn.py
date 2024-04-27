@@ -91,6 +91,6 @@ def duplicate_window(root, view, state):
     root.create_window(view.piece, new_state)
 
 
-@mark.ui_command(htypes.root.view)
-def quit(piece, state):
+@mark.ui_command(htypes.window.view)
+def quit():
     QtWidgets.QApplication.quit()
