@@ -235,7 +235,7 @@ class TRecord(Type):
             try:
                 t = self.fields[name]
             except KeyError:
-                raise RuntimeError(f"Missing record field: {name}")
+                raise RuntimeError(f"Unexpected record field: {name}")
             if not isinstance(value, t):
                 raise RuntimeError(f"{name}: expected {t}, but got: {value!r}")
 
