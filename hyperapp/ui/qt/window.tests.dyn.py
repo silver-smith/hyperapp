@@ -12,7 +12,7 @@ from .code import menu_bar  # Used implicitly
 from .tested.code import window
 
 
-def make_piece():
+def make_window_piece():
     adapter_piece = htypes.str_adapter.static_str_adapter("Sample text")
     text_piece = htypes.text.readonly_view(mosaic.put(adapter_piece))
     tabs_piece = htypes.tabs.view(
@@ -25,7 +25,7 @@ def make_piece():
     return (tabs_piece, piece)
 
 
-def make_state():
+def make_window_state():
     text_state = htypes.text.state()
     tabs_state = htypes.tabs.state(
         current_tab=0,
@@ -42,8 +42,8 @@ def make_state():
 
 def test_construct_widget():
     ctx = Context()
-    tabs_piece, piece = make_piece()
-    tabs_state, state = make_state()
+    tabs_piece, piece = make_window_piece()
+    tabs_state, state = make_window_state()
     app = QtWidgets.QApplication()
     try:
         view = window.WindowView.from_piece(piece, ctx)
@@ -53,12 +53,3 @@ def test_construct_widget():
         assert state
     finally:
         app.shutdown()
-
-
-def test_duplicate_window():
-    tabs_piece, window_piece = make_piece()
-    tabs_state, window_state = make_state()
-    root_piece = htypes.root.view((mosaic.put(window_piece),))
-    root_state = htypes.root.state((mosaic.put(window_state),), 0)
-    diff = window.duplicate_window(root_piece, root_state)
-    assert diff

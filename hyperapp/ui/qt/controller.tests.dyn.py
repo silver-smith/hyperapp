@@ -6,11 +6,13 @@ from . import htypes
 from .services import (
     feed_factory,
     mosaic,
+    web,
     )
 from .code.context import Context
 from .code.list_diff import ListDiff
 from .code.view import Diff
 from .tested.code import controller
+from .tested.code import window
 
 
 def make_default_piece():
@@ -62,33 +64,19 @@ class PhonyLayoutBundle:
         pass
 
 
-# Visit htypes.root.state type.
-def test_root_view_widget_state():
-    item = Mock(id=0)
-    item.view.widget_state.return_value = 'mock widget state'
-    root_view = controller.RootView([item], window_item_id=0)
-    state = root_view.widget_state(widget=None)
-    assert isinstance(state, htypes.root.state)
-
-
-async def test_apply_root_diff():
+async def test_duplicate_window():
     ctx = Context()
     default_layout = make_default_layout()
+    feed = feed_factory(htypes.layout.view())
     app = QtWidgets.QApplication()
     try:
-        feed = feed_factory(htypes.layout.view())
-        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx) as ctl:
-            diff = Diff(
-                piece=ListDiff.Insert(
-                    idx=0,
-                    item=default_layout.piece.window_list[0],
-                    ),
-                state=ListDiff.Insert(
-                    idx=0,
-                    item=default_layout.state.window_list[0],
-                    ),
-                )
-            ctl._root_item.children[0]._apply_diff(diff, show=False)
+        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx, show=False) as ctl:
+            root_item = ctl._root_item
+            root = controller.Root(root_item)
+            view = root_item.children[0].view
+            state = web.summon(default_layout.state.window_list[0])
+            window.duplicate_window(root, view, state)
+            assert len(root_item.children) == 2
             await feed.wait_for_diffs(count=1)
     finally:
         app.shutdown()

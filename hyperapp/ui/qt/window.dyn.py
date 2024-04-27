@@ -10,8 +10,7 @@ from .services import (
     view_creg,
     web,
     )
-from .code.list_diff import ListDiff
-from .code.view import Diff, Item, View
+from .code.view import Item, View
 
 log = logging.getLogger(__name__)
 
@@ -77,28 +76,19 @@ class WindowView(View):
         return super().item_widget(widget, idx)
 
 
-@mark.ui_command(htypes.root.view)
-def duplicate_window(piece, state):
-    log.info("Duplicate window: %s / %s", piece, state)
-    diff_piece = ListDiff.Insert(
-        idx=state.current + 1,
-        item=piece.window_list[state.current],
-        )
-    window_state = web.summon(state.window_list[state.current])
-    new_window_state = htypes.window.state(
-        menu_bar_state=window_state.menu_bar_state,
-        central_view_state=window_state.central_view_state,
-        size=window_state.size,
+@mark.ui_command(htypes.window.view)
+def duplicate_window(root, view, state):
+    log.info("Duplicate window: %s / %s", view, state)
+    new_state = htypes.window.state(
+        menu_bar_state=state.menu_bar_state,
+        central_view_state=state.central_view_state,
+        size=state.size,
         pos=htypes.window.pos(
-            x=window_state.pos.x + DUP_OFFSET.x,
-            y=window_state.pos.y + DUP_OFFSET.y,
+            x=state.pos.x + DUP_OFFSET.x,
+            y=state.pos.y + DUP_OFFSET.y,
             ),
         )
-    diff_state = ListDiff.Insert(
-        idx=state.current + 1,
-        item=mosaic.put(new_window_state),
-        )
-    return Diff(diff_piece, diff_state)
+    root.create_window(view.piece, new_state)
 
 
 @mark.ui_command(htypes.root.view)

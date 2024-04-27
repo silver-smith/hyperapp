@@ -2,6 +2,7 @@
 
 import:
 - builtins:mosaic.service
+- builtins:web.service
 - common.context:context.module
 - common.list_diff:list_diff.module
 - legacy_type.builtin:python_module
@@ -20,6 +21,8 @@ definitions:
       code.view: ui.view:view.module
       services.feed_factory: ui.feed:feed_factory.service
       services.mosaic: builtins:mosaic.service
+      services.web: builtins:web.service
       tested.code.controller: phony
+      tested.code.window: phony
   phony:
     _type: legacy_type.phony:phony

@@ -21,7 +21,7 @@ from .services import (
 from .code.context import Context
 from .code.list_diff import ListDiff
 from .code.tree_diff import TreeDiff
-from .code.view import View, ReplaceViewDiff
+from .code.view import View
 
 log = logging.getLogger(__name__)
 
@@ -115,18 +115,15 @@ class _Item:
         return self._commands
 
     def _make_commands(self):
-        return self._make_view_commands(self.view)
-
-    def _make_view_commands(self, view):
         wrapper = self._apply_diff
         return [
-            *ui_command_factory(view, self._command_context(view)),
-            *view.get_commands(self.widget, [wrapper]),
+            *ui_command_factory(self.view, self._command_context()),
+            *self.view.get_commands(self.widget, [wrapper]),
             ]
 
-    def _command_context(self, view):
+    def _command_context(self):
         return self.ctx.clone_with(
-            view=view,
+            view=self.view,
             widget=weakref.ref(self.widget),
             model=self.model,
             )
@@ -139,10 +136,7 @@ class _Item:
         with self._callback_flag.disabled():
             for diff in diff_list:
                 log.info("Apply diff to item #%d @ %s: %s", self.id, self.path, diff)
-                if isinstance(diff.piece, ReplaceViewDiff):
-                    self._apply_replace_view_diff(diff)
-                else:
-                    self.view.apply(self.ctx, self.widget, diff)
+                self.view.apply(self.ctx, self.widget, diff)
                 self._current_child_idx = None
 
     def _apply_replace_view_diff(self, diff):
@@ -188,6 +182,8 @@ class _Item:
     def update_commands(self):
 
         def visit_item(item, commands):
+            if item.view is None:
+                return  # Root item.
             commands = [*item.commands, *commands]
             item.view.set_commands(item.widget, commands)
             for kid in item.children:
@@ -206,7 +202,8 @@ class _Item:
         def visit_parents(item, commands):
             if not item.parent:
                 return
-            if item.parent.current_child_idx != item.idx:
+            if (item.parent.current_child_idx is not None
+                    and item.parent.current_child_idx != item.idx):
                 return
             commands = visit_item(item.parent, commands)
             visit_parents(item.parent, commands)
@@ -295,36 +292,21 @@ class _WindowItem(_Item):
         view = view_creg.invite(view_ref, ctx)
         state = web.summon(state_ref)
         item_id = next(counter)
-        widget = view.construct_widget(state, ctx)
-        self = cls(counter, callback_flag, id_to_item, feed, item_id, parent, ctx, f"window#{item_id}", view,
-                   focusable=True, _widget=widget)
-        self._widget = widget
-        self.view.set_controller_hook(CtlHook(self))
-        id_to_item[item_id] = self
+        self = cls(counter, callback_flag, id_to_item, feed,
+                   item_id, parent, ctx, f"window#{item_id}", view, focusable=True)
+        self._init(state)
         return self
 
-    def _make_commands(self):
-        return self._make_view_commands(view=RootView(self.parent.children, self.id))
+    def _init(self, state):
+        widget = self.view.construct_widget(state, self.ctx)
+        self._widget = widget
+        self.view.set_controller_hook(CtlHook(self))
+        self._id_to_item[self.id] = self
 
-    def _apply_diff(self, diffs, show=True):
-        diff_list = _ensure_diff_list(diffs)
-        for diff in diff_list:
-            log.info("Apply root diff: %s", diff)
-            if isinstance(diff.piece, ListDiff.Insert):
-                piece_ref = diff.piece.item
-                state_ref = diff.state.item
-                item = self.from_refs(
-                    self._counter, self._callback_flag, self._id_to_item, self._feed, self.ctx, self.parent, piece_ref, state_ref)
-                self.parent._children.insert(diff.piece.idx, item)
-                item.update_commands()
-                item.update_model()
-                self.save_state()
-                if show:
-                    item.widget.show()
-                model_diff = TreeDiff.Insert(item.path, item.model_item)
-                asyncio.create_task(self._send_model_diff(model_diff))
-            else:
-                raise NotImplementedError(diff.piece)
+    def _command_context(self):
+        return super()._command_context().clone_with(
+            root=Root(root_item=self.parent),
+            )
 
     def save_state(self):
         self.parent.save_state(current_window=self)
@@ -334,12 +316,13 @@ class _WindowItem(_Item):
 class _RootItem(_Item):
 
     _layout_bundle: Any = None
+    _show: bool = True
 
     @classmethod
-    def from_piece(cls, counter, callback_flag, id_to_item, feed, ctx, layout_bundle, layout):
+    def from_piece(cls, counter, callback_flag, id_to_item, feed, show, ctx, layout_bundle, layout):
         item_id = 0
         self = cls(counter, callback_flag, id_to_item, feed, item_id, None, ctx, "root",
-                   view=None, focusable=False, _layout_bundle=layout_bundle)
+                   view=None, focusable=False, _layout_bundle=layout_bundle, _show=show)
         self._children = [
             _WindowItem.from_refs(
                 counter, callback_flag, id_to_item, feed, ctx, self, piece_ref, state_ref)
@@ -368,49 +351,55 @@ class _RootItem(_Item):
         return None
 
     def save_state(self, current_window):
-        view = RootView(self.children, current_window.id)
         layout = htypes.root.layout(
-            piece=view.piece,
-            state=view.widget_state(),
+            piece=self._root_piece,
+            state=self._root_state(current_window),
             )
         self._layout_bundle.save_piece(layout)
+
+    @property
+    def _root_piece(self):
+        return htypes.root.view(
+            window_list=tuple(
+                mosaic.put(item.view.piece)
+                for item in self.children
+                ),
+            )
+
+    def _root_state(self, current_window):
+        window_list = tuple(
+            mosaic.put(item.view.widget_state(item.widget))
+            for item in self.children
+            )
+        return htypes.root.state(window_list, current_window.idx)
+
+    def create_window(self, piece, state):
+        view = view_creg.animate(piece, self.ctx)
+        item_id = next(self._counter)
+        item = _WindowItem(self._counter, self._callback_flag, self._id_to_item, self._feed,
+                           item_id, self, self.ctx, f"window#{item_id}", view, focusable=True)
+        item._init(state)
+        self._children.append(item)
+        item.update_commands()
+        item.update_model()
+        if self._show:
+            item.widget.show()
+        self.save_state(item)
+        model_diff = TreeDiff.Insert(item.path, item.model_item)
+        asyncio.create_task(self._send_model_diff(model_diff))
 
 
 def _description(piece):
     return str(piece._t)
 
 
-class RootView(View):
+class Root:
 
-    def __init__(self, window_items, window_item_id):
-        self._window_items = window_items
-        self._window_item_id = window_item_id
+    def __init__(self, root_item):
+        self._root_item = root_item
 
-    @property
-    def piece(self):
-        return htypes.root.view(
-            window_list=tuple(
-                mosaic.put(item.view.piece)
-                for item in self._window_items
-                ),
-            )
-
-    def construct_widget(self, state, ctx):
-        raise NotImplementedError()
-
-    def widget_state(self, widget=None):
-        window_list = tuple(
-            mosaic.put(item.view.widget_state(item.widget))
-            for item in self._window_items
-            )
-        current_idx = self._window_id_to_idx(self._window_item_id)
-        return htypes.root.state(window_list, current_idx)
-
-    def _window_id_to_idx(self, item_id):
-        for idx, item in enumerate(self._window_items):
-            if item.id == item_id:
-                return idx
-        raise RuntimeError(f"Unknown window item id: {item_id}")
+    def create_window(self, piece, state):
+        self._root_item.create_window(piece, state)
 
 
 class CtlHook:
@@ -450,7 +439,7 @@ class Controller:
     @classmethod
     @contextmanager
     def running(cls, layout_bundle, default_layout, ctx, show=False, load_state=False):
-        cls.instance = self = cls(layout_bundle, default_layout, ctx, load_state)
+        cls.instance = self = cls(layout_bundle, default_layout, ctx, show, load_state)
         try:
             if show:
                 self.show()
@@ -458,7 +447,7 @@ class Controller:
         finally:
             cls.instance = None
 
-    def __init__(self, layout_bundle, default_layout, ctx, load_state):
+    def __init__(self, layout_bundle, default_layout, ctx, show, load_state):
         self._root_ctx = ctx
         self._id_to_item = {}
         self._callback_flag = CallbackFlag()
@@ -471,7 +460,7 @@ class Controller:
             except FileNotFoundError:
                 pass
         self._root_item = _RootItem.from_piece(
-            self._counter, self._callback_flag, self._id_to_item, self._feed, ctx, layout_bundle, layout)
+            self._counter, self._callback_flag, self._id_to_item, self._feed, show, ctx, layout_bundle, layout)
 
     def show(self):
         self._root_item.show()

@@ -33,14 +33,14 @@ associations:
   key:
   - ui_command_d
   - legacy_type.root:view
-  value: duplicate_window.ui_command
+  value: quit.ui_command
 - bases:
   - ui_command_d
-  - legacy_type.root:view
+  - legacy_type.window:view
   key:
   - ui_command_d
-  - legacy_type.root:view
-  value: quit.ui_command
+  - legacy_type.window:view
+  value: duplicate_window.ui_command
 definitions:
   WindowView:
     _type: legacy_type.builtin:attribute
@@ -67,7 +67,8 @@ definitions:
     name: duplicate_window
     function: duplicate_window
     params:
-    - piece
+    - root
+    - view
     - state
   quit:
     _type: legacy_type.builtin:attribute
