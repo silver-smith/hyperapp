@@ -11,8 +11,7 @@ from .services import (
     view_creg,
     web,
     )
-from .code.list_diff import ListDiff
-from .code.view import Diff, Item, View
+from .code.view import Item, View
 
 log = logging.getLogger(__name__)
 
@@ -86,6 +85,10 @@ class TabsView(View):
         idx = widget.currentIndex()
         return widget.widget(idx)
 
+    @property
+    def tab_count(self):
+        return len(self._tabs)
+
     def insert_tab(self, ctx, widget, idx, label, tab_view, tab_state):
         w = tab_view.construct_widget(tab_state, ctx)
         new_tab = self._Tab(tab_view, label)
@@ -98,22 +101,15 @@ class TabsView(View):
             self._current_changed_hook_enabled = True
         self._ctl_hook.element_inserted(idx)
 
-    def apply(self, ctx, widget, diff):
-        log.info("Tabs: apply: %s", diff)
-        if isinstance(diff.piece, ListDiff.Remove):
-            idx = diff.piece.idx
+    def close_tab(self, widget, idx):
+        self._current_changed_hook_enabled = False
+        try:
             widget.removeTab(idx)
+            del self._tabs[idx]
             widget.setCurrentIndex(idx)
-            self._tabs = diff.piece.remove(self._tabs)
-            self._ctl_hook.element_removed(idx)
-        elif isinstance(diff.piece, ListDiff.Modify):
-            idx = diff.piece.idx
-            tab_diff = diff.piece.item_diff
-            tab_state_diff = diff.state.item_diff
-            item_diff = Diff(tab_diff, tab_state_diff)
-            self._tabs[idx].view.apply(ctx, widget.widget(idx), item_diff)
-        else:
-            raise NotImplementedError(f"Not implemented: tab.apply({diff.piece})")
+        finally:
+            self._current_changed_hook_enabled = True
+        self._ctl_hook.element_removed(idx)
 
     def items(self):
         return [

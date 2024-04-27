@@ -83,8 +83,7 @@ def test_close():
         view = auto_tabs.AutoTabsView.from_piece(piece, ctx)
         view.set_controller_hook(Mock())
         widget = view.construct_widget(state, ctx)
-        diff = auto_tabs.close_tab(piece, state)
-        view.apply(ctx, widget, diff)
+        auto_tabs.close_tab(view, widget, state)
         assert len(view.piece.tabs) == 1
         assert view.piece.tabs[0] == piece.tabs[1]
     finally:

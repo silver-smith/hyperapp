@@ -65,16 +65,9 @@ def duplicate_tab(ctx, view, widget, state):
 
 
 @mark.ui_command(htypes.auto_tabs.view)
-def close_tab(piece, state):
-    log.info("Close tab: %s / %s", piece, state)
-    if len(piece.tabs) == 1:
+def close_tab(view, widget, state):
+    log.info("Close tab: %s / %s", view, state)
+    if view.tab_count == 1:
         log.info("Close tab: won't close last tab")
-        return None
-    return Diff(
-        piece=ListDiff.Remove(
-            idx=state.current_tab,
-            ),
-        state=ListDiff.Remove(
-            idx=state.current_tab,
-            ),
-        )
+        return
+    view.close_tab(widget, state.current_tab)

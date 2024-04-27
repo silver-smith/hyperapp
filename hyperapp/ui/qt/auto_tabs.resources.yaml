@@ -92,7 +92,8 @@ definitions:
     name: close_tab
     function: close_tab
     params:
-    - piece
+    - view
+    - widget
     - state
   duplicate_tab:
     _type: legacy_type.builtin:attribute
