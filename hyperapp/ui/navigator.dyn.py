@@ -67,43 +67,41 @@ class NavigatorView(View):
             next=None,
             )
 
+    def _replace_widget(self, ctx):
+        state = None  # TODO: Devise new state.
+        new_widget = self.construct_widget(state, ctx)
+        self._ctl_hook.replace_item_element(0, self._current_view, new_widget)
+        self._ctl_hook.replace_parent_widget(new_widget)
+
     def open(self, ctx, model, view):
         current_piece = self.piece
         self._current_view = view
         self._current_model = model
         self._prev = mosaic.put(current_piece)
         self._next = None
-        state = None  # TODO: Devise new state.
-        new_widget = self.construct_widget(state, ctx)
-        self._ctl_hook.replace_item_element(0, self._current_view, new_widget)
-        self._ctl_hook.replace_parent_widget(new_widget)
+        self._replace_widget(ctx)
 
-    def apply(self, ctx, widget, diff):
-        log.info("Navigator: apply: %s", diff)
-        if isinstance(diff.piece, htypes.navigator.go_back_diff):
-            if not self._prev:
-                return None
-            current_piece = self.piece
-            prev = web.summon(self._prev)
-            self._current_view = view_creg.invite(prev.current_view, ctx)
-            self._current_model = web.summon(prev.current_model)
-            self._prev = prev.prev
-            self._next = mosaic.put(current_piece)
-        elif isinstance(diff.piece, htypes.navigator.go_forward_diff):
-            if not self._next:
-                return None
-            current_piece = self.piece
-            next = web.summon(self._next)
-            self._current_view = view_creg.invite(next.current_view, ctx)
-            self._current_model = web.summon(next.current_model)
-            self._prev = mosaic.put(current_piece)
-            self._next = next.next
-        else:
-            raise NotImplementedError(repr(diff.piece))
-        state = None  # TODO: Devise new state.
-        new_widget = self.construct_widget(state, ctx)
-        self._ctl_hook.replace_item_element(0, self._current_view, new_widget)
-        self._ctl_hook.replace_parent_widget(new_widget)
+    def go_back(self, ctx):
+        if not self._prev:
+            return
+        current_piece = self.piece
+        prev = web.summon(self._prev)
+        self._current_view = view_creg.invite(prev.current_view, ctx)
+        self._current_model = web.summon(prev.current_model)
+        self._prev = prev.prev
+        self._next = mosaic.put(current_piece)
+        self._replace_widget(ctx)
+
+    def go_forward(self, ctx):
+        if not self._next:
+            return
+        current_piece = self.piece
+        next = web.summon(self._next)
+        self._current_view = view_creg.invite(next.current_view, ctx)
+        self._current_model = web.summon(next.current_model)
+        self._prev = mosaic.put(current_piece)
+        self._next = next.next
+        self._replace_widget(ctx)
 
     def replace_child(self, widget, idx, new_child_view, new_child_widget):
         assert idx == 0
@@ -120,10 +118,10 @@ class NavigatorView(View):
 
 
 @mark.ui_command(htypes.navigator.view)
-def go_back(piece, state):
-    return Diff(htypes.navigator.go_back_diff())
+def go_back(view, ctx):
+    view.go_back(ctx)
 
 
 @mark.ui_command(htypes.navigator.view)
-def go_forward(piece, state):
-    return Diff(htypes.navigator.go_forward_diff())
+def go_forward(view, ctx):
+    view.go_forward(ctx)

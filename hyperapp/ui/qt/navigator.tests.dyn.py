@@ -67,10 +67,24 @@ def test_navigator():
 def test_go_back_command():
     piece = make_piece()
     state = make_state()
-    navigator.go_back(piece, state)
+    app = QtWidgets.QApplication()
+    try:
+        ctx = Context()
+        view = navigator.NavigatorView.from_piece(piece, ctx)
+        view.set_controller_hook(Mock())
+        navigator.go_back(view, state)
+    finally:
+        app.shutdown()
 
 
 def test_go_forward_command():
     piece = make_piece()
     state = make_state()
-    navigator.go_forward(piece, state)
+    app = QtWidgets.QApplication()
+    try:
+        ctx = Context()
+        view = navigator.NavigatorView.from_piece(piece, ctx)
+        view.set_controller_hook(Mock())
+        navigator.go_forward(view, state)
+    finally:
+        app.shutdown()

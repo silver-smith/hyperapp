@@ -13,6 +13,3 @@ state = record:
 
 go_back_d = record
 go_forward_d = record
-
-go_back_diff = record
-go_forward_diff = record
