@@ -18,8 +18,8 @@ async def open_sample_static_list():
     return items
 
 
-async def show_state(state):
-    return str(state)
+async def show_state(model_state):
+    return str(model_state)
 
 
 async def details(piece, current_idx):

@@ -166,7 +166,7 @@ definitions:
     name: show_state
     function: show_state
     params:
-    - state
+    - model_state
   show_state.d:
     _type: legacy_type.builtin:call
     function: legacy_type.sample_commands:show_state_d

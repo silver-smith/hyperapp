@@ -206,7 +206,7 @@ def construct_global_model_command(ctx, module_name, resource_module, module_res
         mosaic.put(model_command_kind_d_res),
         mosaic.put(global_model_command_kind_d_res),
         )
-    has_context = 'state' in params
+    has_context = 'model_state' in params
     if has_context:
         d = (*d, mosaic.put(context_model_command_kind_d_res))
     command = htypes.ui.model_command(
@@ -273,7 +273,7 @@ def construct_model_command(ctx, module_name, resource_module, module_res, qname
         mosaic.put(command_d_res),
         mosaic.put(model_command_kind_d_res),
         )
-    has_context = set(params) & {'state', 'current_idx', 'current_item'}
+    has_context = set(params) & {'model_state', 'current_idx', 'current_item'}
     if has_context:
         d = (*d, mosaic.put(context_model_command_kind_d_res))
     command = htypes.ui.model_command(
@@ -330,13 +330,13 @@ def _create_trace_resources(ctx, module_name, resource_module, module_res, qname
                 or result_t is tString
                 or isinstance(result_t, TList) and isinstance(result_t.element_t, TRecord)):
             # Return type suggests it can be a command.
-            if params.keys() <= {'state'}:
+            if params.keys() <= {'model_state'}:
                 ass_set |= construct_global_model_command(ctx, module_name, resource_module, module_res, qname, params)
         if (isinstance(result_t, TRecord)
                 or result_t is tString
                 or isinstance(result_t, TList) and isinstance(result_t.element_t, TRecord)
                 or result_t is tNone):
-            if param_names[:1] == ['piece'] and set(param_names[1:]) <= {'state', 'current_idx', 'current_item'}:
+            if param_names[:1] == ['piece'] and set(param_names[1:]) <= {'model_state', 'current_idx', 'current_item'}:
                 piece_t_ref = _resolve_record_t(params['piece'])
                 if piece_t_ref is None:
                     log.warning("%s.%s: piece parameter type is not a data record", module_name, qname)

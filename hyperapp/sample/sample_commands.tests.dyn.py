@@ -18,7 +18,7 @@ async def test_open_sample_static_list():
 
 
 async def test_show_state():
-    value = await sample_commands.show_state(state="sample state")
+    value = await sample_commands.show_state(model_state="sample state")
     assert value
 
 
