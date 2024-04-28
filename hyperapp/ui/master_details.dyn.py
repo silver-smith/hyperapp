@@ -12,51 +12,41 @@ from .services import (
     )
 from .code.list_diff import ListDiff
 from .code.view import Diff, ReplaceViewDiff
-from .code.wrapper_view import WrapperView
+from .code.box_layout import BoxLayoutView
 
 log = logging.getLogger(__name__)
 
 
-class MasterDetailsView(WrapperView):
+class MasterDetailsView(BoxLayoutView):
     
     @classmethod
     def from_piece(cls, piece, ctx):
-        elements = [
-            htypes.box_layout.element(
-                view=piece.master_view,
-                focusable=True,
-                stretch=piece.master_stretch,
-                ),
-            htypes.box_layout.element(
-                view=piece.details_view,
-                focusable=False,
-                stretch=piece.details_stretch,
-                ),
-            ]
-        base_piece = htypes.box_layout.view(
-            direction=piece.direction,
-            elements=elements,
-            )
         model = web.summon(piece.model)
-        base = view_creg.animate(base_piece, ctx)
-        return cls(base, model, piece.details_command)
+        master_view = view_creg.invite(piece.master_view, ctx)
+        details_view = view_creg.invite(piece.details_view, ctx)
+        elements = [
+            cls._Element(master_view, focusable=True, stretch=piece.master_stretch),
+            cls._Element(details_view, focusable=False, stretch=piece.details_stretch),
+            ]
+        direction = cls._direction_to_qt(piece.direction)
+        return cls(direction, elements, model, piece.details_command)
 
-    def __init__(self, base_view, model_piece, details_command):
-        super().__init__(base_view)
+    def __init__(self, direction, elements, model_piece, details_command):
+        super().__init__(direction, elements)
         self._model_piece = model_piece
         self._details_command = details_command
 
     @property
     def piece(self):
-        base = self._base.piece
+        base = super().piece
         return htypes.master_details.view(
             model=mosaic.put(self._model_piece),
-            master_view=base.elements[0].view,
+            master_view=mosaic.put(self._elements[0].view.piece),
             details_command=self._details_command,
-            details_view=base.elements[1].view,
-            direction=base.direction,
-            master_stretch=base.elements[0].stretch,
-            details_stretch=base.elements[1].stretch,
+            details_view=mosaic.put(self._elements[1].view.piece),
+            direction=self._direction.name,
+            master_stretch=self._elements[0].stretch,
+            details_stretch=self._elements[1].stretch,
             )
 
     def construct_widget(self, state, ctx):
@@ -74,7 +64,7 @@ class MasterDetailsView(WrapperView):
             current=0,
             elements=elements,
             )
-        return self._base.construct_widget(base_state, ctx)
+        return super().construct_widget(base_state, ctx)
 
     async def child_state_changed(self, ctx, widget):
         log.info("Master-details: child state changed: %s", widget)
@@ -90,21 +80,21 @@ class MasterDetailsView(WrapperView):
         self._ctl_hook.apply_diff(Diff(ListDiff.Replace(1, details_view_piece)))
 
     def widget_state(self, widget):
-        base = self._base.widget_state(widget)
+        base = super().widget_state(widget)
         return htypes.master_details.state(
             master_state=base.elements[0],
             details_state=base.elements[1],
             )
 
     def model_state(self, widget):
-        master_view = self._base.child_view(0)
-        master_widget = self._base.item_widget(widget, 0)
+        master_view = super().child_view(0)
+        master_widget = super().item_widget(widget, 0)
         return master_view.model_state(master_widget)
 
 
 @mark.ui_command(htypes.master_details.view)
-def unwrap_master_details(piece, state):
-    log.info("Unwrap master-details: %s / %s", piece, state)
+def unwrap_master_details(view, state):
+    log.info("Unwrap master-details: %s / %s", view, state)
     master_view = web.summon(piece.master_view)
     master_state = web.summon(state.master_state)
     return Diff(ReplaceViewDiff(master_view), master_state)

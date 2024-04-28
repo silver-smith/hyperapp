@@ -30,8 +30,12 @@ class BoxLayoutView(View):
                 )
             for elt in piece.elements
             ]
-        direction = QtWidgets.QBoxLayout.Direction[piece.direction]
+        direction = cls._direction_to_qt(piece.direction)
         return cls(direction, elements)
+
+    @staticmethod
+    def _direction_to_qt(direction):
+        return QtWidgets.QBoxLayout.Direction[direction]
 
     def __init__(self, direction, elements):
         super().__init__()

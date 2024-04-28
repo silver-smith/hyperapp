@@ -5,9 +5,7 @@ import:
 - builtins:web.service
 - common.list_diff:list_diff.module
 - common.mark:mark.service
-- legacy_type.box_layout:element
 - legacy_type.box_layout:state
-- legacy_type.box_layout:view
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
@@ -23,6 +21,7 @@ import:
 - legacy_type.ui:view
 - ui.model_command:model_command_factory.service
 - ui.model_command_creg:model_command_creg.service
+- ui.qt.box_layout:box_layout.module
 - ui.view:view.module
 - ui.view_registry:view_creg.service
 - ui.visualizer:visualizer.service
@@ -63,12 +62,11 @@ definitions:
     module_name: master_details
     file_name: master_details.dyn.py
     import_list:
+      code.box_layout: ui.qt.box_layout:box_layout.module
       code.list_diff: common.list_diff:list_diff.module
       code.view: ui.view:view.module
       code.wrapper_view: ui.wrapper_view:wrapper_view.module
-      htypes.box_layout.element: legacy_type.box_layout:element
       htypes.box_layout.state: legacy_type.box_layout:state
-      htypes.box_layout.view: legacy_type.box_layout:view
       htypes.master_details.state: legacy_type.master_details:state
       htypes.master_details.view: legacy_type.master_details:view
       htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
@@ -99,7 +97,7 @@ definitions:
     name: unwrap_master_details
     function: unwrap_master_details
     params:
-    - piece
+    - view
     - state
   wrap_master_details:
     _type: legacy_type.builtin:attribute
