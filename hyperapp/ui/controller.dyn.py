@@ -151,16 +151,11 @@ class _Item:
         if model is None:
             return commands
         model_state = self.view.model_state(self.widget)
-        state_attrs = {
-            name: getattr(model_state, name)
-            for name in dir(model_state)
-            if not name.startswith('_')
-            }
         nav_ctx = self.ctx.clone_with(
             piece=model,
             model_state=model_state,
             navigator=self.navigator,
-            **state_attrs,
+            **self.ctx.attributes(model_state),
             )
         return commands + ui_model_command_factory(model, model_state, nav_ctx)
 

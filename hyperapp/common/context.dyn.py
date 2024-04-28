@@ -14,3 +14,11 @@ class Context:
 
     def as_dict(self):
         return self._items
+
+    @staticmethod
+    def attributes(obj):
+        return {
+            name: getattr(obj, name)
+            for name in dir(obj)
+            if not name.startswith('_')
+            }
