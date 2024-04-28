@@ -14,7 +14,7 @@ from .code.ui_command import CommandBase
 log = logging.getLogger(__name__)
 
 
-class ModelUiCommand(CommandBase):
+class UiModelWrapperCommand(CommandBase):
 
     @classmethod
     def from_model_command(cls, model_command, ctx):
@@ -67,7 +67,7 @@ def ui_model_command_factory():
             ]
         model_commands += enum_model_commands(piece, model_state)
         return [
-            ModelUiCommand.from_model_command(cmd, ctx)
+            UiModelWrapperCommand.from_model_command(cmd, ctx)
             for cmd in model_commands
             ]
     return _ui_model_command_factory

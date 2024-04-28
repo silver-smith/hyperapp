@@ -13,7 +13,9 @@ ui_command = record:
   function: ref
   params: string list
 
-model_ui_command = record:
+ui_model_command = record(ui_command)
+
+ui_model_wrapper_command = record:
   d: ref
   name: string
   model_command: ref
