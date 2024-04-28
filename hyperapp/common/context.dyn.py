@@ -9,6 +9,9 @@ class Context:
             raise AttributeError(name)
         return self._items[name]
 
+    def __contains__(self, name):
+        return name in self._items
+
     def clone_with(self, **kw):
         return Context({**self._items, **kw})
 
