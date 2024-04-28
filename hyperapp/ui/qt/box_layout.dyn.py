@@ -101,18 +101,13 @@ class BoxLayoutView(View):
         layout = widget.layout()
         return layout.itemAt(idx).widget()
 
-    def apply(self, ctx, widget, diff):
-        log.info("Box layout: apply: %s", diff)
-        if isinstance(diff.piece, ListDiff.Replace):
-            idx = diff.piece.idx
-            view = view_creg.animate(diff.piece.item, ctx)
-            old_elt = self._elements[idx]
-            self._elements[idx] = self._Element(view, old_elt.focusable, old_elt.stretch)
-            elt_widget = view.construct_widget(None, ctx)
-            self.replace_child_widget(widget, idx, elt_widget)
-            self._ctl_hook.replace_item_element(idx, view, elt_widget)
-        else:
-            raise NotImplementedError(f"Not implemented: tab.apply({diff.piece})")
-
     def child_view(self, idx):
         return self._elements[idx].view
+
+    def replace_element(self, ctx, widget, idx, view):
+        log.info("Box layout: replace element #%d -> %s", idx, view)
+        old_elt = self._elements[idx]
+        self._elements[idx] = self._Element(view, old_elt.focusable, old_elt.stretch)
+        elt_widget = view.construct_widget(None, ctx)
+        self.replace_child_widget(widget, idx, elt_widget)
+        self._ctl_hook.replace_item_element(idx, view, elt_widget)

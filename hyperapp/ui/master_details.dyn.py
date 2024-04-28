@@ -68,16 +68,22 @@ class MasterDetailsView(BoxLayoutView):
 
     async def child_state_changed(self, ctx, widget):
         log.info("Master-details: child state changed: %s", widget)
-        master_view = self._base.child_view(0)
-        master_widget = self._base.item_widget(widget, 0)
-        command = model_command_creg.invite(
-            self._details_command, master_view, self._model_piece, master_widget, wrappers=[])
+        master_view = super().child_view(0)
+        master_widget = super().item_widget(widget, 0)
+        model_state = master_view.model_state(master_widget)
+        command_ctx = ctx.clone_with(
+            piece=self._model_piece,
+            model_state=model_state,
+            **ctx.attributes(model_state),
+            )
+        command = model_command_creg.invite(self._details_command, command_ctx)
         piece = await command.run()
         log.info("Master-details: command result: %s", piece)
         if type(piece) is list:
             piece = tuple(piece)
         details_view_piece = visualizer(piece)
-        self._ctl_hook.apply_diff(Diff(ListDiff.Replace(1, details_view_piece)))
+        details_view = view_creg.animate(details_view_piece, ctx)
+        self.replace_element(ctx, widget, 1, details_view)
 
     def widget_state(self, widget):
         base = super().widget_state(widget)

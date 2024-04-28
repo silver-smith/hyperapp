@@ -109,6 +109,7 @@ class _Item:
     def widget(self):
         if not self._widget:
             self._widget = self.parent.get_child_widget(self.idx)
+            self._widget = self.parent.get_child_widget(self.idx)
             self.view.init_widget(self._widget)
         return self._widget
 
