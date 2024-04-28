@@ -147,24 +147,26 @@ class _Item:
         return self._commands
 
     def _make_commands(self):
-        commands = ui_command_factory(self.view, self._command_context())
-        model = self.model
-        if model is None:
+        ctx = self._command_context()
+        commands = ui_command_factory(self.view, ctx)
+        if 'piece' not in ctx:
             return commands
-        model_state = self.view.model_state(self.widget)
-        nav_ctx = self.ctx.clone_with(
-            piece=model,
-            model_state=model_state,
-            navigator=self.navigator,
-            **self.ctx.attributes(model_state),
-            )
-        return commands + ui_model_command_factory(model, model_state, nav_ctx)
+        return commands + ui_model_command_factory(ctx.piece, ctx.model_state, ctx)
 
     def _command_context(self):
-        return self.ctx.clone_with(
+        ctx = self.ctx.clone_with(
             view=self.view,
             widget=weakref.ref(self.widget),
-            model=self.model,
+            navigator=self.navigator,
+            )
+        model = self.model
+        if model is None:
+            return ctx
+        model_state = self.view.model_state(self.widget)
+        return ctx.clone_with(
+            piece=model,
+            model_state=model_state,
+            **self.ctx.attributes(model_state),
             )
 
     def get_child_widget(self, idx):
