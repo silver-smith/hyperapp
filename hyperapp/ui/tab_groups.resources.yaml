@@ -1,0 +1,59 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:mosaic.service
+- builtins:web.service
+- common.list_diff:list_diff.module
+- common.mark:mark.service
+- legacy_type.auto_tabs:view
+- legacy_type.builtin:attribute
+- legacy_type.builtin:call
+- legacy_type.builtin:python_module
+- legacy_type.tab_groups:move_tab_to_new_group_d
+- legacy_type.tabs:state
+- legacy_type.tabs:tab
+- legacy_type.tabs:view
+- legacy_type.ui:ui_command
+- legacy_type.ui:ui_command_d
+- ui.view:view.module
+associations:
+- bases:
+  - ui_command_d
+  - legacy_type.tabs:view
+  key:
+  - ui_command_d
+  - legacy_type.tabs:view
+  value: move_tab_to_new_group.ui_command
+definitions:
+  move_tab_to_new_group:
+    _type: legacy_type.builtin:attribute
+    object: tab_groups.module
+    attr_name: move_tab_to_new_group
+  move_tab_to_new_group.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.tab_groups:move_tab_to_new_group_d
+  move_tab_to_new_group.ui_command:
+    _type: legacy_type.ui:ui_command
+    d: move_tab_to_new_group.d
+    name: move_tab_to_new_group
+    function: move_tab_to_new_group
+    params:
+    - piece
+    - state
+  tab_groups.module:
+    _type: legacy_type.builtin:python_module
+    module_name: tab_groups
+    file_name: tab_groups.dyn.py
+    import_list:
+      code.list_diff: common.list_diff:list_diff.module
+      code.view: ui.view:view.module
+      htypes.auto_tabs.view: legacy_type.auto_tabs:view
+      htypes.tabs.state: legacy_type.tabs:state
+      htypes.tabs.tab: legacy_type.tabs:tab
+      htypes.tabs.view: legacy_type.tabs:view
+      services.mark: common.mark:mark.service
+      services.mosaic: builtins:mosaic.service
+      services.web: builtins:web.service
+  ui_command_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:ui_command_d
