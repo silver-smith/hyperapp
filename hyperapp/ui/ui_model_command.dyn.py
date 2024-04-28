@@ -31,7 +31,6 @@ class ModelUiCommand(CommandBase):
             name=self._name,
             d={*self._d, d},
             ctx=self._ctx,
-            navigator=self._navigator,
             model_command=self._model_command,
             )
 
