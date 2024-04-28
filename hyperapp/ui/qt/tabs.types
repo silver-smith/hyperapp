@@ -8,3 +8,6 @@ view = record:
 state = record:
   current_tab: int
   tabs: ref list
+
+
+open_tab_list_d = record
