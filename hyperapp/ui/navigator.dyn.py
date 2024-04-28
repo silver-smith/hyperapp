@@ -52,9 +52,6 @@ class NavigatorView(View):
     def get_current(self, widget):
         return 0
 
-    async def child_state_changed(self, ctx, widget):
-        self._ctl_hook.commands_changed()
-
     @property
     def is_navigator(self):
         return True

@@ -302,6 +302,8 @@ class _Item:
         if not self._callback_flag.is_enabled:
             return
         log.info("Controller: state changed for: %s", self)
+        self._commands = None
+        self.update_commands()
         item = self.parent
         while item:
             if item.view:
