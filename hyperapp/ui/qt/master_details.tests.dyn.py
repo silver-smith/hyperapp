@@ -73,8 +73,17 @@ def model_command_factory():
 
 
 def test_wrap_master_details():
-    model = "Sample model"
-    piece = "Dummy view piece"
-    state = None
-    diff = master_details.wrap_master_details(model, piece, state)
-    assert diff
+    ctx = Context()
+    piece = make_piece()
+    state = make_state()
+    app = QtWidgets.QApplication()
+    try:
+        view = master_details.MasterDetailsView.from_piece(piece, ctx)
+        widget = view.construct_widget(state, ctx)
+        assert view.piece
+        state = view.widget_state(widget)
+        assert state
+        model = "Sample model"
+        master_details.wrap_master_details(model, view, state)
+    finally:
+        app.shutdown()

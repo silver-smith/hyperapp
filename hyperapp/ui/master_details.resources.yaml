@@ -113,5 +113,5 @@ definitions:
     function: wrap_master_details
     params:
     - model
-    - piece
+    - view
     - state

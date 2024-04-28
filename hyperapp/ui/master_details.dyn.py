@@ -121,14 +121,14 @@ def _pick_command(model):
 
 
 @mark.ui_command
-def wrap_master_details(model, piece, state):
-    log.info("Wrap master-details: %s/ %s / %s", model, piece, state)
+def wrap_master_details(model, view, state):
+    log.info("Wrap master-details: %s/ %s / %s", model, view, state)
     command = _pick_command(model)
     details_adapter = htypes.str_adapter.static_str_adapter("")
     details = htypes.text.readonly_view(mosaic.put(details_adapter))
     view = htypes.master_details.view(
         model=mosaic.put(model),
-        master_view=mosaic.put(piece),
+        master_view=mosaic.put(view.piece),
         details_command=mosaic.put(command),
         details_view=mosaic.put(details),
         direction='LeftToRight',
