@@ -4,7 +4,9 @@ import:
 - legacy_type.rc_constructors:parameter
 - legacy_type.rc_constructors:service
 - legacy_type.rc_constructors:ui_command_ctr
+- legacy_type.rc_constructors:ui_model_command_ctr
 - legacy_type.rc_constructors:universal_ui_command_ctr
+- legacy_type.rc_constructors:universal_ui_model_command_ctr
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.global_command_ctr:global_command_ctr
@@ -23,7 +25,9 @@ definitions:
       htypes.rc_constructors.parameter: legacy_type.rc_constructors:parameter
       htypes.rc_constructors.service: legacy_type.rc_constructors:service
       htypes.rc_constructors.ui_command_ctr: legacy_type.rc_constructors:ui_command_ctr
+      htypes.rc_constructors.ui_model_command_ctr: legacy_type.rc_constructors:ui_model_command_ctr
       htypes.rc_constructors.universal_ui_command_ctr: legacy_type.rc_constructors:universal_ui_command_ctr
+      htypes.rc_constructors.universal_ui_model_command_ctr: legacy_type.rc_constructors:universal_ui_model_command_ctr
       htypes.global_command_ctr.global_command_ctr: legacy_type.global_command_ctr:global_command_ctr
       htypes.object_command_ctr.object_command_ctr: legacy_type.object_command_ctr:object_command_ctr
       services.mosaic: builtins:mosaic.service

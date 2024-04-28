@@ -5,14 +5,20 @@ service = record:
 parameter = record:
   path: string list
 
+
 ui_command_ctr = record:
   t: ref
   name: string
   params: string list
 
+ui_model_command_ctr = record(ui_command_ctr)
+
 universal_ui_command_ctr = record:
   name: string
   params: string list
+
+universal_ui_model_command_ctr = record(universal_ui_command_ctr)
+
 
 list_feed_ctr = record:
   t: ref

@@ -1,4 +1,5 @@
 import inspect
+from functools import partial
 from types import SimpleNamespace
 
 from hyperapp.common.htypes import Type
@@ -84,25 +85,36 @@ def object_command(fn):
     return fn
 
 
-def ui_command(fn_or_t):
-    if isinstance(fn_or_t, Type):  # Parameterized version.
-        t_res = pyobj_creg.reverse_resolve(fn_or_t)
-        t_ref = mosaic.put(t_res)
+class UiCommandBase:
 
-        def _ui_command(fn):
-            name = fn.__name__
-            params = tuple(inspect.signature(fn).parameters)
-            ctr = htypes.rc_constructors.ui_command_ctr(t_ref, name, params)
-            add_fn_module_constructor(fn, mosaic.put(ctr))
-            return fn
+    def __call__(self, fn_or_t):
+        if isinstance(fn_or_t, Type):  # Parameterized version.
+            t_res = pyobj_creg.reverse_resolve(fn_or_t)
+            t_ref = mosaic.put(t_res)
+            return partial(self._ui_command_wrapper, t_ref)
+        else:  # Non-parameterized version.
+            name = fn_or_t.__name__
+            params = tuple(inspect.signature(fn_or_t).parameters)
+            ctr = self.universal_command_ctr(name, params)
+            add_fn_module_constructor(fn_or_t, mosaic.put(ctr))
+            return fn_or_t
 
-        return _ui_command
-    else:  # Non-parameterized version.
-        name = fn_or_t.__name__
-        params = tuple(inspect.signature(fn_or_t).parameters)
-        ctr = htypes.rc_constructors.universal_ui_command_ctr(name, params)
-        add_fn_module_constructor(fn_or_t, mosaic.put(ctr))
-        return fn_or_t
+    def _ui_command_wrapper(self, t_ref, fn):
+        name = fn.__name__
+        params = tuple(inspect.signature(fn).parameters)
+        ctr = self.command_ctr(t_ref, name, params)
+        add_fn_module_constructor(fn, mosaic.put(ctr))
+        return fn
+
+
+class UiCommand(UiCommandBase):
+    universal_command_ctr = htypes.rc_constructors.universal_ui_command_ctr    
+    command_ctr = htypes.rc_constructors.ui_command_ctr
+
+
+class UiModelCommand(UiCommandBase):
+    universal_command_ctr = htypes.rc_constructors.universal_ui_model_command_ctr    
+    command_ctr = htypes.rc_constructors.ui_model_command_ctr
 
 
 def mark():
@@ -111,5 +123,6 @@ def mark():
         service=ServiceMarker(),
         global_command=global_command,
         object_command=object_command,
-        ui_command=ui_command,
+        ui_command=UiCommand(),
+        ui_model_command=UiModelCommand(),
         )
