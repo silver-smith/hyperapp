@@ -42,7 +42,7 @@ associations:
 - bases:
   - universal_ui_command_d
   key: universal_ui_command_d
-  value: wrap_master_details.ui_command
+  value: wrap_master_details.universal_ui_command
 definitions:
   MasterDetailsView:
     _type: legacy_type.builtin:attribute
@@ -104,7 +104,7 @@ definitions:
   wrap_master_details.d:
     _type: legacy_type.builtin:call
     function: legacy_type.master_details:wrap_master_details_d
-  wrap_master_details.ui_command:
+  wrap_master_details.universal_ui_command:
     _type: legacy_type.ui:ui_command
     d: wrap_master_details.d
     name: wrap_master_details
