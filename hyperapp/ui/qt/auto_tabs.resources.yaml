@@ -23,7 +23,6 @@ import:
 - ui.qt.tabs:tabs.module
 - ui.view:view.module
 - ui.view_registry:view_creg.service
-- ui.wrapper_view:wrapper_view.module
 associations:
 - bases:
   - legacy_type.auto_tabs:view
@@ -72,7 +71,6 @@ definitions:
       code.list_diff: common.list_diff:list_diff.module
       code.tabs: ui.qt.tabs:tabs.module
       code.view: ui.view:view.module
-      code.wrapper_view: ui.wrapper_view:wrapper_view.module
       htypes.auto_tabs.view: legacy_type.auto_tabs:view
       htypes.box_layout.view: legacy_type.box_layout:view
       htypes.navigator.view: legacy_type.navigator:view
