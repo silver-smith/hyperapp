@@ -9,7 +9,6 @@ from .services import (
     )
 from .code.list_diff import ListDiff
 from .code.context import Context
-from .code.view import Diff
 from .tested.code import tabs
 
 
@@ -60,16 +59,3 @@ def test_tabs():
         assert state
     finally:
         app.shutdown()
-
-
-def duplicate(piece, state):
-    return Diff(
-        piece=ListDiff.Insert(
-            idx=state.current_tab + 1,
-            item=piece.tabs[state.current_tab],
-            ),
-        state=ListDiff.Insert(
-            idx=state.current_tab + 1,
-            item=state.tabs[state.current_tab],
-            ),
-        )
