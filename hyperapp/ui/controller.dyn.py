@@ -259,6 +259,18 @@ class _Item:
     def state_changed_hook(self):
         asyncio.create_task(self._state_changed_async())
 
+    async def _state_changed_async(self):
+        if not self._callback_flag.is_enabled:
+            return
+        log.info("Controller: state changed for: %s", self)
+        self._commands = None
+        self.update_commands()
+        item = self.parent
+        while item:
+            if item.view:
+                await item.view.child_state_changed(item.ctx, item.widget)
+            item = item.parent
+
     def current_changed_hook(self):
         if not self._callback_flag.is_enabled:
             return
@@ -301,18 +313,6 @@ class _Item:
 
     def apply_diff_hook(self, diff):
         self._apply_diff(diff)
-
-    async def _state_changed_async(self):
-        if not self._callback_flag.is_enabled:
-            return
-        log.info("Controller: state changed for: %s", self)
-        self._commands = None
-        self.update_commands()
-        item = self.parent
-        while item:
-            if item.view:
-                await item.view.child_state_changed(item.ctx, item.widget)
-            item = item.parent
 
     def replace_parent_widget_hook(self, new_widget):
         parent = self.parent
