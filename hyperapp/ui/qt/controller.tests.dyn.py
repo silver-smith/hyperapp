@@ -10,7 +10,6 @@ from .services import (
     )
 from .code.context import Context
 from .code.list_diff import ListDiff
-from .code.view import Diff
 from .tested.code import controller
 from .tested.code import window
 

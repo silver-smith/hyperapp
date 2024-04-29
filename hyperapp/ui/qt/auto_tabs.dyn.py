@@ -7,7 +7,6 @@ from .services import (
     web,
     )
 from .code.list_diff import ListDiff
-from .code.view import Diff
 from .code.tabs import TabsView
 
 log = logging.getLogger(__name__)

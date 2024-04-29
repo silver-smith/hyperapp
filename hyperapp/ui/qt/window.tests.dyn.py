@@ -7,7 +7,6 @@ from .services import (
     )
 from .code.context import Context
 from .code.list_diff import ListDiff
-from .code.view import Diff
 from .code import menu_bar  # Used implicitly
 from .tested.code import window
 

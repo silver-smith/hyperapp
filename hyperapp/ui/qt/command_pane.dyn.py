@@ -4,7 +4,7 @@ from functools import partial
 from PySide6 import QtCore, QtWidgets
 
 from . import htypes
-from .code.view import Diff, Item, View
+from .code.view import Item, View
 
 log = logging.getLogger(__name__)
 

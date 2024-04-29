@@ -8,7 +8,6 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.phony:phony
 - ui.feed:feed_factory.service
-- ui.view:view.module
 associations: []
 definitions:
   controller.tests.module:
@@ -18,7 +17,6 @@ definitions:
     import_list:
       code.context: common.context:context.module
       code.list_diff: common.list_diff:list_diff.module
-      code.view: ui.view:view.module
       services.feed_factory: ui.feed:feed_factory.service
       services.mosaic: builtins:mosaic.service
       services.web: builtins:web.service

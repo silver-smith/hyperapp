@@ -21,7 +21,6 @@ import:
 - legacy_type.ui:ui_command_d
 - legacy_type.ui:view
 - ui.qt.tabs:tabs.module
-- ui.view:view.module
 - ui.view_registry:view_creg.service
 associations:
 - bases:
@@ -70,7 +69,6 @@ definitions:
     import_list:
       code.list_diff: common.list_diff:list_diff.module
       code.tabs: ui.qt.tabs:tabs.module
-      code.view: ui.view:view.module
       htypes.auto_tabs.view: legacy_type.auto_tabs:view
       htypes.box_layout.view: legacy_type.box_layout:view
       htypes.navigator.view: legacy_type.navigator:view
