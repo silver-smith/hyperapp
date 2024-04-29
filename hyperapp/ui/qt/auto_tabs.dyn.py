@@ -61,7 +61,8 @@ def duplicate_tab(ctx, view, widget, state):
     current_view = view.current_tab(widget).view
     current_widget = view.current_widget(widget)
     tab_state = current_view.widget_state(current_widget)
-    view.insert_tab(ctx, widget, state.current_tab + 1, current_view, tab_state)
+    new_view = view_creg.animate(current_view.piece, ctx)
+    view.insert_tab(ctx, widget, state.current_tab + 1, new_view, tab_state)
 
 
 @mark.ui_command(htypes.auto_tabs.view)
