@@ -256,11 +256,6 @@ class _Item:
         commands = visit_item_and_children(self)
         visit_parents(self, commands)
 
-    def element_replaced_hook(self, idx, new_view, new_widget):
-        view_items = self.view.items()
-        item = self._make_child_item(view_items[idx])
-        self._children[idx] = item
-
     def state_changed_hook(self):
         asyncio.create_task(self._state_changed_async())
 
@@ -281,6 +276,11 @@ class _Item:
     # Should be on stack for proper module for feed constructor be picked up.
     async def _send_model_diff(self, model_diff):
         await self._feed.send(model_diff)
+
+    def element_replaced_hook(self, idx, new_view, new_widget):
+        view_items = self.view.items()
+        item = self._make_child_item(view_items[idx])
+        self._children[idx] = item
 
     def element_inserted_hook(self, idx):
         self._children = None
