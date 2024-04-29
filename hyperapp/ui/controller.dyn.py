@@ -83,15 +83,19 @@ class _Item:
     def children(self):
         if self._children is None:
             self._children = []
-            for idx, rec in enumerate(self.view.items()):
-                item_id = next(self._counter)
-                item = _Item(self._counter, self._callback_flag, self._id_to_item, self._feed,
-                             item_id, self, self.ctx, rec.name, rec.view, rec.focusable)
-                item.view.set_controller_hook(CtlHook(item))
+            for rec in self.view.items():
+                item = self._make_child_item(rec)
                 self._children.append(item)
-                self._id_to_item[item_id] = item
         return self._children
-                
+
+    def _make_child_item(self, rec):
+        item_id = next(self._counter)
+        item = _Item(self._counter, self._callback_flag, self._id_to_item, self._feed,
+                     item_id, self, self.ctx, rec.name, rec.view, rec.focusable)
+        item.view.set_controller_hook(CtlHook(item))
+        self._id_to_item[item_id] = item
+        return item
+
     @property
     def current_child_idx(self):
         if self._current_child_idx is None:
@@ -252,8 +256,10 @@ class _Item:
         commands = visit_item_and_children(self)
         visit_parents(self, commands)
 
-    def replace_item_element_hook(self, idx, new_view, new_widget):
-        self._children = None
+    def element_replaced_hook(self, idx, new_view, new_widget):
+        view_items = self.view.items()
+        item = self._make_child_item(view_items[idx])
+        self._children[idx] = item
 
     def state_changed_hook(self):
         asyncio.create_task(self._state_changed_async())
@@ -465,8 +471,8 @@ class CtlHook:
     def element_removed(self, idx):
         self._item.element_removed_hook(idx)
 
-    def replace_item_element(self, idx, new_view, new_widget=None):
-        self._item.replace_item_element_hook(idx, new_view, new_widget)
+    def element_replaced(self, idx, new_view, new_widget=None):
+        self._item.element_replaced_hook(idx, new_view, new_widget)
 
     def replace_parent_widget(self, new_widget):
         self._item.replace_parent_widget_hook(new_widget)

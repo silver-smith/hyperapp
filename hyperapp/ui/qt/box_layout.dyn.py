@@ -110,4 +110,4 @@ class BoxLayoutView(View):
         self._elements[idx] = self._Element(view, old_elt.focusable, old_elt.stretch)
         elt_widget = view.construct_widget(None, ctx)
         self.replace_child_widget(widget, idx, elt_widget)
-        self._ctl_hook.replace_item_element(idx, view, elt_widget)
+        self._ctl_hook.element_replaced(idx, view, elt_widget)
