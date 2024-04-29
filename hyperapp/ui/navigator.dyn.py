@@ -67,8 +67,8 @@ class NavigatorView(View):
     def _replace_widget(self, ctx):
         state = None  # TODO: Devise new state.
         new_widget = self.construct_widget(state, ctx)
-        self._ctl_hook.element_replaced(0, self._current_view, new_widget)
         self._ctl_hook.replace_parent_widget(new_widget)
+        self._ctl_hook.element_replaced(0, self._current_view, new_widget)
 
     def open(self, ctx, model, view):
         current_piece = self.piece

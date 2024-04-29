@@ -288,6 +288,11 @@ class _Item:
         view_items = self.view.items()
         item = self._make_child_item(view_items[idx])
         self._children[idx] = item
+        self.update_commands()
+        self.update_model()
+        self.save_state()
+        model_diff = TreeDiff.Replace(self.path, self.model_item)
+        asyncio.create_task(self._send_model_diff(model_diff))
 
     def replace_view_hook(self, new_view, new_state=None):
         log.info("Controller: Replace view @%s -> %s", self, new_view)
@@ -325,11 +330,6 @@ class _Item:
         parent.view.replace_child_widget(parent.widget, self.idx, new_widget)
         self._widget = None
         self._commands = None
-        self.update_commands()
-        self.update_model()
-        self.save_state()
-        model_diff = TreeDiff.Replace(self.path, self.model_item)
-        asyncio.create_task(self._send_model_diff(model_diff))
 
     def save_state(self):
         self.parent.save_state()
