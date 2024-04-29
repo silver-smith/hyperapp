@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from PySide6 import QtWidgets
 
 from . import htypes
@@ -84,6 +86,8 @@ def test_wrap_master_details():
         state = view.widget_state(widget)
         assert state
         model = "Sample model"
-        master_details.wrap_master_details(model, view, state)
+        hook = Mock()
+        master_details.wrap_master_details(model, view, state, hook, ctx)
+        hook.replace_view.assert_called_once()
     finally:
         app.shutdown()

@@ -99,11 +99,11 @@ class MasterDetailsView(BoxLayoutView):
 
 
 @mark.ui_command(htypes.master_details.view)
-def unwrap_master_details(view, state):
+def unwrap_master_details(view, state, hook, ctx):
     log.info("Unwrap master-details: %s / %s", view, state)
-    master_view = web.summon(piece.master_view)
+    master_view = view_creg.invite(view.piece.master_view, ctx)
     master_state = web.summon(state.master_state)
-    return Diff(ReplaceViewDiff(master_view), master_state)
+    hook.replace_view(master_view, master_state)
 
 
 def _pick_command(model):
@@ -121,13 +121,13 @@ def _pick_command(model):
 
 
 @mark.ui_command
-def wrap_master_details(model, view, state):
-    log.info("Wrap master-details: %s/ %s / %s", model, view, state)
-    command = _pick_command(model)
+def wrap_master_details(piece, view, state, hook, ctx):
+    log.info("Wrap master-details: %s/ %s / %s", piece, view, state)
+    command = _pick_command(piece)
     details_adapter = htypes.str_adapter.static_str_adapter("")
     details = htypes.text.readonly_view(mosaic.put(details_adapter))
-    view = htypes.master_details.view(
-        model=mosaic.put(model),
+    view_piece = htypes.master_details.view(
+        model=mosaic.put(piece),
         master_view=mosaic.put(view.piece),
         details_command=mosaic.put(command),
         details_view=mosaic.put(details),
@@ -135,4 +135,5 @@ def wrap_master_details(model, view, state):
         master_stretch=1,
         details_stretch=1,
         )
-    return Diff(ReplaceViewDiff(view))
+    view = view_creg.animate(view_piece, ctx)
+    hook.replace_view(view)

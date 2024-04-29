@@ -97,6 +97,8 @@ definitions:
     params:
     - view
     - state
+    - hook
+    - ctx
   wrap_master_details:
     _type: legacy_type.builtin:attribute
     object: master_details.module
@@ -110,6 +112,8 @@ definitions:
     name: wrap_master_details
     function: wrap_master_details
     params:
-    - model
+    - piece
     - view
     - state
+    - hook
+    - ctx
