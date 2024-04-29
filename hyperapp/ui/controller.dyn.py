@@ -92,9 +92,13 @@ class _Item:
         item_id = next(self._counter)
         item = _Item(self._counter, self._callback_flag, self._id_to_item, self._feed,
                      item_id, self, self.ctx, rec.name, rec.view, rec.focusable)
-        item.view.set_controller_hook(CtlHook(item))
+        item.view.set_controller_hook(item._hook)
         self._id_to_item[item_id] = item
         return item
+
+    @property
+    def _hook(self):
+        return CtlHook(self)
 
     @property
     def current_child_idx(self):
@@ -161,6 +165,7 @@ class _Item:
         ctx = self.ctx.clone_with(
             view=self.view,
             widget=weakref.ref(self.widget),
+            hook=self._hook,
             navigator=self.navigator,
             )
         model = self.model
@@ -183,15 +188,6 @@ class _Item:
                 log.info("Apply diff to item #%d @ %s: %s", self.id, self.path, diff)
                 self.view.apply(self.ctx, self.widget, diff)
                 self._current_child_idx = None
-
-    def _apply_replace_view_diff(self, diff):
-        log.info("Replace view @%s: %s", self, diff)
-        parent = self.parent
-        idx = self.idx
-        parent._children = None
-        new_view = view_creg.animate(diff.piece.piece, self.ctx)
-        new_widget = new_view.construct_widget(diff.state, self.ctx)
-        parent.view.replace_child(parent.widget, idx, new_view, new_widget)
 
     def update_model(self):
 
@@ -289,10 +285,21 @@ class _Item:
     async def _send_model_diff(self, model_diff):
         await self._feed.send(model_diff)
 
-    def element_replaced_hook(self, idx, new_view, new_widget):
+    def _replace_child_item(self, idx):
         view_items = self.view.items()
         item = self._make_child_item(view_items[idx])
         self._children[idx] = item
+
+    def replace_view_hook(self, new_view, new_state=None):
+        log.info("Controller: Replace view @%s -> %s", self, new_view)
+        parent = self.parent
+        idx = self.idx
+        new_widget = new_view.construct_widget(new_state, self.ctx)
+        parent.view.replace_child(parent.widget, idx, new_view, new_widget)
+        parent._replace_child_item(idx)
+
+    def element_replaced_hook(self, idx, new_view, new_widget):
+        self._replace_child_item(idx)
 
     def element_inserted_hook(self, idx):
         self._children = None
@@ -349,7 +356,7 @@ class _WindowItem(_Item):
     def _init(self, state):
         widget = self.view.construct_widget(state, self.ctx)
         self._widget = widget
-        self.view.set_controller_hook(CtlHook(self))
+        self.view.set_controller_hook(self._hook)
         self._id_to_item[self.id] = self
 
     def _command_context(self):
@@ -464,6 +471,9 @@ class CtlHook:
 
     def state_changed(self):
         self._item.state_changed_hook()
+
+    def replace_view(self, new_view, new_state=None):
+        self._item.replace_view_hook(new_view, new_state)
 
     def element_inserted(self, idx):
         self._item.element_inserted_hook(idx)
