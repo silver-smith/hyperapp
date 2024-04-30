@@ -16,21 +16,7 @@ log = logging.getLogger(__name__)
 
 
 class ModelCommand(FnCommandBase):
-
-    @property
-    def params(self):
-        params = super().params
-        try:
-            view = params['view']
-            widget = params['widget']
-        except KeyError:
-            return params
-        state = view.model_state(widget)
-        params['state'] = state
-        for name in dir(state):
-            if not name.startswith('_'):
-                params[name] = getattr(state, name)
-        return params
+    pass
 
 
 @model_command_creg.actor(htypes.ui.model_command)

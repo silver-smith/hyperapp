@@ -144,7 +144,6 @@ class FnCommandBase(CommandBase):
             view = self._ctx.view
         except KeyError:
             return params
-        # params['piece'] = view.piece
         try:
             widget = self._ctx.widget()
         except KeyError:
