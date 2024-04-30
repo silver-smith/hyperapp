@@ -89,6 +89,10 @@ class TabsView(View):
     def tab_count(self):
         return len(self._tabs)
 
+    @property
+    def tabs(self):
+        return self._tabs
+
     def insert_tab(self, ctx, widget, idx, label, tab_view, tab_state):
         w = tab_view.construct_widget(tab_state, ctx)
         new_tab = self._Tab(tab_view, label)
