@@ -25,25 +25,10 @@ from .code.view import View
 
 log = logging.getLogger(__name__)
 
-
-class CallbackFlag:
-
-    def __init__(self):
-        self.is_enabled = True
-
-    @contextmanager
-    def disabled(self):
-        self.is_enabled = False
-        try:
-            yield
-        finally:
-            self.is_enabled = True
-
         
 @dataclass
 class _Item:
     _counter: itertools.count
-    _callback_flag: CallbackFlag
     _id_to_item: dict[int, Self]
     _feed: Any
 
@@ -80,7 +65,7 @@ class _Item:
 
     def _make_child_item(self, rec):
         item_id = next(self._counter)
-        item = _Item(self._counter, self._callback_flag, self._id_to_item, self._feed,
+        item = _Item(self._counter, self._id_to_item, self._feed,
                      item_id, self, self.ctx, rec.name, rec.view, rec.focusable)
         item.view.set_controller_hook(item._hook)
         self._id_to_item[item_id] = item
@@ -237,8 +222,6 @@ class _Item:
         asyncio.create_task(self._state_changed_async())
 
     async def _state_changed_async(self):
-        if not self._callback_flag.is_enabled:
-            return
         log.info("Controller: state changed for: %s", self)
         self._commands = None
         self.update_commands()
@@ -249,8 +232,6 @@ class _Item:
             item = item.parent
 
     def current_changed_hook(self):
-        if not self._callback_flag.is_enabled:
-            return
         log.info("Controller: current changed: %s", self)
         self._current_child_idx = None
         self.update_commands()
@@ -322,11 +303,11 @@ class _Item:
 class _WindowItem(_Item):
 
     @classmethod
-    def from_refs(cls, counter, callback_flag, id_to_item, feed, ctx, parent, view_ref, state_ref):
+    def from_refs(cls, counter, id_to_item, feed, ctx, parent, view_ref, state_ref):
         view = view_creg.invite(view_ref, ctx)
         state = web.summon(state_ref)
         item_id = next(counter)
-        self = cls(counter, callback_flag, id_to_item, feed,
+        self = cls(counter, id_to_item, feed,
                    item_id, parent, ctx, f"window#{item_id}", view, focusable=True)
         self._init(state)
         return self
@@ -353,13 +334,13 @@ class _RootItem(_Item):
     _show: bool = True
 
     @classmethod
-    def from_piece(cls, counter, callback_flag, id_to_item, feed, show, ctx, layout_bundle, layout):
+    def from_piece(cls, counter, id_to_item, feed, show, ctx, layout_bundle, layout):
         item_id = 0
-        self = cls(counter, callback_flag, id_to_item, feed, item_id, None, ctx, "root",
+        self = cls(counter, id_to_item, feed, item_id, None, ctx, "root",
                    view=None, focusable=False, _layout_bundle=layout_bundle, _show=show)
         self._children = [
             _WindowItem.from_refs(
-                counter, callback_flag, id_to_item, feed, ctx, self, piece_ref, state_ref)
+                counter, id_to_item, feed, ctx, self, piece_ref, state_ref)
             for piece_ref, state_ref
             in zip(layout.piece.window_list, layout.state.window_list)
             ]
@@ -410,7 +391,7 @@ class _RootItem(_Item):
     def create_window(self, piece, state):
         view = view_creg.animate(piece, self.ctx)
         item_id = next(self._counter)
-        item = _WindowItem(self._counter, self._callback_flag, self._id_to_item, self._feed,
+        item = _WindowItem(self._counter, self._id_to_item, self._feed,
                            item_id, self, self.ctx, f"window#{item_id}", view, focusable=True)
         item._init(state)
         self._children.append(item)
@@ -484,7 +465,6 @@ class Controller:
     def __init__(self, layout_bundle, default_layout, ctx, show, load_state):
         self._root_ctx = ctx
         self._id_to_item = {}
-        self._callback_flag = CallbackFlag()
         self._counter = itertools.count(start=1)
         self._feed = feed_factory(htypes.layout.view())
         layout = default_layout
@@ -494,7 +474,7 @@ class Controller:
             except FileNotFoundError:
                 pass
         self._root_item = _RootItem.from_piece(
-            self._counter, self._callback_flag, self._id_to_item, self._feed, show, ctx, layout_bundle, layout)
+            self._counter, self._id_to_item, self._feed, show, ctx, layout_bundle, layout)
 
     def show(self):
         self._root_item.show()
