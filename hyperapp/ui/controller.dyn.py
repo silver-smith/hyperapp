@@ -114,7 +114,7 @@ class _Item:
             if child is None:
                 return None
             if child.view.is_navigator:
-                return child
+                return child.view
             return child_navigator(child)
 
         navigator = parent_navigator(self)
