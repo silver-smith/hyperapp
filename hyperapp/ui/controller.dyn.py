@@ -20,20 +20,10 @@ from .services import (
     web,
     )
 from .code.context import Context
-from .code.list_diff import ListDiff
 from .code.tree_diff import TreeDiff
 from .code.view import View
 
 log = logging.getLogger(__name__)
-
-
-def _ensure_diff_list(diffs):
-    if diffs is None:
-        return []
-    if type(diffs) is list:
-        return diffs
-    else:
-        return [diffs]
 
 
 class CallbackFlag:
@@ -180,14 +170,6 @@ class _Item:
     def get_child_widget(self, idx):
         return self.view.item_widget(self.widget, idx)
 
-    def _apply_diff(self, diffs):
-        diff_list = _ensure_diff_list(diffs)
-        with self._callback_flag.disabled():
-            for diff in diff_list:
-                log.info("Apply diff to item #%d @ %s: %s", self.id, self.path, diff)
-                self.view.apply(self.ctx, self.widget, diff)
-                self._current_child_idx = None
-
     def update_model(self):
 
         def visit_item(item, model):
@@ -321,9 +303,6 @@ class _Item:
         self.update_commands()
         self.update_model()
         self.save_state()
-
-    def apply_diff_hook(self, diff):
-        self._apply_diff(diff)
 
     def replace_parent_widget_hook(self, new_widget):
         parent = self.parent
@@ -485,9 +464,6 @@ class CtlHook:
 
     def replace_parent_widget(self, new_widget):
         self._item.replace_parent_widget_hook(new_widget)
-
-    def apply_diff(self, diff):
-        self._item.apply_diff_hook(diff)
 
 
 class Controller:
