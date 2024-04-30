@@ -20,6 +20,18 @@ ui_model_wrapper_command = record:
   name: string
   model_command: ref
 
+
+model_command = record:
+  d: ref list
+  name: string
+  function: ref
+  params: string list
+
+model_command_enumerator = record:
+  function: ref
+  params: string list
+
+
 # selectors for command associations.
 model_command_d = record
 model_command_enumerator_d = record
@@ -55,14 +67,3 @@ tree_ui_t = record:
 fn_impl = record:
   function: ref
   want_feed: bool
-
-
-model_command_enumerator = record:
-  function: ref
-  params: string list
-
-model_command = record:
-  d: ref list
-  name: string
-  function: ref
-  params: string list
