@@ -131,4 +131,7 @@ class TabsView(View):
 @mark.ui_model_command(htypes.tabs.view)
 def open_tab_list(view):
     log.info("Open tab list: %s", view)
-    return [item.name for item in view.items()]
+    return [
+        htypes.tabs.list_item(item.name)
+        for item in view.items()
+        ]

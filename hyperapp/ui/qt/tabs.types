@@ -11,3 +11,6 @@ state = record:
 
 
 open_tab_list_d = record
+
+list_item = record:
+  name: string

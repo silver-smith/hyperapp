@@ -59,3 +59,21 @@ def test_tabs():
         assert state
     finally:
         app.shutdown()
+
+
+def test_tab_list():
+    ctx = Context()
+    piece = make_inner_piece()
+    state = make_inner_state()
+    app = QtWidgets.QApplication()
+    try:
+        view = tabs.TabsView.from_piece(piece, ctx)
+        view.set_controller_hook(Mock())
+        widget = view.construct_widget(state, ctx)
+        assert view.piece
+        state = view.widget_state(widget)
+        assert state
+        tab_list = tabs.open_tab_list(view)
+        assert tab_list
+    finally:
+        app.shutdown()
