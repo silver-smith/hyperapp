@@ -8,18 +8,15 @@ ui_command_d = record
 universal_ui_command_d = record
 
 ui_command = record:
-  d: ref
+  d: ref list
   name: string
   function: ref
   params: string list
 
-ui_model_command = record(ui_command)
-
-ui_model_wrapper_command = record:
-  d: ref
+ui_model_command = record:
+  d: ref list
   name: string
   model_command: ref
-
 
 model_command = record:
   d: ref list

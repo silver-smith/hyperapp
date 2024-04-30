@@ -65,7 +65,8 @@ definitions:
     function: legacy_type.navigator:go_back_d
   go_back.ui_command:
     _type: legacy_type.ui:ui_command
-    d: go_back.d
+    d:
+    - go_back.d
     name: go_back
     function: go_back
     params:
@@ -80,7 +81,8 @@ definitions:
     function: legacy_type.navigator:go_forward_d
   go_forward.ui_command:
     _type: legacy_type.ui:ui_command
-    d: go_forward.d
+    d:
+    - go_forward.d
     name: go_forward
     function: go_forward
     params:

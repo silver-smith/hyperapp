@@ -62,7 +62,8 @@ definitions:
     function: legacy_type.window:duplicate_window_d
   duplicate_window.ui_command:
     _type: legacy_type.ui:ui_command
-    d: duplicate_window.d
+    d:
+    - duplicate_window.d
     name: duplicate_window
     function: duplicate_window
     params:
@@ -78,7 +79,8 @@ definitions:
     function: legacy_type.window:quit_d
   quit.ui_command:
     _type: legacy_type.ui:ui_command
-    d: quit.d
+    d:
+    - quit.d
     name: quit
     function: quit
     params: []

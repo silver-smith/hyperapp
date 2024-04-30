@@ -84,7 +84,8 @@ definitions:
     function: legacy_type.auto_tabs:close_tab_d
   close_tab.ui_command:
     _type: legacy_type.ui:ui_command
-    d: close_tab.d
+    d:
+    - close_tab.d
     name: close_tab
     function: close_tab
     params:
@@ -100,7 +101,8 @@ definitions:
     function: legacy_type.auto_tabs:duplicate_tab_d
   duplicate_tab.ui_command:
     _type: legacy_type.ui:ui_command
-    d: duplicate_tab.d
+    d:
+    - duplicate_tab.d
     name: duplicate_tab
     function: duplicate_tab
     params:

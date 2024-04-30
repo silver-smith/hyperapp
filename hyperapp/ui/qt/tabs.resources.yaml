@@ -12,6 +12,8 @@ import:
 - legacy_type.tabs:state
 - legacy_type.tabs:tab
 - legacy_type.tabs:view
+- legacy_type.ui:model_command
+- legacy_type.ui:model_command_kind_d
 - legacy_type.ui:ui_command_d
 - legacy_type.ui:ui_model_command
 - legacy_type.ui:view
@@ -44,6 +46,9 @@ definitions:
     _type: legacy_type.ui:view
     ctr_fn: TabsView.from_piece
     command_methods: []
+  model_command_kind_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:model_command_kind_d
   open_tab_list:
     _type: legacy_type.builtin:attribute
     object: tabs.module
@@ -51,13 +56,21 @@ definitions:
   open_tab_list.d:
     _type: legacy_type.builtin:call
     function: legacy_type.tabs:open_tab_list_d
-  open_tab_list.ui_command:
-    _type: legacy_type.ui:ui_model_command
-    d: open_tab_list.d
+  open_tab_list.model_command:
+    _type: legacy_type.ui:model_command
+    d:
+    - open_tab_list.d
+    - model_command_kind_d
     name: open_tab_list
     function: open_tab_list
     params:
     - view
+  open_tab_list.ui_command:
+    _type: legacy_type.ui:ui_model_command
+    d:
+    - open_tab_list.d
+    name: open_tab_list
+    model_command: open_tab_list.model_command
   tabs.module:
     _type: legacy_type.builtin:python_module
     module_name: tabs
