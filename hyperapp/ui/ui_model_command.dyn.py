@@ -1,11 +1,14 @@
 import logging
 
+from . import htypes
 from .services import (
     enum_model_commands,
     global_commands,
     mark,
     model_command_creg,
     model_command_factory,
+    pyobj_creg,
+    ui_command_creg,
     view_creg,
     visualizer,
     )
@@ -52,6 +55,13 @@ class UiModelWrapperCommand(CommandBase):
         view = view_creg.animate(view_piece, self._ctx)
         log.info("Run model command %r view: %s", self.name, view)
         self._navigator.open(self._ctx, piece, view)
+
+
+@ui_command_creg.actor(htypes.ui.ui_model_command)
+def ui_model_command_from_piece(piece, ctx):
+    command_d = {pyobj_creg.invite(d) for d in piece.d}
+    model_command = model_command_creg.invite(piece.model_command, ctx)
+    return UiModelWrapperCommand(piece.name, command_d, ctx, model_command)
 
 
 @mark.service

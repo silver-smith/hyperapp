@@ -15,6 +15,7 @@ from .services import (
     mark,
     mosaic,
     pyobj_creg,
+    ui_command_creg,
     )
 
 log = logging.getLogger(__name__)
@@ -159,6 +160,13 @@ class UiCommand(FnCommandBase):
     pass
 
 
+@ui_command_creg.actor(htypes.ui.ui_command)
+def ui_command_from_piece(piece, ctx):
+    command_d = {pyobj_creg.invite(d) for d in piece.d}
+    fn = pyobj_creg.invite(piece.function)
+    return UiCommand(piece.name, command_d, ctx, fn, piece.params)
+
+
 @mark.service
 def ui_command_factory():
     def _ui_command_factory(view, ctx):
@@ -166,14 +174,13 @@ def ui_command_factory():
         piece_t_res = pyobj_creg.reverse_resolve(piece_t)
         d_res = data_to_res(htypes.ui.ui_command_d())
         universal_d_res = data_to_res(htypes.ui.universal_ui_command_d())
-        command_rec_list = [
+        command_piece_list = [
             *association_reg.get_all((d_res, piece_t_res)),
             *association_reg.get_all(universal_d_res),
             ]
         command_list = []
-        for command_rec in command_rec_list:
-            command_d = {pyobj_creg.invite(d_ref) for d_ref in command_rec.d}
-            fn = pyobj_creg.invite(command_rec.function)
-            command_list.append(UiCommand(command_rec.name, command_d, ctx, fn, command_rec.params))
+        for command_piece in command_piece_list:
+            command = ui_command_creg.animate(command_piece, ctx)
+            command_list.append(command)
         return command_list
     return _ui_command_factory

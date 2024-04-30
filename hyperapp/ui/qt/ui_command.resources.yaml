@@ -8,16 +8,26 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.ui:ui_command
 - legacy_type.ui:ui_command_d
 - legacy_type.ui:universal_ui_command_d
 - resource.data_to_res:data_to_res.service
-associations: []
+- ui.ui_command_creg:ui_command_creg.service
+associations:
+- bases:
+  - ui.ui_command_creg:ui_command_creg.service
+  - legacy_type.ui:ui_command
+  key:
+  - ui.ui_command_creg:ui_command_creg.service
+  - legacy_type.ui:ui_command
+  value: ui_command_from_piece
 definitions:
   ui_command.module:
     _type: legacy_type.builtin:python_module
     module_name: ui_command
     file_name: ui_command.dyn.py
     import_list:
+      htypes.ui.ui_command: legacy_type.ui:ui_command
       htypes.ui.ui_command_d: legacy_type.ui:ui_command_d
       htypes.ui.universal_ui_command_d: legacy_type.ui:universal_ui_command_d
       services.association_reg: builtins:association_reg.service
@@ -25,6 +35,7 @@ definitions:
       services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
+      services.ui_command_creg: ui.ui_command_creg:ui_command_creg.service
   ui_command_factory:
     _type: legacy_type.builtin:attribute
     object: ui_command.module
@@ -32,3 +43,7 @@ definitions:
   ui_command_factory.service:
     _type: legacy_type.builtin:call
     function: ui_command_factory
+  ui_command_from_piece:
+    _type: legacy_type.builtin:attribute
+    object: ui_command.module
+    attr_name: ui_command_from_piece

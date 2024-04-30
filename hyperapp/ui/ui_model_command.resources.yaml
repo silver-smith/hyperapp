@@ -1,18 +1,28 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:pyobj_creg.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.ui:ui_model_command
 - ui.model_command:enum_model_commands.service
 - ui.model_command:global_commands.service
 - ui.model_command:model_command_factory.service
 - ui.model_command_creg:model_command_creg.service
 - ui.qt.ui_command:ui_command.module
+- ui.ui_command_creg:ui_command_creg.service
 - ui.view_registry:view_creg.service
 - ui.visualizer:visualizer.service
-associations: []
+associations:
+- bases:
+  - ui.ui_command_creg:ui_command_creg.service
+  - legacy_type.ui:ui_model_command
+  key:
+  - ui.ui_command_creg:ui_command_creg.service
+  - legacy_type.ui:ui_model_command
+  value: ui_model_command_from_piece
 definitions:
   ui_model_command.module:
     _type: legacy_type.builtin:python_module
@@ -20,11 +30,14 @@ definitions:
     file_name: ui_model_command.dyn.py
     import_list:
       code.ui_command: ui.qt.ui_command:ui_command.module
+      htypes.ui.ui_model_command: legacy_type.ui:ui_model_command
       services.enum_model_commands: ui.model_command:enum_model_commands.service
       services.global_commands: ui.model_command:global_commands.service
       services.mark: common.mark:mark.service
       services.model_command_creg: ui.model_command_creg:model_command_creg.service
       services.model_command_factory: ui.model_command:model_command_factory.service
+      services.pyobj_creg: builtins:pyobj_creg.service
+      services.ui_command_creg: ui.ui_command_creg:ui_command_creg.service
       services.view_creg: ui.view_registry:view_creg.service
       services.visualizer: ui.visualizer:visualizer.service
   ui_model_command_factory:
@@ -34,3 +47,7 @@ definitions:
   ui_model_command_factory.service:
     _type: legacy_type.builtin:call
     function: ui_model_command_factory
+  ui_model_command_from_piece:
+    _type: legacy_type.builtin:attribute
+    object: ui_model_command.module
+    attr_name: ui_model_command_from_piece
