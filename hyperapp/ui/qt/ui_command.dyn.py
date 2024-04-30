@@ -42,7 +42,8 @@ _hardcoded_shortcuts = {
     'add_view_command': 'Insert',
     'unwrap_master_details': 'Ctrl+U',
     'wrap_master_details': 'Ctrl+W',
-    'move_tab_to_new_group': 'Alt+T',
+    'move_tab_to_new_group': 'Shift+Alt+T',
+    'open_tab_list': 'Alt+T',
     }
 
 
