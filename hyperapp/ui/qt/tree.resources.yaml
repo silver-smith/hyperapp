@@ -27,7 +27,6 @@ definitions:
   TreeView.from_piece.view:
     _type: legacy_type.ui:view
     ctr_fn: TreeView.from_piece
-    command_methods: []
   tree.module:
     _type: legacy_type.builtin:python_module
     module_name: tree

@@ -30,7 +30,6 @@ definitions:
   MenuBarView.from_piece.view:
     _type: legacy_type.ui:view
     ctr_fn: MenuBarView.from_piece
-    command_methods: []
   menu_bar.module:
     _type: legacy_type.builtin:python_module
     module_name: menu_bar

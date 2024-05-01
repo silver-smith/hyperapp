@@ -44,7 +44,6 @@ def construct_view_impl(ctx, module_name, resource_module, module_res, qname, pa
     piece_t_res = htypes.builtin.legacy_type(piece_t_ref)
     view = htypes.ui.view(
         ctr_fn=mosaic.put(ctr_attribute),
-        command_methods=(),
         )
     view_creg_res = pyobj_creg.reverse_resolve(view_creg)
     ctl_association = Association(

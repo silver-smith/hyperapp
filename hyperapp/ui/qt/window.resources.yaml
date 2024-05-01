@@ -52,7 +52,6 @@ definitions:
   WindowView.from_piece.view:
     _type: legacy_type.ui:view
     ctr_fn: WindowView.from_piece
-    command_methods: []
   duplicate_window:
     _type: legacy_type.builtin:attribute
     object: window.module

@@ -46,7 +46,6 @@ definitions:
   TabsView.from_piece.view:
     _type: legacy_type.ui:view
     ctr_fn: TabsView.from_piece
-    command_methods: []
   model_command_kind_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_command_kind_d

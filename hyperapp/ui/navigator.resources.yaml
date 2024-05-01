@@ -55,7 +55,6 @@ definitions:
   NavigatorView.from_piece.view:
     _type: legacy_type.ui:view
     ctr_fn: NavigatorView.from_piece
-    command_methods: []
   go_back:
     _type: legacy_type.builtin:attribute
     object: navigator.module

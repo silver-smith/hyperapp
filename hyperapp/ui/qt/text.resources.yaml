@@ -35,7 +35,6 @@ definitions:
   EditTextView.from_piece.view:
     _type: legacy_type.ui:view
     ctr_fn: EditTextView.from_piece
-    command_methods: []
   ViewTextView:
     _type: legacy_type.builtin:attribute
     object: text.module
@@ -47,7 +46,6 @@ definitions:
   ViewTextView.from_piece.view:
     _type: legacy_type.ui:view
     ctr_fn: ViewTextView.from_piece
-    command_methods: []
   text.module:
     _type: legacy_type.builtin:python_module
     module_name: text

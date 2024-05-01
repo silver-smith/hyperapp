@@ -28,7 +28,6 @@ definitions:
   ListView.from_piece.view:
     _type: legacy_type.ui:view
     ctr_fn: ListView.from_piece
-    command_methods: []
   list.module:
     _type: legacy_type.builtin:python_module
     module_name: list
