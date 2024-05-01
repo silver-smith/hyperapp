@@ -269,17 +269,18 @@ class _Item:
         self._replace_child_item(idx)
 
     def element_inserted_hook(self, idx):
-        self._children = None
+        view_items = self.view.items()
+        item = self._make_child_item(view_items[idx])
+        self._children.insert(idx, item)
         self._current_child_idx = None
         self.update_commands()
         self.update_model()
         self.save_state()
-        item = self.children[idx]
         model_diff = TreeDiff.Insert(item.path, item.model_item)
         asyncio.create_task(self._send_model_diff(model_diff))
 
     def element_removed_hook(self, idx):
-        self._children = None
+        del self._children[idx]
         self._current_child_idx = None
         self.update_commands()
         self.update_model()
