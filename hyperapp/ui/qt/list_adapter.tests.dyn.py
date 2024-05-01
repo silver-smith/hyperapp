@@ -24,14 +24,13 @@ log = logging.getLogger(__name__)
 
 def test_static_adapter():
     ctx = Context()
-    value = (
+    model = (
         htypes.list_tests.item(1, "First"),
         htypes.list_tests.item(2, "Second"),
         htypes.list_tests.item(3, "Third"),
         )
-    t = deduce_complex_value_type(mosaic, types, value)
-    piece = htypes.list_adapter.static_list_adapter(mosaic.put(value, t))
-    adapter = list_adapter.StaticListAdapter.from_piece(piece, ctx)
+    piece = htypes.list_adapter.static_list_adapter()
+    adapter = list_adapter.StaticListAdapter.from_piece(piece, model, ctx)
 
     assert adapter.column_count() == 2
     assert adapter.column_title(0) == 'id'
@@ -54,14 +53,13 @@ def sample_list_fn(piece):
 
 def test_fn_adapter():
     ctx = Context()
-    model_piece = htypes.list_adapter_tests.sample_list()
+    model = htypes.list_adapter_tests.sample_list()
     adapter_piece = htypes.list_adapter.fn_list_adapter(
-        model_piece=mosaic.put(model_piece),
         element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.list_adapter_tests.item)),
         function=fn_to_ref(sample_list_fn),
         want_feed=False,
         )
-    adapter = list_adapter.FnListAdapter.from_piece(adapter_piece, ctx)
+    adapter = list_adapter.FnListAdapter.from_piece(adapter_piece, model, ctx)
     assert adapter.column_count() == 2
     assert adapter.column_title(0) == 'id'
     assert adapter.column_title(1) == 'text'
@@ -97,15 +95,14 @@ def sample_feed_list_fn(piece, feed):
 
 async def test_feed_fn_adapter():
     ctx = Context()
-    model_piece = htypes.list_adapter_tests.sample_list()
+    model = htypes.list_adapter_tests.sample_list()
     adapter_piece = htypes.list_adapter.fn_list_adapter(
-        model_piece=mosaic.put(model_piece),
         element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.list_adapter_tests.item)),
         function=fn_to_ref(sample_feed_list_fn),
         want_feed=True,
         )
 
-    adapter = list_adapter.FnListAdapter.from_piece(adapter_piece, ctx)
+    adapter = list_adapter.FnListAdapter.from_piece(adapter_piece, model, ctx)
     queue = asyncio.Queue()
     subscriber = Subscriber(queue)
     adapter.subscribe(subscriber)
@@ -138,15 +135,14 @@ def test_remote_fn_adapter():
     with subprocess_rpc_server_running(subprocess_name, rpc_endpoint, identity) as process:
         log.info("Started: %r", process)
 
-        model_piece = htypes.list_adapter_tests.sample_list()
+        model = htypes.list_adapter_tests.sample_list()
         adapter_piece = htypes.list_adapter.remote_fn_list_adapter(
-            model_piece=mosaic.put(model_piece),
             element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.list_adapter_tests.item)),
             function=fn_to_ref(sample_list_fn),
             remote_peer=mosaic.put(process.peer.piece),
             want_feed=False,
             )
-        adapter = list_adapter.RemoteFnListAdapter.from_piece(adapter_piece, ctx)
+        adapter = list_adapter.RemoteFnListAdapter.from_piece(adapter_piece, model, ctx)
 
         assert adapter.column_count() == 2
         assert adapter.column_title(0) == 'id'

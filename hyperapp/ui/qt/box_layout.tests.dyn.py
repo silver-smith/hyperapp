@@ -8,20 +8,18 @@ from .code.context import Context
 from .tested.code import box_layout
 
 def make_piece():
-    adapter_1 = htypes.str_adapter.static_str_adapter("Sample text 1")
-    adapter_2 = htypes.str_adapter.static_str_adapter("Sample text 2")
-    text_1 = htypes.text.readonly_view(mosaic.put(adapter_1))
-    text_2 = htypes.text.readonly_view(mosaic.put(adapter_2))
+    label_1 = htypes.label.view("Sample label 1")
+    label_2 = htypes.label.view("Sample label 2")
     return htypes.box_layout.view(
         direction='LeftToRight',
         elements=[
             htypes.box_layout.element(
-                view=mosaic.put(text_1),
+                view=mosaic.put(label_1),
                 focusable=True,
                 stretch=1,
                 ),
             htypes.box_layout.element(
-                view=mosaic.put(text_2),
+                view=mosaic.put(label_2),
                 focusable=False,
                 stretch=2,
                 ),
@@ -30,12 +28,12 @@ def make_piece():
 
 
 def make_state():
-    text_state = htypes.text.state()
+    label_state = htypes.label.state()
     return htypes.box_layout.state(
         current=0,
         elements=[
-            mosaic.put(text_state),
-            mosaic.put(text_state),
+            mosaic.put(label_state),
+            mosaic.put(label_state),
             ],
         )
 

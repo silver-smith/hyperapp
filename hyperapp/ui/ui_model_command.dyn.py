@@ -9,7 +9,7 @@ from .services import (
     model_command_factory,
     pyobj_creg,
     ui_command_creg,
-    view_creg,
+    model_view_creg,
     visualizer,
     )
 from .code.ui_command import CommandBase
@@ -52,7 +52,7 @@ class UiModelWrapperCommand(CommandBase):
         if type(piece) is list:
             piece = tuple(piece)
         view_piece = visualizer(piece)
-        view = view_creg.animate(view_piece, self._ctx)
+        view = model_view_creg.animate(view_piece, piece, self._ctx)
         log.info("Run model command %r view: %s", self.name, view)
         self._navigator.open(self._ctx, piece, view)
 

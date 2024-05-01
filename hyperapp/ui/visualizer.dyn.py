@@ -20,10 +20,10 @@ def visualizer():
         t = deduce_complex_value_type(mosaic, types, value)
 
         if t is tString:
-            adapter = htypes.str_adapter.static_str_adapter(value)
+            adapter = htypes.str_adapter.static_str_adapter()
             return htypes.text.edit_view(mosaic.put(adapter))
         if isinstance(t, TList):
-            adapter = htypes.list_adapter.static_list_adapter(mosaic.put(value, t))
+            adapter = htypes.list_adapter.static_list_adapter()
             return htypes.list.view(mosaic.put(adapter))
 
         model_d_res = data_to_res(htypes.ui.model_d())
@@ -37,7 +37,6 @@ def visualizer():
 
         if isinstance(ui_t, htypes.ui.list_ui_t) and isinstance(impl, htypes.ui.fn_impl):
             adapter = htypes.list_adapter.fn_list_adapter(
-                model_piece=mosaic.put(value),
                 element_t=ui_t.element_t,
                 function=impl.function,
                 want_feed=impl.want_feed,
@@ -49,12 +48,12 @@ def visualizer():
 
             command_list = model_command_factory(value)
             command = next(cmd for cmd in command_list if cmd.name == 'details')
-            details_adapter = htypes.str_adapter.static_str_adapter("Default details")
+            details_adapter = htypes.str_adapter.static_str_adapter()
             details = htypes.text.readonly_view(mosaic.put(details_adapter))
             return htypes.master_details.view(
-                model=mosaic.put(value),
                 master_view=mosaic.put(view),
                 details_command=mosaic.put(command),
+                details_model=mosaic.put("Details model placeholder"),
                 details_view=mosaic.put(details),
                 direction='LeftToRight',
                 master_stretch=1,
@@ -63,7 +62,6 @@ def visualizer():
 
         if isinstance(ui_t, htypes.ui.tree_ui_t) and isinstance(impl, htypes.ui.fn_impl):
             adapter = htypes.tree_adapter.fn_index_tree_adapter(
-                model_piece=mosaic.put(value),
                 element_t=ui_t.element_t,
                 key_t=ui_t.key_t,
                 function=impl.function,

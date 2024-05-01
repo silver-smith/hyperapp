@@ -11,6 +11,7 @@ from .services import (
     pyobj_creg,
     types,
     view_creg,
+    model_view_creg,
     ui_adapter_creg,
     )
 
@@ -26,7 +27,7 @@ def _resolve_record_t(t_rec):
     return t_rec.t
 
 
-def construct_view_impl(ctx, module_name, resource_module, module_res, qname, params):
+def construct_view_impl(ctx, module_name, resource_module, module_res, qname, params, view_creg_service):
     piece_t_ref = _resolve_record_t(params['piece'])
     if piece_t_ref is None:
         log.warning("%s.%s: piece parameter type is not a data record", module_name, qname)
@@ -42,7 +43,7 @@ def construct_view_impl(ctx, module_name, resource_module, module_res, qname, pa
         attr_name=method_name,
     )
     piece_t_res = htypes.builtin.legacy_type(piece_t_ref)
-    view_creg_res = pyobj_creg.reverse_resolve(view_creg)
+    view_creg_res = pyobj_creg.reverse_resolve(view_creg_service)
     ctl_association = Association(
         bases=[view_creg_res, piece_t_res],
         key=[view_creg_res, piece_t_res],
@@ -303,8 +304,10 @@ def _create_trace_resources(ctx, module_name, resource_module, module_res, qname
     param_names = list(params)
     if len(qname.split('.')) == 2 and trace.obj_type in ('classmethod', 'staticmethod'):
         if param_names == ['piece', 'ctx'] and 'View' in qname:
-            ass_set |= construct_view_impl(ctx, module_name, resource_module, module_res, qname, params)
-        if param_names == ['piece', 'ctx'] and 'Adapter' in qname:
+            ass_set |= construct_view_impl(ctx, module_name, resource_module, module_res, qname, params, view_creg)
+        if param_names == ['piece', 'model', 'ctx'] and 'View' in qname:
+            ass_set |= construct_view_impl(ctx, module_name, resource_module, module_res, qname, params, model_view_creg)
+        if param_names == ['piece', 'model', 'ctx'] and 'Adapter' in qname:
             ass_set |= construct_adapter_impl(ctx, module_name, resource_module, module_res, qname, params)
     if len(qname.split('.')) == 1 and trace.obj_type == 'function':
         if (trace.result_t == htypes.inspect.object_t('list', 'builtins')

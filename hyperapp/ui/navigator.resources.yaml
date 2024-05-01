@@ -19,6 +19,7 @@ import:
 - ui.model_command:model_command_factory.service
 - ui.model_command_creg:model_command_creg.service
 - ui.view:view.module
+- ui.view_registry:model_view_creg.service
 - ui.view_registry:view_creg.service
 - ui.visualizer:visualizer.service
 associations:
@@ -97,6 +98,7 @@ definitions:
       services.mark: common.mark:mark.service
       services.model_command_creg: ui.model_command_creg:model_command_creg.service
       services.model_command_factory: ui.model_command:model_command_factory.service
+      services.model_view_creg: ui.view_registry:model_view_creg.service
       services.mosaic: builtins:mosaic.service
       services.types: builtins:types.service
       services.view_creg: ui.view_registry:view_creg.service

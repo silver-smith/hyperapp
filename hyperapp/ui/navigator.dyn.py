@@ -8,7 +8,7 @@ from .services import (
     mark,
     mosaic,
     types,
-    view_creg,
+    model_view_creg,
     web,
     )
 
@@ -21,23 +21,23 @@ class NavigatorView(View):
 
     @classmethod
     def from_piece(cls, piece, ctx):
-        current_view = view_creg.invite(piece.current_view, ctx)
-        current_model = web.summon(piece.current_model)
-        return cls(current_view, current_model, piece.prev, piece.next)
+        model = web.summon(piece.current_model)
+        current_view = model_view_creg.invite(piece.current_view, model, ctx)
+        return cls(current_view, model, piece.prev, piece.next)
 
-    def __init__(self, current_view, current_model, prev, next):
+    def __init__(self, current_view, model, prev, next):
         super().__init__()
         self._current_view = current_view
-        self._current_model = current_model  # piece
+        self._model = model  # piece
         self._prev = prev  # ref opt
         self._next = next  # ref opt
 
     @property
     def piece(self):
-        model_t = deduce_complex_value_type(mosaic, types, self._current_model)
+        model_t = deduce_complex_value_type(mosaic, types, self._model)
         return htypes.navigator.view(
             current_view=mosaic.put(self._current_view.piece),
-            current_model=mosaic.put(self._current_model, model_t),
+            current_model=mosaic.put(self._model, model_t),
             prev=self._prev,
             next=self._next,
             )
@@ -73,7 +73,7 @@ class NavigatorView(View):
     def open(self, ctx, model, view):
         current_piece = self.piece
         self._current_view = view
-        self._current_model = model
+        self._model = model
         self._prev = mosaic.put(current_piece)
         self._next = None
         self._replace_widget(ctx)
@@ -83,8 +83,9 @@ class NavigatorView(View):
             return
         current_piece = self.piece
         prev = web.summon(self._prev)
-        self._current_view = view_creg.invite(prev.current_view, ctx)
-        self._current_model = web.summon(prev.current_model)
+        prev_model = web.summon(prev.current_model)
+        self._current_view = model_view_creg.invite(prev.current_view, prev_model, ctx)
+        self._model = web.summon(prev.current_model)
         self._prev = prev.prev
         self._next = mosaic.put(current_piece)
         self._replace_widget(ctx)
@@ -94,8 +95,9 @@ class NavigatorView(View):
             return
         current_piece = self.piece
         next = web.summon(self._next)
-        self._current_view = view_creg.invite(next.current_view, ctx)
-        self._current_model = web.summon(next.current_model)
+        next_model = web.summon(next.current_model)
+        self._current_view = model_view_creg.invite(next.current_view, next_model, ctx)
+        self._model = web.summon(next.current_model)
         self._prev = mosaic.put(current_piece)
         self._next = next.next
         self._replace_widget(ctx)

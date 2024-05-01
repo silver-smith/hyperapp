@@ -12,18 +12,17 @@ from .tested.code import auto_tabs
 
 
 def make_piece():
-    adapter = htypes.str_adapter.static_str_adapter("Sample text")
-    text = htypes.text.readonly_view(mosaic.put(adapter))
+    label = htypes.label.view("Sample label")
     return htypes.auto_tabs.view(
-        tabs=(mosaic.put(text),),
+        tabs=(mosaic.put(label),),
         )
 
 
 def make_state():
-    text_state = htypes.text.state()
+    label_state = htypes.label.state()
     return htypes.tabs.state(
         current_tab=0,
-        tabs=(mosaic.put(text_state),),
+        tabs=(mosaic.put(label_state),),
         )
 
 
@@ -61,20 +60,19 @@ def test_duplicate():
 
 
 def test_close():
-    adapter = htypes.str_adapter.static_str_adapter("Sample text")
-    text = htypes.text.readonly_view(mosaic.put(adapter))
+    label = htypes.label.view("Sample label")
     piece = htypes.auto_tabs.view(
         tabs=(
-            mosaic.put(text),
-            mosaic.put(text),
+            mosaic.put(label),
+            mosaic.put(label),
             ),
         )
-    text_state = htypes.text.state()
+    label_state = htypes.label.state()
     state = htypes.tabs.state(
         current_tab=0,
         tabs=(
-            mosaic.put(text_state),
-            mosaic.put(text_state),
+            mosaic.put(label_state),
+            mosaic.put(label_state),
             ),
         )
     ctx = Context()

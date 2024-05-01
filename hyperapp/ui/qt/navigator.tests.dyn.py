@@ -16,7 +16,7 @@ def _wrapper(diff):
 
 
 def make_piece():
-    adapter_piece = htypes.str_adapter.static_str_adapter("Sample text")
+    adapter_piece = htypes.str_adapter.static_str_adapter()
     text_piece = htypes.text.readonly_view(mosaic.put(adapter_piece))
     prev_piece = htypes.navigator.view(
         current_view=mosaic.put(text_piece),

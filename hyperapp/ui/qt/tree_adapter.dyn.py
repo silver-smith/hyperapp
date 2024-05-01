@@ -18,8 +18,8 @@ log = logging.getLogger(__name__)
 
 class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
 
-    def __init__(self, model_piece, item_t, want_feed):
-        self._model_piece = model_piece
+    def __init__(self, model, item_t, want_feed):
+        self._model = model
         self._item_t = item_t
         self._want_feed = want_feed
         self._column_names = sorted(self._item_t.fields)
@@ -29,7 +29,7 @@ class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
         self._id_counter = itertools.count(start=1)
         self._subscribers = weakref.WeakSet()
         try:
-            self._feed = feed_factory(model_piece)
+            self._feed = feed_factory(model)
         except KeyError:
             self._feed = None
         else:
@@ -40,7 +40,7 @@ class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
 
     @property
     def model(self):
-        return self._model_piece
+        return self._model
 
     def column_count(self):
         return len(self._item_t.fields)
@@ -115,13 +115,13 @@ class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
         else:
             parent_item = None
         kw = {
-            'piece': self._model_piece,
+            'piece': self._model,
             'parent': parent_item,
             }
         if self._want_feed:
             kw['feed'] = self._feed
         item_list = self._call_fn(**kw)
-        log.info("Tree adapter: populated (%s, %s) -> %s", self._model_piece, parent_item, item_list)
+        log.info("Tree adapter: populated (%s, %s) -> %s", self._model, parent_item, item_list)
         item_id_list = []
         for item in item_list:
             id = next(self._id_counter)
@@ -139,14 +139,13 @@ class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
 class FnIndexTreeAdapter(FnIndexTreeAdapterBase):
 
     @classmethod
-    def from_piece(cls, piece, ctx):
-        model_piece = web.summon(piece.model_piece)
+    def from_piece(cls, piece, model, ctx):
         element_t = pyobj_creg.invite(piece.element_t)
         fn = pyobj_creg.invite(piece.function)
-        return cls(model_piece, element_t, piece.want_feed, fn)
+        return cls(model, element_t, piece.want_feed, fn)
 
-    def __init__(self, model_piece, item_t, want_feed, fn):
-        super().__init__(model_piece, item_t, want_feed)
+    def __init__(self, model, item_t, want_feed, fn):
+        super().__init__(model, item_t, want_feed)
         self._fn = fn
 
     def _call_fn(self, **kw):
@@ -156,14 +155,13 @@ class FnIndexTreeAdapter(FnIndexTreeAdapterBase):
 class RemoteFnIndexTreeAdapter(FnIndexTreeAdapterBase):
 
     @classmethod
-    def from_piece(cls, piece, ctx):
-        model_piece = web.summon(piece.model_piece)
+    def from_piece(cls, piece, model, ctx):
         element_t = pyobj_creg.invite(piece.element_t)
         remote_peer = peer_registry.invite(piece.remote_peer)
-        return cls(model_piece, element_t, piece.want_feed, piece.function, ctx.rpc_endpoint, ctx.identity, remote_peer)
+        return cls(model, element_t, piece.want_feed, piece.function, ctx.rpc_endpoint, ctx.identity, remote_peer)
 
-    def __init__(self, model_piece, item_t, want_feed, fn_res_ref, rpc_endpoint, identity, remote_peer):
-        super().__init__(model_piece, item_t, want_feed)
+    def __init__(self, model, item_t, want_feed, fn_res_ref, rpc_endpoint, identity, remote_peer):
+        super().__init__(model, item_t, want_feed)
         self._rpc_call = rpc_call_factory(
             rpc_endpoint=rpc_endpoint,
             receiver_peer=remote_peer,

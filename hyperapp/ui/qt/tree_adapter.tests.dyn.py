@@ -38,15 +38,14 @@ def sample_tree_fn(piece, parent):
 
 def test_fn_adapter():
     ctx = Context()
-    model_piece = htypes.tree_adapter_tests.sample_tree()
+    model = htypes.tree_adapter_tests.sample_tree()
     adapter_piece = htypes.tree_adapter.fn_index_tree_adapter(
-        model_piece=mosaic.put(model_piece),
         element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.tree_adapter_tests.item)),
         key_t=mosaic.put(pyobj_creg.reverse_resolve(tInt)),
         function=fn_to_ref(sample_tree_fn),
         want_feed=False,
         )
-    adapter = tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, ctx)
+    adapter = tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, model, ctx)
 
     assert adapter.column_count() == 2
     assert adapter.column_title(0) == 'id'
@@ -96,16 +95,15 @@ def sample_feed_tree_fn(piece, parent, feed):
 
 async def test_feed_fn_adapter():
     ctx = Context()
-    model_piece = htypes.tree_adapter_tests.sample_tree()
+    model = htypes.tree_adapter_tests.sample_tree()
     adapter_piece = htypes.tree_adapter.fn_index_tree_adapter(
-        model_piece=mosaic.put(model_piece),
         element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.tree_adapter_tests.item)),
         key_t=mosaic.put(pyobj_creg.reverse_resolve(tInt)),
         function=fn_to_ref(sample_feed_tree_fn),
         want_feed=True,
         )
 
-    adapter = tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, ctx)
+    adapter = tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, model, ctx)
     queue = asyncio.Queue()
     subscriber = Subscriber(queue)
     adapter.subscribe(subscriber)
@@ -141,16 +139,15 @@ def test_remote_fn_adapter():
     with subprocess_rpc_server_running(subprocess_name, rpc_endpoint, identity) as process:
         log.info("Started: %r", process)
 
-        model_piece = htypes.tree_adapter_tests.sample_tree()
+        model = htypes.tree_adapter_tests.sample_tree()
         adapter_piece = htypes.tree_adapter.remote_fn_index_tree_adapter(
-            model_piece=mosaic.put(model_piece),
             element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.tree_adapter_tests.item)),
             key_t=mosaic.put(pyobj_creg.reverse_resolve(tInt)),
             function=fn_to_ref(sample_tree_fn),
             remote_peer=mosaic.put(process.peer.piece),
             want_feed=False,
             )
-        adapter = tree_adapter.RemoteFnIndexTreeAdapter.from_piece(adapter_piece, ctx)
+        adapter = tree_adapter.RemoteFnIndexTreeAdapter.from_piece(adapter_piece, model, ctx)
 
         assert adapter.column_count() == 2
         assert adapter.column_title(0) == 'id'

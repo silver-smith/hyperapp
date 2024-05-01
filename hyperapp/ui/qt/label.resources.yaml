@@ -1,0 +1,34 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.label:state
+- legacy_type.label:view
+- ui.view:view.module
+- ui.view_registry:view_creg.service
+associations:
+- bases:
+  - ui.view_registry:view_creg.service
+  - legacy_type.label:view
+  key:
+  - ui.view_registry:view_creg.service
+  - legacy_type.label:view
+  value: LabelView.from_piece
+definitions:
+  LabelView:
+    _type: legacy_type.builtin:attribute
+    object: label.module
+    attr_name: LabelView
+  LabelView.from_piece:
+    _type: legacy_type.builtin:attribute
+    object: LabelView
+    attr_name: from_piece
+  label.module:
+    _type: legacy_type.builtin:python_module
+    module_name: label
+    file_name: label.dyn.py
+    import_list:
+      code.view: ui.view:view.module
+      htypes.label.state: legacy_type.label:state
+      htypes.label.view: legacy_type.label:view

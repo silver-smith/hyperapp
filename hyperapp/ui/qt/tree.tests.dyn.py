@@ -30,9 +30,7 @@ def _sample_tree_fn(piece, parent):
 
 
 def _make_adapter_piece():
-    model_piece = htypes.tree_tests.sample_tree()
     return htypes.tree_adapter.fn_index_tree_adapter(
-        model_piece=mosaic.put(model_piece),
         element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.tree_tests.item)),
         key_t=mosaic.put(pyobj_creg.reverse_resolve(tInt)),
         function=fn_to_ref(_sample_tree_fn),
@@ -48,10 +46,11 @@ def _make_piece():
 def test_tree():
     ctx = Context()
     piece = _make_piece()
+    model = htypes.tree_tests.sample_tree()
     state = None
     app = QtWidgets.QApplication()
     try:
-        view = tree.TreeView.from_piece(piece, ctx)
+        view = tree.TreeView.from_piece(piece, model, ctx)
         view.set_controller_hook(Mock())
         widget = view.construct_widget(state, ctx)
         assert view.piece

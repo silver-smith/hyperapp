@@ -6,7 +6,7 @@ from .services import (
     model_command_creg,
     model_command_factory,
     mosaic,
-    view_creg,
+    model_view_creg,
     visualizer,
     web,
     )
@@ -19,30 +19,31 @@ log = logging.getLogger(__name__)
 class MasterDetailsView(BoxLayoutView):
     
     @classmethod
-    def from_piece(cls, piece, ctx):
-        model = web.summon(piece.model)
-        master_view = view_creg.invite(piece.master_view, ctx)
-        details_view = view_creg.invite(piece.details_view, ctx)
+    def from_piece(cls, piece, model, ctx):
+        details_model = web.summon(piece.details_model)
+        master_view = model_view_creg.invite(piece.master_view, model, ctx)
+        details_view = model_view_creg.invite(piece.details_view, details_model, ctx)
         elements = [
             cls._Element(master_view, focusable=True, stretch=piece.master_stretch),
             cls._Element(details_view, focusable=False, stretch=piece.details_stretch),
             ]
         direction = cls._direction_to_qt(piece.direction)
-        return cls(direction, elements, model, piece.details_command)
+        details_command = web.summon(piece.details_command)
+        return cls(direction, elements, model, details_command)
 
-    def __init__(self, direction, elements, model_piece, details_command):
+    def __init__(self, direction, elements, model, details_command):
         super().__init__(direction, elements)
-        self._model_piece = model_piece
+        self._model = model
         self._details_command = details_command
 
     @property
     def piece(self):
         base = super().piece
         return htypes.master_details.view(
-            model=mosaic.put(self._model_piece),
-            master_view=mosaic.put(self._elements[0].view.piece),
-            details_command=self._details_command,
-            details_view=mosaic.put(self._elements[1].view.piece),
+            master_view=mosaic.put(self.master_view.piece),
+            details_command=mosaic.put(self._details_command),
+            details_model=mosaic.put(self.details_view.get_model()),
+            details_view=mosaic.put(self.details_view.piece),
             direction=self._direction.name,
             master_stretch=self._elements[0].stretch,
             details_stretch=self._elements[1].stretch,
@@ -70,19 +71,28 @@ class MasterDetailsView(BoxLayoutView):
         master_view = super().child_view(0)
         master_widget = super().item_widget(widget, 0)
         model_state = master_view.model_state(master_widget)
+        piece = await self.run_details_command(ctx, self._model, model_state, self._details_command)
+        details_view = self.model_to_view(ctx, piece)
+        self.replace_element(ctx, widget, 1, details_view)
+
+    @staticmethod
+    async def run_details_command(ctx, model, model_state, command_piece):
         command_ctx = ctx.clone_with(
-            piece=self._model_piece,
+            piece=model,
             model_state=model_state,
             **ctx.attributes(model_state),
             )
-        command = model_command_creg.invite(self._details_command, command_ctx)
+        command = model_command_creg.animate(command_piece, command_ctx)
         piece = await command.run()
         log.info("Master-details: command result: %s", piece)
         if type(piece) is list:
             piece = tuple(piece)
+        return piece
+
+    @staticmethod
+    def model_to_view(ctx, piece):
         details_view_piece = visualizer(piece)
-        details_view = view_creg.animate(details_view_piece, ctx)
-        self.replace_element(ctx, widget, 1, details_view)
+        return model_view_creg.animate(details_view_piece, piece, ctx)
 
     def widget_state(self, widget):
         base = super().widget_state(widget)
@@ -96,11 +106,20 @@ class MasterDetailsView(BoxLayoutView):
         master_widget = super().item_widget(widget, 0)
         return master_view.model_state(master_widget)
 
+    @property
+    def master_view(self):
+        return self._elements[0].view
+
+    @property
+    def details_view(self):
+        return self._elements[1].view
+
 
 @mark.ui_command(htypes.master_details.view)
 def unwrap_master_details(view, state, hook, ctx):
     log.info("Unwrap master-details: %s / %s", view, state)
-    master_view = view_creg.invite(view.piece.master_view, ctx)
+    model = view.master_view.get_model()
+    master_view = model_view_creg.invite(view.piece.master_view, model, ctx)
     master_state = web.summon(state.master_state)
     hook.replace_view(master_view, master_state)
 
@@ -120,19 +139,20 @@ def _pick_command(model):
 
 
 @mark.ui_command
-def wrap_master_details(piece, view, state, hook, ctx):
+async def wrap_master_details(piece, view, widget, state, hook, ctx):
     log.info("Wrap master-details: %s/ %s / %s", piece, view, state)
     command = _pick_command(piece)
-    details_adapter = htypes.str_adapter.static_str_adapter("")
-    details = htypes.text.readonly_view(mosaic.put(details_adapter))
+    model_state = view.model_state(widget)
+    piece = await MasterDetailsView.run_details_command(ctx, piece, model_state, command)
+    details_view = MasterDetailsView.model_to_view(ctx, piece)
     view_piece = htypes.master_details.view(
-        model=mosaic.put(piece),
         master_view=mosaic.put(view.piece),
         details_command=mosaic.put(command),
-        details_view=mosaic.put(details),
+        details_model=mosaic.put(piece),
+        details_view=mosaic.put(details_view.piece),
         direction='LeftToRight',
         master_stretch=1,
         details_stretch=1,
         )
-    view = view_creg.animate(view_piece, ctx)
+    view = model_view_creg.animate(view_piece, piece, ctx)
     hook.replace_view(view)

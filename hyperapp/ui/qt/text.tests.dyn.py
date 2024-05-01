@@ -9,7 +9,7 @@ from .code.context import Context
 
 
 def make_adapter():
-    return htypes.str_adapter.static_str_adapter("Sample text")
+    return htypes.str_adapter.static_str_adapter()
 
 
 def make_view_piece():
@@ -30,9 +30,10 @@ def test_view_text():
     ctx = Context()
     piece = make_view_piece()
     state = make_state()
+    model ="Sample text"
     app = QtWidgets.QApplication()
     try:
-        view = text.ViewTextView.from_piece(piece, ctx)
+        view = text.ViewTextView.from_piece(piece, model, ctx)
         widget = view.construct_widget(state, ctx)
         assert view.piece
         state = view.widget_state(widget)
@@ -45,9 +46,10 @@ def test_edit_text():
     ctx = Context()
     piece = make_edit_piece()
     state = make_state()
+    model ="Sample text"
     app = QtWidgets.QApplication()
     try:
-        view = text.EditTextView.from_piece(piece, ctx)
+        view = text.EditTextView.from_piece(piece, model, ctx)
         widget = view.construct_widget(state, ctx)
         assert view.piece
         state = view.widget_state(widget)

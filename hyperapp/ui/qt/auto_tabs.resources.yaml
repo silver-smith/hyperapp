@@ -12,8 +12,8 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.label:view
 - legacy_type.navigator:view
-- legacy_type.text:readonly_view
 - legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_kind_d
@@ -23,10 +23,10 @@ import:
 - ui.view_registry:view_creg.service
 associations:
 - bases:
-  - legacy_type.text:readonly_view
+  - legacy_type.label:view
   key:
   - model_command_d
-  - legacy_type.text:readonly_view
+  - legacy_type.label:view
   value: tab_piece_label.command
 - bases:
   - ui.view_registry:view_creg.service

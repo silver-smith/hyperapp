@@ -3,8 +3,8 @@
 class StaticStrAdapter:
 
     @classmethod
-    def from_piece(cls, piece, ctx):
-        return cls(piece.value)
+    def from_piece(cls, piece, model, ctx):
+        return cls(model)
 
     def __init__(self, text):
         self._text = text

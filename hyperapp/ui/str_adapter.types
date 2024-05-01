@@ -1,3 +1,2 @@
 
-static_str_adapter = record:
-  value: string
+static_str_adapter = record

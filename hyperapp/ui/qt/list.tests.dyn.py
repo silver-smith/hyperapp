@@ -14,12 +14,7 @@ from .code.context import Context
 
 
 def make_adapter_piece():
-    value = (
-        htypes.list_tests.item(1, "First"),
-        htypes.list_tests.item(2, "Second"),
-        )
-    t = deduce_complex_value_type(mosaic, types, value)
-    return htypes.list_adapter.static_list_adapter(mosaic.put(value, t))
+    return htypes.list_adapter.static_list_adapter()
 
 
 def make_piece():
@@ -30,10 +25,14 @@ def make_piece():
 def test_list():
     ctx = Context()
     piece = make_piece()
+    model = (
+        htypes.list_tests.item(1, "First"),
+        htypes.list_tests.item(2, "Second"),
+        )
     state = None
     app = QtWidgets.QApplication()
     try:
-        view = list.ListView.from_piece(piece, ctx)
+        view = list.ListView.from_piece(piece, model, ctx)
         view.set_controller_hook(Mock())
         widget = view.construct_widget(state, ctx)
         assert view.piece

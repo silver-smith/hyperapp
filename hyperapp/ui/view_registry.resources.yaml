@@ -12,6 +12,13 @@ import:
 - legacy_type.builtin:python_module
 associations: []
 definitions:
+  model_view_creg:
+    _type: legacy_type.builtin:attribute
+    object: view_registry.module
+    attr_name: model_view_creg
+  model_view_creg.service:
+    _type: legacy_type.builtin:call
+    function: model_view_creg
   view_creg:
     _type: legacy_type.builtin:attribute
     object: view_registry.module

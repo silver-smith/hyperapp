@@ -13,11 +13,10 @@ from .tested.code import tabs
 
 
 def make_inner_piece():
-    adapter = htypes.str_adapter.static_str_adapter("Sample text")
-    text = htypes.text.readonly_view(mosaic.put(adapter))
+    label = htypes.label.view("Sample label")
     return htypes.tabs.view(
         tabs=(
-            htypes.tabs.tab("One", mosaic.put(text)),
+            htypes.tabs.tab("One", mosaic.put(label)),
             ),
         )
 
@@ -31,10 +30,10 @@ def make_outer_piece(inner_tab_view):
 
 
 def make_inner_state():
-    text_state = htypes.text.state()
+    label_state = htypes.label.state()
     return htypes.tabs.state(
         current_tab=0,
-        tabs=(mosaic.put(text_state),),
+        tabs=(mosaic.put(label_state),),
         )
 
 

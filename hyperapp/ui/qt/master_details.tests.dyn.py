@@ -27,16 +27,15 @@ def _details_command():
 
 
 def make_piece():
-    model = "Sample master text"
-    master_adapter = htypes.str_adapter.static_str_adapter(model)
-    details_adapter = htypes.str_adapter.static_str_adapter("Sample details")
+    master_adapter = htypes.str_adapter.static_str_adapter()
+    details_adapter = htypes.str_adapter.static_str_adapter()
     master = htypes.text.readonly_view(mosaic.put(master_adapter))
     details = htypes.text.readonly_view(mosaic.put(details_adapter))
     command = _details_command()
     return htypes.master_details.view(
-        model=mosaic.put(model),
         master_view=mosaic.put(master),
         details_command=mosaic.put(command),
+        details_model=mosaic.put("Sample details model"),
         details_view=mosaic.put(details),
         direction='LeftToRight',
         master_stretch=1,
@@ -56,9 +55,10 @@ def test_master_details():
     ctx = Context()
     piece = make_piece()
     state = make_state()
+    model = "Sample master text"
     app = QtWidgets.QApplication()
     try:
-        view = master_details.MasterDetailsView.from_piece(piece, ctx)
+        view = master_details.MasterDetailsView.from_piece(piece, model, ctx)
         widget = view.construct_widget(state, ctx)
         assert view.piece
         state = view.widget_state(widget)
@@ -74,20 +74,21 @@ def model_command_factory():
     return _factory
 
 
-def test_wrap_master_details():
+async def test_wrap_master_details():
     ctx = Context()
     piece = make_piece()
     state = make_state()
+    model = "Sample master text"
     app = QtWidgets.QApplication()
     try:
-        view = master_details.MasterDetailsView.from_piece(piece, ctx)
+        view = master_details.MasterDetailsView.from_piece(piece, model, ctx)
         widget = view.construct_widget(state, ctx)
         assert view.piece
         state = view.widget_state(widget)
         assert state
         model = "Sample model"
         hook = Mock()
-        master_details.wrap_master_details(model, view, state, hook, ctx)
+        await master_details.wrap_master_details(model, view, widget, state, hook, ctx)
         hook.replace_view.assert_called_once()
     finally:
         app.shutdown()

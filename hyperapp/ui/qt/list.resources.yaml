@@ -7,13 +7,13 @@ import:
 - legacy_type.list:view
 - ui.ui_adapter_creg:ui_adapter_creg.service
 - ui.view:view.module
-- ui.view_registry:view_creg.service
+- ui.view_registry:model_view_creg.service
 associations:
 - bases:
-  - ui.view_registry:view_creg.service
+  - ui.view_registry:model_view_creg.service
   - legacy_type.list:view
   key:
-  - ui.view_registry:view_creg.service
+  - ui.view_registry:model_view_creg.service
   - legacy_type.list:view
   value: ListView.from_piece
 definitions:

@@ -22,11 +22,10 @@ log = logging.getLogger(__name__)
 class StaticListAdapter:
 
     @classmethod
-    def from_piece(cls, piece, ctx):
-        value = web.summon(piece.value)
-        list_t = deduce_complex_value_type(mosaic, types, value)
+    def from_piece(cls, piece, model, ctx):
+        list_t = deduce_complex_value_type(mosaic, types, model)
         assert isinstance(list_t, TList), repr(list_t)
-        return cls(list_t.element_t, value)
+        return cls(list_t.element_t, model)
 
     def __init__(self, item_t, value):
         self._item_t = item_t
@@ -58,15 +57,15 @@ class StaticListAdapter:
 
 class FnListAdapterBase(metaclass=abc.ABCMeta):
 
-    def __init__(self, model_piece, item_t, want_feed):
-        self._model_piece = model_piece
+    def __init__(self, model, item_t, want_feed):
+        self._model = model
         self._item_t = item_t
         self._want_feed = want_feed
         self._column_names = sorted(self._item_t.fields)
         self._item_list = None
         self._subscribers = weakref.WeakSet()
         try:
-            self._feed = feed_factory(model_piece)
+            self._feed = feed_factory(model)
         except KeyError:
             self._feed = None
         else:
@@ -77,7 +76,7 @@ class FnListAdapterBase(metaclass=abc.ABCMeta):
 
     @property
     def model(self):
-        return self._model_piece
+        return self._model
 
     def column_count(self):
         return len(self._item_t.fields)
@@ -120,18 +119,17 @@ class FnListAdapterBase(metaclass=abc.ABCMeta):
 class FnListAdapter(FnListAdapterBase):
 
     @classmethod
-    def from_piece(cls, piece, ctx):
-        model_piece = web.summon(piece.model_piece)
+    def from_piece(cls, piece, model, ctx):
         element_t = pyobj_creg.invite(piece.element_t)
         fn = pyobj_creg.invite(piece.function)
-        return cls(model_piece, element_t, piece.want_feed, fn)
+        return cls(model, element_t, piece.want_feed, fn)
 
-    def __init__(self, model_piece, item_t, want_feed, fn):
-        super().__init__(model_piece, item_t, want_feed)
+    def __init__(self, model, item_t, want_feed, fn):
+        super().__init__(model, item_t, want_feed)
         self._fn = fn
 
     def _populate(self):
-        kw = {'piece': self._model_piece}
+        kw = {'piece': self._model}
         if self._want_feed:
             kw['feed'] = self._feed
         self._item_list = self._fn(**kw)
@@ -140,14 +138,13 @@ class FnListAdapter(FnListAdapterBase):
 class RemoteFnListAdapter(FnListAdapterBase):
 
     @classmethod
-    def from_piece(cls, piece, ctx):
-        model_piece = web.summon(piece.model_piece)
+    def from_piece(cls, piece, model, ctx):
         element_t = pyobj_creg.invite(piece.element_t)
         remote_peer = peer_registry.invite(piece.remote_peer)
-        return cls(model_piece, element_t, piece.want_feed, piece.function, ctx.rpc_endpoint, ctx.identity, remote_peer)
+        return cls(model, element_t, piece.want_feed, piece.function, ctx.rpc_endpoint, ctx.identity, remote_peer)
 
-    def __init__(self, model_piece, item_t, want_feed, fn_res_ref, rpc_endpoint, identity, remote_peer):
-        super().__init__(model_piece, item_t, want_feed)
+    def __init__(self, model, item_t, want_feed, fn_res_ref, rpc_endpoint, identity, remote_peer):
+        super().__init__(model, item_t, want_feed)
         self._rpc_call = rpc_call_factory(
             rpc_endpoint=rpc_endpoint,
             receiver_peer=remote_peer,
@@ -156,7 +153,7 @@ class RemoteFnListAdapter(FnListAdapterBase):
             )
 
     def _populate(self):
-        kw = {'piece': self._model_piece}
+        kw = {'piece': self._model}
         if self._want_feed:
             kw['feed'] = self._feed
         self._item_list = self._rpc_call(**kw)

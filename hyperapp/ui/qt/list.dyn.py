@@ -77,8 +77,8 @@ class _TableView(QtWidgets.QTableView):
 class ListView(View):
 
     @classmethod
-    def from_piece(cls, piece, ctx):
-        adapter = ui_adapter_creg.invite(piece.adapter, ctx)
+    def from_piece(cls, piece, model, ctx):
+        adapter = ui_adapter_creg.invite(piece.adapter, model, ctx)
         return cls(piece.adapter, adapter)
 
     def __init__(self, adapter_ref, adapter):

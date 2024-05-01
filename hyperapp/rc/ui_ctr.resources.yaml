@@ -23,6 +23,7 @@ import:
 - legacy_type.ui:model_d
 - resource.data_to_res:data_to_res.service
 - ui.view_registry:view_creg.service
+- ui.view_registry:model_view_creg.service
 - ui.ui_adapter_creg:ui_adapter_creg.service
 associations: []
 definitions:
@@ -53,5 +54,6 @@ definitions:
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
       services.types: builtins:types.service
+      services.model_view_creg: ui.view_registry:model_view_creg.service
       services.view_creg: ui.view_registry:view_creg.service
       services.ui_adapter_creg: ui.ui_adapter_creg:ui_adapter_creg.service

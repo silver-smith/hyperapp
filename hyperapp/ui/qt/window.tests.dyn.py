@@ -12,10 +12,9 @@ from .tested.code import window
 
 
 def make_window_piece():
-    adapter_piece = htypes.str_adapter.static_str_adapter("Sample text")
-    text_piece = htypes.text.readonly_view(mosaic.put(adapter_piece))
+    label = htypes.label.view("Sample label")
     tabs_piece = htypes.tabs.view(
-        tabs=(htypes.tabs.tab("One", mosaic.put(text_piece)),),
+        tabs=(htypes.tabs.tab("One", mosaic.put(label)),),
         )
     piece = htypes.window.view(
         menu_bar_ref=mosaic.put(htypes.menu_bar.view()),
@@ -25,10 +24,10 @@ def make_window_piece():
 
 
 def make_window_state():
-    text_state = htypes.text.state()
+    label_state = htypes.label.state()
     tabs_state = htypes.tabs.state(
         current_tab=0,
-        tabs=(mosaic.put(text_state),),
+        tabs=(mosaic.put(label_state),),
         )
     state = htypes.window.state(
         menu_bar_state=mosaic.put(htypes.menu_bar.state()),
