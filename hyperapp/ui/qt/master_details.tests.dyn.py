@@ -29,7 +29,7 @@ def _details_command():
 def make_piece():
     model = "Sample master text"
     master_adapter = htypes.str_adapter.static_str_adapter(model)
-    details_adapter= htypes.str_adapter.static_str_adapter("Sample details")
+    details_adapter = htypes.str_adapter.static_str_adapter("Sample details")
     master = htypes.text.readonly_view(mosaic.put(master_adapter))
     details = htypes.text.readonly_view(mosaic.put(details_adapter))
     command = _details_command()

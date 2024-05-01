@@ -1,8 +1,4 @@
 
-view = record:
-  ctr_fn: ref
-
-
 ui_command_d = record
 universal_ui_command_d = record
 

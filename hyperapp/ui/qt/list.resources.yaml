@@ -5,17 +5,17 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.list:view
-- legacy_type.ui:view
 - ui.ui_adapter_creg:ui_adapter_creg.service
 - ui.view:view.module
 - ui.view_registry:view_creg.service
 associations:
 - bases:
+  - ui.view_registry:view_creg.service
   - legacy_type.list:view
   key:
   - ui.view_registry:view_creg.service
   - legacy_type.list:view
-  value: ListView.from_piece.view
+  value: ListView.from_piece
 definitions:
   ListView:
     _type: legacy_type.builtin:attribute
@@ -25,9 +25,6 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: ListView
     attr_name: from_piece
-  ListView.from_piece.view:
-    _type: legacy_type.ui:view
-    ctr_fn: ListView.from_piece
   list.module:
     _type: legacy_type.builtin:python_module
     module_name: list

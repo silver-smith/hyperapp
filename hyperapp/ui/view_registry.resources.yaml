@@ -2,6 +2,7 @@
 
 import:
 - builtins:association_reg.service
+- builtins:code_registry_ctr.service
 - builtins:pyobj_creg.service
 - builtins:types.service
 - builtins:web.service
@@ -24,6 +25,7 @@ definitions:
     file_name: view_registry.dyn.py
     import_list:
       services.association_reg: builtins:association_reg.service
+      services.code_registry_ctr: builtins:code_registry_ctr.service
       services.mark: common.mark:mark.service
       services.pyobj_creg: builtins:pyobj_creg.service
       services.types: builtins:types.service

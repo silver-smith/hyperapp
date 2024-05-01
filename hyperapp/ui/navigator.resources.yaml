@@ -14,7 +14,6 @@ import:
 - legacy_type.navigator:view
 - legacy_type.ui:ui_command
 - legacy_type.ui:ui_command_d
-- legacy_type.ui:view
 - ui.model_command:enum_model_commands.service
 - ui.model_command:global_commands.service
 - ui.model_command:model_command_factory.service
@@ -24,11 +23,12 @@ import:
 - ui.visualizer:visualizer.service
 associations:
 - bases:
+  - ui.view_registry:view_creg.service
   - legacy_type.navigator:view
   key:
   - ui.view_registry:view_creg.service
   - legacy_type.navigator:view
-  value: NavigatorView.from_piece.view
+  value: NavigatorView.from_piece
 - bases:
   - ui_command_d
   - legacy_type.navigator:view
@@ -52,9 +52,6 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: NavigatorView
     attr_name: from_piece
-  NavigatorView.from_piece.view:
-    _type: legacy_type.ui:view
-    ctr_fn: NavigatorView.from_piece
   go_back:
     _type: legacy_type.builtin:attribute
     object: navigator.module

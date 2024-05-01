@@ -42,18 +42,14 @@ def construct_view_impl(ctx, module_name, resource_module, module_res, qname, pa
         attr_name=method_name,
     )
     piece_t_res = htypes.builtin.legacy_type(piece_t_ref)
-    view = htypes.ui.view(
-        ctr_fn=mosaic.put(ctr_attribute),
-        )
     view_creg_res = pyobj_creg.reverse_resolve(view_creg)
     ctl_association = Association(
-        bases=[piece_t_res],
+        bases=[view_creg_res, piece_t_res],
         key=[view_creg_res, piece_t_res],
-        value=view,
+        value=ctr_attribute,
         )
     resource_module[class_name] = class_attribute
     resource_module[f'{class_name}.{method_name}'] = ctr_attribute
-    resource_module[f'{class_name}.{method_name}.view'] = view
     return {ctl_association}
 
 

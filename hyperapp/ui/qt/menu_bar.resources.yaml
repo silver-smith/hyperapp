@@ -8,16 +8,16 @@ import:
 - legacy_type.ui:context_model_command_kind_d
 - legacy_type.ui:global_model_command_kind_d
 - legacy_type.ui:model_command_kind_d
-- legacy_type.ui:view
 - ui.view:view.module
 - ui.view_registry:view_creg.service
 associations:
 - bases:
+  - ui.view_registry:view_creg.service
   - legacy_type.menu_bar:view
   key:
   - ui.view_registry:view_creg.service
   - legacy_type.menu_bar:view
-  value: MenuBarView.from_piece.view
+  value: MenuBarView.from_piece
 definitions:
   MenuBarView:
     _type: legacy_type.builtin:attribute
@@ -27,9 +27,6 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: MenuBarView
     attr_name: from_piece
-  MenuBarView.from_piece.view:
-    _type: legacy_type.ui:view
-    ctr_fn: MenuBarView.from_piece
   menu_bar.module:
     _type: legacy_type.builtin:python_module
     module_name: menu_bar

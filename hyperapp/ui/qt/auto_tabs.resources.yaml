@@ -19,22 +19,22 @@ import:
 - legacy_type.ui:model_command_kind_d
 - legacy_type.ui:ui_command
 - legacy_type.ui:ui_command_d
-- legacy_type.ui:view
 - ui.qt.tabs:tabs.module
 - ui.view_registry:view_creg.service
 associations:
-- bases:
-  - legacy_type.auto_tabs:view
-  key:
-  - ui.view_registry:view_creg.service
-  - legacy_type.auto_tabs:view
-  value: AutoTabsView.from_piece.view
 - bases:
   - legacy_type.text:readonly_view
   key:
   - model_command_d
   - legacy_type.text:readonly_view
   value: tab_piece_label.command
+- bases:
+  - ui.view_registry:view_creg.service
+  - legacy_type.auto_tabs:view
+  key:
+  - ui.view_registry:view_creg.service
+  - legacy_type.auto_tabs:view
+  value: AutoTabsView.from_piece
 - bases:
   - ui_command_d
   - legacy_type.auto_tabs:view
@@ -58,9 +58,6 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: AutoTabsView
     attr_name: from_piece
-  AutoTabsView.from_piece.view:
-    _type: legacy_type.ui:view
-    ctr_fn: AutoTabsView.from_piece
   auto_tabs.module:
     _type: legacy_type.builtin:python_module
     module_name: auto_tabs

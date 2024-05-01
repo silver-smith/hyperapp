@@ -6,23 +6,24 @@ import:
 - legacy_type.text:edit_view
 - legacy_type.text:readonly_view
 - legacy_type.text:state
-- legacy_type.ui:view
 - ui.ui_adapter_creg:ui_adapter_creg.service
 - ui.view:view.module
 - ui.view_registry:view_creg.service
 associations:
 - bases:
+  - ui.view_registry:view_creg.service
   - legacy_type.text:edit_view
   key:
   - ui.view_registry:view_creg.service
   - legacy_type.text:edit_view
-  value: EditTextView.from_piece.view
+  value: EditTextView.from_piece
 - bases:
+  - ui.view_registry:view_creg.service
   - legacy_type.text:readonly_view
   key:
   - ui.view_registry:view_creg.service
   - legacy_type.text:readonly_view
-  value: ViewTextView.from_piece.view
+  value: ViewTextView.from_piece
 definitions:
   EditTextView:
     _type: legacy_type.builtin:attribute
@@ -32,9 +33,6 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: EditTextView
     attr_name: from_piece
-  EditTextView.from_piece.view:
-    _type: legacy_type.ui:view
-    ctr_fn: EditTextView.from_piece
   ViewTextView:
     _type: legacy_type.builtin:attribute
     object: text.module
@@ -43,9 +41,6 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: ViewTextView
     attr_name: from_piece
-  ViewTextView.from_piece.view:
-    _type: legacy_type.ui:view
-    ctr_fn: ViewTextView.from_piece
   text.module:
     _type: legacy_type.builtin:python_module
     module_name: text

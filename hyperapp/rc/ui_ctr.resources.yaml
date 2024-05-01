@@ -21,7 +21,6 @@ import:
 - legacy_type.ui:tree_ui_t
 - legacy_type.ui:model
 - legacy_type.ui:model_d
-- legacy_type.ui:view
 - resource.data_to_res:data_to_res.service
 - ui.view_registry:view_creg.service
 - ui.ui_adapter_creg:ui_adapter_creg.service
@@ -50,7 +49,6 @@ definitions:
       htypes.ui.global_model_command_d: legacy_type.ui:global_model_command_d
       htypes.ui.model: legacy_type.ui:model
       htypes.ui.model_d: legacy_type.ui:model_d
-      htypes.ui.view: legacy_type.ui:view
       services.data_to_res: resource.data_to_res:data_to_res.service
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service

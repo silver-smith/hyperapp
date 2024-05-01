@@ -18,7 +18,6 @@ import:
 - legacy_type.ui:ui_command
 - legacy_type.ui:ui_command_d
 - legacy_type.ui:universal_ui_command_d
-- legacy_type.ui:view
 - ui.model_command:model_command_factory.service
 - ui.model_command_creg:model_command_creg.service
 - ui.qt.box_layout:box_layout.module
@@ -26,11 +25,12 @@ import:
 - ui.visualizer:visualizer.service
 associations:
 - bases:
+  - ui.view_registry:view_creg.service
   - legacy_type.master_details:view
   key:
   - ui.view_registry:view_creg.service
   - legacy_type.master_details:view
-  value: MasterDetailsView.from_piece.view
+  value: MasterDetailsView.from_piece
 - bases:
   - ui_command_d
   - legacy_type.master_details:view
@@ -51,9 +51,6 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: MasterDetailsView
     attr_name: from_piece
-  MasterDetailsView.from_piece.view:
-    _type: legacy_type.ui:view
-    ctr_fn: MasterDetailsView.from_piece
   master_details.module:
     _type: legacy_type.builtin:python_module
     module_name: master_details
