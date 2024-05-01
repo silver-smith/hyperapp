@@ -234,6 +234,7 @@ class _Item:
     def current_changed_hook(self):
         log.info("Controller: current changed: %s", self)
         self._current_child_idx = None
+        self._invalidate_parents_commands()
         self.update_commands()
         self.update_model()
         self.save_state()
@@ -257,6 +258,12 @@ class _Item:
         model_diff = TreeDiff.Replace(self.path, self.model_item)
         asyncio.create_task(self._send_model_diff(model_diff))
 
+    # Current navigator is changed, should update commands so their navigator be up-to-date.
+    def _invalidate_parents_commands(self):
+        self._commands = None
+        if self.parent:
+            self.parent._invalidate_parents_commands()
+
     def replace_view_hook(self, new_view, new_state=None):
         log.info("Controller: Replace view @%s -> %s", self, new_view)
         parent = self.parent
@@ -273,6 +280,7 @@ class _Item:
         item = self._make_child_item(view_items[idx])
         self._children.insert(idx, item)
         self._current_child_idx = None
+        self._invalidate_parents_commands()
         self.update_commands()
         self.update_model()
         self.save_state()
@@ -282,6 +290,7 @@ class _Item:
     def element_removed_hook(self, idx):
         del self._children[idx]
         self._current_child_idx = None
+        self._invalidate_parents_commands()
         self.update_commands()
         self.update_model()
         self.save_state()
