@@ -99,11 +99,6 @@ class MasterDetailsView(BoxLayoutView):
             details_state=base.elements[1],
             )
 
-    def model_state(self, widget):
-        master_view = super().child_view(0)
-        master_widget = super().item_widget(widget, 0)
-        return master_view.model_state(master_widget)
-
     @property
     def master_view(self):
         return self._elements[0].view
