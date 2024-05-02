@@ -273,6 +273,7 @@ class _Item:
         parent._replace_child_item(idx)
 
     def element_replaced_hook(self, idx, new_view, new_widget):
+        log.info("Controller: Element replaced @%s #%d -> %s", self, idx, new_view)
         self._replace_child_item(idx)
 
     def element_inserted_hook(self, idx):
