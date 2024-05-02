@@ -138,7 +138,7 @@ def _pick_command(model):
 
 @mark.ui_command
 async def wrap_master_details(piece, view, hook, ctx):
-    log.info("Wrap master-details: %s/ %s / %s", piece, view)
+    log.info("Wrap master-details: %s / %s", piece, view)
     command = _pick_command(piece)
     view_piece = htypes.master_details.view(
         master_view=mosaic.put(view.piece),
