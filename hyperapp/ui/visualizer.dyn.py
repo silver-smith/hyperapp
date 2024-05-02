@@ -53,8 +53,6 @@ def visualizer():
             return htypes.master_details.view(
                 master_view=mosaic.put(view),
                 details_command=mosaic.put(command),
-                details_model=mosaic.put("Details model placeholder"),
-                details_view=mosaic.put(details),
                 direction='LeftToRight',
                 master_stretch=1,
                 details_stretch=1,

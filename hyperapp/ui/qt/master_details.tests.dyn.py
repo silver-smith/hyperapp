@@ -28,15 +28,11 @@ def _details_command():
 
 def make_piece():
     master_adapter = htypes.str_adapter.static_str_adapter()
-    details_adapter = htypes.str_adapter.static_str_adapter()
     master = htypes.text.readonly_view(mosaic.put(master_adapter))
-    details = htypes.text.readonly_view(mosaic.put(details_adapter))
     command = _details_command()
     return htypes.master_details.view(
         master_view=mosaic.put(master),
         details_command=mosaic.put(command),
-        details_model=mosaic.put("Sample details model"),
-        details_view=mosaic.put(details),
         direction='LeftToRight',
         master_stretch=1,
         details_stretch=1,
@@ -47,7 +43,7 @@ def make_state():
     text_state = htypes.text.state()
     return htypes.master_details.state(
         master_state=mosaic.put(text_state),
-        details_state=mosaic.put(text_state),
+        details_state=mosaic.put(htypes.label.state()),
         )
 
 
@@ -88,7 +84,7 @@ async def test_wrap_master_details():
         assert state
         model = "Sample model"
         hook = Mock()
-        await master_details.wrap_master_details(model, view, widget, state, hook, ctx)
+        await master_details.wrap_master_details(model, view, hook, ctx)
         hook.replace_view.assert_called_once()
     finally:
         app.shutdown()

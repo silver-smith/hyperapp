@@ -6,6 +6,7 @@ from .services import (
     model_command_creg,
     model_command_factory,
     mosaic,
+    view_creg,
     model_view_creg,
     visualizer,
     web,
@@ -20,9 +21,8 @@ class MasterDetailsView(BoxLayoutView):
     
     @classmethod
     def from_piece(cls, piece, model, ctx):
-        details_model = web.summon(piece.details_model)
         master_view = model_view_creg.invite(piece.master_view, model, ctx)
-        details_view = model_view_creg.invite(piece.details_view, details_model, ctx)
+        details_view = view_creg.animate(htypes.label.view("Placeholder"), ctx)
         elements = [
             cls._Element(master_view, focusable=True, stretch=piece.master_stretch),
             cls._Element(details_view, focusable=False, stretch=piece.details_stretch),
@@ -42,8 +42,6 @@ class MasterDetailsView(BoxLayoutView):
         return htypes.master_details.view(
             master_view=mosaic.put(self.master_view.piece),
             details_command=mosaic.put(self._details_command),
-            details_model=mosaic.put(self.details_view.get_model()),
-            details_view=mosaic.put(self.details_view.piece),
             direction=self._direction.name,
             master_stretch=self._elements[0].stretch,
             details_stretch=self._elements[1].stretch,
@@ -139,20 +137,15 @@ def _pick_command(model):
 
 
 @mark.ui_command
-async def wrap_master_details(piece, view, widget, state, hook, ctx):
-    log.info("Wrap master-details: %s/ %s / %s", piece, view, state)
+async def wrap_master_details(piece, view, hook, ctx):
+    log.info("Wrap master-details: %s/ %s / %s", piece, view)
     command = _pick_command(piece)
-    model_state = view.model_state(widget)
-    piece = await MasterDetailsView.run_details_command(ctx, piece, model_state, command)
-    details_view = MasterDetailsView.model_to_view(ctx, piece)
     view_piece = htypes.master_details.view(
         master_view=mosaic.put(view.piece),
         details_command=mosaic.put(command),
-        details_model=mosaic.put(piece),
-        details_view=mosaic.put(details_view.piece),
         direction='LeftToRight',
         master_stretch=1,
         details_stretch=1,
         )
-    view = model_view_creg.animate(view_piece, piece, ctx)
-    hook.replace_view(view)
+    new_view = model_view_creg.animate(view_piece, piece, ctx)
+    hook.replace_view(new_view)
