@@ -1,0 +1,17 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:mosaic.service
+- legacy_type.builtin:python_module
+- legacy_type.phony:phony
+associations: []
+definitions:
+  lcs.tests.module:
+    _type: legacy_type.builtin:python_module
+    module_name: lcs.tests
+    file_name: lcs.tests.dyn.py
+    import_list:
+      services.mosaic: builtins:mosaic.service
+      tested.code.lcs: phony
+  phony:
+    _type: legacy_type.phony:phony
