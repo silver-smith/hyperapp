@@ -15,10 +15,12 @@ from .services import (
     view_creg,
     )
 from .code.context import Context
+from .code.lcs import LCSheet
 from .code.controller import Controller
 
 
 layout_path = Path.home() / '.local/share/hyperapp/client/layout.json'
+lcs_path = Path.home() / '.local/share/hyperapp/client/lcs.cdr'
 
 
 def make_default_piece():
@@ -112,11 +114,15 @@ def _main(load_state):
     event_loop = QEventLoop(app)
     asyncio.set_event_loop(event_loop)  # Should be set before any asyncio objects created.
 
+    lcs_bundle = file_bundle(lcs_path, encoding='cdr')
+    lcs = LCSheet(lcs_bundle)
+
     identity = generate_rsa_identity()
     rpc_endpoint = rpc_endpoint_factory()
     endpoint_registry.register(identity, rpc_endpoint)
 
     ctx = Context(
+        lcs=lcs,
         identity=identity,
         rpc_endpoint=rpc_endpoint,
         )

@@ -4,6 +4,7 @@ import:
 - builtins:mosaic.service
 - common.context:context.module
 - common.file_bundle:file_bundle.service
+- common.lcs:lcs.module
 - legacy_type.auto_tabs:view
 - legacy_type.box_layout:element
 - legacy_type.box_layout:state
@@ -63,6 +64,7 @@ definitions:
     import_list:
       code.context: common.context:context.module
       code.controller: ui.controller:controller.module
+      code.lcs: common.lcs:lcs.module
       htypes.auto_tabs.view: legacy_type.auto_tabs:view
       htypes.box_layout.element: legacy_type.box_layout:element
       htypes.box_layout.state: legacy_type.box_layout:state
