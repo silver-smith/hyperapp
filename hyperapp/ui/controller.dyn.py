@@ -8,12 +8,15 @@ from dataclasses import dataclass
 from functools import partial
 from typing import Any, Self
 
+from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 from hyperapp.common import dict_coders  # register codec
 
 from . import htypes
 from .services import (
     feed_factory,
     mosaic,
+    pyobj_creg,
+    types,
     ui_command_factory,
     ui_model_command_factory,
     view_creg,
@@ -100,11 +103,11 @@ class _Item:
         return self.view.get_model()
 
     @property
-    def navigator(self):
+    def navigator_item(self):
 
         def parent_navigator(item):
             if item.view and item.view.is_navigator:
-                return item.view
+                return item
             if not item.parent:
                 return None
             return parent_navigator(item.parent)
@@ -114,13 +117,21 @@ class _Item:
             if child is None:
                 return None
             if child.view.is_navigator:
-                return child.view
+                return child
             return child_navigator(child)
 
         navigator = parent_navigator(self)
         if navigator:
             return navigator
         return child_navigator(self)
+
+    @property
+    def navigator_view(self):
+        item = self.navigator_item
+        if item:
+            return item.view
+        else:
+            return None
 
     @property
     def commands(self):
@@ -140,7 +151,7 @@ class _Item:
             view=self.view,
             widget=weakref.ref(self.widget),
             hook=self._hook,
-            navigator=self.navigator,
+            navigator=self.navigator_view,
             )
         model = self.model
         if model is None:
@@ -248,6 +259,25 @@ class _Item:
     async def _send_model_diff(self, model_diff):
         await self._feed.send(model_diff)
 
+    def _set_model_layout(self, layout):
+        model = self._find_child_model()
+        t = deduce_complex_value_type(mosaic, types, model)
+        log.info("Controller: Set layout for %s -> %s", t, layout)
+        t_res = pyobj_creg.reverse_resolve(t)
+        d = {
+            htypes.ui.model_view_layout_d(),
+            t_res,
+            }
+        self.ctx.lcs.set(d, layout, persist=True)
+
+    def _find_child_model(self):
+        if self.model:
+            return self.model
+        child = self.current_child
+        if not child:
+            return None
+        return child._find_child_model()
+
     def _replace_child_item(self, idx):
         view_items = self.view.items()
         item = self._make_child_item(view_items[idx])
@@ -271,6 +301,8 @@ class _Item:
         new_widget = new_view.construct_widget(new_state, self.ctx)
         parent.view.replace_child(parent.widget, idx, new_view, new_widget)
         parent._replace_child_item(idx)
+        if parent.view.is_navigator:
+            parent._set_model_layout(new_view.piece)
 
     def element_replaced_hook(self, idx, new_view, new_widget):
         log.info("Controller: Element replaced @%s #%d -> %s", self, idx, new_view)

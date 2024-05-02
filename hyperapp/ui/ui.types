@@ -24,16 +24,19 @@ model_command_enumerator = record:
   params: string list
 
 
-# selectors for command associations.
+# Selectors for command associations.
 model_command_d = record
 model_command_enumerator_d = record
 global_model_command_d = record
 model_d = record
 
-# selector for command's `.d` property
+# Selector for command's `.d` property.
 model_command_kind_d = record
 context_model_command_kind_d = record
 global_model_command_kind_d = record
+
+# Selector for model view layout lcs association.
+model_view_layout_d = record
 
 
 feed_d = record

@@ -14,10 +14,21 @@ from .tested.code import controller
 from .tested.code import window
 
 
+def make_text_layout():
+    adapter = htypes.str_adapter.static_str_adapter()
+    return htypes.text.readonly_view(mosaic.put(adapter))
+
+
 def make_default_piece():
-    label = htypes.label.view("Sample label")
+    text = make_text_layout()
+    navigator = htypes.navigator.view(
+        current_view=mosaic.put(text),
+        current_model=mosaic.put("Sample model"),
+        prev=None,
+        next=None,
+        )
     tabs_piece = htypes.auto_tabs.view(
-        tabs=(mosaic.put(label),),
+        tabs=(mosaic.put(navigator),),
         )
     window_piece = htypes.window.view(
         menu_bar_ref=mosaic.put(htypes.menu_bar.view()),
@@ -29,10 +40,15 @@ def make_default_piece():
 
 
 def make_default_state():
-    label_state = htypes.label.state()
+    text_state = htypes.text.state()
+    navigator_state = htypes.navigator.state(
+        current_state=mosaic.put(text_state),
+        prev=None,
+        next=None,
+        )
     tabs_state = htypes.tabs.state(
         current_tab=0,
-        tabs=(mosaic.put(label_state),),
+        tabs=(mosaic.put(navigator_state),),
         )
     window_state = htypes.window.state(
         menu_bar_state=mosaic.put(htypes.menu_bar.state()),
@@ -76,6 +92,24 @@ async def test_duplicate_window():
             window.duplicate_window(root, view, state)
             assert len(root_item.children) == 2
             await feed.wait_for_diffs(count=1)
+    finally:
+        app.shutdown()
+
+
+async def test_save_model_layout():
+    lcs = Mock()
+    ctx = Context(
+        lcs=lcs,
+        )
+    default_layout = make_default_layout()
+    app = QtWidgets.QApplication()
+    try:
+        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx, show=False) as ctl:
+            window_item = ctl._root_item.children[0]
+            navigator = window_item.navigator_item
+            layout = make_text_layout()
+            navigator._set_model_layout(layout)
+            lcs.set.assert_called()
     finally:
         app.shutdown()
 

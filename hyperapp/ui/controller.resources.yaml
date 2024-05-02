@@ -2,6 +2,8 @@
 
 import:
 - builtins:mosaic.service
+- builtins:pyobj_creg.service
+- builtins:types.service
 - builtins:web.service
 - common.context:context.module
 - common.list_diff:list_diff.module
@@ -35,6 +37,7 @@ import:
 - legacy_type.ui:model_command_enumerator_d
 - legacy_type.ui:model_command_kind_d
 - legacy_type.ui:model_d
+- legacy_type.ui:model_view_layout_d
 - legacy_type.ui:tree_ui_t
 - ui.feed:feed_factory.service
 - ui.qt.ui_command:ui_command_factory.service
@@ -128,8 +131,11 @@ definitions:
       htypes.root.state: legacy_type.root:state
       htypes.root.view: legacy_type.root:view
       htypes.ui.context_model_command_kind_d: legacy_type.ui:context_model_command_kind_d
+      htypes.ui.model_view_layout_d: legacy_type.ui:model_view_layout_d
       services.feed_factory: ui.feed:feed_factory.service
       services.mosaic: builtins:mosaic.service
+      services.pyobj_creg: builtins:pyobj_creg.service
+      services.types: builtins:types.service
       services.ui_command_factory: ui.qt.ui_command:ui_command_factory.service
       services.ui_model_command_factory: ui.ui_model_command:ui_model_command_factory.service
       services.view_creg: ui.view_registry:view_creg.service
