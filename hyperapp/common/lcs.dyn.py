@@ -94,7 +94,7 @@ class LCSheet(LCSlice):
                 mosaic.put(piece)
                 for piece in record.association_list(dir)
                 ]
-        self._bundle.save_piece(htypes.lcs.storage(association_list))
+        self._bundle.save_piece(htypes.lcs.storage(tuple(association_list)))
 
     def register_association(self, association):
         self._add_association(association, persist=False)
