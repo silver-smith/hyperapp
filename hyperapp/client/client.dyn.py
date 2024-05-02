@@ -23,9 +23,9 @@ layout_path = Path.home() / '.local/share/hyperapp/client/layout.json'
 lcs_path = Path.home() / '.local/share/hyperapp/client/lcs.cdr'
 
 
-def make_default_piece():
+def make_default_piece(lcs):
     text = "Sample text"
-    text_view = visualizer(text)
+    text_view = visualizer(lcs, text)
     navigator = htypes.navigator.view(
         current_view=mosaic.put(text_view),
         current_model=mosaic.put(text),
@@ -102,9 +102,9 @@ def make_default_state():
         )
 
 
-def make_default_layout():
+def make_default_layout(lcs):
     return htypes.root.layout(
-        piece=make_default_piece(),
+        piece=make_default_piece(lcs),
         state=make_default_state(),
         )
 
@@ -126,7 +126,7 @@ def _main(load_state):
         identity=identity,
         rpc_endpoint=rpc_endpoint,
         )
-    default_layout = make_default_layout()
+    default_layout = make_default_layout(lcs)
     layout_bundle = file_bundle(layout_path)
 
     with Controller.running(layout_bundle, default_layout, ctx, show=True, load_state=load_state):

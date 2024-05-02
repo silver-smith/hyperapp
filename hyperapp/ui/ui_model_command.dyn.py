@@ -27,6 +27,7 @@ class UiModelWrapperCommand(CommandBase):
         super().__init__(name, d)
         self._ctx = ctx
         self._navigator = ctx.navigator
+        self._lcs = ctx.lcs
         self._model_command = model_command
 
     def clone_with_d(self, d):
@@ -51,7 +52,7 @@ class UiModelWrapperCommand(CommandBase):
             return None
         if type(piece) is list:
             piece = tuple(piece)
-        view_piece = visualizer(piece)
+        view_piece = visualizer(self._lcs, piece)
         view = model_view_creg.animate(view_piece, piece, self._ctx)
         log.info("Run model command %r view: %s", self.name, view)
         self._navigator.open(self._ctx, piece, view)

@@ -1,10 +1,18 @@
+from unittest.mock import Mock
+
 from . import htypes
 from .tested.code import visualizer
 from .tested.services import visualizer
 
 
+def make_lcs():
+    lcs = Mock()
+    return lcs
+
+
 def test_text():
-    layout = visualizer("Sample text")
+    lcs = make_lcs()
+    layout = visualizer(lcs, "Sample text")
     assert layout
 
 
@@ -13,17 +21,20 @@ def test_list():
         htypes.list_tests.item(1, "First"),
         htypes.list_tests.item(2, "Second"),
         )
-    layout = visualizer(value)
+    lcs = make_lcs()
+    layout = visualizer(lcs, value)
     assert layout
 
 
 def test_sample_list():
     piece = htypes.sample_list.sample_list()
-    layout = visualizer(piece)
+    lcs = make_lcs()
+    layout = visualizer(lcs, piece)
     assert layout
 
 
 def test_sample_tree():
     piece = htypes.sample_tree.sample_tree()
-    layout = visualizer(piece)
+    lcs = make_lcs()
+    layout = visualizer(lcs, piece)
     assert layout

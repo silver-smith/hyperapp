@@ -89,7 +89,7 @@ class MasterDetailsView(BoxLayoutView):
 
     @staticmethod
     def model_to_view(ctx, piece):
-        details_view_piece = visualizer(piece)
+        details_view_piece = visualizer(ctx.lcs, piece)
         return model_view_creg.animate(details_view_piece, piece, ctx)
 
     def widget_state(self, widget):

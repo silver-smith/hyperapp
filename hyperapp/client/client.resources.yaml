@@ -12,8 +12,6 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
-- legacy_type.client:make_default_layout_d
-- legacy_type.client:make_default_piece_d
 - legacy_type.client:make_default_state_d
 - legacy_type.command_pane:state
 - legacy_type.command_pane:view
@@ -44,14 +42,6 @@ import:
 - ui.view_registry:view_creg.service
 - ui.visualizer:visualizer.service
 associations:
-- bases:
-  - global_model_command_d
-  key: global_model_command_d
-  value: make_default_layout.command
-- bases:
-  - global_model_command_d
-  key: global_model_command_d
-  value: make_default_piece.command
 - bases:
   - global_model_command_d
   key: global_model_command_d
@@ -100,38 +90,6 @@ definitions:
   global_model_command_kind_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:global_model_command_kind_d
-  make_default_layout:
-    _type: legacy_type.builtin:attribute
-    object: client.module
-    attr_name: make_default_layout
-  make_default_layout.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - make_default_layout.d
-    - model_command_kind_d
-    - global_model_command_kind_d
-    name: make_default_layout
-    function: make_default_layout
-    params: []
-  make_default_layout.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.client:make_default_layout_d
-  make_default_piece:
-    _type: legacy_type.builtin:attribute
-    object: client.module
-    attr_name: make_default_piece
-  make_default_piece.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - make_default_piece.d
-    - model_command_kind_d
-    - global_model_command_kind_d
-    name: make_default_piece
-    function: make_default_piece
-    params: []
-  make_default_piece.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.client:make_default_piece_d
   make_default_state:
     _type: legacy_type.builtin:attribute
     object: client.module
