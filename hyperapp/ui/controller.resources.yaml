@@ -175,6 +175,7 @@ definitions:
     params:
     - piece
     - current_item
+    - controller
   layout_view.index_tree_feed:
     _type: legacy_type.ui:index_tree_feed
     element_t: legacy_type.layout:item
@@ -237,6 +238,7 @@ definitions:
     function: view_item_commands
     params:
     - piece
+    - controller
   view_item_commands.d:
     _type: legacy_type.builtin:call
     function: legacy_type.controller:view_item_commands_d

@@ -119,12 +119,12 @@ def test_layout_tree():
     default_layout = make_default_layout()
     app = QtWidgets.QApplication()
     try:
-        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx):
+        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx) as ctl:
             piece = htypes.layout.view()
-            items = controller.layout_tree(piece, None)
+            items = controller.layout_tree(piece, None, ctl)
             assert items
             parent = htypes.layout.item(1, "Some item", True, "Item description")
-            controller.layout_tree(piece, parent)
+            controller.layout_tree(piece, parent, ctl)
     finally:
         app.shutdown()
 
@@ -134,11 +134,11 @@ def test_layout_tree_commands():
     default_layout = make_default_layout()
     app = QtWidgets.QApplication()
     try:
-        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx):
+        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx) as ctl:
             piece = htypes.layout.view()
-            windows = controller.layout_tree(piece, None)
-            window_items = controller.layout_tree(piece, windows[0])
-            commands = controller.layout_tree_commands(piece, window_items[1])
+            windows = controller.layout_tree(piece, None, ctl)
+            window_items = controller.layout_tree(piece, windows[0], ctl)
+            commands = controller.layout_tree_commands(piece, window_items[1], ctl)
             assert commands
     finally:
         app.shutdown()
@@ -157,12 +157,12 @@ def test_view_item_commands():
     default_layout = make_default_layout()
     app = QtWidgets.QApplication()
     try:
-        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx):
+        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx) as ctl:
             piece = htypes.layout.view()
-            windows = controller.layout_tree(piece, None)
-            window_items = controller.layout_tree(piece, windows[0])
+            windows = controller.layout_tree(piece, None, ctl)
+            window_items = controller.layout_tree(piece, windows[0], ctl)
             item_id = window_items[1].id
-            commands = controller.view_item_commands(htypes.layout.command_list(item_id))
+            commands = controller.view_item_commands(htypes.layout.command_list(item_id), ctl)
             assert commands
     finally:
         app.shutdown()

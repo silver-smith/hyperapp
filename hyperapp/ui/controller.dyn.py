@@ -144,7 +144,7 @@ class _Item:
         commands = ui_command_factory(self.view, ctx)
         if 'piece' not in ctx:
             return commands
-        return commands + ui_model_command_factory(ctx.piece, ctx.model_state, ctx)
+        return commands + ui_model_command_factory(ctx.piece, ctx)
 
     def _command_context(self):
         ctx = self.ctx.clone_with(
@@ -492,21 +492,16 @@ class CtlHook:
 
 class Controller:
 
-    instance = None
-
     @classmethod
     @contextmanager
     def running(cls, layout_bundle, default_layout, ctx, show=False, load_state=False):
-        cls.instance = self = cls(layout_bundle, default_layout, ctx, show, load_state)
-        try:
-            if show:
-                self.show()
-            yield self
-        finally:
-            cls.instance = None
+        self = cls(layout_bundle, default_layout, ctx, show, load_state)
+        if show:
+            self.show()
+        yield self
 
     def __init__(self, layout_bundle, default_layout, ctx, show, load_state):
-        self._root_ctx = ctx
+        self._root_ctx = ctx.clone_with(controller=self)
         self._id_to_item = {}
         self._counter = itertools.count(start=1)
         self._feed = feed_factory(htypes.layout.view())
@@ -517,7 +512,7 @@ class Controller:
             except FileNotFoundError:
                 pass
         self._root_item = _RootItem.from_piece(
-            self._counter, self._id_to_item, self._feed, show, ctx, layout_bundle, layout)
+            self._counter, self._id_to_item, self._feed, show, self._root_ctx, layout_bundle, layout)
 
     def show(self):
         self._root_item.show()
@@ -538,21 +533,21 @@ class Controller:
             return []
 
 
-def layout_tree(piece, parent):
+def layout_tree(piece, parent, controller):
     if parent is None:
         parent_id = 0
     else:
         parent_id = parent.id
-    return Controller.instance.view_items(parent_id)
+    return controller.view_items(parent_id)
 
 
-def layout_tree_commands(piece, current_item):
+def layout_tree_commands(piece, current_item, controller):
     context_kind_d = htypes.ui.context_model_command_kind_d()
     if current_item:
         commands = [
             cmd.clone_with_d(context_kind_d)
             for cmd
-            in Controller.instance.item_commands(current_item.id)
+            in controller.item_commands(current_item.id)
             ]
     else:
         commands = []
@@ -570,10 +565,10 @@ async def open_view_item_commands(piece, current_item):
         return htypes.layout.command_list(item_id=current_item.id)
 
 
-def view_item_commands(piece):
+def view_item_commands(piece, controller):
     command_list = [
         htypes.layout.command_item(command.name)
-        for command in Controller.instance.item_commands(piece.item_id)
+        for command in controller.item_commands(piece.item_id)
         ]
     log.info("Get view item commands for %s: %s", piece, command_list)
     return command_list

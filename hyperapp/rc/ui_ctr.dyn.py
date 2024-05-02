@@ -311,7 +311,7 @@ def _create_trace_resources(ctx, module_name, resource_module, module_res, qname
             ass_set |= construct_adapter_impl(ctx, module_name, resource_module, module_res, qname, params)
     if len(qname.split('.')) == 1 and trace.obj_type == 'function':
         if (trace.result_t == htypes.inspect.object_t('list', 'builtins')
-                and param_names[:1] == ['piece'] and set(param_names[1:]) <= {'current_item'}):
+                and param_names[:1] == ['piece'] and set(param_names[1:]) <= {'current_item', 'controller'}):
             piece_t_ref = _resolve_record_t(params['piece'])
             if piece_t_ref is None:
                 log.warning("%s.%s: piece parameter type is not a data record", module_name, qname)
@@ -320,10 +320,14 @@ def _create_trace_resources(ctx, module_name, resource_module, module_res, qname
         if not isinstance(trace.result_t, htypes.inspect.data_t):
             return ass_set
         result_t = types.resolve(trace.result_t.t)
-        if param_names in [['piece'], ['piece', 'feed']] and isinstance(result_t, TList):
-            ass_set |= construct_fn_list_impl(ctx, module_name, resource_module, module_res, qname, params, result_t)
-        if param_names in [['piece', 'parent'], ['piece', 'parent', 'feed']] and isinstance(result_t, TList):
+        if (isinstance(result_t, TList)
+                and param_names[:2] == ['piece', 'parent']
+                and params.keys() <= {'piece', 'parent', 'feed', 'controller'}):
             ass_set |= construct_fn_tree_impl(ctx, module_name, resource_module, module_res, qname, params, result_t)
+        if (isinstance(result_t, TList)
+                and param_names[:1] == ['piece']
+                and params.keys() <= {'piece', 'feed', 'controller'}):
+            ass_set |= construct_fn_list_impl(ctx, module_name, resource_module, module_res, qname, params, result_t)
         if (isinstance(result_t, TRecord)
                 or result_t is tString
                 or isinstance(result_t, TList) and isinstance(result_t.element_t, TRecord)):
@@ -334,7 +338,7 @@ def _create_trace_resources(ctx, module_name, resource_module, module_res, qname
                 or result_t is tString
                 or isinstance(result_t, TList) and isinstance(result_t.element_t, TRecord)
                 or result_t is tNone):
-            if param_names[:1] == ['piece'] and set(param_names[1:]) <= {'model_state', 'current_idx', 'current_item'}:
+            if param_names[:1] == ['piece'] and set(param_names[1:]) <= {'model_state', 'current_idx', 'current_item', 'controller'}:
                 piece_t_ref = _resolve_record_t(params['piece'])
                 if piece_t_ref is None:
                     log.warning("%s.%s: piece parameter type is not a data record", module_name, qname)

@@ -67,7 +67,7 @@ def ui_model_command_from_piece(piece, ctx):
 
 @mark.service
 def ui_model_command_factory():
-    def _ui_model_command_factory(piece, model_state, ctx):
+    def _ui_model_command_factory(piece, ctx):
         model_command_pieces = [
             *global_commands(),
             *model_command_factory(piece),
@@ -76,7 +76,7 @@ def ui_model_command_factory():
             model_command_creg.animate(cmd, ctx)
             for cmd in model_command_pieces
             ]
-        model_commands += enum_model_commands(piece, model_state)
+        model_commands += enum_model_commands(piece, ctx)
         return [
             UiModelWrapperCommand.from_model_command(cmd, ctx)
             for cmd in model_commands

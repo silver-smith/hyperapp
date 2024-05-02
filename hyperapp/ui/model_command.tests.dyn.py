@@ -26,8 +26,9 @@ def test_model_command_factory():
 
 
 def test_enum_model_commands():
+    ctx = Context()
     piece = htypes.model_command_tests.sample_model()
-    commands = list(enum_model_commands(piece, model_state=None))
+    commands = list(enum_model_commands(piece, ctx))
 
 
 def _sample_fn():

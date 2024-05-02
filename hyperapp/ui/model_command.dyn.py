@@ -56,7 +56,7 @@ def model_command_factory():
 @mark.service
 def enum_model_commands():
 
-    def _enum_model_commands(piece, model_state):
+    def _enum_model_commands(piece, ctx):
         try:
             t = deduce_value_type(piece)
         except DeduceTypeError:
@@ -72,7 +72,7 @@ def enum_model_commands():
                 kw['piece'] = piece
                 params.remove('piece')
             kw.update({
-                name: getattr(model_state, name)
+                name: getattr(ctx, name)
                 for name in params
                 })
             yield from fn(**kw)
