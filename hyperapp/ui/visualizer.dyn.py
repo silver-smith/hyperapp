@@ -8,7 +8,6 @@ from .services import (
     association_reg,
     data_to_res,
     mark,
-    model_command_factory,
     mosaic,
     pyobj_creg,
     types,
@@ -53,22 +52,7 @@ def _default_layout(t, value):
             function=impl.function,
             params=impl.params,
             )
-        view = htypes.list.view(mosaic.put(adapter))
-
-        if t is not htypes.sample_list.sample_list:
-            return view
-
-        command_list = model_command_factory(value)
-        command = next(cmd for cmd in command_list if cmd.name == 'details')
-        details_adapter = htypes.str_adapter.static_str_adapter()
-        details = htypes.text.readonly_view(mosaic.put(details_adapter))
-        return htypes.master_details.view(
-            master_view=mosaic.put(view),
-            details_command=mosaic.put(command),
-            direction='LeftToRight',
-            master_stretch=1,
-            details_stretch=1,
-            )
+        return htypes.list.view(mosaic.put(adapter))
 
     if isinstance(ui_t, htypes.ui.tree_ui_t) and isinstance(impl, htypes.ui.fn_impl):
         adapter = htypes.tree_adapter.fn_index_tree_adapter(
