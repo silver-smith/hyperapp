@@ -1,3 +1,5 @@
+import logging
+
 from hyperapp.common.htypes import tString, TList
 from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 
@@ -13,6 +15,8 @@ from .services import (
     web,
     )
 
+log = logging.getLogger(__name__)
+
 
 def _primitive_value_layout(t, value):
     if t is tString:
@@ -25,7 +29,12 @@ def _primitive_value_layout(t, value):
 
 
 def _configured_layout(lcs, t, value):
-    return None
+    t_res = pyobj_creg.reverse_resolve(t)
+    d = {
+        htypes.ui.model_view_layout_d(),
+        t_res,
+        }
+    return lcs.get(d)
 
 
 def _default_layout(t, value):
@@ -84,6 +93,7 @@ def visualizer():
 
         view = _configured_layout(lcs, t, value)
         if view is not None:
+            log.info("Using configured layout for %s: %s", t, view)
             return view
 
         view = _default_layout(t, value)

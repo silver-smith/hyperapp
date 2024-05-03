@@ -7,6 +7,8 @@ from .tested.services import visualizer
 
 def make_lcs():
     lcs = Mock()
+    # Fall thru to default layout.
+    lcs.get.return_value = None
     return lcs
 
 

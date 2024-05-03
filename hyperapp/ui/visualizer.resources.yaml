@@ -23,6 +23,7 @@ import:
 - legacy_type.ui:fn_impl
 - legacy_type.ui:list_ui_t
 - legacy_type.ui:model_d
+- legacy_type.ui:model_view_layout_d
 - legacy_type.ui:tree_ui_t
 - resource.data_to_res:data_to_res.service
 - ui.model_command:model_command_factory.service
@@ -50,6 +51,7 @@ definitions:
       htypes.ui.fn_impl: legacy_type.ui:fn_impl
       htypes.ui.list_ui_t: legacy_type.ui:list_ui_t
       htypes.ui.model_d: legacy_type.ui:model_d
+      htypes.ui.model_view_layout_d: legacy_type.ui:model_view_layout_d
       htypes.ui.tree_ui_t: legacy_type.ui:tree_ui_t
       services.association_reg: builtins:association_reg.service
       services.data_to_res: resource.data_to_res:data_to_res.service
