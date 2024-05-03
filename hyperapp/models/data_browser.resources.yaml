@@ -1,0 +1,50 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:mosaic.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:call
+- legacy_type.builtin:python_module
+- legacy_type.data_browser:browse_current_model_d
+- legacy_type.data_browser:data_browser
+- legacy_type.data_browser_tests:sample_model_1
+- legacy_type.ui:model_command
+- legacy_type.ui:model_command_d
+- legacy_type.ui:model_command_kind_d
+associations:
+- bases:
+  - legacy_type.data_browser_tests:sample_model_1
+  key:
+  - model_command_d
+  - legacy_type.data_browser_tests:sample_model_1
+  value: browse_current_model.command
+definitions:
+  browse_current_model:
+    _type: legacy_type.builtin:attribute
+    object: data_browser.module
+    attr_name: browse_current_model
+  browse_current_model.command:
+    _type: legacy_type.ui:model_command
+    d:
+    - browse_current_model.d
+    - model_command_kind_d
+    name: browse_current_model
+    function: browse_current_model
+    params:
+    - piece
+  browse_current_model.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.data_browser:browse_current_model_d
+  data_browser.module:
+    _type: legacy_type.builtin:python_module
+    module_name: data_browser
+    file_name: data_browser.dyn.py
+    import_list:
+      htypes.data_browser.data_browser: legacy_type.data_browser:data_browser
+      services.mosaic: builtins:mosaic.service
+  model_command_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:model_command_d
+  model_command_kind_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:model_command_kind_d

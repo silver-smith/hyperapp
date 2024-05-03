@@ -1,0 +1,4 @@
+data_browser = record:
+  data: ref
+
+browse_current_model_d = record
