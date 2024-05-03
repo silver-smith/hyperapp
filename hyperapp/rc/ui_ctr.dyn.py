@@ -310,7 +310,7 @@ def _create_trace_resources(ctx, module_name, resource_module, module_res, qname
         if param_names == ['piece', 'model', 'ctx'] and 'Adapter' in qname:
             ass_set |= construct_adapter_impl(ctx, module_name, resource_module, module_res, qname, params)
     if len(qname.split('.')) == 1 and trace.obj_type == 'function':
-        if (trace.result_t == htypes.inspect.object_t('list', 'builtins')
+        if (trace.result_t == htypes.inspect.object_t('builtins', 'list')
                 and param_names[:1] == ['piece'] and set(param_names[1:]) <= {'current_item', 'controller'}):
             piece_t_ref = _resolve_record_t(params['piece'])
             if piece_t_ref is None:

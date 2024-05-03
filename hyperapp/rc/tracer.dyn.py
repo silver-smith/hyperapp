@@ -26,8 +26,8 @@ def value_type(value):
             t = htypes.inspect.coroutine_t()
         else:
             t = htypes.inspect.object_t(
-                class_name=value.__class__.__name__,
                 class_module=value.__class__.__module__,
+                class_name=value.__class__.__name__,
                 )
         log.info("Type for %s is non-data: %r", safe_repr(value), t)
         return t

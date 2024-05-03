@@ -34,8 +34,8 @@ type_name = record:
   name: string
 
 object_t = record:
-  class_name: string
   class_module: string
+  class_name: string
 
 coroutine_t = record
 
