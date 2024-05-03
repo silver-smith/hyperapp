@@ -1,0 +1,25 @@
+import:
+- builtins:mosaic.service
+- builtins:pyobj_creg.service
+- legacy_type.builtin:legacy_type
+- legacy_type.builtin:python_module
+- rc.ui_ctr_constructor:ui_ctr_constructor.module
+- ui.view_registry:view_creg.service
+- ui.view_registry:model_view_creg.service
+- ui.ui_adapter_creg:ui_adapter_creg.service
+
+associations: []
+definitions:
+
+  ui_ctr_view.module:
+    _type: legacy_type.builtin:python_module
+    module_name: ui_ctr_view
+    file_name: ui_ctr_view.dyn.py
+    import_list:
+      htypes.builtin.legacy_type: legacy_type.builtin:legacy_type
+      services.mosaic: builtins:mosaic.service
+      services.pyobj_creg: builtins:pyobj_creg.service
+      services.model_view_creg: ui.view_registry:model_view_creg.service
+      services.view_creg: ui.view_registry:view_creg.service
+      services.ui_adapter_creg: ui.ui_adapter_creg:ui_adapter_creg.service
+      code.ui_ctr_constructor: rc.ui_ctr_constructor:ui_ctr_constructor.module

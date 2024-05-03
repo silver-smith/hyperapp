@@ -66,7 +66,7 @@ module_constructors = record:
 object_type_info = record:
   imports: module_imports list
   t: ref
-  calls: call_trace list
+  traces: call_trace list
   tested_constructors: module_constructors list
 
 imported_module_info = record:

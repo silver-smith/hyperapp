@@ -66,6 +66,6 @@ def call_test(import_recorders, test_call_res, module_res, tested_units, tested_
     return htypes.inspect.object_type_info(
         imports=recorders.module_imports_list,
         t=mosaic.put(t),
-        calls=tracer.calls,
+        traces=tracer.traces,
         tested_constructors=tuple(module_ctrs_list),
         )

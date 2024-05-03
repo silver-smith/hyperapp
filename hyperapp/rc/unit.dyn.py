@@ -27,7 +27,7 @@ from .code.scaffolds import (
     tested_units,
     types_import_list,
     )
-from .code.call_trace import CallTrace
+from .code.call_trace import FnInfo
 from .code import ui_ctr
 
 log = logging.getLogger(__name__)
@@ -205,7 +205,7 @@ class Unit:
         self._deps_discovered = False
         self._tests = set()  # TestsUnit set
         self._attr_list = None  # inspect.attr|fn_attr|generator_fn_attr list
-        self._call_list = []  # CallTrace list
+        self._qname_to_fn_info = {}  # qual_name -> FnInfo  # CallTrace list
         self._used_types = set()
         self._module_constructors = []
 
@@ -458,14 +458,10 @@ class Unit:
             unit.add_used_types(info.used_types)
             log.debug("%s: discovered imports for %s: %s", self.name, name, info)
 
-    def _handle_result_calls(self, call_list):
-        name_to_calls = defaultdict(list)
-        for call in call_list:
-            trace = CallTrace.from_piece(call)
-            name_to_calls[trace.module_name].append(trace)
-        for name, calls in name_to_calls.items():
-            unit = self._graph.name_to_unit[name]
-            unit.add_calls(calls)
+    def _handle_result_traces(self, trace_list):
+        for trace in trace_list:
+            unit = self._graph.name_to_unit[trace.module]
+            unit.add_trace(trace)
 
     def _handle_module_constructors(self, ctrs_list):
         for rec in ctrs_list:
@@ -483,7 +479,7 @@ class Unit:
             trace_modules=[self.name],
             )
         self._handle_result_imports(result.imports)
-        self._handle_result_calls(result.calls)
+        self._handle_result_traces(result.traces)
 
     async def _call_all_fn_attrs(self, process_pool, attr_list):
         fixtures = self._fixtures_recs()
@@ -508,7 +504,7 @@ class Unit:
         resource_module[f'{self.code_name}.module'] = module_res
         ass_set = invite_module_constructors(self._ctx, self._module_constructors, module_res, resource_module)
         ass_set |= invite_attr_constructors(self._ctx, self._attr_list, module_res, resource_module)
-        ass_set |= ui_ctr.create_ui_resources(self._ctx, self.name, resource_module, module_res, self._call_list)
+        ass_set |= ui_ctr.create_ui_resources(self._ctx, self.name, resource_module, module_res, self._qname_to_fn_info)
         resource_module.add_association_list(ass_set)
         source_hash_str = _sources_ref_str(self.sources)
         tests_hash_str = _sources_ref_str(self._test_sources)
@@ -575,8 +571,13 @@ class Unit:
     def add_used_types(self, used_types):
         self._used_types |= used_types
 
-    def add_calls(self, calls):
-        self._call_list += calls
+    def add_trace(self, trace):
+        try:
+            ft = self._qname_to_fn_info[trace.fn_qual_name]
+        except KeyError:
+            self._qname_to_fn_info[trace.fn_qual_name] = FnInfo(trace)
+        else:
+            ft.add_trace(trace)
 
     def add_module_constructors(self, ctr_list):
         self._module_constructors += ctr_list
@@ -710,7 +711,7 @@ class TestsUnit(FixturesDepsProviderUnit):
             use_associations=[ass.to_piece(mosaic) for ass in ass_set],
             )
         self._handle_result_imports(result.imports)
-        self._handle_result_calls(result.calls)
+        self._handle_result_traces(result.traces)
         self._handle_module_constructors(result.tested_constructors)
 
     async def _call_all_tests(self, process_pool):

@@ -44,11 +44,11 @@ class Tracer:
             }
         # Used by debugger. See also: pydevd.GetGlobalDebugger().
         self._original_tracer = None
-        self._calls = []
+        self._traces = []
 
     @property
-    def calls(self):
-        return tuple(self._calls)
+    def traces(self):
+        return tuple(self._traces)
 
     @staticmethod
     def _pick_object(frame):
@@ -88,7 +88,7 @@ class Tracer:
             htypes.inspect.call_param(name, mosaic.put(t))
             for name, t in args_types.items()
             )
-        self._calls.append(
+        self._traces.append(
             htypes.inspect.call_trace(
                 module=module_name,
                 line_no=code.co_firstlineno,

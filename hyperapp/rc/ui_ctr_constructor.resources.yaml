@@ -1,0 +1,15 @@
+import:
+- builtins:mosaic.service
+- legacy_type.builtin:python_module
+- legacy_type.builtin:attribute
+
+associations: []
+definitions:
+
+  ui_ctr_constructor.module:
+    _type: legacy_type.builtin:python_module
+    module_name: ui_ctr_constructor
+    file_name: ui_ctr_constructor.dyn.py
+    import_list:
+      htypes.builtin.attribute: legacy_type.builtin:attribute
+      services.mosaic: builtins:mosaic.service

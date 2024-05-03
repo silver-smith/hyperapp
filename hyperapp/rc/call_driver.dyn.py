@@ -42,6 +42,6 @@ def call_function(import_recorders, module_name, module_res, call_result_ref, tr
     return htypes.inspect.object_type_info(
         imports=recorders.module_imports_list,
         t=mosaic.put(t),
-        calls=tracer.calls,
+        traces=tracer.traces,
         tested_constructors=(module_ctrs,),
         )
