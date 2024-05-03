@@ -57,10 +57,11 @@ class StaticListAdapter:
 
 class FnListAdapterBase(metaclass=abc.ABCMeta):
 
-    def __init__(self, model, item_t, want_feed):
+    def __init__(self, model, item_t, params, ctx):
         self._model = model
         self._item_t = item_t
-        self._want_feed = want_feed
+        self._params = params
+        self._ctx = ctx
         self._column_names = sorted(self._item_t.fields)
         self._item_list = None
         self._subscribers = weakref.WeakSet()
@@ -111,8 +112,21 @@ class FnListAdapterBase(metaclass=abc.ABCMeta):
         self._populate()
         return self._item_list
 
-    @abc.abstractmethod
     def _populate(self):
+        available_params = {
+            'piece': self._model,
+            'feed': self._feed,
+            'ctx': self._ctx,
+            **self._ctx.as_dict(),
+            }
+        kw = {
+            name: available_params[name]
+            for name in self._params
+            }
+        self._item_list = self._call_fn(**kw)
+
+    @abc.abstractmethod
+    def _call_fn(self, **kw):
         pass
 
 
@@ -122,17 +136,14 @@ class FnListAdapter(FnListAdapterBase):
     def from_piece(cls, piece, model, ctx):
         element_t = pyobj_creg.invite(piece.element_t)
         fn = pyobj_creg.invite(piece.function)
-        return cls(model, element_t, piece.want_feed, fn)
+        return cls(model, element_t, piece.params, ctx, fn)
 
-    def __init__(self, model, item_t, want_feed, fn):
-        super().__init__(model, item_t, want_feed)
+    def __init__(self, model, item_t, params, ctx, fn):
+        super().__init__(model, item_t, params, ctx)
         self._fn = fn
 
-    def _populate(self):
-        kw = {'piece': self._model}
-        if self._want_feed:
-            kw['feed'] = self._feed
-        self._item_list = self._fn(**kw)
+    def _call_fn(self, **kw):
+        return self._fn(**kw)
 
 
 class RemoteFnListAdapter(FnListAdapterBase):
@@ -141,10 +152,10 @@ class RemoteFnListAdapter(FnListAdapterBase):
     def from_piece(cls, piece, model, ctx):
         element_t = pyobj_creg.invite(piece.element_t)
         remote_peer = peer_registry.invite(piece.remote_peer)
-        return cls(model, element_t, piece.want_feed, piece.function, ctx.rpc_endpoint, ctx.identity, remote_peer)
+        return cls(model, element_t, piece.params, ctx, piece.function, ctx.rpc_endpoint, ctx.identity, remote_peer)
 
-    def __init__(self, model, item_t, want_feed, fn_res_ref, rpc_endpoint, identity, remote_peer):
-        super().__init__(model, item_t, want_feed)
+    def __init__(self, model, item_t, params, ctx, fn_res_ref, rpc_endpoint, identity, remote_peer):
+        super().__init__(model, item_t, params, ctx)
         self._rpc_call = rpc_call_factory(
             rpc_endpoint=rpc_endpoint,
             receiver_peer=remote_peer,
@@ -152,8 +163,5 @@ class RemoteFnListAdapter(FnListAdapterBase):
             sender_identity=identity,
             )
 
-    def _populate(self):
-        kw = {'piece': self._model}
-        if self._want_feed:
-            kw['feed'] = self._feed
-        self._item_list = self._rpc_call(**kw)
+    def _call_fn(self, **kw):
+        return self._rpc_call(**kw)

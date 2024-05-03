@@ -59,7 +59,10 @@ definitions:
   feed_sample_tree.impl:
     _type: legacy_type.ui:fn_impl
     function: feed_sample_tree
-    want_feed: true
+    params:
+    - piece
+    - parent
+    - feed
   feed_sample_tree.model:
     _type: legacy_type.ui:model
     ui_t: feed_sample_tree.ui_t
@@ -119,7 +122,9 @@ definitions:
   sample_tree.impl:
     _type: legacy_type.ui:fn_impl
     function: sample_tree
-    want_feed: false
+    params:
+    - piece
+    - parent
   sample_tree.model:
     _type: legacy_type.ui:model
     ui_t: sample_tree.ui_t

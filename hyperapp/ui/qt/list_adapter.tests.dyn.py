@@ -57,7 +57,7 @@ def test_fn_adapter():
     adapter_piece = htypes.list_adapter.fn_list_adapter(
         element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.list_adapter_tests.item)),
         function=fn_to_ref(sample_list_fn),
-        want_feed=False,
+        params=('piece',),
         )
     adapter = list_adapter.FnListAdapter.from_piece(adapter_piece, model, ctx)
     assert adapter.column_count() == 2
@@ -99,7 +99,7 @@ async def test_feed_fn_adapter():
     adapter_piece = htypes.list_adapter.fn_list_adapter(
         element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.list_adapter_tests.item)),
         function=fn_to_ref(sample_feed_list_fn),
-        want_feed=True,
+        params=('piece', 'feed'),
         )
 
     adapter = list_adapter.FnListAdapter.from_piece(adapter_piece, model, ctx)
@@ -140,7 +140,7 @@ def test_remote_fn_adapter():
             element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.list_adapter_tests.item)),
             function=fn_to_ref(sample_list_fn),
             remote_peer=mosaic.put(process.peer.piece),
-            want_feed=False,
+            params=('piece',),
             )
         adapter = list_adapter.RemoteFnListAdapter.from_piece(adapter_piece, model, ctx)
 

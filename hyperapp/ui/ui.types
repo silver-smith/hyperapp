@@ -61,4 +61,4 @@ tree_ui_t = record:
 
 fn_impl = record:
   function: ref
-  want_feed: bool
+  params: string list

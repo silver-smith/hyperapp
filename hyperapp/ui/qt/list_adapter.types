@@ -4,10 +4,10 @@ static_list_adapter = record
 fn_list_adapter = record:
   element_t: ref
   function: ref
-  want_feed: bool
+  params: string list
 
 remote_fn_list_adapter = record:
   element_t: ref
   function: ref
   remote_peer: ref
-  want_feed: bool
+  params: string list

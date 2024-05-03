@@ -42,7 +42,7 @@ def _default_layout(t, value):
         adapter = htypes.list_adapter.fn_list_adapter(
             element_t=ui_t.element_t,
             function=impl.function,
-            want_feed=impl.want_feed,
+            params=impl.params,
             )
         view = htypes.list.view(mosaic.put(adapter))
 
@@ -66,7 +66,7 @@ def _default_layout(t, value):
             element_t=ui_t.element_t,
             key_t=ui_t.key_t,
             function=impl.function,
-            want_feed=impl.want_feed,
+            params=impl.params,
             )
         return htypes.tree.view(mosaic.put(adapter))
 

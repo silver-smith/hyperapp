@@ -99,7 +99,7 @@ def construct_fn_list_impl(ctx, module_name, resource_module, module_res, qname,
         )
     impl = htypes.ui.fn_impl(
         function=mosaic.put(fn_attribute),
-        want_feed='feed' in params,
+        params=tuple(params),
         )
     model_d_res = pyobj_creg.reverse_resolve(htypes.ui.model_d)
     model_d = htypes.builtin.call(
@@ -146,7 +146,7 @@ def construct_fn_tree_impl(ctx, module_name, resource_module, module_res, qname,
         )
     impl = htypes.ui.fn_impl(
         function=mosaic.put(fn_attribute),
-        want_feed='feed' in params,
+        params=tuple(params),
         )
     model_d_res = pyobj_creg.reverse_resolve(htypes.ui.model_d)
     model_d = htypes.builtin.call(

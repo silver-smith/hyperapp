@@ -156,7 +156,10 @@ definitions:
   layout_tree.impl:
     _type: legacy_type.ui:fn_impl
     function: layout_tree
-    want_feed: false
+    params:
+    - piece
+    - parent
+    - controller
   layout_tree.model:
     _type: legacy_type.ui:model
     ui_t: layout_tree.ui_t
@@ -245,7 +248,9 @@ definitions:
   view_item_commands.impl:
     _type: legacy_type.ui:fn_impl
     function: view_item_commands
-    want_feed: false
+    params:
+    - piece
+    - controller
   view_item_commands.model:
     _type: legacy_type.ui:model
     ui_t: view_item_commands.ui_t

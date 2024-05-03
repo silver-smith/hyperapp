@@ -34,7 +34,7 @@ def _make_adapter_piece():
         element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.tree_tests.item)),
         key_t=mosaic.put(pyobj_creg.reverse_resolve(tInt)),
         function=fn_to_ref(_sample_tree_fn),
-        want_feed=False,
+        params=('piece', 'parent'),
         )
 
 

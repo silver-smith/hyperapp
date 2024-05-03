@@ -43,7 +43,7 @@ def test_fn_adapter():
         element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.tree_adapter_tests.item)),
         key_t=mosaic.put(pyobj_creg.reverse_resolve(tInt)),
         function=fn_to_ref(sample_tree_fn),
-        want_feed=False,
+        params=('piece', 'parent'),
         )
     adapter = tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, model, ctx)
 
@@ -100,7 +100,7 @@ async def test_feed_fn_adapter():
         element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.tree_adapter_tests.item)),
         key_t=mosaic.put(pyobj_creg.reverse_resolve(tInt)),
         function=fn_to_ref(sample_feed_tree_fn),
-        want_feed=True,
+        params=('piece', 'parent', 'feed'),
         )
 
     adapter = tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, model, ctx)
@@ -145,7 +145,7 @@ def test_remote_fn_adapter():
             key_t=mosaic.put(pyobj_creg.reverse_resolve(tInt)),
             function=fn_to_ref(sample_tree_fn),
             remote_peer=mosaic.put(process.peer.piece),
-            want_feed=False,
+            params=('piece', 'parent'),
             )
         adapter = tree_adapter.RemoteFnIndexTreeAdapter.from_piece(adapter_piece, model, ctx)
 
