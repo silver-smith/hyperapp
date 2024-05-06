@@ -7,6 +7,7 @@ import:
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.model_commands:item
+- legacy_type.model_commands:list_model_commands_d
 - legacy_type.model_commands:model_commands
 - legacy_type.model_commands:open_model_commands_d
 - legacy_type.model_commands:run_command_d
@@ -21,11 +22,18 @@ import:
 - legacy_type.ui:model_command_kind_d
 - legacy_type.ui:model_d
 - ui.model_command:model_command_factory.service
+- ui.model_command_creg:model_command_creg.service
 associations:
 - bases:
   - global_model_command_d
   key: global_model_command_d
   value: open_model_commands.command
+- bases:
+  - legacy_type.model_commands:model_commands
+  key:
+  - model_command_d
+  - legacy_type.model_commands:model_commands
+  value: list_model_commands.command
 - bases:
   - legacy_type.model_commands:model_commands
   key:
@@ -52,6 +60,19 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: model_commands.module
     attr_name: list_model_commands
+  list_model_commands.command:
+    _type: legacy_type.ui:model_command
+    d:
+    - list_model_commands.d
+    - model_command_kind_d
+    name: list_model_commands
+    function: list_model_commands
+    params:
+    - piece
+    - ctx
+  list_model_commands.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.model_commands:list_model_commands_d
   list_model_commands.impl:
     _type: legacy_type.ui:fn_impl
     function: list_model_commands
@@ -78,6 +99,7 @@ definitions:
     import_list:
       htypes.model_commands.item: legacy_type.model_commands:item
       htypes.model_commands.model_commands: legacy_type.model_commands:model_commands
+      services.model_command_creg: ui.model_command_creg:model_command_creg.service
       services.model_command_factory: ui.model_command:model_command_factory.service
       services.mosaic: builtins:mosaic.service
       services.web: builtins:web.service
@@ -116,6 +138,7 @@ definitions:
     params:
     - piece
     - current_item
+    - ctx
   run_command.d:
     _type: legacy_type.builtin:call
     function: legacy_type.model_commands:run_command_d

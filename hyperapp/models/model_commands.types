@@ -2,9 +2,11 @@ model_commands = record:
   model: ref
 
 item = record:
+  command: ref
   name: string
   d: string
   params: string
 
 open_model_commands_d = record
+list_model_commands_d = record
 run_command_d = record

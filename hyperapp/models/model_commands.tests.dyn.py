@@ -1,8 +1,11 @@
 from . import htypes
 from .services import (
+    association_reg,
+    data_to_res,
     fn_to_res,
     mark,
     mosaic,
+    pyobj_creg,
     )
 from .code.context import Context
 from .tested.code import model_commands
@@ -18,7 +21,7 @@ def test_browse_current_model():
 
 
 def _phony_fn(piece, ctx):
-    pass
+    return "Sample result"
 
 
 def _make_sample_command():
@@ -30,15 +33,15 @@ def _make_sample_command():
         )
 
 
-@mark.service
-def model_command_factory():
-    def _model_command_factory(model):
-        return [_make_sample_command()]
-    return _model_command_factory
-
-
 def test_list_model_commands():
-    model = htypes.model_commands_tests.sample_model_1()
+    sample_command = _make_sample_command()
+    model_t = htypes.model_commands_tests.sample_model_1
+
+    t_res = pyobj_creg.reverse_resolve(model_t)
+    d_res = data_to_res(htypes.ui.model_command_d())
+    association_reg[d_res, t_res] = sample_command
+
+    model = model_t()
     piece = htypes.model_commands.model_commands(
         model=mosaic.put(model),
         )
@@ -46,18 +49,23 @@ def test_list_model_commands():
     result = model_commands.list_model_commands(piece, ctx)
     assert result
     assert len(result) == 1
-    assert result[0].name == _make_sample_command().name
+    assert result[0].name == sample_command.name
     assert result[0].params == "piece, ctx"
 
 
-def test_run_command():
+async def test_run_command():
+    sample_command = _make_sample_command()
+    ctx = Context()
     model = htypes.model_commands_tests.sample_model_1()
     piece = htypes.model_commands.model_commands(
         model=mosaic.put(model),
         )
     current_item = htypes.model_commands.item(
-        name=_make_sample_command().name,
+        command=mosaic.put(sample_command),
+        name=sample_command.name,
         d="<unused>",
         params="<unused>",
         )
-    result = model_commands.run_command(piece, current_item)
+    result = await model_commands.run_command(piece, current_item, ctx)
+    assert result
+    assert result == "Sample result"
