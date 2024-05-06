@@ -1,5 +1,9 @@
 model_commands = record:
   model: ref
 
+item = record:
+  name: string
+  d: string
+  params: string
 
 open_model_commands_d = record
