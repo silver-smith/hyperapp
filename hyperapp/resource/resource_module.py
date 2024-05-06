@@ -58,7 +58,7 @@ class ResourceModule:
         except KeyError:
             raise KeyError(f"Resource module {self._name!r}: Unknown resource: {var_name!r}")
         piece = definition.type.resolve(definition.value, self._resolve_name_to_ref, self._resource_dir)
-        log.info("%s: Loaded resource %r: %s", self._name, var_name, piece)
+        log.debug("%s: Loaded resource %r: %s", self._name, var_name, piece)
         return piece
 
     def __setitem__(self, name, resource):
