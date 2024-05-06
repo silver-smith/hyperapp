@@ -21,17 +21,19 @@ def _phony_fn(piece, ctx):
     pass
 
 
+def _make_sample_command():
+    return htypes.ui.model_command(
+        name="Sample model command",
+        d=(),
+        function=mosaic.put(fn_to_res(_phony_fn)),
+        params=('piece', 'ctx'),
+        )
+
+
 @mark.service
 def model_command_factory():
     def _model_command_factory(model):
-        return [
-            htypes.ui.model_command(
-                name="Sample model command",
-                d=(),
-                function=mosaic.put(fn_to_res(_phony_fn)),
-                params=('piece', 'ctx'),
-                )
-            ]
+        return [_make_sample_command()]
     return _model_command_factory
 
 
@@ -44,5 +46,18 @@ def test_list_model_commands():
     result = model_commands.list_model_commands(piece, ctx)
     assert result
     assert len(result) == 1
-    assert result[0].name == "Sample model command"
+    assert result[0].name == _make_sample_command().name
     assert result[0].params == "piece, ctx"
+
+
+def test_run_command():
+    model = htypes.model_commands_tests.sample_model_1()
+    piece = htypes.model_commands.model_commands(
+        model=mosaic.put(model),
+        )
+    current_item = htypes.model_commands.item(
+        name=_make_sample_command().name,
+        d="<unused>",
+        params="<unused>",
+        )
+    result = model_commands.run_command(piece, current_item)

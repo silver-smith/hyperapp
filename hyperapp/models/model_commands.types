@@ -7,3 +7,4 @@ item = record:
   params: string
 
 open_model_commands_d = record
+run_command_d = record

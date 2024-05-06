@@ -21,6 +21,10 @@ def list_model_commands(piece, ctx):
         ]
 
 
+def run_command(piece, current_item):
+    pass
+
+
 def open_model_commands(piece):
     return htypes.model_commands.model_commands(
         model=mosaic.put(piece),
