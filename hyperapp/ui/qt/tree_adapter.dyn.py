@@ -116,11 +116,11 @@ class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
         else:
             parent_item = None
         available_params = {
+            **self._ctx.as_dict(),
             'piece': self._model,
             'parent': parent_item,
             'feed': self._feed,
             'ctx': self._ctx,
-            **self._ctx.as_dict(),
             }
         kw = {
             name: available_params[name]

@@ -114,10 +114,10 @@ class FnListAdapterBase(metaclass=abc.ABCMeta):
 
     def _populate(self):
         available_params = {
+            **self._ctx.as_dict(),
             'piece': self._model,
             'feed': self._feed,
             'ctx': self._ctx,
-            **self._ctx.as_dict(),
             }
         kw = {
             name: available_params[name]
