@@ -185,7 +185,7 @@ class GlobalCommandImplementationCtr(CommandImplementationCtr):
         return {association}
 
 
-class CommandEnumaratorImplementationCtr(Constructor):
+class CommandEnumeratorImplementationCtr(Constructor):
 
     @property
     def name(self):
@@ -235,5 +235,5 @@ class CommandEnumaratorImplementationCtr(Constructor):
 command_constructors = [
     ModelCommandImplementationCtr,
     GlobalCommandImplementationCtr,
-    CommandEnumaratorImplementationCtr,
+    CommandEnumeratorImplementationCtr,
     ]
