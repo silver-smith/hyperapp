@@ -362,7 +362,7 @@ class ResourceModule:
 
 def load_resource_modules(resource_module_factory, resource_dir, resource_registry):
     for rp in resource_dir.enum():
-        log.info("Resource module: %r", rp.name)
+        log.debug("Resource module: %r", rp.name)
         resource_registry.set_module(rp.name, resource_module_factory(resource_registry, rp.name, rp.path))
 
 

@@ -133,7 +133,7 @@ def _partial_res(unit, fixtures, attr, attr_res):
         for param in attr.param_list
         }
     kw = {key: value for key, value in kw.items() if value is not None}
-    log.info("%s:%s: Parameter fixtures: %s", unit.name, attr_path_str, kw)
+    log.debug("%s:%s: Parameter fixtures: %s", unit.name, attr_path_str, kw)
     missing_params = ", ".join(sorted(set(attr.param_list) - set(kw)))
     if missing_params:
         if kw:

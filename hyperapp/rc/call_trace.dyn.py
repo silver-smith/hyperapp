@@ -116,8 +116,8 @@ class FnInfo:
             for p in trace.params
             }
         result_t = web.summon(trace.result_t)
-        log.info("Call trace: %s:%d: %s %s (%s) -> %s",
-                 trace.module, trace.line_no, trace.fn_qual_name, trace.obj_type or '-', params, result_t)
+        log.debug("Call trace: %s:%d: %s %s (%s) -> %s",
+                  trace.module, trace.line_no, trace.fn_qual_name, trace.obj_type or '-', params, result_t)
         assert self.line_no == trace.line_no
         assert self.module_name == trace.module
         assert self.obj_type == trace.obj_type

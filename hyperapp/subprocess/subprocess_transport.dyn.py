@@ -92,7 +92,7 @@ class SubprocessRoute:
         refs_and_bundle = bundler([parcel_ref], self._seen_refs)
         self._seen_refs |= refs_and_bundle.ref_set
         bundle_cdr = packet_coders.encode('cdr', refs_and_bundle.bundle)
-        log.info("Subprocess transport: send bundle to %r. Bundle size: %.2f KB", self._name, len(bundle_cdr)/1024)
+        log.debug("Subprocess transport: send bundle to %r. Bundle size: %.2f KB", self._name, len(bundle_cdr)/1024)
         self._connection.send(encode_packet(bundle_cdr))
         log.debug("Subprocess %s: parcel is sent: %s", self._name, parcel_ref)
 
@@ -117,7 +117,7 @@ def _process_parcel(connection, connection_rec, parcel):
 
 
 def _process_bundle(connection, connection_rec, data):
-    log.info("Subprocess transport: received bundle from %r. Bundle size: %.2f KB", connection_rec.name, len(data)/1024)
+    log.debug("Subprocess transport: received bundle from %r. Bundle size: %.2f KB", connection_rec.name, len(data)/1024)
     parcel_bundle = packet_coders.decode('cdr', data, bundle_t)
     ref_set = unbundler.register_bundle(parcel_bundle)
     connection_rec.seen_refs |= ref_set

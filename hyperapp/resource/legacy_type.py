@@ -70,7 +70,7 @@ def load_legacy_type_resources(local_types):
         for name, type_ref in local_type_module.items():
             type_piece = legacy_type_t(type_ref)
             name_to_module[f'legacy_type.{module_name}'][name] = type_piece
-            log.info("Legacy type resource %s.%s: %s", module_name, name, type_piece)
+            log.debug("Legacy type resource %s.%s: %s", module_name, name, type_piece)
     return name_to_module
 
 

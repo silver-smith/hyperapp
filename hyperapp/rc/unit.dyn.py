@@ -156,9 +156,9 @@ def _imports_info(imports):
                 test_code.add(name)
                 continue
         raise RuntimeError(f"Unknown import kind %r: %s", kind, '.'.join(imp))
-    log.info("Discovered import deps: %s", want_deps)
-    log.info("Discovered test_services: %s", test_services)
-    log.info("Discovered test_code: %s", test_code)
+    log.debug("Discovered import deps: %s", want_deps)
+    log.debug("Discovered test_services: %s", test_services)
+    log.debug("Discovered test_code: %s", test_code)
 
     return ImportsInfo(
         used_types=used_types,
