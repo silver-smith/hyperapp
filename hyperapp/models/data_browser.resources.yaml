@@ -7,16 +7,14 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.data_browser:browse_current_model_d
 - legacy_type.data_browser:data_browser
-- legacy_type.data_browser_tests:sample_model_1
+- legacy_type.ui:global_model_command_d
+- legacy_type.ui:global_model_command_kind_d
 - legacy_type.ui:model_command
-- legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_kind_d
 associations:
 - bases:
-  - legacy_type.data_browser_tests:sample_model_1
-  key:
-  - model_command_d
-  - legacy_type.data_browser_tests:sample_model_1
+  - global_model_command_d
+  key: global_model_command_d
   value: browse_current_model.command
 definitions:
   browse_current_model:
@@ -28,6 +26,7 @@ definitions:
     d:
     - browse_current_model.d
     - model_command_kind_d
+    - global_model_command_kind_d
     name: browse_current_model
     function: browse_current_model
     params:
@@ -42,9 +41,12 @@ definitions:
     import_list:
       htypes.data_browser.data_browser: legacy_type.data_browser:data_browser
       services.mosaic: builtins:mosaic.service
-  model_command_d:
+  global_model_command_d:
     _type: legacy_type.builtin:call
-    function: legacy_type.ui:model_command_d
+    function: legacy_type.ui:global_model_command_d
+  global_model_command_kind_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:global_model_command_kind_d
   model_command_kind_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_command_kind_d

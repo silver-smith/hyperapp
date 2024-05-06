@@ -132,7 +132,16 @@ class GlobalCommandImplementationCtr(CommandImplementationCtr):
             )
         if not result_is_accepted:
             return f"Result is not a record, list or records, string or None: {fn_info.result.data_t!r}"
-        accepted_params = {'model_state'}
+        if 'piece' in fn_info.params:
+            piece_t = fn_info.params['piece']
+            if piece_t.is_single:
+                return f"Function has 'piece' param, and it do not has multiple type cases: {piece_t!r}"
+            for case in piece_t.cases:
+                if not case.is_data:
+                    return "Piece param case is not a data: {case!r}"
+                if not isinstance(case.data_t, TRecord):
+                    return f"Piece param case is not a record: {case.data_t!r}"
+        accepted_params = {'piece', 'model_state'}
         reason = self._check_accepted_params(fn_info, accepted_params)
         if reason:
             return reason
