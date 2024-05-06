@@ -81,7 +81,7 @@ class ListImplementationCtr(ModelImplementationCtr):
     def check_applicable(self, fn_info):
         if fn_info.param_names[:1] != ['piece']:
             return f"First param is not 'piece': {fn_info.param_names}"
-        reason = self._check_accepted_params(fn_info, {'piece', 'feed', 'controller'})
+        reason = self._check_accepted_params(fn_info, {'piece', 'feed', 'controller', 'ctx'})
         if reason:
             return reason
         reason = super().check_applicable(fn_info)
@@ -111,7 +111,7 @@ class TreeImplementationCtr(ModelImplementationCtr):
     def check_applicable(self, fn_info):
         if fn_info.param_names[:2] != ['piece', 'parent']:
             return f"First and second params are not 'piece' and 'parent': {fn_info.param_names}"
-        reason = self._check_accepted_params(fn_info, {'piece', 'parent', 'feed', 'controller'})
+        reason = self._check_accepted_params(fn_info, {'piece', 'parent', 'feed', 'controller', 'ctx'})
         if reason:
             return reason
         reason = super().check_applicable(fn_info)
