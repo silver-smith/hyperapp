@@ -63,7 +63,7 @@ class ModelCommandImplementationCtr(CommandImplementationCtr):
             )
         if not result_is_accepted:
             return f"Result is not a record, list or records, string or None: {fn_info.result.data_t!r}"
-        accepted_params = {'piece', 'model_state', 'current_idx', 'current_item', 'controller'}
+        accepted_params = {'piece', 'model_state', 'current_idx', 'current_item', 'controller', 'ctx'}
         reason = self._check_accepted_params(fn_info, accepted_params)
         if reason:
             return reason
@@ -141,7 +141,7 @@ class GlobalCommandImplementationCtr(CommandImplementationCtr):
                     return "Piece param case is not a data: {case!r}"
                 if not isinstance(case.data_t, TRecord):
                     return f"Piece param case is not a record: {case.data_t!r}"
-        accepted_params = {'piece', 'model_state'}
+        accepted_params = {'piece', 'model_state', 'ctx'}
         reason = self._check_accepted_params(fn_info, accepted_params)
         if reason:
             return reason
