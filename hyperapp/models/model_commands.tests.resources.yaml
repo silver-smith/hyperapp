@@ -1,0 +1,15 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.builtin:python_module
+- legacy_type.phony:phony
+associations: []
+definitions:
+  model_commands.tests.module:
+    _type: legacy_type.builtin:python_module
+    module_name: model_commands.tests
+    file_name: model_commands.tests.dyn.py
+    import_list:
+      tested.code.model_commands: phony
+  phony:
+    _type: legacy_type.phony:phony
