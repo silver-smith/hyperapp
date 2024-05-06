@@ -42,7 +42,7 @@ def _default_layout(t, value):
     try:
         model = association_reg[model_d_res, t_res]
     except KeyError:
-        raise NotImplementedError(t)
+        raise RuntimeError(f"No implementation is registered for model: {t}")
     ui_t = web.summon(model.ui_t)
     impl = web.summon(model.impl)
 
