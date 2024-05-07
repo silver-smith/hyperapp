@@ -116,6 +116,9 @@ class AssociationRegistry:
             value, key, value_list)
         return value
 
+    def __setitem__(self, key, value):
+        self._key_to_values[key] = [value]
+
     def get_all(self, key):
         return self._key_to_values.get(key, [])
         
