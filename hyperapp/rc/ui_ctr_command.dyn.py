@@ -192,10 +192,15 @@ class CommandEnumeratorImplementationCtr(Constructor):
         return "Command enumerator"
 
     def check_applicable(self, fn_info):
-        if not fn_info.result.is_single:
-            return f"Result has not one, but {fn_info.result.count} type variants: {fn_info.result.cases}"
-        if not fn_info.result.is_builtin_type('list'):
-            return f"Result is not a list: {fn_info.result!r}"
+        result = fn_info.result
+        if not result.is_single:
+            return f"Result has not one, but {result.count} type variants: {result.cases}"
+        if not result.is_data:
+            return f"Result is not a data: {result!r}"
+        if not isinstance(result.data_t, TList):
+            return f"Result is not a list: {result.data_t!r}"
+        if not issubclass(result.data_t.element_t, (htypes.ui.ui_command, htypes.ui.ui_model_command)):
+            return f"Result element type is not a command: {result.data_t.element_t}"
         if fn_info.param_names[:1] != ['piece']:
             return f"First param is not 'piece': {fn_info.param_names}"
         accepted_params = {'piece', 'current_item', 'controller'}
