@@ -65,7 +65,7 @@ class Tracer:
             obj = inspect.getattr_static(obj, n)
         return obj
 
-    def trace_return(self, module_name, frame, event, arg):
+    def trace_return(self, module_name, arg_types, frame, event, arg):
         if self._original_tracer is not None:
             self._original_tracer(frame, event, arg)
         if event != 'return':
@@ -73,20 +73,11 @@ class Tracer:
         code = frame.f_code
         result_t = value_type(arg)
         obj = self._pick_object(frame)
-        args = inspect.getargvalues(frame)
-        args_dict = {
-            name: safe_repr(args.locals[name])
-            for name in args.args
-            }
-        args_types = {
-            name: value_type(args.locals[name])
-            for name in args.args
-            }
         log.info("Trace call: %s:%d %r: %s -> [%s] %s",
-                 module_name, code.co_firstlineno, code.co_qualname, repr(args_types), result_t, repr(arg))
+                 module_name, code.co_firstlineno, code.co_qualname, repr(arg_types), result_t, repr(arg))
         params = tuple(
             htypes.inspect.call_param(name, mosaic.put(t))
-            for name, t in args_types.items()
+            for name, t in arg_types.items()
             )
         self._traces.append(
             htypes.inspect.call_trace(
@@ -99,6 +90,14 @@ class Tracer:
                 )
             )
 
+    def _fn_arg_types(self, frame):
+        code = frame.f_code
+        args = inspect.getargvalues(frame)
+        return {
+            name: value_type(args.locals[name])
+            for name in args.args
+            }
+
     def trace(self, frame, event, arg):
         if self._original_tracer is not None:
             self._original_tracer(frame, event, arg)
@@ -108,7 +107,8 @@ class Tracer:
         module_name = self._path_to_module.get(path)
         if not module_name:
             return self._original_tracer
-        return partial(self.trace_return, module_name)
+        arg_types = self._fn_arg_types(frame)
+        return partial(self.trace_return, module_name, arg_types)
 
     @contextmanager
     def tracing(self):
