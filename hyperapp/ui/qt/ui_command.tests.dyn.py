@@ -6,6 +6,7 @@ from .services import (
     fn_to_res,
     mark,
     mosaic,
+    ui_command_creg,
     )
 from .code.context import Context
 from .tested.code import ui_command
@@ -56,7 +57,8 @@ async def test_ui_command_factory():
         view=view,
         widget=weakref.ref(widget),
         )
-    command_list = ui_command_factory(view, ctx)
-    assert command_list
-    result = await command_list[0].run()
+    command_piece_list = ui_command_factory(view)
+    assert command_piece_list
+    command = ui_command_creg.animate(command_piece_list[0], ctx)
+    result = await command.run()
     assert result == 123, repr(result)

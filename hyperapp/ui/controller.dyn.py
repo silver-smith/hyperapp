@@ -5,7 +5,7 @@ import weakref
 from collections import defaultdict, namedtuple
 from contextlib import contextmanager
 from dataclasses import dataclass
-from functools import partial
+from functools import cached_property, partial
 from typing import Any, Self
 
 from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
@@ -13,10 +13,12 @@ from hyperapp.common import dict_coders  # register codec
 
 from . import htypes
 from .services import (
+    data_to_res,
     feed_factory,
     mosaic,
     pyobj_creg,
     types,
+    ui_command_creg,
     ui_command_factory,
     ui_model_command_factory,
     view_creg,
@@ -27,6 +29,16 @@ from .code.tree_diff import TreeDiff
 from .code.view import View
 
 log = logging.getLogger(__name__)
+
+
+@dataclass
+class CommandRec:
+    piece: Any
+    ctx: Any
+
+    @cached_property
+    def animated(self):
+        return ui_command_creg.animate(self.piece, self.ctx)
 
         
 @dataclass
@@ -43,8 +55,8 @@ class _Item:
     focusable: bool
     _current_child_idx: int | None = None
     _widget: Any | None = None
-    _commands: list[Self] = None
-    _children: list = None
+    _commands: list[CommandRec] | None = None
+    _children: list[Self] | None = None
 
     def __repr__(self):
         return f"<{self.__class__.__name__.lstrip('_')} #{self.id}: {self.view.__class__.__name__}>"
@@ -141,10 +153,10 @@ class _Item:
 
     def _make_commands(self):
         ctx = self._command_context()
-        commands = ui_command_factory(self.view, ctx)
-        if 'piece' not in ctx:
-            return commands
-        return commands + ui_model_command_factory(ctx.piece, ctx)
+        commands = ui_command_factory(self.view)
+        if 'piece' in ctx:
+            commands += ui_model_command_factory(ctx.piece, ctx)
+        return [CommandRec(cmd, ctx) for cmd in commands]
 
     def _command_context(self):
         ctx = self.ctx.clone_with(
@@ -203,10 +215,11 @@ class _Item:
             if item.view is None:
                 return  # Root item.
             commands = [*item.commands, *commands]
-            item.view.set_commands(item.widget, commands)
+            animated_commands = [cmd.animated for cmd in commands]
+            item.view.set_commands(item.widget, animated_commands)
             for kid in item.children:
                 if not kid.focusable:
-                    kid.view.set_commands(kid.widget, commands)
+                    kid.view.set_commands(kid.widget, animated_commands)
             return commands
 
         def visit_item_and_children(item):
@@ -528,7 +541,7 @@ class Controller:
     def item_commands(self, item_id):
         item = self._id_to_item.get(item_id)
         if item:
-            return item.commands
+            return [rec.piece for rec in item.commands]
         else:
             return []
 
@@ -541,11 +554,33 @@ def layout_tree(piece, parent, controller):
     return controller.view_items(parent_id)
 
 
+def _copy_command_with_d(command, d):
+    d_res = data_to_res(d)
+    command_d = (
+        *command.d,
+        mosaic.put(d_res),
+        )
+    if isinstance(command, htypes.ui.ui_command):
+        return htypes.ui.ui_command(
+            d=command_d,
+            name=command.name,
+            function=command.function,
+            params=command.params,
+            )
+    if isinstance(command, htypes.ui.ui_model_command):
+        return htypes.ui.ui_command(
+            d=command_d,
+            name=command.name,
+            model_command=command.model_command,
+            )
+    raise RuntimeError(f"Unsupported command type: {command}")
+
+
 def layout_tree_commands(piece, current_item, controller):
     context_kind_d = htypes.ui.context_model_command_kind_d()
     if current_item:
         commands = [
-            cmd.clone_with_d(context_kind_d)
+            _copy_command_with_d(cmd, context_kind_d)
             for cmd
             in controller.item_commands(current_item.id)
             ]

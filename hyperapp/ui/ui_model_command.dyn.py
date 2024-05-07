@@ -10,6 +10,7 @@ from .services import (
     pyobj_creg,
     ui_command_creg,
     model_view_creg,
+    mosaic,
     visualizer,
     )
 from .code.ui_command import CommandBase
@@ -17,11 +18,7 @@ from .code.ui_command import CommandBase
 log = logging.getLogger(__name__)
 
 
-class UiModelWrapperCommand(CommandBase):
-
-    @classmethod
-    def from_model_command(cls, model_command, ctx):
-        return cls(model_command.name, model_command.d, ctx, model_command)
+class UiModelCommand(CommandBase):
 
     def __init__(self, name, d, ctx, model_command):
         super().__init__(name, d)
@@ -29,14 +26,6 @@ class UiModelWrapperCommand(CommandBase):
         self._navigator = ctx.navigator
         self._lcs = ctx.lcs
         self._model_command = model_command
-
-    def clone_with_d(self, d):
-        return self.__class__(
-            name=self._name,
-            d={*self._d, d},
-            ctx=self._ctx,
-            model_command=self._model_command,
-            )
 
     @property
     def enabled(self):
@@ -62,23 +51,23 @@ class UiModelWrapperCommand(CommandBase):
 def ui_model_command_from_piece(piece, ctx):
     command_d = {pyobj_creg.invite(d) for d in piece.d}
     model_command = model_command_creg.invite(piece.model_command, ctx)
-    return UiModelWrapperCommand(piece.name, command_d, ctx, model_command)
+    return UiModelCommand(piece.name, command_d, ctx, model_command)
 
 
 @mark.service
 def ui_model_command_factory():
     def _ui_model_command_factory(piece, ctx):
-        model_command_pieces = [
+        model_commands = [
             *global_commands(),
             *model_command_factory(piece),
+            *enum_model_commands(piece, ctx),
             ]
-        model_commands = [
-            model_command_creg.animate(cmd, ctx)
-            for cmd in model_command_pieces
-            ]
-        model_commands += enum_model_commands(piece, ctx)
         return [
-            UiModelWrapperCommand.from_model_command(cmd, ctx)
+            htypes.ui.ui_model_command(
+                d=cmd.d,
+                name=cmd.name,
+                model_command=mosaic.put(cmd),
+                )
             for cmd in model_commands
             ]
     return _ui_model_command_factory

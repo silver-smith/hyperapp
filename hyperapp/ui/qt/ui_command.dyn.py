@@ -119,15 +119,6 @@ class FnCommandBase(CommandBase):
         self._fn = fn
         self._params = set(params)
 
-    def clone_with_d(self, d):
-        return self.__class__(
-            name=self._name,
-            d={*self._d, d},
-            ctx=self._ctx,
-            fn=self._fn,
-            params=self._params,
-            )
-
     async def _run(self):
         kw = {name: value for name, value in self.params.items() if name in self._params}
         log.info("Run command: %r (%s)", self.name, kw)
@@ -171,18 +162,14 @@ def ui_command_from_piece(piece, ctx):
 
 @mark.service
 def ui_command_factory():
-    def _ui_command_factory(view, ctx):
+    def _ui_command_factory(view):
         piece_t = deduce_value_type(view.piece)
         piece_t_res = pyobj_creg.reverse_resolve(piece_t)
         d_res = data_to_res(htypes.ui.ui_command_d())
         universal_d_res = data_to_res(htypes.ui.universal_ui_command_d())
-        command_piece_list = [
+        command_list = [
             *association_reg.get_all((d_res, piece_t_res)),
             *association_reg.get_all(universal_d_res),
             ]
-        command_list = []
-        for command_piece in command_piece_list:
-            command = ui_command_creg.animate(command_piece, ctx)
-            command_list.append(command)
         return command_list
     return _ui_command_factory
