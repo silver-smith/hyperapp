@@ -33,6 +33,8 @@ import:
 - legacy_type.ui:model
 - legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
+- legacy_type.ui:model_command_enumerator
+- legacy_type.ui:model_command_enumerator_d
 - legacy_type.ui:model_command_kind_d
 - legacy_type.ui:model_d
 - legacy_type.ui:model_view_layout_d
@@ -87,6 +89,12 @@ associations:
   - model_command_d
   - legacy_type.layout:view
   value: open_view_item_commands.command
+- bases:
+  - legacy_type.layout:view
+  key:
+  - model_command_enumerator_d
+  - legacy_type.layout:view
+  value: layout_tree_commands.enumerator
 - bases:
   - legacy_type.layout:view
   key:
@@ -191,12 +199,22 @@ definitions:
   layout_tree_commands.d:
     _type: legacy_type.builtin:call
     function: legacy_type.controller:layout_tree_commands_d
+  layout_tree_commands.enumerator:
+    _type: legacy_type.ui:model_command_enumerator
+    function: layout_tree_commands
+    params:
+    - piece
+    - current_item
+    - controller
   layout_view.index_tree_feed:
     _type: legacy_type.ui:index_tree_feed
     element_t: legacy_type.layout:item
   model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_command_d
+  model_command_enumerator_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:model_command_enumerator_d
   model_command_kind_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_command_kind_d
