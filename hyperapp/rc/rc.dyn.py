@@ -34,7 +34,6 @@ def _report_outdated(graph):
         if unit.is_up_to_date:
             continue
         log.info("Outdated: %s", unit.name)
-        unit.report_deps()
 
 
 def _dump_graph(graph):

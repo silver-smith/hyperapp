@@ -245,9 +245,6 @@ class Unit:
         log.debug("%s: manually created", self.name)
         return
 
-    def report_deps(self):
-        pass
-
     def resource(self, name):
         return self._ctx.resource_registry[self.name, name]
 
