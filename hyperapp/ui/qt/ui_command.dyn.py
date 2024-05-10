@@ -96,15 +96,6 @@ class CommandBase:
         log.info("Start command: %r", self.name)
         asyncio.create_task(self.run())
 
-    @property
-    def enabled(self):
-        return set(self.params) >= self._params
-
-    @property
-    def disabled_reason(self):
-        params = ", ".join(self._params - set(self.params))
-        return f"Params not ready: {params}"
-
     async def run(self):
         if not self.enabled:
             raise RuntimeError(f"{self.name}: Disabled: {self.disabled_reason}")
@@ -118,6 +109,15 @@ class FnCommandBase(CommandBase):
         self._ctx = ctx
         self._fn = fn
         self._params = set(params)
+
+    @property
+    def enabled(self):
+        return set(self.params) >= self._params
+
+    @property
+    def disabled_reason(self):
+        params = ", ".join(self._params - set(self.params))
+        return f"Params not ready: {params}"
 
     async def _run(self):
         params = self.params
