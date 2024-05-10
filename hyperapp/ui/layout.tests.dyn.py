@@ -90,7 +90,7 @@ def test_layout_tree():
         app.shutdown()
 
 
-def test_layout_tree_commands():
+def test_enum_layout_tree_commands():
     ctx = Context()
     default_layout = make_default_layout()
     app = QtWidgets.QApplication()
@@ -99,7 +99,7 @@ def test_layout_tree_commands():
             piece = htypes.layout.view()
             windows = layout.layout_tree(piece, None, ctl)
             window_items = layout.layout_tree(piece, windows[0], ctl)
-            commands = layout.layout_tree_commands(piece, window_items[1], ctl)
+            commands = layout.enum_layout_tree_commands(piece, window_items[1], ctl)
             assert commands
     finally:
         app.shutdown()

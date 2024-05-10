@@ -8,8 +8,8 @@ import:
 - legacy_type.layout:add_view_command_d
 - legacy_type.layout:command_item
 - legacy_type.layout:command_list
+- legacy_type.layout:enum_layout_tree_commands_d
 - legacy_type.layout:item
-- legacy_type.layout:layout_tree_commands_d
 - legacy_type.layout:open_layout_tree_d
 - legacy_type.layout:open_view_item_commands_d
 - legacy_type.layout:view
@@ -57,7 +57,7 @@ associations:
   key:
   - model_command_d
   - legacy_type.layout:view
-  value: layout_tree_commands.command
+  value: enum_layout_tree_commands.command
 - bases:
   - legacy_type.layout:view
   key:
@@ -69,7 +69,7 @@ associations:
   key:
   - model_command_enumerator_d
   - legacy_type.layout:view
-  value: layout_tree_commands.enumerator
+  value: enum_layout_tree_commands.enumerator
 - bases:
   - legacy_type.layout:view
   key:
@@ -98,6 +98,32 @@ definitions:
   context_model_command_kind_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:context_model_command_kind_d
+  enum_layout_tree_commands:
+    _type: legacy_type.builtin:attribute
+    object: layout.module
+    attr_name: enum_layout_tree_commands
+  enum_layout_tree_commands.command:
+    _type: legacy_type.ui:model_command
+    d:
+    - enum_layout_tree_commands.d
+    - model_command_kind_d
+    - context_model_command_kind_d
+    name: enum_layout_tree_commands
+    function: enum_layout_tree_commands
+    params:
+    - piece
+    - current_item
+    - controller
+  enum_layout_tree_commands.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.layout:enum_layout_tree_commands_d
+  enum_layout_tree_commands.enumerator:
+    _type: legacy_type.ui:model_command_enumerator
+    function: enum_layout_tree_commands
+    params:
+    - piece
+    - current_item
+    - controller
   global_model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:global_model_command_d
@@ -135,32 +161,6 @@ definitions:
     _type: legacy_type.ui:tree_ui_t
     key_t: legacy_type.layout:item
     element_t: legacy_type.layout:item
-  layout_tree_commands:
-    _type: legacy_type.builtin:attribute
-    object: layout.module
-    attr_name: layout_tree_commands
-  layout_tree_commands.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - layout_tree_commands.d
-    - model_command_kind_d
-    - context_model_command_kind_d
-    name: layout_tree_commands
-    function: layout_tree_commands
-    params:
-    - piece
-    - current_item
-    - controller
-  layout_tree_commands.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.layout:layout_tree_commands_d
-  layout_tree_commands.enumerator:
-    _type: legacy_type.ui:model_command_enumerator
-    function: layout_tree_commands
-    params:
-    - piece
-    - current_item
-    - controller
   model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_command_d

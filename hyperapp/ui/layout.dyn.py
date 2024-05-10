@@ -39,7 +39,7 @@ def _copy_command_with_d(command, d):
     raise RuntimeError(f"Unsupported command type: {command}")
 
 
-def layout_tree_commands(piece, current_item, controller):
+def enum_layout_tree_commands(piece, current_item, controller):
     context_kind_d = htypes.ui.context_model_command_kind_d()
     if current_item:
         commands = [
