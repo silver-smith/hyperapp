@@ -1,6 +1,11 @@
 sample_model_1 = record
 sample_model_2 = record
 
+inner_data = record:
+  text: string
+
 sample_data = record:
   name: string
+  sample_list: int list
+  inner: inner_data
   value: ref

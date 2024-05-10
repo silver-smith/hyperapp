@@ -7,4 +7,5 @@ item = record:
   value: string
 
 browse_d = record
+open_d = record
 browse_current_model_d = record
