@@ -1,4 +1,4 @@
-from hyperapp.common.htypes import TRecord
+from hyperapp.common.htypes import TRecord, ref_t
 from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 
 from . import htypes
@@ -35,9 +35,14 @@ def open(piece, current_item):
         name = current_item.name
         t = data_t.fields[name]
         value = getattr(data, name)
-        return htypes.data_browser.data_browser(
-            data=mosaic.put(value, t),
-            )
+        if t is ref_t:
+            return htypes.data_browser.data_browser(
+                data=value,
+                )
+        else:
+            return htypes.data_browser.data_browser(
+                data=mosaic.put(value, t),
+                )
     raise RuntimeError(f"Browser open: Unsupported type: {data_t}: {data}")
 
 

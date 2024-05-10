@@ -1,6 +1,7 @@
 from . import htypes
 from .services import (
     mosaic,
+    web,
     )
 from .tested.code import data_browser
 
@@ -33,7 +34,7 @@ def test_browser():
     assert result[1].name == 'sample_list'
 
 
-def test_open():
+def test_open_record():
     data = htypes.data_browser_tests.sample_data(
         name="Sample name",
         sample_list=(11, 22, 33),
@@ -50,3 +51,30 @@ def test_open():
         )
     result = data_browser.open(piece, current_item)
     assert isinstance(result, htypes.data_browser.data_browser)
+    assert web.summon(result.data) == data.inner
+
+
+def test_open_ref():
+    data_1 = htypes.data_browser_tests.sample_data(
+        name="Sample name 1",
+        sample_list=(11, 22,),
+        inner=htypes.data_browser_tests.inner_data("Sample inner text"),
+        value=mosaic.put("Sample value"),
+        )
+    data_2 = htypes.data_browser_tests.sample_data(
+        name="Sample name 2",
+        sample_list=(22, 33),
+        inner=htypes.data_browser_tests.inner_data("Sample inner text"),
+        value=mosaic.put(data_1),
+        )
+    piece = htypes.data_browser.data_browser(
+        data=mosaic.put(data_2),
+        )
+    current_item = htypes.data_browser.item(
+        name="value",
+        type="",
+        value="",
+        )
+    result = data_browser.open(piece, current_item)
+    assert isinstance(result, htypes.data_browser.data_browser)
+    assert web.summon(result.data) == data_1
