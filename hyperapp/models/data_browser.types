@@ -1,4 +1,10 @@
 data_browser = record:
   data: ref
 
+item = record:
+  name: string
+  type: string
+  value: string
+
+browse_d = record
 browse_current_model_d = record

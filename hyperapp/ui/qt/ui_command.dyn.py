@@ -31,8 +31,8 @@ _hardcoded_shortcuts = {
     'close_tab': 'Ctrl+f4',
     'duplicate_window': 'Alt+W',
     'open_layout_tree': 'Alt+L',
-    'open_sample_static_text_1': 'Alt+F1',
-    'open_sample_static_text_2': 'f2',
+    'open_sample_static_text_1': 'F2',
+    'open_sample_static_text_2': 'Ctrl+F2',
     'open_sample_static_list': 'f3',
     'open_sample_fn_list': 'f4',
     'open_sample_fn_tree': 'f6',
@@ -46,6 +46,7 @@ _hardcoded_shortcuts = {
     'wrap_master_details': 'Ctrl+W',
     'move_tab_to_new_group': 'Shift+Alt+T',
     'open_tab_list': 'Alt+T',
+    'browse_current_model': 'Ctrl+F1',
     }
 
 
