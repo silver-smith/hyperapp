@@ -199,7 +199,7 @@ class CommandEnumeratorImplementationCtr(Constructor):
             return f"Result is not a data: {result!r}"
         if not isinstance(result.data_t, TList):
             return f"Result is not a list: {result.data_t!r}"
-        if not issubclass(result.data_t.element_t, (htypes.ui.ui_command, htypes.ui.ui_model_command)):
+        if not issubclass(result.data_t.element_t, (htypes.ui.model_command, htypes.layout.layout_command)):
             return f"Result element type is not a command: {result.data_t.element_t}"
         if fn_info.param_names[:1] != ['piece']:
             return f"First param is not 'piece': {fn_info.param_names}"
