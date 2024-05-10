@@ -17,33 +17,23 @@ def layout_tree(piece, parent, controller):
     return controller.view_items(parent_id)
 
 
-def _copy_command_with_d(command, d):
-    d_res = data_to_res(d)
-    command_d = (
-        *command.d,
-        mosaic.put(d_res),
+def _wrap_ui_command(command, kind_d_res_ref):
+    return htypes.layout.layout_command(
+        name=command.name,
+        d=(
+            command.d[0],
+            kind_d_res_ref,
+            ),
+        ui_command=mosaic.put(command),
         )
-    if isinstance(command, htypes.ui.ui_command):
-        return htypes.ui.ui_command(
-            d=command_d,
-            name=command.name,
-            function=command.function,
-            params=command.params,
-            )
-    if isinstance(command, htypes.ui.ui_model_command):
-        return htypes.ui.ui_command(
-            d=command_d,
-            name=command.name,
-            model_command=command.model_command,
-            )
-    raise RuntimeError(f"Unsupported command type: {command}")
 
 
 def enum_layout_tree_commands(piece, current_item, controller):
-    context_kind_d = htypes.ui.context_model_command_kind_d()
+    kind_d = htypes.ui.context_model_command_kind_d()
+    kind_d_res_ref = mosaic.put(data_to_res(kind_d))
     if current_item:
         commands = [
-            _copy_command_with_d(cmd, context_kind_d)
+            _wrap_ui_command(cmd, kind_d_res_ref)
             for cmd
             in controller.item_commands(current_item.id)
             ]

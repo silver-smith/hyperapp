@@ -10,6 +10,7 @@ import:
 - legacy_type.layout:command_list
 - legacy_type.layout:enum_layout_tree_commands_d
 - legacy_type.layout:item
+- legacy_type.layout:layout_command
 - legacy_type.layout:open_layout_tree_d
 - legacy_type.layout:open_view_item_commands_d
 - legacy_type.layout:view
@@ -27,7 +28,6 @@ import:
 - legacy_type.ui:model_command_kind_d
 - legacy_type.ui:model_d
 - legacy_type.ui:tree_ui_t
-- legacy_type.ui:ui_command
 - resource.data_to_res:data_to_res.service
 associations:
 - bases:
@@ -137,9 +137,9 @@ definitions:
     import_list:
       htypes.layout.command_item: legacy_type.layout:command_item
       htypes.layout.command_list: legacy_type.layout:command_list
+      htypes.layout.layout_command: legacy_type.layout:layout_command
       htypes.layout.view: legacy_type.layout:view
       htypes.ui.context_model_command_kind_d: legacy_type.ui:context_model_command_kind_d
-      htypes.ui.ui_command: legacy_type.ui:ui_command
       services.data_to_res: resource.data_to_res:data_to_res.service
       services.mosaic: builtins:mosaic.service
   layout_tree:
