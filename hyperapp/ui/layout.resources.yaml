@@ -1,0 +1,239 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:mosaic.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:call
+- legacy_type.builtin:python_module
+- legacy_type.layout:add_view_command_d
+- legacy_type.layout:command_item
+- legacy_type.layout:command_list
+- legacy_type.layout:item
+- legacy_type.layout:layout_tree_commands_d
+- legacy_type.layout:open_layout_tree_d
+- legacy_type.layout:open_view_item_commands_d
+- legacy_type.layout:view
+- legacy_type.layout:view_item_commands_d
+- legacy_type.ui:context_model_command_kind_d
+- legacy_type.ui:fn_impl
+- legacy_type.ui:global_model_command_d
+- legacy_type.ui:global_model_command_kind_d
+- legacy_type.ui:list_ui_t
+- legacy_type.ui:model
+- legacy_type.ui:model_command
+- legacy_type.ui:model_command_d
+- legacy_type.ui:model_command_enumerator
+- legacy_type.ui:model_command_enumerator_d
+- legacy_type.ui:model_command_kind_d
+- legacy_type.ui:model_d
+- legacy_type.ui:tree_ui_t
+- legacy_type.ui:ui_command
+- resource.data_to_res:data_to_res.service
+associations:
+- bases:
+  - global_model_command_d
+  key: global_model_command_d
+  value: open_layout_tree.command
+- bases:
+  - legacy_type.layout:command_list
+  key:
+  - model_command_d
+  - legacy_type.layout:command_list
+  value: add_view_command.command
+- bases:
+  - legacy_type.layout:command_list
+  key:
+  - model_command_d
+  - legacy_type.layout:command_list
+  value: view_item_commands.command
+- bases:
+  - legacy_type.layout:command_list
+  key:
+  - model_d
+  - legacy_type.layout:command_list
+  value: view_item_commands.model
+- bases:
+  - legacy_type.layout:view
+  key:
+  - model_command_d
+  - legacy_type.layout:view
+  value: layout_tree_commands.command
+- bases:
+  - legacy_type.layout:view
+  key:
+  - model_command_d
+  - legacy_type.layout:view
+  value: open_view_item_commands.command
+- bases:
+  - legacy_type.layout:view
+  key:
+  - model_command_enumerator_d
+  - legacy_type.layout:view
+  value: layout_tree_commands.enumerator
+- bases:
+  - legacy_type.layout:view
+  key:
+  - model_d
+  - legacy_type.layout:view
+  value: layout_tree.model
+definitions:
+  add_view_command:
+    _type: legacy_type.builtin:attribute
+    object: layout.module
+    attr_name: add_view_command
+  add_view_command.command:
+    _type: legacy_type.ui:model_command
+    d:
+    - add_view_command.d
+    - model_command_kind_d
+    - context_model_command_kind_d
+    name: add_view_command
+    function: add_view_command
+    params:
+    - piece
+    - current_item
+  add_view_command.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.layout:add_view_command_d
+  context_model_command_kind_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:context_model_command_kind_d
+  global_model_command_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:global_model_command_d
+  global_model_command_kind_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:global_model_command_kind_d
+  layout.module:
+    _type: legacy_type.builtin:python_module
+    module_name: layout
+    file_name: layout.dyn.py
+    import_list:
+      htypes.layout.command_item: legacy_type.layout:command_item
+      htypes.layout.command_list: legacy_type.layout:command_list
+      htypes.layout.view: legacy_type.layout:view
+      htypes.ui.context_model_command_kind_d: legacy_type.ui:context_model_command_kind_d
+      htypes.ui.ui_command: legacy_type.ui:ui_command
+      services.data_to_res: resource.data_to_res:data_to_res.service
+      services.mosaic: builtins:mosaic.service
+  layout_tree:
+    _type: legacy_type.builtin:attribute
+    object: layout.module
+    attr_name: layout_tree
+  layout_tree.impl:
+    _type: legacy_type.ui:fn_impl
+    function: layout_tree
+    params:
+    - piece
+    - parent
+    - controller
+  layout_tree.model:
+    _type: legacy_type.ui:model
+    ui_t: layout_tree.ui_t
+    impl: layout_tree.impl
+  layout_tree.ui_t:
+    _type: legacy_type.ui:tree_ui_t
+    key_t: legacy_type.layout:item
+    element_t: legacy_type.layout:item
+  layout_tree_commands:
+    _type: legacy_type.builtin:attribute
+    object: layout.module
+    attr_name: layout_tree_commands
+  layout_tree_commands.command:
+    _type: legacy_type.ui:model_command
+    d:
+    - layout_tree_commands.d
+    - model_command_kind_d
+    - context_model_command_kind_d
+    name: layout_tree_commands
+    function: layout_tree_commands
+    params:
+    - piece
+    - current_item
+    - controller
+  layout_tree_commands.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.layout:layout_tree_commands_d
+  layout_tree_commands.enumerator:
+    _type: legacy_type.ui:model_command_enumerator
+    function: layout_tree_commands
+    params:
+    - piece
+    - current_item
+    - controller
+  model_command_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:model_command_d
+  model_command_enumerator_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:model_command_enumerator_d
+  model_command_kind_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:model_command_kind_d
+  model_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:model_d
+  open_layout_tree:
+    _type: legacy_type.builtin:attribute
+    object: layout.module
+    attr_name: open_layout_tree
+  open_layout_tree.command:
+    _type: legacy_type.ui:model_command
+    d:
+    - open_layout_tree.d
+    - model_command_kind_d
+    - global_model_command_kind_d
+    name: open_layout_tree
+    function: open_layout_tree
+    params: []
+  open_layout_tree.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.layout:open_layout_tree_d
+  open_view_item_commands:
+    _type: legacy_type.builtin:attribute
+    object: layout.module
+    attr_name: open_view_item_commands
+  open_view_item_commands.command:
+    _type: legacy_type.ui:model_command
+    d:
+    - open_view_item_commands.d
+    - model_command_kind_d
+    - context_model_command_kind_d
+    name: open_view_item_commands
+    function: open_view_item_commands
+    params:
+    - piece
+    - current_item
+  open_view_item_commands.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.layout:open_view_item_commands_d
+  view_item_commands:
+    _type: legacy_type.builtin:attribute
+    object: layout.module
+    attr_name: view_item_commands
+  view_item_commands.command:
+    _type: legacy_type.ui:model_command
+    d:
+    - view_item_commands.d
+    - model_command_kind_d
+    name: view_item_commands
+    function: view_item_commands
+    params:
+    - piece
+    - controller
+  view_item_commands.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.layout:view_item_commands_d
+  view_item_commands.impl:
+    _type: legacy_type.ui:fn_impl
+    function: view_item_commands
+    params:
+    - piece
+    - controller
+  view_item_commands.model:
+    _type: legacy_type.ui:model
+    ui_t: view_item_commands.ui_t
+    impl: view_item_commands.impl
+  view_item_commands.ui_t:
+    _type: legacy_type.ui:list_ui_t
+    element_t: legacy_type.layout:command_item

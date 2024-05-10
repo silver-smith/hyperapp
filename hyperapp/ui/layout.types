@@ -12,3 +12,10 @@ command_list = record:
 
 command_item = record:
   name: string
+
+
+open_layout_tree_d = record
+add_view_command_d = record
+open_view_item_commands_d = record
+view_item_commands_d = record
+layout_tree_commands_d = record

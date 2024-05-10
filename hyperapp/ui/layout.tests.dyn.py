@@ -4,13 +4,11 @@ from PySide6 import QtWidgets
 
 from . import htypes
 from .services import (
-    feed_factory,
     mosaic,
-    web,
     )
 from .code.context import Context
 from .tested.code import controller
-from .tested.code import window
+from .tested.code import layout
 
 
 def make_text_layout():
@@ -77,37 +75,60 @@ class PhonyLayoutBundle:
         pass
 
 
-async def test_duplicate_window():
+def test_layout_tree():
     ctx = Context()
     default_layout = make_default_layout()
-    feed = feed_factory(htypes.layout.view())
     app = QtWidgets.QApplication()
     try:
-        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx, show=False) as ctl:
-            root_item = ctl._root_item
-            root = controller.Root(root_item)
-            view = root_item.children[0].view
-            state = web.summon(default_layout.state.window_list[0])
-            window.duplicate_window(root, view, state)
-            assert len(root_item.children) == 2
-            await feed.wait_for_diffs(count=1)
+        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx) as ctl:
+            piece = htypes.layout.view()
+            items = layout.layout_tree(piece, None, ctl)
+            assert items
+            parent = htypes.layout.item(1, "Some item", True, "Item description")
+            layout.layout_tree(piece, parent, ctl)
     finally:
         app.shutdown()
 
 
-async def test_save_model_layout():
-    lcs = Mock()
-    ctx = Context(
-        lcs=lcs,
-        )
+def test_layout_tree_commands():
+    ctx = Context()
     default_layout = make_default_layout()
     app = QtWidgets.QApplication()
     try:
-        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx, show=False) as ctl:
-            window_item = ctl._root_item.children[0]
-            navigator = window_item.navigator_item
-            layout = make_text_layout()
-            navigator._set_model_layout(layout)
-            lcs.set.assert_called()
+        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx) as ctl:
+            piece = htypes.layout.view()
+            windows = layout.layout_tree(piece, None, ctl)
+            window_items = layout.layout_tree(piece, windows[0], ctl)
+            commands = layout.layout_tree_commands(piece, window_items[1], ctl)
+            assert commands
     finally:
         app.shutdown()
+
+
+async def test_open_view_item_commands():
+    piece = htypes.layout.view()
+    item = Mock()
+    item.id = 123
+    result = await layout.open_view_item_commands(piece, current_item=item)
+    assert result
+
+
+def test_view_item_commands():
+    ctx = Context()
+    default_layout = make_default_layout()
+    app = QtWidgets.QApplication()
+    try:
+        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx) as ctl:
+            piece = htypes.layout.view()
+            windows = layout.layout_tree(piece, None, ctl)
+            window_items = layout.layout_tree(piece, windows[0], ctl)
+            item_id = window_items[1].id
+            commands = layout.view_item_commands(htypes.layout.command_list(item_id), ctl)
+            assert commands
+    finally:
+        app.shutdown()
+
+
+async def test_add_view_command():
+    piece = htypes.layout.command_list(item_id=123)
+    result = await layout.add_view_command(piece, current_item=None)
