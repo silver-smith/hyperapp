@@ -120,7 +120,13 @@ class FnCommandBase(CommandBase):
         self._params = set(params)
 
     async def _run(self):
-        kw = {name: value for name, value in self.params.items() if name in self._params}
+        params = self.params
+        kw = {
+            name: value
+            for name, value
+            in params.items()
+            if name in self._params
+            }
         log.info("Run command: %r (%s)", self.name, kw)
         result = self._fn(**kw)
         if inspect.iscoroutinefunction(self._fn):
