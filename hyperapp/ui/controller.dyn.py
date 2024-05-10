@@ -151,13 +151,13 @@ class _Item:
         return self._commands
 
     def _make_commands(self):
-        ctx = self._command_context()
+        ctx = self.command_context()
         commands = ui_command_factory(self.view)
         if 'piece' in ctx:
             commands += ui_model_command_factory(ctx.piece, ctx)
         return [CommandRec(cmd, ctx) for cmd in commands]
 
-    def _command_context(self):
+    def command_context(self):
         ctx = self.ctx.clone_with(
             view=self.view,
             widget=weakref.ref(self.widget),
@@ -373,8 +373,8 @@ class _WindowItem(_Item):
         self.view.set_controller_hook(self._hook)
         self._id_to_item[self.id] = self
 
-    def _command_context(self):
-        return super()._command_context().clone_with(
+    def command_context(self):
+        return super().command_context().clone_with(
             root=Root(root_item=self.parent),
             )
 
@@ -543,3 +543,7 @@ class Controller:
             return [rec.piece for rec in item.commands]
         else:
             return []
+
+    def item_command_context(self, item_id):
+        item = self._id_to_item[item_id]
+        return item.command_context()

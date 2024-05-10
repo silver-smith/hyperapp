@@ -3,10 +3,42 @@ import logging
 from . import htypes
 from .services import (
     data_to_res,
+    model_command_creg,
     mosaic,
+    pyobj_creg,
+    ui_command_creg,
     )
+from .code.ui_command import CommandBase
 
 log = logging.getLogger(__name__)
+
+
+class LayoutCommand(CommandBase):
+
+    def __init__(self, name, d, ui_command):
+        super().__init__(name, d)
+        self._ui_command = ui_command
+
+    @property
+    def enabled(self):
+        return self._ui_command.enabled
+
+    @property
+    def disabled_reason(self):
+        return self._ui_command.disabled_reason
+
+    async def _run(self):
+        log.info("Run layout command: %r", self.name)
+        return await self._ui_command.run()
+
+
+@model_command_creg.actor(htypes.layout.layout_command)
+def layout_command_from_piece(piece, ctx):
+    command_d = {pyobj_creg.invite(d) for d in piece.d}
+    item_id = ctx.current_item.id
+    ui_command_ctx = ctx.controller.item_command_context(item_id)
+    ui_command = ui_command_creg.invite(piece.ui_command, ui_command_ctx)
+    return LayoutCommand(piece.name, command_d, ui_command)
 
 
 def layout_tree(piece, parent, controller):
