@@ -552,6 +552,8 @@ class Unit:
         if await self._check_up_to_date():
             return
         info, self._attr_list = await self._discover_attributes(process_pool)
+        for attr in self._attr_list:
+            self._qname_to_fn_info[attr.name] = FnInfo([attr.name], self.name, attr.constructors)
         await _lock_and_notify_all(self._attributes_discovered)
         self._graph.dep_to_provider[ModuleDep(self.name)] = self
         await self._set_service_providers(_enum_provided_services(self._attr_list))
@@ -572,7 +574,7 @@ class Unit:
         try:
             ft = self._qname_to_fn_info[trace.fn_qual_name]
         except KeyError:
-            self._qname_to_fn_info[trace.fn_qual_name] = FnInfo(trace)
+            self._qname_to_fn_info[trace.fn_qual_name] = FnInfo.from_trace(trace)
         else:
             ft.add_trace(trace)
 

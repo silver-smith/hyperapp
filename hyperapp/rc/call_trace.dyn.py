@@ -93,15 +93,24 @@ class Type(TypeCaseBase):
 
 class FnInfo:
 
-    def __init__(self, trace):
-        self.name = trace.fn_qual_name.split('.')
-        self.module_name = trace.module
-        self.line_no = trace.line_no
-        self.obj_type = trace.obj_type
+    @classmethod
+    def from_trace(cls, trace):
+        self = cls(
+            name=trace.fn_qual_name.split('.'),
+            module_name=trace.module,
+            )
+        self.add_trace(trace)
+        return self
+
+    def __init__(self, name, module_name, constructors=None):
+        self.name = name
+        self.module_name = module_name
+        self.line_no = None
+        self.obj_type = None
         self.result = Type()
         self.params = {}  # name -> Type
         self._traces = []
-        self.add_trace(trace)
+        self.constructors = [web.summon(ctr) for ctr in constructors or []]
 
     def __repr__(self):
         return f"<FnInfo {self.module_name!r}:{self.name!r} obj_type={self.obj_type!r} result={self.result!r} params={dict(self.params)!r}>"
@@ -118,9 +127,13 @@ class FnInfo:
         result_t = web.summon(trace.result_t)
         log.debug("Call trace: %s:%d: %s %s (%s) -> %s",
                   trace.module, trace.line_no, trace.fn_qual_name, trace.obj_type or '-', params, result_t)
-        assert self.line_no == trace.line_no
         assert self.module_name == trace.module
-        assert self.obj_type == trace.obj_type
+        if self.line_no is None:
+            self.line_no = trace.line_no
+            self.obj_type = trace.obj_type
+        else:
+            assert self.line_no == trace.line_no
+            assert self.obj_type == trace.obj_type
         for idx, (name, t) in enumerate(params.items()):
             if self.obj_type == 'classmethod' and idx == 0:
                 continue  # Omit first, 'cls', parameter.
