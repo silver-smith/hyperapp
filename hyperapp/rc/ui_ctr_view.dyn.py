@@ -102,9 +102,9 @@ class ViewAdapterImplementationCtr(Constructor):
             return f"Param names are not 'piece', 'model' and 'ctx': {fn_info.param_names}"
         piece_t = fn_info.params['piece']
         if not piece_t.is_single:
-            return "Piece param has not one, but {piece_t.count} type variants: {piece_t.cases}"
+            return f"Piece param has not one, but {piece_t.count} type variants: {piece_t.cases}"
         if not piece_t.is_data:
-            return "Piece param is not a data: {piece_t!r}"
+            return f"Piece param is not a data: {piece_t!r}"
         if not isinstance(piece_t.data_t, TRecord):
             return f"Piece param is not a record: {piece_t.data_t!r}"
         return None

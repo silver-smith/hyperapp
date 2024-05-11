@@ -38,10 +38,6 @@ class CommandImplementationCtr(Constructor):
             return f"Name has not 1 parts: {fn_info.name!r}"
         if fn_info.obj_type != 'function':
             return f"obj_type is not a 'function': {fn_info.obj_type!r}"
-        if not fn_info.result.is_single:
-            return "Result has not one, but {fn_info.result.count} type variants: {fn_info.result.cases}"
-        if not fn_info.result.is_data:
-            return "Result is not a data: {fn_info.result!r}"
         return None
 
 
@@ -55,6 +51,10 @@ class ModelCommandImplementationCtr(CommandImplementationCtr):
         reason = super().check_applicable(fn_info)
         if reason:
             return reason
+        if not fn_info.result.is_single:
+            return f"Result has not one, but {fn_info.result.count} type variants: {fn_info.result.cases}"
+        if not fn_info.result.is_data:
+            return f"Result is not a data: {fn_info.result!r}"
         result_is_accepted = (
             isinstance(fn_info.result.data_t, TRecord) or
             isinstance(fn_info.result.data_t, TList) and isinstance(fn_info.result.data_t.element_t, TRecord) or
@@ -62,7 +62,7 @@ class ModelCommandImplementationCtr(CommandImplementationCtr):
             fn_info.result.data_t is tNone
             )
         if not result_is_accepted:
-            return f"Result is not a record, list or records, string or None: {fn_info.result.data_t!r}"
+            return f"Result is not a record, list of records, string or None: {fn_info.result.data_t!r}"
         accepted_params = {'piece', 'model_state', 'current_idx', 'current_item', 'controller', 'ctx'}
         reason = self._check_accepted_params(fn_info, accepted_params)
         if reason:
@@ -71,9 +71,9 @@ class ModelCommandImplementationCtr(CommandImplementationCtr):
             return f"First param is not 'piece': {fn_info.param_names}"
         piece_t = fn_info.params['piece']
         if not piece_t.is_single:
-            return "Piece param has not one, but {piece_t.count} type variants: {piece_t.cases}"
+            return f"Piece param has not one, but {piece_t.count} type variants: {piece_t.cases}"
         if not piece_t.is_data:
-            return "Piece param is not a data: {piece_t!r}"
+            return f"Piece param is not a data: {piece_t!r}"
         if not isinstance(piece_t.data_t, TRecord):
             return f"Piece param is not a record: {piece_t.data_t!r}"
         return None
@@ -121,26 +121,32 @@ class GlobalCommandImplementationCtr(CommandImplementationCtr):
     def name(self):
         return "Global command"
 
+    def _check_is_record_list_or_str(self, case, name):
+        if not case.is_data:
+            return f"{name} case is not a data: {case!r}"
+        is_accepted = (
+            isinstance(case.data_t, TRecord) or
+            isinstance(case.data_t, TList) and isinstance(case.data_t.element_t, TRecord) or
+            case.data_t is tString
+            )
+        if not is_accepted:
+            return f"{name} case is not a record, list of records or string: {case.data_t!r}"
+        return None
+
     def check_applicable(self, fn_info):
         reason = super().check_applicable(fn_info)
         if reason:
             return reason
-        result_is_accepted = (
-            isinstance(fn_info.result.data_t, TRecord) or
-            isinstance(fn_info.result.data_t, TList) and isinstance(fn_info.result.data_t.element_t, TRecord) or
-            fn_info.result.data_t is tString
-            )
-        if not result_is_accepted:
-            return f"Result is not a record, list or records, string or None: {fn_info.result.data_t!r}"
+        for result in fn_info.result.cases:
+            reason = self._check_is_record_list_or_str(result, "Result")
+            if reason:
+                return reason
         if 'piece' in fn_info.params:
             piece_t = fn_info.params['piece']
             if piece_t.is_single:
                 return f"Function has 'piece' param, and it do not has multiple type cases: {piece_t!r}"
             for case in piece_t.cases:
-                if not case.is_data:
-                    return "Piece param case is not a data: {case!r}"
-                if not isinstance(case.data_t, TRecord):
-                    return f"Piece param case is not a record: {case.data_t!r}"
+                reason = self._check_is_record_list_or_str(case, "Piece param")
         accepted_params = {'piece', 'model_state', 'ctx'}
         reason = self._check_accepted_params(fn_info, accepted_params)
         if reason:
@@ -209,9 +215,9 @@ class CommandEnumeratorImplementationCtr(Constructor):
             return reason
         piece_t = fn_info.params['piece']
         if not piece_t.is_single:
-            return "Piece param has not one, but {piece_t.count} type variants: {piece_t.cases}"
+            return f"Piece param has not one, but {piece_t.count} type variants: {piece_t.cases}"
         if not piece_t.is_data:
-            return "Piece param is not a data: {piece_t!r}"
+            return f"Piece param is not a data: {piece_t!r}"
         if not isinstance(piece_t.data_t, TRecord):
             return f"Piece param is not a record: {piece_t.data_t!r}"
         return None
