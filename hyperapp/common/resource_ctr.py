@@ -11,7 +11,7 @@ def add_attr_constructor(module, fn_name, ctr_ref):
     ctr_list.append(ctr_ref)
 
 
-def add_fn_module_constructor(fn, ctr_ref, name=None):
+def add_fn_attr_constructor(fn, ctr_ref, name=None):
     module = inspect.getmodule(fn)
     add_attr_constructor(module, fn.__name__, ctr_ref)
 

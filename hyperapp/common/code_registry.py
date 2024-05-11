@@ -6,7 +6,7 @@ from functools import cached_property
 from .htypes import code_registry_ctr_t, ref_t
 from .htypes.deduce_value_type import deduce_value_type
 from .ref import decode_capsule
-from .resource_ctr import add_fn_module_constructor
+from .resource_ctr import add_fn_attr_constructor
 
 _log = logging.getLogger(__name__)
 
@@ -32,7 +32,7 @@ class CodeRegistry:
                 service=self._mosaic.put(self._my_resource),
                 type=self._mosaic.put(type_res),
                 )
-            add_fn_module_constructor(fn, self._mosaic.put(ctr))
+            add_fn_attr_constructor(fn, self._mosaic.put(ctr))
             return fn
 
         return register
