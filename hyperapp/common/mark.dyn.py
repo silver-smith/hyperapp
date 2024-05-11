@@ -73,18 +73,6 @@ class ParamMarker:
         return fn
 
 
-def global_command(fn):
-    ctr = htypes.global_command_ctr.global_command_ctr()
-    add_fn_module_constructor(fn, mosaic.put(ctr))
-    return fn
-
-
-def object_command(fn):
-    ctr = htypes.object_command_ctr.object_command_ctr()
-    add_fn_module_constructor(fn, mosaic.put(ctr))
-    return fn
-
-
 class UiCommandBase:
 
     def __call__(self, fn_or_t):
@@ -121,8 +109,6 @@ def mark():
     return SimpleNamespace(
         param=ParamMarker(),
         service=ServiceMarker(),
-        global_command=global_command,
-        object_command=object_command,
         ui_command=UiCommand(),
         ui_model_command=UiModelCommand(),
         )
