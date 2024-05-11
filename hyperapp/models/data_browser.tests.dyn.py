@@ -15,7 +15,7 @@ def test_browse_current_model():
     assert isinstance(result_2, htypes.data_browser.data_browser)
 
 
-def test_browser():
+def test_browse_record():
     data = htypes.data_browser_tests.sample_data(
         name="Sample name",
         sample_list=(11, 22, 33),
@@ -32,6 +32,16 @@ def test_browser():
     assert result[0].type == 'str'
     assert result[0].value == data.name
     assert result[1].name == 'sample_list'
+
+
+def test_browse_primitive():
+    data = "Sample primitive string"
+    piece = data_browser.browse_current_model(data)
+    assert isinstance(piece, htypes.data_browser.primitive_data_browser)
+    result = data_browser.browse_primitive(piece)
+    assert isinstance(result, htypes.data_browser.primitive_item)
+    assert result.type == 'str'
+    assert result.value == data
 
 
 def test_open_record():

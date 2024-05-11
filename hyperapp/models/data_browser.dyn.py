@@ -1,4 +1,4 @@
-from hyperapp.common.htypes import TRecord, ref_t
+from hyperapp.common.htypes import TPrimitive, TRecord, ref_t
 from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 
 from . import htypes
@@ -28,6 +28,15 @@ def browse(piece):
     raise RuntimeError(f"Browser: Unsupported type: {data_t}: {data}")
 
 
+def browse_primitive(piece):
+    data = web.summon(piece.data)
+    data_t = deduce_t(data)
+    return htypes.data_browser.primitive_item(
+        type=str(data_t),
+        value=str(data),
+        )
+
+
 def open(piece, current_item):
     data = web.summon(piece.data)
     data_t = deduce_t(data)
@@ -47,6 +56,12 @@ def open(piece, current_item):
 
 
 def browse_current_model(piece):
-    return htypes.data_browser.data_browser(
-        data=mosaic.put(piece),
-        )
+    t = deduce_t(piece)
+    if isinstance(t, TPrimitive):
+        return htypes.data_browser.primitive_data_browser(
+            data=mosaic.put(piece),
+            )
+    else:
+        return htypes.data_browser.data_browser(
+            data=mosaic.put(piece),
+            )
