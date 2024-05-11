@@ -63,7 +63,7 @@ def _default_layout(t, value):
             )
         return htypes.tree.view(mosaic.put(adapter))
 
-    return None
+    raise NotImplementedError(f"Not supported model: {ui_t} / {impl}")
 
 
 @mark.service
@@ -80,9 +80,6 @@ def visualizer():
             log.info("Using configured layout for %s: %s", t, view)
             return view
 
-        view = _default_layout(t, value)
-        if view is not None:
-            return view
+        return _default_layout(t, value)
 
-        raise NotImplementedError(f"Not supported model: {ui_t} / {impl}")
     return fn
