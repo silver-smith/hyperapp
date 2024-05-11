@@ -25,6 +25,7 @@ import:
 - legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_kind_d
 - legacy_type.ui:model_d
+- legacy_type.ui:record_ui_t
 associations:
 - bases:
   - global_model_command_d
@@ -48,6 +49,12 @@ associations:
   - model_d
   - legacy_type.data_browser:data_browser
   value: browse.model
+- bases:
+  - legacy_type.data_browser:primitive_data_browser
+  key:
+  - model_d
+  - legacy_type.data_browser:primitive_data_browser
+  value: browse_primitive.model
 definitions:
   browse:
     _type: legacy_type.builtin:attribute
@@ -94,6 +101,22 @@ definitions:
   browse_current_model.d:
     _type: legacy_type.builtin:call
     function: legacy_type.data_browser:browse_current_model_d
+  browse_primitive:
+    _type: legacy_type.builtin:attribute
+    object: data_browser.module
+    attr_name: browse_primitive
+  browse_primitive.impl:
+    _type: legacy_type.ui:fn_impl
+    function: browse_primitive
+    params:
+    - piece
+  browse_primitive.model:
+    _type: legacy_type.ui:model
+    ui_t: browse_primitive.ui_t
+    impl: browse_primitive.impl
+  browse_primitive.ui_t:
+    _type: legacy_type.ui:record_ui_t
+    record_t: legacy_type.data_browser:primitive_item
   context_model_command_kind_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:context_model_command_kind_d

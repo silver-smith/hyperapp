@@ -25,8 +25,6 @@ class ModelImplementationCtr(Constructor, metaclass=ABCMeta):
             return f"Result has not one, but {fn_info.result.count} type variants: {fn_info.result.cases}"
         if not fn_info.result.is_data:
             return f"Result is not a data: {fn_info.result}"
-        if not isinstance(fn_info.result.data_t, TList):
-            return f"Result is not a list: {fn_info.result.data_t!r}"
         piece_t = fn_info.params['piece']
         if not piece_t.is_single:
             return f"Piece param has not one, but {piece_t.count} type variants: {piece_t.cases}"
@@ -39,7 +37,6 @@ class ModelImplementationCtr(Constructor, metaclass=ABCMeta):
     def construct(self, fn_info):
         fn_name = fn_info.name[0]
         fn_attribute = self._make_attribute(fn_name)
-        element_t_res = pyobj_creg.reverse_resolve(fn_info.result.data_t.element_t)
         ui_t = self._construct_ui_t(fn_info)
         impl = htypes.ui.fn_impl(
             function=mosaic.put(fn_attribute),
@@ -72,7 +69,18 @@ class ModelImplementationCtr(Constructor, metaclass=ABCMeta):
         pass
 
 
-class ListImplementationCtr(ModelImplementationCtr):
+class EnumerableImplementationCtr(ModelImplementationCtr):
+
+    def check_applicable(self, fn_info):
+        reason = super().check_applicable(fn_info)
+        if reason:
+            return reason
+        if not isinstance(fn_info.result.data_t, TList):
+            return f"Result is not a list: {fn_info.result.data_t!r}"
+        return None
+
+
+class ListImplementationCtr(EnumerableImplementationCtr):
 
     @property
     def name(self):
@@ -96,7 +104,7 @@ class ListImplementationCtr(ModelImplementationCtr):
             )
 
 
-class TreeImplementationCtr(ModelImplementationCtr):
+class TreeImplementationCtr(EnumerableImplementationCtr):
 
     @property
     def name(self):
@@ -138,7 +146,34 @@ class TreeImplementationCtr(ModelImplementationCtr):
             )
 
 
+class RecordImplementationCtr(ModelImplementationCtr):
+
+    @property
+    def name(self):
+        return "List model"
+
+    def check_applicable(self, fn_info):
+        if fn_info.param_names[:1] != ['piece']:
+            return f"First param is not 'piece': {fn_info.param_names}"
+        reason = self._check_accepted_params(fn_info, {'piece', 'feed', 'controller', 'ctx'})
+        if reason:
+            return reason
+        reason = super().check_applicable(fn_info)
+        if reason:
+            return reason
+        if not isinstance(fn_info.result.data_t, TRecord):
+            return f"Result is not a record: {fn_info.result.data_t!r}"
+        return None
+
+    def _construct_ui_t(self, fn_info):
+        record_t_res = pyobj_creg.reverse_resolve(fn_info.result.data_t)
+        return htypes.ui.record_ui_t(
+            record_t=mosaic.put(record_t_res),
+            )
+
+
 model_constructors = [
     ListImplementationCtr,
     TreeImplementationCtr,
+    RecordImplementationCtr,
     ]

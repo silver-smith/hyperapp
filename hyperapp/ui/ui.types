@@ -59,6 +59,9 @@ tree_ui_t = record:
   key_t: ref
   element_t: ref
 
+record_ui_t = record:
+  record_t: ref
+
 fn_impl = record:
   function: ref
   params: string list

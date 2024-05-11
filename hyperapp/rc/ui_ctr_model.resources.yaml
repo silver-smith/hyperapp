@@ -7,6 +7,7 @@ import:
 - legacy_type.ui:fn_impl
 - legacy_type.ui:list_ui_t
 - legacy_type.ui:tree_ui_t
+- legacy_type.ui:record_ui_t
 - legacy_type.ui:model
 - legacy_type.ui:model_d
 - rc.ui_ctr_constructor:ui_ctr_constructor.module
@@ -23,6 +24,7 @@ definitions:
       htypes.builtin.legacy_type: legacy_type.builtin:legacy_type
       htypes.ui.list_ui_t: legacy_type.ui:list_ui_t
       htypes.ui.tree_ui_t: legacy_type.ui:tree_ui_t
+      htypes.ui.record_ui_t: legacy_type.ui:record_ui_t
       htypes.ui.fn_impl: legacy_type.ui:fn_impl
       htypes.ui.model: legacy_type.ui:model
       htypes.ui.model_d: legacy_type.ui:model_d
