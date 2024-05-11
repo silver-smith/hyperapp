@@ -38,6 +38,9 @@ class CommandImplementationCtr(Constructor):
             return f"Name has not 1 parts: {fn_info.name!r}"
         if fn_info.obj_type != 'function':
             return f"obj_type is not a 'function': {fn_info.obj_type!r}"
+        if fn_info.constructors:
+            # @mark.model decorator prevents a function from being a command.
+            return f"Has constructors: {fn_info.constructors!r}"
         return None
 
 
