@@ -73,6 +73,12 @@ class ParamMarker:
         return fn
 
 
+def model(fn):
+    ctr = htypes.rc_constructors.model_ctr()
+    add_fn_attr_constructor(fn, mosaic.put(ctr))
+    return fn
+
+
 class UiCommandBase:
 
     def __call__(self, fn_or_t):
@@ -109,6 +115,7 @@ def mark():
     return SimpleNamespace(
         param=ParamMarker(),
         service=ServiceMarker(),
+        model=model,
         ui_command=UiCommand(),
         ui_model_command=UiModelCommand(),
         )

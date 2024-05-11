@@ -6,6 +6,9 @@ parameter = record:
   path: string list
 
 
+model_ctr = record
+
+
 ui_command_ctr = record:
   t: ref
   name: string

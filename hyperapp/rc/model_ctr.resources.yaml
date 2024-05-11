@@ -1,0 +1,27 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.rc_constructors:model_ctr
+- resource.constructor_creg:constructor_creg.service
+associations:
+- bases:
+  - resource.constructor_creg:constructor_creg.service
+  - legacy_type.rc_constructors:model_ctr
+  key:
+  - resource.constructor_creg:constructor_creg.service
+  - legacy_type.rc_constructors:model_ctr
+  value: construct
+definitions:
+  construct:
+    _type: legacy_type.builtin:attribute
+    object: model_ctr.module
+    attr_name: construct
+  model_ctr.module:
+    _type: legacy_type.builtin:python_module
+    module_name: model_ctr
+    file_name: model_ctr.dyn.py
+    import_list:
+      htypes.rc_constructors.model_ctr: legacy_type.rc_constructors:model_ctr
+      services.constructor_creg: resource.constructor_creg:constructor_creg.service
