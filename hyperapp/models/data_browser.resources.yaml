@@ -4,6 +4,7 @@ import:
 - builtins:mosaic.service
 - builtins:types.service
 - builtins:web.service
+- common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
@@ -128,6 +129,7 @@ definitions:
       htypes.data_browser.item: legacy_type.data_browser:item
       htypes.data_browser.primitive_data_browser: legacy_type.data_browser:primitive_data_browser
       htypes.data_browser.primitive_item: legacy_type.data_browser:primitive_item
+      services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service
       services.types: builtins:types.service
       services.web: builtins:web.service

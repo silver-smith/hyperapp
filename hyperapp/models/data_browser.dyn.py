@@ -3,6 +3,7 @@ from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 
 from . import htypes
 from .services import (
+    mark,
     mosaic,
     types,
     web,
@@ -28,6 +29,7 @@ def browse(piece):
     raise RuntimeError(f"Browser: Unsupported type: {data_t}: {data}")
 
 
+@mark.model
 def browse_primitive(piece):
     data = web.summon(piece.data)
     data_t = deduce_t(data)
