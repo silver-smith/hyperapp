@@ -63,6 +63,14 @@ def _default_layout(t, value):
             )
         return htypes.tree.view(mosaic.put(adapter))
 
+    if isinstance(ui_t, htypes.ui.record_ui_t) and isinstance(impl, htypes.ui.fn_impl):
+        adapter = htypes.record_adapter.fn_record_adapter(
+            record_t=ui_t.record_t,
+            function=impl.function,
+            params=impl.params,
+            )
+        return htypes.form.view(mosaic.put(adapter))
+
     raise NotImplementedError(f"Not supported model: {ui_t} / {impl}")
 
 

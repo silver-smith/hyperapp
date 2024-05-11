@@ -40,3 +40,10 @@ def test_sample_tree():
     lcs = make_lcs()
     layout = visualizer(lcs, piece)
     assert layout
+
+
+def test_sample_record():
+    piece = htypes.sample_record.sample_record()
+    lcs = make_lcs()
+    layout = visualizer(lcs, piece)
+    assert layout

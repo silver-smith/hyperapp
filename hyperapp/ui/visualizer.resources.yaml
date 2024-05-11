@@ -10,9 +10,11 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.form:view
 - legacy_type.list:view
 - legacy_type.list_adapter:fn_list_adapter
 - legacy_type.list_adapter:static_list_adapter
+- legacy_type.record_adapter:fn_record_adapter
 - legacy_type.str_adapter:static_str_adapter
 - legacy_type.text:edit_view
 - legacy_type.tree:view
@@ -21,6 +23,7 @@ import:
 - legacy_type.ui:list_ui_t
 - legacy_type.ui:model_d
 - legacy_type.ui:model_view_layout_d
+- legacy_type.ui:record_ui_t
 - legacy_type.ui:tree_ui_t
 - resource.data_to_res:data_to_res.service
 associations: []
@@ -34,9 +37,11 @@ definitions:
     module_name: visualizer
     file_name: visualizer.dyn.py
     import_list:
+      htypes.form.view: legacy_type.form:view
       htypes.list.view: legacy_type.list:view
       htypes.list_adapter.fn_list_adapter: legacy_type.list_adapter:fn_list_adapter
       htypes.list_adapter.static_list_adapter: legacy_type.list_adapter:static_list_adapter
+      htypes.record_adapter.fn_record_adapter: legacy_type.record_adapter:fn_record_adapter
       htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
       htypes.text.edit_view: legacy_type.text:edit_view
       htypes.tree.view: legacy_type.tree:view
@@ -45,6 +50,7 @@ definitions:
       htypes.ui.list_ui_t: legacy_type.ui:list_ui_t
       htypes.ui.model_d: legacy_type.ui:model_d
       htypes.ui.model_view_layout_d: legacy_type.ui:model_view_layout_d
+      htypes.ui.record_ui_t: legacy_type.ui:record_ui_t
       htypes.ui.tree_ui_t: legacy_type.ui:tree_ui_t
       services.association_reg: builtins:association_reg.service
       services.data_to_res: resource.data_to_res:data_to_res.service
