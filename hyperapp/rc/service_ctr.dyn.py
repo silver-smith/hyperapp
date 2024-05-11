@@ -1,7 +1,6 @@
 from . import htypes
 from .services import (
     constructor_creg,
-    mark,
     mosaic,
     )
 

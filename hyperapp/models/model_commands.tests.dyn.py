@@ -3,7 +3,6 @@ from .services import (
     association_reg,
     data_to_res,
     fn_to_res,
-    mark,
     mosaic,
     pyobj_creg,
     )
