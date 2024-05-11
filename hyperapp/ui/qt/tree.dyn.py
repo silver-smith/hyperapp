@@ -2,7 +2,7 @@ import logging
 from collections import namedtuple
 from functools import partial
 
-from PySide6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from . import htypes
 from .services import (
