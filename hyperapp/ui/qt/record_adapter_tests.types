@@ -1,0 +1,5 @@
+sample_record = record
+
+item = record:
+  id: int
+  text: string

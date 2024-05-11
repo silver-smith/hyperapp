@@ -23,7 +23,7 @@ log = logging.getLogger(__name__)
 
 
 def sample_tree_fn(piece, parent):
-    log.info("Sample list fn: %s", piece)
+    log.info("Sample tree fn: %s", piece)
     assert isinstance(piece, htypes.tree_adapter_tests.sample_tree), repr(piece)
     if parent:
         base = parent.id
@@ -159,4 +159,3 @@ def test_remote_fn_adapter():
         assert adapter.cell_data(row_1_id, 1) == "Second item"
         row_2_id = adapter.row_id(row_1_id, 2)
         assert adapter.cell_data(row_2_id, 0) == 23
-

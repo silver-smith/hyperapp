@@ -17,7 +17,7 @@ from .tested.code import tree
 
 
 def _sample_tree_fn(piece, parent):
-    assert isinstance(piece, htypes.tree_adapter_tests.sample_tree), repr(piece)
+    assert isinstance(piece, htypes.tree_tests.sample_tree), repr(piece)
     if parent:
         base = parent.id
     else:

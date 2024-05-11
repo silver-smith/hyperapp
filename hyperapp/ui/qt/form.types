@@ -1,0 +1,10 @@
+
+view = record:
+  adapter: ref
+
+field = record:
+  name: string
+  value: ref
+
+state = record:
+  fields: field list

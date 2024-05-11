@@ -1,0 +1,5 @@
+sample_form = record
+
+item = record:
+  id: int
+  text: string
