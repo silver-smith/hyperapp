@@ -12,9 +12,15 @@ def make_lcs():
     return lcs
 
 
-def test_text():
+def test_string():
     lcs = make_lcs()
     layout = visualizer(lcs, "Sample text")
+    assert layout
+
+
+def test_int():
+    lcs = make_lcs()
+    layout = visualizer(lcs, 12345)
     assert layout
 
 

@@ -1,6 +1,6 @@
 import logging
 
-from hyperapp.common.htypes import tString, TList
+from hyperapp.common.htypes import tInt, tString, TList
 from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 
 from . import htypes
@@ -20,6 +20,9 @@ log = logging.getLogger(__name__)
 def _primitive_value_layout(t, value):
     if t is tString:
         adapter = htypes.str_adapter.static_str_adapter()
+        return htypes.text.edit_view(mosaic.put(adapter))
+    if t is tInt:
+        adapter = htypes.int_adapter.int_adapter()
         return htypes.text.edit_view(mosaic.put(adapter))
     if isinstance(t, TList):
         adapter = htypes.list_adapter.static_list_adapter()
