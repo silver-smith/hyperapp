@@ -1,13 +1,17 @@
 # Automatically generated file. Do not edit.
 
 import:
+- common.file_bundle:file_bundle.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
-- legacy_type.file_bundles:bundle
+- legacy_type.data_browser:data_browser
+- legacy_type.file_bundles:bundle_item
 - legacy_type.file_bundles:bundle_list
 - legacy_type.file_bundles:file_bundle_list_d
+- legacy_type.file_bundles:open_d
 - legacy_type.file_bundles:open_file_bundle_list_d
+- legacy_type.ui:context_model_command_kind_d
 - legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:global_model_command_kind_d
@@ -31,10 +35,19 @@ associations:
 - bases:
   - legacy_type.file_bundles:bundle_list
   key:
+  - model_command_d
+  - legacy_type.file_bundles:bundle_list
+  value: open.command
+- bases:
+  - legacy_type.file_bundles:bundle_list
+  key:
   - model_d
   - legacy_type.file_bundles:bundle_list
   value: file_bundle_list.model
 definitions:
+  context_model_command_kind_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:context_model_command_kind_d
   file_bundle_list:
     _type: legacy_type.builtin:attribute
     object: file_bundles.module
@@ -62,14 +75,16 @@ definitions:
     impl: file_bundle_list.impl
   file_bundle_list.ui_t:
     _type: legacy_type.ui:list_ui_t
-    element_t: legacy_type.file_bundles:bundle
+    element_t: legacy_type.file_bundles:bundle_item
   file_bundles.module:
     _type: legacy_type.builtin:python_module
     module_name: file_bundles
     file_name: file_bundles.dyn.py
     import_list:
-      htypes.file_bundles.bundle: legacy_type.file_bundles:bundle
+      htypes.data_browser.data_browser: legacy_type.data_browser:data_browser
+      htypes.file_bundles.bundle_item: legacy_type.file_bundles:bundle_item
       htypes.file_bundles.bundle_list: legacy_type.file_bundles:bundle_list
+      services.file_bundle: common.file_bundle:file_bundle.service
   global_model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:global_model_command_d
@@ -85,6 +100,24 @@ definitions:
   model_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_d
+  open:
+    _type: legacy_type.builtin:attribute
+    object: file_bundles.module
+    attr_name: open
+  open.command:
+    _type: legacy_type.ui:model_command
+    d:
+    - open.d
+    - model_command_kind_d
+    - context_model_command_kind_d
+    name: open
+    function: open
+    params:
+    - piece
+    - current_item
+  open.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.file_bundles:open_d
   open_file_bundle_list:
     _type: legacy_type.builtin:attribute
     object: file_bundles.module

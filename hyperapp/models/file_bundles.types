@@ -1,8 +1,13 @@
 bundle_list = record
 
-bundle = record:
+bundle_item = record:
   name: string
   path: string
 
+file_bundle = record:
+  path: string
+
+
 open_file_bundle_list_d = record
 file_bundle_list_d = record
+open_d = record

@@ -1,6 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
+- common.file_bundle:file_bundle.service
 - legacy_type.builtin:python_module
 - legacy_type.phony:phony
 associations: []
@@ -10,6 +11,7 @@ definitions:
     module_name: file_bundles.tests
     file_name: file_bundles.tests.dyn.py
     import_list:
+      services.file_bundle: common.file_bundle:file_bundle.service
       tested.code.file_bundles: phony
   phony:
     _type: legacy_type.phony:phony
