@@ -1,5 +1,4 @@
 import logging
-from collections import namedtuple
 
 from PySide6 import QtWidgets
 
@@ -11,14 +10,12 @@ from .services import (
     visualizer,
     web,
     )
-from .code.view import View
+from .code.view import Item, View
 
 log = logging.getLogger(__name__)
 
 
 class FormView(View):
-
-    _Field = namedtuple('_Field', 'view widget')
 
     @classmethod
     def from_piece(cls, piece, model, ctx):
@@ -30,7 +27,7 @@ class FormView(View):
         self._adapter_ref = adapter_ref
         self._adapter = adapter
         self._lcs = lcs
-        self._fields = {}  # name -> _Field
+        self._fields = {}  # name -> view
 
     @property
     def piece(self):
@@ -53,19 +50,39 @@ class FormView(View):
             view = model_view_creg.animate(view_piece, field, ctx)
             fs = field_state.get(name)
             w = view.construct_widget(fs, ctx)
-            self._fields[name] = self._Field(view, w)
+            self._fields[name] = view
             layout.addWidget(w)
         return widget
 
+    def get_current(self, widget):
+        layout = widget.layout()
+        for idx in range(len(self._fields)):
+            w = self.item_widget(widget, idx)
+            if w.hasFocus():
+                return idx
+        return 0
+
     def widget_state(self, widget):
-        fields = tuple(
-            htypes.form.field(name, mosaic.put(field.view.widget_state(field.widget)))
-            for name, field in self._fields.items()
-            )
-        return htypes.form.state(fields)
+        field_list = []
+        for idx, (name, view) in enumerate(self._fields.items()):
+            w = self.item_widget(widget, idx)
+            state = view.widget_state(w)
+            field = htypes.form.field(name, mosaic.put(state))
+            field_list.append(field)
+        return htypes.form.state(tuple(field_list))
 
     def get_model(self):
         return self._adapter.model
 
     def model_state(self, widget):
         return None
+
+    def items(self):
+        return [
+            Item(name, view, focusable=True)
+            for name, view in self._fields.items()
+            ]
+
+    def item_widget(self, widget, idx):
+        layout = widget.layout()
+        return layout.itemAt(idx*2 + 1).widget()
