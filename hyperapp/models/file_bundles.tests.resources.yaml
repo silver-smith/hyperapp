@@ -1,0 +1,15 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.builtin:python_module
+- legacy_type.phony:phony
+associations: []
+definitions:
+  file_bundles.tests.module:
+    _type: legacy_type.builtin:python_module
+    module_name: file_bundles.tests
+    file_name: file_bundles.tests.dyn.py
+    import_list:
+      tested.code.file_bundles: phony
+  phony:
+    _type: legacy_type.phony:phony

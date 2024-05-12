@@ -1,0 +1,8 @@
+bundle_list = record
+
+bundle = record:
+  name: string
+  path: string
+
+open_file_bundle_list_d = record
+file_bundle_list_d = record
