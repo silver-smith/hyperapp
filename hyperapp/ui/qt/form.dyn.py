@@ -3,7 +3,10 @@ from collections import namedtuple
 
 from PySide6 import QtWidgets
 
+from . import htypes
 from .services import (
+    model_view_creg,
+    mosaic,
     ui_adapter_creg,
     visualizer,
     web,
@@ -47,18 +50,22 @@ class FormView(View):
             layout.addWidget(QtWidgets.QLabel(text=name))
             field = self._adapter.get_field(name)
             view_piece = visualizer(self._lcs, field)
-            view = model_view_creg.animate(view_piece, piece, self._ctx)
+            view = model_view_creg.animate(view_piece, field, ctx)
             fs = field_state.get(name)
-            w = view.create_widget(fs, ctx)
+            w = view.construct_widget(fs, ctx)
             self._fields[name] = self._Field(view, w)
             layout.addWidget(w)
+        return widget
 
     def widget_state(self, widget):
-        fields = [
+        fields = tuple(
             htypes.form.field(name, mosaic.put(field.view.widget_state(field.widget)))
             for name, field in self._fields.items()
-            ]
+            )
         return htypes.form.state(fields)
+
+    def get_model(self):
+        return self._adapter.model
 
     def model_state(self, widget):
         return None

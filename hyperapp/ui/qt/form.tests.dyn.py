@@ -56,6 +56,7 @@ def test_form():
         assert view.piece
         state = view.widget_state(widget)
         assert state
+        assert view.get_model() == model
         model_state = view.model_state(widget)
         # assert model_state
     finally:
