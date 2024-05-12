@@ -3,15 +3,13 @@ import logging
 import weakref
 
 from hyperapp.common.htypes import TList
-from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 
 from .services import (
+    deduce_t,
     feed_factory,
-    mosaic,
     peer_registry,
     pyobj_creg,
     rpc_call_factory,
-    types,
     web,
     )
 from .code.list_diff import ListDiff
@@ -23,7 +21,7 @@ class StaticListAdapter:
 
     @classmethod
     def from_piece(cls, piece, model, ctx):
-        list_t = deduce_complex_value_type(mosaic, types, model)
+        list_t = deduce_t(model)
         assert isinstance(list_t, TList), repr(list_t)
         return cls(list_t.element_t, model)
 

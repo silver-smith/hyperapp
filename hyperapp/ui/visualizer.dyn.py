@@ -1,16 +1,15 @@
 import logging
 
 from hyperapp.common.htypes import tInt, tString, TList
-from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 
 from . import htypes
 from .services import (
     association_reg,
     data_to_res,
+    deduce_t,
     mark,
     mosaic,
     pyobj_creg,
-    types,
     web,
     )
 
@@ -80,7 +79,7 @@ def _default_layout(t, value):
 @mark.service
 def visualizer():
     def fn(lcs, value):
-        t = deduce_complex_value_type(mosaic, types, value)
+        t = deduce_t(value)
 
         view = _primitive_value_layout(t, value)
         if view is not None:

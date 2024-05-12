@@ -1,6 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:types.service
@@ -68,6 +69,7 @@ definitions:
     file_name: list_adapter.dyn.py
     import_list:
       code.list_diff: common.list_diff:list_diff.module
+      services.deduce_t: builtins:deduce_t.service
       services.feed_factory: ui.feed:feed_factory.service
       services.mosaic: builtins:mosaic.service
       services.peer_registry: transport.identity:peer_registry.service

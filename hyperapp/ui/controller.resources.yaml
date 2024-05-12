@@ -1,6 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:types.service
@@ -46,6 +47,7 @@ definitions:
       htypes.root.state: legacy_type.root:state
       htypes.root.view: legacy_type.root:view
       htypes.ui.model_view_layout_d: legacy_type.ui:model_view_layout_d
+      services.deduce_t: builtins:deduce_t.service
       services.feed_factory: ui.feed:feed_factory.service
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service

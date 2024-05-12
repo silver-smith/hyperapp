@@ -1,13 +1,11 @@
 import logging
 from functools import partial
 
-from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
-
 from . import htypes
 from .services import (
+    deduce_t,
     mark,
     mosaic,
-    types,
     model_view_creg,
     web,
     )
@@ -34,7 +32,7 @@ class NavigatorView(View):
 
     @property
     def piece(self):
-        model_t = deduce_complex_value_type(mosaic, types, self._model)
+        model_t = deduce_t(self._model)
         return htypes.navigator.view(
             current_view=mosaic.put(self._current_view.piece),
             current_model=mosaic.put(self._model, model_t),

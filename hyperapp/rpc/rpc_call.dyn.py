@@ -4,21 +4,20 @@ from concurrent.futures import Future
 from functools import partial
 
 from hyperapp.common.htypes import HException
-from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 
 from . import htypes
 from .services import (
+    deduce_t,
     mark,
     mosaic,
     transport,
-    types,
     )
 
 log = logging.getLogger(__name__)
 
 
 def _param_value_to_ref(value):
-    t = deduce_complex_value_type(mosaic, types, value)
+    t = deduce_t(value)
     if type(value) is list:
         value = tuple(value)
     return mosaic.put(value, t)

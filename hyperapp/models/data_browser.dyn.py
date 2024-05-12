@@ -1,17 +1,12 @@
 from hyperapp.common.htypes import TPrimitive, TRecord, ref_t
-from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 
 from . import htypes
 from .services import (
+    deduce_t,
     mark,
     mosaic,
-    types,
     web,
     )
-
-
-def deduce_t(data):
-    return deduce_complex_value_type(mosaic, types, data)
 
 
 def browse(piece):

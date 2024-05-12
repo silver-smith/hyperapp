@@ -1,4 +1,5 @@
 import:
+  - builtins:deduce_t.service
   - builtins:hyperapp_dir.service
   - builtins:mosaic.service
   - builtins:types.service
@@ -23,6 +24,7 @@ definitions:
       htypes.inspect.object_t: legacy_type.inspect:object_t
       htypes.inspect.coroutine_t: legacy_type.inspect:coroutine_t
       htypes.inspect.data_t: legacy_type.inspect:data_t
+      services.deduce_t: builtins:deduce_t.service
       services.hyperapp_dir: builtins:hyperapp_dir.service
       services.mosaic: builtins:mosaic.service
       services.types: builtins:types.service

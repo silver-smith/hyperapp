@@ -2,6 +2,7 @@
 
 import:
 - builtins:association_reg.service
+- builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:types.service
@@ -56,6 +57,7 @@ definitions:
       htypes.ui.tree_ui_t: legacy_type.ui:tree_ui_t
       services.association_reg: builtins:association_reg.service
       services.data_to_res: resource.data_to_res:data_to_res.service
+      services.deduce_t: builtins:deduce_t.service
       services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service

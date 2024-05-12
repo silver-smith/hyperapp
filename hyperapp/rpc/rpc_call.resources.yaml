@@ -1,6 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:types.service
 - common.mark:mark.service
@@ -21,6 +22,7 @@ definitions:
       htypes.rpc.param: legacy_type.rpc:param
       htypes.rpc.request: legacy_type.rpc:request
       htypes.rpc.server_error: legacy_type.rpc:server_error
+      services.deduce_t: builtins:deduce_t.service
       services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service
       services.transport: transport.transport:transport.service

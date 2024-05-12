@@ -1,9 +1,8 @@
 from unittest.mock import Mock
 
-from hyperapp.common.htypes import tInt
-from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
-
 from PySide6 import QtWidgets
+
+from hyperapp.common.htypes import tInt
 
 from . import htypes
 from .services import (

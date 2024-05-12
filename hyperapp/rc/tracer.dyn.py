@@ -5,10 +5,11 @@ from contextlib import contextmanager
 from functools import partial
 
 from hyperapp.common.htypes import TPrimitive, TList, TRecord
-from hyperapp.common.htypes.deduce_value_type import DeduceTypeError, deduce_complex_value_type, safe_repr
+from hyperapp.common.htypes.deduce_value_type import DeduceTypeError, safe_repr
 
 from . import htypes
 from .services import (
+    deduce_t,
     hyperapp_dir,
     mosaic,
     types,
@@ -19,7 +20,7 @@ log = logging.getLogger(__name__)
 def value_type(value):
     log.debug("Get type for value: %s", safe_repr(value))
     try:
-        t = deduce_complex_value_type(mosaic, types, value)
+        t = deduce_t(value)
     except DeduceTypeError:
         log.info("Non-data type: %r", value.__class__.__name__)
         if inspect.iscoroutine(value):

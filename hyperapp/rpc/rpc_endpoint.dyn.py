@@ -6,18 +6,17 @@ from collections import namedtuple
 from functools import partial
 
 from hyperapp.common.htypes import HException
-from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 
 from . import htypes
 from .services import (
     code_registry_ctr,
+    deduce_t,
     mark,
     mosaic,
     on_stop,
     peer_registry,
     pyobj_creg,
     transport,
-    types,
     )
 
 log = logging.getLogger(__name__)
@@ -76,7 +75,7 @@ class RpcEndpoint:
             log.info("Rpc servant %s call result: %s", servant_fn, result)
             if type(result) is list:
                 result = tuple(result)
-            result_t = deduce_complex_value_type(mosaic, types, result)
+            result_t = deduce_t(result)
             result_ref = mosaic.put(result, result_t)
             response = htypes.rpc.response(
                 request_id=request.request_id,

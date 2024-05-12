@@ -8,15 +8,14 @@ from dataclasses import dataclass
 from functools import cached_property, partial
 from typing import Any, Self
 
-from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 from hyperapp.common import dict_coders  # register codec
 
 from . import htypes
 from .services import (
+    deduce_t,
     feed_factory,
     mosaic,
     pyobj_creg,
-    types,
     ui_command_creg,
     ui_command_factory,
     ui_model_command_factory,
@@ -273,7 +272,7 @@ class _Item:
 
     def _set_model_layout(self, layout):
         model = self._find_child_model()
-        t = deduce_complex_value_type(mosaic, types, model)
+        t = deduce_t(model)
         log.info("Controller: Set layout for %s -> %s", t, layout)
         t_res = pyobj_creg.reverse_resolve(t)
         d = {

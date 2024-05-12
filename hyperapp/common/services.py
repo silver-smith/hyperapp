@@ -7,6 +7,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from .htypes import BuiltinTypeRegistry, register_builtin_types
+from .htypes.deduce_value_type import deduce_complex_value_type
 from .ref import ref_repr
 from .mosaic import Mosaic
 from .web import Web
@@ -79,6 +80,7 @@ class Services(object):
         'builtin_types_as_dict',
         'legacy_type_resource_loader',
         'builtin_service_resource_loader',
+        'deduce_t',
     ]
 
     def __init__(self, module_dir_list, additional_resource_dirs=None):
@@ -109,6 +111,7 @@ class Services(object):
         self.resource_type_factory = partial(ResourceType, self.types, self.mosaic, self.web)
         self.resource_type_reg = {}  # resource_t -> ResourceType instance
         self.pyobj_creg = PyObjRegistry(self.mosaic, self.web, self.types, self.association_reg)
+        self.deduce_t = partial(deduce_complex_value_type, self.mosaic, self.types)
         self.unbundler = Unbundler(self.web, self.mosaic, self.association_reg)
         self.resource_type_producer = partial(resource_type_producer, self.resource_type_factory, self.resource_type_reg)
         self.resource_type_reg[python_module_t] = PythonModuleResourceType()

@@ -2,6 +2,7 @@
 
 import:
 - builtins:code_registry_ctr.service
+- builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:on_stop.service
 - builtins:pyobj_creg.service
@@ -28,6 +29,7 @@ definitions:
       htypes.rpc.response: legacy_type.rpc:response
       htypes.rpc.server_error: legacy_type.rpc:server_error
       services.code_registry_ctr: builtins:code_registry_ctr.service
+      services.deduce_t: builtins:deduce_t.service
       services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service
       services.on_stop: builtins:on_stop.service

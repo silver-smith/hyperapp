@@ -2,8 +2,6 @@ import asyncio
 import logging
 from functools import partial
 
-from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
-
 from . import htypes
 from .services import (
     endpoint_registry,
