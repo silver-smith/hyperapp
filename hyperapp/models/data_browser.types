@@ -6,6 +6,7 @@ record_item = record:
   type: string
   value: string
 
+
 primitive_view = record:
   data: ref
 
@@ -13,7 +14,19 @@ primitive_item = record:
   type: string
   value: string
 
+
+ref_list_view = record:
+  data: ref
+
+ref_list_item = record:
+  idx: int
+  type: string
+  value: string
+
+
 browse_record_d = record
 browse_primitive_d = record
+browse_ref_list_d = record
 record_open_d = record
+ref_list_open_d = record
 browse_current_model_d = record

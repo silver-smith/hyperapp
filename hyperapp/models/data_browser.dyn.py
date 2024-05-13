@@ -1,4 +1,4 @@
-from hyperapp.common.htypes import TPrimitive, TRecord, ref_t
+from hyperapp.common.htypes import TPrimitive, TList, TRecord, ref_t
 
 from . import htypes
 from .services import (
@@ -18,6 +18,10 @@ def _data_browser(data, t):
         return htypes.data_browser.record_view(
             data=mosaic.put(data),
             )
+    if isinstance(t, TList) and t.element_t is ref_t:
+        return htypes.data_browser.ref_list_view(
+            data=mosaic.put(data),
+            )
     raise RuntimeError(f"Data browser: Unsupported type: {t}: {data}")
 
 
@@ -34,16 +38,6 @@ def browse_record(piece):
         ]
 
 
-@mark.model
-def browse_primitive(piece):
-    data = web.summon(piece.data)
-    data_t = deduce_t(data)
-    return htypes.data_browser.primitive_item(
-        type=str(data_t),
-        value=str(data),
-        )
-
-
 def record_open(piece, current_item):
     data = web.summon(piece.data)
     data_t = deduce_t(data)
@@ -54,6 +48,38 @@ def record_open(piece, current_item):
         value = web.summon(value)
         field_t = deduce_t(value)
     return _data_browser(value, field_t)
+
+
+def browse_ref_list(piece):
+    data = web.summon(piece.data)
+    result = []
+    for idx, elt_ref in enumerate(data):
+        elt = web.summon(elt_ref)
+        item = htypes.data_browser.ref_list_item(
+            idx=idx,
+            type=str(deduce_t(elt)),
+            value=str(elt),
+            )
+        result.append(item)
+    return result
+
+
+def ref_list_open(piece, current_item):
+    data = web.summon(piece.data)
+    value_ref = data[current_item.idx]
+    value = web.summon(value_ref)
+    t = deduce_t(value)
+    return _data_browser(value, t)
+
+
+@mark.model
+def browse_primitive(piece):
+    data = web.summon(piece.data)
+    data_t = deduce_t(data)
+    return htypes.data_browser.primitive_item(
+        type=str(data_t),
+        value=str(data),
+        )
 
 
 def browse_current_model(piece):

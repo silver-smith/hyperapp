@@ -11,11 +11,15 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.data_browser:browse_current_model_d
 - legacy_type.data_browser:browse_record_d
+- legacy_type.data_browser:browse_ref_list_d
 - legacy_type.data_browser:primitive_item
 - legacy_type.data_browser:primitive_view
 - legacy_type.data_browser:record_item
 - legacy_type.data_browser:record_open_d
 - legacy_type.data_browser:record_view
+- legacy_type.data_browser:ref_list_item
+- legacy_type.data_browser:ref_list_open_d
+- legacy_type.data_browser:ref_list_view
 - legacy_type.ui:context_model_command_kind_d
 - legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
@@ -56,6 +60,24 @@ associations:
   - model_d
   - legacy_type.data_browser:record_view
   value: browse_record.model
+- bases:
+  - legacy_type.data_browser:ref_list_view
+  key:
+  - model_command_d
+  - legacy_type.data_browser:ref_list_view
+  value: browse_ref_list.command
+- bases:
+  - legacy_type.data_browser:ref_list_view
+  key:
+  - model_command_d
+  - legacy_type.data_browser:ref_list_view
+  value: ref_list_open.command
+- bases:
+  - legacy_type.data_browser:ref_list_view
+  key:
+  - model_d
+  - legacy_type.data_browser:ref_list_view
+  value: browse_ref_list.model
 definitions:
   browse_current_model:
     _type: legacy_type.builtin:attribute
@@ -118,6 +140,34 @@ definitions:
   browse_record.ui_t:
     _type: legacy_type.ui:list_ui_t
     element_t: legacy_type.data_browser:record_item
+  browse_ref_list:
+    _type: legacy_type.builtin:attribute
+    object: data_browser.module
+    attr_name: browse_ref_list
+  browse_ref_list.command:
+    _type: legacy_type.ui:model_command
+    d:
+    - browse_ref_list.d
+    - model_command_kind_d
+    name: browse_ref_list
+    function: browse_ref_list
+    params:
+    - piece
+  browse_ref_list.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.data_browser:browse_ref_list_d
+  browse_ref_list.impl:
+    _type: legacy_type.ui:fn_impl
+    function: browse_ref_list
+    params:
+    - piece
+  browse_ref_list.model:
+    _type: legacy_type.ui:model
+    ui_t: browse_ref_list.ui_t
+    impl: browse_ref_list.impl
+  browse_ref_list.ui_t:
+    _type: legacy_type.ui:list_ui_t
+    element_t: legacy_type.data_browser:ref_list_item
   context_model_command_kind_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:context_model_command_kind_d
@@ -130,6 +180,8 @@ definitions:
       htypes.data_browser.primitive_view: legacy_type.data_browser:primitive_view
       htypes.data_browser.record_item: legacy_type.data_browser:record_item
       htypes.data_browser.record_view: legacy_type.data_browser:record_view
+      htypes.data_browser.ref_list_item: legacy_type.data_browser:ref_list_item
+      htypes.data_browser.ref_list_view: legacy_type.data_browser:ref_list_view
       services.deduce_t: builtins:deduce_t.service
       services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service
@@ -168,3 +220,21 @@ definitions:
   record_open.d:
     _type: legacy_type.builtin:call
     function: legacy_type.data_browser:record_open_d
+  ref_list_open:
+    _type: legacy_type.builtin:attribute
+    object: data_browser.module
+    attr_name: ref_list_open
+  ref_list_open.command:
+    _type: legacy_type.ui:model_command
+    d:
+    - ref_list_open.d
+    - model_command_kind_d
+    - context_model_command_kind_d
+    name: ref_list_open
+    function: ref_list_open
+    params:
+    - piece
+    - current_item
+  ref_list_open.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.data_browser:ref_list_open_d

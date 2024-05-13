@@ -49,6 +49,7 @@ _hardcoded_shortcuts = {
     'open_tab_list': 'Alt+T',
     'browse_current_model': 'Ctrl+F1',
     'record_open': 'Return',
+    'ref_list_open': 'Return',
     'open_file_bundle_list': 'Alt+B',
     }
 
