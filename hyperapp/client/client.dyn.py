@@ -93,8 +93,8 @@ def make_default_state():
     window_state = htypes.window.state(
         menu_bar_state=mosaic.put(htypes.menu_bar.state()),
         central_view_state=mosaic.put(outer_tabs_state),
-        size=htypes.window.size(500, 500),
-        pos=htypes.window.pos(1000, 500),
+        size=htypes.window.size(1600, 700),
+        pos=htypes.window.pos(500, 500),
         )
     return htypes.root.state(
         window_list=(mosaic.put(window_state),),
