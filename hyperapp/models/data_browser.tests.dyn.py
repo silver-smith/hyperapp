@@ -34,6 +34,27 @@ def test_browse_record():
     assert result[1].name == 'sample_list'
 
 
+def test_browse_list():
+    elt_1 = "Sample element 1"
+    elt_2 = "Sample element 2"
+    data = (elt_1, elt_2)
+    piece = data_browser.browse_current_model(data)
+    assert isinstance(piece, htypes.data_browser.list_view)
+    result = data_browser.browse_list(piece)
+    assert type(result) is list
+    assert len(result) == 2
+    assert isinstance(result[0], htypes.data_browser.list_item)
+    assert result[0].idx == 0
+    assert result[0].value == elt_1
+    assert result[1].idx == 1
+    assert result[1].value == str(elt_2)
+
+    current_item = result[1]
+    view = data_browser.list_open(piece, current_item)
+    assert isinstance(view, htypes.data_browser.primitive_view)
+    assert web.summon(view.data) == elt_2
+
+
 def test_browse_ref_list():
     elt_1 = "Sample element 1"
     elt_2 = 12345

@@ -10,8 +10,12 @@ import:
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.data_browser:browse_current_model_d
+- legacy_type.data_browser:browse_list_d
 - legacy_type.data_browser:browse_record_d
 - legacy_type.data_browser:browse_ref_list_d
+- legacy_type.data_browser:list_item
+- legacy_type.data_browser:list_open_d
+- legacy_type.data_browser:list_view
 - legacy_type.data_browser:primitive_item
 - legacy_type.data_browser:primitive_view
 - legacy_type.data_browser:record_item
@@ -36,6 +40,24 @@ associations:
   - global_model_command_d
   key: global_model_command_d
   value: browse_current_model.command
+- bases:
+  - legacy_type.data_browser:list_view
+  key:
+  - model_command_d
+  - legacy_type.data_browser:list_view
+  value: browse_list.command
+- bases:
+  - legacy_type.data_browser:list_view
+  key:
+  - model_command_d
+  - legacy_type.data_browser:list_view
+  value: list_open.command
+- bases:
+  - legacy_type.data_browser:list_view
+  key:
+  - model_d
+  - legacy_type.data_browser:list_view
+  value: browse_list.model
 - bases:
   - legacy_type.data_browser:primitive_view
   key:
@@ -96,6 +118,34 @@ definitions:
   browse_current_model.d:
     _type: legacy_type.builtin:call
     function: legacy_type.data_browser:browse_current_model_d
+  browse_list:
+    _type: legacy_type.builtin:attribute
+    object: data_browser.module
+    attr_name: browse_list
+  browse_list.command:
+    _type: legacy_type.ui:model_command
+    d:
+    - browse_list.d
+    - model_command_kind_d
+    name: browse_list
+    function: browse_list
+    params:
+    - piece
+  browse_list.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.data_browser:browse_list_d
+  browse_list.impl:
+    _type: legacy_type.ui:fn_impl
+    function: browse_list
+    params:
+    - piece
+  browse_list.model:
+    _type: legacy_type.ui:model
+    ui_t: browse_list.ui_t
+    impl: browse_list.impl
+  browse_list.ui_t:
+    _type: legacy_type.ui:list_ui_t
+    element_t: legacy_type.data_browser:list_item
   browse_primitive:
     _type: legacy_type.builtin:attribute
     object: data_browser.module
@@ -176,6 +226,8 @@ definitions:
     module_name: data_browser
     file_name: data_browser.dyn.py
     import_list:
+      htypes.data_browser.list_item: legacy_type.data_browser:list_item
+      htypes.data_browser.list_view: legacy_type.data_browser:list_view
       htypes.data_browser.primitive_item: legacy_type.data_browser:primitive_item
       htypes.data_browser.primitive_view: legacy_type.data_browser:primitive_view
       htypes.data_browser.record_item: legacy_type.data_browser:record_item
@@ -193,6 +245,24 @@ definitions:
   global_model_command_kind_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:global_model_command_kind_d
+  list_open:
+    _type: legacy_type.builtin:attribute
+    object: data_browser.module
+    attr_name: list_open
+  list_open.command:
+    _type: legacy_type.ui:model_command
+    d:
+    - list_open.d
+    - model_command_kind_d
+    - context_model_command_kind_d
+    name: list_open
+    function: list_open
+    params:
+    - piece
+    - current_item
+  list_open.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.data_browser:list_open_d
   model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_command_d

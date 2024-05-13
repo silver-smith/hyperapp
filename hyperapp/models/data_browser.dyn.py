@@ -12,15 +12,19 @@ from .services import (
 def _data_browser(data, t):
     if isinstance(t, TPrimitive):
         return htypes.data_browser.primitive_view(
-            data=mosaic.put(data),
+            data=mosaic.put(data, t),
             )
     if isinstance(t, TRecord):
         return htypes.data_browser.record_view(
-            data=mosaic.put(data),
+            data=mosaic.put(data, t),
             )
     if isinstance(t, TList) and t.element_t is ref_t:
         return htypes.data_browser.ref_list_view(
-            data=mosaic.put(data),
+            data=mosaic.put(data, t),
+            )
+    if isinstance(t, TList):
+        return htypes.data_browser.list_view(
+            data=mosaic.put(data, t),
             )
     raise RuntimeError(f"Data browser: Unsupported type: {t}: {data}")
 
@@ -48,6 +52,24 @@ def record_open(piece, current_item):
         value = web.summon(value)
         field_t = deduce_t(value)
     return _data_browser(value, field_t)
+
+
+def browse_list(piece):
+    data = web.summon(piece.data)
+    return [
+        htypes.data_browser.list_item(
+            idx=idx,
+            value=str(elt),
+            )
+        for idx, elt in enumerate(data)
+        ]
+
+
+def list_open(piece, current_item):
+    data = web.summon(piece.data)
+    value = data[current_item.idx]
+    t = deduce_t(value)
+    return _data_browser(value, t)
 
 
 def browse_ref_list(piece):
