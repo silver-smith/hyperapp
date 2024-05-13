@@ -6,12 +6,21 @@ import:
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.sample_record:item
+- legacy_type.sample_record:open_sample_fn_record_d
 - legacy_type.sample_record:sample_record
 - legacy_type.ui:fn_impl
+- legacy_type.ui:global_model_command_d
+- legacy_type.ui:global_model_command_kind_d
 - legacy_type.ui:model
+- legacy_type.ui:model_command
+- legacy_type.ui:model_command_kind_d
 - legacy_type.ui:model_d
 - legacy_type.ui:record_ui_t
 associations:
+- bases:
+  - global_model_command_d
+  key: global_model_command_d
+  value: open_sample_fn_record.command
 - bases:
   - legacy_type.sample_record:sample_record
   key:
@@ -19,9 +28,34 @@ associations:
   - legacy_type.sample_record:sample_record
   value: sample_record.model
 definitions:
+  global_model_command_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:global_model_command_d
+  global_model_command_kind_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:global_model_command_kind_d
+  model_command_kind_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:model_command_kind_d
   model_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_d
+  open_sample_fn_record:
+    _type: legacy_type.builtin:attribute
+    object: sample_record.module
+    attr_name: open_sample_fn_record
+  open_sample_fn_record.command:
+    _type: legacy_type.ui:model_command
+    d:
+    - open_sample_fn_record.d
+    - model_command_kind_d
+    - global_model_command_kind_d
+    name: open_sample_fn_record
+    function: open_sample_fn_record
+    params: []
+  open_sample_fn_record.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.sample_record:open_sample_fn_record_d
   sample_record:
     _type: legacy_type.builtin:attribute
     object: sample_record.module
@@ -41,6 +75,7 @@ definitions:
     file_name: sample_record.dyn.py
     import_list:
       htypes.sample_record.item: legacy_type.sample_record:item
+      htypes.sample_record.sample_record: legacy_type.sample_record:sample_record
       services.mark: common.mark:mark.service
   sample_record.ui_t:
     _type: legacy_type.ui:record_ui_t
