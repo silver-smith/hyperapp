@@ -54,18 +54,17 @@ class ModelCommandImplementationCtr(CommandImplementationCtr):
         reason = super().check_applicable(fn_info)
         if reason:
             return reason
-        if not fn_info.result.is_single:
-            return f"Result has not one, but {fn_info.result.count} type variants: {fn_info.result.cases}"
-        if not fn_info.result.is_data:
-            return f"Result is not a data: {fn_info.result!r}"
-        result_is_accepted = (
-            isinstance(fn_info.result.data_t, TRecord) or
-            isinstance(fn_info.result.data_t, TList) and isinstance(fn_info.result.data_t.element_t, TRecord) or
-            fn_info.result.data_t is tString or
-            fn_info.result.data_t is tNone
-            )
-        if not result_is_accepted:
-            return f"Result is not a record, list of records, string or None: {fn_info.result.data_t!r}"
+        for result in fn_info.result.cases:
+            if not result.is_data:
+                return f"Result case is not a data: {result!r}"
+            result_is_accepted = (
+                isinstance(result.data_t, TRecord) or
+                isinstance(result.data_t, TList) and isinstance(result.data_t.element_t, TRecord) or
+                result.data_t is tString or
+                result.data_t is tNone
+                )
+            if not result_is_accepted:
+                return f"Result is not a record, list of records, string or None: {result.data_t!r}"
         accepted_params = {'piece', 'model_state', 'current_idx', 'current_item', 'controller', 'ctx'}
         reason = self._check_accepted_params(fn_info, accepted_params)
         if reason:
