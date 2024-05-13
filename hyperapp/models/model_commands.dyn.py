@@ -28,6 +28,8 @@ def list_model_commands(piece, ctx):
 
 
 async def run_command(piece, current_item, ctx):
+    if current_item is None:
+        return None  # Empty command list - no item is selected.
     model = web.summon(piece.model)
     command_ctx = ctx.clone_with(
         piece=model,
