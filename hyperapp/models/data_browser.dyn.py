@@ -1,4 +1,4 @@
-from hyperapp.common.htypes import TPrimitive, TList, TRecord, ref_t
+from hyperapp.common.htypes import TPrimitive, TList, TOptional, TRecord, ref_t
 
 from . import htypes
 from .services import (
@@ -26,6 +26,13 @@ def _data_browser(data, t):
         return htypes.data_browser.list_view(
             data=mosaic.put(data, t),
             )
+    if isinstance(t, TOptional):
+        if data is None:
+            return htypes.data_browser.primitive_view(
+                data=mosaic.put(None),
+                )
+        else:
+            return _data_browser(data, t.base_t)
     raise RuntimeError(f"Data browser: Unsupported type: {t}: {data}")
 
 

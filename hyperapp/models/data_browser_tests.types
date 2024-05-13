@@ -9,3 +9,6 @@ sample_data = record:
   sample_list: int list
   inner: inner_data
   value: ref
+
+sample_opt_data = record:
+  str_field: string opt

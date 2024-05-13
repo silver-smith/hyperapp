@@ -88,6 +88,37 @@ def test_browse_primitive():
     assert result.value == data
 
 
+def test_browse_primitive_string_opt():
+    field = "Sample primitive string"
+    data = htypes.data_browser_tests.sample_opt_data(
+        str_field=field,
+        )
+    piece = htypes.data_browser.record_view(mosaic.put(data))
+    current_item = htypes.data_browser.record_item(
+        name="str_field",
+        type="",
+        value="",
+        )
+    view = data_browser.record_open(piece, current_item)
+    assert isinstance(view, htypes.data_browser.primitive_view)
+    assert web.summon(view.data) == field
+
+
+def test_browse_primitive_string_opt_none():
+    data = htypes.data_browser_tests.sample_opt_data(
+        str_field=None,
+        )
+    piece = htypes.data_browser.record_view(mosaic.put(data))
+    current_item = htypes.data_browser.record_item(
+        name="str_field",
+        type="",
+        value="",
+        )
+    view = data_browser.record_open(piece, current_item)
+    assert isinstance(view, htypes.data_browser.primitive_view)
+    assert web.summon(view.data) == None
+
+
 def test_record_open():
     data = htypes.data_browser_tests.sample_data(
         name="Sample name",
