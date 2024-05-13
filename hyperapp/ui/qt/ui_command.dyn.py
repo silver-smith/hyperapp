@@ -48,6 +48,7 @@ _hardcoded_shortcuts = {
     'move_tab_to_new_group': 'Shift+Alt+T',
     'open_tab_list': 'Alt+T',
     'browse_current_model': 'Ctrl+F1',
+    'record_open': 'Return',
     'open_file_bundle_list': 'Alt+B',
     }
 

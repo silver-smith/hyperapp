@@ -5,7 +5,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
-- legacy_type.data_browser:data_browser
+- legacy_type.data_browser:record_view
 - legacy_type.file_bundles:bundle_item
 - legacy_type.file_bundles:bundle_list
 - legacy_type.file_bundles:file_bundle_list_d
@@ -81,7 +81,7 @@ definitions:
     module_name: file_bundles
     file_name: file_bundles.dyn.py
     import_list:
-      htypes.data_browser.data_browser: legacy_type.data_browser:data_browser
+      htypes.data_browser.record_view: legacy_type.data_browser:record_view
       htypes.file_bundles.bundle_item: legacy_type.file_bundles:bundle_item
       htypes.file_bundles.bundle_list: legacy_type.file_bundles:bundle_list
       services.file_bundle: common.file_bundle:file_bundle.service

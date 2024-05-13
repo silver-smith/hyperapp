@@ -1,19 +1,19 @@
-data_browser = record:
+record_view = record:
   data: ref
 
-item = record:
+record_item = record:
   name: string
   type: string
   value: string
 
-primitive_data_browser = record:
+primitive_view = record:
   data: ref
 
 primitive_item = record:
   type: string
   value: string
 
-browse_d = record
+browse_record_d = record
 browse_primitive_d = record
-open_d = record
+record_open_d = record
 browse_current_model_d = record

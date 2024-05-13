@@ -10,12 +10,12 @@ import:
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.data_browser:browse_current_model_d
-- legacy_type.data_browser:browse_d
-- legacy_type.data_browser:data_browser
-- legacy_type.data_browser:item
-- legacy_type.data_browser:open_d
-- legacy_type.data_browser:primitive_data_browser
+- legacy_type.data_browser:browse_record_d
 - legacy_type.data_browser:primitive_item
+- legacy_type.data_browser:primitive_view
+- legacy_type.data_browser:record_item
+- legacy_type.data_browser:record_open_d
+- legacy_type.data_browser:record_view
 - legacy_type.ui:context_model_command_kind_d
 - legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
@@ -33,58 +33,30 @@ associations:
   key: global_model_command_d
   value: browse_current_model.command
 - bases:
-  - legacy_type.data_browser:data_browser
-  key:
-  - model_command_d
-  - legacy_type.data_browser:data_browser
-  value: browse.command
-- bases:
-  - legacy_type.data_browser:data_browser
-  key:
-  - model_command_d
-  - legacy_type.data_browser:data_browser
-  value: open.command
-- bases:
-  - legacy_type.data_browser:data_browser
+  - legacy_type.data_browser:primitive_view
   key:
   - model_d
-  - legacy_type.data_browser:data_browser
-  value: browse.model
-- bases:
-  - legacy_type.data_browser:primitive_data_browser
-  key:
-  - model_d
-  - legacy_type.data_browser:primitive_data_browser
+  - legacy_type.data_browser:primitive_view
   value: browse_primitive.model
+- bases:
+  - legacy_type.data_browser:record_view
+  key:
+  - model_command_d
+  - legacy_type.data_browser:record_view
+  value: browse_record.command
+- bases:
+  - legacy_type.data_browser:record_view
+  key:
+  - model_command_d
+  - legacy_type.data_browser:record_view
+  value: record_open.command
+- bases:
+  - legacy_type.data_browser:record_view
+  key:
+  - model_d
+  - legacy_type.data_browser:record_view
+  value: browse_record.model
 definitions:
-  browse:
-    _type: legacy_type.builtin:attribute
-    object: data_browser.module
-    attr_name: browse
-  browse.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - browse.d
-    - model_command_kind_d
-    name: browse
-    function: browse
-    params:
-    - piece
-  browse.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.data_browser:browse_d
-  browse.impl:
-    _type: legacy_type.ui:fn_impl
-    function: browse
-    params:
-    - piece
-  browse.model:
-    _type: legacy_type.ui:model
-    ui_t: browse.ui_t
-    impl: browse.impl
-  browse.ui_t:
-    _type: legacy_type.ui:list_ui_t
-    element_t: legacy_type.data_browser:item
   browse_current_model:
     _type: legacy_type.builtin:attribute
     object: data_browser.module
@@ -118,6 +90,34 @@ definitions:
   browse_primitive.ui_t:
     _type: legacy_type.ui:record_ui_t
     record_t: legacy_type.data_browser:primitive_item
+  browse_record:
+    _type: legacy_type.builtin:attribute
+    object: data_browser.module
+    attr_name: browse_record
+  browse_record.command:
+    _type: legacy_type.ui:model_command
+    d:
+    - browse_record.d
+    - model_command_kind_d
+    name: browse_record
+    function: browse_record
+    params:
+    - piece
+  browse_record.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.data_browser:browse_record_d
+  browse_record.impl:
+    _type: legacy_type.ui:fn_impl
+    function: browse_record
+    params:
+    - piece
+  browse_record.model:
+    _type: legacy_type.ui:model
+    ui_t: browse_record.ui_t
+    impl: browse_record.impl
+  browse_record.ui_t:
+    _type: legacy_type.ui:list_ui_t
+    element_t: legacy_type.data_browser:record_item
   context_model_command_kind_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:context_model_command_kind_d
@@ -126,10 +126,10 @@ definitions:
     module_name: data_browser
     file_name: data_browser.dyn.py
     import_list:
-      htypes.data_browser.data_browser: legacy_type.data_browser:data_browser
-      htypes.data_browser.item: legacy_type.data_browser:item
-      htypes.data_browser.primitive_data_browser: legacy_type.data_browser:primitive_data_browser
       htypes.data_browser.primitive_item: legacy_type.data_browser:primitive_item
+      htypes.data_browser.primitive_view: legacy_type.data_browser:primitive_view
+      htypes.data_browser.record_item: legacy_type.data_browser:record_item
+      htypes.data_browser.record_view: legacy_type.data_browser:record_view
       services.deduce_t: builtins:deduce_t.service
       services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service
@@ -150,21 +150,21 @@ definitions:
   model_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_d
-  open:
+  record_open:
     _type: legacy_type.builtin:attribute
     object: data_browser.module
-    attr_name: open
-  open.command:
+    attr_name: record_open
+  record_open.command:
     _type: legacy_type.ui:model_command
     d:
-    - open.d
+    - record_open.d
     - model_command_kind_d
     - context_model_command_kind_d
-    name: open
-    function: open
+    name: record_open
+    function: record_open
     params:
     - piece
     - current_item
-  open.d:
+  record_open.d:
     _type: legacy_type.builtin:call
-    function: legacy_type.data_browser:open_d
+    function: legacy_type.data_browser:record_open_d
