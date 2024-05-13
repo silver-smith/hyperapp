@@ -53,7 +53,8 @@ class _Item:
     focusable: bool
     _current_child_idx: int | None = None
     _widget: Any | None = None
-    _commands: list[CommandRec] | None = None
+    _view_commands: list[CommandRec] | None = None
+    _model_commands: list[CommandRec] | None = None
     _children: list[Self] | None = None
 
     def __repr__(self):
@@ -144,28 +145,40 @@ class _Item:
             return None
 
     @property
-    def commands(self):
-        if self._commands is None:
-            self._commands = self._make_commands()
-        return self._commands
+    def view_commands(self):
+        if self._view_commands is None:
+            self._view_commands = self._make_view_commands()
+        return self._view_commands
 
-    def _make_commands(self):
+    @property
+    def model_commands(self):
+        if self._model_commands is None:
+            self._model_commands = self._make_model_commands()
+        return self._model_commands
+
+    def _make_view_commands(self):
         ctx = self.command_context()
         commands = ui_command_factory(self.view)
-        if 'piece' in ctx:
-            commands += ui_model_command_factory(ctx.piece, ctx)
+        return [CommandRec(cmd, ctx) for cmd in commands]
+
+    def _make_model_commands(self):
+        model = self.model
+        if model is None:
+            return []
+        ctx = self._model_command_context(model)
+        commands = ui_model_command_factory(ctx.piece, ctx)
         return [CommandRec(cmd, ctx) for cmd in commands]
 
     def command_context(self):
-        ctx = self.ctx.clone_with(
+        return self.ctx.clone_with(
             view=self.view,
             widget=weakref.ref(self.widget),
             hook=self._hook,
             navigator=self.navigator_view,
             )
-        model = self.model
-        if model is None:
-            return ctx
+
+    def _model_command_context(self, model):
+        ctx = self.command_context()
         model_state = self.view.model_state(self.widget)
         return ctx.clone_with(
             piece=model,
@@ -209,43 +222,46 @@ class _Item:
 
     def update_commands(self):
 
-        def visit_item(item, commands):
+        def visit_item(item, view_commands, model_commands):
             if item.view is None:
-                return  # Root item.
-            commands = [*item.commands, *commands]
-            animated_commands = [cmd.animated for cmd in commands]
+                return (None, None)  # Root item.
+            view_commands = [*item.view_commands, *view_commands]
+            if item.model_commands:
+                model_commands = item.model_commands
+            animated_commands = [cmd.animated for cmd in view_commands + model_commands]
             item.view.set_commands(item.widget, animated_commands)
             for kid in item.children:
                 if not kid.focusable:
                     kid.view.set_commands(kid.widget, animated_commands)
-            return commands
+            return view_commands, model_commands
 
         def visit_item_and_children(item):
             if item.children:
-                commands = visit_item_and_children(item.current_child)
+                view_commands, model_commands = visit_item_and_children(item.current_child)
             else:
-                commands = []
-            commands = visit_item(item, commands)
-            return commands
+                view_commands = model_commands = []
+            view_commands, model_commands = visit_item(item, view_commands, model_commands)
+            return view_commands, model_commands
 
-        def visit_parents(item, commands):
+        def visit_parents(item, view_commands, model_commands):
             if not item.parent:
                 return
             if (item.parent.current_child_idx is not None
                     and item.parent.current_child_idx != item.idx):
                 return
-            commands = visit_item(item.parent, commands)
-            visit_parents(item.parent, commands)
+            view_commands, model_commands = visit_item(item.parent, view_commands, model_commands)
+            visit_parents(item.parent, view_commands, model_commands)
 
-        commands = visit_item_and_children(self)
-        visit_parents(self, commands)
+        view_commands, model_commands = visit_item_and_children(self)
+        visit_parents(self, view_commands, model_commands)
 
     def state_changed_hook(self):
         asyncio.create_task(self._state_changed_async())
 
     async def _state_changed_async(self):
         log.info("Controller: state changed for: %s", self)
-        self._commands = None
+        self._view_commands = None
+        self._model_commands = None
         self.update_commands()
         item = self.parent
         while item:
@@ -263,7 +279,8 @@ class _Item:
 
     def commands_changed_hook(self):
         log.info("Controller: commands changed for: %s", self)
-        self._commands = None
+        self._view_commands = None
+        self._model_commands = None
         self.update_commands()
 
     # Should be on stack for proper module for feed constructor be picked up.
@@ -301,7 +318,8 @@ class _Item:
 
     # Current navigator is changed, should update commands so their navigator be up-to-date.
     def _invalidate_parents_commands(self):
-        self._commands = None
+        self._view_commands = None
+        self._model_commands = None
         if self.parent:
             self.parent._invalidate_parents_commands()
 
@@ -343,7 +361,8 @@ class _Item:
         parent = self.parent
         parent.view.replace_child_widget(parent.widget, self.idx, new_widget)
         self._widget = None
-        self._commands = None
+        self._view_commands = None
+        self._model_commands = None
 
     def save_state(self):
         self.parent.save_state()
@@ -539,7 +558,7 @@ class Controller:
     def item_commands(self, item_id):
         item = self._id_to_item.get(item_id)
         if item:
-            return [rec.piece for rec in item.commands]
+            return [rec.piece for rec in item.view_commands + item.model_commands]
         else:
             return []
 
