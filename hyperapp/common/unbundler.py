@@ -14,10 +14,12 @@ class Unbundler:
         self._mosaic = mosaic
         self._association_reg = association_reg
 
-    def register_bundle(self, bundle):
+    def register_bundle(self, bundle, register_associations=True):
         ref_set = set()
         for capsule in bundle.capsule_list:
             ref_set.add(self._mosaic.register_capsule(capsule))
+        if not register_associations:
+            return ref_set
         # Meta associations should be registered before others. So, collect association list first.
         ass_list = []
         for ass_ref in bundle.associations:

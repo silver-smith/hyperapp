@@ -30,9 +30,9 @@ class FileBundle:
         self.path.write_bytes(data)
         log.info("Saved %s to %s (%d bytes)", ref, self.path, len(data))
 
-    def load_ref(self):
+    def load_ref(self, register_associations=True):
         bundle = packet_coders.decode(self._encoding, self.path.read_bytes(), bundle_t)
-        unbundler.register_bundle(bundle)
+        unbundler.register_bundle(bundle, register_associations)
         ref_count = len(bundle.roots)
         if ref_count != 1:
             raise RuntimeError(f"Bundle {self.path} has {ref_count} refs, but expected only one")
@@ -43,8 +43,8 @@ class FileBundle:
         ref = mosaic.put(piece)
         self.save_ref(ref)
 
-    def load_piece(self):
-        ref = self.load_ref()
+    def load_piece(self, register_associations=True):
+        ref = self.load_ref(register_associations)
         return mosaic.resolve_ref(ref).value
 
 

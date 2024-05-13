@@ -28,7 +28,7 @@ def open(piece, current_item):
     else:
         raise RuntimeError(f"Unknown file bundle encoding suffix: {path.suffix!r}")
     bundle = file_bundle(path, encoding)
-    piece_ref = bundle.load_ref()
+    piece_ref = bundle.load_ref(register_associations=False)
     return htypes.data_browser.record_view(
         data=piece_ref,
         )

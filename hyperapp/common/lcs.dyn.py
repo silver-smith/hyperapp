@@ -74,7 +74,7 @@ class LCSheet(LCSlice):
         if not self._bundle:
             return
         try:
-            storage = self._bundle.load_piece()
+            storage = self._bundle.load_piece(register_associations=False)
         except FileNotFoundError:
             pass
         else:
