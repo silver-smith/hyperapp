@@ -106,7 +106,10 @@ class CommandBase:
     async def run(self):
         if not self.enabled:
             raise RuntimeError(f"{self.name}: Disabled: {self.disabled_reason}")
-        return await self._run()
+        result = await self._run()
+        if type(result) is list:
+            result = tuple(result)
+        return result
 
 
 class FnCommandBase(CommandBase):

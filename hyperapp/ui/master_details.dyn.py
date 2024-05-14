@@ -83,8 +83,6 @@ class MasterDetailsView(BoxLayoutView):
         command = model_command_creg.animate(command_piece, command_ctx)
         piece = await command.run()
         log.info("Master-details: command result: %s", piece)
-        if type(piece) is list:
-            piece = tuple(piece)
         return piece
 
     @staticmethod
