@@ -16,7 +16,7 @@ from .services import (
 log = logging.getLogger(__name__)
 
 
-def _primitive_value_layout(t, value):
+def _primitive_value_layout(t):
     if t is tString:
         adapter = htypes.str_adapter.static_str_adapter()
         return htypes.text.edit_view(mosaic.put(adapter))
@@ -29,7 +29,7 @@ def _primitive_value_layout(t, value):
     return None
 
 
-def _configured_layout(lcs, t, value):
+def _configured_layout(lcs, t):
     t_res = pyobj_creg.reverse_resolve(t)
     d = {
         htypes.ui.model_view_layout_d(),
@@ -38,7 +38,7 @@ def _configured_layout(lcs, t, value):
     return lcs.get(d)
 
 
-def _default_layout(t, value):
+def _visualizer_info(t):
     model_d_res = data_to_res(htypes.ui.model_d())
     t_res = pyobj_creg.reverse_resolve(t)
     try:
@@ -47,6 +47,11 @@ def _default_layout(t, value):
         raise RuntimeError(f"No implementation is registered for model: {t}")
     ui_t = web.summon(model.ui_t)
     impl = web.summon(model.impl)
+    return (ui_t, impl)
+
+
+def _default_layout(t):
+    ui_t, impl = _visualizer_info(t)
 
     if isinstance(ui_t, htypes.ui.list_ui_t) and isinstance(impl, htypes.ui.fn_impl):
         adapter = htypes.list_adapter.fn_list_adapter(
@@ -77,19 +82,24 @@ def _default_layout(t, value):
 
 
 @mark.service
+def pick_visualizer_info():
+    return _visualizer_info
+
+
+@mark.service
 def visualizer():
     def fn(lcs, value):
         t = deduce_t(value)
 
-        view = _primitive_value_layout(t, value)
+        view = _primitive_value_layout(t)
         if view is not None:
             return view
 
-        view = _configured_layout(lcs, t, value)
+        view = _configured_layout(lcs, t)
         if view is not None:
             log.info("Using configured layout for %s: %s", t, view)
             return view
 
-        return _default_layout(t, value)
+        return _default_layout(t)
 
     return fn

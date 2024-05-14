@@ -30,6 +30,13 @@ import:
 - resource.data_to_res:data_to_res.service
 associations: []
 definitions:
+  pick_visualizer_info:
+    _type: legacy_type.builtin:attribute
+    object: visualizer.module
+    attr_name: pick_visualizer_info
+  pick_visualizer_info.service:
+    _type: legacy_type.builtin:call
+    function: pick_visualizer_info
   visualizer:
     _type: legacy_type.builtin:attribute
     object: visualizer.module
