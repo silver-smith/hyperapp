@@ -16,25 +16,16 @@ from .code.tree import VisualTreeDiffAppend, VisualTreeDiffInsert, VisualTreeDif
 log = logging.getLogger(__name__)
 
 
-class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
+class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
 
-    def __init__(self, model, item_t, params, ctx):
+    def __init__(self, model, ctx):
         self._model = model
-        self._item_t = item_t
-        self._params = params
         self._ctx = ctx
-        self._column_names = sorted(self._item_t.fields)
         self._id_to_item = {}
         self._id_to_children_id_list = {}
         self._id_to_parent_id = {}
         self._id_counter = itertools.count(start=1)
         self._subscribers = weakref.WeakSet()
-        try:
-            self._feed = feed_factory(model)
-        except KeyError:
-            self._feed = None
-        else:
-            self._feed.subscribe(self)
 
     def subscribe(self, subscriber):
         self._subscribers.add(subscriber)
@@ -42,12 +33,6 @@ class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
     @property
     def model(self):
         return self._model
-
-    def column_count(self):
-        return len(self._item_t.fields)
-
-    def column_title(self, column):
-        return self._column_names[column]
 
     def row_id(self, parent_id, row):
         try:
@@ -67,10 +52,6 @@ class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
     def row_count(self, parent_id):
         id_list = self._id_list(parent_id)
         return len(id_list)
-
-    def cell_data(self, id, column):
-        item = self._id_to_item[id]
-        return getattr(item, self._column_names[column])
 
     def get_item(self, id):
         return self._id_to_item.get(id)
@@ -115,6 +96,47 @@ class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
             parent_item = self._id_to_item[parent_id]  # Expecting upper level is already populated.
         else:
             parent_item = None
+        item_list = self._retrieve_item_list(parent_id, parent_item)
+        log.info("Tree adapter: retrieved item list (%s, %s) -> %s", self._model, parent_item, item_list)
+        item_id_list = []
+        for item in item_list:
+            id = next(self._id_counter)
+            item_id_list.append(id)
+            self._id_to_item[id] = item
+            self._id_to_parent_id[id] = parent_id
+        self._id_to_children_id_list[parent_id] = item_id_list
+        return item_id_list
+
+    @abc.abstractmethod
+    def _retrieve_item_list(self, parent_id, parent_item):
+        pass
+
+
+class FnIndexTreeAdapterBase(IndexTreeAdapterBase, metaclass=abc.ABCMeta):
+
+    def __init__(self, model, item_t, params, ctx):
+        super().__init__(model, ctx)
+        self._item_t = item_t
+        self._params = params
+        self._column_names = sorted(self._item_t.fields)
+        try:
+            self._feed = feed_factory(model)
+        except KeyError:
+            self._feed = None
+        else:
+            self._feed.subscribe(self)
+
+    def column_count(self):
+        return len(self._column_names)
+
+    def column_title(self, column):
+        return self._column_names[column]
+
+    def cell_data(self, id, column):
+        item = self._id_to_item[id]
+        return getattr(item, self._column_names[column])
+
+    def _retrieve_item_list(self, parent_id, parent_item):
         available_params = {
             **self._ctx.as_dict(),
             'piece': self._model,
@@ -126,16 +148,7 @@ class FnIndexTreeAdapterBase(metaclass=abc.ABCMeta):
             name: available_params[name]
             for name in self._params
             }
-        item_list = self._call_fn(**kw)
-        log.info("Tree adapter: populated (%s, %s) -> %s", self._model, parent_item, item_list)
-        item_id_list = []
-        for item in item_list:
-            id = next(self._id_counter)
-            item_id_list.append(id)
-            self._id_to_item[id] = item
-            self._id_to_parent_id[id] = parent_id
-        self._id_to_children_id_list[parent_id] = item_id_list
-        return item_id_list
+        return self._call_fn(**kw)
 
     @abc.abstractmethod
     def _call_fn(self, **kw):
