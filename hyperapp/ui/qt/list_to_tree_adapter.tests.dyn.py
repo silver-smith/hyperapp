@@ -41,19 +41,47 @@ def sample_fn_2(piece):
         ]
 
 
+def sample_fn_2_open(piece, current_item):
+    log.info("Sample fn 2 open: %s", piece)
+    assert isinstance(piece, htypes.list_to_tree_adapter_tests.sample_list_2), repr(piece)
+    return htypes.list_to_tree_adapter_tests.sample_list_3(base_id=current_item.id)
+
+
+def sample_fn_3(piece):
+    log.info("Sample fn 3: %s", piece)
+    assert isinstance(piece, htypes.list_to_tree_adapter_tests.sample_list_3), repr(piece)
+    return [
+        htypes.list_to_tree_adapter_tests.item_2(piece.base_id*10 + 0, "First item"),
+        htypes.list_to_tree_adapter_tests.item_2(piece.base_id*10 + 1, "Second item"),
+        htypes.list_to_tree_adapter_tests.item_2(piece.base_id*10 + 2, "Third item"),
+        htypes.list_to_tree_adapter_tests.item_2(piece.base_id*10 + 3, "Fourth item"),
+        ]
+
+
 @mark.service
 def pick_visualizer_info():
     def _pick_visualizer_info(t):
-        assert t is htypes.list_to_tree_adapter_tests.sample_list_2, repr(t)
-        element_t = pyobj_creg.reverse_resolve(htypes.list_to_tree_adapter_tests.item_2)
-        ui_t = htypes.ui.list_ui_t(
-            element_t=mosaic.put(element_t),
-            )
-        impl = htypes.ui.fn_impl(
-            function=fn_to_ref(sample_fn_2),
-            params=('piece',),
-            )
-        return (ui_t, impl)
+        if t is htypes.list_to_tree_adapter_tests.sample_list_2:
+            element_t = pyobj_creg.reverse_resolve(htypes.list_to_tree_adapter_tests.item_2)
+            ui_t = htypes.ui.list_ui_t(
+                element_t=mosaic.put(element_t),
+                )
+            impl = htypes.ui.fn_impl(
+                function=fn_to_ref(sample_fn_2),
+                params=('piece',),
+                )
+            return (ui_t, impl)
+        if t is htypes.list_to_tree_adapter_tests.sample_list_3:
+            element_t = pyobj_creg.reverse_resolve(htypes.list_to_tree_adapter_tests.item_3)
+            ui_t = htypes.ui.list_ui_t(
+                element_t=mosaic.put(element_t),
+                )
+            impl = htypes.ui.fn_impl(
+                function=fn_to_ref(sample_fn_3),
+                params=('piece',),
+                )
+            return (ui_t, impl)
+        assert False, repr(t)
     return _pick_visualizer_info
 
 
@@ -68,7 +96,15 @@ def test_fn_adapter():
         function=fn_to_ref(sample_fn_1_open),
         params=('piece', 'current_item'),
         )
+    open_command_2_d_res = data_to_res(htypes.list_to_tree_adapter_tests.open_2_d())
+    open_command_2 = htypes.ui.model_command(
+        d=(mosaic.put(open_command_2_d_res),),
+        name='open_2',
+        function=fn_to_ref(sample_fn_2_open),
+        params=('piece', 'current_item'),
+        )
     piece_2_t = pyobj_creg.reverse_resolve(htypes.list_to_tree_adapter_tests.sample_list_2)
+    piece_3_t = pyobj_creg.reverse_resolve(htypes.list_to_tree_adapter_tests.sample_list_3)
     adapter_piece = htypes.list_to_tree_adapter.adapter(
         root_element_t=mosaic.put(root_element_t),
         root_function=fn_to_ref(sample_fn_1),
@@ -77,6 +113,10 @@ def test_fn_adapter():
         layers=(
             htypes.list_to_tree_adapter.layer(
                 piece_t=mosaic.put(piece_2_t),
+                open_children_command=mosaic.put(open_command_2),
+                ),
+            htypes.list_to_tree_adapter.layer(
+                piece_t=mosaic.put(piece_3_t),
                 open_children_command=None,
                 ),
             ),
@@ -104,3 +144,7 @@ def test_fn_adapter():
     row_2_3_id = adapter.row_id(row_2_id, 3)
     assert adapter.cell_data(row_2_3_id, 0) == 23
     assert adapter.cell_data(row_2_3_id, 1) == "four"
+
+    row_1_2_0_id = adapter.row_id(row_1_2_id, 0)
+    assert adapter.cell_data(row_1_2_0_id, 0) == 120
+    assert adapter.cell_data(row_1_2_0_id, 1) == "First item"
