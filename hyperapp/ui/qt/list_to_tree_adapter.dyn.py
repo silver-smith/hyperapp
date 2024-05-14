@@ -1,24 +1,31 @@
+import asyncio
+import logging
 from dataclasses import dataclass
 from typing import Any
 
+from . import htypes
 from .services import (
+    deduce_t,
+    model_command_creg,
+    pick_visualizer_info,
     pyobj_creg,
     )
 from .code.tree_adapter import IndexTreeAdapterBase
 
+log = logging.getLogger(__name__)
+
 
 @dataclass
 class _Layer:
-    piece: Any|None=None
     element_t: Any|None = None
-    fn: Any|None = None
-    params: list[str]|None = None
+    list_fn: Any|None = None
+    list_fn_params: list[str]|None = None
+    open_command: Any|None = None
 
 
 @dataclass
 class _NonRootLayer(_Layer):
     piece_t: Any = None
-    command: Any = None
 
 
 class ListToTreeAdapter(IndexTreeAdapterBase):
@@ -30,19 +37,22 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
             piece_t = pyobj_creg.invite(rec.piece_t)
             layer = _NonRootLayer(
                 piece_t=piece_t,
-                command=l.open_children_command,
+                open_command=rec.open_children_command,
                 )
             layers[piece_t] = layer
         root_layer = _Layer(
-            piece=model,
             element_t=pyobj_creg.invite(piece.root_element_t),
-            fn=pyobj_creg.invite(piece.root_function),
-            params=piece.root_params,
+            list_fn=pyobj_creg.invite(piece.root_function),
+            list_fn_params=piece.root_params,
+            open_command=piece.root_open_children_command,
             )
         return cls(model, ctx, root_layer, layers)
 
     def __init__(self, model, ctx, root_layer, layers):
         super().__init__(model, ctx)
+        self._id_to_piece = {
+            0: model,
+            }
         self._layers = {
             **layers,
             model: root_layer,
@@ -62,15 +72,51 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
         item = self._id_to_item[id]
         return getattr(item, self._column_names[column])
 
+    def _populate(self, parent_id):
+        item_id_list = super()._populate(parent_id)
+        return item_id_list
+
+    def _load_layer(self, parent_id, parent_item):
+        pp_id = self._id_to_parent_id[parent_id]
+        pp_layer = self._parent_id_to_layer[pp_id]
+        pp_piece = self._id_to_piece[pp_id]
+        command_ctx = self._ctx.clone_with(
+            piece=pp_piece,
+            current_item=parent_item,
+            )
+        command = model_command_creg.invite(pp_layer.open_command, command_ctx)
+        piece = asyncio.run(command.run())
+        log.info("List-to-tree adapter: open command result: %s", piece)
+        piece_t = deduce_t(piece)
+        ui_t, impl = pick_visualizer_info(piece_t)
+        if not isinstance(ui_t, htypes.ui.list_ui_t) or not isinstance(impl, htypes.ui.fn_impl):
+            return None  # Not an fn list.
+        try:
+            layer = self._layers[piece_t]
+        except KeyError:
+            return None  # Not one of our tree piece types.
+        layer.element_t = pyobj_creg.invite(ui_t.element_t)
+        layer.list_fn = pyobj_creg.invite(impl.function)
+        layer.list_fn_params = impl.params
+        self._id_to_piece[parent_id] = piece
+        return layer
+        
     def _retrieve_item_list(self, parent_id, parent_item):
-        layer = self._parent_id_to_layer[parent_id]
+        try:
+            layer = self._parent_id_to_layer[parent_id]
+        except KeyError:
+            layer = self._load_layer(parent_id, parent_item)
+            if not layer:
+                return []  # Not a list or unknown piece - no more children.
+            self._parent_id_to_layer[parent_id] = layer
+        piece = self._id_to_piece[parent_id]
         available_params = {
             **self._ctx.as_dict(),
-            'piece': layer.piece,
+            'piece': piece,
             'ctx': self._ctx,
             }
         kw = {
             name: available_params[name]
-            for name in layer.params
+            for name in layer.list_fn_params
             }
-        return layer.fn(**kw)
+        return layer.list_fn(**kw)

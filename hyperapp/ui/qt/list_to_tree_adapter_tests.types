@@ -4,3 +4,13 @@ item_1 = record:
   id: int
   name: string
   text: string
+
+open_1_d = record
+
+
+sample_list_2 = record:
+  base_id: int
+
+item_2 = record:
+  id: int
+  name: string

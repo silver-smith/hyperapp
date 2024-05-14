@@ -1,9 +1,10 @@
 layer = record:
   piece_t: ref
-  open_children_command: ref
+  open_children_command: ref opt
 
 adapter = record:
   root_element_t: ref
   root_function: ref
   root_params: string list
-  layers: ref list
+  root_open_children_command: ref
+  layers: layer list
