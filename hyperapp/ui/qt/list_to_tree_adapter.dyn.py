@@ -72,6 +72,10 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
         item = self._id_to_item[id]
         return getattr(item, self._column_names[column])
 
+    def get_item_piece(self, path):
+        item_id = self.path_to_item_id(path)
+        return self._id_to_piece[item_id]
+
     def _load_layer(self, parent_id):
         pp_id = self._id_to_parent_id[parent_id]
         pp_layer = self._parent_id_to_layer[pp_id]

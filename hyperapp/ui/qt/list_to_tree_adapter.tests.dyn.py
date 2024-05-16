@@ -151,6 +151,10 @@ def test_three_layers():
     assert adapter.cell_data(row_1_2_0_id, 1) == "First item"
     assert not adapter.has_children(row_1_2_0_id)
 
+    assert adapter.get_item_piece([]) == model
+    assert adapter.get_item_piece([1]) == htypes.list_to_tree_adapter_tests.sample_list_2(1)
+    assert adapter.get_item_piece([1, 2]) == htypes.list_to_tree_adapter_tests.sample_list_3(12)
+
 
 def test_single_layer():
     ctx = Context()
