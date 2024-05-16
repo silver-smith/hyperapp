@@ -21,7 +21,7 @@ class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
     def __init__(self, model, ctx):
         self._model = model
         self._ctx = ctx
-        self._id_to_item = {}
+        self._id_to_item = {0: None}
         self._id_to_children_id_list = {}
         self._id_to_parent_id = {}
         self._id_counter = itertools.count(start=1)
@@ -110,12 +110,8 @@ class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
             return self._populate(parent_id)
 
     def _populate(self, parent_id):
-        if parent_id:
-            parent_item = self._id_to_item[parent_id]  # Expecting upper level is already populated.
-        else:
-            parent_item = None
-        item_list = self._retrieve_item_list(parent_id, parent_item)
-        log.info("Tree adapter: retrieved item list (%s, %s) -> %s", self._model, parent_item, item_list)
+        item_list = self._retrieve_item_list(parent_id)
+        log.info("Tree adapter: retrieved item list (%s) -> %s", self._model, item_list)
         item_id_list = []
         for item in item_list:
             id = next(self._id_counter)
@@ -126,7 +122,7 @@ class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
         return item_id_list
 
     @abc.abstractmethod
-    def _retrieve_item_list(self, parent_id, parent_item):
+    def _retrieve_item_list(self, parent_id):
         pass
 
 
@@ -154,11 +150,11 @@ class FnIndexTreeAdapterBase(IndexTreeAdapterBase, metaclass=abc.ABCMeta):
         item = self._id_to_item[id]
         return getattr(item, self._column_names[column])
 
-    def _retrieve_item_list(self, parent_id, parent_item):
+    def _retrieve_item_list(self, parent_id):
         available_params = {
             **self._ctx.as_dict(),
             'piece': self._model,
-            'parent': parent_item,
+            'parent': self._id_to_item[parent_id],
             'feed': self._feed,
             'ctx': self._ctx,
             }

@@ -72,12 +72,13 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
         item = self._id_to_item[id]
         return getattr(item, self._column_names[column])
 
-    def _load_layer(self, parent_id, parent_item):
+    def _load_layer(self, parent_id):
         pp_id = self._id_to_parent_id[parent_id]
         pp_layer = self._parent_id_to_layer[pp_id]
         pp_piece = self._id_to_piece[pp_id]
         if pp_layer.open_command is None:
             return None
+        parent_item = self._id_to_item[parent_id]
         command_ctx = self._ctx.clone_with(
             piece=pp_piece,
             current_item=parent_item,
@@ -98,15 +99,19 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
         layer.list_fn_params = impl.params
         self._id_to_piece[parent_id] = piece
         return layer
-        
-    def _retrieve_item_list(self, parent_id, parent_item):
+
+    def _get_layer(self, parent_id):
         try:
-            layer = self._parent_id_to_layer[parent_id]
+            return self._parent_id_to_layer[parent_id]
         except KeyError:
-            layer = self._load_layer(parent_id, parent_item)
-            if not layer:
-                return []  # Not a list or unknown piece - no more children.
-            self._parent_id_to_layer[parent_id] = layer
+            layer = self._load_layer(parent_id)
+            self._parent_id_to_layer[parent_id] = layer  # Cache Nones also.
+            return layer
+
+    def _retrieve_item_list(self, parent_id):
+        layer = self._get_layer(parent_id)
+        if not layer:
+            return []  # Not a list or unknown piece - no more children.
         piece = self._id_to_piece[parent_id]
         available_params = {
             **self._ctx.as_dict(),
