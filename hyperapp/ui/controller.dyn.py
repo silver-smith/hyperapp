@@ -170,11 +170,20 @@ class _Item:
         return [CommandRec(cmd, ctx) for cmd in commands]
 
     def command_context(self):
-        return self.ctx.clone_with(
+        ctx = self.ctx.clone_with(
             view=self.view,
             widget=weakref.ref(self.widget),
             hook=self._hook,
             navigator=self.navigator_view,
+            )
+        model = self.model
+        if model is None:
+            return ctx
+        model_state = self.view.model_state(self.widget)
+        return ctx.clone_with(
+            piece=model,
+            model_state=model_state,
+            **self.ctx.attributes(model_state),
             )
 
     def _model_command_context(self, model):
