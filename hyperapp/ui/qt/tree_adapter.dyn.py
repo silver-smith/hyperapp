@@ -56,6 +56,15 @@ class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
     def get_item(self, id):
         return self._id_to_item.get(id)
 
+    def get_path(self, id):
+        path = []
+        while id != 0:
+            parent_id = self._id_to_parent_id[id]
+            idx = self._id_to_children_id_list[parent_id].index(id)
+            path.insert(0, idx)
+            id = parent_id
+        return path
+
     def process_diff(self, diff):
         log.info("Tree adapter: process diff: %s", diff)
         if not isinstance(diff, (TreeDiff.Append, TreeDiff.Insert, TreeDiff.Replace)):
