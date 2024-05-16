@@ -4,11 +4,14 @@ from . import htypes
 from .services import (
     fn_to_ref,
     mark,
+    model_command_factory,
     model_view_creg,
     mosaic,
     pyobj_creg,
+    web,
     )
 from .code.list_adapter import FnListAdapter
+from .code.list_to_tree_adapter import ListToTreeAdapter
 
 log = logging.getLogger(__name__)
 
@@ -32,3 +35,28 @@ def switch_list_to_tree(piece, view, hook, ctx):
         )
     new_view = model_view_creg.animate(new_view_piece, piece, ctx)
     hook.replace_view(new_view)
+
+
+@mark.ui_model_command(htypes.tree.view)
+def open_opener_commands(view, current_path):
+    adapter = view.adapter
+    if not isinstance(adapter, ListToTreeAdapter):
+        log.info("Not a ListToTreeAdapter: %r", adapter)
+    piece = adapter.get_item_piece(current_path[:-1])
+    return htypes.list_as_tree.opener_commands(
+        model=mosaic.put(piece),
+        )
+
+
+def opener_command_list(piece):
+    model = web.summon(piece.model)
+    command_list = model_command_factory(model)
+    return [
+        htypes.list_as_tree.opener_command_item(
+            command=mosaic.put(command),
+            name=command.name,
+            d=str(command.d),
+            params=", ".join(command.params),
+            )
+        for command in command_list
+        ]

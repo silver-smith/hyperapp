@@ -3,20 +3,47 @@
 import:
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
+- builtins:web.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.list:view
+- legacy_type.list_as_tree:open_opener_commands_d
+- legacy_type.list_as_tree:opener_command_item
+- legacy_type.list_as_tree:opener_command_list_d
+- legacy_type.list_as_tree:opener_commands
 - legacy_type.list_as_tree:switch_list_to_tree_d
 - legacy_type.list_to_tree_adapter:adapter
 - legacy_type.tree:view
+- legacy_type.ui:fn_impl
+- legacy_type.ui:list_ui_t
+- legacy_type.ui:model
+- legacy_type.ui:model_command
+- legacy_type.ui:model_command_d
+- legacy_type.ui:model_command_kind_d
+- legacy_type.ui:model_d
 - legacy_type.ui:ui_command
 - legacy_type.ui:ui_command_d
+- legacy_type.ui:ui_model_command
 - resource.fn_to_res:fn_to_ref.service
+- ui.model_command:model_command_factory.service
 - ui.qt.list_adapter:list_adapter.module
+- ui.qt.list_to_tree_adapter:list_to_tree_adapter.module
 - ui.view_registry:model_view_creg.service
 associations:
+- bases:
+  - legacy_type.list_as_tree:opener_commands
+  key:
+  - model_command_d
+  - legacy_type.list_as_tree:opener_commands
+  value: opener_command_list.command
+- bases:
+  - legacy_type.list_as_tree:opener_commands
+  key:
+  - model_d
+  - legacy_type.list_as_tree:opener_commands
+  value: opener_command_list.model
 - bases:
   - ui_command_d
   - legacy_type.list:view
@@ -24,6 +51,13 @@ associations:
   - ui_command_d
   - legacy_type.list:view
   value: switch_list_to_tree.ui_command
+- bases:
+  - ui_command_d
+  - legacy_type.tree:view
+  key:
+  - ui_command_d
+  - legacy_type.tree:view
+  value: open_opener_commands.ui_command
 definitions:
   list_as_tree.module:
     _type: legacy_type.builtin:python_module
@@ -31,14 +65,79 @@ definitions:
     file_name: list_as_tree.dyn.py
     import_list:
       code.list_adapter: ui.qt.list_adapter:list_adapter.module
+      code.list_to_tree_adapter: ui.qt.list_to_tree_adapter:list_to_tree_adapter.module
       htypes.list.view: legacy_type.list:view
+      htypes.list_as_tree.opener_command_item: legacy_type.list_as_tree:opener_command_item
+      htypes.list_as_tree.opener_commands: legacy_type.list_as_tree:opener_commands
       htypes.list_to_tree_adapter.adapter: legacy_type.list_to_tree_adapter:adapter
       htypes.tree.view: legacy_type.tree:view
       services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
       services.mark: common.mark:mark.service
+      services.model_command_factory: ui.model_command:model_command_factory.service
       services.model_view_creg: ui.view_registry:model_view_creg.service
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
+      services.web: builtins:web.service
+  model_command_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:model_command_d
+  model_command_kind_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:model_command_kind_d
+  model_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:model_d
+  open_opener_commands:
+    _type: legacy_type.builtin:attribute
+    object: list_as_tree.module
+    attr_name: open_opener_commands
+  open_opener_commands.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.list_as_tree:open_opener_commands_d
+  open_opener_commands.model_command:
+    _type: legacy_type.ui:model_command
+    d:
+    - open_opener_commands.d
+    - model_command_kind_d
+    name: open_opener_commands
+    function: open_opener_commands
+    params:
+    - view
+    - current_path
+  open_opener_commands.ui_command:
+    _type: legacy_type.ui:ui_model_command
+    d:
+    - open_opener_commands.d
+    name: open_opener_commands
+    model_command: open_opener_commands.model_command
+  opener_command_list:
+    _type: legacy_type.builtin:attribute
+    object: list_as_tree.module
+    attr_name: opener_command_list
+  opener_command_list.command:
+    _type: legacy_type.ui:model_command
+    d:
+    - opener_command_list.d
+    - model_command_kind_d
+    name: opener_command_list
+    function: opener_command_list
+    params:
+    - piece
+  opener_command_list.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.list_as_tree:opener_command_list_d
+  opener_command_list.impl:
+    _type: legacy_type.ui:fn_impl
+    function: opener_command_list
+    params:
+    - piece
+  opener_command_list.model:
+    _type: legacy_type.ui:model
+    ui_t: opener_command_list.ui_t
+    impl: opener_command_list.impl
+  opener_command_list.ui_t:
+    _type: legacy_type.ui:list_ui_t
+    element_t: legacy_type.list_as_tree:opener_command_item
   switch_list_to_tree:
     _type: legacy_type.builtin:attribute
     object: list_as_tree.module

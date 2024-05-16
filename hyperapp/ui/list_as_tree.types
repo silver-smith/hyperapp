@@ -1,1 +1,12 @@
 switch_list_to_tree_d = record
+open_opener_commands_d = record
+opener_command_list_d = record
+
+opener_commands = record:
+  model: ref
+
+opener_command_item = record:
+  command: ref
+  name: string
+  d: string
+  params: string

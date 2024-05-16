@@ -3,13 +3,17 @@
 import:
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
+- builtins:web.service
 - common.context:context.module
+- common.mark:mark.service
 - legacy_type.builtin:python_module
 - legacy_type.phony:phony
+- resource.data_to_res:data_to_res.service
 - resource.fn_to_res:fn_to_ref.service
 - ui.qt.list_adapter:list_adapter.module
 - ui.qt.list_to_tree_adapter:list_to_tree_adapter.module
 - ui.qt.tree:tree.module
+- ui.ui_adapter_creg:ui_adapter_creg.service
 associations: []
 definitions:
   list_as_tree.tests.module:
@@ -21,9 +25,13 @@ definitions:
       code.list_adapter: ui.qt.list_adapter:list_adapter.module
       code.list_to_tree_adapter: ui.qt.list_to_tree_adapter:list_to_tree_adapter.module
       code.tree: ui.qt.tree:tree.module
+      services.data_to_res: resource.data_to_res:data_to_res.service
       services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
+      services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
+      services.ui_adapter_creg: ui.ui_adapter_creg:ui_adapter_creg.service
+      services.web: builtins:web.service
       tested.code.list_as_tree: phony
   phony:
     _type: legacy_type.phony:phony
