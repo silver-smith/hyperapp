@@ -58,6 +58,11 @@ def test_fn_adapter():
     row_2_id = adapter.row_id(row_1_id, 2)
     assert adapter.cell_data(row_2_id, 0) == 23
 
+    assert adapter.path_to_item_id([]) == 0
+    assert adapter.path_to_item_id([0]) == adapter.row_id(0, 0)
+    assert adapter.path_to_item_id([2]) == adapter.row_id(0, 2)
+    assert adapter.path_to_item_id([1, 2]) == adapter.row_id(row_1_id, 2)
+
 
 class Subscriber:
 

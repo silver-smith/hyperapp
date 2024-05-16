@@ -94,6 +94,15 @@ class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
             id = parent_id
         return path
 
+    def path_to_item_id(self, path):
+        item_id = 0
+        idx = 0
+        while idx < len(path):
+            id_list = self._id_list(item_id)
+            item_id = id_list[path[idx]]
+            idx += 1
+        return item_id
+
     def _id_list(self, parent_id):
         try:
             return self._id_to_children_id_list[parent_id]
