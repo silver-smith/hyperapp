@@ -1,0 +1,62 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:mosaic.service
+- builtins:pyobj_creg.service
+- common.mark:mark.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:call
+- legacy_type.builtin:python_module
+- legacy_type.list:view
+- legacy_type.list_as_tree:switch_list_to_tree_d
+- legacy_type.list_to_tree_adapter:adapter
+- legacy_type.tree:view
+- legacy_type.ui:ui_command
+- legacy_type.ui:ui_command_d
+- resource.fn_to_res:fn_to_ref.service
+- ui.qt.list_adapter:list_adapter.module
+- ui.view_registry:model_view_creg.service
+associations:
+- bases:
+  - ui_command_d
+  - legacy_type.list:view
+  key:
+  - ui_command_d
+  - legacy_type.list:view
+  value: switch_list_to_tree.ui_command
+definitions:
+  list_as_tree.module:
+    _type: legacy_type.builtin:python_module
+    module_name: list_as_tree
+    file_name: list_as_tree.dyn.py
+    import_list:
+      code.list_adapter: ui.qt.list_adapter:list_adapter.module
+      htypes.list.view: legacy_type.list:view
+      htypes.list_to_tree_adapter.adapter: legacy_type.list_to_tree_adapter:adapter
+      htypes.tree.view: legacy_type.tree:view
+      services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
+      services.mark: common.mark:mark.service
+      services.model_view_creg: ui.view_registry:model_view_creg.service
+      services.mosaic: builtins:mosaic.service
+      services.pyobj_creg: builtins:pyobj_creg.service
+  switch_list_to_tree:
+    _type: legacy_type.builtin:attribute
+    object: list_as_tree.module
+    attr_name: switch_list_to_tree
+  switch_list_to_tree.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.list_as_tree:switch_list_to_tree_d
+  switch_list_to_tree.ui_command:
+    _type: legacy_type.ui:ui_command
+    d:
+    - switch_list_to_tree.d
+    name: switch_list_to_tree
+    function: switch_list_to_tree
+    params:
+    - piece
+    - view
+    - hook
+    - ctx
+  ui_command_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:ui_command_d

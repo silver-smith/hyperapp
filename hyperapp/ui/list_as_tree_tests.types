@@ -1,0 +1,5 @@
+sample_list = record
+
+item = record:
+  id: int
+  title: string

@@ -53,6 +53,7 @@ _hardcoded_shortcuts = {
     'list_open': 'Return',
     'ref_list_open': 'Return',
     'open_file_bundle_list': 'Alt+B',
+    'switch_list_to_tree': 'Alt+K',
     }
 
 

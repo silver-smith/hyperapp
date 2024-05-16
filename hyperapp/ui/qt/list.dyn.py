@@ -123,6 +123,10 @@ class ListView(View):
             current_item = None
         return ModelState(current_idx=idx, current_item=current_item)
 
+    @property
+    def adapter(self):
+        return self._adapter
+
     def _on_data_changed(self, widget, *args):
         log.info("List: on_data_changed: %s: %s", widget, args)
         widget.resizeColumnsToContents()

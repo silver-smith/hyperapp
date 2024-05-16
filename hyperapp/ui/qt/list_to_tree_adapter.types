@@ -6,5 +6,5 @@ adapter = record:
   root_element_t: ref
   root_function: ref
   root_params: string list
-  root_open_children_command: ref
+  root_open_children_command: ref opt
   layers: layer list

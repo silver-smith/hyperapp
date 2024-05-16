@@ -104,6 +104,14 @@ class FnListAdapterBase(metaclass=abc.ABCMeta):
             subscriber.process_diff(diff)
 
     @property
+    def element_t(self):
+        return self._item_t
+
+    @property
+    def function_params(self):
+        return self._params
+
+    @property
     def _items(self):
         if self._item_list is not None:
             return self._item_list
@@ -139,6 +147,10 @@ class FnListAdapter(FnListAdapterBase):
     def __init__(self, model, item_t, params, ctx, fn):
         super().__init__(model, item_t, params, ctx)
         self._fn = fn
+
+    @property
+    def function(self):
+        return self._fn
 
     def _call_fn(self, **kw):
         return self._fn(**kw)

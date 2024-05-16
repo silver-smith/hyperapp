@@ -175,6 +175,10 @@ class TreeView(View):
         item = self._adapter.get_item(index.internalId())
         return ModelState(current_item=item)
 
+    @property
+    def adapter(self):
+        return self._adapter
+
     def _on_data_changed(self, widget, *args):
         log.info("Tree: on_data_changed: %s: %s", widget, args)
         # widget.resizeColumnToContents(0)
