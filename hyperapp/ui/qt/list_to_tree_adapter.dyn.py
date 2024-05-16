@@ -80,6 +80,8 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
         pp_id = self._id_to_parent_id[parent_id]
         pp_layer = self._parent_id_to_layer[pp_id]
         pp_piece = self._id_to_piece[pp_id]
+        if pp_layer.open_command is None:
+            return None
         command_ctx = self._ctx.clone_with(
             piece=pp_piece,
             current_item=parent_item,

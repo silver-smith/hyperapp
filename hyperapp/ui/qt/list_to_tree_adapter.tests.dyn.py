@@ -85,7 +85,7 @@ def pick_visualizer_info():
     return _pick_visualizer_info
 
 
-def test_fn_adapter():
+def test_three_layers():
     ctx = Context()
     model = htypes.list_to_tree_adapter_tests.sample_list_1()
     root_element_t = pyobj_creg.reverse_resolve(htypes.list_to_tree_adapter_tests.item_1)
@@ -144,7 +144,39 @@ def test_fn_adapter():
     row_2_3_id = adapter.row_id(row_2_id, 3)
     assert adapter.cell_data(row_2_3_id, 0) == 23
     assert adapter.cell_data(row_2_3_id, 1) == "four"
+    assert adapter.has_children(row_2_3_id)
 
     row_1_2_0_id = adapter.row_id(row_1_2_id, 0)
     assert adapter.cell_data(row_1_2_0_id, 0) == 120
     assert adapter.cell_data(row_1_2_0_id, 1) == "First item"
+    assert not adapter.has_children(row_1_2_0_id)
+
+
+def test_single_layer():
+    ctx = Context()
+    model = htypes.list_to_tree_adapter_tests.sample_list_1()
+    root_element_t = pyobj_creg.reverse_resolve(htypes.list_to_tree_adapter_tests.item_1)
+    adapter_piece = htypes.list_to_tree_adapter.adapter(
+        root_element_t=mosaic.put(root_element_t),
+        root_function=fn_to_ref(sample_fn_1),
+        root_params=('piece',),
+        root_open_children_command=None,
+        layers=(),
+        )
+    adapter = list_to_tree_adapter.ListToTreeAdapter.from_piece(adapter_piece, model, ctx)
+
+    assert adapter.column_count() == 3
+    assert adapter.column_title(0) == 'id'
+    assert adapter.column_title(1) == 'name'
+    assert adapter.column_title(2) == 'text'
+
+    assert adapter.has_children(0)
+    assert adapter.row_count(0) == 3
+    row_1_id = adapter.row_id(0, 1)
+    assert adapter.cell_data(row_1_id, 0) == 1
+    assert adapter.cell_data(row_1_id, 1) == "two"
+    assert adapter.cell_data(row_1_id, 2) == "Second item"
+
+    assert not adapter.has_children(adapter.row_id(0, 0))
+    assert not adapter.has_children(adapter.row_id(0, 1))
+    assert not adapter.has_children(adapter.row_id(0, 2))
