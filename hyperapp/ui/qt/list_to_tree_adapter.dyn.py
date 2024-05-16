@@ -72,10 +72,6 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
         item = self._id_to_item[id]
         return getattr(item, self._column_names[column])
 
-    def _populate(self, parent_id):
-        item_id_list = super()._populate(parent_id)
-        return item_id_list
-
     def _load_layer(self, parent_id, parent_item):
         pp_id = self._id_to_parent_id[parent_id]
         pp_layer = self._parent_id_to_layer[pp_id]
