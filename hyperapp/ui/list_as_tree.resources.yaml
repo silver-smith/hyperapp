@@ -140,6 +140,7 @@ definitions:
     function: opener_command_list
     params:
     - piece
+    - lcs
   opener_command_list.d:
     _type: legacy_type.builtin:call
     function: legacy_type.list_as_tree:opener_command_list_d
@@ -148,6 +149,7 @@ definitions:
     function: opener_command_list
     params:
     - piece
+    - lcs
   opener_command_list.model:
     _type: legacy_type.ui:model
     ui_t: opener_command_list.ui_t

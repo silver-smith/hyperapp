@@ -11,3 +11,4 @@ opener_command_item = record:
   name: string
   d: string
   params: string
+  is_opener: bool

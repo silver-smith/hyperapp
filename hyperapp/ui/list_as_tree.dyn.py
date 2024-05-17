@@ -51,8 +51,14 @@ def open_opener_commands(view, current_path):
         )
 
 
-def opener_command_list(piece):
-    model = web.summon(piece.model)
+def opener_command_list(piece, lcs):
+    model, model_t = web.summon_with_t(piece.model)
+    view = get_model_layout(lcs, model_t)
+    current_command = None
+    if isinstance(view, htypes.tree.view):
+        adapter = web.summon(view.adapter)
+        if isinstance(adapter, htypes.list_to_tree_adapter.adapter):
+            current_command = web.summon(adapter.root_open_children_command)
     command_list = model_command_factory(model)
     return [
         htypes.list_as_tree.opener_command_item(
@@ -60,6 +66,7 @@ def opener_command_list(piece):
             name=command.name,
             d=str(command.d),
             params=", ".join(command.params),
+            is_opener=command == current_command,
             )
         for command in command_list
         ]

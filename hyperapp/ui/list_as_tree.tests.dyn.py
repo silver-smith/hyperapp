@@ -106,7 +106,8 @@ def test_opener_commands_list():
     piece = htypes.list_as_tree.opener_commands(
         model=mosaic.put(model),
         )
-    result = list_as_tree.opener_command_list(piece)
+    lcs = Mock()
+    result = list_as_tree.opener_command_list(piece, lcs)
     assert type(result) is list
     item = result[0]
     assert item.name == 'open_1'
@@ -135,6 +136,7 @@ def test_use_command():
         name=command.name,
         d=str(command.d),
         params=", ".join(command.params),
+        is_opener=False,
         )
     lcs = Mock()
     lcs.get.return_value = view
