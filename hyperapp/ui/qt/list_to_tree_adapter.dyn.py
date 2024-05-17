@@ -76,7 +76,7 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
         item_id = self.path_to_item_id(path)
         return self._id_to_piece[item_id]
 
-    def _load_layer(self, parent_id):
+    async def _load_layer(self, parent_id):
         pp_id = self._id_to_parent_id[parent_id]
         pp_layer = self._parent_id_to_layer[pp_id]
         pp_piece = self._id_to_piece[pp_id]
@@ -88,34 +88,41 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
             current_item=parent_item,
             )
         command = model_command_creg.invite(pp_layer.open_command, command_ctx)
-        piece = asyncio.run(command.run())
+        piece = await command.run()
         log.info("List-to-tree adapter: open command result: %s", piece)
         piece_t = deduce_t(piece)
-        ui_t, impl = pick_visualizer_info(piece_t)
+        try:
+            ui_t, impl = pick_visualizer_info(piece_t)
+        except KeyError:
+            log.info("List-to-tree: Model for %s is not available", piece_t)
+            return None
         if not isinstance(ui_t, htypes.ui.list_ui_t) or not isinstance(impl, htypes.ui.fn_impl):
-            return None  # Not an fn list.
+            log.info("List-to-tree: Model for %s is not a function list", piece_t)
+            return None
         try:
             layer = self._layers[piece_t]
         except KeyError:
-            return None  # Not one of our tree piece types.
+            log.info("List-to-tree: %s is not an included piece type", piece_t)
+            return
         layer.element_t = pyobj_creg.invite(ui_t.element_t)
         layer.list_fn = pyobj_creg.invite(impl.function)
         layer.list_fn_params = impl.params
+        self._parent_id_to_layer[parent_id] = layer  # Cache Nones also.
         self._id_to_piece[parent_id] = piece
-        return layer
+        log.info("List-to-tree: loaded layer for piece %r", piece)
 
     def _get_layer(self, parent_id):
         try:
             return self._parent_id_to_layer[parent_id]
         except KeyError:
-            layer = self._load_layer(parent_id)
-            self._parent_id_to_layer[parent_id] = layer  # Cache Nones also.
-            return layer
+            asyncio.create_task(self._load_layer(parent_id))
+            return None
 
     def _retrieve_item_list(self, parent_id):
         layer = self._get_layer(parent_id)
         if not layer:
-            return []  # Not a list or unknown piece - no more children.
+            # Not a list or unknown piece or layer is not yet loaded -> no more children (yet).
+            return []
         piece = self._id_to_piece[parent_id]
         available_params = {
             **self._ctx.as_dict(),
