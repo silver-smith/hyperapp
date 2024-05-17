@@ -49,11 +49,16 @@ class _Model(QtCore.QAbstractTableModel):
 
     def process_diff(self, diff):
         log.info("List: process diff: %s", diff)
-        if not isinstance(diff, ListDiff.Append):
+        if isinstance(diff, ListDiff.Append):
+            row_count = self.adapter.row_count()
+            self.beginInsertRows(QtCore.QModelIndex(), row_count - 1, row_count - 1)
+            self.endInsertRows()
+        elif isinstance(diff, ListDiff.Replace):
+            left = self.createIndex(diff.idx, 0)
+            right = self.createIndex(diff.idx, self.adapter.column_count() - 1)
+            self.dataChanged.emit(left, right)
+        else:
             raise NotImplementedError(diff)
-        row_count = self.adapter.row_count()
-        self.beginInsertRows(QtCore.QModelIndex(), row_count - 1, row_count - 1)
-        self.endInsertRows()
 
 
 class _TableView(QtWidgets.QTableView):

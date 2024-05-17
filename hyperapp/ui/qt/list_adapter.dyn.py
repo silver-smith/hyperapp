@@ -97,9 +97,12 @@ class FnListAdapterBase(metaclass=abc.ABCMeta):
         log.info("List adapter: process diff: %s", diff)
         if self._item_list is None:
             self._populate()
-        if not isinstance(diff, ListDiff.Append):
+        if isinstance(diff, ListDiff.Append):
+            self._item_list.append(diff.item)
+        elif isinstance(diff, ListDiff.Replace):
+            self._item_list[diff.idx] = diff.item
+        else:
             raise NotImplementedError(diff)
-        self._item_list.append(diff.item)
         for subscriber in self._subscribers:
             subscriber.process_diff(diff)
 
