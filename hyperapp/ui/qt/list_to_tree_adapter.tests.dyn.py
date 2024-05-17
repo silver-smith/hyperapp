@@ -1,3 +1,4 @@
+import asyncio
 import logging
 
 from . import htypes
@@ -85,6 +86,22 @@ def pick_visualizer_info():
     return _pick_visualizer_info
 
 
+class MockSubscriber:
+
+    def __init__(self):
+        self._queue = asyncio.Queue()
+
+    def process_diff(self, diff):
+        log.info("Mock subscriber: got diff: %s", diff)
+        asyncio.create_task(self._queue.put(diff))
+
+    async def skip(self, count, timeout=2):
+        async with asyncio.timeout(timeout):
+            for i in range(count):
+                await self._queue.get()
+            log.info("Mock subscriber: skipped %d diffs", count)
+
+
 async def test_three_layers():
     ctx = Context()
     model = htypes.list_to_tree_adapter_tests.sample_list_1()
@@ -121,7 +138,10 @@ async def test_three_layers():
                 ),
             ),
         )
+
     adapter = list_to_tree_adapter.ListToTreeAdapter.from_piece(adapter_piece, model, ctx)
+    subscriber = MockSubscriber()
+    adapter.subscribe(subscriber)
 
     assert adapter.column_count() == 3
     assert adapter.column_title(0) == 'id'
@@ -135,18 +155,21 @@ async def test_three_layers():
     assert adapter.cell_data(row_1_id, 2) == "Second item"
 
     assert adapter.row_count(row_1_id) == 0
-    return  # TODO
 
+    await subscriber.skip(4)
     assert adapter.row_count(row_1_id) == 4
     row_1_2_id = adapter.row_id(row_1_id, 2)
     assert adapter.cell_data(row_1_2_id, 0) == 12
     assert adapter.cell_data(row_1_2_id, 1) == "three"
 
     row_2_id = adapter.row_id(0, 2)
+    if adapter.row_count(row_2_id) == 0:
+        await subscriber.skip(4)
     assert adapter.row_count(row_2_id) == 4
     row_2_3_id = adapter.row_id(row_2_id, 3)
     assert adapter.cell_data(row_2_3_id, 0) == 23
     assert adapter.cell_data(row_2_3_id, 1) == "four"
+    return  # TODO
     assert adapter.has_children(row_2_3_id)
 
     row_1_2_0_id = adapter.row_id(row_1_2_id, 0)

@@ -109,7 +109,22 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
         layer.list_fn_params = impl.params
         self._parent_id_to_layer[parent_id] = layer  # Cache Nones also.
         self._id_to_piece[parent_id] = piece
-        log.info("List-to-tree: loaded layer for piece %r", piece)
+        item_list = self._load_item_list(layer, piece)
+        log.info("List-to-tree: loaded layer for piece %r: %s", piece, item_list)
+        for item in item_list:
+            self._append_item(parent_id, item)
+
+    def _load_item_list(self, layer, piece):
+        available_params = {
+            **self._ctx.as_dict(),
+            'piece': piece,
+            'ctx': self._ctx,
+            }
+        kw = {
+            name: available_params[name]
+            for name in layer.list_fn_params
+            }
+        return layer.list_fn(**kw)
 
     def _get_layer(self, parent_id):
         try:
@@ -124,13 +139,4 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
             # Not a list or unknown piece or layer is not yet loaded -> no more children (yet).
             return []
         piece = self._id_to_piece[parent_id]
-        available_params = {
-            **self._ctx.as_dict(),
-            'piece': piece,
-            'ctx': self._ctx,
-            }
-        kw = {
-            name: available_params[name]
-            for name in layer.list_fn_params
-            }
-        return layer.list_fn(**kw)
+        return self._load_item_list(layer, piece)

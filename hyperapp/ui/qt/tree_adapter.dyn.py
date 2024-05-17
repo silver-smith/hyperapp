@@ -64,21 +64,32 @@ class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
         parent_id = 0
         for idx in parent_path:
             parent_id = self._id_list(parent_id)[idx]
+        if isinstance(diff, TreeDiff.Append):
+            self._append_item(parent_id, diff.item)
+            return
         item_id_list = self._id_list(parent_id)
         item_id = next(self._id_counter)
         self._id_to_parent_id[item_id] = parent_id
         self._id_to_item[item_id] = diff.item
-        if isinstance(diff, TreeDiff.Append):
-            item_id_list.append(item_id)
-            visual_diff = VisualTreeDiffAppend(parent_id)
-        else:
-            idx = diff.path[-1]
-            if isinstance(diff, TreeDiff.Insert):
-                item_id_list.insert(idx, item_id)
-                visual_diff = VisualTreeDiffInsert(parent_id, idx)
-            if isinstance(diff, TreeDiff.Replace):
-                item_id_list[idx] = item_id
-                visual_diff = VisualTreeDiffReplace(parent_id, idx)
+        idx = diff.path[-1]
+        if isinstance(diff, TreeDiff.Insert):
+            item_id_list.insert(idx, item_id)
+            visual_diff = VisualTreeDiffInsert(parent_id, idx)
+        if isinstance(diff, TreeDiff.Replace):
+            item_id_list[idx] = item_id
+            visual_diff = VisualTreeDiffReplace(parent_id, idx)
+        self._send_view_diff(visual_diff)
+
+    def _append_item(self, parent_id, item):
+        item_id_list = self._id_list(parent_id)
+        item_id = next(self._id_counter)
+        self._id_to_parent_id[item_id] = parent_id
+        self._id_to_item[item_id] = item
+        item_id_list.append(item_id)
+        visual_diff = VisualTreeDiffAppend(parent_id)
+        self._send_view_diff(visual_diff)
+
+    def _send_view_diff(self, visual_diff):
         for subscriber in self._subscribers:
             subscriber.process_diff(visual_diff)
 
@@ -111,7 +122,7 @@ class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
 
     def _populate(self, parent_id):
         item_list = self._retrieve_item_list(parent_id)
-        log.info("Tree adapter: retrieved item list (%s) -> %s", self._model, item_list)
+        log.info("Tree adapter: retrieved item list for %s/%s -> %s", self._model, parent_id, item_list)
         item_id_list = []
         for item in item_list:
             id = next(self._id_counter)
