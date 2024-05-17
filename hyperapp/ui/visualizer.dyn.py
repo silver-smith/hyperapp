@@ -54,7 +54,7 @@ def _visualizer_info(t):
     try:
         model = association_reg[model_d_res, t_res]
     except KeyError:
-        raise RuntimeError(f"No implementation is registered for model: {t}")
+        raise KeyError(f"No implementation is registered for model: {t}")
     ui_t = web.summon(model.ui_t)
     impl = web.summon(model.impl)
     return (ui_t, impl)
