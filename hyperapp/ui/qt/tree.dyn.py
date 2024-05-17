@@ -82,8 +82,13 @@ class _Model(QtCore.QAbstractItemModel):
         if isinstance(diff, VisualTreeDiffReplace):
             self.beginRemoveRows(parent_idx, 0, 0)
             self.endRemoveRows()
+        else:
+            # When inserting children into items having none, this is required for them to appear:
+            self.layoutAboutToBeChanged.emit()
         self.beginInsertRows(parent_idx, 0, 0)
         self.endInsertRows()
+        if not isinstance(diff, VisualTreeDiffReplace):
+            self.layoutChanged.emit()
 
 
 class _TreeWidget(QtWidgets.QTreeView):
