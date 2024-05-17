@@ -15,7 +15,7 @@ import:
 - legacy_type.list_as_tree:opener_command_list_d
 - legacy_type.list_as_tree:opener_commands
 - legacy_type.list_as_tree:switch_list_to_tree_d
-- legacy_type.list_as_tree:use_command_d
+- legacy_type.list_as_tree:toggle_use_command_d
 - legacy_type.list_to_tree_adapter:adapter
 - legacy_type.tree:view
 - legacy_type.ui:context_model_command_kind_d
@@ -48,7 +48,7 @@ associations:
   key:
   - model_command_d
   - legacy_type.list_as_tree:opener_commands
-  value: use_command.command
+  value: toggle_use_command.command
 - bases:
   - legacy_type.list_as_tree:opener_commands
   key:
@@ -175,25 +175,25 @@ definitions:
     - view
     - hook
     - ctx
-  ui_command_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:ui_command_d
-  use_command:
+  toggle_use_command:
     _type: legacy_type.builtin:attribute
     object: list_as_tree.module
-    attr_name: use_command
-  use_command.command:
+    attr_name: toggle_use_command
+  toggle_use_command.command:
     _type: legacy_type.ui:model_command
     d:
-    - use_command.d
+    - toggle_use_command.d
     - model_command_kind_d
     - context_model_command_kind_d
-    name: use_command
-    function: use_command
+    name: toggle_use_command
+    function: toggle_use_command
     params:
     - piece
     - current_item
     - lcs
-  use_command.d:
+  toggle_use_command.d:
     _type: legacy_type.builtin:call
-    function: legacy_type.list_as_tree:use_command_d
+    function: legacy_type.list_as_tree:toggle_use_command_d
+  ui_command_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:ui_command_d

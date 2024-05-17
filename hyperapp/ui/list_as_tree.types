@@ -1,7 +1,7 @@
 switch_list_to_tree_d = record
 open_opener_commands_d = record
 opener_command_list_d = record
-use_command_d = record
+toggle_use_command_d = record
 
 opener_commands = record:
   model: ref

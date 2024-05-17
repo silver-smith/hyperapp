@@ -140,5 +140,5 @@ def test_use_command():
         )
     lcs = Mock()
     lcs.get.return_value = view
-    result = list_as_tree.use_command(piece, current_item, lcs)
+    result = list_as_tree.toggle_use_command(piece, current_item, lcs)
     lcs.set.assert_called_once()

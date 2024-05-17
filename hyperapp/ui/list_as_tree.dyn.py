@@ -58,7 +58,8 @@ def opener_command_list(piece, lcs):
     if isinstance(view, htypes.tree.view):
         adapter = web.summon(view.adapter)
         if isinstance(adapter, htypes.list_to_tree_adapter.adapter):
-            current_command = web.summon(adapter.root_open_children_command)
+            if adapter.root_open_children_command is not None:
+                current_command = web.summon(adapter.root_open_children_command)
     command_list = model_command_factory(model)
     return [
         htypes.list_as_tree.opener_command_item(
@@ -72,7 +73,7 @@ def opener_command_list(piece, lcs):
         ]
 
 
-def use_command(piece, current_item, lcs):
+def toggle_use_command(piece, current_item, lcs):
     model, model_t = web.summon_with_t(piece.model)
     view = get_model_layout(lcs, model_t)
     if not isinstance(view, htypes.tree.view):
@@ -80,11 +81,15 @@ def use_command(piece, current_item, lcs):
     adapter = web.summon(view.adapter)
     if not isinstance(adapter, htypes.list_to_tree_adapter.adapter):
         log.info("Adapter for %s is not a list-to-tree: %s", model_t, adapter)
+    if adapter.root_open_children_command == current_item.command:
+        new_command = None
+    else:
+        new_command = current_item.command
     new_adapter = htypes.list_to_tree_adapter.adapter(
         root_element_t=adapter.root_element_t,
         root_function=adapter.root_function,
         root_params=adapter.root_params,
-        root_open_children_command=current_item.command,
+        root_open_children_command=new_command,
         layers=adapter.layers,
         )
     new_view = htypes.tree.view(
