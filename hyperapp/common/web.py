@@ -30,16 +30,21 @@ class Web(object):
                 return capsule
         raise RefResolveFailure(ref)
 
-    def summon(self, ref, expected_type=None):
+    def summon_with_t(self, ref, expected_type=None):
         try:
             rec = self._mosaic.resolve_ref(ref)
         except KeyError:
             pass
         else:
-            return rec.value
+            return (rec.value, rec.t)
         capsule = self.pull(ref)
         # Following code is actually dead.
         t = self._types.resolve(capsule.type_ref)
         if expected_type:
             assert t is expected_type, (t, expected_type)
-        return packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
+        value = packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
+        return (value, t)
+
+    def summon(self, ref, expected_type=None):
+        value, t = self.summon_with_t(ref, expected_type)
+        return value
