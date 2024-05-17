@@ -1,6 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
@@ -14,8 +15,10 @@ import:
 - legacy_type.list_as_tree:opener_command_list_d
 - legacy_type.list_as_tree:opener_commands
 - legacy_type.list_as_tree:switch_list_to_tree_d
+- legacy_type.list_as_tree:use_command_d
 - legacy_type.list_to_tree_adapter:adapter
 - legacy_type.tree:view
+- legacy_type.ui:context_model_command_kind_d
 - legacy_type.ui:fn_impl
 - legacy_type.ui:list_ui_t
 - legacy_type.ui:model
@@ -31,6 +34,8 @@ import:
 - ui.qt.list_adapter:list_adapter.module
 - ui.qt.list_to_tree_adapter:list_to_tree_adapter.module
 - ui.view_registry:model_view_creg.service
+- ui.visualizer:get_model_layout.service
+- ui.visualizer:set_model_layout.service
 associations:
 - bases:
   - legacy_type.list_as_tree:opener_commands
@@ -38,6 +43,12 @@ associations:
   - model_command_d
   - legacy_type.list_as_tree:opener_commands
   value: opener_command_list.command
+- bases:
+  - legacy_type.list_as_tree:opener_commands
+  key:
+  - model_command_d
+  - legacy_type.list_as_tree:opener_commands
+  value: use_command.command
 - bases:
   - legacy_type.list_as_tree:opener_commands
   key:
@@ -59,6 +70,9 @@ associations:
   - legacy_type.tree:view
   value: open_opener_commands.ui_command
 definitions:
+  context_model_command_kind_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:context_model_command_kind_d
   list_as_tree.module:
     _type: legacy_type.builtin:python_module
     module_name: list_as_tree
@@ -71,12 +85,15 @@ definitions:
       htypes.list_as_tree.opener_commands: legacy_type.list_as_tree:opener_commands
       htypes.list_to_tree_adapter.adapter: legacy_type.list_to_tree_adapter:adapter
       htypes.tree.view: legacy_type.tree:view
+      services.deduce_t: builtins:deduce_t.service
       services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
+      services.get_model_layout: ui.visualizer:get_model_layout.service
       services.mark: common.mark:mark.service
       services.model_command_factory: ui.model_command:model_command_factory.service
       services.model_view_creg: ui.view_registry:model_view_creg.service
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
+      services.set_model_layout: ui.visualizer:set_model_layout.service
       services.web: builtins:web.service
   model_command_d:
     _type: legacy_type.builtin:call
@@ -159,3 +176,22 @@ definitions:
   ui_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:ui_command_d
+  use_command:
+    _type: legacy_type.builtin:attribute
+    object: list_as_tree.module
+    attr_name: use_command
+  use_command.command:
+    _type: legacy_type.ui:model_command
+    d:
+    - use_command.d
+    - model_command_kind_d
+    - context_model_command_kind_d
+    name: use_command
+    function: use_command
+    params:
+    - piece
+    - current_item
+    - lcs
+  use_command.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.list_as_tree:use_command_d

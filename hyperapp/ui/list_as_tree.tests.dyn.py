@@ -111,3 +111,32 @@ def test_opener_commands_list():
     item = result[0]
     assert item.name == 'open_1'
     assert web.summon(item.command) == _open_1_command()
+
+
+def test_use_command():
+    model = htypes.list_as_tree_tests.sample_list_1()
+    piece = htypes.list_as_tree.opener_commands(
+        model=mosaic.put(model),
+        )
+    root_element_t = pyobj_creg.reverse_resolve(htypes.list_as_tree_tests.item_1)
+    adapter_piece = htypes.list_to_tree_adapter.adapter(
+        root_element_t=mosaic.put(root_element_t),
+        root_function=fn_to_ref(sample_fn_1),
+        root_params=('piece',),
+        root_open_children_command=None,
+        layers=(),
+        )
+    view = htypes.tree.view(
+        adapter=mosaic.put(adapter_piece),
+        )
+    command = _open_1_command()
+    current_item = htypes.list_as_tree.opener_command_item(
+        command=mosaic.put(command),
+        name=command.name,
+        d=str(command.d),
+        params=", ".join(command.params),
+        )
+    lcs = Mock()
+    lcs.get.return_value = view
+    result = list_as_tree.use_command(piece, current_item, lcs)
+    lcs.set.assert_called_once()

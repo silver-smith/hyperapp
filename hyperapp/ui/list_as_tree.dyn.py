@@ -2,7 +2,10 @@ import logging
 
 from . import htypes
 from .services import (
+    deduce_t,
     fn_to_ref,
+    get_model_layout,
+    set_model_layout,
     mark,
     model_command_factory,
     model_view_creg,
@@ -60,3 +63,24 @@ def opener_command_list(piece):
             )
         for command in command_list
         ]
+
+
+def use_command(piece, current_item, lcs):
+    model, model_t = web.summon_with_t(piece.model)
+    view = get_model_layout(lcs, model_t)
+    if not isinstance(view, htypes.tree.view):
+        log.info("View for %s is not a tree: %s", model_t, view)
+    adapter = web.summon(view.adapter)
+    if not isinstance(adapter, htypes.list_to_tree_adapter.adapter):
+        log.info("Adapter for %s is not a list-to-tree: %s", model_t, adapter)
+    new_adapter = htypes.list_to_tree_adapter.adapter(
+        root_element_t=adapter.root_element_t,
+        root_function=adapter.root_function,
+        root_params=adapter.root_params,
+        root_open_children_command=current_item.command,
+        layers=adapter.layers,
+        )
+    new_view = htypes.tree.view(
+        adapter=mosaic.put(new_adapter),
+        )
+    set_model_layout(lcs, model_t, new_view)
