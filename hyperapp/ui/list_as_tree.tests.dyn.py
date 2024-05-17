@@ -114,7 +114,7 @@ def test_opener_commands_list():
     assert web.summon(item.command) == _open_1_command()
 
 
-def test_use_command():
+async def test_use_command():
     model = htypes.list_as_tree_tests.sample_list_1()
     piece = htypes.list_as_tree.opener_commands(
         model=mosaic.put(model),
@@ -140,5 +140,5 @@ def test_use_command():
         )
     lcs = Mock()
     lcs.get.return_value = view
-    result = list_as_tree.toggle_use_command(piece, current_item, lcs)
+    result = await list_as_tree.toggle_use_command(piece, 0, current_item, lcs)
     lcs.set.assert_called_once()

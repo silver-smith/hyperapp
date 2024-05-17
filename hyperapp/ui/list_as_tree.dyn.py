@@ -3,6 +3,7 @@ import logging
 from . import htypes
 from .services import (
     deduce_t,
+    feed_factory,
     fn_to_ref,
     get_model_layout,
     set_model_layout,
@@ -13,6 +14,7 @@ from .services import (
     pyobj_creg,
     web,
     )
+from .code.list_diff import ListDiff
 from .code.list_adapter import FnListAdapter
 from .code.list_to_tree_adapter import ListToTreeAdapter
 
@@ -51,6 +53,16 @@ def open_opener_commands(view, current_path):
         )
 
 
+def _make_command_item(command, is_opener):
+    return htypes.list_as_tree.opener_command_item(
+        command=mosaic.put(command),
+        name=command.name,
+        d=str(command.d),
+        params=", ".join(command.params),
+        is_opener=is_opener,
+        )
+
+
 def opener_command_list(piece, lcs):
     model, model_t = web.summon_with_t(piece.model)
     view = get_model_layout(lcs, model_t)
@@ -62,18 +74,12 @@ def opener_command_list(piece, lcs):
                 current_command = web.summon(adapter.root_open_children_command)
     command_list = model_command_factory(model)
     return [
-        htypes.list_as_tree.opener_command_item(
-            command=mosaic.put(command),
-            name=command.name,
-            d=str(command.d),
-            params=", ".join(command.params),
-            is_opener=command == current_command,
-            )
+        _make_command_item(command, is_opener=command == current_command)
         for command in command_list
         ]
 
 
-def toggle_use_command(piece, current_item, lcs):
+async def toggle_use_command(piece, current_idx, current_item, lcs):
     model, model_t = web.summon_with_t(piece.model)
     view = get_model_layout(lcs, model_t)
     if not isinstance(view, htypes.tree.view):
@@ -96,3 +102,7 @@ def toggle_use_command(piece, current_item, lcs):
         adapter=mosaic.put(new_adapter),
         )
     set_model_layout(lcs, model_t, new_view)
+    feed = feed_factory(piece)
+    current_command = web.summon(current_item.command)
+    item = _make_command_item(current_command, is_opener=new_command is not None)
+    await feed.send(ListDiff.Replace(current_idx, item))

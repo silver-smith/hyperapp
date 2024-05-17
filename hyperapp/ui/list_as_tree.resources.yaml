@@ -5,6 +5,7 @@ import:
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
+- common.list_diff:list_diff.module
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -19,7 +20,9 @@ import:
 - legacy_type.list_to_tree_adapter:adapter
 - legacy_type.tree:view
 - legacy_type.ui:context_model_command_kind_d
+- legacy_type.ui:feed_d
 - legacy_type.ui:fn_impl
+- legacy_type.ui:list_feed
 - legacy_type.ui:list_ui_t
 - legacy_type.ui:model
 - legacy_type.ui:model_command
@@ -30,6 +33,7 @@ import:
 - legacy_type.ui:ui_command_d
 - legacy_type.ui:ui_model_command
 - resource.fn_to_res:fn_to_ref.service
+- ui.feed:feed_factory.service
 - ui.model_command:model_command_factory.service
 - ui.qt.list_adapter:list_adapter.module
 - ui.qt.list_to_tree_adapter:list_to_tree_adapter.module
@@ -37,6 +41,13 @@ import:
 - ui.visualizer:get_model_layout.service
 - ui.visualizer:set_model_layout.service
 associations:
+- bases:
+  - feed_d
+  - legacy_type.list_as_tree:opener_commands
+  key:
+  - feed_d
+  - legacy_type.list_as_tree:opener_commands
+  value: list_as_tree_opener_commands.list_feed
 - bases:
   - legacy_type.list_as_tree:opener_commands
   key:
@@ -73,12 +84,16 @@ definitions:
   context_model_command_kind_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:context_model_command_kind_d
+  feed_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:feed_d
   list_as_tree.module:
     _type: legacy_type.builtin:python_module
     module_name: list_as_tree
     file_name: list_as_tree.dyn.py
     import_list:
       code.list_adapter: ui.qt.list_adapter:list_adapter.module
+      code.list_diff: common.list_diff:list_diff.module
       code.list_to_tree_adapter: ui.qt.list_to_tree_adapter:list_to_tree_adapter.module
       htypes.list.view: legacy_type.list:view
       htypes.list_as_tree.opener_command_item: legacy_type.list_as_tree:opener_command_item
@@ -86,6 +101,7 @@ definitions:
       htypes.list_to_tree_adapter.adapter: legacy_type.list_to_tree_adapter:adapter
       htypes.tree.view: legacy_type.tree:view
       services.deduce_t: builtins:deduce_t.service
+      services.feed_factory: ui.feed:feed_factory.service
       services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
       services.get_model_layout: ui.visualizer:get_model_layout.service
       services.mark: common.mark:mark.service
@@ -95,6 +111,9 @@ definitions:
       services.pyobj_creg: builtins:pyobj_creg.service
       services.set_model_layout: ui.visualizer:set_model_layout.service
       services.web: builtins:web.service
+  list_as_tree_opener_commands.list_feed:
+    _type: legacy_type.ui:list_feed
+    element_t: legacy_type.list_as_tree:opener_command_item
   model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_command_d
@@ -189,6 +208,7 @@ definitions:
     function: toggle_use_command
     params:
     - piece
+    - current_idx
     - current_item
     - lcs
   toggle_use_command.d:
