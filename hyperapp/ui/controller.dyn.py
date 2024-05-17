@@ -14,8 +14,8 @@ from . import htypes
 from .services import (
     deduce_t,
     feed_factory,
+    set_model_layout,
     mosaic,
-    pyobj_creg,
     ui_command_creg,
     ui_command_factory,
     ui_model_command_factory,
@@ -299,13 +299,7 @@ class _Item:
     def _set_model_layout(self, layout):
         model = self._find_child_model()
         t = deduce_t(model)
-        log.info("Controller: Set layout for %s -> %s", t, layout)
-        t_res = pyobj_creg.reverse_resolve(t)
-        d = {
-            htypes.ui.model_view_layout_d(),
-            t_res,
-            }
-        self.ctx.lcs.set(d, layout, persist=True)
+        set_model_layout(self.ctx.lcs, t, layout)
 
     def _find_child_model(self):
         if self.model:

@@ -17,13 +17,13 @@ import:
 - legacy_type.root:view
 - legacy_type.ui:feed_d
 - legacy_type.ui:index_tree_feed
-- legacy_type.ui:model_view_layout_d
 - ui.feed:feed_factory.service
 - ui.qt.ui_command:ui_command_factory.service
 - ui.ui_command_creg:ui_command_creg.service
 - ui.ui_model_command:ui_model_command_factory.service
 - ui.view:view.module
 - ui.view_registry:view_creg.service
+- ui.visualizer:set_model_layout.service
 associations:
 - bases:
   - feed_d
@@ -46,11 +46,11 @@ definitions:
       htypes.root.layout: legacy_type.root:layout
       htypes.root.state: legacy_type.root:state
       htypes.root.view: legacy_type.root:view
-      htypes.ui.model_view_layout_d: legacy_type.ui:model_view_layout_d
       services.deduce_t: builtins:deduce_t.service
       services.feed_factory: ui.feed:feed_factory.service
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
+      services.set_model_layout: ui.visualizer:set_model_layout.service
       services.types: builtins:types.service
       services.ui_command_creg: ui.ui_command_creg:ui_command_creg.service
       services.ui_command_factory: ui.qt.ui_command:ui_command_factory.service

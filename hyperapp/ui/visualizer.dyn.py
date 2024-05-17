@@ -29,13 +29,23 @@ def _primitive_value_layout(t):
     return None
 
 
-def _configured_layout(lcs, t):
+def _get_model_layout(lcs, t):
     t_res = pyobj_creg.reverse_resolve(t)
     d = {
         htypes.ui.model_view_layout_d(),
         t_res,
         }
     return lcs.get(d)
+
+
+def _set_model_layout(lcs, t, layout):
+    log.info("Save layout for %s: %s", t, layout)
+    t_res = pyobj_creg.reverse_resolve(t)
+    d = {
+        htypes.ui.model_view_layout_d(),
+        t_res,
+        }
+    lcs.set(d, layout, persist=True)
 
 
 def _visualizer_info(t):
@@ -87,6 +97,16 @@ def pick_visualizer_info():
 
 
 @mark.service
+def get_model_layout():
+    return _get_model_layout
+
+
+@mark.service
+def set_model_layout():
+    return _set_model_layout
+
+
+@mark.service
 def visualizer():
     def fn(lcs, value):
         t = deduce_t(value)
@@ -95,7 +115,7 @@ def visualizer():
         if view is not None:
             return view
 
-        view = _configured_layout(lcs, t)
+        view = _get_model_layout(lcs, t)
         if view is not None:
             log.info("Using configured layout for %s: %s", t, view)
             return view

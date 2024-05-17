@@ -30,6 +30,13 @@ import:
 - resource.data_to_res:data_to_res.service
 associations: []
 definitions:
+  get_model_layout:
+    _type: legacy_type.builtin:attribute
+    object: visualizer.module
+    attr_name: get_model_layout
+  get_model_layout.service:
+    _type: legacy_type.builtin:call
+    function: get_model_layout
   pick_visualizer_info:
     _type: legacy_type.builtin:attribute
     object: visualizer.module
@@ -37,6 +44,13 @@ definitions:
   pick_visualizer_info.service:
     _type: legacy_type.builtin:call
     function: pick_visualizer_info
+  set_model_layout:
+    _type: legacy_type.builtin:attribute
+    object: visualizer.module
+    attr_name: set_model_layout
+  set_model_layout.service:
+    _type: legacy_type.builtin:call
+    function: set_model_layout
   visualizer:
     _type: legacy_type.builtin:attribute
     object: visualizer.module
