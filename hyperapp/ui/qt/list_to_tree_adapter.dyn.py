@@ -55,7 +55,7 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
             }
         self._layers = {
             **layers,
-            model: root_layer,
+            deduce_t(model): root_layer,
             }
         self._column_names = sorted(root_layer.element_t.fields)
         self._parent_id_to_layer = {
@@ -102,7 +102,7 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
         try:
             layer = self._layers[piece_t]
         except KeyError:
-            log.info("List-to-tree: %s is not an included piece type", piece_t)
+            log.info("List-to-tree: %s is not in included piece types: %s", piece_t, list(self._layers))
             return
         layer.element_t = pyobj_creg.invite(ui_t.element_t)
         layer.list_fn = pyobj_creg.invite(impl.function)
