@@ -20,6 +20,7 @@ module_dir_list = [
     HYPERAPP_DIR / 'models',
     HYPERAPP_DIR / 'sample',
     HYPERAPP_DIR / 'ui',
+    HYPERAPP_DIR / 'views',
     HYPERAPP_DIR / 'client',
     ]
 
