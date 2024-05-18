@@ -48,3 +48,8 @@ class Web(object):
     def summon(self, ref, expected_type=None):
         value, t = self.summon_with_t(ref, expected_type)
         return value
+
+    def summon_opt(self, ref):
+        if ref is None:
+            return None
+        return self.summon(ref)
