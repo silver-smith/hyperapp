@@ -1,0 +1,8 @@
+show_current_context_d = record
+current_context_list_d = record
+
+view = record
+
+item = record:
+  name: string
+  value: string

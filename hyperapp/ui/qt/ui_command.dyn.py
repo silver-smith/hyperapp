@@ -57,6 +57,7 @@ _hardcoded_shortcuts = {
     'open_opener_commands': 'Alt+O',
     'toggle_open_command': 'Space',
     'open_local_server_context': 'Alt+S',
+    'show_current_context': 'Alt+U',
     }
 
 
