@@ -1,3 +1,5 @@
+import inspect
+
 
 class Context:
 
@@ -23,5 +25,6 @@ class Context:
         return {
             name: getattr(obj, name)
             for name in dir(obj)
-            if not name.startswith('_')
+            if (not name.startswith('_')
+                and not inspect.isbuiltin(getattr(obj, name)))
             }
