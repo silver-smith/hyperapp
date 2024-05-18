@@ -87,6 +87,13 @@ async def toggle_use_command(piece, current_idx, current_item, lcs):
     adapter = web.summon(view.adapter)
     if not isinstance(adapter, htypes.list_to_tree_adapter.adapter):
         log.info("Adapter for %s is not a list-to-tree: %s", model_t, adapter)
+        return
+    command_list = model_command_factory(model)
+    prev_command_by_idx = {
+        idx: cmd for idx, cmd
+        in enumerate(command_list)
+        if mosaic.put(cmd) == adapter.root_open_children_command
+        }
     if adapter.root_open_children_command == current_item.command:
         new_command = None
     else:
@@ -103,6 +110,10 @@ async def toggle_use_command(piece, current_idx, current_item, lcs):
         )
     set_model_layout(lcs, model_t, new_view)
     feed = feed_factory(piece)
+    if prev_command_by_idx:
+        idx, prev_command = next(iter(prev_command_by_idx.items()))
+        prev_item = _make_command_item(prev_command, is_opener=False)
+        await feed.send(ListDiff.Replace(idx, prev_item))
     current_command = web.summon(current_item.command)
     item = _make_command_item(current_command, is_opener=new_command is not None)
     await feed.send(ListDiff.Replace(current_idx, item))
