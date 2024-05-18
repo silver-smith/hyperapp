@@ -37,6 +37,9 @@ class View(metaclass=abc.ABCMeta):
     def get_model(self):
         return None
 
+    def children_context(self, ctx):
+        return ctx
+
     def model_changed(self, widget, model):
         pass
 

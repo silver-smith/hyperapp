@@ -39,6 +39,9 @@ class LocalServerContextView(View):
         layout.addWidget(base_widget)
         return widget
 
+    def children_context(self, ctx):
+        return ctx.clone_with(test_context=12345)
+
     def get_current(self, widget):
         return 0
 

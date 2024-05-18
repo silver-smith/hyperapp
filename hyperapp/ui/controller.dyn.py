@@ -79,8 +79,9 @@ class _Item:
 
     def _make_child_item(self, rec):
         item_id = next(self._counter)
+        ctx = rec.view.children_context(self.ctx)
         item = _Item(self._counter, self._id_to_item, self._feed,
-                     item_id, self, self.ctx, rec.name, rec.view, rec.focusable)
+                     item_id, self, ctx, rec.name, rec.view, rec.focusable)
         item.view.set_controller_hook(item._hook)
         self._id_to_item[item_id] = item
         return item
@@ -467,8 +468,9 @@ class _RootItem(_Item):
     def create_window(self, piece, state):
         view = view_creg.animate(piece, self.ctx)
         item_id = next(self._counter)
+        ctx = view.children_context(self.ctx)
         item = _WindowItem(self._counter, self._id_to_item, self._feed,
-                           item_id, self, self.ctx, f"window#{item_id}", view, focusable=True)
+                           item_id, self, ctx, f"window#{item_id}", view, focusable=True)
         item._init(state)
         self._children.append(item)
         item.update_commands()
