@@ -49,6 +49,14 @@ class LocalServerContextView(View):
             base=mosaic.put(base_state),
             )
 
+    def replace_child_widget(self, widget, idx, new_child_widget):
+        if idx != 0:
+            return super().replace_child_widget(widget, idx, new_child_widget)
+        layout = widget.layout()
+        old_w = layout.itemAt(1).widget()
+        layout.replaceWidget(old_w, new_child_widget)
+        old_w.deleteLater()
+
     def items(self):
         return [Item('base', self._base_view)]
 
