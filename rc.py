@@ -21,6 +21,7 @@ module_dir_list = [
     HYPERAPP_DIR / 'command_line',
     HYPERAPP_DIR / 'sample',
     HYPERAPP_DIR / 'ui',
+    HYPERAPP_DIR / 'views',
     ]
 
 
