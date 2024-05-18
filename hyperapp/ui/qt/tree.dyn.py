@@ -1,4 +1,5 @@
 import logging
+import time
 from collections import namedtuple
 from functools import partial
 
@@ -96,6 +97,7 @@ class _TreeWidget(QtWidgets.QTreeView):
     def __init__(self):
         super().__init__()
         self.on_state_changed = None
+        self._visible_time = 0
 
     def currentChanged(self, current, previous):
         result = super().currentChanged(current, previous)
@@ -107,6 +109,12 @@ class _TreeWidget(QtWidgets.QTreeView):
         super().setVisible(visible)
         if visible:
             self.setFocus()
+            self._initial_expand()
+            self._visible_time = time.time()
+
+    def expand_if_just_shown(self):
+        if time.time() - self._visible_time < 0.2:
+            # Heuristics to detect initial data population.
             self._initial_expand()
 
     def _initial_expand(self):
@@ -188,4 +196,5 @@ class TreeView(View):
 
     def _on_data_changed(self, widget, *args):
         log.info("Tree: on_data_changed: %s: %s", widget, args)
+        widget.expand_if_just_shown()
         # widget.resizeColumnToContents(0)
