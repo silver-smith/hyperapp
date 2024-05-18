@@ -9,7 +9,6 @@ from .services import (
     model_view_creg,
     web,
     )
-
 from .code.view import Item, View
 
 log = logging.getLogger(__name__)
