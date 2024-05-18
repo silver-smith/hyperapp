@@ -16,8 +16,9 @@ import:
 - legacy_type.list_as_tree:opener_command_list_d
 - legacy_type.list_as_tree:opener_commands
 - legacy_type.list_as_tree:switch_list_to_tree_d
-- legacy_type.list_as_tree:toggle_use_command_d
+- legacy_type.list_as_tree:toggle_open_command_d
 - legacy_type.list_to_tree_adapter:adapter
+- legacy_type.list_to_tree_adapter:layer
 - legacy_type.tree:view
 - legacy_type.ui:context_model_command_kind_d
 - legacy_type.ui:feed_d
@@ -59,7 +60,7 @@ associations:
   key:
   - model_command_d
   - legacy_type.list_as_tree:opener_commands
-  value: toggle_use_command.command
+  value: toggle_open_command.command
 - bases:
   - legacy_type.list_as_tree:opener_commands
   key:
@@ -99,6 +100,7 @@ definitions:
       htypes.list_as_tree.opener_command_item: legacy_type.list_as_tree:opener_command_item
       htypes.list_as_tree.opener_commands: legacy_type.list_as_tree:opener_commands
       htypes.list_to_tree_adapter.adapter: legacy_type.list_to_tree_adapter:adapter
+      htypes.list_to_tree_adapter.layer: legacy_type.list_to_tree_adapter:layer
       htypes.tree.view: legacy_type.tree:view
       services.deduce_t: builtins:deduce_t.service
       services.feed_factory: ui.feed:feed_factory.service
@@ -194,26 +196,26 @@ definitions:
     - view
     - hook
     - ctx
-  toggle_use_command:
+  toggle_open_command:
     _type: legacy_type.builtin:attribute
     object: list_as_tree.module
-    attr_name: toggle_use_command
-  toggle_use_command.command:
+    attr_name: toggle_open_command
+  toggle_open_command.command:
     _type: legacy_type.ui:model_command
     d:
-    - toggle_use_command.d
+    - toggle_open_command.d
     - model_command_kind_d
     - context_model_command_kind_d
-    name: toggle_use_command
-    function: toggle_use_command
+    name: toggle_open_command
+    function: toggle_open_command
     params:
     - piece
     - current_idx
     - current_item
     - lcs
-  toggle_use_command.d:
+  toggle_open_command.d:
     _type: legacy_type.builtin:call
-    function: legacy_type.list_as_tree:toggle_use_command_d
+    function: legacy_type.list_as_tree:toggle_open_command_d
   ui_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:ui_command_d

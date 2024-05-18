@@ -1,10 +1,11 @@
 switch_list_to_tree_d = record
 open_opener_commands_d = record
 opener_command_list_d = record
-toggle_use_command_d = record
+toggle_open_command_d = record
 
 opener_commands = record:
-  model: ref
+  root_piece: ref
+  layer_piece: ref
 
 opener_command_item = record:
   command: ref

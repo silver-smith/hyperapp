@@ -55,7 +55,7 @@ _hardcoded_shortcuts = {
     'open_file_bundle_list': 'Alt+B',
     'switch_list_to_tree': 'Alt+K',
     'open_opener_commands': 'Alt+O',
-    'toggle_use_command': 'Space',
+    'toggle_open_command': 'Space',
     }
 
 
