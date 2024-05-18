@@ -1,0 +1,7 @@
+open_local_server_context_d = record
+
+view = record:
+  base: ref
+
+state = record:
+  base: ref

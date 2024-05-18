@@ -1,0 +1,75 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:mosaic.service
+- builtins:web.service
+- common.mark:mark.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:call
+- legacy_type.builtin:python_module
+- legacy_type.local_server_context:open_local_server_context_d
+- legacy_type.local_server_context:state
+- legacy_type.local_server_context:view
+- legacy_type.navigator:view
+- legacy_type.ui:ui_command
+- legacy_type.ui:ui_command_d
+- ui.view:view.module
+- ui.view_registry:view_creg.service
+associations:
+- bases:
+  - ui.view_registry:view_creg.service
+  - legacy_type.local_server_context:view
+  key:
+  - ui.view_registry:view_creg.service
+  - legacy_type.local_server_context:view
+  value: LocalServerContextView.from_piece
+- bases:
+  - ui_command_d
+  - legacy_type.navigator:view
+  key:
+  - ui_command_d
+  - legacy_type.navigator:view
+  value: open_local_server_context.ui_command
+definitions:
+  LocalServerContextView:
+    _type: legacy_type.builtin:attribute
+    object: local_server_context.module
+    attr_name: LocalServerContextView
+  LocalServerContextView.from_piece:
+    _type: legacy_type.builtin:attribute
+    object: LocalServerContextView
+    attr_name: from_piece
+  local_server_context.module:
+    _type: legacy_type.builtin:python_module
+    module_name: local_server_context
+    file_name: local_server_context.dyn.py
+    import_list:
+      code.view: ui.view:view.module
+      htypes.local_server_context.state: legacy_type.local_server_context:state
+      htypes.local_server_context.view: legacy_type.local_server_context:view
+      htypes.navigator.view: legacy_type.navigator:view
+      services.mark: common.mark:mark.service
+      services.mosaic: builtins:mosaic.service
+      services.view_creg: ui.view_registry:view_creg.service
+      services.web: builtins:web.service
+  open_local_server_context:
+    _type: legacy_type.builtin:attribute
+    object: local_server_context.module
+    attr_name: open_local_server_context
+  open_local_server_context.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.local_server_context:open_local_server_context_d
+  open_local_server_context.ui_command:
+    _type: legacy_type.ui:ui_command
+    d:
+    - open_local_server_context.d
+    name: open_local_server_context
+    function: open_local_server_context
+    params:
+    - view
+    - state
+    - hook
+    - ctx
+  ui_command_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:ui_command_d
