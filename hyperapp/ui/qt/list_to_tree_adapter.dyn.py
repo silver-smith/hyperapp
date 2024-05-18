@@ -70,7 +70,12 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
 
     def cell_data(self, id, column):
         item = self._id_to_item[id]
-        return getattr(item, self._column_names[column])
+        name = self._column_names[column]
+        try:
+            return getattr(item, name)
+        except AttributeError:
+            # TODO: Implement column inserting visual diff.
+            return None
 
     def get_item_piece(self, path):
         item_id = self.path_to_item_id(path)
