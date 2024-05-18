@@ -107,8 +107,9 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
         try:
             layer = self._layers[piece_t]
         except KeyError:
-            log.info("List-to-tree: %s is not in included piece types: %s", piece_t, list(self._layers))
-            return
+            # Not yet included, but parent layer has open command - show it anyway.
+            layer = _NonRootLayer(piece_t=piece_t)
+            self._layers[piece_t] = layer
         layer.element_t = pyobj_creg.invite(ui_t.element_t)
         layer.list_fn = pyobj_creg.invite(impl.function)
         layer.list_fn_params = impl.params
