@@ -168,6 +168,8 @@ class TreeView(View):
         widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         widget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         widget.setUniformRowHeights(True)
+        for idx in range(self._adapter.column_count()):
+            widget.header().setSectionResizeMode(idx, QtWidgets.QHeaderView.ResizeToContents)
         font_info = widget.fontInfo()
         # widget.setCurrentIndex(widget.model().createIndex(0, 0))
         # model.dataChanged.connect(partial(self._on_data_changed, widget))
@@ -197,4 +199,3 @@ class TreeView(View):
     def _on_data_changed(self, widget, *args):
         log.info("Tree: on_data_changed: %s: %s", widget, args)
         widget.expand_if_just_shown()
-        # widget.resizeColumnToContents(0)
