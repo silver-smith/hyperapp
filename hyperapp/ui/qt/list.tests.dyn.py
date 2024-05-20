@@ -35,6 +35,6 @@ def test_list():
         widget = view.construct_widget(state, ctx)
         assert view.piece
         state = view.widget_state(widget)
-        # assert state
+        assert isinstance(state, htypes.list.state)
     finally:
         app.shutdown()

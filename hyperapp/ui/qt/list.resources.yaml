@@ -4,6 +4,7 @@ import:
 - common.list_diff:list_diff.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.list:state
 - legacy_type.list:view
 - ui.ui_adapter_creg:ui_adapter_creg.service
 - ui.view:view.module
@@ -32,5 +33,6 @@ definitions:
     import_list:
       code.list_diff: common.list_diff:list_diff.module
       code.view: ui.view:view.module
+      htypes.list.state: legacy_type.list:state
       htypes.list.view: legacy_type.list:view
       services.ui_adapter_creg: ui.ui_adapter_creg:ui_adapter_creg.service
