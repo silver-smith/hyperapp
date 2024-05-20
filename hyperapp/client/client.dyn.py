@@ -69,11 +69,7 @@ def make_default_piece(lcs):
 
 def make_default_state():
     text_state = htypes.text.state()
-    navigator_state = htypes.navigator.state(
-        current_state=mosaic.put(text_state),
-        prev=None,
-        next=None,
-        )
+    navigator_state = text_state
     command_pane_state = htypes.command_pane.state()
     box_layout_state = htypes.box_layout.state(
         current=0,

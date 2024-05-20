@@ -1,12 +1,14 @@
 
-view = record:
-  current_view: ref
-  current_model: ref
+history_rec = record:
+  view: ref
+  model: ref
+  state: ref
   prev: ref opt
   next: ref opt
 
-state = record:
-  current_state: ref
+view = record:
+  current_view: ref
+  current_model: ref
   prev: ref opt
   next: ref opt
 

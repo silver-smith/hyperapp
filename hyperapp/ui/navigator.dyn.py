@@ -40,11 +40,7 @@ class NavigatorView(View):
             )
             
     def construct_widget(self, state, ctx):
-        if state is not None:
-            current_state = web.summon(state.current_state)
-        else:
-            current_state = None
-        return self._current_view.construct_widget(current_state, ctx)
+        return self._current_view.construct_widget(state, ctx)
 
     def get_current(self, widget):
         return 0
@@ -54,50 +50,57 @@ class NavigatorView(View):
         return True
 
     def widget_state(self, widget):
-        current_state = self._current_view.widget_state(widget)
-        return htypes.navigator.state(
-            current_state=mosaic.put(current_state),
-            prev=None,
-            next=None,
-            )
+        return self._current_view.widget_state(widget)
 
-    def _replace_widget(self, ctx):
-        state = None  # TODO: Devise new state.
+    def _replace_widget(self, ctx, state):
         new_widget = self.construct_widget(state, ctx)
         self._ctl_hook.replace_parent_widget(new_widget)
         self._ctl_hook.element_replaced(0, self._current_view, new_widget)
 
-    def open(self, ctx, model, view):
-        current_piece = self.piece
+    def _history_rec(self, widget):
+        model_t = deduce_t(self._model)
+        return htypes.navigator.history_rec(
+            view=mosaic.put(self._current_view.piece),
+            model=mosaic.put(self._model, model_t),
+            state=mosaic.put(self.widget_state(widget)),
+            prev=self._prev,
+            next=self._next,
+            )
+
+    def open(self, ctx, model, view, widget):
+        history_rec = self._history_rec(widget)
         self._current_view = view
         self._model = model
-        self._prev = mosaic.put(current_piece)
+        self._prev = mosaic.put(history_rec)
         self._next = None
-        self._replace_widget(ctx)
+        state = None  # TODO: Devise new state.
+        self._replace_widget(ctx, state)
 
-    def go_back(self, ctx):
+    def go_back(self, ctx, widget):
         if not self._prev:
             return
-        current_piece = self.piece
+        history_rec = self._history_rec(widget)
         prev = web.summon(self._prev)
-        prev_model = web.summon(prev.current_model)
-        self._current_view = model_view_creg.invite(prev.current_view, prev_model, ctx)
-        self._model = web.summon(prev.current_model)
+        prev_model = web.summon(prev.model)
+        prev_state = web.summon(prev.state)
+        self._current_view = model_view_creg.invite(prev.view, prev_model, ctx)
+        self._model = web.summon(prev.model)
         self._prev = prev.prev
-        self._next = mosaic.put(current_piece)
-        self._replace_widget(ctx)
+        self._next = mosaic.put(history_rec)
+        self._replace_widget(ctx, prev_state)
 
-    def go_forward(self, ctx):
+    def go_forward(self, ctx, widget):
         if not self._next:
             return
-        current_piece = self.piece
+        history_rec = self._history_rec(widget)
         next = web.summon(self._next)
-        next_model = web.summon(next.current_model)
-        self._current_view = model_view_creg.invite(next.current_view, next_model, ctx)
-        self._model = web.summon(next.current_model)
-        self._prev = mosaic.put(current_piece)
+        next_model = web.summon(next.model)
+        next_state = web.summon(next.state)
+        self._current_view = model_view_creg.invite(next.view, next_model, ctx)
+        self._model = web.summon(next.model)
+        self._prev = mosaic.put(history_rec)
         self._next = next.next
-        self._replace_widget(ctx)
+        self._replace_widget(ctx, next_state)
 
     def replace_child(self, widget, idx, new_child_view, new_child_widget):
         assert idx == 0
@@ -114,10 +117,10 @@ class NavigatorView(View):
 
 
 @mark.ui_command(htypes.navigator.view)
-def go_back(view, ctx):
-    view.go_back(ctx)
+def go_back(view, widget, ctx):
+    view.go_back(ctx, widget)
 
 
 @mark.ui_command(htypes.navigator.view)
-def go_forward(view, ctx):
-    view.go_forward(ctx)
+def go_forward(view, widget, ctx):
+    view.go_forward(ctx, widget)

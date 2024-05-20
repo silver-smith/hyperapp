@@ -23,7 +23,7 @@ class UiModelCommand(CommandBase):
     def __init__(self, name, d, ctx, model_command):
         super().__init__(name, d)
         self._ctx = ctx
-        self._navigator = ctx.navigator
+        self._navigator_rec = ctx.navigator
         self._lcs = ctx.lcs
         self._model_command = model_command
 
@@ -36,6 +36,9 @@ class UiModelCommand(CommandBase):
         return self._model_command.disabled_reason
 
     async def _run(self):
+        navigator_w = self._navigator_rec.widget_wr()
+        if navigator_w is None:
+            raise RuntimeError("Navigator widget is gone")
         piece = await self._model_command.run()
         if piece is None:
             return None
@@ -44,7 +47,7 @@ class UiModelCommand(CommandBase):
         view_piece = visualizer(self._lcs, piece)
         view = model_view_creg.animate(view_piece, piece, self._ctx)
         log.info("Run model command %r view: %s", self.name, view)
-        self._navigator.open(self._ctx, piece, view)
+        self._navigator_rec.view.open(self._ctx, piece, view, navigator_w)
 
 
 @ui_command_creg.actor(htypes.ui.ui_model_command)

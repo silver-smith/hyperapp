@@ -29,6 +29,9 @@ from .code.view import View
 log = logging.getLogger(__name__)
 
 
+_NavigatorRec = namedtuple('_NavigatorRec', 'view widget_wr')
+
+
 @dataclass
 class CommandRec:
     piece: Any
@@ -138,10 +141,10 @@ class _Item:
         return child_navigator(self)
 
     @property
-    def navigator_view(self):
+    def navigator_rec(self):
         item = self.navigator_item
         if item:
-            return item.view
+            return _NavigatorRec(item.view, weakref.ref(item.widget))
         else:
             return None
 
@@ -175,7 +178,7 @@ class _Item:
             view=self.view,
             widget=weakref.ref(self.widget),
             hook=self._hook,
-            navigator=self.navigator_view,
+            navigator=self.navigator_rec,
             )
         model = self.model
         if model is None:

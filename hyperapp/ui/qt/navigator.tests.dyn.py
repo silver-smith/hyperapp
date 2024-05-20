@@ -18,35 +18,31 @@ def _wrapper(diff):
 def make_piece():
     adapter_piece = htypes.str_adapter.static_str_adapter()
     text_piece = htypes.text.readonly_view(mosaic.put(adapter_piece))
-    prev_piece = htypes.navigator.view(
-        current_view=mosaic.put(text_piece),
-        current_model=mosaic.put("Sample piece"),
+    prev_rec = htypes.navigator.history_rec(
+        view=mosaic.put(text_piece),
+        model=mosaic.put("Sample piece"),
+        state=mosaic.put(htypes.text.state()),
         prev=None,
         next=None,
         )
-    next_piece = htypes.navigator.view(
-        current_view=mosaic.put(text_piece),
-        current_model=mosaic.put("Sample piece"),
+    next_rec = htypes.navigator.history_rec(
+        view=mosaic.put(text_piece),
+        model=mosaic.put("Sample piece"),
+        state=mosaic.put(htypes.text.state()),
         prev=None,
         next=None,
         )
     piece = htypes.navigator.view(
         current_view=mosaic.put(text_piece),
         current_model=mosaic.put("Sample piece"),
-        prev=mosaic.put(prev_piece),
-        next=mosaic.put(next_piece),
+        prev=mosaic.put(prev_rec),
+        next=mosaic.put(next_rec),
         )
     return piece
 
 
 def make_state():
-    tab_state = htypes.text.state()
-    state = htypes.navigator.state(
-        current_state=mosaic.put(tab_state),
-        prev=None,
-        next=None,
-        )
-    return state
+    return htypes.text.state()
 
 
 def test_navigator():
@@ -59,7 +55,7 @@ def test_navigator():
         view.set_controller_hook(Mock())
         widget = view.construct_widget(state, ctx)
         assert view.piece
-        assert view.widget_state(widget)
+        assert view.widget_state(widget) == htypes.text.state()
     finally:
         app.shutdown()
 
@@ -72,7 +68,8 @@ def test_go_back_command():
         ctx = Context()
         view = navigator.NavigatorView.from_piece(piece, ctx)
         view.set_controller_hook(Mock())
-        navigator.go_back(view, state)
+        widget = view.construct_widget(state, ctx)
+        navigator.go_back(view, state, widget)
     finally:
         app.shutdown()
 
@@ -85,6 +82,7 @@ def test_go_forward_command():
         ctx = Context()
         view = navigator.NavigatorView.from_piece(piece, ctx)
         view.set_controller_hook(Mock())
-        navigator.go_forward(view, state)
+        widget = view.construct_widget(state, ctx)
+        navigator.go_forward(view, state, widget)
     finally:
         app.shutdown()
