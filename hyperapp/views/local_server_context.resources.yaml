@@ -13,6 +13,7 @@ import:
 - legacy_type.navigator:view
 - legacy_type.ui:ui_command
 - legacy_type.ui:ui_command_d
+- ui.local_server:local_server.module
 - ui.view:view.module
 - ui.view_registry:view_creg.service
 associations:
@@ -44,6 +45,7 @@ definitions:
     module_name: local_server_context
     file_name: local_server_context.dyn.py
     import_list:
+      code.local_server: ui.local_server:local_server.module
       code.view: ui.view:view.module
       htypes.local_server_context.state: legacy_type.local_server_context:state
       htypes.local_server_context.view: legacy_type.local_server_context:view

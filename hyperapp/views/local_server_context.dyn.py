@@ -1,3 +1,5 @@
+from functools import cached_property
+
 from PySide6 import QtWidgets
 
 from . import htypes
@@ -8,6 +10,7 @@ from .services import (
     web,
     )
 from .code.view import Item, View
+from .code.local_server import local_server_peer
 
 
 class LocalServerContextView(View):
@@ -40,7 +43,13 @@ class LocalServerContextView(View):
         return widget
 
     def children_context(self, ctx):
-        return ctx.clone_with(test_context=12345)
+        return ctx.clone_with(
+            remote_peer=self._local_server_peer
+            )
+
+    @cached_property
+    def _local_server_peer(self):
+        return local_server_peer()
 
     def get_current(self, widget):
         return 0
