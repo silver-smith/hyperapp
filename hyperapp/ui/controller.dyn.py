@@ -55,7 +55,7 @@ class _Item:
     view: View
     focusable: bool
     _current_child_idx: int | None = None
-    _widget: Any | None = None
+    _widget_wr: Any | None = None
     _view_commands: list[CommandRec] | None = None
     _model_commands: list[CommandRec] | None = None
     _children: list[Self] | None = None
@@ -108,10 +108,11 @@ class _Item:
 
     @property
     def widget(self):
-        if not self._widget:
-            self._widget = self.parent.get_child_widget(self.idx)
-            self.view.init_widget(self._widget)
-        return self._widget
+        if not self._widget_wr:
+            widget = self.parent.get_child_widget(self.idx)
+            self._widget_wr = weakref.ref(widget)
+            self.view.init_widget(widget)
+        return self._widget_wr()
 
     @property
     def model(self):
@@ -367,7 +368,7 @@ class _Item:
     def replace_parent_widget_hook(self, new_widget):
         parent = self.parent
         parent.view.replace_child_widget(parent.widget, self.idx, new_widget)
-        self._widget = None
+        self._widget_wr = None
         self._view_commands = None
         self._model_commands = None
 
@@ -382,6 +383,8 @@ class _Item:
 @dataclass(repr=False)
 class _WindowItem(_Item):
 
+    _window_widget: Any = None
+
     @classmethod
     def from_refs(cls, counter, id_to_item, feed, ctx, parent, view_ref, state_ref):
         view = view_creg.invite(view_ref, ctx)
@@ -394,9 +397,10 @@ class _WindowItem(_Item):
 
     def _init(self, state):
         widget = self.view.construct_widget(state, self.ctx)
-        self._widget = widget
+        self._widget_wr = weakref.ref(widget)
         self.view.set_controller_hook(self._hook)
         self._id_to_item[self.id] = self
+        self._window_widget = widget  # Prevent windows refs from be gone.
 
     def command_context(self):
         return super().command_context().clone_with(
