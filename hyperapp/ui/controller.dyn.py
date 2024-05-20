@@ -112,7 +112,10 @@ class _Item:
             widget = self.parent.get_child_widget(self.idx)
             self._widget_wr = weakref.ref(widget)
             self.view.init_widget(widget)
-        return self._widget_wr()
+        widget = self._widget_wr()
+        if widget is None:
+            raise RuntimeError("Widget is gone")
+        return widget
 
     @property
     def model(self):
