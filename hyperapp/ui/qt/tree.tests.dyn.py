@@ -54,7 +54,7 @@ def test_tree():
         widget = view.construct_widget(state, ctx)
         assert view.piece
         state = view.widget_state(widget)
-        # assert state
+        assert isinstance(state, htypes.tree.state)
         model_state = view.model_state(widget)
         assert model_state
     finally:

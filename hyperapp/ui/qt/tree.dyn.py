@@ -94,8 +94,9 @@ class _Model(QtCore.QAbstractItemModel):
 
 class _TreeWidget(QtWidgets.QTreeView):
 
-    def __init__(self):
+    def __init__(self, current_path):
         super().__init__()
+        self._want_current_path = current_path
         self.on_state_changed = None
         self._visible_time = 0
 
@@ -109,13 +110,21 @@ class _TreeWidget(QtWidgets.QTreeView):
         super().setVisible(visible)
         if visible:
             self.setFocus()
-            self._initial_expand()
+            self._setup()
             self._visible_time = time.time()
 
-    def expand_if_just_shown(self):
-        if time.time() - self._visible_time < 0.2:
-            # Heuristics to detect initial data population.
-            self._initial_expand()
+    def check_is_just_shown(self):
+        # Heuristics to detect initial data population.
+        if time.time() - self._visible_time > 0.2:
+            self._want_current_path = None
+            return
+        self._setup()
+
+    def _setup(self):
+        self._initial_expand()
+        if self._want_current_path:
+            if self._set_current_path(self._want_current_path):
+                self._want_current_path = None
 
     def _initial_expand(self):
         def bottom(idx):
@@ -144,6 +153,23 @@ class _TreeWidget(QtWidgets.QTreeView):
                 lowest = kid
         self.resizeColumnToContents(0)
 
+    def _set_current_path(self, path):
+        model = self.model()
+        index = self.rootIndex()
+        while path:
+            if not model.hasChildren(index):
+                return False
+            if not self.isExpanded(index):
+                self.expand(index)
+            row = path[0]
+            if row >= model.rowCount(index):
+                return False
+            index = model.index(row, 0, index)
+            self.setCurrentIndex(index)
+            self.scrollTo(index)
+            path = path[1:]
+        return True  # Now, we are fully expanded and selected.
+
 
 class TreeView(View):
 
@@ -162,7 +188,11 @@ class TreeView(View):
         return htypes.tree.view(self._adapter_ref)
 
     def construct_widget(self, state, ctx):
-        widget = _TreeWidget()
+        if isinstance(state, htypes.tree.state):
+            current_path = state.current_path
+        else:
+            current_path = None
+        widget = _TreeWidget(current_path)
         model = _Model(self._adapter)
         widget.setModel(model)
         widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
@@ -180,7 +210,10 @@ class TreeView(View):
         widget.on_state_changed = self._ctl_hook.state_changed
 
     def widget_state(self, widget):
-        return None
+        index = widget.currentIndex()
+        item_id = index.internalId()
+        path = self._adapter.get_path(item_id)
+        return htypes.tree.state(current_path=tuple(path))
 
     def get_model(self):
         return self._adapter.model
@@ -198,4 +231,4 @@ class TreeView(View):
 
     def _on_data_changed(self, widget, *args):
         log.info("Tree: on_data_changed: %s: %s", widget, args)
-        widget.expand_if_just_shown()
+        widget.check_is_just_shown()
