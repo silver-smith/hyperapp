@@ -145,10 +145,11 @@ class FnListAdapter(FnListAdapterBase):
     def from_piece(cls, piece, model, ctx):
         element_t = pyobj_creg.invite(piece.element_t)
         fn = pyobj_creg.invite(piece.function)
-        return cls(model, element_t, piece.params, ctx, fn)
+        return cls(model, element_t, piece.params, ctx, piece.function, fn)
 
-    def __init__(self, model, item_t, params, ctx, fn):
+    def __init__(self, model, item_t, params, ctx, fn_res_ref, fn):
         super().__init__(model, item_t, params, ctx)
+        self._fn_res_ref = fn_res_ref
         self._fn = fn
 
     @property
@@ -156,6 +157,20 @@ class FnListAdapter(FnListAdapterBase):
         return self._fn
 
     def _call_fn(self, **kw):
+        try:
+            rpc_endpoint = self._ctx.rpc_endpoint
+            identity = self._ctx.identity
+            remote_peer = self._ctx.remote_peer
+        except KeyError:
+            pass
+        else:
+            rpc_call = rpc_call_factory(
+                rpc_endpoint=rpc_endpoint,
+                sender_identity=identity,
+                receiver_peer=remote_peer,
+                servant_ref=self._fn_res_ref,
+                )
+            return rpc_call(**kw)
         return self._fn(**kw)
 
 
