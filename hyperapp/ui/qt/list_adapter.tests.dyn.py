@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import threading
 from functools import partial
 
 from . import htypes
@@ -9,6 +10,7 @@ from .services import (
     generate_rsa_identity,
     mosaic,
     pyobj_creg,
+    rpc_call_factory,
     rpc_endpoint_factory,
     subprocess_rpc_server_running,
     types,
@@ -116,6 +118,61 @@ async def test_feed_fn_adapter():
     diff = await queue.get()
     assert isinstance(diff, ListDiff.Append), repr(diff)
     assert diff.item.id == 44
+
+
+_sample_fn_is_called = threading.Event()
+
+
+def sample_remote_list_fn(piece):
+    log.info("Sample remote list fn: %s", piece)
+    result = sample_list_fn(piece)
+    _sample_fn_is_called.set()
+    return result
+
+
+def get_fn_called_flag():
+    return _sample_fn_is_called.is_set()
+
+
+def test_fn_adapter_with_remote_context():
+
+    identity = generate_rsa_identity(fast=True)
+    rpc_endpoint = rpc_endpoint_factory()
+    endpoint_registry.register(identity, rpc_endpoint)
+
+    subprocess_name = 'test-remote-fn-list-adapter-main'
+    with subprocess_rpc_server_running(subprocess_name, rpc_endpoint, identity) as process:
+        log.info("Started: %r", process)
+
+        ctx = Context(
+            rpc_endpoint=rpc_endpoint,
+            identity=identity,
+            remote_peer=process.peer,
+            )
+
+        model = htypes.list_adapter_tests.sample_list()
+        adapter_piece = htypes.list_adapter.fn_list_adapter(
+            element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.list_adapter_tests.item)),
+            function=fn_to_ref(sample_remote_list_fn),
+            params=('piece',),
+            )
+        adapter = list_adapter.FnListAdapter.from_piece(adapter_piece, model, ctx)
+
+        assert adapter.column_count() == 2
+        assert adapter.column_title(0) == 'id'
+        assert adapter.column_title(1) == 'text'
+
+        assert adapter.row_count() == 3
+        assert adapter.cell_data(1, 0) == 22
+        assert adapter.cell_data(2, 1) == "Third item"
+
+        get_fn_called_flag_call = rpc_call_factory(
+            rpc_endpoint=rpc_endpoint,
+            sender_identity=identity,
+            receiver_peer=process.peer,
+            servant_ref=fn_to_ref(get_fn_called_flag),
+            )
+        assert get_fn_called_flag_call()
 
 
 def test_remote_fn_adapter():
