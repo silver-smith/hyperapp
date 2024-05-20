@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import threading
 from functools import partial
 
 from hyperapp.common.htypes import tInt
@@ -11,6 +12,7 @@ from .services import (
     generate_rsa_identity,
     mosaic,
     pyobj_creg,
+    rpc_call_factory,
     rpc_endpoint_factory,
     subprocess_rpc_server_running,
     )
@@ -127,6 +129,65 @@ async def test_feed_fn_adapter():
     diff = await queue.get()
     assert isinstance(diff, VisualTreeDiffAppend), repr(diff)
     assert diff.parent_id == 0
+
+
+_sample_fn_is_called = threading.Event()
+
+
+def sample_remote_tree_fn(piece, parent):
+    log.info("Sample remote tree fn: %s", piece)
+    result = sample_tree_fn(piece, parent)
+    _sample_fn_is_called.set()
+    return result
+
+
+def get_fn_called_flag():
+    return _sample_fn_is_called.is_set()
+
+
+def test_fn_adapter_with_remote_context():
+
+    identity = generate_rsa_identity(fast=True)
+    rpc_endpoint = rpc_endpoint_factory()
+    endpoint_registry.register(identity, rpc_endpoint)
+
+    subprocess_name = 'test-remote-fn-tree-adapter-main'
+    with subprocess_rpc_server_running(subprocess_name, rpc_endpoint, identity) as process:
+        log.info("Started: %r", process)
+
+        ctx = Context(
+            rpc_endpoint=rpc_endpoint,
+            identity=identity,
+            remote_peer=process.peer,
+            )
+
+        model = htypes.tree_adapter_tests.sample_tree()
+        adapter_piece = htypes.tree_adapter.fn_index_tree_adapter(
+            element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.tree_adapter_tests.item)),
+            key_t=mosaic.put(pyobj_creg.reverse_resolve(tInt)),
+            function=fn_to_ref(sample_remote_tree_fn),
+            params=('piece', 'parent'),
+            )
+        adapter = tree_adapter.FnIndexTreeAdapter.from_piece(adapter_piece, model, ctx)
+
+        assert adapter.column_count() == 2
+        assert adapter.column_title(0) == 'id'
+        assert adapter.column_title(1) == 'text'
+
+        assert adapter.row_count(0) == 3
+        row_1_id = adapter.row_id(0, 1)
+        assert adapter.cell_data(row_1_id, 0) == 2
+        assert adapter.cell_data(row_1_id, 1) == "Second item"
+        row_2_id = adapter.row_id(row_1_id, 2)
+        assert adapter.cell_data(row_2_id, 0) == 23
+
+        get_fn_called_flag_call = rpc_call_factory(
+            rpc_endpoint=rpc_endpoint,
+            sender_identity=identity,
+            receiver_peer=process.peer,
+            servant_ref=fn_to_ref(get_fn_called_flag),
+            )
+        assert get_fn_called_flag_call()
 
 
 def test_remote_fn_adapter():
