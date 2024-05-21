@@ -8,7 +8,7 @@ import:
 - legacy_type.phony:phony
 - resource.data_to_res:data_to_res.service
 - resource.fn_to_res:fn_to_res.service
-- ui.ui_command_creg:ui_command_creg.service
+- ui.ui_command_impl_creg:ui_command_impl_creg.service
 associations: []
 definitions:
   phony:
@@ -23,6 +23,6 @@ definitions:
       services.fn_to_res: resource.fn_to_res:fn_to_res.service
       services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service
-      services.ui_command_creg: ui.ui_command_creg:ui_command_creg.service
+      services.ui_command_impl_creg: ui.ui_command_impl_creg:ui_command_impl_creg.service
       tested.code.ui_command: phony
       tested.services.ui_command_factory: phony

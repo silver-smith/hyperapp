@@ -33,7 +33,7 @@ import:
 - ui.command:command.module
 - ui.model_command_impl_creg:model_command_impl_creg.service
 - ui.ui_command:ui_command.module
-- ui.ui_command_creg:ui_command_creg.service
+- ui.ui_command_impl_creg:ui_command_impl_creg.service
 associations:
 - bases:
   - global_model_command_d
@@ -158,7 +158,7 @@ definitions:
       services.model_command_impl_creg: ui.model_command_impl_creg:model_command_impl_creg.service
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
-      services.ui_command_creg: ui.ui_command_creg:ui_command_creg.service
+      services.ui_command_impl_creg: ui.ui_command_impl_creg:ui_command_impl_creg.service
   layout_command_from_piece:
     _type: legacy_type.builtin:attribute
     object: layout.module

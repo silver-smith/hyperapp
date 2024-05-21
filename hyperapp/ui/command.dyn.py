@@ -3,6 +3,12 @@ import inspect
 import logging
 from functools import cached_property
 
+from .services import (
+    mark,
+    pyobj_creg,
+    ui_command_impl_creg,
+    )
+
 log = logging.getLogger(__name__)
 
 
@@ -78,8 +84,10 @@ class Command:
 
     def start(self):
         log.info("Start command: %r", self.name)
-        asyncio.create_task(self._impl.run())
+        asyncio.create_task(self.run())
 
+    async def run(self):
+        return await self._impl.run()
   
 
 class CommandImpl:
@@ -147,3 +155,12 @@ class FnCommandImpl(CommandImpl):
         params['widget'] = widget
         params['state'] = view.widget_state(widget)
         return params
+
+
+@mark.service
+def command_factory():
+    def _command_factory(piece, ctx):
+        command_d = pyobj_creg.invite(piece.d)
+        impl = ui_command_impl_creg.invite(piece.impl, ctx)
+        return Command(command_d, impl)
+    return _command_factory

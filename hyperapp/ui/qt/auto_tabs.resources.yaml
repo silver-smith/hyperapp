@@ -17,28 +17,34 @@ import:
 - legacy_type.ui:command
 - legacy_type.ui:command_properties
 - legacy_type.ui:command_properties_d
-- legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
-- legacy_type.ui:model_command_kind_d
+- legacy_type.ui:model_command_impl
 - legacy_type.ui:ui_command_d
 - legacy_type.ui:ui_command_impl
 - ui.qt.tabs:tabs.module
 - ui.view_registry:view_creg.service
 associations:
 - bases:
-  - duplicate_tab.command_properties_d
-  - close_tab.ui_command_impl
+  - command_properties_d
+  - close_tab.impl
   key:
-  - duplicate_tab.command_properties_d
-  - close_tab.ui_command_impl
+  - command_properties_d
+  - close_tab.impl
   value: close_tab.command_properties
 - bases:
-  - duplicate_tab.command_properties_d
-  - duplicate_tab.ui_command_impl
+  - command_properties_d
+  - duplicate_tab.impl
   key:
-  - duplicate_tab.command_properties_d
-  - duplicate_tab.ui_command_impl
+  - command_properties_d
+  - duplicate_tab.impl
   value: duplicate_tab.command_properties
+- bases:
+  - command_properties_d
+  - tab_piece_label.impl
+  key:
+  - command_properties_d
+  - tab_piece_label.impl
+  value: tab_piece_label.command_properties
 - bases:
   - legacy_type.label:view
   key:
@@ -95,25 +101,25 @@ definitions:
   close_tab.command:
     _type: legacy_type.ui:command
     d: close_tab.d
-    impl: close_tab.ui_command_impl
+    impl: close_tab.impl
   close_tab.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
     uses_state: true
     remotable: true
-  close_tab.command_properties_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:command_properties_d
   close_tab.d:
     _type: legacy_type.builtin:call
     function: legacy_type.auto_tabs:close_tab_d
-  close_tab.ui_command_impl:
+  close_tab.impl:
     _type: legacy_type.ui:ui_command_impl
     function: close_tab
     params:
     - view
     - widget
     - state
+  command_properties_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:command_properties_d
   duplicate_tab:
     _type: legacy_type.builtin:attribute
     object: auto_tabs.module
@@ -121,19 +127,16 @@ definitions:
   duplicate_tab.command:
     _type: legacy_type.ui:command
     d: duplicate_tab.d
-    impl: duplicate_tab.ui_command_impl
+    impl: duplicate_tab.impl
   duplicate_tab.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
     uses_state: true
     remotable: false
-  duplicate_tab.command_properties_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:command_properties_d
   duplicate_tab.d:
     _type: legacy_type.builtin:call
     function: legacy_type.auto_tabs:duplicate_tab_d
-  duplicate_tab.ui_command_impl:
+  duplicate_tab.impl:
     _type: legacy_type.ui:ui_command_impl
     function: duplicate_tab
     params:
@@ -144,25 +147,27 @@ definitions:
   model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_command_d
-  model_command_kind_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:model_command_kind_d
   tab_piece_label:
     _type: legacy_type.builtin:attribute
     object: auto_tabs.module
     attr_name: tab_piece_label
   tab_piece_label.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - tab_piece_label.d
-    - model_command_kind_d
-    name: tab_piece_label
-    function: tab_piece_label
-    params:
-    - piece
+    _type: legacy_type.ui:command
+    d: tab_piece_label.d
+    impl: tab_piece_label.impl
+  tab_piece_label.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: false
+    remotable: true
   tab_piece_label.d:
     _type: legacy_type.builtin:call
     function: legacy_type.auto_tabs:tab_piece_label_d
+  tab_piece_label.impl:
+    _type: legacy_type.ui:model_command_impl
+    function: tab_piece_label
+    params:
+    - piece
   ui_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:ui_command_d

@@ -21,11 +21,11 @@ import:
 - ui.view_registry:view_creg.service
 associations:
 - bases:
-  - open_local_server_context.command_properties_d
-  - open_local_server_context.ui_command_impl
+  - command_properties_d
+  - open_local_server_context.impl
   key:
-  - open_local_server_context.command_properties_d
-  - open_local_server_context.ui_command_impl
+  - command_properties_d
+  - open_local_server_context.impl
   value: open_local_server_context.command_properties
 - bases:
   - ui.view_registry:view_creg.service
@@ -50,6 +50,9 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: LocalServerContextView
     attr_name: from_piece
+  command_properties_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:command_properties_d
   local_server_context.module:
     _type: legacy_type.builtin:python_module
     module_name: local_server_context
@@ -71,19 +74,16 @@ definitions:
   open_local_server_context.command:
     _type: legacy_type.ui:command
     d: open_local_server_context.d
-    impl: open_local_server_context.ui_command_impl
+    impl: open_local_server_context.impl
   open_local_server_context.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
     uses_state: true
     remotable: false
-  open_local_server_context.command_properties_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:command_properties_d
   open_local_server_context.d:
     _type: legacy_type.builtin:call
     function: legacy_type.local_server_context:open_local_server_context_d
-  open_local_server_context.ui_command_impl:
+  open_local_server_context.impl:
     _type: legacy_type.ui:ui_command_impl
     function: open_local_server_context
     params:

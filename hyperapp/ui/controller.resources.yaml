@@ -19,7 +19,7 @@ import:
 - legacy_type.ui:index_tree_feed
 - ui.feed:feed_factory.service
 - ui.ui_command:ui_command_factory.service
-- ui.ui_command_creg:ui_command_creg.service
+- ui.ui_command_impl_creg:ui_command_impl_creg.service
 - ui.ui_model_command:ui_model_command_factory.service
 - ui.view:view.module
 - ui.view_registry:view_creg.service
@@ -52,7 +52,7 @@ definitions:
       services.pyobj_creg: builtins:pyobj_creg.service
       services.set_model_layout: ui.visualizer:set_model_layout.service
       services.types: builtins:types.service
-      services.ui_command_creg: ui.ui_command_creg:ui_command_creg.service
+      services.ui_command_impl_creg: ui.ui_command_impl_creg:ui_command_impl_creg.service
       services.ui_command_factory: ui.ui_command:ui_command_factory.service
       services.ui_model_command_factory: ui.ui_model_command:ui_model_command_factory.service
       services.view_creg: ui.view_registry:view_creg.service

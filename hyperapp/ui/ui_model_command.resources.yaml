@@ -14,16 +14,16 @@ import:
 - ui.model_command:model_command_factory.service
 - ui.model_command_impl_creg:model_command_impl_creg.service
 - ui.ui_command:ui_command.module
-- ui.ui_command_creg:ui_command_creg.service
+- ui.ui_command_impl_creg:ui_command_impl_creg.service
 - ui.view_registry:model_view_creg.service
 - ui.view_registry:view_creg.service
 - ui.visualizer:visualizer.service
 associations:
 - bases:
-  - ui.ui_command_creg:ui_command_creg.service
+  - ui.ui_command_impl_creg:ui_command_impl_creg.service
   - legacy_type.ui:ui_model_command
   key:
-  - ui.ui_command_creg:ui_command_creg.service
+  - ui.ui_command_impl_creg:ui_command_impl_creg.service
   - legacy_type.ui:ui_model_command
   value: ui_model_command_from_piece
 definitions:
@@ -43,7 +43,7 @@ definitions:
       services.model_view_creg: ui.view_registry:model_view_creg.service
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
-      services.ui_command_creg: ui.ui_command_creg:ui_command_creg.service
+      services.ui_command_impl_creg: ui.ui_command_impl_creg:ui_command_impl_creg.service
       services.view_creg: ui.view_registry:view_creg.service
       services.visualizer: ui.visualizer:visualizer.service
   ui_model_command_factory:

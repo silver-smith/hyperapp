@@ -9,7 +9,7 @@ from .services import (
     mark,
     mosaic,
     pyobj_creg,
-    ui_command_creg,
+    ui_command_impl_creg,
     )
 from .code.command import FnCommandImpl
 
@@ -20,7 +20,7 @@ class UiCommandImpl(FnCommandImpl):
     pass
 
 
-@ui_command_creg.actor(htypes.ui.ui_command_impl)
+@ui_command_impl_creg.actor(htypes.ui.ui_command_impl)
 def ui_command_from_piece(piece, ctx):
     fn = pyobj_creg.invite(piece.function)
     return UiCommandImpl(ctx, fn, piece.params)
