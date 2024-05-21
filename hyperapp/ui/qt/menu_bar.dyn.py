@@ -1,6 +1,6 @@
 import logging
 
-from PySide6 import QtWidgets
+from PySide6 import QtGui, QtWidgets
 
 log = logging.getLogger(__name__)
 
@@ -57,6 +57,16 @@ class MenuBarView(View):
                 menu = current_menu
             else:
                 menu = view_menu
-            action = cmd.make_action()
+            action = self._make_action(cmd)
             menu.addAction(action)
             w._command_to_action[cmd] = action
+
+    @staticmethod
+    def _make_action(cmd):
+        action = QtGui.QAction(cmd.name, enabled=cmd.enabled)
+        action.triggered.connect(cmd.start)
+        if cmd.shortcut:
+            action.setShortcut(cmd.shortcut)
+        if not cmd.enabled:
+            action.setToolTip(cmd.disabled_reason)
+        return action

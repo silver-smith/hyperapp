@@ -59,6 +59,20 @@ class CommandPaneView(View):
         for cmd in new_commands:
             # All except context commands are present at menu bar;
             # avoid setting shortcut to prevent ambigous ones.
-            button = cmd.make_button(add_shortcut=cmd.d & context_d)
+            button = self._make_button(cmd, add_shortcut=cmd.d & context_d)
             layout.addWidget(button)
             widget._command_to_button[cmd] = button
+
+    @staticmethod
+    def _make_button(cmd, add_shortcut):
+        text = cmd.name
+        if cmd.shortcut:
+            text += f' ({cmd.shortcut})'
+        button = QtWidgets.QPushButton(
+            text, focusPolicy=QtCore.Qt.NoFocus, enabled=cmd.enabled)
+        button.pressed.connect(cmd.start)
+        if add_shortcut and cmd.shortcut:
+            button.setShortcut(cmd.shortcut)
+        if not cmd.enabled:
+            button.setToolTip(cmd.disabled_reason)
+        return button

@@ -4,8 +4,6 @@ import logging
 import weakref
 from functools import cached_property
 
-from PySide6 import QtCore, QtGui, QtWidgets
-
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 
 from . import htypes
@@ -78,33 +76,11 @@ class CommandBase:
     def name(self):
         return self._name
 
-    def make_action(self):
-        action = QtGui.QAction(self.name, enabled=self.enabled)
-        action.triggered.connect(self._start)
-        if self.shortcut:
-            action.setShortcut(self.shortcut)
-        if not self.enabled:
-            action.setToolTip(self.disabled_reason)
-        return action
-
-    def make_button(self, add_shortcut):
-        text = self.name
-        if self.shortcut:
-            text += f' ({self.shortcut})'
-        button = QtWidgets.QPushButton(
-            text, focusPolicy=QtCore.Qt.NoFocus, enabled=self.enabled)
-        button.pressed.connect(self._start)
-        if add_shortcut and self.shortcut:
-            button.setShortcut(self.shortcut)
-        if not self.enabled:
-            button.setToolTip(self.disabled_reason)
-        return button
-
     @property
     def shortcut(self):
         return _hardcoded_shortcuts.get(self.name)
 
-    def _start(self):
+    def start(self):
         log.info("Start command: %r", self.name)
         asyncio.create_task(self.run())
 
