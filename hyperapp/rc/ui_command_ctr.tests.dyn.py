@@ -39,7 +39,8 @@ def _test_construct_ui_command(command_ctr_t, fn):
         module_res=module_res,
         attr=make_inspect_attr(),
         )
-    assert 'sample_command.ui_command' in name_to_res
+    assert 'sample_command.command' in name_to_res
+    assert 'sample_command.command_properties' in name_to_res
 
 
 def test_construct_ui_command():
@@ -65,7 +66,8 @@ def _test_construct_univeral_ui_command(command_ctr_t, fn):
         module_res=module_res,
         attr=make_inspect_attr(),
         )
-    assert 'sample_command.universal_ui_command' in name_to_res
+    assert 'sample_command.command' in name_to_res
+    assert 'sample_command.command_properties' in name_to_res
 
 
 def test_construct_univeral_ui_command():

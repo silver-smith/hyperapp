@@ -12,11 +12,13 @@ import:
 - legacy_type.rc_constructors:ui_model_command_ctr
 - legacy_type.rc_constructors:universal_ui_command_ctr
 - legacy_type.rc_constructors:universal_ui_model_command_ctr
-- legacy_type.ui:model_command
-- legacy_type.ui:model_command_kind_d
-- legacy_type.ui:ui_command
+- legacy_type.ui:command
+- legacy_type.ui:command_properties
+- legacy_type.ui:command_properties_d
+- legacy_type.ui:model_command_impl
 - legacy_type.ui:ui_command_d
-- legacy_type.ui:ui_model_command
+- legacy_type.ui:ui_command_impl
+- legacy_type.ui:ui_model_command_impl
 - legacy_type.ui:universal_ui_command_d
 - rc.utils:utils.module
 - resource.constructor_creg:constructor_creg.service
@@ -79,11 +81,13 @@ definitions:
       htypes.rc_constructors.ui_model_command_ctr: legacy_type.rc_constructors:ui_model_command_ctr
       htypes.rc_constructors.universal_ui_command_ctr: legacy_type.rc_constructors:universal_ui_command_ctr
       htypes.rc_constructors.universal_ui_model_command_ctr: legacy_type.rc_constructors:universal_ui_model_command_ctr
-      htypes.ui.model_command: legacy_type.ui:model_command
-      htypes.ui.model_command_kind_d: legacy_type.ui:model_command_kind_d
-      htypes.ui.ui_command: legacy_type.ui:ui_command
+      htypes.ui.command: legacy_type.ui:command
+      htypes.ui.command_properties: legacy_type.ui:command_properties
+      htypes.ui.command_properties_d: legacy_type.ui:command_properties_d
+      htypes.ui.model_command_impl: legacy_type.ui:model_command_impl
       htypes.ui.ui_command_d: legacy_type.ui:ui_command_d
-      htypes.ui.ui_model_command: legacy_type.ui:ui_model_command
+      htypes.ui.ui_command_impl: legacy_type.ui:ui_command_impl
+      htypes.ui.ui_model_command_impl: legacy_type.ui:ui_model_command_impl
       htypes.ui.universal_ui_command_d: legacy_type.ui:universal_ui_command_d
       services.constructor_creg: resource.constructor_creg:constructor_creg.service
       services.data_to_res: resource.data_to_res:data_to_res.service
