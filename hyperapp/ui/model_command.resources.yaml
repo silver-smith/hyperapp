@@ -14,7 +14,7 @@ import:
 - resource.data_to_res:data_to_res.service
 - ui.command:command.module
 - ui.model_command_creg:model_command_creg.service
-- ui.qt.ui_command:ui_command.module
+- ui.ui_command:ui_command.module
 associations:
 - bases:
   - ui.model_command_creg:model_command_creg.service
@@ -44,7 +44,7 @@ definitions:
     file_name: model_command.dyn.py
     import_list:
       code.command: ui.command:command.module
-      code.ui_command: ui.qt.ui_command:ui_command.module
+      code.ui_command: ui.ui_command:ui_command.module
       htypes.ui.global_model_command_d: legacy_type.ui:global_model_command_d
       htypes.ui.model_command: legacy_type.ui:model_command
       htypes.ui.model_command_d: legacy_type.ui:model_command_d

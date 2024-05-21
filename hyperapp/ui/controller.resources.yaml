@@ -18,7 +18,7 @@ import:
 - legacy_type.ui:feed_d
 - legacy_type.ui:index_tree_feed
 - ui.feed:feed_factory.service
-- ui.qt.ui_command:ui_command_factory.service
+- ui.ui_command:ui_command_factory.service
 - ui.ui_command_creg:ui_command_creg.service
 - ui.ui_model_command:ui_model_command_factory.service
 - ui.view:view.module
@@ -53,7 +53,7 @@ definitions:
       services.set_model_layout: ui.visualizer:set_model_layout.service
       services.types: builtins:types.service
       services.ui_command_creg: ui.ui_command_creg:ui_command_creg.service
-      services.ui_command_factory: ui.qt.ui_command:ui_command_factory.service
+      services.ui_command_factory: ui.ui_command:ui_command_factory.service
       services.ui_model_command_factory: ui.ui_model_command:ui_model_command_factory.service
       services.view_creg: ui.view_registry:view_creg.service
       services.web: builtins:web.service

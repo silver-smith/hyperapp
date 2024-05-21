@@ -13,7 +13,7 @@ import:
 - ui.model_command:global_commands.service
 - ui.model_command:model_command_factory.service
 - ui.model_command_creg:model_command_creg.service
-- ui.qt.ui_command:ui_command.module
+- ui.ui_command:ui_command.module
 - ui.ui_command_creg:ui_command_creg.service
 - ui.view_registry:model_view_creg.service
 - ui.view_registry:view_creg.service
@@ -33,7 +33,7 @@ definitions:
     file_name: ui_model_command.dyn.py
     import_list:
       code.command: ui.command:command.module
-      code.ui_command: ui.qt.ui_command:ui_command.module
+      code.ui_command: ui.ui_command:ui_command.module
       htypes.ui.ui_model_command: legacy_type.ui:ui_model_command
       services.enum_model_commands: ui.model_command:enum_model_commands.service
       services.global_commands: ui.model_command:global_commands.service
