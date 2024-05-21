@@ -6,7 +6,7 @@ from typing import Any
 from . import htypes
 from .services import (
     deduce_t,
-    model_command_creg,
+    model_command_impl_creg,
     pick_visualizer_info,
     pyobj_creg,
     )
@@ -92,7 +92,7 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
             piece=pp_piece,
             current_item=parent_item,
             )
-        command = model_command_creg.invite(pp_layer.open_command, command_ctx)
+        command = model_command_impl_creg.invite(pp_layer.open_command, command_ctx)
         piece = await command.run()
         log.info("List-to-tree adapter: open command result: %s", piece)
         piece_t = deduce_t(piece)

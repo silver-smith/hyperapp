@@ -31,7 +31,7 @@ import:
 - legacy_type.ui:tree_ui_t
 - resource.data_to_res:data_to_res.service
 - ui.command:command.module
-- ui.model_command_creg:model_command_creg.service
+- ui.model_command_impl_creg:model_command_impl_creg.service
 - ui.ui_command:ui_command.module
 - ui.ui_command_creg:ui_command_creg.service
 associations:
@@ -82,10 +82,10 @@ associations:
   - legacy_type.layout:view
   value: layout_tree.model
 - bases:
-  - ui.model_command_creg:model_command_creg.service
+  - ui.model_command_impl_creg:model_command_impl_creg.service
   - legacy_type.layout:layout_command
   key:
-  - ui.model_command_creg:model_command_creg.service
+  - ui.model_command_impl_creg:model_command_impl_creg.service
   - legacy_type.layout:layout_command
   value: layout_command_from_piece
 definitions:
@@ -155,7 +155,7 @@ definitions:
       htypes.layout.view: legacy_type.layout:view
       htypes.ui.context_model_command_kind_d: legacy_type.ui:context_model_command_kind_d
       services.data_to_res: resource.data_to_res:data_to_res.service
-      services.model_command_creg: ui.model_command_creg:model_command_creg.service
+      services.model_command_impl_creg: ui.model_command_impl_creg:model_command_impl_creg.service
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
       services.ui_command_creg: ui.ui_command_creg:ui_command_creg.service

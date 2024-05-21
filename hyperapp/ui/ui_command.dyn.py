@@ -11,20 +11,19 @@ from .services import (
     pyobj_creg,
     ui_command_creg,
     )
-from .code.command import FnCommandBase
+from .code.command import FnCommandImpl
 
 log = logging.getLogger(__name__)
 
 
-class UiCommand(FnCommandBase):
+class UiCommandImpl(FnCommandImpl):
     pass
 
 
-@ui_command_creg.actor(htypes.ui.ui_command)
+@ui_command_creg.actor(htypes.ui.ui_command_impl)
 def ui_command_from_piece(piece, ctx):
-    command_d = {pyobj_creg.invite(d) for d in piece.d}
     fn = pyobj_creg.invite(piece.function)
-    return UiCommand(piece.name, command_d, ctx, fn, piece.params)
+    return UiCommandImpl(ctx, fn, piece.params)
 
 
 @mark.service

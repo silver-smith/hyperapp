@@ -5,7 +5,7 @@ from .services import (
     enum_model_commands,
     global_commands,
     mark,
-    model_command_creg,
+    model_command_impl_creg,
     model_command_factory,
     pyobj_creg,
     ui_command_creg,
@@ -13,15 +13,15 @@ from .services import (
     mosaic,
     visualizer,
     )
-from .code.command import CommandBase
+from .code.command import CommandImpl
 
 log = logging.getLogger(__name__)
 
 
-class UiModelCommand(CommandBase):
+class UiModelCommandImpl(CommandImpl):
 
-    def __init__(self, name, d, ctx, model_command):
-        super().__init__(name, d)
+    def __init__(self, ctx, model_command):
+        super().__init__()
         self._ctx = ctx
         self._navigator_rec = ctx.navigator
         self._lcs = ctx.lcs
@@ -50,11 +50,10 @@ class UiModelCommand(CommandBase):
         self._navigator_rec.view.open(self._ctx, piece, view, navigator_w)
 
 
-@ui_command_creg.actor(htypes.ui.ui_model_command)
+@ui_command_creg.actor(htypes.ui.ui_model_command_impl)
 def ui_model_command_from_piece(piece, ctx):
-    command_d = {pyobj_creg.invite(d) for d in piece.d}
-    model_command = model_command_creg.invite(piece.model_command, ctx)
-    return UiModelCommand(piece.name, command_d, ctx, model_command)
+    model_command = model_command_impl_creg.invite(piece.model_command_impl, ctx)
+    return UiModelCommand(ctx, model_command)
 
 
 @mark.service

@@ -4,7 +4,7 @@ import logging
 
 from . import htypes
 from .services import (
-    model_command_creg,
+    model_command_impl_creg,
     model_command_factory,
     mosaic,
     web,
@@ -34,7 +34,7 @@ async def run_command(piece, current_item, ctx):
     command_ctx = ctx.clone_with(
         piece=model,
         )
-    command = model_command_creg.invite(current_item.command, command_ctx)
+    command = model_command_impl_creg.invite(current_item.command, command_ctx)
     piece = await command.run()
     log.info("Run command: command result: %s", piece)
     return piece

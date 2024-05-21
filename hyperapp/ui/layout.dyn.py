@@ -3,7 +3,7 @@ import logging
 from . import htypes
 from .services import (
     data_to_res,
-    model_command_creg,
+    model_command_impl_creg,
     mosaic,
     pyobj_creg,
     ui_command_creg,
@@ -32,7 +32,7 @@ class LayoutCommand(CommandBase):
         return await self._ui_command.run()
 
 
-@model_command_creg.actor(htypes.layout.layout_command)
+@model_command_impl_creg.actor(htypes.layout.layout_command)
 def layout_command_from_piece(piece, ctx):
     command_d = {pyobj_creg.invite(d) for d in piece.d}
     item_id = ctx.current_item.id

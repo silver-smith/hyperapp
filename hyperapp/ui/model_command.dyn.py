@@ -8,23 +8,22 @@ from .services import (
     association_reg,
     data_to_res,
     mark,
-    model_command_creg,
+    model_command_impl_creg,
     pyobj_creg,
     )
-from .code.command import FnCommandBase
+from .code.command import FnCommandImpl
 
 log = logging.getLogger(__name__)
 
 
-class ModelCommand(FnCommandBase):
+class ModelCommandImpl(FnCommandImpl):
     pass
 
 
-@model_command_creg.actor(htypes.ui.model_command)
+@model_command_impl_creg.actor(htypes.ui.model_command_impl)
 def model_command_from_piece(piece, ctx):
-    command_d = {pyobj_creg.invite(d) for d in piece.d}
     fn = pyobj_creg.invite(piece.function)
-    return ModelCommand(piece.name, command_d, ctx, fn, piece.params)
+    return ModelCommandImpl(ctx, fn, piece.params)
 
 
 @mark.service

@@ -1,6 +1,7 @@
 import asyncio
 import inspect
 import logging
+from functools import cached_property
 
 log = logging.getLogger(__name__)
 
@@ -45,22 +46,31 @@ _hardcoded_shortcuts = {
     }
 
 
-class CommandBase:
+class Command:
 
-    def __init__(self, name, d):
-        self._name = name
+    def __init__(self, d, impl):
         self._d = d
+        self._impl = impl
 
     def __repr__(self):
-        return f"{self.__class__.__name__} #{hex(id(self))[-6:]}: {self.name}"
+        return f"<{self.name}: {self._impl}>"
 
     @property
     def d(self):
         return self._d
 
-    @property
+    @cached_property
     def name(self):
-        return self._name
+        assert self._d._t.name.endswith('_d')
+        return self._d._t.name[:-2]
+
+    @property
+    def enabled(self):
+        return self._impl.enabled
+
+    @property
+    def disabled_reason(self):
+        return self._impl.disabled_reason
 
     @property
     def shortcut(self):
@@ -68,7 +78,11 @@ class CommandBase:
 
     def start(self):
         log.info("Start command: %r", self.name)
-        asyncio.create_task(self.run())
+        asyncio.create_task(self._impl.run())
+
+  
+
+class CommandImpl:
 
     async def run(self):
         if not self.enabled:
@@ -79,13 +93,16 @@ class CommandBase:
         return result
 
 
-class FnCommandBase(CommandBase):
+class FnCommandImpl(CommandImpl):
 
-    def __init__(self, name, d, ctx, fn, params):
-        super().__init__(name, d)
+    def __init__(self, ctx, fn, params):
+        super().__init__()
         self._ctx = ctx
         self._fn = fn
         self._params = set(params)
+
+    def __repr__(self):
+        return f"{self.__class__.__name__} #{hex(id(self))[-6:]}: {self._fn.__name__}"
 
     @property
     def enabled(self):

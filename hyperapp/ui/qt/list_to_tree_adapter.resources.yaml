@@ -8,7 +8,7 @@ import:
 - legacy_type.list_to_tree_adapter:adapter
 - legacy_type.ui:fn_impl
 - legacy_type.ui:list_ui_t
-- ui.model_command_creg:model_command_creg.service
+- ui.model_command_impl_creg:model_command_impl_creg.service
 - ui.qt.tree_adapter:tree_adapter.module
 - ui.ui_adapter_creg:ui_adapter_creg.service
 - ui.visualizer:pick_visualizer_info.service
@@ -38,6 +38,6 @@ definitions:
       htypes.ui.fn_impl: legacy_type.ui:fn_impl
       htypes.ui.list_ui_t: legacy_type.ui:list_ui_t
       services.deduce_t: builtins:deduce_t.service
-      services.model_command_creg: ui.model_command_creg:model_command_creg.service
+      services.model_command_impl_creg: ui.model_command_impl_creg:model_command_impl_creg.service
       services.pick_visualizer_info: ui.visualizer:pick_visualizer_info.service
       services.pyobj_creg: builtins:pyobj_creg.service

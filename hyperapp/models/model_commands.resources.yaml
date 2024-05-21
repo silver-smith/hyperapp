@@ -22,7 +22,7 @@ import:
 - legacy_type.ui:model_command_kind_d
 - legacy_type.ui:model_d
 - ui.model_command:model_command_factory.service
-- ui.model_command_creg:model_command_creg.service
+- ui.model_command_impl_creg:model_command_impl_creg.service
 associations:
 - bases:
   - global_model_command_d
@@ -99,7 +99,7 @@ definitions:
     import_list:
       htypes.model_commands.item: legacy_type.model_commands:item
       htypes.model_commands.model_commands: legacy_type.model_commands:model_commands
-      services.model_command_creg: ui.model_command_creg:model_command_creg.service
+      services.model_command_impl_creg: ui.model_command_impl_creg:model_command_impl_creg.service
       services.model_command_factory: ui.model_command:model_command_factory.service
       services.mosaic: builtins:mosaic.service
       services.web: builtins:web.service

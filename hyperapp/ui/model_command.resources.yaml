@@ -8,20 +8,20 @@ import:
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.ui:global_model_command_d
-- legacy_type.ui:model_command
+- legacy_type.ui:model_command_impl
 - legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_enumerator_d
 - resource.data_to_res:data_to_res.service
 - ui.command:command.module
-- ui.model_command_creg:model_command_creg.service
+- ui.model_command_impl_creg:model_command_impl_creg.service
 - ui.ui_command:ui_command.module
 associations:
 - bases:
-  - ui.model_command_creg:model_command_creg.service
-  - legacy_type.ui:model_command
+  - ui.model_command_impl_creg:model_command_impl_creg.service
+  - legacy_type.ui:model_command_impl
   key:
-  - ui.model_command_creg:model_command_creg.service
-  - legacy_type.ui:model_command
+  - ui.model_command_impl_creg:model_command_impl_creg.service
+  - legacy_type.ui:model_command_impl
   value: model_command_from_piece
 definitions:
   enum_model_commands:
@@ -46,13 +46,13 @@ definitions:
       code.command: ui.command:command.module
       code.ui_command: ui.ui_command:ui_command.module
       htypes.ui.global_model_command_d: legacy_type.ui:global_model_command_d
-      htypes.ui.model_command: legacy_type.ui:model_command
+      htypes.ui.model_command_impl: legacy_type.ui:model_command_impl
       htypes.ui.model_command_d: legacy_type.ui:model_command_d
       htypes.ui.model_command_enumerator_d: legacy_type.ui:model_command_enumerator_d
       services.association_reg: builtins:association_reg.service
       services.data_to_res: resource.data_to_res:data_to_res.service
       services.mark: common.mark:mark.service
-      services.model_command_creg: ui.model_command_creg:model_command_creg.service
+      services.model_command_impl_creg: ui.model_command_impl_creg:model_command_impl_creg.service
       services.pyobj_creg: builtins:pyobj_creg.service
   model_command_factory:
     _type: legacy_type.builtin:attribute
