@@ -11,12 +11,22 @@ import:
 - legacy_type.local_server_context:state
 - legacy_type.local_server_context:view
 - legacy_type.navigator:view
-- legacy_type.ui:ui_command
+- legacy_type.ui:command
+- legacy_type.ui:command_properties
+- legacy_type.ui:command_properties_d
 - legacy_type.ui:ui_command_d
+- legacy_type.ui:ui_command_impl
 - ui.local_server:local_server.module
 - ui.view:view.module
 - ui.view_registry:view_creg.service
 associations:
+- bases:
+  - open_local_server_context.command_properties_d
+  - open_local_server_context.ui_command_impl
+  key:
+  - open_local_server_context.command_properties_d
+  - open_local_server_context.ui_command_impl
+  value: open_local_server_context.command_properties
 - bases:
   - ui.view_registry:view_creg.service
   - legacy_type.local_server_context:view
@@ -30,7 +40,7 @@ associations:
   key:
   - ui_command_d
   - legacy_type.navigator:view
-  value: open_local_server_context.ui_command
+  value: open_local_server_context.command
 definitions:
   LocalServerContextView:
     _type: legacy_type.builtin:attribute
@@ -58,14 +68,23 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: local_server_context.module
     attr_name: open_local_server_context
+  open_local_server_context.command:
+    _type: legacy_type.ui:command
+    d: open_local_server_context.d
+    impl: open_local_server_context.ui_command_impl
+  open_local_server_context.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: true
+    remotable: false
+  open_local_server_context.command_properties_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:command_properties_d
   open_local_server_context.d:
     _type: legacy_type.builtin:call
     function: legacy_type.local_server_context:open_local_server_context_d
-  open_local_server_context.ui_command:
-    _type: legacy_type.ui:ui_command
-    d:
-    - open_local_server_context.d
-    name: open_local_server_context
+  open_local_server_context.ui_command_impl:
+    _type: legacy_type.ui:ui_command_impl
     function: open_local_server_context
     params:
     - view

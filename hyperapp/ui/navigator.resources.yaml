@@ -12,12 +12,29 @@ import:
 - legacy_type.navigator:go_forward_d
 - legacy_type.navigator:history_rec
 - legacy_type.navigator:view
-- legacy_type.ui:ui_command
+- legacy_type.ui:command
+- legacy_type.ui:command_properties
+- legacy_type.ui:command_properties_d
 - legacy_type.ui:ui_command_d
+- legacy_type.ui:ui_command_impl
 - ui.view:view.module
 - ui.view_registry:model_view_creg.service
 - ui.view_registry:view_creg.service
 associations:
+- bases:
+  - go_forward.command_properties_d
+  - go_back.ui_command_impl
+  key:
+  - go_forward.command_properties_d
+  - go_back.ui_command_impl
+  value: go_forward.command_properties
+- bases:
+  - go_forward.command_properties_d
+  - go_forward.ui_command_impl
+  key:
+  - go_forward.command_properties_d
+  - go_forward.ui_command_impl
+  value: go_forward.command_properties
 - bases:
   - ui.view_registry:view_creg.service
   - legacy_type.navigator:view
@@ -31,14 +48,14 @@ associations:
   key:
   - ui_command_d
   - legacy_type.navigator:view
-  value: go_back.ui_command
+  value: go_back.command
 - bases:
   - ui_command_d
   - legacy_type.navigator:view
   key:
   - ui_command_d
   - legacy_type.navigator:view
-  value: go_forward.ui_command
+  value: go_forward.command
 definitions:
   NavigatorView:
     _type: legacy_type.builtin:attribute
@@ -52,14 +69,23 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: navigator.module
     attr_name: go_back
+  go_back.command:
+    _type: legacy_type.ui:command
+    d: go_back.d
+    impl: go_back.ui_command_impl
+  go_back.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: false
+    remotable: false
+  go_back.command_properties_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:command_properties_d
   go_back.d:
     _type: legacy_type.builtin:call
     function: legacy_type.navigator:go_back_d
-  go_back.ui_command:
-    _type: legacy_type.ui:ui_command
-    d:
-    - go_back.d
-    name: go_back
+  go_back.ui_command_impl:
+    _type: legacy_type.ui:ui_command_impl
     function: go_back
     params:
     - view
@@ -69,14 +95,23 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: navigator.module
     attr_name: go_forward
+  go_forward.command:
+    _type: legacy_type.ui:command
+    d: go_forward.d
+    impl: go_forward.ui_command_impl
+  go_forward.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: false
+    remotable: false
+  go_forward.command_properties_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:command_properties_d
   go_forward.d:
     _type: legacy_type.builtin:call
     function: legacy_type.navigator:go_forward_d
-  go_forward.ui_command:
-    _type: legacy_type.ui:ui_command
-    d:
-    - go_forward.d
-    name: go_forward
+  go_forward.ui_command_impl:
+    _type: legacy_type.ui:ui_command_impl
     function: go_forward
     params:
     - view

@@ -14,8 +14,11 @@ import:
 - legacy_type.master_details:unwrap_master_details_d
 - legacy_type.master_details:view
 - legacy_type.master_details:wrap_master_details_d
-- legacy_type.ui:ui_command
+- legacy_type.ui:command
+- legacy_type.ui:command_properties
+- legacy_type.ui:command_properties_d
 - legacy_type.ui:ui_command_d
+- legacy_type.ui:ui_command_impl
 - legacy_type.ui:universal_ui_command_d
 - ui.model_command:model_command_factory.service
 - ui.model_command_creg:model_command_creg.service
@@ -37,11 +40,25 @@ associations:
   key:
   - ui_command_d
   - legacy_type.master_details:view
-  value: unwrap_master_details.ui_command
+  value: unwrap_master_details.command
 - bases:
   - universal_ui_command_d
   key: universal_ui_command_d
-  value: wrap_master_details.universal_ui_command
+  value: wrap_master_details.command
+- bases:
+  - wrap_master_details.command_properties_d
+  - unwrap_master_details.ui_command_impl
+  key:
+  - wrap_master_details.command_properties_d
+  - unwrap_master_details.ui_command_impl
+  value: unwrap_master_details.command_properties
+- bases:
+  - wrap_master_details.command_properties_d
+  - wrap_master_details.ui_command_impl
+  key:
+  - wrap_master_details.command_properties_d
+  - wrap_master_details.ui_command_impl
+  value: wrap_master_details.command_properties
 definitions:
   MasterDetailsView:
     _type: legacy_type.builtin:attribute
@@ -80,14 +97,23 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: master_details.module
     attr_name: unwrap_master_details
+  unwrap_master_details.command:
+    _type: legacy_type.ui:command
+    d: unwrap_master_details.d
+    impl: unwrap_master_details.ui_command_impl
+  unwrap_master_details.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: true
+    remotable: false
+  unwrap_master_details.command_properties_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:command_properties_d
   unwrap_master_details.d:
     _type: legacy_type.builtin:call
     function: legacy_type.master_details:unwrap_master_details_d
-  unwrap_master_details.ui_command:
-    _type: legacy_type.ui:ui_command
-    d:
-    - unwrap_master_details.d
-    name: unwrap_master_details
+  unwrap_master_details.ui_command_impl:
+    _type: legacy_type.ui:ui_command_impl
     function: unwrap_master_details
     params:
     - view
@@ -98,14 +124,23 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: master_details.module
     attr_name: wrap_master_details
+  wrap_master_details.command:
+    _type: legacy_type.ui:command
+    d: wrap_master_details.d
+    impl: wrap_master_details.ui_command_impl
+  wrap_master_details.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: true
+    uses_state: false
+    remotable: false
+  wrap_master_details.command_properties_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:command_properties_d
   wrap_master_details.d:
     _type: legacy_type.builtin:call
     function: legacy_type.master_details:wrap_master_details_d
-  wrap_master_details.universal_ui_command:
-    _type: legacy_type.ui:ui_command
-    d:
-    - wrap_master_details.d
-    name: wrap_master_details
+  wrap_master_details.ui_command_impl:
+    _type: legacy_type.ui:ui_command_impl
     function: wrap_master_details
     params:
     - piece

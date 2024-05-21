@@ -13,13 +13,22 @@ import:
 - legacy_type.tabs:state
 - legacy_type.tabs:tab
 - legacy_type.tabs:view
-- legacy_type.ui:model_command
-- legacy_type.ui:model_command_kind_d
+- legacy_type.ui:command
+- legacy_type.ui:command_properties
+- legacy_type.ui:command_properties_d
+- legacy_type.ui:model_command_impl
 - legacy_type.ui:ui_command_d
-- legacy_type.ui:ui_model_command
+- legacy_type.ui:ui_model_command_impl
 - ui.view:view.module
 - ui.view_registry:view_creg.service
 associations:
+- bases:
+  - open_tab_list.command_properties_d
+  - open_tab_list.model_command_impl
+  key:
+  - open_tab_list.command_properties_d
+  - open_tab_list.model_command_impl
+  value: open_tab_list.command_properties
 - bases:
   - ui.view_registry:view_creg.service
   - legacy_type.tabs:view
@@ -33,7 +42,7 @@ associations:
   key:
   - ui_command_d
   - legacy_type.tabs:view
-  value: open_tab_list.ui_command
+  value: open_tab_list.command
 definitions:
   TabsView:
     _type: legacy_type.builtin:attribute
@@ -43,31 +52,33 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: TabsView
     attr_name: from_piece
-  model_command_kind_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:model_command_kind_d
   open_tab_list:
     _type: legacy_type.builtin:attribute
     object: tabs.module
     attr_name: open_tab_list
+  open_tab_list.command:
+    _type: legacy_type.ui:command
+    d: open_tab_list.d
+    impl: open_tab_list.ui_command_impl
+  open_tab_list.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: false
+    remotable: true
+  open_tab_list.command_properties_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:command_properties_d
   open_tab_list.d:
     _type: legacy_type.builtin:call
     function: legacy_type.tabs:open_tab_list_d
-  open_tab_list.model_command:
-    _type: legacy_type.ui:model_command
-    d:
-    - open_tab_list.d
-    - model_command_kind_d
-    name: open_tab_list
+  open_tab_list.model_command_impl:
+    _type: legacy_type.ui:model_command_impl
     function: open_tab_list
     params:
     - view
-  open_tab_list.ui_command:
-    _type: legacy_type.ui:ui_model_command
-    d:
-    - open_tab_list.d
-    name: open_tab_list
-    model_command: open_tab_list.model_command
+  open_tab_list.ui_command_impl:
+    _type: legacy_type.ui:ui_model_command_impl
+    model_command_impl: open_tab_list.model_command_impl
   tabs.module:
     _type: legacy_type.builtin:python_module
     module_name: tabs
