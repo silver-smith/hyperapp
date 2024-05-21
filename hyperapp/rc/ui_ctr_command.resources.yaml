@@ -5,15 +5,18 @@ import:
 - legacy_type.builtin:call
 - legacy_type.builtin:legacy_type
 - legacy_type.builtin:python_module
+- legacy_type.ui:command
+- legacy_type.ui:command_properties
+- legacy_type.ui:command_properties_d
 - legacy_type.ui:context_model_command_kind_d
-- legacy_type.layout:layout_command
-- legacy_type.ui:model_command
+- legacy_type.ui:model_command_impl
 - legacy_type.ui:model_command_enumerator
 - legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_enumerator_d
 - legacy_type.ui:model_command_kind_d
 - legacy_type.ui:global_model_command_kind_d
 - legacy_type.ui:global_model_command_d
+- rc.command_params:command_params.module
 - rc.ui_ctr_constructor:ui_ctr_constructor.module
 - resource.data_to_res:data_to_res.service
 
@@ -27,9 +30,11 @@ definitions:
     import_list:
       htypes.builtin.call: legacy_type.builtin:call
       htypes.builtin.legacy_type: legacy_type.builtin:legacy_type
+      htypes.ui.command: legacy_type.ui:command
+      htypes.ui.command_properties: legacy_type.ui:command_properties
+      htypes.ui.command_properties_d: legacy_type.ui:command_properties_d
       htypes.ui.context_model_command_kind_d: legacy_type.ui:context_model_command_kind_d
-      htypes.layout.layout_command: legacy_type.layout:layout_command
-      htypes.ui.model_command: legacy_type.ui:model_command
+      htypes.ui.model_command_impl: legacy_type.ui:model_command_impl
       htypes.ui.model_command_enumerator: legacy_type.ui:model_command_enumerator
       htypes.ui.model_command_enumerator_d: legacy_type.ui:model_command_enumerator_d
       htypes.ui.model_command_d: legacy_type.ui:model_command_d
@@ -41,3 +46,4 @@ definitions:
       services.pyobj_creg: builtins:pyobj_creg.service
       services.types: builtins:types.service
       code.ui_ctr_constructor: rc.ui_ctr_constructor:ui_ctr_constructor.module
+      code.command_params: rc.command_params:command_params.module

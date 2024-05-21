@@ -20,6 +20,7 @@ import:
 - legacy_type.ui:ui_command_impl
 - legacy_type.ui:ui_model_command_impl
 - legacy_type.ui:universal_ui_command_d
+- rc.command_params:command_params.module
 - rc.utils:utils.module
 - resource.constructor_creg:constructor_creg.service
 - resource.data_to_res:data_to_res.service
@@ -74,6 +75,7 @@ definitions:
     module_name: ui_command_ctr
     file_name: ui_command_ctr.dyn.py
     import_list:
+      code.command_params: rc.command_params:command_params.module
       code.utils: rc.utils:utils.module
       htypes.builtin.attribute: legacy_type.builtin:attribute
       htypes.builtin.call: legacy_type.builtin:call

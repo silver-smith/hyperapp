@@ -10,10 +10,7 @@ from .services import (
     web,
   )
 from .code.utils import camel_to_snake
-
-
-STATE_PARAMS = {'state', 'current_item', 'current_idx', 'current_path'}
-LOCAL_PARAMS = {'controller', 'ctx', 'lcs', 'rpc_endpoint', 'identity', 'remote_peer'}
+from .code.command_params import STATE_PARAMS, LOCAL_PARAMS
 
 
 def _make_command_d_res(custom_types, module_res, attr):
@@ -108,10 +105,10 @@ def construct_ui_command(piece, custom_types, name_to_res, module_res, attr):
         value=command,
         )
     name_to_res['ui_command_d'] = dir_res
+    name_to_res['command_properties_d'] = command_properties_d_res
     name_to_res[attr.name] = attribute
     name_to_res[f'{attr.name}.d'] = command_d_res
-    name_to_res[f'{attr.name}.command_properties_d'] = command_properties_d_res
-    name_to_res[f'{attr.name}.ui_command_impl'] = impl
+    name_to_res[f'{attr.name}.impl'] = impl
     name_to_res[f'{attr.name}.command'] = command
     name_to_res[f'{attr.name}.command_properties'] = props
     return [association, props_association]
@@ -131,11 +128,11 @@ def construct_ui_model_command(piece, custom_types, name_to_res, module_res, att
         value=command,
         )
     name_to_res['ui_command_d'] = dir_res
+    name_to_res['command_properties_d'] = command_properties_d_res
     name_to_res[attr.name] = attribute
     name_to_res[f'{attr.name}.d'] = command_d_res
-    name_to_res[f'{attr.name}.command_properties_d'] = command_properties_d_res
     name_to_res[f'{attr.name}.model_command_impl'] = model_command_impl
-    name_to_res[f'{attr.name}.ui_command_impl'] = impl
+    name_to_res[f'{attr.name}.impl'] = impl
     name_to_res[f'{attr.name}.command'] = command
     name_to_res[f'{attr.name}.command_properties'] = props
     return [association, props_association]
@@ -154,10 +151,10 @@ def construct_universal_ui_command(piece, custom_types, name_to_res, module_res,
         value=command,
         )
     name_to_res['universal_ui_command_d'] = dir_res
+    name_to_res['command_properties_d'] = command_properties_d_res
     name_to_res[attr.name] = attribute
     name_to_res[f'{attr.name}.d'] = command_d_res
-    name_to_res[f'{attr.name}.command_properties_d'] = command_properties_d_res
-    name_to_res[f'{attr.name}.ui_command_impl'] = impl
+    name_to_res[f'{attr.name}.impl'] = impl
     name_to_res[f'{attr.name}.command'] = command
     name_to_res[f'{attr.name}.command_properties'] = props
     return [association, props_association]
@@ -176,11 +173,11 @@ def construct_universal_ui_model_command(piece, custom_types, name_to_res, modul
         value=command,
         )
     name_to_res['ui_command_d'] = dir_res
+    name_to_res['command_properties_d'] = command_properties_d_res
     name_to_res[attr.name] = attribute
     name_to_res[f'{attr.name}.d'] = command_d_res
-    name_to_res[f'{attr.name}.command_properties_d'] = command_properties_d_res
     name_to_res[f'{attr.name}.model_command_impl'] = model_command_impl
-    name_to_res[f'{attr.name}.ui_command_impl'] = impl
+    name_to_res[f'{attr.name}.impl'] = impl
     name_to_res[f'{attr.name}.command'] = command
     name_to_res[f'{attr.name}.command_properties'] = props
     return [association, props_association]

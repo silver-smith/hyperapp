@@ -11,6 +11,7 @@ from .services import (
     types,
     )
 from .code.ui_ctr_constructor import Constructor
+from .code.command_params import STATE_PARAMS, LOCAL_PARAMS
 
 log = logging.getLogger(__name__)
 
@@ -24,15 +25,6 @@ def _make_d_instance_res(t):
 
 class CommandImplementationCtr(Constructor):
 
-    def _make_command_d_res(self, fn_name):
-        d_attr = fn_name + '_d'
-        try:
-            command_d_ref = self._ctx.types[self._module_res.module_name][d_attr]
-        except KeyError:
-            raise RuntimeError(f"Create directory type: {self._module_res.module_name}.{d_attr}")
-        command_d_t = types.resolve(command_d_ref)
-        return data_to_res(command_d_t())
-
     def check_applicable(self, fn_info):
         if len(fn_info.name) != 1:
             return f"Name has not 1 parts: {fn_info.name!r}"
@@ -42,6 +34,48 @@ class CommandImplementationCtr(Constructor):
             # @mark.model decorator prevents a function from being a command.
             return f"Has constructors: {fn_info.constructors!r}"
         return None
+
+    def _make_command_d_res(self, fn_name):
+        d_attr = fn_name + '_d'
+        try:
+            command_d_ref = self._ctx.types[self._module_res.module_name][d_attr]
+        except KeyError:
+            raise RuntimeError(f"Create directory type: {self._module_res.module_name}.{d_attr}")
+        command_d_t = types.resolve(command_d_ref)
+        return data_to_res(command_d_t())
+
+    def _make_properties(self, impl, is_global=False, uses_state=False, remotable=False):
+        command_properties_d_res = _make_d_instance_res(htypes.ui.command_properties_d)
+        properties = htypes.ui.command_properties(
+            is_global=is_global,
+            uses_state=uses_state,
+            remotable=remotable,
+            )
+        association = Association(
+            bases=[command_properties_d_res, impl],
+            key=[command_properties_d_res, impl],
+            value=properties,
+            )
+        return command_properties_d_res, properties, association
+
+
+    def _make_fn_impl_properties(self, impl, is_global=False):
+        return self._make_properties(
+            impl, is_global,
+            uses_state=bool(set(impl.params) & STATE_PARAMS),
+            remotable=not set(impl.params) & LOCAL_PARAMS,
+            )
+
+    def _make_command(self, fn_info, fn_attribute, command_d_res):
+        impl = htypes.ui.model_command_impl(
+            function=mosaic.put(fn_attribute),
+            params=tuple(fn_info.params),
+            )
+        command = htypes.ui.command(
+            d=mosaic.put(command_d_res),
+            impl=mosaic.put(impl),
+            )
+        return (impl, command)
 
 
 class ModelCommandImplementationCtr(CommandImplementationCtr):
@@ -84,21 +118,8 @@ class ModelCommandImplementationCtr(CommandImplementationCtr):
         fn_name = fn_info.name[0]
         fn_attribute = self._make_attribute(fn_name)
         command_d_res = self._make_command_d_res(fn_name)
-        model_command_kind_d_res = _make_d_instance_res(htypes.ui.model_command_kind_d)
-        d = (
-            mosaic.put(command_d_res),
-            mosaic.put(model_command_kind_d_res),
-            )
-        has_context = fn_info.params.keys() & {'model_state', 'current_idx', 'current_item'}
-        if has_context:
-            context_model_command_kind_d_res = _make_d_instance_res(htypes.ui.context_model_command_kind_d)
-            d = (*d, mosaic.put(context_model_command_kind_d_res))
-        command = htypes.ui.model_command(
-            d=d,
-            name=fn_name,
-            function=mosaic.put(fn_attribute),
-            params=tuple(fn_info.params),
-            )
+        impl, command = self._make_command(fn_info, fn_attribute, command_d_res)
+        command_properties_d_res, props, props_association = self._make_fn_impl_properties(impl)
         model_command_d_res = _make_d_instance_res(htypes.ui.model_command_d)
         piece_t = fn_info.params['piece']
         piece_t_res = htypes.builtin.legacy_type(piece_t.data_t_ref)
@@ -107,14 +128,14 @@ class ModelCommandImplementationCtr(CommandImplementationCtr):
             key=[model_command_d_res, piece_t_res],
             value=command,
             )
+        self._resource_module['model_command_d'] = model_command_d_res
+        self._resource_module['command_properties_d'] = command_properties_d_res
         self._resource_module[fn_name] = fn_attribute
         self._resource_module[f'{fn_name}.d'] = command_d_res
-        if has_context:
-            self._resource_module['context_model_command_kind_d'] = context_model_command_kind_d_res
-        self._resource_module['model_command_kind_d'] = model_command_kind_d_res
+        self._resource_module[f'{fn_name}.impl'] = impl
         self._resource_module[f'{fn_name}.command'] = command
-        self._resource_module['model_command_d'] = model_command_d_res
-        return {association}
+        self._resource_module[f'{fn_name}.command_properties'] = props
+        return {association, props_association}
 
 
 class GlobalCommandImplementationCtr(CommandImplementationCtr):
@@ -159,38 +180,22 @@ class GlobalCommandImplementationCtr(CommandImplementationCtr):
         fn_name = fn_info.name[0]
         fn_attribute = self._make_attribute(fn_name)
         command_d_res = self._make_command_d_res(fn_name)
-        model_command_kind_d_res = _make_d_instance_res(htypes.ui.model_command_kind_d)
-        global_model_command_kind_d_res = _make_d_instance_res(htypes.ui.global_model_command_kind_d)
-        d = (
-            mosaic.put(command_d_res),
-            mosaic.put(model_command_kind_d_res),
-            mosaic.put(global_model_command_kind_d_res),
-            )
-        has_context = fn_info.params.keys() & {'model_state'}
-        if has_context:
-            context_model_command_kind_d_res = _make_d_instance_res(htypes.ui.context_model_command_kind_d)
-            d = (*d, mosaic.put(context_model_command_kind_d_res))
-        command = htypes.ui.model_command(
-            d=d,
-            name=fn_name,
-            function=mosaic.put(fn_attribute),
-            params=tuple(fn_info.params),
-            )
+        impl, command = self._make_command(fn_info, fn_attribute, command_d_res)
+        command_properties_d_res, props, props_association = self._make_fn_impl_properties(impl)
         global_model_command_d_res = _make_d_instance_res(htypes.ui.global_model_command_d)
         association = Association(
             bases=[global_model_command_d_res],
             key=[global_model_command_d_res],
             value=command,
             )
+        self._resource_module['global_model_command_d'] = global_model_command_d_res
+        self._resource_module['command_properties_d'] = command_properties_d_res
         self._resource_module[fn_name] = fn_attribute
         self._resource_module[f'{fn_name}.d'] = command_d_res
-        if has_context:
-            self._resource_module['context_model_command_kind_d'] = context_model_command_kind_d_res
-        self._resource_module['model_command_kind_d'] = model_command_kind_d_res
-        self._resource_module['global_model_command_kind_d'] = global_model_command_kind_d_res
+        self._resource_module[f'{fn_name}.impl'] = impl
         self._resource_module[f'{fn_name}.command'] = command
-        self._resource_module['global_model_command_d'] = global_model_command_d_res
-        return {association}
+        self._resource_module[f'{fn_name}.command_properties'] = props
+        return {association, props_association}
 
 
 class CommandEnumeratorImplementationCtr(Constructor):
@@ -207,7 +212,7 @@ class CommandEnumeratorImplementationCtr(Constructor):
             return f"Result is not a data: {result!r}"
         if not isinstance(result.data_t, TList):
             return f"Result is not a list: {result.data_t!r}"
-        if not issubclass(result.data_t.element_t, (htypes.ui.model_command, htypes.layout.layout_command)):
+        if not issubclass(result.data_t.element_t, htypes.ui.command):
             return f"Result element type is not a command: {result.data_t.element_t}"
         if fn_info.param_names[:1] != ['piece']:
             return f"First param is not 'piece': {fn_info.param_names}"
@@ -239,9 +244,9 @@ class CommandEnumeratorImplementationCtr(Constructor):
             key=[enumerator_d_res, piece_t_res],
             value=enumerator,
             )
+        self._resource_module['model_command_enumerator_d'] = enumerator_d_res
         self._resource_module[fn_name] = fn_attribute
         self._resource_module[f'{fn_name}.enumerator'] = enumerator
-        self._resource_module['model_command_enumerator_d'] = enumerator_d_res
         return {association}
 
 
