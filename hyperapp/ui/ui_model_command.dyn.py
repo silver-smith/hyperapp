@@ -13,7 +13,7 @@ from .services import (
     mosaic,
     visualizer,
     )
-from .code.ui_command import CommandBase
+from .code.command import CommandBase
 
 log = logging.getLogger(__name__)
 

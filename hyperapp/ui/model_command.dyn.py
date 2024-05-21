@@ -11,7 +11,8 @@ from .services import (
     model_command_creg,
     pyobj_creg,
     )
-from .code.ui_command import FnCommandBase
+from .code.command import FnCommandBase
+
 log = logging.getLogger(__name__)
 
 

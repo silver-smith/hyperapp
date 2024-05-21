@@ -8,7 +8,7 @@ from .services import (
     pyobj_creg,
     ui_command_creg,
     )
-from .code.ui_command import CommandBase
+from .code.command import CommandBase
 
 log = logging.getLogger(__name__)
 

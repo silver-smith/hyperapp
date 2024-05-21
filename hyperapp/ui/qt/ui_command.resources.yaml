@@ -2,6 +2,7 @@
 
 import:
 - builtins:association_reg.service
+- builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - common.mark:mark.service
@@ -12,6 +13,7 @@ import:
 - legacy_type.ui:ui_command_d
 - legacy_type.ui:universal_ui_command_d
 - resource.data_to_res:data_to_res.service
+- ui.command:command.module
 - ui.ui_command_creg:ui_command_creg.service
 associations:
 - bases:
@@ -27,11 +29,13 @@ definitions:
     module_name: ui_command
     file_name: ui_command.dyn.py
     import_list:
+      code.command: ui.command:command.module
       htypes.ui.ui_command: legacy_type.ui:ui_command
       htypes.ui.ui_command_d: legacy_type.ui:ui_command_d
       htypes.ui.universal_ui_command_d: legacy_type.ui:universal_ui_command_d
       services.association_reg: builtins:association_reg.service
       services.data_to_res: resource.data_to_res:data_to_res.service
+      services.deduce_t: builtins:deduce_t.service
       services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
