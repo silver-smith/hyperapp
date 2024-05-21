@@ -10,17 +10,32 @@ import:
 - legacy_type.sample_tree:open_feed_sample_fn_tree_d
 - legacy_type.sample_tree:open_sample_fn_tree_d
 - legacy_type.sample_tree:sample_tree
+- legacy_type.ui:command
+- legacy_type.ui:command_properties
+- legacy_type.ui:command_properties_d
 - legacy_type.ui:feed_d
 - legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
-- legacy_type.ui:global_model_command_kind_d
 - legacy_type.ui:index_tree_feed
 - legacy_type.ui:model
-- legacy_type.ui:model_command
-- legacy_type.ui:model_command_kind_d
+- legacy_type.ui:model_command_impl
 - legacy_type.ui:model_d
 - legacy_type.ui:tree_ui_t
 associations:
+- bases:
+  - command_properties_d
+  - open_feed_sample_fn_tree.impl
+  key:
+  - command_properties_d
+  - open_feed_sample_fn_tree.impl
+  value: open_sample_fn_tree.command_properties
+- bases:
+  - command_properties_d
+  - open_sample_fn_tree.impl
+  key:
+  - command_properties_d
+  - open_sample_fn_tree.impl
+  value: open_sample_fn_tree.command_properties
 - bases:
   - feed_d
   - legacy_type.sample_tree:feed_sample_tree
@@ -49,6 +64,9 @@ associations:
   - legacy_type.sample_tree:sample_tree
   value: sample_tree.model
 definitions:
+  command_properties_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:command_properties_d
   feed_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:feed_d
@@ -74,12 +92,6 @@ definitions:
   global_model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:global_model_command_d
-  global_model_command_kind_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:global_model_command_kind_d
-  model_command_kind_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:model_command_kind_d
   model_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_d
@@ -88,33 +100,41 @@ definitions:
     object: sample_tree.module
     attr_name: open_feed_sample_fn_tree
   open_feed_sample_fn_tree.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - open_feed_sample_fn_tree.d
-    - model_command_kind_d
-    - global_model_command_kind_d
-    name: open_feed_sample_fn_tree
-    function: open_feed_sample_fn_tree
-    params: []
+    _type: legacy_type.ui:command
+    d: open_feed_sample_fn_tree.d
+    impl: open_feed_sample_fn_tree.impl
+  open_feed_sample_fn_tree.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: false
+    remotable: true
   open_feed_sample_fn_tree.d:
     _type: legacy_type.builtin:call
     function: legacy_type.sample_tree:open_feed_sample_fn_tree_d
+  open_feed_sample_fn_tree.impl:
+    _type: legacy_type.ui:model_command_impl
+    function: open_feed_sample_fn_tree
+    params: []
   open_sample_fn_tree:
     _type: legacy_type.builtin:attribute
     object: sample_tree.module
     attr_name: open_sample_fn_tree
   open_sample_fn_tree.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - open_sample_fn_tree.d
-    - model_command_kind_d
-    - global_model_command_kind_d
-    name: open_sample_fn_tree
-    function: open_sample_fn_tree
-    params: []
+    _type: legacy_type.ui:command
+    d: open_sample_fn_tree.d
+    impl: open_sample_fn_tree.impl
+  open_sample_fn_tree.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: false
+    remotable: true
   open_sample_fn_tree.d:
     _type: legacy_type.builtin:call
     function: legacy_type.sample_tree:open_sample_fn_tree_d
+  open_sample_fn_tree.impl:
+    _type: legacy_type.ui:model_command_impl
+    function: open_sample_fn_tree
+    params: []
   sample_tree:
     _type: legacy_type.builtin:attribute
     object: sample_tree.module

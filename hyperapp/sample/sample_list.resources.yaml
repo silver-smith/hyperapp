@@ -11,18 +11,40 @@ import:
 - legacy_type.sample_list:open_sample_fn_list_d
 - legacy_type.sample_list:sample_list
 - legacy_type.sample_list:sample_list_d
+- legacy_type.ui:command
+- legacy_type.ui:command_properties
+- legacy_type.ui:command_properties_d
 - legacy_type.ui:feed_d
 - legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
-- legacy_type.ui:global_model_command_kind_d
 - legacy_type.ui:list_feed
 - legacy_type.ui:list_ui_t
 - legacy_type.ui:model
-- legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
-- legacy_type.ui:model_command_kind_d
+- legacy_type.ui:model_command_impl
 - legacy_type.ui:model_d
 associations:
+- bases:
+  - command_properties_d
+  - open_feed_sample_fn_list.impl
+  key:
+  - command_properties_d
+  - open_feed_sample_fn_list.impl
+  value: sample_list.command_properties
+- bases:
+  - command_properties_d
+  - open_sample_fn_list.impl
+  key:
+  - command_properties_d
+  - open_sample_fn_list.impl
+  value: sample_list.command_properties
+- bases:
+  - command_properties_d
+  - sample_list.impl
+  key:
+  - command_properties_d
+  - sample_list.impl
+  value: sample_list.command_properties
 - bases:
   - feed_d
   - legacy_type.sample_list:feed_sample_list
@@ -57,6 +79,9 @@ associations:
   - legacy_type.sample_list:sample_list
   value: sample_list.model
 definitions:
+  command_properties_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:command_properties_d
   feed_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:feed_d
@@ -80,15 +105,9 @@ definitions:
   global_model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:global_model_command_d
-  global_model_command_kind_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:global_model_command_kind_d
   model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_command_d
-  model_command_kind_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:model_command_kind_d
   model_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_d
@@ -97,51 +116,59 @@ definitions:
     object: sample_list.module
     attr_name: open_feed_sample_fn_list
   open_feed_sample_fn_list.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - open_feed_sample_fn_list.d
-    - model_command_kind_d
-    - global_model_command_kind_d
-    name: open_feed_sample_fn_list
-    function: open_feed_sample_fn_list
-    params: []
+    _type: legacy_type.ui:command
+    d: open_feed_sample_fn_list.d
+    impl: open_feed_sample_fn_list.impl
+  open_feed_sample_fn_list.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: false
+    remotable: true
   open_feed_sample_fn_list.d:
     _type: legacy_type.builtin:call
     function: legacy_type.sample_list:open_feed_sample_fn_list_d
+  open_feed_sample_fn_list.impl:
+    _type: legacy_type.ui:model_command_impl
+    function: open_feed_sample_fn_list
+    params: []
   open_sample_fn_list:
     _type: legacy_type.builtin:attribute
     object: sample_list.module
     attr_name: open_sample_fn_list
   open_sample_fn_list.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - open_sample_fn_list.d
-    - model_command_kind_d
-    - global_model_command_kind_d
-    name: open_sample_fn_list
-    function: open_sample_fn_list
-    params: []
+    _type: legacy_type.ui:command
+    d: open_sample_fn_list.d
+    impl: open_sample_fn_list.impl
+  open_sample_fn_list.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: false
+    remotable: true
   open_sample_fn_list.d:
     _type: legacy_type.builtin:call
     function: legacy_type.sample_list:open_sample_fn_list_d
+  open_sample_fn_list.impl:
+    _type: legacy_type.ui:model_command_impl
+    function: open_sample_fn_list
+    params: []
   sample_list:
     _type: legacy_type.builtin:attribute
     object: sample_list.module
     attr_name: sample_list
   sample_list.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - sample_list.d
-    - model_command_kind_d
-    name: sample_list
-    function: sample_list
-    params:
-    - piece
+    _type: legacy_type.ui:command
+    d: sample_list.d
+    impl: sample_list.impl
+  sample_list.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: false
+    remotable: true
   sample_list.d:
     _type: legacy_type.builtin:call
     function: legacy_type.sample_list:sample_list_d
   sample_list.impl:
-    _type: legacy_type.ui:fn_impl
+    _type: legacy_type.ui:model_command_impl
     function: sample_list
     params:
     - piece

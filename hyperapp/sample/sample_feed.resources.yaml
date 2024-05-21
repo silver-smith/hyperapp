@@ -12,14 +12,30 @@ import:
 - legacy_type.sample_feed:schedule_sample_tree_feed_d
 - legacy_type.sample_list:item
 - legacy_type.sample_tree:item
+- legacy_type.ui:command
+- legacy_type.ui:command_properties
+- legacy_type.ui:command_properties_d
 - legacy_type.ui:feed_d
 - legacy_type.ui:index_tree_feed
 - legacy_type.ui:list_feed
-- legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
-- legacy_type.ui:model_command_kind_d
+- legacy_type.ui:model_command_impl
 - ui.feed:feed_factory.service
 associations:
+- bases:
+  - command_properties_d
+  - schedule_sample_list_feed.impl
+  key:
+  - command_properties_d
+  - schedule_sample_list_feed.impl
+  value: schedule_sample_tree_feed.command_properties
+- bases:
+  - command_properties_d
+  - schedule_sample_tree_feed.impl
+  key:
+  - command_properties_d
+  - schedule_sample_tree_feed.impl
+  value: schedule_sample_tree_feed.command_properties
 - bases:
   - feed_d
   - legacy_type.sample_feed:sample_list_feed
@@ -47,15 +63,15 @@ associations:
   - legacy_type.sample_feed:sample_tree_feed
   value: schedule_sample_tree_feed.command
 definitions:
+  command_properties_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:command_properties_d
   feed_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:feed_d
   model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_command_d
-  model_command_kind_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:model_command_kind_d
   sample_feed.module:
     _type: legacy_type.builtin:python_module
     module_name: sample_feed
@@ -77,30 +93,40 @@ definitions:
     object: sample_feed.module
     attr_name: schedule_sample_list_feed
   schedule_sample_list_feed.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - schedule_sample_list_feed.d
-    - model_command_kind_d
-    name: schedule_sample_list_feed
-    function: schedule_sample_list_feed
-    params:
-    - piece
+    _type: legacy_type.ui:command
+    d: schedule_sample_list_feed.d
+    impl: schedule_sample_list_feed.impl
+  schedule_sample_list_feed.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: false
+    remotable: true
   schedule_sample_list_feed.d:
     _type: legacy_type.builtin:call
     function: legacy_type.sample_feed:schedule_sample_list_feed_d
+  schedule_sample_list_feed.impl:
+    _type: legacy_type.ui:model_command_impl
+    function: schedule_sample_list_feed
+    params:
+    - piece
   schedule_sample_tree_feed:
     _type: legacy_type.builtin:attribute
     object: sample_feed.module
     attr_name: schedule_sample_tree_feed
   schedule_sample_tree_feed.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - schedule_sample_tree_feed.d
-    - model_command_kind_d
-    name: schedule_sample_tree_feed
-    function: schedule_sample_tree_feed
-    params:
-    - piece
+    _type: legacy_type.ui:command
+    d: schedule_sample_tree_feed.d
+    impl: schedule_sample_tree_feed.impl
+  schedule_sample_tree_feed.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: false
+    remotable: true
   schedule_sample_tree_feed.d:
     _type: legacy_type.builtin:call
     function: legacy_type.sample_feed:schedule_sample_tree_feed_d
+  schedule_sample_tree_feed.impl:
+    _type: legacy_type.ui:model_command_impl
+    function: schedule_sample_tree_feed
+    params:
+    - piece

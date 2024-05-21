@@ -22,18 +22,18 @@ import:
 - ui.view_registry:view_creg.service
 associations:
 - bases:
-  - go_forward.command_properties_d
-  - go_back.ui_command_impl
+  - command_properties_d
+  - go_back.impl
   key:
-  - go_forward.command_properties_d
-  - go_back.ui_command_impl
+  - command_properties_d
+  - go_back.impl
   value: go_forward.command_properties
 - bases:
-  - go_forward.command_properties_d
-  - go_forward.ui_command_impl
+  - command_properties_d
+  - go_forward.impl
   key:
-  - go_forward.command_properties_d
-  - go_forward.ui_command_impl
+  - command_properties_d
+  - go_forward.impl
   value: go_forward.command_properties
 - bases:
   - ui.view_registry:view_creg.service
@@ -65,6 +65,9 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: NavigatorView
     attr_name: from_piece
+  command_properties_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:command_properties_d
   go_back:
     _type: legacy_type.builtin:attribute
     object: navigator.module
@@ -72,19 +75,16 @@ definitions:
   go_back.command:
     _type: legacy_type.ui:command
     d: go_back.d
-    impl: go_back.ui_command_impl
+    impl: go_back.impl
   go_back.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
     uses_state: false
     remotable: false
-  go_back.command_properties_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:command_properties_d
   go_back.d:
     _type: legacy_type.builtin:call
     function: legacy_type.navigator:go_back_d
-  go_back.ui_command_impl:
+  go_back.impl:
     _type: legacy_type.ui:ui_command_impl
     function: go_back
     params:
@@ -98,19 +98,16 @@ definitions:
   go_forward.command:
     _type: legacy_type.ui:command
     d: go_forward.d
-    impl: go_forward.ui_command_impl
+    impl: go_forward.impl
   go_forward.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
     uses_state: false
     remotable: false
-  go_forward.command_properties_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:command_properties_d
   go_forward.d:
     _type: legacy_type.builtin:call
     function: legacy_type.navigator:go_forward_d
-  go_forward.ui_command_impl:
+  go_forward.impl:
     _type: legacy_type.ui:ui_command_impl
     function: go_forward
     params:

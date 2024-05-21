@@ -8,15 +8,23 @@ import:
 - legacy_type.sample_record:item
 - legacy_type.sample_record:open_sample_fn_record_d
 - legacy_type.sample_record:sample_record
+- legacy_type.ui:command
+- legacy_type.ui:command_properties
+- legacy_type.ui:command_properties_d
 - legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
-- legacy_type.ui:global_model_command_kind_d
 - legacy_type.ui:model
-- legacy_type.ui:model_command
-- legacy_type.ui:model_command_kind_d
+- legacy_type.ui:model_command_impl
 - legacy_type.ui:model_d
 - legacy_type.ui:record_ui_t
 associations:
+- bases:
+  - command_properties_d
+  - open_sample_fn_record.impl
+  key:
+  - command_properties_d
+  - open_sample_fn_record.impl
+  value: open_sample_fn_record.command_properties
 - bases:
   - global_model_command_d
   key: global_model_command_d
@@ -28,15 +36,12 @@ associations:
   - legacy_type.sample_record:sample_record
   value: sample_record.model
 definitions:
+  command_properties_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:command_properties_d
   global_model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:global_model_command_d
-  global_model_command_kind_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:global_model_command_kind_d
-  model_command_kind_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:model_command_kind_d
   model_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_d
@@ -45,17 +50,21 @@ definitions:
     object: sample_record.module
     attr_name: open_sample_fn_record
   open_sample_fn_record.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - open_sample_fn_record.d
-    - model_command_kind_d
-    - global_model_command_kind_d
-    name: open_sample_fn_record
-    function: open_sample_fn_record
-    params: []
+    _type: legacy_type.ui:command
+    d: open_sample_fn_record.d
+    impl: open_sample_fn_record.impl
+  open_sample_fn_record.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: false
+    remotable: true
   open_sample_fn_record.d:
     _type: legacy_type.builtin:call
     function: legacy_type.sample_record:open_sample_fn_record_d
+  open_sample_fn_record.impl:
+    _type: legacy_type.ui:model_command_impl
+    function: open_sample_fn_record
+    params: []
   sample_record:
     _type: legacy_type.builtin:attribute
     object: sample_record.module

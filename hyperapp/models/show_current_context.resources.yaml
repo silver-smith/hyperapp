@@ -8,16 +8,31 @@ import:
 - legacy_type.show_current_context:item
 - legacy_type.show_current_context:show_current_context_d
 - legacy_type.show_current_context:view
+- legacy_type.ui:command
+- legacy_type.ui:command_properties
+- legacy_type.ui:command_properties_d
 - legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
-- legacy_type.ui:global_model_command_kind_d
 - legacy_type.ui:list_ui_t
 - legacy_type.ui:model
-- legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
-- legacy_type.ui:model_command_kind_d
+- legacy_type.ui:model_command_impl
 - legacy_type.ui:model_d
 associations:
+- bases:
+  - command_properties_d
+  - current_context_list.impl
+  key:
+  - command_properties_d
+  - current_context_list.impl
+  value: current_context_list.command_properties
+- bases:
+  - command_properties_d
+  - show_current_context.impl
+  key:
+  - command_properties_d
+  - show_current_context.impl
+  value: show_current_context.command_properties
 - bases:
   - global_model_command_d
   key: global_model_command_d
@@ -35,25 +50,27 @@ associations:
   - legacy_type.show_current_context:view
   value: current_context_list.model
 definitions:
+  command_properties_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:command_properties_d
   current_context_list:
     _type: legacy_type.builtin:attribute
     object: show_current_context.module
     attr_name: current_context_list
   current_context_list.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - current_context_list.d
-    - model_command_kind_d
-    name: current_context_list
-    function: current_context_list
-    params:
-    - piece
-    - ctx
+    _type: legacy_type.ui:command
+    d: current_context_list.d
+    impl: current_context_list.impl
+  current_context_list.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: false
+    remotable: false
   current_context_list.d:
     _type: legacy_type.builtin:call
     function: legacy_type.show_current_context:current_context_list_d
   current_context_list.impl:
-    _type: legacy_type.ui:fn_impl
+    _type: legacy_type.ui:model_command_impl
     function: current_context_list
     params:
     - piece
@@ -68,15 +85,9 @@ definitions:
   global_model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:global_model_command_d
-  global_model_command_kind_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:global_model_command_kind_d
   model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_command_d
-  model_command_kind_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:model_command_kind_d
   model_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_d
@@ -85,18 +96,22 @@ definitions:
     object: show_current_context.module
     attr_name: show_current_context
   show_current_context.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - show_current_context.d
-    - model_command_kind_d
-    - global_model_command_kind_d
-    name: show_current_context
-    function: show_current_context
-    params:
-    - piece
+    _type: legacy_type.ui:command
+    d: show_current_context.d
+    impl: show_current_context.impl
+  show_current_context.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: false
+    remotable: true
   show_current_context.d:
     _type: legacy_type.builtin:call
     function: legacy_type.show_current_context:show_current_context_d
+  show_current_context.impl:
+    _type: legacy_type.ui:model_command_impl
+    function: show_current_context
+    params:
+    - piece
   show_current_context.module:
     _type: legacy_type.builtin:python_module
     module_name: show_current_context
