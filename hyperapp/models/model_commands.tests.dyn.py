@@ -24,9 +24,14 @@ def _phony_fn(piece, ctx):
 
 
 def _make_sample_command():
-    return htypes.ui.model_command_impl(
+    d_res = data_to_res(htypes.model_commands_tests.sample_d())
+    model_impl = htypes.ui.model_command_impl(
         function=fn_to_ref(_phony_fn),
         params=('piece', 'ctx'),
+        )
+    return htypes.ui.model_command(
+        d=mosaic.put(d_res),
+        impl=mosaic.put(model_impl),
         )
 
 
@@ -46,8 +51,7 @@ def test_list_model_commands():
     result = model_commands.list_model_commands(piece, ctx)
     assert result
     assert len(result) == 1
-    assert result[0].name == _phony_fn.__name__
-    assert result[0].params == "piece, ctx"
+    assert result[0].name == 'sample'
 
 
 async def test_run_command():
@@ -60,7 +64,7 @@ async def test_run_command():
     current_item = htypes.model_commands.item(
         command=mosaic.put(sample_command),
         name="<unused>",
-        params="<unused>",
+        impl="<unused>",
         )
     result = await model_commands.run_command(piece, current_item, ctx)
     assert result

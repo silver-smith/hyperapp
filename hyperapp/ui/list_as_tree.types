@@ -11,5 +11,5 @@ opener_command_item = record:
   command: ref
   name: string
   d: string
-  params: string
+  impl: string
   is_opener: bool

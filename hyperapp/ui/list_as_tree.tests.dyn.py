@@ -62,11 +62,13 @@ def test_open_opener_commans():
     model = htypes.list_as_tree_tests.sample_list_1()
     root_element_t = pyobj_creg.reverse_resolve(htypes.list_as_tree_tests.item_1)
     open_command_1_d_res = data_to_res(htypes.list_as_tree_tests.open_1_d())
-    open_command_1 = htypes.ui.model_command(
-        d=(mosaic.put(open_command_1_d_res),),
-        name='open_1',
+    open_command_1_impl = htypes.ui.model_command_impl(
         function=fn_to_ref(sample_fn_1_open),
         params=('piece', 'current_item'),
+        )
+    open_command_1 = htypes.ui.model_command(
+        d=mosaic.put(open_command_1_d_res),
+        impl=mosaic.put(open_command_1_impl),
         )
     adapter_piece = htypes.list_to_tree_adapter.adapter(
         root_element_t=mosaic.put(root_element_t),
@@ -87,16 +89,18 @@ def test_open_opener_commans():
 
 def _open_1_command():
     open_command_1_d_res = data_to_res(htypes.list_as_tree_tests.open_1_d())
-    return htypes.ui.model_command(
-        d=(mosaic.put(open_command_1_d_res),),
-        name='open_1',
+    impl = htypes.ui.model_command_impl(
         function=fn_to_ref(sample_fn_1_open),
         params=('piece', 'current_item'),
+        )
+    return htypes.ui.model_command(
+        d=mosaic.put(open_command_1_d_res),
+        impl=mosaic.put(impl),
         )
 
 
 @mark.service
-def model_command_factory():
+def model_commands():
     def _factory(model):
         return [_open_1_command()]
     return _factory
@@ -138,9 +142,9 @@ async def test_non_root_open_command():
     command = _open_1_command()
     current_item = htypes.list_as_tree.opener_command_item(
         command=mosaic.put(command),
-        name=command.name,
+        name='open_1',
         d=str(command.d),
-        params=", ".join(command.params),
+        impl="<unused>",
         is_opener=False,
         )
     lcs = Mock()
@@ -178,9 +182,9 @@ async def test_set_non_root_open_command():
     command = _open_1_command()
     current_item = htypes.list_as_tree.opener_command_item(
         command=mosaic.put(command),
-        name=command.name,
+        name="<unused>",
         d=str(command.d),
-        params=", ".join(command.params),
+        impl="<unused>",
         is_opener=False,
         )
     lcs = Mock()

@@ -8,12 +8,12 @@ import:
 - legacy_type.sample_record:item
 - legacy_type.sample_record:open_sample_fn_record_d
 - legacy_type.sample_record:sample_record
-- legacy_type.ui:command
 - legacy_type.ui:command_properties
 - legacy_type.ui:command_properties_d
 - legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:model
+- legacy_type.ui:model_command
 - legacy_type.ui:model_command_impl
 - legacy_type.ui:model_d
 - legacy_type.ui:record_ui_t
@@ -50,7 +50,7 @@ definitions:
     object: sample_record.module
     attr_name: open_sample_fn_record
   open_sample_fn_record.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: open_sample_fn_record.d
     impl: open_sample_fn_record.command_impl
   open_sample_fn_record.command_impl:

@@ -5,7 +5,7 @@ from PySide6 import QtWidgets
 from . import htypes
 from .services import (
     data_to_res,
-    fn_to_res,
+    fn_to_ref,
     mark,
     mosaic,
     )
@@ -18,11 +18,14 @@ def _details_command_impl(piece):
 
 
 def _details_command():
-    return htypes.ui.model_command(
-        d=(mosaic.put(data_to_res(htypes.master_details_tests.sample_details_command_d())),),
-        name='details',
-        function=mosaic.put(fn_to_res(_details_command_impl)),
+    d_res = data_to_res(htypes.master_details_tests.sample_details_command_d())
+    impl = htypes.ui.model_command_impl(
+        function=fn_to_ref(_details_command_impl),
         params=('piece',),
+        )
+    return htypes.ui.model_command(
+        d=mosaic.put(d_res),
+        impl=mosaic.put(impl),
         )
 
 
@@ -64,7 +67,7 @@ def test_master_details():
 
 
 @mark.service
-def model_command_factory():
+def model_commands():
     def _factory(model):
         return [_details_command()]
     return _factory

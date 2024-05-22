@@ -8,13 +8,13 @@ import:
 - legacy_type.show_current_context:item
 - legacy_type.show_current_context:show_current_context_d
 - legacy_type.show_current_context:view
-- legacy_type.ui:command
 - legacy_type.ui:command_properties
 - legacy_type.ui:command_properties_d
 - legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:list_ui_t
 - legacy_type.ui:model
+- legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_impl
 - legacy_type.ui:model_d
@@ -58,7 +58,7 @@ definitions:
     object: show_current_context.module
     attr_name: current_context_list
   current_context_list.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: current_context_list.d
     impl: current_context_list.command_impl
   current_context_list.command_impl:
@@ -102,7 +102,7 @@ definitions:
     object: show_current_context.module
     attr_name: show_current_context
   show_current_context.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: show_current_context.d
     impl: show_current_context.command_impl
   show_current_context.command_impl:

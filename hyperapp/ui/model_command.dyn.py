@@ -11,9 +11,16 @@ from .services import (
     model_command_impl_creg,
     pyobj_creg,
     )
-from .code.command import FnCommandImpl
+from .code.command import Command, FnCommandImpl
 
 log = logging.getLogger(__name__)
+
+
+
+class ModelCommand(Command):
+
+    def __repr__(self):
+        return f"<ModelCommand: {self.name}: {self._impl}>"
 
 
 class ModelCommandImpl(FnCommandImpl):
@@ -38,7 +45,7 @@ def global_commands():
 
 
 @mark.service
-def model_command_factory():
+def model_commands():
 
     def _model_commands(piece):
         try:
@@ -78,3 +85,12 @@ def enum_model_commands():
             yield from fn(**kw)
 
     return _enum_model_commands
+
+
+@mark.service
+def model_command_factory():
+    def _model_command_factory(piece, ctx):
+        command_d = pyobj_creg.invite(piece.d)
+        impl = model_command_impl_creg.invite(piece.impl, ctx)
+        return ModelCommand(command_d, impl)
+    return _model_command_factory

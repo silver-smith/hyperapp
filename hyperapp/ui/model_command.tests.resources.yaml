@@ -23,6 +23,6 @@ definitions:
       tested.code.model_command: phony
       tested.services.enum_model_commands: phony
       tested.services.global_commands: phony
-      tested.services.model_command_factory: phony
+      tested.services.model_commands: phony
   phony:
     _type: legacy_type.phony:phony

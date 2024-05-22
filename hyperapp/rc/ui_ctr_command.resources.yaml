@@ -9,6 +9,7 @@ import:
 - legacy_type.ui:command_properties
 - legacy_type.ui:command_properties_d
 - legacy_type.ui:context_model_command_kind_d
+- legacy_type.ui:model_command
 - legacy_type.ui:model_command_impl
 - legacy_type.ui:model_command_enumerator
 - legacy_type.ui:model_command_d
@@ -34,6 +35,7 @@ definitions:
       htypes.ui.command_properties: legacy_type.ui:command_properties
       htypes.ui.command_properties_d: legacy_type.ui:command_properties_d
       htypes.ui.context_model_command_kind_d: legacy_type.ui:context_model_command_kind_d
+      htypes.ui.model_command: legacy_type.ui:model_command
       htypes.ui.model_command_impl: legacy_type.ui:model_command_impl
       htypes.ui.model_command_enumerator: legacy_type.ui:model_command_enumerator
       htypes.ui.model_command_enumerator_d: legacy_type.ui:model_command_enumerator_d

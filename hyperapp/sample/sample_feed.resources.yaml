@@ -12,12 +12,12 @@ import:
 - legacy_type.sample_feed:schedule_sample_tree_feed_d
 - legacy_type.sample_list:item
 - legacy_type.sample_tree:item
-- legacy_type.ui:command
 - legacy_type.ui:command_properties
 - legacy_type.ui:command_properties_d
 - legacy_type.ui:feed_d
 - legacy_type.ui:index_tree_feed
 - legacy_type.ui:list_feed
+- legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_impl
 - ui.feed:feed_factory.service
@@ -93,7 +93,7 @@ definitions:
     object: sample_feed.module
     attr_name: schedule_sample_list_feed
   schedule_sample_list_feed.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: schedule_sample_list_feed.d
     impl: schedule_sample_list_feed.command_impl
   schedule_sample_list_feed.command_impl:
@@ -114,7 +114,7 @@ definitions:
     object: sample_feed.module
     attr_name: schedule_sample_tree_feed
   schedule_sample_tree_feed.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: schedule_sample_tree_feed.d
     impl: schedule_sample_tree_feed.command_impl
   schedule_sample_tree_feed.command_impl:

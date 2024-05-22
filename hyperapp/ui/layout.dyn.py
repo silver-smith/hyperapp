@@ -8,7 +8,7 @@ from .services import (
     pyobj_creg,
     ui_command_impl_creg,
     )
-from .code.command import CommandImpl, d_to_name
+from .code.command import CommandImpl, d_res_ref_to_name
 
 log = logging.getLogger(__name__)
 
@@ -85,7 +85,7 @@ async def open_view_item_commands(piece, current_item):
 
 def view_item_commands(piece, controller):
     command_list = [
-        htypes.layout.command_item(d_to_name(pyobj_creg.invite(command.d)))
+        htypes.layout.command_item(d_res_ref_to_name(command.d))
         for command in controller.item_commands(piece.item_id)
         ]
     log.info("Get view item commands for %s: %s", piece, command_list)

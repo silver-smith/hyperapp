@@ -24,13 +24,13 @@ import:
 - legacy_type.data_browser:ref_list_item
 - legacy_type.data_browser:ref_list_open_d
 - legacy_type.data_browser:ref_list_view
-- legacy_type.ui:command
 - legacy_type.ui:command_properties
 - legacy_type.ui:command_properties_d
 - legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:list_ui_t
 - legacy_type.ui:model
+- legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_impl
 - legacy_type.ui:model_d
@@ -155,7 +155,7 @@ definitions:
     object: data_browser.module
     attr_name: browse_current_model
   browse_current_model.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: browse_current_model.d
     impl: browse_current_model.command_impl
   browse_current_model.command_impl:
@@ -176,7 +176,7 @@ definitions:
     object: data_browser.module
     attr_name: browse_list
   browse_list.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: browse_list.d
     impl: browse_list.command_impl
   browse_list.command_impl:
@@ -225,7 +225,7 @@ definitions:
     object: data_browser.module
     attr_name: browse_record
   browse_record.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: browse_record.d
     impl: browse_record.command_impl
   browse_record.command_impl:
@@ -258,7 +258,7 @@ definitions:
     object: data_browser.module
     attr_name: browse_ref_list
   browse_ref_list.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: browse_ref_list.d
     impl: browse_ref_list.command_impl
   browse_ref_list.command_impl:
@@ -315,7 +315,7 @@ definitions:
     object: data_browser.module
     attr_name: list_open
   list_open.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: list_open.d
     impl: list_open.command_impl
   list_open.command_impl:
@@ -343,7 +343,7 @@ definitions:
     object: data_browser.module
     attr_name: record_open
   record_open.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: record_open.d
     impl: record_open.command_impl
   record_open.command_impl:
@@ -365,7 +365,7 @@ definitions:
     object: data_browser.module
     attr_name: ref_list_open
   ref_list_open.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: ref_list_open.d
     impl: ref_list_open.command_impl
   ref_list_open.command_impl:

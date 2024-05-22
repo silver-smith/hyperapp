@@ -11,13 +11,13 @@ import:
 - legacy_type.file_bundles:file_bundle_list_d
 - legacy_type.file_bundles:open_d
 - legacy_type.file_bundles:open_file_bundle_list_d
-- legacy_type.ui:command
 - legacy_type.ui:command_properties
 - legacy_type.ui:command_properties_d
 - legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:list_ui_t
 - legacy_type.ui:model
+- legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_impl
 - legacy_type.ui:model_d
@@ -74,7 +74,7 @@ definitions:
     object: file_bundles.module
     attr_name: file_bundle_list
   file_bundle_list.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: file_bundle_list.d
     impl: file_bundle_list.command_impl
   file_bundle_list.command_impl:
@@ -125,7 +125,7 @@ definitions:
     object: file_bundles.module
     attr_name: open
   open.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: open.d
     impl: open.command_impl
   open.command_impl:
@@ -147,7 +147,7 @@ definitions:
     object: file_bundles.module
     attr_name: open_file_bundle_list
   open_file_bundle_list.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: open_file_bundle_list.d
     impl: open_file_bundle_list.command_impl
   open_file_bundle_list.command_impl:

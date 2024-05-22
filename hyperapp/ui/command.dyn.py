@@ -58,14 +58,16 @@ def d_to_name(d):
     return name[:-2]
 
 
+def d_res_ref_to_name(d_ref):
+    d = pyobj_creg.invite(d_ref)
+    return d_to_name(d)
+
+
 class Command:
 
     def __init__(self, d, impl):
         self._d = d
         self._impl = impl
-
-    def __repr__(self):
-        return f"<{self.name}: {self._impl}>"
 
     @property
     def d(self):
@@ -93,7 +95,13 @@ class Command:
 
     async def run(self):
         return await self._impl.run()
-  
+
+
+class UiCommand(Command):
+
+    def __repr__(self):
+        return f"<UiCommand: {self.name}: {self._impl}>"
+
 
 class CommandImpl:
 

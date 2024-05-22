@@ -4,29 +4,25 @@ import logging
 
 from . import htypes
 from .services import (
-    model_command_impl_creg,
     model_command_factory,
+    model_commands,
     mosaic,
     pyobj_creg,
     web,
     )
+from .code.command import d_res_ref_to_name
 
 log = logging.getLogger(__name__)
 
 
-def _command_name(command):
-    fn = pyobj_creg.invite(command.function)
-    return fn.__name__
-
-
 def list_model_commands(piece, ctx):
     model = web.summon(piece.model)
-    command_list = model_command_factory(model)
+    command_list = model_commands(model)
     return [
         htypes.model_commands.item(
             command=mosaic.put(command),
-            name=_command_name(command),
-            params=", ".join(command.params),
+            name=d_res_ref_to_name(command.d),
+            impl=str(web.summon(command.impl)),
             )
         for command in command_list
         ]
@@ -39,7 +35,8 @@ async def run_command(piece, current_item, ctx):
     command_ctx = ctx.clone_with(
         piece=model,
         )
-    command = model_command_impl_creg.invite(current_item.command, command_ctx)
+    command_piece = web.summon(current_item.command)
+    command = model_command_factory(command_piece, command_ctx)
     piece = await command.run()
     log.info("Run command: command result: %s", piece)
     return piece

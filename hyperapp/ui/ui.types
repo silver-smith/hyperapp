@@ -18,6 +18,10 @@ command = record:
   d: ref
   impl: ref
 
+model_command = record:
+  d: ref
+  impl: ref
+
 ui_command_impl = record:
   function: ref
   params: string list
@@ -29,27 +33,10 @@ model_command_impl = record:
 ui_model_command_impl = record:
   model_command_impl: ref
 
-
-ui_command = record:
-  d: ref list
-  name: string
-  function: ref
-  params: string list
-
-ui_model_command = record:
-  d: ref list
-  name: string
-  model_command: ref
-
-model_command = record:
-  d: ref list
-  name: string
-  function: ref
-  params: string list
-
 model_command_enumerator = record:
   function: ref
   params: string list
+
 
 # Selector for command's `.d` property.
 model_command_kind_d = record

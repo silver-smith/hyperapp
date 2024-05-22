@@ -8,12 +8,13 @@ from .services import (
     get_model_layout,
     set_model_layout,
     mark,
-    model_command_factory,
+    model_commands,
     model_view_creg,
     mosaic,
     pyobj_creg,
     web,
     )
+from .code.command import d_res_ref_to_name
 from .code.list_diff import ListDiff
 from .code.list_adapter import FnListAdapter
 from .code.list_to_tree_adapter import ListToTreeAdapter
@@ -58,9 +59,9 @@ def open_opener_commands(view, current_path):
 def _make_command_item(command, is_opener):
     return htypes.list_as_tree.opener_command_item(
         command=mosaic.put(command),
-        name=command.name,
+        name=d_res_ref_to_name(command.d),
         d=str(command.d),
-        params=", ".join(command.params),
+        impl=str(web.summon(command.impl)),
         is_opener=is_opener,
         )
 
@@ -117,7 +118,7 @@ def opener_command_list(piece, lcs):
         adapter = web.summon(view.adapter)
         if isinstance(adapter, htypes.list_to_tree_adapter.adapter):
             current_command = _get_current_command(root_piece_t, layer_piece_t, adapter)
-    command_list = model_command_factory(layer_piece)
+    command_list = model_commands(layer_piece)
     return [
         _make_command_item(command, is_opener=command == current_command)
         for command in command_list
@@ -136,7 +137,7 @@ async def toggle_open_command(piece, current_idx, current_item, lcs):
         log.info("Adapter for %s is not a list-to-tree: %s", model_t, adapter)
         return
     prev_command = _get_current_command(root_piece_t, layer_piece_t, adapter)
-    command_list = model_command_factory(layer_piece)
+    command_list = model_commands(layer_piece)
     prev_command_by_idx = {
         idx: cmd for idx, cmd
         in enumerate(command_list)

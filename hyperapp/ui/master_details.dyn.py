@@ -4,13 +4,14 @@ from . import htypes
 from .services import (
     mark,
     model_command_impl_creg,
-    model_command_factory,
+    model_commands,
     mosaic,
     view_creg,
     model_view_creg,
     visualizer,
     web,
     )
+from .code.command import d_res_ref_to_name
 from .code.list_diff import ListDiff
 from .code.box_layout import BoxLayoutView
 
@@ -116,9 +117,9 @@ def unwrap_master_details(view, state, hook, ctx):
 
 
 def _pick_command(model):
-    command_list = model_command_factory(model)
+    command_list = model_commands(model)
     name_to_cmd = {
-        cmd.name: cmd for cmd in command_list
+        d_res_ref_to_name(cmd.d): cmd for cmd in command_list
         }
     preffered_names = ['open', 'details']
     for name in preffered_names:

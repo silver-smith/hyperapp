@@ -65,3 +65,10 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: model_command.module
     attr_name: model_command_impl_from_piece
+  model_commands:
+    _type: legacy_type.builtin:attribute
+    object: model_command.module
+    attr_name: model_commands
+  model_commands.service:
+    _type: legacy_type.builtin:call
+    function: model_commands

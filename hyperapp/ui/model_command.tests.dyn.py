@@ -10,7 +10,7 @@ from .tested.code import model_command
 from .tested.services import (
     enum_model_commands,
     global_commands,
-    model_command_factory,
+    model_commands,
     )
 
 
@@ -19,9 +19,9 @@ def test_global_commands():
     # assert commands
 
 
-def test_model_command_factory():
+def test_model_commands():
     piece = htypes.model_command_tests.sample_model()
-    commands = model_command_factory(piece)
+    commands = model_commands(piece)
 
 
 def test_enum_model_commands():

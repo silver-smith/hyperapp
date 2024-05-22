@@ -13,10 +13,10 @@ import:
 - legacy_type.sample_list:item
 - legacy_type.sample_list:sample_list
 - legacy_type.sample_tree:sample_tree
-- legacy_type.ui:command
 - legacy_type.ui:command_properties
 - legacy_type.ui:command_properties_d
 - legacy_type.ui:global_model_command_d
+- legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_impl
 associations:
@@ -99,7 +99,7 @@ definitions:
     object: sample_commands.module
     attr_name: details
   details.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: details.d
     impl: details.command_impl
   details.command_impl:
@@ -127,7 +127,7 @@ definitions:
     object: sample_commands.module
     attr_name: open_sample_static_list
   open_sample_static_list.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: open_sample_static_list.d
     impl: open_sample_static_list.command_impl
   open_sample_static_list.command_impl:
@@ -147,7 +147,7 @@ definitions:
     object: sample_commands.module
     attr_name: open_sample_static_text_1
   open_sample_static_text_1.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: open_sample_static_text_1.d
     impl: open_sample_static_text_1.command_impl
   open_sample_static_text_1.command_impl:
@@ -167,7 +167,7 @@ definitions:
     object: sample_commands.module
     attr_name: open_sample_static_text_2
   open_sample_static_text_2.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: open_sample_static_text_2.d
     impl: open_sample_static_text_2.command_impl
   open_sample_static_text_2.command_impl:
@@ -193,7 +193,7 @@ definitions:
     object: sample_commands.module
     attr_name: sample_tree_info
   sample_tree_info.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: sample_tree_info.d
     impl: sample_tree_info.command_impl
   sample_tree_info.command_impl:
@@ -214,7 +214,7 @@ definitions:
     object: sample_commands.module
     attr_name: show_state
   show_state.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: show_state.d
     impl: show_state.command_impl
   show_state.command_impl:

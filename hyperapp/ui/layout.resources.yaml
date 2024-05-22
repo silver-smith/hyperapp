@@ -24,6 +24,7 @@ import:
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:list_ui_t
 - legacy_type.ui:model
+- legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_enumerator
 - legacy_type.ui:model_command_enumerator_d
@@ -129,7 +130,7 @@ definitions:
     object: layout.module
     attr_name: add_view_command
   add_view_command.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: add_view_command.d
     impl: add_view_command.command_impl
   add_view_command.command_impl:
@@ -154,7 +155,7 @@ definitions:
     object: layout.module
     attr_name: enum_layout_tree_commands
   enum_layout_tree_commands.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: enum_layout_tree_commands.d
     impl: enum_layout_tree_commands.command_impl
   enum_layout_tree_commands.command_impl:
@@ -236,7 +237,7 @@ definitions:
     object: layout.module
     attr_name: open_layout_tree
   open_layout_tree.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: open_layout_tree.d
     impl: open_layout_tree.command_impl
   open_layout_tree.command_impl:
@@ -256,7 +257,7 @@ definitions:
     object: layout.module
     attr_name: open_view_item_commands
   open_view_item_commands.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: open_view_item_commands.d
     impl: open_view_item_commands.command_impl
   open_view_item_commands.command_impl:
@@ -278,7 +279,7 @@ definitions:
     object: layout.module
     attr_name: view_item_commands
   view_item_commands.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: view_item_commands.d
     impl: view_item_commands.command_impl
   view_item_commands.command_impl:

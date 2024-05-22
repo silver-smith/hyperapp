@@ -28,6 +28,7 @@ import:
 - legacy_type.ui:list_feed
 - legacy_type.ui:list_ui_t
 - legacy_type.ui:model
+- legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_impl
 - legacy_type.ui:model_d
@@ -35,8 +36,9 @@ import:
 - legacy_type.ui:ui_command_impl
 - legacy_type.ui:ui_model_command_impl
 - resource.fn_to_res:fn_to_ref.service
+- ui.command:command.module
 - ui.feed:feed_factory.service
-- ui.model_command:model_command_factory.service
+- ui.model_command:model_commands.service
 - ui.qt.list_adapter:list_adapter.module
 - ui.qt.list_to_tree_adapter:list_to_tree_adapter.module
 - ui.view_registry:model_view_creg.service
@@ -122,6 +124,7 @@ definitions:
     module_name: list_as_tree
     file_name: list_as_tree.dyn.py
     import_list:
+      code.command: ui.command:command.module
       code.list_adapter: ui.qt.list_adapter:list_adapter.module
       code.list_diff: common.list_diff:list_diff.module
       code.list_to_tree_adapter: ui.qt.list_to_tree_adapter:list_to_tree_adapter.module
@@ -136,7 +139,7 @@ definitions:
       services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
       services.get_model_layout: ui.visualizer:get_model_layout.service
       services.mark: common.mark:mark.service
-      services.model_command_factory: ui.model_command:model_command_factory.service
+      services.model_commands: ui.model_command:model_commands.service
       services.model_view_creg: ui.view_registry:model_view_creg.service
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
@@ -181,7 +184,7 @@ definitions:
     object: list_as_tree.module
     attr_name: opener_command_list
   opener_command_list.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: opener_command_list.d
     impl: opener_command_list.command_impl
   opener_command_list.command_impl:
@@ -240,7 +243,7 @@ definitions:
     object: list_as_tree.module
     attr_name: toggle_open_command
   toggle_open_command.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: toggle_open_command.d
     impl: toggle_open_command.command_impl
   toggle_open_command.command_impl:

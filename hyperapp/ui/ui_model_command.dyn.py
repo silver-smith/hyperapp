@@ -6,7 +6,7 @@ from .services import (
     global_commands,
     mark,
     model_command_impl_creg,
-    model_command_factory,
+    model_commands,
     pyobj_creg,
     ui_command_impl_creg,
     model_view_creg,
@@ -60,20 +60,26 @@ def ui_model_command_impl_from_piece(piece, ctx):
     return UiModelCommandImpl(ctx, model_command)
 
 
+def _model_command_to_ui_command(model_command):
+    impl = htypes.ui.ui_model_command_impl(
+        model_command_impl=model_command.impl,
+        )
+    return htypes.ui.command(
+        d=model_command.d,
+        impl=mosaic.put(impl),
+        )
+
+
 @mark.service
 def ui_model_command_factory():
     def _ui_model_command_factory(piece, ctx):
-        model_commands = [
+        command_list = [
             *global_commands(),
-            *model_command_factory(piece),
+            *model_commands(piece),
             *enum_model_commands(piece, ctx),
             ]
         return [
-            htypes.ui.ui_model_command(
-                d=cmd.d,
-                name=cmd.name,
-                model_command=mosaic.put(cmd),
-                )
-            for cmd in model_commands
+            _model_command_to_ui_command(cmd)
+            for cmd in command_list
             ]
     return _ui_model_command_factory

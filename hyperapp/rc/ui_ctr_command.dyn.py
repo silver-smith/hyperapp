@@ -71,7 +71,7 @@ class CommandImplementationCtr(Constructor):
             function=mosaic.put(fn_attribute),
             params=tuple(fn_info.params),
             )
-        command = htypes.ui.command(
+        command = htypes.ui.model_command(
             d=mosaic.put(command_d_res),
             impl=mosaic.put(impl),
             )

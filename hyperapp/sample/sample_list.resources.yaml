@@ -11,7 +11,6 @@ import:
 - legacy_type.sample_list:open_sample_fn_list_d
 - legacy_type.sample_list:sample_list
 - legacy_type.sample_list:sample_list_d
-- legacy_type.ui:command
 - legacy_type.ui:command_properties
 - legacy_type.ui:command_properties_d
 - legacy_type.ui:feed_d
@@ -20,6 +19,7 @@ import:
 - legacy_type.ui:list_feed
 - legacy_type.ui:list_ui_t
 - legacy_type.ui:model
+- legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_impl
 - legacy_type.ui:model_d
@@ -116,7 +116,7 @@ definitions:
     object: sample_list.module
     attr_name: open_feed_sample_fn_list
   open_feed_sample_fn_list.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: open_feed_sample_fn_list.d
     impl: open_feed_sample_fn_list.command_impl
   open_feed_sample_fn_list.command_impl:
@@ -136,7 +136,7 @@ definitions:
     object: sample_list.module
     attr_name: open_sample_fn_list
   open_sample_fn_list.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: open_sample_fn_list.d
     impl: open_sample_fn_list.command_impl
   open_sample_fn_list.command_impl:
@@ -156,7 +156,7 @@ definitions:
     object: sample_list.module
     attr_name: sample_list
   sample_list.command:
-    _type: legacy_type.ui:command
+    _type: legacy_type.ui:model_command
     d: sample_list.d
     impl: sample_list.command_impl
   sample_list.command_impl:
