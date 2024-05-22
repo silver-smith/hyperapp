@@ -2,6 +2,7 @@
 
 import:
 - builtins:mosaic.service
+- builtins:pyobj_creg.service
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -11,19 +12,40 @@ import:
 - legacy_type.model_commands:model_commands
 - legacy_type.model_commands:open_model_commands_d
 - legacy_type.model_commands:run_command_d
-- legacy_type.ui:context_model_command_kind_d
+- legacy_type.ui:command
+- legacy_type.ui:command_properties
+- legacy_type.ui:command_properties_d
 - legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
-- legacy_type.ui:global_model_command_kind_d
 - legacy_type.ui:list_ui_t
 - legacy_type.ui:model
-- legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
-- legacy_type.ui:model_command_kind_d
+- legacy_type.ui:model_command_impl
 - legacy_type.ui:model_d
 - ui.model_command:model_command_factory.service
 - ui.model_command_impl_creg:model_command_impl_creg.service
 associations:
+- bases:
+  - command_properties_d
+  - list_model_commands.impl
+  key:
+  - command_properties_d
+  - list_model_commands.impl
+  value: list_model_commands.command_properties
+- bases:
+  - command_properties_d
+  - open_model_commands.impl
+  key:
+  - command_properties_d
+  - open_model_commands.impl
+  value: open_model_commands.command_properties
+- bases:
+  - command_properties_d
+  - run_command.impl
+  key:
+  - command_properties_d
+  - run_command.impl
+  value: run_command.command_properties
 - bases:
   - global_model_command_d
   key: global_model_command_d
@@ -47,34 +69,30 @@ associations:
   - legacy_type.model_commands:model_commands
   value: list_model_commands.model
 definitions:
-  context_model_command_kind_d:
+  command_properties_d:
     _type: legacy_type.builtin:call
-    function: legacy_type.ui:context_model_command_kind_d
+    function: legacy_type.ui:command_properties_d
   global_model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:global_model_command_d
-  global_model_command_kind_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:global_model_command_kind_d
   list_model_commands:
     _type: legacy_type.builtin:attribute
     object: model_commands.module
     attr_name: list_model_commands
   list_model_commands.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - list_model_commands.d
-    - model_command_kind_d
-    name: list_model_commands
-    function: list_model_commands
-    params:
-    - piece
-    - ctx
+    _type: legacy_type.ui:command
+    d: list_model_commands.d
+    impl: list_model_commands.impl
+  list_model_commands.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: false
+    remotable: false
   list_model_commands.d:
     _type: legacy_type.builtin:call
     function: legacy_type.model_commands:list_model_commands_d
   list_model_commands.impl:
-    _type: legacy_type.ui:fn_impl
+    _type: legacy_type.ui:model_command_impl
     function: list_model_commands
     params:
     - piece
@@ -89,9 +107,6 @@ definitions:
   model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_command_d
-  model_command_kind_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:model_command_kind_d
   model_commands.module:
     _type: legacy_type.builtin:python_module
     module_name: model_commands
@@ -99,9 +114,10 @@ definitions:
     import_list:
       htypes.model_commands.item: legacy_type.model_commands:item
       htypes.model_commands.model_commands: legacy_type.model_commands:model_commands
-      services.model_command_impl_creg: ui.model_command_impl_creg:model_command_impl_creg.service
       services.model_command_factory: ui.model_command:model_command_factory.service
+      services.model_command_impl_creg: ui.model_command_impl_creg:model_command_impl_creg.service
       services.mosaic: builtins:mosaic.service
+      services.pyobj_creg: builtins:pyobj_creg.service
       services.web: builtins:web.service
   model_d:
     _type: legacy_type.builtin:call
@@ -111,34 +127,42 @@ definitions:
     object: model_commands.module
     attr_name: open_model_commands
   open_model_commands.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - open_model_commands.d
-    - model_command_kind_d
-    - global_model_command_kind_d
-    name: open_model_commands
-    function: open_model_commands
-    params:
-    - piece
+    _type: legacy_type.ui:command
+    d: open_model_commands.d
+    impl: open_model_commands.impl
+  open_model_commands.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: false
+    remotable: true
   open_model_commands.d:
     _type: legacy_type.builtin:call
     function: legacy_type.model_commands:open_model_commands_d
+  open_model_commands.impl:
+    _type: legacy_type.ui:model_command_impl
+    function: open_model_commands
+    params:
+    - piece
   run_command:
     _type: legacy_type.builtin:attribute
     object: model_commands.module
     attr_name: run_command
   run_command.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - run_command.d
-    - model_command_kind_d
-    - context_model_command_kind_d
-    name: run_command
+    _type: legacy_type.ui:command
+    d: run_command.d
+    impl: run_command.impl
+  run_command.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: true
+    remotable: false
+  run_command.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.model_commands:run_command_d
+  run_command.impl:
+    _type: legacy_type.ui:model_command_impl
     function: run_command
     params:
     - piece
     - current_item
     - ctx
-  run_command.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.model_commands:run_command_d

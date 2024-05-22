@@ -4,7 +4,6 @@ model_commands = record:
 item = record:
   command: ref
   name: string
-  d: string
   params: string
 
 open_model_commands_d = record

@@ -9,8 +9,8 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
-- legacy_type.ui:ui_command_impl
 - legacy_type.ui:ui_command_d
+- legacy_type.ui:ui_command_impl
 - legacy_type.ui:universal_ui_command_d
 - resource.data_to_res:data_to_res.service
 - ui.command:command.module
@@ -30,8 +30,8 @@ definitions:
     file_name: ui_command.dyn.py
     import_list:
       code.command: ui.command:command.module
-      htypes.ui.ui_command_impl: legacy_type.ui:ui_command_impl
       htypes.ui.ui_command_d: legacy_type.ui:ui_command_d
+      htypes.ui.ui_command_impl: legacy_type.ui:ui_command_impl
       htypes.ui.universal_ui_command_d: legacy_type.ui:universal_ui_command_d
       services.association_reg: builtins:association_reg.service
       services.data_to_res: resource.data_to_res:data_to_res.service

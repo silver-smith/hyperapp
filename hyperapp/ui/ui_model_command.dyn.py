@@ -8,7 +8,7 @@ from .services import (
     model_command_impl_creg,
     model_command_factory,
     pyobj_creg,
-    ui_command_creg,
+    ui_command_impl_creg,
     model_view_creg,
     mosaic,
     visualizer,
@@ -26,6 +26,10 @@ class UiModelCommandImpl(CommandImpl):
         self._navigator_rec = ctx.navigator
         self._lcs = ctx.lcs
         self._model_command = model_command
+
+    @property
+    def name(self):
+        return self._model_command.name
 
     @property
     def enabled(self):
@@ -50,10 +54,10 @@ class UiModelCommandImpl(CommandImpl):
         self._navigator_rec.view.open(self._ctx, piece, view, navigator_w)
 
 
-@ui_command_creg.actor(htypes.ui.ui_model_command_impl)
-def ui_model_command_from_piece(piece, ctx):
+@ui_command_impl_creg.actor(htypes.ui.ui_model_command_impl)
+def ui_model_command_impl_from_piece(piece, ctx):
     model_command = model_command_impl_creg.invite(piece.model_command_impl, ctx)
-    return UiModelCommand(ctx, model_command)
+    return UiModelCommandImpl(ctx, model_command)
 
 
 @mark.service

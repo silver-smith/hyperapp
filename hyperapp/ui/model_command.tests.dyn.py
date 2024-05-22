@@ -2,8 +2,7 @@ from unittest.mock import Mock
 
 from . import htypes
 from .services import (
-    data_to_res,
-    fn_to_res,
+    fn_to_ref,
     mosaic,
     )
 from .code.context import Context
@@ -36,14 +35,10 @@ def _sample_fn():
 
 
 def test_model_command_ctr():
-    command_d_res = data_to_res(htypes.model_command_tests.sample_command_d())
-    fn_res = fn_to_res(_sample_fn)
-    piece = htypes.ui.model_command(
-        d=(mosaic.put(command_d_res),),
-        name='sample_command',
-        function=mosaic.put(fn_res),
+    piece = htypes.ui.model_command_impl(
+        function=fn_to_ref(_sample_fn),
         params=(),
         )
     ctx = Context()
-    command = model_command.model_command_from_piece(piece, ctx)
-    assert isinstance(command, model_command.ModelCommand)
+    command = model_command.model_command_impl_from_piece(piece, ctx)
+    assert isinstance(command, model_command.ModelCommandImpl)

@@ -21,7 +21,7 @@ class ModelCommandImpl(FnCommandImpl):
 
 
 @model_command_impl_creg.actor(htypes.ui.model_command_impl)
-def model_command_from_piece(piece, ctx):
+def model_command_impl_from_piece(piece, ctx):
     fn = pyobj_creg.invite(piece.function)
     return ModelCommandImpl(ctx, fn, piece.params)
 

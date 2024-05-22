@@ -7,10 +7,16 @@ from .services import (
     model_command_impl_creg,
     model_command_factory,
     mosaic,
+    pyobj_creg,
     web,
     )
 
 log = logging.getLogger(__name__)
+
+
+def _command_name(command):
+    fn = pyobj_creg.invite(command.function)
+    return fn.__name__
 
 
 def list_model_commands(piece, ctx):
@@ -19,8 +25,7 @@ def list_model_commands(piece, ctx):
     return [
         htypes.model_commands.item(
             command=mosaic.put(command),
-            name=command.name,
-            d=str(command.d),
+            name=_command_name(command),
             params=", ".join(command.params),
             )
         for command in command_list

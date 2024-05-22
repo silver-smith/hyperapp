@@ -94,7 +94,7 @@ class CommandImpl:
 
     async def run(self):
         if not self.enabled:
-            raise RuntimeError(f"{self.name}: Disabled: {self.disabled_reason}")
+            raise RuntimeError(f"{self!r}: Disabled: {self.disabled_reason}")
         result = await self._run()
         if type(result) is list:
             result = tuple(result)
@@ -113,6 +113,10 @@ class FnCommandImpl(CommandImpl):
         return f"{self.__class__.__name__} #{hex(id(self))[-6:]}: {self._fn.__name__}"
 
     @property
+    def name(self):
+        return self._fn.__name__
+
+    @property
     def enabled(self):
         return set(self.params) >= self._params
 
@@ -129,11 +133,11 @@ class FnCommandImpl(CommandImpl):
             in params.items()
             if name in self._params
             }
-        log.info("Run command: %r (%s)", self.name, kw)
+        log.info("Run command: %r (%s)", self, kw)
         result = self._fn(**kw)
         if inspect.iscoroutinefunction(self._fn):
             result = await result
-        log.info("Run command %r result: [%s] %r", self.name, type(result), result)
+        log.info("Run command %r result: [%s] %r", self, type(result), result)
         return result
 
     @property
@@ -151,7 +155,7 @@ class FnCommandImpl(CommandImpl):
         except KeyError:
             return params
         if widget is None:
-            raise RuntimeError(f"{self.name}: widget is gone")
+            raise RuntimeError(f"{self!r}: widget is gone")
         params['widget'] = widget
         params['state'] = view.widget_state(widget)
         return params
