@@ -80,7 +80,7 @@ def test_open_opener_commans():
     view = Mock(adapter=adapter)
 
     result = list_as_tree.open_opener_commands(view, current_path=[1])
-    assert isinstance(result, htypes.list_as_tree.opener_commands)
+    assert isinstance(result, htypes.list_as_tree.opener_commands), repr(result)
     assert web.summon(result.root_piece) == model
     assert web.summon(result.layer_piece) == model
 
