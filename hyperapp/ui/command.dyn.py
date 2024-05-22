@@ -75,7 +75,7 @@ class Command:
 
     @cached_property
     def name(self):
-        assert d_to_name(self._d)
+        return d_to_name(self._d)
 
     @property
     def enabled(self):
