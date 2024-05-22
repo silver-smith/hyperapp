@@ -3,6 +3,7 @@ import logging
 
 from . import htypes
 from .services import (
+    data_to_res,
     fn_to_ref,
     mark,
     mosaic,
@@ -105,13 +106,23 @@ async def test_three_layers():
     ctx = Context()
     model = htypes.list_to_tree_adapter_tests.sample_list_1()
     root_element_t = pyobj_creg.reverse_resolve(htypes.list_to_tree_adapter_tests.item_1)
-    open_command_1 = htypes.ui.model_command_impl(
+    open_command_1_d_res = data_to_res(htypes.list_to_tree_adapter_tests.open_1_d())
+    open_command_1_impl = htypes.ui.model_command_impl(
         function=fn_to_ref(sample_fn_1_open),
         params=('piece', 'current_item'),
         )
-    open_command_2 = htypes.ui.model_command_impl(
+    open_command_1 = htypes.ui.model_command(
+        d=mosaic.put(open_command_1_d_res),
+        impl=mosaic.put(open_command_1_impl),
+        )
+    open_command_2_d_res = data_to_res(htypes.list_to_tree_adapter_tests.open_2_d())
+    open_command_2_impl = htypes.ui.model_command_impl(
         function=fn_to_ref(sample_fn_2_open),
         params=('piece', 'current_item'),
+        )
+    open_command_2 = htypes.ui.model_command(
+        d=mosaic.put(open_command_2_d_res),
+        impl=mosaic.put(open_command_2_impl),
         )
     piece_2_t = pyobj_creg.reverse_resolve(htypes.list_to_tree_adapter_tests.sample_list_2)
     piece_3_t = pyobj_creg.reverse_resolve(htypes.list_to_tree_adapter_tests.sample_list_3)
