@@ -21,17 +21,17 @@ import:
 associations:
 - bases:
   - command_properties_d
-  - current_context_list.impl
+  - current_context_list.command_impl
   key:
   - command_properties_d
-  - current_context_list.impl
+  - current_context_list.command_impl
   value: current_context_list.command_properties
 - bases:
   - command_properties_d
-  - show_current_context.impl
+  - show_current_context.command_impl
   key:
   - command_properties_d
-  - show_current_context.impl
+  - show_current_context.command_impl
   value: show_current_context.command_properties
 - bases:
   - global_model_command_d
@@ -60,7 +60,13 @@ definitions:
   current_context_list.command:
     _type: legacy_type.ui:command
     d: current_context_list.d
-    impl: current_context_list.impl
+    impl: current_context_list.command_impl
+  current_context_list.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: current_context_list
+    params:
+    - piece
+    - ctx
   current_context_list.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -70,7 +76,7 @@ definitions:
     _type: legacy_type.builtin:call
     function: legacy_type.show_current_context:current_context_list_d
   current_context_list.impl:
-    _type: legacy_type.ui:model_command_impl
+    _type: legacy_type.ui:fn_impl
     function: current_context_list
     params:
     - piece
@@ -98,7 +104,12 @@ definitions:
   show_current_context.command:
     _type: legacy_type.ui:command
     d: show_current_context.d
-    impl: show_current_context.impl
+    impl: show_current_context.command_impl
+  show_current_context.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: show_current_context
+    params:
+    - piece
   show_current_context.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -107,11 +118,6 @@ definitions:
   show_current_context.d:
     _type: legacy_type.builtin:call
     function: legacy_type.show_current_context:show_current_context_d
-  show_current_context.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: show_current_context
-    params:
-    - piece
   show_current_context.module:
     _type: legacy_type.builtin:python_module
     module_name: show_current_context

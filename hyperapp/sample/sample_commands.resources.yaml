@@ -22,45 +22,45 @@ import:
 associations:
 - bases:
   - command_properties_d
-  - details.impl
+  - details.command_impl
   key:
   - command_properties_d
-  - details.impl
+  - details.command_impl
   value: show_state.command_properties
 - bases:
   - command_properties_d
-  - open_sample_static_list.impl
+  - open_sample_static_list.command_impl
   key:
   - command_properties_d
-  - open_sample_static_list.impl
+  - open_sample_static_list.command_impl
   value: sample_tree_info.command_properties
 - bases:
   - command_properties_d
-  - open_sample_static_text_1.impl
+  - open_sample_static_text_1.command_impl
   key:
   - command_properties_d
-  - open_sample_static_text_1.impl
+  - open_sample_static_text_1.command_impl
   value: sample_tree_info.command_properties
 - bases:
   - command_properties_d
-  - open_sample_static_text_2.impl
+  - open_sample_static_text_2.command_impl
   key:
   - command_properties_d
-  - open_sample_static_text_2.impl
+  - open_sample_static_text_2.command_impl
   value: sample_tree_info.command_properties
 - bases:
   - command_properties_d
-  - sample_tree_info.impl
+  - sample_tree_info.command_impl
   key:
   - command_properties_d
-  - sample_tree_info.impl
+  - sample_tree_info.command_impl
   value: sample_tree_info.command_properties
 - bases:
   - command_properties_d
-  - show_state.impl
+  - show_state.command_impl
   key:
   - command_properties_d
-  - show_state.impl
+  - show_state.command_impl
   value: show_state.command_properties
 - bases:
   - global_model_command_d
@@ -101,7 +101,13 @@ definitions:
   details.command:
     _type: legacy_type.ui:command
     d: details.d
-    impl: details.impl
+    impl: details.command_impl
+  details.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: details
+    params:
+    - piece
+    - current_idx
   details.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -110,12 +116,6 @@ definitions:
   details.d:
     _type: legacy_type.builtin:call
     function: legacy_type.sample_commands:details_d
-  details.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: details
-    params:
-    - piece
-    - current_idx
   global_model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:global_model_command_d
@@ -129,7 +129,11 @@ definitions:
   open_sample_static_list.command:
     _type: legacy_type.ui:command
     d: open_sample_static_list.d
-    impl: open_sample_static_list.impl
+    impl: open_sample_static_list.command_impl
+  open_sample_static_list.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: open_sample_static_list
+    params: []
   open_sample_static_list.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -138,10 +142,6 @@ definitions:
   open_sample_static_list.d:
     _type: legacy_type.builtin:call
     function: legacy_type.sample_commands:open_sample_static_list_d
-  open_sample_static_list.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: open_sample_static_list
-    params: []
   open_sample_static_text_1:
     _type: legacy_type.builtin:attribute
     object: sample_commands.module
@@ -149,7 +149,11 @@ definitions:
   open_sample_static_text_1.command:
     _type: legacy_type.ui:command
     d: open_sample_static_text_1.d
-    impl: open_sample_static_text_1.impl
+    impl: open_sample_static_text_1.command_impl
+  open_sample_static_text_1.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: open_sample_static_text_1
+    params: []
   open_sample_static_text_1.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -158,10 +162,6 @@ definitions:
   open_sample_static_text_1.d:
     _type: legacy_type.builtin:call
     function: legacy_type.sample_commands:open_sample_static_text_1_d
-  open_sample_static_text_1.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: open_sample_static_text_1
-    params: []
   open_sample_static_text_2:
     _type: legacy_type.builtin:attribute
     object: sample_commands.module
@@ -169,7 +169,11 @@ definitions:
   open_sample_static_text_2.command:
     _type: legacy_type.ui:command
     d: open_sample_static_text_2.d
-    impl: open_sample_static_text_2.impl
+    impl: open_sample_static_text_2.command_impl
+  open_sample_static_text_2.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: open_sample_static_text_2
+    params: []
   open_sample_static_text_2.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -178,10 +182,6 @@ definitions:
   open_sample_static_text_2.d:
     _type: legacy_type.builtin:call
     function: legacy_type.sample_commands:open_sample_static_text_2_d
-  open_sample_static_text_2.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: open_sample_static_text_2
-    params: []
   sample_commands.module:
     _type: legacy_type.builtin:python_module
     module_name: sample_commands
@@ -195,7 +195,12 @@ definitions:
   sample_tree_info.command:
     _type: legacy_type.ui:command
     d: sample_tree_info.d
-    impl: sample_tree_info.impl
+    impl: sample_tree_info.command_impl
+  sample_tree_info.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: sample_tree_info
+    params:
+    - piece
   sample_tree_info.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -204,11 +209,6 @@ definitions:
   sample_tree_info.d:
     _type: legacy_type.builtin:call
     function: legacy_type.sample_commands:sample_tree_info_d
-  sample_tree_info.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: sample_tree_info
-    params:
-    - piece
   show_state:
     _type: legacy_type.builtin:attribute
     object: sample_commands.module
@@ -216,7 +216,12 @@ definitions:
   show_state.command:
     _type: legacy_type.ui:command
     d: show_state.d
-    impl: show_state.impl
+    impl: show_state.command_impl
+  show_state.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: show_state
+    params:
+    - model_state
   show_state.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -225,8 +230,3 @@ definitions:
   show_state.d:
     _type: legacy_type.builtin:call
     function: legacy_type.sample_commands:show_state_d
-  show_state.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: show_state
-    params:
-    - model_state

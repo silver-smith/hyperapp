@@ -45,24 +45,24 @@ import:
 associations:
 - bases:
   - command_properties_d
-  - make_default_layout.impl
+  - make_default_layout.command_impl
   key:
   - command_properties_d
-  - make_default_layout.impl
+  - make_default_layout.command_impl
   value: make_default_piece.command_properties
 - bases:
   - command_properties_d
-  - make_default_piece.impl
+  - make_default_piece.command_impl
   key:
   - command_properties_d
-  - make_default_piece.impl
+  - make_default_piece.command_impl
   value: make_default_piece.command_properties
 - bases:
   - command_properties_d
-  - make_default_state.impl
+  - make_default_state.command_impl
   key:
   - command_properties_d
-  - make_default_state.impl
+  - make_default_state.command_impl
   value: make_default_state.command_properties
 - bases:
   - global_model_command_d
@@ -125,7 +125,12 @@ definitions:
   make_default_layout.command:
     _type: legacy_type.ui:command
     d: make_default_layout.d
-    impl: make_default_layout.impl
+    impl: make_default_layout.command_impl
+  make_default_layout.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: make_default_layout
+    params:
+    - lcs
   make_default_layout.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -134,11 +139,6 @@ definitions:
   make_default_layout.d:
     _type: legacy_type.builtin:call
     function: legacy_type.client:make_default_layout_d
-  make_default_layout.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: make_default_layout
-    params:
-    - lcs
   make_default_piece:
     _type: legacy_type.builtin:attribute
     object: client.module
@@ -146,7 +146,12 @@ definitions:
   make_default_piece.command:
     _type: legacy_type.ui:command
     d: make_default_piece.d
-    impl: make_default_piece.impl
+    impl: make_default_piece.command_impl
+  make_default_piece.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: make_default_piece
+    params:
+    - lcs
   make_default_piece.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -155,11 +160,6 @@ definitions:
   make_default_piece.d:
     _type: legacy_type.builtin:call
     function: legacy_type.client:make_default_piece_d
-  make_default_piece.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: make_default_piece
-    params:
-    - lcs
   make_default_state:
     _type: legacy_type.builtin:attribute
     object: client.module
@@ -167,7 +167,11 @@ definitions:
   make_default_state.command:
     _type: legacy_type.ui:command
     d: make_default_state.d
-    impl: make_default_state.impl
+    impl: make_default_state.command_impl
+  make_default_state.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: make_default_state
+    params: []
   make_default_state.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -176,7 +180,3 @@ definitions:
   make_default_state.d:
     _type: legacy_type.builtin:call
     function: legacy_type.client:make_default_state_d
-  make_default_state.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: make_default_state
-    params: []

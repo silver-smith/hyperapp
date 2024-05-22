@@ -20,10 +20,10 @@ import:
 associations:
 - bases:
   - command_properties_d
-  - open_sample_fn_record.impl
+  - open_sample_fn_record.command_impl
   key:
   - command_properties_d
-  - open_sample_fn_record.impl
+  - open_sample_fn_record.command_impl
   value: open_sample_fn_record.command_properties
 - bases:
   - global_model_command_d
@@ -52,7 +52,11 @@ definitions:
   open_sample_fn_record.command:
     _type: legacy_type.ui:command
     d: open_sample_fn_record.d
-    impl: open_sample_fn_record.impl
+    impl: open_sample_fn_record.command_impl
+  open_sample_fn_record.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: open_sample_fn_record
+    params: []
   open_sample_fn_record.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -61,10 +65,6 @@ definitions:
   open_sample_fn_record.d:
     _type: legacy_type.builtin:call
     function: legacy_type.sample_record:open_sample_fn_record_d
-  open_sample_fn_record.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: open_sample_fn_record
-    params: []
   sample_record:
     _type: legacy_type.builtin:attribute
     object: sample_record.module

@@ -40,10 +40,10 @@ associations:
   value: duplicate_tab.command_properties
 - bases:
   - command_properties_d
-  - tab_piece_label.impl
+  - tab_piece_label.command_impl
   key:
   - command_properties_d
-  - tab_piece_label.impl
+  - tab_piece_label.command_impl
   value: tab_piece_label.command_properties
 - bases:
   - legacy_type.label:view
@@ -154,7 +154,12 @@ definitions:
   tab_piece_label.command:
     _type: legacy_type.ui:command
     d: tab_piece_label.d
-    impl: tab_piece_label.impl
+    impl: tab_piece_label.command_impl
+  tab_piece_label.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: tab_piece_label
+    params:
+    - piece
   tab_piece_label.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -163,11 +168,6 @@ definitions:
   tab_piece_label.d:
     _type: legacy_type.builtin:call
     function: legacy_type.auto_tabs:tab_piece_label_d
-  tab_piece_label.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: tab_piece_label
-    params:
-    - piece
   ui_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:ui_command_d

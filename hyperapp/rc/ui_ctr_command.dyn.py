@@ -132,7 +132,7 @@ class ModelCommandImplementationCtr(CommandImplementationCtr):
         self._resource_module['command_properties_d'] = command_properties_d_res
         self._resource_module[fn_name] = fn_attribute
         self._resource_module[f'{fn_name}.d'] = command_d_res
-        self._resource_module[f'{fn_name}.impl'] = impl
+        self._resource_module[f'{fn_name}.command_impl'] = impl
         self._resource_module[f'{fn_name}.command'] = command
         self._resource_module[f'{fn_name}.command_properties'] = props
         return {association, props_association}
@@ -192,7 +192,7 @@ class GlobalCommandImplementationCtr(CommandImplementationCtr):
         self._resource_module['command_properties_d'] = command_properties_d_res
         self._resource_module[fn_name] = fn_attribute
         self._resource_module[f'{fn_name}.d'] = command_d_res
-        self._resource_module[f'{fn_name}.impl'] = impl
+        self._resource_module[f'{fn_name}.command_impl'] = impl
         self._resource_module[f'{fn_name}.command'] = command
         self._resource_module[f'{fn_name}.command_properties'] = props
         return {association, props_association}

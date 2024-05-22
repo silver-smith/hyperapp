@@ -24,17 +24,17 @@ import:
 associations:
 - bases:
   - command_properties_d
-  - schedule_sample_list_feed.impl
+  - schedule_sample_list_feed.command_impl
   key:
   - command_properties_d
-  - schedule_sample_list_feed.impl
+  - schedule_sample_list_feed.command_impl
   value: schedule_sample_tree_feed.command_properties
 - bases:
   - command_properties_d
-  - schedule_sample_tree_feed.impl
+  - schedule_sample_tree_feed.command_impl
   key:
   - command_properties_d
-  - schedule_sample_tree_feed.impl
+  - schedule_sample_tree_feed.command_impl
   value: schedule_sample_tree_feed.command_properties
 - bases:
   - feed_d
@@ -95,7 +95,12 @@ definitions:
   schedule_sample_list_feed.command:
     _type: legacy_type.ui:command
     d: schedule_sample_list_feed.d
-    impl: schedule_sample_list_feed.impl
+    impl: schedule_sample_list_feed.command_impl
+  schedule_sample_list_feed.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: schedule_sample_list_feed
+    params:
+    - piece
   schedule_sample_list_feed.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -104,11 +109,6 @@ definitions:
   schedule_sample_list_feed.d:
     _type: legacy_type.builtin:call
     function: legacy_type.sample_feed:schedule_sample_list_feed_d
-  schedule_sample_list_feed.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: schedule_sample_list_feed
-    params:
-    - piece
   schedule_sample_tree_feed:
     _type: legacy_type.builtin:attribute
     object: sample_feed.module
@@ -116,7 +116,12 @@ definitions:
   schedule_sample_tree_feed.command:
     _type: legacy_type.ui:command
     d: schedule_sample_tree_feed.d
-    impl: schedule_sample_tree_feed.impl
+    impl: schedule_sample_tree_feed.command_impl
+  schedule_sample_tree_feed.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: schedule_sample_tree_feed
+    params:
+    - piece
   schedule_sample_tree_feed.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -125,8 +130,3 @@ definitions:
   schedule_sample_tree_feed.d:
     _type: legacy_type.builtin:call
     function: legacy_type.sample_feed:schedule_sample_tree_feed_d
-  schedule_sample_tree_feed.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: schedule_sample_tree_feed
-    params:
-    - piece

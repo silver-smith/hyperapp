@@ -24,17 +24,17 @@ import:
 associations:
 - bases:
   - command_properties_d
-  - open_feed_sample_fn_tree.impl
+  - open_feed_sample_fn_tree.command_impl
   key:
   - command_properties_d
-  - open_feed_sample_fn_tree.impl
+  - open_feed_sample_fn_tree.command_impl
   value: open_sample_fn_tree.command_properties
 - bases:
   - command_properties_d
-  - open_sample_fn_tree.impl
+  - open_sample_fn_tree.command_impl
   key:
   - command_properties_d
-  - open_sample_fn_tree.impl
+  - open_sample_fn_tree.command_impl
   value: open_sample_fn_tree.command_properties
 - bases:
   - feed_d
@@ -102,7 +102,11 @@ definitions:
   open_feed_sample_fn_tree.command:
     _type: legacy_type.ui:command
     d: open_feed_sample_fn_tree.d
-    impl: open_feed_sample_fn_tree.impl
+    impl: open_feed_sample_fn_tree.command_impl
+  open_feed_sample_fn_tree.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: open_feed_sample_fn_tree
+    params: []
   open_feed_sample_fn_tree.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -111,10 +115,6 @@ definitions:
   open_feed_sample_fn_tree.d:
     _type: legacy_type.builtin:call
     function: legacy_type.sample_tree:open_feed_sample_fn_tree_d
-  open_feed_sample_fn_tree.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: open_feed_sample_fn_tree
-    params: []
   open_sample_fn_tree:
     _type: legacy_type.builtin:attribute
     object: sample_tree.module
@@ -122,7 +122,11 @@ definitions:
   open_sample_fn_tree.command:
     _type: legacy_type.ui:command
     d: open_sample_fn_tree.d
-    impl: open_sample_fn_tree.impl
+    impl: open_sample_fn_tree.command_impl
+  open_sample_fn_tree.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: open_sample_fn_tree
+    params: []
   open_sample_fn_tree.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -131,10 +135,6 @@ definitions:
   open_sample_fn_tree.d:
     _type: legacy_type.builtin:call
     function: legacy_type.sample_tree:open_sample_fn_tree_d
-  open_sample_fn_tree.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: open_sample_fn_tree
-    params: []
   sample_tree:
     _type: legacy_type.builtin:attribute
     object: sample_tree.module

@@ -27,24 +27,24 @@ import:
 associations:
 - bases:
   - command_properties_d
-  - list_model_commands.impl
+  - list_model_commands.command_impl
   key:
   - command_properties_d
-  - list_model_commands.impl
+  - list_model_commands.command_impl
   value: list_model_commands.command_properties
 - bases:
   - command_properties_d
-  - open_model_commands.impl
+  - open_model_commands.command_impl
   key:
   - command_properties_d
-  - open_model_commands.impl
+  - open_model_commands.command_impl
   value: open_model_commands.command_properties
 - bases:
   - command_properties_d
-  - run_command.impl
+  - run_command.command_impl
   key:
   - command_properties_d
-  - run_command.impl
+  - run_command.command_impl
   value: run_command.command_properties
 - bases:
   - global_model_command_d
@@ -82,7 +82,13 @@ definitions:
   list_model_commands.command:
     _type: legacy_type.ui:command
     d: list_model_commands.d
-    impl: list_model_commands.impl
+    impl: list_model_commands.command_impl
+  list_model_commands.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: list_model_commands
+    params:
+    - piece
+    - ctx
   list_model_commands.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -92,7 +98,7 @@ definitions:
     _type: legacy_type.builtin:call
     function: legacy_type.model_commands:list_model_commands_d
   list_model_commands.impl:
-    _type: legacy_type.ui:model_command_impl
+    _type: legacy_type.ui:fn_impl
     function: list_model_commands
     params:
     - piece
@@ -129,7 +135,12 @@ definitions:
   open_model_commands.command:
     _type: legacy_type.ui:command
     d: open_model_commands.d
-    impl: open_model_commands.impl
+    impl: open_model_commands.command_impl
+  open_model_commands.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: open_model_commands
+    params:
+    - piece
   open_model_commands.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -138,11 +149,6 @@ definitions:
   open_model_commands.d:
     _type: legacy_type.builtin:call
     function: legacy_type.model_commands:open_model_commands_d
-  open_model_commands.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: open_model_commands
-    params:
-    - piece
   run_command:
     _type: legacy_type.builtin:attribute
     object: model_commands.module
@@ -150,7 +156,14 @@ definitions:
   run_command.command:
     _type: legacy_type.ui:command
     d: run_command.d
-    impl: run_command.impl
+    impl: run_command.command_impl
+  run_command.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: run_command
+    params:
+    - piece
+    - current_item
+    - ctx
   run_command.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -159,10 +172,3 @@ definitions:
   run_command.d:
     _type: legacy_type.builtin:call
     function: legacy_type.model_commands:run_command_d
-  run_command.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: run_command
-    params:
-    - piece
-    - current_item
-    - ctx

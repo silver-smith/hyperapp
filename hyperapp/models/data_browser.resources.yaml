@@ -38,52 +38,52 @@ import:
 associations:
 - bases:
   - command_properties_d
-  - browse_current_model.impl
+  - browse_current_model.command_impl
   key:
   - command_properties_d
-  - browse_current_model.impl
+  - browse_current_model.command_impl
   value: browse_ref_list.command_properties
 - bases:
   - command_properties_d
-  - browse_list.impl
+  - browse_list.command_impl
   key:
   - command_properties_d
-  - browse_list.impl
+  - browse_list.command_impl
   value: browse_ref_list.command_properties
 - bases:
   - command_properties_d
-  - browse_record.impl
+  - browse_record.command_impl
   key:
   - command_properties_d
-  - browse_record.impl
+  - browse_record.command_impl
   value: browse_ref_list.command_properties
 - bases:
   - command_properties_d
-  - browse_ref_list.impl
+  - browse_ref_list.command_impl
   key:
   - command_properties_d
-  - browse_ref_list.impl
+  - browse_ref_list.command_impl
   value: browse_ref_list.command_properties
 - bases:
   - command_properties_d
-  - list_open.impl
+  - list_open.command_impl
   key:
   - command_properties_d
-  - list_open.impl
+  - list_open.command_impl
   value: ref_list_open.command_properties
 - bases:
   - command_properties_d
-  - record_open.impl
+  - record_open.command_impl
   key:
   - command_properties_d
-  - record_open.impl
+  - record_open.command_impl
   value: ref_list_open.command_properties
 - bases:
   - command_properties_d
-  - ref_list_open.impl
+  - ref_list_open.command_impl
   key:
   - command_properties_d
-  - ref_list_open.impl
+  - ref_list_open.command_impl
   value: ref_list_open.command_properties
 - bases:
   - global_model_command_d
@@ -157,7 +157,12 @@ definitions:
   browse_current_model.command:
     _type: legacy_type.ui:command
     d: browse_current_model.d
-    impl: browse_current_model.impl
+    impl: browse_current_model.command_impl
+  browse_current_model.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: browse_current_model
+    params:
+    - piece
   browse_current_model.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -166,11 +171,6 @@ definitions:
   browse_current_model.d:
     _type: legacy_type.builtin:call
     function: legacy_type.data_browser:browse_current_model_d
-  browse_current_model.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: browse_current_model
-    params:
-    - piece
   browse_list:
     _type: legacy_type.builtin:attribute
     object: data_browser.module
@@ -178,7 +178,12 @@ definitions:
   browse_list.command:
     _type: legacy_type.ui:command
     d: browse_list.d
-    impl: browse_list.impl
+    impl: browse_list.command_impl
+  browse_list.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: browse_list
+    params:
+    - piece
   browse_list.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -188,7 +193,7 @@ definitions:
     _type: legacy_type.builtin:call
     function: legacy_type.data_browser:browse_list_d
   browse_list.impl:
-    _type: legacy_type.ui:model_command_impl
+    _type: legacy_type.ui:fn_impl
     function: browse_list
     params:
     - piece
@@ -222,7 +227,12 @@ definitions:
   browse_record.command:
     _type: legacy_type.ui:command
     d: browse_record.d
-    impl: browse_record.impl
+    impl: browse_record.command_impl
+  browse_record.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: browse_record
+    params:
+    - piece
   browse_record.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -232,7 +242,7 @@ definitions:
     _type: legacy_type.builtin:call
     function: legacy_type.data_browser:browse_record_d
   browse_record.impl:
-    _type: legacy_type.ui:model_command_impl
+    _type: legacy_type.ui:fn_impl
     function: browse_record
     params:
     - piece
@@ -250,7 +260,12 @@ definitions:
   browse_ref_list.command:
     _type: legacy_type.ui:command
     d: browse_ref_list.d
-    impl: browse_ref_list.impl
+    impl: browse_ref_list.command_impl
+  browse_ref_list.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: browse_ref_list
+    params:
+    - piece
   browse_ref_list.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -260,7 +275,7 @@ definitions:
     _type: legacy_type.builtin:call
     function: legacy_type.data_browser:browse_ref_list_d
   browse_ref_list.impl:
-    _type: legacy_type.ui:model_command_impl
+    _type: legacy_type.ui:fn_impl
     function: browse_ref_list
     params:
     - piece
@@ -302,7 +317,13 @@ definitions:
   list_open.command:
     _type: legacy_type.ui:command
     d: list_open.d
-    impl: list_open.impl
+    impl: list_open.command_impl
+  list_open.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: list_open
+    params:
+    - piece
+    - current_item
   list_open.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -311,12 +332,6 @@ definitions:
   list_open.d:
     _type: legacy_type.builtin:call
     function: legacy_type.data_browser:list_open_d
-  list_open.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: list_open
-    params:
-    - piece
-    - current_item
   model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_command_d
@@ -330,7 +345,13 @@ definitions:
   record_open.command:
     _type: legacy_type.ui:command
     d: record_open.d
-    impl: record_open.impl
+    impl: record_open.command_impl
+  record_open.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: record_open
+    params:
+    - piece
+    - current_item
   record_open.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -339,12 +360,6 @@ definitions:
   record_open.d:
     _type: legacy_type.builtin:call
     function: legacy_type.data_browser:record_open_d
-  record_open.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: record_open
-    params:
-    - piece
-    - current_item
   ref_list_open:
     _type: legacy_type.builtin:attribute
     object: data_browser.module
@@ -352,7 +367,13 @@ definitions:
   ref_list_open.command:
     _type: legacy_type.ui:command
     d: ref_list_open.d
-    impl: ref_list_open.impl
+    impl: ref_list_open.command_impl
+  ref_list_open.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: ref_list_open
+    params:
+    - piece
+    - current_item
   ref_list_open.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -361,9 +382,3 @@ definitions:
   ref_list_open.d:
     _type: legacy_type.builtin:call
     function: legacy_type.data_browser:ref_list_open_d
-  ref_list_open.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: ref_list_open
-    params:
-    - piece
-    - current_item

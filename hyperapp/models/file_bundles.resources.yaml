@@ -24,24 +24,24 @@ import:
 associations:
 - bases:
   - command_properties_d
-  - file_bundle_list.impl
+  - file_bundle_list.command_impl
   key:
   - command_properties_d
-  - file_bundle_list.impl
+  - file_bundle_list.command_impl
   value: open_file_bundle_list.command_properties
 - bases:
   - command_properties_d
-  - open.impl
+  - open.command_impl
   key:
   - command_properties_d
-  - open.impl
+  - open.command_impl
   value: open.command_properties
 - bases:
   - command_properties_d
-  - open_file_bundle_list.impl
+  - open_file_bundle_list.command_impl
   key:
   - command_properties_d
-  - open_file_bundle_list.impl
+  - open_file_bundle_list.command_impl
   value: open_file_bundle_list.command_properties
 - bases:
   - global_model_command_d
@@ -76,7 +76,12 @@ definitions:
   file_bundle_list.command:
     _type: legacy_type.ui:command
     d: file_bundle_list.d
-    impl: file_bundle_list.impl
+    impl: file_bundle_list.command_impl
+  file_bundle_list.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: file_bundle_list
+    params:
+    - piece
   file_bundle_list.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -86,7 +91,7 @@ definitions:
     _type: legacy_type.builtin:call
     function: legacy_type.file_bundles:file_bundle_list_d
   file_bundle_list.impl:
-    _type: legacy_type.ui:model_command_impl
+    _type: legacy_type.ui:fn_impl
     function: file_bundle_list
     params:
     - piece
@@ -122,7 +127,13 @@ definitions:
   open.command:
     _type: legacy_type.ui:command
     d: open.d
-    impl: open.impl
+    impl: open.command_impl
+  open.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: open
+    params:
+    - piece
+    - current_item
   open.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -131,12 +142,6 @@ definitions:
   open.d:
     _type: legacy_type.builtin:call
     function: legacy_type.file_bundles:open_d
-  open.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: open
-    params:
-    - piece
-    - current_item
   open_file_bundle_list:
     _type: legacy_type.builtin:attribute
     object: file_bundles.module
@@ -144,7 +149,11 @@ definitions:
   open_file_bundle_list.command:
     _type: legacy_type.ui:command
     d: open_file_bundle_list.d
-    impl: open_file_bundle_list.impl
+    impl: open_file_bundle_list.command_impl
+  open_file_bundle_list.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: open_file_bundle_list
+    params: []
   open_file_bundle_list.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -153,7 +162,3 @@ definitions:
   open_file_bundle_list.d:
     _type: legacy_type.builtin:call
     function: legacy_type.file_bundles:open_file_bundle_list_d
-  open_file_bundle_list.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: open_file_bundle_list
-    params: []

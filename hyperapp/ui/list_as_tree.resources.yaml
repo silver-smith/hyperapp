@@ -52,10 +52,10 @@ associations:
   value: open_opener_commands.command_properties
 - bases:
   - command_properties_d
-  - opener_command_list.impl
+  - opener_command_list.command_impl
   key:
   - command_properties_d
-  - opener_command_list.impl
+  - opener_command_list.command_impl
   value: opener_command_list.command_properties
 - bases:
   - command_properties_d
@@ -66,10 +66,10 @@ associations:
   value: opener_command_list.command_properties
 - bases:
   - command_properties_d
-  - toggle_open_command.impl
+  - toggle_open_command.command_impl
   key:
   - command_properties_d
-  - toggle_open_command.impl
+  - toggle_open_command.command_impl
   value: toggle_open_command.command_properties
 - bases:
   - feed_d
@@ -183,7 +183,13 @@ definitions:
   opener_command_list.command:
     _type: legacy_type.ui:command
     d: opener_command_list.d
-    impl: opener_command_list.impl
+    impl: opener_command_list.command_impl
+  opener_command_list.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: opener_command_list
+    params:
+    - piece
+    - lcs
   opener_command_list.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -193,7 +199,7 @@ definitions:
     _type: legacy_type.builtin:call
     function: legacy_type.list_as_tree:opener_command_list_d
   opener_command_list.impl:
-    _type: legacy_type.ui:model_command_impl
+    _type: legacy_type.ui:fn_impl
     function: opener_command_list
     params:
     - piece
@@ -236,7 +242,15 @@ definitions:
   toggle_open_command.command:
     _type: legacy_type.ui:command
     d: toggle_open_command.d
-    impl: toggle_open_command.impl
+    impl: toggle_open_command.command_impl
+  toggle_open_command.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: toggle_open_command
+    params:
+    - piece
+    - current_idx
+    - current_item
+    - lcs
   toggle_open_command.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -245,14 +259,6 @@ definitions:
   toggle_open_command.d:
     _type: legacy_type.builtin:call
     function: legacy_type.list_as_tree:toggle_open_command_d
-  toggle_open_command.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: toggle_open_command
-    params:
-    - piece
-    - current_idx
-    - current_item
-    - lcs
   ui_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:ui_command_d

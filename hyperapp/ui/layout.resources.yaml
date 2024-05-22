@@ -37,38 +37,38 @@ import:
 associations:
 - bases:
   - command_properties_d
-  - add_view_command.impl
+  - add_view_command.command_impl
   key:
   - command_properties_d
-  - add_view_command.impl
+  - add_view_command.command_impl
   value: open_view_item_commands.command_properties
 - bases:
   - command_properties_d
-  - enum_layout_tree_commands.impl
+  - enum_layout_tree_commands.command_impl
   key:
   - command_properties_d
-  - enum_layout_tree_commands.impl
+  - enum_layout_tree_commands.command_impl
   value: enum_layout_tree_commands.command_properties
 - bases:
   - command_properties_d
-  - open_layout_tree.impl
+  - open_layout_tree.command_impl
   key:
   - command_properties_d
-  - open_layout_tree.impl
+  - open_layout_tree.command_impl
   value: open_layout_tree.command_properties
 - bases:
   - command_properties_d
-  - open_view_item_commands.impl
+  - open_view_item_commands.command_impl
   key:
   - command_properties_d
-  - open_view_item_commands.impl
+  - open_view_item_commands.command_impl
   value: open_view_item_commands.command_properties
 - bases:
   - command_properties_d
-  - view_item_commands.impl
+  - view_item_commands.command_impl
   key:
   - command_properties_d
-  - view_item_commands.impl
+  - view_item_commands.command_impl
   value: view_item_commands.command_properties
 - bases:
   - global_model_command_d
@@ -131,7 +131,13 @@ definitions:
   add_view_command.command:
     _type: legacy_type.ui:command
     d: add_view_command.d
-    impl: add_view_command.impl
+    impl: add_view_command.command_impl
+  add_view_command.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: add_view_command
+    params:
+    - piece
+    - current_item
   add_view_command.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -140,12 +146,6 @@ definitions:
   add_view_command.d:
     _type: legacy_type.builtin:call
     function: legacy_type.layout:add_view_command_d
-  add_view_command.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: add_view_command
-    params:
-    - piece
-    - current_item
   command_properties_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:command_properties_d
@@ -156,7 +156,14 @@ definitions:
   enum_layout_tree_commands.command:
     _type: legacy_type.ui:command
     d: enum_layout_tree_commands.d
-    impl: enum_layout_tree_commands.impl
+    impl: enum_layout_tree_commands.command_impl
+  enum_layout_tree_commands.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: enum_layout_tree_commands
+    params:
+    - piece
+    - current_item
+    - controller
   enum_layout_tree_commands.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -167,13 +174,6 @@ definitions:
     function: legacy_type.layout:enum_layout_tree_commands_d
   enum_layout_tree_commands.enumerator:
     _type: legacy_type.ui:model_command_enumerator
-    function: enum_layout_tree_commands
-    params:
-    - piece
-    - current_item
-    - controller
-  enum_layout_tree_commands.impl:
-    _type: legacy_type.ui:model_command_impl
     function: enum_layout_tree_commands
     params:
     - piece
@@ -238,7 +238,11 @@ definitions:
   open_layout_tree.command:
     _type: legacy_type.ui:command
     d: open_layout_tree.d
-    impl: open_layout_tree.impl
+    impl: open_layout_tree.command_impl
+  open_layout_tree.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: open_layout_tree
+    params: []
   open_layout_tree.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -247,10 +251,6 @@ definitions:
   open_layout_tree.d:
     _type: legacy_type.builtin:call
     function: legacy_type.layout:open_layout_tree_d
-  open_layout_tree.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: open_layout_tree
-    params: []
   open_view_item_commands:
     _type: legacy_type.builtin:attribute
     object: layout.module
@@ -258,7 +258,13 @@ definitions:
   open_view_item_commands.command:
     _type: legacy_type.ui:command
     d: open_view_item_commands.d
-    impl: open_view_item_commands.impl
+    impl: open_view_item_commands.command_impl
+  open_view_item_commands.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: open_view_item_commands
+    params:
+    - piece
+    - current_item
   open_view_item_commands.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -267,12 +273,6 @@ definitions:
   open_view_item_commands.d:
     _type: legacy_type.builtin:call
     function: legacy_type.layout:open_view_item_commands_d
-  open_view_item_commands.impl:
-    _type: legacy_type.ui:model_command_impl
-    function: open_view_item_commands
-    params:
-    - piece
-    - current_item
   view_item_commands:
     _type: legacy_type.builtin:attribute
     object: layout.module
@@ -280,7 +280,13 @@ definitions:
   view_item_commands.command:
     _type: legacy_type.ui:command
     d: view_item_commands.d
-    impl: view_item_commands.impl
+    impl: view_item_commands.command_impl
+  view_item_commands.command_impl:
+    _type: legacy_type.ui:model_command_impl
+    function: view_item_commands
+    params:
+    - piece
+    - controller
   view_item_commands.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -290,7 +296,7 @@ definitions:
     _type: legacy_type.builtin:call
     function: legacy_type.layout:view_item_commands_d
   view_item_commands.impl:
-    _type: legacy_type.ui:model_command_impl
+    _type: legacy_type.ui:fn_impl
     function: view_item_commands
     params:
     - piece
