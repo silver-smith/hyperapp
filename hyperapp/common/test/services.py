@@ -8,6 +8,7 @@ from hyperapp.common.htypes.python_module import python_module_t
 from hyperapp.common.htypes.attribute import attribute_t
 from hyperapp.common.htypes.legacy_type import legacy_type_t
 from hyperapp.common.htypes.call import call_t
+from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 from hyperapp.common.services import HYPERAPP_DIR
 from hyperapp.common.code_registry import CodeRegistry
 from hyperapp.common.pyobj_registry import PyObjRegistry
@@ -119,6 +120,11 @@ def pyobj_creg(types, mosaic, web, association_reg, python_importer):
 
 
 @pytest.fixture
+def deduce_t(mosaic, types):
+    return partial(deduce_complex_value_type, mosaic, types)
+
+
+@pytest.fixture
 def resource_registry_factory(mosaic):
     return partial(ResourceRegistry, mosaic)
 
@@ -166,6 +172,7 @@ def builtin_services(
         resource_type_factory,
         resource_type_reg,
         pyobj_creg,
+        deduce_t,
         resource_type_producer,
         resource_registry_factory,
         # resource_registry,
@@ -193,6 +200,7 @@ def builtin_services(
         'resource_type_factory': resource_type_factory,
         'resource_type_reg': resource_type_reg,
         'pyobj_creg': pyobj_creg,
+        'deduce_t': deduce_t,
         'resource_type_producer': resource_type_producer,
         'resource_registry_factory': resource_registry_factory,
         # 'resource_registry': resource_registry,
