@@ -44,13 +44,14 @@ class CommandPaneView(View):
         model_d = {htypes.ui.model_command_kind_d()}
         context_d = {htypes.ui.context_model_command_kind_d()}
         global_d = {htypes.ui.global_model_command_kind_d()}
-        wanted_commands = {
-            cmd for cmd in commands
-            if (
-                    cmd.d & model_d and not (cmd.d & global_d)
-                    or cmd.d & context_d
-                )
-            }
+        # wanted_commands = {
+        #     cmd for cmd in commands
+        #     if (
+        #             cmd.d & model_d and not (cmd.d & global_d)
+        #             or cmd.d & context_d
+        #         )
+        #     }
+        wanted_commands = set(commands)  # TODO
         removed_commands = set(widget._command_to_button) - wanted_commands
         new_commands = wanted_commands - set(widget._command_to_button)
         for cmd in removed_commands:
@@ -59,7 +60,8 @@ class CommandPaneView(View):
         for cmd in new_commands:
             # All except context commands are present at menu bar;
             # avoid setting shortcut to prevent ambigous ones.
-            button = self._make_button(cmd, add_shortcut=cmd.d & context_d)
+            # button = self._make_button(cmd, add_shortcut=cmd.d & context_d)
+            button = self._make_button(cmd, add_shortcut=True)  # TODO
             layout.addWidget(button)
             widget._command_to_button[cmd] = button
 
