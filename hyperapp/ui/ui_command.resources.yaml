@@ -24,6 +24,13 @@ associations:
   - legacy_type.ui:ui_command_impl
   value: ui_command_from_piece
 definitions:
+  command_factory:
+    _type: legacy_type.builtin:attribute
+    object: ui_command.module
+    attr_name: command_factory
+  command_factory.service:
+    _type: legacy_type.builtin:call
+    function: command_factory
   ui_command.module:
     _type: legacy_type.builtin:python_module
     module_name: ui_command

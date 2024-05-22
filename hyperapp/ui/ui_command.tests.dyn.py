@@ -2,7 +2,6 @@ import weakref
 
 from . import htypes
 from .services import (
-    command_factory,
     data_to_res,
     fn_to_res,
     mark,
@@ -10,7 +9,7 @@ from .services import (
     )
 from .code.context import Context
 from .tested.code import ui_command
-from .tested.services import ui_command_factory
+from .tested.services import command_factory, ui_command_factory
 
 
 def _sample_fn(view, state):

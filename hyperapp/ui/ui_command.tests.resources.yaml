@@ -8,8 +8,6 @@ import:
 - legacy_type.phony:phony
 - resource.data_to_res:data_to_res.service
 - resource.fn_to_res:fn_to_res.service
-- ui.command:command_factory.service
-- ui.ui_command_impl_creg:ui_command_impl_creg.service
 associations: []
 definitions:
   phony:
@@ -20,11 +18,10 @@ definitions:
     file_name: ui_command.tests.dyn.py
     import_list:
       code.context: common.context:context.module
-      services.command_factory: ui.command:command_factory.service
       services.data_to_res: resource.data_to_res:data_to_res.service
       services.fn_to_res: resource.fn_to_res:fn_to_res.service
       services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service
-      services.ui_command_impl_creg: ui.ui_command_impl_creg:ui_command_impl_creg.service
       tested.code.ui_command: phony
+      tested.services.command_factory: phony
       tested.services.ui_command_factory: phony

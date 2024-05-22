@@ -11,9 +11,16 @@ from .services import (
     pyobj_creg,
     ui_command_impl_creg,
     )
-from .code.command import FnCommandImpl
+from .code.command import Command, FnCommandImpl
 
 log = logging.getLogger(__name__)
+
+
+
+class UiCommand(Command):
+
+    def __repr__(self):
+        return f"<UiCommand: {self.name}: {self._impl}>"
 
 
 class UiCommandImpl(FnCommandImpl):
@@ -39,3 +46,12 @@ def ui_command_factory():
             ]
         return command_list
     return _ui_command_factory
+
+
+@mark.service
+def command_factory():
+    def _command_factory(piece, ctx):
+        command_d = pyobj_creg.invite(piece.d)
+        impl = ui_command_impl_creg.invite(piece.impl, ctx)
+        return UiCommand(command_d, impl)
+    return _command_factory

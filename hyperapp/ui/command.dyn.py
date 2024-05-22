@@ -97,12 +97,6 @@ class Command:
         return await self._impl.run()
 
 
-class UiCommand(Command):
-
-    def __repr__(self):
-        return f"<UiCommand: {self.name}: {self._impl}>"
-
-
 class CommandImpl:
 
     async def run(self):
@@ -172,12 +166,3 @@ class FnCommandImpl(CommandImpl):
         params['widget'] = widget
         params['state'] = view.widget_state(widget)
         return params
-
-
-@mark.service
-def command_factory():
-    def _command_factory(piece, ctx):
-        command_d = pyobj_creg.invite(piece.d)
-        impl = ui_command_impl_creg.invite(piece.impl, ctx)
-        return Command(command_d, impl)
-    return _command_factory
