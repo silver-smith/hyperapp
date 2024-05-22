@@ -8,8 +8,11 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
-- legacy_type.ui:ui_command
+- legacy_type.ui:command
+- legacy_type.ui:command_properties
+- legacy_type.ui:command_properties_d
 - legacy_type.ui:ui_command_d
+- legacy_type.ui:ui_command_impl
 - legacy_type.window:duplicate_window_d
 - legacy_type.window:pos
 - legacy_type.window:quit_d
@@ -19,6 +22,20 @@ import:
 - ui.view:view.module
 - ui.view_registry:view_creg.service
 associations:
+- bases:
+  - command_properties_d
+  - duplicate_window.impl
+  key:
+  - command_properties_d
+  - duplicate_window.impl
+  value: duplicate_window.command_properties
+- bases:
+  - command_properties_d
+  - quit.impl
+  key:
+  - command_properties_d
+  - quit.impl
+  value: quit.command_properties
 - bases:
   - ui.view_registry:view_creg.service
   - legacy_type.window:view
@@ -32,14 +49,14 @@ associations:
   key:
   - ui_command_d
   - legacy_type.window:view
-  value: duplicate_window.ui_command
+  value: duplicate_window.command
 - bases:
   - ui_command_d
   - legacy_type.window:view
   key:
   - ui_command_d
   - legacy_type.window:view
-  value: quit.ui_command
+  value: quit.command
 definitions:
   WindowView:
     _type: legacy_type.builtin:attribute
@@ -49,18 +66,27 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: WindowView
     attr_name: from_piece
+  command_properties_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:command_properties_d
   duplicate_window:
     _type: legacy_type.builtin:attribute
     object: window.module
     attr_name: duplicate_window
+  duplicate_window.command:
+    _type: legacy_type.ui:command
+    d: duplicate_window.d
+    impl: duplicate_window.impl
+  duplicate_window.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: true
+    remotable: true
   duplicate_window.d:
     _type: legacy_type.builtin:call
     function: legacy_type.window:duplicate_window_d
-  duplicate_window.ui_command:
-    _type: legacy_type.ui:ui_command
-    d:
-    - duplicate_window.d
-    name: duplicate_window
+  duplicate_window.impl:
+    _type: legacy_type.ui:ui_command_impl
     function: duplicate_window
     params:
     - root
@@ -70,14 +96,20 @@ definitions:
     _type: legacy_type.builtin:attribute
     object: window.module
     attr_name: quit
+  quit.command:
+    _type: legacy_type.ui:command
+    d: quit.d
+    impl: quit.impl
+  quit.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: false
+    remotable: true
   quit.d:
     _type: legacy_type.builtin:call
     function: legacy_type.window:quit_d
-  quit.ui_command:
-    _type: legacy_type.ui:ui_command
-    d:
-    - quit.d
-    name: quit
+  quit.impl:
+    _type: legacy_type.ui:ui_command_impl
     function: quit
     params: []
   ui_command_d:

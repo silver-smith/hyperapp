@@ -14,10 +14,8 @@ command_item = record:
   name: string
 
 
-layout_command = record:
-  name: string
-  d: ref list
-  ui_command: ref
+layout_command_impl = record:
+  ui_command_impl: ref
 
 
 open_layout_tree_d = record

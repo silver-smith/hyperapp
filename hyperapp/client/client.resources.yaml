@@ -27,10 +27,11 @@ import:
 - legacy_type.tabs:tab
 - legacy_type.tabs:view
 - legacy_type.text:state
+- legacy_type.ui:command
+- legacy_type.ui:command_properties
+- legacy_type.ui:command_properties_d
 - legacy_type.ui:global_model_command_d
-- legacy_type.ui:global_model_command_kind_d
-- legacy_type.ui:model_command
-- legacy_type.ui:model_command_kind_d
+- legacy_type.ui:model_command_impl
 - legacy_type.window:pos
 - legacy_type.window:size
 - legacy_type.window:state
@@ -42,6 +43,27 @@ import:
 - ui.view_registry:view_creg.service
 - ui.visualizer:visualizer.service
 associations:
+- bases:
+  - command_properties_d
+  - make_default_layout.impl
+  key:
+  - command_properties_d
+  - make_default_layout.impl
+  value: make_default_piece.command_properties
+- bases:
+  - command_properties_d
+  - make_default_piece.impl
+  key:
+  - command_properties_d
+  - make_default_piece.impl
+  value: make_default_piece.command_properties
+- bases:
+  - command_properties_d
+  - make_default_state.impl
+  key:
+  - command_properties_d
+  - make_default_state.impl
+  value: make_default_state.command_properties
 - bases:
   - global_model_command_d
   key: global_model_command_d
@@ -90,62 +112,71 @@ definitions:
       services.rpc_endpoint_factory: rpc.rpc_endpoint:rpc_endpoint_factory.service
       services.view_creg: ui.view_registry:view_creg.service
       services.visualizer: ui.visualizer:visualizer.service
+  command_properties_d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.ui:command_properties_d
   global_model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:global_model_command_d
-  global_model_command_kind_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:global_model_command_kind_d
   make_default_layout:
     _type: legacy_type.builtin:attribute
     object: client.module
     attr_name: make_default_layout
   make_default_layout.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - make_default_layout.d
-    - model_command_kind_d
-    - global_model_command_kind_d
-    name: make_default_layout
-    function: make_default_layout
-    params:
-    - lcs
+    _type: legacy_type.ui:command
+    d: make_default_layout.d
+    impl: make_default_layout.impl
+  make_default_layout.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: false
+    remotable: false
   make_default_layout.d:
     _type: legacy_type.builtin:call
     function: legacy_type.client:make_default_layout_d
+  make_default_layout.impl:
+    _type: legacy_type.ui:model_command_impl
+    function: make_default_layout
+    params:
+    - lcs
   make_default_piece:
     _type: legacy_type.builtin:attribute
     object: client.module
     attr_name: make_default_piece
   make_default_piece.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - make_default_piece.d
-    - model_command_kind_d
-    - global_model_command_kind_d
-    name: make_default_piece
-    function: make_default_piece
-    params:
-    - lcs
+    _type: legacy_type.ui:command
+    d: make_default_piece.d
+    impl: make_default_piece.impl
+  make_default_piece.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: false
+    remotable: false
   make_default_piece.d:
     _type: legacy_type.builtin:call
     function: legacy_type.client:make_default_piece_d
+  make_default_piece.impl:
+    _type: legacy_type.ui:model_command_impl
+    function: make_default_piece
+    params:
+    - lcs
   make_default_state:
     _type: legacy_type.builtin:attribute
     object: client.module
     attr_name: make_default_state
   make_default_state.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - make_default_state.d
-    - model_command_kind_d
-    - global_model_command_kind_d
-    name: make_default_state
-    function: make_default_state
-    params: []
+    _type: legacy_type.ui:command
+    d: make_default_state.d
+    impl: make_default_state.impl
+  make_default_state.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: false
+    remotable: true
   make_default_state.d:
     _type: legacy_type.builtin:call
     function: legacy_type.client:make_default_state_d
-  model_command_kind_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:model_command_kind_d
+  make_default_state.impl:
+    _type: legacy_type.ui:model_command_impl
+    function: make_default_state
+    params: []

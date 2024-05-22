@@ -6,39 +6,38 @@ from .services import (
     model_command_impl_creg,
     mosaic,
     pyobj_creg,
-    ui_command_creg,
+    ui_command_impl_creg,
     )
-from .code.command import CommandBase
+from .code.command import CommandImpl, d_to_name
 
 log = logging.getLogger(__name__)
 
 
-class LayoutCommand(CommandBase):
+class LayoutCommandImpl(CommandImpl):
 
-    def __init__(self, name, d, ui_command):
-        super().__init__(name, d)
-        self._ui_command = ui_command
+    def __init__(self, ui_command_impl):
+        super().__init__()
+        self._ui_command_impl = ui_command_impl
 
     @property
     def enabled(self):
-        return self._ui_command.enabled
+        return self._ui_command_impl.enabled
 
     @property
     def disabled_reason(self):
-        return self._ui_command.disabled_reason
+        return self._ui_command_impl.disabled_reason
 
-    async def _run(self):
+    async def run(self):
         log.info("Run layout command: %r", self.name)
-        return await self._ui_command.run()
+        return await self._ui_command_impl.run()
 
 
-@model_command_impl_creg.actor(htypes.layout.layout_command)
-def layout_command_from_piece(piece, ctx):
-    command_d = {pyobj_creg.invite(d) for d in piece.d}
+@model_command_impl_creg.actor(htypes.layout.layout_command_impl)
+def layout_command_impl_from_piece(piece, ctx):
     item_id = ctx.current_item.id
     ui_command_ctx = ctx.controller.item_command_context(item_id)
-    ui_command = ui_command_creg.invite(piece.ui_command, ui_command_ctx)
-    return LayoutCommand(piece.name, command_d, ui_command)
+    ui_command_impl = ui_command_impl_creg.invite(piece.ui_command_impl, ui_command_ctx)
+    return LayoutCommandImpl(ui_command_impl)
 
 
 def layout_tree(piece, parent, controller):
@@ -50,13 +49,12 @@ def layout_tree(piece, parent, controller):
 
 
 def _wrap_ui_command(command, kind_d_res_ref):
-    return htypes.layout.layout_command(
-        name=command.name,
-        d=(
-            command.d[0],
-            kind_d_res_ref,
-            ),
-        ui_command=mosaic.put(command),
+    impl = htypes.layout.layout_command_impl(
+        ui_command_impl=command.impl,
+        )
+    return htypes.ui.command(
+        d=command.d,
+        impl=mosaic.put(impl),
         )
 
 
@@ -87,7 +85,7 @@ async def open_view_item_commands(piece, current_item):
 
 def view_item_commands(piece, controller):
     command_list = [
-        htypes.layout.command_item(command.name)
+        htypes.layout.command_item(d_to_name(pyobj_creg.invite(command.d)))
         for command in controller.item_commands(piece.item_id)
         ]
     log.info("Get view item commands for %s: %s", piece, command_list)

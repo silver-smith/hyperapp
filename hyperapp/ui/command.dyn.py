@@ -52,6 +52,12 @@ _hardcoded_shortcuts = {
     }
 
 
+def d_to_name(d):
+    name = d._t.name
+    assert name.endswith('_d'), repr(name)
+    return name[:-2]
+
+
 class Command:
 
     def __init__(self, d, impl):
@@ -67,8 +73,7 @@ class Command:
 
     @cached_property
     def name(self):
-        assert self._d._t.name.endswith('_d')
-        return self._d._t.name[:-2]
+        assert d_to_name(self._d)
 
     @property
     def enabled(self):

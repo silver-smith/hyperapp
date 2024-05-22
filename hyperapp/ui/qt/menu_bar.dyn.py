@@ -49,14 +49,15 @@ class MenuBarView(View):
             action = w._command_to_action.pop(cmd)
             global_menu.removeAction(action)
         for cmd in commands:
-            if cmd.d & context_d:
-                continue
-            if cmd.d & global_d:
-                menu = global_menu
-            elif cmd.d & model_d:
-                menu = current_menu
-            else:
-                menu = view_menu
+            # if cmd.d & context_d:
+            #     continue
+            # if cmd.d & global_d:
+            #     menu = global_menu
+            # elif cmd.d & model_d:
+            #     menu = current_menu
+            # else:
+            #     menu = view_menu
+            menu = global_menu  # TODO
             action = self._make_action(cmd)
             menu.addAction(action)
             w._command_to_action[cmd] = action

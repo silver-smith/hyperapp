@@ -11,30 +11,65 @@ import:
 - legacy_type.layout:command_list
 - legacy_type.layout:enum_layout_tree_commands_d
 - legacy_type.layout:item
-- legacy_type.layout:layout_command
+- legacy_type.layout:layout_command_impl
 - legacy_type.layout:open_layout_tree_d
 - legacy_type.layout:open_view_item_commands_d
 - legacy_type.layout:view
 - legacy_type.layout:view_item_commands_d
+- legacy_type.ui:command
+- legacy_type.ui:command_properties
+- legacy_type.ui:command_properties_d
 - legacy_type.ui:context_model_command_kind_d
 - legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
-- legacy_type.ui:global_model_command_kind_d
 - legacy_type.ui:list_ui_t
 - legacy_type.ui:model
-- legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_enumerator
 - legacy_type.ui:model_command_enumerator_d
-- legacy_type.ui:model_command_kind_d
+- legacy_type.ui:model_command_impl
 - legacy_type.ui:model_d
 - legacy_type.ui:tree_ui_t
 - resource.data_to_res:data_to_res.service
 - ui.command:command.module
 - ui.model_command_impl_creg:model_command_impl_creg.service
-- ui.ui_command:ui_command.module
 - ui.ui_command_impl_creg:ui_command_impl_creg.service
 associations:
+- bases:
+  - command_properties_d
+  - add_view_command.impl
+  key:
+  - command_properties_d
+  - add_view_command.impl
+  value: open_view_item_commands.command_properties
+- bases:
+  - command_properties_d
+  - enum_layout_tree_commands.impl
+  key:
+  - command_properties_d
+  - enum_layout_tree_commands.impl
+  value: enum_layout_tree_commands.command_properties
+- bases:
+  - command_properties_d
+  - open_layout_tree.impl
+  key:
+  - command_properties_d
+  - open_layout_tree.impl
+  value: open_layout_tree.command_properties
+- bases:
+  - command_properties_d
+  - open_view_item_commands.impl
+  key:
+  - command_properties_d
+  - open_view_item_commands.impl
+  value: open_view_item_commands.command_properties
+- bases:
+  - command_properties_d
+  - view_item_commands.impl
+  key:
+  - command_properties_d
+  - view_item_commands.impl
+  value: view_item_commands.command_properties
 - bases:
   - global_model_command_d
   key: global_model_command_d
@@ -83,49 +118,50 @@ associations:
   value: layout_tree.model
 - bases:
   - ui.model_command_impl_creg:model_command_impl_creg.service
-  - legacy_type.layout:layout_command
+  - legacy_type.layout:layout_command_impl
   key:
   - ui.model_command_impl_creg:model_command_impl_creg.service
-  - legacy_type.layout:layout_command
-  value: layout_command_from_piece
+  - legacy_type.layout:layout_command_impl
+  value: layout_command_impl_from_piece
 definitions:
   add_view_command:
     _type: legacy_type.builtin:attribute
     object: layout.module
     attr_name: add_view_command
   add_view_command.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - add_view_command.d
-    - model_command_kind_d
-    - context_model_command_kind_d
-    name: add_view_command
+    _type: legacy_type.ui:command
+    d: add_view_command.d
+    impl: add_view_command.impl
+  add_view_command.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: true
+    remotable: true
+  add_view_command.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.layout:add_view_command_d
+  add_view_command.impl:
+    _type: legacy_type.ui:model_command_impl
     function: add_view_command
     params:
     - piece
     - current_item
-  add_view_command.d:
+  command_properties_d:
     _type: legacy_type.builtin:call
-    function: legacy_type.layout:add_view_command_d
-  context_model_command_kind_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:context_model_command_kind_d
+    function: legacy_type.ui:command_properties_d
   enum_layout_tree_commands:
     _type: legacy_type.builtin:attribute
     object: layout.module
     attr_name: enum_layout_tree_commands
   enum_layout_tree_commands.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - enum_layout_tree_commands.d
-    - model_command_kind_d
-    - context_model_command_kind_d
-    name: enum_layout_tree_commands
-    function: enum_layout_tree_commands
-    params:
-    - piece
-    - current_item
-    - controller
+    _type: legacy_type.ui:command
+    d: enum_layout_tree_commands.d
+    impl: enum_layout_tree_commands.impl
+  enum_layout_tree_commands.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: true
+    remotable: false
   enum_layout_tree_commands.d:
     _type: legacy_type.builtin:call
     function: legacy_type.layout:enum_layout_tree_commands_d
@@ -136,33 +172,37 @@ definitions:
     - piece
     - current_item
     - controller
+  enum_layout_tree_commands.impl:
+    _type: legacy_type.ui:model_command_impl
+    function: enum_layout_tree_commands
+    params:
+    - piece
+    - current_item
+    - controller
   global_model_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:global_model_command_d
-  global_model_command_kind_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:global_model_command_kind_d
   layout.module:
     _type: legacy_type.builtin:python_module
     module_name: layout
     file_name: layout.dyn.py
     import_list:
       code.command: ui.command:command.module
-      code.ui_command: ui.ui_command:ui_command.module
       htypes.layout.command_item: legacy_type.layout:command_item
       htypes.layout.command_list: legacy_type.layout:command_list
-      htypes.layout.layout_command: legacy_type.layout:layout_command
+      htypes.layout.layout_command_impl: legacy_type.layout:layout_command_impl
       htypes.layout.view: legacy_type.layout:view
+      htypes.ui.command: legacy_type.ui:command
       htypes.ui.context_model_command_kind_d: legacy_type.ui:context_model_command_kind_d
       services.data_to_res: resource.data_to_res:data_to_res.service
       services.model_command_impl_creg: ui.model_command_impl_creg:model_command_impl_creg.service
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
       services.ui_command_impl_creg: ui.ui_command_impl_creg:ui_command_impl_creg.service
-  layout_command_from_piece:
+  layout_command_impl_from_piece:
     _type: legacy_type.builtin:attribute
     object: layout.module
-    attr_name: layout_command_from_piece
+    attr_name: layout_command_impl_from_piece
   layout_tree:
     _type: legacy_type.builtin:attribute
     object: layout.module
@@ -188,9 +228,6 @@ definitions:
   model_command_enumerator_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_command_enumerator_d
-  model_command_kind_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:model_command_kind_d
   model_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:model_d
@@ -199,54 +236,61 @@ definitions:
     object: layout.module
     attr_name: open_layout_tree
   open_layout_tree.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - open_layout_tree.d
-    - model_command_kind_d
-    - global_model_command_kind_d
-    name: open_layout_tree
-    function: open_layout_tree
-    params: []
+    _type: legacy_type.ui:command
+    d: open_layout_tree.d
+    impl: open_layout_tree.impl
+  open_layout_tree.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: false
+    remotable: true
   open_layout_tree.d:
     _type: legacy_type.builtin:call
     function: legacy_type.layout:open_layout_tree_d
+  open_layout_tree.impl:
+    _type: legacy_type.ui:model_command_impl
+    function: open_layout_tree
+    params: []
   open_view_item_commands:
     _type: legacy_type.builtin:attribute
     object: layout.module
     attr_name: open_view_item_commands
   open_view_item_commands.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - open_view_item_commands.d
-    - model_command_kind_d
-    - context_model_command_kind_d
-    name: open_view_item_commands
+    _type: legacy_type.ui:command
+    d: open_view_item_commands.d
+    impl: open_view_item_commands.impl
+  open_view_item_commands.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: true
+    remotable: true
+  open_view_item_commands.d:
+    _type: legacy_type.builtin:call
+    function: legacy_type.layout:open_view_item_commands_d
+  open_view_item_commands.impl:
+    _type: legacy_type.ui:model_command_impl
     function: open_view_item_commands
     params:
     - piece
     - current_item
-  open_view_item_commands.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.layout:open_view_item_commands_d
   view_item_commands:
     _type: legacy_type.builtin:attribute
     object: layout.module
     attr_name: view_item_commands
   view_item_commands.command:
-    _type: legacy_type.ui:model_command
-    d:
-    - view_item_commands.d
-    - model_command_kind_d
-    name: view_item_commands
-    function: view_item_commands
-    params:
-    - piece
-    - controller
+    _type: legacy_type.ui:command
+    d: view_item_commands.d
+    impl: view_item_commands.impl
+  view_item_commands.command_properties:
+    _type: legacy_type.ui:command_properties
+    is_global: false
+    uses_state: false
+    remotable: false
   view_item_commands.d:
     _type: legacy_type.builtin:call
     function: legacy_type.layout:view_item_commands_d
   view_item_commands.impl:
-    _type: legacy_type.ui:fn_impl
+    _type: legacy_type.ui:model_command_impl
     function: view_item_commands
     params:
     - piece
