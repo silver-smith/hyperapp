@@ -17,7 +17,7 @@ import:
 - legacy_type.ui:index_tree_feed
 - ui.feed:feed_factory.service
 - ui.ui_command:command_factory.service
-- ui.ui_command:ui_command_factory.service
+- ui.ui_command:list_view_commands.service
 - ui.ui_model_command:ui_model_command_factory.service
 - ui.view:view.module
 - ui.view_registry:view_creg.service
@@ -47,9 +47,9 @@ definitions:
       services.command_factory: ui.ui_command:command_factory.service
       services.deduce_t: builtins:deduce_t.service
       services.feed_factory: ui.feed:feed_factory.service
+      services.list_view_commands: ui.ui_command:list_view_commands.service
       services.mosaic: builtins:mosaic.service
       services.set_model_layout: ui.visualizer:set_model_layout.service
-      services.ui_command_factory: ui.ui_command:ui_command_factory.service
       services.ui_model_command_factory: ui.ui_model_command:ui_model_command_factory.service
       services.view_creg: ui.view_registry:view_creg.service
       services.web: builtins:web.service

@@ -9,7 +9,7 @@ from .services import (
     )
 from .code.context import Context
 from .tested.code import ui_command
-from .tested.services import command_factory, ui_command_factory
+from .tested.services import command_factory, list_view_commands
 
 
 def _sample_fn(view, state):
@@ -51,14 +51,14 @@ class PhonyView:
         return 100
 
 
-async def test_ui_command_factory():
+async def test_list_view_commands():
     view = PhonyView()
     widget = PhonyWidget()  # Should hold ref to it.
     ctx = Context(
         view=view,
         widget=weakref.ref(widget),
         )
-    command_piece_list = ui_command_factory(view)
+    command_piece_list = list_view_commands(view)
     assert command_piece_list
     command = command_factory(command_piece_list[0], ctx)
     result = await command.run()

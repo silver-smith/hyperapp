@@ -34,8 +34,8 @@ def ui_command_from_piece(piece, ctx):
 
 
 @mark.service
-def ui_command_factory():
-    def _ui_command_factory(view):
+def list_view_commands():
+    def _list_view_commands(view):
         piece_t = deduce_t(view.piece)
         piece_t_res = pyobj_creg.reverse_resolve(piece_t)
         d_res = data_to_res(htypes.ui.ui_command_d())
@@ -45,7 +45,7 @@ def ui_command_factory():
             *association_reg.get_all(universal_d_res),
             ]
         return command_list
-    return _ui_command_factory
+    return _list_view_commands
 
 
 @mark.service

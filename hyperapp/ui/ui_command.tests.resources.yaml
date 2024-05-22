@@ -24,4 +24,4 @@ definitions:
       services.mosaic: builtins:mosaic.service
       tested.code.ui_command: phony
       tested.services.command_factory: phony
-      tested.services.ui_command_factory: phony
+      tested.services.list_view_commands: phony

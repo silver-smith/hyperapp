@@ -17,7 +17,7 @@ from .services import (
     feed_factory,
     mosaic,
     set_model_layout,
-    ui_command_factory,
+    list_view_commands,
     ui_model_command_factory,
     view_creg,
     web,
@@ -166,7 +166,7 @@ class _Item:
 
     def _make_view_commands(self):
         ctx = self.command_context()
-        commands = ui_command_factory(self.view)
+        commands = list_view_commands(self.view)
         return [CommandRec(cmd, ctx) for cmd in commands]
 
     def _make_model_commands(self):
