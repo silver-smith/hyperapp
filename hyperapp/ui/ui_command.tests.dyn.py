@@ -9,7 +9,7 @@ from .services import (
     )
 from .code.context import Context
 from .tested.code import ui_command
-from .tested.services import command_factory, list_view_commands
+from .tested.services import ui_command_factory, list_view_commands
 
 
 def _sample_fn(view, state):
@@ -60,6 +60,6 @@ async def test_list_view_commands():
         )
     command_piece_list = list_view_commands(view)
     assert command_piece_list
-    command = command_factory(command_piece_list[0], ctx)
+    command = ui_command_factory(command_piece_list[0], ctx)
     result = await command.run()
     assert result == 123, repr(result)

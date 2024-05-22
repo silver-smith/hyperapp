@@ -49,9 +49,9 @@ def list_view_commands():
 
 
 @mark.service
-def command_factory():
-    def _command_factory(piece, ctx):
+def ui_command_factory():
+    def _ui_command_factory(piece, ctx):
         command_d = pyobj_creg.invite(piece.d)
         impl = ui_command_impl_creg.invite(piece.impl, ctx)
         return UiCommand(command_d, impl)
-    return _command_factory
+    return _ui_command_factory

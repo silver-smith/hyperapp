@@ -12,7 +12,7 @@ from hyperapp.common import dict_coders  # register codec
 
 from . import htypes
 from .services import (
-    command_factory,
+    ui_command_factory,
     deduce_t,
     feed_factory,
     mosaic,
@@ -39,7 +39,7 @@ class CommandRec:
 
     @cached_property
     def animated(self):
-        return command_factory(self.piece, self.ctx)
+        return ui_command_factory(self.piece, self.ctx)
 
         
 @dataclass
