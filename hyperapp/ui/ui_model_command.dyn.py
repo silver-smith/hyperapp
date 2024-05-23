@@ -79,13 +79,18 @@ def ui_model_command_impl_from_piece(piece, ctx):
     return UiModelCommandImpl(ctx, model_impl, properties)
 
 
-def _model_command_to_ui_command(model_command):
-    impl = htypes.ui.ui_model_command_impl(
-        model_command_impl=model_command.impl,
-        )
+def _model_command_to_ui_command(command):
+    if isinstance(command, htypes.ui.model_command):
+        impl = htypes.ui.ui_model_command_impl(
+            model_command_impl=command.impl,
+            )
+        impl_ref = mosaic.put(impl)
+    else:
+        # Layout command enumerator returns UI commands. Do not wrap them.
+        impl_ref = command.impl
     return htypes.ui.command(
-        d=model_command.d,
-        impl=mosaic.put(impl),
+        d=command.d,
+        impl=impl_ref,
         )
 
 
