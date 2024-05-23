@@ -10,7 +10,6 @@ from .services import (
     mosaic,
     pyobj_creg,
     ui_command_impl_creg,
-    web,
     )
 from .code.command import Command, FnCommandImpl
 from .code.command_groups import default_command_groups
@@ -34,13 +33,22 @@ class UiCommand(Command):
 
 
 class UiCommandImpl(FnCommandImpl):
-    pass
+
+    def __init__(self, ctx, fn, params, properties):
+        super().__init__(ctx, fn, params)
+        self._properties = properties
+
+    @property
+    def properties(self):
+        return self._properties
 
 
 @ui_command_impl_creg.actor(htypes.ui.ui_command_impl)
-def ui_command_from_piece(piece, ctx):
+def ui_command_impl_from_piece(piece, ctx):
+    command_properties_d_res = data_to_res(htypes.ui.command_properties_d())
     fn = pyobj_creg.invite(piece.function)
-    return UiCommandImpl(ctx, fn, piece.params)
+    properties = association_reg[command_properties_d_res, piece]
+    return UiCommandImpl(ctx, fn, piece.params, properties)
 
 
 @mark.service
@@ -60,14 +68,10 @@ def list_view_commands():
 
 @mark.service
 def ui_command_factory():
-    command_properties_d_res = data_to_res(htypes.ui.command_properties_d())
-
     def _ui_command_factory(piece, ctx):
         command_d = pyobj_creg.invite(piece.d)
-        impl_piece = web.summon(piece.impl)
-        impl = ui_command_impl_creg.animate(impl_piece, ctx)
-        properties = association_reg[command_properties_d_res, impl_piece]
-        groups = default_command_groups(properties)
+        impl = ui_command_impl_creg.invite(piece.impl, ctx)
+        groups = default_command_groups(impl.properties)
         return UiCommand(command_d, impl, groups)
 
     return _ui_command_factory

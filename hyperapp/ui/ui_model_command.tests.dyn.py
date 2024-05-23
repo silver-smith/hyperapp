@@ -52,3 +52,39 @@ def test_ui_model_command_factory():
     piece = "Sample piece"
     commands = ui_model_command_factory(piece, ctx)
     assert commands
+
+
+def _sample_fn(piece):
+    pass
+
+
+class PhonyAssociationRegistry:
+
+    def __getitem__(self, key):
+        return htypes.ui.command_properties(
+            is_global=False,
+            uses_state=False,
+            remotable=False,
+            )
+
+
+@mark.service
+def association_reg():
+    return PhonyAssociationRegistry()
+
+
+def test_command_impl_from_piece():
+    ctx = Context(
+        lcs=None,
+        navigator=None,
+        )
+    model_impl = htypes.ui.model_command_impl(
+        function=fn_to_ref(_sample_fn),
+        params=('piece',),
+        )
+    piece = htypes.ui.ui_model_command_impl(
+        model_command_impl=mosaic.put(model_impl),
+        )
+    impl = ui_model_command.ui_model_command_impl_from_piece(piece, ctx)
+    assert impl
+    assert impl.properties

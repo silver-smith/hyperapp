@@ -25,7 +25,7 @@ associations:
   key:
   - ui.ui_command_impl_creg:ui_command_impl_creg.service
   - legacy_type.ui:ui_command_impl
-  value: ui_command_from_piece
+  value: ui_command_impl_from_piece
 definitions:
   list_view_commands:
     _type: legacy_type.builtin:attribute
@@ -60,7 +60,7 @@ definitions:
   ui_command_factory.service:
     _type: legacy_type.builtin:call
     function: ui_command_factory
-  ui_command_from_piece:
+  ui_command_impl_from_piece:
     _type: legacy_type.builtin:attribute
     object: ui_command.module
-    attr_name: ui_command_from_piece
+    attr_name: ui_command_impl_from_piece

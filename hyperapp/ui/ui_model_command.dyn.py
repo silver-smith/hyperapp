@@ -2,6 +2,8 @@ import logging
 
 from . import htypes
 from .services import (
+    association_reg,
+    data_to_res,
     enum_model_commands,
     global_commands,
     mark,
@@ -12,6 +14,7 @@ from .services import (
     model_view_creg,
     mosaic,
     visualizer,
+    web,
     )
 from .code.command import CommandImpl
 
@@ -20,30 +23,35 @@ log = logging.getLogger(__name__)
 
 class UiModelCommandImpl(CommandImpl):
 
-    def __init__(self, ctx, model_command):
+    def __init__(self, ctx, model_command_impl, properties):
         super().__init__()
         self._ctx = ctx
         self._navigator_rec = ctx.navigator
         self._lcs = ctx.lcs
-        self._model_command = model_command
+        self._model_command_impl = model_command_impl
+        self._properties = properties
 
     @property
     def name(self):
-        return self._model_command.name
+        return self._model_command_impl.name
 
     @property
     def enabled(self):
-        return self._model_command.enabled
+        return self._model_command_impl.enabled
 
     @property
     def disabled_reason(self):
-        return self._model_command.disabled_reason
+        return self._model_command_impl.disabled_reason
+
+    @property
+    def properties(self):
+        return self._properties
 
     async def _run(self):
         navigator_w = self._navigator_rec.widget_wr()
         if navigator_w is None:
             raise RuntimeError("Navigator widget is gone")
-        piece = await self._model_command.run()
+        piece = await self._model_command_impl.run()
         if piece is None:
             return None
         if type(piece) is list:
@@ -56,8 +64,11 @@ class UiModelCommandImpl(CommandImpl):
 
 @ui_command_impl_creg.actor(htypes.ui.ui_model_command_impl)
 def ui_model_command_impl_from_piece(piece, ctx):
-    model_command = model_command_impl_creg.invite(piece.model_command_impl, ctx)
-    return UiModelCommandImpl(ctx, model_command)
+    props_d_res = data_to_res(htypes.ui.command_properties_d())
+    model_impl_piece = web.summon(piece.model_command_impl)
+    model_impl = model_command_impl_creg.animate(model_impl_piece, ctx)
+    properties = association_reg[props_d_res, model_impl_piece]
+    return UiModelCommandImpl(ctx, model_impl, properties)
 
 
 def _model_command_to_ui_command(model_command):
