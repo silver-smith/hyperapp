@@ -23,13 +23,6 @@ def _make_command_d_res(custom_types, module_res, attr):
     return data_to_res(command_d_t())
 
 
-def _make_d_instance_res(t):
-    t_res = pyobj_creg.reverse_resolve(t)
-    return htypes.builtin.call(
-        function=mosaic.put(t_res),
-        )
-
-
 def _make_attribute(module_res, attr):
     return htypes.builtin.attribute(
         object=mosaic.put(module_res),
@@ -69,7 +62,7 @@ def _make_model_command(piece, custom_types, module_res, attr, d_res):
 
 
 def _make_properties(impl, is_global=False, uses_state=False, remotable=False):
-    command_properties_d_res = _make_d_instance_res(htypes.ui.command_properties_d)
+    command_properties_d_res = data_to_res(htypes.ui.command_properties_d())
     properties = htypes.ui.command_properties(
         is_global=is_global,
         uses_state=uses_state,

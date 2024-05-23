@@ -2,7 +2,6 @@ import:
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:types.service
-- legacy_type.builtin:call
 - legacy_type.builtin:legacy_type
 - legacy_type.builtin:python_module
 - legacy_type.ui:command
@@ -29,7 +28,6 @@ definitions:
     module_name: ui_ctr_command
     file_name: ui_ctr_command.dyn.py
     import_list:
-      htypes.builtin.call: legacy_type.builtin:call
       htypes.builtin.legacy_type: legacy_type.builtin:legacy_type
       htypes.ui.command: legacy_type.ui:command
       htypes.ui.command_properties: legacy_type.ui:command_properties

@@ -6,7 +6,6 @@ import:
 - builtins:types.service
 - builtins:web.service
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.rc_constructors:ui_command_ctr
 - legacy_type.rc_constructors:ui_model_command_ctr
@@ -78,7 +77,6 @@ definitions:
       code.command_params: rc.command_params:command_params.module
       code.utils: rc.utils:utils.module
       htypes.builtin.attribute: legacy_type.builtin:attribute
-      htypes.builtin.call: legacy_type.builtin:call
       htypes.rc_constructors.ui_command_ctr: legacy_type.rc_constructors:ui_command_ctr
       htypes.rc_constructors.ui_model_command_ctr: legacy_type.rc_constructors:ui_model_command_ctr
       htypes.rc_constructors.universal_ui_command_ctr: legacy_type.rc_constructors:universal_ui_command_ctr

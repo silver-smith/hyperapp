@@ -16,13 +16,6 @@ from .code.command_params import STATE_PARAMS, LOCAL_PARAMS
 log = logging.getLogger(__name__)
 
 
-def _make_d_instance_res(t):
-    t_res = pyobj_creg.reverse_resolve(t)
-    return htypes.builtin.call(
-        function=mosaic.put(t_res),
-        )
-
-
 class CommandImplementationCtr(Constructor):
 
     def check_applicable(self, fn_info):
@@ -45,7 +38,7 @@ class CommandImplementationCtr(Constructor):
         return data_to_res(command_d_t())
 
     def _make_properties(self, impl, is_global=False, uses_state=False, remotable=False):
-        command_properties_d_res = _make_d_instance_res(htypes.ui.command_properties_d)
+        command_properties_d_res = data_to_res(htypes.ui.command_properties_d())
         properties = htypes.ui.command_properties(
             is_global=is_global,
             uses_state=uses_state,
@@ -120,7 +113,7 @@ class ModelCommandImplementationCtr(CommandImplementationCtr):
         command_d_res = self._make_command_d_res(fn_name)
         impl, command = self._make_command(fn_info, fn_attribute, command_d_res)
         command_properties_d_res, props, props_association = self._make_fn_impl_properties(impl)
-        model_command_d_res = _make_d_instance_res(htypes.ui.model_command_d)
+        model_command_d_res = data_to_res(htypes.ui.model_command_d())
         piece_t = fn_info.params['piece']
         piece_t_res = htypes.builtin.legacy_type(piece_t.data_t_ref)
         association = Association(
@@ -182,7 +175,7 @@ class GlobalCommandImplementationCtr(CommandImplementationCtr):
         command_d_res = self._make_command_d_res(fn_name)
         impl, command = self._make_command(fn_info, fn_attribute, command_d_res)
         command_properties_d_res, props, props_association = self._make_fn_impl_properties(impl)
-        global_model_command_d_res = _make_d_instance_res(htypes.ui.global_model_command_d)
+        global_model_command_d_res = data_to_res(htypes.ui.global_model_command_d())
         association = Association(
             bases=[global_model_command_d_res],
             key=[global_model_command_d_res],
@@ -236,7 +229,7 @@ class CommandEnumeratorImplementationCtr(Constructor):
             function=mosaic.put(fn_attribute),
             params=tuple(fn_info.params),
             )
-        enumerator_d_res = _make_d_instance_res(htypes.ui.model_command_enumerator_d)
+        enumerator_d_res = data_to_res(htypes.ui.model_command_enumerator_d())
         piece_t = fn_info.params['piece']
         piece_t_res = htypes.builtin.legacy_type(piece_t.data_t_ref)
         association = Association(
