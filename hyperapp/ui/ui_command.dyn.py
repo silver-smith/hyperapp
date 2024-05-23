@@ -10,8 +10,10 @@ from .services import (
     mosaic,
     pyobj_creg,
     ui_command_impl_creg,
+    web,
     )
 from .code.command import Command, FnCommandImpl
+from .code.command_groups import default_command_groups
 
 log = logging.getLogger(__name__)
 
@@ -19,8 +21,16 @@ log = logging.getLogger(__name__)
 
 class UiCommand(Command):
 
+    def __init__(self, d, impl, groups):
+        super().__init__(d, impl)
+        self._groups = groups
+
     def __repr__(self):
         return f"<UiCommand: {self.name}: {self._impl}>"
+
+    @property
+    def groups(self):
+        return self._groups
 
 
 class UiCommandImpl(FnCommandImpl):
@@ -50,8 +60,14 @@ def list_view_commands():
 
 @mark.service
 def ui_command_factory():
+    command_properties_d_res = data_to_res(htypes.ui.command_properties_d())
+
     def _ui_command_factory(piece, ctx):
         command_d = pyobj_creg.invite(piece.d)
-        impl = ui_command_impl_creg.invite(piece.impl, ctx)
-        return UiCommand(command_d, impl)
+        impl_piece = web.summon(piece.impl)
+        impl = ui_command_impl_creg.animate(impl_piece, ctx)
+        properties = association_reg[command_properties_d_res, impl_piece]
+        groups = default_command_groups(properties)
+        return UiCommand(command_d, impl, groups)
+
     return _ui_command_factory

@@ -18,6 +18,13 @@ def _sample_fn(view, state):
 
 class PhonyAssociationRegistry:
 
+    def __getitem__(self, key):
+        return htypes.ui.command_properties(
+            is_global=False,
+            uses_state=False,
+            remotable=False,
+            )
+
     def get_all(self, key):
         command_d_res = data_to_res(htypes.ui_command_tests.sample_command_d())
         fn_res = fn_to_res(_sample_fn)

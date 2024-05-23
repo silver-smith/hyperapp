@@ -1,0 +1,6 @@
+global_d = record
+view_d = record
+model_d = record
+context_d = record
+
+remotable_d = record
