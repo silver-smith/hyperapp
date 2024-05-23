@@ -51,7 +51,10 @@ class CommandPaneView(View):
         #             or cmd.d & context_d
         #         )
         #     }
-        wanted_commands = set(commands)  # TODO
+        wanted_commands = {
+            cmd for cmd in commands
+            if self._show_command(cmd.groups)
+            }
         removed_commands = set(widget._command_to_button) - wanted_commands
         new_commands = wanted_commands - set(widget._command_to_button)
         for cmd in removed_commands:
@@ -64,6 +67,12 @@ class CommandPaneView(View):
             button = self._make_button(cmd, add_shortcut=True)  # TODO
             layout.addWidget(button)
             widget._command_to_button[cmd] = button
+
+    def _show_command(self, groups):
+        context_d = htypes.command_groups.context_d()
+        if context_d in groups:
+            return True
+        return False
 
     @staticmethod
     def _make_button(cmd, add_shortcut):

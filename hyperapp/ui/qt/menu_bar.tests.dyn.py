@@ -1,3 +1,6 @@
+from unittest.mock import Mock
+
+
 from PySide6 import QtWidgets
 
 from . import htypes
@@ -17,6 +20,8 @@ def test_widget():
     ctx = Context()
     piece = make_piece()
     state = make_state()
+    command = Mock(groups=set(), enabled=True, shortcut="")
+    command.name = "Sample"
     app = QtWidgets.QApplication()
     try:
         view = menu_bar.MenuBarView.from_piece(piece, ctx)
@@ -24,6 +29,6 @@ def test_widget():
         assert view.piece
         state = view.widget_state(widget)
         assert state
-        view.set_commands(widget, [])
+        view.set_commands(widget, [command])
     finally:
         app.shutdown()

@@ -38,9 +38,11 @@ class MenuBarView(View):
         return htypes.menu_bar.state()
 
     def set_commands(self, w, commands):
-        model_d = {htypes.ui.model_command_kind_d()}
-        context_d = {htypes.ui.context_model_command_kind_d()}
-        global_d = {htypes.ui.global_model_command_kind_d()}
+        global_d = htypes.command_groups.global_d()
+        view_d = htypes.command_groups.view_d()
+        model_d = htypes.command_groups.model_d()
+        context_d = htypes.command_groups.context_d()
+
         global_menu, view_menu, current_menu = [
             action.menu() for action in w.actions()
             ]
@@ -49,15 +51,14 @@ class MenuBarView(View):
             action = w._command_to_action.pop(cmd)
             global_menu.removeAction(action)
         for cmd in commands:
-            # if cmd.d & context_d:
-            #     continue
-            # if cmd.d & global_d:
-            #     menu = global_menu
-            # elif cmd.d & model_d:
-            #     menu = current_menu
-            # else:
-            #     menu = view_menu
-            menu = global_menu  # TODO
+            if context_d in cmd.groups:
+                continue
+            if global_d in cmd.groups:
+                menu = global_menu
+            elif model_d in cmd.groups:
+                menu = current_menu
+            else:
+                menu = view_menu
             action = self._make_action(cmd)
             menu.addAction(action)
             w._command_to_action[cmd] = action
