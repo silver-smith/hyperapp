@@ -41,9 +41,6 @@ class CommandPaneView(View):
 
     def set_commands(self, widget, commands):
         layout = widget.layout()
-        model_d = {htypes.ui.model_command_kind_d()}
-        context_d = {htypes.ui.context_model_command_kind_d()}
-        global_d = {htypes.ui.global_model_command_kind_d()}
         # wanted_commands = {
         #     cmd for cmd in commands
         #     if (

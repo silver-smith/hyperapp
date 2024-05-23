@@ -7,14 +7,11 @@ import:
 - legacy_type.ui:command
 - legacy_type.ui:command_properties
 - legacy_type.ui:command_properties_d
-- legacy_type.ui:context_model_command_kind_d
 - legacy_type.ui:model_command
 - legacy_type.ui:model_command_impl
 - legacy_type.ui:model_command_enumerator
 - legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_enumerator_d
-- legacy_type.ui:model_command_kind_d
-- legacy_type.ui:global_model_command_kind_d
 - legacy_type.ui:global_model_command_d
 - rc.command_params:command_params.module
 - rc.ui_ctr_constructor:ui_ctr_constructor.module
@@ -32,14 +29,11 @@ definitions:
       htypes.ui.command: legacy_type.ui:command
       htypes.ui.command_properties: legacy_type.ui:command_properties
       htypes.ui.command_properties_d: legacy_type.ui:command_properties_d
-      htypes.ui.context_model_command_kind_d: legacy_type.ui:context_model_command_kind_d
       htypes.ui.model_command: legacy_type.ui:model_command
       htypes.ui.model_command_impl: legacy_type.ui:model_command_impl
       htypes.ui.model_command_enumerator: legacy_type.ui:model_command_enumerator
       htypes.ui.model_command_enumerator_d: legacy_type.ui:model_command_enumerator_d
       htypes.ui.model_command_d: legacy_type.ui:model_command_d
-      htypes.ui.model_command_kind_d: legacy_type.ui:model_command_kind_d
-      htypes.ui.global_model_command_kind_d: legacy_type.ui:global_model_command_kind_d
       htypes.ui.global_model_command_d: legacy_type.ui:global_model_command_d
       services.data_to_res: resource.data_to_res:data_to_res.service
       services.mosaic: builtins:mosaic.service

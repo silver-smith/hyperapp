@@ -38,11 +38,6 @@ model_command_enumerator = record:
   params: string list
 
 
-# Selector for command's `.d` property.
-model_command_kind_d = record
-context_model_command_kind_d = record
-global_model_command_kind_d = record
-
 # Model implementation association.
 model_d = record
 

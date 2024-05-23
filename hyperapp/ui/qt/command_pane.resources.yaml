@@ -6,9 +6,6 @@ import:
 - legacy_type.command_groups:context_d
 - legacy_type.command_pane:state
 - legacy_type.command_pane:view
-- legacy_type.ui:context_model_command_kind_d
-- legacy_type.ui:global_model_command_kind_d
-- legacy_type.ui:model_command_kind_d
 - ui.view:view.module
 - ui.view_registry:view_creg.service
 associations:
@@ -37,6 +34,3 @@ definitions:
       htypes.command_groups.context_d: legacy_type.command_groups:context_d
       htypes.command_pane.state: legacy_type.command_pane:state
       htypes.command_pane.view: legacy_type.command_pane:view
-      htypes.ui.context_model_command_kind_d: legacy_type.ui:context_model_command_kind_d
-      htypes.ui.global_model_command_kind_d: legacy_type.ui:global_model_command_kind_d
-      htypes.ui.model_command_kind_d: legacy_type.ui:model_command_kind_d
