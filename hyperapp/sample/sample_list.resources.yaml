@@ -30,14 +30,14 @@ associations:
   key:
   - command_properties_d
   - open_feed_sample_fn_list.command_impl
-  value: sample_list.command_properties
+  value: open_sample_fn_list.command_properties
 - bases:
   - command_properties_d
   - open_sample_fn_list.command_impl
   key:
   - command_properties_d
   - open_sample_fn_list.command_impl
-  value: sample_list.command_properties
+  value: open_sample_fn_list.command_properties
 - bases:
   - command_properties_d
   - sample_list.command_impl
@@ -125,7 +125,7 @@ definitions:
     params: []
   open_feed_sample_fn_list.command_properties:
     _type: legacy_type.ui:command_properties
-    is_global: false
+    is_global: true
     uses_state: false
     remotable: true
   open_feed_sample_fn_list.d:
@@ -145,7 +145,7 @@ definitions:
     params: []
   open_sample_fn_list.command_properties:
     _type: legacy_type.ui:command_properties
-    is_global: false
+    is_global: true
     uses_state: false
     remotable: true
   open_sample_fn_list.d:

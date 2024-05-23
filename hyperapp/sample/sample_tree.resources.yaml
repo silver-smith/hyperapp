@@ -109,7 +109,7 @@ definitions:
     params: []
   open_feed_sample_fn_tree.command_properties:
     _type: legacy_type.ui:command_properties
-    is_global: false
+    is_global: true
     uses_state: false
     remotable: true
   open_feed_sample_fn_tree.d:
@@ -129,7 +129,7 @@ definitions:
     params: []
   open_sample_fn_tree.command_properties:
     _type: legacy_type.ui:command_properties
-    is_global: false
+    is_global: true
     uses_state: false
     remotable: true
   open_sample_fn_tree.d:

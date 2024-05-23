@@ -26,28 +26,28 @@ associations:
   key:
   - command_properties_d
   - details.command_impl
-  value: show_state.command_properties
+  value: details.command_properties
 - bases:
   - command_properties_d
   - open_sample_static_list.command_impl
   key:
   - command_properties_d
   - open_sample_static_list.command_impl
-  value: sample_tree_info.command_properties
+  value: open_sample_static_text_2.command_properties
 - bases:
   - command_properties_d
   - open_sample_static_text_1.command_impl
   key:
   - command_properties_d
   - open_sample_static_text_1.command_impl
-  value: sample_tree_info.command_properties
+  value: open_sample_static_text_2.command_properties
 - bases:
   - command_properties_d
   - open_sample_static_text_2.command_impl
   key:
   - command_properties_d
   - open_sample_static_text_2.command_impl
-  value: sample_tree_info.command_properties
+  value: open_sample_static_text_2.command_properties
 - bases:
   - command_properties_d
   - sample_tree_info.command_impl
@@ -136,7 +136,7 @@ definitions:
     params: []
   open_sample_static_list.command_properties:
     _type: legacy_type.ui:command_properties
-    is_global: false
+    is_global: true
     uses_state: false
     remotable: true
   open_sample_static_list.d:
@@ -156,7 +156,7 @@ definitions:
     params: []
   open_sample_static_text_1.command_properties:
     _type: legacy_type.ui:command_properties
-    is_global: false
+    is_global: true
     uses_state: false
     remotable: true
   open_sample_static_text_1.d:
@@ -176,7 +176,7 @@ definitions:
     params: []
   open_sample_static_text_2.command_properties:
     _type: legacy_type.ui:command_properties
-    is_global: false
+    is_global: true
     uses_state: false
     remotable: true
   open_sample_static_text_2.d:
@@ -224,7 +224,7 @@ definitions:
     - model_state
   show_state.command_properties:
     _type: legacy_type.ui:command_properties
-    is_global: false
+    is_global: true
     uses_state: true
     remotable: true
   show_state.d:

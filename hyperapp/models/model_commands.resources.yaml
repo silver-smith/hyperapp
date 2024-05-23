@@ -147,7 +147,7 @@ definitions:
     - piece
   open_model_commands.command_properties:
     _type: legacy_type.ui:command_properties
-    is_global: false
+    is_global: true
     uses_state: false
     remotable: true
   open_model_commands.d:

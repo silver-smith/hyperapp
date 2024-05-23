@@ -28,7 +28,7 @@ associations:
   key:
   - command_properties_d
   - file_bundle_list.command_impl
-  value: open_file_bundle_list.command_properties
+  value: file_bundle_list.command_properties
 - bases:
   - command_properties_d
   - open.command_impl
@@ -156,7 +156,7 @@ definitions:
     params: []
   open_file_bundle_list.command_properties:
     _type: legacy_type.ui:command_properties
-    is_global: false
+    is_global: true
     uses_state: false
     remotable: true
   open_file_bundle_list.d:

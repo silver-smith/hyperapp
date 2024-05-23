@@ -42,7 +42,7 @@ associations:
   key:
   - command_properties_d
   - browse_current_model.command_impl
-  value: browse_ref_list.command_properties
+  value: browse_current_model.command_properties
 - bases:
   - command_properties_d
   - browse_list.command_impl
@@ -165,7 +165,7 @@ definitions:
     - piece
   browse_current_model.command_properties:
     _type: legacy_type.ui:command_properties
-    is_global: false
+    is_global: true
     uses_state: false
     remotable: true
   browse_current_model.d:

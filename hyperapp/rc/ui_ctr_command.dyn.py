@@ -174,7 +174,7 @@ class GlobalCommandImplementationCtr(CommandImplementationCtr):
         fn_attribute = self._make_attribute(fn_name)
         command_d_res = self._make_command_d_res(fn_name)
         impl, command = self._make_command(fn_info, fn_attribute, command_d_res)
-        command_properties_d_res, props, props_association = self._make_fn_impl_properties(impl)
+        command_properties_d_res, props, props_association = self._make_fn_impl_properties(impl, is_global=True)
         global_model_command_d_res = data_to_res(htypes.ui.global_model_command_d())
         association = Association(
             bases=[global_model_command_d_res],
