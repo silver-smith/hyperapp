@@ -3,6 +3,7 @@
 import:
 - legacy_type.builtin:python_module
 - legacy_type.phony:phony
+- ui.command:command.module
 associations: []
 definitions:
   command_groups.tests.module:
@@ -10,6 +11,7 @@ definitions:
     module_name: command_groups.tests
     file_name: command_groups.tests.dyn.py
     import_list:
+      code.command: ui.command:command.module
       tested.code.command_groups: phony
   phony:
     _type: legacy_type.phony:phony

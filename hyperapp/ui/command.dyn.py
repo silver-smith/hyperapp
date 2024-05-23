@@ -2,6 +2,7 @@ import asyncio
 import inspect
 import logging
 from functools import cached_property
+from enum import Enum
 
 from .services import (
     mark,
@@ -10,6 +11,11 @@ from .services import (
     )
 
 log = logging.getLogger(__name__)
+
+
+class CommandKind(Enum):
+    VIEW = 'view'
+    MODEL = 'model'
 
 
 _hardcoded_shortcuts = {

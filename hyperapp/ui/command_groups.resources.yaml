@@ -7,6 +7,7 @@ import:
 - legacy_type.command_groups:model_d
 - legacy_type.command_groups:remotable_d
 - legacy_type.command_groups:view_d
+- ui.command:command.module
 associations: []
 definitions:
   command_groups.module:
@@ -14,6 +15,7 @@ definitions:
     module_name: command_groups
     file_name: command_groups.dyn.py
     import_list:
+      code.command: ui.command:command.module
       htypes.command_groups.context_d: legacy_type.command_groups:context_d
       htypes.command_groups.global_d: legacy_type.command_groups:global_d
       htypes.command_groups.model_d: legacy_type.command_groups:model_d

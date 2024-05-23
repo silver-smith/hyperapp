@@ -11,11 +11,10 @@ from .services import (
     pyobj_creg,
     ui_command_impl_creg,
     )
-from .code.command import Command, FnCommandImpl
+from .code.command import Command, CommandKind, FnCommandImpl
 from .code.command_groups import default_command_groups
 
 log = logging.getLogger(__name__)
-
 
 
 class UiCommand(Command):
@@ -41,6 +40,10 @@ class UiCommandImpl(FnCommandImpl):
     @property
     def properties(self):
         return self._properties
+
+    @property
+    def kind(self):
+        return CommandKind.VIEW
 
 
 @ui_command_impl_creg.actor(htypes.ui.ui_command_impl)
@@ -71,7 +74,7 @@ def ui_command_factory():
     def _ui_command_factory(piece, ctx):
         command_d = pyobj_creg.invite(piece.d)
         impl = ui_command_impl_creg.invite(piece.impl, ctx)
-        groups = default_command_groups(impl.properties)
+        groups = default_command_groups(impl.properties, impl.kind)
         return UiCommand(command_d, impl, groups)
 
     return _ui_command_factory
