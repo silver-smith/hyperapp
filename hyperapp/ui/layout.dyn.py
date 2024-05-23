@@ -52,7 +52,7 @@ def layout_tree(piece, parent, controller):
     return controller.view_items(parent_id)
 
 
-def _wrap_ui_command(command, kind_d_res_ref):
+def _wrap_ui_command(command):
     impl = htypes.layout.layout_command_impl(
         ui_command_impl=command.impl,
         )
@@ -63,11 +63,9 @@ def _wrap_ui_command(command, kind_d_res_ref):
 
 
 def enum_layout_tree_commands(piece, current_item, controller):
-    kind_d = htypes.ui.context_model_command_kind_d()
-    kind_d_res_ref = mosaic.put(data_to_res(kind_d))
     if current_item:
         commands = [
-            _wrap_ui_command(cmd, kind_d_res_ref)
+            _wrap_ui_command(cmd)
             for cmd
             in controller.item_commands(current_item.id)
             ]

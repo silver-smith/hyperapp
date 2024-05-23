@@ -19,7 +19,6 @@ import:
 - legacy_type.ui:command
 - legacy_type.ui:command_properties
 - legacy_type.ui:command_properties_d
-- legacy_type.ui:context_model_command_kind_d
 - legacy_type.ui:fn_impl
 - legacy_type.ui:global_model_command_d
 - legacy_type.ui:list_ui_t
@@ -194,7 +193,6 @@ definitions:
       htypes.layout.layout_command_impl: legacy_type.layout:layout_command_impl
       htypes.layout.view: legacy_type.layout:view
       htypes.ui.command: legacy_type.ui:command
-      htypes.ui.context_model_command_kind_d: legacy_type.ui:context_model_command_kind_d
       services.data_to_res: resource.data_to_res:data_to_res.service
       services.model_command_impl_creg: ui.model_command_impl_creg:model_command_impl_creg.service
       services.mosaic: builtins:mosaic.service
