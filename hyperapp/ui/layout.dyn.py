@@ -20,6 +20,10 @@ class LayoutCommandImpl(CommandImpl):
         self._ui_command_impl = ui_command_impl
 
     @property
+    def name(self):
+        return f'layout:{self._ui_command_impl.name}'
+
+    @property
     def enabled(self):
         return self._ui_command_impl.enabled
 
