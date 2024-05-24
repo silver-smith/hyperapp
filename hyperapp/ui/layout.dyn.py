@@ -1,4 +1,5 @@
 import logging
+from types import SimpleNamespace
 
 from . import htypes
 from .services import (
@@ -94,20 +95,24 @@ async def open_view_item_commands(piece, current_item):
         return htypes.layout.command_list(item_id=current_item.id)
 
 
-def _command_piece_to_item(ctx, piece):
+def _command_piece_to_item(ctx, piece, item_id):
+    wrapped_piece = _wrap_ui_command(piece)
     command_ctx = ctx.push(
         navigator=None,
+        current_item=SimpleNamespace(id=item_id),
         )
     command = ui_command_factory(piece, command_ctx)
+    wrapped_command = ui_command_factory(wrapped_piece, command_ctx)
     return htypes.layout.command_item(
         name=command.name,
         groups=', '.join(d_to_name(g) for g in command.groups),
+        wrapped_groups=', '.join(d_to_name(g) for g in wrapped_command.groups),
         )
 
 
 def view_item_commands(piece, controller, ctx):
     command_list = [
-        _command_piece_to_item(ctx, command)
+        _command_piece_to_item(ctx, command, piece.item_id)
         for command in controller.item_commands(piece.item_id)
         ]
     log.info("Get view item commands for %s: %s", piece, command_list)

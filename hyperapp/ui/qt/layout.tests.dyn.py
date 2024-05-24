@@ -115,11 +115,13 @@ def test_view_item_commands():
     app = QtWidgets.QApplication()
     try:
         with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx) as ctl:
-            piece = htypes.layout.view()
-            windows = layout.layout_tree(piece, None, ctl)
-            window_items = layout.layout_tree(piece, windows[0], ctl)
+            ctx = ctx.clone_with(controller=ctl)
+            layout_piece = htypes.layout.view()
+            windows = layout.layout_tree(layout_piece, None, ctl)
+            window_items = layout.layout_tree(layout_piece, windows[0], ctl)
             item_id = window_items[1].id
-            commands = layout.view_item_commands(htypes.layout.command_list(item_id), ctl, ctx)
+            command_list_piece = htypes.layout.command_list(item_id)
+            commands = layout.view_item_commands(command_list_piece, ctl, ctx)
             assert commands
     finally:
         app.shutdown()
