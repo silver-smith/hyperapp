@@ -550,6 +550,7 @@ class Controller:
         self._id_to_item = {}
         self._counter = itertools.count(start=1)
         self._feed = feed_factory(htypes.layout.view())
+        self._inside_commands_call = False
         layout = default_layout
         if load_state:
             try:
@@ -571,11 +572,17 @@ class Controller:
         return [item.model_item for item in item_list]
 
     def item_commands(self, item_id):
-        item = self._id_to_item.get(item_id)
-        if item:
-            return [rec.piece for rec in item.view_commands + item.model_commands]
-        else:
+        if self._inside_commands_call:
             return []
+        self._inside_commands_call = True
+        try:
+            item = self._id_to_item.get(item_id)
+            if item:
+                return [rec.piece for rec in item.view_commands + item.model_commands]
+            else:
+                return []
+        finally:
+            self._inside_commands_call = False
 
     def item_command_context(self, item_id):
         item = self._id_to_item[item_id]
