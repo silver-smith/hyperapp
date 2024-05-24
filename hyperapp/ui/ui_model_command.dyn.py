@@ -16,8 +16,7 @@ from .services import (
     visualizer,
     web,
     )
-from .code.command import CommandImpl
-from .code.ui_command import CommandKind
+from .code.command import CommandKind, CommandImpl
 
 log = logging.getLogger(__name__)
 
