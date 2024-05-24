@@ -117,10 +117,10 @@ associations:
   - legacy_type.layout:view
   value: layout_tree.model
 - bases:
-  - ui.model_command_impl_creg:model_command_impl_creg.service
+  - ui.ui_command_impl_creg:ui_command_impl_creg.service
   - legacy_type.layout:layout_command_impl
   key:
-  - ui.model_command_impl_creg:model_command_impl_creg.service
+  - ui.ui_command_impl_creg:ui_command_impl_creg.service
   - legacy_type.layout:layout_command_impl
   value: layout_command_impl_from_piece
 definitions:

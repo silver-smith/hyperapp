@@ -8,7 +8,7 @@ from .services import (
     pyobj_creg,
     ui_command_impl_creg,
     )
-from .code.command import CommandImpl, d_res_ref_to_name
+from .code.command import CommandKind, CommandImpl, d_res_ref_to_name
 
 log = logging.getLogger(__name__)
 
@@ -31,12 +31,20 @@ class LayoutCommandImpl(CommandImpl):
     def disabled_reason(self):
         return self._ui_command_impl.disabled_reason
 
+    @property
+    def properties(self):
+        return self._ui_command_impl.properties
+
+    @property
+    def kind(self):
+        return CommandKind.MODEL
+
     async def run(self):
         log.info("Run layout command: %r", self.name)
         return await self._ui_command_impl.run()
 
 
-@model_command_impl_creg.actor(htypes.layout.layout_command_impl)
+@ui_command_impl_creg.actor(htypes.layout.layout_command_impl)
 def layout_command_impl_from_piece(piece, ctx):
     item_id = ctx.current_item.id
     ui_command_ctx = ctx.controller.item_command_context(item_id)
