@@ -178,7 +178,7 @@ class _Item:
         return [CommandRec(cmd, ctx) for cmd in commands]
 
     def command_context(self):
-        ctx = self.ctx.clone_with(
+        ctx = self.ctx.push(
             view=self.view,
             widget=weakref.ref(self.widget),
             hook=self._hook,

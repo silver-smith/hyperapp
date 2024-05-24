@@ -157,7 +157,7 @@ class FnCommandImpl(CommandImpl):
     def params(self):
         params = {
             **self._ctx.as_dict(),
-            'ctx': self._ctx,
+            'ctx': self._ctx.pop(),
             }
         try:
             view = self._ctx.view

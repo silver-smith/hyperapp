@@ -61,7 +61,7 @@ class UiModelCommandImpl(CommandImpl):
         if type(piece) is list:
             piece = tuple(piece)
         view_piece = visualizer(self._lcs, piece)
-        view = model_view_creg.animate(view_piece, piece, self._ctx)
+        view = model_view_creg.animate(view_piece, piece, self._ctx.pop())
         log.info("Run model command %r view: %s", self.name, view)
         self._navigator_rec.view.open(self._ctx, piece, view, navigator_w)
 

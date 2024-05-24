@@ -3,22 +3,37 @@ import inspect
 
 class Context:
 
-    def __init__(self, items=None, **kw):
+    def __init__(self, items=None, next=None, **kw):
+        self._next = next
         self._items = {**kw, **(items or {})}
 
     def __getattr__(self, name):
         if name.startswith('_'):
             raise AttributeError(name)
+        if self._next and name in self._next:
+            return getattr(self._next, name)
         return self._items[name]
 
     def __contains__(self, name):
+        if self._next:
+            if name in self._next:
+                return True
         return name in self._items
 
     def clone_with(self, **kw):
-        return Context({**self._items, **kw})
+        return Context({**self._items, **kw}, self._next)
+
+    def push(self, **kw):
+        return Context(kw.copy(), self)
+
+    def pop(self):
+        return self._next
 
     def as_dict(self):
-        return self._items
+        if self._next:
+            return {**self._next.as_dict(), **self._items}
+        else:
+            return self._items
 
     @staticmethod
     def attributes(obj):
