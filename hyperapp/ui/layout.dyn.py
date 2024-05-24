@@ -6,9 +6,10 @@ from .services import (
     model_command_impl_creg,
     mosaic,
     pyobj_creg,
+    ui_command_factory,
     ui_command_impl_creg,
     )
-from .code.command import CommandKind, CommandImpl, d_res_ref_to_name
+from .code.command import CommandKind, CommandImpl, d_to_name
 
 log = logging.getLogger(__name__)
 
@@ -93,9 +94,20 @@ async def open_view_item_commands(piece, current_item):
         return htypes.layout.command_list(item_id=current_item.id)
 
 
-def view_item_commands(piece, controller):
+def _command_piece_to_item(ctx, piece):
+    command_ctx = ctx.push(
+        navigator=None,
+        )
+    command = ui_command_factory(piece, command_ctx)
+    return htypes.layout.command_item(
+        name=command.name,
+        groups=', '.join(d_to_name(g) for g in command.groups),
+        )
+
+
+def view_item_commands(piece, controller, ctx):
     command_list = [
-        htypes.layout.command_item(d_res_ref_to_name(command.d))
+        _command_piece_to_item(ctx, command)
         for command in controller.item_commands(piece.item_id)
         ]
     log.info("Get view item commands for %s: %s", piece, command_list)

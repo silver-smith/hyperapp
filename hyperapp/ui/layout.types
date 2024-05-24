@@ -12,6 +12,7 @@ command_list = record:
 
 command_item = record:
   name: string
+  groups: string
 
 
 layout_command_impl = record:

@@ -119,7 +119,7 @@ def test_view_item_commands():
             windows = layout.layout_tree(piece, None, ctl)
             window_items = layout.layout_tree(piece, windows[0], ctl)
             item_id = window_items[1].id
-            commands = layout.view_item_commands(htypes.layout.command_list(item_id), ctl)
+            commands = layout.view_item_commands(htypes.layout.command_list(item_id), ctl, ctx)
             assert commands
     finally:
         app.shutdown()

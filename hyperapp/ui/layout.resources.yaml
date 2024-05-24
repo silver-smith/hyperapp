@@ -33,6 +33,7 @@ import:
 - resource.data_to_res:data_to_res.service
 - ui.command:command.module
 - ui.model_command_impl_creg:model_command_impl_creg.service
+- ui.ui_command:ui_command_factory.service
 - ui.ui_command_impl_creg:ui_command_impl_creg.service
 associations:
 - bases:
@@ -197,6 +198,7 @@ definitions:
       services.model_command_impl_creg: ui.model_command_impl_creg:model_command_impl_creg.service
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
+      services.ui_command_factory: ui.ui_command:ui_command_factory.service
       services.ui_command_impl_creg: ui.ui_command_impl_creg:ui_command_impl_creg.service
   layout_command_impl_from_piece:
     _type: legacy_type.builtin:attribute
@@ -286,6 +288,7 @@ definitions:
     params:
     - piece
     - controller
+    - ctx
   view_item_commands.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: false
@@ -300,6 +303,7 @@ definitions:
     params:
     - piece
     - controller
+    - ctx
   view_item_commands.model:
     _type: legacy_type.ui:model
     ui_t: view_item_commands.ui_t
