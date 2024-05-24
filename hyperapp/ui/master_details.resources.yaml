@@ -21,8 +21,8 @@ import:
 - legacy_type.ui:ui_command_impl
 - legacy_type.ui:universal_ui_command_d
 - ui.command:command.module
+- ui.model_command:model_command_factory.service
 - ui.model_command:model_commands.service
-- ui.model_command_impl_creg:model_command_impl_creg.service
 - ui.qt.box_layout:box_layout.module
 - ui.view_registry:model_view_creg.service
 - ui.view_registry:view_creg.service
@@ -85,7 +85,7 @@ definitions:
       htypes.master_details.state: legacy_type.master_details:state
       htypes.master_details.view: legacy_type.master_details:view
       services.mark: common.mark:mark.service
-      services.model_command_impl_creg: ui.model_command_impl_creg:model_command_impl_creg.service
+      services.model_command_factory: ui.model_command:model_command_factory.service
       services.model_commands: ui.model_command:model_commands.service
       services.model_view_creg: ui.view_registry:model_view_creg.service
       services.mosaic: builtins:mosaic.service

@@ -3,7 +3,7 @@ import logging
 from . import htypes
 from .services import (
     mark,
-    model_command_impl_creg,
+    model_command_factory,
     model_commands,
     mosaic,
     view_creg,
@@ -81,7 +81,7 @@ class MasterDetailsView(BoxLayoutView):
             model_state=model_state,
             **ctx.attributes(model_state),
             )
-        command = model_command_impl_creg.animate(command_piece, command_ctx)
+        command = model_command_factory(command_piece, command_ctx)
         piece = await command.run()
         log.info("Master-details: command result: %s", piece)
         return piece
