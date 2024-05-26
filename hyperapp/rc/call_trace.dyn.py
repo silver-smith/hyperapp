@@ -132,7 +132,7 @@ class FnInfo:
             self.line_no = trace.line_no
             self.obj_type = trace.obj_type
         else:
-            assert self.line_no == trace.line_no
+            assert self.line_no == trace.line_no, f"was: {self.line_no}; new: {trace.line_no}. {trace.module}/{trace.fn_qual_name}"
             assert self.obj_type == trace.obj_type
         for idx, (name, t) in enumerate(params.items()):
             if self.obj_type == 'classmethod' and idx == 0:
