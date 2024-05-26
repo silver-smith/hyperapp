@@ -104,7 +104,10 @@ class Tracer:
             self._original_tracer(frame, event, arg)
         if event != 'call':
             return self._original_tracer
-        path = frame.f_code.co_filename
+        code = frame.f_code
+        if '<locals>' in code.co_qualname or '<genexpr>' in code.co_qualname:
+            return self._original_tracer
+        path = code.co_filename
         module_name = self._path_to_module.get(path)
         if not module_name:
             return self._original_tracer
