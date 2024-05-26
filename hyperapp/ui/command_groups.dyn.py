@@ -12,14 +12,17 @@ def default_command_groups(properties, kind):
 
     groups = set()
     if properties.is_global:
-        groups.add(global_d)
-    if kind == CommandKind.VIEW:
-        groups.add(view_d)
-    if kind == CommandKind.MODEL:
-        groups.add(model_d)
         if properties.uses_state:
             groups.add(pane_2_d)
         else:
+            groups.add(global_d)
+    elif kind == CommandKind.VIEW:
+        groups.add(view_d)
+    elif kind == CommandKind.MODEL:
+        if properties.uses_state:
+            groups.add(pane_2_d)
+        else:
+            groups.add(model_d)
             groups.add(pane_1_d)
     if properties.remotable:
         groups.add(remotable_d)
