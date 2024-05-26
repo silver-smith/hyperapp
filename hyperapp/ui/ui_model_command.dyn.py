@@ -17,6 +17,7 @@ from .services import (
     web,
     )
 from .code.command import CommandKind, CommandImpl
+from .code.command_groups import default_command_groups
 
 log = logging.getLogger(__name__)
 
@@ -48,8 +49,8 @@ class UiModelCommandImpl(CommandImpl):
         return self._properties
 
     @property
-    def kind(self):
-        return CommandKind.MODEL
+    def groups(self):
+        return default_command_groups(self.properties, CommandKind.MODEL)
 
     async def _run(self):
         navigator_w = self._navigator_rec.widget_wr()

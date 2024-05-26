@@ -10,7 +10,7 @@ from .services import (
     ui_command_factory,
     ui_command_impl_creg,
     )
-from .code.command import CommandKind, CommandImpl, d_to_name
+from .code.command import CommandImpl, d_to_name
 
 log = logging.getLogger(__name__)
 
@@ -34,12 +34,9 @@ class LayoutCommandImpl(CommandImpl):
         return self._ui_command_impl.disabled_reason
 
     @property
-    def properties(self):
-        return self._ui_command_impl.properties
-
-    @property
-    def kind(self):
-        return CommandKind.MODEL
+    def groups(self):
+        context_d = htypes.command_groups.context_d()
+        return {context_d}
 
     async def run(self):
         log.info("Run layout command: %r", self.name)

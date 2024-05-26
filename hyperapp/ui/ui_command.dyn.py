@@ -19,16 +19,15 @@ log = logging.getLogger(__name__)
 
 class UiCommand(Command):
 
-    def __init__(self, d, impl, groups):
+    def __init__(self, d, impl):
         super().__init__(d, impl)
-        self._groups = groups
 
     def __repr__(self):
         return f"<UiCommand: {self.name}: {self._impl}>"
 
     @property
     def groups(self):
-        return self._groups
+        return self._impl.groups
 
 
 class UiCommandImpl(FnCommandImpl):
@@ -42,8 +41,8 @@ class UiCommandImpl(FnCommandImpl):
         return self._properties
 
     @property
-    def kind(self):
-        return CommandKind.VIEW
+    def groups(self):
+        return default_command_groups(self.properties, CommandKind.VIEW)
 
 
 @ui_command_impl_creg.actor(htypes.ui.ui_command_impl)
@@ -74,7 +73,6 @@ def ui_command_factory():
     def _ui_command_factory(piece, ctx):
         command_d = pyobj_creg.invite(piece.d)
         impl = ui_command_impl_creg.invite(piece.impl, ctx)
-        groups = default_command_groups(impl.properties, impl.kind)
-        return UiCommand(command_d, impl, groups)
+        return UiCommand(command_d, impl)
 
     return _ui_command_factory

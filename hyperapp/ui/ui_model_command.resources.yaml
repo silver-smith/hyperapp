@@ -15,6 +15,7 @@ import:
 - legacy_type.ui:ui_model_command_impl
 - resource.data_to_res:data_to_res.service
 - ui.command:command.module
+- ui.command_groups:command_groups.module
 - ui.model_command:enum_model_commands.service
 - ui.model_command:global_commands.service
 - ui.model_command:model_command_factory.service
@@ -40,6 +41,7 @@ definitions:
     file_name: ui_model_command.dyn.py
     import_list:
       code.command: ui.command:command.module
+      code.command_groups: ui.command_groups:command_groups.module
       code.ui_command: ui.ui_command:ui_command.module
       htypes.ui.command: legacy_type.ui:command
       htypes.ui.command_properties_d: legacy_type.ui:command_properties_d
