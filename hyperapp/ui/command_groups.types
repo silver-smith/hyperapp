@@ -1,6 +1,7 @@
 global_d = record
 view_d = record
 model_d = record
-context_d = record
+pane_1_d = record
+pane_2_d = record
 
 remotable_d = record

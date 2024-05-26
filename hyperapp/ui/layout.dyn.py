@@ -35,8 +35,8 @@ class LayoutCommandImpl(CommandImpl):
 
     @property
     def groups(self):
-        context_d = htypes.command_groups.context_d()
-        return {context_d}
+        pane_2_d = htypes.command_groups.pane_2_d()
+        return {pane_2_d}
 
     async def run(self):
         log.info("Run layout command: %r", self.name)

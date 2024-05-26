@@ -2,9 +2,10 @@
 
 import:
 - legacy_type.builtin:python_module
-- legacy_type.command_groups:context_d
 - legacy_type.command_groups:global_d
 - legacy_type.command_groups:model_d
+- legacy_type.command_groups:pane_1_d
+- legacy_type.command_groups:pane_2_d
 - legacy_type.command_groups:remotable_d
 - legacy_type.command_groups:view_d
 - ui.command:command.module
@@ -16,8 +17,9 @@ definitions:
     file_name: command_groups.dyn.py
     import_list:
       code.command: ui.command:command.module
-      htypes.command_groups.context_d: legacy_type.command_groups:context_d
       htypes.command_groups.global_d: legacy_type.command_groups:global_d
       htypes.command_groups.model_d: legacy_type.command_groups:model_d
+      htypes.command_groups.pane_1_d: legacy_type.command_groups:pane_1_d
+      htypes.command_groups.pane_2_d: legacy_type.command_groups:pane_2_d
       htypes.command_groups.remotable_d: legacy_type.command_groups:remotable_d
       htypes.command_groups.view_d: legacy_type.command_groups:view_d

@@ -41,13 +41,6 @@ class CommandPaneView(View):
 
     def set_commands(self, widget, commands):
         layout = widget.layout()
-        # wanted_commands = {
-        #     cmd for cmd in commands
-        #     if (
-        #             cmd.d & model_d and not (cmd.d & global_d)
-        #             or cmd.d & context_d
-        #         )
-        #     }
         wanted_commands = {
             cmd for cmd in commands
             if self._show_command(cmd.groups)
@@ -60,14 +53,14 @@ class CommandPaneView(View):
         for cmd in new_commands:
             # All except context commands are present at menu bar;
             # avoid setting shortcut to prevent ambigous ones.
-            # button = self._make_button(cmd, add_shortcut=cmd.d & context_d)
-            button = self._make_button(cmd, add_shortcut=True)  # TODO
+            button = self._make_button(cmd, add_shortcut=True)
             layout.addWidget(button)
             widget._command_to_button[cmd] = button
 
     def _show_command(self, groups):
-        context_d = htypes.command_groups.context_d()
-        if context_d in groups:
+        pane_1_d = htypes.command_groups.pane_1_d()
+        pane_2_d = htypes.command_groups.pane_2_d()
+        if {pane_1_d, pane_2_d} & groups:
             return True
         return False
 

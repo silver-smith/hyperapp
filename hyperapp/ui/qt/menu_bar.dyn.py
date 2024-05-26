@@ -41,9 +41,8 @@ class MenuBarView(View):
         global_d = htypes.command_groups.global_d()
         view_d = htypes.command_groups.view_d()
         model_d = htypes.command_groups.model_d()
-        context_d = htypes.command_groups.context_d()
 
-        global_menu, view_menu, current_menu = [
+        global_menu, view_menu, model_menu = [
             action.menu() for action in w.actions()
             ]
         removed_commands = set(w._command_to_action) - set(commands)
@@ -51,14 +50,14 @@ class MenuBarView(View):
             action = w._command_to_action.pop(cmd)
             global_menu.removeAction(action)
         for cmd in commands:
-            if context_d in cmd.groups:
-                continue
             if global_d in cmd.groups:
                 menu = global_menu
-            elif model_d in cmd.groups:
-                menu = current_menu
-            else:
+            elif view_d in cmd.groups:
                 menu = view_menu
+            elif model_d in cmd.groups:
+                menu = model_menu
+            else:
+                continue
             action = self._make_action(cmd)
             menu.addAction(action)
             w._command_to_action[cmd] = action
