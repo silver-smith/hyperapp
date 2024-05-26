@@ -65,12 +65,14 @@ class MasterDetailsView(BoxLayoutView):
             )
         return super().construct_widget(base_state, ctx)
 
-    async def child_state_changed(self, ctx, widget):
-        log.info("Master-details: child state changed: %s", widget)
-        master_view = super().child_view(0)
-        master_widget = super().item_widget(widget, 0)
-        model_state = master_view.model_state(master_widget)
-        piece = await self.run_details_command(ctx, self._model, model_state, self._details_command)
+    async def children_context_changed(self, ctx, rctx, widget):
+        log.info("Master-details: children context changed: %s", widget)
+        try:
+            model_state = rctx.model_state
+        except KeyError:
+            piece = "No item is selected"
+        else:
+            piece = await self.run_details_command(ctx, self._model, model_state, self._details_command)
         details_view = self.model_to_view(ctx, piece)
         self.replace_element(ctx, widget, 1, details_view)
 

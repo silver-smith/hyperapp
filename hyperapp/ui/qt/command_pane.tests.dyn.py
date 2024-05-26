@@ -7,7 +7,7 @@ from .code.context import Context
 from .tested.code import command_pane
 
 
-def test_widget():
+async def test_widget():
     ctx = Context()
     piece = htypes.command_pane.view()
     state = htypes.command_pane.state()
@@ -19,6 +19,7 @@ def test_widget():
         assert view.piece
         state = view.widget_state(widget)
         assert state
-        view.set_commands(widget, [command])
+        rctx = Context(view_commands=[], model_commands=[command])
+        await view.children_context_changed(rctx, widget)
     finally:
         app.shutdown()

@@ -16,7 +16,7 @@ def make_state():
     return htypes.menu_bar.state()
 
 
-def test_widget():
+async def test_widget():
     ctx = Context()
     piece = make_piece()
     state = make_state()
@@ -29,6 +29,7 @@ def test_widget():
         assert view.piece
         state = view.widget_state(widget)
         assert state
-        view.set_commands(widget, [command])
+        rctx = Context(view_commands=[], model_commands=[command])
+        await view.children_context_changed(rctx, widget)
     finally:
         app.shutdown()

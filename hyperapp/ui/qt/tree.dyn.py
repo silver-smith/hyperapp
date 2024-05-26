@@ -207,7 +207,7 @@ class TreeView(View):
         return widget
 
     def init_widget(self, widget):
-        widget.on_state_changed = self._ctl_hook.state_changed
+        widget.on_state_changed = self._ctl_hook.parent_context_changed
 
     def widget_state(self, widget):
         index = widget.currentIndex()
@@ -215,10 +215,13 @@ class TreeView(View):
         path = self._adapter.get_path(item_id)
         return htypes.tree.state(current_path=tuple(path))
 
-    def get_model(self):
-        return self._adapter.model
+    def parent_context(self, ctx, widget):
+        return ctx.clone_with(
+            model=self._adapter.model,
+            model_state=self._model_state(widget),
+            )
 
-    def model_state(self, widget):
+    def _model_state(self, widget):
         index = widget.currentIndex()
         item_id = index.internalId()
         item = self._adapter.get_item(item_id)

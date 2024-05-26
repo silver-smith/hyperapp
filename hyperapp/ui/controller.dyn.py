@@ -51,6 +51,7 @@ class _Item:
     id: int
     parent: Self | None
     ctx: Context
+    rctx: Context  # Parent-context from children.
     name: str
     view: View
     focusable: bool
@@ -84,7 +85,7 @@ class _Item:
         item_id = next(self._counter)
         ctx = rec.view.children_context(self.ctx)
         item = _Item(self._counter, self._id_to_item, self._feed,
-                     item_id, self, ctx, rec.name, rec.view, rec.focusable)
+                     item_id, self, ctx, None, rec.name, rec.view, rec.focusable)
         item.view.set_controller_hook(item._hook)
         self._id_to_item[item_id] = item
         return item
@@ -206,123 +207,54 @@ class _Item:
     def get_child_widget(self, idx):
         return self.view.item_widget(self.widget, idx)
 
-    def update_model(self):
+    def _update_parents_context(self):
+        asyncio.create_task(self.update_parents_context(self.rctx))
 
-        def visit_item(item, model):
-            item_model = item.view.get_model()
-            if item_model is not None:
-                model = item_model
-            else:
-                item.view.model_changed(item.widget, model)
-            for kid in item.children:
-                if not kid.focusable:
-                    kid.view.model_changed(kid.widget, model)
-            return model
+    async def update_parents_context(self, rctx):
+        for idx, item in enumerate(self.children):
+            if item.focusable and idx != self._current_child_idx:
+                continue
+            rctx = item.view.parent_context(rctx, item.widget)
+        self.rctx = rctx
+        await self.view.children_context_changed(self.ctx, rctx, self.widget)
+        rctx = self._reverse_context(rctx)
+        if self.parent and parent.current_child is self:
+            await self.parent.update_parents_context(rctx)
 
-        def visit_item_and_children(item):
-            if item.children:
-                model = visit_item_and_children(item.current_child)
-            else:
-                model = None
-            return visit_item(item, model)
+    def _reverse_context(self, rctx):
+        rctx = self.view.parent_context(rctx, self.widget)
+        kw = {'view_commands': self.view_commands}
+        if self.model_commands:
+            kw = {**kw, 'model_commands': self.model_commands}
+        return rctx.clone_with(**kw)
 
-        def visit_parents(item, model):
-            if not item.parent:
-                return
-            if item.parent.current_child_idx != item.idx:
-                return
-            model = visit_item(item.parent, model)
-            visit_parents(item.parent, model)
-
-        model = visit_item_and_children(self)
-        visit_parents(self, model)
-
-    def update_commands(self):
-
-        def visit_item(item, view_commands, model_commands):
-            if item.view is None:
-                return (None, None)  # Root item.
-            view_commands = [*item.view_commands, *view_commands]
-            if item.model_commands:
-                model_commands = item.model_commands
-            animated_commands = [cmd.animated for cmd in view_commands + model_commands]
-            item.view.set_commands(item.widget, animated_commands)
-            for kid in item.children:
-                if not kid.focusable:
-                    kid.view.set_commands(kid.widget, animated_commands)
-            return view_commands, model_commands
-
-        def visit_item_and_children(item):
-            if item.children:
-                view_commands, model_commands = visit_item_and_children(item.current_child)
-            else:
-                view_commands = model_commands = []
-            view_commands, model_commands = visit_item(item, view_commands, model_commands)
-            return view_commands, model_commands
-
-        def visit_parents(item, view_commands, model_commands):
-            if not item.parent:
-                return
-            if (item.parent.current_child_idx is not None
-                    and item.parent.current_child_idx != item.idx):
-                return
-            view_commands, model_commands = visit_item(item.parent, view_commands, model_commands)
-            visit_parents(item.parent, view_commands, model_commands)
-
-        view_commands, model_commands = visit_item_and_children(self)
-        visit_parents(self, view_commands, model_commands)
-
-    def state_changed_hook(self):
-        asyncio.create_task(self._state_changed_async())
-
-    async def _state_changed_async(self):
-        log.info("Controller: state changed for: %s", self)
+    def parent_context_changed_hook(self):
+        log.info("Controller: parent context changed from: %s", self)
+        # Recreate commands because model_state may be changed.
         self._view_commands = None
         self._model_commands = None
-        self.update_commands()
-        item = self.parent
-        while item:
-            if item.view:
-                await item.view.child_state_changed(item.ctx, item.widget)
-            item = item.parent
+        self._update_parents_context()
 
     def current_changed_hook(self):
-        log.info("Controller: current changed: %s", self)
+        log.info("Controller: current changed from: %s", self)
         self._current_child_idx = None
-        self._invalidate_parents_commands()
-        self.update_commands()
-        self.update_model()
+        self._update_parents_context()
         self.save_state()
-
-    def commands_changed_hook(self):
-        log.info("Controller: commands changed for: %s", self)
-        self._view_commands = None
-        self._model_commands = None
-        self.update_commands()
 
     # Should be on stack for proper module for feed constructor be picked up.
     async def _send_model_diff(self, model_diff):
         await self._feed.send(model_diff)
 
     def _set_model_layout(self, layout):
-        model = self._find_child_model()
+        model = self.rctx.model
         t = deduce_t(model)
         set_model_layout(self.ctx.lcs, t, layout)
-
-    def _find_child_model(self):
-        if self.model:
-            return self.model
-        child = self.current_child
-        if not child:
-            return None
-        return child._find_child_model()
 
     def _replace_child_item(self, idx):
         view_items = self.view.items()
         item = self._make_child_item(view_items[idx])
         self._children[idx] = item
-        self.update_commands()
-        self.update_model()
+        self._update_parents_context()
         self.save_state()
         model_diff = TreeDiff.Replace(self.path, self.model_item)
         asyncio.create_task(self._send_model_diff(model_diff))
@@ -354,8 +286,7 @@ class _Item:
         self._children.insert(idx, item)
         self._current_child_idx = None
         self._invalidate_parents_commands()
-        self.update_commands()
-        self.update_model()
+        self._update_parents_context()
         self.save_state()
         model_diff = TreeDiff.Insert(item.path, item.model_item)
         asyncio.create_task(self._send_model_diff(model_diff))
@@ -364,8 +295,7 @@ class _Item:
         del self._children[idx]
         self._current_child_idx = None
         self._invalidate_parents_commands()
-        self.update_commands()
-        self.update_model()
+        self._update_parents_context()
         self.save_state()
 
     def replace_parent_widget_hook(self, new_widget):
@@ -394,7 +324,7 @@ class _WindowItem(_Item):
         state = web.summon(state_ref)
         item_id = next(counter)
         self = cls(counter, id_to_item, feed,
-                   item_id, parent, ctx, f"window#{item_id}", view, focusable=True)
+                   item_id, parent, ctx, None, f"window#{item_id}", view, focusable=True)
         self._init(state)
         return self
 
@@ -423,7 +353,7 @@ class _RootItem(_Item):
     @classmethod
     def from_piece(cls, counter, id_to_item, feed, show, ctx, layout_bundle, layout):
         item_id = 0
-        self = cls(counter, id_to_item, feed, item_id, None, ctx, "root",
+        self = cls(counter, id_to_item, feed, item_id, None, ctx, None, "root",
                    view=None, focusable=False, _layout_bundle=layout_bundle, _show=show)
         self._children = [
             _WindowItem.from_refs(
@@ -436,8 +366,7 @@ class _RootItem(_Item):
 
     def show(self):
         for item in self._children:
-            item.update_commands()
-            item.update_model()
+            self._update_parents_context()
             item.widget.show()
 
     @property
@@ -480,11 +409,10 @@ class _RootItem(_Item):
         item_id = next(self._counter)
         ctx = view.children_context(self.ctx)
         item = _WindowItem(self._counter, self._id_to_item, self._feed,
-                           item_id, self, ctx, f"window#{item_id}", view, focusable=True)
+                           item_id, self, ctx, None, f"window#{item_id}", view, focusable=True)
         item._init(state)
         self._children.append(item)
-        item.update_commands()
-        item.update_model()
+        self._update_parents_context()
         if self._show:
             item.widget.show()
         self.save_state(item)
@@ -510,14 +438,11 @@ class CtlHook:
     def __init__(self, item):
         self._item = item
 
-    def commands_changed(self):
-        self._item.commands_changed_hook()
-
     def current_changed(self):
         self._item.current_changed_hook()
 
-    def state_changed(self):
-        self._item.state_changed_hook()
+    def parent_context_changed(self):
+        self._item.parent_context_changed_hook()
 
     def replace_view(self, new_view, new_state=None):
         self._item.replace_view_hook(new_view, new_state)

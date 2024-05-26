@@ -29,25 +29,26 @@ class MenuBarView(View):
         return htypes.menu_bar.view()
 
     def construct_widget(self, state, ctx):
-        w = MenuBar()
+        widget = MenuBar()
         for text in ['&Global', '&View', '&Current']:
-            w.addMenu(QtWidgets.QMenu(text, toolTipsVisible=True))
-        return w
+            widget.addMenu(QtWidgets.QMenu(text, toolTipsVisible=True))
+        return widget
 
     def widget_state(self, widget):
         return htypes.menu_bar.state()
 
-    def set_commands(self, w, commands):
+    async def children_context_changed(self, ctx, widget):
+        commands = ctx.view_commands + ctx.model_commands
         global_d = htypes.command_groups.global_d()
         view_d = htypes.command_groups.view_d()
         model_d = htypes.command_groups.model_d()
 
         global_menu, view_menu, model_menu = [
-            action.menu() for action in w.actions()
+            action.menu() for action in widget.actions()
             ]
-        removed_commands = set(w._command_to_action) - set(commands)
+        removed_commands = set(widget._command_to_action) - set(commands)
         for cmd in removed_commands:
-            action = w._command_to_action.pop(cmd)
+            action = widget._command_to_action.pop(cmd)
             global_menu.removeAction(action)
         for cmd in commands:
             if global_d in cmd.groups:
@@ -60,7 +61,7 @@ class MenuBarView(View):
                 continue
             action = self._make_action(cmd)
             menu.addAction(action)
-            w._command_to_action[cmd] = action
+            widget._command_to_action[cmd] = action
 
     @staticmethod
     def _make_action(cmd):

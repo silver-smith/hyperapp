@@ -30,20 +30,13 @@ class View(metaclass=abc.ABCMeta):
     def get_current(self, widget):
         return None
 
-    @property
-    def is_navigator(self):
-        return False
-
-    def get_model(self):
-        return None
-
     def children_context(self, ctx):
         return ctx
 
-    def model_changed(self, widget, model):
-        pass
+    def parent_context(self, ctx, widget):
+        return ctx
 
-    async def child_state_changed(self, ctx, widget):
+    async def children_context_changed(self, ctx, widget):
         pass
 
     @abc.abstractmethod
@@ -61,6 +54,3 @@ class View(metaclass=abc.ABCMeta):
 
     def item_widget(self, widget, idx):
         raise RuntimeError(f"Unknown item: {idx}")
-
-    def set_commands(self, w, commands):
-        pass

@@ -13,10 +13,6 @@ log = logging.getLogger(__name__)
 
 
 def tab_piece_label(piece):
-    if isinstance(piece, htypes.box_layout.view):
-        piece = web.summon(piece.elements[0].view)
-    if isinstance(piece, htypes.navigator.view):
-        piece = web.summon(piece.current_model)
     return str(piece)[:40]
 
 
@@ -43,10 +39,12 @@ class AutoTabsView(TabsView):
         tabs = tuple(tab.ctl for tab in super().piece.tabs)
         return htypes.auto_tabs.view(tabs)
 
-    def model_changed(self, widget, model):
-        idx = super().get_current(widget)
-        item = super().items()[idx]
-        text = tab_piece_label(item.view.piece)
+    async def children_context_changed(self, ctx, widget):
+        try:
+            model = ctx.model
+        except KeyError:
+            return
+        text = tab_piece_label(model)
         super().set_tab_text(widget, idx, text)
 
     def insert_tab(self, ctx, widget, idx, tab_view, tab_state):

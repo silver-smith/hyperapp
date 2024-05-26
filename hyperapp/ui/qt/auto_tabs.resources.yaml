@@ -8,12 +8,10 @@ import:
 - legacy_type.auto_tabs:duplicate_tab_d
 - legacy_type.auto_tabs:tab_piece_label_d
 - legacy_type.auto_tabs:view
-- legacy_type.box_layout:view
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.label:view
-- legacy_type.navigator:view
 - legacy_type.ui:command
 - legacy_type.ui:command_properties
 - legacy_type.ui:command_properties_d
@@ -90,8 +88,6 @@ definitions:
       code.list_diff: common.list_diff:list_diff.module
       code.tabs: ui.qt.tabs:tabs.module
       htypes.auto_tabs.view: legacy_type.auto_tabs:view
-      htypes.box_layout.view: legacy_type.box_layout:view
-      htypes.navigator.view: legacy_type.navigator:view
       services.mark: common.mark:mark.service
       services.view_creg: ui.view_registry:view_creg.service
       services.web: builtins:web.service

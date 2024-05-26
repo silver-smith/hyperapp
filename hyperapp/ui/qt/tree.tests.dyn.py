@@ -55,7 +55,7 @@ def test_tree():
         assert view.piece
         state = view.widget_state(widget)
         assert isinstance(state, htypes.tree.state)
-        model_state = view.model_state(widget)
+        model_state = view._model_state(widget)
         assert model_state
     finally:
         app.shutdown()

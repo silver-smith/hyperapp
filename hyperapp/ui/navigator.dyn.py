@@ -1,4 +1,6 @@
 import logging
+import weakref
+from collections import namedtuple
 from functools import partial
 
 from . import htypes
@@ -12,6 +14,9 @@ from .services import (
 from .code.view import Item, View
 
 log = logging.getLogger(__name__)
+
+
+_NavigatorRec = namedtuple('_NavigatorRec', 'view widget_wr')
 
 
 class NavigatorView(View):
@@ -44,6 +49,11 @@ class NavigatorView(View):
 
     def get_current(self, widget):
         return 0
+
+    def parent_context(self, ctx, widget):
+        return ctx.clone_with(
+            navigator=_NavigatorRec(self, weakref.ref(widget)),
+            )
 
     @property
     def is_navigator(self):

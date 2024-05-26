@@ -115,16 +115,19 @@ class ListView(View):
         return widget
 
     def init_widget(self, widget):
-        widget.on_state_changed = self._ctl_hook.state_changed
+        widget.on_state_changed = self._ctl_hook.parent_context_changed
 
     def widget_state(self, widget):
         idx = widget.currentIndex().row()
         return htypes.list.state(current_idx=idx)
 
-    def get_model(self):
-        return self._adapter.model
+    def parent_context(self, ctx, widget):
+        return ctx.clone_with(
+            model=self._adapter.model,
+            model_state=self._model_state(widget),
+            )
 
-    def model_state(self, widget):
+    def _model_state(self, widget):
         idx = widget.currentIndex().row()
         if self._adapter.row_count():
             current_item = self._adapter.get_item(idx)
