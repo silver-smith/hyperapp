@@ -30,13 +30,17 @@ class View(metaclass=abc.ABCMeta):
     def get_current(self, widget):
         return None
 
+    @property
+    def is_navigator(self):
+        return False
+
     def children_context(self, ctx):
         return ctx
 
     def parent_context(self, ctx, widget):
         return ctx
 
-    async def children_context_changed(self, ctx, widget):
+    async def children_context_changed(self, ctx, rctx, widget):
         pass
 
     @abc.abstractmethod

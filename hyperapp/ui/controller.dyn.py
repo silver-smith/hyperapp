@@ -174,7 +174,7 @@ class _Item:
         model = self.model
         if model is None:
             return []
-        ctx = self._model_command_context(model)
+        ctx = self.command_context(model)
         commands = ui_model_command_factory(ctx.piece, ctx)
         return [CommandRec(cmd, ctx) for cmd in commands]
 
@@ -183,50 +183,56 @@ class _Item:
             view=self.view,
             widget=weakref.ref(self.widget),
             hook=self._hook,
-            navigator=self.navigator_rec,
             )
-        model = self.model
-        if model is None:
+        ctx = ctx.copy_from(self.rctx)
+        try:
+            model = ctx.model
+            model_state = ctx.model_state
+        except KeyError:
             return ctx
-        model_state = self.view.model_state(self.widget)
-        return ctx.clone_with(
-            piece=model,
-            model_state=model_state,
-            **self.ctx.attributes(model_state),
-            )
-
-    def _model_command_context(self, model):
-        ctx = self.command_context()
-        model_state = self.view.model_state(self.widget)
-        return ctx.clone_with(
-            piece=model,
-            model_state=model_state,
-            **self.ctx.attributes(model_state),
-            )
+        else:
+            return ctx.clone_with(
+                piece=model,
+                **ctx.attributes(model_state),
+                )
 
     def get_child_widget(self, idx):
         return self.view.item_widget(self.widget, idx)
 
-    def _update_parents_context(self):
-        asyncio.create_task(self.update_parents_context(self.rctx))
+    async def init_children_reverse_context(self):
+        is_leaf = True
+        for item in self.children:
+            if item.focusable:
+                await item.init_children_reverse_context()
+                is_leaf = False
+        if is_leaf:
+            await self.update_parents_context()
 
-    async def update_parents_context(self, rctx):
+    def _update_parents_context(self):
+        asyncio.create_task(self.update_parents_context())
+
+    async def update_parents_context(self):
+        kid = self.current_child
+        if kid:
+            rctx = kid.rctx
+        else:
+            rctx = Context(model_commands=[])
         for idx, item in enumerate(self.children):
-            if item.focusable and idx != self._current_child_idx:
+            if item.focusable:
                 continue
+            await item.view.children_context_changed(item.ctx, rctx, widget)
             rctx = item.view.parent_context(rctx, item.widget)
-        self.rctx = rctx
         await self.view.children_context_changed(self.ctx, rctx, self.widget)
-        rctx = self._reverse_context(rctx)
+        self.rctx = self._reverse_context(rctx)
         if self.parent and parent.current_child is self:
-            await self.parent.update_parents_context(rctx)
+            await self.parent.update_parents_context()
 
     def _reverse_context(self, rctx):
         rctx = self.view.parent_context(rctx, self.widget)
-        kw = {'view_commands': self.view_commands}
+        rctx = rctx.clone_with(view_commands=self.view_commands)
         if self.model_commands:
-            kw = {**kw, 'model_commands': self.model_commands}
-        return rctx.clone_with(**kw)
+            rctx = rctx.clone_with(model_commands=self.model_commands)
+        return rctx
 
     def parent_context_changed_hook(self):
         log.info("Controller: parent context changed from: %s", self)
@@ -476,6 +482,7 @@ class Controller:
         self._counter = itertools.count(start=1)
         self._feed = feed_factory(htypes.layout.view())
         self._inside_commands_call = False
+        self.inited = asyncio.Event()
         layout = default_layout
         if load_state:
             try:
@@ -484,9 +491,14 @@ class Controller:
                 pass
         self._root_item = _RootItem.from_piece(
             self._counter, self._id_to_item, self._feed, show, self._root_ctx, layout_bundle, layout)
+        asyncio.create_task(self._async_init())
 
     def show(self):
         self._root_item.show()
+
+    async def _async_init(self):
+        await self._root_item.init_children_reverse_context()
+        self.inited.set()
 
     def view_items(self, item_id):
         item = self._id_to_item.get(item_id)

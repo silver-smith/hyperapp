@@ -39,9 +39,9 @@ class AutoTabsView(TabsView):
         tabs = tuple(tab.ctl for tab in super().piece.tabs)
         return htypes.auto_tabs.view(tabs)
 
-    async def children_context_changed(self, ctx, widget):
+    async def children_context_changed(self, ctx, rctx, widget):
         try:
-            model = ctx.model
+            model = rctx.model
         except KeyError:
             return
         text = tab_piece_label(model)

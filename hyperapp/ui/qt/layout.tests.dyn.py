@@ -71,12 +71,13 @@ class PhonyLayoutBundle:
         pass
 
 
-def test_layout_tree():
+async def test_layout_tree():
     ctx = Context()
     default_layout = make_default_layout()
     app = QtWidgets.QApplication()
     try:
         with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx) as ctl:
+            await ctl.inited.wait()
             piece = htypes.layout.view()
             items = layout.layout_tree(piece, None, ctl)
             assert items
@@ -86,12 +87,13 @@ def test_layout_tree():
         app.shutdown()
 
 
-def test_enum_layout_tree_commands():
+async def test_enum_layout_tree_commands():
     ctx = Context()
     default_layout = make_default_layout()
     app = QtWidgets.QApplication()
     try:
         with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx) as ctl:
+            await ctl.inited.wait()
             piece = htypes.layout.view()
             windows = layout.layout_tree(piece, None, ctl)
             window_items = layout.layout_tree(piece, windows[0], ctl)
@@ -109,12 +111,13 @@ async def test_open_view_item_commands():
     assert result
 
 
-def test_view_item_commands():
+async def test_view_item_commands():
     ctx = Context()
     default_layout = make_default_layout()
     app = QtWidgets.QApplication()
     try:
         with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx) as ctl:
+            await ctl.inited.wait()
             ctx = ctx.clone_with(controller=ctl)
             layout_piece = htypes.layout.view()
             windows = layout.layout_tree(layout_piece, None, ctl)

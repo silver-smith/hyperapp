@@ -23,6 +23,9 @@ class Context:
     def clone_with(self, **kw):
         return Context({**self._items, **kw}, self._next)
 
+    def copy_from(self, ctx):
+        self._items.update(ctx._items)
+
     def push(self, **kw):
         return Context(kw.copy(), self)
 

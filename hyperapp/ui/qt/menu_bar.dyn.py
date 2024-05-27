@@ -37,8 +37,8 @@ class MenuBarView(View):
     def widget_state(self, widget):
         return htypes.menu_bar.state()
 
-    async def children_context_changed(self, ctx, widget):
-        commands = ctx.view_commands + ctx.model_commands
+    async def children_context_changed(self, ctx, rctx, widget):
+        commands = rctx.view_commands + rctx.model_commands
         global_d = htypes.command_groups.global_d()
         view_d = htypes.command_groups.view_d()
         model_d = htypes.command_groups.model_d()
