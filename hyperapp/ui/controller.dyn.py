@@ -157,6 +157,9 @@ class _Item:
             )
         return ctx.copy_from(rctx)
 
+    def _init_children_reverse_context(self):
+        asyncio.create_task(self.init_children_reverse_context())
+
     async def init_children_reverse_context(self):
         is_leaf = True
         for item in self.children:
@@ -201,9 +204,6 @@ class _Item:
 
     def parent_context_changed_hook(self):
         log.info("Controller: parent context changed from: %s", self)
-        # Recreate commands because model_state may be changed.
-        self._view_commands = None
-        self._model_commands = None
         self._update_parents_context()
 
     def current_changed_hook(self):
@@ -225,7 +225,7 @@ class _Item:
         view_items = self.view.items()
         item = self._make_child_item(view_items[idx])
         self._children[idx] = item
-        self._update_parents_context()
+        item._init_children_reverse_context()
         self.save_state()
         model_diff = TreeDiff.Replace(self.path, self.model_item)
         asyncio.create_task(self._send_model_diff(model_diff))
@@ -249,7 +249,7 @@ class _Item:
         item = self._make_child_item(view_items[idx])
         self._children.insert(idx, item)
         self._current_child_idx = None
-        self._update_parents_context()
+        item._init_children_reverse_context()
         self.save_state()
         model_diff = TreeDiff.Insert(item.path, item.model_item)
         asyncio.create_task(self._send_model_diff(model_diff))
