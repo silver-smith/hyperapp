@@ -29,7 +29,7 @@ async def test_widget():
         assert view.piece
         state = view.widget_state(widget)
         assert state
-        rctx = Context(view_commands=[], model_commands=[command])
+        rctx = Context(commands=[command])
         await view.children_context_changed(ctx, rctx, widget)
     finally:
         app.shutdown()

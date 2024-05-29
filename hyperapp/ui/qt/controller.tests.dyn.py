@@ -103,9 +103,11 @@ async def test_save_model_layout():
         with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx, show=False) as ctl:
             await ctl.inited.wait()
             window_item = ctl._root_item.children[0]
-            navigator = window_item.navigator_item
+            tabs_item = window_item.children[1]
+            navigator_item = tabs_item.children[0]
+            assert navigator_item.is_navigator
             layout = make_text_layout()
-            navigator._set_model_layout(layout)
+            navigator_item._set_model_layout(layout)
             lcs.set.assert_called()
     finally:
         app.shutdown()

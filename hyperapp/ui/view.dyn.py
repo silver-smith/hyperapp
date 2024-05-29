@@ -30,10 +30,6 @@ class View(metaclass=abc.ABCMeta):
     def get_current(self, widget):
         return None
 
-    @property
-    def is_navigator(self):
-        return False
-
     def children_context(self, ctx):
         return ctx
 

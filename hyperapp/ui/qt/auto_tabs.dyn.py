@@ -45,6 +45,7 @@ class AutoTabsView(TabsView):
         except KeyError:
             return
         text = tab_piece_label(model)
+        idx = super().get_current(widget)
         super().set_tab_text(widget, idx, text)
 
     def insert_tab(self, ctx, widget, idx, tab_view, tab_state):

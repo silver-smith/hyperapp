@@ -32,6 +32,21 @@ class Context:
     def pop(self):
         return self._next
 
+    def diffs(self, rhs):
+        diffs = set()
+        for name, lvalue in self._items.items():
+            try:
+                rvalue = rhs._items[name]
+            except KeyError:
+                diffs.add(name)
+            else:
+                if rvalue != lvalue:
+                    diffs.add(name)
+        for name in rhs._items:
+            if name not in self._items:
+                diffs.add(name)
+        return diffs
+
     def as_dict(self):
         if self._next:
             return {**self._next.as_dict(), **self._items}

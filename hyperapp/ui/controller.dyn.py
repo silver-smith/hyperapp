@@ -2,7 +2,6 @@ import asyncio
 import itertools
 import logging
 import weakref
-from collections import defaultdict, namedtuple
 from contextlib import contextmanager
 from dataclasses import dataclass
 from functools import cached_property, partial
@@ -27,9 +26,6 @@ from .code.tree_diff import TreeDiff
 from .code.view import View
 
 log = logging.getLogger(__name__)
-
-
-_NavigatorRec = namedtuple('_NavigatorRec', 'view widget_wr')
 
 
 @dataclass
@@ -57,8 +53,6 @@ class _Item:
     focusable: bool
     _current_child_idx: int | None = None
     _widget_wr: Any | None = None
-    _view_commands: list[CommandRec] | None = None
-    _model_commands: list[CommandRec] | None = None
     _children: list[Self] | None = None
 
     def __repr__(self):
@@ -118,86 +112,37 @@ class _Item:
             raise RuntimeError("Widget is gone")
         return widget
 
-    @property
-    def model(self):
-        return self.view.get_model()
+    def get_child_widget(self, idx):
+        return self.view.item_widget(self.widget, idx)
 
-    @property
-    def navigator_item(self):
-
-        def parent_navigator(item):
-            if item.view and item.view.is_navigator:
-                return item
-            if not item.parent:
-                return None
-            return parent_navigator(item.parent)
-
-        def child_navigator(item):
-            child = item.current_child
-            if child is None:
-                return None
-            if child.view.is_navigator:
-                return child
-            return child_navigator(child)
-
-        navigator = parent_navigator(self)
-        if navigator:
-            return navigator
-        return child_navigator(self)
-
-    @property
-    def navigator_rec(self):
-        item = self.navigator_item
-        if item:
-            return _NavigatorRec(item.view, weakref.ref(item.widget))
+    @cached_property
+    def is_navigator(self):
+        kid = self.current_child
+        if kid:
+            return 'navigator' in self.rctx.diffs(kid.rctx)
         else:
-            return None
-
-    @property
-    def view_commands(self):
-        if self._view_commands is None:
-            self._view_commands = self._make_view_commands()
-        return self._view_commands
-
-    @property
-    def model_commands(self):
-        if self._model_commands is None:
-            self._model_commands = self._make_model_commands()
-        return self._model_commands
+            return 'navigator' in self.rctx
 
     def _make_view_commands(self):
-        ctx = self.command_context()
+        ctx = self._command_context()
         commands = list_view_commands(self.view)
         return [CommandRec(cmd, ctx) for cmd in commands]
 
-    def _make_model_commands(self):
-        model = self.model
-        if model is None:
-            return []
-        ctx = self.command_context(model)
+    def _make_model_commands(self, model, model_state):
+        ctx = self._command_context()
+        ctx = ctx.clone_with(
+            piece=model,
+            **ctx.attributes(model_state),
+            )
         commands = ui_model_command_factory(ctx.piece, ctx)
         return [CommandRec(cmd, ctx) for cmd in commands]
 
-    def command_context(self):
-        ctx = self.ctx.push(
+    def _command_context(self):
+        return self.ctx.push(
             view=self.view,
             widget=weakref.ref(self.widget),
             hook=self._hook,
             )
-        ctx = ctx.copy_from(self.rctx)
-        try:
-            model = ctx.model
-            model_state = ctx.model_state
-        except KeyError:
-            return ctx
-        else:
-            return ctx.clone_with(
-                piece=model,
-                **ctx.attributes(model_state),
-                )
-
-    def get_child_widget(self, idx):
-        return self.view.item_widget(self.widget, idx)
 
     async def init_children_reverse_context(self):
         is_leaf = True
@@ -220,19 +165,26 @@ class _Item:
         for idx, item in enumerate(self.children):
             if item.focusable:
                 continue
-            await item.view.children_context_changed(item.ctx, rctx, widget)
+            await item.view.children_context_changed(item.ctx, rctx, item.widget)
             rctx = item.view.parent_context(rctx, item.widget)
         await self.view.children_context_changed(self.ctx, rctx, self.widget)
         self.rctx = self._reverse_context(rctx)
-        if self.parent and parent.current_child is self:
+        if self.parent and self.parent.current_child is self:
             await self.parent.update_parents_context()
 
     def _reverse_context(self, rctx):
-        rctx = self.view.parent_context(rctx, self.widget)
-        rctx = rctx.clone_with(view_commands=self.view_commands)
-        if self.model_commands:
-            rctx = rctx.clone_with(model_commands=self.model_commands)
-        return rctx
+        my_rctx = self.view.parent_context(rctx, self.widget)
+        commands = self._make_view_commands()
+        if 'piece' in my_rctx.diffs(rctx):
+            # piece is added or one from a child is replaced.
+            # We expect model_state always added with model.
+            model_commands = self._make_model_commands(my_rctx.model, my_rctx.model_state)
+            commands = commands + model_commands
+        animated_commands = [cmd.animated for cmd in commands]
+        return my_rctx.clone_with(
+            command_recs=commands,
+            commands=animated_commands,
+            )
 
     def parent_context_changed_hook(self):
         log.info("Controller: parent context changed from: %s", self)
@@ -265,13 +217,6 @@ class _Item:
         model_diff = TreeDiff.Replace(self.path, self.model_item)
         asyncio.create_task(self._send_model_diff(model_diff))
 
-    # Current navigator is changed, should update commands so their navigator be up-to-date.
-    def _invalidate_parents_commands(self):
-        self._view_commands = None
-        self._model_commands = None
-        if self.parent:
-            self.parent._invalidate_parents_commands()
-
     def replace_view_hook(self, new_view, new_state=None):
         log.info("Controller: Replace view @%s -> %s", self, new_view)
         parent = self.parent
@@ -279,7 +224,7 @@ class _Item:
         new_widget = new_view.construct_widget(new_state, self.ctx)
         parent.view.replace_child(parent.widget, idx, new_view, new_widget)
         parent._replace_child_item(idx)
-        if parent.view.is_navigator:
+        if parent.is_navigator:
             parent._set_model_layout(new_view.piece)
 
     def element_replaced_hook(self, idx, new_view, new_widget):
@@ -291,7 +236,6 @@ class _Item:
         item = self._make_child_item(view_items[idx])
         self._children.insert(idx, item)
         self._current_child_idx = None
-        self._invalidate_parents_commands()
         self._update_parents_context()
         self.save_state()
         model_diff = TreeDiff.Insert(item.path, item.model_item)
@@ -300,7 +244,6 @@ class _Item:
     def element_removed_hook(self, idx):
         del self._children[idx]
         self._current_child_idx = None
-        self._invalidate_parents_commands()
         self._update_parents_context()
         self.save_state()
 
@@ -341,11 +284,6 @@ class _WindowItem(_Item):
         self._id_to_item[self.id] = self
         self._window_widget = widget  # Prevent windows refs from be gone.
 
-    def command_context(self):
-        return super().command_context().clone_with(
-            root=Root(root_item=self.parent),
-            )
-
     def save_state(self):
         self.parent.save_state(current_window=self)
 
@@ -361,6 +299,9 @@ class _RootItem(_Item):
         item_id = 0
         self = cls(counter, id_to_item, feed, item_id, None, ctx, None, "root",
                    view=None, focusable=False, _layout_bundle=layout_bundle, _show=show)
+        self.ctx = self.ctx.clone_with(
+            root=Root(root_item=self),
+            )
         self._children = [
             _WindowItem.from_refs(
                 counter, id_to_item, feed, ctx, self, piece_ref, state_ref)
@@ -515,7 +456,7 @@ class Controller:
         try:
             item = self._id_to_item.get(item_id)
             if item:
-                return [rec.piece for rec in item.view_commands + item.model_commands]
+                return [rec.piece for rec in item.rctx.command_recs]
             else:
                 return []
         finally:
@@ -523,4 +464,5 @@ class Controller:
 
     def item_command_context(self, item_id):
         item = self._id_to_item[item_id]
-        return item.command_context()
+        assert 0, 'TODO: Add command id to pick context from command rec'
+        # return item.command_context()

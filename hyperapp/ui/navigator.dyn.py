@@ -55,10 +55,6 @@ class NavigatorView(View):
             navigator=_NavigatorRec(self, weakref.ref(widget)),
             )
 
-    @property
-    def is_navigator(self):
-        return True
-
     def widget_state(self, widget):
         return self._current_view.widget_state(widget)
 

@@ -43,7 +43,7 @@ class CommandPaneView(View):
         return htypes.command_pane.state()
 
     async def children_context_changed(self, ctx, rctx, widget):
-        commands = rctx.view_commands + rctx.model_commands
+        commands = rctx.commands
         pane_1_d = htypes.command_groups.pane_1_d()
         pane_2_d = htypes.command_groups.pane_2_d()
         layout = widget.layout()
