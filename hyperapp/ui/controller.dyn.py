@@ -176,7 +176,7 @@ class _Item:
     def _reverse_context(self, rctx):
         my_rctx = self.view.parent_context(rctx, self.widget)
         commands = self._make_view_commands(my_rctx)
-        if 'piece' in my_rctx.diffs(rctx):
+        if 'model' in my_rctx.diffs(rctx):
             # piece is added or one from a child is replaced.
             # We expect model_state always added with model.
             model_commands = self._make_model_commands(my_rctx, my_rctx.model, my_rctx.model_state)
