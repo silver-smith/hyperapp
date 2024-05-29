@@ -123,6 +123,17 @@ class _Item:
         else:
             return 'navigator' in self.rctx
 
+    def navigator_rec(self, rctx):
+        try:
+            return rctx.navigator
+        except KeyError:
+            pass
+        parent = self.parent
+        if not parent:
+            return None
+        rctx = parent.view.parent_context(rctx, parent.widget)
+        return parent.navigator_rec(rctx)
+
     def _make_view_commands(self, rctx):
         ctx = self._command_context(rctx)
         commands = list_view_commands(self.view)
@@ -142,6 +153,7 @@ class _Item:
             view=self.view,
             widget=weakref.ref(self.widget),
             hook=self._hook,
+            navigator=self.navigator_rec(rctx),
             )
         return ctx.copy_from(rctx)
 
