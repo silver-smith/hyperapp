@@ -36,8 +36,8 @@ class ViewTextView(View):
         # return htypes.text.state(text=widget.toPlainText())
         return htypes.text.state()
 
-    def parent_context(self, ctx, widget):
-        return ctx.clone_with(
+    def parent_context(self, rctx, widget):
+        return rctx.clone_with(
             model=self._adapter.model,
             model_state=self._model_state(widget),
             )
@@ -72,8 +72,8 @@ class EditTextView(View):
         # return htypes.text.state(text=widget.toPlainText())
         return htypes.text.state()
 
-    def parent_context(self, ctx, widget):
-        return ctx.clone_with(
+    def parent_context(self, rctx, widget):
+        return rctx.clone_with(
             model=self._adapter.model,
             model_state=self._model_state(widget),
             )
