@@ -174,7 +174,7 @@ class _Item:
         if kid:
             rctx = kid.rctx
         else:
-            rctx = Context(model_commands=[])
+            rctx = Context(command_recs=[], commands=[])
         for idx, item in enumerate(self.children):
             if item.focusable:
                 continue
@@ -195,8 +195,8 @@ class _Item:
             commands = commands + model_commands
         animated_commands = [cmd.animated for cmd in commands]
         return my_rctx.clone_with(
-            command_recs=commands,
-            commands=animated_commands,
+            command_recs=rctx.command_recs + commands,
+            commands=rctx.commands + animated_commands,
             )
 
     def parent_context_changed_hook(self):
