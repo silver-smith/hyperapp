@@ -45,9 +45,8 @@ class LayoutCommandImpl(CommandImpl):
 
 @ui_command_impl_creg.actor(htypes.layout.layout_command_impl)
 def layout_command_impl_from_piece(piece, ctx):
-    item_id = ctx.current_item.id
-    ui_command_ctx = ctx.controller.item_command_context(item_id)
-    ui_command_impl = ui_command_impl_creg.invite(piece.ui_command_impl, ui_command_ctx)
+    command_ctx = ctx.controller.item_command_context(piece.item_id, piece.command_d)
+    ui_command_impl = ui_command_impl_creg.invite(piece.ui_command_impl, command_ctx)
     return LayoutCommandImpl(ui_command_impl)
 
 
@@ -59,8 +58,10 @@ def layout_tree(piece, parent, controller):
     return controller.view_items(parent_id)
 
 
-def _wrap_ui_command(command):
+def _wrap_ui_command(item_id, command):
     impl = htypes.layout.layout_command_impl(
+        item_id=item_id,
+        command_d=command.d,
         ui_command_impl=command.impl,
         )
     return htypes.ui.command(
@@ -71,10 +72,11 @@ def _wrap_ui_command(command):
 
 def enum_layout_tree_commands(piece, current_item, controller):
     if current_item:
+        item_id = current_item.id
         commands = [
-            _wrap_ui_command(cmd)
+            _wrap_ui_command(item_id, cmd)
             for cmd
-            in controller.item_commands(current_item.id)
+            in controller.item_commands(item_id)
             ]
     else:
         commands = []
@@ -92,24 +94,22 @@ async def open_view_item_commands(piece, current_item):
         return htypes.layout.command_list(item_id=current_item.id)
 
 
-def _command_piece_to_item(ctx, piece, item_id):
-    wrapped_piece = _wrap_ui_command(piece)
-    command_ctx = ctx.push(
-        navigator=None,
-        current_item=SimpleNamespace(id=item_id),
-        )
+def _command_piece_to_item(controller, ctx, piece, item_id):
+    wrapped_piece = _wrap_ui_command(item_id, piece)
+    command_ctx = controller.item_command_context(item_id, piece.d)
     command = ui_command_factory(piece, command_ctx)
     wrapped_command = ui_command_factory(wrapped_piece, command_ctx)
     return htypes.layout.command_item(
         name=command.name,
         groups=', '.join(d_to_name(g) for g in command.groups),
         wrapped_groups=', '.join(d_to_name(g) for g in wrapped_command.groups),
+        command_d=piece.d,
         )
 
 
 def view_item_commands(piece, controller, ctx):
     command_list = [
-        _command_piece_to_item(ctx, command, piece.item_id)
+        _command_piece_to_item(controller, ctx, command, piece.item_id)
         for command in controller.item_commands(piece.item_id)
         ]
     log.info("Get view item commands for %s: %s", piece, command_list)

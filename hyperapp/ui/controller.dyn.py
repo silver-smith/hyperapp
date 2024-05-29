@@ -462,7 +462,10 @@ class Controller:
         finally:
             self._inside_commands_call = False
 
-    def item_command_context(self, item_id):
+    def item_command_context(self, item_id, command_d_ref):
         item = self._id_to_item[item_id]
-        assert 0, 'TODO: Add command id to pick context from command rec'
-        # return item.command_context()
+        for rec in item.rctx.command_recs:
+            if rec.piece.d == command_d_ref:
+                return rec.ctx
+        command_d = web.summon(command_d_ref)
+        raise RuntimeError(f"Item {item_id} has no command {command_d}")
