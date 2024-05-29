@@ -123,13 +123,13 @@ class _Item:
         else:
             return 'navigator' in self.rctx
 
-    def _make_view_commands(self):
-        ctx = self._command_context()
+    def _make_view_commands(self, rctx):
+        ctx = self._command_context(rctx)
         commands = list_view_commands(self.view)
         return [CommandRec(cmd, ctx) for cmd in commands]
 
-    def _make_model_commands(self, model, model_state):
-        ctx = self._command_context()
+    def _make_model_commands(self, rctx, model, model_state):
+        ctx = self._command_context(rctx)
         ctx = ctx.clone_with(
             piece=model,
             **ctx.attributes(model_state),
@@ -137,12 +137,13 @@ class _Item:
         commands = ui_model_command_factory(ctx.piece, ctx)
         return [CommandRec(cmd, ctx) for cmd in commands]
 
-    def _command_context(self):
-        return self.ctx.push(
+    def _command_context(self, rctx):
+        ctx = self.ctx.push(
             view=self.view,
             widget=weakref.ref(self.widget),
             hook=self._hook,
             )
+        return ctx.copy_from(rctx)
 
     async def init_children_reverse_context(self):
         is_leaf = True
@@ -174,11 +175,11 @@ class _Item:
 
     def _reverse_context(self, rctx):
         my_rctx = self.view.parent_context(rctx, self.widget)
-        commands = self._make_view_commands()
+        commands = self._make_view_commands(my_rctx)
         if 'piece' in my_rctx.diffs(rctx):
             # piece is added or one from a child is replaced.
             # We expect model_state always added with model.
-            model_commands = self._make_model_commands(my_rctx.model, my_rctx.model_state)
+            model_commands = self._make_model_commands(my_rctx, my_rctx.model, my_rctx.model_state)
             commands = commands + model_commands
         animated_commands = [cmd.animated for cmd in commands]
         return my_rctx.clone_with(
@@ -313,7 +314,7 @@ class _RootItem(_Item):
 
     def show(self):
         for item in self._children:
-            self._update_parents_context()
+            item._update_parents_context()
             item.widget.show()
 
     @property
@@ -359,7 +360,7 @@ class _RootItem(_Item):
                            item_id, self, ctx, None, f"window#{item_id}", view, focusable=True)
         item._init(state)
         self._children.append(item)
-        self._update_parents_context()
+        item._update_parents_context()
         if self._show:
             item.widget.show()
         self.save_state(item)

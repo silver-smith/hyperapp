@@ -24,7 +24,7 @@ class Context:
         return Context({**self._items, **kw}, self._next)
 
     def copy_from(self, ctx):
-        self._items.update(ctx._items)
+        return Context({**self._items, **ctx._items}, self._next)
 
     def push(self, **kw):
         return Context(kw.copy(), self)
