@@ -178,13 +178,14 @@ class _Item:
             rctx = kid.rctx
         else:
             rctx = Context(command_recs=[], commands=[])
+        await self.view.children_context_changed(self.ctx, rctx, self.widget)
+        rctx = self._reverse_context(rctx)
         for idx, item in enumerate(self.children):
             if item.focusable:
                 continue
             await item.view.children_context_changed(item.ctx, rctx, item.widget)
             rctx = item.view.secondary_parent_context(rctx, item.widget)
-        await self.view.children_context_changed(self.ctx, rctx, self.widget)
-        self.rctx = self._reverse_context(rctx)
+        self.rctx = rctx
         if self.parent and self.parent.current_child is self:
             await self.parent.update_parents_context()
 
@@ -317,7 +318,7 @@ class _RootItem(_Item):
             )
         self._children = [
             _WindowItem.from_refs(
-                counter, id_to_item, feed, ctx, self, piece_ref, state_ref)
+                counter, id_to_item, feed, self.ctx, self, piece_ref, state_ref)
             for piece_ref, state_ref
             in zip(layout.piece.window_list, layout.state.window_list)
             ]
