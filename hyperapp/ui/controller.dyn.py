@@ -131,7 +131,7 @@ class _Item:
         parent = self.parent
         if not parent:
             return None
-        rctx = parent.view.parent_context(rctx, parent.widget)
+        rctx = parent.view.primary_parent_context(rctx, parent.widget)
         return parent.navigator_rec(rctx)
 
     def _make_view_commands(self, rctx):
@@ -182,14 +182,14 @@ class _Item:
             if item.focusable:
                 continue
             await item.view.children_context_changed(item.ctx, rctx, item.widget)
-            rctx = item.view.parent_context(rctx, item.widget)
+            rctx = item.view.secondary_parent_context(rctx, item.widget)
         await self.view.children_context_changed(self.ctx, rctx, self.widget)
         self.rctx = self._reverse_context(rctx)
         if self.parent and self.parent.current_child is self:
             await self.parent.update_parents_context()
 
     def _reverse_context(self, rctx):
-        my_rctx = self.view.parent_context(rctx, self.widget)
+        my_rctx = self.view.primary_parent_context(rctx, self.widget)
         commands = self._make_view_commands(my_rctx)
         if 'model' in my_rctx.diffs(rctx):
             # piece is added or one from a child is replaced.

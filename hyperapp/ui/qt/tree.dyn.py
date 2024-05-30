@@ -215,7 +215,7 @@ class TreeView(View):
         path = self._adapter.get_path(item_id)
         return htypes.tree.state(current_path=tuple(path))
 
-    def parent_context(self, rctx, widget):
+    def primary_parent_context(self, rctx, widget):
         return rctx.clone_with(
             model=self._adapter.model,
             model_state=self._model_state(widget),

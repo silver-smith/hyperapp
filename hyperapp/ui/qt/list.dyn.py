@@ -121,7 +121,7 @@ class ListView(View):
         idx = widget.currentIndex().row()
         return htypes.list.state(current_idx=idx)
 
-    def parent_context(self, rctx, widget):
+    def primary_parent_context(self, rctx, widget):
         return rctx.clone_with(
             model=self._adapter.model,
             model_state=self._model_state(widget),

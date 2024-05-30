@@ -50,7 +50,7 @@ class NavigatorView(View):
     def get_current(self, widget):
         return 0
 
-    def parent_context(self, rctx, widget):
+    def primary_parent_context(self, rctx, widget):
         return rctx.clone_with(
             navigator=_NavigatorRec(self, weakref.ref(widget)),
             )
