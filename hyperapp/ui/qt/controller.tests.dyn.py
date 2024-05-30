@@ -85,7 +85,7 @@ async def test_duplicate_window():
             root = controller.Root(root_item)
             view = root_item.children[0].view
             state = web.summon(default_layout.state.window_list[0])
-            window.duplicate_window(root, view, state)
+            await window.duplicate_window(root, view, state)
             assert len(root_item.children) == 2
             await feed.wait_for_diffs(count=1)
     finally:

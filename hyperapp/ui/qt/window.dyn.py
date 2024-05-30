@@ -77,7 +77,7 @@ class WindowView(View):
 
 
 @mark.ui_command(htypes.window.view)
-def duplicate_window(root, view, state):
+async def duplicate_window(root, view, state):
     log.info("Duplicate window: %s / %s", view, state)
     new_state = htypes.window.state(
         menu_bar_state=state.menu_bar_state,
@@ -88,7 +88,7 @@ def duplicate_window(root, view, state):
             y=state.pos.y + DUP_OFFSET.y,
             ),
         )
-    root.create_window(view.piece, new_state)
+    await root.create_window(view.piece, new_state)
 
 
 @mark.ui_command(htypes.window.view)

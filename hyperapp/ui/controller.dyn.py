@@ -365,7 +365,7 @@ class _RootItem(_Item):
             )
         return htypes.root.state(window_list, current_window.idx)
 
-    def create_window(self, piece, state):
+    async def create_window(self, piece, state):
         view = view_creg.animate(piece, self.ctx)
         item_id = next(self._counter)
         ctx = view.children_context(self.ctx)
@@ -373,7 +373,7 @@ class _RootItem(_Item):
                            item_id, self, ctx, None, f"window#{item_id}", view, focusable=True)
         item._init(state)
         self._children.append(item)
-        item._update_parents_context()
+        await item.init_children_reverse_context()
         if self._show:
             item.widget.show()
         self.save_state(item)
@@ -390,8 +390,8 @@ class Root:
     def __init__(self, root_item):
         self._root_item = root_item
 
-    def create_window(self, piece, state):
-        self._root_item.create_window(piece, state)
+    async def create_window(self, piece, state):
+        await self._root_item.create_window(piece, state)
 
 
 class CtlHook:
