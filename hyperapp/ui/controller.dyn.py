@@ -185,6 +185,7 @@ class _Item:
                 continue
             await item.view.children_context_changed(item.ctx, rctx, item.widget)
             rctx = item.view.secondary_parent_context(rctx, item.widget)
+            item.rctx = rctx
         self.rctx = rctx
         if self.parent and self.parent.current_child is self:
             await self.parent.update_parents_context()
