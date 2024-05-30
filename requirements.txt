@@ -6,7 +6,7 @@ pytest-asyncio==0.14.0
 aiomock
 ply==3.11
 PySide6==6.4.3
-qasync==0.21.0
+qasync==0.27.1
 attrs==20.3.0  # fix pytest requirement
 
 # installing pyside using pip has following package requirements:

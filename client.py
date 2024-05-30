@@ -54,14 +54,11 @@ def main():
         association_reg.register_association_list(resource_registry.associations)
         client_module_res = resource_registry['client.client', 'client.module']
         client_module = pyobj_creg.animate(client_module_res)
-        exit_code = client_module._main(load_state=not args.clean)
+        client_module._main(load_state=not args.clean)
     finally:
         log.info("Stopping.")
         services.stop_signal.set()
         services.stop()
-    if exit_code != 0:
-        log.error("Application returned non-zero exit code: %d", exit_code)
-        sys.exit(exit_code)
 
 
 main()

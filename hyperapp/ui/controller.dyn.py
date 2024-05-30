@@ -433,6 +433,7 @@ class Controller:
         yield self
 
     def __init__(self, layout_bundle, default_layout, ctx, show, load_state):
+        self.app_close_event = asyncio.Event()
         self._root_ctx = ctx.clone_with(controller=self)
         self._id_to_item = {}
         self._counter = itertools.count(start=1)
