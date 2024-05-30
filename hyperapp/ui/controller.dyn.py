@@ -169,7 +169,7 @@ class _Item:
         if is_leaf:
             await self.update_parents_context()
 
-    def _update_parents_context(self):
+    def schedule_update_parents_context(self):
         asyncio.create_task(self.update_parents_context())
 
     async def update_parents_context(self):
@@ -206,12 +206,12 @@ class _Item:
 
     def parent_context_changed_hook(self):
         log.info("Controller: parent context changed from: %s", self)
-        self._update_parents_context()
+        self.schedule_update_parents_context()
 
     def current_changed_hook(self):
         log.info("Controller: current changed from: %s", self)
         self._current_child_idx = None
-        self._update_parents_context()
+        self.schedule_update_parents_context()
         self.save_state()
 
     # Should be on stack for proper module for feed constructor be picked up.
@@ -259,7 +259,7 @@ class _Item:
     def element_removed_hook(self, idx):
         del self._children[idx]
         self._current_child_idx = None
-        self._update_parents_context()
+        self.schedule_update_parents_context()
         self.save_state()
 
     def replace_parent_widget_hook(self, new_widget):
@@ -328,7 +328,7 @@ class _RootItem(_Item):
 
     def show(self):
         for item in self._children:
-            item._update_parents_context()
+            item.schedule_update_parents_context()
             item.widget.show()
 
     @property
