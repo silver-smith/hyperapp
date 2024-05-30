@@ -12,7 +12,7 @@ class MenuBar(QtWidgets.QMenuBar):
 
     def __init__(self):
         super().__init__()
-        self._command_to_action = {}
+        self.command_to_action = {}
 
 
 class MenuBarView(View):
@@ -46,9 +46,9 @@ class MenuBarView(View):
         global_menu, view_menu, model_menu = [
             action.menu() for action in widget.actions()
             ]
-        removed_commands = set(widget._command_to_action) - set(commands)
+        removed_commands = set(widget.command_to_action) - set(commands)
         for cmd in removed_commands:
-            action = widget._command_to_action.pop(cmd)
+            action = widget.command_to_action.pop(cmd)
             global_menu.removeAction(action)
         for cmd in commands:
             if global_d in cmd.groups:
@@ -61,7 +61,7 @@ class MenuBarView(View):
                 continue
             action = self._make_action(cmd)
             menu.addAction(action)
-            widget._command_to_action[cmd] = action
+            widget.command_to_action[cmd] = action
 
     @staticmethod
     def _make_action(cmd):

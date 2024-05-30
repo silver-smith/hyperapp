@@ -13,8 +13,8 @@ class CommandPane(QtWidgets.QWidget):
 
     def __init__(self):
         super().__init__()
-        self._command_to_button = {}
-        self._spacing_idx = None
+        self.command_to_button = {}
+        self.spacing_idx = None
 
 
 class CommandPaneView(View):
@@ -36,7 +36,7 @@ class CommandPaneView(View):
         layout.setAlignment(QtCore.Qt.AlignTop)
         layout.setContentsMargins(2, 2, 2, 2)
         layout.addSpacing(10)
-        w._spacing_idx = 0
+        w.spacing_idx = 0
         return w
 
     def widget_state(self, widget):
@@ -51,22 +51,22 @@ class CommandPaneView(View):
             cmd for cmd in commands
             if {pane_1_d, pane_2_d} & cmd.groups
             }
-        removed_commands = set(widget._command_to_button) - new_commands
-        widget._spacing_idx -= sum(1 for cmd in removed_commands if pane_1_d in cmd.groups)
-        new_commands = new_commands - set(widget._command_to_button)
+        removed_commands = set(widget.command_to_button) - new_commands
+        widget.spacing_idx -= sum(1 for cmd in removed_commands if pane_1_d in cmd.groups)
+        new_commands = new_commands - set(widget.command_to_button)
         for cmd in removed_commands:
-            button = widget._command_to_button.pop(cmd)
+            button = widget.command_to_button.pop(cmd)
             button.deleteLater()
         for cmd in new_commands:
             # All except context commands are present at menu bar;
             # avoid setting shortcut to prevent ambigous ones.
             button = self._make_button(cmd, add_shortcut=True)
             if pane_1_d in cmd.groups:
-                layout.insertWidget(widget._spacing_idx, button)
+                layout.insertWidget(widget.spacing_idx, button)
             else:
                 layout.addWidget(button)
-            widget._command_to_button[cmd] = button
-        widget._spacing_idx += sum(1 for cmd in new_commands if pane_1_d in cmd.groups)
+            widget.command_to_button[cmd] = button
+        widget.spacing_idx += sum(1 for cmd in new_commands if pane_1_d in cmd.groups)
 
     @staticmethod
     def _make_button(cmd, add_shortcut):
