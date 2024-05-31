@@ -62,7 +62,7 @@ def _rpc_subprocess_callback(request, subprocess_name, subprocess_id, subprocess
 def subprocess_rpc_server_running():
 
     @contextmanager
-    def _subprocess_rpc_server(name, rpc_endpoint, identity, timeout_sec=3):
+    def _subprocess_rpc_server(name, rpc_endpoint, identity, timeout_sec=10):
         subprocess_id = next(_subprocess_id_counter)
         _callback_signals[subprocess_id] = event = threading.Event()
         main_ref = partial_ref(
