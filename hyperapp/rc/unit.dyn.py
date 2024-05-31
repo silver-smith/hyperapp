@@ -182,6 +182,8 @@ async def _lock_and_notify_all(condition):
 
 class Unit:
 
+    _ServiceResources = namedtuple('_ServiceResources', 'ass_set service_name_to_resource')
+
     _providers_changed = asyncio.Condition()  # May be obsoleted by _deps_discovered.
     _new_deps_discovered = asyncio.Condition()
     _attributes_discovered = asyncio.Condition()
@@ -208,6 +210,7 @@ class Unit:
         self._qname_to_fn_info = {}  # qual_name -> FnInfo  # CallTrace list
         self._used_types = set()
         self._module_constructors = []
+        self._module_res_to_service_resources = {}  # module_res -> _ServiceResources
 
     def __repr__(self):
         return f"<Unit {self.name!r}>"
@@ -333,15 +336,27 @@ class Unit:
         return ass_set
 
     def pick_service_resource(self, module_res, service_name):
+        try:
+            sr = self._module_res_to_service_resources[module_res]
+        except KeyError:
+            sr = self._load_service_resources(module_res)
+            self._module_res_to_service_resources[module_res] = sr
+        try:
+            resource = sr.service_name_to_resource[service_name]
+        except KeyError:
+            raise RuntimeError(f"{self}: Service {service_name!r} was not created by it's constructor")
+        return (sr.ass_set, resource)
+
+    def _load_service_resources(self, module_res):
         assert self._attr_list is not None  # Not yet imported/attr enumerated.
         name_to_res = {}
         ass_set = invite_attr_constructors(self._ctx, self._attr_list, module_res, name_to_res)
+        service_name_to_resource = {}
         for name, resource in name_to_res.items():
             if name.endswith('.service'):
-                sn, _ = name.rsplit('.', 1)
-                if sn == service_name:
-                    return (ass_set, resource)
-        raise RuntimeError(f"{self}: Service {service_name!r} was not created by it's constructor")
+                service_name, _ = name.rsplit('.', 1)
+                service_name_to_resource[service_name] = resource
+        return self._ServiceResources(ass_set, service_name_to_resource)
 
     async def _wait_for_all_test_targets(self):
         async with self._test_targets_discovered:
