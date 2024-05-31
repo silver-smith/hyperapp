@@ -17,6 +17,10 @@ from .services import (
 log = logging.getLogger(__name__)
 
 
+class ProcessWaitError(RuntimeError):
+    pass
+
+
 class ProcessPool:
 
     def __init__(self, process_list):
@@ -27,7 +31,10 @@ class ProcessPool:
     async def _allocate_process(self):
         async with self._process_available:
             while not self._free_processes:
-                await self._process_available.wait()
+                try:
+                    await self._process_available.wait()
+                except asyncio.CancelledError:
+                    raise ProcessWaitError("Cancelled while waiting for a process be available")
             return self._free_processes.pop()
 
     async def _free_process(self, process):

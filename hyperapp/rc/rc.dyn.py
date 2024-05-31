@@ -9,7 +9,7 @@ from .services import (
     hyperapp_dir,
     )
 from .code.collector import collect_units
-from .code.process_pool import process_pool_running
+from .code.process_pool import ProcessWaitError, process_pool_running
 from .code.unit import DeadlockError
 
 log = logging.getLogger(__name__)
@@ -53,6 +53,8 @@ async def _run_unit(unit, process_pool, show_traces):
         return await unit.run(process_pool)
     except DeadlockError as x:
         log.info("Deadlocked: %s: %s", unit.name, x)
+    except ProcessWaitError as x:
+        log.info("%s: %s", x, unit.name)
     except asyncio.CancelledError as x:
         x.__context__ = None
         error_logger("Cancelled: %s", unit)
