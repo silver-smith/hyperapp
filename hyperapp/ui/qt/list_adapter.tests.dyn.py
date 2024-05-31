@@ -13,7 +13,6 @@ from .services import (
     rpc_call_factory,
     rpc_endpoint_factory,
     subprocess_rpc_server_running,
-    types,
     )
 from .code.context import Context
 from .code.list_diff import ListDiff

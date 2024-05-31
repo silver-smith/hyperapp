@@ -9,7 +9,6 @@ from .services import (
     fn_to_ref,
     mosaic,
     pyobj_creg,
-    types,
     )
 from .code.context import Context
 from .tested.code import tree

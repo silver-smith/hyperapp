@@ -6,7 +6,6 @@ from . import htypes
 from .tested.code import list
 from .services import (
     mosaic,
-    types,
     )
 from .code.context import Context
 

@@ -12,7 +12,6 @@ from .services import (
     mosaic,
     pick_refs,
     pyobj_creg,
-    types,
     )
 
 log = logging.getLogger(__name__)
