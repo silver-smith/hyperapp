@@ -170,25 +170,6 @@ def function_call_res(graph, ctx, unit, fixtures, attr):
     return (recorders, module_res, call_res)
 
 
-# def tested_import_list(graph, ctx, test_unit, tested_units, tested_service_to_unit):
-#     import_list = []
-#     all_recorders = {}
-#     for unit in tested_units:
-#         recorders, module_res = recorder_module_res(graph, ctx, unit, fixtures_unit=test_unit)
-#         all_recorders.update(recorders)
-#         import_rec = htypes.builtin.import_rec(f'tested.code.{unit.code_name}', mosaic.put(module_res))
-#         import_list.append(import_rec)
-#     all_ass_list = []
-#     for service_name, unit in tested_service_to_unit.items():
-#         recorders, module_res = recorder_module_res(graph, ctx, unit, fixtures_unit=test_unit)
-#         all_recorders.update(recorders)
-#         ass_list, service_res = unit.pick_service_resource(module_res, service_name)
-#         all_ass_list += ass_list
-#         import_rec = htypes.builtin.import_rec(f'tested.services.{service_name}', mosaic.put(service_res))
-#         import_list.append(import_rec)
-#     return (all_recorders, all_ass_list, import_list)
-
-
 def tested_units(graph, ctx, fixtures, tested_units):
     field_list = []
     all_recorders = {}
