@@ -95,11 +95,12 @@ class MockSubscriber:
         log.info("Mock subscriber: got diff: %s", diff)
         asyncio.create_task(self._queue.put(diff))
 
-    async def skip(self, count, timeout=2):
+    async def wait(self, cond, timeout=2):
         async with asyncio.timeout(timeout):
-            for i in range(count):
+            while not cond():
+                log.info("Mock subscriber: condition not met, wait for next diff: %s", cond)
                 await self._queue.get()
-            log.info("Mock subscriber: skipped %d diffs", count)
+            log.info("Mock subscriber: condition is met: %s", cond)
 
 
 async def test_three_layers():
@@ -160,22 +161,20 @@ async def test_three_layers():
 
     assert adapter.row_count(row_1_id) == 0
 
-    await subscriber.skip(4)
-    assert adapter.row_count(row_1_id) == 4
+    await subscriber.wait(lambda: adapter.row_count(row_1_id) == 4)
     row_1_2_id = adapter.row_id(row_1_id, 2)
     assert adapter.cell_data(row_1_2_id, 0) == 12
     assert adapter.cell_data(row_1_2_id, 1) == "three"
 
     row_2_id = adapter.row_id(0, 2)
-    if adapter.row_count(row_2_id) == 0:
-        await subscriber.skip(4)
-    assert adapter.row_count(row_2_id) == 4
+    await subscriber.wait(lambda: adapter.row_count(row_2_id) == 4)
     row_2_3_id = adapter.row_id(row_2_id, 3)
     assert adapter.cell_data(row_2_3_id, 0) == 23
     assert adapter.cell_data(row_2_3_id, 1) == "four"
-    return  # TODO
-    assert adapter.has_children(row_2_3_id)
 
+    await subscriber.wait(lambda: adapter.has_children(row_2_3_id))
+
+    await subscriber.wait(lambda: adapter.has_children(row_1_2_id))
     row_1_2_0_id = adapter.row_id(row_1_2_id, 0)
     assert adapter.cell_data(row_1_2_0_id, 0) == 120
     assert adapter.cell_data(row_1_2_0_id, 1) == "First item"
