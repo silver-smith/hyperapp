@@ -328,7 +328,6 @@ class _RootItem(_Item):
 
     def show(self):
         for item in self._children:
-            item.schedule_update_parents_context()
             item.widget.show()
 
     @property
@@ -433,13 +432,11 @@ class Controller:
         yield self
 
     def __init__(self, layout_bundle, default_layout, ctx, show, load_state):
-        self.app_close_event = asyncio.Event()
         self._root_ctx = ctx.clone_with(controller=self)
         self._id_to_item = {}
         self._counter = itertools.count(start=1)
         self._feed = feed_factory(htypes.layout.view())
         self._inside_commands_call = False
-        self.inited = asyncio.Event()
         layout = default_layout
         if load_state:
             try:
@@ -448,14 +445,22 @@ class Controller:
                 pass
         self._root_item = _RootItem.from_piece(
             self._counter, self._id_to_item, self._feed, show, self._root_ctx, layout_bundle, layout)
-        asyncio.create_task(self._async_init())
 
     def show(self):
         self._root_item.show()
 
-    async def _async_init(self):
+    def run(self, app, event_loop):
+        with event_loop:
+            stop_event = asyncio.Event()
+            app.aboutToQuit.connect(stop_event.set)
+            event_loop.run_until_complete(self._main(stop_event))
+
+    async def _main(self, stop_event):
+        await self.async_init()
+        await stop_event.wait()
+
+    async def async_init(self):
         await self._root_item.init_children_reverse_context()
-        self.inited.set()
 
     def view_items(self, item_id):
         item = self._id_to_item.get(item_id)

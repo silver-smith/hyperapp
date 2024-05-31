@@ -126,7 +126,4 @@ def _main(load_state):
     layout_bundle = file_bundle(layout_path)
 
     with Controller.running(layout_bundle, default_layout, ctx, show=True, load_state=load_state) as ctl:
-        app.aboutToQuit.connect(ctl.app_close_event.set)
-        with event_loop:
-            event_loop.create_task(ctl._async_init())
-            event_loop.run_until_complete(ctl.app_close_event.wait())
+        ctl.run(app, event_loop)

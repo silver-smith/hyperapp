@@ -80,7 +80,7 @@ async def test_duplicate_window():
     app = QtWidgets.QApplication()
     try:
         with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx, show=False) as ctl:
-            await ctl.inited.wait()
+            await ctl.async_init()
             root_item = ctl._root_item
             root = controller.Root(root_item)
             view = root_item.children[0].view
@@ -101,7 +101,7 @@ async def test_save_model_layout():
     app = QtWidgets.QApplication()
     try:
         with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx, show=False) as ctl:
-            await ctl.inited.wait()
+            await ctl.async_init()
             window_item = ctl._root_item.children[0]
             tabs_item = window_item.children[1]
             navigator_item = tabs_item.children[0]

@@ -111,8 +111,7 @@ definitions:
   quit.impl:
     _type: legacy_type.ui:ui_command_impl
     function: quit
-    params:
-     - controller
+    params: []
   ui_command_d:
     _type: legacy_type.builtin:call
     function: legacy_type.ui:ui_command_d
