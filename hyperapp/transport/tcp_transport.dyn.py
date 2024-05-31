@@ -1,4 +1,5 @@
 import logging
+import select
 import selectors
 import socket
 import threading
@@ -76,12 +77,22 @@ class Connection:
         data = encode_tcp_packet(refs_and_bundle.bundle)
         ofs = 0
         while ofs < len(data):
-            sent_size = self._socket.send(data[ofs:])
+            sent_size = self._socket_send(data[ofs:])
             log.debug("%s: Sent %d bytes", self, sent_size)
             if sent_size == 0:
                 raise RuntimeError(f"{self}: remote end closed connection")
             ofs += sent_size
         log.info("%s: Parcel is sent: %s", self, parcel_ref)
+
+    def _socket_send(self, data):
+        while True:
+            try:
+                return self._socket.send(data)
+            except OSError as x:
+                if x.errno != socket.errno.EAGAIN:
+                    raise
+            rd, wr, er = select.select([], [self._socket], [])
+            assert wr
 
     def on_read(self, sock, mask):
         try:
