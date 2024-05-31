@@ -39,6 +39,7 @@ class MenuBarView(View):
 
     async def children_context_changed(self, ctx, rctx, widget):
         commands = rctx.commands
+        used_shortcuts = rctx.get('used_shortcuts', set())
         global_d = htypes.command_groups.global_d()
         view_d = htypes.command_groups.view_d()
         model_d = htypes.command_groups.model_d()
@@ -59,15 +60,15 @@ class MenuBarView(View):
                 menu = model_menu
             else:
                 continue
-            action = self._make_action(cmd)
+            action = self._make_action(cmd, used_shortcuts)
             menu.addAction(action)
             widget.command_to_action[cmd] = action
 
     @staticmethod
-    def _make_action(cmd):
+    def _make_action(cmd, used_shortcuts):
         action = QtGui.QAction(cmd.name, enabled=cmd.enabled)
         action.triggered.connect(cmd.start)
-        if cmd.shortcut:
+        if cmd.shortcut and cmd.shortcut not in used_shortcuts:
             action.setShortcut(cmd.shortcut)
         if not cmd.enabled:
             action.setToolTip(cmd.disabled_reason)

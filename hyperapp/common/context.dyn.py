@@ -7,18 +7,27 @@ class Context:
         self._next = next
         self._items = {**kw, **(items or {})}
 
-    def __getattr__(self, name):
-        if name.startswith('_'):
-            raise AttributeError(name)
+    def _get(self, name):
         if self._next and name in self._next:
             return getattr(self._next, name)
         return self._items[name]
+
+    def __getattr__(self, name):
+        if name.startswith('_'):
+            raise AttributeError(name)
+        return self._get(name)
 
     def __contains__(self, name):
         if self._next:
             if name in self._next:
                 return True
         return name in self._items
+
+    def get(self, name, default_value):
+        try:
+            return self._get(name)
+        except KeyError:
+            return default_value
 
     def clone_with(self, **kw):
         return Context({**self._items, **kw}, self._next)

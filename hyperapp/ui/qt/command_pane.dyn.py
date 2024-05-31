@@ -42,6 +42,16 @@ class CommandPaneView(View):
     def widget_state(self, widget):
         return htypes.command_pane.state()
 
+    def secondary_parent_context(self, rctx, widget):
+        used_shortcuts = set()
+        for button in widget.command_to_button.values():
+            shortcut = button.shortcut()
+            if shortcut:
+                used_shortcuts.add(shortcut.toString())
+        return rctx.clone_with(
+            used_shortcuts=used_shortcuts,
+            )
+
     async def children_context_changed(self, ctx, rctx, widget):
         commands = rctx.commands
         pane_1_d = htypes.command_groups.pane_1_d()
@@ -58,8 +68,6 @@ class CommandPaneView(View):
             button = widget.command_to_button.pop(cmd)
             button.deleteLater()
         for cmd in new_commands:
-            # All except context commands are present at menu bar;
-            # avoid setting shortcut to prevent ambigous ones.
             button = self._make_button(cmd, add_shortcut=True)
             if pane_1_d in cmd.groups:
                 layout.insertWidget(widget.spacing_idx, button)
