@@ -44,9 +44,9 @@ optional_mt = TRecord(BUILTIN_MODULE_NAME, 'optional_mt', {
     })
 
 
-def optional_from_piece(rec, type_code_registry, module_name, name, types):
-    base_t = types.resolve(rec.base)
-    return TOptional(base_t, module_name, name)
+def optional_from_piece(rec, pyobj_creg):
+    base_t = pyobj_creg.invite(rec.base)
+    return TOptional(base_t)
 
 
 list_mt = TRecord(BUILTIN_MODULE_NAME, 'list_mt', {
@@ -54,9 +54,9 @@ list_mt = TRecord(BUILTIN_MODULE_NAME, 'list_mt', {
     })
 
 
-def list_from_piece(rec, type_code_registry, module_name, name, types):
-    element_t = types.resolve(rec.element)
-    return TList(element_t, module_name, name)
+def list_from_piece(rec, pyobj_creg):
+    element_t = pyobj_creg.invite(rec.element)
+    return TList(element_t)
 
 
 field_mt = TRecord(BUILTIN_MODULE_NAME, 'field_mt', {
@@ -118,7 +118,7 @@ def register_builtin_meta_types(builtin_types, pyobj_creg):
 def register_meta_types(pyobj_creg):
     # name_mt does not produce a type, it is removed by type module loader.
     pyobj_creg.register_actor(name_wrapped_mt, name_wrapped_from_piece)
-    pyobj_creg.register_actor(optional_mt, optional_from_piece)
-    pyobj_creg.register_actor(list_mt, list_from_piece)
+    pyobj_creg.register_actor(optional_mt, optional_from_piece, pyobj_creg)
+    pyobj_creg.register_actor(list_mt, list_from_piece, pyobj_creg)
     pyobj_creg.register_actor(record_mt, record_from_piece)
     pyobj_creg.register_actor(exception_mt, exception_from_piece)

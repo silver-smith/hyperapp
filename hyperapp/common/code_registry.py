@@ -54,9 +54,8 @@ class CodeRegistry:
 
     def invite(self, ref, *args, **kw):
         assert isinstance(ref, ref_t), repr(ref)
-        capsule = self._web.pull(ref)
-        decoded_capsule = decode_capsule(self._pyobj_creg, capsule)
-        return self._animate(decoded_capsule.t, decoded_capsule.value, args, kw)
+        value, t = self._web.summon_with_t(ref)
+        return self._animate(t, value, args, kw)
 
     def animate(self, piece, *args, **kw):
         t = deduce_value_type(piece)
