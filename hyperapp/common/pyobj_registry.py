@@ -1,21 +1,16 @@
+from .htypes import register_builtin_meta_types, register_meta_types
 from .htypes.legacy_type import legacy_type_t
 from .cached_code_registry import CachedCodeRegistry
 
 
 class PyObjRegistry(CachedCodeRegistry):
 
-    def __init__(self, mosaic, web, types, association_reg):
-        super().__init__(mosaic, web, types, association_reg, self, 'pyobj')
+    def __init__(self, association_reg):
+        super().__init__(None, None, association_reg, self, 'pyobj')
 
-    def reverse_resolve(self, actor):
-        try:
-            return super().reverse_resolve(actor)
-        except KeyError:
-            pass
-        try:
-            type_ref = self._types.reverse_resolve(actor)
-        except KeyError:
-            raise  # Not a known type.
-        type_piece = legacy_type_t(type_ref)
-        self.add_to_cache(type_piece, actor)
-        return type_piece
+    def init(self, builtin_types, mosaic, web):
+        self._mosaic = mosaic
+        self._web = web
+        builtin_types.register_builtin_mt(mosaic, self)
+        register_builtin_meta_types(builtin_types, self)
+        register_meta_types(self)

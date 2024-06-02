@@ -18,9 +18,6 @@ from hyperapp.common.type_module_loader import CircularDepError, TypeModuleLoade
 from hyperapp.common.test.hyper_types_namespace import HyperTypesNamespace
 
 
-pytest_plugins = ['hyperapp.common.htypes.test.fixtures']
-
-
 TEST_MODULES_DIR = Path(__file__).parent.resolve()
 
 

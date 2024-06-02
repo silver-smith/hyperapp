@@ -4,11 +4,14 @@ from types import SimpleNamespace
 
 import pytest
 
+from hyperapp.common.htypes import BuiltinTypeRegistry, register_builtin_types
 from hyperapp.common.htypes.python_module import python_module_t
 from hyperapp.common.htypes.attribute import attribute_t
 from hyperapp.common.htypes.legacy_type import legacy_type_t
 from hyperapp.common.htypes.call import call_t
 from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
+from hyperapp.common.mosaic import Mosaic
+from hyperapp.common.web import Web
 from hyperapp.common.services import HYPERAPP_DIR
 from hyperapp.common.code_registry import CodeRegistry
 from hyperapp.common.pyobj_registry import PyObjRegistry
@@ -28,6 +31,56 @@ from hyperapp.resource.legacy_type import convert_builtin_types_to_dict, load_le
 from hyperapp.resource.builtin_service import builtin_service_pyobj, make_builtin_service_resource_module
 
 log = logging.getLogger(__name__)
+
+
+@pytest.fixture
+def pyobj_creg(association_reg):
+    return PyObjRegistry(association_reg)
+
+
+@pytest.fixture
+def builtin_types():
+    return BuiltinTypeRegistry()
+
+
+@pytest.fixture
+def python_importer():
+    importer = PythonImporter()
+    importer.register_meta_hook()
+    yield importer
+    importer.remove_modules()
+    importer.unregister_meta_hook()
+
+
+@pytest.fixture
+def association_reg():
+    return AssociationRegistry()
+
+
+@pytest.fixture
+def mosaic_and_web(pyobj_creg, builtin_types, python_importer):
+    mosaic = Mosaic(pyobj_creg)
+    web = Web(mosaic, pyobj_creg)
+    pyobj_creg.init(builtin_types, mosaic, web)
+    register_builtin_types(builtin_types, mosaic, pyobj_creg)
+    pyobj_creg.register_actor(python_module_t, python_module_pyobj, mosaic, python_importer, creg)
+    pyobj_creg.register_actor(legacy_type_t, legacy_type_pyobj, pyobj_creg)
+    # pyobj_creg.register_actor(builtin_service_t, builtin_service_pyobj, self)
+    pyobj_creg.register_actor(attribute_t, attribute_pyobj, pyobj_creg)
+    pyobj_creg.register_actor(call_t, call_pyobj, pyobj_creg)
+    return (mosaic, web)
+
+
+@pytest.fixture
+def mosaic(mosaic_and_web):
+    mosaic, web = mosaic_and_web
+    return mosaic
+
+
+@pytest.fixture
+def web(mosaic_and_web):
+    mosaic, web = mosaic_and_web
+    return web
 
 
 @pytest.fixture
@@ -56,11 +109,6 @@ def resource_dir_list(hyperapp_dir, module_dir_list, additional_resource_dirs):
         ResourceDir(hyperapp_dir, module_dir_list),
         *[ResourceDir(d) for d in additional_resource_dirs],
         ]
-
-
-@pytest.fixture
-def association_reg():
-    return AssociationRegistry()
 
 
 @pytest.fixture
@@ -97,26 +145,6 @@ def resource_type_reg():
 @pytest.fixture
 def resource_type_producer(resource_type_factory, resource_type_reg):
     return partial(resource_type_producer_fn, resource_type_factory, resource_type_reg)
-
-
-@pytest.fixture
-def python_importer():
-    importer = PythonImporter()
-    importer.register_meta_hook()
-    yield importer
-    importer.remove_modules()
-    importer.unregister_meta_hook()
-
-
-@pytest.fixture
-def pyobj_creg(types, mosaic, web, association_reg, python_importer):
-    creg = PyObjRegistry(mosaic, web, types, association_reg)
-    creg.register_actor(python_module_t, python_module_pyobj, mosaic, python_importer, creg)
-    creg.register_actor(legacy_type_t, legacy_type_pyobj, types)
-    # creg.register_actor(builtin_service_t, builtin_service_pyobj, self)
-    creg.register_actor(attribute_t, attribute_pyobj, pyobj_creg)
-    creg.register_actor(call_t, call_pyobj, pyobj_creg)
-    return creg
 
 
 @pytest.fixture

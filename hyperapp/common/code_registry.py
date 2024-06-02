@@ -15,11 +15,10 @@ class CodeRegistry:
 
     _Rec = namedtuple('_Rec', 'factory args kw')
 
-    def __init__(self, mosaic, web, types, association_reg, pyobj_creg, produce_name):
+    def __init__(self, mosaic, web, association_reg, pyobj_creg, produce_name):
         super().__init__()
         self._mosaic = mosaic
         self._web = web
-        self._types = types
         self._association_reg = association_reg
         self._pyobj_creg = pyobj_creg
         self._produce_name = produce_name
@@ -56,7 +55,7 @@ class CodeRegistry:
     def invite(self, ref, *args, **kw):
         assert isinstance(ref, ref_t), repr(ref)
         capsule = self._web.pull(ref)
-        decoded_capsule = decode_capsule(self._types, capsule)
+        decoded_capsule = decode_capsule(self._pyobj_creg, capsule)
         return self._animate(decoded_capsule.t, decoded_capsule.value, args, kw)
 
     def animate(self, piece, *args, **kw):

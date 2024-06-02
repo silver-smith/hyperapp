@@ -13,9 +13,9 @@ class RefResolveFailure(Exception):
 
 class Web(object):
 
-    def __init__(self, types, mosaic):
-        self._types = types
+    def __init__(self, mosaic, pyobj_creg):
         self._mosaic = mosaic
+        self._pyobj_creg = pyobj_creg
         self._sources = []
 
     def add_source(self, source):
@@ -39,7 +39,7 @@ class Web(object):
             return (rec.value, rec.t)
         capsule = self.pull(ref)
         # Following code is actually dead.
-        t = self._types.resolve(capsule.type_ref)
+        t = self._pyobj_creg.invite(capsule.type_ref)
         if expected_type:
             assert t is expected_type, (t, expected_type)
         value = packet_coders.decode(capsule.encoding, capsule.encoded_object, t)

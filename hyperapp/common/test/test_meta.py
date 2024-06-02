@@ -28,13 +28,10 @@ from hyperapp.common import cdr_coders  # register codec
 log = logging.getLogger(__name__)
 
 
-pytest_plugins = ['hyperapp.common.htypes.test.fixtures']
-
-
-def test_optional(types, mosaic):
+def test_optional(pyobj_creg, mosaic):
     base_ref = mosaic.put(builtin_mt('string'))
     piece = optional_mt(base_ref)
-    t = types.resolve(mosaic.put(piece))
+    t = pyobj_creg.animate(piece)
     assert t == TOptional(tString)
     assert t.base_t is tString
 

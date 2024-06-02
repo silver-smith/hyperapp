@@ -13,7 +13,6 @@ log = logging.getLogger(__name__)
 
 
 pytest_plugins = [
-    'hyperapp.common.htypes.test.fixtures',
     'hyperapp.common.test.services',
     ]
 

@@ -9,7 +9,6 @@ from hyperapp.common import cdr_coders  # self-registering
 log = logging.getLogger(__name__)
 
 pytest_plugins = [
-    'hyperapp.common.htypes.test.fixtures',
     'hyperapp.common.test.services',
     ]
 

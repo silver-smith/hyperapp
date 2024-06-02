@@ -11,12 +11,11 @@ class BuiltinTypeRegistry:
     def __init__(self):
         self._name_to_type = {}
 
-    def register(self, mosaic, types, t):
+    def register(self, pyobj_creg, t):
         self._name_to_type[t.name] = t
         piece = builtin_mt(t.name)
-        type_ref = mosaic.put(piece)
-        types.add_to_cache(type_ref, t)
-        log.debug("Registered builtin type %s: %s", t, type_ref)
+        pyobj_creg.add_to_cache(piece, t)
+        log.debug("Registered builtin type %s: %s", t, piece)
 
     def resolve(self, name):
         return self._name_to_type[name]
@@ -27,13 +26,14 @@ class BuiltinTypeRegistry:
     def values(self):
         return self._name_to_type.values()
 
-    def type_from_piece(self, piece, type_code_registry, name):
+    def type_from_piece(self, piece):
         return self._name_to_type[piece.name]
 
-    def register_builtin_mt(self, types, type_code_registry):
-        # Register builtin_mt with phony ref - can not be registered as usual because of dependency loop.
-        builtin_ref = phony_ref('BUILTIN_REF')
+    def register_builtin_mt(self, mosaic, pyobj_creg):
+        # Register builtin_mt with phony piece - can not be registered as usual because of dependency loop.
         self._name_to_type[builtin_mt.name] = builtin_mt
-        types.add_to_cache(builtin_ref, builtin_mt)
-
-        type_code_registry.register_actor(builtin_mt, self.type_from_piece)
+        builtin_ref = phony_ref(builtin_mt.name)
+        builtin_mt_piece = builtin_mt(builtin_mt.name)
+        mosaic.add_to_cache(builtin_mt_piece, builtin_ref)
+        pyobj_creg.add_to_cache(builtin_mt_piece, builtin_mt)
+        pyobj_creg.register_actor(builtin_mt, self.type_from_piece)

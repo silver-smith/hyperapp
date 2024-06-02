@@ -63,5 +63,5 @@ def load_legacy_type_resources(local_types):
     return name_to_module
 
 
-def legacy_type_pyobj(piece, types):
-    return types.resolve(piece.type_ref)
+def legacy_type_pyobj(piece, pyobj_creg):
+    return pyobj_creg.invite(piece.type_ref)

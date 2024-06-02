@@ -36,18 +36,19 @@ def make_ref(capsule):
     return ref_t(DEFAULT_HASH_ALGORITHM, hash)
 
 
-def make_capsule(types, object, t=None):
+def make_capsule(mosaic, pyobj_creg, object, t=None):
     t = t or deduce_value_type(object)
     assert isinstance(t, Type), repr(t)
     assert isinstance(object, t), repr((t, object))
     encoding = DEFAULT_CAPSULE_ENCODING
     encoded_object = packet_coders.encode(encoding, object, t)
-    type_ref = types.reverse_resolve(t)
+    type_piece = pyobj_creg.reverse_resolve(t)
+    type_ref = mosaic.put(type_piece)
     return capsule_t(type_ref, encoding, encoded_object)
 
 
-def decode_capsule(types, capsule, expected_type=None):
-    t = types.resolve(capsule.type_ref)
+def decode_capsule(pyobj_creg, capsule, expected_type=None):
+    t = pyobj_creg.invite(capsule.type_ref)
     if expected_type and t is not expected_type:
         raise UnexpectedTypeError(expected_type, t)
     value = packet_coders.decode(capsule.encoding, capsule.encoded_object, t)

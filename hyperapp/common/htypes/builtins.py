@@ -54,20 +54,20 @@ _builtin_type_list = [
     ]
 
 
-def register_builtin_types(builtin_types, mosaic, types):
+def register_builtin_types(builtin_types, mosaic, pyobj_creg):
 
     def _list_type(element_t):
-        element_ref = types.reverse_resolve(element_t)
-        piece = list_mt(element_ref)
-        type_ref = mosaic.put(piece)
-        return types.resolve(type_ref)
+        element_piece = pyobj_creg.reverse_resolve(element_t)
+        element_ref = mosaic.put(element_piece)
+        list_piece = list_mt(element_ref)
+        return pyobj_creg.animate(list_piece)
 
     for t in _builtin_type_list:
-        type_ref = builtin_types.register(mosaic, types, t)
+        builtin_types.register(pyobj_creg, t)
     # Register list of builtin types
     for element_t in _builtin_type_list:
         list_t = _list_type(element_t)
         list_list_t = _list_type(list_t)
         primitive_list_types[element_t] = list_t
         primitive_list_list_types[element_t] = list_list_t
-        log.debug("Registered builtin list type: %s -> %s, %s", type_ref, list_t, list_list_t)
+        log.debug("Registered builtin list type: %s -> %s, %s", element_t, list_t, list_list_t)
