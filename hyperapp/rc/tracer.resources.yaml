@@ -2,7 +2,7 @@ import:
   - builtins:deduce_t.service
   - builtins:hyperapp_dir.service
   - builtins:mosaic.service
-  - builtins:types.service
+  - builtins:pyobj_creg.service
   - legacy_type.inspect:call_param
   - legacy_type.inspect:call_trace
   - legacy_type.inspect:type_name
@@ -27,4 +27,4 @@ definitions:
       services.deduce_t: builtins:deduce_t.service
       services.hyperapp_dir: builtins:hyperapp_dir.service
       services.mosaic: builtins:mosaic.service
-      services.types: builtins:types.service
+      services.pyobj_creg: builtins:pyobj_creg.service

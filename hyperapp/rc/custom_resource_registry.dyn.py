@@ -26,12 +26,11 @@ def _load_legacy_type_resources(dir_list):
     resource_list = []
     pair_to_resource = {}
     for module_name, type_module in custom_types.items():
-        for name, type_ref in type_module.items():
-            resource = htypes.builtin.legacy_type(type_ref)
-            resource_ref = mosaic.put(resource)
+        for name, type_piece in type_module.items():
+            resource_ref = mosaic.put(type_piece)
             resource_list.append(
                 htypes.import_recorder.resource(('htypes', module_name, name), resource_ref))
-            pair_to_resource[module_name, name] = resource
+            pair_to_resource[module_name, name] = type_piece
     return (custom_types, resource_list, pair_to_resource)
 
 

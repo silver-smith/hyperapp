@@ -46,7 +46,7 @@ def test_record():
         'some_ref': ref_t,
         })
     # Test tracer resolves traced types to refs.
-    types.add_to_cache(phony_ref('ref_picker_tests-test_record'), t)
+    # types.add_to_cache(phony_ref('ref_picker_tests-test_record'), t)
     picker = ref_picker._t_to_picker(t)
     ref = mosaic.put("Sample text")
     record = t("Some string", ref)
@@ -58,7 +58,7 @@ def test_one_field_record():
         'some_ref': ref_t,
         })
     # Test tracer resolves traced types to refs.
-    types.add_to_cache(phony_ref('ref_picker_tests-test_one_field_record'), t)
+    # types.add_to_cache(phony_ref('ref_picker_tests-test_one_field_record'), t)
     picker = ref_picker._t_to_picker(t)
     ref = mosaic.put("Sample text")
     record = t(ref)
@@ -71,7 +71,7 @@ def test_exception():
         'some_ref': ref_t,
         })
     # Test tracer resolves traced types to refs.
-    types.add_to_cache(phony_ref('ref_picker_tests-test_exception-exception'), t)
+    # types.add_to_cache(phony_ref('ref_picker_tests-test_exception-exception'), t)
     picker = ref_picker._t_to_picker(t)
     ref = mosaic.put("Sample text")
     record = t("Some string", ref)
@@ -86,7 +86,7 @@ def test_combined():
         'some_list': list_t,
         })
     # Test tracer resolves traced types to refs.
-    types.add_to_cache(phony_ref('ref_picker_tests-test_composite-record'), t)
+    # types.add_to_cache(phony_ref('ref_picker_tests-test_composite-record'), t)
     picker = ref_picker._t_to_picker(t)
     ref_1 = mosaic.put("Sample text 1")
     ref_2 = mosaic.put("Sample text 2")
@@ -103,7 +103,7 @@ def test_service():
         'some_list': list_t,
         })
     # Test tracer resolves traced types to refs.
-    types.add_to_cache(phony_ref('ref_picker_tests-test_service-record'), t)
+    # types.add_to_cache(phony_ref('ref_picker_tests-test_service-record'), t)
     ref_1 = mosaic.put("Sample text 1")
     ref_2 = mosaic.put("Sample text 2")
     ref_3 = mosaic.put("Sample text 3")

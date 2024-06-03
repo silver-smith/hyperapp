@@ -5,11 +5,10 @@ from .services import (
     mark,
     mosaic,
     pyobj_creg,
-    types,
     web,
     )
 
 
 @mark.service
 def feed_creg():
-    return CachedCodeRegistry(mosaic, web, types, association_reg, pyobj_creg, 'feed')
+    return CachedCodeRegistry(mosaic, web, association_reg, pyobj_creg, 'feed')

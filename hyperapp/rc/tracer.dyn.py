@@ -12,7 +12,7 @@ from .services import (
     deduce_t,
     hyperapp_dir,
     mosaic,
-    types,
+    pyobj_creg,
     )
 log = logging.getLogger(__name__)
 
@@ -32,8 +32,8 @@ def value_type(value):
                 )
         log.info("Type for %s is non-data: %r", safe_repr(value), t)
         return t
-    t_ref = types.reverse_resolve(t)
-    return htypes.inspect.data_t(t_ref)
+    t_piece = pyobj_creg.reverse_resolve(t)
+    return htypes.inspect.data_t(mosaic.put(t_piece))
 
 
 class Tracer:

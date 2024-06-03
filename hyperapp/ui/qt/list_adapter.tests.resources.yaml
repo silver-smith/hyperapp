@@ -3,7 +3,6 @@
 import:
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
-- builtins:types.service
 - common.context:context.module
 - common.list_diff:list_diff.module
 - legacy_type.builtin:python_module
@@ -31,7 +30,6 @@ definitions:
       services.rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
       services.rpc_endpoint_factory: rpc.rpc_endpoint:rpc_endpoint_factory.service
       services.subprocess_rpc_server_running: subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
-      services.types: builtins:types.service
       tested.code.list_adapter: phony
   phony:
     _type: legacy_type.phony:phony

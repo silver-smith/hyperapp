@@ -2,7 +2,6 @@
 
 import:
 - builtins:mosaic.service
-- builtins:types.service
 - legacy_type.builtin:python_module
 - legacy_type.phony:phony
 associations: []
@@ -15,6 +14,5 @@ definitions:
     file_name: ref_picker.tests.dyn.py
     import_list:
       services.mosaic: builtins:mosaic.service
-      services.types: builtins:types.service
       tested.code.ref_picker: phony
       tested.services.pick_refs: phony

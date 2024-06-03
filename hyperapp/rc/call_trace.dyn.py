@@ -8,7 +8,7 @@ from hyperapp.common.htypes import TRecord
 
 from . import htypes
 from .services import (
-    types,
+    pyobj_creg,
     web,
     )
 
@@ -27,7 +27,7 @@ class TypeCaseBase:
     @cached_property
     def data_t(self):
         assert self.is_data
-        return types.resolve(self._t.t)
+        return pyobj_creg.invite(self._t.t)
 
     @cached_property
     def data_t_ref(self):

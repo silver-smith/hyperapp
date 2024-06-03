@@ -6,7 +6,6 @@ from .services import (
     data_to_res,
     mosaic,
     pyobj_creg,
-    types,
     web,
   )
 from .code.utils import camel_to_snake
@@ -16,10 +15,10 @@ from .code.command_params import STATE_PARAMS, LOCAL_PARAMS
 def _make_command_d_res(custom_types, module_res, attr):
     d_attr = attr.name + '_d'
     try:
-        command_d_ref = custom_types[module_res.module_name][d_attr]
+        command_d_piece = custom_types[module_res.module_name][d_attr]
     except KeyError:
         raise RuntimeError(f"Create directory type: {module_res.module_name}.{d_attr}")
-    command_d_t = types.resolve(command_d_ref)
+    command_d_t = pyobj_creg.animate(command_d_piece)
     return data_to_res(command_d_t())
 
 

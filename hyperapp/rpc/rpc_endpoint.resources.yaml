@@ -6,7 +6,6 @@ import:
 - builtins:mosaic.service
 - builtins:on_stop.service
 - builtins:pyobj_creg.service
-- builtins:types.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -36,7 +35,6 @@ definitions:
       services.peer_registry: transport.identity:peer_registry.service
       services.pyobj_creg: builtins:pyobj_creg.service
       services.transport: transport.transport:transport.service
-      services.types: builtins:types.service
   rpc_endpoint_factory:
     _type: legacy_type.builtin:attribute
     object: rpc_endpoint.module

@@ -33,14 +33,13 @@ class LegacyTypeResourceModule:
         return []
 
 
-def add_builtin_types_to_pyobj_cache(types, builtin_types, pyobj_creg):
+def add_builtin_types_to_pyobj_cache(pyobj_creg, builtin_types):
     for t in [
             *builtin_types.values(),
             *primitive_list_types.values(),
             *primitive_list_list_types.values(),
             ]:
-        type_ref = types.reverse_resolve(t)
-        type_piece = legacy_type_t(type_ref)
+        type_piece = pyobj_creg.reverse_resolve(t)
         pyobj_creg.add_to_cache(type_piece, t)
 
 

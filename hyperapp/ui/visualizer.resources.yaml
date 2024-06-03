@@ -5,7 +5,6 @@ import:
 - builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
-- builtins:types.service
 - builtins:web.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
@@ -82,7 +81,6 @@ definitions:
       services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
-      services.types: builtins:types.service
       services.web: builtins:web.service
   visualizer.service:
     _type: legacy_type.builtin:call

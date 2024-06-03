@@ -8,7 +8,6 @@ from .services import (
     data_to_res,
     mosaic,
     pyobj_creg,
-    types,
     )
 from .code.ui_ctr_constructor import Constructor
 from .code.command_params import STATE_PARAMS, LOCAL_PARAMS
@@ -31,10 +30,10 @@ class CommandImplementationCtr(Constructor):
     def _make_command_d_res(self, fn_name):
         d_attr = fn_name + '_d'
         try:
-            command_d_ref = self._ctx.types[self._module_res.module_name][d_attr]
+            command_d_piece = self._ctx.types[self._module_res.module_name][d_attr]
         except KeyError:
             raise RuntimeError(f"Create directory type: {self._module_res.module_name}.{d_attr}")
-        command_d_t = types.resolve(command_d_ref)
+        command_d_t = pyobj_creg.animate(command_d_piece)
         return data_to_res(command_d_t())
 
     def _make_properties(self, impl, is_global=False, uses_state=False, remotable=False):

@@ -3,7 +3,6 @@
 import:
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
-- builtins:types.service
 - common.context:context.module
 - legacy_type.builtin:python_module
 - legacy_type.phony:phony
@@ -21,5 +20,4 @@ definitions:
       services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
       services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
-      services.types: builtins:types.service
       tested.code.tree: phony
