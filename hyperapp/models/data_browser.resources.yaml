@@ -3,7 +3,6 @@
 import:
 - builtins:deduce_t.service
 - builtins:mosaic.service
-- builtins:types.service
 - builtins:web.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
@@ -305,7 +304,6 @@ definitions:
       services.deduce_t: builtins:deduce_t.service
       services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service
-      services.types: builtins:types.service
       services.web: builtins:web.service
   global_model_command_d:
     _type: legacy_type.builtin:call

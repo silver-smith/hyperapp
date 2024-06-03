@@ -2,7 +2,6 @@
 
 import:
 - builtins:code_registry_ctr.service
-- builtins:web.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
