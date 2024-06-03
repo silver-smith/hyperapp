@@ -44,24 +44,19 @@ def add_builtin_types_to_pyobj_cache(types, builtin_types, pyobj_creg):
         pyobj_creg.add_to_cache(type_piece, t)
 
 
-def convert_builtin_types_to_dict(types, builtin_types):
+def convert_builtin_types_to_dict(pyobj_creg, builtin_types):
     name_to_module = defaultdict(dict)
     for t in builtin_types.values():
-        type_ref = types.reverse_resolve(t)
+        type_piece = pyobj_creg.reverse_resolve(t)
         module_dict = name_to_module[t.module_name]
-        module_dict[t.name] = type_ref
+        module_dict[t.name] = type_piece
     return name_to_module
 
 
 def load_legacy_type_resources(local_types):
     name_to_module = defaultdict(LegacyTypeResourceModule)
     for module_name, local_type_module in local_types.items():
-        for name, type_ref in local_type_module.items():
-            type_piece = legacy_type_t(type_ref)
+        for name, type_piece in local_type_module.items():
             name_to_module[f'legacy_type.{module_name}'][name] = type_piece
             log.debug("Legacy type resource %s.%s: %s", module_name, name, type_piece)
     return name_to_module
-
-
-def legacy_type_pyobj(piece, pyobj_creg):
-    return pyobj_creg.invite(piece.type_ref)

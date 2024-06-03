@@ -64,25 +64,24 @@ def deduce_value_type(value):
     raise DeduceTypeError(f"Unable to deduce type for {safe_repr(value)} (t: {t!r}). Use explicit type parameter.")
 
 
-def _deduce_list_type(mosaic, types, value):
+def _deduce_list_type(mosaic, pyobj_creg, value):
     if value:
-        element_t = deduce_complex_value_type(mosaic, types, value[0])
+        element_t = deduce_complex_value_type(mosaic, pyobj_creg, value[0])
     else:
         element_t = tNone  # Does not matter for an empty list.
     t = TList(element_t)
     try:
-        _ = types.reverse_resolve(t)
+        _ = pyobj_creg.reverse_resolve(t)
         return t
     except:
-        element_t_ref = types.reverse_resolve(element_t)
-        piece = list_mt(element_t_ref)
-        type_ref = mosaic.put(piece)
-        return types.resolve(type_ref)
+        element_t_piece = pyobj_creg.reverse_resolve(element_t)
+        piece = list_mt(mosaic.put(element_t_piece))
+        return pyobj_creg.animate(piece)
 
 
-def deduce_complex_value_type(mosaic, types, value):
+def deduce_complex_value_type(mosaic, pyobj_creg, value):
     if (isinstance(value, (list, tuple))
         and not _is_named_tuple(value)
         and not hasattr(value, '_t')):
-        return _deduce_list_type(mosaic, types, value)
+        return _deduce_list_type(mosaic, pyobj_creg, value)
     return deduce_value_type(value)

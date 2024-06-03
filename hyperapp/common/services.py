@@ -30,7 +30,6 @@ from ..resource.legacy_type import (
     add_builtin_types_to_pyobj_cache,
     convert_builtin_types_to_dict,
     load_legacy_type_resources,
-    legacy_type_pyobj,
     )
 from .htypes.builtin_service import builtin_service_t
 from ..resource.builtin_service import (
@@ -136,7 +135,6 @@ class Services(object):
         self.builtin_types_as_dict = partial(convert_builtin_types_to_dict, self.types, self.builtin_types)
         self.legacy_type_resource_loader = load_legacy_type_resources
         add_builtin_types_to_pyobj_cache(self.types, self.builtin_types, self.pyobj_creg)
-        self.pyobj_creg.register_actor(legacy_type_t, legacy_type_pyobj, self.types)
         self.builtin_service_resource_loader = partial(
             make_builtin_service_resource_module, self.mosaic, self.builtin_services)
         self.resource_registry.set_module(

@@ -27,7 +27,7 @@ from hyperapp.resource.resource_module import ResourceModule, load_resource_modu
 from hyperapp.resource.python_module import PythonModuleResourceType, python_module_pyobj
 from hyperapp.resource.attribute import AttributeResourceType, attribute_pyobj
 from hyperapp.resource.call import CallResourceType, call_pyobj
-from hyperapp.resource.legacy_type import convert_builtin_types_to_dict, load_legacy_type_resources, legacy_type_pyobj
+from hyperapp.resource.legacy_type import convert_builtin_types_to_dict, load_legacy_type_resources
 from hyperapp.resource.builtin_service import builtin_service_pyobj, make_builtin_service_resource_module
 
 log = logging.getLogger(__name__)
@@ -64,7 +64,6 @@ def mosaic_and_web(pyobj_creg, builtin_types, python_importer):
     pyobj_creg.init(builtin_types, mosaic, web)
     register_builtin_types(builtin_types, mosaic, pyobj_creg)
     pyobj_creg.register_actor(python_module_t, python_module_pyobj, mosaic, python_importer, pyobj_creg)
-    pyobj_creg.register_actor(legacy_type_t, legacy_type_pyobj, pyobj_creg)
     # pyobj_creg.register_actor(builtin_service_t, builtin_service_pyobj, self)
     pyobj_creg.register_actor(attribute_t, attribute_pyobj, pyobj_creg)
     pyobj_creg.register_actor(call_t, call_pyobj, pyobj_creg)
@@ -148,8 +147,8 @@ def resource_type_producer(resource_type_factory, resource_type_reg):
 
 
 @pytest.fixture
-def deduce_t(mosaic, types):
-    return partial(deduce_complex_value_type, mosaic, types)
+def deduce_t(mosaic, pyobj_creg):
+    return partial(deduce_complex_value_type, mosaic, pyobj_creg)
 
 
 @pytest.fixture
@@ -173,13 +172,13 @@ def legacy_type_resource_loader():
 
 
 @pytest.fixture
-def builtin_types_as_dict(types, builtin_types):
-    return partial(convert_builtin_types_to_dict, types, builtin_types)
+def builtin_types_as_dict(pyobj_creg, builtin_types):
+    return partial(convert_builtin_types_to_dict, pyobj_creg, builtin_types)
 
 
 @pytest.fixture
-def code_registry_ctr(mosaic, web, types, association_reg, pyobj_creg):
-    return partial(CodeRegistry, mosaic, web, types, association_reg, pyobj_creg)
+def code_registry_ctr(mosaic, web, association_reg, pyobj_creg):
+    return partial(CodeRegistry, mosaic, web, association_reg, pyobj_creg)
 
 
 @pytest.fixture
@@ -190,7 +189,6 @@ def builtin_services(
         hyperapp_dir,
         module_dir_list,
         mosaic,
-        types,
         web,
         local_types,
         type_module_loader,
@@ -218,7 +216,6 @@ def builtin_services(
         'hyperapp_dir': hyperapp_dir,
         'module_dir_list': module_dir_list,
         'mosaic': mosaic,
-        'types': types,
         'web': web,
         'local_types': local_types,
         'type_module_loader': type_module_loader,

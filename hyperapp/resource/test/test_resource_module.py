@@ -12,6 +12,10 @@ from hyperapp.common import cdr_coders  # self-registering
 log = logging.getLogger(__name__)
 
 
+pytest_plugins = [
+    'hyperapp.common.test.services',
+    ]
+
 TEST_DIR = Path(__file__).parent.resolve()
 TEST_RESOURCES_DIR = Path(__file__).parent / 'test_resources'
 
