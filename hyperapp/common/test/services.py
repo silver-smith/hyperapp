@@ -7,7 +7,6 @@ import pytest
 from hyperapp.common.htypes import BuiltinTypeRegistry, register_builtin_types
 from hyperapp.common.htypes.python_module import python_module_t
 from hyperapp.common.htypes.attribute import attribute_t
-from hyperapp.common.htypes.legacy_type import legacy_type_t
 from hyperapp.common.htypes.call import call_t
 from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
 from hyperapp.common.mosaic import Mosaic

@@ -1,5 +1,4 @@
 from .htypes import register_builtin_meta_types, register_meta_types
-from .htypes.legacy_type import legacy_type_t
 from .cached_code_registry import CachedCodeRegistry
 
 

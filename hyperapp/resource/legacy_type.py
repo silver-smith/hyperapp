@@ -1,7 +1,6 @@
 import logging
 from collections import defaultdict
 
-from hyperapp.common.htypes.legacy_type import legacy_type_t
 from hyperapp.common.htypes.builtins import primitive_list_types, primitive_list_list_types
 
 log = logging.getLogger(__name__)
