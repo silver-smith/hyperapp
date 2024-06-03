@@ -104,7 +104,7 @@ class Services(object):
         self.types.init(self.builtin_types, self.mosaic, self.web)
         self.association_reg = AssociationRegistry()
         register_builtin_types(self.builtin_types, self.mosaic, self.types)
-        self.local_types = {}  # module name -> name -> name_wrapped_mt ref.
+        self.local_types = {}  # module name -> name -> type piece.
         self.type_module_loader = TypeModuleLoader(self.builtin_types, self.mosaic, self.types)
         self.python_importer = PythonImporter()
         self.python_importer.register_meta_hook()

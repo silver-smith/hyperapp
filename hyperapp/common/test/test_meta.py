@@ -16,7 +16,6 @@ from hyperapp.common.htypes import (
     TException,
     TList,
     builtin_mt,
-    name_wrapped_mt,
     optional_mt,
     list_mt,
     field_mt,

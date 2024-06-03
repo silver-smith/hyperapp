@@ -3,7 +3,6 @@ import logging
 from .htypes import (
     ref_t,
     name_mt,
-    name_wrapped_mt,
     )
 from .ref import ref_repr
 from .visual_rep import pprint
@@ -55,7 +54,7 @@ class TypeModuleLoader(object):
         self._mosaic = mosaic
         self._pyobj_creg = pyobj_creg
 
-    # registry: module name -> name -> name_wrapped_mt ref
+    # registry: module name -> name -> type piece.
     def load_type_modules(self, dir_list, registry):
         log.info("Load type modules from: %s", dir_list)
         name_to_source = self._load_sources(dir_list)  # name -> type_module_t.

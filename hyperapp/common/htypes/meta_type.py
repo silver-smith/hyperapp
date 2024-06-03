@@ -28,17 +28,6 @@ name_mt = TRecord(BUILTIN_MODULE_NAME, 'name_mt', {
     })
 
 
-name_wrapped_mt = TRecord(BUILTIN_MODULE_NAME, 'name_wrapped_mt', {
-    'module_name': tString,
-    'name': tString,
-    'type': ref_t,
-    })
-
-
-def name_wrapped_from_piece(rec, pyobj_creg):
-    return pyobj_creg.invite(rec.type, rec.module_name, rec.name)
-
-
 optional_mt = TRecord(BUILTIN_MODULE_NAME, 'optional_mt', {
     'base': ref_t,
     })
@@ -120,7 +109,6 @@ def register_builtin_meta_types(builtin_types, pyobj_creg):
 
 def register_meta_types(pyobj_creg):
     # name_mt does not produce a type, it is removed by type module loader.
-    pyobj_creg.register_actor(name_wrapped_mt, name_wrapped_from_piece, pyobj_creg)
     pyobj_creg.register_actor(optional_mt, optional_from_piece, pyobj_creg)
     pyobj_creg.register_actor(list_mt, list_from_piece, pyobj_creg)
     pyobj_creg.register_actor(record_mt, record_from_piece, pyobj_creg)
