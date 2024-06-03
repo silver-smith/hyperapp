@@ -1,5 +1,6 @@
 import sys
 import token, tokenize
+from collections import namedtuple
 from io import BytesIO
 
 import ply.lex as lex
@@ -13,16 +14,36 @@ from .htypes import (
     record_mt,
     exception_mt,
     )
-from .local_type_module import (
-    type_import_t,
-    type_def_t,
-    type_module_t,
-    )
 
 
 class ParseError(Exception):
     pass
 
+
+TypeDef = namedtuple('TypeDef', 'name type')
+TypeImport = namedtuple('TypeImport', 'module_name source_name target_name')
+TypeModule = namedtuple('TypeModule', 'module_name import_list typedefs')
+
+
+# class SimpleMtGenerator:
+
+#     def __init__(self, mt):
+#         self._mt = mt
+
+#     def generate(self, module_name=None, name=None):
+#         return self._mt
+
+
+class RecordMtGenerator:
+
+    def __init__(self, t, base, fields):
+        self._t = t
+        self._base = base
+        self._fields = fields
+
+    def generate(self, module_name, name):
+        return self._t(module_name, name, self._base, self._fields)
+    
 
 keywords = [
     'import',
@@ -87,7 +108,7 @@ class Grammar:
 
     def p_module_contents_1(self, p):
         'module_contents : import_list STMT_SEP typedef_list'
-        p[0] = type_module_t(
+        p[0] = TypeModule(
             module_name=p.parser.module_name,
             import_list=p[1],
             typedefs=p[3],
@@ -95,7 +116,7 @@ class Grammar:
 
     def p_module_contents_2(self, p):
         'module_contents : typedef_list_opt'
-        p[0] = type_module_t(
+        p[0] = TypeModule(
             module_name=p.parser.module_name,
             import_list=[],
             typedefs=p[1],
@@ -113,7 +134,7 @@ class Grammar:
 
     def p_import_def_list(self, p):
         'import_def : FROM NAME IMPORT name_list'
-        p[0] = [type_import_t(p[2], source_name=name, target_name=name) for name in p[4]]
+        p[0] = [TypeImport(p[2], source_name=name, target_name=name) for name in p[4]]
         p.parser.known_name_set |= set(p[4])
 
     def p_import_def_as(self, p):
@@ -148,8 +169,7 @@ class Grammar:
 
     def p_typedef(self, p):
         'typedef : NAME EQUAL typedef_rhs'
-        t = p.parser.mosaic.put(p[3])
-        p[0] = type_def_t(name=p[1], type=t)
+        p[0] = TypeDef(name=p[1], type=p[3])
         p.parser.known_name_set.add(p[1])
 
     def p_typedef_rhs_expr(self, p):
@@ -173,7 +193,7 @@ class Grammar:
             base_ref = p.parser.mosaic.put(base_mt)
         else:
             base_ref = None
-        p[0] = record_mt(base_ref, ())
+        p[0] = RecordMtGenerator(record_mt, base_ref, ())
 
     def p_record_def_2(self, p):
         'record_def : RECORD record_base_name_def COLON BLOCK_BEGIN field_list BLOCK_END'
@@ -182,7 +202,7 @@ class Grammar:
             base = p.parser.mosaic.put(name_mt(base_name))
         else:
             base = None
-        p[0] = record_mt(base, tuple(p[5]))
+        p[0] = RecordMtGenerator(record_mt, base, tuple(p[5]))
 
     def p_record_base_name_def_1(self, p):
         'record_base_name_def : empty'
@@ -201,7 +221,7 @@ class Grammar:
             base_ref = p.parser.mosaic.put(base_mt)
         else:
             base_ref = None
-        p[0] = exception_mt(base_ref, ())
+        p[0] = RecordMtGenerator(exception_mt, base_ref, ())
 
     def p_exception_def_2(self, p):
         'exception_def : EXCEPTION exception_base_name_def COLON BLOCK_BEGIN field_list BLOCK_END'
@@ -210,7 +230,7 @@ class Grammar:
             base = p.parser.mosaic.put(name_mt(base_name))
         else:
             base = None
-        p[0] = exception_mt(base, tuple(p[5]))
+        p[0] = RecordMtGenerator(exception_mt, base, tuple(p[5]))
 
     def p_exception_base_name_def_1(self, p):
         'exception_base_name_def : empty'

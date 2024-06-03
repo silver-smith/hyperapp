@@ -7,7 +7,7 @@ from .htypes import (
     )
 from .ref import ref_repr
 from .visual_rep import pprint
-from .type_module_parser import load_type_module_source
+from .type_module_parser import RecordMtGenerator, load_type_module_source
 from .mapper import Mapper
 
 log = logging.getLogger(__name__)
@@ -19,10 +19,10 @@ class CircularDepError(RuntimeError):
 
 class _NameToRefMapper(Mapper):
 
-    def __init__(self, builtin_types, mosaic, types, local_name_dict):
+    def __init__(self, builtin_types, mosaic, pyobj_creg, local_name_dict):
         self._builtin_types = builtin_types
         self._mosaic = mosaic
-        self._types = types
+        self._pyobj_creg = pyobj_creg
         self._local_name_dict = local_name_dict
 
     def map_record(self, t, value, context):
@@ -33,12 +33,11 @@ class _NameToRefMapper(Mapper):
         return value
 
     def _resolve_name(self, rec):
-        ref = self._local_name_dict.get(rec.name)
-        if not ref:
+        piece = self._local_name_dict.get(rec.name)
+        if not piece:
             t = self._builtin_types.resolve(rec.name)
-            ref = self._types.reverse_resolve(t)
-        piece = self._mosaic.resolve_ref(ref).value
-        log.debug("Name %r is resolved to %s %r", rec.name, ref, piece)
+            piece = self._pyobj_creg.reverse_resolve(t)
+        log.debug("Name %r is resolved to %r", rec.name, piece)
         return piece
 
     def _map_ref(self, ref):
@@ -51,10 +50,10 @@ class _NameToRefMapper(Mapper):
 
 class TypeModuleLoader(object):
 
-    def __init__(self, builtin_types, mosaic, types):
+    def __init__(self, builtin_types, mosaic, pyobj_creg):
         self._builtin_types = builtin_types
         self._mosaic = mosaic
-        self._types = types
+        self._pyobj_creg = pyobj_creg
 
     # registry: module name -> name -> name_wrapped_mt ref
     def load_type_modules(self, dir_list, registry):
@@ -106,13 +105,14 @@ class TypeModuleLoader(object):
 
     def _map_module_names(self, name, source, local_name_dict):
         local_type_module = {}
-        mapper = _NameToRefMapper(self._builtin_types, self._mosaic, self._types, local_name_dict)
+        mapper = _NameToRefMapper(self._builtin_types, self._mosaic, self._pyobj_creg, local_name_dict)
         for typedef in source.typedefs:
             log.debug('Type module loader %r: mapping %r %s:', name, typedef.name, typedef.type)
-            type_ref = mapper.map(typedef.type)
-            named = name_wrapped_mt(name, typedef.name, type_ref)
-            ref = self._mosaic.put(named)
-            local_type_module[typedef.name] = ref
-            local_name_dict[typedef.name] = ref
-            log.debug('Type module loader %r: %r is mapped to %s', name, typedef.name, ref)
+            mt = typedef.type
+            if isinstance(mt, RecordMtGenerator):
+                mt = mt.generate(name, typedef.name)
+            piece = mapper.map(mt)
+            local_type_module[typedef.name] = piece
+            local_name_dict[typedef.name] = piece
+            log.debug('Type module loader %r: %r is mapped to %r', name, typedef.name, piece)
         return local_type_module

@@ -26,7 +26,10 @@ class CachedCodeRegistry(CodeRegistry):
         return actor
 
     def reverse_resolve(self, actor):
-        return self._reverse_cache[id(actor)]
+        try:
+            return self._reverse_cache[id(actor)]
+        except KeyError as x:
+            raise KeyError(f"{x}: {actor!r}")
 
     def add_to_cache(self, piece, actor):
         self._cache[piece] = actor

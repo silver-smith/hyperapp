@@ -27,13 +27,13 @@ def local_types():
 
 
 @pytest.fixture
-def loader(builtin_types, mosaic, types):
-    return TypeModuleLoader(builtin_types, mosaic, types)
+def loader(builtin_types, mosaic, pyobj_creg):
+    return TypeModuleLoader(builtin_types, mosaic, pyobj_creg)
 
 
 @pytest.fixture
-def htypes(types, local_types):
-    return HyperTypesNamespace(types, local_types)
+def htypes(pyobj_creg, local_types):
+    return HyperTypesNamespace(pyobj_creg, local_types)
 
 
 def test_type_module_loader(local_types, loader):
@@ -46,7 +46,7 @@ def test_circular_type_dep(local_types, loader):
     assert str(excinfo.value) == 'Circular type module dependency: module_1->module_2->module_3->module_1'
 
 
-def test_types(types, local_types, htypes, loader):
+def test_types(local_types, htypes, loader):
     loader.load_type_modules([TEST_MODULES_DIR / 'test_type_modules'], local_types)
 
 
@@ -84,7 +84,7 @@ def test_same_instance(local_types, htypes, loader):
     assert isinstance(value, htypes.same_instance.container)
 
 
-def test_exception_type(types, local_types, htypes, loader):
+def test_exception_type(local_types, htypes, loader):
     loader.load_type_modules([TEST_MODULES_DIR / 'test_type_modules'], local_types)
 
     assert htypes.exceptions.exception_1 == TException('exceptions', 'exception_1', {'int_field': tInt})

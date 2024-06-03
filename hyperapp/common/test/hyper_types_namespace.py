@@ -3,8 +3,8 @@ from types import SimpleNamespace
 
 class HyperTypesNamespace:
 
-    def __init__(self, types, local_types):
-        self._types = types
+    def __init__(self, pyobj_creg, local_types):
+        self._pyobj_creg = pyobj_creg
         self._local_types = local_types
 
     def __getattr__(self, name):
@@ -19,6 +19,6 @@ class HyperTypesNamespace:
 
     def _type_module_namespace(self, type_module):
         name_to_type = {}
-        for name, type_ref in type_module.items():
-            name_to_type[name] = self._types.resolve(type_ref)
+        for name, piece in type_module.items():
+            name_to_type[name] = self._pyobj_creg.animate(piece)
         return SimpleNamespace(**name_to_type)
