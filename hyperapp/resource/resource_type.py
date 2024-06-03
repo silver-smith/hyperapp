@@ -1,6 +1,6 @@
 from functools import cached_property
 
-from hyperapp.common.htypes import ref_t, builtin_mt, list_mt, optional_mt, field_mt, record_mt
+from hyperapp.common.htypes import ref_t, builtin_mt, list_mt, optional_mt, field_mt, record_mt, exception_mt
 from hyperapp.common.mapper import Mapper
 from hyperapp.common.dict_decoder import NamedPairsDictDecoder
 from hyperapp.common.dict_encoder import NamedPairsDictEncoder
@@ -16,10 +16,11 @@ class TypeToDefinitionMapper(Mapper):
 
     def process_record(self, t, value, context):
         fields = self.map_record_fields(t, value, context)
-        if t is name_wrapped_mt:
+        is_named = t in {record_mt, exception_mt}
+        if is_named:
             fields = {**fields, 'name': fields['name'] + '_def'}
         mapped_value = t(**fields)
-        if t is name_wrapped_mt:
+        if is_named:
             self.type_meta_to_def_meta[value] = mapped_value
         if t is ref_t:
             return self._map_type_ref(mapped_value)
@@ -35,20 +36,18 @@ class TypeToDefinitionMapper(Mapper):
 
 class TypeToValueMapper(Mapper):
 
-    def __init__(self, types, mosaic, web, source_meta_to_target_meta):
+    def __init__(self, mosaic, web, pyobj_creg, source_meta_to_target_meta):
         super().__init__()
-        self._types = types
         self._mosaic = mosaic
         self._web = web
+        self._pyobj_creg = pyobj_creg
         self._source_meta_to_target_meta = source_meta_to_target_meta
 
     def process_record(self, t, value, context):
-        if t is name_wrapped_mt:
-            return self.map(value.type, context=value)
         if t is ref_t:
             return self._map_type_ref(value, context)
         if t is record_mt:
-            return self._map_record(value, name_meta=context)
+            return self._map_record(value)
         if t is list_mt:
             return ListMapper(self.map(value.element))
         if t is optional_mt:
@@ -60,15 +59,14 @@ class TypeToValueMapper(Mapper):
                 return IdentityMapper()
         raise RuntimeError(f"Unknown meta type {t}: {value}")
 
-    def _map_record(self, value, name_meta):
+    def _map_record(self, value):
         if value.base:
             base_record = self._web.summon(value.base)
             base_mapper = self.map(base_record)
         else:
             base_mapper = None
-        target_t_meta = self._source_meta_to_target_meta[name_meta]
-        target_t_ref = self._mosaic.put(target_t_meta)
-        target_t = self._types.resolve(target_t_ref)
+        target_t_meta = self._source_meta_to_target_meta[value]
+        target_t = self._pyobj_creg.animate(target_t_meta)
         fields = {
             f.name: self.map(f.type)
             for f in value.fields
@@ -130,23 +128,21 @@ class ResolveMapper:
 
 class ResourceType:
 
-    def __init__(self, types, mosaic, web, resource_t):
-        self._types = types
+    def __init__(self, mosaic, web, pyobj_creg, resource_t):
         self._mosaic = mosaic
         self._web = web
+        self._pyobj_creg = pyobj_creg
         self.resource_t = resource_t
 
-        resource_type_ref = self._types.reverse_resolve(self.resource_t)
-        self._resource_type_mt = self._web.summon(resource_type_ref)
+        self._resource_type_mt = self._pyobj_creg.reverse_resolve(self.resource_t)
 
         mapper = TypeToDefinitionMapper(self._mosaic, self._web)
         definition_type = mapper.map(self._resource_type_mt)
-        definition_type_ref = self._mosaic.put(definition_type)
         self._type_meta_to_def_meta = mapper.type_meta_to_def_meta
         self._type_meta_to_type_meta = {
             key: key for key in mapper.type_meta_to_def_meta.keys()
             }
-        self.definition_t = self._types.resolve(definition_type_ref)
+        self.definition_t = self._pyobj_creg.animate(definition_type)
 
     def __str__(self):
         return str(self.resource_t)
@@ -166,12 +162,12 @@ class ResourceType:
 
     @cached_property
     def _mapper(self):
-        type_mapper = TypeToValueMapper(self._types, self._mosaic, self._web, self._type_meta_to_type_meta)
+        type_mapper = TypeToValueMapper(self._mosaic, self._web, self._pyobj_creg, self._type_meta_to_type_meta)
         return type_mapper.map(self._resource_type_mt)
 
     @cached_property
     def _reverse_mapper(self):
-        type_mapper = TypeToValueMapper(self._types, self._mosaic, self._web, self._type_meta_to_def_meta)
+        type_mapper = TypeToValueMapper(self._mosaic, self._web, self._pyobj_creg, self._type_meta_to_def_meta)
         return type_mapper.map(self._resource_type_mt)
 
     def resolve(self, value, resolver, resource_dir):

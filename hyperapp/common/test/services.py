@@ -112,8 +112,8 @@ def resource_dir_list(hyperapp_dir, module_dir_list, additional_resource_dirs):
 
 
 @pytest.fixture
-def type_module_loader(builtin_types, mosaic, types):
-    return TypeModuleLoader(builtin_types, mosaic, types)
+def type_module_loader(builtin_types, mosaic, pyobj_creg):
+    return TypeModuleLoader(builtin_types, mosaic, pyobj_creg)
 
 
 @pytest.fixture
@@ -124,13 +124,13 @@ def local_types(type_module_loader, module_dir_list):
 
 
 @pytest.fixture
-def htypes(types, local_types):
-    return HyperTypesNamespace(types, local_types)
+def htypes(pyobj_creg, local_types):
+    return HyperTypesNamespace(pyobj_creg, local_types)
 
 
 @pytest.fixture
-def resource_type_factory(types, mosaic, web):
-    return partial(ResourceType, types, mosaic, web)
+def resource_type_factory(mosaic, web, pyobj_creg):
+    return partial(ResourceType, mosaic, web, pyobj_creg)
 
 
 @pytest.fixture
