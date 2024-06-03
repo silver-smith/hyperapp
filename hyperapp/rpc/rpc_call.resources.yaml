@@ -3,7 +3,6 @@
 import:
 - builtins:deduce_t.service
 - builtins:mosaic.service
-- builtins:types.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -26,7 +25,6 @@ definitions:
       services.mark: common.mark:mark.service
       services.mosaic: builtins:mosaic.service
       services.transport: transport.transport:transport.service
-      services.types: builtins:types.service
   rpc_call_factory:
     _type: legacy_type.builtin:attribute
     object: rpc_call.module

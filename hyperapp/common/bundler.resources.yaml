@@ -4,7 +4,6 @@ import:
 - builtins:association_reg.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
-- builtins:types.service
 - common.mark:mark.service
 - common.ref_picker:pick_refs.service
 - legacy_type.builtin:attribute
@@ -26,7 +25,6 @@ definitions:
       services.mosaic: builtins:mosaic.service
       services.pick_refs: common.ref_picker:pick_refs.service
       services.pyobj_creg: builtins:pyobj_creg.service
-      services.types: builtins:types.service
   bundler.service:
     _type: legacy_type.builtin:call
     function: bundler
