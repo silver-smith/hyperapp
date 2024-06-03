@@ -8,6 +8,13 @@ class CachedCodeRegistry(CodeRegistry):
         self._cache = {}  # piece -> actor
         self._reverse_cache = {}  # actor id -> piece
 
+    # Disable additional *args and **kw because they make cache incorrect.
+    def invite(self, ref):
+        return super().invite(ref)
+
+    def animate(self, piece):
+        return super().animate(piece)
+
     def _animate(self, t, piece, args, kw):
         try:
             return self._cache[piece]

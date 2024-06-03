@@ -35,8 +35,8 @@ name_wrapped_mt = TRecord(BUILTIN_MODULE_NAME, 'name_wrapped_mt', {
     })
 
 
-def name_wrapped_from_piece(rec, type_code_registry, module_name, name):
-    return type_code_registry.invite(rec.type, type_code_registry, rec.module_name, rec.name)
+def name_wrapped_from_piece(rec, pyobj_creg):
+    return pyobj_creg.invite(rec.type, rec.module_name, rec.name)
 
 
 optional_mt = TRecord(BUILTIN_MODULE_NAME, 'optional_mt', {
@@ -44,8 +44,8 @@ optional_mt = TRecord(BUILTIN_MODULE_NAME, 'optional_mt', {
     })
 
 
-def optional_from_piece(rec, pyobj_creg):
-    base_t = pyobj_creg.invite(rec.base)
+def optional_from_piece(piece, pyobj_creg):
+    base_t = pyobj_creg.invite(piece.base)
     return TOptional(base_t)
 
 
@@ -54,8 +54,8 @@ list_mt = TRecord(BUILTIN_MODULE_NAME, 'list_mt', {
     })
 
 
-def list_from_piece(rec, pyobj_creg):
-    element_t = pyobj_creg.invite(rec.element)
+def list_from_piece(piece, pyobj_creg):
+    element_t = pyobj_creg.invite(piece.element)
     return TList(element_t)
 
 
@@ -65,49 +65,52 @@ field_mt = TRecord(BUILTIN_MODULE_NAME, 'field_mt', {
     })
 
 record_mt = TRecord(BUILTIN_MODULE_NAME, 'record_mt', {
+    'module_name': tString,
+    'name': tString,
     'base': TOptional(ref_t),
     'fields': TList(field_mt),
     })
 
 exception_mt = TRecord(BUILTIN_MODULE_NAME, 'exception_mt', {
+    'module_name': tString,
+    'name': tString,
     'base': TOptional(ref_t),
     'fields': TList(field_mt),
     })
 
 
-def _field_from_piece(rec, types):
-    t = types.resolve(rec.type)
-    return (rec.name, t)
+def _field_from_piece(piece, pyobj_creg):
+    t = pyobj_creg.invite(piece.type)
+    return (piece.name, t)
 
 
-def _field_dict_from_piece_list(field_list, types):
-    return dict(_field_from_piece(field, types) for field in field_list)
+def _field_dict_from_piece_list(field_list, pyobj_creg):
+    return dict(_field_from_piece(field, pyobj_creg) for field in field_list)
 
 
-def record_from_piece(rec, type_code_registry, module_name, name, types):
-    if rec.base is not None:
-        base_t = types.resolve(rec.base)
+def record_from_piece(piece, pyobj_creg):
+    if piece.base is not None:
+        base_t = pyobj_creg.invite(piece.base)
         assert isinstance(base_t, TRecord), f"Record base is not a record: {base_t}"
     else:
         base_t = None
-    field_dict = _field_dict_from_piece_list(rec.fields, types)
-    return TRecord(module_name, name, field_dict, base=base_t)
+    field_dict = _field_dict_from_piece_list(piece.fields, pyobj_creg)
+    return TRecord(piece.module_name, piece.name, field_dict, base=base_t)
 
 
-def exception_from_piece(rec, type_code_registry, module_name, name, types):
-    if rec.base is not None:
-        base_t = types.resolve(rec.base)
+def exception_from_piece(piece, pyobj_creg):
+    if piece.base is not None:
+        base_t = pyobj_creg.invite(piece.base)
         assert isinstance(base_t, TException), f"Exception base is not an exception: {base_t}"
     else:
         base_t = None
-    field_dict = _field_dict_from_piece_list(rec.fields, types)
-    return TException(module_name, name, field_dict, base=base_t)
+    field_dict = _field_dict_from_piece_list(piece.fields, pyobj_creg)
+    return TException(piece.module_name, piece.name, field_dict, base=base_t)
 
 
 
 def register_builtin_meta_types(builtin_types, pyobj_creg):
     builtin_types.register(pyobj_creg, name_mt)
-    builtin_types.register(pyobj_creg, name_wrapped_mt)
     builtin_types.register(pyobj_creg, optional_mt)
     builtin_types.register(pyobj_creg, list_mt)
     builtin_types.register(pyobj_creg, field_mt)
@@ -117,8 +120,8 @@ def register_builtin_meta_types(builtin_types, pyobj_creg):
 
 def register_meta_types(pyobj_creg):
     # name_mt does not produce a type, it is removed by type module loader.
-    pyobj_creg.register_actor(name_wrapped_mt, name_wrapped_from_piece)
+    pyobj_creg.register_actor(name_wrapped_mt, name_wrapped_from_piece, pyobj_creg)
     pyobj_creg.register_actor(optional_mt, optional_from_piece, pyobj_creg)
     pyobj_creg.register_actor(list_mt, list_from_piece, pyobj_creg)
-    pyobj_creg.register_actor(record_mt, record_from_piece)
-    pyobj_creg.register_actor(exception_mt, exception_from_piece)
+    pyobj_creg.register_actor(record_mt, record_from_piece, pyobj_creg)
+    pyobj_creg.register_actor(exception_mt, exception_from_piece, pyobj_creg)
