@@ -34,6 +34,6 @@ class BuiltinTypeRegistry:
         self._name_to_type[builtin_mt.name] = builtin_mt
         builtin_ref = phony_ref(builtin_mt.name)
         builtin_mt_piece = builtin_mt(builtin_mt.name)
-        mosaic.add_to_cache(builtin_mt_piece, builtin_ref)
+        mosaic.add_to_cache(builtin_mt_piece, builtin_mt, builtin_ref)
         pyobj_creg.add_to_cache(builtin_mt_piece, builtin_mt)
         pyobj_creg.register_actor(builtin_mt, self.type_from_piece)

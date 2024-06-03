@@ -52,7 +52,8 @@ class Mosaic:
         log.debug('Registered piece %s (type: %s): %r', ref, capsule.type_ref, piece)
         return ref
 
-    def add_to_cache(self, piece, ref):
+    def add_to_cache(self, piece, t, ref):
+        self._ref_to_rec[ref] = self._Rec(None, None, t, piece)
         self._piece_to_ref[piece] = ref
 
     def put_opt(self, piece, t=None):
