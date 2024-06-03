@@ -3,13 +3,13 @@ import logging
 from hyperapp.common.htypes import TRecord
 from hyperapp.common.association_registry import Association
 
-from . import htypes
 from .services import (
     mosaic,
     pyobj_creg,
     view_creg,
     model_view_creg,
     ui_adapter_creg,
+    web,
     )
 from .code.ui_ctr_constructor import Constructor
 
@@ -39,7 +39,7 @@ class ViewImplementationCtrBase(Constructor):
         class_attribute = self._make_attribute(class_name)
         ctr_attribute = self._make_attribute(method_name, class_attribute)
         piece_t = fn_info.params['piece']
-        piece_t_res = htypes.builtin.legacy_type(piece_t.data_t_ref)
+        piece_t_res = web.summon(piece_t.data_t_ref)
         view_creg_res = pyobj_creg.reverse_resolve(self.view_creg_service)
         ctl_association = Association(
             bases=[view_creg_res, piece_t_res],
@@ -114,7 +114,7 @@ class ViewAdapterImplementationCtr(Constructor):
         class_attribute = self._make_attribute(class_name)
         ctr_attribute = self._make_attribute(method_name, class_attribute)
         piece_t = fn_info.params['piece']
-        piece_t_res = htypes.builtin.legacy_type(piece_t.data_t_ref)
+        piece_t_res = web.summon(piece_t.data_t_ref)
         ui_adapter_creg_res = pyobj_creg.reverse_resolve(ui_adapter_creg)
         association = Association(
             bases=[ui_adapter_creg_res, piece_t_res],

@@ -8,6 +8,7 @@ from . import htypes
 from .services import (
     mosaic,
     pyobj_creg,
+    web,
     )
 from .code.ui_ctr_constructor import Constructor
 
@@ -51,7 +52,7 @@ class ModelImplementationCtr(Constructor, metaclass=ABCMeta):
             impl=mosaic.put(impl),
             )
         piece_t = fn_info.params['piece']
-        piece_t_res = htypes.builtin.legacy_type(piece_t.data_t_ref)
+        piece_t_res = web.summon(piece_t.data_t_ref)
         association = Association(
             bases=[piece_t_res],
             key=[model_d, piece_t_res],
@@ -138,10 +139,10 @@ class TreeImplementationCtr(EnumerableImplementationCtr):
     def _construct_ui_t(self, fn_info):
         parent_t = fn_info.params['parent']
         [parent_t_case] = list(self._non_none_cases(parent_t))
-        parent_t_res = htypes.builtin.legacy_type(parent_t_case.data_t_ref)
+        parent_t_ref = parent_t_case.data_t_ref
         element_t_res = pyobj_creg.reverse_resolve(fn_info.result.data_t.element_t)
         return htypes.ui.tree_ui_t(
-            key_t=mosaic.put(parent_t_res),
+            key_t=parent_t_ref,
             element_t=mosaic.put(element_t_res),
             )
 

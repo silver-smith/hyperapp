@@ -8,6 +8,7 @@ from .services import (
     data_to_res,
     mosaic,
     pyobj_creg,
+    web,
     )
 from .code.ui_ctr_constructor import Constructor
 from .code.command_params import STATE_PARAMS, LOCAL_PARAMS
@@ -114,7 +115,7 @@ class ModelCommandImplementationCtr(CommandImplementationCtr):
         command_properties_d_res, props, props_association = self._make_fn_impl_properties(impl)
         model_command_d_res = data_to_res(htypes.ui.model_command_d())
         piece_t = fn_info.params['piece']
-        piece_t_res = htypes.builtin.legacy_type(piece_t.data_t_ref)
+        piece_t_res = web.summon(piece_t.data_t_ref)
         association = Association(
             bases=[piece_t_res],
             key=[model_command_d_res, piece_t_res],
@@ -230,7 +231,7 @@ class CommandEnumeratorImplementationCtr(Constructor):
             )
         enumerator_d_res = data_to_res(htypes.ui.model_command_enumerator_d())
         piece_t = fn_info.params['piece']
-        piece_t_res = htypes.builtin.legacy_type(piece_t.data_t_ref)
+        piece_t_res = web.summon(piece_t.data_t_ref)
         association = Association(
             bases=[piece_t_res],
             key=[enumerator_d_res, piece_t_res],
