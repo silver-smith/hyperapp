@@ -16,7 +16,7 @@ def data_to_res():
         t = deduce_t(piece)
         assert isinstance(t, TRecord)  # TODO: Add support for other types.
         assert not t.fields  # TODO: Add support for non-empty records.
-        t_res = pyobj_creg.reverse_resolve(t)
+        t_res = pyobj_creg.actor_to_piece(t)
         return htypes.builtin.call(
             function=mosaic.put(t_res),
             )

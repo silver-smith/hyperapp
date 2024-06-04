@@ -39,7 +39,7 @@ def test_list_model_commands():
     sample_command = _make_sample_command()
     model_t = htypes.model_commands_tests.sample_model_1
 
-    t_res = pyobj_creg.reverse_resolve(model_t)
+    t_res = pyobj_creg.actor_to_piece(model_t)
     d_res = data_to_res(htypes.ui.model_command_d())
     association_reg[d_res, t_res] = sample_command
 

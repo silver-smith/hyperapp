@@ -120,7 +120,7 @@ class Bundler:
 
     def _collect_associations(self, ref, t, value):
         result = set()
-        t_res = pyobj_creg.reverse_resolve(t)
+        t_res = pyobj_creg.actor_to_piece(t)
         for obj in [t_res, value]:
             for ass in association_reg.base_to_ass_list(obj):
                 piece = ass.to_piece(mosaic)

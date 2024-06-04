@@ -42,7 +42,7 @@ def make_capsule(mosaic, pyobj_creg, object, t=None):
     assert isinstance(object, t), repr((t, object))
     encoding = DEFAULT_CAPSULE_ENCODING
     encoded_object = packet_coders.encode(encoding, object, t)
-    type_piece = pyobj_creg.reverse_resolve(t)
+    type_piece = pyobj_creg.actor_to_piece(t)
     type_ref = mosaic.put(type_piece)
     return capsule_t(type_ref, encoding, encoded_object)
 

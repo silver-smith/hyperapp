@@ -43,7 +43,7 @@ class ModelImplementationCtr(Constructor, metaclass=ABCMeta):
             function=mosaic.put(fn_attribute),
             params=tuple(fn_info.params),
             )
-        model_d_res = pyobj_creg.reverse_resolve(htypes.ui.model_d)
+        model_d_res = pyobj_creg.actor_to_piece(htypes.ui.model_d)
         model_d = htypes.builtin.call(
             function=mosaic.put(model_d_res),
             )
@@ -99,7 +99,7 @@ class ListImplementationCtr(EnumerableImplementationCtr):
         return None
 
     def _construct_ui_t(self, fn_info):
-        element_t_res = pyobj_creg.reverse_resolve(fn_info.result.data_t.element_t)
+        element_t_res = pyobj_creg.actor_to_piece(fn_info.result.data_t.element_t)
         return htypes.ui.list_ui_t(
             element_t=mosaic.put(element_t_res),
             )
@@ -140,7 +140,7 @@ class TreeImplementationCtr(EnumerableImplementationCtr):
         parent_t = fn_info.params['parent']
         [parent_t_case] = list(self._non_none_cases(parent_t))
         parent_t_ref = parent_t_case.data_t_ref
-        element_t_res = pyobj_creg.reverse_resolve(fn_info.result.data_t.element_t)
+        element_t_res = pyobj_creg.actor_to_piece(fn_info.result.data_t.element_t)
         return htypes.ui.tree_ui_t(
             key_t=parent_t_ref,
             element_t=mosaic.put(element_t_res),
@@ -167,7 +167,7 @@ class RecordImplementationCtr(ModelImplementationCtr):
         return None
 
     def _construct_ui_t(self, fn_info):
-        record_t_res = pyobj_creg.reverse_resolve(fn_info.result.data_t)
+        record_t_res = pyobj_creg.actor_to_piece(fn_info.result.data_t)
         return htypes.ui.record_ui_t(
             record_t=mosaic.put(record_t_res),
             )

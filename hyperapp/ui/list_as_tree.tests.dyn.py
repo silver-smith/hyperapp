@@ -34,7 +34,7 @@ def test_switch_list_to_tree():
     ctx = Context()
     piece = htypes.list_as_tree_tests.sample_list_1()
     adapter_piece = htypes.list_adapter.fn_list_adapter(
-        element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.list_as_tree_tests.item_1)),
+        element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_as_tree_tests.item_1)),
         function=fn_to_ref(sample_fn_1),
         params=('piece',),
         )
@@ -60,7 +60,7 @@ def sample_fn_1_open(piece, current_item):
 def test_open_opener_commans():
     ctx = Context()
     model = htypes.list_as_tree_tests.sample_list_1()
-    root_element_t = pyobj_creg.reverse_resolve(htypes.list_as_tree_tests.item_1)
+    root_element_t = pyobj_creg.actor_to_piece(htypes.list_as_tree_tests.item_1)
     open_command_1_d_res = data_to_res(htypes.list_as_tree_tests.open_1_d())
     open_command_1_impl = htypes.ui.model_command_impl(
         function=fn_to_ref(sample_fn_1_open),
@@ -128,7 +128,7 @@ async def test_non_root_open_command():
         root_piece=mosaic.put(root_piece),
         layer_piece=mosaic.put(layer_piece),
         )
-    root_element_t = pyobj_creg.reverse_resolve(htypes.list_as_tree_tests.item_1)
+    root_element_t = pyobj_creg.actor_to_piece(htypes.list_as_tree_tests.item_1)
     adapter_piece = htypes.list_to_tree_adapter.adapter(
         root_element_t=mosaic.put(root_element_t),
         root_function=fn_to_ref(sample_fn_1),
@@ -157,7 +157,7 @@ async def test_set_non_root_open_command():
     root_piece = htypes.list_as_tree_tests.sample_list_1()
     layer_piece_t = htypes.list_as_tree_tests.sample_list_2
     layer_piece = layer_piece_t(base_id=0)
-    layer_piece_t_res = pyobj_creg.reverse_resolve(layer_piece_t)
+    layer_piece_t_res = pyobj_creg.actor_to_piece(layer_piece_t)
     piece = htypes.list_as_tree.opener_commands(
         root_piece=mosaic.put(root_piece),
         layer_piece=mosaic.put(layer_piece),
@@ -168,7 +168,7 @@ async def test_set_non_root_open_command():
             open_children_command=None,
             ),
         )
-    root_element_t = pyobj_creg.reverse_resolve(htypes.list_as_tree_tests.item_1)
+    root_element_t = pyobj_creg.actor_to_piece(htypes.list_as_tree_tests.item_1)
     adapter_piece = htypes.list_to_tree_adapter.adapter(
         root_element_t=mosaic.put(root_element_t),
         root_function=fn_to_ref(sample_fn_1),

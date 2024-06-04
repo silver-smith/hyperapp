@@ -26,7 +26,7 @@ def make_inspect_attr():
 
 def _test_construct_ui_command(command_ctr_t, fn):
     module_res = make_module_res()
-    string_res = pyobj_creg.reverse_resolve(htypes.builtin.string)
+    string_res = pyobj_creg.actor_to_piece(htypes.builtin.string)
     name_to_res = {}
     fn(
         piece=command_ctr_t(

@@ -32,7 +32,7 @@ def value_type(value):
                 )
         log.info("Type for %s is non-data: %r", safe_repr(value), t)
         return t
-    t_piece = pyobj_creg.reverse_resolve(t)
+    t_piece = pyobj_creg.actor_to_piece(t)
     return htypes.inspect.data_t(mosaic.put(t_piece))
 
 

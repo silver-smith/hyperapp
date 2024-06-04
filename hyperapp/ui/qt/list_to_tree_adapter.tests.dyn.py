@@ -63,7 +63,7 @@ def sample_fn_3(piece):
 def pick_visualizer_info():
     def _pick_visualizer_info(t):
         if t is htypes.list_to_tree_adapter_tests.sample_list_2:
-            element_t = pyobj_creg.reverse_resolve(htypes.list_to_tree_adapter_tests.item_2)
+            element_t = pyobj_creg.actor_to_piece(htypes.list_to_tree_adapter_tests.item_2)
             ui_t = htypes.ui.list_ui_t(
                 element_t=mosaic.put(element_t),
                 )
@@ -73,7 +73,7 @@ def pick_visualizer_info():
                 )
             return (ui_t, impl)
         if t is htypes.list_to_tree_adapter_tests.sample_list_3:
-            element_t = pyobj_creg.reverse_resolve(htypes.list_to_tree_adapter_tests.item_3)
+            element_t = pyobj_creg.actor_to_piece(htypes.list_to_tree_adapter_tests.item_3)
             ui_t = htypes.ui.list_ui_t(
                 element_t=mosaic.put(element_t),
                 )
@@ -106,7 +106,7 @@ class MockSubscriber:
 async def test_three_layers():
     ctx = Context()
     model = htypes.list_to_tree_adapter_tests.sample_list_1()
-    root_element_t = pyobj_creg.reverse_resolve(htypes.list_to_tree_adapter_tests.item_1)
+    root_element_t = pyobj_creg.actor_to_piece(htypes.list_to_tree_adapter_tests.item_1)
     open_command_1_d_res = data_to_res(htypes.list_to_tree_adapter_tests.open_1_d())
     open_command_1_impl = htypes.ui.model_command_impl(
         function=fn_to_ref(sample_fn_1_open),
@@ -125,8 +125,8 @@ async def test_three_layers():
         d=mosaic.put(open_command_2_d_res),
         impl=mosaic.put(open_command_2_impl),
         )
-    piece_2_t = pyobj_creg.reverse_resolve(htypes.list_to_tree_adapter_tests.sample_list_2)
-    piece_3_t = pyobj_creg.reverse_resolve(htypes.list_to_tree_adapter_tests.sample_list_3)
+    piece_2_t = pyobj_creg.actor_to_piece(htypes.list_to_tree_adapter_tests.sample_list_2)
+    piece_3_t = pyobj_creg.actor_to_piece(htypes.list_to_tree_adapter_tests.sample_list_3)
     adapter_piece = htypes.list_to_tree_adapter.adapter(
         root_element_t=mosaic.put(root_element_t),
         root_function=fn_to_ref(sample_fn_1),
@@ -188,7 +188,7 @@ async def test_three_layers():
 async def test_single_layer():
     ctx = Context()
     model = htypes.list_to_tree_adapter_tests.sample_list_1()
-    root_element_t = pyobj_creg.reverse_resolve(htypes.list_to_tree_adapter_tests.item_1)
+    root_element_t = pyobj_creg.actor_to_piece(htypes.list_to_tree_adapter_tests.item_1)
     adapter_piece = htypes.list_to_tree_adapter.adapter(
         root_element_t=mosaic.put(root_element_t),
         root_function=fn_to_ref(sample_fn_1),

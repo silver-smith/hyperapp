@@ -26,7 +26,7 @@ class CodeRegistry:
 
     def actor(self, t):
         def register(fn):
-            type_res = self._pyobj_creg.reverse_resolve(t)
+            type_res = self._pyobj_creg.actor_to_piece(t)
             ctr = code_registry_ctr_t(
                 service=self._mosaic.put(self._my_resource),
                 type=self._mosaic.put(type_res),
@@ -38,12 +38,12 @@ class CodeRegistry:
 
     @cached_property
     def _my_resource(self):
-        return self._pyobj_creg.reverse_resolve(self)
+        return self._pyobj_creg.actor_to_piece(self)
 
     def type_registered(self, t):
         if t in self._registry:
             return True
-        t_res = self._pyobj_creg.reverse_resolve(t)
+        t_res = self._pyobj_creg.actor_to_piece(t)
         return (self._my_resource, t_res) in self._association_reg
 
     def register_actor(self, t, factory, *args, **kw):
@@ -67,7 +67,7 @@ class CodeRegistry:
         except KeyError:
             if not self._association_reg:
                 raise
-        t_res = self._pyobj_creg.reverse_resolve(t)
+        t_res = self._pyobj_creg.actor_to_piece(t)
         fn_res = self._association_reg[self._my_resource, t_res]
         try:
             fn = self._pyobj_creg.animate(fn_res)

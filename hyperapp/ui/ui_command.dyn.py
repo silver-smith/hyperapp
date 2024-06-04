@@ -57,7 +57,7 @@ def ui_command_impl_from_piece(piece, ctx):
 def list_view_commands():
     def _list_view_commands(view):
         piece_t = deduce_t(view.piece)
-        piece_t_res = pyobj_creg.reverse_resolve(piece_t)
+        piece_t_res = pyobj_creg.actor_to_piece(piece_t)
         d_res = data_to_res(htypes.ui.ui_command_d())
         universal_d_res = data_to_res(htypes.ui.universal_ui_command_d())
         command_list = [

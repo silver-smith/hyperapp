@@ -30,7 +30,7 @@ def _primitive_value_layout(t):
 
 
 def _get_model_layout(lcs, t):
-    t_res = pyobj_creg.reverse_resolve(t)
+    t_res = pyobj_creg.actor_to_piece(t)
     d = {
         htypes.ui.model_view_layout_d(),
         t_res,
@@ -40,7 +40,7 @@ def _get_model_layout(lcs, t):
 
 def _set_model_layout(lcs, t, layout):
     log.info("Save layout for %s: %s", t, layout)
-    t_res = pyobj_creg.reverse_resolve(t)
+    t_res = pyobj_creg.actor_to_piece(t)
     d = {
         htypes.ui.model_view_layout_d(),
         t_res,
@@ -50,7 +50,7 @@ def _set_model_layout(lcs, t, layout):
 
 def _visualizer_info(t):
     model_d_res = data_to_res(htypes.ui.model_d())
-    t_res = pyobj_creg.reverse_resolve(t)
+    t_res = pyobj_creg.actor_to_piece(t)
     try:
         model = association_reg[model_d_res, t_res]
     except KeyError:

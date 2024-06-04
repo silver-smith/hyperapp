@@ -26,7 +26,7 @@ class FeedDiscoverer:
         self._subscribers = weakref.WeakSet()
         self._got_diff = asyncio.Condition()
         self._got_diff_count = 0
-        self._piece_t_res = pyobj_creg.reverse_resolve(self._piece_t)
+        self._piece_t_res = pyobj_creg.actor_to_piece(self._piece_t)
 
     def subscribe(self, subscriber):
         self._subscribers.add(subscriber)
@@ -53,7 +53,7 @@ class FeedDiscoverer:
                 ListDiff.Replace,
                 )):
             element_t = deduce_value_type(diff.item)
-            element_t_res = pyobj_creg.reverse_resolve(element_t)
+            element_t_res = pyobj_creg.actor_to_piece(element_t)
             ctr = htypes.rc_constructors.list_feed_ctr(
                 t=mosaic.put(self._piece_t_res),
                 element_t=mosaic.put(element_t_res),
@@ -76,7 +76,7 @@ class FeedDiscoverer:
                 TreeDiff.Replace,
                 )):
             element_t = deduce_value_type(diff.item)
-            element_t_res = pyobj_creg.reverse_resolve(element_t)
+            element_t_res = pyobj_creg.actor_to_piece(element_t)
             ctr = htypes.rc_constructors.index_tree_feed_ctr(
                 t=mosaic.put(self._piece_t_res),
                 element_t=mosaic.put(element_t_res),

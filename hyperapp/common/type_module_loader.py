@@ -35,7 +35,7 @@ class _NameToRefMapper(Mapper):
         piece = self._local_name_dict.get(rec.name)
         if not piece:
             t = self._builtin_types.resolve(rec.name)
-            piece = self._pyobj_creg.reverse_resolve(t)
+            piece = self._pyobj_creg.actor_to_piece(t)
         log.debug("Name %r is resolved to %r", rec.name, piece)
         return piece
 

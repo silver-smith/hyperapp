@@ -54,7 +54,7 @@ def test_fn_adapter():
     ctx = Context()
     model = htypes.list_adapter_tests.sample_list()
     adapter_piece = htypes.list_adapter.fn_list_adapter(
-        element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.list_adapter_tests.item)),
+        element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
         function=fn_to_ref(sample_list_fn),
         params=('piece',),
         )
@@ -96,7 +96,7 @@ async def test_feed_fn_adapter():
     ctx = Context()
     model = htypes.list_adapter_tests.sample_list()
     adapter_piece = htypes.list_adapter.fn_list_adapter(
-        element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.list_adapter_tests.item)),
+        element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
         function=fn_to_ref(sample_feed_list_fn),
         params=('piece', 'feed'),
         )
@@ -151,7 +151,7 @@ def test_fn_adapter_with_remote_context():
 
         model = htypes.list_adapter_tests.sample_list()
         adapter_piece = htypes.list_adapter.fn_list_adapter(
-            element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.list_adapter_tests.item)),
+            element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
             function=fn_to_ref(sample_remote_list_fn),
             params=('piece',),
             )
@@ -191,7 +191,7 @@ def test_remote_fn_adapter():
 
         model = htypes.list_adapter_tests.sample_list()
         adapter_piece = htypes.list_adapter.remote_fn_list_adapter(
-            element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.list_adapter_tests.item)),
+            element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
             function=fn_to_ref(sample_list_fn),
             remote_peer=mosaic.put(process.peer.piece),
             params=('piece',),

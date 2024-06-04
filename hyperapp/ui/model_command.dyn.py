@@ -52,7 +52,7 @@ def model_commands():
             t = deduce_value_type(piece)
         except DeduceTypeError:
             return []
-        t_res = pyobj_creg.reverse_resolve(t)
+        t_res = pyobj_creg.actor_to_piece(t)
         d_res = data_to_res(htypes.ui.model_command_d())
         command_list = association_reg.get_all((d_res, t_res))
         return command_list
@@ -68,7 +68,7 @@ def enum_model_commands():
             t = deduce_value_type(piece)
         except DeduceTypeError:
             return []
-        t_res = pyobj_creg.reverse_resolve(t)
+        t_res = pyobj_creg.actor_to_piece(t)
         d_res = data_to_res(htypes.ui.model_command_enumerator_d())
         enumerator_list = association_reg.get_all((d_res, t_res))
         for enumerator in enumerator_list:

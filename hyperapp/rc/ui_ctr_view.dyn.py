@@ -40,7 +40,7 @@ class ViewImplementationCtrBase(Constructor):
         ctr_attribute = self._make_attribute(method_name, class_attribute)
         piece_t = fn_info.params['piece']
         piece_t_res = web.summon(piece_t.data_t_ref)
-        view_creg_res = pyobj_creg.reverse_resolve(self.view_creg_service)
+        view_creg_res = pyobj_creg.actor_to_piece(self.view_creg_service)
         ctl_association = Association(
             bases=[view_creg_res, piece_t_res],
             key=[view_creg_res, piece_t_res],
@@ -115,7 +115,7 @@ class ViewAdapterImplementationCtr(Constructor):
         ctr_attribute = self._make_attribute(method_name, class_attribute)
         piece_t = fn_info.params['piece']
         piece_t_res = web.summon(piece_t.data_t_ref)
-        ui_adapter_creg_res = pyobj_creg.reverse_resolve(ui_adapter_creg)
+        ui_adapter_creg_res = pyobj_creg.actor_to_piece(ui_adapter_creg)
         association = Association(
             bases=[ui_adapter_creg_res, piece_t_res],
             key=[ui_adapter_creg_res, piece_t_res],

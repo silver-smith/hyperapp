@@ -25,7 +25,7 @@ def sample_record_fn(piece):
 def test_fn_adapter():
     ctx = Context()
     model = htypes.record_adapter_tests.sample_record()
-    record_t_res = pyobj_creg.reverse_resolve(htypes.record_adapter_tests.item)
+    record_t_res = pyobj_creg.actor_to_piece(htypes.record_adapter_tests.item)
     adapter_piece = htypes.record_adapter.fn_record_adapter(
         record_t=mosaic.put(record_t_res),
         function=fn_to_ref(sample_record_fn),

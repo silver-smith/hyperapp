@@ -11,7 +11,7 @@ from .tested.services import feed_factory
 class PhonyAssociationRegistry:
 
     def __getitem__(self, key):
-        element_t = pyobj_creg.reverse_resolve(htypes.feed_tests.sample_item)
+        element_t = pyobj_creg.actor_to_piece(htypes.feed_tests.sample_item)
         return htypes.ui.list_feed(
             element_t=mosaic.put(element_t),
             )

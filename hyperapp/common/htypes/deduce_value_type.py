@@ -71,10 +71,10 @@ def _deduce_list_type(mosaic, pyobj_creg, value):
         element_t = tNone  # Does not matter for an empty list.
     t = TList(element_t)
     try:
-        _ = pyobj_creg.reverse_resolve(t)
+        _ = pyobj_creg.actor_to_piece(t)
         return t
     except:
-        element_t_piece = pyobj_creg.reverse_resolve(element_t)
+        element_t_piece = pyobj_creg.actor_to_piece(element_t)
         piece = list_mt(mosaic.put(element_t_piece))
         return pyobj_creg.animate(piece)
 

@@ -29,8 +29,8 @@ def _sample_tree_fn(piece, parent):
 
 def _make_adapter_piece():
     return htypes.tree_adapter.fn_index_tree_adapter(
-        element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.tree_tests.item)),
-        key_t=mosaic.put(pyobj_creg.reverse_resolve(tInt)),
+        element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_tests.item)),
+        key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
         function=fn_to_ref(_sample_tree_fn),
         params=('piece', 'parent'),
         )

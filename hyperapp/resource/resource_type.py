@@ -134,7 +134,7 @@ class ResourceType:
         self._pyobj_creg = pyobj_creg
         self.resource_t = resource_t
 
-        self._resource_type_mt = self._pyobj_creg.reverse_resolve(self.resource_t)
+        self._resource_type_mt = self._pyobj_creg.actor_to_piece(self.resource_t)
 
         mapper = TypeToDefinitionMapper(self._mosaic, self._web)
         definition_type = mapper.map(self._resource_type_mt)

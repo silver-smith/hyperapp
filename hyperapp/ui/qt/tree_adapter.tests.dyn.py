@@ -42,8 +42,8 @@ def test_fn_adapter():
     ctx = Context()
     model = htypes.tree_adapter_tests.sample_tree()
     adapter_piece = htypes.tree_adapter.fn_index_tree_adapter(
-        element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.tree_adapter_tests.item)),
-        key_t=mosaic.put(pyobj_creg.reverse_resolve(tInt)),
+        element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
+        key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
         function=fn_to_ref(sample_tree_fn),
         params=('piece', 'parent'),
         )
@@ -104,8 +104,8 @@ async def test_feed_fn_adapter():
     ctx = Context()
     model = htypes.tree_adapter_tests.sample_tree()
     adapter_piece = htypes.tree_adapter.fn_index_tree_adapter(
-        element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.tree_adapter_tests.item)),
-        key_t=mosaic.put(pyobj_creg.reverse_resolve(tInt)),
+        element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
+        key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
         function=fn_to_ref(sample_feed_tree_fn),
         params=('piece', 'parent', 'feed'),
         )
@@ -163,8 +163,8 @@ def test_fn_adapter_with_remote_context():
 
         model = htypes.tree_adapter_tests.sample_tree()
         adapter_piece = htypes.tree_adapter.fn_index_tree_adapter(
-            element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.tree_adapter_tests.item)),
-            key_t=mosaic.put(pyobj_creg.reverse_resolve(tInt)),
+            element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
+            key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
             function=fn_to_ref(sample_remote_tree_fn),
             params=('piece', 'parent'),
             )
@@ -207,8 +207,8 @@ def test_remote_fn_adapter():
 
         model = htypes.tree_adapter_tests.sample_tree()
         adapter_piece = htypes.tree_adapter.remote_fn_index_tree_adapter(
-            element_t=mosaic.put(pyobj_creg.reverse_resolve(htypes.tree_adapter_tests.item)),
-            key_t=mosaic.put(pyobj_creg.reverse_resolve(tInt)),
+            element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
+            key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
             function=fn_to_ref(sample_tree_fn),
             remote_peer=mosaic.put(process.peer.piece),
             params=('piece', 'parent'),

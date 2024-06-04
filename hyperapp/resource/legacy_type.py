@@ -38,14 +38,14 @@ def add_builtin_types_to_pyobj_cache(pyobj_creg, builtin_types):
             *primitive_list_types.values(),
             *primitive_list_list_types.values(),
             ]:
-        type_piece = pyobj_creg.reverse_resolve(t)
+        type_piece = pyobj_creg.actor_to_piece(t)
         pyobj_creg.add_to_cache(type_piece, t)
 
 
 def convert_builtin_types_to_dict(pyobj_creg, builtin_types):
     name_to_module = defaultdict(dict)
     for t in builtin_types.values():
-        type_piece = pyobj_creg.reverse_resolve(t)
+        type_piece = pyobj_creg.actor_to_piece(t)
         module_dict = name_to_module[t.module_name]
         module_dict[t.name] = type_piece
     return name_to_module

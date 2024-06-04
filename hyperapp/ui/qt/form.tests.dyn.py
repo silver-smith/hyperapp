@@ -20,7 +20,7 @@ def _sample_form_fn(piece):
 
 
 def _make_adapter_piece():
-    item_t_res = pyobj_creg.reverse_resolve(htypes.form_tests.item)
+    item_t_res = pyobj_creg.actor_to_piece(htypes.form_tests.item)
     return htypes.record_adapter.fn_record_adapter(
         record_t=mosaic.put(item_t_res),
         function=fn_to_ref(_sample_form_fn),
