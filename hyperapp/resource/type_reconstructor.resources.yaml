@@ -1,0 +1,23 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:pyobj_creg.service
+- legacy_type.builtin:exception_mt
+- legacy_type.builtin:field_mt
+- legacy_type.builtin:list_mt
+- legacy_type.builtin:optional_mt
+- legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
+associations: []
+definitions:
+  type_reconstructor.module:
+    _type: legacy_type.builtin:python_module
+    module_name: type_reconstructor
+    file_name: type_reconstructor.dyn.py
+    import_list:
+      htypes.builtin.exception_mt: legacy_type.builtin:exception_mt
+      htypes.builtin.field_mt: legacy_type.builtin:field_mt
+      htypes.builtin.list_mt: legacy_type.builtin:list_mt
+      htypes.builtin.optional_mt: legacy_type.builtin:optional_mt
+      htypes.builtin.record_mt: legacy_type.builtin:record_mt
+      services.pyobj_creg: builtins:pyobj_creg.service
