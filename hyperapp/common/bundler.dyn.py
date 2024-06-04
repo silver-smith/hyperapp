@@ -63,9 +63,9 @@ class Bundler:
         log.debug('Making bundle from refs: %s', [ref_repr(ref) for ref in ref_list])
         refass, capsule_list = self._collect_capsule_list(ref_list, seen_refs or [])
         bundle = bundle_t(
-            roots=ref_list,
-            associations=list(refass.asss),
-            capsule_list=capsule_list,
+            roots=tuple(ref_list),
+            associations=tuple(refass.asss),
+            capsule_list=tuple(capsule_list),
             )
         return _RefsAndBundle(refass.refs, bundle)
 
