@@ -52,6 +52,7 @@ class Services(object):
     builtin_services = [
         'services',
         'association_reg',
+        'reconstructors',
         'builtin_services',
         'builtin_types',
         'code_registry_ctr',
@@ -95,7 +96,8 @@ class Services(object):
         self.services = self  # Allows resources to access services itself.
         self.builtin_types = BuiltinTypeRegistry()
         self.association_reg = AssociationRegistry()
-        self.pyobj_creg = PyObjRegistry(self.association_reg)
+        self.reconstructors = []
+        self.pyobj_creg = PyObjRegistry(self.association_reg, self.reconstructors)
         self.mosaic = Mosaic(self.pyobj_creg)
         self.web = Web(self.mosaic, self.pyobj_creg)
         self.pyobj_creg.init(self.builtin_types, self.mosaic, self.web)

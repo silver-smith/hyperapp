@@ -38,8 +38,13 @@ def association_reg():
 
 
 @pytest.fixture
-def pyobj_creg(association_reg):
-    return PyObjRegistry(association_reg)
+def reconstructors():
+    return []
+
+
+@pytest.fixture
+def pyobj_creg(association_reg, reconstructors):
+    return PyObjRegistry(association_reg, reconstructors)
 
 
 @pytest.fixture
