@@ -31,6 +31,10 @@ class CachedCodeRegistry(CodeRegistry):
         except KeyError as x:
             raise KeyError(f"{x}: {actor!r}")
 
+    def actor_to_ref(self, actor):
+        piece = self.actor_to_piece(actor)
+        return self._mosaic.put(piece)
+
     def add_to_cache(self, piece, actor):
         self._cache[piece] = actor
         self._reverse_cache[id(actor)] = piece

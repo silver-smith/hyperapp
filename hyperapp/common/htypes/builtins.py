@@ -52,11 +52,10 @@ _builtin_type_list = [
     ]
 
 
-def register_builtin_types(builtin_types, mosaic, pyobj_creg):
+def register_builtin_types(builtin_types, pyobj_creg):
 
     def _list_type(element_t):
-        element_piece = pyobj_creg.actor_to_piece(element_t)
-        element_ref = mosaic.put(element_piece)
+        element_ref = pyobj_creg.actor_to_ref(element_t)
         list_piece = list_mt(element_ref)
         return pyobj_creg.animate(list_piece)
 

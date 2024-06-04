@@ -5,7 +5,6 @@ from . import htypes
 from .services import (
     deduce_t,
     mark,
-    mosaic,
     pyobj_creg,
     )
 
@@ -16,8 +15,8 @@ def data_to_res():
         t = deduce_t(piece)
         assert isinstance(t, TRecord)  # TODO: Add support for other types.
         assert not t.fields  # TODO: Add support for non-empty records.
-        t_res = pyobj_creg.actor_to_piece(t)
+        t_ref = pyobj_creg.actor_to_ref(t)
         return htypes.builtin.call(
-            function=mosaic.put(t_res),
+            function=t_ref,
             )
     return _data_to_res

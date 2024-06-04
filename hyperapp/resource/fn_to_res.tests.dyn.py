@@ -1,13 +1,14 @@
 from .services import (
     mark,
+    mosaic,
     )
 from .tested.code import fn_to_res
 from .tested.services import fn_to_ref
 
 
 class _PhonyPyObjCReg:
-    def reverse_resolve(self, obj):
-        return 'some object'
+    def actor_to_ref(self, obj):
+        return mosaic.put('some object')
 
 
 @mark.service

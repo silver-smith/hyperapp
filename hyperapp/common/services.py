@@ -99,7 +99,7 @@ class Services(object):
         self.mosaic = Mosaic(self.pyobj_creg)
         self.web = Web(self.mosaic, self.pyobj_creg)
         self.pyobj_creg.init(self.builtin_types, self.mosaic, self.web)
-        register_builtin_types(self.builtin_types, self.mosaic, self.pyobj_creg)
+        register_builtin_types(self.builtin_types, self.pyobj_creg)
         self.local_types = {}  # module name -> name -> type piece.
         self.type_module_loader = TypeModuleLoader(self.builtin_types, self.mosaic, self.pyobj_creg)
         self.python_importer = PythonImporter()

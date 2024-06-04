@@ -61,7 +61,7 @@ def mosaic_and_web(pyobj_creg, builtin_types, python_importer):
     mosaic = Mosaic(pyobj_creg)
     web = Web(mosaic, pyobj_creg)
     pyobj_creg.init(builtin_types, mosaic, web)
-    register_builtin_types(builtin_types, mosaic, pyobj_creg)
+    register_builtin_types(builtin_types, pyobj_creg)
     pyobj_creg.register_actor(python_module_t, python_module_pyobj, mosaic, python_importer, pyobj_creg)
     # pyobj_creg.register_actor(builtin_service_t, builtin_service_pyobj, self)
     pyobj_creg.register_actor(attribute_t, attribute_pyobj, pyobj_creg)

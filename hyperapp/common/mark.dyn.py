@@ -83,8 +83,7 @@ class UiCommandBase:
 
     def __call__(self, fn_or_t):
         if isinstance(fn_or_t, Type):  # Parameterized version.
-            t_res = pyobj_creg.actor_to_piece(fn_or_t)
-            t_ref = mosaic.put(t_res)
+            t_ref = pyobj_creg.actor_to_ref(fn_or_t)
             return partial(self._ui_command_wrapper, t_ref)
         else:  # Non-parameterized version.
             name = fn_or_t.__name__

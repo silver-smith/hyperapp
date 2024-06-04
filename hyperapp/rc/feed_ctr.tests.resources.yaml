@@ -2,7 +2,6 @@
 
 import:
 - builtins:local_types.service
-- builtins:mosaic.service
 - builtins:pyobj_creg.service
 - legacy_type.builtin:python_module
 - legacy_type.phony:phony
@@ -14,7 +13,6 @@ definitions:
     file_name: feed_ctr.tests.dyn.py
     import_list:
       services.local_types: builtins:local_types.service
-      services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
       tested.code.feed_ctr: phony
   phony:

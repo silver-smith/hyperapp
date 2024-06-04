@@ -10,9 +10,9 @@ from .services import (
 
 def _fn_to_res(fn):
     module = inspect.getmodule(fn)
-    module_res = pyobj_creg.actor_to_piece(module)
+    module_ref = pyobj_creg.actor_to_ref(module)
     return htypes.builtin.attribute(
-        object=mosaic.put(module_res),
+        object=module_ref,
         attr_name=fn.__name__,
         )
 

@@ -74,8 +74,8 @@ def _deduce_list_type(mosaic, pyobj_creg, value):
         _ = pyobj_creg.actor_to_piece(t)
         return t
     except:
-        element_t_piece = pyobj_creg.actor_to_piece(element_t)
-        piece = list_mt(mosaic.put(element_t_piece))
+        element_t_ref = pyobj_creg.actor_to_ref(element_t)
+        piece = list_mt(element_t_ref)
         return pyobj_creg.animate(piece)
 
 

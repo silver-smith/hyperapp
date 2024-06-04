@@ -2,7 +2,6 @@
 
 import:
 - builtins:deduce_t.service
-- builtins:mosaic.service
 - builtins:pyobj_creg.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
@@ -22,7 +21,6 @@ definitions:
       htypes.builtin.call: legacy_type.builtin:call
       services.deduce_t: builtins:deduce_t.service
       services.mark: common.mark:mark.service
-      services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
   data_to_res.service:
     _type: legacy_type.builtin:call

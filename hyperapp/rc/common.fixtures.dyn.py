@@ -53,10 +53,10 @@ class FeedDiscoverer:
                 ListDiff.Replace,
                 )):
             element_t = deduce_value_type(diff.item)
-            element_t_res = pyobj_creg.actor_to_piece(element_t)
+            element_t_ref = pyobj_creg.actor_to_ref(element_t)
             ctr = htypes.rc_constructors.list_feed_ctr(
                 t=mosaic.put(self._piece_t_res),
-                element_t=mosaic.put(element_t_res),
+                element_t=element_t_ref,
                 )
             if self.ctr:
                 if ctr != self.ctr:
@@ -76,10 +76,10 @@ class FeedDiscoverer:
                 TreeDiff.Replace,
                 )):
             element_t = deduce_value_type(diff.item)
-            element_t_res = pyobj_creg.actor_to_piece(element_t)
+            element_t_ref = pyobj_creg.actor_to_ref(element_t)
             ctr = htypes.rc_constructors.index_tree_feed_ctr(
                 t=mosaic.put(self._piece_t_res),
-                element_t=mosaic.put(element_t_res),
+                element_t=element_t_ref,
                 )
             if self.ctr:
                 if ctr != self.ctr:

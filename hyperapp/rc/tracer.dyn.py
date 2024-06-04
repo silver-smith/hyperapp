@@ -32,8 +32,8 @@ def value_type(value):
                 )
         log.info("Type for %s is non-data: %r", safe_repr(value), t)
         return t
-    t_piece = pyobj_creg.actor_to_piece(t)
-    return htypes.inspect.data_t(mosaic.put(t_piece))
+    t_ref = pyobj_creg.actor_to_ref(t)
+    return htypes.inspect.data_t(t_ref)
 
 
 class Tracer:

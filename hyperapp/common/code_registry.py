@@ -26,10 +26,10 @@ class CodeRegistry:
 
     def actor(self, t):
         def register(fn):
-            type_res = self._pyobj_creg.actor_to_piece(t)
+            type_ref = self._pyobj_creg.actor_to_ref(t)
             ctr = code_registry_ctr_t(
                 service=self._mosaic.put(self._my_resource),
-                type=self._mosaic.put(type_res),
+                type=type_ref,
                 )
             add_fn_attr_constructor(fn, self._mosaic.put(ctr))
             return fn

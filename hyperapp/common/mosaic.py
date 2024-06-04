@@ -46,7 +46,7 @@ class Mosaic:
             pass
         t = t or deduce_value_type(piece)
         log.debug('Registering piece %r: %s', t.name, piece)
-        capsule = make_capsule(self, self._pyobj_creg, piece, t)
+        capsule = make_capsule(self._pyobj_creg, piece, t)
         ref = make_ref(capsule)
         self._register_capsule(ref, capsule, capsule.type_ref, t, piece)
         log.debug('Registered piece %s (type: %s): %r', ref, capsule.type_ref, piece)
