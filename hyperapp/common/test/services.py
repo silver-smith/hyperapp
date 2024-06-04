@@ -33,6 +33,11 @@ log = logging.getLogger(__name__)
 
 
 @pytest.fixture
+def association_reg():
+    return AssociationRegistry()
+
+
+@pytest.fixture
 def pyobj_creg(association_reg):
     return PyObjRegistry(association_reg)
 
@@ -49,11 +54,6 @@ def python_importer():
     yield importer
     importer.remove_modules()
     importer.unregister_meta_hook()
-
-
-@pytest.fixture
-def association_reg():
-    return AssociationRegistry()
 
 
 @pytest.fixture
