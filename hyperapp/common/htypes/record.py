@@ -168,6 +168,7 @@ def _namedtuple(typename, field_names, verbose=False, rename=False, str_fmt=None
 class TRecord(Type):
 
     def __init__(self, module_name, name, fields=None, base=None, verbose=False):
+        assert module_name
         assert name
         assert fields is None or is_dict_inst(fields, str, Type), repr(fields)
         assert base is None or isinstance(base, TRecord), repr(base)
