@@ -8,6 +8,7 @@ from hyperapp.common.htypes import HException
 from .services import (
     hyperapp_dir,
     )
+from .code.reconstructors import register_reconstructors
 from .code.collector import collect_units
 from .code.process_pool import ProcessWaitError, process_pool_running
 from .code.unit import DeadlockError
@@ -80,6 +81,8 @@ async def _main(graph, process_pool, show_traces):
 
 def compile_resources(generator_ref, subdir_list, root_dirs, module_list, process_count, show_traces, rpc_timeout):
     log.info("Compile resources at: %s, %s: %s", subdir_list, root_dirs, module_list)
+
+    register_reconstructors()
 
     if subdir_list:
         dir_list = [hyperapp_dir / d for d in subdir_list]

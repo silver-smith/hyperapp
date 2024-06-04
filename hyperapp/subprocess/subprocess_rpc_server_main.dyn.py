@@ -14,6 +14,7 @@ from .services import (
     stop_signal,
     )
 from .code.subprocess_transport import SubprocessRoute
+from .code.reconstructors import register_reconstructors
 
 log = logging.getLogger(__name__)
 
@@ -26,6 +27,8 @@ def _stop(rpc_endpoint):
 def rpc_server_main(connection, received_refs, name, master_peer_piece, master_servant_ref, subprocess_id):
     my_name = f"Subprocess rpc server {name}"
     log.info("%s: Init", my_name)
+
+    register_reconstructors()
 
     master_peer = peer_registry.animate(master_peer_piece)
     master_peer_ref = mosaic.put(master_peer_piece)

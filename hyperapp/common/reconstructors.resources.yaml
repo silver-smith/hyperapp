@@ -1,0 +1,15 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:reconstructors.service
+- legacy_type.builtin:python_module
+- resource.type_reconstructor:type_reconstructor.module
+associations: []
+definitions:
+  reconstructors.module:
+    _type: legacy_type.builtin:python_module
+    module_name: reconstructors
+    file_name: reconstructors.dyn.py
+    import_list:
+      code.type_reconstructor: resource.type_reconstructor:type_reconstructor.module
+      services.reconstructors: builtins:reconstructors.service

@@ -3,6 +3,7 @@
 import:
 - builtins:mosaic.service
 - builtins:stop_signal.service
+- common.reconstructors:reconstructors.module
 - legacy_type.builtin:python_module
 - rpc.rpc_call:rpc_call_factory.service
 - rpc.rpc_endpoint:rpc_endpoint_factory.service
@@ -19,6 +20,7 @@ definitions:
     module_name: subprocess_rpc_server_main
     file_name: subprocess_rpc_server_main.dyn.py
     import_list:
+      code.reconstructors: common.reconstructors:reconstructors.module
       code.subprocess_transport: subprocess.subprocess_transport:subprocess_transport.module
       services.add_subprocess_server_connection: subprocess.subprocess_transport:add_subprocess_server_connection.service
       services.endpoint_registry: transport.endpoint:endpoint_registry.service

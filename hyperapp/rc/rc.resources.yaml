@@ -2,6 +2,7 @@ import:
 - builtins:hyperapp_dir.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- common.reconstructors:reconstructors.module
 - rc.process_pool:process_pool.module
 - rc.collector:collector.module
 - rc.unit:unit.module
@@ -14,6 +15,7 @@ definitions:
     file_name: rc.dyn.py
     import_list:
       services.hyperapp_dir: builtins:hyperapp_dir.service
+      code.reconstructors: common.reconstructors:reconstructors.module
       code.collector: rc.collector:collector.module
       code.process_pool: rc.process_pool:process_pool.module
       code.unit: rc.unit:unit.module
