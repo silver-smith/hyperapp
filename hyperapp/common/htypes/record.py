@@ -1,5 +1,6 @@
 import codecs
 import sys
+from functools import cached_property
 from keyword import iskeyword
 
 from ..util import is_dict_inst
@@ -167,6 +168,8 @@ def _namedtuple(typename, field_names, verbose=False, rename=False, str_fmt=None
 
 class TRecord(Type):
 
+    _used_type_names = {}  # type name -> module_name
+
     def __init__(self, module_name, name, fields=None, base=None, verbose=False):
         assert module_name
         assert name
@@ -177,9 +180,8 @@ class TRecord(Type):
         if base:
             self.fields = {**base.fields, **self.fields}
         self.base = base
-        self._named_tuple = _namedtuple(
-            name, [name for name in self.fields], verbose, str_fmt=self._str_fmt(), repr_fmt=self._repr_fmt())
         self._eq_key = (self._module_name, self._name, *self.fields.items())
+        self._verbose = verbose
 
     def __str__(self):
         return f'{self.module_name}.{self.name}'
@@ -222,6 +224,22 @@ class TRecord(Type):
     def __instancecheck__(self, rec):
         ## print '__instancecheck__', self, rec
         return issubclass(getattr(rec, '_t', None), self)
+
+    @cached_property
+    def _named_tuple(self):
+        type_name = f'{self._module_name}_{self._name}'
+        try:
+            used_module_name = self._used_type_names[type_name]
+        except KeyError:
+            pass
+        else:
+            raise RuntimeError(
+                f"TRecord: type name {type_name!r} from {used_module_name!r} is already in use;"
+                f" Clash with new name from {self._module_name!r}"
+                )
+        self._used_type_names[type_name] = self._module_name
+        return _namedtuple(
+            type_name, [name for name in self.fields], self._verbose, str_fmt=self._str_fmt(), repr_fmt=self._repr_fmt())
 
     def instantiate(self, *args, **kw):
         if CHECK_FIELD_TYPES:

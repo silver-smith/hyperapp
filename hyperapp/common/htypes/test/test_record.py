@@ -9,7 +9,8 @@ from hyperapp.common.htypes import (
 
 
 def test_instantiate():
-    t = TRecord('test', 'test_record', {
+    module_name = 'test_instantiate'
+    t = TRecord(module_name, 'test_record', {
         'some_str': tString,
         'some_int': tInt,
         }, verbose=True)
@@ -23,7 +24,7 @@ def test_instantiate():
         'some_str': 'foo',
         'some_int': 123,
         }
-    assert repr(rec_1) == "test.test_record(some_str='foo', some_int=123)"
+    assert repr(rec_1) == f"{module_name}.test_record(some_str='foo', some_int=123)"
     assert rec_1._replace(some_int=456) == t(some_str='foo', some_int=456)
 
     rec_2 = t('foo', 123)
@@ -32,27 +33,30 @@ def test_instantiate():
 
 
 def test_instantiate_empty():
-    t = TRecord('test', 'test_record', {}, verbose=True)
+    module_name = 'test_instantiate_empty'
+    t = TRecord(module_name, 'test_record', {}, verbose=True)
     rec_1 = t()
     assert list(rec_1) == []
     assert rec_1._asdict() == {}
-    assert repr(rec_1) == "test.test_record()"
+    assert repr(rec_1) == f"{module_name}.test_record()"
 
     rec_2 = t()
     assert rec_1 == rec_2
 
 
 def test_record_repr():
-    t = TRecord('test', 'test', {
+    module_name = 'test_record_repr'
+    t = TRecord(module_name, 'test', {
         'field_1': tString,
         'field_2': tInt,
         })
-    assert repr(t('abc', 123)) == "test.test(field_1='abc', field_2=123)"
+    assert repr(t('abc', 123)) == f"{module_name}.test(field_1='abc', field_2=123)"
 
 
 def test_empty_record_repr():
-    empty_t = TRecord('test', 'empty')
-    assert repr(empty_t()) == "test.empty()"
+    module_name = 'test_empty_record_repr'
+    empty_t = TRecord(module_name, 'empty')
+    assert repr(empty_t()) == f"{module_name}.empty()"
 
 
 def test_ref_str():
@@ -66,7 +70,8 @@ def test_ref_repr():
 
 
 def test_is_instance_primitives():
-    t = TRecord('test', 'test_record', {
+    module_name = 'test_is_instance_primitives'
+    t = TRecord(module_name, 'test_record', {
         'str_field': tString,
         'int_field': tInt,
         })
@@ -74,7 +79,8 @@ def test_is_instance_primitives():
 
 
 def test_is_instance_ref_opt():
-    t = TRecord('test', 'test_record', {
+    module_name = 'test_is_instance_ref_opt'
+    t = TRecord(module_name, 'test_record', {
         'str_field': tString,
         'ref_field': TOptional(ref_t),
         })
@@ -82,11 +88,12 @@ def test_is_instance_ref_opt():
 
 
 def test_is_instance_list():
-    element_t = TRecord('test', 'test_element', {
+    module_name = 'test_is_instance_list'
+    element_t = TRecord(module_name, 'test_element', {
         'str_field': tString,
         'ref_field': TOptional(ref_t),
         })
-    t = TRecord('test', 'test_record', {
+    t = TRecord(module_name, 'test_record', {
         'element_list': TList(element_t),
         })
     element = element_t('abc', None)
@@ -95,14 +102,15 @@ def test_is_instance_list():
 
 
 def test_is_instance_base_list():
-    element_t = TRecord('test', 'test_element', {
+    module_name = 'test_is_instance_base_list'
+    element_t = TRecord(module_name, 'test_element', {
         'str_field': tString,
         'ref_field': TOptional(ref_t),
         })
-    base_t = TRecord('test', 'test_base', {
+    base_t = TRecord(module_name, 'test_base', {
         'element_list': TList(element_t),
         })
-    t = TRecord('test', 'test_record', base=base_t)
+    t = TRecord(module_name, 'test_record', base=base_t)
     element = element_t('abc', None)
     value = t(element_list=(element,))
     assert isinstance(value, t)

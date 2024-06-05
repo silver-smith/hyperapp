@@ -51,7 +51,7 @@ def test_list_opt(mosaic, pyobj_creg):
 
 
 def test_record(mosaic, pyobj_creg):
-    module_name = 'test'
+    module_name = 'test_record'
     name = 'some_test_record'
     string_list_mt = list_mt(mosaic.put(builtin_mt('string')))
     bool_opt_mt = optional_mt(mosaic.put(builtin_mt('bool')))
@@ -69,7 +69,7 @@ def test_record(mosaic, pyobj_creg):
 
 
 def test_based_record(mosaic, pyobj_creg):
-    module_name = 'test'
+    module_name = 'test_based_record'
     base_piece = record_mt(module_name, 'some_base_record', None, (
         field_mt('int_field', mosaic.put(builtin_mt('int'))),
         ))
@@ -86,7 +86,7 @@ def test_based_record(mosaic, pyobj_creg):
 
 
 def test_empty_record(mosaic, pyobj_creg):
-    module_name = 'test'
+    module_name = 'test_empty_record'
     name_1 = 'record_1'
     piece_1 = record_mt(module_name, name_1, None, ())
     t_1 = pyobj_creg.animate(piece_1)
@@ -101,6 +101,7 @@ def test_empty_record(mosaic, pyobj_creg):
 
 
 def test_exception(mosaic, pyobj_creg):
+    module_name = 'test_exception'
     string_list_mt = list_mt(mosaic.put(builtin_mt('string')))
     bool_opt_mt = optional_mt(mosaic.put(builtin_mt('bool')))
     module_name = 'test'
@@ -119,7 +120,7 @@ def test_exception(mosaic, pyobj_creg):
 
 
 def test_based_exception(mosaic, pyobj_creg):
-    module_name = 'test'
+    module_name = 'test_based_exception'
     base_piece = exception_mt(module_name, 'some_base_exception', None, (
         field_mt('int_field', mosaic.put(builtin_mt('int'))),
         ))
@@ -136,7 +137,7 @@ def test_based_exception(mosaic, pyobj_creg):
 
 
 def test_empty_exception(mosaic, pyobj_creg):
-    module_name = 'test'
+    module_name = 'test_empty_exception'
 
     name_1 = 'exception_1'
     piece_1 = exception_mt(module_name, name_1, None, ())
