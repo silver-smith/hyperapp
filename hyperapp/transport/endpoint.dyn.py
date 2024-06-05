@@ -37,6 +37,7 @@ class LocalRoute:
         return True
 
     def send(self, parcel):
+        parcel.verify()
         bundle = self._identity.decrypt_parcel(parcel)
         unbundler.register_bundle(bundle)
         request = Request(self._identity, parcel.sender, bundle.roots)

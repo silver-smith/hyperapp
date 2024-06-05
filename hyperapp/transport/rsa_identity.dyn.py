@@ -133,7 +133,8 @@ class RsaPeer:
                 mgf=padding.MGF1(algorithm=hash_algorithm),
                 algorithm=hash_algorithm,
                 label=None,
-                ))
+                ),
+            )
         signature = sender_identity.sign(encrypted_bundle)
         return RsaParcel(
             receiver=self,
@@ -169,6 +170,18 @@ class RsaSignature:
     def signer(self):
         return self._signer
 
+    def verify(self, data):
+        hash_algorithm = hashes.SHA256()
+        self._signer._public_key.verify(
+            self._signature,
+            data,
+            padding.PSS(
+                mgf=padding.MGF1(hash_algorithm),
+                salt_length=padding.PSS.MAX_LENGTH,
+                ),
+            hash_algorithm,
+            )
+
 
 class RsaParcel:
 
@@ -200,6 +213,9 @@ class RsaParcel:
     @property
     def receiver(self):
         return self._receiver
+
+    def verify(self):
+        return self._signature.verify(self._encrypted_bundle)
 
     @property
     def sender(self):
