@@ -31,7 +31,7 @@ def hash_sha512(source_bytes):
 def make_ref(capsule):
     assert isinstance(capsule, capsule_t)
     # use same encoding for capsule as for object
-    encoded_capsule = packet_coders.encode(capsule.encoding, capsule)
+    encoded_capsule = packet_coders.encode(capsule.encoding, capsule, capsule_t)
     hash = hash_sha512(encoded_capsule)
     return ref_t(DEFAULT_HASH_ALGORITHM, hash)
 
