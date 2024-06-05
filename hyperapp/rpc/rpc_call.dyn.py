@@ -44,7 +44,7 @@ def _rpc_submit_factory(rpc_endpoint, receiver_peer, servant_ref, sender_identit
         request_ref = mosaic.put(request)
         future = Future()
         rpc_endpoint.assign_future_to_request_id(request_id, future)
-        log.info("Rpc call: %s %s (%s): send rpc request: %s", receiver_peer, servant_ref, kw, request)
+        log.info("Rpc call: %s %s (%s): send rpc request %s: %s", receiver_peer, servant_ref, kw, request_ref, request)
         transport.send(receiver_peer, sender_identity, [request_ref])
         return future
 
