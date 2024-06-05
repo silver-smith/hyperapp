@@ -1,4 +1,5 @@
 import codecs
+import itertools
 import sys
 from functools import cached_property
 from keyword import iskeyword
@@ -228,15 +229,12 @@ class TRecord(Type):
     @cached_property
     def _named_tuple(self):
         type_name = f'{self._module_name}_{self._name}'
-        try:
-            used_module_name = self._used_type_names[type_name]
-        except KeyError:
-            pass
-        else:
-            raise RuntimeError(
-                f"TRecord: type name {type_name!r} from {used_module_name!r} is already in use;"
-                f" Clash with new name from {self._module_name!r}"
-                )
+        for idx in itertools.count(1):
+            try:
+                used_module_name = self._used_type_names[type_name]
+            except KeyError:
+                break
+            type_name = f'{self._module_name}_{self._name}_{idx}'
         self._used_type_names[type_name] = self._module_name
         return _namedtuple(
             type_name, [name for name in self.fields], self._verbose, str_fmt=self._str_fmt(), repr_fmt=self._repr_fmt())
