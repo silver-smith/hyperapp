@@ -79,7 +79,7 @@ async def _main(graph, process_pool, show_traces):
         log.error("Deadlocked\n")
 
 
-def compile_resources(generator_ref, subdir_list, root_dirs, module_list, process_count, show_traces, rpc_timeout):
+def compile_resources(generator_ref, subdir_list, root_dirs, module_list, process_count, show_traces, timeout):
     log.info("Compile resources at: %s, %s: %s", subdir_list, root_dirs, module_list)
 
     register_reconstructors()
@@ -92,7 +92,7 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, proces
     graph = Graph()
     try:
         collect_units(hyperapp_dir, dir_list, generator_ref, graph)
-        with process_pool_running(process_count, rpc_timeout) as pool:
+        with process_pool_running(process_count, timeout) as pool:
             asyncio.run(_main(graph, pool, show_traces))
         _report_outdated(graph)
     finally:

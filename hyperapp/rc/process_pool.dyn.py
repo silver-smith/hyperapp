@@ -23,8 +23,9 @@ class ProcessWaitError(RuntimeError):
 
 class ProcessPool:
 
-    def __init__(self, process_list):
+    def __init__(self, process_list, deadlock_timeout):
         self._process_list = process_list
+        self._deadlock_timeout = deadlock_timeout
         self._free_processes = process_list[:]
         self._process_available = asyncio.Condition()
 
@@ -62,13 +63,15 @@ class ProcessPool:
             await self._free_process(process)
 
     async def check_for_deadlock(self):
+        if not self._deadlock_timeout:
+            return
         try:
-            async with asyncio.timeout(6) as timeout:
+            async with asyncio.timeout(self._deadlock_timeout) as timeout:
                 async with self._process_available:
                     log.debug("Deadlock check: setup")
                     while True:
                         await self._process_available.wait()
-                        when = asyncio.get_running_loop().time() + 10
+                        when = asyncio.get_running_loop().time() + self._deadlock_timeout
                         log.debug("Deadlock check: reschedule to %s", when)
                         timeout.reschedule(when)
         except asyncio.CancelledError:
@@ -78,7 +81,7 @@ class ProcessPool:
 
 
 @contextmanager
-def process_pool_running(process_count, rpc_timeout):
+def process_pool_running(process_count, timeout):
     identity = generate_rsa_identity(fast=True)
     rpc_endpoint = rpc_endpoint_factory()
     endpoint_registry.register(identity, rpc_endpoint)
@@ -92,9 +95,9 @@ def process_pool_running(process_count, rpc_timeout):
                     f'rc-driver-{idx:02}',
                     rpc_endpoint,
                     identity,
-                    timeout_sec=rpc_timeout,
+                    timeout_sec=timeout,
                     ))
 
             process_list = list(executor.map(start_process, range(process_count)))
 
-        yield ProcessPool(process_list)
+        yield ProcessPool(process_list, timeout * 2 if timeout else None)
