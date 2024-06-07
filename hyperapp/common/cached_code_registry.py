@@ -5,6 +5,7 @@ class CachedCodeRegistry(CodeRegistry):
 
     def __init__(self, mosaic, web, association_reg, pyobj_creg, produce_name):
         super().__init__(mosaic, web, association_reg, pyobj_creg, produce_name)
+        self._actor_keep = []
         self._cache = {}  # piece -> actor
         self._reverse_cache = {}  # actor id -> piece
 
@@ -23,6 +24,7 @@ class CachedCodeRegistry(CodeRegistry):
         actor = super()._animate(t, piece, args, kw)
         self._cache[piece] = actor
         self._reverse_cache[id(actor)] = piece
+        self._actor_keep.append(actor)
         return actor
 
     def actor_to_piece(self, actor):
@@ -38,4 +40,4 @@ class CachedCodeRegistry(CodeRegistry):
     def add_to_cache(self, piece, actor):
         self._cache[piece] = actor
         self._reverse_cache[id(actor)] = piece
-
+        self._actor_keep.append(actor)
