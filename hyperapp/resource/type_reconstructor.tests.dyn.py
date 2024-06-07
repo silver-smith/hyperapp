@@ -19,6 +19,22 @@ from .services import (
 from .tested.code import type_reconstructor
 
 
+def _clean_cache(t):
+    try:
+        del pyobj_creg._reverse_cache[id(t)]
+    except KeyError:
+        pass
+
+
+def _test(t):
+    _clean_cache(t)
+    # Also remove existing type reconstructor.
+    reconstructors[:] = [type_reconstructor.type_to_piece]
+    piece = pyobj_creg.actor_to_piece(t)
+    resolved_t = pyobj_creg.animate(piece)
+    assert resolved_t is t
+
+
 def test_primitive():
     sample_values = [
         None,
@@ -32,40 +48,30 @@ def test_primitive():
     for value in sample_values:
         t = deduce_t(value)
         piece = pyobj_creg.actor_to_piece(t)
-        reverse_t = pyobj_creg.animate(piece)
-        assert reverse_t is t
+        resolved_t = pyobj_creg.animate(piece)
+        assert resolved_t is t
 
 
 def test_optional():
-    reconstructors.append(type_reconstructor.type_to_piece)
     t = TOptional(tInt)
-    piece = pyobj_creg.actor_to_piece(t)
-    reverse_t = pyobj_creg.animate(piece)
-    assert reverse_t is t
+    _test(t)
 
 
 def test_list():
-    reconstructors.append(type_reconstructor.type_to_piece)
     t = TList(tInt)
-    piece = pyobj_creg.actor_to_piece(t)
-    reverse_t = pyobj_creg.animate(piece)
-    assert reverse_t is t
+    _test(t)
 
 
 def test_unbased_record():
-    reconstructors.append(type_reconstructor.type_to_piece)
     t = TRecord('sample_module', 'sample_type', {
         'int_opt': TOptional(tInt),
         'str_list': TList(tString),
         'ref': ref_t,
       })
-    piece = pyobj_creg.actor_to_piece(t)
-    reverse_t = pyobj_creg.animate(piece)
-    assert reverse_t is t
+    _test(t)
 
 
 def test_based_record():
-    reconstructors.append(type_reconstructor.type_to_piece)
     base_t = TRecord('sample_module', 'sample_base_type', {
         'base_int_opt': TOptional(tInt),
       })
@@ -73,25 +79,19 @@ def test_based_record():
         'str_list': TList(tString),
         'ref': ref_t,
       }, base=base_t)
-    piece = pyobj_creg.actor_to_piece(t)
-    reverse_t = pyobj_creg.animate(piece)
-    assert reverse_t is t
+    _test(t)
 
 
 def test_unbased_exception():
-    reconstructors.append(type_reconstructor.type_to_piece)
     t = TException('sample_module', 'sample_type', {
         'int_opt': TOptional(tInt),
         'str_list': TList(tString),
         'ref': ref_t,
       })
-    piece = pyobj_creg.actor_to_piece(t)
-    reverse_t = pyobj_creg.animate(piece)
-    assert reverse_t is t
+    _test(t)
 
 
 def test_based_exception():
-    reconstructors.append(type_reconstructor.type_to_piece)
     base_t = TException('sample_module', 'sample_base_type', {
         'base_int_opt': TOptional(tInt),
       })
@@ -99,6 +99,4 @@ def test_based_exception():
         'str_list': TList(tString),
         'ref': ref_t,
       }, base=base_t)
-    piece = pyobj_creg.actor_to_piece(t)
-    reverse_t = pyobj_creg.animate(piece)
-    assert reverse_t is t
+    _test(t)
