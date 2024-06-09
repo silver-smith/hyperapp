@@ -12,7 +12,6 @@ from .htypes import (
 from .record import TRecord
 from .exception import TException
 from .meta_type import list_mt
-from .builtins import primitive_list_types
 
 
 class DeduceTypeError(RuntimeError):
@@ -54,34 +53,10 @@ def deduce_value_type(value):
         else:
             element_t = tNone
         try:
-            return primitive_list_types[element_t]
+            return TList(element_t)
         except KeyError:
-            # Use deduce_complex_value_type for non-primitive-element lists.
             raise DeduceTypeError(
                 f"Unable to deduce type for {safe_repr(value)}:"
                 f" No list type for: {element_t}. Use explicit type parameter."
             )
     raise DeduceTypeError(f"Unable to deduce type for {safe_repr(value)} (t: {t!r}). Use explicit type parameter.")
-
-
-def _deduce_list_type(mosaic, pyobj_creg, value):
-    if value:
-        element_t = deduce_complex_value_type(mosaic, pyobj_creg, value[0])
-    else:
-        element_t = tNone  # Does not matter for an empty list.
-    t = TList(element_t)
-    try:
-        _ = pyobj_creg.actor_to_piece(t)
-        return t
-    except:
-        element_t_ref = pyobj_creg.actor_to_ref(element_t)
-        piece = list_mt(element_t_ref)
-        return pyobj_creg.animate(piece)
-
-
-def deduce_complex_value_type(mosaic, pyobj_creg, value):
-    if (isinstance(value, (list, tuple))
-        and not _is_named_tuple(value)
-        and not hasattr(value, '_t')):
-        return _deduce_list_type(mosaic, pyobj_creg, value)
-    return deduce_value_type(value)

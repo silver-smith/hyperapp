@@ -7,7 +7,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from .htypes import BuiltinTypeRegistry, register_builtin_types
-from .htypes.deduce_value_type import deduce_complex_value_type
+from .htypes.deduce_value_type import deduce_value_type
 from .ref import ref_repr
 from .mosaic import Mosaic
 from .web import Web
@@ -108,7 +108,7 @@ class Services(object):
         self.python_importer.register_meta_hook()
         self.resource_type_factory = partial(ResourceType, self.mosaic, self.web, self.pyobj_creg)
         self.resource_type_reg = {}  # resource_t -> ResourceType instance
-        self.deduce_t = partial(deduce_complex_value_type, self.mosaic, self.pyobj_creg)
+        self.deduce_t = deduce_value_type
         self.unbundler = Unbundler(self.web, self.mosaic, self.association_reg)
         self.resource_type_producer = partial(resource_type_producer, self.resource_type_factory, self.resource_type_reg)
         self.resource_type_reg[python_module_t] = PythonModuleResourceType()

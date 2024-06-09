@@ -8,7 +8,7 @@ from hyperapp.common.htypes import BuiltinTypeRegistry, register_builtin_types
 from hyperapp.common.htypes.python_module import python_module_t
 from hyperapp.common.htypes.attribute import attribute_t
 from hyperapp.common.htypes.call import call_t
-from hyperapp.common.htypes.deduce_value_type import deduce_complex_value_type
+from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.common.mosaic import Mosaic
 from hyperapp.common.web import Web
 from hyperapp.common.services import HYPERAPP_DIR
@@ -152,7 +152,7 @@ def resource_type_producer(resource_type_factory, resource_type_reg):
 
 @pytest.fixture
 def deduce_t(mosaic, pyobj_creg):
-    return partial(deduce_complex_value_type, mosaic, pyobj_creg)
+    return deduce_value_type
 
 
 @pytest.fixture
