@@ -30,12 +30,8 @@ class Mosaic:
             assert capsule == rec.capsule, repr((rec.capsule, capsule))  # new capsule does not match existing one
             return
         dc = decode_capsule(self._pyobj_creg, capsule)
-        self._register_capsule(ref, capsule, dc.type_ref, dc.t, dc.value)
+        self._register_capsule(dc.value, dc.t, ref, dc.type_ref, capsule)
         return ref
-
-    def _register_capsule(self, ref, capsule, type_ref, t, piece):
-        self._ref_to_rec[ref] = self._Rec(capsule, type_ref, t, piece)
-        self._piece_to_ref[piece] = ref
 
     def put(self, piece, t=None):
         try:
@@ -48,13 +44,16 @@ class Mosaic:
         log.debug('Registering piece %r: %s', t.name, piece)
         capsule = make_capsule(self._pyobj_creg, piece, t)
         ref = make_ref(capsule)
-        self._register_capsule(ref, capsule, capsule.type_ref, t, piece)
+        self._register_capsule(piece, t, ref, capsule.type_ref, capsule)
         log.debug('Registered piece %s (type: %s): %r', ref, capsule.type_ref, piece)
         return ref
 
-    def add_to_cache(self, piece, t, ref):
-        self._ref_to_rec[ref] = self._Rec(None, None, t, piece)
+    def _register_capsule(self, piece, t, ref, type_ref, capsule):
+        self._ref_to_rec[ref] = self._Rec(capsule, type_ref, t, piece)
         self._piece_to_ref[piece] = ref
+
+    def add_to_cache(self, piece, t, ref):
+        self._register_capsule(piece, t, ref, None, None)
 
     def put_opt(self, piece, t=None):
         if piece is None:
