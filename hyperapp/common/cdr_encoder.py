@@ -1,5 +1,6 @@
 import struct
-from .method_dispatch import method_dispatch
+from functools import singledispatchmethod
+
 from .htypes import (
     TNone,
     TString,
@@ -23,7 +24,7 @@ class CdrEncoder(object):
         self.dispatch(t, value)
         return self.data
 
-    @method_dispatch
+    @singledispatchmethod
     def dispatch(self, t, value):
         assert False, repr((t, value))  # Unknown type
 

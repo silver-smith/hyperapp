@@ -1,4 +1,5 @@
-from hyperapp.common.method_dispatch import method_dispatch
+from functools import singledispatchmethod
+
 from hyperapp.common.htypes import (
     TPrimitive,
     TOptional,
@@ -19,7 +20,7 @@ class Visitor:
     def visit_record(self, t, value):
         pass
 
-    @method_dispatch
+    @singledispatchmethod
     def dispatch(self, t, value):
         assert False, repr((t, value))  # Unknown type
 

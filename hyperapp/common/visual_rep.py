@@ -1,6 +1,7 @@
-import logging
-import json
 import codecs
+import json
+import logging
+from functools import singledispatchmethod
 
 from .htypes import (
     TString,
@@ -15,7 +16,6 @@ from .htypes import (
     ref_t,
     capsule_t,
     )
-from .method_dispatch import method_dispatch
 from .util import encode_path, encode_route
 from .htypes.deduce_value_type import deduce_value_type
 from .ref import ref_repr, make_ref
@@ -62,7 +62,7 @@ class VisualRepEncoder(object):
         assert isinstance(value, t), repr(value)
         return self.dispatch(t, name or t.name, value)
 
-    @method_dispatch
+    @singledispatchmethod
     def dispatch(self, t, name, value):
         assert False, repr((t, value))  # Unknown type
 

@@ -1,6 +1,8 @@
 import struct
+from functools import singledispatchmethod
+
 import dateutil.parser
-from .method_dispatch import method_dispatch
+
 from .htypes import (
     TNone,
     TString,
@@ -40,7 +42,7 @@ class CdrDecoder(object):
     def failure(self, path, desc):
         raise DecodeError('%s: %s' % (path, desc))
 
-    @method_dispatch
+    @singledispatchmethod
     def dispatch(self, t, path):
         assert False, repr((t, path))  # Unknown type
 

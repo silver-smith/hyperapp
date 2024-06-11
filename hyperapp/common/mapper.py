@@ -1,4 +1,5 @@
-from .method_dispatch import method_dispatch
+from functools import singledispatchmethod
+
 from .htypes import (
     TPrimitive,
     TOptional,
@@ -18,7 +19,7 @@ class Mapper(object):
     def map_record(self, t, value, context):
         return value
 
-    @method_dispatch
+    @singledispatchmethod
     def dispatch(self, t, value, context):
         assert False, repr((t, value))  # Unknown type
 

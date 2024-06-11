@@ -2,8 +2,10 @@ import abc
 import base64
 import codecs
 import json
+from functools import singledispatchmethod
+
 import yaml
-from .method_dispatch import method_dispatch
+
 from .htypes import (
     TNone,
     TString,
@@ -34,7 +36,7 @@ class DictEncoder(metaclass=abc.ABCMeta):
     def _encode_dict(self, value):
         return value
 
-    @method_dispatch
+    @singledispatchmethod
     def dispatch(self, t, value):
         assert False, repr((t, value))  # Unknown type
 

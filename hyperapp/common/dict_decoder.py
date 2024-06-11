@@ -2,9 +2,11 @@ import abc
 import base64
 import codecs
 import json
+from functools import singledispatchmethod
+
 import yaml
 import dateutil.parser
-from .method_dispatch import method_dispatch
+
 from .htypes import (
     TNone,
     TString,
@@ -47,7 +49,7 @@ class DictDecoder(metaclass=abc.ABCMeta):
     def failure(self, path, desc):
         raise DecodeError('%s: %s' % (path, desc))
 
-    @method_dispatch
+    @singledispatchmethod
     def dispatch(self, t, value, path):
         assert False, repr((t, path, value))  # Unknown type
 
