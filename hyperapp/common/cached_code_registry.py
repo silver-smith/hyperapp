@@ -1,3 +1,5 @@
+import threading
+
 from hyperapp.common.code_registry import CodeRegistry
 
 
@@ -8,6 +10,7 @@ class CachedCodeRegistry(CodeRegistry):
         self._actor_keep = []
         self._cache = {}  # piece -> actor
         self._reverse_cache = {}  # actor id -> piece
+        self._lock = threading.Lock()
 
     # Disable additional *args and **kw because they make cache incorrect.
     def invite(self, ref):
@@ -22,10 +25,12 @@ class CachedCodeRegistry(CodeRegistry):
         except KeyError:
             pass
         actor = super()._animate(t, piece, args, kw)
-        self._cache[piece] = actor
-        self._reverse_cache[id(actor)] = piece
-        self._actor_keep.append(actor)
-        return actor
+        with self._lock:
+            assert piece not in self._cache  # Ensure it is not yet added.
+            self._cache[piece] = actor
+            self._reverse_cache[id(actor)] = piece
+            self._actor_keep.append(actor)
+            return actor
 
     def actor_to_piece(self, actor):
         try:
@@ -38,6 +43,7 @@ class CachedCodeRegistry(CodeRegistry):
         return self._mosaic.put(piece)
 
     def add_to_cache(self, piece, actor):
-        self._cache[piece] = actor
-        self._reverse_cache[id(actor)] = piece
-        self._actor_keep.append(actor)
+        with self._lock:
+            self._cache[piece] = actor
+            self._reverse_cache[id(actor)] = piece
+            self._actor_keep.append(actor)
