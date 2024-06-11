@@ -8,9 +8,9 @@ class DecodeError(Exception):
 
 class Coders(object):
 
-    def __init__(self, encoder, decoder):
-        self.encoder = encoder
-        self.decoder = decoder
+    def __init__(self, encoder_ctr, decoder_ctr):
+        self.encoder_ctr = encoder_ctr
+        self.decoder_ctr = decoder_ctr
 
 
 class PacketCoders(object):
@@ -18,9 +18,9 @@ class PacketCoders(object):
     def __init__(self):
         self.encodings = {}  # encoding -> Coders
 
-    def register(self, encoding, encoder, decoder):
+    def register(self, encoding, encoder_ctr, decoder_ctr):
         assert isinstance(encoding, str), repr(encoding)
-        self.encodings[encoding] = Coders(encoder, decoder)
+        self.encodings[encoding] = Coders(encoder_ctr, decoder_ctr)
 
     def resolve(self, encoding):
         assert encoding in self.encodings, repr(encoding)  # Unknown encoding
@@ -28,13 +28,13 @@ class PacketCoders(object):
 
     def decode(self, encoding, data, t):
         coders = self.resolve(encoding)
-        return coders.decoder.decode(t, data)
+        return coders.decoder_ctr().decode(t, data)
 
     def encode(self, encoding, object, t=None):
         t = t or deduce_value_type(object)
         assert isinstance(object, t), repr(object)
         coders = self.resolve(encoding)
-        return coders.encoder.encode(object, t)
+        return coders.encoder_ctr().encode(object, t)
 
 
 packet_coders = PacketCoders()

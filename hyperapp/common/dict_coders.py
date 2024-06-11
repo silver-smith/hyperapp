@@ -3,4 +3,4 @@ from .dict_encoder import JsonEncoder
 from .dict_decoder import JsonDecoder
 
 
-packet_coders.register('json', JsonEncoder(), JsonDecoder())
+packet_coders.register('json', JsonEncoder, JsonDecoder)
