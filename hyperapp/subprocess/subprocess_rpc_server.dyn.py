@@ -75,8 +75,8 @@ def subprocess_rpc_server_running():
         with subprocess_running(name, main_ref) as process:
             connection_rec = add_subprocess_server_connection(name, process.connection, process.sent_refs)
             try:
-                if not event.wait(timeout=3):
-                    raise RuntimeError(f"Timed out waiting for subprocess #{subprocess_id} {name!r} (3 sec)")
+                if not event.wait(timeout=timeout_sec):
+                    raise RuntimeError(f"Timed out waiting for subprocess #{subprocess_id} {name!r} ({timeout_sec} sec)")
                 peer = _subprocess_peer[subprocess_id]
                 log.info("Rpc server #%d %r is started with peer %s", subprocess_id, name, peer)
                 yield _RpcServerProcess(subprocess_id, name, process.connection, peer, rpc_endpoint, identity, timeout_sec)
