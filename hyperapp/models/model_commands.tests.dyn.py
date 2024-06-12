@@ -11,11 +11,12 @@ from .tested.code import model_commands
 
 
 def test_browse_current_model():
+    model_state = htypes.model_commands_tests.sample_model_state()
     model_1 = htypes.model_commands_tests.sample_model_1()
-    piece_1 = model_commands.open_model_commands(model_1)
+    piece_1 = model_commands.open_model_commands(model_1, model_state)
     assert piece_1
     model_2 = htypes.model_commands_tests.sample_model_2()
-    piece_2 = model_commands.open_model_commands(model_2)
+    piece_2 = model_commands.open_model_commands(model_2, model_state)
     assert piece_2
 
 
@@ -44,8 +45,10 @@ def test_list_model_commands():
     association_reg[d_res, t_res] = sample_command
 
     model = model_t()
+    model_state = htypes.model_commands_tests.sample_model_state()
     piece = htypes.model_commands.model_commands(
         model=mosaic.put(model),
+        model_state=mosaic.put(model_state)
         )
     ctx = Context()
     result = model_commands.list_model_commands(piece, ctx)
@@ -58,8 +61,10 @@ async def test_run_command():
     sample_command = _make_sample_command()
     ctx = Context()
     model = htypes.model_commands_tests.sample_model_1()
+    model_state = htypes.model_commands_tests.sample_model_state()
     piece = htypes.model_commands.model_commands(
         model=mosaic.put(model),
+        model_state=mosaic.put(model_state)
         )
     current_item = htypes.model_commands.item(
         command=mosaic.put(sample_command),

@@ -145,10 +145,11 @@ definitions:
     function: open_model_commands
     params:
     - piece
+    - model_state
   open_model_commands.command_properties:
     _type: legacy_type.ui:command_properties
     is_global: true
-    uses_state: false
+    uses_state: true
     remotable: true
   open_model_commands.d:
     _type: legacy_type.builtin:call

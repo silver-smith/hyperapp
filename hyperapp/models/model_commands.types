@@ -1,5 +1,6 @@
 model_commands = record:
   model: ref
+  model_state: ref
 
 item = record:
   command: ref
