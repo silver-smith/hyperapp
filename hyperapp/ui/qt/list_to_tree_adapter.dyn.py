@@ -41,16 +41,17 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
                 open_command=rec.open_children_command,
                 )
             layers[piece_t] = layer
+        root_element_t = pyobj_creg.invite(piece.root_element_t)
         root_layer = _Layer(
-            element_t=pyobj_creg.invite(piece.root_element_t),
+            element_t=root_element_t,
             list_fn=pyobj_creg.invite(piece.root_function),
             list_fn_params=piece.root_params,
             open_command=piece.root_open_children_command,
             )
-        return cls(model, ctx, root_layer, layers)
+        return cls(model, root_element_t, ctx, root_layer, layers)
 
-    def __init__(self, model, ctx, root_layer, layers):
-        super().__init__(model, ctx)
+    def __init__(self, model, item_t, ctx, root_layer, layers):
+        super().__init__(model, item_t, ctx)
         self._id_to_piece = {
             0: model,
             }

@@ -2,6 +2,9 @@ import abc
 import itertools
 import logging
 import weakref
+from functools import cached_property
+
+from hyperapp.common.htypes import tInt, TList, TOptional, TRecord
 
 from .services import (
     feed_factory,
@@ -18,8 +21,9 @@ log = logging.getLogger(__name__)
 
 class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
 
-    def __init__(self, model, ctx):
+    def __init__(self, model, item_t, ctx):
         self._model = model
+        self._item_t = item_t
         self._ctx = ctx
         self._id_to_item = {0: None}
         self._id_to_children_id_list = {}
@@ -29,6 +33,14 @@ class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
 
     def subscribe(self, subscriber):
         self._subscribers.add(subscriber)
+
+    @cached_property
+    def model_state_t(self):
+        item_t = self._item_t
+        return TRecord('ui_tree', f'model_state_{item_t.module_name}_{item_t.name}', {
+            'current_path': TList(tInt),
+            'current_item': TOptional(item_t),
+            })
 
     @property
     def model(self):
@@ -140,8 +152,7 @@ class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
 class FnIndexTreeAdapterBase(IndexTreeAdapterBase, metaclass=abc.ABCMeta):
 
     def __init__(self, model, item_t, params, ctx):
-        super().__init__(model, ctx)
-        self._item_t = item_t
+        super().__init__(model, item_t, ctx)
         self._params = params
         self._column_names = sorted(self._item_t.fields)
         try:

@@ -1,8 +1,9 @@
 import abc
 import logging
 import weakref
+from functools import cached_property
 
-from hyperapp.common.htypes import TList
+from hyperapp.common.htypes import tInt, TList, TOptional, TRecord
 
 from .services import (
     deduce_t,
@@ -17,7 +18,18 @@ from .code.list_diff import ListDiff
 log = logging.getLogger(__name__)
 
 
-class StaticListAdapter:
+class ListAdapterBase:
+
+    @cached_property
+    def model_state_t(self):
+        item_t = self._item_t
+        return TRecord('ui_list', f'model_state_{item_t.module_name}_{item_t.name}', {
+            'current_idx': tInt,
+            'current_item': TOptional(item_t),
+            })
+
+
+class StaticListAdapter(ListAdapterBase):
 
     @classmethod
     def from_piece(cls, piece, model, ctx):
@@ -53,7 +65,7 @@ class StaticListAdapter:
         return self._value[idx]
 
 
-class FnListAdapterBase(metaclass=abc.ABCMeta):
+class FnListAdapterBase(ListAdapterBase, metaclass=abc.ABCMeta):
 
     def __init__(self, model, item_t, params, ctx):
         self._model = model

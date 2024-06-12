@@ -1,5 +1,4 @@
 import logging
-from collections import namedtuple
 from functools import partial
 
 from PySide6 import QtCore, QtWidgets
@@ -15,9 +14,6 @@ log = logging.getLogger(__name__)
 
 
 ROW_HEIGHT_PADDING = 3  # same as default QTreeView padding
-
-
-ModelState = namedtuple('ModelState', 'current_idx current_item')
 
 
 class _Model(QtCore.QAbstractTableModel):
@@ -133,7 +129,7 @@ class ListView(View):
             current_item = self._adapter.get_item(idx)
         else:
             current_item = None
-        return ModelState(current_idx=idx, current_item=current_item)
+        return self._adapter.model_state_t(current_idx=idx, current_item=current_item)
 
     @property
     def adapter(self):

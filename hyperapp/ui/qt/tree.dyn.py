@@ -14,7 +14,6 @@ from .code.view import View
 log = logging.getLogger(__name__)
 
 
-ModelState = namedtuple('ModelState', 'current_path current_item')
 VisualTreeDiffAppend = namedtuple('VisualTreeDiffAppend', 'parent_id')
 VisualTreeDiffInsert = namedtuple('VisualTreeDiffInsert', 'parent_id idx')
 VisualTreeDiffReplace = namedtuple('VisualTreeDiffReplace', 'parent_id idx')
@@ -226,7 +225,7 @@ class TreeView(View):
         item_id = index.internalId()
         item = self._adapter.get_item(item_id)
         path = self._adapter.get_path(item_id)
-        return ModelState(current_path=path, current_item=item)
+        return self._adapter.model_state_t(current_path=path, current_item=item)
 
     @property
     def adapter(self):
