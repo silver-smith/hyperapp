@@ -36,7 +36,7 @@ class CachedCodeRegistry(CodeRegistry):
         try:
             return self._reverse_cache[id(actor)]
         except KeyError as x:
-            raise KeyError(f"{x}: {actor!r}")
+            raise KeyError(f"{x}: {actor!r}") from x
 
     def actor_to_ref(self, actor):
         piece = self.actor_to_piece(actor)
