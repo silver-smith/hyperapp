@@ -17,6 +17,7 @@ from .services import (
 from .code.context import Context
 from .code.lcs import LCSheet
 from .code.controller import Controller
+from .code.reconstructors import register_reconstructors
 
 
 layout_path = Path.home() / '.local/share/hyperapp/client/layout.json'
@@ -106,6 +107,9 @@ def make_default_layout(lcs):
 
 
 def _main(load_state):
+
+    register_reconstructors()
+
     app = QtWidgets.QApplication()
     event_loop = QEventLoop(app)
     asyncio.set_event_loop(event_loop)  # Should be set before any asyncio objects created.

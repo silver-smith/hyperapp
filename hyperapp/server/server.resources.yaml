@@ -4,6 +4,7 @@ import:
 - builtins:mosaic.service
 - builtins:stop_signal.service
 - common.file_bundle:file_bundle.service
+- common.reconstructors:reconstructors.module
 - legacy_type.builtin:python_module
 - rpc.rpc_call:rpc_call_factory.service
 - rpc.rpc_endpoint:rpc_endpoint_factory.service
@@ -20,6 +21,7 @@ definitions:
     module_name: server
     file_name: server.dyn.py
     import_list:
+      code.reconstructors: common.reconstructors:reconstructors.module
       services.endpoint_registry: transport.endpoint:endpoint_registry.service
       services.file_bundle: common.file_bundle:file_bundle.service
       services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service

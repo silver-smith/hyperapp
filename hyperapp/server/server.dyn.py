@@ -16,11 +16,14 @@ from .services import (
     stop_signal,
     tcp_server_factory,
     )
+from .code.reconstructors import register_reconstructors
 
 log = logging.getLogger(__name__)
 
 
 def _main():
+
+    register_reconstructors()
 
     identity_bundle = file_bundle(Path.home() / '.local/share/hyperapp/server/identity.json')
     try:
