@@ -2,6 +2,8 @@ import logging
 
 from PySide6 import QtWidgets
 
+from hyperapp.common.htypes import TRecord
+
 from . import htypes
 from .services import (
     model_view_creg,
@@ -71,11 +73,14 @@ class FormView(View):
             field_list.append(field)
         return htypes.form.state(tuple(field_list))
 
-    def get_model(self):
-        return self._adapter.model
+    def primary_parent_context(self, rctx, widget):
+        return rctx.clone_with(
+            model=self._adapter.model,
+            model_state=self._model_state(widget),
+            )
 
-    def model_state(self, widget):
-        return None
+    def _model_state(self, widget):
+        return TRecord('ui_form', 'model_state', {})
 
     def items(self):
         return [

@@ -55,8 +55,5 @@ def test_form():
         state = view.widget_state(widget)
         assert state
         assert hash(state)  # Check it is hashable.
-        assert view.get_model() == model
-        model_state = view.model_state(widget)
-        # assert model_state
     finally:
         app.shutdown()
