@@ -3,6 +3,10 @@ sample_1_d = record
 sample_2_d = record:
   path: string
 
+inner_piece = record:
+  value: int list
+
 sample_piece = record:
   direction: string
   stretch: int
+  inner: ref

@@ -6,6 +6,7 @@ import:
 - builtins:resource_module_factory.service
 - builtins:resource_registry.service
 - builtins:web.service
+- common.ref_picker:pick_refs.service
 - legacy_type.builtin:python_module
 - legacy_type.lcs_resource_storage:element
 - legacy_type.lcs_resource_storage:mapping
@@ -20,6 +21,7 @@ definitions:
       htypes.lcs_resource_storage.mapping: legacy_type.lcs_resource_storage:mapping
       services.deduce_t: builtins:deduce_t.service
       services.mosaic: builtins:mosaic.service
+      services.pick_refs: common.ref_picker:pick_refs.service
       services.resource_module_factory: builtins:resource_module_factory.service
       services.resource_registry: builtins:resource_registry.service
       services.web: builtins:web.service

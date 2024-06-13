@@ -8,6 +8,7 @@ from . import htypes
 from .services import (
     deduce_t,
     mosaic,
+    pick_refs,
     resource_module_factory,
     resource_registry,
     web,
@@ -37,8 +38,16 @@ class LcsResourceStorage:
         return self._mapping.get(frozen_dir)
 
     def _store(self, piece):
-        name = self._make_name(piece)
+        t = deduce_t(piece)
+        for ref in pick_refs(t, piece):
+            self._store_if_missing(ref)
+        name = self._make_name(t)
         self._res_module[name] = piece
+
+    def _store_if_missing(self, ref):
+        piece = web.summon(ref)
+        if not resource_registry.has_piece(piece):
+            self._store(piece)
 
     @property
     def _mapping(self):
@@ -70,8 +79,7 @@ class LcsResourceStorage:
         text = yaml.dump(self._res_module.as_dict, sort_keys=False)
         self._path.write_text(text)
 
-    def _make_name(self, piece):
-        t = deduce_t(piece)
+    def _make_name(self, t):
         assert isinstance(t, TRecord)
         name = t.name
         for idx in itertools.count(2):

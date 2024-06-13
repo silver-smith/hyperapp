@@ -94,6 +94,9 @@ class ResourceRegistry:
         self._piece_to_name_pair[piece] = name_pair
         return piece
 
+    def has_piece(self, piece):
+        return piece in self._piece_to_name_pair
+
     def reverse_resolve(self, piece):
         try:
             return self._piece_to_name_pair[piece]

@@ -4,6 +4,7 @@ from . import htypes
 from .services import (
     legacy_type_resource_loader,
     local_types,
+    mosaic,
     resource_registry,
     )
 from .tested.code import lcs_resource_storage
@@ -21,9 +22,13 @@ def test_set():
 
     d_1 = htypes.lcs_resource_storage_tests.sample_1_d()
     d_2 = htypes.lcs_resource_storage_tests.sample_2_d('some-path')
+    inner = htypes.lcs_resource_storage_tests.inner_piece(
+        value=(11, 22, 33),
+        )
     piece = htypes.lcs_resource_storage_tests.sample_piece(
         direction='sample-direction',
         stretch=12345,
+        inner=mosaic.put(inner),
         )
 
     storage_1 = lcs_resource_storage.LcsResourceStorage('test.lcs_storage', path)
