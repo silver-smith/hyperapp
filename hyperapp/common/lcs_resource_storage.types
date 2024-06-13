@@ -1,6 +1,6 @@
-mapping = record:
-  elements: ref list
-
 element = record:
   key: ref list
   value: ref
+
+mapping = record:
+  elements: element list

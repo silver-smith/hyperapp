@@ -49,8 +49,7 @@ class LcsResourceStorage:
             mapping = self._res_module[self._mapping_name]
         except KeyError:
             return self._mapping_cache
-        for ref in mapping:
-            elt = web.summon(ref)
+        for elt in mapping:
             key = frozenset(web.summon(d) for d in elt.key)
             value = web.summon(elt.value)
             self._mapping_cache[key] = value
@@ -58,23 +57,14 @@ class LcsResourceStorage:
 
     def _save(self):
         element_list = []
-        for item, idx in itertools.zip_longest(
-                self._mapping.items(), itertools.count()):
-            name = f'mapping_element_{idx}'
-            if item:
-                key, value = item
-                element = htypes.lcs_resource_storage.element(
-                    key=tuple(mosaic.put(d) for d in key),
-                    value=mosaic.put(value),
-                    )
-                self._res_module[name] = element
-                element_list.append(element)
-            else:
-                if name not in self._res_module:
-                    break
-                del self._res_module[name]
+        for key, value in self._mapping.items():
+            element = htypes.lcs_resource_storage.element(
+                key=tuple(mosaic.put(d) for d in key),
+                value=mosaic.put(value),
+                )
+            element_list.append(element)
         mapping = htypes.lcs_resource_storage.mapping(
-            elements=tuple(mosaic.put(elt) for elt in element_list),
+            elements=tuple(element_list),
             )
         self._res_module[self._mapping_name] = mapping
         text = yaml.dump(self._res_module.as_dict, sort_keys=False)
