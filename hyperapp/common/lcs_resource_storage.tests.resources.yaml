@@ -1,0 +1,15 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.builtin:python_module
+- legacy_type.phony:phony
+associations: []
+definitions:
+  lcs_resource_storage.tests.module:
+    _type: legacy_type.builtin:python_module
+    module_name: lcs_resource_storage.tests
+    file_name: lcs_resource_storage.tests.dyn.py
+    import_list:
+      tested.code.lcs_resource_storage: phony
+  phony:
+    _type: legacy_type.phony:phony

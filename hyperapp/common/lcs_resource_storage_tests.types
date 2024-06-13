@@ -1,0 +1,8 @@
+sample_1_d = record
+
+sample_2_d = record:
+  path: string
+
+sample_piece = record:
+  direction: string
+  stretch: int
