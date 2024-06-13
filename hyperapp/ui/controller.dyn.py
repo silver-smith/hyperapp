@@ -2,6 +2,7 @@ import asyncio
 import itertools
 import logging
 import weakref
+from collections import namedtuple
 from contextlib import contextmanager
 from dataclasses import dataclass
 from functools import cached_property, partial
@@ -37,6 +38,9 @@ class CommandRec:
     def animated(self):
         return ui_command_factory(self.piece, self.ctx)
 
+
+ViewCommandsRec = namedtuple('ViewCommandsRec', 'command_recs command_context')
+
         
 @dataclass
 class _Item:
@@ -51,6 +55,9 @@ class _Item:
     name: str
     view: View
     focusable: bool
+    view_commands_rec: ViewCommandsRec = None
+    # view_commands: list = None  # [command]
+    # command_context: dict = None  # command_d -> Context
     _current_child_idx: int | None = None
     _widget_wr: Any | None = None
     _children: list[Self] | None = None
@@ -134,16 +141,14 @@ class _Item:
         rctx = parent.view.primary_parent_context(rctx, parent.widget)
         return parent.navigator_rec(rctx)
 
-    def _make_view_commands(self, rctx):
-        ctx = self._command_context(rctx)
+    def _make_view_commands(self, command_ctx):
         commands = list_view_commands(self.view)
-        return [CommandRec(cmd, ctx) for cmd in commands]
+        return [CommandRec(cmd, command_ctx) for cmd in commands]
 
-    def _make_model_commands(self, rctx, model, model_state):
-        ctx = self._command_context(rctx)
-        ctx = ctx.clone_with(
+    def _make_model_commands(self, command_ctx, model, model_state):
+        ctx = command_ctx.clone_with(
             piece=model,
-            **ctx.attributes(model_state),
+            **command_ctx.attributes(model_state),
             )
         commands = ui_model_command_factory(ctx.piece, ctx)
         return [CommandRec(cmd, ctx) for cmd in commands]
@@ -179,7 +184,7 @@ class _Item:
         else:
             rctx = Context(command_recs=[], commands=[])
         await self.view.children_context_changed(self.ctx, rctx, self.widget)
-        rctx = self._reverse_context(rctx)
+        self.view_commands_rec, rctx = self._reverse_context(rctx)
         for idx, item in enumerate(self.children):
             if item.focusable:
                 continue
@@ -192,17 +197,21 @@ class _Item:
 
     def _reverse_context(self, rctx):
         my_rctx = self.view.primary_parent_context(rctx, self.widget)
-        commands = self._make_view_commands(my_rctx)
+        command_ctx = self._command_context(my_rctx)
+        commands = view_commands = self._make_view_commands(command_ctx)
+        d_to_context = {}
         if 'model' in my_rctx.diffs(rctx):
             # piece is added or one from a child is replaced.
             # We expect model_state always added with model.
-            model_commands = self._make_model_commands(my_rctx, my_rctx.model, my_rctx.model_state)
+            model_commands = self._make_model_commands(command_ctx, my_rctx.model, my_rctx.model_state)
             commands = commands + model_commands
+        view_commands_rec = ViewCommandsRec(view_commands, command_ctx)
         animated_commands = [cmd.animated for cmd in commands]
-        return my_rctx.clone_with(
+        commands_rctx = my_rctx.clone_with(
             command_recs=rctx.command_recs + commands,
             commands=rctx.commands + animated_commands,
             )
+        return (view_commands_rec, commands_rctx)
 
     def parent_context_changed_hook(self):
         log.info("Controller: parent context changed from: %s", self)
@@ -476,8 +485,9 @@ class Controller:
         self._inside_commands_call = True
         try:
             item = self._id_to_item.get(item_id)
-            if item:
-                return [rec.piece for rec in item.rctx.command_recs]
+            if item and item.view_commands_rec:
+                rec_list = item.view_commands_rec.command_recs
+                return [rec.piece for rec in rec_list]
             else:
                 return []
         finally:
@@ -485,8 +495,4 @@ class Controller:
 
     def item_command_context(self, item_id, command_d_ref):
         item = self._id_to_item[item_id]
-        for rec in item.rctx.command_recs:
-            if rec.piece.d == command_d_ref:
-                return rec.ctx
-        command_d = web.summon(command_d_ref)
-        raise RuntimeError(f"Item {item_id} has no command {command_d}")
+        return item.view_commands_rec.command_context
