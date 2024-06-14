@@ -12,5 +12,5 @@ class LCSheet:
         return self._storage.get(dir)
 
     def set(self, dir, piece):
-        log.info("LCS: set%s %s -> %s", '/persist' if persist else '', set(dir), piece)
+        log.info("LCS: set %s -> %s", set(dir), piece)
         self._storage.set(dir, piece)

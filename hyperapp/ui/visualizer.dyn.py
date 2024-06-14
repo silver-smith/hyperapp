@@ -45,7 +45,7 @@ def _set_model_layout(lcs, t, layout):
         htypes.ui.model_view_layout_d(),
         t_res,
         }
-    lcs.set(d, layout, persist=True)
+    lcs.set(d, layout)
 
 
 def _visualizer_info(t):
