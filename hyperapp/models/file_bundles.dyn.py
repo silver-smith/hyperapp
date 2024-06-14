@@ -15,7 +15,7 @@ def open_file_bundle_list():
 def file_bundle_list(piece):
     return [
         htypes.file_bundles.bundle_item("lcs", "~/.local/share/hyperapp/client/lcs.cdr"),
-        htypes.file_bundles.bundle_item("client state", "~/.local/share/hyperapp/client/state.json"),
+        htypes.file_bundles.bundle_item("client state", "~/.local/share/hyperapp/client/layout.json"),
         ]
 
 
