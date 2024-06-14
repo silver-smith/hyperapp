@@ -145,13 +145,9 @@ class _Item:
         commands = list_view_commands(self.view)
         return [CommandRec(cmd, command_ctx) for cmd in commands]
 
-    def _make_model_commands(self, command_ctx, model, model_state):
-        ctx = command_ctx.clone_with(
-            piece=model,
-            **command_ctx.attributes(model_state),
-            )
-        commands = ui_model_command_factory(ctx.piece, ctx)
-        return [CommandRec(cmd, ctx) for cmd in commands]
+    def _make_model_commands(self, command_ctx):
+        commands = ui_model_command_factory(command_ctx.piece, command_ctx)
+        return [CommandRec(cmd, command_ctx) for cmd in commands]
 
     def _command_context(self, rctx):
         ctx = self.ctx.push(
@@ -160,7 +156,12 @@ class _Item:
             hook=self._hook,
             navigator=self.navigator_rec(rctx),
             )
-        return ctx.copy_from(rctx)
+        ctx = ctx.copy_from(rctx)
+        if 'model' in ctx:
+            ctx = ctx.clone_with(piece=ctx.model)
+        if 'model_state' in ctx:
+            ctx = ctx.clone_with(**ctx.attributes(ctx.model_state))
+        return ctx
 
     def schedule_init_children_reverse_context(self):
         asyncio.create_task(self.init_children_reverse_context())
@@ -201,9 +202,8 @@ class _Item:
         commands = view_commands = self._make_view_commands(command_ctx)
         d_to_context = {}
         if 'model' in my_rctx.diffs(rctx):
-            # piece is added or one from a child is replaced.
-            # We expect model_state always added with model.
-            model_commands = self._make_model_commands(command_ctx, my_rctx.model, my_rctx.model_state)
+            # model is added or one from a child is replaced.
+            model_commands = self._make_model_commands(command_ctx)
             commands = commands + model_commands
         view_commands_rec = ViewCommandsRec(view_commands, command_ctx)
         animated_commands = [cmd.animated for cmd in commands]
