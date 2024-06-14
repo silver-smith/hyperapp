@@ -1,10 +1,12 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:hyperapp_dir.service
 - builtins:mosaic.service
 - common.context:context.module
 - common.file_bundle:file_bundle.service
 - common.lcs:lcs.module
+- common.lcs_resource_storage:lcs_resource_storage.module
 - common.reconstructors:reconstructors.module
 - legacy_type.auto_tabs:view
 - legacy_type.box_layout:element
@@ -86,6 +88,7 @@ definitions:
       code.context: common.context:context.module
       code.controller: ui.controller:controller.module
       code.lcs: common.lcs:lcs.module
+      code.lcs_resource_storage: common.lcs_resource_storage:lcs_resource_storage.module
       code.reconstructors: common.reconstructors:reconstructors.module
       htypes.auto_tabs.view: legacy_type.auto_tabs:view
       htypes.box_layout.element: legacy_type.box_layout:element
@@ -110,6 +113,7 @@ definitions:
       services.endpoint_registry: transport.endpoint:endpoint_registry.service
       services.file_bundle: common.file_bundle:file_bundle.service
       services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
+      services.hyperapp_dir: builtins:hyperapp_dir.service
       services.mosaic: builtins:mosaic.service
       services.rpc_endpoint_factory: rpc.rpc_endpoint:rpc_endpoint_factory.service
       services.view_creg: ui.view_registry:view_creg.service

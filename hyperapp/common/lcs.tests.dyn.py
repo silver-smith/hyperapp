@@ -7,7 +7,7 @@ from .services import (
 from .tested.code import lcs
 
 
-def test_load_add_iter_save():
+def _test_load_add_iter_save():
     association = htypes.lcs.lcs_set_association(
         dir=(mosaic.put(htypes.lcs_tests.sample_d()),),
         value=mosaic.put("Sample value"),

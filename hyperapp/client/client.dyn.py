@@ -9,6 +9,7 @@ from .services import (
     endpoint_registry,
     file_bundle,
     generate_rsa_identity,
+    hyperapp_dir,
     mosaic,
     rpc_endpoint_factory,
     visualizer,
@@ -18,10 +19,10 @@ from .code.context import Context
 from .code.lcs import LCSheet
 from .code.controller import Controller
 from .code.reconstructors import register_reconstructors
+from .code.lcs_resource_storage import LcsResourceStorage
 
 
 layout_path = Path.home() / '.local/share/hyperapp/client/layout.json'
-lcs_path = Path.home() / '.local/share/hyperapp/client/lcs.cdr'
 
 
 def make_default_piece(lcs):
@@ -114,8 +115,8 @@ def _main(load_state):
     event_loop = QEventLoop(app)
     asyncio.set_event_loop(event_loop)  # Should be set before any asyncio objects created.
 
-    lcs_bundle = file_bundle(lcs_path, encoding='cdr')
-    lcs = LCSheet(lcs_bundle)
+    lcs_storage = LcsResourceStorage('client.lcs', hyperapp_dir / 'client/lcs.yaml')
+    lcs = LCSheet(lcs_storage)
 
     identity = generate_rsa_identity()
     rpc_endpoint = rpc_endpoint_factory()

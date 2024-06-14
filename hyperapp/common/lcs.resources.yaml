@@ -4,9 +4,6 @@ import:
 - builtins:mosaic.service
 - builtins:web.service
 - legacy_type.builtin:python_module
-- legacy_type.lcs:lcs_association
-- legacy_type.lcs:lcs_set_association
-- legacy_type.lcs:storage
 associations: []
 definitions:
   lcs.module:
@@ -14,8 +11,5 @@ definitions:
     module_name: lcs
     file_name: lcs.dyn.py
     import_list:
-      htypes.lcs.lcs_association: legacy_type.lcs:lcs_association
-      htypes.lcs.lcs_set_association: legacy_type.lcs:lcs_set_association
-      htypes.lcs.storage: legacy_type.lcs:storage
       services.mosaic: builtins:mosaic.service
       services.web: builtins:web.service

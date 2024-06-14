@@ -37,6 +37,15 @@ class LcsResourceStorage:
         frozen_dir = frozenset(dir)
         return self._mapping.get(frozen_dir)
 
+    def add(self, dir, piece):
+        raise NotImplementedError()
+
+    def remove(self, dir):
+        raise NotImplementedError()
+
+    def iter(self, filter_dir):
+        raise NotImplementedError()
+
     def _store(self, piece):
         t = deduce_t(piece)
         for ref in pick_refs(t, piece):
