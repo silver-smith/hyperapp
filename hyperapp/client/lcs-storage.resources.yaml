@@ -1,0 +1,43 @@
+import:
+- legacy_type.builtin:record_mt
+- legacy_type.lcs_resource_storage:mapping
+- legacy_type.list:view
+- legacy_type.list_adapter:fn_list_adapter
+- legacy_type.master_details:view
+- legacy_type.sample_list:item
+- legacy_type.ui:model_view_layout_d
+- sample.sample_commands:details.command
+- sample.sample_list:sample_list
+associations: []
+definitions:
+  fn_list_adapter:
+    _type: legacy_type.list_adapter:fn_list_adapter
+    element_t: legacy_type.sample_list:item
+    function: sample.sample_list:sample_list
+    params:
+    - piece
+  lcs_storage_mapping:
+    _type: legacy_type.lcs_resource_storage:mapping
+    elements:
+    - key:
+      - model_view_layout_d
+      - record_mt
+      value: view_2
+  model_view_layout_d:
+    _type: legacy_type.ui:model_view_layout_d
+  record_mt:
+    _type: legacy_type.builtin:record_mt
+    module_name: sample_list
+    name: sample_list
+    base: null
+    fields: {}
+  view:
+    _type: legacy_type.list:view
+    adapter: fn_list_adapter
+  view_2:
+    _type: legacy_type.master_details:view
+    master_view: view
+    details_command: sample.sample_commands:details.command
+    direction: LeftToRight
+    master_stretch: 1
+    details_stretch: 1
