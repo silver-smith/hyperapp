@@ -115,7 +115,7 @@ def _main(load_state):
     event_loop = QEventLoop(app)
     asyncio.set_event_loop(event_loop)  # Should be set before any asyncio objects created.
 
-    lcs_storage = LcsResourceStorage('client.lcs', hyperapp_dir / 'client/lcs.yaml')
+    lcs_storage = LcsResourceStorage('client.lcs-storage', hyperapp_dir / 'client/lcs-storage.resources.yaml')
     lcs = LCSheet(lcs_storage)
 
     identity = generate_rsa_identity()
