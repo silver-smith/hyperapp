@@ -74,7 +74,9 @@ class PhonyLayoutBundle:
 
 
 async def test_duplicate_window():
-    ctx = Context()
+    ctx = Context(
+        lcs=Mock(),
+    )
     default_layout = make_default_layout()
     feed = feed_factory(htypes.layout.view())
     app = QtWidgets.QApplication()
@@ -88,26 +90,5 @@ async def test_duplicate_window():
             await window.duplicate_window(root, view, state)
             assert len(root_item.children) == 2
             await feed.wait_for_diffs(count=1)
-    finally:
-        app.shutdown()
-
-
-async def test_save_model_layout():
-    lcs = Mock()
-    ctx = Context(
-        lcs=lcs,
-        )
-    default_layout = make_default_layout()
-    app = QtWidgets.QApplication()
-    try:
-        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx, show=False) as ctl:
-            await ctl.async_init()
-            window_item = ctl._root_item.children[0]
-            tabs_item = window_item.children[1]
-            navigator_item = tabs_item.children[0]
-            assert navigator_item.is_navigator
-            layout = make_text_layout()
-            navigator_item._set_model_layout(layout)
-            lcs.set.assert_called()
     finally:
         app.shutdown()

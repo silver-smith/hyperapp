@@ -9,6 +9,7 @@ from .services import (
     mark,
     mosaic,
     model_view_creg,
+    set_model_layout,
     web,
     )
 from .code.view import Item, View
@@ -23,12 +24,14 @@ class NavigatorView(View):
 
     @classmethod
     def from_piece(cls, piece, ctx):
+        lcs = ctx.lcs
         model = web.summon(piece.current_model)
         current_view = model_view_creg.invite(piece.current_view, model, ctx)
-        return cls(current_view, model, piece.prev, piece.next)
+        return cls(lcs, current_view, model, piece.prev, piece.next)
 
-    def __init__(self, current_view, model, prev, next):
+    def __init__(self, lcs, current_view, model, prev, next):
         super().__init__()
+        self._lcs = lcs
         self._current_view = current_view
         self._model = model  # piece
         self._prev = prev  # ref opt
@@ -112,6 +115,8 @@ class NavigatorView(View):
         assert idx == 0
         self._current_view = new_child_view
         self._ctl_hook.replace_parent_widget(new_child_widget)
+        t = deduce_t(self._model)
+        set_model_layout(self._lcs, t, new_child_view.piece)
 
     def items(self):
         return [Item('current', self._current_view)]

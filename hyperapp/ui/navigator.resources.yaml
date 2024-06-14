@@ -20,6 +20,7 @@ import:
 - ui.view:view.module
 - ui.view_registry:model_view_creg.service
 - ui.view_registry:view_creg.service
+- ui.visualizer:set_model_layout.service
 associations:
 - bases:
   - command_properties_d
@@ -126,6 +127,7 @@ definitions:
       services.mark: common.mark:mark.service
       services.model_view_creg: ui.view_registry:model_view_creg.service
       services.mosaic: builtins:mosaic.service
+      services.set_model_layout: ui.visualizer:set_model_layout.service
       services.web: builtins:web.service
   ui_command_d:
     _type: legacy_type.builtin:call

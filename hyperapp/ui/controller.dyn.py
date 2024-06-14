@@ -13,10 +13,8 @@ from hyperapp.common import dict_coders  # register codec
 from . import htypes
 from .services import (
     ui_command_factory,
-    deduce_t,
     feed_factory,
     mosaic,
-    set_model_layout,
     list_view_commands,
     ui_model_command_factory,
     view_creg,
@@ -227,11 +225,6 @@ class _Item:
     async def _send_model_diff(self, model_diff):
         await self._feed.send(model_diff)
 
-    def _set_model_layout(self, layout):
-        model = self.rctx.model
-        t = deduce_t(model)
-        set_model_layout(self.ctx.lcs, t, layout)
-
     def _replace_child_item(self, idx):
         view_items = self.view.items()
         item = self._make_child_item(view_items[idx])
@@ -248,8 +241,6 @@ class _Item:
         new_widget = new_view.construct_widget(new_state, self.ctx)
         parent.view.replace_child(parent.widget, idx, new_view, new_widget)
         parent._replace_child_item(idx)
-        if parent.is_navigator:
-            parent._set_model_layout(new_view.piece)
 
     def element_replaced_hook(self, idx, new_view, new_widget):
         log.info("Controller: Element replaced @%s #%d -> %s", self, idx, new_view)
