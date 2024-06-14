@@ -85,7 +85,7 @@ class {typename}(tuple):
 
     def __getnewargs__(self):
         'Return self as a plain tuple.  Used by copy and pickle.'
-        return tuple(*(*self, self_t))
+        return tuple((*self, self._t))
 
 {field_defs}
 """
