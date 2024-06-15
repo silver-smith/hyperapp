@@ -48,15 +48,16 @@ class LcsResourceStorage:
 
     def _store(self, piece):
         t = deduce_t(piece)
+        self._store_if_missing(piece, t)
+
+    def _store_if_missing(self, piece, t):
+        if resource_registry.has_piece(piece):
+            return
         for ref in pick_refs(t, piece):
-            self._store_if_missing(ref)
+            elt_piece, elt_t = web.summon_with_t(ref)
+            self._store_if_missing(elt_piece, elt_t)
         name = self._make_name(t)
         self._res_module[name] = piece
-
-    def _store_if_missing(self, ref):
-        piece = web.summon(ref)
-        if not resource_registry.has_piece(piece):
-            self._store(piece)
 
     @property
     def _mapping(self):
