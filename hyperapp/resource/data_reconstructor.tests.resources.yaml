@@ -1,6 +1,8 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:mosaic.service
+- builtins:pyobj_creg.service
 - legacy_type.builtin:python_module
 - legacy_type.phony:phony
 associations: []
@@ -10,6 +12,8 @@ definitions:
     module_name: data_reconstructor.tests
     file_name: data_reconstructor.tests.dyn.py
     import_list:
+      services.mosaic: builtins:mosaic.service
+      services.pyobj_creg: builtins:pyobj_creg.service
       tested.code.data_reconstructor: phony
   phony:
     _type: legacy_type.phony:phony
