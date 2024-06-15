@@ -1,15 +1,28 @@
 import:
-- legacy_type.builtin:record_mt
+- legacy_type.data_browser:record_item
+- legacy_type.data_browser:record_view
 - legacy_type.lcs_resource_storage:mapping
 - legacy_type.list:view
 - legacy_type.list_adapter:fn_list_adapter
+- legacy_type.list_to_tree_adapter:adapter
 - legacy_type.master_details:view
 - legacy_type.sample_list:item
+- legacy_type.sample_list:sample_list
+- legacy_type.tree:view
 - legacy_type.ui:model_view_layout_d
+- models.data_browser:browse_record
 - sample.sample_commands:details.command
 - sample.sample_list:sample_list
 associations: []
 definitions:
+  adapter:
+    _type: legacy_type.list_to_tree_adapter:adapter
+    root_element_t: legacy_type.data_browser:record_item
+    root_function: models.data_browser:browse_record
+    root_params:
+    - piece
+    root_open_children_command: null
+    layers: {}
   fn_list_adapter:
     _type: legacy_type.list_adapter:fn_list_adapter
     element_t: legacy_type.sample_list:item
@@ -20,17 +33,15 @@ definitions:
     _type: legacy_type.lcs_resource_storage:mapping
     elements:
     - key:
+      - legacy_type.sample_list:sample_list
       - model_view_layout_d
-      - record_mt
       value: view_2
+    - key:
+      - model_view_layout_d
+      - legacy_type.data_browser:record_view
+      value: view_3
   model_view_layout_d:
     _type: legacy_type.ui:model_view_layout_d
-  record_mt:
-    _type: legacy_type.builtin:record_mt
-    module_name: sample_list
-    name: sample_list
-    base: null
-    fields: {}
   view:
     _type: legacy_type.list:view
     adapter: fn_list_adapter
@@ -41,3 +52,6 @@ definitions:
     direction: LeftToRight
     master_stretch: 1
     details_stretch: 1
+  view_3:
+    _type: legacy_type.tree:view
+    adapter: adapter
