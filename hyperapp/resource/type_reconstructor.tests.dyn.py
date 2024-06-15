@@ -28,11 +28,15 @@ def _clean_cache(t):
 
 def _test(t):
     _clean_cache(t)
-    # Also remove existing type reconstructor.
-    reconstructors[:] = [type_reconstructor.type_to_piece]
-    piece = pyobj_creg.actor_to_piece(t)
-    resolved_t = pyobj_creg.animate(piece)
-    assert resolved_t is t
+    saved_reconsnstructors = [*reconstructors]
+    try:
+        # Also remove existing reconstructors.
+        reconstructors[:] = [type_reconstructor.type_to_piece]
+        piece = pyobj_creg.actor_to_piece(t)
+        resolved_t = pyobj_creg.animate(piece)
+        assert resolved_t is t
+    finally:
+        reconstructors[:] = saved_reconsnstructors
 
 
 def test_primitive():
