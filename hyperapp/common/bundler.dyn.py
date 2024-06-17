@@ -112,7 +112,7 @@ class Bundler:
 
     def _collect_refs_from_capsule(self, ref, rec):
         log.debug('Collecting refs from %r:', rec.value)
-        refs = pick_refs(rec.t, rec.value)
+        refs = pick_refs(rec.value, rec.t)
         asss = self._collect_associations(ref, rec.t, rec.value)
         log.debug('Collected %d refs from %s %s: %s', len(refs), rec.t, ref,
                  ', '.join(map(ref_repr, refs)))

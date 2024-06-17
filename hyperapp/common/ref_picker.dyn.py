@@ -8,6 +8,7 @@ from hyperapp.common.htypes import (
     )
 
 from .services import (
+    deduce_t,
     mark,
     mosaic,
     web,
@@ -78,7 +79,9 @@ def pick_refs():
     t_to_picker = {}
     value_to_refs = {}
 
-    def picker(t, value):
+    def picker(value, t=None):
+        if t is None:
+            t = deduce_t(value)
         try:
             return value_to_refs[value]
         except KeyError:

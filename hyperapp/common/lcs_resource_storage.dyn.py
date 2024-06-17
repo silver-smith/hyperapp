@@ -53,7 +53,7 @@ class LcsResourceStorage:
     def _store_if_missing(self, piece, t):
         if resource_registry.has_piece(piece):
             return
-        for ref in pick_refs(t, piece):
+        for ref in pick_refs(piece):
             elt_piece, elt_t = web.summon_with_t(ref)
             self._store_if_missing(elt_piece, elt_t)
         name = self._make_name(t)
