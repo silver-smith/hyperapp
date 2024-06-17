@@ -1,6 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:mosaic.service
 - builtins:pyobj_creg.service
 - legacy_type.builtin:python_module
 - legacy_type.phony:phony
@@ -11,6 +12,7 @@ definitions:
     module_name: data_to_res.tests
     file_name: data_to_res.tests.dyn.py
     import_list:
+      services.mosaic: builtins:mosaic.service
       services.pyobj_creg: builtins:pyobj_creg.service
       tested.code.data_to_res: phony
       tested.services.data_to_res: phony
