@@ -1,5 +1,4 @@
 from hyperapp.common.htypes import TRecord
-from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 
 from . import htypes
 from .services import (
