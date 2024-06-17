@@ -11,8 +11,9 @@ from .services import (
 
 @mark.service
 def data_to_res():
-    def _data_to_res(piece):
-        t = deduce_t(piece)
+    def _data_to_res(piece, t=None):
+        if t is None:
+            t = deduce_t(piece)
         assert isinstance(t, TRecord)  # TODO: Add support for other types.
         t_ref = pyobj_creg.actor_to_ref(t)
         if t.fields:
