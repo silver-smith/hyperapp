@@ -4,6 +4,7 @@ import:
 associations: []
 definitions:
   sample_servant_2:
-    _type: legacy_type.builtin:attribute
-    object: sample_module_2:sample_module_2.module
-    attr_name: sample_servant_2
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_module_2:sample_module_2.module
+      attr_name: sample_servant_2

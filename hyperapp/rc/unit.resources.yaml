@@ -19,31 +19,31 @@ import:
 - rc.scaffolds:scaffolds.module
 - rc.htest_driver:htest_driver.module
 - rc.ui_ctr:ui_ctr.module
-
+associations: []
 definitions:
-
   unit.module:
-    _type: legacy_type.builtin:python_module
-    module_name: unit
-    file_name: unit.dyn.py
-    import_list:
-      htypes.rc_constructors.service: legacy_type.rc_constructors:service
-      htypes.builtin.import_rec: legacy_type.builtin:import_rec
-      htypes.builtin.python_module: legacy_type.builtin:python_module
-      htypes.import_discoverer.using_incomplete_object: legacy_type.import_discoverer:using_incomplete_object
-      htypes.inspect.class_attr: legacy_type.inspect:class_attr
-      htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
-      htypes.inspect.import_recorder: legacy_type.inspect:import_recorder
-      htypes.rc.source_dep: legacy_type.rc:source_dep
-      htypes.rc.module_deps: legacy_type.rc:module_deps
-      htypes.phony.phony: legacy_type.phony:phony
-      services.mosaic: builtins:mosaic.service
-      services.resource_module_factory: builtins:resource_module_factory.service
-      services.web: builtins:web.service
-      code.call_driver: rc.call_driver:call_driver.module
-      code.call_trace: rc.call_trace:call_trace.module
-      code.dep: rc.dep:dep.module
-      code.import_driver: rc.import_driver:import_driver.module
-      code.scaffolds: rc.scaffolds:scaffolds.module
-      code.htest_driver: rc.htest_driver:htest_driver.module
-      code.ui_ctr: rc.ui_ctr:ui_ctr.module
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: unit
+      file_name: unit.dyn.py
+      import_list:
+        htypes.rc_constructors.service: legacy_type.rc_constructors:service
+        htypes.builtin.import_rec: legacy_type.builtin:import_rec
+        htypes.builtin.python_module: legacy_type.builtin:python_module
+        htypes.import_discoverer.using_incomplete_object: legacy_type.import_discoverer:using_incomplete_object
+        htypes.inspect.class_attr: legacy_type.inspect:class_attr
+        htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
+        htypes.inspect.import_recorder: legacy_type.inspect:import_recorder
+        htypes.rc.source_dep: legacy_type.rc:source_dep
+        htypes.rc.module_deps: legacy_type.rc:module_deps
+        htypes.phony.phony: legacy_type.phony:phony
+        services.mosaic: builtins:mosaic.service
+        services.resource_module_factory: builtins:resource_module_factory.service
+        services.web: builtins:web.service
+        code.call_driver: rc.call_driver:call_driver.module
+        code.call_trace: rc.call_trace:call_trace.module
+        code.dep: rc.dep:dep.module
+        code.import_driver: rc.import_driver:import_driver.module
+        code.scaffolds: rc.scaffolds:scaffolds.module
+        code.htest_driver: rc.htest_driver:htest_driver.module
+        code.ui_ctr: rc.ui_ctr:ui_ctr.module

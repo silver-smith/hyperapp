@@ -11,16 +11,18 @@ import:
 associations: []
 definitions:
   controller.tests.module:
-    _type: legacy_type.builtin:python_module
-    module_name: controller.tests
-    file_name: controller.tests.dyn.py
-    import_list:
-      code.context: common.context:context.module
-      code.list_diff: common.list_diff:list_diff.module
-      services.feed_factory: ui.feed:feed_factory.service
-      services.mosaic: builtins:mosaic.service
-      services.web: builtins:web.service
-      tested.code.controller: phony
-      tested.code.window: phony
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: controller.tests
+      file_name: controller.tests.dyn.py
+      import_list:
+        code.context: common.context:context.module
+        code.list_diff: common.list_diff:list_diff.module
+        services.feed_factory: ui.feed:feed_factory.service
+        services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service
+        tested.code.controller: phony
+        tested.code.window: phony
   phony:
-    _type: legacy_type.phony:phony
+    type: legacy_type.phony:phony
+    value: {}

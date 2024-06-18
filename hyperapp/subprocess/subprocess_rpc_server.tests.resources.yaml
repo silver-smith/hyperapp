@@ -11,16 +11,18 @@ import:
 associations: []
 definitions:
   phony:
-    _type: legacy_type.phony:phony
+    type: legacy_type.phony:phony
+    value: {}
   subprocess_rpc_server.tests.module:
-    _type: legacy_type.builtin:python_module
-    module_name: subprocess_rpc_server.tests
-    file_name: subprocess_rpc_server.tests.dyn.py
-    import_list:
-      code.subprocess_rpc_server_tests_aux: subprocess.subprocess_rpc_server_tests_aux:subprocess_rpc_server_tests_aux.module
-      services.endpoint_registry: transport.endpoint:endpoint_registry.service
-      services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
-      services.partial_ref: resource.partial_ref:partial_ref.service
-      services.rpc_endpoint_factory: rpc.rpc_endpoint:rpc_endpoint_factory.service
-      tested.code.subprocess_rpc_server: phony
-      tested.services.subprocess_rpc_server_running: phony
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: subprocess_rpc_server.tests
+      file_name: subprocess_rpc_server.tests.dyn.py
+      import_list:
+        code.subprocess_rpc_server_tests_aux: subprocess.subprocess_rpc_server_tests_aux:subprocess_rpc_server_tests_aux.module
+        services.endpoint_registry: transport.endpoint:endpoint_registry.service
+        services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
+        services.partial_ref: resource.partial_ref:partial_ref.service
+        services.rpc_endpoint_factory: rpc.rpc_endpoint:rpc_endpoint_factory.service
+        tested.code.subprocess_rpc_server: phony
+        tested.services.subprocess_rpc_server_running: phony

@@ -15,15 +15,18 @@ associations:
   value: StaticStrAdapter.from_piece
 definitions:
   StaticStrAdapter:
-    _type: legacy_type.builtin:attribute
-    object: str_adapter.module
-    attr_name: StaticStrAdapter
+    type: legacy_type.builtin:attribute
+    value:
+      object: str_adapter.module
+      attr_name: StaticStrAdapter
   StaticStrAdapter.from_piece:
-    _type: legacy_type.builtin:attribute
-    object: StaticStrAdapter
-    attr_name: from_piece
+    type: legacy_type.builtin:attribute
+    value:
+      object: StaticStrAdapter
+      attr_name: from_piece
   str_adapter.module:
-    _type: legacy_type.builtin:python_module
-    module_name: str_adapter
-    file_name: str_adapter.dyn.py
-    import_list: {}
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: str_adapter
+      file_name: str_adapter.dyn.py
+      import_list: {}

@@ -17,24 +17,27 @@ import:
 associations: []
 definitions:
   subprocess_rpc_server.module:
-    _type: legacy_type.builtin:python_module
-    module_name: subprocess_rpc_server
-    file_name: subprocess_rpc_server.dyn.py
-    import_list:
-      code.rpc_proxy: rpc.rpc_proxy:rpc_proxy.module
-      code.subprocess_rpc_server_main: subprocess.subprocess_rpc_server_main:subprocess_rpc_server_main.module
-      services.add_subprocess_server_connection: subprocess.subprocess_transport:add_subprocess_server_connection.service
-      services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
-      services.mark: common.mark:mark.service
-      services.partial_ref: resource.partial_ref:partial_ref.service
-      services.peer_registry: transport.identity:peer_registry.service
-      services.rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
-      services.rpc_submit_factory: rpc.rpc_call:rpc_submit_factory.service
-      services.subprocess_running: subprocess.subprocess:subprocess_running.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: subprocess_rpc_server
+      file_name: subprocess_rpc_server.dyn.py
+      import_list:
+        code.rpc_proxy: rpc.rpc_proxy:rpc_proxy.module
+        code.subprocess_rpc_server_main: subprocess.subprocess_rpc_server_main:subprocess_rpc_server_main.module
+        services.add_subprocess_server_connection: subprocess.subprocess_transport:add_subprocess_server_connection.service
+        services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
+        services.mark: common.mark:mark.service
+        services.partial_ref: resource.partial_ref:partial_ref.service
+        services.peer_registry: transport.identity:peer_registry.service
+        services.rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
+        services.rpc_submit_factory: rpc.rpc_call:rpc_submit_factory.service
+        services.subprocess_running: subprocess.subprocess:subprocess_running.service
   subprocess_rpc_server_running:
-    _type: legacy_type.builtin:attribute
-    object: subprocess_rpc_server.module
-    attr_name: subprocess_rpc_server_running
+    type: legacy_type.builtin:attribute
+    value:
+      object: subprocess_rpc_server.module
+      attr_name: subprocess_rpc_server_running
   subprocess_rpc_server_running.service:
-    _type: legacy_type.builtin:call
-    function: subprocess_rpc_server_running
+    type: legacy_type.builtin:call
+    value:
+      function: subprocess_rpc_server_running

@@ -9,16 +9,19 @@ import:
 associations: []
 definitions:
   route_registry:
-    _type: legacy_type.builtin:attribute
-    object: route_registry.module
-    attr_name: route_registry
+    type: legacy_type.builtin:attribute
+    value:
+      object: route_registry.module
+      attr_name: route_registry
   route_registry.module:
-    _type: legacy_type.builtin:python_module
-    module_name: route_registry
-    file_name: route_registry.dyn.py
-    import_list:
-      services.code_registry_ctr: builtins:code_registry_ctr.service
-      services.mark: common.mark:mark.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: route_registry
+      file_name: route_registry.dyn.py
+      import_list:
+        services.code_registry_ctr: builtins:code_registry_ctr.service
+        services.mark: common.mark:mark.service
   route_registry.service:
-    _type: legacy_type.builtin:call
-    function: route_registry
+    type: legacy_type.builtin:call
+    value:
+      function: route_registry

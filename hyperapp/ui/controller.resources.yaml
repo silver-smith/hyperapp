@@ -31,29 +31,32 @@ associations:
   value: layout_view.index_tree_feed
 definitions:
   controller.module:
-    _type: legacy_type.builtin:python_module
-    module_name: controller
-    file_name: controller.dyn.py
-    import_list:
-      code.context: common.context:context.module
-      code.tree_diff: common.tree_diff:tree_diff.module
-      code.view: ui.view:view.module
-      htypes.layout.item: legacy_type.layout:item
-      htypes.layout.view: legacy_type.layout:view
-      htypes.root.layout: legacy_type.root:layout
-      htypes.root.state: legacy_type.root:state
-      htypes.root.view: legacy_type.root:view
-      services.deduce_t: builtins:deduce_t.service
-      services.feed_factory: ui.feed:feed_factory.service
-      services.list_view_commands: ui.ui_command:list_view_commands.service
-      services.mosaic: builtins:mosaic.service
-      services.ui_command_factory: ui.ui_command:ui_command_factory.service
-      services.ui_model_command_factory: ui.ui_model_command:ui_model_command_factory.service
-      services.view_creg: ui.view_registry:view_creg.service
-      services.web: builtins:web.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: controller
+      file_name: controller.dyn.py
+      import_list:
+        code.context: common.context:context.module
+        code.tree_diff: common.tree_diff:tree_diff.module
+        code.view: ui.view:view.module
+        htypes.layout.item: legacy_type.layout:item
+        htypes.layout.view: legacy_type.layout:view
+        htypes.root.layout: legacy_type.root:layout
+        htypes.root.state: legacy_type.root:state
+        htypes.root.view: legacy_type.root:view
+        services.deduce_t: builtins:deduce_t.service
+        services.feed_factory: ui.feed:feed_factory.service
+        services.list_view_commands: ui.ui_command:list_view_commands.service
+        services.mosaic: builtins:mosaic.service
+        services.ui_command_factory: ui.ui_command:ui_command_factory.service
+        services.ui_model_command_factory: ui.ui_model_command:ui_model_command_factory.service
+        services.view_creg: ui.view_registry:view_creg.service
+        services.web: builtins:web.service
   feed_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:feed_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:feed_d
   layout_view.index_tree_feed:
-    _type: legacy_type.ui:index_tree_feed
-    element_t: legacy_type.layout:item
+    type: legacy_type.ui:index_tree_feed
+    value:
+      element_t: legacy_type.layout:item

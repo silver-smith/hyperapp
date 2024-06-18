@@ -5,7 +5,8 @@ import:
 associations: []
 definitions:
   context.module:
-    _type: legacy_type.builtin:python_module
-    module_name: context
-    file_name: context.dyn.py
-    import_list: {}
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: context
+      file_name: context.dyn.py
+      import_list: {}

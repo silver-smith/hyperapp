@@ -9,14 +9,16 @@ import:
 associations: []
 definitions:
   phony:
-    _type: legacy_type.phony:phony
+    type: legacy_type.phony:phony
+    value: {}
   rpc_call.tests.module:
-    _type: legacy_type.builtin:python_module
-    module_name: rpc_call.tests
-    file_name: rpc_call.tests.dyn.py
-    import_list:
-      services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
-      services.mark: common.mark:mark.service
-      services.mosaic: builtins:mosaic.service
-      tested.code.rpc_call: phony
-      tested.services.rpc_call_factory: phony
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: rpc_call.tests
+      file_name: rpc_call.tests.dyn.py
+      import_list:
+        services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
+        services.mark: common.mark:mark.service
+        services.mosaic: builtins:mosaic.service
+        tested.code.rpc_call: phony
+        tested.services.rpc_call_factory: phony

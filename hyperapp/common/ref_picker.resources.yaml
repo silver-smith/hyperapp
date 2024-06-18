@@ -11,18 +11,21 @@ import:
 associations: []
 definitions:
   pick_refs:
-    _type: legacy_type.builtin:attribute
-    object: ref_picker.module
-    attr_name: pick_refs
+    type: legacy_type.builtin:attribute
+    value:
+      object: ref_picker.module
+      attr_name: pick_refs
   pick_refs.service:
-    _type: legacy_type.builtin:call
-    function: pick_refs
+    type: legacy_type.builtin:call
+    value:
+      function: pick_refs
   ref_picker.module:
-    _type: legacy_type.builtin:python_module
-    module_name: ref_picker
-    file_name: ref_picker.dyn.py
-    import_list:
-      services.deduce_t: builtins:deduce_t.service
-      services.mark: common.mark:mark.service
-      services.mosaic: builtins:mosaic.service
-      services.web: builtins:web.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: ref_picker
+      file_name: ref_picker.dyn.py
+      import_list:
+        services.deduce_t: builtins:deduce_t.service
+        services.mark: common.mark:mark.service
+        services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service

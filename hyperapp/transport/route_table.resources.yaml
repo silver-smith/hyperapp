@@ -2,12 +2,13 @@ import:
 - builtins:association_reg.service
 - builtins:web.service
 - legacy_type.builtin:python_module
-
+associations: []
 definitions:
   route_table.module:
-    _type: legacy_type.builtin:python_module
-    module_name: route_table
-    file_name: route_table.dyn.py
-    import_list:
-      services.association_reg: builtins:association_reg.service
-      services.web: builtins:web.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: route_table
+      file_name: route_table.dyn.py
+      import_list:
+        services.association_reg: builtins:association_reg.service
+        services.web: builtins:web.service

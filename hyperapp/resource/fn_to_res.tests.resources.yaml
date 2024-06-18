@@ -8,13 +8,15 @@ import:
 associations: []
 definitions:
   fn_to_res.tests.module:
-    _type: legacy_type.builtin:python_module
-    module_name: fn_to_res.tests
-    file_name: fn_to_res.tests.dyn.py
-    import_list:
-      services.mark: common.mark:mark.service
-      services.mosaic: builtins:mosaic.service
-      tested.code.fn_to_res: phony
-      tested.services.fn_to_ref: phony
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: fn_to_res.tests
+      file_name: fn_to_res.tests.dyn.py
+      import_list:
+        services.mark: common.mark:mark.service
+        services.mosaic: builtins:mosaic.service
+        tested.code.fn_to_res: phony
+        tested.services.fn_to_ref: phony
   phony:
-    _type: legacy_type.phony:phony
+    type: legacy_type.phony:phony
+    value: {}

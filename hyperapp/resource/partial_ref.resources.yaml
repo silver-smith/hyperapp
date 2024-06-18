@@ -13,20 +13,23 @@ import:
 associations: []
 definitions:
   partial_ref:
-    _type: legacy_type.builtin:attribute
-    object: partial_ref.module
-    attr_name: partial_ref
+    type: legacy_type.builtin:attribute
+    value:
+      object: partial_ref.module
+      attr_name: partial_ref
   partial_ref.module:
-    _type: legacy_type.builtin:python_module
-    module_name: partial_ref
-    file_name: partial_ref.dyn.py
-    import_list:
-      htypes.partial.param: legacy_type.partial:param
-      htypes.partial.partial: legacy_type.partial:partial
-      htypes.raw.raw: legacy_type.raw:raw
-      services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
-      services.mark: common.mark:mark.service
-      services.mosaic: builtins:mosaic.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: partial_ref
+      file_name: partial_ref.dyn.py
+      import_list:
+        htypes.partial.param: legacy_type.partial:param
+        htypes.partial.partial: legacy_type.partial:partial
+        htypes.raw.raw: legacy_type.raw:raw
+        services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
+        services.mark: common.mark:mark.service
+        services.mosaic: builtins:mosaic.service
   partial_ref.service:
-    _type: legacy_type.builtin:call
-    function: partial_ref
+    type: legacy_type.builtin:call
+    value:
+      function: partial_ref

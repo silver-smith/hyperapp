@@ -108,7 +108,7 @@ class ResourceModule:
     def code_module_imports(self, code_name):
         assert self._loaded_definitions is None  # Not expecting it to be already loaded.
         module_contents = self._module_contents
-        return module_contents['definitions'][f'{code_name}.module']['import_list']
+        return module_contents['definitions'][f'{code_name}.module']['value']['import_list']
 
     @property
     def provided_services(self):
@@ -215,8 +215,8 @@ class ResourceModule:
 
     def _definition_as_dict(self, definition):
         return {
-            '_type': self._resource_type_name(definition.type),
-            **definition.type.to_dict(definition.value),
+            'type': self._resource_type_name(definition.type),
+            'value': definition.type.to_dict(definition.value),
             }
 
     def _association_as_dict(self, ass):
@@ -324,14 +324,15 @@ class ResourceModule:
     def _read_definition(self, name, data):
         log.debug("%s: Load definition %r: %s", self._name, name, data)
         try:
-            resource_t_name = data['_type']
-        except KeyError:
-            raise RuntimeError(f"{self._name}: definition {name!r} has no '_type' attribute")
+            resource_t_name = data['type']
+            resource_value = data['value']
+        except KeyError as x:
+            raise RuntimeError(f"{self._name}: definition {name!r} has no {e.args[0]!r} attribute")
         resource_t_res = self._resolve_name(resource_t_name)
         resource_t = self._pyobj_creg.animate(resource_t_res)
         t = self._resource_type_producer(resource_t)
         try:
-            value = t.from_dict(data)
+            value = t.from_dict(resource_value)
         except Exception as x:
             raise RuntimeError(f"Error loading definition {self._name}/{name}: {x}")
         return Definition(t, value)

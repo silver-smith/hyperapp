@@ -1,12 +1,14 @@
 import:
-  - legacy_type.sample_python_module:sample_servant_d
-  - legacy_type.sample_python_module:sample_item
-  - legacy_type.builtin:python_module
+- legacy_type.sample_python_module:sample_servant_d
+- legacy_type.sample_python_module:sample_item
+- legacy_type.builtin:python_module
+associations: []
 definitions:
   sample_python_module:
-    _type: legacy_type.builtin:python_module
-    module_name: sample_python_module
-    file_name: sample_python_module.dyn.py
-    import_list:
-      htypes.sample_python_module.sample_servant_d: legacy_type.sample_python_module:sample_servant_d
-      htypes.sample_python_module.sample_item: legacy_type.sample_python_module:sample_item
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: sample_python_module
+      file_name: sample_python_module.dyn.py
+      import_list:
+        htypes.sample_python_module.sample_servant_d: legacy_type.sample_python_module:sample_servant_d
+        htypes.sample_python_module.sample_item: legacy_type.sample_python_module:sample_item

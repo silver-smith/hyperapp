@@ -9,16 +9,19 @@ import:
 associations: []
 definitions:
   constructor_creg:
-    _type: legacy_type.builtin:attribute
-    object: constructor_creg.module
-    attr_name: constructor_creg
+    type: legacy_type.builtin:attribute
+    value:
+      object: constructor_creg.module
+      attr_name: constructor_creg
   constructor_creg.module:
-    _type: legacy_type.builtin:python_module
-    module_name: constructor_creg
-    file_name: constructor_creg.dyn.py
-    import_list:
-      services.code_registry_ctr: builtins:code_registry_ctr.service
-      services.mark: common.mark:mark.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: constructor_creg
+      file_name: constructor_creg.dyn.py
+      import_list:
+        services.code_registry_ctr: builtins:code_registry_ctr.service
+        services.mark: common.mark:mark.service
   constructor_creg.service:
-    _type: legacy_type.builtin:call
-    function: constructor_creg
+    type: legacy_type.builtin:call
+    value:
+      function: constructor_creg

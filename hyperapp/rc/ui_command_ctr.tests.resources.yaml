@@ -9,13 +9,15 @@ import:
 associations: []
 definitions:
   phony:
-    _type: legacy_type.phony:phony
+    type: legacy_type.phony:phony
+    value: {}
   ui_command_ctr.tests.module:
-    _type: legacy_type.builtin:python_module
-    module_name: ui_command_ctr.tests
-    file_name: ui_command_ctr.tests.dyn.py
-    import_list:
-      services.local_types: builtins:local_types.service
-      services.mosaic: builtins:mosaic.service
-      services.pyobj_creg: builtins:pyobj_creg.service
-      tested.code.ui_command_ctr: phony
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: ui_command_ctr.tests
+      file_name: ui_command_ctr.tests.dyn.py
+      import_list:
+        services.local_types: builtins:local_types.service
+        services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        tested.code.ui_command_ctr: phony

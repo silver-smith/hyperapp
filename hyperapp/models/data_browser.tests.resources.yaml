@@ -8,12 +8,14 @@ import:
 associations: []
 definitions:
   data_browser.tests.module:
-    _type: legacy_type.builtin:python_module
-    module_name: data_browser.tests
-    file_name: data_browser.tests.dyn.py
-    import_list:
-      services.mosaic: builtins:mosaic.service
-      services.web: builtins:web.service
-      tested.code.data_browser: phony
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: data_browser.tests
+      file_name: data_browser.tests.dyn.py
+      import_list:
+        services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service
+        tested.code.data_browser: phony
   phony:
-    _type: legacy_type.phony:phony
+    type: legacy_type.phony:phony
+    value: {}

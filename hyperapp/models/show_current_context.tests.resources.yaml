@@ -7,11 +7,13 @@ import:
 associations: []
 definitions:
   phony:
-    _type: legacy_type.phony:phony
+    type: legacy_type.phony:phony
+    value: {}
   show_current_context.tests.module:
-    _type: legacy_type.builtin:python_module
-    module_name: show_current_context.tests
-    file_name: show_current_context.tests.dyn.py
-    import_list:
-      code.context: common.context:context.module
-      tested.code.show_current_context: phony
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: show_current_context.tests
+      file_name: show_current_context.tests.dyn.py
+      import_list:
+        code.context: common.context:context.module
+        tested.code.show_current_context: phony

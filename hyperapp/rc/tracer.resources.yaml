@@ -1,30 +1,30 @@
 import:
-  - builtins:deduce_t.service
-  - builtins:hyperapp_dir.service
-  - builtins:mosaic.service
-  - builtins:pyobj_creg.service
-  - legacy_type.inspect:call_param
-  - legacy_type.inspect:call_trace
-  - legacy_type.inspect:type_name
-  - legacy_type.inspect:object_t
-  - legacy_type.inspect:coroutine_t
-  - legacy_type.inspect:data_t
-  - legacy_type.builtin:python_module
-
+- builtins:deduce_t.service
+- builtins:hyperapp_dir.service
+- builtins:mosaic.service
+- builtins:pyobj_creg.service
+- legacy_type.inspect:call_param
+- legacy_type.inspect:call_trace
+- legacy_type.inspect:type_name
+- legacy_type.inspect:object_t
+- legacy_type.inspect:coroutine_t
+- legacy_type.inspect:data_t
+- legacy_type.builtin:python_module
+associations: []
 definitions:
-
   tracer.module:
-    _type: legacy_type.builtin:python_module
-    module_name: tracer
-    file_name: tracer.dyn.py
-    import_list:
-      htypes.inspect.call_param: legacy_type.inspect:call_param
-      htypes.inspect.call_trace: legacy_type.inspect:call_trace
-      htypes.inspect.type_name: legacy_type.inspect:type_name
-      htypes.inspect.object_t: legacy_type.inspect:object_t
-      htypes.inspect.coroutine_t: legacy_type.inspect:coroutine_t
-      htypes.inspect.data_t: legacy_type.inspect:data_t
-      services.deduce_t: builtins:deduce_t.service
-      services.hyperapp_dir: builtins:hyperapp_dir.service
-      services.mosaic: builtins:mosaic.service
-      services.pyobj_creg: builtins:pyobj_creg.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: tracer
+      file_name: tracer.dyn.py
+      import_list:
+        htypes.inspect.call_param: legacy_type.inspect:call_param
+        htypes.inspect.call_trace: legacy_type.inspect:call_trace
+        htypes.inspect.type_name: legacy_type.inspect:type_name
+        htypes.inspect.object_t: legacy_type.inspect:object_t
+        htypes.inspect.coroutine_t: legacy_type.inspect:coroutine_t
+        htypes.inspect.data_t: legacy_type.inspect:data_t
+        services.deduce_t: builtins:deduce_t.service
+        services.hyperapp_dir: builtins:hyperapp_dir.service
+        services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service

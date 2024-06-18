@@ -19,20 +19,23 @@ associations:
   value: ListView.from_piece
 definitions:
   ListView:
-    _type: legacy_type.builtin:attribute
-    object: list.module
-    attr_name: ListView
+    type: legacy_type.builtin:attribute
+    value:
+      object: list.module
+      attr_name: ListView
   ListView.from_piece:
-    _type: legacy_type.builtin:attribute
-    object: ListView
-    attr_name: from_piece
+    type: legacy_type.builtin:attribute
+    value:
+      object: ListView
+      attr_name: from_piece
   list.module:
-    _type: legacy_type.builtin:python_module
-    module_name: list
-    file_name: list.dyn.py
-    import_list:
-      code.list_diff: common.list_diff:list_diff.module
-      code.view: ui.view:view.module
-      htypes.list.state: legacy_type.list:state
-      htypes.list.view: legacy_type.list:view
-      services.ui_adapter_creg: ui.ui_adapter_creg:ui_adapter_creg.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: list
+      file_name: list.dyn.py
+      import_list:
+        code.list_diff: common.list_diff:list_diff.module
+        code.view: ui.view:view.module
+        htypes.list.state: legacy_type.list:state
+        htypes.list.view: legacy_type.list:view
+        services.ui_adapter_creg: ui.ui_adapter_creg:ui_adapter_creg.service

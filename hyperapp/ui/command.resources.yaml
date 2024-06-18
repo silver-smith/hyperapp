@@ -8,10 +8,11 @@ import:
 associations: []
 definitions:
   command.module:
-    _type: legacy_type.builtin:python_module
-    module_name: command
-    file_name: command.dyn.py
-    import_list:
-      services.mark: common.mark:mark.service
-      services.pyobj_creg: builtins:pyobj_creg.service
-      services.ui_command_impl_creg: ui.ui_command_impl_creg:ui_command_impl_creg.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: command
+      file_name: command.dyn.py
+      import_list:
+        services.mark: common.mark:mark.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        services.ui_command_impl_creg: ui.ui_command_impl_creg:ui_command_impl_creg.service

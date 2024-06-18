@@ -7,9 +7,10 @@ import:
 associations: []
 definitions:
   lcs.module:
-    _type: legacy_type.builtin:python_module
-    module_name: lcs
-    file_name: lcs.dyn.py
-    import_list:
-      services.mosaic: builtins:mosaic.service
-      services.web: builtins:web.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: lcs
+      file_name: lcs.dyn.py
+      import_list:
+        services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service

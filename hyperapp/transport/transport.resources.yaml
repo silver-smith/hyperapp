@@ -12,19 +12,22 @@ import:
 associations: []
 definitions:
   transport:
-    _type: legacy_type.builtin:attribute
-    object: transport.module
-    attr_name: transport
+    type: legacy_type.builtin:attribute
+    value:
+      object: transport.module
+      attr_name: transport
   transport.module:
-    _type: legacy_type.builtin:python_module
-    module_name: transport
-    file_name: transport.dyn.py
-    import_list:
-      services.bundler: common.bundler:bundler.service
-      services.mark: common.mark:mark.service
-      services.mosaic: builtins:mosaic.service
-      services.route_registry: transport.route_registry:route_registry.service
-      services.route_table: transport.sync_route_table:route_table.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: transport
+      file_name: transport.dyn.py
+      import_list:
+        services.bundler: common.bundler:bundler.service
+        services.mark: common.mark:mark.service
+        services.mosaic: builtins:mosaic.service
+        services.route_registry: transport.route_registry:route_registry.service
+        services.route_table: transport.sync_route_table:route_table.service
   transport.service:
-    _type: legacy_type.builtin:call
-    function: transport
+    type: legacy_type.builtin:call
+    value:
+      function: transport

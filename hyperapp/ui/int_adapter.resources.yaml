@@ -15,15 +15,18 @@ associations:
   value: IntAdapter.from_piece
 definitions:
   IntAdapter:
-    _type: legacy_type.builtin:attribute
-    object: int_adapter.module
-    attr_name: IntAdapter
+    type: legacy_type.builtin:attribute
+    value:
+      object: int_adapter.module
+      attr_name: IntAdapter
   IntAdapter.from_piece:
-    _type: legacy_type.builtin:attribute
-    object: IntAdapter
-    attr_name: from_piece
+    type: legacy_type.builtin:attribute
+    value:
+      object: IntAdapter
+      attr_name: from_piece
   int_adapter.module:
-    _type: legacy_type.builtin:python_module
-    module_name: int_adapter
-    file_name: int_adapter.dyn.py
-    import_list: {}
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: int_adapter
+      file_name: int_adapter.dyn.py
+      import_list: {}

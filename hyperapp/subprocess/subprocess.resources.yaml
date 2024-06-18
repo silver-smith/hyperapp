@@ -10,17 +10,20 @@ import:
 associations: []
 definitions:
   subprocess.module:
-    _type: legacy_type.builtin:python_module
-    module_name: subprocess
-    file_name: subprocess.dyn.py
-    import_list:
-      services.bundler: common.bundler:bundler.service
-      services.mark: common.mark:mark.service
-      services.mosaic: builtins:mosaic.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: subprocess
+      file_name: subprocess.dyn.py
+      import_list:
+        services.bundler: common.bundler:bundler.service
+        services.mark: common.mark:mark.service
+        services.mosaic: builtins:mosaic.service
   subprocess_running:
-    _type: legacy_type.builtin:attribute
-    object: subprocess.module
-    attr_name: subprocess_running
+    type: legacy_type.builtin:attribute
+    value:
+      object: subprocess.module
+      attr_name: subprocess_running
   subprocess_running.service:
-    _type: legacy_type.builtin:call
-    function: subprocess_running
+    type: legacy_type.builtin:call
+    value:
+      function: subprocess_running

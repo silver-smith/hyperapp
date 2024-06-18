@@ -27,31 +27,35 @@ associations:
   value: route_from_piece
 definitions:
   route_from_piece:
-    _type: legacy_type.builtin:attribute
-    object: tcp_transport.module
-    attr_name: route_from_piece
+    type: legacy_type.builtin:attribute
+    value:
+      object: tcp_transport.module
+      attr_name: route_from_piece
   tcp_server_factory:
-    _type: legacy_type.builtin:attribute
-    object: tcp_transport.module
-    attr_name: tcp_server_factory
+    type: legacy_type.builtin:attribute
+    value:
+      object: tcp_transport.module
+      attr_name: tcp_server_factory
   tcp_server_factory.service:
-    _type: legacy_type.builtin:call
-    function: tcp_server_factory
+    type: legacy_type.builtin:call
+    value:
+      function: tcp_server_factory
   tcp_transport.module:
-    _type: legacy_type.builtin:python_module
-    module_name: tcp_transport
-    file_name: tcp_transport.dyn.py
-    import_list:
-      code.tcp_utils: transport.tcp_utils:tcp_utils.module
-      htypes.tcp_transport.route: legacy_type.tcp_transport:route
-      services.bundler: common.bundler:bundler.service
-      services.failed: common.failure:failed.service
-      services.mark: common.mark:mark.service
-      services.mosaic: builtins:mosaic.service
-      services.on_stop: builtins:on_stop.service
-      services.parcel_registry: transport.identity:parcel_registry.service
-      services.route_registry: transport.route_registry:route_registry.service
-      services.route_table: transport.sync_route_table:route_table.service
-      services.stop_signal: builtins:stop_signal.service
-      services.transport: transport.transport:transport.service
-      services.unbundler: builtins:unbundler.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: tcp_transport
+      file_name: tcp_transport.dyn.py
+      import_list:
+        code.tcp_utils: transport.tcp_utils:tcp_utils.module
+        htypes.tcp_transport.route: legacy_type.tcp_transport:route
+        services.bundler: common.bundler:bundler.service
+        services.failed: common.failure:failed.service
+        services.mark: common.mark:mark.service
+        services.mosaic: builtins:mosaic.service
+        services.on_stop: builtins:on_stop.service
+        services.parcel_registry: transport.identity:parcel_registry.service
+        services.route_registry: transport.route_registry:route_registry.service
+        services.route_table: transport.sync_route_table:route_table.service
+        services.stop_signal: builtins:stop_signal.service
+        services.transport: transport.transport:transport.service
+        services.unbundler: builtins:unbundler.service

@@ -6,10 +6,12 @@ import:
 associations: []
 definitions:
   client.tests.module:
-    _type: legacy_type.builtin:python_module
-    module_name: client.tests
-    file_name: client.tests.dyn.py
-    import_list:
-      tested.code.client: phony
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: client.tests
+      file_name: client.tests.dyn.py
+      import_list:
+        tested.code.client: phony
   phony:
-    _type: legacy_type.phony:phony
+    type: legacy_type.phony:phony
+    value: {}

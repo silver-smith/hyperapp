@@ -24,24 +24,27 @@ associations:
   value: ListToTreeAdapter.from_piece
 definitions:
   ListToTreeAdapter:
-    _type: legacy_type.builtin:attribute
-    object: list_to_tree_adapter.module
-    attr_name: ListToTreeAdapter
+    type: legacy_type.builtin:attribute
+    value:
+      object: list_to_tree_adapter.module
+      attr_name: ListToTreeAdapter
   ListToTreeAdapter.from_piece:
-    _type: legacy_type.builtin:attribute
-    object: ListToTreeAdapter
-    attr_name: from_piece
+    type: legacy_type.builtin:attribute
+    value:
+      object: ListToTreeAdapter
+      attr_name: from_piece
   list_to_tree_adapter.module:
-    _type: legacy_type.builtin:python_module
-    module_name: list_to_tree_adapter
-    file_name: list_to_tree_adapter.dyn.py
-    import_list:
-      code.tree_adapter: ui.qt.tree_adapter:tree_adapter.module
-      htypes.ui.fn_impl: legacy_type.ui:fn_impl
-      htypes.ui.list_ui_t: legacy_type.ui:list_ui_t
-      services.deduce_t: builtins:deduce_t.service
-      services.model_command_factory: ui.model_command:model_command_factory.service
-      services.model_command_impl_creg: ui.model_command_impl_creg:model_command_impl_creg.service
-      services.pick_visualizer_info: ui.visualizer:pick_visualizer_info.service
-      services.pyobj_creg: builtins:pyobj_creg.service
-      services.web: builtins:web.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: list_to_tree_adapter
+      file_name: list_to_tree_adapter.dyn.py
+      import_list:
+        code.tree_adapter: ui.qt.tree_adapter:tree_adapter.module
+        htypes.ui.fn_impl: legacy_type.ui:fn_impl
+        htypes.ui.list_ui_t: legacy_type.ui:list_ui_t
+        services.deduce_t: builtins:deduce_t.service
+        services.model_command_factory: ui.model_command:model_command_factory.service
+        services.model_command_impl_creg: ui.model_command_impl_creg:model_command_impl_creg.service
+        services.pick_visualizer_info: ui.visualizer:pick_visualizer_info.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        services.web: builtins:web.service

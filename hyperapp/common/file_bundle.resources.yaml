@@ -11,18 +11,21 @@ import:
 associations: []
 definitions:
   file_bundle:
-    _type: legacy_type.builtin:attribute
-    object: file_bundle.module
-    attr_name: file_bundle
+    type: legacy_type.builtin:attribute
+    value:
+      object: file_bundle.module
+      attr_name: file_bundle
   file_bundle.module:
-    _type: legacy_type.builtin:python_module
-    module_name: file_bundle
-    file_name: file_bundle.dyn.py
-    import_list:
-      services.bundler: common.bundler:bundler.service
-      services.mark: common.mark:mark.service
-      services.mosaic: builtins:mosaic.service
-      services.unbundler: builtins:unbundler.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: file_bundle
+      file_name: file_bundle.dyn.py
+      import_list:
+        services.bundler: common.bundler:bundler.service
+        services.mark: common.mark:mark.service
+        services.mosaic: builtins:mosaic.service
+        services.unbundler: builtins:unbundler.service
   file_bundle.service:
-    _type: legacy_type.builtin:call
-    function: file_bundle
+    type: legacy_type.builtin:call
+    value:
+      function: file_bundle

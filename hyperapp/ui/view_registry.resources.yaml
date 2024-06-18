@@ -9,23 +9,28 @@ import:
 associations: []
 definitions:
   model_view_creg:
-    _type: legacy_type.builtin:attribute
-    object: view_registry.module
-    attr_name: model_view_creg
+    type: legacy_type.builtin:attribute
+    value:
+      object: view_registry.module
+      attr_name: model_view_creg
   model_view_creg.service:
-    _type: legacy_type.builtin:call
-    function: model_view_creg
+    type: legacy_type.builtin:call
+    value:
+      function: model_view_creg
   view_creg:
-    _type: legacy_type.builtin:attribute
-    object: view_registry.module
-    attr_name: view_creg
+    type: legacy_type.builtin:attribute
+    value:
+      object: view_registry.module
+      attr_name: view_creg
   view_creg.service:
-    _type: legacy_type.builtin:call
-    function: view_creg
+    type: legacy_type.builtin:call
+    value:
+      function: view_creg
   view_registry.module:
-    _type: legacy_type.builtin:python_module
-    module_name: view_registry
-    file_name: view_registry.dyn.py
-    import_list:
-      services.code_registry_ctr: builtins:code_registry_ctr.service
-      services.mark: common.mark:mark.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: view_registry
+      file_name: view_registry.dyn.py
+      import_list:
+        services.code_registry_ctr: builtins:code_registry_ctr.service
+        services.mark: common.mark:mark.service

@@ -4,24 +4,23 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.raw:raw
-
 associations:
-
 - bases:
   - legacy_type.raw:raw
   key:
   - builtins:pyobj_creg.service
   - legacy_type.raw:raw
   value: python_object
-
 definitions:
   raw.module:
-    _type: legacy_type.builtin:python_module
-    module_name: raw
-    file_name: raw.dyn.py
-    import_list:
-      services.web: builtins:web.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: raw
+      file_name: raw.dyn.py
+      import_list:
+        services.web: builtins:web.service
   python_object:
-    _type: legacy_type.builtin:attribute
-    object: raw.module
-    attr_name: python_object
+    type: legacy_type.builtin:attribute
+    value:
+      object: raw.module
+      attr_name: python_object

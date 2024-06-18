@@ -45,40 +45,47 @@ associations:
   value: rsa_signature_from_piece
 definitions:
   generate_rsa_identity:
-    _type: legacy_type.builtin:attribute
-    object: rsa_identity.module
-    attr_name: generate_rsa_identity
+    type: legacy_type.builtin:attribute
+    value:
+      object: rsa_identity.module
+      attr_name: generate_rsa_identity
   generate_rsa_identity.service:
-    _type: legacy_type.builtin:call
-    function: generate_rsa_identity
+    type: legacy_type.builtin:call
+    value:
+      function: generate_rsa_identity
   rsa_identity.module:
-    _type: legacy_type.builtin:python_module
-    module_name: rsa_identity
-    file_name: rsa_identity.dyn.py
-    import_list:
-      htypes.rsa_identity.rsa_identity: legacy_type.rsa_identity:rsa_identity
-      htypes.rsa_identity.rsa_parcel: legacy_type.rsa_identity:rsa_parcel
-      htypes.rsa_identity.rsa_peer: legacy_type.rsa_identity:rsa_peer
-      htypes.rsa_identity.rsa_signature: legacy_type.rsa_identity:rsa_signature
-      services.identity_registry: transport.identity:identity_registry.service
-      services.mark: common.mark:mark.service
-      services.mosaic: builtins:mosaic.service
-      services.parcel_registry: transport.identity:parcel_registry.service
-      services.peer_registry: transport.identity:peer_registry.service
-      services.signature_registry: transport.identity:signature_registry.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: rsa_identity
+      file_name: rsa_identity.dyn.py
+      import_list:
+        htypes.rsa_identity.rsa_identity: legacy_type.rsa_identity:rsa_identity
+        htypes.rsa_identity.rsa_parcel: legacy_type.rsa_identity:rsa_parcel
+        htypes.rsa_identity.rsa_peer: legacy_type.rsa_identity:rsa_peer
+        htypes.rsa_identity.rsa_signature: legacy_type.rsa_identity:rsa_signature
+        services.identity_registry: transport.identity:identity_registry.service
+        services.mark: common.mark:mark.service
+        services.mosaic: builtins:mosaic.service
+        services.parcel_registry: transport.identity:parcel_registry.service
+        services.peer_registry: transport.identity:peer_registry.service
+        services.signature_registry: transport.identity:signature_registry.service
   rsa_identity_from_piece:
-    _type: legacy_type.builtin:attribute
-    object: rsa_identity.module
-    attr_name: rsa_identity_from_piece
+    type: legacy_type.builtin:attribute
+    value:
+      object: rsa_identity.module
+      attr_name: rsa_identity_from_piece
   rsa_parcel_from_piece:
-    _type: legacy_type.builtin:attribute
-    object: rsa_identity.module
-    attr_name: rsa_parcel_from_piece
+    type: legacy_type.builtin:attribute
+    value:
+      object: rsa_identity.module
+      attr_name: rsa_parcel_from_piece
   rsa_peer_from_piece:
-    _type: legacy_type.builtin:attribute
-    object: rsa_identity.module
-    attr_name: rsa_peer_from_piece
+    type: legacy_type.builtin:attribute
+    value:
+      object: rsa_identity.module
+      attr_name: rsa_peer_from_piece
   rsa_signature_from_piece:
-    _type: legacy_type.builtin:attribute
-    object: rsa_identity.module
-    attr_name: rsa_signature_from_piece
+    type: legacy_type.builtin:attribute
+    value:
+      object: rsa_identity.module
+      attr_name: rsa_signature_from_piece

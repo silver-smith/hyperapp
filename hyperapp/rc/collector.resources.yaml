@@ -3,14 +3,14 @@ import:
 - rc.custom_resource_registry:custom_resource_registry.module
 - rc.builtins_unit:builtins_unit.module
 - rc.unit:unit.module
-
+associations: []
 definitions:
-
   collector.module:
-    _type: legacy_type.builtin:python_module
-    module_name: collector
-    file_name: collector.dyn.py
-    import_list:
-      code.custom_resource_registry: rc.custom_resource_registry:custom_resource_registry.module
-      code.builtins_unit: rc.builtins_unit:builtins_unit.module
-      code.unit: rc.unit:unit.module
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: collector
+      file_name: collector.dyn.py
+      import_list:
+        code.custom_resource_registry: rc.custom_resource_registry:custom_resource_registry.module
+        code.builtins_unit: rc.builtins_unit:builtins_unit.module
+        code.unit: rc.unit:unit.module

@@ -10,14 +10,16 @@ import:
 associations: []
 definitions:
   lcs_resource_storage.tests.module:
-    _type: legacy_type.builtin:python_module
-    module_name: lcs_resource_storage.tests
-    file_name: lcs_resource_storage.tests.dyn.py
-    import_list:
-      services.legacy_type_resource_loader: builtins:legacy_type_resource_loader.service
-      services.local_types: builtins:local_types.service
-      services.mosaic: builtins:mosaic.service
-      services.resource_registry: builtins:resource_registry.service
-      tested.code.lcs_resource_storage: phony
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: lcs_resource_storage.tests
+      file_name: lcs_resource_storage.tests.dyn.py
+      import_list:
+        services.legacy_type_resource_loader: builtins:legacy_type_resource_loader.service
+        services.local_types: builtins:local_types.service
+        services.mosaic: builtins:mosaic.service
+        services.resource_registry: builtins:resource_registry.service
+        tested.code.lcs_resource_storage: phony
   phony:
-    _type: legacy_type.phony:phony
+    type: legacy_type.phony:phony
+    value: {}

@@ -4,26 +4,23 @@ import:
 - legacy_type.import_discoverer:import_discoverer
 - legacy_type.import_discoverer:using_incomplete_object
 - legacy_type.builtin:python_module
-
 associations:
-
 - bases:
   - legacy_type.import_discoverer:import_discoverer
   key:
   - builtins:pyobj_creg.service
   - legacy_type.import_discoverer:import_discoverer
   value: ImportDiscoverer
-
 definitions:
-
   import_discoverer.module:
-    _type: legacy_type.builtin:python_module
-    module_name: import_discoverer
-    file_name: import_discoverer.dyn.py
-    import_list:
-      htypes.import_discoverer.using_incomplete_object: legacy_type.import_discoverer:using_incomplete_object
-
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: import_discoverer
+      file_name: import_discoverer.dyn.py
+      import_list:
+        htypes.import_discoverer.using_incomplete_object: legacy_type.import_discoverer:using_incomplete_object
   ImportDiscoverer:
-    _type: legacy_type.builtin:attribute
-    object: import_discoverer.module
-    attr_name:  ImportDiscoverer
+    type: legacy_type.builtin:attribute
+    value:
+      object: import_discoverer.module
+      attr_name: ImportDiscoverer

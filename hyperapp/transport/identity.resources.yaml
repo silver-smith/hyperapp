@@ -9,37 +9,46 @@ import:
 associations: []
 definitions:
   identity.module:
-    _type: legacy_type.builtin:python_module
-    module_name: identity
-    file_name: identity.dyn.py
-    import_list:
-      services.code_registry_ctr: builtins:code_registry_ctr.service
-      services.mark: common.mark:mark.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: identity
+      file_name: identity.dyn.py
+      import_list:
+        services.code_registry_ctr: builtins:code_registry_ctr.service
+        services.mark: common.mark:mark.service
   identity_registry:
-    _type: legacy_type.builtin:attribute
-    object: identity.module
-    attr_name: identity_registry
+    type: legacy_type.builtin:attribute
+    value:
+      object: identity.module
+      attr_name: identity_registry
   identity_registry.service:
-    _type: legacy_type.builtin:call
-    function: identity_registry
+    type: legacy_type.builtin:call
+    value:
+      function: identity_registry
   parcel_registry:
-    _type: legacy_type.builtin:attribute
-    object: identity.module
-    attr_name: parcel_registry
+    type: legacy_type.builtin:attribute
+    value:
+      object: identity.module
+      attr_name: parcel_registry
   parcel_registry.service:
-    _type: legacy_type.builtin:call
-    function: parcel_registry
+    type: legacy_type.builtin:call
+    value:
+      function: parcel_registry
   peer_registry:
-    _type: legacy_type.builtin:attribute
-    object: identity.module
-    attr_name: peer_registry
+    type: legacy_type.builtin:attribute
+    value:
+      object: identity.module
+      attr_name: peer_registry
   peer_registry.service:
-    _type: legacy_type.builtin:call
-    function: peer_registry
+    type: legacy_type.builtin:call
+    value:
+      function: peer_registry
   signature_registry:
-    _type: legacy_type.builtin:attribute
-    object: identity.module
-    attr_name: signature_registry
+    type: legacy_type.builtin:attribute
+    value:
+      object: identity.module
+      attr_name: signature_registry
   signature_registry.service:
-    _type: legacy_type.builtin:call
-    function: signature_registry
+    type: legacy_type.builtin:call
+    value:
+      function: signature_registry

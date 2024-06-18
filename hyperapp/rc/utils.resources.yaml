@@ -5,7 +5,8 @@ import:
 associations: []
 definitions:
   utils.module:
-    _type: legacy_type.builtin:python_module
-    module_name: utils
-    file_name: utils.dyn.py
-    import_list: {}
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: utils
+      file_name: utils.dyn.py
+      import_list: {}

@@ -12,16 +12,18 @@ import:
 associations: []
 definitions:
   list_to_tree_adapter.tests.module:
-    _type: legacy_type.builtin:python_module
-    module_name: list_to_tree_adapter.tests
-    file_name: list_to_tree_adapter.tests.dyn.py
-    import_list:
-      code.context: common.context:context.module
-      services.data_to_res: resource.data_to_res:data_to_res.service
-      services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
-      services.mark: common.mark:mark.service
-      services.mosaic: builtins:mosaic.service
-      services.pyobj_creg: builtins:pyobj_creg.service
-      tested.code.list_to_tree_adapter: phony
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: list_to_tree_adapter.tests
+      file_name: list_to_tree_adapter.tests.dyn.py
+      import_list:
+        code.context: common.context:context.module
+        services.data_to_res: resource.data_to_res:data_to_res.service
+        services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
+        services.mark: common.mark:mark.service
+        services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        tested.code.list_to_tree_adapter: phony
   phony:
-    _type: legacy_type.phony:phony
+    type: legacy_type.phony:phony
+    value: {}

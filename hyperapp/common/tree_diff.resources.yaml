@@ -5,7 +5,8 @@ import:
 associations: []
 definitions:
   tree_diff.module:
-    _type: legacy_type.builtin:python_module
-    module_name: tree_diff
-    file_name: tree_diff.dyn.py
-    import_list: {}
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: tree_diff
+      file_name: tree_diff.dyn.py
+      import_list: {}

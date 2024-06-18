@@ -2,13 +2,13 @@ import:
 - builtins:builtin_services.service
 - legacy_type.builtin:python_module
 - rc.dep:dep.module
-
+associations: []
 definitions:
-
   builtins_unit.module:
-    _type: legacy_type.builtin:python_module
-    module_name: builtins_unit
-    file_name: builtins_unit.dyn.py
-    import_list:
-      services.builtin_services: builtins:builtin_services.service
-      code.dep: rc.dep:dep.module
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: builtins_unit
+      file_name: builtins_unit.dyn.py
+      import_list:
+        services.builtin_services: builtins:builtin_services.service
+        code.dep: rc.dep:dep.module

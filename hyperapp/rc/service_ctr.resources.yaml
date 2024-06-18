@@ -18,17 +18,19 @@ associations:
   value: construct
 definitions:
   construct:
-    _type: legacy_type.builtin:attribute
-    object: service_ctr.module
-    attr_name: construct
+    type: legacy_type.builtin:attribute
+    value:
+      object: service_ctr.module
+      attr_name: construct
   service_ctr.module:
-    _type: legacy_type.builtin:python_module
-    module_name: service_ctr
-    file_name: service_ctr.dyn.py
-    import_list:
-      htypes.builtin.attribute: legacy_type.builtin:attribute
-      htypes.builtin.call: legacy_type.builtin:call
-      htypes.rc_constructors.service: legacy_type.rc_constructors:service
-      services.constructor_creg: resource.constructor_creg:constructor_creg.service
-      services.mark: common.mark:mark.service
-      services.mosaic: builtins:mosaic.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: service_ctr
+      file_name: service_ctr.dyn.py
+      import_list:
+        htypes.builtin.attribute: legacy_type.builtin:attribute
+        htypes.builtin.call: legacy_type.builtin:call
+        htypes.rc_constructors.service: legacy_type.rc_constructors:service
+        services.constructor_creg: resource.constructor_creg:constructor_creg.service
+        services.mark: common.mark:mark.service
+        services.mosaic: builtins:mosaic.service

@@ -13,15 +13,16 @@ import:
 associations: []
 definitions:
   lcs_resource_storage.module:
-    _type: legacy_type.builtin:python_module
-    module_name: lcs_resource_storage
-    file_name: lcs_resource_storage.dyn.py
-    import_list:
-      htypes.lcs_resource_storage.element: legacy_type.lcs_resource_storage:element
-      htypes.lcs_resource_storage.mapping: legacy_type.lcs_resource_storage:mapping
-      services.deduce_t: builtins:deduce_t.service
-      services.mosaic: builtins:mosaic.service
-      services.pick_refs: common.ref_picker:pick_refs.service
-      services.resource_module_factory: builtins:resource_module_factory.service
-      services.resource_registry: builtins:resource_registry.service
-      services.web: builtins:web.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: lcs_resource_storage
+      file_name: lcs_resource_storage.dyn.py
+      import_list:
+        htypes.lcs_resource_storage.element: legacy_type.lcs_resource_storage:element
+        htypes.lcs_resource_storage.mapping: legacy_type.lcs_resource_storage:mapping
+        services.deduce_t: builtins:deduce_t.service
+        services.mosaic: builtins:mosaic.service
+        services.pick_refs: common.ref_picker:pick_refs.service
+        services.resource_module_factory: builtins:resource_module_factory.service
+        services.resource_registry: builtins:resource_registry.service
+        services.web: builtins:web.service

@@ -13,24 +13,24 @@ import:
 - legacy_type.partial:partial
 - legacy_type.tested_imports:tested_import
 - resource.constructor_creg:constructor_creg.service
-
+associations: []
 definitions:
-
   scaffolds.module:
-    _type: legacy_type.builtin:python_module
-    module_name: scaffolds
-    file_name: scaffolds.dyn.py
-    import_list:
-      htypes.builtin.attribute: legacy_type.builtin:attribute
-      htypes.builtin.call: legacy_type.builtin:call
-      htypes.builtin.import_rec: legacy_type.builtin:import_rec
-      htypes.inspect.field: legacy_type.inspect:field
-      htypes.inspect.tested_unit: legacy_type.inspect:tested_unit
-      htypes.import_discoverer.import_discoverer: legacy_type.import_discoverer:import_discoverer
-      htypes.import_recorder.import_recorder: legacy_type.import_recorder:import_recorder
-      htypes.import_recorder.resource: legacy_type.import_recorder:resource
-      htypes.partial.param: legacy_type.partial:param
-      htypes.partial.partial: legacy_type.partial:partial
-      htypes.tested_imports.tested_import: legacy_type.tested_imports:tested_import
-      services.constructor_creg: resource.constructor_creg:constructor_creg.service
-      services.mosaic: builtins:mosaic.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: scaffolds
+      file_name: scaffolds.dyn.py
+      import_list:
+        htypes.builtin.attribute: legacy_type.builtin:attribute
+        htypes.builtin.call: legacy_type.builtin:call
+        htypes.builtin.import_rec: legacy_type.builtin:import_rec
+        htypes.inspect.field: legacy_type.inspect:field
+        htypes.inspect.tested_unit: legacy_type.inspect:tested_unit
+        htypes.import_discoverer.import_discoverer: legacy_type.import_discoverer:import_discoverer
+        htypes.import_recorder.import_recorder: legacy_type.import_recorder:import_recorder
+        htypes.import_recorder.resource: legacy_type.import_recorder:resource
+        htypes.partial.param: legacy_type.partial:param
+        htypes.partial.partial: legacy_type.partial:partial
+        htypes.tested_imports.tested_import: legacy_type.tested_imports:tested_import
+        services.constructor_creg: resource.constructor_creg:constructor_creg.service
+        services.mosaic: builtins:mosaic.service

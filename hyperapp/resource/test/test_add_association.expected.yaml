@@ -8,10 +8,12 @@ associations:
   value: sample_value
 definitions:
   sample_key:
-    _type: legacy_type.builtin:attribute
-    object: sample_module_2:sample_module_2.module
-    attr_name: sample_key_attr
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_module_2:sample_module_2.module
+      attr_name: sample_key_attr
   sample_value:
-    _type: legacy_type.builtin:attribute
-    object: sample_module_2:sample_module_2.module
-    attr_name: sample_value_attr
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_module_2:sample_module_2.module
+      attr_name: sample_value_attr

@@ -45,55 +45,66 @@ associations:
   value: open_tab_list.command
 definitions:
   TabsView:
-    _type: legacy_type.builtin:attribute
-    object: tabs.module
-    attr_name: TabsView
+    type: legacy_type.builtin:attribute
+    value:
+      object: tabs.module
+      attr_name: TabsView
   TabsView.from_piece:
-    _type: legacy_type.builtin:attribute
-    object: TabsView
-    attr_name: from_piece
+    type: legacy_type.builtin:attribute
+    value:
+      object: TabsView
+      attr_name: from_piece
   command_properties_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:command_properties_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:command_properties_d
   open_tab_list:
-    _type: legacy_type.builtin:attribute
-    object: tabs.module
-    attr_name: open_tab_list
+    type: legacy_type.builtin:attribute
+    value:
+      object: tabs.module
+      attr_name: open_tab_list
   open_tab_list.command:
-    _type: legacy_type.ui:command
-    d: open_tab_list.d
-    impl: open_tab_list.impl
+    type: legacy_type.ui:command
+    value:
+      d: open_tab_list.d
+      impl: open_tab_list.impl
   open_tab_list.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: false
-    uses_state: false
-    remotable: true
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: false
+      uses_state: false
+      remotable: true
   open_tab_list.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.tabs:open_tab_list_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.tabs:open_tab_list_d
   open_tab_list.impl:
-    _type: legacy_type.ui:ui_model_command_impl
-    model_command_impl: open_tab_list.model_command_impl
+    type: legacy_type.ui:ui_model_command_impl
+    value:
+      model_command_impl: open_tab_list.model_command_impl
   open_tab_list.model_command_impl:
-    _type: legacy_type.ui:model_command_impl
-    function: open_tab_list
-    params:
-    - view
+    type: legacy_type.ui:model_command_impl
+    value:
+      function: open_tab_list
+      params:
+      - view
   tabs.module:
-    _type: legacy_type.builtin:python_module
-    module_name: tabs
-    file_name: tabs.dyn.py
-    import_list:
-      code.list_diff: common.list_diff:list_diff.module
-      code.view: ui.view:view.module
-      htypes.tabs.list_item: legacy_type.tabs:list_item
-      htypes.tabs.state: legacy_type.tabs:state
-      htypes.tabs.tab: legacy_type.tabs:tab
-      htypes.tabs.view: legacy_type.tabs:view
-      services.mark: common.mark:mark.service
-      services.mosaic: builtins:mosaic.service
-      services.view_creg: ui.view_registry:view_creg.service
-      services.web: builtins:web.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: tabs
+      file_name: tabs.dyn.py
+      import_list:
+        code.list_diff: common.list_diff:list_diff.module
+        code.view: ui.view:view.module
+        htypes.tabs.list_item: legacy_type.tabs:list_item
+        htypes.tabs.state: legacy_type.tabs:state
+        htypes.tabs.tab: legacy_type.tabs:tab
+        htypes.tabs.view: legacy_type.tabs:view
+        services.mark: common.mark:mark.service
+        services.mosaic: builtins:mosaic.service
+        services.view_creg: ui.view_registry:view_creg.service
+        services.web: builtins:web.service
   ui_command_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:ui_command_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:ui_command_d

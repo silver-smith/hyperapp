@@ -1,48 +1,48 @@
 import:
-  - sample_module:sample_module.module
-  - builtins:mosaic.service
-  - builtins:web.service
-  - transport.identity:peer_registry.service
-  - rpc.rpc_call:rpc_call_factory.service
-  - mock_identity:mock_identity.service
-  - legacy_type.builtin:attribute
-  - legacy_type.partial:partial
-  - legacy_type.builtin:call
-  - legacy_type.resource_service:list_service
-  - legacy_type.test_resources:test_d
-
+- sample_module:sample_module.module
+- builtins:mosaic.service
+- builtins:web.service
+- transport.identity:peer_registry.service
+- rpc.rpc_call:rpc_call_factory.service
+- mock_identity:mock_identity.service
+- legacy_type.builtin:attribute
+- legacy_type.partial:partial
+- legacy_type.builtin:call
+- legacy_type.resource_service:list_service
+- legacy_type.test_resources:test_d
+associations: []
 definitions:
-
   sample_servant_factory:
-    _type: legacy_type.builtin:attribute
-    object: sample_module:sample_module.module
-    attr_name: sample_servant
-
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_module:sample_module.module
+      attr_name: sample_servant
   sample_servant_partial:
-    _type: legacy_type.partial:partial
-    function: sample_servant_factory
-    params:
-      mosaic: builtins:mosaic.service
-      web: builtins:web.service
-      peer_registry: transport.identity:peer_registry.service
-      rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
-
+    type: legacy_type.partial:partial
+    value:
+      function: sample_servant_factory
+      params:
+        mosaic: builtins:mosaic.service
+        web: builtins:web.service
+        peer_registry: transport.identity:peer_registry.service
+        rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
   sample_servant:
-    _type: legacy_type.builtin:call
-    function: sample_servant_partial
-
+    type: legacy_type.builtin:call
+    value:
+      function: sample_servant_partial
   servant_list:
-    _type: legacy_type.builtin:attribute
-    object: sample_servant
-    attr_name: list
-
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_servant
+      attr_name: list
   test_d:
-    _type: legacy_type.test_resources:test_d
-
+    type: legacy_type.test_resources:test_d
+    value: {}
   sample_list_service:
-    _type: legacy_type.resource_service:list_service
-    identity: mock_identity:mock_identity.service
-    function: servant_list
-    dir: test_d
-    commands: []
-    key_attribute: id
+    type: legacy_type.resource_service:list_service
+    value:
+      identity: mock_identity:mock_identity.service
+      function: servant_list
+      dir: test_d
+      commands: []
+      key_attribute: id

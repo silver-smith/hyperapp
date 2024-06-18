@@ -7,12 +7,14 @@ import:
 associations: []
 definitions:
   partial_ref.tests.module:
-    _type: legacy_type.builtin:python_module
-    module_name: partial_ref.tests
-    file_name: partial_ref.tests.dyn.py
-    import_list:
-      services.pyobj_creg: builtins:pyobj_creg.service
-      tested.code.partial_ref: phony
-      tested.services.partial_ref: phony
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: partial_ref.tests
+      file_name: partial_ref.tests.dyn.py
+      import_list:
+        services.pyobj_creg: builtins:pyobj_creg.service
+        tested.code.partial_ref: phony
+        tested.services.partial_ref: phony
   phony:
-    _type: legacy_type.phony:phony
+    type: legacy_type.phony:phony
+    value: {}

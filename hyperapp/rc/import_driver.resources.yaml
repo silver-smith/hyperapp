@@ -8,19 +8,19 @@ import:
 - legacy_type.inspect:generator_fn_attr
 - legacy_type.inspect:imported_module_info
 - rc.driver_recorders:driver_recorders.module
-
+associations: []
 definitions:
-
   import_driver.module:
-    _type: legacy_type.builtin:python_module
-    module_name: import_driver
-    file_name: import_driver.dyn.py
-    import_list:
-      htypes.inspect.attr: legacy_type.inspect:attr
-      htypes.inspect.class_attr: legacy_type.inspect:class_attr
-      htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
-      htypes.inspect.generator_fn_attr: legacy_type.inspect:generator_fn_attr
-      htypes.inspect.imported_module_info: legacy_type.inspect:imported_module_info
-      services.mosaic: builtins:mosaic.service
-      services.pyobj_creg: builtins:pyobj_creg.service
-      code.driver_recorders: rc.driver_recorders:driver_recorders.module
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: import_driver
+      file_name: import_driver.dyn.py
+      import_list:
+        htypes.inspect.attr: legacy_type.inspect:attr
+        htypes.inspect.class_attr: legacy_type.inspect:class_attr
+        htypes.inspect.fn_attr: legacy_type.inspect:fn_attr
+        htypes.inspect.generator_fn_attr: legacy_type.inspect:generator_fn_attr
+        htypes.inspect.imported_module_info: legacy_type.inspect:imported_module_info
+        services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        code.driver_recorders: rc.driver_recorders:driver_recorders.module

@@ -17,21 +17,23 @@ import:
 associations: []
 definitions:
   list_as_tree.tests.module:
-    _type: legacy_type.builtin:python_module
-    module_name: list_as_tree.tests
-    file_name: list_as_tree.tests.dyn.py
-    import_list:
-      code.context: common.context:context.module
-      code.list_adapter: ui.qt.list_adapter:list_adapter.module
-      code.list_to_tree_adapter: ui.qt.list_to_tree_adapter:list_to_tree_adapter.module
-      code.tree: ui.qt.tree:tree.module
-      services.data_to_res: resource.data_to_res:data_to_res.service
-      services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
-      services.mark: common.mark:mark.service
-      services.mosaic: builtins:mosaic.service
-      services.pyobj_creg: builtins:pyobj_creg.service
-      services.ui_adapter_creg: ui.ui_adapter_creg:ui_adapter_creg.service
-      services.web: builtins:web.service
-      tested.code.list_as_tree: phony
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: list_as_tree.tests
+      file_name: list_as_tree.tests.dyn.py
+      import_list:
+        code.context: common.context:context.module
+        code.list_adapter: ui.qt.list_adapter:list_adapter.module
+        code.list_to_tree_adapter: ui.qt.list_to_tree_adapter:list_to_tree_adapter.module
+        code.tree: ui.qt.tree:tree.module
+        services.data_to_res: resource.data_to_res:data_to_res.service
+        services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
+        services.mark: common.mark:mark.service
+        services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        services.ui_adapter_creg: ui.ui_adapter_creg:ui_adapter_creg.service
+        services.web: builtins:web.service
+        tested.code.list_as_tree: phony
   phony:
-    _type: legacy_type.phony:phony
+    type: legacy_type.phony:phony
+    value: {}

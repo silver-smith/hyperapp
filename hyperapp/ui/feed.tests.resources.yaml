@@ -9,14 +9,16 @@ import:
 associations: []
 definitions:
   feed.tests.module:
-    _type: legacy_type.builtin:python_module
-    module_name: feed.tests
-    file_name: feed.tests.dyn.py
-    import_list:
-      services.mark: common.mark:mark.service
-      services.mosaic: builtins:mosaic.service
-      services.pyobj_creg: builtins:pyobj_creg.service
-      tested.code.feed: phony
-      tested.services.feed_factory: phony
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: feed.tests
+      file_name: feed.tests.dyn.py
+      import_list:
+        services.mark: common.mark:mark.service
+        services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        tested.code.feed: phony
+        tested.services.feed_factory: phony
   phony:
-    _type: legacy_type.phony:phony
+    type: legacy_type.phony:phony
+    value: {}

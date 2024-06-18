@@ -150,233 +150,286 @@ associations:
   value: browse_ref_list.model
 definitions:
   browse_current_model:
-    _type: legacy_type.builtin:attribute
-    object: data_browser.module
-    attr_name: browse_current_model
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_browser.module
+      attr_name: browse_current_model
   browse_current_model.command:
-    _type: legacy_type.ui:model_command
-    d: browse_current_model.d
-    impl: browse_current_model.command_impl
+    type: legacy_type.ui:model_command
+    value:
+      d: browse_current_model.d
+      impl: browse_current_model.command_impl
   browse_current_model.command_impl:
-    _type: legacy_type.ui:model_command_impl
-    function: browse_current_model
-    params:
-    - piece
+    type: legacy_type.ui:model_command_impl
+    value:
+      function: browse_current_model
+      params:
+      - piece
   browse_current_model.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: true
-    uses_state: false
-    remotable: true
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: true
+      uses_state: false
+      remotable: true
   browse_current_model.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.data_browser:browse_current_model_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.data_browser:browse_current_model_d
   browse_list:
-    _type: legacy_type.builtin:attribute
-    object: data_browser.module
-    attr_name: browse_list
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_browser.module
+      attr_name: browse_list
   browse_list.command:
-    _type: legacy_type.ui:model_command
-    d: browse_list.d
-    impl: browse_list.command_impl
+    type: legacy_type.ui:model_command
+    value:
+      d: browse_list.d
+      impl: browse_list.command_impl
   browse_list.command_impl:
-    _type: legacy_type.ui:model_command_impl
-    function: browse_list
-    params:
-    - piece
+    type: legacy_type.ui:model_command_impl
+    value:
+      function: browse_list
+      params:
+      - piece
   browse_list.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: false
-    uses_state: false
-    remotable: true
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: false
+      uses_state: false
+      remotable: true
   browse_list.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.data_browser:browse_list_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.data_browser:browse_list_d
   browse_list.impl:
-    _type: legacy_type.ui:fn_impl
-    function: browse_list
-    params:
-    - piece
+    type: legacy_type.ui:fn_impl
+    value:
+      function: browse_list
+      params:
+      - piece
   browse_list.model:
-    _type: legacy_type.ui:model
-    ui_t: browse_list.ui_t
-    impl: browse_list.impl
+    type: legacy_type.ui:model
+    value:
+      ui_t: browse_list.ui_t
+      impl: browse_list.impl
   browse_list.ui_t:
-    _type: legacy_type.ui:list_ui_t
-    element_t: legacy_type.data_browser:list_item
+    type: legacy_type.ui:list_ui_t
+    value:
+      element_t: legacy_type.data_browser:list_item
   browse_primitive:
-    _type: legacy_type.builtin:attribute
-    object: data_browser.module
-    attr_name: browse_primitive
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_browser.module
+      attr_name: browse_primitive
   browse_primitive.impl:
-    _type: legacy_type.ui:fn_impl
-    function: browse_primitive
-    params:
-    - piece
+    type: legacy_type.ui:fn_impl
+    value:
+      function: browse_primitive
+      params:
+      - piece
   browse_primitive.model:
-    _type: legacy_type.ui:model
-    ui_t: browse_primitive.ui_t
-    impl: browse_primitive.impl
+    type: legacy_type.ui:model
+    value:
+      ui_t: browse_primitive.ui_t
+      impl: browse_primitive.impl
   browse_primitive.ui_t:
-    _type: legacy_type.ui:record_ui_t
-    record_t: legacy_type.data_browser:primitive_item
+    type: legacy_type.ui:record_ui_t
+    value:
+      record_t: legacy_type.data_browser:primitive_item
   browse_record:
-    _type: legacy_type.builtin:attribute
-    object: data_browser.module
-    attr_name: browse_record
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_browser.module
+      attr_name: browse_record
   browse_record.command:
-    _type: legacy_type.ui:model_command
-    d: browse_record.d
-    impl: browse_record.command_impl
+    type: legacy_type.ui:model_command
+    value:
+      d: browse_record.d
+      impl: browse_record.command_impl
   browse_record.command_impl:
-    _type: legacy_type.ui:model_command_impl
-    function: browse_record
-    params:
-    - piece
+    type: legacy_type.ui:model_command_impl
+    value:
+      function: browse_record
+      params:
+      - piece
   browse_record.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: false
-    uses_state: false
-    remotable: true
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: false
+      uses_state: false
+      remotable: true
   browse_record.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.data_browser:browse_record_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.data_browser:browse_record_d
   browse_record.impl:
-    _type: legacy_type.ui:fn_impl
-    function: browse_record
-    params:
-    - piece
+    type: legacy_type.ui:fn_impl
+    value:
+      function: browse_record
+      params:
+      - piece
   browse_record.model:
-    _type: legacy_type.ui:model
-    ui_t: browse_record.ui_t
-    impl: browse_record.impl
+    type: legacy_type.ui:model
+    value:
+      ui_t: browse_record.ui_t
+      impl: browse_record.impl
   browse_record.ui_t:
-    _type: legacy_type.ui:list_ui_t
-    element_t: legacy_type.data_browser:record_item
+    type: legacy_type.ui:list_ui_t
+    value:
+      element_t: legacy_type.data_browser:record_item
   browse_ref_list:
-    _type: legacy_type.builtin:attribute
-    object: data_browser.module
-    attr_name: browse_ref_list
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_browser.module
+      attr_name: browse_ref_list
   browse_ref_list.command:
-    _type: legacy_type.ui:model_command
-    d: browse_ref_list.d
-    impl: browse_ref_list.command_impl
+    type: legacy_type.ui:model_command
+    value:
+      d: browse_ref_list.d
+      impl: browse_ref_list.command_impl
   browse_ref_list.command_impl:
-    _type: legacy_type.ui:model_command_impl
-    function: browse_ref_list
-    params:
-    - piece
+    type: legacy_type.ui:model_command_impl
+    value:
+      function: browse_ref_list
+      params:
+      - piece
   browse_ref_list.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: false
-    uses_state: false
-    remotable: true
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: false
+      uses_state: false
+      remotable: true
   browse_ref_list.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.data_browser:browse_ref_list_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.data_browser:browse_ref_list_d
   browse_ref_list.impl:
-    _type: legacy_type.ui:fn_impl
-    function: browse_ref_list
-    params:
-    - piece
+    type: legacy_type.ui:fn_impl
+    value:
+      function: browse_ref_list
+      params:
+      - piece
   browse_ref_list.model:
-    _type: legacy_type.ui:model
-    ui_t: browse_ref_list.ui_t
-    impl: browse_ref_list.impl
+    type: legacy_type.ui:model
+    value:
+      ui_t: browse_ref_list.ui_t
+      impl: browse_ref_list.impl
   browse_ref_list.ui_t:
-    _type: legacy_type.ui:list_ui_t
-    element_t: legacy_type.data_browser:ref_list_item
+    type: legacy_type.ui:list_ui_t
+    value:
+      element_t: legacy_type.data_browser:ref_list_item
   command_properties_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:command_properties_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:command_properties_d
   data_browser.module:
-    _type: legacy_type.builtin:python_module
-    module_name: data_browser
-    file_name: data_browser.dyn.py
-    import_list:
-      htypes.data_browser.list_item: legacy_type.data_browser:list_item
-      htypes.data_browser.list_view: legacy_type.data_browser:list_view
-      htypes.data_browser.primitive_item: legacy_type.data_browser:primitive_item
-      htypes.data_browser.primitive_view: legacy_type.data_browser:primitive_view
-      htypes.data_browser.record_item: legacy_type.data_browser:record_item
-      htypes.data_browser.record_view: legacy_type.data_browser:record_view
-      htypes.data_browser.ref_list_item: legacy_type.data_browser:ref_list_item
-      htypes.data_browser.ref_list_view: legacy_type.data_browser:ref_list_view
-      services.deduce_t: builtins:deduce_t.service
-      services.mark: common.mark:mark.service
-      services.mosaic: builtins:mosaic.service
-      services.web: builtins:web.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: data_browser
+      file_name: data_browser.dyn.py
+      import_list:
+        htypes.data_browser.list_item: legacy_type.data_browser:list_item
+        htypes.data_browser.list_view: legacy_type.data_browser:list_view
+        htypes.data_browser.primitive_item: legacy_type.data_browser:primitive_item
+        htypes.data_browser.primitive_view: legacy_type.data_browser:primitive_view
+        htypes.data_browser.record_item: legacy_type.data_browser:record_item
+        htypes.data_browser.record_view: legacy_type.data_browser:record_view
+        htypes.data_browser.ref_list_item: legacy_type.data_browser:ref_list_item
+        htypes.data_browser.ref_list_view: legacy_type.data_browser:ref_list_view
+        services.deduce_t: builtins:deduce_t.service
+        services.mark: common.mark:mark.service
+        services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service
   global_model_command_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:global_model_command_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:global_model_command_d
   list_open:
-    _type: legacy_type.builtin:attribute
-    object: data_browser.module
-    attr_name: list_open
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_browser.module
+      attr_name: list_open
   list_open.command:
-    _type: legacy_type.ui:model_command
-    d: list_open.d
-    impl: list_open.command_impl
+    type: legacy_type.ui:model_command
+    value:
+      d: list_open.d
+      impl: list_open.command_impl
   list_open.command_impl:
-    _type: legacy_type.ui:model_command_impl
-    function: list_open
-    params:
-    - piece
-    - current_item
+    type: legacy_type.ui:model_command_impl
+    value:
+      function: list_open
+      params:
+      - piece
+      - current_item
   list_open.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: false
-    uses_state: true
-    remotable: true
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: false
+      uses_state: true
+      remotable: true
   list_open.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.data_browser:list_open_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.data_browser:list_open_d
   model_command_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:model_command_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:model_command_d
   model_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:model_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:model_d
   record_open:
-    _type: legacy_type.builtin:attribute
-    object: data_browser.module
-    attr_name: record_open
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_browser.module
+      attr_name: record_open
   record_open.command:
-    _type: legacy_type.ui:model_command
-    d: record_open.d
-    impl: record_open.command_impl
+    type: legacy_type.ui:model_command
+    value:
+      d: record_open.d
+      impl: record_open.command_impl
   record_open.command_impl:
-    _type: legacy_type.ui:model_command_impl
-    function: record_open
-    params:
-    - piece
-    - current_item
+    type: legacy_type.ui:model_command_impl
+    value:
+      function: record_open
+      params:
+      - piece
+      - current_item
   record_open.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: false
-    uses_state: true
-    remotable: true
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: false
+      uses_state: true
+      remotable: true
   record_open.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.data_browser:record_open_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.data_browser:record_open_d
   ref_list_open:
-    _type: legacy_type.builtin:attribute
-    object: data_browser.module
-    attr_name: ref_list_open
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_browser.module
+      attr_name: ref_list_open
   ref_list_open.command:
-    _type: legacy_type.ui:model_command
-    d: ref_list_open.d
-    impl: ref_list_open.command_impl
+    type: legacy_type.ui:model_command
+    value:
+      d: ref_list_open.d
+      impl: ref_list_open.command_impl
   ref_list_open.command_impl:
-    _type: legacy_type.ui:model_command_impl
-    function: ref_list_open
-    params:
-    - piece
-    - current_item
+    type: legacy_type.ui:model_command_impl
+    value:
+      function: ref_list_open
+      params:
+      - piece
+      - current_item
   ref_list_open.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: false
-    uses_state: true
-    remotable: true
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: false
+      uses_state: true
+      remotable: true
   ref_list_open.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.data_browser:ref_list_open_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.data_browser:ref_list_open_d

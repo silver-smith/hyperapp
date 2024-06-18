@@ -114,154 +114,185 @@ associations:
   value: open_opener_commands.command
 definitions:
   command_properties_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:command_properties_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:command_properties_d
   feed_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:feed_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:feed_d
   list_as_tree.module:
-    _type: legacy_type.builtin:python_module
-    module_name: list_as_tree
-    file_name: list_as_tree.dyn.py
-    import_list:
-      code.command: ui.command:command.module
-      code.list_adapter: ui.qt.list_adapter:list_adapter.module
-      code.list_diff: common.list_diff:list_diff.module
-      code.list_to_tree_adapter: ui.qt.list_to_tree_adapter:list_to_tree_adapter.module
-      htypes.list.view: legacy_type.list:view
-      htypes.list_as_tree.opener_command_item: legacy_type.list_as_tree:opener_command_item
-      htypes.list_as_tree.opener_commands: legacy_type.list_as_tree:opener_commands
-      htypes.list_to_tree_adapter.adapter: legacy_type.list_to_tree_adapter:adapter
-      htypes.list_to_tree_adapter.layer: legacy_type.list_to_tree_adapter:layer
-      htypes.tree.view: legacy_type.tree:view
-      services.deduce_t: builtins:deduce_t.service
-      services.feed_factory: ui.feed:feed_factory.service
-      services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
-      services.get_model_layout: ui.visualizer:get_model_layout.service
-      services.mark: common.mark:mark.service
-      services.model_commands: ui.model_command:model_commands.service
-      services.model_view_creg: ui.view_registry:model_view_creg.service
-      services.mosaic: builtins:mosaic.service
-      services.pyobj_creg: builtins:pyobj_creg.service
-      services.set_model_layout: ui.visualizer:set_model_layout.service
-      services.web: builtins:web.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: list_as_tree
+      file_name: list_as_tree.dyn.py
+      import_list:
+        code.command: ui.command:command.module
+        code.list_adapter: ui.qt.list_adapter:list_adapter.module
+        code.list_diff: common.list_diff:list_diff.module
+        code.list_to_tree_adapter: ui.qt.list_to_tree_adapter:list_to_tree_adapter.module
+        htypes.list.view: legacy_type.list:view
+        htypes.list_as_tree.opener_command_item: legacy_type.list_as_tree:opener_command_item
+        htypes.list_as_tree.opener_commands: legacy_type.list_as_tree:opener_commands
+        htypes.list_to_tree_adapter.adapter: legacy_type.list_to_tree_adapter:adapter
+        htypes.list_to_tree_adapter.layer: legacy_type.list_to_tree_adapter:layer
+        htypes.tree.view: legacy_type.tree:view
+        services.deduce_t: builtins:deduce_t.service
+        services.feed_factory: ui.feed:feed_factory.service
+        services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
+        services.get_model_layout: ui.visualizer:get_model_layout.service
+        services.mark: common.mark:mark.service
+        services.model_commands: ui.model_command:model_commands.service
+        services.model_view_creg: ui.view_registry:model_view_creg.service
+        services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        services.set_model_layout: ui.visualizer:set_model_layout.service
+        services.web: builtins:web.service
   list_as_tree_opener_commands.list_feed:
-    _type: legacy_type.ui:list_feed
-    element_t: legacy_type.list_as_tree:opener_command_item
+    type: legacy_type.ui:list_feed
+    value:
+      element_t: legacy_type.list_as_tree:opener_command_item
   model_command_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:model_command_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:model_command_d
   model_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:model_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:model_d
   open_opener_commands:
-    _type: legacy_type.builtin:attribute
-    object: list_as_tree.module
-    attr_name: open_opener_commands
+    type: legacy_type.builtin:attribute
+    value:
+      object: list_as_tree.module
+      attr_name: open_opener_commands
   open_opener_commands.command:
-    _type: legacy_type.ui:command
-    d: open_opener_commands.d
-    impl: open_opener_commands.impl
+    type: legacy_type.ui:command
+    value:
+      d: open_opener_commands.d
+      impl: open_opener_commands.impl
   open_opener_commands.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: false
-    uses_state: true
-    remotable: true
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: false
+      uses_state: true
+      remotable: true
   open_opener_commands.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.list_as_tree:open_opener_commands_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.list_as_tree:open_opener_commands_d
   open_opener_commands.impl:
-    _type: legacy_type.ui:ui_model_command_impl
-    model_command_impl: open_opener_commands.model_command_impl
+    type: legacy_type.ui:ui_model_command_impl
+    value:
+      model_command_impl: open_opener_commands.model_command_impl
   open_opener_commands.model_command_impl:
-    _type: legacy_type.ui:model_command_impl
-    function: open_opener_commands
-    params:
-    - view
-    - current_path
+    type: legacy_type.ui:model_command_impl
+    value:
+      function: open_opener_commands
+      params:
+      - view
+      - current_path
   opener_command_list:
-    _type: legacy_type.builtin:attribute
-    object: list_as_tree.module
-    attr_name: opener_command_list
+    type: legacy_type.builtin:attribute
+    value:
+      object: list_as_tree.module
+      attr_name: opener_command_list
   opener_command_list.command:
-    _type: legacy_type.ui:model_command
-    d: opener_command_list.d
-    impl: opener_command_list.command_impl
+    type: legacy_type.ui:model_command
+    value:
+      d: opener_command_list.d
+      impl: opener_command_list.command_impl
   opener_command_list.command_impl:
-    _type: legacy_type.ui:model_command_impl
-    function: opener_command_list
-    params:
-    - piece
-    - lcs
+    type: legacy_type.ui:model_command_impl
+    value:
+      function: opener_command_list
+      params:
+      - piece
+      - lcs
   opener_command_list.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: false
-    uses_state: false
-    remotable: false
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: false
+      uses_state: false
+      remotable: false
   opener_command_list.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.list_as_tree:opener_command_list_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.list_as_tree:opener_command_list_d
   opener_command_list.impl:
-    _type: legacy_type.ui:fn_impl
-    function: opener_command_list
-    params:
-    - piece
-    - lcs
+    type: legacy_type.ui:fn_impl
+    value:
+      function: opener_command_list
+      params:
+      - piece
+      - lcs
   opener_command_list.model:
-    _type: legacy_type.ui:model
-    ui_t: opener_command_list.ui_t
-    impl: opener_command_list.impl
+    type: legacy_type.ui:model
+    value:
+      ui_t: opener_command_list.ui_t
+      impl: opener_command_list.impl
   opener_command_list.ui_t:
-    _type: legacy_type.ui:list_ui_t
-    element_t: legacy_type.list_as_tree:opener_command_item
+    type: legacy_type.ui:list_ui_t
+    value:
+      element_t: legacy_type.list_as_tree:opener_command_item
   switch_list_to_tree:
-    _type: legacy_type.builtin:attribute
-    object: list_as_tree.module
-    attr_name: switch_list_to_tree
+    type: legacy_type.builtin:attribute
+    value:
+      object: list_as_tree.module
+      attr_name: switch_list_to_tree
   switch_list_to_tree.command:
-    _type: legacy_type.ui:command
-    d: switch_list_to_tree.d
-    impl: switch_list_to_tree.impl
+    type: legacy_type.ui:command
+    value:
+      d: switch_list_to_tree.d
+      impl: switch_list_to_tree.impl
   switch_list_to_tree.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: false
-    uses_state: false
-    remotable: false
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: false
+      uses_state: false
+      remotable: false
   switch_list_to_tree.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.list_as_tree:switch_list_to_tree_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.list_as_tree:switch_list_to_tree_d
   switch_list_to_tree.impl:
-    _type: legacy_type.ui:ui_command_impl
-    function: switch_list_to_tree
-    params:
-    - piece
-    - view
-    - hook
-    - ctx
+    type: legacy_type.ui:ui_command_impl
+    value:
+      function: switch_list_to_tree
+      params:
+      - piece
+      - view
+      - hook
+      - ctx
   toggle_open_command:
-    _type: legacy_type.builtin:attribute
-    object: list_as_tree.module
-    attr_name: toggle_open_command
+    type: legacy_type.builtin:attribute
+    value:
+      object: list_as_tree.module
+      attr_name: toggle_open_command
   toggle_open_command.command:
-    _type: legacy_type.ui:model_command
-    d: toggle_open_command.d
-    impl: toggle_open_command.command_impl
+    type: legacy_type.ui:model_command
+    value:
+      d: toggle_open_command.d
+      impl: toggle_open_command.command_impl
   toggle_open_command.command_impl:
-    _type: legacy_type.ui:model_command_impl
-    function: toggle_open_command
-    params:
-    - piece
-    - current_idx
-    - current_item
-    - lcs
+    type: legacy_type.ui:model_command_impl
+    value:
+      function: toggle_open_command
+      params:
+      - piece
+      - current_idx
+      - current_item
+      - lcs
   toggle_open_command.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: false
-    uses_state: true
-    remotable: false
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: false
+      uses_state: true
+      remotable: false
   toggle_open_command.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.list_as_tree:toggle_open_command_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.list_as_tree:toggle_open_command_d
   ui_command_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:ui_command_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:ui_command_d

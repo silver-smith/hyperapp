@@ -13,20 +13,23 @@ import:
 associations: []
 definitions:
   endpoint.module:
-    _type: legacy_type.builtin:python_module
-    module_name: endpoint
-    file_name: endpoint.dyn.py
-    import_list:
-      services.failed: common.failure:failed.service
-      services.mark: common.mark:mark.service
-      services.mosaic: builtins:mosaic.service
-      services.on_stop: builtins:on_stop.service
-      services.route_table: transport.sync_route_table:route_table.service
-      services.unbundler: builtins:unbundler.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: endpoint
+      file_name: endpoint.dyn.py
+      import_list:
+        services.failed: common.failure:failed.service
+        services.mark: common.mark:mark.service
+        services.mosaic: builtins:mosaic.service
+        services.on_stop: builtins:on_stop.service
+        services.route_table: transport.sync_route_table:route_table.service
+        services.unbundler: builtins:unbundler.service
   endpoint_registry:
-    _type: legacy_type.builtin:attribute
-    object: endpoint.module
-    attr_name: endpoint_registry
+    type: legacy_type.builtin:attribute
+    value:
+      object: endpoint.module
+      attr_name: endpoint_registry
   endpoint_registry.service:
-    _type: legacy_type.builtin:call
-    function: endpoint_registry
+    type: legacy_type.builtin:call
+    value:
+      function: endpoint_registry

@@ -12,19 +12,22 @@ import:
 associations: []
 definitions:
   bundler:
-    _type: legacy_type.builtin:attribute
-    object: bundler.module
-    attr_name: bundler
+    type: legacy_type.builtin:attribute
+    value:
+      object: bundler.module
+      attr_name: bundler
   bundler.module:
-    _type: legacy_type.builtin:python_module
-    module_name: bundler
-    file_name: bundler.dyn.py
-    import_list:
-      services.association_reg: builtins:association_reg.service
-      services.mark: common.mark:mark.service
-      services.mosaic: builtins:mosaic.service
-      services.pick_refs: common.ref_picker:pick_refs.service
-      services.pyobj_creg: builtins:pyobj_creg.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: bundler
+      file_name: bundler.dyn.py
+      import_list:
+        services.association_reg: builtins:association_reg.service
+        services.mark: common.mark:mark.service
+        services.mosaic: builtins:mosaic.service
+        services.pick_refs: common.ref_picker:pick_refs.service
+        services.pyobj_creg: builtins:pyobj_creg.service
   bundler.service:
-    _type: legacy_type.builtin:call
-    function: bundler
+    type: legacy_type.builtin:call
+    value:
+      function: bundler

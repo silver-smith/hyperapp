@@ -11,16 +11,18 @@ import:
 associations: []
 definitions:
   phony:
-    _type: legacy_type.phony:phony
+    type: legacy_type.phony:phony
+    value: {}
   rpc_endpoint.tests.module:
-    _type: legacy_type.builtin:python_module
-    module_name: rpc_endpoint.tests
-    file_name: rpc_endpoint.tests.dyn.py
-    import_list:
-      code.endpoint: transport.endpoint:endpoint.module
-      services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
-      services.mark: common.mark:mark.service
-      services.mosaic: builtins:mosaic.service
-      services.pyobj_creg: builtins:pyobj_creg.service
-      tested.code.rpc_endpoint: phony
-      tested.services.rpc_endpoint_factory: phony
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: rpc_endpoint.tests
+      file_name: rpc_endpoint.tests.dyn.py
+      import_list:
+        code.endpoint: transport.endpoint:endpoint.module
+        services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
+        services.mark: common.mark:mark.service
+        services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        tested.code.rpc_endpoint: phony
+        tested.services.rpc_endpoint_factory: phony

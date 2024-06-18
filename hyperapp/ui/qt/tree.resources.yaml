@@ -18,19 +18,22 @@ associations:
   value: TreeView.from_piece
 definitions:
   TreeView:
-    _type: legacy_type.builtin:attribute
-    object: tree.module
-    attr_name: TreeView
+    type: legacy_type.builtin:attribute
+    value:
+      object: tree.module
+      attr_name: TreeView
   TreeView.from_piece:
-    _type: legacy_type.builtin:attribute
-    object: TreeView
-    attr_name: from_piece
+    type: legacy_type.builtin:attribute
+    value:
+      object: TreeView
+      attr_name: from_piece
   tree.module:
-    _type: legacy_type.builtin:python_module
-    module_name: tree
-    file_name: tree.dyn.py
-    import_list:
-      code.view: ui.view:view.module
-      htypes.tree.state: legacy_type.tree:state
-      htypes.tree.view: legacy_type.tree:view
-      services.ui_adapter_creg: ui.ui_adapter_creg:ui_adapter_creg.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: tree
+      file_name: tree.dyn.py
+      import_list:
+        code.view: ui.view:view.module
+        htypes.tree.state: legacy_type.tree:state
+        htypes.tree.view: legacy_type.tree:view
+        services.ui_adapter_creg: ui.ui_adapter_creg:ui_adapter_creg.service

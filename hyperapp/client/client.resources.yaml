@@ -81,108 +81,126 @@ associations:
   value: make_default_state.command
 definitions:
   client.module:
-    _type: legacy_type.builtin:python_module
-    module_name: client
-    file_name: client.dyn.py
-    import_list:
-      code.context: common.context:context.module
-      code.controller: ui.controller:controller.module
-      code.lcs: common.lcs:lcs.module
-      code.lcs_resource_storage: common.lcs_resource_storage:lcs_resource_storage.module
-      code.reconstructors: common.reconstructors:reconstructors.module
-      htypes.auto_tabs.view: legacy_type.auto_tabs:view
-      htypes.box_layout.element: legacy_type.box_layout:element
-      htypes.box_layout.state: legacy_type.box_layout:state
-      htypes.box_layout.view: legacy_type.box_layout:view
-      htypes.command_pane.state: legacy_type.command_pane:state
-      htypes.command_pane.view: legacy_type.command_pane:view
-      htypes.menu_bar.state: legacy_type.menu_bar:state
-      htypes.menu_bar.view: legacy_type.menu_bar:view
-      htypes.navigator.view: legacy_type.navigator:view
-      htypes.root.layout: legacy_type.root:layout
-      htypes.root.state: legacy_type.root:state
-      htypes.root.view: legacy_type.root:view
-      htypes.tabs.state: legacy_type.tabs:state
-      htypes.tabs.tab: legacy_type.tabs:tab
-      htypes.tabs.view: legacy_type.tabs:view
-      htypes.text.state: legacy_type.text:state
-      htypes.window.pos: legacy_type.window:pos
-      htypes.window.size: legacy_type.window:size
-      htypes.window.state: legacy_type.window:state
-      htypes.window.view: legacy_type.window:view
-      services.endpoint_registry: transport.endpoint:endpoint_registry.service
-      services.file_bundle: common.file_bundle:file_bundle.service
-      services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
-      services.hyperapp_dir: builtins:hyperapp_dir.service
-      services.mosaic: builtins:mosaic.service
-      services.rpc_endpoint_factory: rpc.rpc_endpoint:rpc_endpoint_factory.service
-      services.view_creg: ui.view_registry:view_creg.service
-      services.visualizer: ui.visualizer:visualizer.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: client
+      file_name: client.dyn.py
+      import_list:
+        code.context: common.context:context.module
+        code.controller: ui.controller:controller.module
+        code.lcs: common.lcs:lcs.module
+        code.lcs_resource_storage: common.lcs_resource_storage:lcs_resource_storage.module
+        code.reconstructors: common.reconstructors:reconstructors.module
+        htypes.auto_tabs.view: legacy_type.auto_tabs:view
+        htypes.box_layout.element: legacy_type.box_layout:element
+        htypes.box_layout.state: legacy_type.box_layout:state
+        htypes.box_layout.view: legacy_type.box_layout:view
+        htypes.command_pane.state: legacy_type.command_pane:state
+        htypes.command_pane.view: legacy_type.command_pane:view
+        htypes.menu_bar.state: legacy_type.menu_bar:state
+        htypes.menu_bar.view: legacy_type.menu_bar:view
+        htypes.navigator.view: legacy_type.navigator:view
+        htypes.root.layout: legacy_type.root:layout
+        htypes.root.state: legacy_type.root:state
+        htypes.root.view: legacy_type.root:view
+        htypes.tabs.state: legacy_type.tabs:state
+        htypes.tabs.tab: legacy_type.tabs:tab
+        htypes.tabs.view: legacy_type.tabs:view
+        htypes.text.state: legacy_type.text:state
+        htypes.window.pos: legacy_type.window:pos
+        htypes.window.size: legacy_type.window:size
+        htypes.window.state: legacy_type.window:state
+        htypes.window.view: legacy_type.window:view
+        services.endpoint_registry: transport.endpoint:endpoint_registry.service
+        services.file_bundle: common.file_bundle:file_bundle.service
+        services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
+        services.hyperapp_dir: builtins:hyperapp_dir.service
+        services.mosaic: builtins:mosaic.service
+        services.rpc_endpoint_factory: rpc.rpc_endpoint:rpc_endpoint_factory.service
+        services.view_creg: ui.view_registry:view_creg.service
+        services.visualizer: ui.visualizer:visualizer.service
   command_properties_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:command_properties_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:command_properties_d
   global_model_command_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:global_model_command_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:global_model_command_d
   make_default_layout:
-    _type: legacy_type.builtin:attribute
-    object: client.module
-    attr_name: make_default_layout
+    type: legacy_type.builtin:attribute
+    value:
+      object: client.module
+      attr_name: make_default_layout
   make_default_layout.command:
-    _type: legacy_type.ui:model_command
-    d: make_default_layout.d
-    impl: make_default_layout.command_impl
+    type: legacy_type.ui:model_command
+    value:
+      d: make_default_layout.d
+      impl: make_default_layout.command_impl
   make_default_layout.command_impl:
-    _type: legacy_type.ui:model_command_impl
-    function: make_default_layout
-    params:
-    - lcs
+    type: legacy_type.ui:model_command_impl
+    value:
+      function: make_default_layout
+      params:
+      - lcs
   make_default_layout.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: true
-    uses_state: false
-    remotable: false
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: true
+      uses_state: false
+      remotable: false
   make_default_layout.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.client:make_default_layout_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.client:make_default_layout_d
   make_default_piece:
-    _type: legacy_type.builtin:attribute
-    object: client.module
-    attr_name: make_default_piece
+    type: legacy_type.builtin:attribute
+    value:
+      object: client.module
+      attr_name: make_default_piece
   make_default_piece.command:
-    _type: legacy_type.ui:model_command
-    d: make_default_piece.d
-    impl: make_default_piece.command_impl
+    type: legacy_type.ui:model_command
+    value:
+      d: make_default_piece.d
+      impl: make_default_piece.command_impl
   make_default_piece.command_impl:
-    _type: legacy_type.ui:model_command_impl
-    function: make_default_piece
-    params:
-    - lcs
+    type: legacy_type.ui:model_command_impl
+    value:
+      function: make_default_piece
+      params:
+      - lcs
   make_default_piece.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: true
-    uses_state: false
-    remotable: false
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: true
+      uses_state: false
+      remotable: false
   make_default_piece.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.client:make_default_piece_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.client:make_default_piece_d
   make_default_state:
-    _type: legacy_type.builtin:attribute
-    object: client.module
-    attr_name: make_default_state
+    type: legacy_type.builtin:attribute
+    value:
+      object: client.module
+      attr_name: make_default_state
   make_default_state.command:
-    _type: legacy_type.ui:model_command
-    d: make_default_state.d
-    impl: make_default_state.command_impl
+    type: legacy_type.ui:model_command
+    value:
+      d: make_default_state.d
+      impl: make_default_state.command_impl
   make_default_state.command_impl:
-    _type: legacy_type.ui:model_command_impl
-    function: make_default_state
-    params: []
+    type: legacy_type.ui:model_command_impl
+    value:
+      function: make_default_state
+      params: []
   make_default_state.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: true
-    uses_state: false
-    remotable: true
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: true
+      uses_state: false
+      remotable: true
   make_default_state.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.client:make_default_state_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.client:make_default_state_d

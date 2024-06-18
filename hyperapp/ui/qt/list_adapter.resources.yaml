@@ -39,39 +39,46 @@ associations:
   value: StaticListAdapter.from_piece
 definitions:
   FnListAdapter:
-    _type: legacy_type.builtin:attribute
-    object: list_adapter.module
-    attr_name: FnListAdapter
+    type: legacy_type.builtin:attribute
+    value:
+      object: list_adapter.module
+      attr_name: FnListAdapter
   FnListAdapter.from_piece:
-    _type: legacy_type.builtin:attribute
-    object: FnListAdapter
-    attr_name: from_piece
+    type: legacy_type.builtin:attribute
+    value:
+      object: FnListAdapter
+      attr_name: from_piece
   RemoteFnListAdapter:
-    _type: legacy_type.builtin:attribute
-    object: list_adapter.module
-    attr_name: RemoteFnListAdapter
+    type: legacy_type.builtin:attribute
+    value:
+      object: list_adapter.module
+      attr_name: RemoteFnListAdapter
   RemoteFnListAdapter.from_piece:
-    _type: legacy_type.builtin:attribute
-    object: RemoteFnListAdapter
-    attr_name: from_piece
+    type: legacy_type.builtin:attribute
+    value:
+      object: RemoteFnListAdapter
+      attr_name: from_piece
   StaticListAdapter:
-    _type: legacy_type.builtin:attribute
-    object: list_adapter.module
-    attr_name: StaticListAdapter
+    type: legacy_type.builtin:attribute
+    value:
+      object: list_adapter.module
+      attr_name: StaticListAdapter
   StaticListAdapter.from_piece:
-    _type: legacy_type.builtin:attribute
-    object: StaticListAdapter
-    attr_name: from_piece
+    type: legacy_type.builtin:attribute
+    value:
+      object: StaticListAdapter
+      attr_name: from_piece
   list_adapter.module:
-    _type: legacy_type.builtin:python_module
-    module_name: list_adapter
-    file_name: list_adapter.dyn.py
-    import_list:
-      code.list_diff: common.list_diff:list_diff.module
-      services.deduce_t: builtins:deduce_t.service
-      services.feed_factory: ui.feed:feed_factory.service
-      services.mosaic: builtins:mosaic.service
-      services.peer_registry: transport.identity:peer_registry.service
-      services.pyobj_creg: builtins:pyobj_creg.service
-      services.rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
-      services.web: builtins:web.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: list_adapter
+      file_name: list_adapter.dyn.py
+      import_list:
+        code.list_diff: common.list_diff:list_diff.module
+        services.deduce_t: builtins:deduce_t.service
+        services.feed_factory: ui.feed:feed_factory.service
+        services.mosaic: builtins:mosaic.service
+        services.peer_registry: transport.identity:peer_registry.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        services.rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
+        services.web: builtins:web.service

@@ -6,10 +6,12 @@ import:
 associations: []
 definitions:
   phony:
-    _type: legacy_type.phony:phony
+    type: legacy_type.phony:phony
+    value: {}
   sample_commands.tests.module:
-    _type: legacy_type.builtin:python_module
-    module_name: sample_commands.tests
-    file_name: sample_commands.tests.dyn.py
-    import_list:
-      tested.code.sample_commands: phony
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: sample_commands.tests
+      file_name: sample_commands.tests.dyn.py
+      import_list:
+        tested.code.sample_commands: phony

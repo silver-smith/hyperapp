@@ -92,141 +92,175 @@ associations:
   value: sample_tree_info.command
 definitions:
   command_properties_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:command_properties_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:command_properties_d
   details:
-    _type: legacy_type.builtin:attribute
-    object: sample_commands.module
-    attr_name: details
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_commands.module
+      attr_name: details
   details.command:
-    _type: legacy_type.ui:model_command
-    d: details.d
-    impl: details.command_impl
+    type: legacy_type.ui:model_command
+    value:
+      d: details.d
+      impl: details.command_impl
   details.command_impl:
-    _type: legacy_type.ui:model_command_impl
-    function: details
-    params:
-    - piece
-    - current_idx
+    type: legacy_type.ui:model_command_impl
+    value:
+      function: details
+      params:
+      - piece
+      - current_idx
   details.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: false
-    uses_state: true
-    remotable: true
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: false
+      uses_state: true
+      remotable: true
   details.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.sample_commands:details_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.sample_commands:details_d
   global_model_command_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:global_model_command_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:global_model_command_d
   model_command_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:model_command_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:model_command_d
   open_sample_static_list:
-    _type: legacy_type.builtin:attribute
-    object: sample_commands.module
-    attr_name: open_sample_static_list
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_commands.module
+      attr_name: open_sample_static_list
   open_sample_static_list.command:
-    _type: legacy_type.ui:model_command
-    d: open_sample_static_list.d
-    impl: open_sample_static_list.command_impl
+    type: legacy_type.ui:model_command
+    value:
+      d: open_sample_static_list.d
+      impl: open_sample_static_list.command_impl
   open_sample_static_list.command_impl:
-    _type: legacy_type.ui:model_command_impl
-    function: open_sample_static_list
-    params: []
+    type: legacy_type.ui:model_command_impl
+    value:
+      function: open_sample_static_list
+      params: []
   open_sample_static_list.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: true
-    uses_state: false
-    remotable: true
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: true
+      uses_state: false
+      remotable: true
   open_sample_static_list.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.sample_commands:open_sample_static_list_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.sample_commands:open_sample_static_list_d
   open_sample_static_text_1:
-    _type: legacy_type.builtin:attribute
-    object: sample_commands.module
-    attr_name: open_sample_static_text_1
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_commands.module
+      attr_name: open_sample_static_text_1
   open_sample_static_text_1.command:
-    _type: legacy_type.ui:model_command
-    d: open_sample_static_text_1.d
-    impl: open_sample_static_text_1.command_impl
+    type: legacy_type.ui:model_command
+    value:
+      d: open_sample_static_text_1.d
+      impl: open_sample_static_text_1.command_impl
   open_sample_static_text_1.command_impl:
-    _type: legacy_type.ui:model_command_impl
-    function: open_sample_static_text_1
-    params: []
+    type: legacy_type.ui:model_command_impl
+    value:
+      function: open_sample_static_text_1
+      params: []
   open_sample_static_text_1.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: true
-    uses_state: false
-    remotable: true
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: true
+      uses_state: false
+      remotable: true
   open_sample_static_text_1.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.sample_commands:open_sample_static_text_1_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.sample_commands:open_sample_static_text_1_d
   open_sample_static_text_2:
-    _type: legacy_type.builtin:attribute
-    object: sample_commands.module
-    attr_name: open_sample_static_text_2
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_commands.module
+      attr_name: open_sample_static_text_2
   open_sample_static_text_2.command:
-    _type: legacy_type.ui:model_command
-    d: open_sample_static_text_2.d
-    impl: open_sample_static_text_2.command_impl
+    type: legacy_type.ui:model_command
+    value:
+      d: open_sample_static_text_2.d
+      impl: open_sample_static_text_2.command_impl
   open_sample_static_text_2.command_impl:
-    _type: legacy_type.ui:model_command_impl
-    function: open_sample_static_text_2
-    params: []
+    type: legacy_type.ui:model_command_impl
+    value:
+      function: open_sample_static_text_2
+      params: []
   open_sample_static_text_2.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: true
-    uses_state: false
-    remotable: true
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: true
+      uses_state: false
+      remotable: true
   open_sample_static_text_2.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.sample_commands:open_sample_static_text_2_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.sample_commands:open_sample_static_text_2_d
   sample_commands.module:
-    _type: legacy_type.builtin:python_module
-    module_name: sample_commands
-    file_name: sample_commands.dyn.py
-    import_list:
-      htypes.sample_list.item: legacy_type.sample_list:item
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: sample_commands
+      file_name: sample_commands.dyn.py
+      import_list:
+        htypes.sample_list.item: legacy_type.sample_list:item
   sample_tree_info:
-    _type: legacy_type.builtin:attribute
-    object: sample_commands.module
-    attr_name: sample_tree_info
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_commands.module
+      attr_name: sample_tree_info
   sample_tree_info.command:
-    _type: legacy_type.ui:model_command
-    d: sample_tree_info.d
-    impl: sample_tree_info.command_impl
+    type: legacy_type.ui:model_command
+    value:
+      d: sample_tree_info.d
+      impl: sample_tree_info.command_impl
   sample_tree_info.command_impl:
-    _type: legacy_type.ui:model_command_impl
-    function: sample_tree_info
-    params:
-    - piece
+    type: legacy_type.ui:model_command_impl
+    value:
+      function: sample_tree_info
+      params:
+      - piece
   sample_tree_info.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: false
-    uses_state: false
-    remotable: true
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: false
+      uses_state: false
+      remotable: true
   sample_tree_info.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.sample_commands:sample_tree_info_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.sample_commands:sample_tree_info_d
   show_state:
-    _type: legacy_type.builtin:attribute
-    object: sample_commands.module
-    attr_name: show_state
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_commands.module
+      attr_name: show_state
   show_state.command:
-    _type: legacy_type.ui:model_command
-    d: show_state.d
-    impl: show_state.command_impl
+    type: legacy_type.ui:model_command
+    value:
+      d: show_state.d
+      impl: show_state.command_impl
   show_state.command_impl:
-    _type: legacy_type.ui:model_command_impl
-    function: show_state
-    params:
-    - model_state
+    type: legacy_type.ui:model_command_impl
+    value:
+      function: show_state
+      params:
+      - model_state
   show_state.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: true
-    uses_state: true
-    remotable: true
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: true
+      uses_state: true
+      remotable: true
   show_state.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.sample_commands:show_state_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.sample_commands:show_state_d

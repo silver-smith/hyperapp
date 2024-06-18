@@ -1,7 +1,5 @@
 # Automatically generated file. Do not edit.
 # Source ref: sha512:46f5ea509b65dd6f21be6b5f04fadd908f538be2cff4ae52fae6cabb92f4c2ec96ce8c5691f0f22659bbfb59ef839ae4164e002605a106ba1c32dce2237d10e3
-# Generator ref: sha512:121aa27d594301951d02b296e3ee9e69f3701834eaf6cf7e77bd92c49269ecb591ff3ea4d3b5284570d29a14ac5253bb1c6b193ea0eb8b20a0cbc0bf14f12358
-
 import:
 - common.mark:mark.service
 - legacy_type.builtin:attribute
@@ -11,16 +9,19 @@ import:
 associations: []
 definitions:
   mock_identity:
-    _type: legacy_type.builtin:attribute
-    object: mock_identity.module
-    attr_name: mock_identity
+    type: legacy_type.builtin:attribute
+    value:
+      object: mock_identity.module
+      attr_name: mock_identity
   mock_identity.module:
-    _type: legacy_type.builtin:python_module
-    module_name: mock_identity
-    file_name: mock_identity.dyn.py
-    import_list:
-      services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
-      services.mark: common.mark:mark.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: mock_identity
+      file_name: mock_identity.dyn.py
+      import_list:
+        services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
+        services.mark: common.mark:mark.service
   mock_identity.service:
-    _type: legacy_type.builtin:call
-    function: mock_identity
+    type: legacy_type.builtin:call
+    value:
+      function: mock_identity

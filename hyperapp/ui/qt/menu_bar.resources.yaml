@@ -20,21 +20,24 @@ associations:
   value: MenuBarView.from_piece
 definitions:
   MenuBarView:
-    _type: legacy_type.builtin:attribute
-    object: menu_bar.module
-    attr_name: MenuBarView
+    type: legacy_type.builtin:attribute
+    value:
+      object: menu_bar.module
+      attr_name: MenuBarView
   MenuBarView.from_piece:
-    _type: legacy_type.builtin:attribute
-    object: MenuBarView
-    attr_name: from_piece
+    type: legacy_type.builtin:attribute
+    value:
+      object: MenuBarView
+      attr_name: from_piece
   menu_bar.module:
-    _type: legacy_type.builtin:python_module
-    module_name: menu_bar
-    file_name: menu_bar.dyn.py
-    import_list:
-      code.view: ui.view:view.module
-      htypes.command_groups.global_d: legacy_type.command_groups:global_d
-      htypes.command_groups.model_d: legacy_type.command_groups:model_d
-      htypes.command_groups.view_d: legacy_type.command_groups:view_d
-      htypes.menu_bar.state: legacy_type.menu_bar:state
-      htypes.menu_bar.view: legacy_type.menu_bar:view
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: menu_bar
+      file_name: menu_bar.dyn.py
+      import_list:
+        code.view: ui.view:view.module
+        htypes.command_groups.global_d: legacy_type.command_groups:global_d
+        htypes.command_groups.model_d: legacy_type.command_groups:model_d
+        htypes.command_groups.view_d: legacy_type.command_groups:view_d
+        htypes.menu_bar.state: legacy_type.menu_bar:state
+        htypes.menu_bar.view: legacy_type.menu_bar:view

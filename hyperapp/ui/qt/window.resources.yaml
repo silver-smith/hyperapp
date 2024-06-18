@@ -59,74 +59,89 @@ associations:
   value: quit.command
 definitions:
   WindowView:
-    _type: legacy_type.builtin:attribute
-    object: window.module
-    attr_name: WindowView
+    type: legacy_type.builtin:attribute
+    value:
+      object: window.module
+      attr_name: WindowView
   WindowView.from_piece:
-    _type: legacy_type.builtin:attribute
-    object: WindowView
-    attr_name: from_piece
+    type: legacy_type.builtin:attribute
+    value:
+      object: WindowView
+      attr_name: from_piece
   command_properties_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:command_properties_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:command_properties_d
   duplicate_window:
-    _type: legacy_type.builtin:attribute
-    object: window.module
-    attr_name: duplicate_window
+    type: legacy_type.builtin:attribute
+    value:
+      object: window.module
+      attr_name: duplicate_window
   duplicate_window.command:
-    _type: legacy_type.ui:command
-    d: duplicate_window.d
-    impl: duplicate_window.impl
+    type: legacy_type.ui:command
+    value:
+      d: duplicate_window.d
+      impl: duplicate_window.impl
   duplicate_window.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: false
-    uses_state: true
-    remotable: true
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: false
+      uses_state: true
+      remotable: true
   duplicate_window.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.window:duplicate_window_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.window:duplicate_window_d
   duplicate_window.impl:
-    _type: legacy_type.ui:ui_command_impl
-    function: duplicate_window
-    params:
-    - root
-    - view
-    - state
+    type: legacy_type.ui:ui_command_impl
+    value:
+      function: duplicate_window
+      params:
+      - root
+      - view
+      - state
   quit:
-    _type: legacy_type.builtin:attribute
-    object: window.module
-    attr_name: quit
+    type: legacy_type.builtin:attribute
+    value:
+      object: window.module
+      attr_name: quit
   quit.command:
-    _type: legacy_type.ui:command
-    d: quit.d
-    impl: quit.impl
+    type: legacy_type.ui:command
+    value:
+      d: quit.d
+      impl: quit.impl
   quit.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: false
-    uses_state: false
-    remotable: true
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: false
+      uses_state: false
+      remotable: true
   quit.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.window:quit_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.window:quit_d
   quit.impl:
-    _type: legacy_type.ui:ui_command_impl
-    function: quit
-    params: []
+    type: legacy_type.ui:ui_command_impl
+    value:
+      function: quit
+      params: []
   ui_command_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:ui_command_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:ui_command_d
   window.module:
-    _type: legacy_type.builtin:python_module
-    module_name: window
-    file_name: window.dyn.py
-    import_list:
-      code.list_diff: common.list_diff:list_diff.module
-      code.view: ui.view:view.module
-      htypes.window.pos: legacy_type.window:pos
-      htypes.window.size: legacy_type.window:size
-      htypes.window.state: legacy_type.window:state
-      htypes.window.view: legacy_type.window:view
-      services.mark: common.mark:mark.service
-      services.mosaic: builtins:mosaic.service
-      services.view_creg: ui.view_registry:view_creg.service
-      services.web: builtins:web.service
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: window
+      file_name: window.dyn.py
+      import_list:
+        code.list_diff: common.list_diff:list_diff.module
+        code.view: ui.view:view.module
+        htypes.window.pos: legacy_type.window:pos
+        htypes.window.size: legacy_type.window:size
+        htypes.window.state: legacy_type.window:state
+        htypes.window.view: legacy_type.window:view
+        services.mark: common.mark:mark.service
+        services.mosaic: builtins:mosaic.service
+        services.view_creg: ui.view_registry:view_creg.service
+        services.web: builtins:web.service

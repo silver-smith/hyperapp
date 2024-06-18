@@ -80,119 +80,148 @@ associations:
   value: sample_list.model
 definitions:
   command_properties_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:command_properties_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:command_properties_d
   feed_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:feed_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:feed_d
   feed_sample_list:
-    _type: legacy_type.builtin:attribute
-    object: sample_list.module
-    attr_name: feed_sample_list
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_list.module
+      attr_name: feed_sample_list
   feed_sample_list.impl:
-    _type: legacy_type.ui:fn_impl
-    function: feed_sample_list
-    params:
-    - piece
-    - feed
+    type: legacy_type.ui:fn_impl
+    value:
+      function: feed_sample_list
+      params:
+      - piece
+      - feed
   feed_sample_list.model:
-    _type: legacy_type.ui:model
-    ui_t: feed_sample_list.ui_t
-    impl: feed_sample_list.impl
+    type: legacy_type.ui:model
+    value:
+      ui_t: feed_sample_list.ui_t
+      impl: feed_sample_list.impl
   feed_sample_list.ui_t:
-    _type: legacy_type.ui:list_ui_t
-    element_t: legacy_type.sample_list:item
+    type: legacy_type.ui:list_ui_t
+    value:
+      element_t: legacy_type.sample_list:item
   global_model_command_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:global_model_command_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:global_model_command_d
   model_command_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:model_command_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:model_command_d
   model_d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.ui:model_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:model_d
   open_feed_sample_fn_list:
-    _type: legacy_type.builtin:attribute
-    object: sample_list.module
-    attr_name: open_feed_sample_fn_list
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_list.module
+      attr_name: open_feed_sample_fn_list
   open_feed_sample_fn_list.command:
-    _type: legacy_type.ui:model_command
-    d: open_feed_sample_fn_list.d
-    impl: open_feed_sample_fn_list.command_impl
+    type: legacy_type.ui:model_command
+    value:
+      d: open_feed_sample_fn_list.d
+      impl: open_feed_sample_fn_list.command_impl
   open_feed_sample_fn_list.command_impl:
-    _type: legacy_type.ui:model_command_impl
-    function: open_feed_sample_fn_list
-    params: []
+    type: legacy_type.ui:model_command_impl
+    value:
+      function: open_feed_sample_fn_list
+      params: []
   open_feed_sample_fn_list.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: true
-    uses_state: false
-    remotable: true
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: true
+      uses_state: false
+      remotable: true
   open_feed_sample_fn_list.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.sample_list:open_feed_sample_fn_list_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.sample_list:open_feed_sample_fn_list_d
   open_sample_fn_list:
-    _type: legacy_type.builtin:attribute
-    object: sample_list.module
-    attr_name: open_sample_fn_list
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_list.module
+      attr_name: open_sample_fn_list
   open_sample_fn_list.command:
-    _type: legacy_type.ui:model_command
-    d: open_sample_fn_list.d
-    impl: open_sample_fn_list.command_impl
+    type: legacy_type.ui:model_command
+    value:
+      d: open_sample_fn_list.d
+      impl: open_sample_fn_list.command_impl
   open_sample_fn_list.command_impl:
-    _type: legacy_type.ui:model_command_impl
-    function: open_sample_fn_list
-    params: []
+    type: legacy_type.ui:model_command_impl
+    value:
+      function: open_sample_fn_list
+      params: []
   open_sample_fn_list.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: true
-    uses_state: false
-    remotable: true
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: true
+      uses_state: false
+      remotable: true
   open_sample_fn_list.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.sample_list:open_sample_fn_list_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.sample_list:open_sample_fn_list_d
   sample_list:
-    _type: legacy_type.builtin:attribute
-    object: sample_list.module
-    attr_name: sample_list
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_list.module
+      attr_name: sample_list
   sample_list.command:
-    _type: legacy_type.ui:model_command
-    d: sample_list.d
-    impl: sample_list.command_impl
+    type: legacy_type.ui:model_command
+    value:
+      d: sample_list.d
+      impl: sample_list.command_impl
   sample_list.command_impl:
-    _type: legacy_type.ui:model_command_impl
-    function: sample_list
-    params:
-    - piece
+    type: legacy_type.ui:model_command_impl
+    value:
+      function: sample_list
+      params:
+      - piece
   sample_list.command_properties:
-    _type: legacy_type.ui:command_properties
-    is_global: false
-    uses_state: false
-    remotable: true
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: false
+      uses_state: false
+      remotable: true
   sample_list.d:
-    _type: legacy_type.builtin:call
-    function: legacy_type.sample_list:sample_list_d
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.sample_list:sample_list_d
   sample_list.impl:
-    _type: legacy_type.ui:fn_impl
-    function: sample_list
-    params:
-    - piece
+    type: legacy_type.ui:fn_impl
+    value:
+      function: sample_list
+      params:
+      - piece
   sample_list.model:
-    _type: legacy_type.ui:model
-    ui_t: sample_list.ui_t
-    impl: sample_list.impl
+    type: legacy_type.ui:model
+    value:
+      ui_t: sample_list.ui_t
+      impl: sample_list.impl
   sample_list.module:
-    _type: legacy_type.builtin:python_module
-    module_name: sample_list
-    file_name: sample_list.dyn.py
-    import_list:
-      code.list_diff: common.list_diff:list_diff.module
-      htypes.sample_list.feed_sample_list: legacy_type.sample_list:feed_sample_list
-      htypes.sample_list.item: legacy_type.sample_list:item
-      htypes.sample_list.sample_list: legacy_type.sample_list:sample_list
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: sample_list
+      file_name: sample_list.dyn.py
+      import_list:
+        code.list_diff: common.list_diff:list_diff.module
+        htypes.sample_list.feed_sample_list: legacy_type.sample_list:feed_sample_list
+        htypes.sample_list.item: legacy_type.sample_list:item
+        htypes.sample_list.sample_list: legacy_type.sample_list:sample_list
   sample_list.ui_t:
-    _type: legacy_type.ui:list_ui_t
-    element_t: legacy_type.sample_list:item
+    type: legacy_type.ui:list_ui_t
+    value:
+      element_t: legacy_type.sample_list:item
   sample_list_feed_sample_list.list_feed:
-    _type: legacy_type.ui:list_feed
-    element_t: legacy_type.sample_list:item
+    type: legacy_type.ui:list_feed
+    value:
+      element_t: legacy_type.sample_list:item

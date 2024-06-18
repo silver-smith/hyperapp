@@ -12,16 +12,18 @@ import:
 associations: []
 definitions:
   phony:
-    _type: legacy_type.phony:phony
+    type: legacy_type.phony:phony
+    value: {}
   sample_feed.tests.module:
-    _type: legacy_type.builtin:python_module
-    module_name: sample_feed.tests
-    file_name: sample_feed.tests.dyn.py
-    import_list:
-      code.list_diff: common.list_diff:list_diff.module
-      code.tree_diff: common.tree_diff:tree_diff.module
-      services.feed_factory: ui.feed:feed_factory.service
-      services.mark: common.mark:mark.service
-      services.mosaic: builtins:mosaic.service
-      services.pyobj_creg: builtins:pyobj_creg.service
-      tested.code.sample_feed: phony
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: sample_feed.tests
+      file_name: sample_feed.tests.dyn.py
+      import_list:
+        code.list_diff: common.list_diff:list_diff.module
+        code.tree_diff: common.tree_diff:tree_diff.module
+        services.feed_factory: ui.feed:feed_factory.service
+        services.mark: common.mark:mark.service
+        services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        tested.code.sample_feed: phony
