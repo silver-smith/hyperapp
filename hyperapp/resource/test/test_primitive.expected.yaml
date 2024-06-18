@@ -1,0 +1,11 @@
+import:
+- legacy_type.builtin:int
+- legacy_type.builtin:string
+associations: []
+definitions:
+  sample_int:
+    type: legacy_type.builtin:int
+    value: 12345
+  sample_string:
+    type: legacy_type.builtin:string
+    value: abcd efgh

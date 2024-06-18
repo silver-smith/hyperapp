@@ -105,3 +105,12 @@ def test_add_association(mosaic, resource_registry, resource_module_factory, com
     res_module['sample_value'] = value
     res_module.add_association(ass)
     compare(res_module, 'test_add_association')
+
+
+def test_primitive(mosaic, resource_registry, resource_module_factory, compare):
+    res_module = resource_module_factory(resource_registry, 'test_module')
+    res_module['sample_string'] = 'abcd efgh'
+    res_module['sample_int'] = 12345
+    compare(res_module, 'test_primitive')
+    assert res_module['sample_int'] == 12345
+    assert res_module['sample_string'] == 'abcd efgh'
