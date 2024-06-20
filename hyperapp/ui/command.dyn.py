@@ -55,6 +55,7 @@ _hardcoded_shortcuts = {
     'toggle_open_command': 'Space',
     'open_local_server_context': 'Alt+S',
     'show_current_context': 'Alt+U',
+    'toggle_editable': 'Ctrl+E',
     }
 
 
