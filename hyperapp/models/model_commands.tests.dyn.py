@@ -20,14 +20,14 @@ def test_browse_current_model():
     assert piece_2
 
 
-def _phony_fn(piece, ctx):
+def _sample_command_fn(piece, ctx):
     return "Sample result"
 
 
 def _make_sample_command():
     d_res = data_to_res(htypes.model_commands_tests.sample_d())
     model_impl = htypes.ui.model_command_impl(
-        function=fn_to_ref(_phony_fn),
+        function=fn_to_ref(_sample_command_fn),
         params=('piece', 'ctx'),
         )
     return htypes.ui.model_command(
