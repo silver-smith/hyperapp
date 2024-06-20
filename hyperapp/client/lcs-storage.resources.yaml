@@ -11,20 +11,12 @@ import:
 - legacy_type.tree:view
 - legacy_type.ui:model_view_layout_d
 - models.data_browser:browse_record
+- models.data_browser:record_open.command
 - sample.sample_commands:details.command
 - sample.sample_list:sample_list
 associations: []
 definitions:
-  adapter:
-    type: legacy_type.list_to_tree_adapter:adapter
-    value:
-      root_element_t: legacy_type.data_browser:record_item
-      root_function: models.data_browser:browse_record
-      root_params:
-      - piece
-      root_open_children_command: null
-      layers: {}
-  fn_list_adapter:
+  fn_list_adapter_1:
     type: legacy_type.list_adapter:fn_list_adapter
     value:
       element_t: legacy_type.sample_list:item
@@ -36,29 +28,47 @@ definitions:
     value:
       elements:
       - key:
+        - model_view_layout_d_1
         - legacy_type.sample_list:sample_list
-        - model_view_layout_d
-        value: view_2
+        value: master_details_view_1
       - key:
-        - model_view_layout_d
         - legacy_type.data_browser:record_view
-        value: view_3
-  model_view_layout_d:
-    type: legacy_type.ui:model_view_layout_d
-    value: {}
-  view:
+        - model_view_layout_d_1
+        value: tree_view_1
+  list_to_tree_adapter_adapter_1:
+    type: legacy_type.list_to_tree_adapter:adapter
+    value:
+      root_element_t: legacy_type.data_browser:record_item
+      root_function: models.data_browser:browse_record
+      root_params:
+      - piece
+      root_open_children_command: null
+      layers: {}
+  list_to_tree_adapter_adapter_2:
+    type: legacy_type.list_to_tree_adapter:adapter
+    value:
+      root_element_t: legacy_type.data_browser:record_item
+      root_function: models.data_browser:browse_record
+      root_params:
+      - piece
+      root_open_children_command: models.data_browser:record_open.command
+      layers: {}
+  list_view_1:
     type: legacy_type.list:view
     value:
-      adapter: fn_list_adapter
-  view_2:
+      adapter: fn_list_adapter_1
+  master_details_view_1:
     type: legacy_type.master_details:view
     value:
-      master_view: view
+      master_view: list_view_1
       details_command: sample.sample_commands:details.command
       direction: LeftToRight
       master_stretch: 1
       details_stretch: 1
-  view_3:
+  model_view_layout_d_1:
+    type: legacy_type.ui:model_view_layout_d
+    value: {}
+  tree_view_1:
     type: legacy_type.tree:view
     value:
-      adapter: adapter
+      adapter: list_to_tree_adapter_adapter_2
