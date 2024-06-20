@@ -2,7 +2,7 @@ import itertools
 
 import yaml
 
-from hyperapp.common.htypes import TRecord
+from hyperapp.common.htypes import TPrimitive, TRecord
 
 from . import htypes
 from .services import (
@@ -90,9 +90,15 @@ class LcsResourceStorage:
         self._path.write_text(text)
 
     def _make_name(self, t):
-        assert isinstance(t, TRecord)
-        name = t.name
-        for idx in itertools.count(2):
+        if isinstance(t, TPrimitive):
+            stem = t.name
+        else:
+            assert isinstance(t, TRecord)
+            stem = t.name
+            if stem in {'view', 'layout', 'state', 'adapter'}:
+                mnl = t.module_name.split('.')
+                stem = f'{mnl[-1]}_{t.name}'
+        for idx in itertools.count(1):
+            name = f'{stem}_{idx}'
             if name not in self._res_module:
                 return name
-            name = f'{t.name}_{idx}'
