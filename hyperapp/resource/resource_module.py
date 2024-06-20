@@ -67,6 +67,10 @@ class ResourceModule:
         self.set_definition(name, t, definition)
         self._resource_registry.add_to_cache((self._name, name), resource)
 
+    def __delitem__(self, var_name):
+        del self._definition_dict[var_name]
+        del self._resource_registry[self._name, var_name]
+
     @cached_property
     def is_auto_generated(self):
         lines = self._path.read_text().splitlines()

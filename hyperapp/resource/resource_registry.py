@@ -21,6 +21,9 @@ class ResourceRegistry:
     def __getitem__(self, name_pair):
         return self.resolve(name_pair)
 
+    def __delitem__(self, name_pair):
+        self.remove_from_cache(name_pair)
+
     def __contains__(self, name_pair):
         if name_pair in self._name_pair_to_piece:
             return True
@@ -67,6 +70,11 @@ class ResourceRegistry:
     def add_to_cache(self, name_pair, piece):
         self._name_pair_to_piece[name_pair] = piece
         self._piece_to_name_pair[piece] = name_pair
+
+    def remove_from_cache(self, name_pair):
+        piece = self._name_pair_to_piece[name_pair]
+        del self._name_pair_to_piece[name_pair]
+        del self._piece_to_name_pair[piece]
 
     def check_has_name(self, name_pair):
         if name_pair in self._name_pair_to_piece:

@@ -43,3 +43,6 @@ def test_set():
 
     storage_2 = lcs_resource_storage.LcsResourceStorage('test.lcs_storage', path)
     assert storage_2.get({d_1, d_2}) == piece
+
+    # Test replacement and primitive value.
+    storage_2.set({d_1, d_2}, "Sample string")

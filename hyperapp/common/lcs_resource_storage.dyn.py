@@ -1,5 +1,3 @@
-import itertools
-
 import yaml
 
 from hyperapp.common.htypes import TPrimitive, TRecord
@@ -13,6 +11,9 @@ from .services import (
     resource_registry,
     web,
     )
+
+
+MAX_SAME_NAME_COUNT = 1000
 
 
 class LcsResourceStorage:
@@ -29,6 +30,12 @@ class LcsResourceStorage:
         frozen_dir = frozenset(dir)
         for elt in dir:
             self._store(elt)
+        try:
+            prev_piece = self._mapping[frozen_dir]
+        except KeyError:
+            pass
+        else:
+            self._remove_piece(prev_piece)
         self._store(piece)
         self._mapping[frozen_dir] = piece
         self._save()
@@ -45,6 +52,12 @@ class LcsResourceStorage:
 
     def iter(self, filter_dir):
         raise NotImplementedError()
+
+    def _remove_piece(self, piece):
+        t = deduce_t(piece)
+        for name in self._existing_names(t):
+            if self._res_module[name] == piece:
+                del self._res_module[name]
 
     def _store(self, piece):
         t = deduce_t(piece)
@@ -89,7 +102,7 @@ class LcsResourceStorage:
         text = yaml.dump(self._res_module.as_dict, sort_keys=False)
         self._path.write_text(text)
 
-    def _make_name(self, t):
+    def _iter_names(self, t):
         if isinstance(t, TPrimitive):
             stem = t.name
         else:
@@ -98,7 +111,16 @@ class LcsResourceStorage:
             if stem in {'view', 'layout', 'state', 'adapter'}:
                 mnl = t.module_name.split('.')
                 stem = f'{mnl[-1]}_{t.name}'
-        for idx in itertools.count(1):
-            name = f'{stem}_{idx}'
+        for idx in range(1, MAX_SAME_NAME_COUNT):
+            yield f'{stem}_{idx}'
+
+
+    def _existing_names(self, t):
+        for name in self._iter_names(t):
+            if name in self._res_module:
+                yield name
+
+    def _make_name(self, t):
+        for name in self._iter_names(t):
             if name not in self._res_module:
                 return name
