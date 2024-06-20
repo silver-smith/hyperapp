@@ -1,9 +1,11 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:builtin_types_as_dict.service
 - builtins:legacy_type_resource_loader.service
 - builtins:local_types.service
 - builtins:mosaic.service
+- builtins:pyobj_creg.service
 - builtins:resource_registry.service
 - legacy_type.builtin:python_module
 - legacy_type.phony:phony
@@ -15,9 +17,11 @@ definitions:
       module_name: lcs_resource_storage.tests
       file_name: lcs_resource_storage.tests.dyn.py
       import_list:
+        services.builtin_types_as_dict: builtins:builtin_types_as_dict.service
         services.legacy_type_resource_loader: builtins:legacy_type_resource_loader.service
         services.local_types: builtins:local_types.service
         services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
         services.resource_registry: builtins:resource_registry.service
         tested.code.lcs_resource_storage: phony
   phony:
