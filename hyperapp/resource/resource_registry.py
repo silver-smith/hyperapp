@@ -21,9 +21,6 @@ class ResourceRegistry:
     def __getitem__(self, name_pair):
         return self.resolve(name_pair)
 
-    def __delitem__(self, name_pair):
-        self.remove_from_cache(name_pair)
-
     def __contains__(self, name_pair):
         if name_pair in self._name_pair_to_piece:
             return True

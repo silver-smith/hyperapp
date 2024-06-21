@@ -69,7 +69,7 @@ class ResourceModule:
 
     def __delitem__(self, var_name):
         del self._definition_dict[var_name]
-        del self._resource_registry[self._name, var_name]
+        self._resource_registry.remove_from_cache((self._name, var_name))
 
     @cached_property
     def is_auto_generated(self):
