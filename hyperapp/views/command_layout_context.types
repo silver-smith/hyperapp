@@ -1,0 +1,6 @@
+view = record:
+  base: ref
+  model_command: ref
+
+state = record:
+  base: ref
