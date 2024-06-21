@@ -71,6 +71,14 @@ class ResourceModule:
         del self._definition_dict[var_name]
         self._resource_registry.remove_from_cache((self._name, var_name))
 
+    def clear(self):
+        for var_name in self._definition_dict:
+            self._resource_registry.remove_from_cache((self._name, var_name))
+        self._definition_dict.clear()
+        self._loaded_imports = set()
+        self._loaded_definitions = {}
+        self._loaded_associations = []
+
     @cached_property
     def is_auto_generated(self):
         lines = self._path.read_text().splitlines()

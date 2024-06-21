@@ -69,7 +69,10 @@ class ResourceRegistry:
         self._piece_to_name_pair[piece] = name_pair
 
     def remove_from_cache(self, name_pair):
-        piece = self._name_pair_to_piece[name_pair]
+        try:
+            piece = self._name_pair_to_piece[name_pair]
+        except KeyError:
+            return
         del self._name_pair_to_piece[name_pair]
         del self._piece_to_name_pair[piece]
 
