@@ -28,23 +28,14 @@ definitions:
     value:
       elements:
       - key:
-        - model_view_layout_d_1
         - legacy_type.sample_list:sample_list
+        - model_view_layout_d_1
         value: master_details_view_1
       - key:
-        - legacy_type.data_browser:record_view
         - model_view_layout_d_1
+        - legacy_type.data_browser:record_view
         value: tree_view_1
   list_to_tree_adapter_adapter_1:
-    type: legacy_type.list_to_tree_adapter:adapter
-    value:
-      root_element_t: legacy_type.data_browser:record_item
-      root_function: models.data_browser:browse_record
-      root_params:
-      - piece
-      root_open_children_command: null
-      layers: {}
-  list_to_tree_adapter_adapter_2:
     type: legacy_type.list_to_tree_adapter:adapter
     value:
       root_element_t: legacy_type.data_browser:record_item
@@ -71,4 +62,4 @@ definitions:
   tree_view_1:
     type: legacy_type.tree:view
     value:
-      adapter: list_to_tree_adapter_adapter_2
+      adapter: list_to_tree_adapter_adapter_1
