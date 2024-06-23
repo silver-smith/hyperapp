@@ -92,7 +92,8 @@ class ModelCommandImplementationCtr(CommandImplementationCtr):
                 )
             if not result_is_accepted:
                 return f"Result is not a record, list of records, string or None: {result.data_t!r}"
-        accepted_params = {'piece', 'model_state', 'current_idx', 'current_item', 'controller', 'ctx', 'lcs'}
+        accepted_params = {
+            'piece', 'model_state', 'current_idx', 'current_item', 'controller', 'ctx', 'view', 'state', 'hook', 'lcs'}
         reason = self._check_accepted_params(fn_info, accepted_params)
         if reason:
             return reason
@@ -163,7 +164,7 @@ class GlobalCommandImplementationCtr(CommandImplementationCtr):
                 return f"Function has 'piece' param, and it do not has multiple type cases: {piece_t!r}"
             for case in piece_t.cases:
                 reason = self._check_is_record_list_or_str(case, "Piece param")
-        accepted_params = {'piece', 'model_state', 'ctx', 'lcs'}
+        accepted_params = {'piece', 'model_state', 'ctx', 'view', 'state', 'hook', 'lcs'}
         reason = self._check_accepted_params(fn_info, accepted_params)
         if reason:
             return reason
