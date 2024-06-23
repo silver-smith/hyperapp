@@ -16,8 +16,9 @@ class Constructor:
         self._module_res = module_res
 
     def _check_accepted_params(self, fn_info, accepted_params):
-        if not fn_info.params.keys() <= accepted_params:
-            return f"Has params not in list: {', '.join(accepted_params)}: {fn_info.param_names}"
+        unaccepted_params = fn_info.params.keys() - accepted_params
+        if unaccepted_params:
+            return f"Has unaccepted params: {', '.join(unaccepted_params)}; accepted are: {accepted_params}"
         return None
 
     def _make_attribute(self, name, base=None):
