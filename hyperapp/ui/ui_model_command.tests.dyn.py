@@ -1,13 +1,15 @@
+from unittest.mock import Mock
+
 from . import htypes
 from .services import (
-    data_to_res,
+    data_to_ref,
     fn_to_ref,
     mark,
     mosaic,
     )
 from .code.context import Context
 from .tested.code import ui_model_command
-from .tested.services import ui_model_command_factory
+from .tested.services import ui_model_command_factory, set_ui_model_command
 
 
 def _phony_fn(piece, ctx):
@@ -15,13 +17,13 @@ def _phony_fn(piece, ctx):
 
 
 def _make_sample_command():
-    d_res = data_to_res(htypes.ui_model_command_tests.sample_d())
+    d_res_ref = data_to_ref(htypes.ui_model_command_tests.sample_d())
     impl = htypes.ui.model_command_impl(
         function=fn_to_ref(_phony_fn),
         params=('piece', 'ctx'),
         )
     return htypes.ui.command(
-        d=mosaic.put(d_res),
+        d=d_res_ref,
         impl=mosaic.put(impl),
         )
 
@@ -88,3 +90,12 @@ def test_command_impl_from_piece():
     impl = ui_model_command.ui_model_command_impl_from_piece(piece, ctx)
     assert impl
     assert impl.properties
+
+
+def test_set_ui_model_command():
+    lcs = Mock()
+    model = "Sample model"
+    command = Mock()
+    command.d = data_to_ref(htypes.ui_model_command_tests.sample_d())
+    set_ui_model_command(lcs, model, command)
+    lcs.set.assert_called_once()

@@ -4,6 +4,7 @@ from . import htypes
 from .services import (
     association_reg,
     data_to_res,
+    deduce_t,
     enum_model_commands,
     global_commands,
     mark,
@@ -92,6 +93,20 @@ def _model_command_to_ui_command(command):
         d=command.d,
         impl=impl_ref,
         )
+
+
+@mark.service
+def set_ui_model_command():
+    def _set_ui_model_command(lcs, model, command):
+        t = deduce_t(model)
+        t_res = pyobj_creg.actor_to_piece(t)
+        command_d = pyobj_creg.invite(command.d)
+        d = {
+            htypes.ui.ui_model_command_d(),
+            t_res,
+            }
+        lcs.set(d, command)
+    return _set_ui_model_command
 
 
 @mark.service
