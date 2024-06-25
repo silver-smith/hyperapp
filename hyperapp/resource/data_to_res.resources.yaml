@@ -13,6 +13,15 @@ import:
 - legacy_type.raw:raw
 associations: []
 definitions:
+  data_to_ref:
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_to_res.module
+      attr_name: data_to_ref
+  data_to_ref.service:
+    type: legacy_type.builtin:call
+    value:
+      function: data_to_ref
   data_to_res:
     type: legacy_type.builtin:attribute
     value:
