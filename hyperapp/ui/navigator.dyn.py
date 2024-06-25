@@ -17,7 +17,7 @@ from .code.view import Item, View
 log = logging.getLogger(__name__)
 
 
-_NavigatorRec = namedtuple('_NavigatorRec', 'view widget_wr')
+_NavigatorRec = namedtuple('_NavigatorRec', 'view state widget_wr hook')
 
 
 class NavigatorView(View):
@@ -54,8 +54,9 @@ class NavigatorView(View):
         return 0
 
     def primary_parent_context(self, rctx, widget):
+        state = self.widget_state(widget)
         return rctx.clone_with(
-            navigator=_NavigatorRec(self, weakref.ref(widget)),
+            navigator=_NavigatorRec(self, state, weakref.ref(widget), self._ctl_hook),
             )
 
     def widget_state(self, widget):
