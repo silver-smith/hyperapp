@@ -129,6 +129,7 @@ definitions:
     value:
       function: unwrap_master_details
       params:
+      - model
       - view
       - state
       - hook

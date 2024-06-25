@@ -110,9 +110,8 @@ class MasterDetailsView(BoxLayoutView):
 
 
 @mark.ui_command(htypes.master_details.view)
-def unwrap_master_details(view, state, hook, ctx):
+def unwrap_master_details(model, view, state, hook, ctx):
     log.info("Unwrap master-details: %s / %s", view, state)
-    model = view.master_view.get_model()
     master_view = model_view_creg.invite(view.piece.master_view, model, ctx)
     master_state = web.summon(state.master_state)
     hook.replace_view(master_view, master_state)
