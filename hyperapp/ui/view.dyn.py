@@ -46,9 +46,6 @@ class View(metaclass=abc.ABCMeta):
     def widget_state(self, widget):
         pass
 
-    def apply(self, ctx, widget, diff):
-        raise NotImplementedError()
-
     def replace_child(self, ctx, widget, idx, new_child_view, new_child_widget):
         pass
 
