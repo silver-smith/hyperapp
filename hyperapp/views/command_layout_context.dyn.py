@@ -79,13 +79,13 @@ class CommandLayoutContextView(View):
         return layout.itemAt(1).widget()
 
 
-def open_command_layout_context(piece, current_item, view, state, hook, ctx):
+def open_command_layout_context(piece, current_item, navigator, ctx):
     new_view_piece = htypes.command_layout_context.view(
-        base=mosaic.put(view.piece),
+        base=mosaic.put(navigator.view.piece),
         model_command=current_item.command,
         )
     new_state = htypes.command_layout_context.state(
-        base=mosaic.put(state),
+        base=mosaic.put(navigator.state),
         )
     new_view = view_creg.animate(new_view_piece, ctx)
-    hook.replace_view(new_view, new_state)
+    navigator.hook.replace_view(new_view, new_state)

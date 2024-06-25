@@ -88,9 +88,7 @@ definitions:
       params:
       - piece
       - current_item
-      - view
-      - state
-      - hook
+      - navigator
       - ctx
   open_command_layout_context.command_properties:
     type: legacy_type.ui:command_properties

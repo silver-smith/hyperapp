@@ -53,14 +53,12 @@ def test_open_command_layout_context():
         name="<unused>",
         impl="<unused>",
         )
-    view = Mock(
-        piece=htypes.label.view("Sample view"),
-        )
-    state = htypes.label.state()
-    hook = Mock()
-    command_layout_context.open_command_layout_context(piece, current_item, view, state, hook, ctx)
+    navigator = Mock()
+    navigator.view.piece = htypes.label.view("Sample view")
+    navigator.state = htypes.label.state()
+    command_layout_context.open_command_layout_context(piece, current_item, navigator, ctx)
     _view_creg_mock.animate.assert_called_once()
-    hook.replace_view.assert_called_once()
+    navigator.hook.replace_view.assert_called_once()
 
 
 def test_view():
