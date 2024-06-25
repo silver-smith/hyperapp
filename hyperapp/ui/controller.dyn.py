@@ -239,7 +239,7 @@ class _Item:
         parent = self.parent
         idx = self.idx
         new_widget = new_view.construct_widget(new_state, self.ctx)
-        parent.view.replace_child(parent.widget, idx, new_view, new_widget)
+        parent.view.replace_child(self.ctx, parent.widget, idx, new_view, new_widget)
         parent._replace_child_item(idx)
 
     def element_replaced_hook(self, idx, new_view, new_widget):

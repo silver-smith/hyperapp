@@ -49,7 +49,7 @@ class View(metaclass=abc.ABCMeta):
     def apply(self, ctx, widget, diff):
         raise NotImplementedError()
 
-    def replace_child(self, widget, idx, new_child_view, new_child_widget):
+    def replace_child(self, ctx, widget, idx, new_child_view, new_child_widget):
         pass
 
     def items(self):

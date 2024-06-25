@@ -112,7 +112,7 @@ class NavigatorView(View):
         self._next = next.next
         self._replace_widget(ctx, next_state)
 
-    def replace_child(self, widget, idx, new_child_view, new_child_widget):
+    def replace_child(self, ctx, widget, idx, new_child_view, new_child_widget):
         assert idx == 0
         self._current_view = new_child_view
         self._ctl_hook.replace_parent_widget(new_child_widget)

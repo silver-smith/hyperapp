@@ -91,7 +91,7 @@ class BoxLayoutView(View):
             elements=tuple(elements),
             )
 
-    def replace_child(self, widget, idx, new_child_view, new_child_widget):
+    def replace_child(self, ctx, widget, idx, new_child_view, new_child_widget):
         log.info("Box layout: replace child #%d -> %s / %s", idx, new_child_view, new_child_widget)
         old_elt = self._elements[idx]
         self._elements[idx] = self._Element(new_child_view, old_elt.focusable, old_elt.stretch)
@@ -113,5 +113,5 @@ class BoxLayoutView(View):
     def replace_element(self, ctx, widget, idx, view):
         log.info("Box layout: replace element #%d -> %s", idx, view)
         elt_widget = view.construct_widget(None, ctx)
-        self.replace_child(widget, idx, view, elt_widget)
+        self.replace_child(ctx, widget, idx, view, elt_widget)
         self._ctl_hook.element_replaced(idx, view, elt_widget)
