@@ -8,7 +8,9 @@ from .services import (
     fn_to_ref,
     mark,
     mosaic,
+    web,
     )
+from .services import view_creg as real_view_creg
 from .code.context import Context
 from .tested.code import command_layout_context
 
@@ -59,3 +61,27 @@ def test_open_command_layout_context():
     command_layout_context.open_command_layout_context(piece, current_item, view, state, hook, ctx)
     _view_creg_mock.animate.assert_called_once()
     hook.replace_view.assert_called_once()
+
+
+def test_view():
+    _view_creg_mock.invite = real_view_creg.invite  # Used to resolve base view.
+    sample_command = _make_sample_command()
+    ctx = Context()
+    base_piece = htypes.label.view("Sample label")
+    piece = htypes.command_layout_context.view(
+        base=mosaic.put(base_piece),
+        model_command=mosaic.put(sample_command),
+        )
+    base_state = htypes.label.state()
+    state = htypes.command_layout_context.state(
+        base=mosaic.put(base_state),
+        )
+    app = QtWidgets.QApplication()
+    try:
+        view = command_layout_context.CommandLayoutContextView.from_piece(piece, ctx)
+        widget = view.construct_widget(state, ctx)
+        assert view.piece
+        state = view.widget_state(widget)
+        assert state
+    finally:
+        app.shutdown()

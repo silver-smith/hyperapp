@@ -4,12 +4,14 @@ import:
 - builtins:association_reg.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
+- builtins:web.service
 - common.context:context.module
 - common.mark:mark.service
 - legacy_type.builtin:python_module
 - legacy_type.phony:phony
 - resource.data_to_res:data_to_res.service
 - resource.fn_to_res:fn_to_ref.service
+- ui.view_registry:view_creg.service
 associations: []
 definitions:
   command_layout_context.tests.module:
@@ -25,6 +27,8 @@ definitions:
         services.mark: common.mark:mark.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
+        services.view_creg: ui.view_registry:view_creg.service
+        services.web: builtins:web.service
         tested.code.command_layout_context: phony
   phony:
     type: legacy_type.phony:phony
