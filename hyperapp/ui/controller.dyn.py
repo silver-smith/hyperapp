@@ -120,14 +120,6 @@ class _Item:
     def get_child_widget(self, idx):
         return self.view.item_widget(self.widget, idx)
 
-    @cached_property
-    def is_navigator(self):
-        kid = self.current_child
-        if kid:
-            return 'navigator' in self.rctx.diffs(kid.rctx)
-        else:
-            return 'navigator' in self.rctx
-
     def navigator_rec(self, rctx):
         try:
             return rctx.navigator
