@@ -1,0 +1,31 @@
+# Automatically generated file. Do not edit.
+
+import:
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.identity_command:identity_model_command_impl
+- ui.command:command.module
+- ui.model_command_impl_creg:model_command_impl_creg.service
+associations:
+- bases:
+  - ui.model_command_impl_creg:model_command_impl_creg.service
+  - legacy_type.identity_command:identity_model_command_impl
+  key:
+  - ui.model_command_impl_creg:model_command_impl_creg.service
+  - legacy_type.identity_command:identity_model_command_impl
+  value: identity_model_command_impl_from_piece
+definitions:
+  identity_command.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: identity_command
+      file_name: identity_command.dyn.py
+      import_list:
+        code.command: ui.command:command.module
+        htypes.identity_command.identity_model_command_impl: legacy_type.identity_command:identity_model_command_impl
+        services.model_command_impl_creg: ui.model_command_impl_creg:model_command_impl_creg.service
+  identity_model_command_impl_from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: identity_command.module
+      attr_name: identity_model_command_impl_from_piece
