@@ -136,7 +136,7 @@ class _Item:
         return [CommandRec(cmd, command_ctx) for cmd in commands]
 
     def _make_model_commands(self, command_ctx):
-        commands = ui_model_command_factory(command_ctx.piece, command_ctx)
+        commands = ui_model_command_factory(self.ctx.lcs, command_ctx.piece, command_ctx)
         return [CommandRec(cmd, command_ctx) for cmd in commands]
 
     def _command_context(self, rctx):

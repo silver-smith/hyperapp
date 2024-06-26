@@ -38,6 +38,15 @@ associations:
   - legacy_type.ui:ui_model_command_impl
   value: ui_model_command_impl_from_piece
 definitions:
+  get_ui_model_command_layout:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ui_model_command.module
+      attr_name: get_ui_model_command_layout
+  get_ui_model_command_layout.service:
+    type: legacy_type.builtin:call
+    value:
+      function: get_ui_model_command_layout
   set_ui_model_command:
     type: legacy_type.builtin:attribute
     value:

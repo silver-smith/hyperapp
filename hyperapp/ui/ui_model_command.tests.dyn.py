@@ -54,9 +54,11 @@ def enum_model_commands():
 
 
 def test_ui_model_command_factory():
+    lcs = Mock()
+    lcs.get.return_value = None
     ctx = Context()
     piece = "Sample piece"
-    commands = ui_model_command_factory(piece, ctx)
+    commands = ui_model_command_factory(lcs, piece, ctx)
     assert commands
 
 

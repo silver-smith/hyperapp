@@ -80,22 +80,6 @@ def ui_model_command_impl_from_piece(piece, ctx):
     return UiModelCommandImpl(ctx, model_impl, properties)
 
 
-def _model_command_to_ui_command(command):
-    if isinstance(command, htypes.ui.model_command):
-        impl = htypes.ui.ui_model_command_impl(
-            model_command_impl=command.impl,
-            layout=None,
-            )
-        impl_ref = mosaic.put(impl)
-    else:
-        # Layout command enumerator returns UI commands. Do not wrap them.
-        impl_ref = command.impl
-    return htypes.ui.command(
-        d=command.d,
-        impl=impl_ref,
-        )
-
-
 @mark.service
 def set_ui_model_command_layout():
     def _set_ui_model_command_layout(lcs, command_d, layout):
@@ -105,6 +89,19 @@ def set_ui_model_command_layout():
             }
         lcs.set(d, layout)
     return _set_ui_model_command_layout
+
+
+def _get_ui_model_command_layout(lcs, command_d):
+    d = {
+        htypes.ui.ui_model_command_layout_d(),
+        command_d,
+        }
+    return lcs.get(d)
+
+
+@mark.service
+def get_ui_model_command_layout():
+    return _get_ui_model_command_layout
 
 
 @mark.service
@@ -121,16 +118,34 @@ def set_ui_model_command():
     return _set_ui_model_command
 
 
+def _model_command_to_ui_command(lcs, command):
+    if isinstance(command, htypes.ui.model_command):
+        command_d = pyobj_creg.invite(command.d)
+        layout = _get_ui_model_command_layout(lcs, command_d)
+        impl = htypes.ui.ui_model_command_impl(
+            model_command_impl=command.impl,
+            layout=mosaic.put_opt(layout),
+            )
+        impl_ref = mosaic.put(impl)
+    else:
+        # Layout command enumerator returns UI commands. Do not wrap them.
+        impl_ref = command.impl
+    return htypes.ui.command(
+        d=command.d,
+        impl=impl_ref,
+        )
+
+
 @mark.service
 def ui_model_command_factory():
-    def _ui_model_command_factory(piece, ctx):
+    def _ui_model_command_factory(lcs, piece, ctx):
         command_list = [
             *global_commands(),
             *model_commands(piece),
             *enum_model_commands(piece, ctx),
             ]
         return [
-            _model_command_to_ui_command(cmd)
+            _model_command_to_ui_command(lcs, cmd)
             for cmd in command_list
             ]
     return _ui_model_command_factory
