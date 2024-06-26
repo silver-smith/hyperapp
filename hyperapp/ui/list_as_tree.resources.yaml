@@ -184,6 +184,7 @@ definitions:
     type: legacy_type.ui:ui_model_command_impl
     value:
       model_command_impl: open_opener_commands.model_command_impl
+      layout: null
   open_opener_commands.model_command_impl:
     type: legacy_type.ui:model_command_impl
     value:

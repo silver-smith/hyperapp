@@ -90,6 +90,7 @@ def test_command_impl_from_piece():
         )
     piece = htypes.ui.ui_model_command_impl(
         model_command_impl=mosaic.put(model_impl),
+        layout=None,
         )
     impl = ui_model_command.ui_model_command_impl_from_piece(piece, ctx)
     assert impl

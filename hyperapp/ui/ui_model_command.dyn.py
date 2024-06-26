@@ -84,6 +84,7 @@ def _model_command_to_ui_command(command):
     if isinstance(command, htypes.ui.model_command):
         impl = htypes.ui.ui_model_command_impl(
             model_command_impl=command.impl,
+            layout=None,
             )
         impl_ref = mosaic.put(impl)
     else:

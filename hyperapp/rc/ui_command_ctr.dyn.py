@@ -55,6 +55,7 @@ def _make_model_command(piece, custom_types, module_res, attr, d_res):
     model_command_impl = _make_impl(piece, attribute, htypes.ui.model_command_impl)
     impl = htypes.ui.ui_model_command_impl(
         model_command_impl=mosaic.put(model_command_impl),
+        layout=None,
         )
     command = _make_command(impl, d_res)
     return (attribute, model_command_impl, impl, command)

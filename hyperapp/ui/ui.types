@@ -34,6 +34,7 @@ model_command_impl = record:
 
 ui_model_command_impl = record:
   model_command_impl: ref
+  layout: ref opt
 
 model_command_enumerator = record:
   function: ref

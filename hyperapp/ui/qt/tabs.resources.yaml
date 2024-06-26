@@ -82,6 +82,7 @@ definitions:
     type: legacy_type.ui:ui_model_command_impl
     value:
       model_command_impl: open_tab_list.model_command_impl
+      layout: null
   open_tab_list.model_command_impl:
     type: legacy_type.ui:model_command_impl
     value:
