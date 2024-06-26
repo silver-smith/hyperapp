@@ -6,6 +6,8 @@ from . import htypes
 from .services import (
     mark,
     mosaic,
+    pyobj_creg,
+    set_ui_model_command_layout,
     view_creg,
     web,
     )
@@ -17,19 +19,22 @@ class CommandLayoutContextView(View):
     @classmethod
     def from_piece(cls, piece, ctx):
         base_view = view_creg.invite(piece.base, ctx)
-        model_command = web.summon(piece.model_command)
-        return cls(base_view, model_command)
+        command = web.summon(piece.model_command)
+        command_d = pyobj_creg.invite(command.d)
+        return cls(ctx.lcs, base_view, piece.model_command, command_d)
 
-    def __init__(self, base_view, model_command):
+    def __init__(self, lcs, base_view, model_command_ref, command_d):
         super().__init__()
+        self._lcs = lcs
         self._base_view = base_view
-        self._model_command = model_command
+        self._model_command_ref = model_command_ref
+        self._command_d = command_d
 
     @property
     def piece(self):
         return htypes.command_layout_context.view(
             base=mosaic.put(self._base_view.piece),
-            model_command=mosaic.put(self._model_command),
+            model_command=self._model_command_ref,
             )
 
     def construct_widget(self, state, ctx):
@@ -44,8 +49,13 @@ class CommandLayoutContextView(View):
         layout.addWidget(base_widget)
         return widget
 
+    def _set_layout(self, layout):
+        command_d = self._command_d
+        set_ui_model_command_layout(self._lcs, command_d, layout)
+
     def children_context(self, ctx):
         return ctx.clone_with(
+            set_layout=self._set_layout,
             )
 
     def get_current(self, widget):

@@ -112,12 +112,16 @@ class NavigatorView(View):
         self._next = next.next
         self._replace_widget(ctx, next_state)
 
+    def _set_layout(self, layout):
+        t = deduce_t(self._model)
+        set_model_layout(self._lcs, t, layout)
+
     def replace_child(self, ctx, widget, idx, new_child_view, new_child_widget):
         assert idx == 0
         self._current_view = new_child_view
         self._ctl_hook.replace_parent_widget(new_child_widget)
-        t = deduce_t(self._model)
-        set_model_layout(self._lcs, t, new_child_view.piece)
+        set_layout = ctx.get('set_layout', self._set_layout)
+        set_layout(new_child_view.piece)
 
     def items(self):
         return [Item('current', self._current_view)]

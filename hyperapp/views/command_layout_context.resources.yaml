@@ -2,6 +2,7 @@
 
 import:
 - builtins:mosaic.service
+- builtins:pyobj_creg.service
 - builtins:web.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
@@ -16,6 +17,8 @@ import:
 - legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_impl
+- ui.ui_model_command:set_ui_model_command.service
+- ui.ui_model_command:set_ui_model_command_layout.service
 - ui.view:view.module
 - ui.view_registry:view_creg.service
 associations:
@@ -61,6 +64,9 @@ definitions:
         htypes.command_layout_context.view: legacy_type.command_layout_context:view
         services.mark: common.mark:mark.service
         services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        services.set_ui_model_command: ui.ui_model_command:set_ui_model_command.service
+        services.set_ui_model_command_layout: ui.ui_model_command:set_ui_model_command_layout.service
         services.view_creg: ui.view_registry:view_creg.service
         services.web: builtins:web.service
   command_properties_d:

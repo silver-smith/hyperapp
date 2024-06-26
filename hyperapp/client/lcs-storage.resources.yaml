@@ -6,16 +6,23 @@ import:
 - legacy_type.list_adapter:fn_list_adapter
 - legacy_type.list_to_tree_adapter:adapter
 - legacy_type.master_details:view
+- legacy_type.sample_commands:details_d
 - legacy_type.sample_list:item
 - legacy_type.sample_list:sample_list
+- legacy_type.str_adapter:static_str_adapter
+- legacy_type.text:readonly_view
 - legacy_type.tree:view
 - legacy_type.ui:model_view_layout_d
+- legacy_type.ui:ui_model_command_layout_d
 - models.data_browser:browse_record
 - models.data_browser:record_open.command
 - sample.sample_commands:details.command
 - sample.sample_list:sample_list
 associations: []
 definitions:
+  details_d_1:
+    type: legacy_type.sample_commands:details_d
+    value: {}
   fn_list_adapter_1:
     type: legacy_type.list_adapter:fn_list_adapter
     value:
@@ -32,9 +39,13 @@ definitions:
         - model_view_layout_d_1
         value: master_details_view_1
       - key:
-        - model_view_layout_d_1
         - legacy_type.data_browser:record_view
+        - model_view_layout_d_1
         value: tree_view_1
+      - key:
+        - ui_model_command_layout_d_1
+        - details_d_1
+        value: readonly_view_1
   list_to_tree_adapter_adapter_1:
     type: legacy_type.list_to_tree_adapter:adapter
     value:
@@ -59,7 +70,17 @@ definitions:
   model_view_layout_d_1:
     type: legacy_type.ui:model_view_layout_d
     value: {}
+  readonly_view_1:
+    type: legacy_type.text:readonly_view
+    value:
+      adapter: static_str_adapter_1
+  static_str_adapter_1:
+    type: legacy_type.str_adapter:static_str_adapter
+    value: {}
   tree_view_1:
     type: legacy_type.tree:view
     value:
       adapter: list_to_tree_adapter_adapter_1
+  ui_model_command_layout_d_1:
+    type: legacy_type.ui:ui_model_command_layout_d
+    value: {}

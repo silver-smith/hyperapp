@@ -64,7 +64,9 @@ def test_open_command_layout_context():
 def test_view():
     _view_creg_mock.invite = real_view_creg.invite  # Used to resolve base view.
     sample_command = _make_sample_command()
-    ctx = Context()
+    ctx = Context(
+        lcs=Mock(),
+        )
     base_piece = htypes.label.view("Sample label")
     piece = htypes.command_layout_context.view(
         base=mosaic.put(base_piece),
