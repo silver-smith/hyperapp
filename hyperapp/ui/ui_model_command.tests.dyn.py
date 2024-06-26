@@ -9,7 +9,11 @@ from .services import (
     )
 from .code.context import Context
 from .tested.code import ui_model_command
-from .tested.services import ui_model_command_factory, set_ui_model_command
+from .tested.services import (
+    ui_model_command_factory,
+    set_ui_model_command,
+    set_ui_model_command_layout,
+    )
 
 
 def _phony_fn(piece, ctx):
@@ -90,6 +94,14 @@ def test_command_impl_from_piece():
     impl = ui_model_command.ui_model_command_impl_from_piece(piece, ctx)
     assert impl
     assert impl.properties
+
+
+def test_set_ui_model_command_layout():
+    lcs = Mock()
+    command_d = data_to_ref(htypes.ui_model_command_tests.sample_d())
+    layout = None
+    set_ui_model_command_layout(lcs, command_d, layout)
+    lcs.set.assert_called_once()
 
 
 def test_set_ui_model_command():

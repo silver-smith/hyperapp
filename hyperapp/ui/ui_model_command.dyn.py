@@ -96,6 +96,17 @@ def _model_command_to_ui_command(command):
 
 
 @mark.service
+def set_ui_model_command_layout():
+    def _set_ui_model_command_layout(lcs, command_d, layout):
+        d = {
+            htypes.ui.ui_model_command_layout_d(),
+            command_d,
+            }
+        lcs.set(d, layout)
+    return _set_ui_model_command_layout
+
+
+@mark.service
 def set_ui_model_command():
     def _set_ui_model_command(lcs, model, command):
         t = deduce_t(model)
