@@ -1,0 +1,25 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:mosaic.service
+- common.context:context.module
+- legacy_type.builtin:python_module
+- legacy_type.phony:phony
+- resource.data_to_res:data_to_res.service
+- resource.fn_to_res:fn_to_ref.service
+associations: []
+definitions:
+  identity_command.tests.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: identity_command.tests
+      file_name: identity_command.tests.dyn.py
+      import_list:
+        code.context: common.context:context.module
+        services.data_to_res: resource.data_to_res:data_to_res.service
+        services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
+        services.mosaic: builtins:mosaic.service
+        tested.code.identity_command: phony
+  phony:
+    type: legacy_type.phony:phony
+    value: {}

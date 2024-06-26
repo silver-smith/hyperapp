@@ -1,1 +1,3 @@
+add_identity_command_d = record
+
 identity_model_command_impl = record
