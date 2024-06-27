@@ -10,7 +10,6 @@ class IdentityModelCommandImpl(CommandImpl):
     def __init__(self, piece):
         super().__init__()
         self._piece = piece
-        self._params = {'piece'}
 
     def __repr__(self):
         return 'identity'
@@ -29,9 +28,7 @@ class IdentityModelCommandImpl(CommandImpl):
 
     @property
     def params(self):
-        return {
-            'piece': self._piece,
-            }
+        return {'piece': self._piece}
 
     async def _run(self):
         return self._piece
