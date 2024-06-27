@@ -57,6 +57,7 @@ _hardcoded_shortcuts = {
     'show_current_context': 'Alt+U',
     'toggle_editable': 'Ctrl+E',
     'open_command_layout_context': 'Ctrl+L',
+    'add_identity_command': 'Ctrl+I',
     }
 
 
