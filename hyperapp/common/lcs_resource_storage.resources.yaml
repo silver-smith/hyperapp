@@ -7,7 +7,9 @@ import:
 - builtins:resource_registry.service
 - builtins:web.service
 - common.ref_picker:pick_refs.service
+- legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.builtin:record_mt
 - legacy_type.lcs_resource_storage:element
 - legacy_type.lcs_resource_storage:mapping
 associations: []
@@ -18,6 +20,8 @@ definitions:
       module_name: lcs_resource_storage
       file_name: lcs_resource_storage.dyn.py
       import_list:
+        htypes.builtin.call: legacy_type.builtin:call
+        htypes.builtin.record_mt: legacy_type.builtin:record_mt
         htypes.lcs_resource_storage.element: legacy_type.lcs_resource_storage:element
         htypes.lcs_resource_storage.mapping: legacy_type.lcs_resource_storage:mapping
         services.deduce_t: builtins:deduce_t.service

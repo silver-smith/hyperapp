@@ -65,7 +65,7 @@ class LcsResourceStorage:
         for ref in pick_refs(piece):
             elt_piece, elt_t = web.summon_with_t(ref)
             self._store_if_missing(elt_piece, elt_t)
-        name = self._make_name(t)
+        name = self._make_name(piece, t)
         self._res_module[name] = piece
 
     def _save(self):
@@ -90,19 +90,30 @@ class LcsResourceStorage:
         text = yaml.dump(self._res_module.as_dict, sort_keys=False)
         self._path.write_text(text)
 
-    def _iter_names(self, t):
+    def _make_stem(self, piece, t=None):
+        if t is None:
+            t = deduce_t(piece)
         if isinstance(t, TPrimitive):
-            stem = t.name
+            return t.name
         else:
             assert isinstance(t, TRecord)
-            stem = t.name
-            if stem in {'view', 'layout', 'state', 'adapter'}:
+            if t.name in {'view', 'layout', 'state', 'adapter'}:
                 mnl = t.module_name.split('.')
-                stem = f'{mnl[-1]}_{t.name}'
+                return f'{mnl[-1]}_{t.name}'
+            if t is htypes.builtin.record_mt:
+                return f'{piece.name}_record_mt'
+            if t is htypes.builtin.call:
+                fn = web.summon(piece.function)
+                base_stem = self._make_stem(fn)
+                return f'{base_stem}_call'
+            return t.name
+
+    def _iter_names(self, piece, t):
         for idx in itertools.count(1):
+            stem = self._make_stem(piece, t)
             yield f'{stem}_{idx}'
 
-    def _make_name(self, t):
-        for name in self._iter_names(t):
+    def _make_name(self, piece, t):
+        for name in self._iter_names(piece, t):
             if name not in self._res_module:
                 return name
