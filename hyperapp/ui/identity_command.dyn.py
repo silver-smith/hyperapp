@@ -1,6 +1,11 @@
+from hyperapp.common.htypes import TRecord
+
 from . import htypes
 from .services import (
+    data_to_ref,
     model_command_impl_creg,
+    mosaic,
+    set_ui_model_command,
     )
 from .code.command import CommandImpl
 
@@ -39,5 +44,11 @@ def identity_model_command_impl_from_piece(piece, ctx):
     return IdentityModelCommandImpl(piece)
 
 
-def add_identity_command(piece):
-    pass
+def add_identity_command(piece, lcs):
+    impl = htypes.identity_command.identity_model_command_impl()
+    d_t = TRecord('identity_command', 'identity')
+    command = htypes.ui.command(
+        d=data_to_ref(d_t()),
+        impl=mosaic.put(impl),
+        )
+    set_ui_model_command(lcs, piece, command)

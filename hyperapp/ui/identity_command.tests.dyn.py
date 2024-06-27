@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from . import htypes
 from .services import (
     data_to_res,
@@ -26,6 +28,7 @@ def _make_sample_command():
 
 def test_add_identity_command():
     sample_command = _make_sample_command()
+    lcs = Mock()
     ctx = Context()
     model = htypes.identity_command_tests.sample_model()
     model_state = htypes.identity_command_tests.sample_model_state()
@@ -33,4 +36,5 @@ def test_add_identity_command():
         model=mosaic.put(model),
         model_state=mosaic.put(model_state)
         )
-    identity_command.add_identity_command(piece)
+    identity_command.add_identity_command(piece, lcs)
+    lcs.set.assert_called_once()
