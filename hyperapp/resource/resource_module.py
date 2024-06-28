@@ -246,7 +246,8 @@ class ResourceModule:
 
     def _resource_type_name(self, resource_type):
         t = resource_type.resource_t
-        assert t.module_name and t.name, t  # Only named types are supported.
+        if not t.module_name or not t.name:
+            raise RuntimeError(f"Only named types are supported: {t}")
         return f'legacy_type.{t.module_name}:{t.name}'
 
     def _resolve_name(self, name):
