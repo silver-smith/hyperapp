@@ -15,6 +15,7 @@ import:
 - legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_impl
+- legacy_type.ui:ui_model_command_impl
 - resource.data_to_res:data_to_ref.service
 - ui.command:command.module
 - ui.model_command_impl_creg:model_command_impl_creg.service
@@ -82,6 +83,7 @@ definitions:
         code.command: ui.command:command.module
         htypes.identity_command.identity_model_command_impl: legacy_type.identity_command:identity_model_command_impl
         htypes.ui.command: legacy_type.ui:command
+        htypes.ui.ui_model_command_impl: legacy_type.ui:ui_model_command_impl
         services.data_to_ref: resource.data_to_res:data_to_ref.service
         services.get_ui_model_commands: ui.ui_model_command:get_ui_model_commands.service
         services.model_command_impl_creg: ui.model_command_impl_creg:model_command_impl_creg.service

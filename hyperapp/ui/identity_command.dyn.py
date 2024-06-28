@@ -49,11 +49,15 @@ def identity_model_command_impl_from_piece(piece, ctx):
 def add_identity_command(piece, lcs):
     model = web.summon(piece.model)
     command_list = get_ui_model_commands(lcs, model)
-    impl = htypes.identity_command.identity_model_command_impl()
+    model_impl = htypes.identity_command.identity_model_command_impl()
+    ui_impl = htypes.ui.ui_model_command_impl(
+        model_command_impl=mosaic.put(model_impl),
+        layout=None,
+        )
     d_t = TRecord('identity_command', 'identity_d')
     command = htypes.ui.command(
         d=data_to_ref(d_t()),
-        impl=mosaic.put(impl),
+        impl=mosaic.put(ui_impl),
         )
     command_list.append(command)
     set_ui_model_commands(lcs, model, command_list)

@@ -18,6 +18,7 @@ import:
 - legacy_type.ui:command
 - legacy_type.ui:model_view_layout_d
 - legacy_type.ui:ui_model_command_d
+- legacy_type.ui:ui_model_command_impl
 - legacy_type.ui:ui_model_command_layout_d
 - legacy_type.ui:ui_model_command_list
 - models.data_browser:browse_record
@@ -30,7 +31,7 @@ definitions:
     type: legacy_type.ui:command
     value:
       d: identity_d_record_mt_call_1
-      impl: identity_model_command_impl_1
+      impl: ui_model_command_impl_1
   details_d_1:
     type: legacy_type.sample_commands:details_d
     value: {}
@@ -60,8 +61,8 @@ definitions:
     value:
       elements:
       - key:
-        - legacy_type.sample_list:sample_list
         - model_view_layout_d_1
+        - legacy_type.sample_list:sample_list
         value: master_details_view_1
       - key:
         - legacy_type.data_browser:record_view
@@ -72,8 +73,8 @@ definitions:
         - details_d_1
         value: readonly_view_1
       - key:
-        - legacy_type.sample_list:sample_list
         - ui_model_command_d_1
+        - legacy_type.sample_list:sample_list
         value: ui_model_command_list_1
   list_to_tree_adapter_adapter_1:
     type: legacy_type.list_to_tree_adapter:adapter
@@ -113,6 +114,11 @@ definitions:
   ui_model_command_d_1:
     type: legacy_type.ui:ui_model_command_d
     value: {}
+  ui_model_command_impl_1:
+    type: legacy_type.ui:ui_model_command_impl
+    value:
+      model_command_impl: identity_model_command_impl_1
+      layout: null
   ui_model_command_layout_d_1:
     type: legacy_type.ui:ui_model_command_layout_d
     value: {}
