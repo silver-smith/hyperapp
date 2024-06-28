@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from . import htypes
 from .services import (
     association_reg,
@@ -37,6 +39,9 @@ def _make_sample_command():
 
 
 def test_list_model_commands():
+    lcs = Mock()
+    lcs.get.return_value = None  # Missint (empty) command list.
+
     sample_command = _make_sample_command()
     model_t = htypes.model_commands_tests.sample_model_1
 
@@ -51,7 +56,7 @@ def test_list_model_commands():
         model_state=mosaic.put(model_state)
         )
     ctx = Context()
-    result = model_commands.list_model_commands(piece, ctx)
+    result = model_commands.list_model_commands(piece, ctx, lcs)
     assert result
     assert len(result) == 1
     assert result[0].name == 'sample'

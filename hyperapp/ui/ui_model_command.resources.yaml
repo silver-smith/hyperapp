@@ -66,6 +66,15 @@ definitions:
     type: legacy_type.builtin:call
     value:
       function: list_ui_model_commands
+  merge_command_lists:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ui_model_command.module
+      attr_name: merge_command_lists
+  merge_command_lists.service:
+    type: legacy_type.builtin:call
+    value:
+      function: merge_command_lists
   set_ui_model_command_layout:
     type: legacy_type.builtin:attribute
     value:

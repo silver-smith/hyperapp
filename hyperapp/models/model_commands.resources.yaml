@@ -26,6 +26,8 @@ import:
 - ui.model_command:model_command_factory.service
 - ui.model_command:model_commands.service
 - ui.model_command_impl_creg:model_command_impl_creg.service
+- ui.ui_model_command:get_ui_model_commands.service
+- ui.ui_model_command:merge_command_lists.service
 associations:
 - bases:
   - command_properties_d
@@ -96,6 +98,7 @@ definitions:
       params:
       - piece
       - ctx
+      - lcs
   list_model_commands.command_properties:
     type: legacy_type.ui:command_properties
     value:
@@ -113,6 +116,7 @@ definitions:
       params:
       - piece
       - ctx
+      - lcs
   list_model_commands.model:
     type: legacy_type.ui:model
     value:
@@ -135,6 +139,8 @@ definitions:
         code.command: ui.command:command.module
         htypes.model_commands.item: legacy_type.model_commands:item
         htypes.model_commands.model_commands: legacy_type.model_commands:model_commands
+        services.get_ui_model_commands: ui.ui_model_command:get_ui_model_commands.service
+        services.merge_command_lists: ui.ui_model_command:merge_command_lists.service
         services.model_command_factory: ui.model_command:model_command_factory.service
         services.model_command_impl_creg: ui.model_command_impl_creg:model_command_impl_creg.service
         services.model_commands: ui.model_command:model_commands.service

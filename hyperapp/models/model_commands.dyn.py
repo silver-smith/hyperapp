@@ -4,6 +4,8 @@ import logging
 
 from . import htypes
 from .services import (
+    get_ui_model_commands,
+    merge_command_lists,
     model_command_factory,
     model_commands,
     mosaic,
@@ -15,9 +17,11 @@ from .code.command import d_res_ref_to_name
 log = logging.getLogger(__name__)
 
 
-def list_model_commands(piece, ctx):
+def list_model_commands(piece, ctx, lcs):
     model = web.summon(piece.model)
-    command_list = model_commands(model)
+    model_command_list = model_commands(model)
+    lcs_command_list = get_ui_model_commands(lcs, model)
+    command_list = merge_command_lists(model_command_list, lcs_command_list)
     return [
         htypes.model_commands.item(
             command=mosaic.put(command),
