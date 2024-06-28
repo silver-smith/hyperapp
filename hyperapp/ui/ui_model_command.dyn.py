@@ -114,7 +114,6 @@ def set_ui_model_command():
     def _set_ui_model_command(lcs, model, command):
         t = deduce_t(model)
         t_res = pyobj_creg.actor_to_piece(t)
-        command_d = pyobj_creg.invite(command.d)
         d = {
             htypes.ui.ui_model_command_d(),
             t_res,
