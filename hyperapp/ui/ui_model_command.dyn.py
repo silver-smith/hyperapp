@@ -146,6 +146,19 @@ def get_ui_model_commands():
     return _get_ui_model_commands
 
 
+def _merge_command_lists(command_list_1, command_list_2):
+    d_to_command = {
+        cmd.d: cmd
+        for cmd in command_list_1 + command_list_2
+        }
+    return list(d_to_command.values())
+
+
+@mark.service
+def merge_command_lists():
+    return _merge_command_lists
+
+
 def _model_command_to_ui_command(lcs, command):
     if isinstance(command, htypes.ui.model_command):
         command_d = pyobj_creg.invite(command.d)
@@ -162,19 +175,6 @@ def _model_command_to_ui_command(lcs, command):
         d=command.d,
         impl=impl_ref,
         )
-
-
-def _merge_command_lists(command_list_1, command_list_2):
-    d_to_command = {
-        cmd.d: cmd
-        for cmd in command_list_1 + command_list_2
-        }
-    return list(d_to_command.values())
-
-
-@mark.service
-def merge_command_lists():
-    return _merge_command_lists
 
 
 @mark.service
