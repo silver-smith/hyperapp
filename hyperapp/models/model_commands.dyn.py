@@ -21,6 +21,7 @@ def list_model_commands(piece, ctx, lcs):
     model = web.summon(piece.model)
     model_command_list = model_commands(model)
     lcs_command_list = get_ui_model_commands(lcs, model)
+    # Mixing model and UI commands:
     command_list = merge_command_lists(model_command_list, lcs_command_list)
     return [
         htypes.model_commands.item(
