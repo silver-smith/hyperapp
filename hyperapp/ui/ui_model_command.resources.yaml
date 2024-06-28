@@ -16,6 +16,7 @@ import:
 - legacy_type.ui:ui_model_command_d
 - legacy_type.ui:ui_model_command_impl
 - legacy_type.ui:ui_model_command_layout_d
+- legacy_type.ui:ui_model_command_list
 - resource.data_to_res:data_to_res.service
 - ui.command:command.module
 - ui.command_groups:command_groups.module
@@ -47,6 +48,15 @@ definitions:
     type: legacy_type.builtin:call
     value:
       function: get_ui_model_command_layout
+  get_ui_model_commands:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ui_model_command.module
+      attr_name: get_ui_model_commands
+  get_ui_model_commands.service:
+    type: legacy_type.builtin:call
+    value:
+      function: get_ui_model_commands
   list_ui_model_commands:
     type: legacy_type.builtin:attribute
     value:
@@ -56,15 +66,6 @@ definitions:
     type: legacy_type.builtin:call
     value:
       function: list_ui_model_commands
-  set_ui_model_command:
-    type: legacy_type.builtin:attribute
-    value:
-      object: ui_model_command.module
-      attr_name: set_ui_model_command
-  set_ui_model_command.service:
-    type: legacy_type.builtin:call
-    value:
-      function: set_ui_model_command
   set_ui_model_command_layout:
     type: legacy_type.builtin:attribute
     value:
@@ -74,6 +75,15 @@ definitions:
     type: legacy_type.builtin:call
     value:
       function: set_ui_model_command_layout
+  set_ui_model_commands:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ui_model_command.module
+      attr_name: set_ui_model_commands
+  set_ui_model_commands.service:
+    type: legacy_type.builtin:call
+    value:
+      function: set_ui_model_commands
   ui_model_command.module:
     type: legacy_type.builtin:python_module
     value:
@@ -89,6 +99,7 @@ definitions:
         htypes.ui.ui_model_command_d: legacy_type.ui:ui_model_command_d
         htypes.ui.ui_model_command_impl: legacy_type.ui:ui_model_command_impl
         htypes.ui.ui_model_command_layout_d: legacy_type.ui:ui_model_command_layout_d
+        htypes.ui.ui_model_command_list: legacy_type.ui:ui_model_command_list
         services.association_reg: builtins:association_reg.service
         services.data_to_res: resource.data_to_res:data_to_res.service
         services.deduce_t: builtins:deduce_t.service

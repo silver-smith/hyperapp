@@ -5,7 +5,8 @@ from .services import (
     data_to_ref,
     model_command_impl_creg,
     mosaic,
-    set_ui_model_command,
+    get_ui_model_commands,
+    set_ui_model_commands,
     )
 from .code.command import CommandImpl
 
@@ -45,10 +46,12 @@ def identity_model_command_impl_from_piece(piece, ctx):
 
 
 def add_identity_command(piece, lcs):
+    command_list = get_ui_model_commands(lcs, piece)
     impl = htypes.identity_command.identity_model_command_impl()
     d_t = TRecord('identity_command', 'identity')
     command = htypes.ui.command(
         d=data_to_ref(d_t()),
         impl=mosaic.put(impl),
         )
-    set_ui_model_command(lcs, piece, command)
+    command_list.append(command)
+    set_ui_model_commands(lcs, piece, command_list)

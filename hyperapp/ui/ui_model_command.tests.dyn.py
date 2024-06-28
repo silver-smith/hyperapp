@@ -11,7 +11,7 @@ from .code.context import Context
 from .tested.code import ui_model_command
 from .tested.services import (
     list_ui_model_commands,
-    set_ui_model_command,
+    set_ui_model_commands,
     set_ui_model_command_layout,
     )
 
@@ -107,10 +107,9 @@ def test_set_ui_model_command_layout():
     lcs.set.assert_called_once()
 
 
-def test_set_ui_model_command():
+def test_set_ui_model_commands():
     lcs = Mock()
     model = "Sample model"
-    command = Mock()
-    command.d = data_to_ref(htypes.ui_model_command_tests.sample_d())
-    set_ui_model_command(lcs, model, command)
+    commands = ["Sample 1", "Sample 2"]
+    set_ui_model_commands(lcs, model, commands)
     lcs.set.assert_called_once()

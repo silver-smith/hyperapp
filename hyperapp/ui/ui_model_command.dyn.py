@@ -110,16 +110,40 @@ def get_ui_model_command_layout():
 
 
 @mark.service
-def set_ui_model_command():
-    def _set_ui_model_command(lcs, model, command):
+def set_ui_model_commands():
+    def _set_ui_model_commands(lcs, model, commands):
         t = deduce_t(model)
         t_res = pyobj_creg.actor_to_piece(t)
         d = {
             htypes.ui.ui_model_command_d(),
             t_res,
             }
-        lcs.set(d, command)
-    return _set_ui_model_command
+        value = htypes.ui.ui_model_command_list(
+            commands=tuple(mosaic.put(cmd) for cmd in commands),
+            )
+        lcs.set(d, value)
+    return _set_ui_model_commands
+
+
+def _get_ui_model_commands(lcs, model):
+    t = deduce_t(model)
+    t_res = pyobj_creg.actor_to_piece(t)
+    d = {
+        htypes.ui.ui_model_command_d(),
+        t_res,
+        }
+    value = lcs.get(d)
+    if value is None:
+        return []
+    return [
+        web.summon(ref)
+        for ref in value.commands
+        ]
+
+
+@mark.service
+def get_ui_model_commands():
+    return _get_ui_model_commands
 
 
 def _model_command_to_ui_command(lcs, command):

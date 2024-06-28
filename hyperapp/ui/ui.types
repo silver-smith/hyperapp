@@ -41,6 +41,11 @@ model_command_enumerator = record:
   params: string list
 
 
+# For storing command list in lcs.
+ui_model_command_list = record:
+  commands: ref list
+
+
 # Model implementation association.
 model_d = record
 

@@ -17,7 +17,8 @@ import:
 - resource.data_to_res:data_to_ref.service
 - ui.command:command.module
 - ui.model_command_impl_creg:model_command_impl_creg.service
-- ui.ui_model_command:set_ui_model_command.service
+- ui.ui_model_command:get_ui_model_commands.service
+- ui.ui_model_command:set_ui_model_commands.service
 associations:
 - bases:
   - command_properties_d
@@ -81,9 +82,10 @@ definitions:
         htypes.identity_command.identity_model_command_impl: legacy_type.identity_command:identity_model_command_impl
         htypes.ui.command: legacy_type.ui:command
         services.data_to_ref: resource.data_to_res:data_to_ref.service
+        services.get_ui_model_commands: ui.ui_model_command:get_ui_model_commands.service
         services.model_command_impl_creg: ui.model_command_impl_creg:model_command_impl_creg.service
         services.mosaic: builtins:mosaic.service
-        services.set_ui_model_command: ui.ui_model_command:set_ui_model_command.service
+        services.set_ui_model_commands: ui.ui_model_command:set_ui_model_commands.service
   identity_model_command_impl_from_piece:
     type: legacy_type.builtin:attribute
     value:

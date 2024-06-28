@@ -28,5 +28,5 @@ definitions:
         services.mosaic: builtins:mosaic.service
         tested.code.ui_model_command: phony
         tested.services.list_ui_model_commands: phony
-        tested.services.set_ui_model_command: phony
         tested.services.set_ui_model_command_layout: phony
+        tested.services.set_ui_model_commands: phony

@@ -29,6 +29,7 @@ def _make_sample_command():
 def test_add_identity_command():
     sample_command = _make_sample_command()
     lcs = Mock()
+    lcs.get.return_value = None  # Imitate missing command list; do not return Mock instance.
     ctx = Context()
     model = htypes.identity_command_tests.sample_model()
     model_state = htypes.identity_command_tests.sample_model_state()
