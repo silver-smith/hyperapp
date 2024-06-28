@@ -7,6 +7,7 @@ from .services import (
     mosaic,
     get_ui_model_commands,
     set_ui_model_commands,
+    web,
     )
 from .code.command import CommandImpl
 
@@ -46,12 +47,13 @@ def identity_model_command_impl_from_piece(piece, ctx):
 
 
 def add_identity_command(piece, lcs):
-    command_list = get_ui_model_commands(lcs, piece)
+    model = web.summon(piece.model)
+    command_list = get_ui_model_commands(lcs, model)
     impl = htypes.identity_command.identity_model_command_impl()
-    d_t = TRecord('identity_command', 'identity')
+    d_t = TRecord('identity_command', 'identity_d')
     command = htypes.ui.command(
         d=data_to_ref(d_t()),
         impl=mosaic.put(impl),
         )
     command_list.append(command)
-    set_ui_model_commands(lcs, piece, command_list)
+    set_ui_model_commands(lcs, model, command_list)
