@@ -185,8 +185,10 @@ def list_ui_model_commands():
             *model_commands(piece),
             *enum_model_commands(piece, ctx),
             ]
-        return [
+        ui_command_list = [
             _model_command_to_ui_command(lcs, cmd)
             for cmd in command_list
             ]
+        lcs_command_list = _get_ui_model_commands(lcs, piece)
+        return _merge_command_lists(ui_command_list, lcs_command_list)
     return _list_ui_model_commands

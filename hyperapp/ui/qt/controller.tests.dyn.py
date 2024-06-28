@@ -74,9 +74,9 @@ class PhonyLayoutBundle:
 
 
 async def test_duplicate_window():
-    ctx = Context(
-        lcs=Mock(),
-    )
+    lcs=Mock()
+    lcs.get.return_value = None  # command list - mock is not iterable.
+    ctx = Context(lcs=lcs)
     default_layout = make_default_layout()
     feed = feed_factory(htypes.layout.view())
     app = QtWidgets.QApplication()

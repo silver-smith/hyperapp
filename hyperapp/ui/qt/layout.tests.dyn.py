@@ -72,7 +72,9 @@ class PhonyLayoutBundle:
 
 
 async def test_layout_tree():
-    ctx = Context(lcs=Mock())
+    lcs=Mock()
+    lcs.get.return_value = None  # command list - mock is not iterable.
+    ctx = Context(lcs=lcs)
     default_layout = make_default_layout()
     app = QtWidgets.QApplication()
     try:
@@ -88,7 +90,9 @@ async def test_layout_tree():
 
 
 async def test_enum_layout_tree_commands():
-    ctx = Context(lcs=Mock())
+    lcs=Mock()
+    lcs.get.return_value = None  # command list - mock is not iterable.
+    ctx = Context(lcs=lcs)
     default_layout = make_default_layout()
     app = QtWidgets.QApplication()
     try:
@@ -112,7 +116,9 @@ async def test_open_view_item_commands():
 
 
 async def test_view_item_commands():
-    ctx = Context(lcs=Mock())
+    lcs=Mock()
+    lcs.get.return_value = None  # command list - mock is not iterable.
+    ctx = Context(lcs=lcs)
     default_layout = make_default_layout()
     app = QtWidgets.QApplication()
     try:
