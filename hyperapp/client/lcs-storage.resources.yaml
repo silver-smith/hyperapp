@@ -1,6 +1,9 @@
 import:
+- legacy_type.builtin:call
+- legacy_type.builtin:record_mt
 - legacy_type.data_browser:record_item
 - legacy_type.data_browser:record_view
+- legacy_type.identity_command:identity_model_command_impl
 - legacy_type.lcs_resource_storage:mapping
 - legacy_type.list:view
 - legacy_type.list_adapter:fn_list_adapter
@@ -12,14 +15,22 @@ import:
 - legacy_type.str_adapter:static_str_adapter
 - legacy_type.text:readonly_view
 - legacy_type.tree:view
+- legacy_type.ui:command
 - legacy_type.ui:model_view_layout_d
+- legacy_type.ui:ui_model_command_d
 - legacy_type.ui:ui_model_command_layout_d
+- legacy_type.ui:ui_model_command_list
 - models.data_browser:browse_record
 - models.data_browser:record_open.command
 - sample.sample_commands:details.command
 - sample.sample_list:sample_list
 associations: []
 definitions:
+  command_1:
+    type: legacy_type.ui:command
+    value:
+      d: identity_d_record_mt_call_1
+      impl: identity_model_command_impl_1
   details_d_1:
     type: legacy_type.sample_commands:details_d
     value: {}
@@ -30,6 +41,20 @@ definitions:
       function: sample.sample_list:sample_list
       params:
       - piece
+  identity_d_record_mt_1:
+    type: legacy_type.builtin:record_mt
+    value:
+      module_name: identity_command
+      name: identity_d
+      base: null
+      fields: {}
+  identity_d_record_mt_call_1:
+    type: legacy_type.builtin:call
+    value:
+      function: identity_d_record_mt_1
+  identity_model_command_impl_1:
+    type: legacy_type.identity_command:identity_model_command_impl
+    value: {}
   lcs_storage_mapping:
     type: legacy_type.lcs_resource_storage:mapping
     value:
@@ -46,6 +71,10 @@ definitions:
         - ui_model_command_layout_d_1
         - details_d_1
         value: readonly_view_1
+      - key:
+        - legacy_type.sample_list:sample_list
+        - ui_model_command_d_1
+        value: ui_model_command_list_1
   list_to_tree_adapter_adapter_1:
     type: legacy_type.list_to_tree_adapter:adapter
     value:
@@ -81,6 +110,14 @@ definitions:
     type: legacy_type.tree:view
     value:
       adapter: list_to_tree_adapter_adapter_1
+  ui_model_command_d_1:
+    type: legacy_type.ui:ui_model_command_d
+    value: {}
   ui_model_command_layout_d_1:
     type: legacy_type.ui:ui_model_command_layout_d
     value: {}
+  ui_model_command_list_1:
+    type: legacy_type.ui:ui_model_command_list
+    value:
+      commands:
+      - command_1
