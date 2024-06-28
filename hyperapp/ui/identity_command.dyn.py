@@ -43,7 +43,7 @@ class IdentityModelCommandImpl(CommandImpl):
 
 @model_command_impl_creg.actor(htypes.identity_command.identity_model_command_impl)
 def identity_model_command_impl_from_piece(piece, ctx):
-    return IdentityModelCommandImpl(piece)
+    return IdentityModelCommandImpl(ctx.piece)
 
 
 def add_identity_command(piece, lcs):
