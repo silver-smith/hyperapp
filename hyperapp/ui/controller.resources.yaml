@@ -18,7 +18,7 @@ import:
 - ui.feed:feed_factory.service
 - ui.ui_command:list_view_commands.service
 - ui.ui_command:ui_command_factory.service
-- ui.ui_model_command:ui_model_command_factory.service
+- ui.ui_model_command:list_ui_model_commands.service
 - ui.view:view.module
 - ui.view_registry:view_creg.service
 associations:
@@ -46,10 +46,10 @@ definitions:
         htypes.root.view: legacy_type.root:view
         services.deduce_t: builtins:deduce_t.service
         services.feed_factory: ui.feed:feed_factory.service
+        services.list_ui_model_commands: ui.ui_model_command:list_ui_model_commands.service
         services.list_view_commands: ui.ui_command:list_view_commands.service
         services.mosaic: builtins:mosaic.service
         services.ui_command_factory: ui.ui_command:ui_command_factory.service
-        services.ui_model_command_factory: ui.ui_model_command:ui_model_command_factory.service
         services.view_creg: ui.view_registry:view_creg.service
         services.web: builtins:web.service
   feed_d:

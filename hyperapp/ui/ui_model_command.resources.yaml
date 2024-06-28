@@ -47,6 +47,15 @@ definitions:
     type: legacy_type.builtin:call
     value:
       function: get_ui_model_command_layout
+  list_ui_model_commands:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ui_model_command.module
+      attr_name: list_ui_model_commands
+  list_ui_model_commands.service:
+    type: legacy_type.builtin:call
+    value:
+      function: list_ui_model_commands
   set_ui_model_command:
     type: legacy_type.builtin:attribute
     value:
@@ -96,15 +105,6 @@ definitions:
         services.view_creg: ui.view_registry:view_creg.service
         services.visualizer: ui.visualizer:visualizer.service
         services.web: builtins:web.service
-  ui_model_command_factory:
-    type: legacy_type.builtin:attribute
-    value:
-      object: ui_model_command.module
-      attr_name: ui_model_command_factory
-  ui_model_command_factory.service:
-    type: legacy_type.builtin:call
-    value:
-      function: ui_model_command_factory
   ui_model_command_impl_from_piece:
     type: legacy_type.builtin:attribute
     value:

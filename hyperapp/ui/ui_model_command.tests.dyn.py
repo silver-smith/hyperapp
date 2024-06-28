@@ -10,7 +10,7 @@ from .services import (
 from .code.context import Context
 from .tested.code import ui_model_command
 from .tested.services import (
-    ui_model_command_factory,
+    list_ui_model_commands,
     set_ui_model_command,
     set_ui_model_command_layout,
     )
@@ -53,12 +53,12 @@ def enum_model_commands():
     return _mock_enum_model_commands
 
 
-def test_ui_model_command_factory():
+def test_list_ui_model_commands():
     lcs = Mock()
     lcs.get.return_value = None
     ctx = Context()
     piece = "Sample piece"
-    commands = ui_model_command_factory(lcs, piece, ctx)
+    commands = list_ui_model_commands(lcs, piece, ctx)
     assert commands
 
 

@@ -141,8 +141,8 @@ def _model_command_to_ui_command(lcs, command):
 
 
 @mark.service
-def ui_model_command_factory():
-    def _ui_model_command_factory(lcs, piece, ctx):
+def list_ui_model_commands():
+    def _list_ui_model_commands(lcs, piece, ctx):
         command_list = [
             *global_commands(),
             *model_commands(piece),
@@ -152,4 +152,4 @@ def ui_model_command_factory():
             _model_command_to_ui_command(lcs, cmd)
             for cmd in command_list
             ]
-    return _ui_model_command_factory
+    return _list_ui_model_commands
