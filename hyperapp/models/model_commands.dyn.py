@@ -42,7 +42,7 @@ async def run_command(piece, current_item, ctx):
         return None  # Empty command list - no item is selected.
     model = web.summon(piece.model)
     model_state = web.summon(piece.model_state)
-    command_ctx = ctx.clone_with(
+    command_ctx = ctx.push(
         piece=model,
         model_state=model_state,
         **ctx.attributes(model_state),
