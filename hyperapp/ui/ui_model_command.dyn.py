@@ -151,22 +151,25 @@ def merge_command_lists():
     return _merge_command_lists
 
 
-def _model_command_to_ui_command(lcs, command):
-    if isinstance(command, htypes.ui.model_command):
-        command_d = pyobj_creg.invite(command.d)
-        layout = _get_ui_model_command_layout(lcs, command_d)
-        impl = htypes.ui.ui_model_command_impl(
-            model_command_impl=command.impl,
-            layout=mosaic.put_opt(layout),
-            )
-        impl_ref = mosaic.put(impl)
-    else:
-        # Layout command enumerator returns UI commands. Do not wrap them.
-        impl_ref = command.impl
+def wrap_model_command_to_ui_command(lcs, command):
+    command_d = pyobj_creg.invite(command.d)
+    layout = _get_ui_model_command_layout(lcs, command_d)
+    impl = htypes.ui.ui_model_command_impl(
+        model_command_impl=command.impl,
+        layout=mosaic.put_opt(layout),
+        )
     return htypes.ui.command(
         d=command.d,
-        impl=impl_ref,
+        impl=mosaic.put(impl),
         )
+
+
+def _model_command_to_ui_command(lcs, command):
+    if isinstance(command, htypes.ui.model_command):
+        return wrap_model_command_to_ui_command(lcs, command)
+    else:
+        # Layout command enumerator returns UI commands. Do not wrap them.
+        return command
 
 
 @mark.service

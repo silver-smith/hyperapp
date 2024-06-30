@@ -6,13 +6,14 @@ from . import htypes
 from .services import (
     get_ui_model_commands,
     merge_command_lists,
-    model_command_factory,
+    ui_command_factory,
     model_commands,
     mosaic,
     pyobj_creg,
     web,
     )
 from .code.command import d_res_ref_to_name
+from .code.ui_model_command import wrap_model_command_to_ui_command
 
 log = logging.getLogger(__name__)
 
@@ -20,9 +21,12 @@ log = logging.getLogger(__name__)
 def list_model_commands(piece, ctx, lcs):
     model = web.summon(piece.model)
     model_command_list = model_commands(model)
+    ui_command_list = [
+        wrap_model_command_to_ui_command(lcs, cmd)
+        for cmd in model_command_list
+        ]
     lcs_command_list = get_ui_model_commands(lcs, model)
-    # Mixing model and UI commands:
-    command_list = merge_command_lists(model_command_list, lcs_command_list)
+    command_list = merge_command_lists(ui_command_list, lcs_command_list)
     return [
         htypes.model_commands.item(
             command=mosaic.put(command),
@@ -44,7 +48,7 @@ async def run_command(piece, current_item, ctx):
         **ctx.attributes(model_state),
         )
     command_piece = web.summon(current_item.command)
-    command = model_command_factory(command_piece, command_ctx)
+    command = ui_command_factory(command_piece, command_ctx)
     piece = await command.run()
     log.info("Run command: command result: %s", piece)
     return piece
