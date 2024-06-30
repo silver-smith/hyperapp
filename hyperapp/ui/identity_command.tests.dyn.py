@@ -39,3 +39,11 @@ def test_add_identity_command():
         )
     identity_command.add_identity_command(piece, lcs)
     lcs.set.assert_called_once()
+
+
+def test_identity_command_instance():
+    model = htypes.identity_command_tests.sample_model()
+    ctx = Context(piece=model)
+    piece = htypes.identity_command.identity_model_command_impl()
+    impl = identity_command.identity_model_command_impl_from_piece(piece, ctx)
+    assert impl.properties

@@ -83,6 +83,7 @@ definitions:
         code.command: ui.command:command.module
         htypes.identity_command.identity_model_command_impl: legacy_type.identity_command:identity_model_command_impl
         htypes.ui.command: legacy_type.ui:command
+        htypes.ui.command_properties: legacy_type.ui:command_properties
         htypes.ui.ui_model_command_impl: legacy_type.ui:ui_model_command_impl
         services.data_to_ref: resource.data_to_res:data_to_ref.service
         services.get_ui_model_commands: ui.ui_model_command:get_ui_model_commands.service

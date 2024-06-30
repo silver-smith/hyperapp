@@ -37,6 +37,14 @@ class IdentityModelCommandImpl(CommandImpl):
     def params(self):
         return {'piece': self._piece}
 
+    @property
+    def properties(self):
+        return htypes.ui.command_properties(
+            is_global=False,
+            uses_state=False,
+            remotable=False,
+            )
+
     async def _run(self):
         return self._piece
 
