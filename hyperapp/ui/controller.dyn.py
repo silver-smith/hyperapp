@@ -140,11 +140,13 @@ class _Item:
         return [CommandRec(cmd, command_ctx) for cmd in commands]
 
     def _command_context(self, rctx):
-        ctx = self.ctx.push(
+        ctx = self.ctx.clone_with(
+            navigator=self.navigator_rec(rctx),
+            )
+        ctx = ctx.push(
             view=self.view,
             widget=weakref.ref(self.widget),
             hook=self._hook,
-            navigator=self.navigator_rec(rctx),
             )
         ctx = ctx.copy_from(rctx)
         if 'model' in ctx:
