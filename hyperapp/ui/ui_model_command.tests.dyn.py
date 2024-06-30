@@ -2,7 +2,9 @@ from unittest.mock import Mock
 
 from . import htypes
 from .services import (
+    association_reg,
     data_to_ref,
+    data_to_res,
     fn_to_ref,
     mark,
     mosaic,
@@ -26,7 +28,7 @@ def _make_sample_command():
         function=fn_to_ref(_phony_fn),
         params=('piece', 'ctx'),
         )
-    return htypes.ui.command(
+    return htypes.ui.model_command(
         d=d_res_ref,
         impl=mosaic.put(impl),
         )
@@ -79,6 +81,14 @@ def test_command_impl_from_piece():
         model_command_impl=mosaic.put(model_impl),
         layout=None,
         )
+
+    props_d_res = data_to_res(htypes.ui.command_properties_d())
+    association_reg[props_d_res, model_impl] = htypes.ui.command_properties(
+        is_global=False,
+        uses_state=False,
+        remotable=False,
+        )
+
     impl = ui_model_command.ui_model_command_impl_from_piece(piece, ctx)
     assert impl
     assert impl.properties
