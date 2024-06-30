@@ -24,13 +24,25 @@ class ModelCommand(Command):
 
 
 class ModelCommandImpl(FnCommandImpl):
-    pass
+
+    def __init__(self, ctx, fn, params, properties):
+        super().__init__(ctx, fn, params)
+        self._properties = properties
+
+    @property
+    def properties(self):
+        return self._properties
 
 
 @model_command_impl_creg.actor(htypes.ui.model_command_impl)
 def model_command_impl_from_piece(piece, ctx):
     fn = pyobj_creg.invite(piece.function)
-    return ModelCommandImpl(ctx, fn, piece.params)
+    props_d_res = data_to_res(htypes.ui.command_properties_d())
+    try:
+        properties = association_reg[props_d_res, piece]
+    except KeyError:
+        raise RuntimeError(f"Properties are missing for model command: {piece}")
+    return ModelCommandImpl(ctx, fn, piece.params, properties)
 
 
 @mark.service

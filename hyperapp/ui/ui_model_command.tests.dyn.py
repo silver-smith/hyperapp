@@ -66,21 +66,6 @@ def _sample_fn(piece):
     pass
 
 
-class PhonyAssociationRegistry:
-
-    def __getitem__(self, key):
-        return htypes.ui.command_properties(
-            is_global=False,
-            uses_state=False,
-            remotable=False,
-            )
-
-
-@mark.service
-def association_reg():
-    return PhonyAssociationRegistry()
-
-
 def test_command_impl_from_piece():
     ctx = Context(
         lcs=None,

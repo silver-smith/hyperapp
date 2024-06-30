@@ -2,8 +2,6 @@ import logging
 
 from . import htypes
 from .services import (
-    association_reg,
-    data_to_res,
     deduce_t,
     enum_model_commands,
     global_commands,
@@ -74,15 +72,9 @@ class UiModelCommandImpl(CommandImpl):
 
 @ui_command_impl_creg.actor(htypes.ui.ui_model_command_impl)
 def ui_model_command_impl_from_piece(piece, ctx):
-    props_d_res = data_to_res(htypes.ui.command_properties_d())
-    model_impl_piece = web.summon(piece.model_command_impl)
-    model_impl = model_command_impl_creg.animate(model_impl_piece, ctx)
+    model_impl = model_command_impl_creg.invite(piece.model_command_impl, ctx)
     layout = web.summon_opt(piece.layout)
-    try:
-        properties = association_reg[props_d_res, model_impl_piece]
-    except KeyError:
-        raise RuntimeError(f"Properties are missing for command {model_impl.name}: {model_impl_piece}")
-    return UiModelCommandImpl(ctx, model_impl, layout, properties)
+    return UiModelCommandImpl(ctx, model_impl, layout, model_impl.properties)
 
 
 @mark.service

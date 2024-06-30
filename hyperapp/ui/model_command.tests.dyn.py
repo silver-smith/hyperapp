@@ -3,8 +3,10 @@ from unittest.mock import Mock
 from . import htypes
 from .services import (
     fn_to_ref,
+    mark,
     mosaic,
     )
+from .services import association_reg as real_association_reg
 from .code.context import Context
 from .tested.code import model_command
 from .tested.services import (
@@ -32,6 +34,24 @@ def test_enum_model_commands():
 
 def _sample_fn():
     return 123
+
+
+class PhonyAssociationRegistry:
+
+    def get_all(self, key):
+        return real_association_reg.get_all(key)
+
+    def __getitem__(self, key):
+        return htypes.ui.command_properties(
+            is_global=False,
+            uses_state=False,
+            remotable=False,
+            )
+
+
+@mark.service
+def association_reg():
+    return PhonyAssociationRegistry()
 
 
 def test_model_command_ctr():

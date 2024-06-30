@@ -28,26 +28,34 @@ def _sample_command_fn(piece, ctx):
 
 def _make_sample_command():
     d_res = data_to_res(htypes.model_commands_tests.sample_d())
-    model_impl = htypes.ui.model_command_impl(
+    impl = htypes.ui.model_command_impl(
         function=fn_to_ref(_sample_command_fn),
         params=('piece', 'ctx'),
         )
-    return htypes.ui.model_command(
+    command = htypes.ui.model_command(
         d=mosaic.put(d_res),
-        impl=mosaic.put(model_impl),
+        impl=mosaic.put(impl),
         )
+    return (impl, command)
 
 
 def test_list_model_commands():
     lcs = Mock()
     lcs.get.return_value = None  # Missint (empty) command list.
 
-    sample_command = _make_sample_command()
+    command_impl, sample_command = _make_sample_command()
     model_t = htypes.model_commands_tests.sample_model_1
 
     t_res = pyobj_creg.actor_to_piece(model_t)
     d_res = data_to_res(htypes.ui.model_command_d())
     association_reg[d_res, t_res] = sample_command
+
+    props_d_res = data_to_res(htypes.ui.command_properties_d())
+    association_reg[props_d_res, command_impl] = htypes.ui.command_properties(
+        is_global=False,
+        uses_state=False,
+        remotable=False,
+        )
 
     model = model_t()
     model_state = htypes.model_commands_tests.sample_model_state()
@@ -63,7 +71,7 @@ def test_list_model_commands():
 
 
 async def test_run_command():
-    sample_command = _make_sample_command()
+    command_impl, sample_command = _make_sample_command()
     ctx = Context()
     model = htypes.model_commands_tests.sample_model_1()
     model_state = htypes.model_commands_tests.sample_model_state()
