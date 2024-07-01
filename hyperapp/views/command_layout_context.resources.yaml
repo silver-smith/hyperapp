@@ -12,12 +12,17 @@ import:
 - legacy_type.command_layout_context:state
 - legacy_type.command_layout_context:view
 - legacy_type.model_commands:model_commands
+- legacy_type.ui:command
 - legacy_type.ui:command_properties
 - legacy_type.ui:command_properties_d
+- legacy_type.ui:external_ui_model_command_impl
 - legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_impl
+- legacy_type.ui:ui_model_command_impl
+- ui.ui_model_command:get_ui_model_commands.service
 - ui.ui_model_command:set_ui_model_command_layout.service
+- ui.ui_model_command:set_ui_model_commands.service
 - ui.view:view.module
 - ui.view_registry:view_creg.service
 associations:
@@ -61,10 +66,15 @@ definitions:
         code.view: ui.view:view.module
         htypes.command_layout_context.state: legacy_type.command_layout_context:state
         htypes.command_layout_context.view: legacy_type.command_layout_context:view
+        htypes.ui.command: legacy_type.ui:command
+        htypes.ui.external_ui_model_command_impl: legacy_type.ui:external_ui_model_command_impl
+        htypes.ui.ui_model_command_impl: legacy_type.ui:ui_model_command_impl
+        services.get_ui_model_commands: ui.ui_model_command:get_ui_model_commands.service
         services.mark: common.mark:mark.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.set_ui_model_command_layout: ui.ui_model_command:set_ui_model_command_layout.service
+        services.set_ui_model_commands: ui.ui_model_command:set_ui_model_commands.service
         services.view_creg: ui.view_registry:view_creg.service
         services.web: builtins:web.service
   command_properties_d:

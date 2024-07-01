@@ -8,6 +8,8 @@ from .services import (
     mosaic,
     pyobj_creg,
     set_ui_model_command_layout,
+    get_ui_model_commands,
+    set_ui_model_commands,
     view_creg,
     web,
     )
@@ -23,15 +25,15 @@ class CommandLayoutContextView(View):
         command = web.summon(piece.ui_command)
         impl = web.summon(command.impl)
         command_d = pyobj_creg.invite(command.d)
-        return cls(ctx.lcs, base_view, model, piece.ui_command, impl, command_d)
+        return cls(ctx.lcs, base_view, model, command, impl, command_d)
 
-    def __init__(self, lcs, base_view, model, ui_command_ref, command_impl, command_d):
+    def __init__(self, lcs, base_view, model, command_piece, command_impl_piece, command_d):
         super().__init__()
         self._lcs = lcs
         self._base_view = base_view
         self._model = model
-        self._ui_command_ref = ui_command_ref
-        self._command_impl = command_impl  # piece
+        self._command_piece = command_piece
+        self._command_impl_piece = command_impl_piece
         self._command_d = command_d
 
     @property
@@ -39,7 +41,7 @@ class CommandLayoutContextView(View):
         return htypes.command_layout_context.view(
             base=mosaic.put(self._base_view.piece),
             model=mosaic.put(self._model),
-            ui_command=self._ui_command_ref,
+            ui_command=mosaic.put(self._command_piece),
             )
 
     def construct_widget(self, state, ctx):
@@ -55,8 +57,31 @@ class CommandLayoutContextView(View):
         return widget
 
     def _set_layout(self, layout):
-        command_d = self._command_d
-        set_ui_model_command_layout(self._lcs, command_d, layout)
+        if isinstance(self._command_impl_piece, htypes.ui.external_ui_model_command_impl):
+            set_ui_model_command_layout(self._lcs, self._command_d, layout)
+        else:
+            self._update_command_layout(layout)
+
+    def _update_command_layout(self, layout):
+        command_list = get_ui_model_commands(self._lcs, self._model)
+        idx, command = self._find_command(command_list)
+        new_impl = htypes.ui.ui_model_command_impl(
+            model_command_impl=self._command_impl_piece.model_command_impl,
+            layout=mosaic.put(layout),
+            )
+        new_command = htypes.ui.command(
+            d=self._command_piece.d,
+            impl=mosaic.put(new_impl),
+            )
+        command_list = command_list.copy()
+        command_list[idx] = new_command
+        set_ui_model_commands(self._lcs, self._model, command_list)
+
+    def _find_command(self, command_list):
+        for idx, command in enumerate(command_list):
+            if command.d == self._command_piece.d:
+                return (idx, command)
+        raise RuntimeError(f"Command {self._command_d} is missing from configured in LCS for model {self._model}")
 
     def children_context(self, ctx):
         return ctx.clone_with(

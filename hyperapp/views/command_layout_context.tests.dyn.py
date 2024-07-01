@@ -27,6 +27,22 @@ def _sample_command_fn(piece, ctx):
     return "Sample result"
 
 
+def _make_sample_external_ui_command():
+    d_res = data_to_res(htypes.command_layout_context_tests.sample_d())
+    model_impl = htypes.ui.model_command_impl(
+        function=fn_to_ref(_sample_command_fn),
+        params=('piece', 'ctx'),
+        )
+    ui_impl = htypes.ui.external_ui_model_command_impl(
+        model_command_impl=mosaic.put(model_impl),
+        layout=None,
+        )
+    return htypes.ui.command(
+        d=mosaic.put(d_res),
+        impl=mosaic.put(ui_impl),
+        )
+
+
 def _make_sample_ui_command():
     d_res = data_to_res(htypes.command_layout_context_tests.sample_d())
     model_impl = htypes.ui.model_command_impl(
@@ -44,7 +60,7 @@ def _make_sample_ui_command():
 
 
 def test_open_command_layout_context():
-    sample_ui_command = _make_sample_ui_command()
+    sample_ui_command = _make_sample_external_ui_command()
     ctx = Context()
     model = htypes.command_layout_context_tests.sample_model()
     model_state = htypes.command_layout_context_tests.sample_model_state()
@@ -67,7 +83,7 @@ def test_open_command_layout_context():
 
 def test_view():
     _view_creg_mock.invite = real_view_creg.invite  # Used to resolve base view.
-    sample_ui_command = _make_sample_ui_command()
+    sample_ui_command = _make_sample_external_ui_command()
     ctx = Context(
         lcs=Mock(),
         )
@@ -91,3 +107,44 @@ def test_view():
         assert state
     finally:
         app.shutdown()
+
+
+def test_set_external_layout():
+    _view_creg_mock.invite = real_view_creg.invite  # Used to resolve base view.
+    sample_ui_command = _make_sample_external_ui_command()
+    lcs = Mock()
+    ctx = Context(
+        lcs=lcs,
+        )
+    model = htypes.command_layout_context_tests.sample_model()
+    base_piece = htypes.label.view("Sample label")
+    piece = htypes.command_layout_context.view(
+        base=mosaic.put(base_piece),
+        model=mosaic.put(model),
+        ui_command=mosaic.put(sample_ui_command),
+        )
+    view = command_layout_context.CommandLayoutContextView.from_piece(piece, ctx)
+    view._set_layout(htypes.label.view("Sample label layout"))
+    lcs.set.assert_called_once()
+
+
+def test_set_usual_layout():
+    _view_creg_mock.invite = real_view_creg.invite  # Used to resolve base view.
+    sample_ui_command = _make_sample_ui_command()
+    lcs = Mock()
+    ctx = Context(
+        lcs=lcs,
+        )
+    model = htypes.command_layout_context_tests.sample_model()
+    base_piece = htypes.label.view("Sample label")
+    piece = htypes.command_layout_context.view(
+        base=mosaic.put(base_piece),
+        model=mosaic.put(model),
+        ui_command=mosaic.put(sample_ui_command),
+        )
+    view = command_layout_context.CommandLayoutContextView.from_piece(piece, ctx)
+    lcs.get.return_value = htypes.ui.ui_model_command_list([
+        mosaic.put(sample_ui_command),
+        ])
+    view._set_layout(htypes.label.view("Sample label layout"))
+    lcs.set.assert_called_once()
