@@ -27,20 +27,24 @@ def _sample_command_fn(piece, ctx):
     return "Sample result"
 
 
-def _make_sample_command():
+def _make_sample_ui_command():
     d_res = data_to_res(htypes.command_layout_context_tests.sample_d())
     model_impl = htypes.ui.model_command_impl(
         function=fn_to_ref(_sample_command_fn),
         params=('piece', 'ctx'),
         )
-    return htypes.ui.model_command(
+    ui_impl = htypes.ui.ui_model_command_impl(
+        model_command_impl=mosaic.put(model_impl),
+        layout=None,
+        )
+    return htypes.ui.command(
         d=mosaic.put(d_res),
-        impl=mosaic.put(model_impl),
+        impl=mosaic.put(ui_impl),
         )
 
 
 def test_open_command_layout_context():
-    sample_command = _make_sample_command()
+    sample_ui_command = _make_sample_ui_command()
     ctx = Context()
     model = htypes.command_layout_context_tests.sample_model()
     model_state = htypes.command_layout_context_tests.sample_model_state()
@@ -49,7 +53,7 @@ def test_open_command_layout_context():
         model_state=mosaic.put(model_state)
         )
     current_item = htypes.model_commands.item(
-        command=mosaic.put(sample_command),
+        command=mosaic.put(sample_ui_command),
         name="<unused>",
         impl="<unused>",
         )
@@ -63,14 +67,14 @@ def test_open_command_layout_context():
 
 def test_view():
     _view_creg_mock.invite = real_view_creg.invite  # Used to resolve base view.
-    sample_command = _make_sample_command()
+    sample_ui_command = _make_sample_ui_command()
     ctx = Context(
         lcs=Mock(),
         )
     base_piece = htypes.label.view("Sample label")
     piece = htypes.command_layout_context.view(
         base=mosaic.put(base_piece),
-        model_command=mosaic.put(sample_command),
+        ui_command=mosaic.put(sample_ui_command),
         )
     base_state = htypes.label.state()
     state = htypes.command_layout_context.state(
