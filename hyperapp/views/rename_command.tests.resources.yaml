@@ -9,6 +9,7 @@ import:
 - legacy_type.phony:phony
 - resource.data_to_res:data_to_res.service
 - resource.fn_to_res:fn_to_ref.service
+- ui.view_registry:model_view_creg.service
 - ui.view_registry:view_creg.service
 associations: []
 definitions:
@@ -25,6 +26,7 @@ definitions:
         services.data_to_res: resource.data_to_res:data_to_res.service
         services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
         services.mark: common.mark:mark.service
+        services.model_view_creg: ui.view_registry:model_view_creg.service
         services.mosaic: builtins:mosaic.service
         services.view_creg: ui.view_registry:view_creg.service
         services.web: builtins:web.service

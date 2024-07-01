@@ -10,17 +10,17 @@ from .services import (
     mosaic,
     web,
     )
-from .services import view_creg as real_view_creg
+from .services import model_view_creg as real_model_view_creg
 from .code.context import Context
 from .tested.code import rename_command
 
 
-_view_creg_mock = Mock()
+_model_view_creg_mock = Mock()
 
 
 @mark.service
-def view_creg():
-    return _view_creg_mock
+def model_view_creg():
+    return _model_view_creg_mock
 
 
 def _sample_command_fn(piece, ctx):
@@ -44,24 +44,27 @@ def _make_sample_ui_command():
 
 
 def test_view():
-    _view_creg_mock.invite = real_view_creg.invite  # Used to resolve base view.
+    _model_view_creg_mock.invite = real_model_view_creg.invite  # Used to resolve base view.
     sample_ui_command = _make_sample_ui_command()
     ctx = Context(
         lcs=Mock(),
         )
-    model = htypes.rename_command_tests.sample_model()
-    base_piece = htypes.label.view("Sample label")
+    model = "Sample command name"
+    adapter = htypes.str_adapter.static_str_adapter()
+    text_view = htypes.text.edit_view(
+        adapter=mosaic.put(adapter),
+        )
     piece = htypes.rename_command.view(
-        base=mosaic.put(base_piece),
+        base=mosaic.put(text_view),
         ui_command=mosaic.put(sample_ui_command),
         )
-    base_state = htypes.label.state()
+    text_state = htypes.text.state()
     state = htypes.rename_command.state(
-        base=mosaic.put(base_state),
+        base=mosaic.put(text_state),
         )
     app = QtWidgets.QApplication()
     try:
-        view = rename_command.RenameCommandContextView.from_piece(piece, ctx)
+        view = rename_command.RenameCommandContextView.from_piece(piece, model, ctx)
         widget = view.construct_widget(state, ctx)
         assert view.piece
         state = view.widget_state(widget)
@@ -85,8 +88,6 @@ def test_rename_command():
         impl="<unused>",
         )
     navigator = Mock()
-    navigator.view.piece = htypes.label.view("Sample view")
-    navigator.state = htypes.label.state()
     rename_command.rename_command(piece, current_item, navigator, ctx)
-    _view_creg_mock.animate.assert_called_once()
-    navigator.hook.replace_view.assert_called_once()
+    _model_view_creg_mock.animate.assert_called_once()
+    navigator.view.open.assert_called_once()

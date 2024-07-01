@@ -11,11 +11,16 @@ import:
 - legacy_type.rename_command:rename_command_d
 - legacy_type.rename_command:state
 - legacy_type.rename_command:view
+- legacy_type.str_adapter:static_str_adapter
+- legacy_type.text:edit_view
+- legacy_type.text:state
 - legacy_type.ui:command_properties
 - legacy_type.ui:command_properties_d
 - legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_impl
+- ui.command:command.module
+- ui.view_registry:model_view_creg.service
 - ui.view_registry:view_creg.service
 - views.context_view:context_view.module
 associations:
@@ -33,10 +38,10 @@ associations:
   - legacy_type.model_commands:model_commands
   value: rename_command.command
 - bases:
-  - ui.view_registry:view_creg.service
+  - ui.view_registry:model_view_creg.service
   - legacy_type.rename_command:view
   key:
-  - ui.view_registry:view_creg.service
+  - ui.view_registry:model_view_creg.service
   - legacy_type.rename_command:view
   value: RenameCommandContextView.from_piece
 definitions:
@@ -93,9 +98,14 @@ definitions:
       module_name: rename_command
       file_name: rename_command.dyn.py
       import_list:
+        code.command: ui.command:command.module
         code.context_view: views.context_view:context_view.module
         htypes.rename_command.state: legacy_type.rename_command:state
         htypes.rename_command.view: legacy_type.rename_command:view
+        htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
+        htypes.text.edit_view: legacy_type.text:edit_view
+        htypes.text.state: legacy_type.text:state
+        services.model_view_creg: ui.view_registry:model_view_creg.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.view_creg: ui.view_registry:view_creg.service
