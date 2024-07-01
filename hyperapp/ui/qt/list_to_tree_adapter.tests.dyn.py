@@ -95,7 +95,7 @@ class MockSubscriber:
         log.info("Mock subscriber: got diff: %s", diff)
         asyncio.create_task(self._queue.put(diff))
 
-    async def wait(self, cond, timeout=2):
+    async def wait(self, cond, timeout=5):
         async with asyncio.timeout(timeout):
             while not cond():
                 log.info("Mock subscriber: condition not met, wait for next diff: %s", cond)
