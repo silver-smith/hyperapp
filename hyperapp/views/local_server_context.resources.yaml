@@ -19,6 +19,7 @@ import:
 - ui.local_server:local_server.module
 - ui.view:view.module
 - ui.view_registry:view_creg.service
+- views.context_view:context_view.module
 associations:
 - bases:
   - command_properties_d
@@ -62,6 +63,7 @@ definitions:
       module_name: local_server_context
       file_name: local_server_context.dyn.py
       import_list:
+        code.context_view: views.context_view:context_view.module
         code.local_server: ui.local_server:local_server.module
         code.view: ui.view:view.module
         htypes.local_server_context.state: legacy_type.local_server_context:state

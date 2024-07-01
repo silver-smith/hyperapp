@@ -25,6 +25,7 @@ import:
 - ui.ui_model_command:set_ui_model_commands.service
 - ui.view:view.module
 - ui.view_registry:view_creg.service
+- views.context_view:context_view.module
 associations:
 - bases:
   - command_properties_d
@@ -63,6 +64,7 @@ definitions:
       module_name: command_layout_context
       file_name: command_layout_context.dyn.py
       import_list:
+        code.context_view: views.context_view:context_view.module
         code.view: ui.view:view.module
         htypes.command_layout_context.state: legacy_type.command_layout_context:state
         htypes.command_layout_context.view: legacy_type.command_layout_context:view

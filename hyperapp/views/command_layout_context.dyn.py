@@ -1,7 +1,3 @@
-from functools import cached_property
-
-from PySide6 import QtWidgets
-
 from . import htypes
 from .services import (
     mark,
@@ -13,10 +9,10 @@ from .services import (
     view_creg,
     web,
     )
-from .code.view import Item, View
+from .code.context_view import ContextView
 
 
-class CommandLayoutContextView(View):
+class CommandLayoutContextView(ContextView):
 
     @classmethod
     def from_piece(cls, piece, ctx):
@@ -25,12 +21,11 @@ class CommandLayoutContextView(View):
         command = web.summon(piece.ui_command)
         impl = web.summon(command.impl)
         command_d = pyobj_creg.invite(command.d)
-        return cls(ctx.lcs, base_view, model, command, impl, command_d)
+        return cls(base_view, ctx.lcs, model, command, impl, command_d)
 
-    def __init__(self, lcs, base_view, model, command_piece, command_impl_piece, command_d):
-        super().__init__()
+    def __init__(self, base_view, lcs, model, command_piece, command_impl_piece, command_d):
+        super().__init__(base_view, label="Command layout")
         self._lcs = lcs
-        self._base_view = base_view
         self._model = model
         self._command_piece = command_piece
         self._command_impl_piece = command_impl_piece
@@ -43,18 +38,6 @@ class CommandLayoutContextView(View):
             model=mosaic.put(self._model),
             ui_command=mosaic.put(self._command_piece),
             )
-
-    def construct_widget(self, state, ctx):
-        if state is not None:
-            base_state = web.summon(state.base)
-        else:
-            base_state = None
-        base_widget = self._base_view.construct_widget(base_state, ctx)
-        widget = QtWidgets.QWidget()
-        layout = QtWidgets.QBoxLayout(QtWidgets.QBoxLayout.Direction.TopToBottom, widget)
-        layout.addWidget(QtWidgets.QLabel(text="Command layout"))
-        layout.addWidget(base_widget)
-        return widget
 
     def _set_layout(self, layout):
         if isinstance(self._command_impl_piece, htypes.ui.external_ui_model_command_impl):
@@ -88,35 +71,12 @@ class CommandLayoutContextView(View):
             set_layout=self._set_layout,
             )
 
-    def get_current(self, widget):
-        return 0
-
     def widget_state(self, widget):
         base_widget = self._base_widget(widget)
         base_state = self._base_view.widget_state(base_widget)
         return htypes.command_layout_context.state(
             base=mosaic.put(base_state),
             )
-
-    def replace_child_widget(self, widget, idx, new_child_widget):
-        if idx != 0:
-            return super().replace_child_widget(widget, idx, new_child_widget)
-        layout = widget.layout()
-        old_w = layout.itemAt(1).widget()
-        layout.replaceWidget(old_w, new_child_widget)
-        old_w.deleteLater()
-
-    def items(self):
-        return [Item('base', self._base_view)]
-
-    def item_widget(self, widget, idx):
-        if idx == 0:
-            return self._base_widget(widget)
-        return super().item_widget(widget, idx)
-
-    def _base_widget(self, widget):
-        layout = widget.layout()
-        return layout.itemAt(1).widget()
 
 
 def open_command_layout_context(piece, current_item, navigator, ctx):
