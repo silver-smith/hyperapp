@@ -71,6 +71,7 @@ class UiModelCommandImpl(CommandImpl):
 
 
 @ui_command_impl_creg.actor(htypes.ui.ui_model_command_impl)
+@ui_command_impl_creg.actor(htypes.ui.external_ui_model_command_impl)
 def ui_model_command_impl_from_piece(piece, ctx):
     model_impl = model_command_impl_creg.invite(piece.model_command_impl, ctx)
     layout = web.summon_opt(piece.layout)
@@ -154,7 +155,7 @@ def merge_command_lists():
 def wrap_model_command_to_ui_command(lcs, command):
     command_d = pyobj_creg.invite(command.d)
     layout = _get_ui_model_command_layout(lcs, command_d)
-    impl = htypes.ui.ui_model_command_impl(
+    impl = htypes.ui.external_ui_model_command_impl(
         model_command_impl=command.impl,
         layout=mosaic.put_opt(layout),
         )
