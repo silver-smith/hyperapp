@@ -56,8 +56,9 @@ _hardcoded_shortcuts = {
     'open_local_server_context': 'Alt+S',
     'show_current_context': 'Alt+U',
     'toggle_editable': 'Ctrl+E',
-    'open_command_layout_context': 'Ctrl+L',
-    'add_identity_command': 'Ctrl+I',
+    'open_command_layout_context': 'L',
+    'add_identity_command': 'I',
+    'rename_command': 'R',
     }
 
 

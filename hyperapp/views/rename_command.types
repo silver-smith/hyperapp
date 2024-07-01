@@ -1,0 +1,8 @@
+rename_command_d = record
+
+view = record:
+  base: ref
+  ui_command: ref
+
+state = record:
+  base: ref
