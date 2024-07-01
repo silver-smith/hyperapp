@@ -71,9 +71,11 @@ def test_view():
     ctx = Context(
         lcs=Mock(),
         )
+    model = htypes.command_layout_context_tests.sample_model()
     base_piece = htypes.label.view("Sample label")
     piece = htypes.command_layout_context.view(
         base=mosaic.put(base_piece),
+        model=mosaic.put(model),
         ui_command=mosaic.put(sample_ui_command),
         )
     base_state = htypes.label.state()

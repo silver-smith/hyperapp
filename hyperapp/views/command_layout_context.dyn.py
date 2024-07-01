@@ -19,21 +19,26 @@ class CommandLayoutContextView(View):
     @classmethod
     def from_piece(cls, piece, ctx):
         base_view = view_creg.invite(piece.base, ctx)
+        model = web.summon(piece.model)
         command = web.summon(piece.ui_command)
+        impl = web.summon(command.impl)
         command_d = pyobj_creg.invite(command.d)
-        return cls(ctx.lcs, base_view, piece.ui_command, command_d)
+        return cls(ctx.lcs, base_view, model, piece.ui_command, impl, command_d)
 
-    def __init__(self, lcs, base_view, ui_command_ref, command_d):
+    def __init__(self, lcs, base_view, model, ui_command_ref, command_impl, command_d):
         super().__init__()
         self._lcs = lcs
         self._base_view = base_view
+        self._model = model
         self._ui_command_ref = ui_command_ref
+        self._command_impl = command_impl  # piece
         self._command_d = command_d
 
     @property
     def piece(self):
         return htypes.command_layout_context.view(
             base=mosaic.put(self._base_view.piece),
+            model=mosaic.put(self._model),
             ui_command=self._ui_command_ref,
             )
 
@@ -92,6 +97,7 @@ class CommandLayoutContextView(View):
 def open_command_layout_context(piece, current_item, navigator, ctx):
     new_view_piece = htypes.command_layout_context.view(
         base=mosaic.put(navigator.view.piece),
+        model=piece.model,
         ui_command=current_item.command,
         )
     new_state = htypes.command_layout_context.state(
