@@ -1,3 +1,5 @@
+from functools import partial
+
 from . import htypes
 from .services import (
     mark,
@@ -9,6 +11,7 @@ from .services import (
     view_creg,
     web,
     )
+from .code.ui_model_command import change_command
 from .code.context_view import ContextView
 
 
@@ -43,28 +46,18 @@ class CommandLayoutContextView(ContextView):
         if isinstance(self._command_impl_piece, htypes.ui.external_ui_model_command_impl):
             set_ui_model_command_layout(self._lcs, self._command_d, layout)
         else:
-            self._update_command_layout(layout)
+            change_command(self._lcs, self._model, self._command_piece.d,
+                           partial(self._command_with_new_layout, layout))
 
-    def _update_command_layout(self, layout):
-        command_list = get_ui_model_commands(self._lcs, self._model)
-        idx, command = self._find_command(command_list)
+    def _command_with_new_layout(self, layout, command):
         new_impl = htypes.ui.ui_model_command_impl(
             model_command_impl=self._command_impl_piece.model_command_impl,
             layout=mosaic.put(layout),
             )
-        new_command = htypes.ui.command(
+        return htypes.ui.command(
             d=self._command_piece.d,
             impl=mosaic.put(new_impl),
             )
-        command_list = command_list.copy()
-        command_list[idx] = new_command
-        set_ui_model_commands(self._lcs, self._model, command_list)
-
-    def _find_command(self, command_list):
-        for idx, command in enumerate(command_list):
-            if command.d == self._command_piece.d:
-                return (idx, command)
-        raise RuntimeError(f"Command {self._command_d} is missing from configured in LCS for model {self._model}")
 
     def children_context(self, ctx):
         return ctx.clone_with(

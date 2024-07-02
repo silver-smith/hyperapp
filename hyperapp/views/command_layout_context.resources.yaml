@@ -23,6 +23,7 @@ import:
 - ui.ui_model_command:get_ui_model_commands.service
 - ui.ui_model_command:set_ui_model_command_layout.service
 - ui.ui_model_command:set_ui_model_commands.service
+- ui.ui_model_command:ui_model_command.module
 - ui.view:view.module
 - ui.view_registry:view_creg.service
 - views.context_view:context_view.module
@@ -65,6 +66,7 @@ definitions:
       file_name: command_layout_context.dyn.py
       import_list:
         code.context_view: views.context_view:context_view.module
+        code.ui_model_command: ui.ui_model_command:ui_model_command.module
         code.view: ui.view:view.module
         htypes.command_layout_context.state: legacy_type.command_layout_context:state
         htypes.command_layout_context.view: legacy_type.command_layout_context:view

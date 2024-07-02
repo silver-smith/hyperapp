@@ -102,19 +102,21 @@ def get_ui_model_command_layout():
     return _get_ui_model_command_layout
 
 
+def _set_ui_model_commands(lcs, model, commands):
+    t = deduce_t(model)
+    t_res = pyobj_creg.actor_to_piece(t)
+    d = {
+        htypes.ui.ui_model_command_d(),
+        t_res,
+        }
+    value = htypes.ui.ui_model_command_list(
+        commands=tuple(mosaic.put(cmd) for cmd in commands),
+        )
+    lcs.set(d, value)
+
+
 @mark.service
 def set_ui_model_commands():
-    def _set_ui_model_commands(lcs, model, commands):
-        t = deduce_t(model)
-        t_res = pyobj_creg.actor_to_piece(t)
-        d = {
-            htypes.ui.ui_model_command_d(),
-            t_res,
-            }
-        value = htypes.ui.ui_model_command_list(
-            commands=tuple(mosaic.put(cmd) for cmd in commands),
-            )
-        lcs.set(d, value)
     return _set_ui_model_commands
 
 
@@ -137,6 +139,23 @@ def _get_ui_model_commands(lcs, model):
 @mark.service
 def get_ui_model_commands():
     return _get_ui_model_commands
+
+
+def change_command(lcs, model, command_d_ref, change_fn):
+
+    def find_command(command_list):
+        for idx, command in enumerate(command_list):
+            if command.d == command_d_ref:
+                return (idx, command)
+        d = pyobj_creg.invite(command_d_ref)
+        raise RuntimeError(f"Command {d} is missing from configured in LCS for model {model}")
+
+    command_list = _get_ui_model_commands(lcs, model)
+    idx, command = find_command(command_list)
+    new_command = change_fn(command)
+    command_list = command_list.copy()
+    command_list[idx] = new_command
+    _set_ui_model_commands(lcs, model, command_list)
 
 
 def _merge_command_lists(command_list_1, command_list_2):
