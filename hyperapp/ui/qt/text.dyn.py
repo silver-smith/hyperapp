@@ -81,3 +81,6 @@ class EditTextView(View):
     def _model_state(self, widget):
         # return htypes.text.state(text=widget.toPlainText())
         return htypes.text.state()
+
+    def get_text(self, widget):
+        return widget.toPlainText()

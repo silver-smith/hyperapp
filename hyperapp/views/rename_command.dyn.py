@@ -1,5 +1,8 @@
+import logging
+
 from . import htypes
 from .services import (
+    mark,
     mosaic,
     pyobj_creg,
     model_view_creg,
@@ -7,6 +10,8 @@ from .services import (
     )
 from .code.context_view import ContextView
 from .code.command import d_res_ref_to_name
+
+log = logging.getLogger(__name__)
 
 
 class RenameCommandContextView(ContextView):
@@ -40,6 +45,10 @@ class RenameCommandContextView(ContextView):
             base=mosaic.put(base_state),
             )
 
+    def get_text(self, widget):
+        base_widget = self._base_widget(widget)
+        return self._base_view.get_text(base_widget)
+
 
 def rename_command(piece, current_item, navigator, ctx):
     if current_item is None:
@@ -60,3 +69,9 @@ def rename_command(piece, current_item, navigator, ctx):
     name = d_res_ref_to_name(command.d)
     new_view = model_view_creg.animate(new_view_piece, name, ctx)
     navigator.view.open(ctx, name, new_view, navigator.widget_wr())
+
+
+@mark.ui_command(htypes.rename_command.view)
+def set_command_name(view, widget):
+    text = view.get_text(widget)
+    log.info("Set command name: %r", text)

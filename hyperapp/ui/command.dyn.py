@@ -59,6 +59,7 @@ _hardcoded_shortcuts = {
     'open_command_layout_context': 'L',
     'add_identity_command': 'I',
     'rename_command': 'R',
+    'set_command_name': 'Return',
     }
 
 

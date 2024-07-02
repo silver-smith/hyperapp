@@ -4,21 +4,26 @@ import:
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
+- common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.model_commands:model_commands
 - legacy_type.rename_command:rename_command_d
+- legacy_type.rename_command:set_command_name_d
 - legacy_type.rename_command:state
 - legacy_type.rename_command:view
 - legacy_type.str_adapter:static_str_adapter
 - legacy_type.text:edit_view
 - legacy_type.text:state
+- legacy_type.ui:command
 - legacy_type.ui:command_properties
 - legacy_type.ui:command_properties_d
 - legacy_type.ui:model_command
 - legacy_type.ui:model_command_d
 - legacy_type.ui:model_command_impl
+- legacy_type.ui:ui_command_d
+- legacy_type.ui:ui_command_impl
 - ui.command:command.module
 - ui.view_registry:model_view_creg.service
 - ui.view_registry:view_creg.service
@@ -32,6 +37,13 @@ associations:
   - rename_command.command_impl
   value: rename_command.command_properties
 - bases:
+  - command_properties_d
+  - set_command_name.impl
+  key:
+  - command_properties_d
+  - set_command_name.impl
+  value: set_command_name.command_properties
+- bases:
   - legacy_type.model_commands:model_commands
   key:
   - model_command_d
@@ -44,6 +56,13 @@ associations:
   - ui.view_registry:model_view_creg.service
   - legacy_type.rename_command:view
   value: RenameCommandContextView.from_piece
+- bases:
+  - ui_command_d
+  - legacy_type.rename_command:view
+  key:
+  - ui_command_d
+  - legacy_type.rename_command:view
+  value: set_command_name.command
 definitions:
   RenameCommandContextView:
     type: legacy_type.builtin:attribute
@@ -105,8 +124,40 @@ definitions:
         htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
         htypes.text.edit_view: legacy_type.text:edit_view
         htypes.text.state: legacy_type.text:state
+        services.mark: common.mark:mark.service
         services.model_view_creg: ui.view_registry:model_view_creg.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.view_creg: ui.view_registry:view_creg.service
         services.web: builtins:web.service
+  set_command_name:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rename_command.module
+      attr_name: set_command_name
+  set_command_name.command:
+    type: legacy_type.ui:command
+    value:
+      d: set_command_name.d
+      impl: set_command_name.impl
+  set_command_name.command_properties:
+    type: legacy_type.ui:command_properties
+    value:
+      is_global: false
+      uses_state: false
+      remotable: true
+  set_command_name.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.rename_command:set_command_name_d
+  set_command_name.impl:
+    type: legacy_type.ui:ui_command_impl
+    value:
+      function: set_command_name
+      params:
+      - view
+      - widget
+  ui_command_d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.ui:ui_command_d

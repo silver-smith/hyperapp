@@ -1,4 +1,5 @@
 rename_command_d = record
+set_command_name_d = record
 
 view = record:
   base: ref
