@@ -3,6 +3,7 @@ set_command_name_d = record
 
 view = record:
   base: ref
+  model: ref
   ui_command: ref
 
 state = record:

@@ -1,6 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
@@ -24,7 +25,9 @@ import:
 - legacy_type.ui:model_command_impl
 - legacy_type.ui:ui_command_d
 - legacy_type.ui:ui_command_impl
+- resource.data_to_res:data_to_ref.service
 - ui.command:command.module
+- ui.ui_model_command:ui_model_command.module
 - ui.view_registry:model_view_creg.service
 - ui.view_registry:view_creg.service
 - views.context_view:context_view.module
@@ -119,11 +122,15 @@ definitions:
       import_list:
         code.command: ui.command:command.module
         code.context_view: views.context_view:context_view.module
+        code.ui_model_command: ui.ui_model_command:ui_model_command.module
         htypes.rename_command.state: legacy_type.rename_command:state
         htypes.rename_command.view: legacy_type.rename_command:view
         htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
         htypes.text.edit_view: legacy_type.text:edit_view
         htypes.text.state: legacy_type.text:state
+        htypes.ui.command: legacy_type.ui:command
+        services.data_to_ref: resource.data_to_res:data_to_ref.service
+        services.deduce_t: builtins:deduce_t.service
         services.mark: common.mark:mark.service
         services.model_view_creg: ui.view_registry:model_view_creg.service
         services.mosaic: builtins:mosaic.service
@@ -145,7 +152,7 @@ definitions:
     value:
       is_global: false
       uses_state: false
-      remotable: true
+      remotable: false
   set_command_name.d:
     type: legacy_type.builtin:call
     value:
@@ -157,6 +164,7 @@ definitions:
       params:
       - view
       - widget
+      - lcs
   ui_command_d:
     type: legacy_type.builtin:call
     value:

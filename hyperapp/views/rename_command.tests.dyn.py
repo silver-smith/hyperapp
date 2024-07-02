@@ -49,13 +49,15 @@ def test_view():
     ctx = Context(
         lcs=Mock(),
         )
-    model = "Sample command name"
+    model = htypes.rename_command_tests.sample_model()
+    name = "Sample command name"
     adapter = htypes.str_adapter.static_str_adapter()
     text_view = htypes.text.edit_view(
         adapter=mosaic.put(adapter),
         )
     piece = htypes.rename_command.view(
         base=mosaic.put(text_view),
+        model=mosaic.put(model),
         ui_command=mosaic.put(sample_ui_command),
         )
     text_state = htypes.text.state()
@@ -64,7 +66,7 @@ def test_view():
         )
     app = QtWidgets.QApplication()
     try:
-        view = rename_command.RenameCommandContextView.from_piece(piece, model, ctx)
+        view = rename_command.RenameCommandContextView.from_piece(piece, name, ctx)
         widget = view.construct_widget(state, ctx)
         assert view.piece
         state = view.widget_state(widget)
@@ -91,3 +93,19 @@ def test_rename_command():
     rename_command.rename_command(piece, current_item, navigator, ctx)
     _model_view_creg_mock.animate.assert_called_once()
     navigator.view.open.assert_called_once()
+
+
+def test_set_command_name():
+    sample_ui_command = _make_sample_ui_command()
+    lcs = Mock()
+    model = htypes.rename_command_tests.sample_model()
+    view = Mock()
+    view.model = model
+    view.command_d_ref = sample_ui_command.d
+    view.get_text.return_value = 'new_name'
+    widget = Mock()
+    lcs.get.return_value = htypes.ui.ui_model_command_list([
+        mosaic.put(sample_ui_command),
+        ])
+    rename_command.set_command_name(view, widget, lcs)
+    lcs.set.assert_called_once()
