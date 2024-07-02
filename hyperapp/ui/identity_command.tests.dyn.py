@@ -3,6 +3,7 @@ from unittest.mock import Mock
 from . import htypes
 from .services import (
     data_to_res,
+    feed_factory,
     fn_to_ref,
     mosaic,
     )
@@ -26,7 +27,7 @@ def _make_sample_command():
         )
 
 
-def test_add_identity_command():
+async def test_add_identity_command():
     sample_command = _make_sample_command()
     lcs = Mock()
     lcs.get.return_value = None  # Imitate missing command list; do not return Mock instance.
@@ -37,7 +38,9 @@ def test_add_identity_command():
         model=mosaic.put(model),
         model_state=mosaic.put(model_state)
         )
-    identity_command.add_identity_command(piece, lcs)
+    feed = feed_factory(piece)
+    await identity_command.add_identity_command(piece, lcs)
+    await feed.wait_for_diffs(count=1)
     lcs.set.assert_called_once()
 
 
