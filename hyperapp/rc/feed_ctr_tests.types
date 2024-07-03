@@ -1,5 +1,0 @@
-sample_feed = record:
-  sample_param: int
-
-sample_item = record:
-  sample_field: string

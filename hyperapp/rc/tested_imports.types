@@ -1,5 +1,0 @@
-tested_import = record
-
-using_tested_object = exception:
-  message: string
-

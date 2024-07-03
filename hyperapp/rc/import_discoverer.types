@@ -1,5 +1,0 @@
-import_discoverer = record:
-  id: string
-
-using_incomplete_object = exception:
-  message: string

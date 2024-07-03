@@ -1,41 +1,10 @@
-
-attr = record:
-  name: string
-  module: string opt
-  constructors: ref list
-
-fn_attr = record(attr):
-  param_list: string list
-
-generator_fn_attr = record(fn_attr)
-class_attr = record(fn_attr)
-
-
-tested_unit = record:
-  name: string
-  code_name: string
-  value: ref
-
-field = record:
-  name: string
-  value: ref
-
-import_recorder = record:
-  module: string
-  recorder: ref
-
-object_info = record:
-  object_module: string
-  attr_list: ref list
-
-
 type_name = record:
   module: string
   name: string
 
 object_t = record:
-  class_module: string
   class_name: string
+  class_module: string
 
 coroutine_t = record
 
@@ -54,22 +23,3 @@ call_trace = record:
   obj_type: string
   params: call_param list
   result_t: ref
-
-module_imports = record:
-  module: string
-  imports: string list list
-
-module_constructors = record:
-  module: string
-  constructors: ref list
-
-object_type_info = record:
-  imports: module_imports list
-  t: ref
-  traces: call_trace list
-  tested_constructors: module_constructors list
-
-imported_module_info = record:
-  imports: module_imports list
-  attr_list: ref list
-  error: ref opt

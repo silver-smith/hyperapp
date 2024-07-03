@@ -1,12 +1,8 @@
-import asyncio
 import logging
-import time
-from concurrent.futures import ThreadPoolExecutor
+from collections import namedtuple
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextlib import ExitStack, contextmanager
 
-from hyperapp.common.htypes import HException
-
-from . import htypes
 from .services import (
     endpoint_registry,
     generate_rsa_identity,
@@ -17,67 +13,42 @@ from .services import (
 log = logging.getLogger(__name__)
 
 
-class ProcessWaitError(RuntimeError):
-    pass
-
-
 class ProcessPool:
 
-    def __init__(self, process_list, deadlock_timeout):
+    _JobRec = namedtuple('JobRec', 'process job')
+
+    def __init__(self, process_list):
         self._process_list = process_list
-        self._deadlock_timeout = deadlock_timeout
         self._free_processes = process_list[:]
-        self._process_available = asyncio.Condition()
+        self._future_to_rec = {}
+        self._job_queue = []
 
-    async def _allocate_process(self):
-        async with self._process_available:
-            while not self._free_processes:
-                try:
-                    await self._process_available.wait()
-                except asyncio.CancelledError:
-                    raise ProcessWaitError("Cancelled while waiting for a process be available")
-            return self._free_processes.pop()
+    @property
+    def job_count(self):
+        return len(self._future_to_rec) + len(self._job_queue)
 
-    async def _free_process(self, process):
-        async with self._process_available:
-            self._free_processes.append(process)
-            self._process_available.notify_all()
+    def submit(self, job):
+        if self._free_processes:
+            process = self._free_processes.pop()
+            self._start_job(job, process)
+        else:
+            self._job_queue.append(job)
 
-    async def run(self, servant_fn, **kw):
-        process = await self._allocate_process()
-        process_idx = self._process_list.index(process)
-        log.info("Process #%d: run: %s(%s)", process_idx, servant_fn, kw)
-        future = process.rpc_submit(servant_fn)(**kw)
-        try:
-            result = await asyncio.wrap_future(future)
-            log.info("Process #%d: result: %s", process_idx, result)
-            return result
-        except HException as x:
-            if isinstance(x, htypes.rpc.server_error):
-                log.error("Process #%d: server error: %s", process_idx, x.message)
-                for entry in x.traceback:
-                    for line in entry.splitlines():
-                        log.error("%s", line)
-            raise
-        finally:
-            await self._free_process(process)
+    def next_completed(self, timeout):
+        future = next(as_completed(self._future_to_rec, timeout))
+        rec = self._future_to_rec.pop(future)
+        if self._job_queue:
+            self._start_job(self._job_queue.pop(0), rec.process)
+        else:
+            self._free_processes.append(rec.process)
+        return (rec.job, future)
 
-    async def check_for_deadlock(self):
-        if not self._deadlock_timeout:
-            return
-        try:
-            async with asyncio.timeout(self._deadlock_timeout) as timeout:
-                async with self._process_available:
-                    log.debug("Deadlock check: setup")
-                    while True:
-                        await self._process_available.wait()
-                        when = asyncio.get_running_loop().time() + self._deadlock_timeout
-                        log.debug("Deadlock check: reschedule to %s", when)
-                        timeout.reschedule(when)
-        except asyncio.CancelledError:
-            pass
-        except TimeoutError:
-            raise
+    def _start_job(self, job, process):
+        log.info("Start at #%d: %s", self._process_list.index(process), job)
+        future = process.rpc_submit(rc_job_driver.run_rc_job)(
+            job_piece=job.piece,
+            )
+        self._future_to_rec[future] = self._JobRec(process, job)
 
 
 @contextmanager
@@ -100,4 +71,4 @@ def process_pool_running(process_count, timeout):
 
             process_list = list(executor.map(start_process, range(process_count)))
 
-        yield ProcessPool(process_list, timeout * 2 if timeout else None)
+        yield ProcessPool(process_list)
