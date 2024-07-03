@@ -341,7 +341,7 @@ class ResourceModule:
             resource_t_name = data['type']
             resource_value = data['value']
         except KeyError as x:
-            raise RuntimeError(f"{self._name}: definition {name!r} has no {e.args[0]!r} attribute")
+            raise RuntimeError(f"{self._name}: definition {name!r} has no {x.args[0]!r} attribute")
         resource_t_res = self._resolve_name(resource_t_name)
         resource_t = self._pyobj_creg.animate(resource_t_res)
         t = self._resource_type_producer(resource_t)
