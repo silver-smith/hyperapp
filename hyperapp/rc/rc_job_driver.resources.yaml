@@ -1,10 +1,16 @@
 import:
+
 - legacy_type.builtin:python_module
+- rc.rc_job_creg:rc_job_creg.service
+
 associations: []
+
 definitions:
+
   rc_job_driver.module:
     type: legacy_type.builtin:python_module
     value:
       module_name: rc_job_driver
       file_name: rc_job_driver.dyn.py
-      import_list: {}
+      import_list:
+        services.rc_job_creg: rc.rc_job_creg:rc_job_creg.service

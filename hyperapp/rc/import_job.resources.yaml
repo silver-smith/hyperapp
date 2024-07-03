@@ -1,8 +1,22 @@
 import:
+
+- legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.import_job:job
-associations: []
+- rc.rc_job_creg:rc_job_creg.service
+
+associations:
+
+- bases:
+  - rc.rc_job_creg:rc_job_creg.service
+  - legacy_type.import_job:job
+  key:
+  - rc.rc_job_creg:rc_job_creg.service
+  - legacy_type.import_job:job
+  value: ImportJob.from_piece
+
 definitions:
+
   import_job.module:
     type: legacy_type.builtin:python_module
     value:
@@ -10,3 +24,16 @@ definitions:
       file_name: import_job.dyn.py
       import_list:
         htypes.import_job.job: legacy_type.import_job:job
+        services.rc_job_creg: rc.rc_job_creg:rc_job_creg.service
+
+  ImportJob:
+    type: legacy_type.builtin:attribute
+    value:
+      object: import_job.module
+      attr_name: ImportJob
+
+  ImportJob.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ImportJob
+      attr_name: from_piece
