@@ -9,6 +9,7 @@ from .services import (
     rpc_endpoint_factory,
     subprocess_rpc_server_running,
     )
+from .code import rc_job_driver
 
 log = logging.getLogger(__name__)
 
@@ -41,7 +42,7 @@ class ProcessPool:
             self._start_job(self._job_queue.pop(0), rec.process)
         else:
             self._free_processes.append(rec.process)
-        return (rec.job, future)
+        return (rec.job, future.result())
 
     def _start_job(self, job, process):
         log.info("Start at #%d: %s", self._process_list.index(process), job)
