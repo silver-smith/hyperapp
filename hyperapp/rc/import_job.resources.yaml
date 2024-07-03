@@ -24,7 +24,6 @@ definitions:
       file_name: import_job.dyn.py
       import_list:
         htypes.import_job.job: legacy_type.import_job:job
-        services.rc_job_creg: rc.rc_job_creg:rc_job_creg.service
 
   ImportJob:
     type: legacy_type.builtin:attribute
