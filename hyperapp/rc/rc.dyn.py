@@ -5,12 +5,16 @@ from .services import (
     )
 from .code.reconstructors import register_reconstructors
 from .code.process_pool import process_pool_running
+from .code.build import load_build
 from .code.import_job import ImportJob
 
 log = logging.getLogger(__name__)
 
 
 def _main(pool, timeout):
+    build = load_build(hyperapp_dir)
+    log.info("Loaded build: %s", build)
+
     job = ImportJob()
     pool.submit(job)
     job, result = pool.next_completed(timeout=timeout)

@@ -1,0 +1,16 @@
+import:
+- builtins:mosaic.service
+- legacy_type.build:full_build_task
+- legacy_type.build:python_module_src
+- legacy_type.builtin:python_module
+associations: []
+definitions:
+  build.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: build
+      file_name: build.dyn.py
+      import_list:
+        htypes.build.full_build_task: legacy_type.build:full_build_task
+        htypes.build.python_module_src: legacy_type.build:python_module_src
+        services.mosaic: builtins:mosaic.service
