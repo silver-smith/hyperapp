@@ -2,9 +2,10 @@ python_module_src = record:
   name: string
   path: string
 
-type_module_src = record:
+type_src = record:
+  module_name: string
   name: string
-  path: string
+  type: ref
 
 full_build_task = record:
   sources: ref list

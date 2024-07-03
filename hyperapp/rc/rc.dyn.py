@@ -2,6 +2,7 @@ import logging
 
 from .services import (
     hyperapp_dir,
+    web,
     )
 from .code.reconstructors import register_reconstructors
 from .code.process_pool import process_pool_running
@@ -13,7 +14,9 @@ log = logging.getLogger(__name__)
 
 def _main(pool, timeout):
     build = load_build(hyperapp_dir)
-    log.info("Loaded build: %s", build)
+    log.info("Loaded build:")
+    for src_ref in build.sources:
+        log.info("\t%s", web.summon(src_ref))
 
     job = ImportJob()
     pool.submit(job)

@@ -1,7 +1,10 @@
 import:
+- builtins:local_types.service
 - builtins:mosaic.service
+- builtins:type_module_loader.service
 - legacy_type.build:full_build_task
 - legacy_type.build:python_module_src
+- legacy_type.build:type_src
 - legacy_type.builtin:python_module
 associations: []
 definitions:
@@ -13,4 +16,7 @@ definitions:
       import_list:
         htypes.build.full_build_task: legacy_type.build:full_build_task
         htypes.build.python_module_src: legacy_type.build:python_module_src
+        htypes.build.type_src: legacy_type.build:type_src
+        services.local_types: builtins:local_types.service
         services.mosaic: builtins:mosaic.service
+        services.type_module_loader: builtins:type_module_loader.service

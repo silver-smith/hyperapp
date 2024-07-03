@@ -1,6 +1,8 @@
 from . import htypes
 from .services import (
+    local_types,
     mosaic,
+    type_module_loader,
     )
 
 
@@ -19,9 +21,25 @@ def _load_pyhon_modules(root_dir):
             )
 
 
+def _load_types(root_dir):
+    types = local_types.copy()
+    type_module_loader.load_type_modules([root_dir], types)
+    for module_name, name_to_type in types.items():
+        for name, type_piece in name_to_type.items():
+            yield htypes.build.type_src(
+                module_name=module_name,
+                name=name,
+                type=mosaic.put(type_piece),
+                )
+
+
 def load_build(root_dir):
-    sources = [
-        mosaic.put(src) for src
-        in _load_pyhon_modules(root_dir)
+    source_list = [
+        *_load_types(root_dir),
+        *_load_pyhon_modules(root_dir),
         ]
-    return htypes.build.full_build_task(sources)
+    source_refs = [
+        mosaic.put(src) for src
+        in source_list
+        ]
+    return htypes.build.full_build_task(source_refs)
