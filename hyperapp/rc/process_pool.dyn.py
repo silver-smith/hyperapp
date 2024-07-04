@@ -35,17 +35,14 @@ class ProcessPool:
         else:
             self._job_queue.append(job)
 
-    def iter_completed(self):
-        try:
-            for future in as_completed(self._future_to_rec, timeout=0):
-                rec = self._future_to_rec.pop(future)
-                if self._job_queue:
-                    self._start_job(self._job_queue.pop(0), rec.process)
-                else:
-                    self._free_processes.append(rec.process)
-                yield (rec.job, future.result())
-        except TimeoutError:
-            return
+    def iter_completed(self, timeout):
+        for future in as_completed(self._future_to_rec, timeout):
+            rec = self._future_to_rec.pop(future)
+            if self._job_queue:
+                self._start_job(self._job_queue.pop(0), rec.process)
+            else:
+                self._free_processes.append(rec.process)
+            yield (rec.job, future.result())
 
     def _start_job(self, job, process):
         log.info("Start at #%d: %s", self._process_list.index(process), job)

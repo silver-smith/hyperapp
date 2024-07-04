@@ -18,7 +18,7 @@ def _setup_targets(build):
         yield ImportTarget(module, build.types)
 
 
-def _run(pool, target_set):
+def _run(pool, target_set, timeout):
     rc_log.info("%d targets", len(target_set))
     target_to_job = {}  # Jobs are never removed.
     job_id_to_target = {}
@@ -33,7 +33,7 @@ def _run(pool, target_set):
                 pool.submit(job)
                 target_to_job[target] = job
                 job_id_to_target[id(job)] = target
-        for job, result in pool.iter_completed():
+        for job, result in pool.iter_completed(timeout):
             target = job_id_to_target[id(job)]
             rc_log.info("Finished %s: %r", target.name, result)
             target.set_job_result(result)
@@ -53,7 +53,7 @@ def _main(pool, timeout):
     build.report()
 
     targets = {*_setup_targets(build)}
-    _run(pool, targets)
+    _run(pool, targets, timeout)
 
 
 def compile_resources(generator_ref, subdir_list, root_dirs, module_list, process_count, show_traces, timeout):
