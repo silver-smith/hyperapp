@@ -15,10 +15,7 @@ log = logging.getLogger(__name__)
 def _main(pool, timeout):
     build = load_build(hyperapp_dir)
     log.info("Loaded build:")
-    for t in build.types:
-        log.info("\tType: %s", t)
-    for s in build.python_modules:
-        log.info("\tPython module: %s", s)
+    build.report()
 
     job = ImportJob()
     pool.submit(job)
