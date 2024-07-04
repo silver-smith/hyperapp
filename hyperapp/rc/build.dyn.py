@@ -18,6 +18,7 @@ def _load_pyhon_modules(root_dir):
         yield htypes.build.python_module_src(
             name=name,
             path=str(rel_path),
+            contents=path.read_text(),
             )
 
 

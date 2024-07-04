@@ -1,6 +1,7 @@
 python_module_src = record:
   name: string
   path: string
+  contents: string
 
 type_src = record:
   module_name: string
