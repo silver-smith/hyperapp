@@ -19,8 +19,10 @@ def _setup_targets(build):
 
 
 def _run(pool, target_set):
+    rc_log.info("%d targets", len(target_set))
     target_to_job = {}  # Jobs are never removed.
     job_id_to_target = {}
+    job_count = 0
     while True:
         for target in target_set:
             if target in target_to_job:
@@ -35,12 +37,14 @@ def _run(pool, target_set):
             target = job_id_to_target[id(job)]
             rc_log.info("Finished %s: %r", target.name, result)
             target.set_job_result(result)
+            job_count += 1
         if all(t.completed for t in target_set):
             rc_log.info("All targets are completed")
             break
         if pool.job_count == 0:
             rc_log.info("Not all targets are completed, but there are no jobs")
             break
+    rc_log.info("Total: %d jobs completed", job_count)
 
 
 def _main(pool, timeout):
