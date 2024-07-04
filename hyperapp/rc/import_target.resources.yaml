@@ -1,5 +1,6 @@
 import:
 - legacy_type.builtin:python_module
+- rc.import_dep:import_dep.module
 - rc.import_job:import_job.module
 
 associations: []
@@ -11,4 +12,5 @@ definitions:
       module_name: import_target
       file_name: import_target.dyn.py
       import_list:
+        code.import_dep: rc.import_dep:import_dep.module
         code.import_job: rc.import_job:import_job.module

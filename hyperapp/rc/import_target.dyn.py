@@ -1,3 +1,4 @@
+from .code.import_dep import ImportDep
 from .code.import_job import ImportJob
 
 
@@ -30,7 +31,11 @@ class ImportTarget:
 
     @property
     def job(self):
-        return ImportJob(self._python_module_src, self._idx)
+        deps = [
+            ImportDep.from_type_src(src)
+            for src in self._type_src_list
+            ]
+        return ImportJob(self._python_module_src, self._idx, deps)
 
     def set_job_result(self, result):
         self._completed = True
