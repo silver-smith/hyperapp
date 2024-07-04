@@ -1,0 +1,3 @@
+import_dep = record:
+  import_name: string list
+  resource: ref

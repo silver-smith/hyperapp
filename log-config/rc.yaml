@@ -30,13 +30,8 @@ handlers:
     backupCount: 5
 
 loggers:
-  hyperapp.common.mosaic: {level: INFO}
-  hyperapp.common.web: {level: WARNING}
-  hyperapp.common.logger: {level: WARNING}
-  hyperapp.common.bundler: {level: WARNING}
-  hyperapp.common.type_module_repository: {level: WARNING}
-  hyperapp.common.module_manager: {level: INFO}
-  hyperapp.server.transport.tcp: {level: INFO}
+  hyperapp: {level: WARNING}
+  rc: {level: INFO}
 
 root:
   level: DEBUG

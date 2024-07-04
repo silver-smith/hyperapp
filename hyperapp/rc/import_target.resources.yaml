@@ -1,0 +1,14 @@
+import:
+- legacy_type.builtin:python_module
+- rc.import_job:import_job.module
+
+associations: []
+definitions:
+
+  import_target.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: import_target
+      file_name: import_target.dyn.py
+      import_list:
+        code.import_job: rc.import_job:import_job.module

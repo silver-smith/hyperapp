@@ -20,6 +20,10 @@ class PythonModuleSrc:
     path: Path
     contents: str
 
+    @classmethod
+    def from_piece(cls, piece):
+        return cls(piece.name, Path(piece.path), piece.contents)
+
     @property
     def piece(self):
         return htypes.build.python_module_src(

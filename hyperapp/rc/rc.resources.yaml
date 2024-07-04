@@ -5,7 +5,7 @@ import:
 - legacy_type.builtin:python_module
 - common.reconstructors:reconstructors.module
 - rc.build:build.module
-- rc.import_job:import_job.module
+- rc.import_target:import_target.module
 - rc.process_pool:process_pool.module
 
 associations: []
@@ -22,7 +22,7 @@ definitions:
         code.build: rc.build:build.module
         code.reconstructors: common.reconstructors:reconstructors.module
         code.process_pool: rc.process_pool:process_pool.module
-        code.import_job: rc.import_job:import_job.module
+        code.import_target: rc.import_target:import_target.module
 
   compile_resources:
     type: legacy_type.builtin:attribute

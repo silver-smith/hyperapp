@@ -3,6 +3,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.import_job:job
+- rc.build:build.module
 - rc.rc_job_creg:rc_job_creg.service
 
 associations:
@@ -24,6 +25,7 @@ definitions:
       file_name: import_job.dyn.py
       import_list:
         htypes.import_job.job: legacy_type.import_job:job
+        code.build: rc.build:build.module
 
   ImportJob:
     type: legacy_type.builtin:attribute
