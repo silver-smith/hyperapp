@@ -31,3 +31,6 @@ class ImportJob:
             idx=self._idx,
             deps=tuple(mosaic.put(d.piece) for d in self._deps),
             )
+
+    def run(self):
+        pass
