@@ -9,4 +9,5 @@ type_src = record:
   type: ref
 
 full_build_task = record:
-  sources: ref list
+  types: type_src list
+  python_modules: python_module_src list

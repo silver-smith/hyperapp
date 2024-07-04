@@ -35,12 +35,8 @@ def _load_types(root_dir):
 
 
 def load_build(root_dir):
-    source_list = [
-        *_load_types(root_dir),
-        *_load_pyhon_modules(root_dir),
-        ]
-    source_refs = [
-        mosaic.put(src) for src
-        in source_list
-        ]
-    return htypes.build.full_build_task(source_refs)
+    return htypes.build.full_build_task(
+        types=tuple(_load_types(root_dir)),
+        python_modules=tuple(_load_pyhon_modules(root_dir)),
+        )
+
