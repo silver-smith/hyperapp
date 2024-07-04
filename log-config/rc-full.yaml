@@ -1,0 +1,43 @@
+version: 1
+disable_existing_loggers: False
+
+formatters:
+  simple:
+    format: '%(asctime)-15s  %(message).200s'
+  full:
+    format: '%(asctime)-15s %(filename)-30s %(lineno)4d %(levelname)-8s %(threadName)-15s %(message)s'
+  named:
+    format: '%(asctime)-15s %(filename)-30s %(name)-30s %(lineno)4d %(levelname)-8s %(message)s'
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: INFO
+    formatter: simple
+    stream: ext://sys.stdout
+  file-debug:
+    class : logging.handlers.RotatingFileHandler
+    formatter: full
+    filename: /tmp/rc-debug.log
+    maxBytes: 10485760  # 10M
+    backupCount: 5
+  file-info:
+    class : logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: full
+    filename: /tmp/rc-info.log
+    maxBytes: 10485760  # 10M
+    backupCount: 5
+
+loggers:
+  hyperapp.common.mosaic: {level: INFO}
+  hyperapp.common.web: {level: WARNING}
+  hyperapp.common.logger: {level: WARNING}
+  hyperapp.common.bundler: {level: WARNING}
+  hyperapp.common.type_module_repository: {level: WARNING}
+  hyperapp.common.module_manager: {level: INFO}
+  hyperapp.server.transport.tcp: {level: INFO}
+
+root:
+  level: DEBUG
+  handlers: [console, file-debug, file-info]
