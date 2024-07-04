@@ -29,8 +29,7 @@ class ImportTarget:
     def completed(self):
         return self._completed
 
-    @property
-    def job(self):
+    def make_job(self):
         deps = [
             ImportDep.from_type_src(src)
             for src in self._type_src_list

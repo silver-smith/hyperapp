@@ -28,7 +28,7 @@ def _run(pool, target_set, timeout):
             if target in target_to_job:
                 continue
             if target.ready:
-                job = target.job
+                job = target.make_job()
                 rc_log.info("Submit %s", target.name)
                 pool.submit(job)
                 target_to_job[target] = job
@@ -57,7 +57,7 @@ def _main(pool, timeout):
 
 
 def compile_resources(generator_ref, subdir_list, root_dirs, module_list, process_count, show_traces, timeout):
-    rc_log.info("Compile resources at: %s, %s: %s", subdir_list, root_dirs, module_list)
+    log.info("Compile resources at: %s, %s: %s", subdir_list, root_dirs, module_list)
 
     register_reconstructors()
 
