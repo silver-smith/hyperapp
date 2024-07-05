@@ -1,6 +1,10 @@
+import traceback
+
 from . import htypes
 from .services import (
     mosaic,
+    hyperapp_dir,
+    pyobj_creg,
     rc_dep_creg,
     )
 from .code.build import PythonModuleSrc
@@ -33,4 +37,18 @@ class ImportJob:
             )
 
     def run(self):
-        pass
+        src = self._python_module_src
+        module_piece = htypes.builtin.python_module(
+            module_name=src.name,
+            source=src.contents,
+            file_path=str(hyperapp_dir / src.path),
+            import_list=(),
+            )
+        try:
+            module = pyobj_creg.animate(module_piece)
+        except Exception as x:
+            traceback_entries = tuple(traceback.format_tb(x.__traceback__))
+            return htypes.import_job.error_result(
+                message=str(x),
+                traceback=traceback_entries,
+                )

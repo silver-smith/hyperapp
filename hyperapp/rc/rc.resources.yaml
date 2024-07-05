@@ -7,6 +7,7 @@ import:
 - rc.build:build.module
 - rc.import_target:import_target.module
 - rc.process_pool:process_pool.module
+- rc.rc_constants:rc_constants.module
 
 associations: []
 definitions:
@@ -23,6 +24,7 @@ definitions:
         code.reconstructors: common.reconstructors:reconstructors.module
         code.process_pool: rc.process_pool:process_pool.module
         code.import_target: rc.import_target:import_target.module
+        code.rc_constants: rc.rc_constants:rc_constants.module
 
   compile_resources:
     type: legacy_type.builtin:attribute

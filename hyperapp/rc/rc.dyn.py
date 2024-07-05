@@ -8,6 +8,7 @@ from .code.reconstructors import register_reconstructors
 from .code.process_pool import process_pool_running
 from .code.build import load_build
 from .code.import_target import ImportTarget
+from .code.rc_constants import JobStatus
 
 log = logging.getLogger(__name__)
 rc_log = logging.getLogger('rc')
@@ -23,20 +24,23 @@ def _run(pool, target_set, timeout):
     target_to_job = {}  # Jobs are never removed.
     job_id_to_target = {}
     job_count = 0
+    failures = {}
     while True:
         for target in target_set:
             if target in target_to_job:
                 continue
             if target.ready:
                 job = target.make_job()
-                rc_log.info("Submit %s", target.name)
+                rc_log.debug("Submit %s", target.name)
                 pool.submit(job)
                 target_to_job[target] = job
                 job_id_to_target[id(job)] = target
-        for job, result in pool.iter_completed(timeout):
+        for job, result_piece in pool.iter_completed(timeout):
             target = job_id_to_target[id(job)]
-            rc_log.info("Finished %s: %r", target.name, result)
-            target.set_job_result(result)
+            result = target.handle_job_result(result_piece)
+            rc_log.info("%s: %s", target.name, result.status.name)
+            if result.status == JobStatus.failed:
+                failures[target] = result
             job_count += 1
         if all(t.completed for t in target_set):
             rc_log.info("All targets are completed")
@@ -44,7 +48,10 @@ def _run(pool, target_set, timeout):
         if pool.job_count == 0:
             rc_log.info("Not all targets are completed, but there are no jobs")
             break
-    rc_log.info("Total: %d jobs completed", job_count)
+    rc_log.info("Failures:\n")
+    for target, result in failures.items():
+        rc_log.info("\n========== %s ==========\n%s%s\n", target.name, "".join(result.traceback), result.message)
+    rc_log.info("Completed: %d; succeeded: %d; failed: %d", job_count, (job_count - len(failures)), len(failures))
 
 
 def _main(pool, timeout):

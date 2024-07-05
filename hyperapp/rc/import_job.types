@@ -4,3 +4,7 @@ job = record:
   python_module: python_module_src
   idx: int
   deps: ref list
+
+error_result = record:
+  message: string
+  traceback: string list

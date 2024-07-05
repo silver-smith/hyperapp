@@ -1,9 +1,11 @@
 import:
 - legacy_type.builtin:python_module
+- legacy_type.import_job:error_result
+- rc.job_result:job_result.module
 - rc.import_dep:import_dep.module
 - rc.import_job:import_job.module
+- rc.rc_constants:rc_constants.module
 
-associations: []
 definitions:
 
   import_target.module:
@@ -12,5 +14,8 @@ definitions:
       module_name: import_target
       file_name: import_target.dyn.py
       import_list:
+        code.job_result: rc.job_result:job_result.module
         code.import_dep: rc.import_dep:import_dep.module
         code.import_job: rc.import_job:import_job.module
+        code.rc_constants: rc.rc_constants:rc_constants.module
+        htypes.import_job.error_result: legacy_type.import_job:error_result

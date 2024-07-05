@@ -1,3 +1,6 @@
+from . import htypes
+from .code.rc_constants import JobStatus
+from .code.job_result import JobResult
 from .code.import_dep import ImportDep
 from .code.import_job import ImportJob
 
@@ -36,5 +39,8 @@ class ImportTarget:
             ]
         return ImportJob(self._python_module_src, self._idx, deps)
 
-    def set_job_result(self, result):
+    def handle_job_result(self, result):
         self._completed = True
+        if isinstance(result, htypes.import_job.error_result):
+            return JobResult(JobStatus.failed, result.message, result.traceback)
+        return JobResult(JobStatus.ok)

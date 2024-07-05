@@ -1,0 +1,11 @@
+import:
+- legacy_type.builtin:python_module
+
+definitions:
+
+  job_result.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: job_result
+      file_name: job_result.dyn.py
+      import_list: {}
