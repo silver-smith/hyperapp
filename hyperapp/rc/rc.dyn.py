@@ -67,8 +67,11 @@ def _main(pool, fail_fast, timeout):
     _run(pool, targets, fail_fast, timeout)
 
 
-def compile_resources(generator_ref, subdir_list, root_dirs, module_list, process_count, show_traces, fail_fast, timeout):
+def compile_resources(generator_ref, subdir_list, root_dirs, module_list, process_count, verbose, fail_fast, timeout):
     log.info("Compile resources at: %s, %s: %s", subdir_list, root_dirs, module_list)
+
+    if verbose:
+        rc_log.setLevel(logging.DEBUG)
 
     register_reconstructors()
 

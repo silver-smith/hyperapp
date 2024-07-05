@@ -36,6 +36,7 @@ def main():
     parser.add_argument('--timeout', type=int, help="Base timeout for RPC calls and everything (seconds). Default is none")
     parser.add_argument('--show-traces', action='store_true', help="Show traces for cancelled and waiting construction units")
     parser.add_argument('--fail-fast', '-x', action='store_true', help="Stop on first failure")
+    parser.add_argument('--verbose', '-v', action='store_true', help="Verbose output")
     parser.add_argument('source_subdir', type=str, nargs='*', help="Subdirs with source files")
     args = parser.parse_args()
 
@@ -66,7 +67,7 @@ def main():
         fn_res = resource_registry['rc.rc', 'compile_resources']
         fn_ref = mosaic.put(fn_res)
         fn = pyobj_creg.animate(fn_res)
-        fn(fn_ref, args.source_subdir, args.root_dir or [], args.module, args.workers, args.show_traces, args.fail_fast, args.timeout)
+        fn(fn_ref, args.source_subdir, args.root_dir or [], args.module, args.workers, args.verbose, args.fail_fast, args.timeout)
     finally:
         log.info("Stopping.")
         services.stop_signal.set()
