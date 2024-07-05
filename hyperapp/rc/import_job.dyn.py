@@ -41,17 +41,35 @@ class ImportJob:
     def run(self):
         src = self._python_module_src
         import_list = flatten(d.import_records for d in self._deps)
+        recorder_resources = tuple(
+            htypes.import_recorder.resource(
+                name=tuple(rec.full_name.split('.')),
+                resource=rec.resource,
+                )
+            for rec in import_list
+            )
+        recorder = htypes.import_recorder.import_recorder(
+            id=src.name,
+            resources=recorder_resources,
+        )
+        recorder_import_list = [
+            htypes.builtin.import_rec('*', mosaic.put(recorder)),
+            ]
         module_piece = htypes.builtin.python_module(
             module_name=src.name,
             source=src.contents,
             file_path=str(hyperapp_dir / src.path),
-            import_list=tuple(import_list),
+            import_list=tuple(recorder_import_list),
             )
         try:
             module = pyobj_creg.animate(module_piece)
         except Exception as x:
-            traceback_entries = tuple(traceback.format_tb(x.__traceback__))
+            message = str(x)
+            traceback_entries = []
+            while x:
+                traceback_entries += traceback.format_tb(x.__traceback__)
+                x = x.__cause__
             return htypes.import_job.error_result(
-                message=str(x),
-                traceback=traceback_entries,
+                message=message,
+                traceback=tuple(traceback_entries),
                 )

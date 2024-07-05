@@ -171,4 +171,4 @@ def python_module_pyobj(piece, mosaic, python_importer, pyobj_creg):
     except HException:
         raise
     except Exception as x:
-        raise RuntimeError(f"Error importing module {piece.module_name!r}: {x}")
+        raise RuntimeError(f"Error importing module {piece.module_name!r}: {x}") from x

@@ -108,6 +108,6 @@ class PythonImporter:
         except HException:
             raise
         except Exception as x:
-            raise RuntimeError(f"Error importing module {module_name}: {x}")
+            raise RuntimeError(f"Error importing module {module_name}: {x}") from x
         self._imported_modules += module_name_to_loader
         return module

@@ -1,0 +1,37 @@
+import:
+- builtins:web.service
+- builtins:pyobj_creg.service
+- legacy_type.import_recorder:import_recorder
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+
+associations:
+
+- bases:
+  - legacy_type.import_recorder:import_recorder
+  key:
+  - builtins:pyobj_creg.service
+  - legacy_type.import_recorder:import_recorder
+  value: ImportRecorder.from_piece
+
+definitions:
+
+  import_recorder.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: import_recorder
+      file_name: import_recorder.dyn.py
+      import_list:
+        services.web: builtins:web.service
+
+  ImportRecorder:
+    type: legacy_type.builtin:attribute
+    value:
+      object: import_recorder.module
+      attr_name: ImportRecorder
+
+  ImportRecorder.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ImportRecorder
+      attr_name: from_piece
