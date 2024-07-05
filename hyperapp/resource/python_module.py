@@ -10,9 +10,18 @@ from hyperapp.common.htypes.python_module import import_rec_t, python_module_t, 
 from hyperapp.common.htypes import HException
 from hyperapp.common.dict_decoder import NamedPairsDictDecoder
 from hyperapp.common.dict_encoder import NamedPairsDictEncoder
-from hyperapp.common.python_importer import ROOT_PACKAGE, Finder
+from hyperapp.common.python_importer import ROOT_PACKAGE, PythonModuleImportError, Finder
 
 log = logging.getLogger(__name__)
+
+
+class PythonModuleResourceImportError(Exception):
+
+    def __init__(self, message, original_error, import_name, module_name):
+        super().__init__(message)
+        self.original_error = original_error
+        self.import_name = import_name
+        self.module_name = module_name
 
 
 class PythonModuleResourceType:
@@ -170,5 +179,5 @@ def python_module_pyobj(piece, mosaic, python_importer, pyobj_creg):
             sub_loader_dict=sub_loader_dict(pyobj_creg, piece.import_list, module_name))
     except HException:
         raise
-    except Exception as x:
-        raise RuntimeError(f"Error importing module {piece.module_name!r}: {x}") from x
+    except PythonModuleImportError as x:
+        raise PythonModuleResourceImportError(str(x), x.original_error, x.import_name, piece.module_name) from x

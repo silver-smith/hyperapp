@@ -41,7 +41,8 @@ def _run(pool, target_set, fail_fast, timeout):
             result = target.handle_job_result(result_piece)
             rc_log.info("%s: %s", target.name, result.status.name)
             job_count += 1
-            if result.status == JobStatus.failed:
+            # if result.status == JobStatus.failed:
+            if result.status != JobStatus.ok:
                 failures[target] = result
                 if fail_fast:
                     should_run = False

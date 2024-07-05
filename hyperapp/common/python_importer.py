@@ -11,6 +11,14 @@ log = logging.getLogger(__name__)
 ROOT_PACKAGE = 'hyperapp.dynamic'
 
 
+class PythonModuleImportError(Exception):
+
+    def __init__(self, message, original_error, import_name):
+        super().__init__(message)
+        self.original_error = original_error
+        self.import_name = import_name
+
+
 def is_sub_path(sub_path, full_path):
     for x, y in zip(
         sub_path.split('.'),
@@ -108,6 +116,6 @@ class PythonImporter:
         except HException:
             raise
         except Exception as x:
-            raise RuntimeError(f"Error importing module {module_name}: {x}") from x
+            raise PythonModuleImportError(str(x), x, module_name) from x
         self._imported_modules += module_name_to_loader
         return module

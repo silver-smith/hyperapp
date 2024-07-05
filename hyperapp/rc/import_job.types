@@ -8,3 +8,7 @@ job = record:
 error_result = record:
   message: string
   traceback: string list
+
+incomplete_result = record:
+  message: string
+  traceback: string list

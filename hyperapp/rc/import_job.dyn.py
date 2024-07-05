@@ -1,6 +1,7 @@
 import traceback
 
 from hyperapp.common.util import flatten
+from hyperapp.resource.python_module import PythonModuleResourceImportError
 
 from . import htypes
 from .services import (
@@ -10,6 +11,7 @@ from .services import (
     rc_dep_creg,
     )
 from .code.build import PythonModuleSrc
+from .code.import_recorder import IncompleteImportedObjectError
 
 
 class ImportJob:
@@ -63,13 +65,19 @@ class ImportJob:
             )
         try:
             module = pyobj_creg.animate(module_piece)
-        except Exception as x:
-            message = str(x)
+        except PythonModuleResourceImportError as x:
             traceback_entries = []
-            while x:
-                traceback_entries += traceback.format_tb(x.__traceback__)
-                x = x.__cause__
-            return htypes.import_job.error_result(
-                message=message,
-                traceback=tuple(traceback_entries),
-                )
+            cause = x
+            while cause:
+                traceback_entries += traceback.format_tb(cause.__traceback__)
+                cause = cause.__cause__
+            if isinstance(x.original_error, IncompleteImportedObjectError):
+                return htypes.import_job.incomplete_result(
+                    message=str(x),
+                    traceback=tuple(traceback_entries[-2:-1]),
+                    )
+            else:
+                return htypes.import_job.error_result(
+                    message=str(x),
+                    traceback=tuple(traceback_entries),
+                    )

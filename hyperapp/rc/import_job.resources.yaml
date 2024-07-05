@@ -7,10 +7,12 @@ import:
 - legacy_type.builtin:import_rec
 - legacy_type.builtin:python_module
 - legacy_type.import_job:error_result
+- legacy_type.import_job:incomplete_result
 - legacy_type.import_job:job
 - legacy_type.import_recorder:import_recorder
 - legacy_type.import_recorder:resource
 - rc.build:build.module
+- rc.import_recorder:import_recorder.module
 - rc.rc_dep_creg:rc_dep_creg.service
 - rc.rc_job_creg:rc_job_creg.service
 
@@ -35,6 +37,7 @@ definitions:
         htypes.builtin.import_rec: legacy_type.builtin:import_rec
         htypes.builtin.python_module: legacy_type.builtin:python_module
         htypes.import_job.error_result: legacy_type.import_job:error_result
+        htypes.import_job.incomplete_result: legacy_type.import_job:incomplete_result
         htypes.import_job.job: legacy_type.import_job:job
         htypes.import_recorder.import_recorder: legacy_type.import_recorder:import_recorder
         htypes.import_recorder.resource: legacy_type.import_recorder:resource
@@ -43,6 +46,7 @@ definitions:
         services.pyobj_creg: builtins:pyobj_creg.service
         services.rc_dep_creg: rc.rc_dep_creg:rc_dep_creg.service
         code.build: rc.build:build.module
+        code.import_recorder: rc.import_recorder:import_recorder.module
 
   ImportJob:
     type: legacy_type.builtin:attribute

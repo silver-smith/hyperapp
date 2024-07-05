@@ -43,4 +43,6 @@ class ImportTarget:
         self._completed = True
         if isinstance(result, htypes.import_job.error_result):
             return JobResult(JobStatus.failed, result.message, result.traceback)
+        elif isinstance(result, htypes.import_job.incomplete_result):
+            return JobResult(JobStatus.incomplete, result.message, result.traceback)
         return JobResult(JobStatus.ok)
