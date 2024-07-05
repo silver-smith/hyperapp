@@ -19,13 +19,14 @@ def _setup_targets(build):
         yield ImportTarget(module, build.types)
 
 
-def _run(pool, target_set, timeout):
+def _run(pool, target_set, fail_fast, timeout):
     rc_log.info("%d targets", len(target_set))
     target_to_job = {}  # Jobs are never removed.
     job_id_to_target = {}
     job_count = 0
     failures = {}
-    while True:
+    should_run = True
+    while should_run:
         for target in target_set:
             if target in target_to_job:
                 continue
@@ -39,9 +40,12 @@ def _run(pool, target_set, timeout):
             target = job_id_to_target[id(job)]
             result = target.handle_job_result(result_piece)
             rc_log.info("%s: %s", target.name, result.status.name)
+            job_count += 1
             if result.status == JobStatus.failed:
                 failures[target] = result
-            job_count += 1
+                if fail_fast:
+                    should_run = False
+                    break
         if all(t.completed for t in target_set):
             rc_log.info("All targets are completed")
             break
@@ -54,16 +58,16 @@ def _run(pool, target_set, timeout):
     rc_log.info("Completed: %d; succeeded: %d; failed: %d", job_count, (job_count - len(failures)), len(failures))
 
 
-def _main(pool, timeout):
+def _main(pool, fail_fast, timeout):
     build = load_build(hyperapp_dir)
     log.info("Loaded build:")
     build.report()
 
     targets = {*_setup_targets(build)}
-    _run(pool, targets, timeout)
+    _run(pool, targets, fail_fast, timeout)
 
 
-def compile_resources(generator_ref, subdir_list, root_dirs, module_list, process_count, show_traces, timeout):
+def compile_resources(generator_ref, subdir_list, root_dirs, module_list, process_count, show_traces, fail_fast, timeout):
     log.info("Compile resources at: %s, %s: %s", subdir_list, root_dirs, module_list)
 
     register_reconstructors()
@@ -74,4 +78,4 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, proces
         dir_list = [hyperapp_dir]
 
     with process_pool_running(process_count, timeout) as pool:
-        _main(pool, timeout)
+        _main(pool, fail_fast, timeout)
