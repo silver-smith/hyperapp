@@ -1,5 +1,7 @@
 import traceback
 
+from hyperapp.common.util import flatten
+
 from . import htypes
 from .services import (
     mosaic,
@@ -38,11 +40,12 @@ class ImportJob:
 
     def run(self):
         src = self._python_module_src
+        import_list = flatten(d.import_records for d in self._deps)
         module_piece = htypes.builtin.python_module(
             module_name=src.name,
             source=src.contents,
             file_path=str(hyperapp_dir / src.path),
-            import_list=(),
+            import_list=tuple(import_list),
             )
         try:
             module = pyobj_creg.animate(module_piece)

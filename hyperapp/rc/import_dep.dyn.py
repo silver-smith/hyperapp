@@ -26,3 +26,10 @@ class ImportDep:
             import_name=tuple(self._import_name),
             resource=mosaic.put(self._resource),
             )
+
+    @property
+    def import_records(self):
+        return [htypes.builtin.import_rec(
+            full_name='.'.join(self._import_name),
+            resource=mosaic.put(self._resource),
+            )]

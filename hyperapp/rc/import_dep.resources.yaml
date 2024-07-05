@@ -2,6 +2,7 @@ import:
 - builtins:mosaic.service
 - builtins:web.service
 - legacy_type.builtin:attribute
+- legacy_type.builtin:import_rec
 - legacy_type.builtin:python_module
 - legacy_type.import_dep:import_dep
 - rc.rc_dep_creg:rc_dep_creg.service
@@ -24,6 +25,7 @@ definitions:
       module_name: import_dep
       file_name: import_dep.dyn.py
       import_list:
+        htypes.builtin.import_rec: legacy_type.builtin:import_rec
         htypes.import_dep.import_dep: legacy_type.import_dep:import_dep
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
