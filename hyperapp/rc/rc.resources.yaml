@@ -6,9 +6,10 @@ import:
 - legacy_type.rpc:server_error
 - common.reconstructors:reconstructors.module
 - rc.build:build.module
+- rc.rc_constants:rc_constants.module
 - rc.import_target:import_target.module
 - rc.process_pool:process_pool.module
-- rc.rc_constants:rc_constants.module
+- rc.target_set:target_set.module
 
 associations: []
 definitions:
@@ -23,10 +24,11 @@ definitions:
         services.hyperapp_dir: builtins:hyperapp_dir.service
         services.web: builtins:web.service
         code.build: rc.build:build.module
-        code.reconstructors: common.reconstructors:reconstructors.module
-        code.process_pool: rc.process_pool:process_pool.module
         code.import_target: rc.import_target:import_target.module
+        code.process_pool: rc.process_pool:process_pool.module
+        code.reconstructors: common.reconstructors:reconstructors.module
         code.rc_constants: rc.rc_constants:rc_constants.module
+        code.target_set: rc.target_set:target_set.module
 
   compile_resources:
     type: legacy_type.builtin:attribute

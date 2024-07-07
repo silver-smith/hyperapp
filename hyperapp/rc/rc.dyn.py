@@ -9,9 +9,10 @@ from .services import (
     )
 from .code.reconstructors import register_reconstructors
 from .code.process_pool import process_pool_running
-from .code.build import load_build
-from .code.import_target import ImportTarget
 from .code.rc_constants import JobStatus
+from .code.build import load_build
+from .code.target_set import TargetSet
+from .code.import_target import ImportTarget
 
 log = logging.getLogger(__name__)
 rc_log = logging.getLogger('rc')
@@ -23,22 +24,21 @@ def _setup_targets(build):
 
 
 def _run(pool, target_set, fail_fast, timeout):
-    rc_log.info("%d targets", len(target_set))
+    rc_log.info("%d targets", target_set.count)
     target_to_job = {}  # Jobs are never removed.
     job_id_to_target = {}
     job_count = 0
     failures = {}
     should_run = True
     while should_run:
-        for target in target_set:
+        for target in target_set.iter_ready():
             if target in target_to_job:
                 continue
-            if target.ready:
-                job = target.make_job()
-                rc_log.debug("Submit %s", target.name)
-                pool.submit(job)
-                target_to_job[target] = job
-                job_id_to_target[id(job)] = target
+            job = target.make_job()
+            rc_log.debug("Submit %s", target.name)
+            pool.submit(job)
+            target_to_job[target] = job
+            job_id_to_target[id(job)] = target
         for job, result_piece in pool.iter_completed(timeout):
             target = job_id_to_target[id(job)]
             result = target.handle_job_result(result_piece)
@@ -50,7 +50,7 @@ def _run(pool, target_set, fail_fast, timeout):
                 if fail_fast:
                     should_run = False
                     break
-        if all(t.completed for t in target_set):
+        if target_set.all_completed:
             rc_log.info("All targets are completed")
             break
         if pool.job_count == 0:
@@ -67,7 +67,7 @@ def _main(pool, fail_fast, timeout):
     log.info("Loaded build:")
     build.report()
 
-    targets = {*_setup_targets(build)}
+    targets = TargetSet(_setup_targets(build))
     try:
         _run(pool, targets, fail_fast, timeout)
     except HException as x:
