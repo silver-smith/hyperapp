@@ -1,0 +1,13 @@
+import:
+- legacy_type.builtin:python_module
+- rc.service_target:service_target.module
+
+definitions:
+
+  target_set.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: target_set
+      file_name: target_set.dyn.py
+      import_list:
+        code.service_target: rc.service_target:service_target.module

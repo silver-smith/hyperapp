@@ -1,4 +1,4 @@
-from .code.service_target import ServiceReq
+from .code.service_target import ServiceCompleteReq
 
 
 class RequirementFactory:
@@ -10,7 +10,7 @@ class RequirementFactory:
         if len(import_path) == 1:
             return
         service_name = import_path[1]
-        return ServiceReq(service_name)
+        return ServiceCompleteReq(service_name)
 
     def import_to_code(self, import_path):
         pass

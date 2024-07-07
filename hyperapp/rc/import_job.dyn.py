@@ -10,6 +10,7 @@ from .services import (
     pyobj_creg,
     rc_dep_creg,
     )
+from .code.rc_constants import JobStatus
 from .code.build import PythonModuleSrc
 from .code.import_recorder import IncompleteImportedObjectError
 from .code.requirement_factory import RequirementFactory
@@ -53,11 +54,22 @@ class ImportJob:
             )
         try:
             module = pyobj_creg.animate(module_piece)
-            result = None
+            status = JobStatus.ok
         except PythonModuleResourceImportError as x:
-            result = self._prepare_error(x)
-        self._handle_used_imports(recorder.used_imports)
-        return result
+            status, error_msg, traceback = self._prepare_error(x)
+        if status == JobStatus.failed:
+            return htypes.import_job.error_result(error_msg, traceback)
+        req_set = self._imports_to_requirements(recorder.used_imports)
+        if status == JobStatus.incomplete:
+            req_refs = tuple(
+                mosaic.put(req.piece)
+                for req in req_set
+                )
+            return htypes.import_job.incomplete_result(
+                requirements=req_refs,
+                message=error_msg,
+                traceback=tuple(traceback),
+                )
 
     def _wrap_in_recorder(self, src, import_list):
         recorder_resources = tuple(
@@ -89,17 +101,15 @@ class ImportJob:
                 break
         traceback_lines = traceback.format_list(traceback_entries)
         if isinstance(x.original_error, IncompleteImportedObjectError):
-            return htypes.import_job.incomplete_result(
-                message=str(x),
-                traceback=tuple(traceback_lines[:-1]),
-                )
+            return (JobStatus.incomplete, str(x), traceback_lines[:-1])
         else:
-            return htypes.import_job.error_result(
-                message=str(x),
-                traceback=tuple(traceback_lines),
-                )
+            return (JobStatus.failed, str(x), traceback_lines)
 
-    def _handle_used_imports(self, import_set):
+    def _imports_to_requirements(self, import_set):
         # print("Used imports", import_set)
+        req_set = set()
         for import_path in import_set:
             req = RequirementFactory().requirement_from_import(import_path)
+            if req:
+                req_set.add(req)
+        return req_set

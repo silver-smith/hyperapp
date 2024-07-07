@@ -1,5 +1,6 @@
 import:
 - legacy_type.builtin:python_module
+- legacy_type.service:service_req
 
 definitions:
 
@@ -8,4 +9,5 @@ definitions:
     value:
       module_name: service_target
       file_name: service_target.dyn.py
-      import_list: {}
+      import_list:
+        htypes.service.service_req: legacy_type.service:service_req

@@ -10,5 +10,6 @@ error_result = record:
   traceback: string list
 
 incomplete_result = record:
+  requirements: ref list
   message: string
   traceback: string list
