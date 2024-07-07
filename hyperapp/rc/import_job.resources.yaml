@@ -15,6 +15,7 @@ import:
 - rc.import_recorder:import_recorder.module
 - rc.rc_dep_creg:rc_dep_creg.service
 - rc.rc_job_creg:rc_job_creg.service
+- rc.requirement_factory:requirement_factory.module
 
 associations:
 
@@ -47,6 +48,7 @@ definitions:
         services.rc_dep_creg: rc.rc_dep_creg:rc_dep_creg.service
         code.build: rc.build:build.module
         code.import_recorder: rc.import_recorder:import_recorder.module
+        code.requirement_factory: rc.requirement_factory:requirement_factory.module
 
   ImportJob:
     type: legacy_type.builtin:attribute

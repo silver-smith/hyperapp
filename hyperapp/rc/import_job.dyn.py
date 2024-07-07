@@ -12,6 +12,7 @@ from .services import (
     )
 from .code.build import PythonModuleSrc
 from .code.import_recorder import IncompleteImportedObjectError
+from .code.requirement_factory import RequirementFactory
 
 
 class ImportJob:
@@ -43,7 +44,7 @@ class ImportJob:
     def run(self):
         src = self._python_module_src
         import_list = flatten(d.import_records for d in self._deps)
-        recorder_import_list = self._wrap_in_recorder(src, import_list)
+        recorder, recorder_import_list = self._wrap_in_recorder(src, import_list)
         module_piece = htypes.builtin.python_module(
             module_name=src.name,
             source=src.contents,
@@ -52,8 +53,11 @@ class ImportJob:
             )
         try:
             module = pyobj_creg.animate(module_piece)
+            result = None
         except PythonModuleResourceImportError as x:
-            return self._prepare_error(x)
+            result = self._prepare_error(x)
+        self._handle_used_imports(recorder.used_imports)
+        return result
 
     def _wrap_in_recorder(self, src, import_list):
         recorder_resources = tuple(
@@ -63,13 +67,15 @@ class ImportJob:
                 )
             for rec in import_list
             )
-        recorder = htypes.import_recorder.import_recorder(
+        recorder_piece = htypes.import_recorder.import_recorder(
             id=src.name,
             resources=recorder_resources,
         )
-        return [
-            htypes.builtin.import_rec('*', mosaic.put(recorder)),
+        recorder_import_list = [
+            htypes.builtin.import_rec('*', mosaic.put(recorder_piece)),
             ]
+        recorder = pyobj_creg.animate(recorder_piece)
+        return (recorder, recorder_import_list)
 
     def _prepare_error(self, x):
         traceback_entries = []
@@ -92,3 +98,8 @@ class ImportJob:
                 message=str(x),
                 traceback=tuple(traceback_lines),
                 )
+
+    def _handle_used_imports(self, import_set):
+        # print("Used imports", import_set)
+        for import_path in import_set:
+            req = RequirementFactory().requirement_from_import(import_path)

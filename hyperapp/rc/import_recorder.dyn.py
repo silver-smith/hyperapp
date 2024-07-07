@@ -72,6 +72,10 @@ class ImportRecorder(Finder):
                     packages.add(prefix)
         return packages
 
+    @property
+    def used_imports(self):
+        return self._imported_set
+
     # Called by python importer.
     def set_base_module_name(self, name):
         self._base_module_name = name

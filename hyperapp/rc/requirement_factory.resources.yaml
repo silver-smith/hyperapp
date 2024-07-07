@@ -1,0 +1,13 @@
+import:
+- legacy_type.builtin:python_module
+- rc.service_target:service_target.module
+
+definitions:
+
+  requirement_factory.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: requirement_factory
+      file_name: requirement_factory.dyn.py
+      import_list:
+        code.service_target: rc.service_target:service_target.module
