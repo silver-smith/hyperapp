@@ -41,7 +41,7 @@ class RecorderObject:
         try:
             return pyobj_creg.animate(resource)
         except Exception as x:
-            raise RuntimeError(f"Error importing {'.'.join(resource_path)!r}: {x}")
+            raise RuntimeError(f"Error importing {'.'.join(resource_path)!r}: {x}") from x
 
 
 class ImportRecorder(Finder):
