@@ -1,5 +1,8 @@
 import logging
 
+from hyperapp.common.htypes import HException
+
+from . import htypes
 from .services import (
     hyperapp_dir,
     web,
@@ -65,7 +68,14 @@ def _main(pool, fail_fast, timeout):
     build.report()
 
     targets = {*_setup_targets(build)}
-    _run(pool, targets, fail_fast, timeout)
+    try:
+        _run(pool, targets, fail_fast, timeout)
+    except HException as x:
+        if isinstance(x, htypes.rpc.server_error):
+            log.error("Server error: %s", x.message)
+            for entry in x.traceback:
+                for line in entry.splitlines():
+                    log.error("%s", line)
 
 
 def compile_resources(generator_ref, subdir_list, root_dirs, module_list, process_count, verbose, fail_fast, timeout):

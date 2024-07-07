@@ -3,6 +3,7 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.rpc:server_error
 - common.reconstructors:reconstructors.module
 - rc.build:build.module
 - rc.import_target:import_target.module
@@ -18,6 +19,7 @@ definitions:
       module_name: rc
       file_name: rc.dyn.py
       import_list:
+        htypes.rpc.server_error: legacy_type.rpc:server_error
         services.hyperapp_dir: builtins:hyperapp_dir.service
         services.web: builtins:web.service
         code.build: rc.build:build.module
