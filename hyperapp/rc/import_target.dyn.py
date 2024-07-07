@@ -1,4 +1,7 @@
 from . import htypes
+from .services import (
+    rc_requirement_creg,
+    )
 from .code.rc_constants import JobStatus
 from .code.job_result import JobResult
 from .code.import_dep import ImportDep
@@ -39,7 +42,10 @@ class ImportTarget:
             ]
         return ImportJob(self._python_module_src, self._idx, deps)
 
-    def handle_job_result(self, result):
+    def handle_job_result(self, target_set, result):
+        requirements = set()
+        for req_ref in result.requirements:
+            requirements.add(rc_requirement_creg.invite(req_ref))
         self._completed = True
         if isinstance(result, htypes.import_job.error_result):
             return JobResult(JobStatus.failed, result.message, result.traceback)

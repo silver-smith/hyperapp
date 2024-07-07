@@ -60,15 +60,19 @@ class ImportJob:
         if status == JobStatus.failed:
             return htypes.import_job.error_result(error_msg, traceback)
         req_set = self._imports_to_requirements(recorder.used_imports)
+        req_refs = tuple(
+            mosaic.put(req.piece)
+            for req in req_set
+            )
         if status == JobStatus.incomplete:
-            req_refs = tuple(
-                mosaic.put(req.piece)
-                for req in req_set
-                )
             return htypes.import_job.incomplete_result(
                 requirements=req_refs,
                 message=error_msg,
                 traceback=tuple(traceback),
+                )
+        if status == JobStatus.ok:
+            return htypes.import_job.succeeded_result(
+                requirements=req_refs,
                 )
 
     def _wrap_in_recorder(self, src, import_list):

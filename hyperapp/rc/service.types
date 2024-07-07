@@ -1,2 +1,2 @@
-service_req = record:
+service_complete_req = record:
   service_name: string

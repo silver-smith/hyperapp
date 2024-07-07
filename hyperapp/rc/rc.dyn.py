@@ -41,7 +41,7 @@ def _run(pool, target_set, fail_fast, timeout):
             job_id_to_target[id(job)] = target
         for job, result_piece in pool.iter_completed(timeout):
             target = job_id_to_target[id(job)]
-            result = target.handle_job_result(result_piece)
+            result = target.handle_job_result(target_set, result_piece)
             rc_log.info("%s: %s", target.name, result.status.name)
             job_count += 1
             # if result.status == JobStatus.failed:

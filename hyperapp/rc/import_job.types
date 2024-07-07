@@ -5,11 +5,14 @@ job = record:
   idx: int
   deps: ref list
 
-error_result = record:
-  message: string
-  traceback: string list
+succeeded_result = record:
+  requirements: ref list
 
 incomplete_result = record:
   requirements: ref list
+  message: string
+  traceback: string list
+
+error_result = record:
   message: string
   traceback: string list
