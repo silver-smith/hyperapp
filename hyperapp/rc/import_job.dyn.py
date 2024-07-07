@@ -43,6 +43,19 @@ class ImportJob:
     def run(self):
         src = self._python_module_src
         import_list = flatten(d.import_records for d in self._deps)
+        recorder_import_list = self._wrap_in_recorder(src, import_list)
+        module_piece = htypes.builtin.python_module(
+            module_name=src.name,
+            source=src.contents,
+            file_path=str(hyperapp_dir / src.path),
+            import_list=tuple(recorder_import_list),
+            )
+        try:
+            module = pyobj_creg.animate(module_piece)
+        except PythonModuleResourceImportError as x:
+            return self._prepare_error(x)
+
+    def _wrap_in_recorder(self, src, import_list):
         recorder_resources = tuple(
             htypes.import_recorder.resource(
                 name=tuple(rec.full_name.split('.')),
@@ -54,35 +67,28 @@ class ImportJob:
             id=src.name,
             resources=recorder_resources,
         )
-        recorder_import_list = [
+        return [
             htypes.builtin.import_rec('*', mosaic.put(recorder)),
             ]
-        module_piece = htypes.builtin.python_module(
-            module_name=src.name,
-            source=src.contents,
-            file_path=str(hyperapp_dir / src.path),
-            import_list=tuple(recorder_import_list),
-            )
-        try:
-            module = pyobj_creg.animate(module_piece)
-        except PythonModuleResourceImportError as x:
-            traceback_entries = []
-            cause = x.original_error
-            while cause:
-                traceback_entries += traceback.extract_tb(cause.__traceback__)
-                cause = cause.__cause__
-            for idx, entry in enumerate(traceback_entries):
-                if entry.name == 'exec_module':
-                    del traceback_entries[:idx + 1]
-                    break
-            traceback_lines = traceback.format_list(traceback_entries)
-            if isinstance(x.original_error, IncompleteImportedObjectError):
-                return htypes.import_job.incomplete_result(
-                    message=str(x),
-                    traceback=tuple(traceback_lines[:-1]),
-                    )
-            else:
-                return htypes.import_job.error_result(
-                    message=str(x),
-                    traceback=tuple(traceback_lines),
-                    )
+
+    def _prepare_error(self, x):
+        traceback_entries = []
+        cause = x.original_error
+        while cause:
+            traceback_entries += traceback.extract_tb(cause.__traceback__)
+            cause = cause.__cause__
+        for idx, entry in enumerate(traceback_entries):
+            if entry.name == 'exec_module':
+                del traceback_entries[:idx + 1]
+                break
+        traceback_lines = traceback.format_list(traceback_entries)
+        if isinstance(x.original_error, IncompleteImportedObjectError):
+            return htypes.import_job.incomplete_result(
+                message=str(x),
+                traceback=tuple(traceback_lines[:-1]),
+                )
+        else:
+            return htypes.import_job.error_result(
+                message=str(x),
+                traceback=tuple(traceback_lines),
+                )
