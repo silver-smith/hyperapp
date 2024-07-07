@@ -23,6 +23,7 @@ definitions:
       file_name: import_recorder.dyn.py
       import_list:
         services.web: builtins:web.service
+        services.pyobj_creg: builtins:pyobj_creg.service
 
   ImportRecorder:
     type: legacy_type.builtin:attribute

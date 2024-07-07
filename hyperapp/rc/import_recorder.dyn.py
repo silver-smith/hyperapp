@@ -1,6 +1,7 @@
 from hyperapp.common.python_importer import Finder
 
 from .services import (
+    pyobj_creg,
     web,
     )
 
