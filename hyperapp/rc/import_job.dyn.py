@@ -67,17 +67,22 @@ class ImportJob:
             module = pyobj_creg.animate(module_piece)
         except PythonModuleResourceImportError as x:
             traceback_entries = []
-            cause = x
+            cause = x.original_error
             while cause:
-                traceback_entries += traceback.format_tb(cause.__traceback__)
+                traceback_entries += traceback.extract_tb(cause.__traceback__)
                 cause = cause.__cause__
+            for idx, entry in enumerate(traceback_entries):
+                if entry.name == 'exec_module':
+                    del traceback_entries[:idx + 1]
+                    break
+            traceback_lines = traceback.format_list(traceback_entries)
             if isinstance(x.original_error, IncompleteImportedObjectError):
                 return htypes.import_job.incomplete_result(
                     message=str(x),
-                    traceback=tuple(traceback_entries[-2:-1]),
+                    traceback=tuple(traceback_lines[:-1]),
                     )
             else:
                 return htypes.import_job.error_result(
                     message=str(x),
-                    traceback=tuple(traceback_entries),
+                    traceback=tuple(traceback_lines),
                     )
