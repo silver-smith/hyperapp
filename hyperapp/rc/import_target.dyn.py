@@ -15,16 +15,9 @@ class ImportTarget:
         self._type_src_list = type_src_list
         self._idx = idx
         self._req_to_target = req_to_target or {}
-        self._key = ('import_target', self._python_module_src.name, self._idx)
         self._completed = False
         self._ready = False
         self.update_status()
-
-    def __eq__(self, rhs):
-        return type(rhs) is ImportTarget and self._key == rhs._key
-
-    def __hash__(self):
-        return hash(self._key)
 
     @property
     def name(self):
