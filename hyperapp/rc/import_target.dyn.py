@@ -58,6 +58,7 @@ class ImportTarget:
         if isinstance(result, htypes.import_job.error_result):
             return JobResult(JobStatus.failed, result.message, result.traceback)
         elif isinstance(result, htypes.import_job.incomplete_result):
-            target_set.add(ImportTarget(self._python_module_src, self._type_src_list, self._idx + 1, req_to_target))
+            if req_to_target:  # TODO: remove after all requirement types are implemented.
+                target_set.add(ImportTarget(self._python_module_src, self._type_src_list, self._idx + 1, req_to_target))
             return JobResult(JobStatus.incomplete, result.message, result.traceback)
         return JobResult(JobStatus.ok)
