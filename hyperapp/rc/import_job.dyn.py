@@ -8,7 +8,7 @@ from .services import (
     mosaic,
     hyperapp_dir,
     pyobj_creg,
-    rc_dep_creg,
+    rc_resource_creg,
     )
 from .code.rc_constants import JobStatus
 from .code.build import PythonModuleSrc
@@ -23,13 +23,13 @@ class ImportJob:
         return cls(
             python_module_src=PythonModuleSrc.from_piece(piece.python_module),
             idx=piece.idx,
-            deps=[rc_dep_creg.invite(d) for d in piece.deps],
+            resources=[rc_resource_creg.invite(d) for d in piece.resources],
             )
 
-    def __init__(self, python_module_src, idx, deps):
+    def __init__(self, python_module_src, idx, resources):
         self._python_module_src = python_module_src
         self._idx = idx
-        self._deps = deps
+        self._resources = resources
 
     def __repr__(self):
         return f"<ImportJob {self._python_module_src}/{self._idx}>"
@@ -39,12 +39,12 @@ class ImportJob:
         return htypes.import_job.job(
             python_module=self._python_module_src.piece,
             idx=self._idx,
-            deps=tuple(mosaic.put(d.piece) for d in self._deps),
+            resources=tuple(mosaic.put(d.piece) for d in self._resources),
             )
 
     def run(self):
         src = self._python_module_src
-        import_list = flatten(d.import_records for d in self._deps)
+        import_list = flatten(d.import_records for d in self._resources)
         recorder, recorder_import_list = self._wrap_in_recorder(src, import_list)
         module_piece = htypes.builtin.python_module(
             module_name=src.name,

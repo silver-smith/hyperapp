@@ -1,0 +1,43 @@
+import:
+- builtins:mosaic.service
+- builtins:web.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:import_rec
+- legacy_type.builtin:python_module
+- legacy_type.import_resource:import_resource
+- rc.rc_resource_creg:rc_resource_creg.service
+
+associations:
+
+- bases:
+  - rc.rc_resource_creg:rc_resource_creg.service
+  - legacy_type.import_resource:import_resource
+  key:
+  - rc.rc_resource_creg:rc_resource_creg.service
+  - legacy_type.import_resource:import_resource
+  value: ImportResource.from_piece
+
+definitions:
+
+  import_resource.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: import_resource
+      file_name: import_resource.dyn.py
+      import_list:
+        htypes.builtin.import_rec: legacy_type.builtin:import_rec
+        htypes.import_resource.import_resource: legacy_type.import_resource:import_resource
+        services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service
+
+  ImportResource:
+    type: legacy_type.builtin:attribute
+    value:
+      object: import_resource.module
+      attr_name: ImportResource
+
+  ImportResource.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ImportResource
+      attr_name: from_piece

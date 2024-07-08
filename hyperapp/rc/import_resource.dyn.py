@@ -5,7 +5,7 @@ from .services import (
     )
 
 
-class ImportDep:
+class ImportResource:
 
     @classmethod
     def from_type_src(cls, type_src):
@@ -22,7 +22,7 @@ class ImportDep:
 
     @property
     def piece(self):
-        return htypes.import_dep.import_dep(
+        return htypes.import_resource.import_resource(
             import_name=tuple(self._import_name),
             resource=mosaic.put(self._resource),
             )

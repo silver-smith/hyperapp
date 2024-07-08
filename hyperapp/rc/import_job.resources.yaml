@@ -15,7 +15,7 @@ import:
 - rc.build:build.module
 - rc.import_recorder:import_recorder.module
 - rc.rc_constants:rc_constants.module
-- rc.rc_dep_creg:rc_dep_creg.service
+- rc.rc_resource_creg:rc_resource_creg.service
 - rc.rc_job_creg:rc_job_creg.service
 - rc.requirement_factory:requirement_factory.module
 
@@ -48,7 +48,7 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.hyperapp_dir: builtins:hyperapp_dir.service
         services.pyobj_creg: builtins:pyobj_creg.service
-        services.rc_dep_creg: rc.rc_dep_creg:rc_dep_creg.service
+        services.rc_resource_creg: rc.rc_resource_creg:rc_resource_creg.service
         code.rc_constants: rc.rc_constants:rc_constants.module
         code.build: rc.build:build.module
         code.import_recorder: rc.import_recorder:import_recorder.module

@@ -33,3 +33,7 @@ class ServiceCompleteTarget:
     @property
     def ready(self):
         return False
+
+    @property
+    def completed(self):
+        return self._completed

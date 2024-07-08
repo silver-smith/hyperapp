@@ -6,20 +6,20 @@ import:
 - legacy_type.builtin:python_module
 associations: []
 definitions:
-  rc_dep_creg:
+  rc_resource_creg:
     type: legacy_type.builtin:attribute
     value:
-      object: rc_dep_creg.module
-      attr_name: rc_dep_creg
-  rc_dep_creg.module:
+      object: rc_resource_creg.module
+      attr_name: rc_resource_creg
+  rc_resource_creg.module:
     type: legacy_type.builtin:python_module
     value:
-      module_name: rc_dep_creg
-      file_name: rc_dep_creg.dyn.py
+      module_name: rc_resource_creg
+      file_name: rc_resource_creg.dyn.py
       import_list:
         services.code_registry_ctr: builtins:code_registry_ctr.service
         services.mark: common.mark:mark.service
-  rc_dep_creg.service:
+  rc_resource_creg.service:
     type: legacy_type.builtin:call
     value:
-      function: rc_dep_creg
+      function: rc_resource_creg
