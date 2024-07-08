@@ -1,0 +1,2 @@
+python_module_req = record:
+  code_name: string

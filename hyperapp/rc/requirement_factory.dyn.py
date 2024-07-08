@@ -1,3 +1,4 @@
+from .code.python_module_resource_target import PythonModuleReq
 from .code.service_target import ServiceCompleteReq
 
 
@@ -13,7 +14,10 @@ class RequirementFactory:
         return ServiceCompleteReq(service_name)
 
     def import_to_code(self, import_path):
-        pass
+        if len(import_path) == 1:
+            return
+        code_name = import_path[1]
+        return PythonModuleReq(code_name)
 
     def import_to_tested_service(self, import_path):
         pass

@@ -59,6 +59,9 @@ def _run(pool, target_set, fail_fast, timeout):
     rc_log.info("Failures:\n")
     for target, result in failures.items():
         rc_log.info("\n========== %s ==========\n%s%s\n", target.name, "".join(result.traceback), result.message)
+    for target in target_set:
+        if not target.completed and target not in failures:
+            rc_log.info("Not completed: %s", target.name)
     rc_log.info("Completed: %d; succeeded: %d; failed: %d", job_count, (job_count - len(failures)), len(failures))
 
 
@@ -67,7 +70,7 @@ def _main(pool, fail_fast, timeout):
     log.info("Loaded build:")
     build.report()
 
-    targets = TargetSet(_setup_targets(build))
+    targets = TargetSet(build.python_modules, _setup_targets(build))
     try:
         _run(pool, targets, fail_fast, timeout)
     except HException as x:

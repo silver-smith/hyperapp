@@ -60,7 +60,7 @@ class ImportJob:
         except PythonModuleResourceImportError as x:
             status, error_msg, traceback = self._prepare_error(x)
         if status == JobStatus.failed:
-            return htypes.import_job.error_result(error_msg, traceback)
+            return htypes.import_job.error_result(error_msg, tuple(traceback))
         req_set = self._imports_to_requirements(recorder.used_imports)
         req_refs = tuple(
             mosaic.put(req.piece)

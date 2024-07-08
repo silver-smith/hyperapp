@@ -17,17 +17,19 @@ log = logging.getLogger(__name__)
 class PythonModuleSrc:
 
     name: str
+    stem: str
     path: Path
     contents: str
 
     @classmethod
     def from_piece(cls, piece):
-        return cls(piece.name, Path(piece.path), piece.contents)
+        return cls(piece.name, piece.stem, Path(piece.path), piece.contents)
 
     @property
     def piece(self):
         return htypes.build.python_module_src(
             name=self.name,
+            stem=self.stem,
             path=str(self.path),
             contents=self.contents,
             )
@@ -78,7 +80,7 @@ def _load_pyhon_modules(root_dir):
         dir = path.parent.relative_to(root_dir)
         dir_name = str(dir).replace('/', '.')
         name = f'{dir_name}.{stem}'
-        yield PythonModuleSrc(name, rel_path, path.read_text())
+        yield PythonModuleSrc(name, stem, rel_path, path.read_text())
 
 
 def _load_types(root_dir):
