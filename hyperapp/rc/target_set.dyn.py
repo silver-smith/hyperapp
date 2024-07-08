@@ -1,5 +1,6 @@
 from operator import attrgetter
 
+from .code.import_target import ImportTargetAlias
 from .code.python_module_resource_target import PythonModuleResourceTarget
 from .code.service_target import ServiceFoundTarget, ServiceCompleteTarget
 
@@ -60,3 +61,7 @@ class TargetFactory:
 
     def tested_service(self, service_name):
         return ServiceFoundTarget(service_name)
+
+    def tested_code(self, code_name):
+        src = self._stem_to_python_module_src[code_name]
+        return ImportTargetAlias(src)

@@ -8,6 +8,25 @@ from .code.import_resource import ImportResource
 from .code.import_job import ImportJob
 
 
+class ImportTargetAlias:
+
+    def __init__(self, python_module_src):
+        self._python_module_src = python_module_src
+        self._completed = False
+
+    @property
+    def name(self):
+        return f'import/{self._python_module_src.name}'
+
+    @property
+    def ready(self):
+        return False
+
+    @property
+    def completed(self):
+        return self._completed
+
+
 class ImportTarget:
 
     def __init__(self, python_module_src, type_src_list, idx=1, req_to_target=None):

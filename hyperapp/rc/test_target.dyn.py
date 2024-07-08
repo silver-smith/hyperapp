@@ -18,3 +18,20 @@ class TestedServiceReq:
 
     def get_target(self, target_factory):
         return target_factory.tested_service(self.service_name)
+
+
+@dataclass(frozen=True, unsafe_hash=True)
+class TestedCodeReq:
+
+    code_name: str
+
+    @classmethod
+    def from_piece(cls, piece):
+        return cls(piece.code_name)
+
+    @property
+    def piece(self):
+        return htypes.test_target.tested_code_req(self.code_name)
+
+    def get_target(self, target_factory):
+        return target_factory.tested_code(self.code_name)

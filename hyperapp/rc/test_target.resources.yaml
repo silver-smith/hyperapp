@@ -1,6 +1,7 @@
 import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.test_target:tested_code_req
 - legacy_type.test_target:tested_service_req
 - rc.rc_requirement_creg:rc_requirement_creg.service
 
@@ -14,6 +15,14 @@ associations:
   - legacy_type.test_target:tested_service_req
   value: TestedServiceReq.from_piece
 
+- bases:
+  - rc.rc_requirement_creg:rc_requirement_creg.service
+  - legacy_type.test_target:tested_code_req
+  key:
+  - rc.rc_requirement_creg:rc_requirement_creg.service
+  - legacy_type.test_target:tested_code_req
+  value: TestedCodeReq.from_piece
+
 definitions:
 
   test_target.module:
@@ -22,6 +31,7 @@ definitions:
       module_name: test_target
       file_name: test_target.dyn.py
       import_list:
+        htypes.test_target.tested_code_req: legacy_type.test_target:tested_code_req
         htypes.test_target.tested_service_req: legacy_type.test_target:tested_service_req
 
   TestedServiceReq:
@@ -34,4 +44,16 @@ definitions:
     type: legacy_type.builtin:attribute
     value:
       object: TestedServiceReq
+      attr_name: from_piece
+
+  TestedCodeReq:
+    type: legacy_type.builtin:attribute
+    value:
+      object: test_target.module
+      attr_name: TestedCodeReq
+
+  TestedCodeReq.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: TestedCodeReq
       attr_name: from_piece
