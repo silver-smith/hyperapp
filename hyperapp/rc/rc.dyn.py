@@ -29,6 +29,7 @@ def _run(pool, target_set, fail_fast, timeout):
     job_id_to_target = {}
     job_count = 0
     failures = {}
+    incomplete = {}
     should_run = True
     while should_run:
         for target in target_set.iter_ready():
@@ -44,25 +45,31 @@ def _run(pool, target_set, fail_fast, timeout):
             result = target.handle_job_result(target_set, result_piece)
             rc_log.info("%s: %s", target.name, result.status.name)
             job_count += 1
-            # if result.status == JobStatus.failed:
-            if result.status != JobStatus.ok:
+            if result.status == JobStatus.failed:
                 failures[target] = result
                 if fail_fast:
                     should_run = False
                     break
+            if result.status == JobStatus.incomplete:
+                incomplete[target] = result
         if target_set.all_completed:
             rc_log.info("All targets are completed")
             break
         if pool.job_count == 0:
             rc_log.info("Not all targets are completed, but there are no jobs")
             break
-    rc_log.info("Failures:\n")
-    for target, result in failures.items():
-        rc_log.info("\n========== %s ==========\n%s%s\n", target.name, "".join(result.traceback), result.message)
+    if failures:
+        rc_log.info("Failures:\n")
+        for target, result in failures.items():
+            rc_log.info("\n========== %s ==========\n%s%s\n", target.name, "".join(result.traceback), result.message)
+    if incomplete:
+        rc_log.info("Incomplete:\n")
+        for target, result in incomplete.items():
+            rc_log.info("\n========== %s ==========\n%s%s\n", target.name, "".join(result.traceback), result.message)
     for target in target_set:
         if not target.completed and target not in failures:
             rc_log.info("Not completed: %s", target.name)
-    rc_log.info("Completed: %d; succeeded: %d; failed: %d", job_count, (job_count - len(failures)), len(failures))
+    rc_log.info("Completed: %d; succeeded: %d; failed: %d; incomplete: %d", job_count, (job_count - len(failures)), len(failures), len(incomplete))
 
 
 def _main(pool, fail_fast, timeout):
