@@ -1,2 +1,5 @@
+service_found_req = record:
+  service_name: string
+
 service_complete_req = record:
   service_name: string

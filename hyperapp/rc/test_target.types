@@ -1,0 +1,5 @@
+tested_service_req = record:
+  service_name: string
+
+tested_code_req = record:
+  code_name: string

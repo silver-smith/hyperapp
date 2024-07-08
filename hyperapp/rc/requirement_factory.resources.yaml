@@ -2,6 +2,7 @@ import:
 - legacy_type.builtin:python_module
 - rc.python_module_resource_target:python_module_resource_target.module
 - rc.service_target:service_target.module
+- rc.test_target:test_target.module
 
 definitions:
 
@@ -13,3 +14,4 @@ definitions:
       import_list:
         code.python_module_resource_target: rc.python_module_resource_target:python_module_resource_target.module
         code.service_target: rc.service_target:service_target.module
+        code.test_target: rc.test_target:test_target.module
