@@ -12,6 +12,7 @@ from .services import (
     )
 from .code.rc_constants import JobStatus
 from .code.build import PythonModuleSrc
+from .code.builtin_resources import enum_builtin_resources
 from .code.import_recorder import IncompleteImportedObjectError
 from .code.requirement_factory import RequirementFactory
 
@@ -44,7 +45,8 @@ class ImportJob:
 
     def run(self):
         src = self._python_module_src
-        import_list = flatten(d.import_records for d in self._resources)
+        all_resources = [*enum_builtin_resources(), *self._resources]
+        import_list = flatten(d.import_records for d in all_resources)
         recorder, recorder_import_list = self._wrap_in_recorder(src, import_list)
         module_piece = htypes.builtin.python_module(
             module_name=src.name,

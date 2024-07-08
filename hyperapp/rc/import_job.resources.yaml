@@ -13,10 +13,11 @@ import:
 - legacy_type.import_recorder:import_recorder
 - legacy_type.import_recorder:resource
 - rc.build:build.module
+- rc.builtin_resources:builtin_resources.module
 - rc.import_recorder:import_recorder.module
 - rc.rc_constants:rc_constants.module
-- rc.rc_resource_creg:rc_resource_creg.service
 - rc.rc_job_creg:rc_job_creg.service
+- rc.rc_resource_creg:rc_resource_creg.service
 - rc.requirement_factory:requirement_factory.module
 
 associations:
@@ -49,9 +50,10 @@ definitions:
         services.hyperapp_dir: builtins:hyperapp_dir.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.rc_resource_creg: rc.rc_resource_creg:rc_resource_creg.service
-        code.rc_constants: rc.rc_constants:rc_constants.module
         code.build: rc.build:build.module
+        code.builtin_resources: rc.builtin_resources:builtin_resources.module
         code.import_recorder: rc.import_recorder:import_recorder.module
+        code.rc_constants: rc.rc_constants:rc_constants.module
         code.requirement_factory: rc.requirement_factory:requirement_factory.module
 
   ImportJob:

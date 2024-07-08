@@ -1,0 +1,17 @@
+import:
+- builtins:builtin_services.service
+- legacy_type.builtin:builtin_service
+- legacy_type.builtin:python_module
+- rc.import_resource:import_resource.module
+
+definitions:
+
+  builtin_resources.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: builtin_resources
+      file_name: builtin_resources.dyn.py
+      import_list:
+        htypes.builtin.builtin_service: legacy_type.builtin:builtin_service
+        services.builtin_services: builtins:builtin_services.service
+        code.import_resource: rc.import_resource:import_resource.module
