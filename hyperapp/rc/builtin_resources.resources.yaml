@@ -1,5 +1,7 @@
 import:
 - builtins:builtin_services.service
+- builtins:pyobj_creg.service
+- common.mark:mark.service
 - legacy_type.builtin:builtin_service
 - legacy_type.builtin:python_module
 - rc.import_resource:import_resource.module
@@ -14,4 +16,6 @@ definitions:
       import_list:
         htypes.builtin.builtin_service: legacy_type.builtin:builtin_service
         services.builtin_services: builtins:builtin_services.service
+        services.mark: common.mark:mark.service
+        services.pyobj_creg: builtins:pyobj_creg.service
         code.import_resource: rc.import_resource:import_resource.module
