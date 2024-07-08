@@ -8,6 +8,32 @@ from .code.import_resource import ImportResource
 from .code.import_job import ImportJob
 
 
+class AllImportsKnownTarget:
+
+    def __init__(self, import_targets):
+        self._import_targets = import_targets
+        self._completed = False
+
+    @property
+    def name(self):
+        return 'all-imports-known'
+
+    @property
+    def ready(self):
+        return False
+
+    @property
+    def completed(self):
+        return self._completed
+
+    @property
+    def deps(self):
+        return self._import_targets
+
+    def update_status(self):
+        self._completed = all(target.completed for target in self._import_targets)
+
+
 class ImportTargetAlias:
 
     def __init__(self, python_module_src):
@@ -25,6 +51,10 @@ class ImportTargetAlias:
     @property
     def completed(self):
         return self._completed
+
+    @property
+    def deps(self):
+        return []
 
 
 class ImportTarget:
@@ -49,6 +79,10 @@ class ImportTarget:
     @property
     def completed(self):
         return self._completed
+
+    @property
+    def deps(self):
+        return self._req_to_target.values()
 
     def update_status(self):
         self._ready = all(target.completed for target in self._req_to_target.values())

@@ -56,6 +56,10 @@ class ServiceFoundTarget:
     def completed(self):
         return self._completed
 
+    @property
+    def deps(self):
+        return []
+
 
 class ServiceCompleteTarget:
 
@@ -74,3 +78,7 @@ class ServiceCompleteTarget:
     @property
     def completed(self):
         return self._completed
+
+    @property
+    def deps(self):
+        return []

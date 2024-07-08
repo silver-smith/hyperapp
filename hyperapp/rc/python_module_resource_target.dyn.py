@@ -37,3 +37,7 @@ class PythonModuleResourceTarget:
     @property
     def completed(self):
         return self._completed
+
+    @property
+    def deps(self):
+        return []

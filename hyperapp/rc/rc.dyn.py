@@ -12,15 +12,22 @@ from .code.process_pool import process_pool_running
 from .code.rc_constants import JobStatus
 from .code.build import load_build
 from .code.target_set import TargetSet
-from .code.import_target import ImportTarget
+from .code.import_target import AllImportsKnownTarget, ImportTarget
 
 log = logging.getLogger(__name__)
 rc_log = logging.getLogger('rc')
 
 
 def _setup_targets(build):
-    for module in build.python_modules:
-        yield ImportTarget(module, build.types)
+    import_targets = [
+        ImportTarget(module, build.types)
+        for module in build.python_modules
+        ]
+    all_imports_known = AllImportsKnownTarget(import_targets)
+    return [
+        *import_targets,
+        all_imports_known,
+        ]
 
 
 def _run(pool, target_set, fail_fast, timeout):
@@ -50,6 +57,8 @@ def _run(pool, target_set, fail_fast, timeout):
                 if fail_fast:
                     should_run = False
                     break
+            else:
+                target_set.update_deps_statuses(target)
             if result.status == JobStatus.incomplete:
                 incomplete[target] = result
         if target_set.all_completed:
