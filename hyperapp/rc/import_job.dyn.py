@@ -68,7 +68,8 @@ class SucceededImportResult(ImportResultBase):
         super().__init__(JobStatus.ok, requirements)
         self._functions = functions
 
-    def create_targets(self, import_target, target_set):
+    def update_targets(self, import_target, target_set):
+        import_target.set_alias_completed()
         if not self._is_tests:
             return
         req_to_target = self._resolve_requirements(target_set.factory)
@@ -99,7 +100,7 @@ class IncompleteImportResult(ImportResultBase):
     def __init__(self, requirements, error, traceback):
         super().__init__(JobStatus.incomplete, requirements, error, traceback)
 
-    def create_targets(self, import_target, target_set):
+    def update_targets(self, import_target, target_set):
         req_to_target = self._resolve_requirements(target_set.factory)
         if req_to_target:  # TODO: remove after all requirement types are implemented.
             target_set.add(import_target.create_next_target(req_to_target))
@@ -114,7 +115,7 @@ class FailedImportResult(JobResult):
     def __init__(self, requirements, error, traceback):
         super().__init__(JobStatus.failed, error, traceback)
 
-    def create_targets(self, import_target, target_set):
+    def update_targets(self, import_target, target_set):
         pass
 
 

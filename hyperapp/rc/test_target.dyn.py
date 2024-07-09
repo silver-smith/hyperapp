@@ -58,6 +58,7 @@ class TestTarget:
 
     @property
     def ready(self):
+        return False  # TODO
         return self._ready
 
     @property

@@ -8,15 +8,13 @@ from .code.service_target import ServiceFoundTarget, ServiceCompleteTarget
 
 class TargetSet:
 
-    def __init__(self, python_module_src_list, targets):
+    def __init__(self, python_module_src_list):
         self._stem_to_python_module_src = {
             src.stem: src
             for src in python_module_src_list
             }
         self._name_to_target = {}
         self._dep_to_target = defaultdict(set)  # target -> target set
-        for tgt in targets:
-            self.add(tgt)
 
     def __iter__(self):
         return iter(sorted(self._name_to_target.values(), key=attrgetter('name')))
