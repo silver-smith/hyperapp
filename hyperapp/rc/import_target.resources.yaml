@@ -3,6 +3,7 @@ import:
 - rc.import_resource:import_resource.module
 - rc.import_job:import_job.module
 - rc.rc_constants:rc_constants.module
+- rc.test_target:test_target.module
 
 definitions:
 
@@ -15,3 +16,4 @@ definitions:
         code.import_resource: rc.import_resource:import_resource.module
         code.import_job: rc.import_job:import_job.module
         code.rc_constants: rc.rc_constants:rc_constants.module
+        code.test_target: rc.test_target:test_target.module

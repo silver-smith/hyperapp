@@ -35,3 +35,34 @@ class TestedCodeReq:
 
     def get_target(self, target_factory):
         return target_factory.tested_code(self.code_name)
+
+
+class TestTarget:
+
+    def __init__(self, python_module_src, type_src_list, function, req_to_target, idx=1):
+        self._python_module_src = python_module_src
+        self._type_src_list = type_src_list
+        self._function = function
+        self._req_to_target = req_to_target or {}
+        self._idx = idx
+        self._completed = False
+        self._ready = False
+
+    @property
+    def name(self):
+        return f'test/{self._python_module_src.name}/{self._function.name}/{self._idx}'
+
+    @property
+    def ready(self):
+        return self._ready
+
+    @property
+    def completed(self):
+        return self._completed
+
+    @property
+    def deps(self):
+        return self._req_to_target.values()
+
+    def update_status(self):
+        self._ready = all(target.completed for target in self._req_to_target.values())

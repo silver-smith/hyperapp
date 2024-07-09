@@ -18,6 +18,7 @@ from .code.builtin_resources import enum_builtin_resources
 from .code.import_recorder import IncompleteImportedObjectError
 from .code.requirement_factory import RequirementFactory
 from .code.job_result import JobResult
+from .code.test_target import TestedCodeReq, TestedServiceReq
 
 
 class Function:
@@ -68,7 +69,19 @@ class SucceededImportResult(ImportResultBase):
         self._functions = functions
 
     def create_targets(self, import_target, target_set):
-        pass
+        if not self._is_tests:
+            return
+        req_to_target = self._resolve_requirements(target_set.factory)
+        for fn in self._functions:
+            if fn.name.startswith('test_'):
+                target_set.add(import_target.create_test_target(fn, req_to_target))
+
+    @property
+    def _is_tests(self):
+        for req in self._requirements:
+            if isinstance(req, (TestedServiceReq, TestedCodeReq)):
+                return True
+        return False
 
 
 class IncompleteImportResult(ImportResultBase):

@@ -1,6 +1,7 @@
 from .code.rc_constants import JobStatus
 from .code.import_resource import ImportResource
 from .code.import_job import ImportJob
+from .code.test_target import TestTarget
 
 
 class AllImportsKnownTarget:
@@ -95,3 +96,6 @@ class ImportTarget:
 
     def create_next_target(self, req_to_target):
         return ImportTarget(self._python_module_src, self._type_src_list, self._idx + 1, req_to_target)
+
+    def create_test_target(self, function, req_to_target):
+        return TestTarget(self._python_module_src, self._type_src_list, function, req_to_target)
