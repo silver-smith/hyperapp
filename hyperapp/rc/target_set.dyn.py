@@ -29,6 +29,7 @@ class TargetSet:
     def add(self, target):
         assert target.name not in self._name_to_target
         self._name_to_target[target.name] = target
+        target.update_status()
         for dep_target in target.deps:
             self._dep_to_target[dep_target].add(target)
 

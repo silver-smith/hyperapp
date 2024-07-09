@@ -52,6 +52,9 @@ class ImportTargetAlias:
     def deps(self):
         return []
 
+    def update_status(self):
+        pass
+
 
 class ImportTarget:
 
@@ -62,7 +65,6 @@ class ImportTarget:
         self._req_to_target = req_to_target or {}
         self._completed = False
         self._ready = False
-        self.update_status()
 
     @property
     def name(self):

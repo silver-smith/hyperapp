@@ -60,6 +60,9 @@ class ServiceFoundTarget:
     def deps(self):
         return []
 
+    def update_status(self):
+        pass
+
 
 class ServiceCompleteTarget:
 
@@ -82,3 +85,6 @@ class ServiceCompleteTarget:
     @property
     def deps(self):
         return []
+
+    def update_status(self):
+        pass

@@ -41,3 +41,6 @@ class PythonModuleResourceTarget:
     @property
     def deps(self):
         return []
+
+    def update_status(self):
+        pass
