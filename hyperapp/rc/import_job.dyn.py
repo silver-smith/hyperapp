@@ -1,3 +1,4 @@
+import inspect
 import traceback
 
 from hyperapp.common.util import flatten
@@ -75,6 +76,25 @@ class ImportJob:
         if status == JobStatus.ok:
             return htypes.import_job.succeeded_result(
                 requirements=req_refs,
+                functions=tuple(self._enum_functions(module)),
+                )
+
+    def _enum_functions(self, module):
+        for name in dir(module):
+            if name.startswith('_'):
+                continue
+            fn = getattr(module, name)
+            if not callable(fn):
+                continue
+            try:
+                signature = inspect.signature(fn)
+            except ValueError as x:
+                if 'no signature found for builtin type' in str(x):
+                    continue
+                raise
+            yield htypes.import_job.function(
+                name=name,
+                params=tuple(signature.parameters.keys()),
                 )
 
     def _wrap_in_recorder(self, src, import_list):
