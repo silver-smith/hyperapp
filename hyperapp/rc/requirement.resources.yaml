@@ -1,0 +1,11 @@
+import:
+- legacy_type.builtin:python_module
+
+definitions:
+
+  requirement.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: requirement
+      file_name: requirement.dyn.py
+      import_list: {}

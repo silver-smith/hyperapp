@@ -1,11 +1,12 @@
 from dataclasses import dataclass
 
 from . import htypes
+from .code.requirement import Requirement
 
 
 # Unused. Is it really needed?`
 @dataclass(frozen=True, unsafe_hash=True)
-class ServiceFoundReq:
+class ServiceFoundReq(Requirement):
 
     service_name: str
 
@@ -22,7 +23,7 @@ class ServiceFoundReq:
 
 
 @dataclass(frozen=True, unsafe_hash=True)
-class ServiceCompleteReq:
+class ServiceCompleteReq(Requirement):
 
     service_name: str
 

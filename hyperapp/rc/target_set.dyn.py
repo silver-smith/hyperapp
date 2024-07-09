@@ -66,8 +66,12 @@ class TargetFactory:
         target = ServiceCompleteTarget(service_name)
         return self._target_set.add_or_get(target)
 
-    def python_module_resource(self, code_name):
+    def python_module_resource_by_code_name(self, code_name):
         src = self._target_set._stem_to_python_module_src[code_name]
+        target = PythonModuleResourceTarget(src)
+        return self._target_set.add_or_get(target)
+
+    def python_module_resource_by_src(self, src):
         target = PythonModuleResourceTarget(src)
         return self._target_set.add_or_get(target)
 
@@ -75,7 +79,7 @@ class TargetFactory:
         target = ServiceFoundTarget(service_name)
         return self._target_set.add_or_get(target)
 
-    def tested_code(self, code_name):
+    def python_module_imported(self, code_name):
         src = self._target_set._stem_to_python_module_src[code_name]
         target = ImportTargetAlias(src)
         return self._target_set.add_or_get(target)

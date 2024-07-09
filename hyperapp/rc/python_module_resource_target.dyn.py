@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 
 from . import htypes
+from .code.requirement import Requirement
 
 
 @dataclass(frozen=True, unsafe_hash=True)
-class PythonModuleReq:
+class PythonModuleReq(Requirement):
 
     code_name: str
 
@@ -17,7 +18,7 @@ class PythonModuleReq:
         return htypes.python_module_resource_target.python_module_req(self.code_name)
 
     def get_target(self, target_factory):
-        return target_factory.python_module_resource(self.code_name)
+        return target_factory.python_module_resource_by_code_name(self.code_name)
 
 
 class PythonModuleResourceTarget:
@@ -25,6 +26,7 @@ class PythonModuleResourceTarget:
     def __init__(self, python_module_src):
         self._python_module_src = python_module_src
         self._completed = False
+        self._deps = set()
 
     @property
     def name(self):
@@ -40,7 +42,10 @@ class PythonModuleResourceTarget:
 
     @property
     def deps(self):
-        return []
+        return self._deps
 
     def update_status(self):
         pass
+
+    def add_test_dep(self, test_target):
+        self._deps.add(test_target)
