@@ -31,14 +31,32 @@ class Function:
         self.params = params
 
 
-class SucceededImportResult(JobResult):
+class ImportResultBase(JobResult):
+
+    @staticmethod
+    def _resolve_reqirement_refs(requirement_refs):
+        return [
+            rc_requirement_creg.invite(ref)
+            for ref in requirement_refs
+            ]
+
+    def __init__(self, status, requirements, error=None, traceback=None):
+        super().__init__(status, error, traceback)
+        self._requirements = requirements
+
+    def _resolve_requirements(self, target_factory):
+        req_to_target = {}
+        for req in self._requirements:
+            target = req.get_target(target_factory)
+            req_to_target[req] = target
+        return req_to_target
+
+
+class SucceededImportResult(ImportResultBase):
 
     @classmethod
     def from_piece(cls, piece):
-        requirements = [
-            rc_requirement_creg.invite(ref)
-            for ref in piece.requirements
-            ]
+        requirements = cls._resolve_reqirement_refs(piece.requirements)
         functions = [
             Function.from_piece(fn)
             for fn in piece.functions
@@ -46,33 +64,25 @@ class SucceededImportResult(JobResult):
         return cls(requirements, functions)
 
     def __init__(self, requirements, functions):
-        super().__init__(JobStatus.ok)
-        self._requirements = requirements
+        super().__init__(JobStatus.ok, requirements)
         self._functions = functions
 
     def create_targets(self, import_target, target_set):
         pass
 
 
-class IncompleteImportResult(JobResult):
+class IncompleteImportResult(ImportResultBase):
 
     @classmethod
     def from_piece(cls, piece):
-        requirements = [
-            rc_requirement_creg.invite(ref)
-            for ref in piece.requirements
-            ]
+        requirements = cls._resolve_reqirement_refs(piece.requirements)
         return cls(requirements, piece.error, piece.traceback)
 
     def __init__(self, requirements, error, traceback):
-        super().__init__(JobStatus.incomplete, error, traceback)
-        self._requirements = requirements
+        super().__init__(JobStatus.incomplete, requirements, error, traceback)
 
     def create_targets(self, import_target, target_set):
-        req_to_target = {}
-        for req in self._requirements:
-            target = req.get_target(target_set.factory)
-            req_to_target[req] = target
+        req_to_target = self._resolve_requirements(target_set.factory)
         if req_to_target:  # TODO: remove after all requirement types are implemented.
             target_set.add(import_target.create_next_target(req_to_target))
 
