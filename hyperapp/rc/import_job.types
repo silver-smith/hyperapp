@@ -15,9 +15,9 @@ succeeded_result = record:
 
 incomplete_result = record:
   requirements: ref list
-  message: string
+  error: string
   traceback: string list
 
-error_result = record:
-  message: string
+failed_result = record:
+  error: string
   traceback: string list

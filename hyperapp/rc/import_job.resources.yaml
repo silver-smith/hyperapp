@@ -6,7 +6,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:import_rec
 - legacy_type.builtin:python_module
-- legacy_type.import_job:error_result
+- legacy_type.import_job:failed_result
 - legacy_type.import_job:function
 - legacy_type.import_job:job
 - legacy_type.import_job:incomplete_result
@@ -15,13 +15,40 @@ import:
 - legacy_type.import_recorder:resource
 - rc.build:build.module
 - rc.builtin_resources:builtin_resources.module
+- rc.job_result:job_result.module
 - rc.import_recorder:import_recorder.module
 - rc.rc_constants:rc_constants.module
 - rc.rc_job_creg:rc_job_creg.service
+- rc.rc_job_result_creg:rc_job_result_creg.service
+- rc.rc_requirement_creg:rc_requirement_creg.service
 - rc.rc_resource_creg:rc_resource_creg.service
 - rc.requirement_factory:requirement_factory.module
 
 associations:
+
+- bases:
+  - rc.rc_job_result_creg:rc_job_result_creg.service
+  - legacy_type.import_job:succeeded_result
+  key:
+  - rc.rc_job_result_creg:rc_job_result_creg.service
+  - legacy_type.import_job:succeeded_result
+  value: SucceededImportResult.from_piece
+
+- bases:
+  - rc.rc_job_result_creg:rc_job_result_creg.service
+  - legacy_type.import_job:incomplete_result
+  key:
+  - rc.rc_job_result_creg:rc_job_result_creg.service
+  - legacy_type.import_job:incomplete_result
+  value: IncompleteImportResult.from_piece
+
+- bases:
+  - rc.rc_job_result_creg:rc_job_result_creg.service
+  - legacy_type.import_job:failed_result
+  key:
+  - rc.rc_job_result_creg:rc_job_result_creg.service
+  - legacy_type.import_job:failed_result
+  value: FailedImportResult.from_piece
 
 - bases:
   - rc.rc_job_creg:rc_job_creg.service
@@ -41,7 +68,7 @@ definitions:
       import_list:
         htypes.builtin.import_rec: legacy_type.builtin:import_rec
         htypes.builtin.python_module: legacy_type.builtin:python_module
-        htypes.import_job.error_result: legacy_type.import_job:error_result
+        htypes.import_job.failed_result: legacy_type.import_job:failed_result
         htypes.import_job.function: legacy_type.import_job:function
         htypes.import_job.job: legacy_type.import_job:job
         htypes.import_job.incomplete_result: legacy_type.import_job:incomplete_result
@@ -51,12 +78,50 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.hyperapp_dir: builtins:hyperapp_dir.service
         services.pyobj_creg: builtins:pyobj_creg.service
+        services.rc_requirement_creg: rc.rc_requirement_creg:rc_requirement_creg.service
         services.rc_resource_creg: rc.rc_resource_creg:rc_resource_creg.service
         code.build: rc.build:build.module
         code.builtin_resources: rc.builtin_resources:builtin_resources.module
+        code.job_result: rc.job_result:job_result.module
         code.import_recorder: rc.import_recorder:import_recorder.module
         code.rc_constants: rc.rc_constants:rc_constants.module
         code.requirement_factory: rc.requirement_factory:requirement_factory.module
+
+  SucceededImportResult:
+    type: legacy_type.builtin:attribute
+    value:
+      object: import_job.module
+      attr_name: SucceededImportResult
+
+  SucceededImportResult.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: SucceededImportResult
+      attr_name: from_piece
+
+  IncompleteImportResult:
+    type: legacy_type.builtin:attribute
+    value:
+      object: import_job.module
+      attr_name: IncompleteImportResult
+
+  IncompleteImportResult.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: IncompleteImportResult
+      attr_name: from_piece
+
+  FailedImportResult:
+    type: legacy_type.builtin:attribute
+    value:
+      object: import_job.module
+      attr_name: FailedImportResult
+
+  FailedImportResult.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: FailedImportResult
+      attr_name: from_piece
 
   ImportJob:
     type: legacy_type.builtin:attribute

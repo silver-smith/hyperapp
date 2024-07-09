@@ -1,7 +1,7 @@
 
 class JobResult:
 
-    def __init__(self, status, message=None, traceback=None):
+    def __init__(self, status, error=None, traceback=None):
         self.status = status
-        self.message = message
+        self.error = error
         self.traceback = traceback

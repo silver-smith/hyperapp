@@ -9,6 +9,7 @@ from .services import (
     mosaic,
     hyperapp_dir,
     pyobj_creg,
+    rc_requirement_creg,
     rc_resource_creg,
     )
 from .code.rc_constants import JobStatus
@@ -16,6 +17,77 @@ from .code.build import PythonModuleSrc
 from .code.builtin_resources import enum_builtin_resources
 from .code.import_recorder import IncompleteImportedObjectError
 from .code.requirement_factory import RequirementFactory
+from .code.job_result import JobResult
+
+
+class Function:
+
+    @classmethod
+    def from_piece(cls, piece):
+        return cls(piece.name, piece.params)
+
+    def __init__(self, name, params):
+        self.name = name
+        self.params = params
+
+
+class SucceededImportResult(JobResult):
+
+    @classmethod
+    def from_piece(cls, piece):
+        requirements = [
+            rc_requirement_creg.invite(ref)
+            for ref in piece.requirements
+            ]
+        functions = [
+            Function.from_piece(fn)
+            for fn in piece.functions
+            ]
+        return cls(requirements, functions)
+
+    def __init__(self, requirements, functions):
+        super().__init__(JobStatus.ok)
+        self._requirements = requirements
+        self._functions = functions
+
+    def create_targets(self, import_target, target_set):
+        pass
+
+
+class IncompleteImportResult(JobResult):
+
+    @classmethod
+    def from_piece(cls, piece):
+        requirements = [
+            rc_requirement_creg.invite(ref)
+            for ref in piece.requirements
+            ]
+        return cls(requirements, piece.error, piece.traceback)
+
+    def __init__(self, requirements, error, traceback):
+        super().__init__(JobStatus.incomplete, error, traceback)
+        self._requirements = requirements
+
+    def create_targets(self, import_target, target_set):
+        req_to_target = {}
+        for req in self._requirements:
+            target = req.get_target(target_set.factory)
+            req_to_target[req] = target
+        if req_to_target:  # TODO: remove after all requirement types are implemented.
+            target_set.add(import_target.create_next_target(req_to_target))
+
+
+class FailedImportResult(JobResult):
+
+    @classmethod
+    def from_piece(cls, piece):
+        return cls(piece.error, piece.traceback)
+
+    def __init__(self, requirements, error, traceback):
+        super().__init__(JobStatus.failed, error, traceback)
+
+    def create_targets(self, import_target, target_set):
+        pass
 
 
 class ImportJob:
@@ -61,7 +133,7 @@ class ImportJob:
         except PythonModuleResourceImportError as x:
             status, error_msg, traceback = self._prepare_error(x)
         if status == JobStatus.failed:
-            return htypes.import_job.error_result(error_msg, tuple(traceback))
+            return htypes.import_job.failed_result(error_msg, tuple(traceback))
         req_set = self._imports_to_requirements(recorder.used_imports)
         req_refs = tuple(
             mosaic.put(req.piece)
@@ -70,7 +142,7 @@ class ImportJob:
         if status == JobStatus.incomplete:
             return htypes.import_job.incomplete_result(
                 requirements=req_refs,
-                message=error_msg,
+                error=error_msg,
                 traceback=tuple(traceback),
                 )
         if status == JobStatus.ok:

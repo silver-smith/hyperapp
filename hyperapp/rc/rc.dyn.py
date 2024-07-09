@@ -5,6 +5,7 @@ from hyperapp.common.htypes import HException
 from . import htypes
 from .services import (
     hyperapp_dir,
+    rc_job_result_creg,
     web,
     )
 from .code.reconstructors import register_reconstructors
@@ -48,8 +49,9 @@ def _run(pool, target_set, fail_fast, timeout):
             target_to_job[target] = job
             job_id_to_target[id(job)] = target
         for job, result_piece in pool.iter_completed(timeout):
+            result = rc_job_result_creg.animate(result_piece)
             target = job_id_to_target[id(job)]
-            result = target.handle_job_result(target_set, result_piece)
+            target.handle_job_result(target_set, result)
             rc_log.info("%s: %s", target.name, result.status.name)
             job_count += 1
             if result.status == JobStatus.failed:
@@ -70,11 +72,11 @@ def _run(pool, target_set, fail_fast, timeout):
     if failures:
         rc_log.info("Failures:\n")
         for target, result in failures.items():
-            rc_log.info("\n========== %s ==========\n%s%s\n", target.name, "".join(result.traceback), result.message)
+            rc_log.info("\n========== %s ==========\n%s%s\n", target.name, "".join(result.traceback), result.error)
     if incomplete:
         rc_log.info("Incomplete:\n")
         for target, result in incomplete.items():
-            rc_log.info("\n========== %s ==========\n%s%s\n", target.name, "".join(result.traceback), result.message)
+            rc_log.info("\n========== %s ==========\n%s%s\n", target.name, "".join(result.traceback), result.error)
     for target in target_set:
         if not target.completed and target not in failures:
             rc_log.info("Not completed: %s", target.name)

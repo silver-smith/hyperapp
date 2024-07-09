@@ -7,6 +7,7 @@ import:
 - common.reconstructors:reconstructors.module
 - rc.build:build.module
 - rc.rc_constants:rc_constants.module
+- rc.rc_job_result_creg:rc_job_result_creg.service
 - rc.import_target:import_target.module
 - rc.process_pool:process_pool.module
 - rc.target_set:target_set.module
@@ -23,6 +24,7 @@ definitions:
         htypes.rpc.server_error: legacy_type.rpc:server_error
         services.hyperapp_dir: builtins:hyperapp_dir.service
         services.web: builtins:web.service
+        services.rc_job_result_creg: rc.rc_job_result_creg:rc_job_result_creg.service
         code.build: rc.build:build.module
         code.import_target: rc.import_target:import_target.module
         code.process_pool: rc.process_pool:process_pool.module

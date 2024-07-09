@@ -1,9 +1,4 @@
-from . import htypes
-from .services import (
-    rc_requirement_creg,
-    )
 from .code.rc_constants import JobStatus
-from .code.job_result import JobResult
 from .code.import_resource import ImportResource
 from .code.import_job import ImportJob
 
@@ -96,15 +91,7 @@ class ImportTarget:
 
     def handle_job_result(self, target_set, result):
         self._completed = True
-        if isinstance(result, htypes.import_job.error_result):
-            return JobResult(JobStatus.failed, result.message, result.traceback)
-        req_to_target = {}
-        for req_ref in result.requirements:
-            req = rc_requirement_creg.invite(req_ref)
-            target = req.get_target(target_set.factory)
-            req_to_target[req] = target
-        if isinstance(result, htypes.import_job.incomplete_result):
-            if req_to_target:  # TODO: remove after all requirement types are implemented.
-                target_set.add(ImportTarget(self._python_module_src, self._type_src_list, self._idx + 1, req_to_target))
-            return JobResult(JobStatus.incomplete, result.message, result.traceback)
-        return JobResult(JobStatus.ok)
+        result.create_targets(self, target_set)
+
+    def create_next_target(self, req_to_target):
+        return ImportTarget(self._python_module_src, self._type_src_list, self._idx + 1, req_to_target)
