@@ -145,11 +145,9 @@ class ImportJob:
             )
 
     def run(self):
-        src = self._python_module_src
         all_resources = [*enum_builtin_resources(), *self._resources]
         import_list = flatten(d.import_records for d in all_resources)
-        recorder, recorder_import_list = self._wrap_in_recorder(src, import_list)
-        module_piece = src.make_resource(recorder_import_list)
+        recorder, module_piece = self._python_module_src.recorded_python_module(import_list)
         try:
             module = pyobj_creg.animate(module_piece)
             status = JobStatus.ok
@@ -191,24 +189,6 @@ class ImportJob:
                 name=name,
                 params=tuple(signature.parameters.keys()),
                 )
-
-    def _wrap_in_recorder(self, src, import_list):
-        recorder_resources = tuple(
-            htypes.import_recorder.resource(
-                name=tuple(rec.full_name.split('.')),
-                resource=rec.resource,
-                )
-            for rec in import_list
-            )
-        recorder_piece = htypes.import_recorder.import_recorder(
-            id=src.name,
-            resources=recorder_resources,
-        )
-        recorder_import_list = [
-            htypes.builtin.import_rec('*', mosaic.put(recorder_piece)),
-            ]
-        recorder = pyobj_creg.animate(recorder_piece)
-        return (recorder, recorder_import_list)
 
     def _prepare_error(self, x):
         traceback_entries = []

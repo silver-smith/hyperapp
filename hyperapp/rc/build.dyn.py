@@ -8,6 +8,7 @@ from .services import (
     local_types,
     hyperapp_dir,
     mosaic,
+    pyobj_creg,
     type_module_loader,
     )
 
@@ -35,13 +36,32 @@ class PythonModuleSrc:
             contents=self.contents,
             )
 
-    def make_resource(self, import_list):
+    def python_module(self, import_list):
         return htypes.builtin.python_module(
             module_name=self.name,
             source=self.contents,
             file_path=str(hyperapp_dir / self.path),
             import_list=tuple(import_list),
             )
+
+    def recorded_python_module(self, import_list):
+        recorder_resources = tuple(
+            htypes.import_recorder.resource(
+                name=tuple(rec.full_name.split('.')),
+                resource=rec.resource,
+                )
+            for rec in import_list
+            )
+        recorder_piece = htypes.import_recorder.import_recorder(
+            id=self.name,
+            resources=recorder_resources,
+        )
+        recorder_import_list = [
+            htypes.builtin.import_rec('*', mosaic.put(recorder_piece)),
+            ]
+        recorder = pyobj_creg.animate(recorder_piece)
+        python_module = self.python_module(recorder_import_list)
+        return (recorder, python_module)
 
 
 @dataclass
