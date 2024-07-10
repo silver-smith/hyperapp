@@ -3,8 +3,10 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.test_target:tested_code_req
 - legacy_type.test_target:tested_service_req
+- rc.import_resource:import_resource.module
 - rc.requirement:requirement.module
 - rc.rc_requirement_creg:rc_requirement_creg.service
+- rc.test_job:test_job.module
 
 associations:
 
@@ -34,7 +36,9 @@ definitions:
       import_list:
         htypes.test_target.tested_code_req: legacy_type.test_target:tested_code_req
         htypes.test_target.tested_service_req: legacy_type.test_target:tested_service_req
+        code.import_resource: rc.import_resource:import_resource.module
         code.requirement: rc.requirement:requirement.module
+        code.test_job: rc.test_job:test_job.module
 
   TestedServiceReq:
     type: legacy_type.builtin:attribute

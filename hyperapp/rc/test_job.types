@@ -1,0 +1,18 @@
+from build import python_module_src
+
+job = record:
+  python_module: python_module_src
+  idx: int
+  resources: ref list
+
+succeeded_result = record:
+  requirements: ref list
+
+incomplete_result = record:
+  requirements: ref list
+  error: string
+  traceback: string list
+
+failed_result = record:
+  error: string
+  traceback: string list

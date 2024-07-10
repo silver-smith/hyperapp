@@ -1,0 +1,92 @@
+import:
+
+- builtins:mosaic.service
+- builtins:hyperapp_dir.service
+- builtins:pyobj_creg.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:import_rec
+- legacy_type.builtin:python_module
+- legacy_type.test_job:failed_result
+- legacy_type.test_job:job
+- legacy_type.test_job:incomplete_result
+- legacy_type.test_job:succeeded_result
+- legacy_type.import_recorder:import_recorder
+- legacy_type.import_recorder:resource
+- rc.build:build.module
+- rc.builtin_resources:builtin_resources.module
+- rc.job_result:job_result.module
+- rc.import_recorder:import_recorder.module
+- rc.rc_constants:rc_constants.module
+- rc.rc_job_creg:rc_job_creg.service
+- rc.rc_job_result_creg:rc_job_result_creg.service
+- rc.rc_requirement_creg:rc_requirement_creg.service
+- rc.rc_resource_creg:rc_resource_creg.service
+
+associations:
+
+- bases:
+  - rc.rc_job_result_creg:rc_job_result_creg.service
+  - legacy_type.test_job:succeeded_result
+  key:
+  - rc.rc_job_result_creg:rc_job_result_creg.service
+  - legacy_type.test_job:succeeded_result
+  value: SucceededTestResult.from_piece
+
+- bases:
+  - rc.rc_job_creg:rc_job_creg.service
+  - legacy_type.test_job:job
+  key:
+  - rc.rc_job_creg:rc_job_creg.service
+  - legacy_type.test_job:job
+  value: TestJob.from_piece
+
+definitions:
+
+  test_job.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: test_job
+      file_name: test_job.dyn.py
+      import_list:
+        htypes.builtin.import_rec: legacy_type.builtin:import_rec
+        htypes.builtin.python_module: legacy_type.builtin:python_module
+        htypes.test_job.failed_result: legacy_type.test_job:failed_result
+        htypes.test_job.job: legacy_type.test_job:job
+        htypes.test_job.incomplete_result: legacy_type.test_job:incomplete_result
+        htypes.test_job.succeeded_result: legacy_type.test_job:succeeded_result
+        htypes.import_recorder.import_recorder: legacy_type.import_recorder:import_recorder
+        htypes.import_recorder.resource: legacy_type.import_recorder:resource
+        services.mosaic: builtins:mosaic.service
+        services.hyperapp_dir: builtins:hyperapp_dir.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        services.rc_requirement_creg: rc.rc_requirement_creg:rc_requirement_creg.service
+        services.rc_resource_creg: rc.rc_resource_creg:rc_resource_creg.service
+        code.build: rc.build:build.module
+        code.builtin_resources: rc.builtin_resources:builtin_resources.module
+        code.job_result: rc.job_result:job_result.module
+        code.import_recorder: rc.import_recorder:import_recorder.module
+        code.rc_constants: rc.rc_constants:rc_constants.module
+
+  SucceededTestResult:
+    type: legacy_type.builtin:attribute
+    value:
+      object: test_job.module
+      attr_name: SucceededTestResult
+
+  SucceededTestResult.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: SucceededTestResult
+      attr_name: from_piece
+
+  TestJob:
+    type: legacy_type.builtin:attribute
+    value:
+      object: test_job.module
+      attr_name: TestJob
+
+  TestJob.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: TestJob
+      attr_name: from_piece

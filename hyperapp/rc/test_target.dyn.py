@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 
 from . import htypes
+from .code.import_resource import ImportResource
 from .code.requirement import Requirement
+from .code.test_job import TestJob
 
 
 @dataclass(frozen=True, unsafe_hash=True)
@@ -58,7 +60,6 @@ class TestTarget:
 
     @property
     def ready(self):
-        return False  # TODO
         return self._ready
 
     @property
@@ -71,3 +72,13 @@ class TestTarget:
 
     def update_status(self):
         self._ready = all(target.completed for target in self._req_to_target.values())
+
+    def make_job(self):
+        resources = [
+            ImportResource.from_type_src(src)
+            for src in self._type_src_list
+            ]
+        return TestJob(self._python_module_src, self._idx, resources)
+
+    def handle_job_result(self, target_set, result):
+        self._completed = True
