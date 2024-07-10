@@ -1,7 +1,6 @@
 import:
 
 - builtins:mosaic.service
-- builtins:hyperapp_dir.service
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:import_rec
@@ -68,7 +67,6 @@ definitions:
       file_name: import_job.dyn.py
       import_list:
         htypes.builtin.import_rec: legacy_type.builtin:import_rec
-        htypes.builtin.python_module: legacy_type.builtin:python_module
         htypes.import_job.failed_result: legacy_type.import_job:failed_result
         htypes.import_job.function: legacy_type.import_job:function
         htypes.import_job.job: legacy_type.import_job:job
@@ -77,7 +75,6 @@ definitions:
         htypes.import_recorder.import_recorder: legacy_type.import_recorder:import_recorder
         htypes.import_recorder.resource: legacy_type.import_recorder:resource
         services.mosaic: builtins:mosaic.service
-        services.hyperapp_dir: builtins:hyperapp_dir.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.rc_requirement_creg: rc.rc_requirement_creg:rc_requirement_creg.service
         services.rc_resource_creg: rc.rc_resource_creg:rc_resource_creg.service

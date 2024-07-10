@@ -7,7 +7,6 @@ from hyperapp.resource.python_module import PythonModuleResourceImportError
 from . import htypes
 from .services import (
     mosaic,
-    hyperapp_dir,
     pyobj_creg,
     rc_requirement_creg,
     rc_resource_creg,
@@ -150,12 +149,7 @@ class ImportJob:
         all_resources = [*enum_builtin_resources(), *self._resources]
         import_list = flatten(d.import_records for d in all_resources)
         recorder, recorder_import_list = self._wrap_in_recorder(src, import_list)
-        module_piece = htypes.builtin.python_module(
-            module_name=src.name,
-            source=src.contents,
-            file_path=str(hyperapp_dir / src.path),
-            import_list=tuple(recorder_import_list),
-            )
+        module_piece = src.make_resource(recorder_import_list)
         try:
             module = pyobj_creg.animate(module_piece)
             status = JobStatus.ok

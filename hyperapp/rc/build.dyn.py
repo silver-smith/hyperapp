@@ -6,6 +6,7 @@ from typing import Any
 from . import htypes
 from .services import (
     local_types,
+    hyperapp_dir,
     mosaic,
     type_module_loader,
     )
@@ -32,6 +33,14 @@ class PythonModuleSrc:
             stem=self.stem,
             path=str(self.path),
             contents=self.contents,
+            )
+
+    def make_resource(self, import_list):
+        return htypes.builtin.python_module(
+            module_name=self.name,
+            source=self.contents,
+            file_path=str(hyperapp_dir / self.path),
+            import_list=tuple(import_list),
             )
 
 
