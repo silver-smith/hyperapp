@@ -24,15 +24,16 @@ class TestedServiceReq(Requirement):
 @dataclass(frozen=True, unsafe_hash=True)
 class TestedCodeReq(Requirement):
 
+    import_path: tuple[str]
     code_name: str
 
     @classmethod
     def from_piece(cls, piece):
-        return cls(piece.code_name)
+        return cls(piece.import_path, piece.code_name)
 
     @property
     def piece(self):
-        return htypes.test_target.tested_code_req(self.code_name)
+        return htypes.test_target.tested_code_req(self.import_path, self.code_name)
 
     def get_target(self, target_factory):
         return target_factory.python_module_imported(self.code_name)

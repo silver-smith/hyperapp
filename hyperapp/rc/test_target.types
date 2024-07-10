@@ -2,4 +2,5 @@ tested_service_req = record:
   service_name: string
 
 tested_code_req = record:
+  import_path: string list
   code_name: string

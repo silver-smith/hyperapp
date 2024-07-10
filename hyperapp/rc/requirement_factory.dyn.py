@@ -22,7 +22,7 @@ class RequirementFactory:
 
     def import_to_tested_code(self, import_path):
         code_name = import_path[2]
-        return TestedCodeReq(code_name)
+        return TestedCodeReq(import_path, code_name)
 
     def ignore_import(self, import_path):
         pass
