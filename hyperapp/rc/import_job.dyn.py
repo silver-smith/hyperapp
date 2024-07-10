@@ -18,7 +18,7 @@ from .code.builtin_resources import enum_builtin_resources
 from .code.import_recorder import IncompleteImportedObjectError
 from .code.requirement_factory import RequirementFactory
 from .code.job_result import JobResult
-from .code.test_target import TestedCodeReq, TestedServiceReq
+from .code.test_requirement import TestedCodeReq, TestedServiceReq
 
 
 class Function:

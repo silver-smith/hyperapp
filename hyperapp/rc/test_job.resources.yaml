@@ -16,6 +16,7 @@ import:
 - rc.builtin_resources:builtin_resources.module
 - rc.job_result:job_result.module
 - rc.import_recorder:import_recorder.module
+- rc.requirement_factory:requirement_factory.module
 - rc.rc_constants:rc_constants.module
 - rc.rc_job_creg:rc_job_creg.service
 - rc.rc_job_result_creg:rc_job_result_creg.service
@@ -31,6 +32,22 @@ associations:
   - rc.rc_job_result_creg:rc_job_result_creg.service
   - legacy_type.test_job:succeeded_result
   value: SucceededTestResult.from_piece
+
+- bases:
+  - rc.rc_job_result_creg:rc_job_result_creg.service
+  - legacy_type.test_job:incomplete_result
+  key:
+  - rc.rc_job_result_creg:rc_job_result_creg.service
+  - legacy_type.test_job:incomplete_result
+  value: IncompleteTestResult.from_piece
+
+- bases:
+  - rc.rc_job_result_creg:rc_job_result_creg.service
+  - legacy_type.test_job:failed_result
+  key:
+  - rc.rc_job_result_creg:rc_job_result_creg.service
+  - legacy_type.test_job:failed_result
+  value: FailedTestResult.from_piece
 
 - bases:
   - rc.rc_job_creg:rc_job_creg.service
@@ -65,6 +82,7 @@ definitions:
         code.builtin_resources: rc.builtin_resources:builtin_resources.module
         code.job_result: rc.job_result:job_result.module
         code.import_recorder: rc.import_recorder:import_recorder.module
+        code.requirement_factory: rc.requirement_factory:requirement_factory.module
         code.rc_constants: rc.rc_constants:rc_constants.module
 
   SucceededTestResult:
@@ -77,6 +95,30 @@ definitions:
     type: legacy_type.builtin:attribute
     value:
       object: SucceededTestResult
+      attr_name: from_piece
+
+  IncompleteTestResult:
+    type: legacy_type.builtin:attribute
+    value:
+      object: test_job.module
+      attr_name: IncompleteTestResult
+
+  IncompleteTestResult.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: IncompleteTestResult
+      attr_name: from_piece
+
+  FailedTestResult:
+    type: legacy_type.builtin:attribute
+    value:
+      object: test_job.module
+      attr_name: FailedTestResult
+
+  FailedTestResult.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: FailedTestResult
       attr_name: from_piece
 
   TestJob:

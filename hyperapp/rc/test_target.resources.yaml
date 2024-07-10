@@ -1,30 +1,7 @@
 import:
-- legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.test_target:tested_code_req
-- legacy_type.test_target:tested_service_req
 - rc.import_resource:import_resource.module
-- rc.requirement:requirement.module
-- rc.rc_requirement_creg:rc_requirement_creg.service
 - rc.test_job:test_job.module
-
-associations:
-
-- bases:
-  - rc.rc_requirement_creg:rc_requirement_creg.service
-  - legacy_type.test_target:tested_service_req
-  key:
-  - rc.rc_requirement_creg:rc_requirement_creg.service
-  - legacy_type.test_target:tested_service_req
-  value: TestedServiceReq.from_piece
-
-- bases:
-  - rc.rc_requirement_creg:rc_requirement_creg.service
-  - legacy_type.test_target:tested_code_req
-  key:
-  - rc.rc_requirement_creg:rc_requirement_creg.service
-  - legacy_type.test_target:tested_code_req
-  value: TestedCodeReq.from_piece
 
 definitions:
 
@@ -34,32 +11,5 @@ definitions:
       module_name: test_target
       file_name: test_target.dyn.py
       import_list:
-        htypes.test_target.tested_code_req: legacy_type.test_target:tested_code_req
-        htypes.test_target.tested_service_req: legacy_type.test_target:tested_service_req
         code.import_resource: rc.import_resource:import_resource.module
-        code.requirement: rc.requirement:requirement.module
         code.test_job: rc.test_job:test_job.module
-
-  TestedServiceReq:
-    type: legacy_type.builtin:attribute
-    value:
-      object: test_target.module
-      attr_name: TestedServiceReq
-
-  TestedServiceReq.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: TestedServiceReq
-      attr_name: from_piece
-
-  TestedCodeReq:
-    type: legacy_type.builtin:attribute
-    value:
-      object: test_target.module
-      attr_name: TestedCodeReq
-
-  TestedCodeReq.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: TestedCodeReq
-      attr_name: from_piece

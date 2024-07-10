@@ -1,46 +1,5 @@
-from dataclasses import dataclass
-
-from . import htypes
 from .code.import_resource import ImportResource
-from .code.requirement import Requirement
 from .code.test_job import TestJob
-
-
-@dataclass(frozen=True, unsafe_hash=True)
-class TestedServiceReq(Requirement):
-
-    service_name: str
-
-    @classmethod
-    def from_piece(cls, piece):
-        return cls(piece.service_name)
-
-    @property
-    def piece(self):
-        return htypes.test_target.tested_service_req(self.service_name)
-
-    def get_target(self, target_factory):
-        return target_factory.tested_service(self.service_name)
-
-
-@dataclass(frozen=True, unsafe_hash=True)
-class TestedCodeReq(Requirement):
-
-    code_name: str
-
-    @classmethod
-    def from_piece(cls, piece):
-        return cls(piece.code_name)
-
-    @property
-    def piece(self):
-        return htypes.test_target.tested_code_req(self.code_name)
-
-    def get_target(self, target_factory):
-        return target_factory.python_module_imported(self.code_name)
-
-    def get_tested_target(self, target_factory):
-        return target_factory.python_module_resource_by_code_name(self.code_name)
 
 
 class TestTarget:
@@ -78,7 +37,7 @@ class TestTarget:
             ImportResource.from_type_src(src)
             for src in self._type_src_list
             ]
-        return TestJob(self._python_module_src, self._idx, resources)
+        return TestJob(self._python_module_src, self._idx, resources, self._function.name)
 
     def handle_job_result(self, target_set, result):
         self._completed = True

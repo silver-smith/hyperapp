@@ -1,9 +1,11 @@
 from build import python_module_src
 
+
 job = record:
   python_module: python_module_src
   idx: int
   resources: ref list
+  test_fn_name: string
 
 succeeded_result = record:
   requirements: ref list

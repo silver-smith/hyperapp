@@ -1,6 +1,6 @@
 from .code.python_module_resource_target import PythonModuleReq
 from .code.service_target import ServiceCompleteReq
-from .code.test_target import TestedServiceReq, TestedCodeReq
+from .code.test_requirement import TestedServiceReq, TestedCodeReq
 
 
 class RequirementFactory:

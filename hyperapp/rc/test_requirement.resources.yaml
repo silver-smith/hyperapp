@@ -1,0 +1,61 @@
+import:
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.test_target:tested_code_req
+- legacy_type.test_target:tested_service_req
+- rc.requirement:requirement.module
+- rc.rc_requirement_creg:rc_requirement_creg.service
+
+associations:
+
+- bases:
+  - rc.rc_requirement_creg:rc_requirement_creg.service
+  - legacy_type.test_target:tested_service_req
+  key:
+  - rc.rc_requirement_creg:rc_requirement_creg.service
+  - legacy_type.test_target:tested_service_req
+  value: TestedServiceReq.from_piece
+
+- bases:
+  - rc.rc_requirement_creg:rc_requirement_creg.service
+  - legacy_type.test_target:tested_code_req
+  key:
+  - rc.rc_requirement_creg:rc_requirement_creg.service
+  - legacy_type.test_target:tested_code_req
+  value: TestedCodeReq.from_piece
+
+definitions:
+
+  test_requirement.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: test_requirement
+      file_name: test_requirement.dyn.py
+      import_list:
+        htypes.test_target.tested_code_req: legacy_type.test_target:tested_code_req
+        htypes.test_target.tested_service_req: legacy_type.test_target:tested_service_req
+        code.requirement: rc.requirement:requirement.module
+
+  TestedServiceReq:
+    type: legacy_type.builtin:attribute
+    value:
+      object: test_requirement.module
+      attr_name: TestedServiceReq
+
+  TestedServiceReq.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: TestedServiceReq
+      attr_name: from_piece
+
+  TestedCodeReq:
+    type: legacy_type.builtin:attribute
+    value:
+      object: test_requirement.module
+      attr_name: TestedCodeReq
+
+  TestedCodeReq.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: TestedCodeReq
+      attr_name: from_piece
