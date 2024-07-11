@@ -33,11 +33,14 @@ class TestTarget:
         self._ready = all(target.completed for target in self._req_to_target.values())
 
     def make_job(self):
-        resources = [
-            ImportResource.from_type_src(src)
-            for src in self._type_src_list
-            ]
+        resources = list(self._enum_resources())
         return TestJob(self._python_module_src, self._idx, resources, self._function.name)
+
+    def _enum_resources(self):
+        for src in self._type_src_list:
+            yield ImportResource.from_type_src(src)
+        for req, target in self._req_to_target.items():
+            yield req.make_resource(target)
 
     def handle_job_result(self, target_set, result):
         self._completed = True

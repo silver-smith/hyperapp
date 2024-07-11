@@ -8,7 +8,6 @@ from .services import (
     local_types,
     hyperapp_dir,
     mosaic,
-    pyobj_creg,
     type_module_loader,
     )
 
@@ -52,14 +51,13 @@ class PythonModuleSrc:
                 )
             for rec in import_list
             )
-        recorder_piece = htypes.import_recorder.import_recorder(
+        recorder = htypes.import_recorder.import_recorder(
             id=self.name,
             resources=recorder_resources,
         )
         recorder_import_list = [
-            htypes.builtin.import_rec('*', mosaic.put(recorder_piece)),
+            htypes.builtin.import_rec('*', mosaic.put(recorder)),
             ]
-        recorder = pyobj_creg.animate(recorder_piece)
         python_module = self.python_module(recorder_import_list)
         return (recorder, python_module)
 

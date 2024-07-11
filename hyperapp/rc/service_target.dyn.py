@@ -21,6 +21,9 @@ class ServiceFoundReq(Requirement):
     def get_target(self, target_factory):
         return target_factory.service_found(self.service_name)
 
+    def make_resource(self, target):
+        return None
+
 
 @dataclass(frozen=True, unsafe_hash=True)
 class ServiceCompleteReq(Requirement):
@@ -37,6 +40,9 @@ class ServiceCompleteReq(Requirement):
 
     def get_target(self, target_factory):
         return target_factory.service_complete(self.service_name)
+
+    def make_resource(self, target):
+        return None
 
 
 class ServiceFoundTarget:

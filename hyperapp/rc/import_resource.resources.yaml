@@ -5,6 +5,7 @@ import:
 - legacy_type.builtin:import_rec
 - legacy_type.builtin:python_module
 - legacy_type.import_resource:import_resource
+- rc.rc_resource:rc_resource.module
 - rc.rc_resource_creg:rc_resource_creg.service
 
 associations:
@@ -29,6 +30,7 @@ definitions:
         htypes.import_resource.import_resource: legacy_type.import_resource:import_resource
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
+        code.rc_resource: rc.rc_resource:rc_resource.module
 
   ImportResource:
     type: legacy_type.builtin:attribute

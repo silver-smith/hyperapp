@@ -1,10 +1,17 @@
 import:
+- builtins:mosaic.service
+- builtins:pyobj_creg.service
+- builtins:web.service
 - legacy_type.builtin:attribute
+- legacy_type.builtin:import_rec
 - legacy_type.builtin:python_module
 - legacy_type.test_target:tested_code_req
+- legacy_type.test_target:tested_code_resource
 - legacy_type.test_target:tested_service_req
 - rc.requirement:requirement.module
 - rc.rc_requirement_creg:rc_requirement_creg.service
+- rc.rc_resource:rc_resource.module
+- rc.rc_resource_creg:rc_resource_creg.service
 
 associations:
 
@@ -24,6 +31,14 @@ associations:
   - legacy_type.test_target:tested_code_req
   value: TestedCodeReq.from_piece
 
+- bases:
+  - rc.rc_resource_creg:rc_resource_creg.service
+  - legacy_type.test_target:tested_code_resource
+  key:
+  - rc.rc_resource_creg:rc_resource_creg.service
+  - legacy_type.test_target:tested_code_resource
+  value: TestedCodeResource.from_piece
+
 definitions:
 
   test_requirement.module:
@@ -32,9 +47,15 @@ definitions:
       module_name: test_requirement
       file_name: test_requirement.dyn.py
       import_list:
+        htypes.builtin.import_rec: legacy_type.builtin:import_rec
         htypes.test_target.tested_code_req: legacy_type.test_target:tested_code_req
         htypes.test_target.tested_service_req: legacy_type.test_target:tested_service_req
+        htypes.test_target.tested_code_resource: legacy_type.test_target:tested_code_resource
+        services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        services.web: builtins:web.service
         code.requirement: rc.requirement:requirement.module
+        code.rc_resource: rc.rc_resource:rc_resource.module
 
   TestedServiceReq:
     type: legacy_type.builtin:attribute
@@ -58,4 +79,16 @@ definitions:
     type: legacy_type.builtin:attribute
     value:
       object: TestedCodeReq
+      attr_name: from_piece
+
+  TestedCodeResource:
+    type: legacy_type.builtin:attribute
+    value:
+      object: test_requirement.module
+      attr_name: TestedCodeResource
+
+  TestedCodeResource.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: TestedCodeResource
       attr_name: from_piece

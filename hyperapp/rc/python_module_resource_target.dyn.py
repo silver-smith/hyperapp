@@ -20,6 +20,9 @@ class PythonModuleReq(Requirement):
     def get_target(self, target_factory):
         return target_factory.python_module_resource_by_code_name(self.code_name)
 
+    def make_resource(self, target):
+        return None
+
 
 class PythonModuleResourceTarget:
 

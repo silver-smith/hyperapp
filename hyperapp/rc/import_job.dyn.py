@@ -68,10 +68,10 @@ class SucceededImportResult(ImportResultBase):
         self._functions = functions
 
     def update_targets(self, import_target, target_set):
-        import_target.set_alias_completed()
+        req_to_target = self._resolve_requirements(target_set.factory)
+        import_target.set_alias_completed(req_to_target)
         if not self._is_tests:
             return
-        req_to_target = self._resolve_requirements(target_set.factory)
         for fn in self._functions:
             if fn.name.startswith('test_'):
                 test_target = import_target.create_test_target(fn, req_to_target)
@@ -147,7 +147,8 @@ class ImportJob:
     def run(self):
         all_resources = [*enum_builtin_resources(), *self._resources]
         import_list = flatten(d.import_records for d in all_resources)
-        recorder, module_piece = self._python_module_src.recorded_python_module(import_list)
+        recorder_piece, module_piece = self._python_module_src.recorded_python_module(import_list)
+        recorder = pyobj_creg.animate(recorder_piece)
         try:
             module = pyobj_creg.animate(module_piece)
             status = JobStatus.ok

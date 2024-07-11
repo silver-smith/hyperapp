@@ -3,9 +3,10 @@ from .services import (
     mosaic,
     web,
     )
+from .code.rc_resource import Resource
 
 
-class ImportResource:
+class ImportResource(Resource):
 
     @classmethod
     def from_type_src(cls, type_src):

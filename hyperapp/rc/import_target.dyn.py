@@ -1,4 +1,7 @@
+from hyperapp.common.util import flatten
+
 from .code.rc_constants import JobStatus
+from .code.builtin_resources import enum_builtin_resources
 from .code.import_resource import ImportResource
 from .code.import_job import ImportJob
 from .code.test_target import TestTarget
@@ -35,6 +38,7 @@ class ImportTargetAlias:
     def __init__(self, python_module_src):
         self._python_module_src = python_module_src
         self._completed = False
+        self._resources = []
 
     @property
     def name(self):
@@ -55,8 +59,19 @@ class ImportTargetAlias:
     def update_status(self):
         pass
 
-    def set_completed(self):
+    def set_completed(self, req_to_target):
+        for req, target in req_to_target.items():
+            resource = req.make_resource(target)
+            if resource is None:
+                continue  # TODO: Remove when all make_resource methods are implemented.
+            self._resources.append(resource)
         self._completed = True
+
+    def recorded_python_module(self):
+        all_resources = [*enum_builtin_resources(), *self._resources]
+        import_list = flatten(d.import_records for d in all_resources)
+        recorder_piece, module_piece = self._python_module_src.recorded_python_module(import_list)
+        return (self._python_module_src.name, recorder_piece, module_piece)
 
 
 class ImportTarget:
@@ -100,8 +115,8 @@ class ImportTarget:
         self._completed = True
         result.update_targets(self, target_set)
 
-    def set_alias_completed(self):
-        self._alias.set_completed()
+    def set_alias_completed(self, req_to_target):
+        self._alias.set_completed(req_to_target)
 
     def create_next_target(self, req_to_target):
         return ImportTarget(self._python_module_src, self._type_src_list, self._alias, self._idx + 1, req_to_target)

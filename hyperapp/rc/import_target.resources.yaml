@@ -1,5 +1,6 @@
 import:
 - legacy_type.builtin:python_module
+- rc.builtin_resources:builtin_resources.module
 - rc.import_resource:import_resource.module
 - rc.import_job:import_job.module
 - rc.rc_constants:rc_constants.module
@@ -13,6 +14,7 @@ definitions:
       module_name: import_target
       file_name: import_target.dyn.py
       import_list:
+        code.builtin_resources: rc.builtin_resources:builtin_resources.module
         code.import_resource: rc.import_resource:import_resource.module
         code.import_job: rc.import_job:import_job.module
         code.rc_constants: rc.rc_constants:rc_constants.module
