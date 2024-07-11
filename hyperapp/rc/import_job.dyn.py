@@ -80,6 +80,7 @@ class SucceededImportResult(ImportResultBase):
                     resource_target = req.get_tested_target(target_set.factory)
                     if resource_target:
                         resource_target.add_test_dep(test_target)
+                        target_set.update_deps_for(resource_target)
 
     @property
     def _is_tests(self):

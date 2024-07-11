@@ -1,7 +1,10 @@
+import logging
 from dataclasses import dataclass
 
 from . import htypes
 from .code.requirement import Requirement
+
+rc_log = logging.getLogger('rc')
 
 
 @dataclass(frozen=True, unsafe_hash=True)
@@ -26,10 +29,11 @@ class PythonModuleReq(Requirement):
 
 class PythonModuleResourceTarget:
 
-    def __init__(self, python_module_src):
+    def __init__(self, python_module_src, all_imports_known_tgt):
         self._python_module_src = python_module_src
+        self._all_imports_known_tgt = all_imports_known_tgt
         self._completed = False
-        self._deps = set()
+        self._tests = set()
 
     def __repr__(self):
         return f"<PythonModuleResourceTarget {self.name}>"
@@ -48,10 +52,14 @@ class PythonModuleResourceTarget:
 
     @property
     def deps(self):
-        return self._deps
+        return {self._all_imports_known_tgt, *self._tests}
 
     def update_status(self):
-        pass
+        if self._completed:
+            return
+        if all(target.completed for target in [self._all_imports_known_tgt, *self._tests]):
+            rc_log.info("Ready: %s", self.name)
+            self._completed = True
 
     def add_test_dep(self, test_target):
-        self._deps.add(test_target)
+        self._tests.add(test_target)

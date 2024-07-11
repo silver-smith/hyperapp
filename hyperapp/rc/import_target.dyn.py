@@ -9,16 +9,14 @@ from .code.test_target import TestTarget
 
 class AllImportsKnownTarget:
 
+    name = 'all-imports-known'
+
     def __init__(self, import_targets):
         self._import_targets = import_targets
         self._completed = False
 
     def __repr__(self):
         return f"<AllImportsKnownTarget>"
-
-    @property
-    def name(self):
-        return 'all-imports-known'
 
     @property
     def ready(self):

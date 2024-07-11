@@ -1,7 +1,7 @@
 from collections import defaultdict
 from operator import attrgetter
 
-from .code.import_target import ImportTargetAlias
+from .code.import_target import AllImportsKnownTarget, ImportTargetAlias
 from .code.python_module_resource_target import PythonModuleResourceTarget
 from .code.service_target import ServiceFoundTarget, ServiceCompleteTarget
 
@@ -27,10 +27,18 @@ class TargetSet:
             if target.ready:
                 yield target
 
+    def iter_completed(self):
+        for target in self._name_to_target.values():
+            if target.completed:
+                yield target
+
     def add(self, target):
         assert target.name not in self._name_to_target
         self._name_to_target[target.name] = target
         target.update_status()
+        self.update_deps_for(target)
+
+    def update_deps_for(self, target):
         for dep_target in target.deps:
             self._dep_to_target[dep_target].add(target)
 
@@ -69,16 +77,18 @@ class TargetFactory:
 
     def python_module_resource_by_code_name(self, code_name):
         src = self._target_set._stem_to_python_module_src[code_name]
-        target = PythonModuleResourceTarget(src)
-        return self._target_set.add_or_get(target)
+        return self.python_module_resource_by_src(src)
 
     def python_module_resource_by_src(self, src):
-        target = PythonModuleResourceTarget(src)
+        target = PythonModuleResourceTarget(src, self.all_imports_known())
         return self._target_set.add_or_get(target)
 
     def tested_service(self, service_name):
         target = ServiceFoundTarget(service_name)
         return self._target_set.add_or_get(target)
+
+    def all_imports_known(self):
+        return self._target_set[AllImportsKnownTarget.name]
 
     def python_module_imported(self, code_name):
         src = self._target_set._stem_to_python_module_src[code_name]

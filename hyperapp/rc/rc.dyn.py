@@ -19,6 +19,17 @@ log = logging.getLogger(__name__)
 rc_log = logging.getLogger('rc')
 
 
+def _update_completed(target_set, prev_completed):
+    while True:
+        completed = set(target_set.iter_completed())
+        new_completed = completed - prev_completed
+        if not new_completed:
+            break
+        for target in new_completed:
+            target_set.update_deps_statuses(target)
+        prev_completed = completed
+
+
 def _run(pool, target_set, fail_fast, timeout):
     rc_log.info("%d targets", target_set.count)
     target_to_job = {}  # Jobs are never removed.
@@ -36,10 +47,10 @@ def _run(pool, target_set, fail_fast, timeout):
             pool.submit(job)
             target_to_job[target] = job
             job_id_to_target[id(job)] = target
+        prev_completed = set(target_set.iter_completed())
         for job, result_piece in pool.iter_completed(timeout):
             result = rc_job_result_creg.animate(result_piece)
             target = job_id_to_target[id(job)]
-            target.handle_job_result(target_set, result)
             rc_log.info("%s: %s", target.name, result.status.name)
             job_count += 1
             if result.status == JobStatus.failed:
@@ -48,9 +59,10 @@ def _run(pool, target_set, fail_fast, timeout):
                     should_run = False
                     break
             else:
-                target_set.update_deps_statuses(target)
+                target.handle_job_result(target_set, result)
             if result.status == JobStatus.incomplete:
                 incomplete[target] = result
+        _update_completed(target_set, prev_completed)
         if target_set.all_completed:
             rc_log.info("All targets are completed")
             break
