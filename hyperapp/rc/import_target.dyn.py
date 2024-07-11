@@ -35,14 +35,19 @@ class AllImportsKnownTarget:
 
 class ImportTargetAlias:
 
-    def __init__(self, python_module_src):
+    @staticmethod
+    def name_for_src(python_module_src):
+        return f'import/{python_module_src.name}'
+
+    def __init__(self, python_module_src, type_src_list):
         self._python_module_src = python_module_src
+        self._type_src_list = type_src_list
         self._completed = False
         self._resources = []
 
     @property
     def name(self):
-        return f'import/{self._python_module_src.name}'
+        return self.name_for_src(self._python_module_src)
 
     @property
     def ready(self):
@@ -68,7 +73,11 @@ class ImportTargetAlias:
         self._completed = True
 
     def recorded_python_module(self):
-        all_resources = [*enum_builtin_resources(), *self._resources]
+        type_resources = [
+            ImportResource.from_type_src(src)
+            for src in self._type_src_list
+            ]
+        all_resources = [*enum_builtin_resources(), *type_resources, *self._resources]
         import_list = flatten(d.import_records for d in all_resources)
         recorder_piece, module_piece = self._python_module_src.recorded_python_module(import_list)
         return (self._python_module_src.name, recorder_piece, module_piece)
@@ -131,7 +140,7 @@ class ImportTarget:
 def create_import_targets(target_set, python_module_src_list, type_src_list):
     import_targets = []
     for python_module_src in python_module_src_list:
-        alias_tgt = ImportTargetAlias(python_module_src)
+        alias_tgt = ImportTargetAlias(python_module_src, type_src_list)
         import_tgt = ImportTarget(python_module_src, type_src_list, alias_tgt)
         import_targets.append(import_tgt)
         target_set.add(import_tgt)

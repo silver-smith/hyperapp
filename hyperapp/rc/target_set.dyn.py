@@ -19,6 +19,9 @@ class TargetSet:
     def __iter__(self):
         return iter(sorted(self._name_to_target.values(), key=attrgetter('name')))
 
+    def __getitem__(self, name):
+        return self._name_to_target[name]
+
     def iter_ready(self):
         for target in self._name_to_target.values():
             if target.ready:
@@ -79,5 +82,5 @@ class TargetFactory:
 
     def python_module_imported(self, code_name):
         src = self._target_set._stem_to_python_module_src[code_name]
-        target = ImportTargetAlias(src)
-        return self._target_set.add_or_get(target)
+        target_name = ImportTargetAlias.name_for_src(src)
+        return self._target_set[target_name]
