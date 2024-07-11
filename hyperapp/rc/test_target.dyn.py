@@ -13,6 +13,9 @@ class TestTarget:
         self._completed = False
         self._ready = False
 
+    def __repr__(self):
+        return f"<TestTarget {self.name}>"
+
     @property
     def name(self):
         return f'test/{self._python_module_src.name}/{self._function.name}/{self._idx}'

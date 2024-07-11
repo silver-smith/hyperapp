@@ -31,6 +31,9 @@ class PythonModuleResourceTarget:
         self._completed = False
         self._deps = set()
 
+    def __repr__(self):
+        return f"<PythonModuleResourceTarget {self.name}>"
+
     @property
     def name(self):
         return f'resource/{self._python_module_src.name}'

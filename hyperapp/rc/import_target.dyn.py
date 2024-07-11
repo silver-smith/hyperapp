@@ -13,6 +13,9 @@ class AllImportsKnownTarget:
         self._import_targets = import_targets
         self._completed = False
 
+    def __repr__(self):
+        return f"<AllImportsKnownTarget>"
+
     @property
     def name(self):
         return 'all-imports-known'
@@ -44,6 +47,9 @@ class ImportTargetAlias:
         self._type_src_list = type_src_list
         self._completed = False
         self._resources = []
+
+    def __repr__(self):
+        return f"<ImportAliasTarget {self.name}>"
 
     @property
     def name(self):
@@ -93,6 +99,9 @@ class ImportTarget:
         self._req_to_target = req_to_target or {}
         self._completed = False
         self._ready = False
+
+    def __repr__(self):
+        return f"<ImportTarget {self.name}>"
 
     @property
     def name(self):
