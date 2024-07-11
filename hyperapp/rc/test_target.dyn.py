@@ -2,14 +2,48 @@ from .code.import_resource import ImportResource
 from .code.test_job import TestJob
 
 
+class TestTargetAlias:
+
+    def __init__(self, python_module_src, function):
+        self._python_module_src = python_module_src
+        self._function = function
+        self._completed = False
+
+    def __repr__(self):
+        return f"<TestAliasTarget {self.name}>"
+
+    @property
+    def name(self):
+        return f'test/{self._python_module_src.name}/{self._function.name}'
+
+    @property
+    def ready(self):
+        return False
+
+    @property
+    def completed(self):
+        return self._completed
+
+    @property
+    def deps(self):
+        return []
+
+    def update_status(self):
+        pass
+
+    def set_completed(self, req_to_target):
+        self._completed = True
+
+
 class TestTarget:
 
-    def __init__(self, python_module_src, type_src_list, function, req_to_target, idx=1):
+    def __init__(self, python_module_src, type_src_list, function, req_to_target, alias, idx=1):
         self._python_module_src = python_module_src
         self._type_src_list = type_src_list
         self._function = function
         self._req_to_target = req_to_target or {}
         self._idx = idx
+        self._alias = alias
         self._completed = False
         self._ready = False
 
@@ -47,3 +81,6 @@ class TestTarget:
 
     def handle_job_result(self, target_set, result):
         self._completed = True
+
+    def set_alias_completed(self, req_to_target):
+        self._alias.set_completed(req_to_target)

@@ -4,7 +4,7 @@ from .code.rc_constants import JobStatus
 from .code.builtin_resources import enum_builtin_resources
 from .code.import_resource import ImportResource
 from .code.import_job import ImportJob
-from .code.test_target import TestTarget
+from .code.test_target import TestTargetAlias, TestTarget
 
 
 class AllImportsKnownTarget:
@@ -138,7 +138,9 @@ class ImportTarget:
         return ImportTarget(self._python_module_src, self._type_src_list, self._alias, self._idx + 1, req_to_target)
 
     def create_test_target(self, function, req_to_target):
-        return TestTarget(self._python_module_src, self._type_src_list, function, req_to_target)
+        alias = TestTargetAlias(self._python_module_src, function)
+        target = TestTarget(self._python_module_src, self._type_src_list, function, req_to_target, alias)
+        return (alias, target)
 
     def get_resource_target(self, target_factory):
         return target_factory.python_module_resource_by_src(self._python_module_src)

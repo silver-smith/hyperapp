@@ -74,12 +74,13 @@ class SucceededImportResult(ImportResultBase):
             return
         for fn in self._functions:
             if fn.name.startswith('test_'):
-                test_target = import_target.create_test_target(fn, req_to_target)
+                test_alias, test_target = import_target.create_test_target(fn, req_to_target)
+                target_set.add(test_alias)
                 target_set.add(test_target)
                 for req in self._requirements:
                     resource_target = req.get_tested_target(target_set.factory)
                     if resource_target:
-                        resource_target.add_test_dep(test_target)
+                        resource_target.add_test_dep(test_alias)
                         target_set.update_deps_for(resource_target)
 
     @property

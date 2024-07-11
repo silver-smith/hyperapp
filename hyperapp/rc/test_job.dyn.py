@@ -56,7 +56,7 @@ class SucceededTestResult(TestResultBase):
         super().__init__(JobStatus.ok, requirements)
 
     def update_targets(self, test_target, target_set):
-        pass
+        test_target.set_alias_completed()
 
 
 class IncompleteTestResult(TestResultBase):
