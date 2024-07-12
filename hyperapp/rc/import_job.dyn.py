@@ -72,22 +72,29 @@ class SucceededImportResult(ImportResultBase):
         my_target.set_alias_completed(req_to_target)
         if self._is_tests:
             self._add_tests(my_target, target_set, req_to_target)
+        else:
+            self._add_resource(my_target, target_set, req_to_target)
 
     def _add_tests(self, my_target, target_set, req_to_target):
         for fn in self._functions:
-            if fn.name.startswith('test_'):
-                test_alias, test_target = my_target.create_test_target(fn, req_to_target)
-                target_set.add(test_alias)
-                target_set.add(test_target)
-                for req in self._requirements:
-                    tested_resource_tgt = req.get_tested_resource_target(target_set.factory)
-                    if tested_resource_tgt:
-                        # This is a tested code requirement.
-                        tested_import_tgt = req.get_tested_import_target(target_set.factory)
-                        test_target.add_tested_import(tested_import_tgt)
-                        target_set.update_deps_for(test_target)
-                        tested_resource_tgt.add_test_dep(test_alias)
-                        target_set.update_deps_for(tested_resource_tgt)
+            if not fn.name.startswith('test_'):
+                continue
+            test_alias, test_target = my_target.create_test_target(fn, req_to_target)
+            target_set.add(test_alias)
+            target_set.add(test_target)
+            for req in self._requirements:
+                tested_resource_tgt = req.get_tested_resource_target(target_set.factory)
+                if not tested_resource_tgt:
+                    continue
+                # This is a tested code requirement.
+                tested_import_tgt = req.get_tested_import_target(target_set.factory)
+                test_target.add_tested_import(tested_import_tgt)
+                target_set.update_deps_for(test_target)
+                tested_resource_tgt.add_test_dep(test_alias)
+                target_set.update_deps_for(tested_resource_tgt)
+
+    def _add_resource(self, my_target, target_set, req_to_target):
+        pass
 
     @property
     def _is_tests(self):
