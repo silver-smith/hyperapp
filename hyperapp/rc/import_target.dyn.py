@@ -144,8 +144,8 @@ class ImportTarget:
         target = TestTarget(self._python_module_src, self._type_src_list, function, req_to_target, alias)
         return (alias, target)
 
-    def get_resource_target(self, target_factory):
-        return target_factory.python_module_resource_by_src(self._python_module_src)
+    # def get_resource_target(self, target_factory):
+    #     return target_factory.python_module_resource_by_src(self._python_module_src)
 
 
 def create_import_targets(target_set, python_module_src_list, type_src_list):
