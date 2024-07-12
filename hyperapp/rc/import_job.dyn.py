@@ -17,7 +17,6 @@ from .code.builtin_resources import enum_builtin_resources
 from .code.import_recorder import IncompleteImportedObjectError
 from .code.requirement_factory import RequirementFactory
 from .code.job_result import JobResult
-from .code.test_requirement import TestedCodeReq, TestedServiceReq
 
 
 class Function:
@@ -99,7 +98,7 @@ class SucceededImportResult(ImportResultBase):
     @property
     def _is_tests(self):
         for req in self._requirements:
-            if isinstance(req, (TestedServiceReq, TestedCodeReq)):
+            if req.is_test_requirement:
                 return True
         return False
 

@@ -26,6 +26,10 @@ class TestedServiceReq(Requirement):
     def get_target(self, target_factory):
         return target_factory.tested_service(self.service_name)
 
+    @property
+    def is_test_requirement(self):
+        return True
+
     def make_resource(self, target):
         return None
 
@@ -46,6 +50,10 @@ class TestedCodeReq(Requirement):
 
     def get_target(self, target_factory):
         return target_factory.python_module_imported(self.code_name)
+
+    @property
+    def is_test_requirement(self):
+        return True
 
     def get_tested_resource_target(self, target_factory):
         return target_factory.python_module_resource_by_code_name(self.code_name)
