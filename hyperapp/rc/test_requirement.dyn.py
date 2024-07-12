@@ -49,7 +49,7 @@ class TestedCodeReq(Requirement):
         return htypes.test_target.tested_code_req(self.import_path, self.code_name)
 
     def get_target(self, target_factory):
-        return target_factory.python_module_imported(self.code_name)
+        return target_factory.python_module_imported_by_code_name(self.code_name)
 
     @property
     def is_test_requirement(self):
@@ -59,7 +59,7 @@ class TestedCodeReq(Requirement):
         return target_factory.python_module_resource_by_code_name(self.code_name)
 
     def get_tested_import_target(self, target_factory):
-        return target_factory.python_module_imported(self.code_name)
+        return target_factory.python_module_imported_by_code_name(self.code_name)
 
     def make_resource(self, target):
         recorder_module_name, recorder_piece, module_piece = target.recorded_python_module()

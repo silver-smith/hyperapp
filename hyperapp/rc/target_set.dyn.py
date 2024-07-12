@@ -90,8 +90,10 @@ class TargetFactory:
         return self.python_module_resource_by_src(src)
 
     def python_module_resource_by_src(self, src):
-        target_name = PythonModuleResourceTarget.name_for_src(src)
-        return self._target_set[target_name]
+        import_target = self.python_module_imported_by_src(src)
+        all_imports_known_tgt = self.all_imports_known()
+        target = import_target.create_resource_target(all_imports_known_tgt)
+        return self._target_set.add_or_get(target)
 
     def tested_service(self, service_name):
         target = ServiceFoundTarget(service_name)
@@ -100,7 +102,10 @@ class TargetFactory:
     def all_imports_known(self):
         return self._target_set[AllImportsKnownTarget.name]
 
-    def python_module_imported(self, code_name):
-        src = self._target_set._stem_to_python_module_src[code_name]
+    def python_module_imported_by_src(self, src):
         target_name = ImportTargetAlias.name_for_src(src)
         return self._target_set[target_name]
+
+    def python_module_imported_by_code_name(self, code_name):
+        src = self._target_set._stem_to_python_module_src[code_name]
+        return self.python_module_imported_by_src(src)

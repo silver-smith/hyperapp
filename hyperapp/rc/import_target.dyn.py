@@ -82,6 +82,9 @@ class ImportTargetAlias:
             self._resources.append(resource)
         self._completed = True
 
+    def create_resource_target(self, all_imports_known_tgt):
+        return PythonModuleResourceTarget(self._python_module_src, all_imports_known_tgt, self)
+
     def recorded_python_module(self):
         type_resources = [
             ImportResource.from_type_src(src)
@@ -143,13 +146,13 @@ class ImportTarget:
     def create_next_target(self, req_to_target):
         return ImportTarget(self._python_module_src, self._type_src_list, self._alias, self._idx + 1, req_to_target)
 
+    def get_resource_target(self, target_factory):
+        return target_factory.python_module_resource_by_src(self._python_module_src)
+
     def create_test_target(self, function, req_to_target):
         alias = TestTargetAlias(self._python_module_src, function)
         target = TestTarget(self._python_module_src, self._type_src_list, function, req_to_target, alias)
         return (alias, target)
-
-    # def get_resource_target(self, target_factory):
-    #     return target_factory.python_module_resource_by_src(self._python_module_src)
 
 
 def create_import_targets(target_set, python_module_src_list, type_src_list):
@@ -158,8 +161,6 @@ def create_import_targets(target_set, python_module_src_list, type_src_list):
         alias_tgt = ImportTargetAlias(src, type_src_list)
         import_tgt = ImportTarget(src, type_src_list, alias_tgt)
         all_imports_known_tgt.add_import_target(import_tgt)
-        resource_tgt = PythonModuleResourceTarget(src, all_imports_known_tgt, alias_tgt)
         target_set.add(import_tgt)
         target_set.add(alias_tgt)
-        target_set.add(resource_tgt)
     target_set.add(all_imports_known_tgt)

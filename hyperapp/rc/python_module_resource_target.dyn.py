@@ -38,6 +38,7 @@ class PythonModuleResourceTarget:
         self._all_imports_known_tgt = all_imports_known_tgt
         self._import_alias_tgt = import_alias_tgt
         self._completed = False
+        self._req_to_target = {}
         self._tests = set()
 
     def __repr__(self):
@@ -57,7 +58,7 @@ class PythonModuleResourceTarget:
 
     @property
     def deps(self):
-        return {self._all_imports_known_tgt, self._import_alias_tgt, *self._tests}
+        return {self._all_imports_known_tgt, self._import_alias_tgt, *self._req_to_target.values(), *self._tests}
 
     def update_status(self):
         if self._completed:
@@ -65,6 +66,9 @@ class PythonModuleResourceTarget:
         if all(target.completed for target in self.deps):
             rc_log.info("Ready: %s", self.name)
             # self._completed = True
+
+    def add_import_requirements(self, req_to_target):
+        self._req_to_target = req_to_target
 
     def add_test_dep(self, test_target):
         self._tests.add(test_target)

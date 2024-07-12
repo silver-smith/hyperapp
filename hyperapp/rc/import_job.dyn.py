@@ -72,7 +72,7 @@ class SucceededImportResult(ImportResultBase):
         if self._is_tests:
             self._add_tests(my_target, target_set, req_to_target)
         else:
-            self._add_resource(my_target, target_set, req_to_target)
+            self._update_resource(my_target, target_set, req_to_target)
 
     def _add_tests(self, my_target, target_set, req_to_target):
         for fn in self._functions:
@@ -92,8 +92,10 @@ class SucceededImportResult(ImportResultBase):
                 tested_resource_tgt.add_test_dep(test_alias)
                 target_set.update_deps_for(tested_resource_tgt)
 
-    def _add_resource(self, my_target, target_set, req_to_target):
-        pass
+    def _update_resource(self, my_target, target_set, req_to_target):
+        resource_target = my_target.get_resource_target(target_set.factory)
+        resource_target.add_import_requirements(req_to_target)
+        target_set.update_deps_for(resource_target)
 
     @property
     def _is_tests(self):
