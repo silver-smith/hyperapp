@@ -140,7 +140,7 @@ class TestJob:
                     log.info("Running coroutine: %r", value)
                     value = asyncio.run(value)
             except Exception as x:
-                status, error_msg, traceback = self._prepare_error(x)
+                status, error_msg, traceback = self._prepare_error(x, skip_entries=1)
         if status == JobStatus.failed:
             return htypes.test_job.failed_result(error_msg, tuple(traceback))
         req_set = self._imports_to_requirements(recorder.used_imports)
@@ -161,7 +161,7 @@ class TestJob:
     def _prepare_import_error(self, x):
         return self._prepare_error(x.original_error)
 
-    def _prepare_error(self, x):
+    def _prepare_error(self, x, skip_entries=0):
         traceback_entries = []
         cause = x
         while cause:
@@ -171,6 +171,8 @@ class TestJob:
             if entry.name == 'exec_module':
                 del traceback_entries[:idx + 1]
                 break
+        else:
+            del traceback_entries[:skip_entries]
         traceback_lines = traceback.format_list(traceback_entries)
         if isinstance(x, IncompleteImportedObjectError):
             return (JobStatus.incomplete, str(x), traceback_lines[:-1])
