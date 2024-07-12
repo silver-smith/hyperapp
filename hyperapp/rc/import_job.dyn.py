@@ -67,14 +67,16 @@ class SucceededImportResult(ImportResultBase):
         super().__init__(JobStatus.ok, requirements)
         self._functions = functions
 
-    def update_targets(self, import_target, target_set):
+    def update_targets(self, my_target, target_set):
         req_to_target = self._resolve_requirements(target_set.factory)
-        import_target.set_alias_completed(req_to_target)
-        if not self._is_tests:
-            return
+        my_target.set_alias_completed(req_to_target)
+        if self._is_tests:
+            self._add_tests(my_target, target_set, req_to_target)
+
+    def _add_tests(self, my_target, target_set, req_to_target):
         for fn in self._functions:
             if fn.name.startswith('test_'):
-                test_alias, test_target = import_target.create_test_target(fn, req_to_target)
+                test_alias, test_target = my_target.create_test_target(fn, req_to_target)
                 target_set.add(test_alias)
                 target_set.add(test_target)
                 for req in self._requirements:
@@ -105,10 +107,10 @@ class IncompleteImportResult(ImportResultBase):
     def __init__(self, requirements, error, traceback):
         super().__init__(JobStatus.incomplete, requirements, error, traceback)
 
-    def update_targets(self, import_target, target_set):
+    def update_targets(self, my_target, target_set):
         req_to_target = self._resolve_requirements(target_set.factory)
         if req_to_target:  # TODO: remove after all requirement types are implemented.
-            target_set.add(import_target.create_next_target(req_to_target))
+            target_set.add(my_target.create_next_target(req_to_target))
 
 
 class FailedImportResult(JobResult):
@@ -120,7 +122,7 @@ class FailedImportResult(JobResult):
     def __init__(self, requirements, error, traceback):
         super().__init__(JobStatus.failed, error, traceback)
 
-    def update_targets(self, import_target, target_set):
+    def update_targets(self, my_target, target_set):
         pass
 
 

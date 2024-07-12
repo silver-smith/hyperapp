@@ -55,8 +55,8 @@ class SucceededTestResult(TestResultBase):
     def __init__(self, requirements):
         super().__init__(JobStatus.ok, requirements)
 
-    def update_targets(self, test_target, target_set):
-        test_target.set_alias_completed()
+    def update_targets(self, my_target, target_set):
+        my_target.set_alias_completed()
 
 
 class IncompleteTestResult(TestResultBase):
@@ -69,10 +69,10 @@ class IncompleteTestResult(TestResultBase):
     def __init__(self, requirements, error, traceback):
         super().__init__(JobStatus.incomplete, requirements, error, traceback)
 
-    def update_targets(self, test_target, target_set):
+    def update_targets(self, my_target, target_set):
         req_to_target = self._resolve_requirements(target_set.factory)
         if req_to_target:  # TODO: remove after all requirement types are implemented.
-            target_set.add(test_target.create_next_target(req_to_target))
+            target_set.add(my_target.create_next_target(req_to_target))
 
 
 class FailedTestResult(JobResult):
@@ -84,7 +84,7 @@ class FailedTestResult(JobResult):
     def __init__(self, requirements, error, traceback):
         super().__init__(JobStatus.failed, error, traceback)
 
-    def update_targets(self, test_target, target_set):
+    def update_targets(self, my_target, target_set):
         pass
 
 
