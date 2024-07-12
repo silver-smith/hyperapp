@@ -29,6 +29,10 @@ class PythonModuleReq(Requirement):
 
 class PythonModuleResourceTarget:
 
+    @staticmethod
+    def name_for_src(python_module_src):
+        return f'resource/{python_module_src.name}'
+
     def __init__(self, python_module_src, all_imports_known_tgt):
         self._python_module_src = python_module_src
         self._all_imports_known_tgt = all_imports_known_tgt
@@ -40,7 +44,7 @@ class PythonModuleResourceTarget:
 
     @property
     def name(self):
-        return f'resource/{self._python_module_src.name}'
+        return self.name_for_src(self._python_module_src)
 
     @property
     def ready(self):

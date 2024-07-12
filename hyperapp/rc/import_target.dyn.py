@@ -5,14 +5,15 @@ from .code.builtin_resources import enum_builtin_resources
 from .code.import_resource import ImportResource
 from .code.import_job import ImportJob
 from .code.test_target import TestTargetAlias, TestTarget
+from .code.python_module_resource_target import PythonModuleResourceTarget
 
 
 class AllImportsKnownTarget:
 
     name = 'all-imports-known'
 
-    def __init__(self, import_targets):
-        self._import_targets = import_targets
+    def __init__(self):
+        self._import_targets = set()  # first import targets, not aliases.
         self._completed = False
 
     def __repr__(self):
@@ -32,6 +33,9 @@ class AllImportsKnownTarget:
 
     def update_status(self):
         self._completed = all(target.completed for target in self._import_targets)
+
+    def add_import_target(self, target):
+        self._import_targets.add(target)
 
 
 class ImportTargetAlias:
@@ -149,12 +153,13 @@ class ImportTarget:
 
 
 def create_import_targets(target_set, python_module_src_list, type_src_list):
-    import_targets = []
-    for python_module_src in python_module_src_list:
-        alias_tgt = ImportTargetAlias(python_module_src, type_src_list)
-        import_tgt = ImportTarget(python_module_src, type_src_list, alias_tgt)
-        import_targets.append(import_tgt)
+    all_imports_known_tgt = AllImportsKnownTarget()
+    for src in python_module_src_list:
+        alias_tgt = ImportTargetAlias(src, type_src_list)
+        import_tgt = ImportTarget(src, type_src_list, alias_tgt)
+        all_imports_known_tgt.add_import_target(import_tgt)
+        resource_tgt = PythonModuleResourceTarget(src, all_imports_known_tgt)
         target_set.add(import_tgt)
         target_set.add(alias_tgt)
-    all_imports_known = AllImportsKnownTarget(import_targets)
-    target_set.add(all_imports_known)
+        target_set.add(resource_tgt)
+    target_set.add(all_imports_known_tgt)

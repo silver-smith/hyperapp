@@ -90,8 +90,8 @@ class TargetFactory:
         return self.python_module_resource_by_src(src)
 
     def python_module_resource_by_src(self, src):
-        target = PythonModuleResourceTarget(src, self.all_imports_known())
-        return self._target_set.add_or_get(target)
+        target_name = PythonModuleResourceTarget.name_for_src(src)
+        return self._target_set[target_name]
 
     def tested_service(self, service_name):
         target = ServiceFoundTarget(service_name)
