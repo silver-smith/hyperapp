@@ -59,7 +59,7 @@ class PythonModuleResourceTarget:
             return
         if all(target.completed for target in [self._all_imports_known_tgt, *self._tests]):
             rc_log.info("Ready: %s", self.name)
-            self._completed = True
+            # self._completed = True
 
     def add_test_dep(self, test_target):
         self._tests.add(test_target)
