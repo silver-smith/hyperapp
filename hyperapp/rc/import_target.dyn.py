@@ -44,6 +44,7 @@ class ImportTargetAlias:
         self._python_module_src = python_module_src
         self._type_src_list = type_src_list
         self._completed = False
+        self._deps = set()
         self._resources = []
 
     def __repr__(self):
@@ -63,12 +64,13 @@ class ImportTargetAlias:
 
     @property
     def deps(self):
-        return []
+        return self._deps
 
     def update_status(self):
         pass
 
     def set_completed(self, req_to_target):
+        self._deps = {*req_to_target.values()}
         for req, target in req_to_target.items():
             resource = req.make_resource(target)
             if resource is None:

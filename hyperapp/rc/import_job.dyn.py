@@ -78,10 +78,14 @@ class SucceededImportResult(ImportResultBase):
                 target_set.add(test_alias)
                 target_set.add(test_target)
                 for req in self._requirements:
-                    resource_target = req.get_tested_target(target_set.factory)
-                    if resource_target:
-                        resource_target.add_test_dep(test_alias)
-                        target_set.update_deps_for(resource_target)
+                    tested_resource_tgt = req.get_tested_resource_target(target_set.factory)
+                    if tested_resource_tgt:
+                        # This is a tested code requirement.
+                        tested_import_tgt = req.get_tested_import_target(target_set.factory)
+                        test_target.add_tested_import(tested_import_tgt)
+                        target_set.update_deps_for(test_target)
+                        tested_resource_tgt.add_test_dep(test_alias)
+                        target_set.update_deps_for(tested_resource_tgt)
 
     @property
     def _is_tests(self):

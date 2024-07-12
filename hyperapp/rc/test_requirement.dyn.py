@@ -47,8 +47,11 @@ class TestedCodeReq(Requirement):
     def get_target(self, target_factory):
         return target_factory.python_module_imported(self.code_name)
 
-    def get_tested_target(self, target_factory):
+    def get_tested_resource_target(self, target_factory):
         return target_factory.python_module_resource_by_code_name(self.code_name)
+
+    def get_tested_import_target(self, target_factory):
+        return target_factory.python_module_imported(self.code_name)
 
     def make_resource(self, target):
         recorder_module_name, recorder_piece, module_piece = target.recorded_python_module()

@@ -42,6 +42,8 @@ class TestTarget:
         self._type_src_list = type_src_list
         self._function = function
         self._req_to_target = req_to_target or {}
+        self._tested_imports = set()  # import targets being tested.
+        self._tested_deps = set()  # targets required by tested code targets.
         self._idx = idx
         self._alias = alias
         self._completed = False
@@ -64,10 +66,13 @@ class TestTarget:
 
     @property
     def deps(self):
-        return self._req_to_target.values()
+        return {*self._tested_imports, *self._tested_deps, *self._req_to_target.values()}
 
     def update_status(self):
-        self._ready = all(target.completed for target in self._req_to_target.values())
+        for target in self._tested_imports:
+            if target.completed:
+                self._tested_deps |= target.deps
+        self._ready = all(target.completed for target in self.deps)
 
     def make_job(self):
         resources = list(filter(None, self._enum_resources()))  # TODO: Remove filter when all make_resource methods are implemented.
@@ -81,6 +86,11 @@ class TestTarget:
 
     def handle_job_result(self, target_set, result):
         self._completed = True
+
+    def add_tested_import(self, target):
+        self._tested_imports.add(target)
+        if target.completed:
+            self._tested_deps |= target.deps
 
     def set_alias_completed(self, req_to_target):
         self._alias.set_completed(req_to_target)

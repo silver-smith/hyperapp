@@ -50,8 +50,18 @@ class TargetSet:
             return target
 
     def update_deps_statuses(self, completed_target):
-        for target in self._dep_to_target[completed_target]:
-            target.update_status()
+        while True:
+            changed_targets = set()
+            for target in self._dep_to_target[completed_target]:
+                prev_deps = set(target.deps)
+                target.update_status()
+                new_deps = set(target.deps)
+                if new_deps != prev_deps:
+                    changed_targets.add(target)
+            if not changed_targets:
+                break
+            for target in changed_targets:
+                self.update_deps_for(target)
 
     @property
     def all_completed(self):
