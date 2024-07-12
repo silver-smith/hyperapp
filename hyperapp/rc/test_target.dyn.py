@@ -86,6 +86,7 @@ class TestTarget:
 
     def handle_job_result(self, target_set, result):
         self._completed = True
+        result.update_targets(self, target_set)
 
     def add_tested_import(self, target):
         self._tested_imports.add(target)
