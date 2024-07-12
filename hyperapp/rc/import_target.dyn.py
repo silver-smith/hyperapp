@@ -158,7 +158,7 @@ def create_import_targets(target_set, python_module_src_list, type_src_list):
         alias_tgt = ImportTargetAlias(src, type_src_list)
         import_tgt = ImportTarget(src, type_src_list, alias_tgt)
         all_imports_known_tgt.add_import_target(import_tgt)
-        resource_tgt = PythonModuleResourceTarget(src, all_imports_known_tgt)
+        resource_tgt = PythonModuleResourceTarget(src, all_imports_known_tgt, alias_tgt)
         target_set.add(import_tgt)
         target_set.add(alias_tgt)
         target_set.add(resource_tgt)

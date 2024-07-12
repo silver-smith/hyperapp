@@ -33,9 +33,10 @@ class PythonModuleResourceTarget:
     def name_for_src(python_module_src):
         return f'resource/{python_module_src.name}'
 
-    def __init__(self, python_module_src, all_imports_known_tgt):
+    def __init__(self, python_module_src, all_imports_known_tgt, import_alias_tgt):
         self._python_module_src = python_module_src
         self._all_imports_known_tgt = all_imports_known_tgt
+        self._import_alias_tgt = import_alias_tgt
         self._completed = False
         self._tests = set()
 
@@ -56,12 +57,12 @@ class PythonModuleResourceTarget:
 
     @property
     def deps(self):
-        return {self._all_imports_known_tgt, *self._tests}
+        return {self._all_imports_known_tgt, self._import_alias_tgt, *self._tests}
 
     def update_status(self):
         if self._completed:
             return
-        if all(target.completed for target in [self._all_imports_known_tgt, *self._tests]):
+        if all(target.completed for target in self.deps):
             rc_log.info("Ready: %s", self.name)
             # self._completed = True
 
