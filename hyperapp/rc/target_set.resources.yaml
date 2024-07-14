@@ -1,6 +1,7 @@
 import:
 - legacy_type.builtin:python_module
 - rc.import_target:import_target.module
+- rc.python_module_resource_target:python_module_resource_target.module
 - rc.service_target:service_target.module
 
 definitions:
@@ -12,4 +13,5 @@ definitions:
       file_name: target_set.dyn.py
       import_list:
         code.import_target: rc.import_target:import_target.module
+        code.python_module_resource_target: rc.python_module_resource_target:python_module_resource_target.module
         code.service_target: rc.service_target:service_target.module

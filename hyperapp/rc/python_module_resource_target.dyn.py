@@ -40,9 +40,40 @@ class PythonModuleResourceTarget:
     def name_for_src(python_module_src):
         return f'resource/{python_module_src.name}'
 
-    def __init__(self, python_module_src, custom_resource_registry, all_imports_known_tgt, import_alias_tgt):
+    def __init__(self, python_module_src, custom_resource_registry):
         self._src = python_module_src
         self._custom_resource_registry = custom_resource_registry
+
+    @property
+    def name(self):
+        return self.name_for_src(self._src)
+
+
+class ManualPythonModuleResourceTarget(PythonModuleResourceTarget):
+
+    def __repr__(self):
+        return f"<ManualPythonModuleResourceTarget {self.name}>"
+
+    @property
+    def ready(self):
+        return False
+
+    @property
+    def completed(self):
+        return True
+
+    @property
+    def deps(self):
+        return set()
+
+    def update_status(self):
+        pass
+
+
+class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
+
+    def __init__(self, python_module_src, custom_resource_registry, all_imports_known_tgt, import_alias_tgt):
+        super().__init__(python_module_src, custom_resource_registry)
         self._all_imports_known_tgt = all_imports_known_tgt
         self._import_alias_tgt = import_alias_tgt
         self._completed = False
@@ -50,11 +81,7 @@ class PythonModuleResourceTarget:
         self._tests = set()
 
     def __repr__(self):
-        return f"<PythonModuleResourceTarget {self.name}>"
-
-    @property
-    def name(self):
-        return self.name_for_src(self._src)
+        return f"<CompiledPythonModuleResourceTarget {self.name}>"
 
     @property
     def ready(self):
@@ -94,8 +121,7 @@ class PythonModuleResourceTarget:
         resource_module = resource_module_factory(self._custom_resource_registry, self._src.name)
         resource_module[f'{self._src.stem}.module'] = python_module
         text = resource_module.as_text
-        res_name = self._src.path.name.replace('.dyn.py', '.resources.yaml')
-        res_path = hyperapp_dir / self._src.path.with_name(res_name)
+        res_path = hyperapp_dir / self._src.resource_path
         p = subprocess.run(
             ['diff', '-u', str(res_path), '-'],
             input=text.encode(),

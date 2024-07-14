@@ -20,11 +20,12 @@ class PythonModuleSrc:
     name: str
     stem: str
     path: Path
+    resource_path: Path
     contents: str
 
     @classmethod
     def from_piece(cls, piece):
-        return cls(piece.name, piece.stem, Path(piece.path), piece.contents)
+        return cls(piece.name, piece.stem, Path(piece.path), Path(piece.resource_path), piece.contents)
 
     @property
     def piece(self):
@@ -32,6 +33,7 @@ class PythonModuleSrc:
             name=self.name,
             stem=self.stem,
             path=str(self.path),
+            resource_path=str(self.resource_path),
             contents=self.contents,
             )
 
@@ -107,7 +109,8 @@ def _load_pyhon_modules(root_dir):
         dir = path.parent.relative_to(root_dir)
         dir_name = str(dir).replace('/', '.')
         name = f'{dir_name}.{stem}'
-        yield PythonModuleSrc(name, stem, rel_path, path.read_text())
+        resource_path = rel_path.with_name(stem + '.resources.yaml')
+        yield PythonModuleSrc(name, stem, rel_path, resource_path, path.read_text())
 
 
 def _load_types(root_dir):

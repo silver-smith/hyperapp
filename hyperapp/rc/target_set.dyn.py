@@ -2,6 +2,7 @@ from collections import defaultdict
 from operator import attrgetter
 
 from .code.import_target import AllImportsKnownTarget, ImportTargetAlias
+from .code.python_module_resource_target import PythonModuleResourceTarget
 from .code.service_target import ServiceFoundTarget, ServiceCompleteTarget
 
 
@@ -89,6 +90,11 @@ class TargetFactory:
         return self.python_module_resource_by_src(src)
 
     def python_module_resource_by_src(self, src):
+        target_name = PythonModuleResourceTarget.name_for_src(src)
+        try:
+            return self._target_set[target_name]
+        except KeyError:
+            pass
         import_target = self.python_module_imported_by_src(src)
         all_imports_known_tgt = self.all_imports_known()
         target = import_target.create_resource_target(all_imports_known_tgt)

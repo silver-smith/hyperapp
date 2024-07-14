@@ -89,7 +89,7 @@ def _main(pool, fail_fast, timeout):
     build.report()
 
     target_set = TargetSet(build.python_modules)
-    create_import_targets(target_set, build.python_modules, build.types)
+    create_import_targets(hyperapp_dir, target_set, build.python_modules, build.types)
     try:
         _run(pool, target_set, fail_fast, timeout)
     except HException as x:

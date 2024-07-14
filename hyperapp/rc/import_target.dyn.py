@@ -1,14 +1,12 @@
 from hyperapp.common.util import flatten
+from hyperapp.resource.resource_module import AUTO_GEN_LINE
 
-from .services import (
-    hyperapp_dir,
-    )
 from .code.rc_constants import JobStatus
 from .code.builtin_resources import enum_builtin_resources
 from .code.import_resource import ImportResource
 from .code.import_job import ImportJob
 from .code.test_target import TestTargetAlias, TestTarget
-from .code.python_module_resource_target import PythonModuleResourceTarget
+from .code.python_module_resource_target import CompiledPythonModuleResourceTarget, ManualPythonModuleResourceTarget
 from .code.custom_resource_registry import create_custom_resource_registry
 
 
@@ -88,7 +86,7 @@ class ImportTargetAlias:
         self._completed = True
 
     def create_resource_target(self, all_imports_known_tgt):
-        return PythonModuleResourceTarget(self._python_module_src, self._custom_resource_registry, all_imports_known_tgt, self)
+        return CompiledPythonModuleResourceTarget(self._python_module_src, self._custom_resource_registry, all_imports_known_tgt, self)
 
     def recorded_python_module(self):
         type_resources = [
@@ -160,13 +158,17 @@ class ImportTarget:
         return (alias, target)
 
 
-def create_import_targets(target_set, python_module_src_list, type_src_list):
-    custom_resource_registry = create_custom_resource_registry(hyperapp_dir)
+def create_import_targets(root_dir, target_set, python_module_src_list, type_src_list):
+    custom_resource_registry = create_custom_resource_registry(root_dir)
     all_imports_known_tgt = AllImportsKnownTarget()
     for src in python_module_src_list:
-        alias_tgt = ImportTargetAlias(src, type_src_list, custom_resource_registry)
-        import_tgt = ImportTarget(src, type_src_list, alias_tgt)
-        all_imports_known_tgt.add_import_target(import_tgt)
-        target_set.add(import_tgt)
-        target_set.add(alias_tgt)
+        if root_dir.joinpath(src.resource_path).read_text().startswith(AUTO_GEN_LINE):
+            alias_tgt = ImportTargetAlias(src, type_src_list, custom_resource_registry)
+            import_tgt = ImportTarget(src, type_src_list, alias_tgt)
+            all_imports_known_tgt.add_import_target(import_tgt)
+            target_set.add(import_tgt)
+            target_set.add(alias_tgt)
+        else:
+            resource_tgt = ManualPythonModuleResourceTarget(src, custom_resource_registry)
+            target_set.add(resource_tgt)
     target_set.add(all_imports_known_tgt)
