@@ -6,7 +6,7 @@ from .services import (
     pyobj_creg,
     web,
     )
-from .code.requirement import Requirement
+from .code.rc_requirement import Requirement
 from .code.rc_resource import Resource
 
 

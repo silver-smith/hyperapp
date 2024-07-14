@@ -9,7 +9,7 @@ from .services import (
     hyperapp_dir,
     resource_module_factory,
     )
-from .code.requirement import Requirement
+from .code.rc_requirement import Requirement
 
 rc_log = logging.getLogger('rc')
 

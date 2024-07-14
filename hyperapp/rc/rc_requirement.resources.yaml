@@ -3,9 +3,9 @@ import:
 
 definitions:
 
-  requirement.module:
+  rc_requirement.module:
     type: legacy_type.builtin:python_module
     value:
-      module_name: requirement
-      file_name: requirement.dyn.py
+      module_name: rc_requirement
+      file_name: rc_requirement.dyn.py
       import_list: {}

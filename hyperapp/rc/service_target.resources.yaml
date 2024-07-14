@@ -3,7 +3,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.service:service_complete_req
 - legacy_type.service:service_found_req
-- rc.requirement:requirement.module
+- rc.rc_requirement:rc_requirement.module
 - rc.rc_requirement_creg:rc_requirement_creg.service
 
 associations:
@@ -34,7 +34,7 @@ definitions:
       import_list:
         htypes.service.service_complete_req: legacy_type.service:service_complete_req
         htypes.service.service_found_req: legacy_type.service:service_found_req
-        code.requirement: rc.requirement:requirement.module
+        code.rc_requirement: rc.rc_requirement:rc_requirement.module
 
   ServiceFoundReq:
     type: legacy_type.builtin:attribute

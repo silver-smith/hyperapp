@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from . import htypes
-from .code.requirement import Requirement
+from .code.rc_requirement import Requirement
 
 
 # Unused. Is it really needed?`

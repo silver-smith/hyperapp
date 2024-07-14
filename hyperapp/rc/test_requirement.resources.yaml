@@ -8,7 +8,7 @@ import:
 - legacy_type.test_target:tested_code_req
 - legacy_type.test_target:tested_code_resource
 - legacy_type.test_target:tested_service_req
-- rc.requirement:requirement.module
+- rc.rc_requirement:rc_requirement.module
 - rc.rc_requirement_creg:rc_requirement_creg.service
 - rc.rc_resource:rc_resource.module
 - rc.rc_resource_creg:rc_resource_creg.service
@@ -54,7 +54,7 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
-        code.requirement: rc.requirement:requirement.module
+        code.rc_requirement: rc.rc_requirement:rc_requirement.module
         code.rc_resource: rc.rc_resource:rc_resource.module
 
   TestedServiceReq:
