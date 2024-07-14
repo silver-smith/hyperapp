@@ -2,7 +2,6 @@ from collections import defaultdict
 from operator import attrgetter
 
 from .code.import_target import AllImportsKnownTarget, ImportTargetAlias
-from .code.python_module_resource_target import PythonModuleResourceTarget
 from .code.service_target import ServiceFoundTarget, ServiceCompleteTarget
 
 
