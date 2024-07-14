@@ -7,10 +7,16 @@ job = record:
   resources: ref list
   test_fn_name: string
 
+used_imports = record:
+  module_name: string
+  imports: string list list
+
 succeeded_result = record:
+  used_imports: used_imports list
   requirements: ref list
 
 incomplete_result = record:
+  used_imports: used_imports list
   requirements: ref list
   error: string
   traceback: string list

@@ -69,6 +69,13 @@ def flatten(list_of_lists):
     return list(itertools.chain.from_iterable(list_of_lists))
 
 
+def merge_dicts(list_of_dicts):
+    result = {}
+    for d in list_of_dicts:
+        result.update(d)
+    return result
+
+
 def single(iter):
     all = list(iter)
     assert len(all) == 1, repr(all)  # Exactly one item is expected

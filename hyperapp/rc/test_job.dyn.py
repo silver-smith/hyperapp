@@ -3,7 +3,7 @@ import inspect
 import logging
 import traceback
 
-from hyperapp.common.util import flatten
+from hyperapp.common.util import flatten, merge_dicts
 from hyperapp.resource.python_module import PythonModuleResourceImportError
 
 from . import htypes
@@ -33,8 +33,16 @@ class TestResultBase(JobResult):
             for ref in requirement_refs
             ]
 
-    def __init__(self, status, requirements, error=None, traceback=None):
+    @staticmethod
+    def _used_imports_to_dict(used_imports_list):
+        result = {}
+        for rec in used_imports_list:
+            result[rec.module_name] = rec.imports
+        return result
+
+    def __init__(self, status, used_imports, requirements, error=None, traceback=None):
         super().__init__(status, error, traceback)
+        self._used_imports = used_imports
         self._requirements = requirements
 
     def _resolve_requirements(self, target_factory):
@@ -49,11 +57,12 @@ class SucceededTestResult(TestResultBase):
 
     @classmethod
     def from_piece(cls, piece):
+        used_imports = cls._used_imports_to_dict(piece.used_imports)
         requirements = cls._resolve_reqirement_refs(piece.requirements)
-        return cls(requirements)
+        return cls(used_imports, requirements)
 
-    def __init__(self, requirements):
-        super().__init__(JobStatus.ok, requirements)
+    def __init__(self, used_imports, requirements):
+        super().__init__(JobStatus.ok, used_imports, requirements)
 
     def update_targets(self, my_target, target_set):
         req_to_target = self._resolve_requirements(target_set.factory)
@@ -64,11 +73,12 @@ class IncompleteTestResult(TestResultBase):
 
     @classmethod
     def from_piece(cls, piece):
+        used_imports = cls._used_imports_to_dict(piece.used_imports)
         requirements = cls._resolve_reqirement_refs(piece.requirements)
-        return cls(requirements, piece.error, piece.traceback)
+        return cls(used_imports, requirements, piece.error, piece.traceback)
 
-    def __init__(self, requirements, error, traceback):
-        super().__init__(JobStatus.incomplete, requirements, error, traceback)
+    def __init__(self, used_imports, requirements, error, traceback):
+        super().__init__(JobStatus.incomplete, used_imports, requirements, error, traceback)
 
     def update_targets(self, my_target, target_set):
         req_to_target = self._resolve_requirements(target_set.factory)
@@ -151,12 +161,14 @@ class TestJob:
             )
         if status == JobStatus.incomplete:
             return htypes.test_job.incomplete_result(
+                used_imports=tuple(self._enum_used_imports(all_resources)),
                 requirements=req_refs,
                 error=error_msg,
                 traceback=tuple(traceback),
                 )
         return htypes.test_job.succeeded_result(
-            requirements=(),
+            used_imports=tuple(self._enum_used_imports(all_resources)),
+            requirements=req_refs,
             )
 
     def _prepare_import_error(self, x):
@@ -188,3 +200,11 @@ class TestJob:
             if req:
                 req_set.add(req)
         return req_set
+
+    def _enum_used_imports(self, resources):
+        recorder_dict = merge_dicts(d.recorders for d in resources)
+        for module_name, recorder in recorder_dict.items():
+            yield htypes.test_job.used_imports(
+                module_name=module_name,
+                imports=tuple(recorder.used_imports),
+                )

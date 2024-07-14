@@ -9,6 +9,7 @@ import:
 - legacy_type.test_job:job
 - legacy_type.test_job:incomplete_result
 - legacy_type.test_job:succeeded_result
+- legacy_type.test_job:used_imports
 - rc.build:build.module
 - rc.builtin_resources:builtin_resources.module
 - rc.job_result:job_result.module
@@ -67,6 +68,7 @@ definitions:
         htypes.test_job.job: legacy_type.test_job:job
         htypes.test_job.incomplete_result: legacy_type.test_job:incomplete_result
         htypes.test_job.succeeded_result: legacy_type.test_job:succeeded_result
+        htypes.test_job.used_imports: legacy_type.test_job:used_imports
         services.mosaic: builtins:mosaic.service
         services.hyperapp_dir: builtins:hyperapp_dir.service
         services.pyobj_creg: builtins:pyobj_creg.service
