@@ -95,3 +95,6 @@ class TestTarget:
 
     def set_alias_completed(self, req_to_target):
         self._alias.set_completed(req_to_target)
+
+    def create_next_target(self, req_to_target):
+        return TestTarget(self._python_module_src, self._type_src_list, self._function, req_to_target, self._alias, self._idx + 1)
