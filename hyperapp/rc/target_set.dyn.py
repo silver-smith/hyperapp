@@ -13,6 +13,10 @@ class TargetSet:
             src.stem: src
             for src in python_module_src_list
             }
+        self._name_to_python_module_src = {
+            src.name: src
+            for src in python_module_src_list
+            }
         self._name_to_target = {}
         self._dep_to_target = defaultdict(set)  # target -> target set
 
@@ -89,8 +93,12 @@ class TargetFactory:
         src = self._target_set._stem_to_python_module_src[code_name]
         return self.python_module_resource_by_src(src)
 
+    def python_module_resource_by_module_name(self, module_name):
+        src = self._target_set._name_to_python_module_src[module_name]
+        return self.python_module_resource_by_src(src)
+
     def python_module_resource_by_src(self, src):
-        target_name = PythonModuleResourceTarget.name_for_src(src)
+        target_name = PythonModuleResourceTarget.target_name_for_src(src)
         try:
             return self._target_set[target_name]
         except KeyError:

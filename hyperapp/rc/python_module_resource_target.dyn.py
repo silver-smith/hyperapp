@@ -36,9 +36,13 @@ class PythonModuleReq(Requirement):
 
 class PythonModuleResourceTarget:
 
+    @classmethod
+    def target_name_for_src(cls, python_module_src):
+        return cls.target_name_for_module_name(python_module_src.name)
+
     @staticmethod
-    def name_for_src(python_module_src):
-        return f'resource/{python_module_src.name}'
+    def target_name_for_module_name(module_name):
+        return f'resource/{module_name}'
 
     def __init__(self, python_module_src, custom_resource_registry):
         self._src = python_module_src
@@ -46,7 +50,7 @@ class PythonModuleResourceTarget:
 
     @property
     def name(self):
-        return self.name_for_src(self._src)
+        return self.target_name_for_src(self._src)
 
 
 class ManualPythonModuleResourceTarget(PythonModuleResourceTarget):
@@ -108,6 +112,9 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
 
     def add_test_dep(self, test_target):
         self._tests.add(test_target)
+
+    def add_used_imports(self, import_list):
+        assert not import_list, import_list
 
     def _enum_resources(self):
         for req, target in self._req_to_target.items():

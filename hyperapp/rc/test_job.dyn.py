@@ -52,6 +52,11 @@ class TestResultBase(JobResult):
             req_to_target[req] = target
         return req_to_target
 
+    def _update_tested_imports(self, target_factory):
+        for module_name, import_list in self._used_imports.items():
+            resource_tgt = target_factory.python_module_resource_by_module_name(module_name)
+            resource_tgt.add_used_imports(import_list)
+
 
 class SucceededTestResult(TestResultBase):
 
@@ -65,6 +70,7 @@ class SucceededTestResult(TestResultBase):
         super().__init__(JobStatus.ok, used_imports, requirements)
 
     def update_targets(self, my_target, target_set):
+        self._update_tested_imports(target_set.factory)
         req_to_target = self._resolve_requirements(target_set.factory)
         my_target.set_alias_completed(req_to_target)
 
@@ -81,6 +87,7 @@ class IncompleteTestResult(TestResultBase):
         super().__init__(JobStatus.incomplete, used_imports, requirements, error, traceback)
 
     def update_targets(self, my_target, target_set):
+        self._update_tested_imports(target_set.factory)
         req_to_target = self._resolve_requirements(target_set.factory)
         if req_to_target:  # TODO: remove after all requirement types are implemented.
             target_set.add(my_target.create_next_target(req_to_target))
