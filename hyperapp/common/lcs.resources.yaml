@@ -1,8 +1,6 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtins:mosaic.service
-- builtins:web.service
 - legacy_type.builtin:python_module
 associations: []
 definitions:
@@ -11,6 +9,4 @@ definitions:
     value:
       module_name: lcs
       file_name: lcs.dyn.py
-      import_list:
-        services.mosaic: builtins:mosaic.service
-        services.web: builtins:web.service
+      import_list: {}
