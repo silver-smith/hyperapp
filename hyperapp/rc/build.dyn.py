@@ -37,7 +37,7 @@ class PythonModuleSrc:
 
     def python_module(self, import_list):
         return htypes.builtin.python_module(
-            module_name=self.name,
+            module_name=self.stem,
             source=self.contents,
             file_path=str(hyperapp_dir / self.path),
             import_list=tuple(import_list),

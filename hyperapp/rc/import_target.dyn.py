@@ -1,11 +1,15 @@
 from hyperapp.common.util import flatten
 
+from .services import (
+    hyperapp_dir,
+    )
 from .code.rc_constants import JobStatus
 from .code.builtin_resources import enum_builtin_resources
 from .code.import_resource import ImportResource
 from .code.import_job import ImportJob
 from .code.test_target import TestTargetAlias, TestTarget
 from .code.python_module_resource_target import PythonModuleResourceTarget
+from .code.custom_resource_registry import create_custom_resource_registry
 
 
 class AllImportsKnownTarget:
@@ -44,9 +48,10 @@ class ImportTargetAlias:
     def name_for_src(python_module_src):
         return f'import/{python_module_src.name}'
 
-    def __init__(self, python_module_src, type_src_list):
+    def __init__(self, python_module_src, type_src_list, custom_resource_registry):
         self._python_module_src = python_module_src
         self._type_src_list = type_src_list
+        self._custom_resource_registry = custom_resource_registry
         self._completed = False
         self._deps = set()
         self._resources = []
@@ -83,7 +88,7 @@ class ImportTargetAlias:
         self._completed = True
 
     def create_resource_target(self, all_imports_known_tgt):
-        return PythonModuleResourceTarget(self._python_module_src, all_imports_known_tgt, self)
+        return PythonModuleResourceTarget(self._python_module_src, self._custom_resource_registry, all_imports_known_tgt, self)
 
     def recorded_python_module(self):
         type_resources = [
@@ -156,9 +161,10 @@ class ImportTarget:
 
 
 def create_import_targets(target_set, python_module_src_list, type_src_list):
+    custom_resource_registry = create_custom_resource_registry(hyperapp_dir)
     all_imports_known_tgt = AllImportsKnownTarget()
     for src in python_module_src_list:
-        alias_tgt = ImportTargetAlias(src, type_src_list)
+        alias_tgt = ImportTargetAlias(src, type_src_list, custom_resource_registry)
         import_tgt = ImportTarget(src, type_src_list, alias_tgt)
         all_imports_known_tgt.add_import_target(import_tgt)
         target_set.add(import_tgt)

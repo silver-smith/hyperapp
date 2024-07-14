@@ -1,0 +1,24 @@
+import:
+- builtins:builtin_service_resource_loader.service
+- builtins:builtin_types_as_dict.service
+- builtins:legacy_type_resource_loader.service
+- builtins:local_types.service
+- builtins:resource_registry_factory.service
+- builtins:type_module_loader.service
+- legacy_type.builtin:python_module
+- legacy_type.import_recorder:resource
+associations: []
+definitions:
+  custom_resource_registry.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: custom_resource_registry
+      file_name: custom_resource_registry.dyn.py
+      import_list:
+        htypes.import_recorder.resource: legacy_type.import_recorder:resource
+        services.builtin_service_resource_loader: builtins:builtin_service_resource_loader.service
+        services.builtin_types_as_dict: builtins:builtin_types_as_dict.service
+        services.legacy_type_resource_loader: builtins:legacy_type_resource_loader.service
+        services.local_types: builtins:local_types.service
+        services.resource_registry_factory: builtins:resource_registry_factory.service
+        services.type_module_loader: builtins:type_module_loader.service

@@ -195,19 +195,6 @@ class ResourceModule:
         self._association_list.add(Definition(resource_type, definition))
         self._import_set.add(self._resource_type_name(resource_type))
 
-    def save_as(self, path, source_ref_str, tests_ref_str, generator_ref_str):
-        yaml_text = yaml.dump(self.as_dict, sort_keys=False)
-        lines = [
-            AUTO_GEN_LINE,
-            '',
-            yaml_text,
-            ]
-        path.write_text('\n'.join(lines))
-        hash_lines = [source_ref_str, tests_ref_str, generator_ref_str]
-        self._hash_file_path(path).write_text('\n'.join(hash_lines))
-        self._path = path
-        self._resource_dir = path.parent
-
     def _hash_file_path(self, path):
         return path.with_suffix('.hash')
 
@@ -224,6 +211,23 @@ class ResourceModule:
                 for name, d in sorted(self._definition_dict.items())
                 },
             }
+
+    @property
+    def as_text(self):
+        yaml_text = yaml.dump(self.as_dict, sort_keys=False)
+        lines = [
+            AUTO_GEN_LINE,
+            '',
+            yaml_text,
+            ]
+        return '\n'.join(lines)
+
+    def save_as(self, path, source_ref_str, tests_ref_str, generator_ref_str):
+        path.write_text(self.as_text)
+        hash_lines = [source_ref_str, tests_ref_str, generator_ref_str]
+        self._hash_file_path(path).write_text('\n'.join(hash_lines))
+        self._path = path
+        self._resource_dir = path.parent
 
     def _definition_as_dict(self, definition):
         return {
