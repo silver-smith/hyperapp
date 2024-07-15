@@ -2,9 +2,6 @@
 service = record:
   name: string
 
-parameter = record:
-  path: string list
-
 
 model_ctr = record
 

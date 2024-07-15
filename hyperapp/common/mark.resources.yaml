@@ -2,7 +2,6 @@ import:
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - legacy_type.rc_constructors:model_ctr
-- legacy_type.rc_constructors:parameter
 - legacy_type.rc_constructors:service
 - legacy_type.rc_constructors:ui_command_ctr
 - legacy_type.rc_constructors:ui_model_command_ctr
@@ -20,7 +19,6 @@ definitions:
       file_name: mark.dyn.py
       import_list:
         htypes.rc_constructors.model_ctr: legacy_type.rc_constructors:model_ctr
-        htypes.rc_constructors.parameter: legacy_type.rc_constructors:parameter
         htypes.rc_constructors.service: legacy_type.rc_constructors:service
         htypes.rc_constructors.ui_command_ctr: legacy_type.rc_constructors:ui_command_ctr
         htypes.rc_constructors.ui_model_command_ctr: legacy_type.rc_constructors:ui_model_command_ctr
