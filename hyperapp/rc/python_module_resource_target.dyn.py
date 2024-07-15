@@ -134,7 +134,7 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
     def python_module_piece(self):
         assert self._completed
         resources = list(filter(None, self._enum_resources()))  # TODO: Remove filter when all make_resource methods are implemented.
-        import_list = flatten(d.import_records for d in resources)
+        import_list = sorted(flatten(d.import_records for d in resources))
         return self._src.python_module(import_list)
 
     def _enum_resources(self):
