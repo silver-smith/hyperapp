@@ -4,9 +4,7 @@ from types import SimpleNamespace
 
 from hyperapp.common.htypes import Type
 from hyperapp.common.resource_ctr import (
-    RESOURCE_ATTR_CTR_NAME,
-    add_attr_constructor,
-    add_fn_attr_constructor,
+    add_fn_module_constructor,
     )
 
 from . import htypes
@@ -20,15 +18,18 @@ class ServiceMarker:
 
     def __call__(self, fn):
         ctr = htypes.rc_constructors.service(
+            attr_name=fn.__name__,
             name=fn.__name__,
             )
-        add_fn_attr_constructor(fn, mosaic.put(ctr))
+        add_fn_module_constructor(fn, mosaic.put(ctr))
         return fn
 
 
 def model(fn):
-    ctr = htypes.rc_constructors.model_ctr()
-    add_fn_attr_constructor(fn, mosaic.put(ctr))
+    ctr = htypes.rc_constructors.model_ctr(
+        attr_name=fn.__name__,
+        )
+    add_fn_module_constructor(fn, mosaic.put(ctr))
     return fn
 
 
@@ -41,15 +42,15 @@ class UiCommandBase:
         else:  # Non-parameterized version.
             name = fn_or_t.__name__
             params = tuple(inspect.signature(fn_or_t).parameters)
-            ctr = self.universal_command_ctr(name, params)
-            add_fn_attr_constructor(fn_or_t, mosaic.put(ctr))
+            ctr = self.universal_command_ctr(name, name, params)
+            add_fn_module_constructor(fn_or_t, mosaic.put(ctr))
             return fn_or_t
 
     def _ui_command_wrapper(self, t_ref, fn):
         name = fn.__name__
         params = tuple(inspect.signature(fn).parameters)
-        ctr = self.command_ctr(t_ref, name, params)
-        add_fn_attr_constructor(fn, mosaic.put(ctr))
+        ctr = self.command_ctr(name, t_ref, name, params)
+        add_fn_module_constructor(fn, mosaic.put(ctr))
         return fn
 
 

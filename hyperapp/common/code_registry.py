@@ -6,7 +6,7 @@ from functools import cached_property
 from .htypes import code_registry_ctr_t, ref_t
 from .htypes.deduce_value_type import deduce_value_type
 from .ref import decode_capsule
-from .resource_ctr import add_fn_attr_constructor
+from .resource_ctr import add_fn_module_constructor
 
 _log = logging.getLogger(__name__)
 
@@ -28,10 +28,11 @@ class CodeRegistry:
         def register(fn):
             type_ref = self._pyobj_creg.actor_to_ref(t)
             ctr = code_registry_ctr_t(
+                attr_name=fn.__name__,
                 service=self._mosaic.put(self._my_resource),
                 type=type_ref,
                 )
-            add_fn_attr_constructor(fn, self._mosaic.put(ctr))
+            add_fn_module_constructor(fn, self._mosaic.put(ctr))
             return fn
 
         return register
