@@ -10,6 +10,23 @@ class IncompleteImportedObjectError(Exception):
     pass
 
 
+def _load_resource(resource_path, resource):
+    try:
+        return pyobj_creg.animate(resource)
+    except Exception as x:
+        raise RuntimeError(f"Error importing {'.'.join(resource_path)!r}: {x}") from x
+
+
+def _get_resource(resource_path, resources, packages, imported_set):
+    imported_set.add(resource_path)
+    try:
+        resource = resources[resource_path]
+    except KeyError:
+        return RecorderObject(resource_path, resources, packages, imported_set)
+    else:
+        return _load_resource(resource_path, resource)
+
+
 class RecorderObject:
 
     def __init__(self, prefix, resources, packages, imported_set):
@@ -22,13 +39,7 @@ class RecorderObject:
         if name.startswith('_'):
             raise AttributeError(name)
         resource_path = (*self._prefix, name)
-        self._imported_set.add(resource_path)
-        try:
-            resource = self._resources[resource_path]
-        except KeyError:
-            return RecorderObject(resource_path, self._resources, self._packages, self._imported_set)
-        else:
-            return self._load_resource(resource_path, resource)
+        return _get_resource(resource_path, self._resources, self._packages, self._imported_set)
 
     def __call__(self, *args, **kw):
         path = '.'.join(self._prefix)
@@ -37,12 +48,6 @@ class RecorderObject:
     def __mro_entries__(self, base):
         path = '.'.join(self._prefix)
         raise IncompleteImportedObjectError(f"Attempt to inherit from not-ready class {path}")
-
-    def _load_resource(self, resource_path, resource):
-        try:
-            return pyobj_creg.animate(resource)
-        except Exception as x:
-            raise RuntimeError(f"Error importing {'.'.join(resource_path)!r}: {x}") from x
 
 
 class ImportRecorder(Finder):
@@ -83,6 +88,5 @@ class ImportRecorder(Finder):
     def create_module(self, spec):
         assert spec.name.startswith(self._base_module_name + '.')
         rel_name = spec.name[len(self._base_module_name) + 1 :]
-        name = tuple(rel_name.split('.'))
-        self._imported_set.add(name)
-        return RecorderObject(name, self._resources, self._packages, self._imported_set)
+        resource_path = tuple(rel_name.split('.'))
+        return _get_resource(resource_path, self._resources, self._packages, self._imported_set)
