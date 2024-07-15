@@ -4,6 +4,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.python_module_resource_target:python_module_req
+- rc.import_resource:import_resource.module
 - rc.rc_requirement:rc_requirement.module
 - rc.rc_requirement_creg:rc_requirement_creg.service
 
@@ -28,6 +29,7 @@ definitions:
         htypes.python_module_resource_target.python_module_req: legacy_type.python_module_resource_target:python_module_req
         services.hyperapp_dir: builtins:hyperapp_dir.service
         services.resource_module_factory: builtins:resource_module_factory.service
+        code.import_resource: rc.import_resource:import_resource.module
         code.rc_requirement: rc.rc_requirement:rc_requirement.module
 
   PythonModuleReq:

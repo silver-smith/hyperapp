@@ -68,7 +68,7 @@ class SucceededImportResult(ImportResultBase):
 
     def update_targets(self, my_target, target_set):
         req_to_target = self._resolve_requirements(target_set.factory)
-        my_target.set_alias_completed(req_to_target)
+        my_target.set_alias_requirements(req_to_target)
         if self._is_tests:
             self._add_tests(my_target, target_set, req_to_target)
         else:
