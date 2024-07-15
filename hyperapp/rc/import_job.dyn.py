@@ -2,12 +2,14 @@ import inspect
 import traceback
 
 from hyperapp.common.util import flatten
+from hyperapp.common.resource_ctr import RESOURCE_MODULE_CTR_NAME
 from hyperapp.resource.python_module import PythonModuleResourceImportError
 
 from . import htypes
 from .services import (
     mosaic,
     pyobj_creg,
+    rc_constructor_creg,
     rc_requirement_creg,
     rc_resource_creg,
     )
@@ -60,13 +62,20 @@ class SucceededImportResult(ImportResultBase):
             Function.from_piece(fn)
             for fn in piece.functions
             ]
-        return cls(requirements, functions)
+        constructors = [
+            rc_constructor_creg.invite(ref)
+            for ref in piece.constructors
+            ]
+        return cls(requirements, functions, constructors)
 
-    def __init__(self, requirements, functions):
+    def __init__(self, requirements, functions, constructors):
         super().__init__(JobStatus.ok, requirements)
         self._functions = functions
+        self._constructors = constructors
 
     def update_targets(self, my_target, target_set):
+        for ctr in self._constructors:
+            ctr.update_targets(target_set.factory)
         req_to_target = self._resolve_requirements(target_set.factory)
         my_target.set_alias_requirements(req_to_target)
         if self._is_tests:
@@ -167,6 +176,7 @@ class ImportJob:
         recorder = pyobj_creg.animate(recorder_piece)
         try:
             module = pyobj_creg.animate(module_piece)
+            constructors = getattr(module, RESOURCE_MODULE_CTR_NAME, [])
             status = JobStatus.ok
         except PythonModuleResourceImportError as x:
             status, error_msg, traceback = self._prepare_error(x)
@@ -187,6 +197,7 @@ class ImportJob:
             return htypes.import_job.succeeded_result(
                 requirements=req_refs,
                 functions=tuple(self._enum_functions(module)),
+                constructors=tuple(constructors),
                 )
 
     def _enum_functions(self, module):
