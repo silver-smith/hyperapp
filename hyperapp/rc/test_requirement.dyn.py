@@ -24,7 +24,7 @@ class TestedServiceReq(Requirement):
         return htypes.test_target.tested_service_req(self.service_name)
 
     def get_target(self, target_factory):
-        return target_factory.tested_service(self.service_name)
+        return target_factory.service_found(self.service_name)
 
     @property
     def is_test_requirement(self):

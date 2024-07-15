@@ -85,6 +85,10 @@ class TargetFactory:
     def __init__(self, target_set):
         self._target_set = target_set
 
+    def service_found(self, service_name):
+        target = ServiceFoundTarget(service_name)
+        return self._target_set.add_or_get(target)
+
     def service_complete(self, service_name):
         target = ServiceCompleteTarget(service_name)
         return self._target_set.add_or_get(target)
@@ -106,10 +110,6 @@ class TargetFactory:
         import_target = self.python_module_imported_by_src(src)
         all_imports_known_tgt = self.all_imports_known()
         target = import_target.create_resource_target(all_imports_known_tgt)
-        return self._target_set.add_or_get(target)
-
-    def tested_service(self, service_name):
-        target = ServiceFoundTarget(service_name)
         return self._target_set.add_or_get(target)
 
     def all_imports_known(self):
