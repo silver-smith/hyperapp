@@ -3,7 +3,6 @@ import weakref
 from functools import partial
 
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
-from hyperapp.common.resource_ctr import add_caller_module_constructor
 
 from . import htypes
 from .services import (
