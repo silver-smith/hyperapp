@@ -79,7 +79,12 @@ def _run(pool, target_set, fail_fast, timeout):
             rc_log.info("\n========== %s ==========\n%s%s\n", target.name, "".join(result.traceback), result.error)
     for target in target_set:
         if not target.completed and target not in failures:
-            rc_log.info("Not completed: %s, wants: %s", target.name, ", ".join(dep.name for dep in target.deps))
+            rc_log.info(
+                "Not completed: %s, missing: %s, wants: %s",
+                target.name,
+                ", ".join(dep.name for dep in target.deps if not dep.completed),
+                ", ".join(dep.name for dep in target.deps),
+                )
     rc_log.info("Completed: %d; succeeded: %d; failed: %d; incomplete: %d", job_count, (job_count - len(failures)), len(failures), len(incomplete))
 
 
