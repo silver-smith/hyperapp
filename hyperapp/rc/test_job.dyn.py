@@ -90,6 +90,8 @@ class IncompleteTestResult(TestResultBase):
         self._update_tested_imports(target_set.factory)
         req_to_target = self._resolve_requirements(target_set.factory)
         if req_to_target:  # TODO: remove after all requirement types are implemented.
+            if my_target._idx > 5:
+                return
             target_set.add(my_target.create_next_target(req_to_target))
 
 

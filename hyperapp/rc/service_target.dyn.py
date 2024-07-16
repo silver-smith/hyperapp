@@ -22,7 +22,7 @@ class ServiceFoundReq(Requirement):
         return target_factory.service_found(self.service_name)
 
     def make_resource(self, target):
-        assert 0, 'todo'
+        raise NotImplementedError(f"ServiceFoundReq is never actually used: {self.service_name!r}")
 
 
 @dataclass(frozen=True, unsafe_hash=True)
@@ -52,6 +52,7 @@ class ServiceFoundTarget:
         self._completed = False
         self._provider_resource_tgt = None
         self._attr_name = None
+        self._import_alias_tgt = None
 
     @property
     def name(self):
@@ -67,15 +68,19 @@ class ServiceFoundTarget:
 
     @property
     def deps(self):
-        return []
+        if self._import_alias_tgt:
+            return {self._import_alias_tgt}
+        else:
+            return set()
 
     def update_status(self):
-        pass
+        if self._import_alias_tgt and self._import_alias_tgt.completed:
+            self._completed = True
 
     def set_provider(self, resource_tgt, attr_name):
         self._provider_resource_tgt = resource_tgt
         self._attr_name = attr_name
-        self._completed = True
+        self._import_alias_tgt = resource_tgt.import_alias_tgt
 
 
 class ServiceCompleteTarget:

@@ -114,6 +114,10 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
             self._completed = True
             self._construct_res_module()
 
+    @property
+    def import_alias_tgt(self):
+        return self._import_alias_tgt
+
     def add_import_requirements(self, req_to_target):
         self._req_to_target = req_to_target
 
@@ -157,4 +161,5 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
         if p.returncode == 0:
             rc_log.info("No diffs")
         else:
-            rc_log.info("Diff:\n%s", p.stdout.decode())
+            # rc_log.info("Diff:\n%s", p.stdout.decode())
+            rc_log.info("Diff: %d lines", len(p.stdout.decode().splitlines()))
