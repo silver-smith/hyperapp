@@ -3,7 +3,6 @@ from .services import (
     mosaic,
     pyobj_creg,
     )
-from .tested.code import data_to_res
 from .tested.services import data_to_res
 
 

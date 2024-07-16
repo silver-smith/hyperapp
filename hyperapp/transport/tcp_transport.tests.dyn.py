@@ -14,7 +14,6 @@ from .services import (
     subprocess_rpc_server_running,
     )
 from .code.tcp_tests_callback import tcp_callback
-from .tested.code import tcp_transport
 from .tested.services import tcp_server_factory
 
 log = logging.getLogger(__name__)

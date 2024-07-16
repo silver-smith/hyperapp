@@ -2,7 +2,6 @@ from .services import (
     mark,
     mosaic,
     )
-from .tested.code import fn_to_res
 from .tested.services import fn_to_ref
 
 

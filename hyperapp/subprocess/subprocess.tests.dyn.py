@@ -4,7 +4,6 @@ from .services import (
     partial_ref,
     )
 from .code.subprocess_tests_aux import process_main
-from .tested.code import subprocess
 from .tested.services import subprocess_running
 
 log = logging.getLogger(__name__)

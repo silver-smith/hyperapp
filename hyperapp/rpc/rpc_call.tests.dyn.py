@@ -5,7 +5,6 @@ from .services import (
     mark,
     mosaic,
     )
-from .tested.code import rpc_call
 from .tested.services import rpc_call_factory
 
 

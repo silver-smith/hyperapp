@@ -1,7 +1,6 @@
 from unittest.mock import Mock
 
 from . import htypes
-from .tested.code import visualizer
 from .tested.services import visualizer
 
 
