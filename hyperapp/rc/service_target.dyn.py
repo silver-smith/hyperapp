@@ -1,7 +1,11 @@
 from dataclasses import dataclass
 
 from . import htypes
+from .services import (
+    builtin_services,
+    )
 from .code.rc_requirement import Requirement
+from .code.import_resource import ImportResource
 
 
 # Unused. Is it really needed?`
@@ -42,7 +46,7 @@ class ServiceCompleteReq(Requirement):
         return target_factory.service_complete(self.service_name)
 
     def make_resource(self, target):
-        assert 0, f'{self.service_name} / {target.name}'
+        return ImportResource(['services', self.service_name], target.service_piece)
 
 
 class ServiceFoundTarget:
@@ -87,7 +91,8 @@ class ServiceCompleteTarget:
 
     def __init__(self, service_name):
         self._service_name = service_name
-        self._completed = False
+        self._is_builtin = service_name in builtin_services
+        self._completed = self._is_builtin
 
     @property
     def name(self):
@@ -107,3 +112,10 @@ class ServiceCompleteTarget:
 
     def update_status(self):
         pass
+
+    @property
+    def service_piece(self):
+        if self._is_builtin:
+            return htypes.builtin.builtin_service(self._service_name)
+        else:
+            assert 0, f'todo: {self._service_name}'
