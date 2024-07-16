@@ -9,5 +9,6 @@ class ServiceCtr:
         self._attr_name = attr_name
         self._name = name
 
-    def update_targets(self, target_factory):
-        assert 0, 'todo'
+    def update_targets(self, resource_target, target_factory):
+        service_found_tgt = target_factory.service_found(self._name)
+        service_found_tgt.set_provider(resource_target, self._attr_name)

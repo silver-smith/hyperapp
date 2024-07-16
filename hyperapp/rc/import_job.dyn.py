@@ -74,8 +74,6 @@ class SucceededImportResult(ImportResultBase):
         self._constructors = constructors
 
     def update_targets(self, my_target, target_set):
-        for ctr in self._constructors:
-            ctr.update_targets(target_set.factory)
         req_to_target = self._resolve_requirements(target_set.factory)
         my_target.set_alias_requirements(req_to_target)
         if self._is_tests:
@@ -105,6 +103,8 @@ class SucceededImportResult(ImportResultBase):
         resource_target = my_target.get_resource_target(target_set.factory)
         resource_target.add_import_requirements(req_to_target)
         target_set.update_deps_for(resource_target)
+        for ctr in self._constructors:
+            ctr.update_targets(resource_target, target_set.factory)
 
     @property
     def _is_tests(self):

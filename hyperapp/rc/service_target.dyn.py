@@ -22,7 +22,7 @@ class ServiceFoundReq(Requirement):
         return target_factory.service_found(self.service_name)
 
     def make_resource(self, target):
-        return None
+        assert 0, 'todo'
 
 
 @dataclass(frozen=True, unsafe_hash=True)
@@ -42,7 +42,7 @@ class ServiceCompleteReq(Requirement):
         return target_factory.service_complete(self.service_name)
 
     def make_resource(self, target):
-        return None
+        assert 0, f'{self.service_name} / {target.name}'
 
 
 class ServiceFoundTarget:
@@ -50,6 +50,8 @@ class ServiceFoundTarget:
     def __init__(self, service_name):
         self._service_name = service_name
         self._completed = False
+        self._provider_resource_tgt = None
+        self._attr_name = None
 
     @property
     def name(self):
@@ -69,6 +71,11 @@ class ServiceFoundTarget:
 
     def update_status(self):
         pass
+
+    def set_provider(self, resource_tgt, attr_name):
+        self._provider_resource_tgt = resource_tgt
+        self._attr_name = attr_name
+        self._completed = True
 
 
 class ServiceCompleteTarget:
