@@ -75,6 +75,10 @@ class ManualPythonModuleResourceTarget(PythonModuleResourceTarget):
     def update_status(self):
         pass
 
+    @property
+    def import_alias_tgt(self):
+        return None
+
 
 class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
 

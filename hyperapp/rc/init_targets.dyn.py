@@ -9,6 +9,12 @@ from .code.import_target import (
     )
 
 
+def add_common_mark_services(resource_tgt, target_factory):
+    service_found_tgt = target_factory.service_found('mark')
+    service_complete_tgt = target_factory.service_complete('mark')
+    service_found_tgt.set_provider(resource_tgt, attr_name='mark')
+
+
 def init_targets(root_dir, target_set, python_module_src_list, type_src_list):
     custom_resource_registry = create_custom_resource_registry(root_dir)
     all_imports_known_tgt = AllImportsKnownTarget()
@@ -22,4 +28,6 @@ def init_targets(root_dir, target_set, python_module_src_list, type_src_list):
         else:
             resource_tgt = ManualPythonModuleResourceTarget(src, custom_resource_registry)
             target_set.add(resource_tgt)
+            if src.name == 'common.mark':
+                add_common_mark_services(resource_tgt, target_set.factory)
     target_set.add(all_imports_known_tgt)

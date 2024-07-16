@@ -78,13 +78,18 @@ class ServiceFoundTarget:
             return set()
 
     def update_status(self):
-        if self._import_alias_tgt and self._import_alias_tgt.completed:
+        if self._completed:
+            return
+        if self._provider_resource_tgt and self._provider_resource_tgt.completed:
+            self._completed = True
+        elif self._import_alias_tgt and self._import_alias_tgt.completed:
             self._completed = True
 
     def set_provider(self, resource_tgt, attr_name):
         self._provider_resource_tgt = resource_tgt
         self._attr_name = attr_name
         self._import_alias_tgt = resource_tgt.import_alias_tgt
+        self.update_status()
 
 
 class ServiceCompleteTarget:
