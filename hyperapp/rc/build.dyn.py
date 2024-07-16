@@ -5,9 +5,11 @@ from typing import Any
 
 from . import htypes
 from .services import (
+    builtin_types,
     local_types,
     hyperapp_dir,
     mosaic,
+    pyobj_creg,
     type_module_loader,
     )
 
@@ -115,6 +117,9 @@ def _load_pyhon_modules(root_dir):
 
 def _load_types(root_dir):
     types = local_types.copy()
+    for name, t in builtin_types.items():
+        type_piece = pyobj_creg.actor_to_piece(t)
+        yield TypeSrc('builtin', name, type_piece)
     type_module_loader.load_type_modules([root_dir], types)
     for module_name, name_to_type in types.items():
         for name, type_piece in name_to_type.items():

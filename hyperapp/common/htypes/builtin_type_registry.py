@@ -26,6 +26,9 @@ class BuiltinTypeRegistry:
     def values(self):
         return self._name_to_type.values()
 
+    def items(self):
+        return self._name_to_type.items()
+
     def type_from_piece(self, piece):
         return self._name_to_type[piece.name]
 
