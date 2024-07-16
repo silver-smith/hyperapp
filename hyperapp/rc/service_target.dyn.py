@@ -91,6 +91,10 @@ class ServiceFoundTarget:
         self._import_alias_tgt = resource_tgt.import_alias_tgt
         self.update_status()
 
+    @property
+    def provider_resource_tgt(self):
+        return self._provider_resource_tgt
+
 
 class ServiceCompleteTarget:
 
@@ -101,6 +105,7 @@ class ServiceCompleteTarget:
     def __init__(self, service_name, service_found_tgt):
         self._service_name = service_name
         self._service_found_tgt = service_found_tgt
+        self._provider_resource_tgt = None
         self._is_builtin = service_name in builtin_services
         self._completed = self._is_builtin
 
@@ -120,11 +125,18 @@ class ServiceCompleteTarget:
     def deps(self):
         if self._is_builtin:
             return set()
+        if self._provider_resource_tgt:
+            return {self._service_found_tgt, self._provider_resource_tgt}
         else:
             return {self._service_found_tgt}
 
     def update_status(self):
-        pass
+        if self._completed or self._is_builtin:
+            return
+        if not self._provider_resource_tgt and self._service_found_tgt.completed:
+            self._provider_resource_tgt = self._service_found_tgt.provider_resource_tgt
+        if self._provider_resource_tgt:
+            self._completed = self._provider_resource_tgt.completed
 
     @property
     def service_piece(self):

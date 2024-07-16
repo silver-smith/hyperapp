@@ -13,6 +13,7 @@ def add_common_mark_services(resource_tgt, target_factory):
     service_found_tgt = target_factory.service_found('mark')
     service_complete_tgt = target_factory.service_complete('mark')
     service_found_tgt.set_provider(resource_tgt, attr_name='mark')
+    service_complete_tgt.update_status()
 
 
 def init_targets(root_dir, target_set, python_module_src_list, type_src_list):
