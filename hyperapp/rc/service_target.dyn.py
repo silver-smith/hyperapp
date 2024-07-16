@@ -89,14 +89,19 @@ class ServiceFoundTarget:
 
 class ServiceCompleteTarget:
 
-    def __init__(self, service_name):
+    @staticmethod
+    def target_name_for_service_name(service_name):
+        return f'service_complete/{service_name}'
+
+    def __init__(self, service_name, service_found_tgt):
         self._service_name = service_name
+        self._service_found_tgt = service_found_tgt
         self._is_builtin = service_name in builtin_services
         self._completed = self._is_builtin
 
     @property
     def name(self):
-        return f'service_complete/{self._service_name}'
+        return self.target_name_for_service_name(self._service_name)
 
     @property
     def ready(self):
@@ -108,7 +113,10 @@ class ServiceCompleteTarget:
 
     @property
     def deps(self):
-        return []
+        if self._is_builtin:
+            return set()
+        else:
+            return {self._service_found_tgt}
 
     def update_status(self):
         pass

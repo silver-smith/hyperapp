@@ -90,8 +90,15 @@ class TargetFactory:
         return self._target_set.add_or_get(target)
 
     def service_complete(self, service_name):
-        target = ServiceCompleteTarget(service_name)
-        return self._target_set.add_or_get(target)
+        target_name = ServiceCompleteTarget.target_name_for_service_name(service_name)
+        try:
+            return self._target_set[target_name]
+        except KeyError:
+            pass
+        service_found_tgt = self.service_found(service_name)
+        target = ServiceCompleteTarget(service_name, service_found_tgt)
+        self._target_set.add(target)
+        return target
 
     def python_module_resource_by_code_name(self, code_name):
         src = self._target_set._stem_to_python_module_src[code_name]
