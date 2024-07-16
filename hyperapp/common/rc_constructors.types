@@ -4,30 +4,30 @@ service = record:
   name: string
 
 
-model_ctr = record:
+model = record:
   attr_name: string
 
 
-ui_command_ctr = record:
+ui_command = record:
   attr_name: string
   t: ref
   name: string
   params: string list
 
-ui_model_command_ctr = record(ui_command_ctr)
+ui_model_command = record(ui_command)
 
-universal_ui_command_ctr = record:
+universal_ui_command = record:
   attr_name: string
   name: string
   params: string list
 
-universal_ui_model_command_ctr = record(universal_ui_command_ctr)
+universal_ui_model_command = record(universal_ui_command)
 
 
-list_feed_ctr = record:
+list_feed = record:
   t: ref
   element_t: ref
 
-index_tree_feed_ctr = record:
+index_tree_feed = record:
   t: ref
   element_t: ref

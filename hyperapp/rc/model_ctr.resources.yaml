@@ -1,0 +1,36 @@
+import:
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.rc_constructors:model
+- resource.rc_constructor_creg:rc_constructor_creg.service
+
+associations:
+
+- bases:
+  - resource.rc_constructor_creg:rc_constructor_creg.service
+  - legacy_type.rc_constructors:model
+  key:
+  - resource.rc_constructor_creg:rc_constructor_creg.service
+  - legacy_type.rc_constructors:model
+  value: ModelCtr.from_piece
+
+definitions:
+
+  model_ctr.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: model_ctr
+      file_name: model_ctr.dyn.py
+      import_list: {}
+
+  ModelCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: model_ctr.module
+      attr_name: ModelCtr
+
+  ModelCtr.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ModelCtr
+      attr_name: from_piece

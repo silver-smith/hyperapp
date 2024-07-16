@@ -1,0 +1,99 @@
+import:
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.rc_constructors:ui_command
+- legacy_type.rc_constructors:ui_model_command
+- legacy_type.rc_constructors:universal_ui_command
+- legacy_type.rc_constructors:universal_ui_model_command
+- resource.rc_constructor_creg:rc_constructor_creg.service
+
+associations:
+
+- bases:
+  - resource.rc_constructor_creg:rc_constructor_creg.service
+  - legacy_type.rc_constructors:ui_command
+  key:
+  - resource.rc_constructor_creg:rc_constructor_creg.service
+  - legacy_type.rc_constructors:ui_command
+  value: UiCommandCtr.from_piece
+
+- bases:
+  - resource.rc_constructor_creg:rc_constructor_creg.service
+  - legacy_type.rc_constructors:universal_ui_command
+  key:
+  - resource.rc_constructor_creg:rc_constructor_creg.service
+  - legacy_type.rc_constructors:universal_ui_command
+  value: UniversalUiCommandCtr.from_piece
+
+- bases:
+  - resource.rc_constructor_creg:rc_constructor_creg.service
+  - legacy_type.rc_constructors:ui_model_command
+  key:
+  - resource.rc_constructor_creg:rc_constructor_creg.service
+  - legacy_type.rc_constructors:ui_model_command
+  value: UiModelCommandCtr.from_piece
+
+- bases:
+  - resource.rc_constructor_creg:rc_constructor_creg.service
+  - legacy_type.rc_constructors:universal_ui_model_command
+  key:
+  - resource.rc_constructor_creg:rc_constructor_creg.service
+  - legacy_type.rc_constructors:universal_ui_model_command
+  value: UniversalUiModelCommandCtr.from_piece
+
+definitions:
+
+  ui_command_ctr.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: ui_command_ctr
+      file_name: ui_command_ctr.dyn.py
+      import_list: {}
+
+  UiCommandCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ui_command_ctr.module
+      attr_name: UiCommandCtr
+
+  UiCommandCtr.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: UiCommandCtr
+      attr_name: from_piece
+
+  UiModelCommandCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ui_command_ctr.module
+      attr_name: UiModelCommandCtr
+
+  UiModelCommandCtr.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: UiModelCommandCtr
+      attr_name: from_piece
+
+  UniversalUiCommandCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ui_command_ctr.module
+      attr_name: UniversalUiCommandCtr
+
+  UniversalUiCommandCtr.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: UniversalUiCommandCtr
+      attr_name: from_piece
+
+  UniversalUiModelCommandCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ui_command_ctr.module
+      attr_name: UniversalUiModelCommandCtr
+
+  UniversalUiModelCommandCtr.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: UniversalUiModelCommandCtr
+      attr_name: from_piece

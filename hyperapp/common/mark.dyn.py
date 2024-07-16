@@ -26,7 +26,7 @@ class ServiceMarker:
 
 
 def model(fn):
-    ctr = htypes.rc_constructors.model_ctr(
+    ctr = htypes.rc_constructors.model(
         attr_name=fn.__name__,
         )
     add_fn_module_constructor(fn, mosaic.put(ctr))
@@ -55,13 +55,13 @@ class UiCommandBase:
 
 
 class UiCommand(UiCommandBase):
-    universal_command_ctr = htypes.rc_constructors.universal_ui_command_ctr    
-    command_ctr = htypes.rc_constructors.ui_command_ctr
+    universal_command_ctr = htypes.rc_constructors.universal_ui_command    
+    command_ctr = htypes.rc_constructors.ui_command
 
 
 class UiModelCommand(UiCommandBase):
-    universal_command_ctr = htypes.rc_constructors.universal_ui_model_command_ctr    
-    command_ctr = htypes.rc_constructors.ui_model_command_ctr
+    universal_command_ctr = htypes.rc_constructors.universal_ui_model_command    
+    command_ctr = htypes.rc_constructors.ui_model_command
 
 
 def mark():
