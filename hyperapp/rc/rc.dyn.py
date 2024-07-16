@@ -13,7 +13,7 @@ from .code.process_pool import process_pool_running
 from .code.rc_constants import JobStatus
 from .code.build import load_build
 from .code.target_set import TargetSet
-from .code.import_target import create_import_targets
+from .code.init_targets import init_targets
 
 log = logging.getLogger(__name__)
 rc_log = logging.getLogger('rc')
@@ -94,7 +94,7 @@ def _main(pool, fail_fast, timeout):
     build.report()
 
     target_set = TargetSet(build.python_modules)
-    create_import_targets(hyperapp_dir, target_set, build.python_modules, build.types)
+    init_targets(hyperapp_dir, target_set, build.python_modules, build.types)
     try:
         _run(pool, target_set, fail_fast, timeout)
     except HException as x:
