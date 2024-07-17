@@ -59,7 +59,10 @@ class TargetSet:
             changed_targets = set()
             for target in self._dep_to_target[completed_target]:
                 prev_deps = set(target.deps)
-                target.update_status()
+                try:
+                    target.update_status()
+                except Exception as x:
+                    raise RuntimeError(f"For {target.name}: {x}") from x
                 new_deps = set(target.deps)
                 if new_deps != prev_deps:
                     changed_targets.add(target)
