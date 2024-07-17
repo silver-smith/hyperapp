@@ -31,7 +31,7 @@ class TestedServiceReq(Requirement):
         return True
 
     def make_resource(self, target):
-        assert 0, f'{self.service_name} / {target.name}'
+        assert 0, f'todo: tested-service-req make_resource: {self.service_name} : {target.name}'
 
 
 @dataclass(frozen=True, unsafe_hash=True)

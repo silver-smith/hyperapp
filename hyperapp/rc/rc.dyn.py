@@ -93,7 +93,7 @@ def _main(pool, fail_fast, timeout):
     log.info("Loaded build:")
     build.report()
 
-    target_set = TargetSet(build.python_modules)
+    target_set = TargetSet(hyperapp_dir, build.python_modules)
     init_targets(hyperapp_dir, target_set, build.python_modules, build.types)
     try:
         _run(pool, target_set, fail_fast, timeout)

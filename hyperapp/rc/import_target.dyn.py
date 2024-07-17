@@ -81,9 +81,9 @@ class ImportTargetAlias:
         self._got_requirements = True
         self.update_status()
 
-    def create_resource_target(self, all_imports_known_tgt):
+    def create_resource_target(self, resource_dir, all_imports_known_tgt):
         return CompiledPythonModuleResourceTarget(
-            self._python_module_src, self._custom_resource_registry, self._type_src_list, all_imports_known_tgt, self)
+            self._python_module_src, self._custom_resource_registry, resource_dir, self._type_src_list, all_imports_known_tgt, self)
 
     def recorded_python_module(self):
         assert self._completed

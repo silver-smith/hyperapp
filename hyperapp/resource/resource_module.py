@@ -27,6 +27,8 @@ class ResourceModule:
             name,
             path=None,
             load_from_file=True,
+            text=None,
+            resource_dir=None,
             imports=None,
             definitions=None,
             associations=None,
@@ -37,7 +39,8 @@ class ResourceModule:
         self._pyobj_creg = pyobj_creg
         self._name = name
         self._path = path
-        self._resource_dir = path.parent if path else None
+        self._text = text
+        self._resource_dir = resource_dir or (path.parent if path else None)
         self._loaded_imports = imports
         self._loaded_definitions = definitions
         self._loaded_associations = associations
@@ -319,9 +322,12 @@ class ResourceModule:
         self._loaded_imports = set()
         self._loaded_definitions = {}
         self._loaded_associations = []
-        if self._path is None or not self._load_from_file:
+        if self._text:
+            log.info("Loading resource module %s (%d bytes)", self._name, len(self._text))
+        elif self._path and self._load_from_file:
+            log.info("Loading resource module %s: %s", self._name, self._path)
+        else:
             return
-        log.info("Loading resource module %s: %s", self._name, self._path)
         module_contents = self._module_contents
         self._loaded_imports = set(module_contents.get('import', []))
         for name in self._loaded_imports:
@@ -337,7 +343,11 @@ class ResourceModule:
 
     @cached_property
     def _module_contents(self):
-        return yaml.safe_load(self._path.read_text())
+        if self._text:
+            text = self._text
+        else:
+            text = self._path.read_text()
+        return yaml.safe_load(text)
 
     def _read_definition(self, name, data):
         log.debug("%s: Load definition %r: %s", self._name, name, data)

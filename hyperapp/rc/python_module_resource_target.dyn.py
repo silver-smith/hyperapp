@@ -57,6 +57,11 @@ class PythonModuleResourceTarget:
 
 class ManualPythonModuleResourceTarget(PythonModuleResourceTarget):
 
+    def __init__(self, python_module_src, custom_resource_registry, resource_dir, resource_text):
+        super().__init__(python_module_src, custom_resource_registry)
+        self._resource_module = resource_module_factory(
+            self._custom_resource_registry, self._src.name, resource_dir=resource_dir, text=resource_text)
+
     def __repr__(self):
         return f"<ManualPythonModuleResourceTarget {self.name}>"
 
@@ -79,16 +84,22 @@ class ManualPythonModuleResourceTarget(PythonModuleResourceTarget):
     def import_alias_tgt(self):
         return None
 
+    @cached_property
+    def python_module_piece(self):
+        name = f'{self._src.stem}.module'
+        return self._resource_module[name]
+
 
 class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
 
-    def __init__(self, python_module_src, custom_resource_registry, type_src_list, all_imports_known_tgt, import_alias_tgt):
+    def __init__(self, python_module_src, custom_resource_registry, resource_dir, type_src_list, all_imports_known_tgt, import_alias_tgt):
         super().__init__(python_module_src, custom_resource_registry)
         self._type_src_list = type_src_list
         self._name_to_src = {
             (rec.module_name, rec.name): rec
             for rec in type_src_list
             }
+        self._resource_dir = resource_dir
         self._all_imports_known_tgt = all_imports_known_tgt
         self._import_alias_tgt = import_alias_tgt
         self._completed = False
@@ -153,7 +164,8 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
     def _construct_res_module(self):
         rc_log.info("Construct: %s", self.name)
         python_module = self.python_module_piece
-        resource_module = resource_module_factory(self._custom_resource_registry, self._src.name)
+        resource_module = resource_module_factory(
+            self._custom_resource_registry, self._src.name, resource_dir=self._resource_dir)
         resource_module[f'{self._src.stem}.module'] = python_module
         text = resource_module.as_text
         res_path = hyperapp_dir / self._src.resource_path

@@ -55,7 +55,7 @@ class ServiceFoundTarget:
         self._service_name = service_name
         self._completed = False
         self._provider_resource_tgt = None
-        self._attr_name = None
+        self._ctr = None
         self._import_alias_tgt = None
 
     @property
@@ -85,15 +85,19 @@ class ServiceFoundTarget:
         elif self._import_alias_tgt and self._import_alias_tgt.completed:
             self._completed = True
 
-    def set_provider(self, resource_tgt, attr_name):
+    def set_provider(self, resource_tgt, ctr):
         self._provider_resource_tgt = resource_tgt
-        self._attr_name = attr_name
+        self._ctr = ctr
         self._import_alias_tgt = resource_tgt.import_alias_tgt
         self.update_status()
 
     @property
     def provider_resource_tgt(self):
         return self._provider_resource_tgt
+
+    @property
+    def constructor(self):
+        return self._ctr
 
 
 class ServiceCompleteTarget:
@@ -143,4 +147,6 @@ class ServiceCompleteTarget:
         if self._is_builtin:
             return htypes.builtin.builtin_service(self._service_name)
         else:
-            assert 0, f'todo: {self._service_name}'
+            ctr = self._service_found_tgt.constructor
+            python_module = self._provider_resource_tgt.python_module_piece
+            assert 0, f'todo: service-complete-target service_piece: {self._service_name}'

@@ -8,7 +8,8 @@ from .code.service_target import ServiceFoundTarget, ServiceCompleteTarget
 
 class TargetSet:
 
-    def __init__(self, python_module_src_list):
+    def __init__(self, resource_dir, python_module_src_list):
+        self._resource_dir = resource_dir
         self._stem_to_python_module_src = {
             src.stem: src
             for src in python_module_src_list
@@ -116,7 +117,7 @@ class TargetFactory:
             pass
         import_target = self.python_module_imported_by_src(src)
         all_imports_known_tgt = self.all_imports_known()
-        target = import_target.create_resource_target(all_imports_known_tgt)
+        target = import_target.create_resource_target(self._target_set._resource_dir, all_imports_known_tgt)
         return self._target_set.add_or_get(target)
 
     def all_imports_known(self):
