@@ -18,7 +18,7 @@ class RequirementFactory:
 
     def import_to_tested_service(self, import_path):
         service_name = import_path[2]
-        return TestedServiceReq(service_name)
+        return TestedServiceReq(import_path, service_name)
 
     def import_to_tested_code(self, import_path):
         code_name = import_path[2]

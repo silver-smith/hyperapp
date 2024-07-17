@@ -92,6 +92,10 @@ class ServiceFoundTarget:
         self.update_status()
 
     @property
+    def import_alias_tgt(self):
+        return self._import_alias_tgt
+
+    @property
     def provider_resource_tgt(self):
         return self._provider_resource_tgt
 

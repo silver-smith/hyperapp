@@ -8,6 +8,7 @@ import:
 - legacy_type.test_target:tested_code_req
 - legacy_type.test_target:tested_code_resource
 - legacy_type.test_target:tested_service_req
+- legacy_type.test_target:tested_service_resource
 - rc.rc_requirement:rc_requirement.module
 - rc.rc_requirement_creg:rc_requirement_creg.service
 - rc.rc_resource:rc_resource.module
@@ -33,6 +34,14 @@ associations:
 
 - bases:
   - rc.rc_resource_creg:rc_resource_creg.service
+  - legacy_type.test_target:tested_service_resource
+  key:
+  - rc.rc_resource_creg:rc_resource_creg.service
+  - legacy_type.test_target:tested_service_resource
+  value: TestedServiceResource.from_piece
+
+- bases:
+  - rc.rc_resource_creg:rc_resource_creg.service
   - legacy_type.test_target:tested_code_resource
   key:
   - rc.rc_resource_creg:rc_resource_creg.service
@@ -51,6 +60,7 @@ definitions:
         htypes.test_target.tested_code_req: legacy_type.test_target:tested_code_req
         htypes.test_target.tested_service_req: legacy_type.test_target:tested_service_req
         htypes.test_target.tested_code_resource: legacy_type.test_target:tested_code_resource
+        htypes.test_target.tested_service_resource: legacy_type.test_target:tested_service_resource
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
@@ -79,6 +89,18 @@ definitions:
     type: legacy_type.builtin:attribute
     value:
       object: TestedCodeReq
+      attr_name: from_piece
+
+  TestedServiceResource:
+    type: legacy_type.builtin:attribute
+    value:
+      object: test_requirement.module
+      attr_name: TestedServiceResource
+
+  TestedServiceResource.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: TestedServiceResource
       attr_name: from_piece
 
   TestedCodeResource:

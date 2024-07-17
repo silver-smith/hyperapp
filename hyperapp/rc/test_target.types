@@ -1,9 +1,16 @@
 tested_service_req = record:
+  import_path: string list
   service_name: string
 
 tested_code_req = record:
   import_path: string list
   code_name: string
+
+tested_service_resource = record:
+  import_name: string list
+  service: ref
+  recorder_module_name: string
+  recorder: ref
 
 tested_code_resource = record:
   import_name: string list
