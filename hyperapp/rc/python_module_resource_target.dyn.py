@@ -60,6 +60,7 @@ class ManualPythonModuleResourceTarget(PythonModuleResourceTarget):
         super().__init__(python_module_src)
         self._resource_module = resource_module_factory(
             custom_resource_registry, self._src.name, resource_dir=resource_dir, text=resource_text)
+        custom_resource_registry.set_module(self._src.name, self._resource_module)
 
     def __repr__(self):
         return f"<ManualPythonModuleResourceTarget {self.name}>"
@@ -105,6 +106,7 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
         self._import_alias_tgt = import_alias_tgt
         self._resource_module = resource_module_factory(
             custom_resource_registry, self._src.name, resource_dir=resource_dir)
+        custom_resource_registry.set_module(self._src.name, self._resource_module)
         self._completed = False
         self._req_to_target = {}
         self._type_resources = []
