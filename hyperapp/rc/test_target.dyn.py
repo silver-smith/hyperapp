@@ -2,6 +2,11 @@ from .code.import_resource import ImportResource
 from .code.test_job import TestJob
 
 
+def req_key(req_item):
+    req = req_item[0]
+    return (req.__class__.__name__, *req.__dict__.values())
+
+
 class TestTargetAlias:
 
     def __init__(self, python_module_src, function):
@@ -81,7 +86,7 @@ class TestTarget:
     def _enum_resources(self):
         for src in self._type_src_list:
             yield ImportResource.from_type_src(src)
-        for req, target in self._req_to_target.items():
+        for req, target in sorted(self._req_to_target.items(), key=req_key):
             yield req.make_resource(target)
 
     def handle_job_result(self, target_set, result):
