@@ -46,9 +46,8 @@ class PythonModuleResourceTarget:
     def target_name_for_module_name(module_name):
         return f'resource/{module_name}'
 
-    def __init__(self, python_module_src, custom_resource_registry):
+    def __init__(self, python_module_src):
         self._src = python_module_src
-        self._custom_resource_registry = custom_resource_registry
 
     @property
     def name(self):
@@ -58,9 +57,9 @@ class PythonModuleResourceTarget:
 class ManualPythonModuleResourceTarget(PythonModuleResourceTarget):
 
     def __init__(self, python_module_src, custom_resource_registry, resource_dir, resource_text):
-        super().__init__(python_module_src, custom_resource_registry)
+        super().__init__(python_module_src)
         self._resource_module = resource_module_factory(
-            self._custom_resource_registry, self._src.name, resource_dir=resource_dir, text=resource_text)
+            custom_resource_registry, self._src.name, resource_dir=resource_dir, text=resource_text)
 
     def __repr__(self):
         return f"<ManualPythonModuleResourceTarget {self.name}>"
@@ -89,19 +88,23 @@ class ManualPythonModuleResourceTarget(PythonModuleResourceTarget):
         name = f'{self._src.stem}.module'
         return self._resource_module[name]
 
+    def add_component(self, ctr):
+        return ctr.get_component(self._resource_module)
+
 
 class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
 
     def __init__(self, python_module_src, custom_resource_registry, resource_dir, type_src_list, all_imports_known_tgt, import_alias_tgt):
-        super().__init__(python_module_src, custom_resource_registry)
+        super().__init__(python_module_src)
         self._type_src_list = type_src_list
         self._name_to_src = {
             (rec.module_name, rec.name): rec
             for rec in type_src_list
             }
-        self._resource_dir = resource_dir
         self._all_imports_known_tgt = all_imports_known_tgt
         self._import_alias_tgt = import_alias_tgt
+        self._resource_module = resource_module_factory(
+            custom_resource_registry, self._src.name, resource_dir=resource_dir)
         self._completed = False
         self._req_to_target = {}
         self._type_resources = []
@@ -156,6 +159,9 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
         import_list = sorted(flatten(d.import_records for d in resources))
         return self._src.python_module(import_list)
 
+    def add_component(self, ctr):
+        return ctr.make_component(self.python_module_piece, self._resource_module)
+
     def _enum_resources(self):
         yield from self._type_resources
         for req, target in self._req_to_target.items():
@@ -164,10 +170,8 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
     def _construct_res_module(self):
         rc_log.info("Construct: %s", self.name)
         python_module = self.python_module_piece
-        resource_module = resource_module_factory(
-            self._custom_resource_registry, self._src.name, resource_dir=self._resource_dir)
-        resource_module[f'{self._src.stem}.module'] = python_module
-        text = resource_module.as_text
+        self._resource_module[f'{self._src.stem}.module'] = python_module
+        text = self._resource_module.as_text
         res_path = hyperapp_dir / self._src.resource_path
         p = subprocess.run(
             ['diff', '-u', str(res_path), '-'],

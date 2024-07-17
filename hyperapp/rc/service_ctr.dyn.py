@@ -18,14 +18,18 @@ class ServiceCtr:
         service_found_tgt = target_factory.service_found(self._name)
         service_found_tgt.set_provider(resource_target, self)
 
-    def make_component(self, python_module):
+    def make_component(self, python_module, name_to_res=None):
         attribute = htypes.builtin.attribute(
             object=mosaic.put(python_module),
             attr_name=self._attr_name,
             )
-        # name_to_res[attr.name] = attribute
         service = htypes.builtin.call(
             function=mosaic.put(attribute),
             )
-        # name_to_res[f'{piece.name}.service'] = service
+        if name_to_res is not None:
+            name_to_res[self._attr_name] = attribute
+            name_to_res[f'{self._name}.service'] = service
         return service
+
+    def get_component(self, name_to_res):
+        return name_to_res[f'{self._name}.service']

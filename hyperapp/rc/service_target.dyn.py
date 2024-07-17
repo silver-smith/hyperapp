@@ -152,5 +152,4 @@ class ServiceCompleteTarget:
             return htypes.builtin.builtin_service(self._service_name)
         else:
             ctr = self._service_found_tgt.constructor
-            python_module = self._provider_resource_tgt.python_module_piece
-            return ctr.make_component(python_module)
+            return self._provider_resource_tgt.add_component(ctr)
