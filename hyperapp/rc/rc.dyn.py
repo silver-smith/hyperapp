@@ -42,7 +42,10 @@ def _run(pool, target_set, fail_fast, timeout):
         for target in target_set.iter_ready():
             if target in target_to_job:
                 continue
-            job = target.make_job()
+            try:
+                job = target.make_job()
+            except Exception as x:
+                raise RuntimeError(f"For {target.name}: {x}") from x
             rc_log.debug("Submit %s", target.name)
             pool.submit(job)
             target_to_job[target] = job
