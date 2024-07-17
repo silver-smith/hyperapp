@@ -1,5 +1,7 @@
 import:
+- builtins:mosaic.service
 - legacy_type.builtin:attribute
+- legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.rc_constructors:service
 - resource.rc_constructor_creg:rc_constructor_creg.service
@@ -21,7 +23,10 @@ definitions:
     value:
       module_name: service_ctr
       file_name: service_ctr.dyn.py
-      import_list: {}
+      import_list:
+        htypes.builtin.attribute: legacy_type.builtin:attribute
+        htypes.builtin.call: legacy_type.builtin:call
+        services.mosaic: builtins:mosaic.service
 
   ServiceCtr:
     type: legacy_type.builtin:attribute

@@ -149,4 +149,4 @@ class ServiceCompleteTarget:
         else:
             ctr = self._service_found_tgt.constructor
             python_module = self._provider_resource_tgt.python_module_piece
-            assert 0, f'todo: service-complete-target service_piece: {self._service_name}'
+            return ctr.make_component(python_module)

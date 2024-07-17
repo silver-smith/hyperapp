@@ -1,3 +1,8 @@
+from . import htypes
+from .services import (
+    mosaic,
+    )
+
 
 class ServiceCtr:
 
@@ -11,4 +16,16 @@ class ServiceCtr:
 
     def update_targets(self, resource_target, target_factory):
         service_found_tgt = target_factory.service_found(self._name)
-        service_found_tgt.set_provider(resource_target, self._attr_name)
+        service_found_tgt.set_provider(resource_target, self)
+
+    def make_component(self, python_module):
+        attribute = htypes.builtin.attribute(
+            object=mosaic.put(python_module),
+            attr_name=self._attr_name,
+            )
+        # name_to_res[attr.name] = attribute
+        service = htypes.builtin.call(
+            function=mosaic.put(attribute),
+            )
+        # name_to_res[f'{piece.name}.service'] = service
+        return service
