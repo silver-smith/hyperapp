@@ -45,7 +45,7 @@ class ImportTargetAlias:
         return f'import/{python_module_src.name}'
 
     def __init__(self, python_module_src, custom_resource_registry, type_src_list):
-        self._python_module_src = python_module_src
+        self._src = python_module_src
         self._type_src_list = type_src_list
         self._custom_resource_registry = custom_resource_registry
         self._completed = False
@@ -58,7 +58,7 @@ class ImportTargetAlias:
 
     @property
     def name(self):
-        return self.name_for_src(self._python_module_src)
+        return self.name_for_src(self._src)
 
     @property
     def ready(self):
@@ -83,7 +83,7 @@ class ImportTargetAlias:
 
     def create_resource_target(self, resource_dir, all_imports_known_tgt):
         return CompiledPythonModuleResourceTarget(
-            self._python_module_src, self._custom_resource_registry, resource_dir, self._type_src_list, all_imports_known_tgt, self)
+            self._src, self._custom_resource_registry, resource_dir, self._type_src_list, all_imports_known_tgt, self)
 
     def recorded_python_module(self):
         assert self._completed
@@ -93,8 +93,8 @@ class ImportTargetAlias:
             ]
         all_resources = [*enum_builtin_resources(), *type_resources, *self._enum_resources()]
         import_list = flatten(d.import_records for d in all_resources)
-        recorder_piece, module_piece = self._python_module_src.recorded_python_module(import_list)
-        return (self._python_module_src.name, recorder_piece, module_piece)
+        recorder_piece, module_piece = self._src.recorded_python_module(import_list)
+        return (self._src.name, recorder_piece, module_piece)
 
     def _enum_resources(self):
         for req, target in self._req_to_target.items():
@@ -107,7 +107,7 @@ class ImportTargetAlias:
 class ImportTarget:
 
     def __init__(self, python_module_src, type_src_list, alias, idx=1, req_to_target=None):
-        self._python_module_src = python_module_src
+        self._src = python_module_src
         self._type_src_list = type_src_list
         self._alias = alias
         self._idx = idx
@@ -120,7 +120,7 @@ class ImportTarget:
 
     @property
     def name(self):
-        return f'import/{self._python_module_src.name}/{self._idx}'
+        return f'import/{self._src.name}/{self._idx}'
 
     @property
     def ready(self):
@@ -139,7 +139,7 @@ class ImportTarget:
 
     def make_job(self):
         resources = list(filter(None, self._enum_resources()))  # TODO: Remove filter when all make_resource methods are implemented.
-        return ImportJob(self._python_module_src, self._idx, resources)
+        return ImportJob(self._src, self._idx, resources)
 
     def _enum_resources(self):
         for src in self._type_src_list:
@@ -155,12 +155,12 @@ class ImportTarget:
         self._alias.set_requirements(req_to_target)
 
     def create_next_target(self, req_to_target):
-        return ImportTarget(self._python_module_src, self._type_src_list, self._alias, self._idx + 1, req_to_target)
+        return ImportTarget(self._src, self._type_src_list, self._alias, self._idx + 1, req_to_target)
 
     def get_resource_target(self, target_factory):
-        return target_factory.python_module_resource_by_src(self._python_module_src)
+        return target_factory.python_module_resource_by_src(self._src)
 
     def create_test_target(self, function, req_to_target):
-        alias = TestTargetAlias(self._python_module_src, function)
-        target = TestTarget(self._python_module_src, self._type_src_list, function, req_to_target, alias)
+        alias = TestTargetAlias(self._src, function)
+        target = TestTarget(self._src, self._type_src_list, function, req_to_target, alias)
         return (alias, target)

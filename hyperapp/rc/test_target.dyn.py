@@ -10,7 +10,7 @@ def req_key(req_item):
 class TestTargetAlias:
 
     def __init__(self, python_module_src, function):
-        self._python_module_src = python_module_src
+        self._src = python_module_src
         self._function = function
         self._completed = False
 
@@ -19,7 +19,7 @@ class TestTargetAlias:
 
     @property
     def name(self):
-        return f'test/{self._python_module_src.name}/{self._function.name}'
+        return f'test/{self._src.name}/{self._function.name}'
 
     @property
     def ready(self):
@@ -43,7 +43,7 @@ class TestTargetAlias:
 class TestTarget:
 
     def __init__(self, python_module_src, type_src_list, function, req_to_target, alias, idx=1):
-        self._python_module_src = python_module_src
+        self._src = python_module_src
         self._type_src_list = type_src_list
         self._function = function
         self._req_to_target = req_to_target or {}
@@ -59,7 +59,7 @@ class TestTarget:
 
     @property
     def name(self):
-        return f'test/{self._python_module_src.name}/{self._function.name}/{self._idx}'
+        return f'test/{self._src.name}/{self._function.name}/{self._idx}'
 
     @property
     def ready(self):
@@ -81,7 +81,7 @@ class TestTarget:
 
     def make_job(self):
         resources = list(filter(None, self._enum_resources()))  # TODO: Remove filter when all make_resource methods are implemented.
-        return TestJob(self._python_module_src, self._idx, resources, self._function.name)
+        return TestJob(self._src, self._idx, resources, self._function.name)
 
     def _enum_resources(self):
         for src in self._type_src_list:
@@ -102,4 +102,4 @@ class TestTarget:
         self._alias.set_completed(req_to_target)
 
     def create_next_target(self, req_to_target):
-        return TestTarget(self._python_module_src, self._type_src_list, self._function, req_to_target, self._alias, self._idx + 1)
+        return TestTarget(self._src, self._type_src_list, self._function, req_to_target, self._alias, self._idx + 1)

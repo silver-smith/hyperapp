@@ -154,17 +154,17 @@ class ImportJob:
             )
 
     def __init__(self, python_module_src, idx, resources):
-        self._python_module_src = python_module_src
+        self._src = python_module_src
         self._idx = idx
         self._resources = resources
 
     def __repr__(self):
-        return f"<ImportJob {self._python_module_src}/{self._idx}>"
+        return f"<ImportJob {self._src}/{self._idx}>"
 
     @property
     def piece(self):
         return htypes.import_job.job(
-            python_module=self._python_module_src.piece,
+            python_module=self._src.piece,
             idx=self._idx,
             resources=tuple(mosaic.put(d.piece) for d in self._resources),
             )
@@ -172,7 +172,7 @@ class ImportJob:
     def run(self):
         all_resources = [*enum_builtin_resources(), *self._resources]
         import_list = flatten(d.import_records for d in all_resources)
-        recorder_piece, module_piece = self._python_module_src.recorded_python_module(import_list)
+        recorder_piece, module_piece = self._src.recorded_python_module(import_list)
         recorder = pyobj_creg.animate(recorder_piece)
         try:
             module = pyobj_creg.animate(module_piece)
