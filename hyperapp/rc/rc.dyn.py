@@ -30,7 +30,7 @@ def _update_completed(target_set, prev_completed):
         prev_completed = completed
 
 
-def _run(pool, target_set, fail_fast, timeout):
+def _run(pool, target_set, options):
     rc_log.info("%d targets", target_set.count)
     target_to_job = {}  # Jobs are never removed.
     job_id_to_target = {}
@@ -51,14 +51,14 @@ def _run(pool, target_set, fail_fast, timeout):
             target_to_job[target] = job
             job_id_to_target[id(job)] = target
         prev_completed = set(target_set.iter_completed())
-        for job, result_piece in pool.iter_completed(timeout):
+        for job, result_piece in pool.iter_completed(options.timeout):
             result = rc_job_result_creg.animate(result_piece)
             target = job_id_to_target[id(job)]
             rc_log.info("%s: %s", target.name, result.status.name)
             job_count += 1
             if result.status == JobStatus.failed:
                 failures[target] = result
-                if fail_fast:
+                if options.fail_fast:
                     should_run = False
                     break
             else:
@@ -91,7 +91,7 @@ def _run(pool, target_set, fail_fast, timeout):
     rc_log.info("Completed: %d; succeeded: %d; failed: %d; incomplete: %d", job_count, (job_count - len(failures)), len(failures), len(incomplete))
 
 
-def _main(pool, fail_fast, timeout):
+def _main(pool, options):
     build = load_build(hyperapp_dir)
     log.info("Loaded build:")
     build.report()
@@ -99,7 +99,7 @@ def _main(pool, fail_fast, timeout):
     target_set = TargetSet(hyperapp_dir, build.python_modules)
     init_targets(hyperapp_dir, target_set, build.python_modules, build.types)
     try:
-        _run(pool, target_set, fail_fast, timeout)
+        _run(pool, target_set, options)
     except HException as x:
         if isinstance(x, htypes.rpc.server_error):
             log.error("Server error: %s", x.message)
@@ -108,10 +108,10 @@ def _main(pool, fail_fast, timeout):
                     log.error("%s", line)
 
 
-def compile_resources(generator_ref, subdir_list, root_dirs, module_list, process_count, verbose, fail_fast, timeout):
+def compile_resources(generator_ref, subdir_list, root_dirs, module_list, process_count, options):
     log.info("Compile resources at: %s, %s: %s", subdir_list, root_dirs, module_list)
 
-    if verbose:
+    if options.verbose:
         rc_log.setLevel(logging.DEBUG)
 
     register_reconstructors()
@@ -121,5 +121,5 @@ def compile_resources(generator_ref, subdir_list, root_dirs, module_list, proces
     else:
         dir_list = [hyperapp_dir]
 
-    with process_pool_running(process_count, timeout) as pool:
-        _main(pool, fail_fast, timeout)
+    with process_pool_running(process_count, options.timeout) as pool:
+        _main(pool, options)
