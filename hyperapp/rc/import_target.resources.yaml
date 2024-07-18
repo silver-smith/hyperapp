@@ -5,6 +5,7 @@ import:
 - rc.import_job:import_job.module
 - rc.python_module_resource_target:python_module_resource_target.module
 - rc.rc_constants:rc_constants.module
+- rc.rc_target:rc_target.module
 - rc.test_target:test_target.module
 
 definitions:
@@ -20,4 +21,5 @@ definitions:
         code.import_job: rc.import_job:import_job.module
         code.python_module_resource_target: rc.python_module_resource_target:python_module_resource_target.module
         code.rc_constants: rc.rc_constants:rc_constants.module
+        code.rc_target: rc.rc_target:rc_target.module
         code.test_target: rc.test_target:test_target.module

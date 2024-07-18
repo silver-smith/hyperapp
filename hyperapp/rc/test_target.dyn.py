@@ -1,3 +1,4 @@
+from .code.rc_target import Target
 from .code.import_resource import ImportResource
 from .code.test_job import TestJob
 
@@ -7,40 +8,26 @@ def req_key(req_item):
     return (req.__class__.__name__, *req.__dict__.values())
 
 
-class TestTargetAlias:
+class TestTargetAlias(Target):
 
     def __init__(self, python_module_src, function):
         self._src = python_module_src
         self._function = function
         self._completed = False
 
-    def __repr__(self):
-        return f"<TestAliasTarget {self.name}>"
-
     @property
     def name(self):
         return f'test/{self._src.name}/{self._function.name}'
 
     @property
-    def ready(self):
-        return False
-
-    @property
     def completed(self):
         return self._completed
-
-    @property
-    def deps(self):
-        return []
-
-    def update_status(self):
-        pass
 
     def set_completed(self, req_to_target):
         self._completed = True
 
 
-class TestTarget:
+class TestTarget(Target):
 
     def __init__(self, python_module_src, type_src_list, function, req_to_target, alias, idx=1):
         self._src = python_module_src
@@ -53,9 +40,6 @@ class TestTarget:
         self._alias = alias
         self._completed = False
         self._ready = False
-
-    def __repr__(self):
-        return f"<TestTarget {self.name}>"
 
     @property
     def name(self):

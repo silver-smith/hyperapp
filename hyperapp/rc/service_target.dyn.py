@@ -4,6 +4,7 @@ from . import htypes
 from .services import (
     builtin_services,
     )
+from .code.rc_target import Target
 from .code.rc_requirement import Requirement
 from .code.import_resource import ImportResource
 
@@ -49,7 +50,7 @@ class ServiceCompleteReq(Requirement):
         return ImportResource(['services', self.service_name], target.service_piece)
 
 
-class ServiceFoundTarget:
+class ServiceFoundTarget(Target):
 
     def __init__(self, service_name):
         self._service_name = service_name
@@ -61,10 +62,6 @@ class ServiceFoundTarget:
     @property
     def name(self):
         return f'service_found/{self._service_name}'
-
-    @property
-    def ready(self):
-        return False
 
     @property
     def completed(self):
@@ -104,7 +101,7 @@ class ServiceFoundTarget:
         return self._ctr
 
 
-class ServiceCompleteTarget:
+class ServiceCompleteTarget(Target):
 
     @staticmethod
     def target_name_for_service_name(service_name):
@@ -120,10 +117,6 @@ class ServiceCompleteTarget:
     @property
     def name(self):
         return self.target_name_for_service_name(self._service_name)
-
-    @property
-    def ready(self):
-        return False
 
     @property
     def completed(self):

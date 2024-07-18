@@ -8,6 +8,7 @@ import:
 - rc.import_resource:import_resource.module
 - rc.rc_requirement:rc_requirement.module
 - rc.rc_requirement_creg:rc_requirement_creg.service
+- rc.rc_target:rc_target.module
 
 associations:
 
@@ -41,6 +42,7 @@ definitions:
         services.builtin_services: builtins:builtin_services.service
         code.import_resource: rc.import_resource:import_resource.module
         code.rc_requirement: rc.rc_requirement:rc_requirement.module
+        code.rc_target: rc.rc_target:rc_target.module
 
   ServiceFoundReq:
     type: legacy_type.builtin:attribute

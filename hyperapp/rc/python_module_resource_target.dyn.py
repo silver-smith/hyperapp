@@ -10,6 +10,7 @@ from .services import (
     hyperapp_dir,
     resource_module_factory,
     )
+from .code.rc_target import Target
 from .code.rc_requirement import Requirement
 from .code.import_resource import ImportResource
 
@@ -36,7 +37,7 @@ class PythonModuleReq(Requirement):
         return ImportResource(['code', self.code_name], target.python_module_piece)
 
 
-class PythonModuleResourceTarget:
+class PythonModuleResourceTarget(Target):
 
     @classmethod
     def target_name_for_src(cls, python_module_src):
@@ -62,23 +63,9 @@ class ManualPythonModuleResourceTarget(PythonModuleResourceTarget):
             custom_resource_registry, self._src.name, resource_dir=resource_dir, text=resource_text)
         custom_resource_registry.set_module(self._src.name, self._resource_module)
 
-    def __repr__(self):
-        return f"<ManualPythonModuleResourceTarget {self.name}>"
-
-    @property
-    def ready(self):
-        return False
-
     @property
     def completed(self):
         return True
-
-    @property
-    def deps(self):
-        return set()
-
-    def update_status(self):
-        pass
 
     @property
     def import_alias_tgt(self):
@@ -112,13 +99,6 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
         self._type_resources = set()
         self._tests = set()
 
-    def __repr__(self):
-        return f"<CompiledPythonModuleResourceTarget {self.name}>"
-
-    @property
-    def ready(self):
-        return False
-
     @property
     def completed(self):
         return self._completed
@@ -133,6 +113,10 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
         if all(target.completed for target in self.deps):
             self._completed = True
             self._construct_res_module()
+
+    @property
+    def has_output(self):
+        return True
 
     @property
     def import_alias_tgt(self):
@@ -183,5 +167,5 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
         if p.returncode == 0:
             rc_log.info("No diffs")
         else:
-            # rc_log.info("Diff:\n%s", p.stdout.decode())
+            rc_log.info("Diff:\n%s", p.stdout.decode())
             rc_log.info("Diff: %d lines", len(p.stdout.decode().splitlines()))

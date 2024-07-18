@@ -1,5 +1,6 @@
 from hyperapp.common.util import flatten
 
+from .code.rc_target import Target
 from .code.rc_constants import JobStatus
 from .code.builtin_resources import enum_builtin_resources
 from .code.import_resource import ImportResource
@@ -8,7 +9,7 @@ from .code.test_target import TestTargetAlias, TestTarget
 from .code.python_module_resource_target import CompiledPythonModuleResourceTarget
 
 
-class AllImportsKnownTarget:
+class AllImportsKnownTarget(Target):
 
     name = 'all-imports-known'
 
@@ -18,10 +19,6 @@ class AllImportsKnownTarget:
 
     def __repr__(self):
         return f"<AllImportsKnownTarget>"
-
-    @property
-    def ready(self):
-        return False
 
     @property
     def completed(self):
@@ -38,7 +35,7 @@ class AllImportsKnownTarget:
         self._import_targets.add(target)
 
 
-class ImportTargetAlias:
+class ImportTargetAlias(Target):
 
     @staticmethod
     def name_for_src(python_module_src):
@@ -59,10 +56,6 @@ class ImportTargetAlias:
     @property
     def name(self):
         return self.name_for_src(self._src)
-
-    @property
-    def ready(self):
-        return False
 
     @property
     def completed(self):
@@ -104,7 +97,7 @@ class ImportTargetAlias:
             yield resource
 
 
-class ImportTarget:
+class ImportTarget(Target):
 
     def __init__(self, python_module_src, type_src_list, alias, idx=1, req_to_target=None):
         self._src = python_module_src
@@ -114,9 +107,6 @@ class ImportTarget:
         self._req_to_target = req_to_target or {}
         self._completed = False
         self._ready = False
-
-    def __repr__(self):
-        return f"<ImportTarget {self.name}>"
 
     @property
     def name(self):
