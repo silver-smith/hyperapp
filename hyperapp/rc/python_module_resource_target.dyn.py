@@ -109,7 +109,7 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
         custom_resource_registry.set_module(self._src.name, self._resource_module)
         self._completed = False
         self._req_to_target = {}
-        self._type_resources = []
+        self._type_resources = set()
         self._tests = set()
 
     def __repr__(self):
@@ -152,7 +152,7 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
                 continue
             type_src = self._name_to_src[name[1:]]
             resource = ImportResource.from_type_src(type_src)
-            self._type_resources.append(resource)
+            self._type_resources.add(resource)
 
     @cached_property
     def python_module_piece(self):
