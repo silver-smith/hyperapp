@@ -89,11 +89,11 @@ class SucceededImportResult(ImportResultBase):
             target_set.add(test_alias)
             target_set.add(test_target)
             for req in self._requirements:
-                tested_resource_tgt = req.get_tested_resource_target(target_set.factory)
+                tested_resource_tgt = req.get_tested_resource_target(my_target, target_set.factory)
                 if not tested_resource_tgt:
                     continue
                 # This is a tested code requirement.
-                tested_import_tgt = req.get_tested_import_target(target_set.factory)
+                tested_import_tgt = tested_resource_tgt.import_alias_tgt
                 test_target.add_tested_import(tested_import_tgt)
                 target_set.update_deps_for(test_target)
                 tested_resource_tgt.add_test_dep(test_alias)

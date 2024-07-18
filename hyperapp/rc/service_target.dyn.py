@@ -147,6 +147,10 @@ class ServiceCompleteTarget:
             self._completed = self._provider_resource_tgt.completed
 
     @property
+    def provider_resource_tgt(self):
+        return self._provider_resource_tgt
+
+    @property
     def service_piece(self):
         if self._is_builtin:
             return htypes.builtin.builtin_service(self._service_name)
