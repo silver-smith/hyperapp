@@ -1,0 +1,36 @@
+import:
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.builtin:code_registry_ctr
+- resource.rc_constructor_creg:rc_constructor_creg.service
+
+associations:
+
+- bases:
+  - resource.rc_constructor_creg:rc_constructor_creg.service
+  - legacy_type.builtin:code_registry_ctr
+  key:
+  - resource.rc_constructor_creg:rc_constructor_creg.service
+  - legacy_type.builtin:code_registry_ctr
+  value: CodeRegistryCtr.from_piece
+
+definitions:
+
+  code_registry_ctr.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: code_registry_ctr
+      file_name: code_registry_ctr.dyn.py
+      import_list: {}
+
+  CodeRegistryCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: code_registry_ctr.module
+      attr_name: CodeRegistryCtr
+
+  CodeRegistryCtr.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: CodeRegistryCtr
+      attr_name: from_piece
