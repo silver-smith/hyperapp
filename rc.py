@@ -38,7 +38,7 @@ def main():
     parser.add_argument('--module', type=str, nargs='*', help="Select (narrow) modules to compile")
     parser.add_argument('--workers', type=int, default=1, help="Worker process count to start and use")
     parser.add_argument('--timeout', type=int, help="Base timeout for RPC calls and everything (seconds). Default is none")
-    parser.add_argument('--show-diffs', action='store_true', help="Show diffs for constructed resources")
+    parser.add_argument('--show-diffs', '-d', action='store_true', help="Show diffs for constructed resources")
     parser.add_argument('--fail-fast', '-x', action='store_true', help="Stop on first failure")
     parser.add_argument('--verbose', '-v', action='store_true', help="Verbose output")
     parser.add_argument('source_subdir', type=str, nargs='*', help="Subdirs with source files")

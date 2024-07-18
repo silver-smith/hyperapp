@@ -1,4 +1,5 @@
 import logging
+import subprocess
 
 from hyperapp.common.htypes import HException
 
@@ -28,6 +29,28 @@ def _update_completed(target_set, prev_completed):
         for target in new_completed:
             target_set.update_deps_statuses(target)
         prev_completed = completed
+
+
+def _collect_output(target_set, failures, options):
+    for target in target_set:
+        if not target.completed or not target.has_output or target in failures:
+            continue
+        resource_path, text = target.get_output()
+        path = hyperapp_dir / resource_path
+        p = subprocess.run(
+            ['diff', '-u', str(path), '-'],
+            input=text.encode(),
+            stdout=subprocess.PIPE,
+            )
+        if p.returncode == 0:
+            rc_log.info("%s: No diffs", target.name)
+        else:
+            diffs = p.stdout.decode()
+            line_count = len(diffs.splitlines())
+            if options.show_diffs:
+                rc_log.info("%s: Diff %d lines\n%s", target.name, line_count, diffs)
+            else:
+                rc_log.info("%s: Diff %d lines", target.name, line_count)
 
 
 def _run(pool, target_set, options):
@@ -88,6 +111,7 @@ def _run(pool, target_set, options):
                 ", ".join(dep.name for dep in target.deps if not dep.completed),
                 ", ".join(dep.name for dep in target.deps),
                 )
+    _collect_output(target_set, failures, options)
     rc_log.info("Completed: %d; succeeded: %d; failed: %d; incomplete: %d", job_count, (job_count - len(failures)), len(failures), len(incomplete))
 
 

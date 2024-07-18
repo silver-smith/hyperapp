@@ -1,5 +1,4 @@
 import logging
-import subprocess
 from dataclasses import dataclass
 from functools import cached_property
 
@@ -7,7 +6,6 @@ from hyperapp.common.util import flatten
 
 from . import htypes
 from .services import (
-    hyperapp_dir,
     resource_module_factory,
     )
 from .code.rc_target import Target
@@ -112,7 +110,7 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
             return
         if all(target.completed for target in self.deps):
             self._completed = True
-            self._construct_res_module()
+            self._construct()
 
     @property
     def has_output(self):
@@ -153,19 +151,10 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
         for req, target in self._req_to_target.items():
             yield req.make_resource(target)
 
-    def _construct_res_module(self):
-        rc_log.info("Construct: %s", self.name)
+    def _construct(self):
+        rc_log.debug("Construct: %s", self.name)
         python_module = self.python_module_piece
         self._resource_module[f'{self._src.stem}.module'] = python_module
-        text = self._resource_module.as_text
-        res_path = hyperapp_dir / self._src.resource_path
-        p = subprocess.run(
-            ['diff', '-u', str(res_path), '-'],
-            input=text.encode(),
-            stdout=subprocess.PIPE,
-            )
-        if p.returncode == 0:
-            rc_log.info("No diffs")
-        else:
-            rc_log.info("Diff:\n%s", p.stdout.decode())
-            rc_log.info("Diff: %d lines", len(p.stdout.decode().splitlines()))
+
+    def get_output(self):
+        return (self._src.resource_path, self._resource_module.as_text)
