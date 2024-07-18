@@ -73,11 +73,11 @@ def _run(pool, target_set, fail_fast, timeout):
             rc_log.info("Not all targets are completed, but there are no jobs")
             break
     if failures:
-        rc_log.info("Failures:\n")
+        rc_log.info("%d failures:\n", len(failures))
         for target, result in failures.items():
             rc_log.info("\n========== %s ==========\n%s%s\n", target.name, "".join(result.traceback), result.error)
     if incomplete:
-        rc_log.info("Incomplete:\n")
+        rc_log.info("%d incomplete:\n", len(incomplete))
         for target, result in incomplete.items():
             rc_log.info("\n========== %s ==========\n%s%s\n", target.name, "".join(result.traceback), result.error)
     for target in target_set:
