@@ -101,7 +101,7 @@ class FailedTestResult(JobResult):
     def from_piece(cls, piece):
         return cls(piece.error, piece.traceback)
 
-    def __init__(self, requirements, error, traceback):
+    def __init__(self, error, traceback):
         super().__init__(JobStatus.failed, error, traceback)
 
     def update_targets(self, my_target, target_set):
