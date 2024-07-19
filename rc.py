@@ -12,7 +12,7 @@ from hyperapp.common.services import HYPERAPP_DIR, Services
 log = logging.getLogger(__name__)
 
 
-Options = namedtuple('Options', 'timeout verbose fail_fast show_diffs')
+Options = namedtuple('Options', 'timeout verbose fail_fast show_diffs show_incomplete_traces')
 
 
 module_dir_list = [
@@ -39,6 +39,7 @@ def main():
     parser.add_argument('--workers', type=int, default=1, help="Worker process count to start and use")
     parser.add_argument('--timeout', type=int, help="Base timeout for RPC calls and everything (seconds). Default is none")
     parser.add_argument('--show-diffs', '-d', action='store_true', help="Show diffs for constructed resources")
+    parser.add_argument('--show-incomplete-traces', '-i', action='store_true', help="Show tracebacks for incomplete jobs")
     parser.add_argument('--fail-fast', '-x', action='store_true', help="Stop on first failure")
     parser.add_argument('--verbose', '-v', action='store_true', help="Verbose output")
     parser.add_argument('source_subdir', type=str, nargs='*', help="Subdirs with source files")
@@ -74,6 +75,7 @@ def main():
             verbose=args.verbose,
             fail_fast=args.fail_fast,
             show_diffs=args.show_diffs,
+            show_incomplete_traces=args.show_incomplete_traces,
             )
         fn_res = resource_registry['rc.rc', 'compile_resources']
         fn_ref = mosaic.put(fn_res)

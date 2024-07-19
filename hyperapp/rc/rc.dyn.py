@@ -102,7 +102,7 @@ def _run(pool, target_set, options):
         rc_log.info("%d failures:\n", len(failures))
         for target, result in failures.items():
             rc_log.info("\n========== %s ==========\n%s%s\n", target.name, "".join(result.traceback), result.error)
-    if incomplete:
+    if incomplete and options.show_incomplete_traces:
         rc_log.info("%d incomplete:\n", len(incomplete))
         for target, result in incomplete.items():
             rc_log.info("\n========== %s ==========\n%s%s\n", target.name, "".join(result.traceback), result.error)
