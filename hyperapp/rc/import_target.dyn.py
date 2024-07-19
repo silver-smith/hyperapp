@@ -141,6 +141,10 @@ class ImportTarget(Target):
         self._completed = True
         result.update_targets(self, target_set)
 
+    @property
+    def alias(self):
+        return self._alias
+
     def set_alias_requirements(self, req_to_target):
         self._alias.set_requirements(req_to_target)
 
