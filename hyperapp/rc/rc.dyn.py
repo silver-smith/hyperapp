@@ -32,6 +32,8 @@ def _update_completed(target_set, prev_completed):
 
 
 def _collect_output(target_set, failures, options):
+    total = 0
+    changed = 0
     for target in target_set:
         if not target.completed or not target.has_output or target in failures:
             continue
@@ -51,13 +53,15 @@ def _collect_output(target_set, failures, options):
                 rc_log.info("%s: Diff %d lines\n%s", target.name, line_count, diffs)
             else:
                 rc_log.info("%s: Diff %d lines", target.name, line_count)
+            changed += 1
+        total += 1
+    return (total, changed)
 
 
 def _run(pool, target_set, options):
     rc_log.info("%d targets", target_set.count)
     target_to_job = {}  # Jobs are never removed.
     job_id_to_target = {}
-    job_count = 0
     failures = {}
     incomplete = {}
     should_run = True
@@ -78,7 +82,6 @@ def _run(pool, target_set, options):
             result = rc_job_result_creg.animate(result_piece)
             target = job_id_to_target[id(job)]
             rc_log.info("%s: %s", target.name, result.status.name)
-            job_count += 1
             if result.status == JobStatus.failed:
                 failures[target] = result
                 if options.fail_fast:
@@ -111,8 +114,19 @@ def _run(pool, target_set, options):
                 ", ".join(dep.name for dep in target.deps if not dep.completed),
                 ", ".join(dep.name for dep in target.deps),
                 )
-    _collect_output(target_set, failures, options)
-    rc_log.info("Completed: %d; succeeded: %d; failed: %d; incomplete: %d", job_count, (job_count - len(failures)), len(failures), len(incomplete))
+    with_output, changed_count = _collect_output(target_set, failures, options)
+    job_count = len(job_id_to_target)
+    completed_count = len(list(target_set.iter_completed()))
+    rc_log.info(
+        "Completed: %d; jobs: %d, succeeded: %d; failed: %d; incomplete: %d, output: %d, changed: %d",
+        completed_count,
+        job_count,
+        (job_count - len(failures)),
+        len(failures),
+        len(incomplete),
+        with_output,
+        changed_count,
+        )
 
 
 def _main(pool, options):
