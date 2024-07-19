@@ -105,7 +105,7 @@ class SucceededImportResult(ImportResultBase):
         resource_target.add_import_requirements(req_to_target)
         target_set.update_deps_for(resource_target)
         for ctr in self._constructors:
-            ctr.update_targets(resource_target, target_set.factory)
+            ctr.update_targets(resource_target, target_set)
 
     @property
     def _is_tests(self):
