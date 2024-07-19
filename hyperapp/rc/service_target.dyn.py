@@ -54,7 +54,7 @@ class ServiceFoundTarget(Target):
 
     def __init__(self, service_name):
         self._service_name = service_name
-        self._completed = False
+        self._completed = service_name in builtin_services
         self._provider_resource_tgt = None
         self._ctr = None
         self._import_alias_tgt = None
