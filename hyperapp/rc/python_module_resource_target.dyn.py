@@ -123,7 +123,7 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
     def add_import_requirements(self, req_to_target):
         self._req_to_target = req_to_target
 
-    def add_test_dep(self, test_target):
+    def add_test(self, test_target):
         self._tests.add(test_target)
 
     def add_used_imports(self, import_list):

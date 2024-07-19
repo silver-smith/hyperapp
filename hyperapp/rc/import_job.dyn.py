@@ -97,7 +97,7 @@ class SucceededImportResult(ImportResultBase):
                 tested_import_tgt = tested_resource_tgt.import_alias_tgt
                 test_target.add_tested_import(tested_import_tgt)
                 target_set.update_deps_for(test_target)
-                tested_resource_tgt.add_test_dep(test_alias)
+                tested_resource_tgt.add_test(test_alias)
                 target_set.update_deps_for(tested_resource_tgt)
 
     def _update_resource(self, my_target, target_set, req_to_target):
