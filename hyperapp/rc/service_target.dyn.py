@@ -87,9 +87,9 @@ class ServiceFoundTarget(Target):
         self._provider_resource_tgt = resource_tgt
         self._ctr = ctr
         self._import_alias_tgt = resource_tgt.import_alias_tgt
-        self.update_status()
         for test_target in self._unresolved_in_tests:
             resource_tgt.add_test(test_target, target_set)
+        self.update_status()
 
     def add_unresolved_in_test(self, test_target):
         self._unresolved_in_tests.add(test_target)
