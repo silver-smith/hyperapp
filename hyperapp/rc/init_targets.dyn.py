@@ -22,18 +22,22 @@ def init_targets(root_dir, target_set, python_module_src_list, type_src_list):
     custom_resource_registry = create_custom_resource_registry(root_dir)
     all_imports_known_tgt = AllImportsKnownTarget()
     for src in python_module_src_list:
-        resource_text = root_dir.joinpath(src.resource_path).read_text()
-        if resource_text.startswith(AUTO_GEN_LINE):
-            alias_tgt = ImportTargetAlias(src, custom_resource_registry, type_src_list)
-            import_tgt = ImportTarget(src, type_src_list, alias_tgt)
-            all_imports_known_tgt.add_import_target(import_tgt)
-            target_set.add(import_tgt)
-            target_set.add(alias_tgt)
+        try:
+            resource_text = root_dir.joinpath(src.resource_path).read_text()
+        except FileNotFoundError:
+            pass
         else:
-            resource_dir = root_dir / src.path.parent
-            resource_tgt = ManualPythonModuleResourceTarget(
-                src, custom_resource_registry, resource_dir, resource_text)
-            target_set.add(resource_tgt)
-            if src.name == 'common.mark':
-                add_common_mark_services(resource_tgt, target_set)
+            if not resource_text.startswith(AUTO_GEN_LINE):
+                resource_dir = root_dir / src.path.parent
+                resource_tgt = ManualPythonModuleResourceTarget(
+                    src, custom_resource_registry, resource_dir, resource_text)
+                target_set.add(resource_tgt)
+                if src.name == 'common.mark':
+                    add_common_mark_services(resource_tgt, target_set)
+                continue
+        alias_tgt = ImportTargetAlias(src, custom_resource_registry, type_src_list)
+        import_tgt = ImportTarget(src, type_src_list, alias_tgt)
+        all_imports_known_tgt.add_import_target(import_tgt)
+        target_set.add(import_tgt)
+        target_set.add(alias_tgt)
     target_set.add(all_imports_known_tgt)
