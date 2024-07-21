@@ -28,6 +28,10 @@ class ProcessPool:
     def job_count(self):
         return len(self._future_to_rec) + len(self._job_queue)
 
+    @property
+    def queue_size(self):
+        return len(self._job_queue)
+
     def submit(self, job):
         if self._free_processes:
             process = self._free_processes.pop()

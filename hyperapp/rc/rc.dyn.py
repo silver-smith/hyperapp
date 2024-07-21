@@ -73,7 +73,7 @@ def _run(pool, target_set, options):
                 job = target.make_job()
             except Exception as x:
                 raise RuntimeError(f"For {target.name}: {x}") from x
-            rc_log.debug("Submit %s", target.name)
+            rc_log.debug("Submit %s (in queue: %d)", target.name, pool.queue_size)
             pool.submit(job)
             target_to_job[target] = job
             job_id_to_target[id(job)] = target
