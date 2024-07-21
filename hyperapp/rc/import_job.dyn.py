@@ -127,8 +127,7 @@ class IncompleteImportResult(ImportResultBase):
 
     def update_targets(self, my_target, target_set):
         req_to_target = self._resolve_requirements(target_set.factory)
-        if req_to_target:  # TODO: remove after all requirement types are implemented.
-            target_set.add(my_target.create_next_target(req_to_target))
+        target_set.add(my_target.create_next_target(req_to_target))
 
 
 class FailedImportResult(JobResult):
