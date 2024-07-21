@@ -94,6 +94,7 @@ class SucceededImportResult(ImportResultBase):
 
     def _update_resource(self, my_target, target_set, req_to_target):
         resource_target = my_target.get_resource_target(target_set.factory)
+        assert not resource_target.completed  # First tests import was incomplete? That is not yet supported.
         resource_target.add_import_requirements(req_to_target)
         target_set.update_deps_for(resource_target)
         for ctr in self._constructors:
