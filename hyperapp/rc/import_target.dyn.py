@@ -91,10 +91,7 @@ class ImportTargetAlias(Target):
 
     def _enum_resources(self):
         for req, target in self._req_to_target.items():
-            resource = req.make_resource(target)
-            if resource is None:
-                continue  # TODO: Remove when all make_resource methods are implemented.
-            yield resource
+            yield req.make_resource(target)
 
 
 class ImportTarget(Target):
@@ -128,7 +125,7 @@ class ImportTarget(Target):
         self._ready = all(target.completed for target in self._req_to_target.values())
 
     def make_job(self):
-        resources = list(filter(None, self._enum_resources()))  # TODO: Remove filter when all make_resource methods are implemented.
+        resources = list(self._enum_resources())
         return ImportJob(self._src, self._idx, resources)
 
     def _enum_resources(self):

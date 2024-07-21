@@ -139,7 +139,7 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
     @cached_property
     def python_module_piece(self):
         assert self._completed
-        resources = list(filter(None, self._enum_resources()))  # TODO: Remove filter when all make_resource methods are implemented.
+        resources = list(self._enum_resources())
         import_list = sorted(flatten(d.import_records for d in resources))
         return self._src.python_module(import_list)
 

@@ -64,7 +64,7 @@ class TestTarget(Target):
         self._ready = all(target.completed for target in self.deps)
 
     def make_job(self):
-        resources = list(filter(None, self._enum_resources()))  # TODO: Remove filter when all make_resource methods are implemented.
+        resources = list(self._enum_resources())
         return TestJob(self._src, self._idx, resources, self._function.name)
 
     def _enum_resources(self):
