@@ -77,6 +77,10 @@ class TestTarget(Target):
         self._completed = True
         result.update_targets(self, target_set)
 
+    @property
+    def alias(self):
+        return self._alias
+
     def add_tested_import(self, target):
         self._tested_imports.add(target)
         if target.completed:

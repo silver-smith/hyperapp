@@ -16,7 +16,7 @@ class ServiceCtr:
 
     def update_targets(self, resource_target, target_set):
         service_found_tgt = target_set.factory.service_found(self._name)
-        service_found_tgt.set_provider(resource_target, self)
+        service_found_tgt.set_provider(resource_target, self, target_set)
         target_set.update_deps_for(service_found_tgt)
 
     def make_component(self, python_module, name_to_res=None):

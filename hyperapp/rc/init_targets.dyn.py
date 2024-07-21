@@ -10,11 +10,11 @@ from .code.import_target import (
 from .code.service_ctr import ServiceCtr
 
 
-def add_common_mark_services(resource_tgt, target_factory):
-    service_found_tgt = target_factory.service_found('mark')
-    service_complete_tgt = target_factory.service_complete('mark')
+def add_common_mark_services(resource_tgt, target_set):
+    service_found_tgt = target_set.factory.service_found('mark')
+    service_complete_tgt = target_set.factory.service_complete('mark')
     ctr = ServiceCtr('mark', 'mark')
-    service_found_tgt.set_provider(resource_tgt, ctr)
+    service_found_tgt.set_provider(resource_tgt, ctr, target_set)
     service_complete_tgt.update_status()
 
 
@@ -35,5 +35,5 @@ def init_targets(root_dir, target_set, python_module_src_list, type_src_list):
                 src, custom_resource_registry, resource_dir, resource_text)
             target_set.add(resource_tgt)
             if src.name == 'common.mark':
-                add_common_mark_services(resource_tgt, target_set.factory)
+                add_common_mark_services(resource_tgt, target_set)
     target_set.add(all_imports_known_tgt)

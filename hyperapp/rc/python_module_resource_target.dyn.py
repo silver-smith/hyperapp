@@ -123,8 +123,11 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
     def add_import_requirements(self, req_to_target):
         self._req_to_target = req_to_target
 
-    def add_test(self, test_target):
-        self._tests.add(test_target)
+    def add_test(self, test_target, target_set):
+        self._tests.add(test_target.alias)
+        test_target.add_tested_import(self._import_alias_tgt)
+        target_set.update_deps_for(test_target)
+        target_set.update_deps_for(self)
 
     def add_used_imports(self, import_list):
         for name in import_list:

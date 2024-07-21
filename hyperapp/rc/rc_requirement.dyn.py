@@ -5,5 +5,5 @@ class Requirement:
     def is_test_requirement(self):
         return False
 
-    def get_tested_resource_target(self, target, target_factory):
+    def update_tested_target(self, import_target, test_target, target_set):
         return None

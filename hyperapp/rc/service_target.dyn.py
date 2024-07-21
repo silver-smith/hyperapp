@@ -58,6 +58,7 @@ class ServiceFoundTarget(Target):
         self._provider_resource_tgt = None
         self._ctr = None
         self._import_alias_tgt = None
+        self._unresolved_in_tests = set()  # tests were imported while provider was not yet discovered.
 
     @property
     def name(self):
@@ -82,11 +83,16 @@ class ServiceFoundTarget(Target):
         elif self._import_alias_tgt and self._import_alias_tgt.completed:
             self._completed = True
 
-    def set_provider(self, resource_tgt, ctr):
+    def set_provider(self, resource_tgt, ctr, target_set):
         self._provider_resource_tgt = resource_tgt
         self._ctr = ctr
         self._import_alias_tgt = resource_tgt.import_alias_tgt
         self.update_status()
+        for test_target in self._unresolved_in_tests:
+            resource_tgt.add_test(test_target, target_set)
+
+    def add_unresolved_in_test(self, test_target):
+        self._unresolved_in_tests.add(test_target)
 
     @property
     def import_alias_tgt(self):

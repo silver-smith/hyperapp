@@ -31,9 +31,13 @@ class TestedServiceReq(Requirement):
     def is_test_requirement(self):
         return True
 
-    def get_tested_resource_target(self, import_target, target_factory):
-        service_found_tgt = self.get_target(target_factory)
-        return service_found_tgt.provider_resource_tgt
+    def update_tested_target(self, import_target, test_target, target_set):
+        service_found_tgt = self.get_target(target_set.factory)
+        tested_resource_tgt = service_found_tgt.provider_resource_tgt
+        if tested_resource_tgt:
+            tested_resource_tgt.add_test(test_target, target_set)
+        else:
+            service_found_tgt.add_unresolved_in_test(test_target)
 
     def make_resource(self, target):
         import_tgt = target.import_alias_tgt
@@ -69,8 +73,9 @@ class TestedCodeReq(Requirement):
     def is_test_requirement(self):
         return True
 
-    def get_tested_resource_target(self, target, target_factory):
-        return target_factory.python_module_resource_by_code_name(self.code_name)
+    def update_tested_target(self, import_target, test_target, target_set):
+        tested_resource_tgt = target_set.factory.python_module_resource_by_code_name(self.code_name)
+        tested_resource_tgt.add_test(test_target, target_set)
 
     def make_resource(self, target):
         recorder_module_name, recorder_piece, module_piece = target.recorded_python_module()
