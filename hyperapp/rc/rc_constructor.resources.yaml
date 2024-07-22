@@ -1,0 +1,11 @@
+import:
+- legacy_type.builtin:python_module
+
+definitions:
+
+  rc_constructor.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: rc_constructor
+      file_name: rc_constructor.dyn.py
+      import_list: {}

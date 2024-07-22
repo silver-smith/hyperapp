@@ -2,9 +2,10 @@ from . import htypes
 from .services import (
     mosaic,
     )
+from .code.rc_constructor import Constructor
 
 
-class ServiceCtr:
+class ServiceCtr(Constructor):
 
     @classmethod
     def from_piece(cls, piece):
@@ -36,7 +37,7 @@ class ServiceCtr:
         return name_to_res[f'{self._name}.service']
 
 
-class Service2Ctr:
+class Service2Ctr(Constructor):
 
     @classmethod
     def from_piece(cls, piece):
@@ -47,7 +48,7 @@ class Service2Ctr:
         self._name = name
 
     def update_targets(self, resource_target, target_set):
-        pass
+        resource_target.import_alias_tgt.add_component(self)
 
     def make_component(self, python_module, name_to_res=None):
         assert 0
@@ -56,7 +57,7 @@ class Service2Ctr:
         assert 0
 
 
-class FixtureCtr:
+class FixtureCtr(Constructor):
 
     @classmethod
     def from_piece(cls, piece):
@@ -66,8 +67,8 @@ class FixtureCtr:
         self._attr_name = attr_name
         self._name = name
 
-    def update_targets(self, resource_target, target_set):
-        pass
+    def update_tests_targets(self, import_alias_tgt, target_set):
+        import_alias_tgt.add_component(self)
 
     def make_component(self, python_module, name_to_res=None):
         assert 0

@@ -1,5 +1,7 @@
+from .code.rc_constructor import Constructor
 
-class ModelCtr:
+
+class ModelCtr(Constructor):
 
     @classmethod
     def from_piece(cls, piece):

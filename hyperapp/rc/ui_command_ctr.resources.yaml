@@ -5,6 +5,7 @@ import:
 - legacy_type.rc_constructors:ui_model_command
 - legacy_type.rc_constructors:universal_ui_command
 - legacy_type.rc_constructors:universal_ui_model_command
+- rc.rc_constructor:rc_constructor.module
 - resource.rc_constructor_creg:rc_constructor_creg.service
 
 associations:
@@ -48,7 +49,8 @@ definitions:
     value:
       module_name: ui_command_ctr
       file_name: ui_command_ctr.dyn.py
-      import_list: {}
+      import_list:
+        code.rc_constructor: rc.rc_constructor:rc_constructor.module
 
   UiCommandCtr:
     type: legacy_type.builtin:attribute

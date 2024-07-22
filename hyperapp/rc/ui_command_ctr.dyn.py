@@ -1,19 +1,7 @@
-
-class UiCommandCtr:
-
-    @classmethod
-    def from_piece(cls, piece):
-        return cls()
-
-    def __init__(self):
-        pass
-
-    def update_targets(self, resource_target, target_factory):
-        # assert 0, f'todo: {resource_target.name}'
-        pass
+from .code.rc_constructor import Constructor
 
 
-class UniversalUiCommandCtr:
+class UiCommandCtr(Constructor):
 
     @classmethod
     def from_piece(cls, piece):
@@ -22,12 +10,8 @@ class UniversalUiCommandCtr:
     def __init__(self):
         pass
 
-    def update_targets(self, resource_target, target_factory):
-        # assert 0, f'todo: {resource_target.name}'
-        pass
 
-
-class UiModelCommandCtr:
+class UniversalUiCommandCtr(Constructor):
 
     @classmethod
     def from_piece(cls, piece):
@@ -36,12 +20,8 @@ class UiModelCommandCtr:
     def __init__(self):
         pass
 
-    def update_targets(self, resource_target, target_factory):
-        # assert 0, f'todo: {resource_target.name}'
-        pass
 
-
-class UniversalUiModelCommandCtr:
+class UiModelCommandCtr(Constructor):
 
     @classmethod
     def from_piece(cls, piece):
@@ -50,6 +30,11 @@ class UniversalUiModelCommandCtr:
     def __init__(self):
         pass
 
-    def update_targets(self, resource_target, target_factory):
-        # assert 0, f'todo: {resource_target.name}'
+class UniversalUiModelCommandCtr(Constructor):
+
+    @classmethod
+    def from_piece(cls, piece):
+        return cls()
+
+    def __init__(self):
         pass
