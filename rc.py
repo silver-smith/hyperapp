@@ -9,7 +9,7 @@ from hyperapp.common.init_logging import init_logging
 from hyperapp.common import cdr_coders  # register codec
 from hyperapp.common.services import HYPERAPP_DIR, Services
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('rc.main')
 
 
 Options = namedtuple('Options', 'timeout verbose fail_fast show_diffs show_incomplete_traces')
@@ -52,7 +52,7 @@ def main():
     services = Services(module_dir_list)
     services.init_services()
     services.load_type_modules()
-    log.info("Initialized.")
+    log.debug("Initialized.")
 
     try:
         mosaic = services.mosaic
