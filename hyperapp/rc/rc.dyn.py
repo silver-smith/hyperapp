@@ -118,8 +118,10 @@ def _run(pool, target_set, options):
     job_count = len(job_id_to_target)
     completed_count = len(list(target_set.iter_completed()))
     rc_log.info(
-        "Completed: %d; jobs: %d, succeeded: %d; failed: %d; incomplete: %d, output: %d, changed: %d",
+        "Total: %d, completed: %d; not completed: %d, jobs: %d, succeeded: %d; failed: %d; incomplete: %d, output: %d, changed: %d",
+        target_set.count,
         completed_count,
+        target_set.count - completed_count,
         job_count,
         (job_count - len(failures)),
         len(failures),

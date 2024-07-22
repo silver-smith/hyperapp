@@ -27,6 +27,10 @@ class TargetSet:
     def __getitem__(self, name):
         return self._name_to_target[name]
 
+    @property
+    def count(self):
+        return len(self._name_to_target)
+
     def iter_ready(self):
         for target in self._name_to_target.values():
             if target.ready:
