@@ -3,6 +3,10 @@ service = record:
   attr_name: string
   name: string
 
+fixture = record:
+  attr_name: string
+  name: string
+
 
 model = record:
   attr_name: string

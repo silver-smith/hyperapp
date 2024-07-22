@@ -25,6 +25,15 @@ class ServiceMarker:
         return fn
 
 
+def fixture_marker(fn):
+    ctr = htypes.rc_constructors.fixture(
+        attr_name=fn.__name__,
+        name=fn.__name__,
+        )
+    add_fn_module_constructor(fn, mosaic.put(ctr))
+    return fn
+
+
 def model(fn):
     ctr = htypes.rc_constructors.model(
         attr_name=fn.__name__,
@@ -67,6 +76,7 @@ class UiModelCommand(UiCommandBase):
 def mark():
     return SimpleNamespace(
         service=ServiceMarker(),
+        fixture=fixture_marker,
         model=model,
         ui_command=UiCommand(),
         ui_model_command=UiModelCommand(),
