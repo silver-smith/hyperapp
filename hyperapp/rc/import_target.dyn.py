@@ -48,7 +48,7 @@ class ImportTargetAlias(Target):
         self._completed = False
         self._got_requirements = False
         self._req_to_target = {}
-        self._resources = []
+        self._components = set()
 
     def __repr__(self):
         return f"<ImportAliasTarget {self.name}>"
@@ -68,6 +68,9 @@ class ImportTargetAlias(Target):
     def update_status(self):
         if self._got_requirements:
             self._completed = all(target.completed for target in self.deps)
+
+    def add_component(self, ctr):
+        self._components.add(ctr)
 
     def set_requirements(self, req_to_target):
         self._req_to_target = req_to_target

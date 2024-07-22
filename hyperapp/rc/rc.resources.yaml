@@ -7,6 +7,7 @@ import:
 - common.reconstructors:reconstructors.module
 - rc.build:build.module
 - rc.rc_constants:rc_constants.module
+- rc.rc_filter:rc_filter.module
 - rc.rc_job_result_creg:rc_job_result_creg.service
 - rc.init_targets:init_targets.module
 - rc.process_pool:process_pool.module
@@ -30,6 +31,7 @@ definitions:
         code.process_pool: rc.process_pool:process_pool.module
         code.reconstructors: common.reconstructors:reconstructors.module
         code.rc_constants: rc.rc_constants:rc_constants.module
+        code.rc_filter: rc.rc_filter:rc_filter.module
         code.target_set: rc.target_set:target_set.module
 
   compile_resources:

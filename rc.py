@@ -35,14 +35,13 @@ def main():
 
     parser = argparse.ArgumentParser(description='Compile resources')
     parser.add_argument('--root-dir', type=Path, nargs='*', help="Additional resource root dirs")
-    parser.add_argument('--module', type=str, nargs='*', help="Select (narrow) modules to compile")
     parser.add_argument('--workers', type=int, default=1, help="Worker process count to start and use")
     parser.add_argument('--timeout', type=int, help="Base timeout for RPC calls and everything (seconds). Default is none")
     parser.add_argument('--show-diffs', '-d', action='store_true', help="Show diffs for constructed resources")
     parser.add_argument('--show-incomplete-traces', '-i', action='store_true', help="Show tracebacks for incomplete jobs")
     parser.add_argument('--fail-fast', '-x', action='store_true', help="Stop on first failure")
     parser.add_argument('--verbose', '-v', action='store_true', help="Verbose output")
-    parser.add_argument('source_subdir', type=str, nargs='*', help="Subdirs with source files")
+    parser.add_argument('targets', type=str, nargs='*', help="Select only those targets to build")
     args = parser.parse_args()
 
     config = {
@@ -80,7 +79,7 @@ def main():
         fn_res = resource_registry['rc.rc', 'compile_resources']
         fn_ref = mosaic.put(fn_res)
         fn = pyobj_creg.animate(fn_res)
-        fn(fn_ref, args.source_subdir, args.root_dir or [], args.module, args.workers, options)
+        fn(fn_ref, args.root_dir or [], args.targets, args.workers, options)
     finally:
         log.info("Stopping.")
         services.stop_signal.set()

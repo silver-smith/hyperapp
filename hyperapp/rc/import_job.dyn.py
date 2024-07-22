@@ -76,11 +76,17 @@ class SucceededImportResult(ImportResultBase):
     def update_targets(self, my_target, target_set):
         req_to_target = self._resolve_requirements(target_set.factory)
         if self._is_tests:
-            self._add_tests(my_target, target_set, req_to_target)
+            self._update_tests_targets(my_target, target_set, req_to_target)
         else:
             self._update_resource(my_target, target_set, req_to_target)
         my_target.set_alias_requirements(req_to_target)
         target_set.update_deps_for(my_target.alias)
+
+    def _update_tests_targets(self, my_target, target_set, req_to_target):
+        import_alias_tgt = my_target.alias
+        for ctr in self._constructors:
+            ctr.update_tests_targets(import_alias_tgt, target_set)
+        self._add_tests(my_target, target_set, req_to_target)
 
     def _add_tests(self, my_target, target_set, req_to_target):
         for fn in self._functions:

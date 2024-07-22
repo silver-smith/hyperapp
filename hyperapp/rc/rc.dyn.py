@@ -15,6 +15,7 @@ from .code.rc_constants import JobStatus
 from .code.build import load_build
 from .code.target_set import TargetSet
 from .code.init_targets import init_targets
+from .code.rc_filter import Filter
 
 log = logging.getLogger(__name__)
 rc_log = logging.getLogger('rc')
@@ -58,7 +59,7 @@ def _collect_output(target_set, failures, options):
     return (total, changed)
 
 
-def _run(pool, target_set, options):
+def _run(pool, target_set, filter, options):
     rc_log.info("%d targets", target_set.count)
     target_to_job = {}  # Jobs are never removed.
     job_id_to_target = {}
@@ -68,6 +69,9 @@ def _run(pool, target_set, options):
     while should_run:
         for target in target_set.iter_ready():
             if target in target_to_job:
+                continue
+            if not filter.included(target):
+                rc_log.debug("%s: not requested", target.name)
                 continue
             try:
                 job = target.make_job()
@@ -131,15 +135,16 @@ def _run(pool, target_set, options):
         )
 
 
-def _main(pool, options):
+def _main(pool, targets, options):
     build = load_build(hyperapp_dir)
     log.info("Loaded build:")
     build.report()
 
     target_set = TargetSet(hyperapp_dir, build.python_modules)
     init_targets(hyperapp_dir, target_set, build.python_modules, build.types)
+    filter = Filter(target_set, targets)
     try:
-        _run(pool, target_set, options)
+        _run(pool, target_set, filter, options)
     except HException as x:
         if isinstance(x, htypes.rpc.server_error):
             log.error("Server error: %s", x.message)
@@ -148,18 +153,13 @@ def _main(pool, options):
                     log.error("%s", line)
 
 
-def compile_resources(generator_ref, subdir_list, root_dirs, module_list, process_count, options):
-    log.info("Compile resources at: %s, %s: %s", subdir_list, root_dirs, module_list)
+def compile_resources(generator_ref, root_dirs, targets, process_count, options):
+    rc_log.info("Compile resources: %s", ", ".join(targets) if targets else 'all')
 
     if options.verbose:
         rc_log.setLevel(logging.DEBUG)
 
     register_reconstructors()
 
-    if subdir_list:
-        dir_list = [hyperapp_dir / d for d in subdir_list]
-    else:
-        dir_list = [hyperapp_dir]
-
     with process_pool_running(process_count, options.timeout) as pool:
-        _main(pool, options)
+        _main(pool, targets, options)

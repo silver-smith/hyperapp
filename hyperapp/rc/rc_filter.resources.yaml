@@ -1,0 +1,11 @@
+import:
+- legacy_type.builtin:python_module
+
+definitions:
+
+  rc_filter.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: rc_filter
+      file_name: rc_filter.dyn.py
+      import_list: {}
