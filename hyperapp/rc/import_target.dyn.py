@@ -80,16 +80,14 @@ class ImportTargetAlias(Target):
 
     def recorded_python_module(self):
         assert self._completed
-        type_resources = [
-            ImportResource.from_type_src(src)
-            for src in self._type_src_list
-            ]
-        all_resources = [*enum_builtin_resources(), *type_resources, *self._enum_resources()]
-        import_list = flatten(d.import_records for d in all_resources)
+        import_list = flatten(d.import_records for d in self._enum_resources())
         recorder_piece, module_piece = self._src.recorded_python_module(import_list)
         return (self._src.name, recorder_piece, module_piece)
 
     def _enum_resources(self):
+        yield from enum_builtin_resources()
+        for src in self._type_src_list:
+            yield ImportResource.from_type_src(src)
         for req, target in self._req_to_target.items():
             yield req.make_resource(target)
 
