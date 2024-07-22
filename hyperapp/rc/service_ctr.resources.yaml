@@ -5,6 +5,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.rc_constructors:fixture
 - legacy_type.rc_constructors:service
+- legacy_type.rc_constructors:service2
 - resource.rc_constructor_creg:rc_constructor_creg.service
 
 associations:
@@ -16,6 +17,14 @@ associations:
   - resource.rc_constructor_creg:rc_constructor_creg.service
   - legacy_type.rc_constructors:service
   value: ServiceCtr.from_piece
+
+- bases:
+  - resource.rc_constructor_creg:rc_constructor_creg.service
+  - legacy_type.rc_constructors:service2
+  key:
+  - resource.rc_constructor_creg:rc_constructor_creg.service
+  - legacy_type.rc_constructors:service2
+  value: Service2Ctr.from_piece
 
 - bases:
   - resource.rc_constructor_creg:rc_constructor_creg.service
@@ -47,6 +56,18 @@ definitions:
     type: legacy_type.builtin:attribute
     value:
       object: ServiceCtr
+      attr_name: from_piece
+
+  Service2Ctr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: service_ctr.module
+      attr_name: Service2Ctr
+
+  Service2Ctr.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: Service2Ctr
       attr_name: from_piece
 
   FixtureCtr:
