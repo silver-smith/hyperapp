@@ -37,6 +37,7 @@ def init_targets(root_dir, target_set, python_module_src_list, type_src_list):
                 continue
         alias_tgt = ImportTargetAlias(src, custom_resource_registry, type_src_list)
         import_tgt = ImportTarget(src, type_src_list, alias_tgt)
+        alias_tgt.set_import_target(import_tgt)
         all_imports_known_tgt.add_import_target(import_tgt)
         target_set.add(import_tgt)
         target_set.add(alias_tgt)

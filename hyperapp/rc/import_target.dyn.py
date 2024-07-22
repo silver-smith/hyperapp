@@ -45,6 +45,7 @@ class ImportTargetAlias(Target):
         self._src = python_module_src
         self._type_src_list = type_src_list
         self._custom_resource_registry = custom_resource_registry
+        self._import_target = None
         self._completed = False
         self._got_requirements = False
         self._req_to_target = {}
@@ -63,11 +64,14 @@ class ImportTargetAlias(Target):
 
     @property
     def deps(self):
-        return set(self._req_to_target.values())
+        return {self._import_target, *self._req_to_target.values()}
 
     def update_status(self):
         if self._got_requirements:
             self._completed = all(target.completed for target in self.deps)
+
+    def set_import_target(self, import_target):
+        self._import_target = import_target
 
     def add_component(self, ctr):
         self._components.add(ctr)
@@ -120,7 +124,7 @@ class ImportTarget(Target):
 
     @property
     def deps(self):
-        return self._req_to_target.values()
+        return set(self._req_to_target.values())
 
     def update_status(self):
         self._ready = all(target.completed for target in self._req_to_target.values())
@@ -147,7 +151,9 @@ class ImportTarget(Target):
         self._alias.set_requirements(req_to_target)
 
     def create_next_target(self, req_to_target):
-        return ImportTarget(self._src, self._type_src_list, self._alias, self._idx + 1, req_to_target)
+        target = ImportTarget(self._src, self._type_src_list, self._alias, self._idx + 1, req_to_target)
+        self._alias.set_import_target(target)
+        return target
 
     def get_resource_target(self, target_factory):
         return target_factory.python_module_resource_by_src(self._src)
