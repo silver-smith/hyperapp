@@ -1,3 +1,5 @@
+from functools import cached_property
+
 from hyperapp.common.util import flatten
 
 from .code.rc_target import Target
@@ -85,6 +87,7 @@ class ImportTargetAlias(Target):
         return CompiledPythonModuleResourceTarget(
             self._src, self._custom_resource_registry, resource_dir, self._type_src_list, all_imports_known_tgt, self)
 
+    @cached_property
     def recorded_python_module(self):
         assert self._completed
         import_list = flatten(d.import_records for d in self._enum_resources())

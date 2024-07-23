@@ -42,7 +42,7 @@ class TestedServiceReq(Requirement):
     def make_resource(self, target):
         import_tgt = target.import_alias_tgt
         ctr = target.constructor
-        recorder_module_name, recorder_piece, python_module = import_tgt.recorded_python_module()
+        recorder_module_name, recorder_piece, python_module = import_tgt.recorded_python_module
         service = ctr.make_component(python_module)
         return TestedServiceResource(
             import_name=self.import_path,
@@ -78,7 +78,7 @@ class TestedCodeReq(Requirement):
         tested_resource_tgt.add_test(test_target, target_set)
 
     def make_resource(self, target):
-        recorder_module_name, recorder_piece, module_piece = target.recorded_python_module()
+        recorder_module_name, recorder_piece, module_piece = target.recorded_python_module
         return TestedCodeResource(
             import_name=self.import_path,
             module_piece=module_piece,
