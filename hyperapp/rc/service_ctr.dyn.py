@@ -3,6 +3,21 @@ from .services import (
     mosaic,
     )
 from .code.rc_constructor import Constructor
+from .code.service_resource import ServiceFnResource
+
+
+def _make_service_component(attr_name, service_name, python_module, name_to_res):
+    attribute = htypes.builtin.attribute(
+        object=mosaic.put(python_module),
+        attr_name=attr_name,
+        )
+    service = htypes.builtin.call(
+        function=mosaic.put(attribute),
+        )
+    if name_to_res is not None:
+        name_to_res[attr_name] = attribute
+        name_to_res[f'{service_name}.service'] = service
+    return service
 
 
 class ServiceCtr(Constructor):
@@ -21,17 +36,7 @@ class ServiceCtr(Constructor):
         target_set.update_deps_for(service_found_tgt)
 
     def make_component(self, python_module, name_to_res=None):
-        attribute = htypes.builtin.attribute(
-            object=mosaic.put(python_module),
-            attr_name=self._attr_name,
-            )
-        service = htypes.builtin.call(
-            function=mosaic.put(attribute),
-            )
-        if name_to_res is not None:
-            name_to_res[self._attr_name] = attribute
-            name_to_res[f'{self._name}.service'] = service
-        return service
+        return _make_service_component(self._attr_name, self._name, python_module, name_to_res)
 
     def get_component(self, name_to_res):
         return name_to_res[f'{self._name}.service']
@@ -41,37 +46,45 @@ class Service2Ctr(Constructor):
 
     @classmethod
     def from_piece(cls, piece):
-        return cls(piece.attr_name, piece.name)
+        return cls(piece.attr_name, piece.name, piece.params)
 
-    def __init__(self, attr_name, name):
+    def __init__(self, attr_name, name, params):
         self._attr_name = attr_name
         self._name = name
+        self._params = params
 
     def update_targets(self, resource_target, target_set):
         resource_target.import_alias_tgt.add_component(self)
 
     def make_component(self, python_module, name_to_res=None):
-        assert 0
+        return _make_service_component(self._attr_name, self._name, python_module, name_to_res)
 
     def get_component(self, name_to_res):
         assert 0
+
+    def make_resource(self, python_module):
+        return ServiceFnResource(self._name, self.make_component(python_module), self._params)
 
 
 class FixtureCtr(Constructor):
 
     @classmethod
     def from_piece(cls, piece):
-        return cls(piece.attr_name, piece.name)
+        return cls(piece.attr_name, piece.name, piece.params)
 
-    def __init__(self, attr_name, name):
+    def __init__(self, attr_name, name, params):
         self._attr_name = attr_name
         self._name = name
+        self._params = params
 
     def update_tests_targets(self, import_alias_tgt, target_set):
         import_alias_tgt.add_component(self)
 
     def make_component(self, python_module, name_to_res=None):
-        assert 0
+        return _make_service_component(self._attr_name, self._name, python_module, name_to_res)
 
     def get_component(self, name_to_res):
         assert 0
+
+    def make_resource(self, python_module):
+        return ServiceFnResource(self._name, self.make_component(python_module), self._params)

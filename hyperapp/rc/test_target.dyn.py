@@ -29,9 +29,10 @@ class TestTargetAlias(Target):
 
 class TestTarget(Target):
 
-    def __init__(self, python_module_src, type_src_list, function, req_to_target, alias, idx=1):
+    def __init__(self, python_module_src, type_src_list, import_alias_tgt, function, req_to_target, alias, idx=1):
         self._src = python_module_src
         self._type_src_list = type_src_list
+        self._import_alias_tgt = import_alias_tgt
         self._function = function
         self._req_to_target = req_to_target or {}
         self._tested_imports = set()  # import targets being tested.
@@ -72,6 +73,7 @@ class TestTarget(Target):
             yield ImportResource.from_type_src(src)
         for req, target in sorted(self._req_to_target.items(), key=req_key):
             yield req.make_resource(target)
+        yield from self._import_alias_tgt.test_resources
 
     def handle_job_result(self, target_set, result):
         self._completed = True
@@ -90,4 +92,4 @@ class TestTarget(Target):
         self._alias.set_completed(req_to_target)
 
     def create_next_target(self, req_to_target):
-        return TestTarget(self._src, self._type_src_list, self._function, req_to_target, self._alias, self._idx + 1)
+        return TestTarget(self._src, self._type_src_list, self._import_alias_tgt, self._function, req_to_target, self._alias, self._idx + 1)

@@ -1,0 +1,45 @@
+import:
+- builtins:mosaic.service
+- builtins:web.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.service_resource:service_fn_resource
+- legacy_type.system:service_fn
+- rc.rc_resource:rc_resource.module
+- rc.rc_resource_creg:rc_resource_creg.service
+
+associations:
+
+- bases:
+  - rc.rc_resource_creg:rc_resource_creg.service
+  - legacy_type.service_resource:service_fn_resource
+  key:
+  - rc.rc_resource_creg:rc_resource_creg.service
+  - legacy_type.service_resource:service_fn_resource
+  value: ServiceFnResource.from_piece
+
+definitions:
+
+  service_resource.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: service_resource
+      file_name: service_resource.dyn.py
+      import_list:
+        htypes.service_resource.service_fn_resource: legacy_type.service_resource:service_fn_resource
+        htypes.system.service_fn: legacy_type.system:service_fn
+        services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service
+        code.rc_resource: rc.rc_resource:rc_resource.module
+
+  ServiceFnResource:
+    type: legacy_type.builtin:attribute
+    value:
+      object: service_resource.module
+      attr_name: ServiceFnResource
+
+  ServiceFnResource.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ServiceFnResource
+      attr_name: from_piece

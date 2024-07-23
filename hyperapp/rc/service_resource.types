@@ -1,0 +1,4 @@
+service_fn_resource = record:
+  service_name: string
+  function: ref
+  params: string list

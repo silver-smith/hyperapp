@@ -2,6 +2,7 @@ import asyncio
 import inspect
 import logging
 import traceback
+from collections import defaultdict
 
 from hyperapp.common.util import flatten, merge_dicts
 from hyperapp.resource.python_module import PythonModuleResourceImportError
@@ -137,6 +138,8 @@ class TestJob:
     def run(self):
         all_resources = [*enum_builtin_resources(), *self._resources]
         import_list = flatten(d.import_records for d in all_resources)
+        configs = self._collect_configs(all_resources)
+        assert 0, configs
         recorder_piece, module_piece = self._src.recorded_python_module(import_list)
         recorder = pyobj_creg.animate(recorder_piece)
         try:
@@ -214,3 +217,11 @@ class TestJob:
                 module_name=module_name,
                 imports=tuple(recorder.used_imports),
                 )
+
+    def _collect_configs(self, resource_list):
+        service_to_config = defaultdict(dict)
+        for resource in resource_list:
+            for triplet in resource.config_triplets:
+                service, key, value = triplet
+                service_to_config[service][key] = value
+        return service_to_config

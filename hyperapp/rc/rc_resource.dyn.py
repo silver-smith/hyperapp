@@ -7,3 +7,7 @@ class Resource:
     @property
     def recorders(self):
         return {}
+
+    @property
+    def config_triplets(self):
+        return []

@@ -13,3 +13,5 @@ class Constructor:
     def get_component(self, name_to_res):
         raise NotImplementedError(self)
 
+    def make_resource(self, python_module):
+        pass

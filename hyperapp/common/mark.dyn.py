@@ -29,6 +29,7 @@ def service2_marker(fn):
     ctr = htypes.rc_constructors.service2(
         attr_name=fn.__name__,
         name=fn.__name__,
+        params=tuple(inspect.signature(fn).parameters),
         )
     add_fn_module_constructor(fn, mosaic.put(ctr))
     return fn
@@ -38,6 +39,7 @@ def fixture_marker(fn):
     ctr = htypes.rc_constructors.fixture(
         attr_name=fn.__name__,
         name=fn.__name__,
+        params=tuple(inspect.signature(fn).parameters),
         )
     add_fn_module_constructor(fn, mosaic.put(ctr))
     return fn

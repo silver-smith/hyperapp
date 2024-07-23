@@ -6,10 +6,12 @@ service = record:
 service2 = record:
   attr_name: string
   name: string
+  params: string list
 
 fixture = record:
   attr_name: string
   name: string
+  params: string list
 
 
 model = record:

@@ -94,6 +94,14 @@ class ImportTargetAlias(Target):
         recorder_piece, module_piece = self._src.recorded_python_module(import_list)
         return (self._src.name, recorder_piece, module_piece)
 
+    @property
+    def test_resources(self):
+        module_name, recorder_piece, python_module = self.recorded_python_module
+        return [
+            ctr.make_resource(python_module)
+            for ctr in self._components
+            ]
+
     def _enum_resources(self):
         yield from enum_builtin_resources()
         for src in self._type_src_list:
@@ -163,5 +171,5 @@ class ImportTarget(Target):
 
     def create_test_target(self, function, req_to_target):
         alias = TestTargetAlias(self._src, function)
-        target = TestTarget(self._src, self._type_src_list, function, req_to_target, alias)
+        target = TestTarget(self._src, self._type_src_list, self._alias, function, req_to_target, alias)
         return (alias, target)
