@@ -1,9 +1,11 @@
 from . import htypes
 from .services import (
     mosaic,
+    pyobj_creg,
     web,
     )
 from .code.rc_resource import Resource
+from .code.system_probe import ServiceProbe
 
 
 class ServiceFnResource(Resource):
@@ -27,8 +29,6 @@ class ServiceFnResource(Resource):
 
     @property
     def config_triplets(self):
-        service_fn = htypes.system.service_fn(
-            function=mosaic.put(self._function),
-            params=tuple(self._params),
-            )
-        return [('system', self._service_name, service_fn)]
+        fn = pyobj_creg.animate(self._function)
+        probe = ServiceProbe(fn, self._params)
+        return [('system', self._service_name, probe)]

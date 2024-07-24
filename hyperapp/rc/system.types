@@ -1,3 +1,0 @@
-service_fn = record:
-  function: ref
-  params: string list

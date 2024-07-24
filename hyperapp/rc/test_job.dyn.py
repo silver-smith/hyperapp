@@ -21,6 +21,7 @@ from .code.builtin_resources import enum_builtin_resources
 from .code.import_recorder import IncompleteImportedObjectError
 from .code.requirement_factory import RequirementFactory
 from .code.job_result import JobResult
+from .code.system_probe import ServiceProbe, SystemProbe
 
 log  = logging.getLogger(__name__)
 
@@ -139,28 +140,12 @@ class TestJob:
         all_resources = [*enum_builtin_resources(), *self._resources]
         import_list = flatten(d.import_records for d in all_resources)
         configs = self._collect_configs(all_resources)
-        assert 0, configs
         recorder_piece, module_piece = self._src.recorded_python_module(import_list)
         recorder = pyobj_creg.animate(recorder_piece)
-        try:
-            module = pyobj_creg.animate(module_piece)
-            status = JobStatus.ok
-        except PythonModuleResourceImportError as x:
-            status, error_msg, traceback = self._prepare_import_error(x)
-        else:
-            test_fn = getattr(module, self._test_fn_name)
-            try:
-                value = test_fn()
-
-                if inspect.isgenerator(value):
-                    log.info("Expanding generator: %r", value)
-                    value = list(value)
-
-                if inspect.iscoroutine(value):
-                    log.info("Running coroutine: %r", value)
-                    value = asyncio.run(value)
-            except Exception as x:
-                status, error_msg, traceback = self._prepare_error(x, skip_entries=1)
+        status, error_msg, traceback, module = self._import_module(module_piece)
+        if status == JobStatus.ok:
+            system, root_name = self._prepare_system(configs, module)
+            status, error_msg, traceback = self._run_system(system, root_name)
         if status == JobStatus.failed:
             return htypes.test_job.failed_result(error_msg, tuple(traceback))
         req_set = self._imports_to_requirements(recorder.used_imports)
@@ -179,6 +164,41 @@ class TestJob:
             used_imports=tuple(self._enum_used_imports(all_resources)),
             requirements=req_refs,
             )
+
+    def _import_module(self, module_piece):
+        try:
+            module = pyobj_creg.animate(module_piece)
+            status = JobStatus.ok
+            error_msg = traceback = None
+        except PythonModuleResourceImportError as x:
+            status, error_msg, traceback = self._prepare_import_error(x)
+            module = None
+        return (status, error_msg, traceback, module)
+
+    def _prepare_system(self, configs, module):
+        test_fn = getattr(module, self._test_fn_name)
+        params = tuple(inspect.signature(test_fn).parameters)
+        root_probe = ServiceProbe(test_fn, params)
+        templates = configs.get('system', {})
+        root_name = self._test_fn_name
+        templates[root_name] = root_probe
+        system = SystemProbe(templates)
+        return (system, root_name)
+
+    def _run_system(self, system, root_name):
+        try:
+            value = system.run(root_name)
+            if inspect.isgenerator(value):
+                log.info("Expanding generator: %r", value)
+                value = list(value)
+            if inspect.iscoroutine(value):
+                log.info("Running coroutine: %r", value)
+                value = asyncio.run(value)
+            status = JobStatus.ok
+            error_msg = traceback = None
+        except Exception as x:
+            status, error_msg, traceback = self._prepare_error(x, skip_entries=1)
+        return (status, error_msg, traceback)
 
     def _prepare_import_error(self, x):
         return self._prepare_error(x.original_error)

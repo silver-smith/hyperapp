@@ -1,0 +1,11 @@
+import:
+- legacy_type.builtin:python_module
+
+definitions:
+
+  system_probe.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: system_probe
+      file_name: system_probe.dyn.py
+      import_list: {}

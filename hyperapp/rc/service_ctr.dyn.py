@@ -6,20 +6,6 @@ from .code.rc_constructor import Constructor
 from .code.service_resource import ServiceFnResource
 
 
-def _make_service_component(attr_name, service_name, python_module, name_to_res):
-    attribute = htypes.builtin.attribute(
-        object=mosaic.put(python_module),
-        attr_name=attr_name,
-        )
-    service = htypes.builtin.call(
-        function=mosaic.put(attribute),
-        )
-    if name_to_res is not None:
-        name_to_res[attr_name] = attribute
-        name_to_res[f'{service_name}.service'] = service
-    return service
-
-
 class ServiceCtr(Constructor):
 
     @classmethod
@@ -36,7 +22,17 @@ class ServiceCtr(Constructor):
         target_set.update_deps_for(service_found_tgt)
 
     def make_component(self, python_module, name_to_res=None):
-        return _make_service_component(self._attr_name, self._name, python_module, name_to_res)
+        attribute = htypes.builtin.attribute(
+            object=mosaic.put(python_module),
+            attr_name=self._attr_name,
+            )
+        service = htypes.builtin.call(
+            function=mosaic.put(attribute),
+            )
+        if name_to_res is not None:
+            name_to_res[self._attr_name] = attribute
+            name_to_res[f'{self._name}.service'] = service
+        return service
 
     def get_component(self, name_to_res):
         return name_to_res[f'{self._name}.service']
@@ -57,7 +53,10 @@ class Service2Ctr(Constructor):
         resource_target.import_alias_tgt.add_component(self)
 
     def make_component(self, python_module, name_to_res=None):
-        return _make_service_component(self._attr_name, self._name, python_module, name_to_res)
+        return htypes.builtin.attribute(
+            object=mosaic.put(python_module),
+            attr_name=self._attr_name,
+            )
 
     def get_component(self, name_to_res):
         assert 0
@@ -81,7 +80,10 @@ class FixtureCtr(Constructor):
         import_alias_tgt.add_component(self)
 
     def make_component(self, python_module, name_to_res=None):
-        return _make_service_component(self._attr_name, self._name, python_module, name_to_res)
+        return htypes.builtin.attribute(
+            object=mosaic.put(python_module),
+            attr_name=self._attr_name,
+            )
 
     def get_component(self, name_to_res):
         assert 0
