@@ -21,7 +21,7 @@ from .code.builtin_resources import enum_builtin_resources
 from .code.import_recorder import IncompleteImportedObjectError
 from .code.requirement_factory import RequirementFactory
 from .code.job_result import JobResult
-from .code.system_probe import ServiceProbe, SystemProbe
+from .code.system_probe import ServiceProbeTemplate, SystemProbe
 
 log  = logging.getLogger(__name__)
 
@@ -178,7 +178,7 @@ class TestJob:
     def _prepare_system(self, configs, module):
         test_fn = getattr(module, self._test_fn_name)
         params = tuple(inspect.signature(test_fn).parameters)
-        root_probe = ServiceProbe(test_fn, params)
+        root_probe = ServiceProbeTemplate(test_fn, params)
         templates = configs.get('system', {})
         root_name = self._test_fn_name
         templates[root_name] = root_probe

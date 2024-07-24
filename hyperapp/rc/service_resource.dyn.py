@@ -5,7 +5,7 @@ from .services import (
     web,
     )
 from .code.rc_resource import Resource
-from .code.system_probe import ServiceProbe
+from .code.system_probe import ServiceProbeTemplate
 
 
 class ServiceFnResource(Resource):
@@ -30,5 +30,5 @@ class ServiceFnResource(Resource):
     @property
     def config_triplets(self):
         fn = pyobj_creg.animate(self._function)
-        probe = ServiceProbe(fn, self._params)
+        probe = ServiceProbeTemplate(fn, self._params)
         return [('system', self._service_name, probe)]
