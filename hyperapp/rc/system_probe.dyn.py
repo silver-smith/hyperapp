@@ -42,8 +42,8 @@ class ServiceProbe:
         return f"<ServiceProbe {self._fn} {self._params}>"
 
     def __call__(self, *args, **kw):
-        free_params = {*self._params[:len(args)], *kw}
-        service_params = set(self._params) - free_params
+        free_param_count = len(args) + len(kw)
+        service_params = self._params[:-free_param_count]
         return self._apply(service_params, *args, **kw)
 
     def __getattr__(self, name):
@@ -52,16 +52,16 @@ class ServiceProbe:
     def _apply(self, service_params, *args, **kw):
         if self._resolved:
             return self._service_obj
-        service_kw = {
-            name: self._system.resolve_service(name)
+        service_args = [
+            self._system.resolve_service(name)
             for name in service_params
-            }
-        service_obj = self._fn(*args, **kw, **service_kw)
+            ]
+        service_obj = self._fn(*service_args, *args, **kw)
         self._service_obj = service_obj
         service = Service(
             fn=self._fn,
-            free_params=[*self._params[:len(args)], *kw],
-            service_params=list(service_kw),
+            free_params=self._params[len(service_params):],
+            service_params=service_params,
             want_config=False,
             )
         self._system.add_resolved_service(self._name, service)
