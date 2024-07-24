@@ -3,7 +3,7 @@ import logging
 log = logging.getLogger(__name__)
 
 
-class Service:
+class ServiceTemplate:
 
     def __init__(self, fn, free_params, service_params, want_config):
         self._fn = fn
@@ -12,7 +12,7 @@ class Service:
         self._want_config = want_config
 
     def __repr__(self):
-        return f"<Service {self._fn} {self._free_params}/{self._service_params}/{self._want_config}>"
+        return f"<ServiceTemplate {self._fn} {self._free_params}/{self._service_params}/{self._want_config}>"
 
 
 class ServiceProbeTemplate:
@@ -36,7 +36,7 @@ class ServiceProbe:
         self._fn = fn
         self._params = params
         self._resolved = False
-        self._service_obj = None
+        self._service = None
 
     def __repr__(self):
         return f"<ServiceProbe {self._fn} {self._params}>"
@@ -51,22 +51,22 @@ class ServiceProbe:
 
     def _apply(self, service_params, *args, **kw):
         if self._resolved:
-            return self._service_obj
+            return self._service
         service_args = [
             self._system.resolve_service(name)
             for name in service_params
             ]
-        service_obj = self._fn(*service_args, *args, **kw)
-        self._service_obj = service_obj
-        service = Service(
+        service = self._fn(*service_args, *args, **kw)
+        self._service = service
+        template = ServiceTemplate(
             fn=self._fn,
             free_params=self._params[len(service_params):],
             service_params=service_params,
             want_config=False,
             )
-        self._system.add_resolved_service(self._name, service)
+        self._system.add_resolved_template(self._name, template)
         self._resolved = True
-        return service_obj
+        return service
 
     def _run(self):
         self._apply(self._params)
@@ -77,12 +77,12 @@ class SystemProbe:
     def __init__(self, service_templates):
         self._name_to_template = service_templates
         self._name_to_service = {}
-        self._resolved_services = {}
+        self._resolved_templates = {}
 
     def run(self, root_name):
         service = self.resolve_service(root_name)
         service._run()
-        for name, service in self._resolved_services.items():
+        for name, service in self._resolved_templates.items():
             log.info("Resolved service %s: %s", name, service)
 
     def resolve_service(self, name):
@@ -95,5 +95,5 @@ class SystemProbe:
         self._name_to_service[name] = service
         return service
 
-    def add_resolved_service(self, name, service):
-        self._resolved_services[name] = service
+    def add_resolved_template(self, name, service):
+        self._resolved_templates[name] = service
