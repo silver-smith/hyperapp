@@ -1,3 +1,21 @@
+import logging
+
+log = logging.getLogger(__name__)
+
+
+class Service:
+
+    def __init__(self, fn, free_arg_count, free_kw_names, want_services, want_config):
+        self._fn = fn
+        self._free_arg_count = free_arg_count
+        self._free_kw_names = free_kw_names
+        self._want_services = want_services
+        self._want_config = want_config
+
+    def __repr__(self):
+        return f"<Service {self._fn} {self._free_arg_count}/{self._free_kw_names}:{self._want_services}/{self._want_config}>"
+
+
 class ServiceProbeTemplate:
 
     def __init__(self, fn, params):
@@ -7,18 +25,19 @@ class ServiceProbeTemplate:
     def __repr__(self):
         return f"<ServiceProbeTemplate {self._fn} {self.params}>"
 
-    def resolve(self, system):
-        return ServiceProbe(system, self.fn, self.params)
+    def resolve(self, system, service_name):
+        return ServiceProbe(system, service_name, self.fn, self.params)
 
 
 class ServiceProbe:
 
-    def __init__(self, system_probe, fn, params):
+    def __init__(self, system_probe, service_name, fn, params):
         self._system = system_probe
+        self._name = service_name
         self._fn = fn
         self._params = params
         self._resolved = False
-        self._service = None
+        self._service_obj = None
 
     def __repr__(self):
         return f"<ServiceProbe {self._fn} {self._params}>"
@@ -33,15 +52,23 @@ class ServiceProbe:
 
     def _apply(self, service_params, *args, **kw):
         if self._resolved:
-            return self._service
+            return self._service_obj
         service_kw = {
-            name: self._system._resolve_service(name)
+            name: self._system.resolve_service(name)
             for name in service_params
             }
-        service = self._fn(*args, **kw, **service_kw)
-        self._service = service
+        service_obj = self._fn(*args, **kw, **service_kw)
+        self._service_obj = service_obj
+        service = Service(
+            fn=self._fn,
+            free_arg_count=len(args),
+            free_kw_names=list(kw),
+            want_services=list(service_kw),
+            want_config=False,
+            )
+        self._system.add_resolved_service(self._name, service)
         self._resolved = True
-        return service
+        return service_obj
 
     def _run(self):
         self._apply(self._params)
@@ -52,21 +79,23 @@ class SystemProbe:
     def __init__(self, service_templates):
         self._name_to_template = service_templates
         self._name_to_service = {}
+        self._resolved_services = {}
 
     def run(self, root_name):
-        template = self._name_to_template[root_name]
-        self._run(template)
-
-    def _run(self, template):
-        service = template.resolve(self)
+        service = self.resolve_service(root_name)
         service._run()
+        for name, service in self._resolved_services.items():
+            log.info("Resolved service %s: %s", name, service)
 
-    def _resolve_service(self, name):
+    def resolve_service(self, name):
         try:
             return self._name_to_service[name]
         except KeyError:
             pass
         template = self._name_to_template[name]
-        service = template.resolve(self)
+        service = template.resolve(self, name)
         self._name_to_service[name] = service
         return service
+
+    def add_resolved_service(self, name, service):
+        self._resolved_services[name] = service
