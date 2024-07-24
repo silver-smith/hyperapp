@@ -6,7 +6,6 @@ service_fn_resource = record:
 service_resource = record:
   service_name: string
   function: ref
-  free_arg_count: int
-  free_kw_names: string list
-  want_services: string list
+  free_params: string list
+  service_params: string list
   want_config: bool

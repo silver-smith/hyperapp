@@ -5,15 +5,14 @@ log = logging.getLogger(__name__)
 
 class Service:
 
-    def __init__(self, fn, free_arg_count, free_kw_names, want_services, want_config):
+    def __init__(self, fn, free_params, service_params, want_config):
         self._fn = fn
-        self._free_arg_count = free_arg_count
-        self._free_kw_names = free_kw_names
-        self._want_services = want_services
+        self._free_params = free_params
+        self._service_params = service_params
         self._want_config = want_config
 
     def __repr__(self):
-        return f"<Service {self._fn} {self._free_arg_count}/{self._free_kw_names}:{self._want_services}/{self._want_config}>"
+        return f"<Service {self._fn} {self._free_params}/{self._service_params}/{self._want_config}>"
 
 
 class ServiceProbeTemplate:
@@ -61,9 +60,8 @@ class ServiceProbe:
         self._service_obj = service_obj
         service = Service(
             fn=self._fn,
-            free_arg_count=len(args),
-            free_kw_names=list(kw),
-            want_services=list(service_kw),
+            free_params=[*self._params[:len(args)], *kw],
+            service_params=list(service_kw),
             want_config=False,
             )
         self._system.add_resolved_service(self._name, service)
