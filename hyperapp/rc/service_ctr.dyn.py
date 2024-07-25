@@ -3,7 +3,7 @@ from .services import (
     mosaic,
     )
 from .code.rc_constructor import Constructor
-from .code.service_resource import FixtureProbeResource, ServiceProbeResource
+from .code.service_probe_resource import FixtureProbeResource, ServiceProbeResource
 
 
 class ServiceCtr(Constructor):
@@ -69,12 +69,14 @@ class ServiceTemplateCtr(Constructor):
 
     @classmethod
     def from_piece(cls, piece):
-        return cls(piece.attr_name, piece.name, piece.params)
+        return cls(piece.attr_name, piece.name, piece.free_params, piece.service_params, piece.want_config)
 
-    def __init__(self, attr_name, name, params):
+    def __init__(self, attr_name, name, free_params, service_params, want_config):
         self._attr_name = attr_name
         self._name = name
-        self._params = params
+        self._free_params = free_params
+        self._service_params = service_params
+        self._want_config = want_config
 
     def update_targets(self, resource_target, target_set):
         resource_target.import_alias_tgt.add_component(self)

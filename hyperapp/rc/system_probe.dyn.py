@@ -9,7 +9,6 @@ class ServiceTemplate:
 
     module_name: str
     attr_name: str
-    fn: callable
     free_params: list[str]
     service_params: list[str]
     want_config: bool
@@ -95,7 +94,6 @@ class ServiceProbe(Probe):
         template = ServiceTemplate(
             module_name=self._module_name,
             attr_name=self._attr_name,
-            fn=self._fn,
             free_params=self._params[len(service_params):],
             service_params=service_params,
             want_config=False,
