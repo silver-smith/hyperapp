@@ -1,0 +1,7 @@
+service_template = record:
+  name: string
+  function: ref
+  free_params: string list
+  service_params: string list
+  want_config: bool
+

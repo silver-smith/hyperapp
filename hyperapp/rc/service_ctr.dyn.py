@@ -86,8 +86,12 @@ class ServiceTemplateCtr(Constructor):
             object=mosaic.put(python_module),
             attr_name=self._attr_name,
             )
-        service = htypes.builtin.call(
+        service = htypes.system.service_template(
+            name=self._name,
             function=mosaic.put(attribute),
+            free_params=tuple(self._free_params),
+            service_params=tuple(self._service_params),
+            want_config=self._want_config,
             )
         if name_to_res is not None:
             name_to_res[self._attr_name] = attribute
