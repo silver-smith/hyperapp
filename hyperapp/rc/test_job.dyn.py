@@ -191,7 +191,7 @@ class TestJob:
     def _prepare_system(self, configs, module):
         test_fn = getattr(module, self._test_fn_name)
         params = tuple(inspect.signature(test_fn).parameters)
-        root_probe = FixtureProbeTemplate('main', test_fn, params)
+        root_probe = FixtureProbeTemplate(test_fn, params)
         templates = configs.get('system', {})
         root_name = self._test_fn_name
         templates[root_name] = root_probe

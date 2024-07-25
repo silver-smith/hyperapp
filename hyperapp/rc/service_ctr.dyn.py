@@ -38,7 +38,7 @@ class ServiceCtr(Constructor):
         return name_to_res[f'{self._name}.service']
 
 
-class Service2Ctr(Constructor):
+class ServiceProbeCtr(Constructor):
 
     @classmethod
     def from_piece(cls, piece):
@@ -62,7 +62,38 @@ class Service2Ctr(Constructor):
         assert 0
 
     def make_resource(self, module_name, python_module):
-        return ServiceProbeResource(module_name, self._name, self.make_component(python_module), self._params)
+        return ServiceProbeResource(module_name, self._attr_name, self._name, self.make_component(python_module), self._params)
+
+
+class ServiceTemplateCtr(Constructor):
+
+    @classmethod
+    def from_piece(cls, piece):
+        return cls(piece.attr_name, piece.name, piece.params)
+
+    def __init__(self, attr_name, name, params):
+        self._attr_name = attr_name
+        self._name = name
+        self._params = params
+
+    def update_targets(self, resource_target, target_set):
+        resource_target.import_alias_tgt.add_component(self)
+
+    def make_component(self, python_module, name_to_res=None):
+        attribute = htypes.builtin.attribute(
+            object=mosaic.put(python_module),
+            attr_name=self._attr_name,
+            )
+        service = htypes.builtin.call(
+            function=mosaic.put(attribute),
+            )
+        if name_to_res is not None:
+            name_to_res[self._attr_name] = attribute
+            name_to_res[f'{self._name}.service'] = service
+        return service
+
+    def get_component(self, name_to_res):
+        assert 0
 
 
 class FixtureCtr(Constructor):
@@ -89,4 +120,4 @@ class FixtureCtr(Constructor):
         assert 0
 
     def make_resource(self, module_name, python_module):
-        return FixtureProbeResource(module_name, self._name, self.make_component(python_module), self._params)
+        return FixtureProbeResource(self._name, self.make_component(python_module), self._params)

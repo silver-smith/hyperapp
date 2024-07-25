@@ -25,8 +25,8 @@ class ServiceMarker:
         return fn
 
 
-def service2_marker(fn):
-    ctr = htypes.rc_constructors.service2(
+def service_probe_marker(fn):
+    ctr = htypes.rc_constructors.service_probe(
         attr_name=fn.__name__,
         name=fn.__name__,
         params=tuple(inspect.signature(fn).parameters),
@@ -87,7 +87,7 @@ class UiModelCommand(UiCommandBase):
 def mark():
     return SimpleNamespace(
         service=ServiceMarker(),
-        service2=service2_marker,
+        service2=service_probe_marker,
         fixture=fixture_marker,
         model=model,
         ui_command=UiCommand(),

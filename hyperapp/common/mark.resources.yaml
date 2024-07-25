@@ -4,7 +4,7 @@ import:
 - legacy_type.rc_constructors:fixture
 - legacy_type.rc_constructors:model
 - legacy_type.rc_constructors:service
-- legacy_type.rc_constructors:service2
+- legacy_type.rc_constructors:service_probe
 - legacy_type.rc_constructors:ui_command
 - legacy_type.rc_constructors:ui_model_command
 - legacy_type.rc_constructors:universal_ui_command
@@ -23,7 +23,7 @@ definitions:
         htypes.rc_constructors.fixture: legacy_type.rc_constructors:fixture
         htypes.rc_constructors.model: legacy_type.rc_constructors:model
         htypes.rc_constructors.service: legacy_type.rc_constructors:service
-        htypes.rc_constructors.service2: legacy_type.rc_constructors:service2
+        htypes.rc_constructors.service_probe: legacy_type.rc_constructors:service_probe
         htypes.rc_constructors.ui_command: legacy_type.rc_constructors:ui_command
         htypes.rc_constructors.ui_model_command: legacy_type.rc_constructors:ui_model_command
         htypes.rc_constructors.universal_ui_command: legacy_type.rc_constructors:universal_ui_command
