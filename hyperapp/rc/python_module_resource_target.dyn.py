@@ -74,7 +74,7 @@ class ManualPythonModuleResourceTarget(PythonModuleResourceTarget):
         name = f'{self._src.stem}.module'
         return self._resource_module[name]
 
-    def add_component(self, ctr):
+    def adopt_component(self, ctr):
         return ctr.get_component(self._resource_module)
 
 
@@ -96,6 +96,7 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
         self._req_to_target = {}
         self._type_resources = set()
         self._tests = set()
+        self._constructors = set()
 
     @property
     def completed(self):
@@ -146,8 +147,11 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
         import_list = sorted(flatten(d.import_records for d in resources))
         return self._src.python_module(import_list)
 
-    def add_component(self, ctr):
+    def adopt_component(self, ctr):
         return ctr.make_component(self.python_module_piece, self._resource_module)
+
+    def add_component(self, ctr):
+        self._constructors.add(ctr)
 
     def _enum_resources(self):
         yield from self._type_resources
@@ -158,6 +162,8 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
         rc_log.debug("Construct: %s", self.name)
         python_module = self.python_module_piece
         self._resource_module[f'{self._src.stem}.module'] = python_module
+        for ctr in self._constructors:
+            self.adopt_component(ctr)
 
     def get_output(self):
         return (self._src.resource_path, self._resource_module.as_text)

@@ -52,11 +52,11 @@ class ServiceTemplateResource(Resource):
 
     def update_targets(self, target_factory):
         resource_tgt = target_factory.python_module_resource_by_module_name(self._module_name)
-        constructor = ServiceTemplateCtr(
+        ctr = ServiceTemplateCtr(
             attr_name=self._attr_name,
             name=self._service_name,
             free_params=self._free_params,
             service_params=self._service_params,
             want_config=self._want_config,
             )
-        assert 0, resource_tgt
+        resource_tgt.add_component(ctr)
