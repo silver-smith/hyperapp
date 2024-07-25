@@ -98,7 +98,7 @@ class ImportTargetAlias(Target):
     def test_resources(self):
         module_name, recorder_piece, python_module = self.recorded_python_module
         return [
-            ctr.make_resource(python_module)
+            ctr.make_resource(self._src.name, python_module)
             for ctr in self._components
             ]
 

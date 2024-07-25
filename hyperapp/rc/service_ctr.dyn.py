@@ -61,8 +61,8 @@ class Service2Ctr(Constructor):
     def get_component(self, name_to_res):
         assert 0
 
-    def make_resource(self, python_module):
-        return ServiceProbeResource(self._name, self.make_component(python_module), self._params)
+    def make_resource(self, module_name, python_module):
+        return ServiceProbeResource(module_name, self._name, self.make_component(python_module), self._params)
 
 
 class FixtureCtr(Constructor):
@@ -88,5 +88,5 @@ class FixtureCtr(Constructor):
     def get_component(self, name_to_res):
         assert 0
 
-    def make_resource(self, python_module):
-        return FixtureProbeResource(self._name, self.make_component(python_module), self._params)
+    def make_resource(self, module_name, python_module):
+        return FixtureProbeResource(module_name, self._name, self.make_component(python_module), self._params)
