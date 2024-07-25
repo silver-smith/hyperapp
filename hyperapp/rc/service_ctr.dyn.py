@@ -3,7 +3,7 @@ from .services import (
     mosaic,
     )
 from .code.rc_constructor import Constructor
-from .code.service_resource import ServiceFnResource
+from .code.service_resource import FixtureProbeResource, ServiceProbeResource
 
 
 class ServiceCtr(Constructor):
@@ -62,7 +62,7 @@ class Service2Ctr(Constructor):
         assert 0
 
     def make_resource(self, python_module):
-        return ServiceFnResource(self._name, self.make_component(python_module), self._params)
+        return ServiceProbeResource(self._name, self.make_component(python_module), self._params)
 
 
 class FixtureCtr(Constructor):
@@ -89,4 +89,4 @@ class FixtureCtr(Constructor):
         assert 0
 
     def make_resource(self, python_module):
-        return ServiceFnResource(self._name, self.make_component(python_module), self._params)
+        return FixtureProbeResource(self._name, self.make_component(python_module), self._params)

@@ -21,7 +21,8 @@ from .code.builtin_resources import enum_builtin_resources
 from .code.import_recorder import IncompleteImportedObjectError
 from .code.requirement_factory import RequirementFactory
 from .code.job_result import JobResult
-from .code.system_probe import ServiceProbeTemplate, SystemProbe
+from .code.service_resource import ServiceTemplateResource
+from .code.system_probe import FixtureProbeTemplate, SystemProbe
 
 log  = logging.getLogger(__name__)
 
@@ -160,9 +161,14 @@ class TestJob:
                 error=error_msg,
                 traceback=tuple(traceback),
                 )
+        resources = [
+            ServiceTemplateResource.from_template(name, template)
+            for name, template in system.resolved_templates.items()
+            ]
         return htypes.test_job.succeeded_result(
             used_imports=tuple(self._enum_used_imports(all_resources)),
             requirements=req_refs,
+            resources=tuple(mosaic.put(res.piece) for res in resources)
             )
 
     def _import_module(self, module_piece):
@@ -178,7 +184,7 @@ class TestJob:
     def _prepare_system(self, configs, module):
         test_fn = getattr(module, self._test_fn_name)
         params = tuple(inspect.signature(test_fn).parameters)
-        root_probe = ServiceProbeTemplate(test_fn, params)
+        root_probe = FixtureProbeTemplate(test_fn, params)
         templates = configs.get('system', {})
         root_name = self._test_fn_name
         templates[root_name] = root_probe
@@ -198,6 +204,8 @@ class TestJob:
             error_msg = traceback = None
         except Exception as x:
             status, error_msg, traceback = self._prepare_error(x, skip_entries=1)
+        for name, service in system.resolved_templates.items():
+            log.info("Resolved service %s: %s", name, service)
         return (status, error_msg, traceback)
 
     def _prepare_import_error(self, x):

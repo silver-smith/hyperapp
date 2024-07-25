@@ -1,9 +1,14 @@
-service_fn_resource = record:
+service_probe_resource = record:
   service_name: string
   function: ref
   params: string list
 
-service_resource = record:
+fixture_probe_resource = record:
+  service_name: string
+  function: ref
+  params: string list
+
+service_template_resource = record:
   service_name: string
   function: ref
   free_params: string list

@@ -20,6 +20,7 @@ import:
 - rc.rc_job_result_creg:rc_job_result_creg.service
 - rc.rc_requirement_creg:rc_requirement_creg.service
 - rc.rc_resource_creg:rc_resource_creg.service
+- rc.service_resource:service_resource.module
 - rc.system_probe:system_probe.module
 
 associations:
@@ -81,6 +82,7 @@ definitions:
         code.import_recorder: rc.import_recorder:import_recorder.module
         code.requirement_factory: rc.requirement_factory:requirement_factory.module
         code.rc_constants: rc.rc_constants:rc_constants.module
+        code.service_resource: rc.service_resource:service_resource.module
         code.system_probe: rc.system_probe:system_probe.module
 
   SucceededTestResult:

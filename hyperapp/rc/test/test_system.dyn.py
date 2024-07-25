@@ -21,8 +21,9 @@ def simple_fixture():
 
 
 @mark.fixture
-def fn_fixture(simple_fixture, sample_service, param_1, param_2, param_3):
-    log.info("Fn fixture: simple_fixture=%r sample_service=%r", simple_fixture.value, sample_service.value)
+def fn_fixture(simple_fixture, sample_fn_service, param_1, param_2, param_3):
+    sample_fn_service_value = sample_fn_service(111, 222)
+    log.info("Fn fixture: simple_fixture=%r sample_service=%r", simple_fixture.value, sample_fn_service_value)
     return f"fn fixture: {param_1} / {param_2} / {param_3}"
 
 

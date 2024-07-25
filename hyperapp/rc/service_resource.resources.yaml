@@ -4,7 +4,9 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.service_resource:service_fn_resource
+- legacy_type.service_resource:fixture_probe_resource
+- legacy_type.service_resource:service_probe_resource
+- legacy_type.service_resource:service_template_resource
 - rc.rc_resource:rc_resource.module
 - rc.rc_resource_creg:rc_resource_creg.service
 - rc.system_probe:system_probe.module
@@ -13,11 +15,27 @@ associations:
 
 - bases:
   - rc.rc_resource_creg:rc_resource_creg.service
-  - legacy_type.service_resource:service_fn_resource
+  - legacy_type.service_resource:service_probe_resource
   key:
   - rc.rc_resource_creg:rc_resource_creg.service
-  - legacy_type.service_resource:service_fn_resource
-  value: ServiceFnResource.from_piece
+  - legacy_type.service_resource:service_probe_resource
+  value: ServiceProbeResource.from_piece
+
+- bases:
+  - rc.rc_resource_creg:rc_resource_creg.service
+  - legacy_type.service_resource:fixture_probe_resource
+  key:
+  - rc.rc_resource_creg:rc_resource_creg.service
+  - legacy_type.service_resource:fixture_probe_resource
+  value: FixtureProbeResource.from_piece
+
+- bases:
+  - rc.rc_resource_creg:rc_resource_creg.service
+  - legacy_type.service_resource:service_template_resource
+  key:
+  - rc.rc_resource_creg:rc_resource_creg.service
+  - legacy_type.service_resource:service_template_resource
+  value: ServiceTemplateResource.from_piece
 
 definitions:
 
@@ -27,21 +45,47 @@ definitions:
       module_name: service_resource
       file_name: service_resource.dyn.py
       import_list:
-        htypes.service_resource.service_fn_resource: legacy_type.service_resource:service_fn_resource
+        htypes.service_resource.service_probe_resource: legacy_type.service_resource:service_probe_resource
+        htypes.service_resource.fixture_probe_resource: legacy_type.service_resource:fixture_probe_resource
+        htypes.service_resource.service_template_resource: legacy_type.service_resource:service_template_resource
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
         code.rc_resource: rc.rc_resource:rc_resource.module
         code.system_probe: rc.system_probe:system_probe.module
 
-  ServiceFnResource:
+  ServiceProbeResource:
     type: legacy_type.builtin:attribute
     value:
       object: service_resource.module
-      attr_name: ServiceFnResource
+      attr_name: ServiceProbeResource
 
-  ServiceFnResource.from_piece:
+  ServiceProbeResource.from_piece:
     type: legacy_type.builtin:attribute
     value:
-      object: ServiceFnResource
+      object: ServiceProbeResource
+      attr_name: from_piece
+
+  FixtureProbeResource:
+    type: legacy_type.builtin:attribute
+    value:
+      object: service_resource.module
+      attr_name: FixtureProbeResource
+
+  FixtureProbeResource.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: FixtureProbeResource
+      attr_name: from_piece
+
+  ServiceTemplateResource:
+    type: legacy_type.builtin:attribute
+    value:
+      object: service_resource.module
+      attr_name: ServiceTemplateResource
+
+  ServiceTemplateResource.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ServiceTemplateResource
       attr_name: from_piece

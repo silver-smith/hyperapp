@@ -1,18 +1,16 @@
 import logging
+from dataclasses import dataclass
 
 log = logging.getLogger(__name__)
 
 
+@dataclass
 class ServiceTemplate:
 
-    def __init__(self, fn, free_params, service_params, want_config):
-        self._fn = fn
-        self._free_params = free_params
-        self._service_params = service_params
-        self._want_config = want_config
-
-    def __repr__(self):
-        return f"<ServiceTemplate {self._fn} {self._free_params}/{self._service_params}/{self._want_config}>"
+    fn: callable
+    free_params: list[str]
+    service_params: list[str]
+    want_config: bool
 
 
 class ServiceProbeTemplate:
@@ -28,7 +26,20 @@ class ServiceProbeTemplate:
         return ServiceProbe(system, service_name, self.fn, self.params)
 
 
-class ServiceProbe:
+class FixtureProbeTemplate:
+
+    def __init__(self, fn, params):
+        self.fn = fn
+        self.params = params
+
+    def __repr__(self):
+        return f"<FixtureProbeTemplate {self._fn} {self.params}>"
+
+    def resolve(self, system, service_name):
+        return FixtureProbe(system, service_name, self.fn, self.params)
+
+
+class Probe:
 
     def __init__(self, system_probe, service_name, fn, params):
         self._system = system_probe
@@ -37,9 +48,6 @@ class ServiceProbe:
         self._params = params
         self._resolved = False
         self._service = None
-
-    def __repr__(self):
-        return f"<ServiceProbe {self._fn} {self._params}>"
 
     def __call__(self, *args, **kw):
         free_param_count = len(args) + len(kw)
@@ -64,12 +72,30 @@ class ServiceProbe:
             service_params=service_params,
             want_config=False,
             )
-        self._system.add_resolved_template(self._name, template)
+        self._add_resolved_template(template)
         self._resolved = True
         return service
 
     def _run(self):
         self._apply(self._params)
+
+    def _add_resolved_template(self, template):
+        pass
+
+
+class ServiceProbe(Probe):
+
+    def __repr__(self):
+        return f"<ServiceProbe {self._fn} {self._params}>"
+
+    def _add_resolved_template(self, template):
+        self._system.add_resolved_template(self._name, template)
+
+
+class FixtureProbe(Probe):
+
+    def __repr__(self):
+        return f"<FixtureProbe {self._fn} {self._params}>"
 
 
 class SystemProbe:
@@ -82,8 +108,10 @@ class SystemProbe:
     def run(self, root_name):
         service = self.resolve_service(root_name)
         service._run()
-        for name, service in self._resolved_templates.items():
-            log.info("Resolved service %s: %s", name, service)
+
+    @property
+    def resolved_templates(self):
+        return self._resolved_templates
 
     def resolve_service(self, name):
         try:
