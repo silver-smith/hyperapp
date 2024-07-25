@@ -10,19 +10,19 @@ log = logging.getLogger(__name__)
 
 
 @dataclass
-class SampleService:
+class SampleFixture:
     value: str
 
 
 @mark.fixture
 def simple_fixture():
     log.info("Simple fixture")
-    return SampleService("simple")
+    return SampleFixture("simple")
 
 
 @mark.fixture
-def fn_fixture(simple_fixture, param_1, param_2, param_3):
-    log.info("Fn fixture: simple_fixture=%r", simple_fixture.value)
+def fn_fixture(simple_fixture, sample_service, param_1, param_2, param_3):
+    log.info("Fn fixture: simple_fixture=%r sample_service=%r", simple_fixture.value, sample_service.value)
     return f"fn fixture: {param_1} / {param_2} / {param_3}"
 
 
@@ -30,7 +30,7 @@ def fn_fixture(simple_fixture, param_1, param_2, param_3):
 def value_fixture(fn_fixture):
     log.info("Fixture 1: fn_fixture=%r", fn_fixture)
     result = fn_fixture("val-1", "val-2", param_3="val-3")
-    return SampleService(f"value fixture: fn result={result}")
+    return SampleFixture(f"value fixture: fn result={result}")
 
 
 def test_sample_service(value_fixture):

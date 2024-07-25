@@ -52,7 +52,7 @@ class TestedServiceReq(Requirement):
             import_name=self.import_path,
             service_piece=service,
             )
-        return [recorder_res, tested_service_res]
+        return [*import_tgt.test_resources, recorder_res, tested_service_res]
 
 
 @dataclass(frozen=True, unsafe_hash=True)
@@ -90,7 +90,7 @@ class TestedCodeReq(Requirement):
             import_name=self.import_path,
             module_piece=module_piece,
             )
-        return [recorder_res, tested_code_res]
+        return [*target.test_resources, recorder_res, tested_code_res]
 
 
 class TestedServiceResource(Resource):
