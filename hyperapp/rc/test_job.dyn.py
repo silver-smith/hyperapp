@@ -67,15 +67,22 @@ class SucceededTestResult(TestResultBase):
     def from_piece(cls, piece):
         used_imports = cls._used_imports_to_dict(piece.used_imports)
         requirements = cls._resolve_reqirement_refs(piece.requirements)
-        return cls(used_imports, requirements)
+        resources = [rc_resource_creg.invite(ref) for ref in piece.resources]
+        return cls(used_imports, requirements, resources)
 
-    def __init__(self, used_imports, requirements):
+    def __init__(self, used_imports, requirements, resources):
         super().__init__(JobStatus.ok, used_imports, requirements)
+        self._resources = resources
 
     def update_targets(self, my_target, target_set):
-        self._update_tested_imports(target_set.factory)
         req_to_target = self._resolve_requirements(target_set.factory)
+        self._update_tested_imports(target_set.factory)
+        self._update_resource_targets(my_target, target_set.factory)
         my_target.set_alias_completed(req_to_target)
+
+    def _update_resource_targets(self, test_target, target_factory):
+        for resource in self._resources:
+            resource.update_targets(target_factory)
 
 
 class IncompleteTestResult(TestResultBase):

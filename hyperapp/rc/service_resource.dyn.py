@@ -98,3 +98,6 @@ class ServiceTemplateResource(Resource):
             service_params=tuple(self._service_params),
             want_config=self._want_config
             )
+
+    def update_targets(self, target_factory):
+        pass
