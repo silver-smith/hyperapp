@@ -107,7 +107,7 @@ class ImportTargetAlias(Target):
         for src in self._type_src_list:
             yield ImportResource.from_type_src(src)
         for req, target in self._req_to_target.items():
-            yield req.make_resource(target)
+            yield from req.make_resource_list(target)
 
 
 class ImportTarget(Target):
@@ -148,7 +148,7 @@ class ImportTarget(Target):
         for src in self._type_src_list:
             yield ImportResource.from_type_src(src)
         for req, target in self._req_to_target.items():
-            yield req.make_resource(target)
+            yield from req.make_resource_list(target)
 
     def handle_job_result(self, target_set, result):
         self._completed = True

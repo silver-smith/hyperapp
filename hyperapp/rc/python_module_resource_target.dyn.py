@@ -152,7 +152,7 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
     def _enum_resources(self):
         yield from self._type_resources
         for req, target in self._req_to_target.items():
-            yield req.make_resource(target)
+            yield from req.make_resource_list(target)
 
     def _construct(self):
         rc_log.debug("Construct: %s", self.name)

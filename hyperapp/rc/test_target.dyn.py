@@ -72,7 +72,7 @@ class TestTarget(Target):
         for src in self._type_src_list:
             yield ImportResource.from_type_src(src)
         for req, target in sorted(self._req_to_target.items(), key=req_key):
-            yield req.make_resource(target)
+            yield from req.make_resource_list(target)
         yield from self._import_alias_tgt.test_resources
 
     def handle_job_result(self, target_set, result):
