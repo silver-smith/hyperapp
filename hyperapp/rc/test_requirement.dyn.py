@@ -39,17 +39,20 @@ class TestedServiceReq(Requirement):
         else:
             service_found_tgt.add_unresolved_in_test(test_target)
 
-    def make_resource(self, target):
+    def make_resource_list(self, target):
         import_tgt = target.import_alias_tgt
         ctr = target.constructor
         recorder_module_name, recorder_piece, python_module = import_tgt.recorded_python_module
         service = ctr.make_component(python_module)
-        return TestedServiceResource(
-            import_name=self.import_path,
-            service_piece=service,
+        recorder_res = RecorderResource(
             recorder_module_name=recorder_module_name,
             recorder_piece=recorder_piece,
             )
+        tested_service_res = TestedServiceResource(
+            import_name=self.import_path,
+            service_piece=service,
+            )
+        return [recorder_res, tested_service_res]
 
 
 @dataclass(frozen=True, unsafe_hash=True)
@@ -77,14 +80,17 @@ class TestedCodeReq(Requirement):
         tested_resource_tgt = target_set.factory.python_module_resource_by_code_name(self.code_name)
         tested_resource_tgt.add_test(test_target, target_set)
 
-    def make_resource(self, target):
+    def make_resource_list(self, target):
         recorder_module_name, recorder_piece, module_piece = target.recorded_python_module
-        return TestedCodeResource(
-            import_name=self.import_path,
-            module_piece=module_piece,
+        recorder_res = RecorderResource(
             recorder_module_name=recorder_module_name,
             recorder_piece=recorder_piece,
             )
+        tested_code_res = TestedCodeResource(
+            import_name=self.import_path,
+            module_piece=module_piece,
+            )
+        return [recorder_res, tested_code_res]
 
 
 class TestedServiceResource(Resource):
@@ -94,23 +100,17 @@ class TestedServiceResource(Resource):
         return cls(
             import_name=piece.import_name,
             service_piece=web.summon(piece.service),
-            recorder_module_name=piece.recorder_module_name,
-            recorder_piece=web.summon(piece.recorder),
             )
 
-    def __init__(self, import_name, service_piece, recorder_module_name, recorder_piece):
+    def __init__(self, import_name, service_piece):
         self._import_name = import_name
         self._service_piece = service_piece
-        self._recorder_module_name = recorder_module_name
-        self._recorder_piece = recorder_piece
 
     @property
     def piece(self):
         return htypes.test_target.tested_service_resource(
             import_name=tuple(self._import_name),
             service=mosaic.put(self._service_piece),
-            recorder_module_name=self._recorder_module_name,
-            recorder=mosaic.put(self._recorder_piece),
             )
 
     @property
@@ -120,12 +120,6 @@ class TestedServiceResource(Resource):
             resource=mosaic.put(self._service_piece),
             )]
 
-    @property
-    def recorders(self):
-        return {
-            self._recorder_module_name: pyobj_creg.animate(self._recorder_piece),
-            }
-
 
 class TestedCodeResource(Resource):
 
@@ -134,23 +128,17 @@ class TestedCodeResource(Resource):
         return cls(
             import_name=piece.import_name,
             module_piece=web.summon(piece.module),
-            recorder_module_name=piece.recorder_module_name,
-            recorder_piece=web.summon(piece.recorder),
             )
 
-    def __init__(self, import_name, module_piece, recorder_module_name, recorder_piece):
+    def __init__(self, import_name, module_piece):
         self._import_name = import_name
         self._module_piece = module_piece
-        self._recorder_module_name = recorder_module_name
-        self._recorder_piece = recorder_piece
 
     @property
     def piece(self):
         return htypes.test_target.tested_code_resource(
             import_name=tuple(self._import_name),
             module=mosaic.put(self._module_piece),
-            recorder_module_name=self._recorder_module_name,
-            recorder=mosaic.put(self._recorder_piece),
             )
 
     @property
@@ -159,6 +147,27 @@ class TestedCodeResource(Resource):
             full_name='.'.join(self._import_name),
             resource=mosaic.put(self._module_piece),
             )]
+
+
+class RecorderResource(Resource):
+
+    @classmethod
+    def from_piece(cls, piece):
+        return cls(
+            recorder_module_name=piece.recorder_module_name,
+            recorder_piece=web.summon(piece.recorder),
+            )
+
+    def __init__(self, recorder_module_name, recorder_piece):
+        self._recorder_module_name = recorder_module_name
+        self._recorder_piece = recorder_piece
+
+    @property
+    def piece(self):
+        return htypes.test_target.recorder_resource(
+            recorder_module_name=self._recorder_module_name,
+            recorder=mosaic.put(self._recorder_piece),
+            )
 
     @property
     def recorders(self):

@@ -5,6 +5,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:import_rec
 - legacy_type.builtin:python_module
+- legacy_type.test_target:recorder_resource
 - legacy_type.test_target:tested_code_req
 - legacy_type.test_target:tested_code_resource
 - legacy_type.test_target:tested_service_req
@@ -48,6 +49,14 @@ associations:
   - legacy_type.test_target:tested_code_resource
   value: TestedCodeResource.from_piece
 
+- bases:
+  - rc.rc_resource_creg:rc_resource_creg.service
+  - legacy_type.test_target:recorder_resource
+  key:
+  - rc.rc_resource_creg:rc_resource_creg.service
+  - legacy_type.test_target:recorder_resource
+  value: RecorderResource.from_piece
+
 definitions:
 
   test_requirement.module:
@@ -61,6 +70,7 @@ definitions:
         htypes.test_target.tested_service_req: legacy_type.test_target:tested_service_req
         htypes.test_target.tested_code_resource: legacy_type.test_target:tested_code_resource
         htypes.test_target.tested_service_resource: legacy_type.test_target:tested_service_resource
+        htypes.test_target.recorder_resource: legacy_type.test_target:recorder_resource
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
@@ -113,4 +123,16 @@ definitions:
     type: legacy_type.builtin:attribute
     value:
       object: TestedCodeResource
+      attr_name: from_piece
+
+  RecorderResource:
+    type: legacy_type.builtin:attribute
+    value:
+      object: test_requirement.module
+      attr_name: RecorderResource
+
+  RecorderResource.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: RecorderResource
       attr_name: from_piece
