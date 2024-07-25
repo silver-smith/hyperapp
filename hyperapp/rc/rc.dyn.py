@@ -40,20 +40,27 @@ def _collect_output(target_set, failures, options):
             continue
         resource_path, text = target.get_output()
         path = hyperapp_dir / resource_path
-        p = subprocess.run(
-            ['diff', '-u', str(path), '-'],
-            input=text.encode(),
-            stdout=subprocess.PIPE,
-            )
-        if p.returncode == 0:
-            rc_log.info("%s: No diffs", target.name)
-        else:
-            diffs = p.stdout.decode()
-            line_count = len(diffs.splitlines())
-            if options.show_diffs:
-                rc_log.info("%s: Diff %d lines\n%s", target.name, line_count, diffs)
+        if path.exists():
+            p = subprocess.run(
+                ['diff', '-u', str(path), '-'],
+                input=text.encode(),
+                stdout=subprocess.PIPE,
+                )
+            if p.returncode == 0:
+                rc_log.info("%s: No diffs", target.name)
             else:
-                rc_log.info("%s: Diff %d lines", target.name, line_count)
+                diffs = p.stdout.decode()
+                line_count = len(diffs.splitlines())
+                if options.show_diffs:
+                    rc_log.info("%s: Diff %d lines\n%s", target.name, line_count, diffs)
+                else:
+                    rc_log.info("%s: Diff %d lines", target.name, line_count)
+                changed += 1
+        else:
+            if options.show_diffs:
+                rc_log.info("%s: New file, %d lines\n%s", target.name, len(text.splitlines()), text)
+            else:
+                rc_log.info("%s: New file, %d lines", target.name, len(text.splitlines()))
             changed += 1
         total += 1
     return (total, changed)
