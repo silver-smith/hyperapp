@@ -50,4 +50,6 @@ class Filter:
                     f'import/{parts[1]}/{i}'
                     for i in range(1, idx)
                     }
+        if parts[0] == 'resource':
+            return {f'import/{parts[1]}'}
         return set()
