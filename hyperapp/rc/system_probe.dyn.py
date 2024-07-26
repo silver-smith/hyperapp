@@ -1,3 +1,5 @@
+import asyncio
+import inspect
 import logging
 from dataclasses import dataclass
 
@@ -81,7 +83,7 @@ class Probe:
         return service
 
     def _run(self):
-        self._apply(self._params)
+        return self._apply(self._params)
 
     def _add_resolved_template(self, template):
         pass
@@ -123,7 +125,10 @@ class SystemProbe:
 
     def run(self, root_name):
         service = self.resolve_service(root_name)
-        service._run()
+        value = service._run()
+        if inspect.iscoroutine(value):
+            log.info("Running coroutine: %r", value)
+            asyncio.run(value)
 
     @property
     def resolved_templates(self):
