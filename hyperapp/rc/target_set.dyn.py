@@ -4,6 +4,7 @@ from operator import attrgetter
 from .code.import_target import AllImportsKnownTarget, ImportTargetAlias
 from .code.python_module_resource_target import PythonModuleResourceTarget
 from .code.service_target import ServiceFoundTarget, ServiceCompleteTarget
+from .code.config_item_target import ConfigItemCompleteTarget
 
 
 class TargetSet:
@@ -137,3 +138,13 @@ class TargetFactory:
     def python_module_imported_by_code_name(self, code_name):
         src = self._target_set._stem_to_python_module_src[code_name]
         return self.python_module_imported_by_src(src)
+
+    def config_item(self, service_name, key):
+        target_name = ConfigItemCompleteTarget.target_name(service_name, key)
+        try:
+            return self._target_set[target_name]
+        except KeyError:
+            pass
+        target = ConfigItemCompleteTarget(service_name, key)
+        self._target_set.add(target)
+        return target

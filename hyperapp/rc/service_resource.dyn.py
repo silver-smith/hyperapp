@@ -24,8 +24,7 @@ class ServiceReq(Requirement):
         return htypes.service_resource.service_req(self.service_name)
 
     def get_target(self, target_factory):
-        assert 0, 'todo'
-
+        return target_factory.config_item('system', self.service_name)
 
 
 class ServiceTemplateResource(Resource):
