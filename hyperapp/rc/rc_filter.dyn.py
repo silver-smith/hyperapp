@@ -47,7 +47,14 @@ class Filter:
             idx = int(parts[2])
             if idx > 1:
                 return {
-                    f'import/{parts[1]}/{i}'
+                    '/'.join([*parts[:2], str(i)])
+                    for i in range(1, idx)
+                    }
+        if parts[0] == 'test' and len(parts) == 4:
+            idx = int(parts[3])
+            if idx > 1:
+                return {
+                    '/'.join([*parts[:3], str(i)])
                     for i in range(1, idx)
                     }
         if parts[0] == 'resource':
