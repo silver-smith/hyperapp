@@ -51,6 +51,9 @@ class ServiceProbeCtr(Constructor):
 
     def update_targets(self, resource_target, target_set):
         resource_target.import_alias_tgt.add_component(self)
+        ready_tgt = target_set.factory.config_item_ready('system', self._name)
+        ready_tgt.set_provider(resource_target, self, target_set)
+        target_set.update_deps_for(ready_tgt)
 
     def make_component(self, python_module, name_to_res=None):
         return htypes.builtin.attribute(

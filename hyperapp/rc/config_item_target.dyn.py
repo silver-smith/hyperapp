@@ -11,6 +11,9 @@ class ConfigItemReadyTarget(Target):
         self._service_name = service_name
         self._key = key
         self._completed = False
+        self._provider_resource_tgt = None
+        self._ctr = None
+        self._import_alias_tgt = None
 
     @property
     def name(self):
@@ -19,6 +22,29 @@ class ConfigItemReadyTarget(Target):
     @property
     def completed(self):
         return self._completed
+
+    @property
+    def deps(self):
+        if self._import_alias_tgt:
+            return {self._import_alias_tgt}
+        else:
+            return set()
+
+    def update_status(self):
+        if self._completed:
+            return
+        if self._provider_resource_tgt and self._provider_resource_tgt.completed:
+            self._completed = True
+        elif self._import_alias_tgt and self._import_alias_tgt.completed:
+            self._completed = True
+
+    def set_provider(self, resource_tgt, ctr, target_set):
+        self._provider_resource_tgt = resource_tgt
+        self._ctr = ctr
+        self._import_alias_tgt = resource_tgt.import_alias_tgt
+        # for test_target in self._unresolved_in_tests:
+        #     resource_tgt.add_test(test_target, target_set)
+        self.update_status()
 
 
 class ConfigItemCompleteTarget(Target):
