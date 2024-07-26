@@ -3,12 +3,24 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.service_resource:service_req
 - legacy_type.service_resource:service_template_resource
+- rc.rc_requirement_creg:rc_requirement_creg.service
+- rc.rc_resource_creg:rc_resource_creg.service
+- rc.rc_requirement:rc_requirement.module
 - rc.rc_resource:rc_resource.module
 - rc.rc_resource_creg:rc_resource_creg.service
 - rc.service_ctr:service_ctr.module
 
 associations:
+
+- bases:
+  - rc.rc_requirement_creg:rc_requirement_creg.service
+  - legacy_type.service_resource:service_req
+  key:
+  - rc.rc_requirement_creg:rc_requirement_creg.service
+  - legacy_type.service_resource:service_req
+  value: ServiceReq.from_piece
 
 - bases:
   - rc.rc_resource_creg:rc_resource_creg.service
@@ -26,11 +38,25 @@ definitions:
       module_name: service_resource
       file_name: service_resource.dyn.py
       import_list:
+        htypes.service_resource.service_req: legacy_type.service_resource:service_req
         htypes.service_resource.service_template_resource: legacy_type.service_resource:service_template_resource
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
+        code.rc_requirement: rc.rc_requirement:rc_requirement.module
         code.rc_resource: rc.rc_resource:rc_resource.module
         code.service_ctr: rc.service_ctr:service_ctr.module
+
+  ServiceReq:
+    type: legacy_type.builtin:attribute
+    value:
+      object: service_resource.module
+      attr_name: ServiceReq
+
+  ServiceReq.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ServiceReq
+      attr_name: from_piece
 
   ServiceTemplateResource:
     type: legacy_type.builtin:attribute

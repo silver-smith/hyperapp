@@ -1,10 +1,31 @@
+from dataclasses import dataclass
+
 from . import htypes
 from .services import (
     mosaic,
     web,
     )
+from .code.rc_requirement import Requirement
 from .code.rc_resource import Resource
 from .code.service_ctr import ServiceTemplateCtr
+
+
+@dataclass(frozen=True, unsafe_hash=True)
+class ServiceReq(Requirement):
+
+    service_name: str
+
+    @classmethod
+    def from_piece(cls, piece):
+        return cls(piece.service_name)
+
+    @property
+    def piece(self):
+        return htypes.service_resource.service_req(self.service_name)
+
+    def get_target(self, target_factory):
+        assert 0, 'todo'
+
 
 
 class ServiceTemplateResource(Resource):

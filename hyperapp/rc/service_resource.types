@@ -1,3 +1,7 @@
+service_req = record:
+  service_name: string
+
+
 service_probe_resource = record:
   module_name: string
   attr_name: string

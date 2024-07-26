@@ -4,6 +4,13 @@ from dataclasses import dataclass
 log = logging.getLogger(__name__)
 
 
+class UnknownServiceError(Exception):
+
+    def __init__(self, service_name):
+        super().__init__(f"Unknown service: {service_name!r}")
+        self.service_name = service_name
+
+
 @dataclass
 class ServiceTemplate:
 
@@ -127,10 +134,16 @@ class SystemProbe:
             return self._name_to_service[name]
         except KeyError:
             pass
-        template = self._name_to_template[name]
+        try:
+            template = self._name_to_template[name]
+        except KeyError:
+            self._raise_missing_service(name)
         service = template.resolve(self, name)
         self._name_to_service[name] = service
         return service
 
     def add_resolved_template(self, name, service):
         self._resolved_templates[name] = service
+
+    def _raise_missing_service(self, service_name):
+        raise UnknownServiceError(service_name)

@@ -21,8 +21,8 @@ from .code.builtin_resources import enum_builtin_resources
 from .code.import_recorder import IncompleteImportedObjectError
 from .code.requirement_factory import RequirementFactory
 from .code.job_result import JobResult
-from .code.service_resource import ServiceTemplateResource
-from .code.system_probe import FixtureProbeTemplate, SystemProbe
+from .code.service_resource import ServiceReq, ServiceTemplateResource
+from .code.system_probe import UnknownServiceError, FixtureProbeTemplate, SystemProbe
 
 log  = logging.getLogger(__name__)
 
@@ -153,10 +153,12 @@ class TestJob:
         status, error_msg, traceback, module = self._import_module(module_piece)
         if status == JobStatus.ok:
             system, root_name = self._prepare_system(configs, module)
-            status, error_msg, traceback = self._run_system(system, root_name)
+            status, error_msg, traceback, req_set = self._run_system(system, root_name)
+        else:
+            req_set = set()
         if status == JobStatus.failed:
             return htypes.test_job.failed_result(error_msg, tuple(traceback))
-        req_set = self._imports_to_requirements(recorder.used_imports)
+        req_set |= self._imports_to_requirements(recorder.used_imports)
         req_refs = tuple(
             mosaic.put(req.piece)
             for req in req_set
@@ -209,11 +211,14 @@ class TestJob:
                 value = asyncio.run(value)
             status = JobStatus.ok
             error_msg = traceback = None
+        except UnknownServiceError as x:
+            req = ServiceReq(x.service_name)
+            return (JobStatus.incomplete, str(x), [], {req})
         except Exception as x:
             status, error_msg, traceback = self._prepare_error(x, skip_entries=1)
         for name, service in system.resolved_templates.items():
             log.info("Resolved service %s: %s", name, service)
-        return (status, error_msg, traceback)
+        return (status, error_msg, traceback, set())
 
     def _prepare_import_error(self, x):
         return self._prepare_error(x.original_error)
