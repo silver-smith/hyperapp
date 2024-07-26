@@ -38,6 +38,10 @@ class ConfigItemReadyTarget(Target):
         elif self._import_alias_tgt and self._import_alias_tgt.completed:
             self._completed = True
 
+    @property
+    def provider_resource_tgt(self):
+        return self._provider_resource_tgt
+
     def set_provider(self, resource_tgt, ctr, target_set):
         self._provider_resource_tgt = resource_tgt
         self._ctr = ctr
@@ -57,6 +61,7 @@ class ConfigItemCompleteTarget(Target):
         self._service_name = service_name
         self._key = key
         self._ready_tgt = ready_tgt
+        self._provider_resource_tgt = None
         self._completed = False
 
     @property
@@ -69,4 +74,15 @@ class ConfigItemCompleteTarget(Target):
 
     @property
     def deps(self):
-        return {self._ready_tgt}
+        if self._provider_resource_tgt:
+            return {self._ready_tgt, self._provider_resource_tgt}
+        else:
+            return {self._ready_tgt}
+
+    def update_status(self):
+        if self._completed:
+            return
+        if not self._provider_resource_tgt and self._ready_tgt.completed:
+            self._provider_resource_tgt = self._ready_tgt.provider_resource_tgt
+        if self._provider_resource_tgt:
+            self._completed = self._provider_resource_tgt.completed
