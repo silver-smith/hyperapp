@@ -82,12 +82,12 @@ class SucceededTestResult(TestResultBase):
     def update_targets(self, my_target, target_set):
         req_to_target = self._resolve_requirements(target_set.factory)
         self._update_tested_imports(target_set.factory)
-        self._update_ctr_targets(target_set.factory)
+        self._update_ctr_targets(target_set)
         my_target.set_alias_completed(req_to_target)
 
-    def _update_ctr_targets(self, target_factory):
+    def _update_ctr_targets(self, target_set):
         for ctr in self._constructors:
-            resource.update_targets(target_factory)
+            ctr.update_targets(target_set)
 
 
 class IncompleteTestResult(TestResultBase):

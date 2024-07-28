@@ -119,7 +119,7 @@ class ServiceTemplateCtr(Constructor):
             want_config=self._want_config,
             )
 
-    def update_targets(self, resource_tgt, target_set):
+    def update_targets(self, target_set):
         resolved_tgt = target_set.factory.config_item_resolved('system', self._name)
         resolved_tgt.resolve(self)
         target_set.update_deps_for(resolved_tgt)
