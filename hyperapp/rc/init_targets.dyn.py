@@ -12,9 +12,12 @@ from .code.service_ctr import ServiceCtr
 
 def add_common_mark_services(resource_tgt, target_set):
     service_found_tgt = target_set.factory.service_found('mark')
+    service_resolved_tgt = target_set.factory.service_resolved('mark')
     service_complete_tgt = target_set.factory.service_complete('mark')
     ctr = ServiceCtr('mark', 'mark')
     service_found_tgt.set_provider(resource_tgt, ctr, target_set)
+    service_resolved_tgt.resolve(ctr)
+    service_resolved_tgt.update_status()
     service_complete_tgt.update_status()
 
 

@@ -3,7 +3,7 @@ from operator import attrgetter
 
 from .code.import_target import AllImportsKnownTarget, ImportTargetAlias
 from .code.python_module_resource_target import PythonModuleResourceTarget
-from .code.service_target import ServiceFoundTarget, ServiceCompleteTarget
+from .code.service_target import ServiceFoundTarget, ServiceResolvedTarget, ServiceCompleteTarget
 from .code.config_item_target import ConfigItemReadyTarget, ConfigItemResolvedTarget, ConfigItemCompleteTarget
 
 
@@ -98,14 +98,25 @@ class TargetFactory:
         target = ServiceFoundTarget(service_name)
         return self._target_set.add_or_get(target)
 
+    def service_resolved(self, service_name):
+        target_name = ServiceResolvedTarget.target_name(service_name)
+        try:
+            return self._target_set[target_name]
+        except KeyError:
+            pass
+        service_found_tgt = self.service_found(service_name)
+        target = ServiceResolvedTarget(service_name, service_found_tgt)
+        self._target_set.add(target)
+        return target
+
     def service_complete(self, service_name):
         target_name = ServiceCompleteTarget.target_name_for_service_name(service_name)
         try:
             return self._target_set[target_name]
         except KeyError:
             pass
-        service_found_tgt = self.service_found(service_name)
-        target = ServiceCompleteTarget(service_name, service_found_tgt)
+        service_resolved_tgt = self.service_resolved(service_name)
+        target = ServiceCompleteTarget(service_name, service_resolved_tgt)
         self._target_set.add(target)
         return target
 

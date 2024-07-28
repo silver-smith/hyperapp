@@ -19,7 +19,12 @@ class ServiceCtr(Constructor):
     def update_targets(self, resource_tgt, target_set):
         service_found_tgt = target_set.factory.service_found(self._name)
         service_found_tgt.set_provider(resource_tgt, self, target_set)
+        resolved_tgt = target_set.factory.service_resolved(self._name)
+        resource_tgt.add_cfg_item_target(resolved_tgt)
+        resolved_tgt.resolve(self)
         target_set.update_deps_for(service_found_tgt)
+        target_set.update_deps_for(resolved_tgt)
+        target_set.update_deps_for(resource_tgt)
 
     def make_component(self, python_module, name_to_res=None):
         attribute = htypes.builtin.attribute(
@@ -117,6 +122,7 @@ class ServiceTemplateCtr(Constructor):
     def update_targets(self, resource_tgt, target_set):
         resolved_tgt = target_set.factory.config_item_resolved('system', self._name)
         resolved_tgt.resolve(self)
+        target_set.update_deps_for(resolved_tgt)
 
     def make_component(self, python_module, name_to_res=None):
         attribute = htypes.builtin.attribute(

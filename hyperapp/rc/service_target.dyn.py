@@ -107,15 +107,61 @@ class ServiceFoundTarget(Target):
         return self._ctr
 
 
+# Tests passed, have enough info for construction.
+class ServiceResolvedTarget(Target):
+
+    @staticmethod
+    def target_name(service_name):
+        return f'service-resolved/{service_name}'
+
+    def __init__(self, service_name, ready_tgt):
+        self._service_name = service_name
+        self._is_builtin = service_name in builtin_services
+        self._completed = self._is_builtin
+        self._ready_tgt = ready_tgt
+        self._provider_resource_tgt = None
+        self._ctr = None
+
+    @property
+    def name(self):
+        return self.target_name(self._service_name)
+
+    @property
+    def completed(self):
+        return self._completed
+
+    @property
+    def deps(self):
+        if self._is_builtin:
+            return set()
+        return {self._ready_tgt}
+
+    @property
+    def provider_resource_tgt(self):
+        assert not self._is_builtin
+        return self._provider_resource_tgt
+
+    @property
+    def constructor(self):
+        assert self._completed
+        return self._ctr
+
+    def resolve(self, ctr):
+        assert not self._is_builtin
+        self._ctr = ctr
+        self._provider_resource_tgt = self._ready_tgt.provider_resource_tgt
+        self._completed = True
+
+
 class ServiceCompleteTarget(Target):
 
     @staticmethod
     def target_name_for_service_name(service_name):
         return f'service_complete/{service_name}'
 
-    def __init__(self, service_name, service_found_tgt):
+    def __init__(self, service_name, service_resolved_tgt):
         self._service_name = service_name
-        self._service_found_tgt = service_found_tgt
+        self._resolved_tgt = service_resolved_tgt
         self._provider_resource_tgt = None
         self._is_builtin = service_name in builtin_services
         self._completed = self._is_builtin
@@ -133,20 +179,21 @@ class ServiceCompleteTarget(Target):
         if self._is_builtin:
             return set()
         if self._provider_resource_tgt:
-            return {self._service_found_tgt, self._provider_resource_tgt}
+            return {self._resolved_tgt, self._provider_resource_tgt}
         else:
-            return {self._service_found_tgt}
+            return {self._resolved_tgt}
 
     def update_status(self):
         if self._completed or self._is_builtin:
             return
-        if not self._provider_resource_tgt and self._service_found_tgt.completed:
-            self._provider_resource_tgt = self._service_found_tgt.provider_resource_tgt
+        if not self._provider_resource_tgt and self._resolved_tgt.completed:
+            self._provider_resource_tgt = self._resolved_tgt.provider_resource_tgt
         if self._provider_resource_tgt:
             self._completed = self._provider_resource_tgt.completed
 
     @property
     def provider_resource_tgt(self):
+        assert not self._is_builtin
         return self._provider_resource_tgt
 
     @property
@@ -154,5 +201,5 @@ class ServiceCompleteTarget(Target):
         if self._is_builtin:
             return htypes.builtin.builtin_service(self._service_name)
         else:
-            ctr = self._service_found_tgt.constructor
+            ctr = self._resolved_tgt.constructor
             return self._provider_resource_tgt.get_resource(ctr)
