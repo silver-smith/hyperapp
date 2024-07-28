@@ -97,6 +97,7 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
         self._type_resources = set()
         self._tests = set()
         self._constructors = set()
+        self._cfg_item_targets = set()
 
     @property
     def completed(self):
@@ -104,7 +105,7 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
 
     @property
     def deps(self):
-        return {self._all_imports_known_tgt, self._import_alias_tgt, *self._req_to_target.values(), *self._tests}
+        return {self._all_imports_known_tgt, self._import_alias_tgt, *self._req_to_target.values(), *self._cfg_item_targets, *self._tests}
 
     def update_status(self):
         if self._completed:
@@ -123,6 +124,9 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
 
     def add_import_requirements(self, req_to_target):
         self._req_to_target = req_to_target
+
+    def add_cfg_item_target(self, target):
+        self._cfg_item_targets.add(target)
 
     def add_test(self, test_target, target_set):
         self._tests.add(test_target.alias)

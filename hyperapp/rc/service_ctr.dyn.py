@@ -16,9 +16,9 @@ class ServiceCtr(Constructor):
         self._attr_name = attr_name
         self._name = name
 
-    def update_targets(self, resource_target, target_set):
+    def update_targets(self, resource_tgt, target_set):
         service_found_tgt = target_set.factory.service_found(self._name)
-        service_found_tgt.set_provider(resource_target, self, target_set)
+        service_found_tgt.set_provider(resource_tgt, self, target_set)
         target_set.update_deps_for(service_found_tgt)
 
     def make_component(self, python_module, name_to_res=None):
@@ -49,11 +49,14 @@ class ServiceProbeCtr(Constructor):
         self._name = name
         self._params = params
 
-    def update_targets(self, resource_target, target_set):
-        resource_target.import_alias_tgt.add_component(self)
+    def update_targets(self, resource_tgt, target_set):
+        resource_tgt.import_alias_tgt.add_component(self)
         ready_tgt = target_set.factory.config_item_ready('system', self._name)
-        ready_tgt.set_provider(resource_target, self, target_set)
+        ready_tgt.set_provider(resource_tgt, self, target_set)
+        resolved_tgt = target_set.factory.config_item_resolved('system', self._name)
+        resource_tgt.add_cfg_item_target(resolved_tgt)
         target_set.update_deps_for(ready_tgt)
+        target_set.update_deps_for(resource_tgt)
 
     def make_component(self, python_module, name_to_res=None):
         return htypes.builtin.attribute(
@@ -62,7 +65,7 @@ class ServiceProbeCtr(Constructor):
             )
 
     def get_component(self, name_to_res):
-        assert 0
+        raise NotImplementedError()
 
     def make_resource(self, module_name, python_module):
         return ServiceProbeResource(module_name, self._attr_name, self._name, self.make_component(python_module), self._params)
@@ -111,7 +114,7 @@ class ServiceTemplateCtr(Constructor):
             want_config=self._want_config,
             )
 
-    def update_targets(self, resource_target, target_set):
+    def update_targets(self, resource_tgt, target_set):
         resource_tgt = target_set.factory.python_module_resource_by_module_name(self._module_name)
         resource_tgt.import_alias_tgt.add_component(self)
 

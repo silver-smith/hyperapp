@@ -52,6 +52,33 @@ class ConfigItemReadyTarget(Target):
         self.update_status()
 
 
+# Tests passed, have enough info for construction.
+class ConfigItemResolvedTarget(Target):
+
+    @staticmethod
+    def target_name(service_name, key):
+        return f'item-resolved/{service_name}/{key}'
+
+    def __init__(self, service_name, key, ready_tgt):
+        self._service_name = service_name
+        self._key = key
+        self._completed = False
+        self._ready_tgt = ready_tgt
+        self._ctr = None
+
+    @property
+    def name(self):
+        return self.target_name(self._service_name, self._key)
+
+    @property
+    def completed(self):
+        return self._completed
+
+    @property
+    def deps(self):
+        return {self._ready_tgt}
+
+
 # Ready for use.
 class ConfigItemCompleteTarget(Target):
 
