@@ -115,8 +115,8 @@ class ServiceTemplateCtr(Constructor):
             )
 
     def update_targets(self, resource_tgt, target_set):
-        resource_tgt = target_set.factory.python_module_resource_by_module_name(self._module_name)
-        resource_tgt.import_alias_tgt.add_component(self)
+        resolved_tgt = target_set.factory.config_item_resolved('system', self._name)
+        resolved_tgt.resolve(self)
 
     def make_component(self, python_module, name_to_res=None):
         attribute = htypes.builtin.attribute(

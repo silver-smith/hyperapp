@@ -64,6 +64,7 @@ class ConfigItemResolvedTarget(Target):
         self._key = key
         self._completed = False
         self._ready_tgt = ready_tgt
+        self._provider_resource_tgt = None
         self._ctr = None
 
     @property
@@ -78,6 +79,20 @@ class ConfigItemResolvedTarget(Target):
     def deps(self):
         return {self._ready_tgt}
 
+    @property
+    def provider_resource_tgt(self):
+        return self._provider_resource_tgt
+
+    @property
+    def constructor(self):
+        assert self._completed
+        return self._ctr
+
+    def resolve(self, ctr):
+        self._ctr = ctr
+        self._provider_resource_tgt = self._ready_tgt.provider_resource_tgt
+        self._completed = True
+
 
 # Ready for use.
 class ConfigItemCompleteTarget(Target):
@@ -86,10 +101,10 @@ class ConfigItemCompleteTarget(Target):
     def target_name(service_name, key):
         return f'item-complete/{service_name}/{key}'
 
-    def __init__(self, service_name, key, ready_tgt):
+    def __init__(self, service_name, key, resolved_tgt):
         self._service_name = service_name
         self._key = key
-        self._ready_tgt = ready_tgt
+        self._resolved_tgt = resolved_tgt
         self._provider_resource_tgt = None
         self._completed = False
 
@@ -104,14 +119,14 @@ class ConfigItemCompleteTarget(Target):
     @property
     def deps(self):
         if self._provider_resource_tgt:
-            return {self._ready_tgt, self._provider_resource_tgt}
+            return {self._resolved_tgt, self._provider_resource_tgt}
         else:
-            return {self._ready_tgt}
+            return {self._resolved_tgt}
 
     def update_status(self):
         if self._completed:
             return
-        if not self._provider_resource_tgt and self._ready_tgt.completed:
-            self._provider_resource_tgt = self._ready_tgt.provider_resource_tgt
+        if not self._provider_resource_tgt and self._resolved_tgt.completed:
+            self._provider_resource_tgt = self._resolved_tgt.provider_resource_tgt
         if self._provider_resource_tgt:
             self._completed = self._provider_resource_tgt.completed

@@ -52,6 +52,9 @@ class PythonModuleResourceTarget(Target):
     def name(self):
         return self.target_name_for_src(self._src)
 
+    def get_resource(self, ctr):
+        return ctr.get_component(self._resource_module)
+
 
 class ManualPythonModuleResourceTarget(PythonModuleResourceTarget):
 
@@ -74,9 +77,6 @@ class ManualPythonModuleResourceTarget(PythonModuleResourceTarget):
         name = f'{self._src.stem}.module'
         return self._resource_module[name]
 
-    def adopt_component(self, ctr):
-        return ctr.get_component(self._resource_module)
-
 
 class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
 
@@ -96,8 +96,8 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
         self._req_to_target = {}
         self._type_resources = set()
         self._tests = set()
-        self._constructors = set()
         self._cfg_item_targets = set()
+        self._python_module_piece = None
 
     @property
     def completed(self):
@@ -105,14 +105,20 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
 
     @property
     def deps(self):
-        return {self._all_imports_known_tgt, self._import_alias_tgt, *self._req_to_target.values(), *self._cfg_item_targets, *self._tests}
+        return {
+            self._all_imports_known_tgt,
+            self._import_alias_tgt,
+            *self._req_to_target.values(),
+            *self._cfg_item_targets,
+            *self._tests,
+            }
 
     def update_status(self):
         if self._completed:
             return
         if all(target.completed for target in self.deps):
-            self._completed = True
             self._construct()
+            self._completed = True
 
     @property
     def has_output(self):
@@ -147,15 +153,7 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
     @cached_property
     def python_module_piece(self):
         assert self._completed
-        resources = list(self._enum_resources())
-        import_list = sorted(flatten(d.import_records for d in resources))
-        return self._src.python_module(import_list)
-
-    def adopt_component(self, ctr):
-        return ctr.make_component(self.python_module_piece, self._resource_module)
-
-    def add_component(self, ctr):
-        self._constructors.add(ctr)
+        return self._python_module_piece
 
     def _enum_resources(self):
         yield from self._type_resources
@@ -164,10 +162,13 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
 
     def _construct(self):
         rc_log.debug("Construct: %s", self.name)
-        python_module = self.python_module_piece
+        resources = list(self._enum_resources())
+        import_list = sorted(flatten(d.import_records for d in resources))
+        python_module = self._src.python_module(import_list)
         self._resource_module[f'{self._src.stem}.module'] = python_module
-        for ctr in self._constructors:
-            self.adopt_component(ctr)
+        self._python_module_piece = python_module
+        for item_tgt in self._cfg_item_targets:
+            item_tgt.constructor.make_component(python_module, self._resource_module)
 
     def get_output(self):
         return (self._src.resource_path, self._resource_module.as_text)
