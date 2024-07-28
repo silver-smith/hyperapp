@@ -71,18 +71,49 @@ class ServiceProbeCtr(Constructor):
 class ServiceTemplateCtr(Constructor):
 
     @classmethod
-    def from_piece(cls, piece):
-        return cls(piece.attr_name, piece.name, piece.free_params, piece.service_params, piece.want_config)
+    def from_template(cls, service_name, template):
+        return cls(
+            module_name=template.module_name,
+            attr_name=template.attr_name,
+            name=service_name,
+            free_params=template.free_params,
+            service_params=template.service_params,
+            want_config=template.want_config,
+            )
 
-    def __init__(self, attr_name, name, free_params, service_params, want_config):
+    @classmethod
+    def from_piece(cls, piece):
+        return cls(
+            module_name=piece.module_name,
+            attr_name=piece.attr_name,
+            name=piece.name,
+            free_params=piece.free_params,
+            service_params=piece.service_params,
+            want_config=piece.want_config,
+            )
+
+    def __init__(self, module_name, attr_name, name, free_params, service_params, want_config):
+        self._module_name = module_name
         self._attr_name = attr_name
         self._name = name
         self._free_params = free_params
         self._service_params = service_params
         self._want_config = want_config
 
+    @property
+    def piece(self):
+        return htypes.rc_constructors.service_template(
+            module_name=self._module_name,
+            attr_name=self._attr_name,
+            name=self._name,
+            free_params=tuple(self._free_params),
+            service_params=tuple(self._service_params),
+            want_config=self._want_config,
+            )
+
     def update_targets(self, resource_target, target_set):
-        resource_target.import_alias_tgt.add_component(self)
+        resource_tgt = target_set.factory.python_module_resource_by_module_name(self._module_name)
+        resource_tgt.import_alias_tgt.add_component(self)
 
     def make_component(self, python_module, name_to_res=None):
         attribute = htypes.builtin.attribute(

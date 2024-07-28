@@ -12,6 +12,7 @@ from .services import (
     mosaic,
     hyperapp_dir,
     pyobj_creg,
+    rc_constructor_creg,
     rc_requirement_creg,
     rc_resource_creg,
     )
@@ -21,7 +22,8 @@ from .code.builtin_resources import enum_builtin_resources
 from .code.import_recorder import IncompleteImportedObjectError
 from .code.requirement_factory import RequirementFactory
 from .code.job_result import JobResult
-from .code.service_resource import ServiceReq, ServiceTemplateResource
+from .code.service_ctr import ServiceTemplateCtr
+from .code.service_resource import ServiceReq
 from .code.system_probe import UnknownServiceError, FixtureProbeTemplate, SystemProbe
 
 log  = logging.getLogger(__name__)
@@ -67,21 +69,24 @@ class SucceededTestResult(TestResultBase):
     def from_piece(cls, piece):
         used_imports = cls._used_imports_to_dict(piece.used_imports)
         requirements = cls._resolve_reqirement_refs(piece.requirements)
-        resources = [rc_resource_creg.invite(ref) for ref in piece.resources]
-        return cls(used_imports, requirements, resources)
+        constructors = [
+            rc_constructor_creg.invite(ref)
+            for ref in piece.constructors
+            ]
+        return cls(used_imports, requirements, constructors)
 
-    def __init__(self, used_imports, requirements, resources):
+    def __init__(self, used_imports, requirements, constructors):
         super().__init__(JobStatus.ok, used_imports, requirements)
-        self._resources = resources
+        self._constructors = constructors
 
     def update_targets(self, my_target, target_set):
         req_to_target = self._resolve_requirements(target_set.factory)
         self._update_tested_imports(target_set.factory)
-        self._update_resource_targets(target_set.factory)
+        self._update_ctr_targets(target_set.factory)
         my_target.set_alias_completed(req_to_target)
 
-    def _update_resource_targets(self, target_factory):
-        for resource in self._resources:
+    def _update_ctr_targets(self, target_factory):
+        for ctr in self._constructors:
             resource.update_targets(target_factory)
 
 
@@ -170,14 +175,14 @@ class TestJob:
                 error=error_msg,
                 traceback=tuple(traceback),
                 )
-        resources = [
-            ServiceTemplateResource.from_template(name, template)
+        constructors = [
+            ServiceTemplateCtr.from_template(name, template)
             for name, template in system.resolved_templates.items()
             ]
         return htypes.test_job.succeeded_result(
             used_imports=tuple(self._enum_used_imports(all_resources)),
             requirements=req_refs,
-            resources=tuple(mosaic.put(res.piece) for res in resources)
+            constructors=tuple(mosaic.put(ctr.piece) for ctr in constructors)
             )
 
     def _import_module(self, module_piece):

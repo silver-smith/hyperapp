@@ -13,11 +13,3 @@ fixture_probe_resource = record:
   service_name: string
   function: ref
   params: string list
-
-service_template_resource = record:
-  module_name: string
-  attr_name: string
-  service_name: string
-  free_params: string list
-  service_params: string list
-  want_config: bool

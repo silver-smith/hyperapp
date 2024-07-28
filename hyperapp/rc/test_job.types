@@ -14,7 +14,7 @@ used_imports = record:
 succeeded_result = record:
   used_imports: used_imports list
   requirements: ref list
-  resources: ref list
+  constructors: ref list
 
 incomplete_result = record:
   used_imports: used_imports list

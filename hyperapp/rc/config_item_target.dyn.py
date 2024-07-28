@@ -1,6 +1,7 @@
 from .code.rc_target import Target
 
 
+# Ready for testing: provider is found and all deps are completed.
 class ConfigItemReadyTarget(Target):
 
     @staticmethod
@@ -51,6 +52,7 @@ class ConfigItemReadyTarget(Target):
         self.update_status()
 
 
+# Ready for use.
 class ConfigItemCompleteTarget(Target):
 
     @staticmethod
