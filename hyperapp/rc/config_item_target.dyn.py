@@ -13,7 +13,6 @@ class ConfigItemReadyTarget(Target):
         self._key = key
         self._completed = False
         self._provider_resource_tgt = None
-        self._ctr = None
         self._import_alias_tgt = None
 
     @property
@@ -43,9 +42,8 @@ class ConfigItemReadyTarget(Target):
     def provider_resource_tgt(self):
         return self._provider_resource_tgt
 
-    def set_provider(self, resource_tgt, ctr, target_set):
+    def set_provider(self, resource_tgt, target_set):
         self._provider_resource_tgt = resource_tgt
-        self._ctr = ctr
         self._import_alias_tgt = resource_tgt.import_alias_tgt
         # for test_target in self._unresolved_in_tests:
         #     resource_tgt.add_test(test_target, target_set)
