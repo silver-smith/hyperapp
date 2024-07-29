@@ -1,3 +1,5 @@
+from functools import partial
+
 from . import htypes
 from .services import (
     pyobj_creg,
@@ -37,4 +39,12 @@ class ServiceTemplate:
             )
 
     def resolve(self, system, service_name):
-        assert 0
+        assert not self.want_config, 'todo'
+        service_args = [
+            system.resolve_service(name)
+            for name in self.service_params
+            ]
+        if self.free_params:
+            return partial(self.fn, *service_args)
+        else:
+            return self.fn(*service_args)
