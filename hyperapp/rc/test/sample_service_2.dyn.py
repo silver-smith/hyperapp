@@ -15,7 +15,8 @@ class SampleService2:
 
 @mark.service2
 def sample_value_service_2(sample_fn_service_1):
-    log.info("Sample value service 2: sample_fn_service_1=%r", sample_fn_service_1.value)
+    value = sample_fn_service_1('val-1-1', 'val-1-2')
+    log.info("Sample value service 2: sample_fn_service_1=%r", value)
     return SampleService2("sample_service_2 value")
 
 
