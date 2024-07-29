@@ -104,9 +104,9 @@ class ServiceTemplateCtr(Constructor):
         self._module_name = module_name
         self._attr_name = attr_name
         self._name = name
-        self._free_params = free_params
-        self._service_params = service_params
-        self._want_config = want_config
+        self.free_params = free_params
+        self.service_params = service_params
+        self.want_config = want_config
 
     @property
     def piece(self):
@@ -114,9 +114,9 @@ class ServiceTemplateCtr(Constructor):
             module_name=self._module_name,
             attr_name=self._attr_name,
             name=self._name,
-            free_params=tuple(self._free_params),
-            service_params=tuple(self._service_params),
-            want_config=self._want_config,
+            free_params=tuple(self.free_params),
+            service_params=tuple(self.service_params),
+            want_config=self.want_config,
             )
 
     def update_targets(self, target_set):
@@ -132,9 +132,9 @@ class ServiceTemplateCtr(Constructor):
         service = htypes.system.service_template(
             name=self._name,
             function=mosaic.put(attribute),
-            free_params=tuple(self._free_params),
-            service_params=tuple(self._service_params),
-            want_config=self._want_config,
+            free_params=tuple(self.free_params),
+            service_params=tuple(self.service_params),
+            want_config=self.want_config,
             )
         if name_to_res is not None:
             name_to_res[self._attr_name] = attribute
@@ -142,7 +142,7 @@ class ServiceTemplateCtr(Constructor):
         return service
 
     def get_component(self, name_to_res):
-        assert 0
+        return name_to_res[f'{self._name}.service']
 
 
 class FixtureCtr(Constructor):

@@ -60,8 +60,8 @@ class ConfigItemResolvedTarget(Target):
     def __init__(self, service_name, key, ready_tgt):
         self._service_name = service_name
         self._key = key
-        self._completed = False
         self._ready_tgt = ready_tgt
+        self._completed = False
         self._provider_resource_tgt = None
         self._ctr = None
 
@@ -103,8 +103,9 @@ class ConfigItemCompleteTarget(Target):
         self._service_name = service_name
         self._key = key
         self._resolved_tgt = resolved_tgt
-        self._provider_resource_tgt = None
         self._completed = False
+        self._provider_resource_tgt = None
+        self._ctr = None
 
     @property
     def name(self):
@@ -126,5 +127,16 @@ class ConfigItemCompleteTarget(Target):
             return
         if not self._provider_resource_tgt and self._resolved_tgt.completed:
             self._provider_resource_tgt = self._resolved_tgt.provider_resource_tgt
-        if self._provider_resource_tgt:
-            self._completed = self._provider_resource_tgt.completed
+            self._ctr = self._resolved_tgt.constructor
+        if self._provider_resource_tgt and self._provider_resource_tgt.completed:
+            self._completed = True
+
+    @property
+    def provider_resource_tgt(self):
+        assert self._completed
+        return self._provider_resource_tgt
+
+    @property
+    def constructor(self):
+        assert self._completed
+        return self._ctr

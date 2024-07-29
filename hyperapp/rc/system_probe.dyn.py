@@ -14,7 +14,7 @@ class UnknownServiceError(Exception):
 
 
 @dataclass
-class ServiceTemplate:
+class ServiceTemplateRec:
 
     module_name: str
     attr_name: str
@@ -100,7 +100,7 @@ class ServiceProbe(Probe):
         return f"<ServiceProbe {self._module_name}:{self._attr_name} {self._fn} {self._params}>"
 
     def _add_resolved_template(self, service_params):
-        template = ServiceTemplate(
+        template = ServiceTemplateRec(
             module_name=self._module_name,
             attr_name=self._attr_name,
             free_params=self._params[len(service_params):],

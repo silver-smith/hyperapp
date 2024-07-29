@@ -1,0 +1,15 @@
+import:
+- builtins:pyobj_creg.service
+- legacy_type.builtin:python_module
+- legacy_type.system:service_template
+
+definitions:
+
+  system.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: system
+      file_name: system.dyn.py
+      import_list:
+        htypes.system.service_template: legacy_type.system:service_template
+        services.pyobj_creg: builtins:pyobj_creg.service

@@ -177,7 +177,7 @@ class TargetFactory:
             return self._target_set[target_name]
         except KeyError:
             pass
-        ready_tgt = self.config_item_ready(service_name, key)
-        target = ConfigItemCompleteTarget(service_name, key, ready_tgt)
+        resolved_tgt = self.config_item_resolved(service_name, key)
+        target = ConfigItemCompleteTarget(service_name, key, resolved_tgt)
         self._target_set.add(target)
         return target

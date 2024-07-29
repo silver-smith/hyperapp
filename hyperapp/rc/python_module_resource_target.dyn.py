@@ -121,6 +121,10 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
             self._completed = True
 
     @property
+    def module_name(self):
+        return self._src.name
+
+    @property
     def has_output(self):
         return True
 

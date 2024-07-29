@@ -1,3 +1,6 @@
+from system import service_template
+
+
 service_req = record:
   service_name: string
 
@@ -13,3 +16,8 @@ fixture_probe_resource = record:
   service_name: string
   function: ref
   params: string list
+
+
+service_template_resource = record:
+  service_name: string
+  template: service_template
