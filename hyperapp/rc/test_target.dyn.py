@@ -92,4 +92,9 @@ class TestTarget(Target):
         self._alias.set_completed(req_to_target)
 
     def create_next_target(self, req_to_target):
-        return TestTarget(self._src, self._type_src_list, self._import_alias_tgt, self._function, req_to_target, self._alias, self._idx + 1)
+        # Do not lose requirements from previous iterations.
+        full_req_to_target = {
+            **self._req_to_target,
+            **req_to_target,
+            }
+        return TestTarget(self._src, self._type_src_list, self._import_alias_tgt, self._function, full_req_to_target, self._alias, self._idx + 1)
