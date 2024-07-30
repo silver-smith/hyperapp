@@ -151,12 +151,11 @@ class TestJob:
     def run(self):
         all_resources = [*enum_builtin_resources(), *self._resources]
         import_list = flatten(d.import_records for d in all_resources)
-        configs = self._collect_configs(all_resources)
         recorder_piece, module_piece = self._src.recorded_python_module(import_list)
         recorder = pyobj_creg.animate(recorder_piece)
         status, error_msg, traceback, module = self._import_module(module_piece)
         if status == JobStatus.ok:
-            system, root_name = self._prepare_system(configs, module)
+            system, root_name = self._prepare_system(module, all_resources)
             status, error_msg, traceback, req_set = self._run_system(system, root_name)
         else:
             req_set = set()
@@ -194,14 +193,27 @@ class TestJob:
             module = None
         return (status, error_msg, traceback, module)
 
-    def _prepare_system(self, configs, module):
+    def _collect_configs(self, resource_list):
+        service_to_config = defaultdict(dict)
+        for resource in resource_list:
+            for triplet in resource.config_triplets:
+                service, key, value = triplet
+                service_to_config[service][key] = value
+        return service_to_config
+
+    def _add_root_fixture(self, module, configs):
         test_fn = getattr(module, self._test_fn_name)
         params = tuple(inspect.signature(test_fn).parameters)
         root_probe = FixtureProbeTemplate(test_fn, params)
         templates = configs.get('system', {})
         root_name = self._test_fn_name
         templates[root_name] = root_probe
-        system = SystemProbe(templates)
+        return root_name
+
+    def _prepare_system(self, module, resources):
+        configs = self._collect_configs(resources)
+        root_name = self._add_root_fixture(module, configs)
+        system = SystemProbe(configs)
         return (system, root_name)
 
     def _run_system(self, system, root_name):
@@ -255,11 +267,3 @@ class TestJob:
                 module_name=module_name,
                 imports=tuple(recorder.used_imports),
                 )
-
-    def _collect_configs(self, resource_list):
-        service_to_config = defaultdict(dict)
-        for resource in resource_list:
-            for triplet in resource.config_triplets:
-                service, key, value = triplet
-                service_to_config[service][key] = value
-        return service_to_config
