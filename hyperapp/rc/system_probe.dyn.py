@@ -132,10 +132,13 @@ class ServiceProbe(Probe):
         return f"<ServiceProbe {self._module_name}:{self._attr_name} {self._fn} {self._params}>"
 
     def _add_resolved_template(self, want_config, service_params):
+        free_params_ofs = len(service_params)
+        if want_config:
+            free_params_ofs += 1
         template = ServiceTemplateRec(
             module_name=self._module_name,
             attr_name=self._attr_name,
-            free_params=self._params[len(service_params):],
+            free_params=self._params[free_params_ofs:],
             service_params=service_params,
             want_config=want_config,
             )
