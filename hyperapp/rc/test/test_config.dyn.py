@@ -30,3 +30,4 @@ def config_item_1(simple_fixture):
 
 def test_service(sample_config_service):
     log.info("test_service: sample_config_service=%r", sample_config_service.value)
+    assert sample_config_service.value == 12345
