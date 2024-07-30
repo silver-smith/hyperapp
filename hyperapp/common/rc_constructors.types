@@ -16,10 +16,16 @@ service_template = record:
   service_params: string list
   want_config: bool
 
+
 fixture = record:
   attr_name: string
   name: string
   params: string list
+
+config_item_fixture = record:
+  attr_name: string
+  service_name: string
+  service_params: string list
 
 
 model = record:

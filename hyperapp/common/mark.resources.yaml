@@ -1,6 +1,7 @@
 import:
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
+- legacy_type.rc_constructors:config_item_fixture
 - legacy_type.rc_constructors:fixture
 - legacy_type.rc_constructors:model
 - legacy_type.rc_constructors:service
@@ -20,6 +21,7 @@ definitions:
       module_name: mark
       file_name: mark.dyn.py
       import_list:
+        htypes.rc_constructors.config_item_fixture: legacy_type.rc_constructors:config_item_fixture
         htypes.rc_constructors.fixture: legacy_type.rc_constructors:fixture
         htypes.rc_constructors.model: legacy_type.rc_constructors:model
         htypes.rc_constructors.service: legacy_type.rc_constructors:service

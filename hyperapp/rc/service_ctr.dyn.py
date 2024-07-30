@@ -165,8 +165,30 @@ class FixtureCtr(Constructor):
             attr_name=self._attr_name,
             )
 
-    def get_component(self, name_to_res):
-        assert 0
-
     def make_resource(self, module_name, python_module):
         return FixtureProbeResource(self._name, self.make_component(python_module), self._params)
+
+
+class ConfigItemFixtureCtr(Constructor):
+
+    @classmethod
+    def from_piece(cls, piece):
+        return cls(piece.attr_name, piece.service_name, piece.service_params)
+
+    def __init__(self, attr_name, service_name, service_params):
+        self._attr_name = attr_name
+        self._service_name = service_name
+        self._service_params = service_params
+
+    def update_tests_targets(self, import_alias_tgt, target_set):
+        import_alias_tgt.add_component(self)
+
+    def make_component(self, python_module, name_to_res=None):
+        assert 0
+        return htypes.builtin.attribute(
+            object=mosaic.put(python_module),
+            attr_name=self._attr_name,
+            )
+
+    def make_resource(self, module_name, python_module):
+        assert 0

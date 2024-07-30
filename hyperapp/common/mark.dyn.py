@@ -45,6 +45,18 @@ def fixture_marker(fn):
     return fn
 
 
+def config_item_fixture(service_name):
+    def _config_item_fixture_wrapper(fn):
+        ctr = htypes.rc_constructors.config_item_fixture(
+            attr_name=fn.__name__,
+            service_name=service_name,
+            service_params=tuple(inspect.signature(fn).parameters),
+            )
+        add_fn_module_constructor(fn, mosaic.put(ctr))
+        return fn
+    return _config_item_fixture_wrapper
+
+
 def model(fn):
     ctr = htypes.rc_constructors.model(
         attr_name=fn.__name__,
@@ -89,6 +101,7 @@ def mark():
         service=ServiceMarker(),
         service2=service_probe_marker,
         fixture=fixture_marker,
+        config_item_fixture=config_item_fixture,
         model=model,
         ui_command=UiCommand(),
         ui_model_command=UiModelCommand(),
