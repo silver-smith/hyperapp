@@ -22,6 +22,7 @@ module_dir_list = [
     HYPERAPP_DIR / 'rpc',
     HYPERAPP_DIR / 'subprocess',
     HYPERAPP_DIR / 'rc',
+    HYPERAPP_DIR / 'rc/test',  # Otherwise types would be skipped in test subdir.
     HYPERAPP_DIR / 'command_line',
     HYPERAPP_DIR / 'sample',
     HYPERAPP_DIR / 'ui',
