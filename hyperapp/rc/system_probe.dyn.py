@@ -87,7 +87,8 @@ class Probe:
         return self._apply(service_params, *args, **kw)
 
     def __getattr__(self, name):
-        return self._apply(self._params)
+        service = self._apply(self._params)
+        return getattr(service, name)
 
     def _apply(self, service_params, *args, **kw):
         if self._resolved:
