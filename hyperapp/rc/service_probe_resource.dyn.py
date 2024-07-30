@@ -5,7 +5,7 @@ from .services import (
     web,
     )
 from .code.rc_resource import Resource
-from .code.system_probe import FixtureProbeTemplate, ServiceProbeTemplate
+from .code.system_probe import ConfigItemFixture, FixtureProbeTemplate, ServiceProbeTemplate
 
 
 class ServiceProbeResource(Resource):
@@ -84,8 +84,7 @@ class ConfigItemFixtureResource(Resource):
             )
 
     @property
-    def config_triplets(self):
+    def config_item_fixtures(self):
         fn = pyobj_creg.animate(self._function)
-        assert 0
-        probe = FixtureProbeTemplate(fn, self._params)
-        return [(self._service_name, probe)]
+        fixture = ConfigItemFixture(fn, self._service_params)
+        return [(self._service_name, fixture)]

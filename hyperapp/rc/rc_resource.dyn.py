@@ -12,5 +12,9 @@ class Resource:
     def config_triplets(self):
         return []
 
+    @property
+    def config_item_fixtures(self):
+        return []
+
     def update_targets(self, target_factory):
         pass

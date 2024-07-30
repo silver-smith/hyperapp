@@ -51,6 +51,26 @@ class FixtureProbeTemplate:
         return FixtureProbe(system, service_name, self.fn, self.params)
 
 
+class ConfigItemFixture:
+
+    def __init__(self, fn, service_params):
+        self._fn = fn
+        self._service_params = service_params
+
+    def __repr__(self):
+        return f"<ConfigItemFixture {self._fn} {self._service_params}>"
+
+    def resolve(self, system):
+        service_args = [
+            system.resolve_service(name)
+            for name in self._service_params
+            ]
+        config = self._fn(*service_args)
+        if not isinstance(config, dict):
+            raise RuntimeError(f"Config item fixture should return a key->value dict ({self._fn}): {config!r}")
+        return config
+
+
 class Probe:
 
     def __init__(self, system_probe, service_name, fn, params):
@@ -72,20 +92,31 @@ class Probe:
     def _apply(self, service_params, *args, **kw):
         if self._resolved:
             return self._service
+        try:
+            idx = service_params.index('config')
+        except ValueError:
+            want_config = False
+            config_args = []
+        else:
+            if idx != 0:
+                raise RuntimeError("'config' should be first parameter")
+            service_params = service_params[1:]
+            want_config = True
+            config_args = [self._system.resolve_config(self._name)]
         service_args = [
             self._system.resolve_service(name)
             for name in service_params
             ]
-        service = self._fn(*service_args, *args, **kw)
+        service = self._fn(*config_args, *service_args, *args, **kw)
         self._service = service
-        self._add_resolved_template(service_params)
+        self._add_resolved_template(want_config, service_params)
         self._resolved = True
         return service
 
     def _run(self):
         return self._apply(self._params)
 
-    def _add_resolved_template(self, template):
+    def _add_resolved_template(self, want_config, template):
         pass
 
 
@@ -99,13 +130,13 @@ class ServiceProbe(Probe):
     def __repr__(self):
         return f"<ServiceProbe {self._module_name}:{self._attr_name} {self._fn} {self._params}>"
 
-    def _add_resolved_template(self, service_params):
+    def _add_resolved_template(self, want_config, service_params):
         template = ServiceTemplateRec(
             module_name=self._module_name,
             attr_name=self._attr_name,
             free_params=self._params[len(service_params):],
             service_params=service_params,
-            want_config=False,
+            want_config=want_config,
             )
         self._system.add_resolved_template(self._name, template)
 
@@ -118,8 +149,10 @@ class FixtureProbe(Probe):
 
 class SystemProbe:
 
-    def __init__(self, service_templates):
-        self._name_to_template = service_templates
+    def __init__(self, configs, config_item_fixtures):
+        self._configs = configs  # service_name -> key -> value
+        self._config_item_fixtures = config_item_fixtures  # service_name -> fixture list
+        self._name_to_template = configs['system']
         self._name_to_service = {}
         self._resolved_templates = {}
 
@@ -133,6 +166,13 @@ class SystemProbe:
     @property
     def resolved_templates(self):
         return self._resolved_templates
+
+    def resolve_config(self, service_name):
+        config = {**self._configs.get(service_name, {})}
+        for fixture in self._config_item_fixtures.get(service_name, []):
+            cfg = fixture.resolve(self)
+            config.update(cfg)
+        return config
 
     def resolve_service(self, name):
         try:

@@ -196,10 +196,16 @@ class TestJob:
     def _collect_configs(self, resource_list):
         service_to_config = defaultdict(dict)
         for resource in resource_list:
-            for triplet in resource.config_triplets:
-                service, key, value = triplet
+            for service, key, value in resource.config_triplets:
                 service_to_config[service][key] = value
         return service_to_config
+
+    def _collect_config_fixtures(self, resource_list):
+        service_to_fixtures = defaultdict(list)
+        for resource in resource_list:
+            for service_name, fixture in resource.config_item_fixtures:
+                service_to_fixtures[service_name].append(fixture)
+        return service_to_fixtures
 
     def _add_root_fixture(self, module, configs):
         test_fn = getattr(module, self._test_fn_name)
@@ -212,8 +218,9 @@ class TestJob:
 
     def _prepare_system(self, module, resources):
         configs = self._collect_configs(resources)
+        cfg_fixtures = self._collect_config_fixtures(resources)
         root_name = self._add_root_fixture(module, configs)
-        system = SystemProbe(configs)
+        system = SystemProbe(configs, cfg_fixtures)
         return (system, root_name)
 
     def _run_system(self, system, root_name):
