@@ -12,4 +12,4 @@ export PYTHONPATH=$PYTHONPATH:$DIR
 set -x
 
 #$venv/bin/pytest "$@" | "$FILTER"
-time $venv/bin/pytest "$@"
+time $venv/bin/pytest --ignore-glob='*.dyn.py' "$@"
