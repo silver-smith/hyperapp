@@ -1,4 +1,3 @@
-import asyncio
 import inspect
 import logging
 import traceback
@@ -207,13 +206,7 @@ class TestJob:
 
     def _run_system(self, system, root_name):
         try:
-            value = system.run(root_name)
-            if inspect.isgenerator(value):
-                log.info("Expanding generator: %r", value)
-                value = list(value)
-            if inspect.iscoroutine(value):
-                log.info("Running coroutine: %r", value)
-                value = asyncio.run(value)
+            system.run(root_name)
             status = JobStatus.ok
             error_msg = traceback = None
         except UnknownServiceError as x:
