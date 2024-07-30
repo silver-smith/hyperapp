@@ -3,7 +3,7 @@ from .services import (
     mosaic,
     )
 from .code.rc_constructor import Constructor
-from .code.service_probe_resource import FixtureProbeResource, ServiceProbeResource
+from .code.service_probe_resource import ConfigItemFixtureResource, FixtureProbeResource, ServiceProbeResource
 
 
 class ServiceCtr(Constructor):
@@ -68,9 +68,6 @@ class ServiceProbeCtr(Constructor):
             object=mosaic.put(python_module),
             attr_name=self._attr_name,
             )
-
-    def get_component(self, name_to_res):
-        raise NotImplementedError()
 
     def make_resource(self, module_name, python_module):
         return ServiceProbeResource(module_name, self._attr_name, self._name, self.make_component(python_module), self._params)
@@ -184,11 +181,10 @@ class ConfigItemFixtureCtr(Constructor):
         import_alias_tgt.add_component(self)
 
     def make_component(self, python_module, name_to_res=None):
-        assert 0
         return htypes.builtin.attribute(
             object=mosaic.put(python_module),
             attr_name=self._attr_name,
             )
 
     def make_resource(self, module_name, python_module):
-        assert 0
+        return ConfigItemFixtureResource(self._service_name, self.make_component(python_module), self._service_params)

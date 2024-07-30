@@ -4,6 +4,7 @@ import:
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.service_resource:config_item_fixture_resource
 - legacy_type.service_resource:fixture_probe_resource
 - legacy_type.service_resource:service_probe_resource
 - rc.rc_resource:rc_resource.module
@@ -28,6 +29,14 @@ associations:
   - legacy_type.service_resource:fixture_probe_resource
   value: FixtureProbeResource.from_piece
 
+- bases:
+  - rc.rc_resource_creg:rc_resource_creg.service
+  - legacy_type.service_resource:config_item_fixture_resource
+  key:
+  - rc.rc_resource_creg:rc_resource_creg.service
+  - legacy_type.service_resource:config_item_fixture_resource
+  value: ConfigItemFixtureResource.from_piece
+
 definitions:
 
   service_probe_resource.module:
@@ -38,6 +47,7 @@ definitions:
       import_list:
         htypes.service_resource.service_probe_resource: legacy_type.service_resource:service_probe_resource
         htypes.service_resource.fixture_probe_resource: legacy_type.service_resource:fixture_probe_resource
+        htypes.service_resource.config_item_fixture_resource: legacy_type.service_resource:config_item_fixture_resource
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
@@ -66,4 +76,16 @@ definitions:
     type: legacy_type.builtin:attribute
     value:
       object: FixtureProbeResource
+      attr_name: from_piece
+
+  ConfigItemFixtureResource:
+    type: legacy_type.builtin:attribute
+    value:
+      object: service_probe_resource.module
+      attr_name: ConfigItemFixtureResource
+
+  ConfigItemFixtureResource.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ConfigItemFixtureResource
       attr_name: from_piece

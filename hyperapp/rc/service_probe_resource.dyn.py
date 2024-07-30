@@ -62,3 +62,30 @@ class FixtureProbeResource(Resource):
         fn = pyobj_creg.animate(self._function)
         probe = FixtureProbeTemplate(fn, self._params)
         return [('system', self._service_name, probe)]
+
+
+class ConfigItemFixtureResource(Resource):
+
+    @classmethod
+    def from_piece(cls, piece):
+        return cls(piece.service_name, web.summon(piece.function), piece.service_params)
+
+    def __init__(self, service_name, function, service_params):
+        self._service_name = service_name
+        self._function = function  # piece
+        self._service_params = service_params
+
+    @property
+    def piece(self):
+        return htypes.service_resource.config_item_fixture_resource(
+            service_name=self._service_name,
+            function=mosaic.put(self._function),
+            service_params=tuple(self._service_params),
+            )
+
+    @property
+    def config_triplets(self):
+        fn = pyobj_creg.animate(self._function)
+        assert 0
+        probe = FixtureProbeTemplate(fn, self._params)
+        return [(self._service_name, probe)]
