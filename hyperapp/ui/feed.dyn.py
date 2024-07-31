@@ -51,16 +51,8 @@ def index_tree_feed_from_piece(piece):
     return IndexTreeFeed.from_piece(piece)
 
 
-class FeedFactory:
-
-    def __call__(self, piece):
-        piece_t = deduce_value_type(piece)
-        piece_t_res = pyobj_creg.actor_to_piece(piece_t)
-        feed_d_res = data_to_res(htypes.ui.feed_d())
-        feed_type = association_reg[feed_d_res, piece_t_res]
-        return feed_creg.animate(feed_type)
-        
-
-@mark.service
-def feed_factory():
-    return FeedFactory()
+@mark.service2
+def feed_factory(config, piece):
+    piece_t = deduce_value_type(piece)
+    feed_type = config[piece_t]
+    return feed_creg.animate(feed_type)
