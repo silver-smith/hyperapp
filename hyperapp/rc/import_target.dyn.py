@@ -17,6 +17,7 @@ class AllImportsKnownTarget(Target):
 
     def __init__(self):
         self._import_targets = set()  # first import targets, not aliases.
+        self._init_completed = False
         self._completed = False
 
     def __repr__(self):
@@ -31,10 +32,15 @@ class AllImportsKnownTarget(Target):
         return self._import_targets
 
     def update_status(self):
+        if not self._init_completed:
+            return
         self._completed = all(target.completed for target in self._import_targets)
 
     def add_import_target(self, target):
         self._import_targets.add(target)
+
+    def init_completed(self):
+        self._init_completed = True
 
 
 class ImportTargetAlias(Target):

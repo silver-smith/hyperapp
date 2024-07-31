@@ -45,3 +45,5 @@ def init_targets(root_dir, target_set, python_module_src_list, type_src_list):
         all_imports_known_tgt.add_import_target(import_tgt)
         target_set.add(import_tgt)
         target_set.add(alias_tgt)
+    all_imports_known_tgt.init_completed()
+    target_set.update_deps_for(all_imports_known_tgt)
