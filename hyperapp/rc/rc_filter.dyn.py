@@ -5,17 +5,12 @@ class Filter:
         self._target_set = target_set
         self._target_names = set(target_names)
         self._wanted_names = set()
-        self._need_to_find_an_item = False
         self.update_deps()
 
     def included(self, target):
         if not self._target_names:
             return True
-        if target.name in self._wanted_names:
-            return True
-        if self._need_to_find_an_item and target.name.split('/')[0] == 'import':
-            return True
-        return False
+        return target.name in self._wanted_names
 
     def update_deps(self):
         targets = set()
@@ -39,19 +34,6 @@ class Filter:
                 for dep in tgt.deps:
                     next_targets.add(dep)
             targets = next_targets
-        self._need_to_find_an_item = False
-        for name in self._wanted_names:
-            if name.split('/')[0] not in {'service_found', 'item-ready'}:
-                continue
-            try:
-                tgt = self._target_set[name]
-            except KeyError:
-                pass
-            else:
-                if tgt.completed:
-                    continue
-            self._need_to_find_an_item = True
-            break
 
     @staticmethod
     def _get_hints(target_name):

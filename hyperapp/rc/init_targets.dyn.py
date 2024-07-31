@@ -24,6 +24,7 @@ def add_common_mark_services(resource_tgt, target_set):
 def init_targets(root_dir, target_set, python_module_src_list, type_src_list):
     custom_resource_registry = create_custom_resource_registry(root_dir)
     all_imports_known_tgt = AllImportsKnownTarget()
+    target_set.add(all_imports_known_tgt)
     for src in python_module_src_list:
         try:
             resource_text = root_dir.joinpath(src.resource_path).read_text()
@@ -44,4 +45,3 @@ def init_targets(root_dir, target_set, python_module_src_list, type_src_list):
         all_imports_known_tgt.add_import_target(import_tgt)
         target_set.add(import_tgt)
         target_set.add(alias_tgt)
-    target_set.add(all_imports_known_tgt)

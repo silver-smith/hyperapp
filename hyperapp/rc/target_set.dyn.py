@@ -95,8 +95,15 @@ class TargetFactory:
         self._target_set = target_set
 
     def service_found(self, service_name):
-        target = ServiceFoundTarget(service_name)
-        return self._target_set.add_or_get(target)
+        target_name = ServiceFoundTarget.target_name(service_name)
+        try:
+            return self._target_set[target_name]
+        except KeyError:
+            pass
+        all_imports_known_tgt = self.all_imports_known()
+        target = ServiceFoundTarget(service_name, all_imports_known_tgt)
+        self._target_set.add(target)
+        return target
 
     def service_resolved(self, service_name):
         target_name = ServiceResolvedTarget.target_name(service_name)
@@ -156,7 +163,8 @@ class TargetFactory:
             return self._target_set[target_name]
         except KeyError:
             pass
-        target = ConfigItemReadyTarget(service_name, key)
+        all_imports_known_tgt = self.all_imports_known()
+        target = ConfigItemReadyTarget(service_name, key, all_imports_known_tgt)
         self._target_set.add(target)
         return target
 

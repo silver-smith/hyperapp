@@ -52,8 +52,13 @@ class ServiceCompleteReq(Requirement):
 
 class ServiceFoundTarget(Target):
 
-    def __init__(self, service_name):
+    @staticmethod
+    def target_name(service_name):
+        return f'service_found/{service_name}'
+
+    def __init__(self, service_name, all_imports_known_tgt):
         self._service_name = service_name
+        self._all_imports_known_tgt = all_imports_known_tgt
         self._completed = service_name in builtin_services
         self._provider_resource_tgt = None
         self._ctr = None
@@ -62,7 +67,7 @@ class ServiceFoundTarget(Target):
 
     @property
     def name(self):
-        return f'service_found/{self._service_name}'
+        return self.target_name(self._service_name)
 
     @property
     def completed(self):
@@ -73,7 +78,7 @@ class ServiceFoundTarget(Target):
         if self._import_alias_tgt:
             return {self._import_alias_tgt}
         else:
-            return set()
+            return {self._all_imports_known_tgt}
 
     def update_status(self):
         if self._completed:

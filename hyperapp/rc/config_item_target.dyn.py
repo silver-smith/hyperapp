@@ -8,9 +8,10 @@ class ConfigItemReadyTarget(Target):
     def target_name(service_name, key):
         return f'item-ready/{service_name}/{key}'
 
-    def __init__(self, service_name, key):
+    def __init__(self, service_name, key, all_imports_known_tgt):
         self._service_name = service_name
         self._key = key
+        self._all_imports_known_tgt = all_imports_known_tgt
         self._completed = False
         self._provider_resource_tgt = None
         self._import_alias_tgt = None
@@ -28,7 +29,7 @@ class ConfigItemReadyTarget(Target):
         if self._import_alias_tgt:
             return {self._import_alias_tgt}
         else:
-            return set()
+            return {self._all_imports_known_tgt}
 
     def update_status(self):
         if self._completed:
