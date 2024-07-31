@@ -119,6 +119,9 @@ def _run(pool, target_set, filter, options):
             break
     if failures:
         rc_log.info("%d failures:\n", len(failures))
+        for target in failures:
+            rc_log.info("Failed: %s", target.name)
+        rc_log.info("\n")
         for target, result in failures.items():
             rc_log.info("\n========== %s ==========\n%s%s\n", target.name, "".join(result.traceback), result.error)
     if incomplete and options.show_incomplete_traces:
