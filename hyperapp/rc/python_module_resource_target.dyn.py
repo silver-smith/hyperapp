@@ -133,18 +133,22 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
         return self._import_alias_tgt
 
     def add_import_requirements(self, req_to_target):
+        assert not self._completed
         self._req_to_target = req_to_target
 
     def add_cfg_item_target(self, target):
+        assert not self._completed
         self._cfg_item_targets.add(target)
 
     def add_test(self, test_target, target_set):
+        assert not self._completed
         self._tests.add(test_target.alias)
         test_target.add_tested_import(self._import_alias_tgt)
         target_set.update_deps_for(test_target)
         target_set.update_deps_for(self)
 
     def add_used_imports(self, import_list):
+        assert not self._completed
         for name in import_list:
             if len(name) < 3:
                 continue
