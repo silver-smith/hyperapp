@@ -18,3 +18,7 @@ tested_code_resource = record:
 recorder_resource = record:
   recorder_module_name: string
   recorder: ref
+
+constructors_picker_resource = record:
+  module_name: string
+  module: ref

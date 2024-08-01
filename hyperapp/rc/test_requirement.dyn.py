@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from hyperapp.common.resource_ctr import RESOURCE_MODULE_CTR_NAME
+
 from . import htypes
 from .services import (
     mosaic,
@@ -42,17 +44,21 @@ class TestedServiceReq(Requirement):
     def make_resource_list(self, target):
         import_tgt = target.import_alias_tgt
         ctr = target.constructor
-        recorder_module_name, recorder_piece, python_module = import_tgt.recorded_python_module
-        service = ctr.make_component(python_module)
+        module_name, recorder_piece, module_piece = import_tgt.recorded_python_module
+        service = ctr.make_component(module_piece)
         recorder_res = RecorderResource(
-            recorder_module_name=recorder_module_name,
+            recorder_module_name=module_name,
             recorder_piece=recorder_piece,
+            )
+        constructors_picker = ConstructorsPickerResource(
+            module_name=module_name,
+            module_piece=module_piece,
             )
         tested_service_res = TestedServiceResource(
             import_name=self.import_path,
             service_piece=service,
             )
-        return [*import_tgt.test_resources, recorder_res, tested_service_res]
+        return [*import_tgt.test_resources, recorder_res, constructors_picker, tested_service_res]
 
 
 @dataclass(frozen=True, unsafe_hash=True)
@@ -81,16 +87,20 @@ class TestedCodeReq(Requirement):
         tested_resource_tgt.add_test(test_target, target_set)
 
     def make_resource_list(self, target):
-        recorder_module_name, recorder_piece, module_piece = target.recorded_python_module
+        module_name, recorder_piece, module_piece = target.recorded_python_module
         recorder_res = RecorderResource(
-            recorder_module_name=recorder_module_name,
+            recorder_module_name=module_name,
             recorder_piece=recorder_piece,
+            )
+        constructors_picker = ConstructorsPickerResource(
+            module_name=module_name,
+            module_piece=module_piece,
             )
         tested_code_res = TestedCodeResource(
             import_name=self.import_path,
             module_piece=module_piece,
             )
-        return [*target.test_resources, recorder_res, tested_code_res]
+        return [*target.test_resources, recorder_res, constructors_picker, tested_code_res]
 
 
 class TestedServiceResource(Resource):
@@ -174,3 +184,28 @@ class RecorderResource(Resource):
         return {
             self._recorder_module_name: pyobj_creg.animate(self._recorder_piece),
             }
+
+
+class ConstructorsPickerResource(Resource):
+
+    @classmethod
+    def from_piece(cls, piece):
+        return cls(
+            module_name=piece.module_name,
+            module_piece=web.summon(piece.module),
+            )
+
+    def __init__(self, module_name, module_piece):
+        self._module_name = module_name
+        self._module_piece = module_piece
+
+    @property
+    def piece(self):
+        return htypes.test_target.constructors_picker_resource(
+            module_name=self._module_name,
+            module=mosaic.put(self._module_piece),
+            )
+
+    def pick_constructor_refs(self):
+        module = pyobj_creg.animate(self._module_piece)
+        return getattr(module, RESOURCE_MODULE_CTR_NAME, [])

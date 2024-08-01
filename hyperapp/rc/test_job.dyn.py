@@ -166,21 +166,18 @@ class TestJob:
             mosaic.put(req.piece)
             for req in req_set
             )
+        used_imports = tuple(self._enum_used_imports(all_resources))
         if status == JobStatus.incomplete:
             return htypes.test_job.incomplete_result(
-                used_imports=tuple(self._enum_used_imports(all_resources)),
+                used_imports=used_imports,
                 requirements=req_refs,
                 error=error_msg,
                 traceback=tuple(traceback),
                 )
-        constructors = [
-            ServiceTemplateCtr.from_template(name, template)
-            for name, template in system.resolved_templates.items()
-            ]
         return htypes.test_job.succeeded_result(
-            used_imports=tuple(self._enum_used_imports(all_resources)),
+            used_imports=used_imports,
             requirements=req_refs,
-            constructors=tuple(mosaic.put(ctr.piece) for ctr in constructors)
+            constructors=tuple(self._enum_constructor_refs(system, all_resources))
             )
 
     def _import_module(self, module_piece):
@@ -276,3 +273,10 @@ class TestJob:
                 module_name=module_name,
                 imports=tuple(recorder.used_imports),
                 )
+
+    def _enum_constructor_refs(self, system, resource_list):
+        for name, template in system.resolved_templates.items():
+            ctr = ServiceTemplateCtr.from_template(name, template)
+            yield mosaic.put(ctr.piece)
+        for resource in resource_list:
+            yield from resource.pick_constructor_refs()
