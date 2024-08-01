@@ -230,7 +230,8 @@ class TestJob:
             error_msg = traceback = None
         except UnknownServiceError as x:
             req = ServiceReq(x.service_name)
-            return (JobStatus.incomplete, str(x), [], {req})
+            error = f"{type(x).__name__}: {x}"
+            return (JobStatus.incomplete, error, [], {req})
         except Exception as x:
             status, error_msg, traceback = self._prepare_error(x, skip_entries=1)
         for name, service in system.resolved_templates.items():
@@ -253,10 +254,11 @@ class TestJob:
         else:
             del traceback_entries[:skip_entries]
         traceback_lines = traceback.format_list(traceback_entries)
+        error = f"{type(x).__name__}: {x}"
         if isinstance(x, IncompleteImportedObjectError):
-            return (JobStatus.incomplete, str(x), traceback_lines[:-1])
+            return (JobStatus.incomplete, error, traceback_lines[:-1])
         else:
-            return (JobStatus.failed, str(x), traceback_lines)
+            return (JobStatus.failed, error, traceback_lines)
 
     def _imports_to_requirements(self, import_set):
         log.info("Used imports: %s", import_set)

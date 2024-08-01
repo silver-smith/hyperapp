@@ -228,10 +228,11 @@ class ImportJob:
                 del traceback_entries[:idx + 1]
                 break
         traceback_lines = traceback.format_list(traceback_entries)
+        error = f"{type(x).__name__}: {x}"
         if isinstance(x.original_error, IncompleteImportedObjectError):
-            return (JobStatus.incomplete, str(x), traceback_lines[:-1])
+            return (JobStatus.incomplete, error, traceback_lines[:-1])
         else:
-            return (JobStatus.failed, str(x), traceback_lines)
+            return (JobStatus.failed, error, traceback_lines)
 
     def _imports_to_requirements(self, import_set):
         # print("Used imports", import_set)
