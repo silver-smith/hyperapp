@@ -18,6 +18,3 @@ class Resource:
 
     def pick_constructor_refs(self):
         return []
-
-    def update_targets(self, target_factory):
-        pass
