@@ -2,9 +2,6 @@ import asyncio
 import logging
 
 from . import htypes
-from .services import (
-    feed_factory,
-    )
 from .code.list_diff import ListDiff
 from .code.tree_diff import TreeDiff
 
@@ -17,7 +14,7 @@ async def _send_list_diff(feed):
     await feed.send(ListDiff.Append(item))
 
 
-async def schedule_sample_list_feed(piece):
+async def schedule_sample_list_feed(feed_factory, piece):
     feed = feed_factory(piece)
     asyncio.create_task(_send_list_diff(feed))
 
@@ -28,6 +25,6 @@ async def _send_tree_diff(feed):
     await feed.send(TreeDiff.Append([], item))
 
 
-async def schedule_sample_tree_feed(piece):
+async def schedule_sample_tree_feed(feed_factory, piece):
     feed = feed_factory(piece)
     asyncio.create_task(_send_tree_diff(feed))
