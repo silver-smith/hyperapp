@@ -39,12 +39,15 @@ class ServiceTemplate:
             )
 
     def resolve(self, system, service_name):
-        assert not self.want_config, 'todo'
+        if self.want_config:
+            config_args = [system.resolve_config(self.service_name)]
+        else:
+            config_args = []
         service_args = [
             system.resolve_service(name)
             for name in self.service_params
             ]
         if self.free_params:
-            return partial(self.fn, *service_args)
+            return partial(self.fn, *config_args, *service_args)
         else:
-            return self.fn(*service_args)
+            return self.fn(*config_args, *service_args)
