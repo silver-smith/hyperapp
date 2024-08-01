@@ -16,5 +16,5 @@ class Resource:
     def config_item_fixtures(self):
         return []
 
-    def pick_constructor_refs(self):
+    def pick_constructors(self):
         return []

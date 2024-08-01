@@ -55,3 +55,8 @@ list_feed = record:
 index_tree_feed = record:
   t: ref
   element_t: ref
+
+
+module_wrapper = record:
+  module_name: string
+  constructor: ref

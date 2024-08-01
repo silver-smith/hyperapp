@@ -206,6 +206,10 @@ class ConstructorsPickerResource(Resource):
             module=mosaic.put(self._module_piece),
             )
 
-    def pick_constructor_refs(self):
+    def pick_constructors(self):
         module = pyobj_creg.animate(self._module_piece)
-        return getattr(module, RESOURCE_MODULE_CTR_NAME, [])
+        constructors = getattr(module, RESOURCE_MODULE_CTR_NAME, [])
+        return [
+            htypes.rc_constructors.module_wrapper(self._module_name, ctr)
+            for ctr in constructors
+            ]

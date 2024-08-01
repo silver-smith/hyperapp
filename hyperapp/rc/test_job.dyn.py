@@ -279,4 +279,5 @@ class TestJob:
             ctr = ServiceTemplateCtr.from_template(name, template)
             yield mosaic.put(ctr.piece)
         for resource in resource_list:
-            yield from resource.pick_constructor_refs()
+            for ctr_piece in resource.pick_constructors():
+                yield mosaic.put(ctr_piece)
