@@ -1,10 +1,13 @@
 
 class Constructor:
 
-    def update_targets(self, resource_target, target_factory):
+    def update_resource_targets(self, resource_tgt, target_set):
         pass
 
     def update_tests_targets(self, import_alias_tgt, target_set):
+        pass
+
+    def update_targets(self, target_set):
         pass
 
     def make_component(self, python_module, name_to_res=None):

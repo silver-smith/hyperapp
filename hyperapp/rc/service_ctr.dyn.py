@@ -16,7 +16,7 @@ class ServiceCtr(Constructor):
         self._attr_name = attr_name
         self._name = name
 
-    def update_targets(self, resource_tgt, target_set):
+    def update_resource_targets(self, resource_tgt, target_set):
         service_found_tgt = target_set.factory.service_found(self._name)
         service_found_tgt.set_provider(resource_tgt, self, target_set)
         resolved_tgt = target_set.factory.service_resolved(self._name)
@@ -54,7 +54,7 @@ class ServiceProbeCtr(Constructor):
         self._name = name
         self._params = params
 
-    def update_targets(self, resource_tgt, target_set):
+    def update_resource_targets(self, resource_tgt, target_set):
         resource_tgt.import_alias_tgt.add_component(self)
         ready_tgt = target_set.factory.config_item_ready('system', self._name)
         ready_tgt.set_provider(resource_tgt, target_set)
