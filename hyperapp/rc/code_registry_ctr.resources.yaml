@@ -2,6 +2,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:code_registry_ctr
+- rc.rc_constructor:rc_constructor.module
 - resource.rc_constructor_creg:rc_constructor_creg.service
 
 associations:
@@ -21,7 +22,8 @@ definitions:
     value:
       module_name: code_registry_ctr
       file_name: code_registry_ctr.dyn.py
-      import_list: {}
+      import_list:
+        code.rc_constructor: rc.rc_constructor:rc_constructor.module
 
   CodeRegistryCtr:
     type: legacy_type.builtin:attribute

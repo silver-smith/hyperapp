@@ -153,7 +153,11 @@ class FixtureCtr(Constructor):
         self._name = name
         self._params = params
 
-    def update_tests_targets(self, import_alias_tgt, target_set):
+    @property
+    def is_fixture(self):
+        return True
+
+    def update_fixtures_targets(self, import_alias_tgt, target_set):
         import_alias_tgt.add_component(self)
 
     def make_component(self, python_module, name_to_res=None):
@@ -177,7 +181,11 @@ class ConfigItemFixtureCtr(Constructor):
         self._service_name = service_name
         self._service_params = service_params
 
-    def update_tests_targets(self, import_alias_tgt, target_set):
+    @property
+    def is_fixture(self):
+        return True
+
+    def update_fixtures_targets(self, import_alias_tgt, target_set):
         import_alias_tgt.add_component(self)
 
     def make_component(self, python_module, name_to_res=None):

@@ -103,6 +103,35 @@ class TestedCodeReq(Requirement):
         return [*target.test_resources, recorder_res, constructors_picker, tested_code_res]
 
 
+@dataclass(frozen=True, unsafe_hash=True)
+class FixturesModuleReq(Requirement):
+
+    import_path: tuple[str]
+    code_name: str
+
+    @classmethod
+    def from_piece(cls, piece):
+        return cls(piece.import_path, piece.code_name)
+
+    @property
+    def piece(self):
+        return htypes.test_target.fixtures_module_req(self.import_path, self.code_name)
+
+    def get_target(self, target_factory):
+        return target_factory.python_module_imported_by_code_name(self.code_name)
+
+    @property
+    def is_test_requirement(self):
+        return True
+
+    def update_tested_target(self, import_target, test_target, target_set):
+        test_target.add_fixtures_import(import_target.alias)
+        target_set.update_deps_for(test_target)
+
+    def make_resource_list(self, target):
+        return target.test_resources
+
+
 class TestedServiceResource(Resource):
 
     @classmethod

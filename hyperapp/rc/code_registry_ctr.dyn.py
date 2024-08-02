@@ -1,5 +1,7 @@
+from .code.rc_constructor import Constructor
 
-class CodeRegistryCtr:
+
+class CodeRegistryCtr(Constructor):
 
     @classmethod
     def from_piece(cls, piece):

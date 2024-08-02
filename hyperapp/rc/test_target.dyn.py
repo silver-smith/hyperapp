@@ -29,13 +29,14 @@ class TestTargetAlias(Target):
 
 class TestTarget(Target):
 
-    def __init__(self, python_module_src, type_src_list, import_alias_tgt, function, req_to_target, alias, idx=1):
+    def __init__(self, python_module_src, type_src_list, import_alias_tgt, function, req_to_target, alias, fixtures_deps=None, idx=1):
         self._src = python_module_src
         self._type_src_list = type_src_list
         self._import_alias_tgt = import_alias_tgt
         self._function = function
         self._req_to_target = req_to_target or {}
         self._tested_imports = set()  # import targets being tested.
+        self._fixtures_deps = fixtures_deps or set()  # import alias targets with fixtures.
         self._tested_deps = set()  # targets required by tested code targets.
         self._idx = idx
         self._alias = alias
@@ -56,7 +57,7 @@ class TestTarget(Target):
 
     @property
     def deps(self):
-        return {*self._tested_imports, *self._tested_deps, *self._req_to_target.values()}
+        return {*self._tested_imports, *self._fixtures_deps, *self._tested_deps, *self._req_to_target.values()}
 
     def update_status(self):
         for target in self._tested_imports:
@@ -83,6 +84,9 @@ class TestTarget(Target):
     def alias(self):
         return self._alias
 
+    def add_fixtures_import(self, target):
+        self._fixtures_deps.add(target)
+
     def add_tested_import(self, target):
         self._tested_imports.add(target)
         if target.completed:
@@ -97,4 +101,13 @@ class TestTarget(Target):
             **self._req_to_target,
             **req_to_target,
             }
-        return TestTarget(self._src, self._type_src_list, self._import_alias_tgt, self._function, full_req_to_target, self._alias, self._idx + 1)
+        return TestTarget(
+            python_module_src=self._src,
+            type_src_list=self._type_src_list,
+            import_alias_tgt=self._import_alias_tgt,
+            function=self._function,
+            req_to_target=full_req_to_target,
+            alias=self._alias,
+            fixtures_deps=self._fixtures_deps,
+            idx=self._idx + 1,
+            )

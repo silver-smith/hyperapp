@@ -6,6 +6,10 @@ tested_code_req = record:
   import_path: string list
   code_name: string
 
+fixtures_module_req = record:
+  import_path: string list
+  code_name: string
+
 
 tested_service_resource = record:
   import_name: string list

@@ -8,10 +8,14 @@ from .services import (
 
 class Constructor:
 
+    @property
+    def is_fixture(self):
+        return False
+
     def update_resource_targets(self, resource_tgt, target_set):
         pass
 
-    def update_tests_targets(self, import_alias_tgt, target_set):
+    def update_fixtures_targets(self, import_alias_tgt, target_set):
         pass
 
     def update_targets(self, target_set):

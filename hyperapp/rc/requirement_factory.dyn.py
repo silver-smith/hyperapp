@@ -1,6 +1,6 @@
 from .code.python_module_resource_target import PythonModuleReq
 from .code.service_target import ServiceCompleteReq
-from .code.test_requirement import TestedServiceReq, TestedCodeReq
+from .code.test_requirement import TestedServiceReq, TestedCodeReq, FixturesModuleReq
 
 
 class RequirementFactory:
@@ -24,6 +24,10 @@ class RequirementFactory:
         code_name = import_path[2]
         return TestedCodeReq(import_path, code_name)
 
+    def import_to_fixtures_module(self, import_path):
+        code_name = import_path[1]
+        return FixturesModuleReq(import_path, code_name)
+
     def ignore_import(self, import_path):
         pass
 
@@ -34,6 +38,7 @@ class RequirementFactory:
         ('tested', 'services'): import_to_tested_service,
         ('tested', 'code'): import_to_tested_code,
         ('tested',): ignore_import,
+        ('fixtures',): import_to_fixtures_module,
         }
 
     def requirement_from_import(self, import_path):

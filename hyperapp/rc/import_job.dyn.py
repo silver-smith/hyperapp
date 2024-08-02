@@ -75,18 +75,19 @@ class SucceededImportResult(ImportResultBase):
 
     def update_targets(self, my_target, target_set):
         req_to_target = self._resolve_requirements(target_set.factory)
+        if self._is_tests or self._is_fixtures:
+            self._update_fixtures_targets(my_target, target_set)
         if self._is_tests:
-            self._update_tests_targets(my_target, target_set, req_to_target)
-        else:
+            self._add_tests(my_target, target_set, req_to_target)
+        elif not self._is_fixtures:
             self._update_resource(my_target, target_set, req_to_target)
         my_target.set_alias_requirements(req_to_target)
         target_set.update_deps_for(my_target.alias)
 
-    def _update_tests_targets(self, my_target, target_set, req_to_target):
+    def _update_fixtures_targets(self, my_target, target_set):
         import_alias_tgt = my_target.alias
         for ctr in self._constructors:
-            ctr.update_tests_targets(import_alias_tgt, target_set)
-        self._add_tests(my_target, target_set, req_to_target)
+            ctr.update_fixtures_targets(import_alias_tgt, target_set)
 
     def _add_tests(self, my_target, target_set, req_to_target):
         for fn in self._functions:
@@ -110,6 +111,13 @@ class SucceededImportResult(ImportResultBase):
     def _is_tests(self):
         for req in self._requirements:
             if req.is_test_requirement:
+                return True
+        return False
+
+    @property
+    def _is_fixtures(self):
+        for ctr in self._constructors:
+            if ctr.is_fixture:
                 return True
         return False
 

@@ -9,6 +9,7 @@ import:
 - legacy_type.test_target:constructors_picker_resource
 - legacy_type.test_target:recorder_resource
 - legacy_type.test_target:tested_code_req
+- legacy_type.test_target:fixtures_module_req
 - legacy_type.test_target:tested_code_resource
 - legacy_type.test_target:tested_service_req
 - legacy_type.test_target:tested_service_resource
@@ -34,6 +35,14 @@ associations:
   - rc.rc_requirement_creg:rc_requirement_creg.service
   - legacy_type.test_target:tested_code_req
   value: TestedCodeReq.from_piece
+
+- bases:
+  - rc.rc_requirement_creg:rc_requirement_creg.service
+  - legacy_type.test_target:fixtures_module_req
+  key:
+  - rc.rc_requirement_creg:rc_requirement_creg.service
+  - legacy_type.test_target:fixtures_module_req
+  value: FixturesModuleReq.from_piece
 
 - bases:
   - rc.rc_resource_creg:rc_resource_creg.service
@@ -79,6 +88,7 @@ definitions:
         htypes.rc_constructors.module_wrapper: legacy_type.rc_constructors:module_wrapper
         htypes.test_target.constructors_picker_resource: legacy_type.test_target:constructors_picker_resource
         htypes.test_target.tested_code_req: legacy_type.test_target:tested_code_req
+        htypes.test_target.fixtures_module_req: legacy_type.test_target:fixtures_module_req
         htypes.test_target.tested_service_req: legacy_type.test_target:tested_service_req
         htypes.test_target.tested_code_resource: legacy_type.test_target:tested_code_resource
         htypes.test_target.tested_service_resource: legacy_type.test_target:tested_service_resource
@@ -111,6 +121,18 @@ definitions:
     type: legacy_type.builtin:attribute
     value:
       object: TestedCodeReq
+      attr_name: from_piece
+
+  FixturesModuleReq:
+    type: legacy_type.builtin:attribute
+    value:
+      object: test_requirement.module
+      attr_name: FixturesModuleReq
+
+  FixturesModuleReq.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: FixturesModuleReq
       attr_name: from_piece
 
   TestedServiceResource:
