@@ -178,4 +178,5 @@ class ImportTarget(Target):
     def create_test_target(self, function, req_to_target):
         alias = TestTargetAlias(self._src, function)
         target = TestTarget(self._src, self._type_src_list, self._alias, function, req_to_target, alias)
+        alias.set_test_target(target)
         return (alias, target)

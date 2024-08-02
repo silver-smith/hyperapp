@@ -13,6 +13,7 @@ class TestTargetAlias(Target):
     def __init__(self, python_module_src, function):
         self._src = python_module_src
         self._function = function
+        self._test_target = None
         self._completed = False
 
     @property
@@ -23,8 +24,15 @@ class TestTargetAlias(Target):
     def completed(self):
         return self._completed
 
+    @property
+    def deps(self):
+        return {self._test_target}
+
     def set_completed(self, req_to_target):
         self._completed = True
+
+    def set_test_target(self, test_target):
+        self._test_target = test_target
 
 
 class TestTarget(Target):
@@ -101,7 +109,7 @@ class TestTarget(Target):
             **self._req_to_target,
             **req_to_target,
             }
-        return TestTarget(
+        target = TestTarget(
             python_module_src=self._src,
             type_src_list=self._type_src_list,
             import_alias_tgt=self._import_alias_tgt,
@@ -111,3 +119,5 @@ class TestTarget(Target):
             fixtures_deps=self._fixtures_deps,
             idx=self._idx + 1,
             )
+        self._alias.set_test_target(target)
+        return target
