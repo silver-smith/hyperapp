@@ -1,9 +1,7 @@
 import asyncio
 
 from . import htypes
-from .services import (
-    feed_factory,
-    )
+from .fixtures import feed_fixtures
 from .tested.code import sample_list
 
 
@@ -12,7 +10,7 @@ def test_sample_list():
     assert value
 
 
-async def test_feed_sample_list():
+async def test_feed_sample_list(feed_factory):
     piece = htypes.sample_list.feed_sample_list()
     feed = feed_factory(piece)
     value = sample_list.feed_sample_list(piece, feed)

@@ -1,9 +1,7 @@
 import asyncio
 
 from . import htypes
-from .services import (
-    feed_factory,
-    )
+from .fixtures import feed_fixtures
 from .tested.code import sample_tree
 
 
@@ -14,7 +12,7 @@ def test_sample_tree():
     assert value
 
 
-async def test_feed_sample_tree():
+async def test_feed_sample_tree(feed_factory):
     piece = htypes.sample_tree.feed_sample_tree()
     feed = feed_factory(piece)
     parent = htypes.sample_tree.item(100, "Some item")
