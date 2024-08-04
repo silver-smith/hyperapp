@@ -34,18 +34,22 @@ class ServiceActorWrapper:
     def __call__(self, fn):
         qual_name = fn.__qualname__.split('.')
         if type(fn) in {classmethod, staticmethod}:
-            fn = inspect.unwrap(fn)
-        elif not inspect.isfunction(fn):
-            raise RuntimeError(
-                f"Unknown object attempted to be marked as an actor: {fn!r};"
-                " Expected function, classmethod or staticmethod"
-                )
-        signature = inspect.signature(fn)
+            actual_fn = inspect.unwrap(fn)
+        else:
+            if not inspect.isfunction(fn):
+                raise RuntimeError(
+                    f"Unknown object attempted to be marked as an actor: {fn!r};"
+                    " Expected function, classmethod or staticmethod"
+                    )
+            actual_fn = fn
+        params = tuple(inspect.signature(actual_fn).parameters)
+        if type(fn) is classmethod:
+            params = params[1:]
         ctr = htypes.rc_constructors.actor_probe(
             attr_qual_name=tuple(qual_name),
             service_name=self._service_name,
             t=pyobj_creg.actor_to_ref(self._t),
-            params=tuple(signature.parameters),
+            params=params,
             )
         add_fn_module_constructor(fn, mosaic.put(ctr))
         return fn
