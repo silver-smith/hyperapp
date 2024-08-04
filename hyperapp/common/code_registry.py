@@ -5,7 +5,6 @@ from functools import cached_property
 
 from .htypes import code_registry_ctr_t, ref_t
 from .htypes.deduce_value_type import deduce_value_type
-from .ref import decode_capsule
 from .resource_ctr import add_fn_module_constructor
 
 _log = logging.getLogger(__name__)
