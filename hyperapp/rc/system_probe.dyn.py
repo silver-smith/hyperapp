@@ -38,6 +38,21 @@ class ServiceProbeTemplate:
         return ServiceProbe(system, self.module_name, self.attr_name, service_name, self.fn, self.params)
 
 
+class ActorProbe:
+
+    def __init__(self, attr_qual_name, t, fn, params):
+        self._attr_qual_name = attr_qual_name
+        self._t = t
+        self._fn = fn
+        self._params = params
+
+    def __repr__(self):
+        return f"<ActorProbe {self._attr_qual_name}/{self._t}: {self._fn} {self._params}>"
+
+    # def resolve(self, system, service_name):
+    #     return ServiceProbe(system, self._attr_qual_name, service_name, self._fn, self._params)
+
+
 class FixtureProbeTemplate:
 
     def __init__(self, fn, params):

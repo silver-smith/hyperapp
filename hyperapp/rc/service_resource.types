@@ -12,6 +12,13 @@ service_probe_resource = record:
   function: ref
   params: string list
 
+actor_probe_resource = record:
+  attr_qual_name: string list
+  service_name: string
+  t: ref
+  function: ref
+  params: string list
+
 fixture_probe_resource = record:
   service_name: string
   function: ref

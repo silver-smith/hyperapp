@@ -1,7 +1,10 @@
+from . import htypes
 from .services import (
+    mosaic,
     pyobj_creg,
     )
 from .code.rc_constructor import Constructor
+from .code.actor_probe_resource import ActorProbeResource
 
 
 class ActorProbeCtr(Constructor):
@@ -31,10 +34,16 @@ class ActorProbeCtr(Constructor):
         target_set.update_deps_for(resource_tgt)
 
     def make_component(self, python_module, name_to_res=None):
-        assert 0
+        object = python_module
+        for name in self._attr_qual_name:
+            object = htypes.builtin.attribute(
+                object=mosaic.put(object),
+                attr_name=name,
+                )
+        return object
 
     def make_resource(self, module_name, python_module):
-        assert 0
+        return ActorProbeResource(self._attr_qual_name, self._service_name, self._t, self.make_component(python_module), self._params)
 
     @property
     def _type_name(self):
