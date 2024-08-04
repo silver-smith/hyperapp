@@ -17,6 +17,13 @@ service_template = record:
   want_config: bool
 
 
+actor_probe = record:
+  attr_qual_name: string list
+  service_name: string
+  t: ref
+  params: string list
+
+
 fixture = record:
   attr_name: string
   name: string

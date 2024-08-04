@@ -25,6 +25,47 @@ class ServiceMarker:
         return fn
 
 
+class ServiceActorWrapper:
+
+    def __init__(self, service_name, t):
+        self._service_name = service_name
+        self._t = t
+
+    def __call__(self, fn):
+        qual_name = fn.__qualname__.split('.')
+        if type(fn) in {classmethod, staticmethod}:
+            fn = inspect.unwrap(fn)
+        elif not inspect.isfunction(fn):
+            raise RuntimeError(
+                f"Unknown object attempted to be marked as an actor: {fn!r};"
+                " Expected function, classmethod or staticmethod"
+                )
+        signature = inspect.signature(fn)
+        ctr = htypes.rc_constructors.actor_probe(
+            attr_qual_name=tuple(qual_name),
+            service_name=self._service_name,
+            t=pyobj_creg.actor_to_ref(self._t),
+            params=tuple(signature.parameters),
+            )
+        add_fn_module_constructor(fn, mosaic.put(ctr))
+        return fn
+
+
+class ServiceActorMarker:
+
+    def __init__(self, service_name):
+        self._service_name = service_name
+
+    def __call__(self, t):
+        return ServiceActorWrapper(self._service_name, t)
+
+
+class ActorMarker:
+
+    def __getattr__(self, service_name):
+        return ServiceActorMarker(service_name)
+
+
 def service_probe_marker(fn):
     ctr = htypes.rc_constructors.service_probe(
         attr_name=fn.__name__,
@@ -100,6 +141,7 @@ def mark():
     return SimpleNamespace(
         service=ServiceMarker(),
         service2=service_probe_marker,
+        actor=ActorMarker(),
         fixture=fixture_marker,
         config_item_fixture=config_item_fixture,
         model=model,
