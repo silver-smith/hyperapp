@@ -41,14 +41,14 @@ def _make_piece():
     return htypes.tree.view(mosaic.put(adapter_piece))
 
 
-def test_tree():
+def test_tree(model_view_creg):
     ctx = Context()
     piece = _make_piece()
     model = htypes.tree_tests.sample_tree()
     state = None
     app = QtWidgets.QApplication()
     try:
-        view = tree.TreeView.from_piece(piece, model, ctx)
+        view = model_view_creg.animate(piece, model, ctx)
         view.set_controller_hook(Mock())
         widget = view.construct_widget(state, ctx)
         assert view.piece
