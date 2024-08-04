@@ -6,8 +6,10 @@ from functools import cached_property
 
 from hyperapp.common.htypes import tInt, TList, TOptional, TRecord
 
+from . import htypes
 from .services import (
     feed_factory,
+    mark,
     peer_registry,
     pyobj_creg,
     rpc_call_factory,
@@ -193,6 +195,7 @@ class FnIndexTreeAdapterBase(IndexTreeAdapterBase, metaclass=abc.ABCMeta):
 
 class FnIndexTreeAdapter(FnIndexTreeAdapterBase):
 
+    @mark.actor.ui_adapter_creg(htypes.tree_adapter.fn_index_tree_adapter)
     @classmethod
     def from_piece(cls, piece, model, ctx):
         element_t = pyobj_creg.invite(piece.element_t)
