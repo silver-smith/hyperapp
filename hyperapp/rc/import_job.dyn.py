@@ -214,6 +214,8 @@ class ImportJob:
             fn = getattr(module, name)
             if not callable(fn):
                 continue
+            if getattr(fn, '__module__', None) != module.__name__:
+                continue  # Skip functions imported from other modules.
             try:
                 signature = inspect.signature(fn)
             except ValueError as x:
