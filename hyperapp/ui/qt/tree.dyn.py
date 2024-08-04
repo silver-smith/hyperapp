@@ -7,7 +7,7 @@ from PySide6 import QtCore, QtWidgets
 
 from . import htypes
 from .services import (
-    ui_adapter_creg,
+    mark,
     )
 from .code.view import View
 
@@ -172,8 +172,9 @@ class _TreeWidget(QtWidgets.QTreeView):
 
 class TreeView(View):
 
+    @mark.actor.model_view_creg(htypes.tree.view)
     @classmethod
-    def from_piece(cls, piece, model, ctx):
+    def from_piece(cls, piece, model, ctx, ui_adapter_creg):
         adapter = ui_adapter_creg.invite(piece.adapter, model, ctx)
         return cls(piece.adapter, adapter)
 
