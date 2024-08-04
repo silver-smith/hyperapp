@@ -1,14 +1,14 @@
 from .services import (
-    code_registry_ctr,
+    code_registry_ctr2,
     mark,
     )
 
 
-@mark.service
-def view_creg():
-    return code_registry_ctr('view')
+@mark.service2
+def view_creg(config):
+    return code_registry_ctr2('view', config)
 
 
-@mark.service
-def model_view_creg():
-    return code_registry_ctr('model_view')
+@mark.service2
+def model_view_creg(config):
+    return code_registry_ctr2('model_view', config)
