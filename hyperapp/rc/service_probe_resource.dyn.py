@@ -15,7 +15,7 @@ class ServiceProbeResource(Resource):
         return cls(piece.module_name, piece.attr_name, piece.service_name, web.summon(piece.function), piece.params)
 
     def __init__(self, module_name, attr_name, service_name, function, params):
-        self._module_name = module_name
+        self._module_name = module_name  # TODO: Check if this actually used up tru final constructor.
         self._attr_name = attr_name
         self._service_name = service_name
         self._function = function  # piece
