@@ -70,7 +70,7 @@ class ServiceProbeCtr(Constructor):
             )
 
     def make_resource(self, module_name, python_module):
-        return ServiceProbeResource(module_name, self._attr_name, self._name, self.make_component(python_module), self._params)
+        return ServiceProbeResource(self._attr_name, self._name, self.make_component(python_module), self._params)
 
 
 class ServiceTemplateCtr(Constructor):

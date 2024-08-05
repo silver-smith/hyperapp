@@ -16,7 +16,6 @@ class UnknownServiceError(Exception):
 @dataclass
 class ServiceTemplateRec:
 
-    module_name: str
     attr_name: str
     free_params: list[str]
     service_params: list[str]
@@ -25,17 +24,16 @@ class ServiceTemplateRec:
 
 class ServiceProbeTemplate:
 
-    def __init__(self, module_name, attr_name, fn, params):
-        self.module_name = module_name
+    def __init__(self, attr_name, fn, params):
         self.attr_name = attr_name
         self.fn = fn
         self.params = params
 
     def __repr__(self):
-        return f"<ServiceProbeTemplate {self.module_name}:{self.attr_name} {self.fn} {self.params}>"
+        return f"<ServiceProbeTemplate {self.attr_name} {self.fn} {self.params}>"
 
     def resolve(self, system, service_name):
-        return ServiceProbe(system, self.module_name, self.attr_name, service_name, self.fn, self.params)
+        return ServiceProbe(system, self.attr_name, service_name, self.fn, self.params)
 
 
 class ActorProbe:
@@ -138,20 +136,18 @@ class Probe:
 
 class ServiceProbe(Probe):
 
-    def __init__(self, system_probe, module_name, attr_name, service_name, fn, params):
+    def __init__(self, system_probe, attr_name, service_name, fn, params):
         super().__init__(system_probe, service_name, fn, params)
-        self._module_name = module_name
         self._attr_name = attr_name
 
     def __repr__(self):
-        return f"<ServiceProbe {self._module_name}:{self._attr_name} {self._fn} {self._params}>"
+        return f"<ServiceProbe {self._attr_name} {self._fn} {self._params}>"
 
     def _add_resolved_template(self, want_config, service_params):
         free_params_ofs = len(service_params)
         if want_config:
             free_params_ofs += 1
         template = ServiceTemplateRec(
-            module_name=self._module_name,
             attr_name=self._attr_name,
             free_params=self._params[free_params_ofs:],
             service_params=service_params,

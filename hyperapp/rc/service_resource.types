@@ -6,7 +6,6 @@ service_req = record:
 
 
 service_probe_resource = record:
-  module_name: string
   attr_name: string
   service_name: string
   function: ref
