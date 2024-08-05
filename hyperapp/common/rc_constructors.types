@@ -9,7 +9,6 @@ service_probe = record:
   params: string list
 
 service_template = record:
-  module_name: string
   attr_name: string
   name: string
   free_params: string list
