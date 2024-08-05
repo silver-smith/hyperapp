@@ -40,7 +40,6 @@ class ActorProbeResource(Resource):
 
     @property
     def config_triplets(self):
-        key = f'{self._t.module_name}_{self._t.name}'
         fn = pyobj_creg.animate(self._function)
         probe = ActorProbe(self._attr_qual_name, self._t, fn, self._params)
-        return [(self._service_name, key, probe)]
+        return [(self._service_name, self._t, probe)]
