@@ -115,6 +115,27 @@ class FixtureProbeTemplate:
         return FixtureProbe(system, service_name, self.fn, self.params)
 
 
+class ConfigItemRequiredError(Exception):
+
+    def __init__(self, service_name, key):
+        super().__init__(f"Configuration item is required for {service_name}: {key}")
+        self.service_name = service_name
+        self.key = key
+
+
+class ConfigProbe:
+
+    def __init__(self, service_name, config):
+        self._service_name = service_name
+        self._config = config
+
+    def __getitem__(self, key):
+        try:
+            return self._config[key]
+        except KeyError:
+            raise ConfigItemRequiredError(self._service_name, key)
+
+
 class ConfigItemFixture:
 
     def __init__(self, fn, service_params):
@@ -245,7 +266,7 @@ class SystemProbe:
         for fixture in self._config_item_fixtures.get(service_name, []):
             cfg = fixture.resolve(self)
             config.update(cfg)
-        return config
+        return ConfigProbe(service_name, config)
 
     def resolve_service(self, name):
         try:

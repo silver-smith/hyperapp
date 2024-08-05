@@ -1,0 +1,48 @@
+import:
+- builtins:mosaic.service
+- builtins:pyobj_creg.service
+- builtins:web.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.actor_resource:actor_req
+- rc.rc_requirement_creg:rc_requirement_creg.service
+- rc.rc_requirement:rc_requirement.module
+- rc.rc_resource:rc_resource.module
+- rc.rc_resource_creg:rc_resource_creg.service
+
+associations:
+
+- bases:
+  - rc.rc_requirement_creg:rc_requirement_creg.service
+  - legacy_type.actor_resource:actor_req
+  key:
+  - rc.rc_requirement_creg:rc_requirement_creg.service
+  - legacy_type.actor_resource:actor_req
+  value: ActorReq.from_piece
+
+definitions:
+
+  actor_resource.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: actor_resource
+      file_name: actor_resource.dyn.py
+      import_list:
+        htypes.actor_resource.actor_req: legacy_type.actor_resource:actor_req
+        services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        services.web: builtins:web.service
+        code.rc_requirement: rc.rc_requirement:rc_requirement.module
+        code.rc_resource: rc.rc_resource:rc_resource.module
+
+  ActorReq:
+    type: legacy_type.builtin:attribute
+    value:
+      object: actor_resource.module
+      attr_name: ActorReq
+
+  ActorReq.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ActorReq
+      attr_name: from_piece

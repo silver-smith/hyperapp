@@ -11,6 +11,7 @@ import:
 - legacy_type.test_job:succeeded_result
 - legacy_type.test_job:used_imports
 - resource.rc_constructor_creg:rc_constructor_creg.service
+- rc.actor_resource:actor_resource.module
 - rc.build:build.module
 - rc.builtin_resources:builtin_resources.module
 - rc.job_result:job_result.module
@@ -87,6 +88,7 @@ definitions:
         code.rc_constants: rc.rc_constants:rc_constants.module
         code.service_ctr: rc.service_ctr:service_ctr.module
         code.service_resource: rc.service_resource:service_resource.module
+        code.actor_resource: rc.actor_resource:actor_resource.module
         code.system_probe: rc.system_probe:system_probe.module
 
   SucceededTestResult:

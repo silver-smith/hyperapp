@@ -23,7 +23,8 @@ from .code.requirement_factory import RequirementFactory
 from .code.job_result import JobResult
 from .code.service_ctr import ServiceTemplateCtr
 from .code.service_resource import ServiceReq
-from .code.system_probe import UnknownServiceError, FixtureProbeTemplate, SystemProbe
+from .code.actor_resource import ActorReq
+from .code.system_probe import ConfigItemRequiredError, UnknownServiceError, FixtureProbeTemplate, SystemProbe
 
 log  = logging.getLogger(__name__)
 
@@ -227,6 +228,10 @@ class TestJob:
             error_msg = traceback = None
         except UnknownServiceError as x:
             req = ServiceReq(x.service_name)
+            error = f"{type(x).__name__}: {x}"
+            return (JobStatus.incomplete, error, [], {req})
+        except ConfigItemRequiredError as x:
+            req = ActorReq(x.service_name, x.key)
             error = f"{type(x).__name__}: {x}"
             return (JobStatus.incomplete, error, [], {req})
         except Exception as x:

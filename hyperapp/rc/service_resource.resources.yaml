@@ -9,7 +9,6 @@ import:
 - rc.rc_requirement:rc_requirement.module
 - rc.rc_resource:rc_resource.module
 - rc.rc_resource_creg:rc_resource_creg.service
-- rc.service_ctr:service_ctr.module
 - rc.system:system.module
 
 associations:
