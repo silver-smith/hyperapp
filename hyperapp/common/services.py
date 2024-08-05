@@ -146,8 +146,7 @@ class Services(object):
         self.pyobj_creg.register_actor(call_t, call_pyobj, self.pyobj_creg)
         self.code_registry_ctr = partial(
             CodeRegistry, self.mosaic, self.web, self.association_reg, self.pyobj_creg)
-        self.code_registry_ctr2 = partial(
-            CodeRegistry2, self.mosaic, self.web, self.association_reg, self.pyobj_creg)
+        self.code_registry_ctr2 = partial(CodeRegistry2, self.web)
         add_builtin_services_to_pyobj_cache(self, self.builtin_services, self.pyobj_creg)
 
     def stop(self):
