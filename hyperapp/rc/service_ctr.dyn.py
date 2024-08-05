@@ -62,6 +62,16 @@ class ServiceProbeCtr(Constructor):
         resource_tgt.add_cfg_item_target(resolved_tgt)
         target_set.update_deps_for(ready_tgt)
         target_set.update_deps_for(resource_tgt)
+        if tuple(self._params) in {(), ('config',)}:
+            template_ctr = ServiceTemplateCtr(
+                attr_name=self._attr_name,
+                name=self._name,
+                free_params=[],
+                service_params=[],
+                want_config='config' in self._params,
+                )
+            resolved_tgt.resolve(template_ctr)
+            target_set.update_deps_for(resolved_tgt)
 
     def make_component(self, python_module, name_to_res=None):
         return htypes.builtin.attribute(
