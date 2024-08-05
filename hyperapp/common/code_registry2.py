@@ -12,7 +12,7 @@ class CodeRegistry2:
         super().__init__()
         self._web = web
         self._produce_name = produce_name
-        self._config = {}  # t -> fn
+        self._config = config  # t -> fn
 
     def invite(self, ref, *args, **kw):
         assert isinstance(ref, ref_t), repr(ref)
