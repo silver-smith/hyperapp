@@ -22,6 +22,14 @@ class ServiceTemplateRec:
     want_config: bool
 
 
+@dataclass
+class ActorRec:
+
+    attr_qual_name: list[str]
+    creg_params: list[str]
+    service_params: list[str]
+
+
 class ServiceProbeTemplate:
 
     def __init__(self, attr_name, fn, params):
@@ -36,10 +44,35 @@ class ServiceProbeTemplate:
         return ServiceProbe(system, self.attr_name, service_name, self.fn, self.params)
 
 
+class ActorProbeTemplate:
+
+    def __init__(self, attr_qual_name, service_name, t, fn, params):
+        self._attr_qual_name = attr_qual_name
+        self._service_name = service_name
+        self._t = t
+        self._fn = fn
+        self._params = params
+
+    def __repr__(self):
+        return f"<ActorProbeTemplate {self._attr_qual_name}/{self._t}: {self._fn} {self._params}>"
+
+    def resolve(self, system):
+        return ActorProbe(
+            system_probe=system,
+            attr_qual_name=self._attr_qual_name,
+            service_name=self._service_name,
+            t=self._t,
+            fn=self._fn,
+            params=self._params,
+            )
+
+
 class ActorProbe:
 
-    def __init__(self, attr_qual_name, t, fn, params):
+    def __init__(self, system_probe, attr_qual_name, service_name, t, fn, params):
+        self._system = system_probe
         self._attr_qual_name = attr_qual_name
+        self._service_name = service_name
         self._t = t
         self._fn = fn
         self._params = params
@@ -47,8 +80,26 @@ class ActorProbe:
     def __repr__(self):
         return f"<ActorProbe {self._attr_qual_name}/{self._t}: {self._fn} {self._params}>"
 
-    # def resolve(self, system, service_name):
-    #     return ServiceProbe(system, self._attr_qual_name, service_name, self._fn, self._params)
+    def __call__(self, *args, **kw):
+        creg_param_count = len(args) + len(kw)
+        service_params = self._params[creg_param_count:]
+        return self._apply(service_params, *args, **kw)
+
+    def _apply(self, service_params, *args, **kw):
+        self._add_resolved_actor(service_params)
+        service_kw = {
+            name: self._system.resolve_service(name)
+            for name in service_params
+            }
+        return self._fn(*args, **kw, **service_kw)
+
+    def _add_resolved_actor(self, service_params):
+        rec = ActorRec(
+            attr_qual_name=self._attr_qual_name,
+            creg_params=self._params[:-len(service_params)],
+            service_params=service_params,
+            )
+        self._system.add_resolved_actor(self._service_name, self._t, rec)
 
 
 class FixtureProbeTemplate:
@@ -170,6 +221,7 @@ class SystemProbe:
         self._name_to_template = configs['system']
         self._name_to_service = {}
         self._resolved_templates = {}
+        self._resolved_actors = {}
 
     def run(self, root_name):
         service = self.resolve_service(root_name)
@@ -182,8 +234,14 @@ class SystemProbe:
     def resolved_templates(self):
         return self._resolved_templates
 
+    @property
+    def resolved_actors(self):
+        return self._resolved_actors
+
     def resolve_config(self, service_name):
-        config = {**self._configs.get(service_name, {})}
+        config = {}
+        for key, template in self._configs.get(service_name, {}).items():
+            config[key] = template.resolve(self)
         for fixture in self._config_item_fixtures.get(service_name, []):
             cfg = fixture.resolve(self)
             config.update(cfg)
@@ -204,6 +262,9 @@ class SystemProbe:
 
     def add_resolved_template(self, name, service):
         self._resolved_templates[name] = service
+
+    def add_resolved_actor(self, service_name, t, rec):
+        self._resolved_actors[service_name, t] = rec
 
     def _raise_missing_service(self, service_name):
         raise UnknownServiceError(service_name)

@@ -5,7 +5,7 @@ from .services import (
     web,
     )
 from .code.rc_resource import Resource
-from .code.system_probe import ActorProbe
+from .code.system_probe import ActorProbeTemplate
 
 
 class ActorProbeResource(Resource):
@@ -41,5 +41,5 @@ class ActorProbeResource(Resource):
     @property
     def config_triplets(self):
         fn = pyobj_creg.animate(self._function)
-        probe = ActorProbe(self._attr_qual_name, self._t, fn, self._params)
+        probe = ActorProbeTemplate(self._attr_qual_name, self._service_name, self._t, fn, self._params)
         return [(self._service_name, self._t, probe)]

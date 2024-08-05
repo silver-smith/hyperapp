@@ -231,8 +231,6 @@ class TestJob:
             return (JobStatus.incomplete, error, [], {req})
         except Exception as x:
             status, error_msg, traceback = self._prepare_error(x, skip_entries=1)
-        for name, service in system.resolved_templates.items():
-            log.info("Resolved service %s: %s", name, service)
         return (status, error_msg, traceback, set())
 
     def _prepare_import_error(self, x):
@@ -276,8 +274,12 @@ class TestJob:
 
     def _enum_constructor_refs(self, system, resource_list):
         for name, template in system.resolved_templates.items():
+            log.info("Resolved service %s: %s", name, template)
             ctr = ServiceTemplateCtr.from_template(name, template)
             yield mosaic.put(ctr.piece)
+        for (service_name, t), rec in system.resolved_actors.items():
+            log.info("Resolved actor %s.%s: %s", service_name, t, rec)
+            assert 0, f"todo: {service_name}.{t}: {rec}"
         for resource in resource_list:
             for ctr_piece in resource.pick_constructors():
                 yield mosaic.put(ctr_piece)
