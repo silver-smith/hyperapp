@@ -6,12 +6,10 @@ from contextlib import contextmanager
 from .services import (
     add_subprocess_server_connection,
     fn_to_ref,
-    mark,
     partial_ref,
     peer_registry,
     rpc_call_factory,
     rpc_submit_factory,
-    subprocess_running,
     )
 from .code.subprocess_rpc_server_main import rpc_server_main
 from .code.rpc_proxy import RpcProxy
@@ -58,8 +56,7 @@ def _rpc_subprocess_callback(request, subprocess_name, subprocess_id, subprocess
     _callback_signals[subprocess_id].set()
 
 
-@mark.service
-def subprocess_rpc_server_running():
+def subprocess_rpc_server_running(subprocess_running):
 
     @contextmanager
     def _subprocess_rpc_server(name, rpc_endpoint, identity, timeout_sec=10):

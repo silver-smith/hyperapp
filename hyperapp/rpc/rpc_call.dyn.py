@@ -8,9 +8,7 @@ from hyperapp.common.htypes import HException
 from . import htypes
 from .services import (
     deduce_t,
-    mark,
     mosaic,
-    transport,
     )
 
 log = logging.getLogger(__name__)
@@ -23,7 +21,7 @@ def _param_value_to_ref(value):
     return mosaic.put(value, t)
 
 
-def _rpc_submit_factory(rpc_endpoint, receiver_peer, servant_ref, sender_identity):
+def rpc_submit_factory(transport, rpc_endpoint, receiver_peer, servant_ref, sender_identity):
     sender_peer_ref = mosaic.put(sender_identity.peer.piece)
 
     def submit(**kw):
@@ -51,28 +49,18 @@ def _rpc_submit_factory(rpc_endpoint, receiver_peer, servant_ref, sender_identit
     return submit
 
 
-@mark.service
-def rpc_submit_factory():
-    return _rpc_submit_factory
+def rpc_call_factory(rpc_submit_factory, rpc_endpoint, receiver_peer, servant_ref, sender_identity, timeout_sec=10):
+    submit_factory = rpc_submit_factory(rpc_endpoint, receiver_peer, servant_ref, sender_identity)
 
+    def call(**kw):
+        future = submit_factory(**kw)
+        try:
+            result = future.result(timeout_sec)
+        except HException as x:
+            if isinstance(x, htypes.rpc.server_error):
+                log.error("Rpc call: got server error: %s\n%s", x.message, "".join(x.traceback))
+            raise
+        log.info("Rpc call: got result: %s", result)
+        return result
 
-@mark.service
-def rpc_call_factory():
-
-    def factory(rpc_endpoint, receiver_peer, servant_ref, sender_identity, timeout_sec=10):
-        submit_factory = _rpc_submit_factory(rpc_endpoint, receiver_peer, servant_ref, sender_identity)
-
-        def call(**kw):
-            future = submit_factory(**kw)
-            try:
-                result = future.result(timeout_sec)
-            except HException as x:
-                if isinstance(x, htypes.rpc.server_error):
-                    log.error("Rpc call: got server error: %s\n%s", x.message, "".join(x.traceback))
-                raise
-            log.info("Rpc call: got result: %s", result)
-            return result
-
-        return call
-
-    return factory
+    return call

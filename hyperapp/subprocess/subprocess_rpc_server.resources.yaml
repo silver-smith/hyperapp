@@ -1,21 +1,19 @@
-# Automatically generated file. Do not edit.
-
 import:
 - common.mark:mark.service
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.system:service_template
 - resource.fn_to_res:fn_to_ref.service
 - resource.partial_ref:partial_ref.service
 - rpc.rpc_call:rpc_call_factory.service
 - rpc.rpc_call:rpc_submit_factory.service
 - rpc.rpc_proxy:rpc_proxy.module
-- subprocess.subprocess:subprocess_running.service
 - subprocess.subprocess_rpc_server_main:subprocess_rpc_server_main.module
 - subprocess.subprocess_transport:add_subprocess_server_connection.service
 - transport.identity:peer_registry.service
-associations: []
+
 definitions:
+
   subprocess_rpc_server.module:
     type: legacy_type.builtin:python_module
     value:
@@ -26,18 +24,23 @@ definitions:
         code.subprocess_rpc_server_main: subprocess.subprocess_rpc_server_main:subprocess_rpc_server_main.module
         services.add_subprocess_server_connection: subprocess.subprocess_transport:add_subprocess_server_connection.service
         services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
-        services.mark: common.mark:mark.service
         services.partial_ref: resource.partial_ref:partial_ref.service
         services.peer_registry: transport.identity:peer_registry.service
         services.rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
         services.rpc_submit_factory: rpc.rpc_call:rpc_submit_factory.service
-        services.subprocess_running: subprocess.subprocess:subprocess_running.service
+
   subprocess_rpc_server_running:
     type: legacy_type.builtin:attribute
     value:
       object: subprocess_rpc_server.module
       attr_name: subprocess_rpc_server_running
+
   subprocess_rpc_server_running.service:
-    type: legacy_type.builtin:call
+    type: legacy_type.system:service_template
     value:
+      name: subprocess_rpc_server_running
       function: subprocess_rpc_server_running
+      free_params: []
+      service_params:
+      - subprocess_running
+      want_config: false

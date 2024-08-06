@@ -1,33 +1,32 @@
-# Automatically generated file. Do not edit.
-
 import:
 - builtins:mosaic.service
-- common.bundler:bundler.service
-- common.mark:mark.service
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
-- transport.route_registry:route_registry.service
-- transport.sync_route_table:route_table.service
-associations: []
+- legacy_type.system:service_template
+
 definitions:
-  transport:
-    type: legacy_type.builtin:attribute
-    value:
-      object: transport.module
-      attr_name: transport
+
   transport.module:
     type: legacy_type.builtin:python_module
     value:
       module_name: transport
       file_name: transport.dyn.py
       import_list:
-        services.bundler: common.bundler:bundler.service
-        services.mark: common.mark:mark.service
         services.mosaic: builtins:mosaic.service
-        services.route_registry: transport.route_registry:route_registry.service
-        services.route_table: transport.sync_route_table:route_table.service
-  transport.service:
-    type: legacy_type.builtin:call
+
+  transport:
+    type: legacy_type.builtin:attribute
     value:
+      object: transport.module
+      attr_name: transport
+
+  transport.service:
+    type: legacy_type.system:service_template
+    value:
+      name: transport
       function: transport
+      free_params: []
+      service_params:
+      - bundler
+      - route_table
+      want_config: false

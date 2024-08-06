@@ -7,8 +7,6 @@ from pathlib import Path
 from hyperapp.common.htypes.packet_coders import packet_coders
 
 from .services import (
-    bundler,
-    mark,
     mosaic,
     )
 
@@ -25,8 +23,7 @@ class _Subprocess:
         self.sent_refs = sent_refs
 
 
-@mark.service
-def subprocess_running():
+def subprocess_running(bundler):
 
     @contextmanager
     def _subprocess_running(name, main_fn_ref):

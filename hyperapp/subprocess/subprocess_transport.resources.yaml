@@ -1,5 +1,3 @@
-# Automatically generated file. Do not edit.
-
 import:
 - builtins:mosaic.service
 - builtins:on_stop.service
@@ -7,24 +5,15 @@ import:
 - builtins:unbundler.service
 - common.bundler:bundler.service
 - common.failure:failed.service
-- common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - transport.identity:parcel_registry.service
 - transport.sync_route_table:route_table.service
 - transport.transport:transport.service
-associations: []
+
 definitions:
-  add_subprocess_server_connection:
-    type: legacy_type.builtin:attribute
-    value:
-      object: subprocess_transport.module
-      attr_name: add_subprocess_server_connection
-  add_subprocess_server_connection.service:
-    type: legacy_type.builtin:call
-    value:
-      function: add_subprocess_server_connection
+
   subprocess_transport.module:
     type: legacy_type.builtin:python_module
     value:
@@ -41,3 +30,14 @@ definitions:
         services.stop_signal: builtins:stop_signal.service
         services.transport: transport.transport:transport.service
         services.unbundler: builtins:unbundler.service
+
+  add_subprocess_server_connection:
+    type: legacy_type.builtin:attribute
+    value:
+      object: subprocess_transport.module
+      attr_name: add_subprocess_server_connection
+
+  add_subprocess_server_connection.service:
+    type: legacy_type.builtin:call
+    value:
+      function: add_subprocess_server_connection

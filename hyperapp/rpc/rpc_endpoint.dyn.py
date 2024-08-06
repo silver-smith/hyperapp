@@ -11,12 +11,9 @@ from . import htypes
 from .services import (
     code_registry_ctr,
     deduce_t,
-    mark,
     mosaic,
     on_stop,
-    peer_registry,
     pyobj_creg,
-    transport,
     )
 
 log = logging.getLogger(__name__)
@@ -27,7 +24,9 @@ RpcRequest = namedtuple('RpcRequest', 'receiver_identity sender')
 
 class RpcEndpoint:
 
-    def __init__(self):
+    def __init__(self, transport, peer_registry):
+        self._transport = transport
+        self._peer_registry = peer_registry
         self._future_by_request_id = {}
         self._response_lock = threading.Lock()
         self._message_registry = registry = code_registry_ctr('rpc_message')
@@ -57,7 +56,7 @@ class RpcEndpoint:
     def _handle_request(self, request, transport_request):
         log.info("Process rpc request: %s", request)
         receiver_identity = transport_request.receiver_identity
-        sender = peer_registry.invite(request.sender_peer_ref)
+        sender = self._peer_registry.invite(request.sender_peer_ref)
         servant_fn = "<unknown servant>"
         try:
             log.debug("Resolve rpc servant: %s", request.servant_ref)
@@ -98,7 +97,7 @@ class RpcEndpoint:
                 exception_ref=mosaic.put(exception),
                 )
         response_ref = mosaic.put(response)
-        transport.send(sender, receiver_identity, [response_ref])
+        self._transport.send(sender, receiver_identity, [response_ref])
 
     def _handle_response(self, response, transport_request):
         log.debug("Process rpc response: %s", response)
@@ -115,10 +114,9 @@ class RpcEndpoint:
             future.set_exception(exception)
 
 
-@mark.service
-def rpc_endpoint_factory():
+def rpc_endpoint_factory(transport, peer_registry):
     def _rpc_endpoint_factory():
-        endpoint = RpcEndpoint()
+        endpoint = RpcEndpoint(transport, peer_registry)
         _endpoint_list.append(endpoint)
         return endpoint
     return _rpc_endpoint_factory

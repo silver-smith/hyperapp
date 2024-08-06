@@ -1,18 +1,15 @@
-# Automatically generated file. Do not edit.
-
 import:
 - builtins:deduce_t.service
 - builtins:mosaic.service
-- common.mark:mark.service
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.rpc:param
 - legacy_type.rpc:request
 - legacy_type.rpc:server_error
-- transport.transport:transport.service
-associations: []
+- legacy_type.system:service_template
+
 definitions:
+
   rpc_call.module:
     type: legacy_type.builtin:python_module
     value:
@@ -23,24 +20,45 @@ definitions:
         htypes.rpc.request: legacy_type.rpc:request
         htypes.rpc.server_error: legacy_type.rpc:server_error
         services.deduce_t: builtins:deduce_t.service
-        services.mark: common.mark:mark.service
         services.mosaic: builtins:mosaic.service
-        services.transport: transport.transport:transport.service
-  rpc_call_factory:
-    type: legacy_type.builtin:attribute
-    value:
-      object: rpc_call.module
-      attr_name: rpc_call_factory
-  rpc_call_factory.service:
-    type: legacy_type.builtin:call
-    value:
-      function: rpc_call_factory
+
   rpc_submit_factory:
     type: legacy_type.builtin:attribute
     value:
       object: rpc_call.module
       attr_name: rpc_submit_factory
-  rpc_submit_factory.service:
-    type: legacy_type.builtin:call
+
+  rpc_call_factory:
+    type: legacy_type.builtin:attribute
     value:
+      object: rpc_call.module
+      attr_name: rpc_call_factory
+
+  rpc_submit_factory.service:
+    type: legacy_type.system:service_template
+    value:
+      name: rpc_submit_factory
       function: rpc_submit_factory
+      free_params:
+      - rpc_endpoint
+      - receiver_peer
+      - servant_ref
+      - sender_identity
+      service_params:
+      - transport
+      want_config: false
+
+  rpc_call_factory.service:
+    type: legacy_type.system:service_template
+    value:
+      name: rpc_call_factory
+      function: rpc_call_factory
+      free_params:
+      - rpc_endpoint
+      - receiver_peer
+      - servant_ref
+      - sender_identity
+      - timeout_sec
+      service_params:
+      - rpc_submit_factory
+      want_config: false

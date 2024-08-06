@@ -1,23 +1,19 @@
-# Automatically generated file. Do not edit.
-
 import:
 - builtins:code_registry_ctr.service
 - builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:on_stop.service
 - builtins:pyobj_creg.service
-- common.mark:mark.service
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.rpc:error_response
 - legacy_type.rpc:request
 - legacy_type.rpc:response
 - legacy_type.rpc:server_error
-- transport.identity:peer_registry.service
-- transport.transport:transport.service
-associations: []
+- legacy_type.system:service_template
+
 definitions:
+
   rpc_endpoint.module:
     type: legacy_type.builtin:python_module
     value:
@@ -30,18 +26,23 @@ definitions:
         htypes.rpc.server_error: legacy_type.rpc:server_error
         services.code_registry_ctr: builtins:code_registry_ctr.service
         services.deduce_t: builtins:deduce_t.service
-        services.mark: common.mark:mark.service
         services.mosaic: builtins:mosaic.service
         services.on_stop: builtins:on_stop.service
-        services.peer_registry: transport.identity:peer_registry.service
         services.pyobj_creg: builtins:pyobj_creg.service
-        services.transport: transport.transport:transport.service
+
   rpc_endpoint_factory:
     type: legacy_type.builtin:attribute
     value:
       object: rpc_endpoint.module
       attr_name: rpc_endpoint_factory
+
   rpc_endpoint_factory.service:
-    type: legacy_type.builtin:call
+    type: legacy_type.system:service_template
     value:
+      name: rpc_endpoint_factory
       function: rpc_endpoint_factory
+      free_params: []
+      service_params:
+      - transport
+      - peer_registry
+      want_config: false

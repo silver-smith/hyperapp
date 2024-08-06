@@ -8,7 +8,6 @@ from hyperapp.common.ref import ref_repr
 
 from .services import (
     association_reg,
-    mark,
     mosaic,
     pick_refs,
     pyobj_creg,
@@ -130,8 +129,5 @@ class Bundler:
         return result
 
 
-@mark.service
-def bundler():
-    def _bundle(ref_list, seen_refs=None):
-        return Bundler().bundle(ref_list, seen_refs)
-    return _bundle
+def bundler(ref_list, seen_refs=None):
+    return Bundler().bundle(ref_list, seen_refs)

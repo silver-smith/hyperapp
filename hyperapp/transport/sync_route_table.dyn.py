@@ -1,12 +1,7 @@
 from functools import partial
 
-from .services import (
-    mark,
-    route_registry,
-    )
 from .code.route_table import RouteTable
 
 
-@mark.service
-def route_table():
+def route_table(route_registry):
     return RouteTable(route_registry)

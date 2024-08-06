@@ -1,29 +1,31 @@
-# Automatically generated file. Do not edit.
-
 import:
 - builtins:mosaic.service
-- common.bundler:bundler.service
-- common.mark:mark.service
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
-associations: []
+- legacy_type.system:service_template
+
 definitions:
+
   subprocess.module:
     type: legacy_type.builtin:python_module
     value:
       module_name: subprocess
       file_name: subprocess.dyn.py
       import_list:
-        services.bundler: common.bundler:bundler.service
-        services.mark: common.mark:mark.service
         services.mosaic: builtins:mosaic.service
+
   subprocess_running:
     type: legacy_type.builtin:attribute
     value:
       object: subprocess.module
       attr_name: subprocess_running
+
   subprocess_running.service:
-    type: legacy_type.builtin:call
+    type: legacy_type.system:service_template
     value:
+      name: subprocess_running
       function: subprocess_running
+      free_params: []
+      service_params:
+      - bundler
+      want_config: false

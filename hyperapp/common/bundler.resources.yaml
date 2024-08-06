@@ -1,21 +1,14 @@
-# Automatically generated file. Do not edit.
-
 import:
 - builtins:association_reg.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
-- common.mark:mark.service
 - common.ref_picker:pick_refs.service
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
-associations: []
+- legacy_type.system:service_template
+
 definitions:
-  bundler:
-    type: legacy_type.builtin:attribute
-    value:
-      object: bundler.module
-      attr_name: bundler
+
   bundler.module:
     type: legacy_type.builtin:python_module
     value:
@@ -23,11 +16,23 @@ definitions:
       file_name: bundler.dyn.py
       import_list:
         services.association_reg: builtins:association_reg.service
-        services.mark: common.mark:mark.service
         services.mosaic: builtins:mosaic.service
         services.pick_refs: common.ref_picker:pick_refs.service
         services.pyobj_creg: builtins:pyobj_creg.service
-  bundler.service:
-    type: legacy_type.builtin:call
+
+  bundler:
+    type: legacy_type.builtin:attribute
     value:
+      object: bundler.module
+      attr_name: bundler
+
+  bundler.service:
+    type: legacy_type.system:service_template
+    value:
+      name: bundler
       function: bundler
+      free_params:
+      - ref_list
+      - seen_refs
+      service_params: []
+      want_config: false
