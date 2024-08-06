@@ -67,7 +67,6 @@ def _collect_output(target_set, failures, options):
 
 
 def _submit_jobs(pool, target_set, target_to_job, job_id_to_target, filter):
-    has_new_jobs = False
     for target in target_set.iter_ready():
         if target in target_to_job:
             continue
@@ -82,8 +81,6 @@ def _submit_jobs(pool, target_set, target_to_job, job_id_to_target, filter):
         pool.submit(job)
         target_to_job[target] = job
         job_id_to_target[id(job)] = target
-        has_new_jobs = True
-    return has_new_jobs
 
 
 def _run(pool, target_set, filter, options):
@@ -94,7 +91,10 @@ def _run(pool, target_set, filter, options):
     incomplete = {}
     should_run = True
     while should_run:
-        has_new_jobs = _submit_jobs(pool, target_set, target_to_job, job_id_to_target, filter)
+        _submit_jobs(pool, target_set, target_to_job, job_id_to_target, filter)
+        if pool.job_count == 0:
+            rc_log.info("Not all targets are completed, but there are no jobs")
+            break
         prev_completed = set(target_set.iter_completed())
         for job, result_piece in pool.iter_completed(options.timeout):
             result = rc_job_result_creg.animate(result_piece)
@@ -113,9 +113,6 @@ def _run(pool, target_set, filter, options):
         filter.update_deps()
         if target_set.all_completed:
             rc_log.info("All targets are completed")
-            break
-        if not has_new_jobs and pool.job_count == 0:
-            rc_log.info("Not all targets are completed, but there are no jobs")
             break
     if failures:
         rc_log.info("%d failures:\n", len(failures))
