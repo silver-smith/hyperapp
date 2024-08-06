@@ -38,8 +38,7 @@ class ActorProbeResource(Resource):
             params=tuple(self._params),
             )
 
-    @property
-    def config_triplets(self):
+    def configure_system(self, system):
         fn = pyobj_creg.animate(self._function)
         probe = ActorProbeTemplate(self._attr_qual_name, self._service_name, self._t, fn, self._params)
-        return [(self._service_name, self._t, probe)]
+        system.update_config(self._service_name, {self._t: probe})

@@ -29,11 +29,10 @@ class ServiceProbeResource(Resource):
             params=tuple(self._params),
             )
 
-    @property
-    def config_triplets(self):
+    def configure_system(self, system):
         fn = pyobj_creg.animate(self._function)
         probe = ServiceProbeTemplate(self._attr_name, fn, self._params)
-        return [('system', self._service_name, probe)]
+        system.update_config('system', {self._service_name: probe})
 
 
 class FixtureProbeResource(Resource):
@@ -55,11 +54,10 @@ class FixtureProbeResource(Resource):
             params=tuple(self._params),
             )
 
-    @property
-    def config_triplets(self):
+    def configure_system(self, system):
         fn = pyobj_creg.animate(self._function)
         probe = FixtureProbeTemplate(fn, self._params)
-        return [('system', self._service_name, probe)]
+        system.update_config('system', {self._service_name: probe})
 
 
 class ConfigItemFixtureResource(Resource):
@@ -81,8 +79,7 @@ class ConfigItemFixtureResource(Resource):
             service_params=tuple(self._service_params),
             )
 
-    @property
-    def config_item_fixtures(self):
+    def configure_system(self, system):
         fn = pyobj_creg.animate(self._function)
         fixture = ConfigItemFixture(fn, self._service_params)
-        return [(self._service_name, fixture)]
+        system.add_item_fixtures(self._service_name, [fixture])

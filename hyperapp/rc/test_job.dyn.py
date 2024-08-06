@@ -156,8 +156,8 @@ class TestJob:
         recorder = pyobj_creg.animate(recorder_piece)
         status, error_msg, traceback, module = self._import_module(module_piece)
         if status == JobStatus.ok:
-            system, root_name = self._prepare_system(module, all_resources)
-            status, error_msg, traceback, req_set = self._run_system(system, root_name)
+            system = self._prepare_system(module, all_resources)
+            status, error_msg, traceback, req_set = self._run_system(system)
         else:
             req_set = set()
         if status == JobStatus.failed:
@@ -191,39 +191,29 @@ class TestJob:
             module = None
         return (status, error_msg, traceback, module)
 
-    def _collect_configs(self, resource_list):
-        service_to_config = defaultdict(dict)
-        for resource in resource_list:
-            for service, key, value in resource.config_triplets:
-                service_to_config[service][key] = value
-        return service_to_config
+    @property
+    def _root_name(self):
+        return self._test_fn_name
 
-    def _collect_config_fixtures(self, resource_list):
-        service_to_fixtures = defaultdict(list)
+    def _configure_system(self, resource_list, system):
         for resource in resource_list:
-            for service_name, fixture in resource.config_item_fixtures:
-                service_to_fixtures[service_name].append(fixture)
-        return service_to_fixtures
+            resource.configure_system(system)
 
-    def _add_root_fixture(self, module, configs):
+    def _make_root_fixture(self, module):
         test_fn = getattr(module, self._test_fn_name)
         params = tuple(inspect.signature(test_fn).parameters)
-        root_probe = FixtureProbeTemplate(test_fn, params)
-        templates = configs['system']
-        root_name = self._test_fn_name
-        templates[root_name] = root_probe
-        return root_name
+        return FixtureProbeTemplate(test_fn, params)
 
     def _prepare_system(self, module, resources):
-        configs = self._collect_configs(resources)
-        cfg_fixtures = self._collect_config_fixtures(resources)
-        root_name = self._add_root_fixture(module, configs)
-        system = SystemProbe(configs, cfg_fixtures)
-        return (system, root_name)
+        system = SystemProbe()
+        self._configure_system(resources, system)
+        root_probe = self._make_root_fixture(module)
+        system.update_config('system', {self._root_name: root_probe})
+        return system
 
-    def _run_system(self, system, root_name):
+    def _run_system(self, system):
         try:
-            system.run(root_name)
+            system.run(self._root_name)
             status = JobStatus.ok
             error_msg = traceback = None
         except UnknownServiceError as x:

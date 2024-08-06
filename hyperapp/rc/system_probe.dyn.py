@@ -1,6 +1,7 @@
 import asyncio
 import inspect
 import logging
+from collections import defaultdict
 from dataclasses import dataclass
 
 log = logging.getLogger(__name__)
@@ -236,13 +237,19 @@ class FixtureProbe(Probe):
 
 class SystemProbe:
 
-    def __init__(self, configs, config_item_fixtures):
-        self._configs = configs  # service_name -> key -> value
-        self._config_item_fixtures = config_item_fixtures  # service_name -> fixture list
-        self._name_to_template = configs['system']
+    def __init__(self, configs=None):
+        self._configs = defaultdict(dict, **(configs or {}))  # service_name -> key -> value
+        self._config_item_fixtures = defaultdict(list)  # service_name -> fixture list
+        self._name_to_template = self._configs['system']
         self._name_to_service = {}
         self._resolved_templates = {}
         self._resolved_actors = {}
+
+    def update_config(self, service_name, config):
+        self._configs[service_name].update(config)
+
+    def add_item_fixtures(self, service_name, fixture_list):
+        self._config_item_fixtures[service_name] += fixture_list
 
     def run(self, root_name):
         service = self.resolve_service(root_name)

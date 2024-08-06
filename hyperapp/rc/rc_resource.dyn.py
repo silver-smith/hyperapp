@@ -8,13 +8,8 @@ class Resource:
     def recorders(self):
         return {}
 
-    @property
-    def config_triplets(self):
-        return []
-
-    @property
-    def config_item_fixtures(self):
-        return []
+    def configure_system(self, system):
+        pass
 
     def pick_constructors(self):
         return []

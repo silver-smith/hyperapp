@@ -53,6 +53,5 @@ class ServiceTemplateResource(Resource):
             template=self._template.piece,
             )
 
-    @property
-    def config_triplets(self):
-        return [('system', self._service_name, self._template)]
+    def configure_system(self, system):
+        system.update_config('system', {self._service_name: self._template})
