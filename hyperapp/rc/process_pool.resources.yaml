@@ -1,10 +1,9 @@
 import:
+- legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.system:service_template
 - rc.rc_job_driver:rc_job_driver.module
-- rpc.rpc_endpoint:rpc_endpoint_factory.service
-- transport.endpoint:endpoint_registry.service
 - transport.rsa_identity:generate_rsa_identity.service
-- subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
 
 definitions:
 
@@ -14,8 +13,25 @@ definitions:
       module_name: process_pool
       file_name: process_pool.dyn.py
       import_list:
-        services.endpoint_registry: transport.endpoint:endpoint_registry.service
         services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
-        services.rpc_endpoint_factory: rpc.rpc_endpoint:rpc_endpoint_factory.service
-        services.subprocess_rpc_server_running: subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
         code.rc_job_driver: rc.rc_job_driver:rc_job_driver.module
+
+  process_pool_running:
+    type: legacy_type.builtin:attribute
+    value:
+      object: process_pool.module
+      attr_name: process_pool_running
+
+  process_pool_running.service:
+    type: legacy_type.system:service_template
+    value:
+      name: process_pool_running
+      function: process_pool_running
+      free_params:
+      - process_count
+      - timeout
+      service_params:
+      - endpoint_registry
+      - rpc_endpoint
+      - subprocess_rpc_server_running
+      want_config: false

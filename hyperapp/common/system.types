@@ -1,3 +1,15 @@
+config_item = record:
+  key: ref
+  value: ref
+
+service_config = record:
+  service: string
+  items: config_item list
+
+system_config = record:
+  services: service_config list
+
+
 service_template = record:
   name: string
   function: ref

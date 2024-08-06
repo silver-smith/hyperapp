@@ -4,6 +4,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.rpc:server_error
+- legacy_type.system:service_template
 - common.reconstructors:reconstructors.module
 - rc.build:build.module
 - rc.rc_constants:rc_constants.module
@@ -13,7 +14,6 @@ import:
 - rc.process_pool:process_pool.module
 - rc.target_set:target_set.module
 
-associations: []
 definitions:
 
   rc.module:
@@ -28,7 +28,6 @@ definitions:
         services.rc_job_result_creg: rc.rc_job_result_creg:rc_job_result_creg.service
         code.build: rc.build:build.module
         code.init_targets: rc.init_targets:init_targets.module
-        code.process_pool: rc.process_pool:process_pool.module
         code.reconstructors: common.reconstructors:reconstructors.module
         code.rc_constants: rc.rc_constants:rc_constants.module
         code.rc_filter: rc.rc_filter:rc_filter.module
@@ -39,3 +38,16 @@ definitions:
     value:
       object: rc.module
       attr_name: compile_resources
+
+  compile_resources.service:
+    type: legacy_type.system:service_template
+    value:
+      name: compile_resources
+      function: compile_resources
+      free_params:
+      - targets
+      - process_count
+      - options
+      service_params:
+      - process_pool_running
+      want_config: false

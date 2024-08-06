@@ -77,10 +77,12 @@ def main():
             show_diffs=args.show_diffs,
             show_incomplete_traces=args.show_incomplete_traces,
             )
-        fn_res = resource_registry['rc.rc', 'compile_resources']
-        fn_ref = mosaic.put(fn_res)
-        fn = pyobj_creg.animate(fn_res)
-        fn(fn_ref, args.root_dir or [], args.targets, args.workers, options)
+        configs = resource_registry['rc.config', 'config']
+        module_res = resource_registry['rc.system', 'system.module']
+        module = pyobj_creg.animate(module_res)
+        configs = {}
+        system = module.System(configs)
+        system.run('compile_resources', args.targets, args.workers, options)
     finally:
         log.info("Stopping.")
         services.stop_signal.set()

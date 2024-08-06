@@ -51,3 +51,12 @@ class ServiceTemplate:
             return partial(self.fn, *config_args, *service_args)
         else:
             return self.fn(*config_args, *service_args)
+
+
+class System:
+
+    def __init__(self, configs):
+        self._configs = configs
+
+    def run(self, root_name, *args, **kw):
+        assert 0, root_name

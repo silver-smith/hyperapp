@@ -168,7 +168,7 @@ def _main(pool, targets, options):
                     log.error("%s", line)
 
 
-def compile_resources(generator_ref, root_dirs, targets, process_count, options):
+def compile_resources(process_pool_running, targets, process_count, options):
     rc_log.info("Compile resources: %s", ", ".join(targets) if targets else 'all')
 
     if options.verbose:
