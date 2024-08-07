@@ -8,6 +8,13 @@ from .services import (
     )
 
 
+class UnknownServiceError(Exception):
+
+    def __init__(self, service_name):
+        super().__init__(f"Unknown service: {service_name!r}")
+        self.service_name = service_name
+
+
 class ServiceTemplate:
 
     @classmethod
@@ -71,12 +78,31 @@ class System:
 
     def __init__(self):
         self._configs = defaultdict(dict)
+        self._name_to_template = self._configs['system']
+        self._name_to_service = {}
 
     def update_config(self, service_name, config):
         self._configs[service_name].update(config)
 
     def run(self, root_name, *args, **kw):
-        assert 0, (root_name, self._configs)
+        service = self.resolve_service(root_name)
+        return service(*args, **kw)
+
+    def resolve_service(self, name):
+        try:
+            return self._name_to_service[name]
+        except KeyError:
+            pass
+        try:
+            template = self._name_to_template[name]
+        except KeyError:
+            self._raise_missing_service(name)
+        service = template.resolve(self, name)
+        self._name_to_service[name] = service
+        return service
+
+    def _raise_missing_service(self, service_name):
+        raise UnknownServiceError(service_name)
 
 
 def load_config(system, config_piece):
