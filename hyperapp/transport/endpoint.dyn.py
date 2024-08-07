@@ -9,7 +9,6 @@ from .services import (
     mark,
     mosaic,
     on_stop,
-    route_table,
     unbundler,
     )
 
@@ -53,16 +52,18 @@ class LocalRoute:
 
 class EndpointRegistry:
 
+    def __init__(self, route_table):
+        self._route_table = route_table
+
     def register(self, identity, endpoint):
         peer_ref = mosaic.put(identity.peer.piece)
         log.info("Local peer %s: %s", ref_repr(peer_ref), endpoint)
         route = LocalRoute(identity, endpoint)
-        route_table.add_route(peer_ref, route)
+        self._route_table.add_route(peer_ref, route)
 
 
-@mark.service
-def endpoint_registry():
-    return EndpointRegistry()
+def endpoint_registry(route_table):
+    return EndpointRegistry(route_table)
 
 
 def stop():
