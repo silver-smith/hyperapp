@@ -6,11 +6,8 @@ import:
 - common.bundler:bundler.service
 - common.failure:failed.service
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
-- transport.identity:parcel_registry.service
-- transport.sync_route_table:route_table.service
-- transport.transport:transport.service
+- legacy_type.system:service_template
 
 definitions:
 
@@ -22,22 +19,25 @@ definitions:
       import_list:
         services.bundler: common.bundler:bundler.service
         services.failed: common.failure:failed.service
-        services.mark: common.mark:mark.service
         services.mosaic: builtins:mosaic.service
         services.on_stop: builtins:on_stop.service
-        services.parcel_registry: transport.identity:parcel_registry.service
-        services.route_table: transport.sync_route_table:route_table.service
         services.stop_signal: builtins:stop_signal.service
-        services.transport: transport.transport:transport.service
         services.unbundler: builtins:unbundler.service
 
-  add_subprocess_server_connection:
+  SubprocessTransport:
     type: legacy_type.builtin:attribute
     value:
       object: subprocess_transport.module
-      attr_name: add_subprocess_server_connection
+      attr_name: SubprocessTransport
 
-  add_subprocess_server_connection.service:
-    type: legacy_type.builtin:call
+  subprocess_transport.service:
+    type: legacy_type.system:service_template
     value:
-      function: add_subprocess_server_connection
+      name: subprocess_transport
+      function: SubprocessTransport
+      free_params: []
+      service_params:
+      - parcel_registry
+      - transport
+      - route_table
+      want_config: false
