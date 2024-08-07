@@ -15,6 +15,7 @@ import:
 - transport.identity:parcel_registry.service
 - transport.identity:peer_registry.service
 - transport.route_registry:route_registry.service
+- transport.rsa_identity:generate_rsa_identity.service
 - transport.sync_route_table:route_table.service
 - transport.transport:transport.service
 
@@ -39,5 +40,6 @@ definitions:
         - transport.identity:parcel_registry.service
         - transport.identity:peer_registry.service
         - transport.route_registry:route_registry.service
+        - transport.rsa_identity:generate_rsa_identity.service
         - transport.sync_route_table:route_table.service
         - transport.transport:transport.service

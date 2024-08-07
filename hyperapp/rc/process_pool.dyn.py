@@ -3,9 +3,6 @@ from collections import namedtuple
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextlib import ExitStack, contextmanager
 
-from .services import (
-    generate_rsa_identity,
-    )
 from .code import rc_job_driver
 
 log = logging.getLogger(__name__)
@@ -54,7 +51,9 @@ class ProcessPool:
 
 
 @contextmanager
-def process_pool_running(endpoint_registry, rpc_endpoint_factory, subprocess_rpc_server_running, system_config, process_count, timeout):
+def process_pool_running(
+        endpoint_registry, rpc_endpoint_factory, generate_rsa_identity, subprocess_rpc_server_running,
+        system_config, process_count, timeout):
     identity = generate_rsa_identity(fast=True)
     rpc_endpoint = rpc_endpoint_factory()
     endpoint_registry.register(identity, rpc_endpoint)

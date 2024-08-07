@@ -3,7 +3,6 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.system:service_template
 - rc.rc_job_driver:rc_job_driver.module
-- transport.rsa_identity:generate_rsa_identity.service
 
 definitions:
 
@@ -13,7 +12,6 @@ definitions:
       module_name: process_pool
       file_name: process_pool.dyn.py
       import_list:
-        services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
         code.rc_job_driver: rc.rc_job_driver:rc_job_driver.module
 
   process_pool_running:
@@ -34,5 +32,6 @@ definitions:
       service_params:
       - endpoint_registry
       - rpc_endpoint_factory
+      - generate_rsa_identity
       - subprocess_rpc_server_running
       want_config: false

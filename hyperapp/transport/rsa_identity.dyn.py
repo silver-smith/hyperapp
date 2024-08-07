@@ -226,11 +226,8 @@ class RsaParcel:
         return self._encrypted_bundle
 
 
-@mark.service
-def generate_rsa_identity():
-    def _generate_rsa_identity(fast=False):
-        return RsaIdentity.generate(fast)
-    return _generate_rsa_identity
+def generate_rsa_identity(fast=False):
+    return RsaIdentity.generate(fast)
 
 
 def rsa_identity_from_piece(piece):

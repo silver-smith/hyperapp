@@ -2,8 +2,8 @@ import:
 - builtins:mosaic.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.system:service_template
 - legacy_type.rsa_identity:rsa_identity
 - legacy_type.rsa_identity:rsa_parcel
 - legacy_type.rsa_identity:rsa_peer
@@ -31,9 +31,14 @@ definitions:
       attr_name: generate_rsa_identity
 
   generate_rsa_identity.service:
-    type: legacy_type.builtin:call
+    type: legacy_type.system:service_template
     value:
+      name: generate_rsa_identity
       function: generate_rsa_identity
+      free_params:
+      - fast
+      service_params: []
+      want_config: false
 
   rsa_identity_from_piece:
     type: legacy_type.builtin:attribute
