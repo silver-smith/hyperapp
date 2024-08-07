@@ -88,6 +88,9 @@ class System:
         service = self.resolve_service(root_name)
         return service(*args, **kw)
 
+    def resolve_config(self, service_name):
+        return self._configs[service_name]
+
     def resolve_service(self, name):
         try:
             return self._name_to_service[name]
