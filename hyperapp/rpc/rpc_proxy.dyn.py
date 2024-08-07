@@ -1,13 +1,13 @@
 from . import htypes
 from .services import (
     mosaic,
-    rpc_call_factory,
     )
 
 
 class RpcProxy:
 
-    def __init__(self, rpc_endpoint, identity, peer, servant_ref, timeout_sec=10):
+    def __init__(self, rpc_call_factory, rpc_endpoint, identity, peer, servant_ref, timeout_sec=10):
+        self._rpc_call_factory = rpc_call_factory
         self._rpc_endpoint = rpc_endpoint
         self._identity = identity
         self._peer = peer

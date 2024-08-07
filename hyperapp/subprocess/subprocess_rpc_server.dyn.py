@@ -41,7 +41,7 @@ class _RpcServerProcess:
             self._rpc_endpoint, self.peer, servant_fn_ref, self._identity, self._timeout_sec)
 
     def proxy(self, servant_ref):
-        return RpcProxy(self._rpc_endpoint, self._identity, self.peer, servant_ref, self._timeout_sec)
+        return RpcProxy(self._rpc_call_factory, self._rpc_endpoint, self._identity, self.peer, servant_ref, self._timeout_sec)
 
 
 _subprocess_id_counter = itertools.count()
