@@ -1,11 +1,16 @@
 import:
 - legacy_type.builtin:string
 - legacy_type.system:system_config
+- common.bundler:bundler.service
 - rc.rc:compile_resources.service
 - rc.process_pool:process_pool_running.service
+- rpc.rpc_endpoint:rpc_endpoint_factory.service
+- subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
 - transport.endpoint:endpoint_registry.service
+- transport.identity:peer_registry.service
 - transport.route_registry:route_registry.service
 - transport.sync_route_table:route_table.service
+- transport.transport:transport.service
 
 definitions:
 
@@ -14,8 +19,13 @@ definitions:
     value:
       services:
         system:
+        - common.bundler:bundler.service
         - rc.rc:compile_resources.service
         - rc.process_pool:process_pool_running.service
+        - rpc.rpc_endpoint:rpc_endpoint_factory.service
+        - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
         - transport.endpoint:endpoint_registry.service
+        - transport.identity:peer_registry.service
         - transport.route_registry:route_registry.service
         - transport.sync_route_table:route_table.service
+        - transport.transport:transport.service
