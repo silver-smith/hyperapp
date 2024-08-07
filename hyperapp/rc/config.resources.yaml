@@ -5,8 +5,14 @@ import:
 - rc.rc:compile_resources.service
 - rc.process_pool:process_pool_running.service
 - rpc.rpc_endpoint:rpc_endpoint_factory.service
+- rpc.rpc_call:rpc_call_factory.service
+- rpc.rpc_call:rpc_submit_factory.service
+- subprocess.subprocess:subprocess_running.service
 - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
+- subprocess.subprocess_rpc_server_main:rpc_server_main.service
+- subprocess.subprocess_transport:subprocess_transport.service
 - transport.endpoint:endpoint_registry.service
+- transport.identity:parcel_registry.service
 - transport.identity:peer_registry.service
 - transport.route_registry:route_registry.service
 - transport.sync_route_table:route_table.service
@@ -23,8 +29,14 @@ definitions:
         - rc.rc:compile_resources.service
         - rc.process_pool:process_pool_running.service
         - rpc.rpc_endpoint:rpc_endpoint_factory.service
+        - rpc.rpc_call:rpc_call_factory.service
+        - rpc.rpc_call:rpc_submit_factory.service
+        - subprocess.subprocess:subprocess_running.service
         - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
+        - subprocess.subprocess_rpc_server_main:rpc_server_main.service
+        - subprocess.subprocess_transport:subprocess_transport.service
         - transport.endpoint:endpoint_registry.service
+        - transport.identity:parcel_registry.service
         - transport.identity:peer_registry.service
         - transport.route_registry:route_registry.service
         - transport.sync_route_table:route_table.service

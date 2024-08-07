@@ -5,12 +5,9 @@ import:
 - legacy_type.system:service_template
 - resource.fn_to_res:fn_to_ref.service
 - resource.partial_ref:partial_ref.service
-- rpc.rpc_call:rpc_call_factory.service
-- rpc.rpc_call:rpc_submit_factory.service
 - rpc.rpc_proxy:rpc_proxy.module
 - subprocess.subprocess_rpc_server_main:subprocess_rpc_server_main.module
-- subprocess.subprocess_transport:add_subprocess_server_connection.service
-- transport.identity:peer_registry.service
+- subprocess.subprocess_system_main:subprocess_system_main.module
 
 definitions:
 
@@ -21,13 +18,10 @@ definitions:
       file_name: subprocess_rpc_server.dyn.py
       import_list:
         code.rpc_proxy: rpc.rpc_proxy:rpc_proxy.module
+        code.subprocess_system_main: subprocess.subprocess_system_main:subprocess_system_main.module
         code.subprocess_rpc_server_main: subprocess.subprocess_rpc_server_main:subprocess_rpc_server_main.module
-        services.add_subprocess_server_connection: subprocess.subprocess_transport:add_subprocess_server_connection.service
         services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
         services.partial_ref: resource.partial_ref:partial_ref.service
-        services.peer_registry: transport.identity:peer_registry.service
-        services.rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
-        services.rpc_submit_factory: rpc.rpc_call:rpc_submit_factory.service
 
   subprocess_rpc_server_running:
     type: legacy_type.builtin:attribute
@@ -42,5 +36,9 @@ definitions:
       function: subprocess_rpc_server_running
       free_params: []
       service_params:
+      - peer_registry
+      - rpc_submit_factory
+      - rpc_call_factory
       - subprocess_running
+      - subprocess_transport
       want_config: false

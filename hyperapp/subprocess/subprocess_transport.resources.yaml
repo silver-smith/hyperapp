@@ -3,7 +3,6 @@ import:
 - builtins:on_stop.service
 - builtins:stop_signal.service
 - builtins:unbundler.service
-- common.bundler:bundler.service
 - common.failure:failed.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
@@ -17,7 +16,6 @@ definitions:
       module_name: subprocess_transport
       file_name: subprocess_transport.dyn.py
       import_list:
-        services.bundler: common.bundler:bundler.service
         services.failed: common.failure:failed.service
         services.mosaic: builtins:mosaic.service
         services.on_stop: builtins:on_stop.service
@@ -37,6 +35,7 @@ definitions:
       function: SubprocessTransport
       free_params: []
       service_params:
+      - bundler
       - parcel_registry
       - transport
       - route_table

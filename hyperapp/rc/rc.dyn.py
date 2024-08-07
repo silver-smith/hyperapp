@@ -167,7 +167,7 @@ def _main(pool, targets, options):
                     log.error("%s", line)
 
 
-def compile_resources(process_pool_running, targets, process_count, options):
+def compile_resources(process_pool_running, system_config, targets, process_count, options):
     rc_log.info("Compile resources: %s", ", ".join(targets) if targets else 'all')
 
     if options.verbose:
@@ -175,5 +175,5 @@ def compile_resources(process_pool_running, targets, process_count, options):
 
     register_reconstructors()
 
-    with process_pool_running(process_count, options.timeout) as pool:
+    with process_pool_running(system_config, process_count, options.timeout) as pool:
         _main(pool, targets, options)

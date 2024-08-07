@@ -80,7 +80,7 @@ def main():
         config = resource_registry['rc.config', 'config']
         module_res = resource_registry['rc.system', 'system.module']
         module = pyobj_creg.animate(module_res)
-        module.run_system(config, 'compile_resources', args.targets, args.workers, options)
+        module.run_system(config, 'compile_resources', config, args.targets, args.workers, options)
     finally:
         log.info("Stopping.")
         services.stop_signal.set()

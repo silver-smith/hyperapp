@@ -1,0 +1,12 @@
+import:
+- legacy_type.builtin:python_module
+- rc.system:system.module
+
+definitions:
+  subprocess_system_main.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: subprocess_system_main
+      file_name: subprocess_system_main.dyn.py
+      import_list:
+        code.system: rc.system:system.module

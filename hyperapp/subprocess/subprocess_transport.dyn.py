@@ -8,7 +8,6 @@ from hyperapp.common.htypes import bundle_t
 from hyperapp.common.htypes.packet_coders import packet_coders
 
 from .services import (
-    bundler,
     failed,
     mosaic,
     on_stop,
@@ -70,7 +69,8 @@ class ConnectionRec:
 
 class SubprocessRoute:
 
-    def __init__(self, name, seen_refs, connection):
+    def __init__(self, bundler, name, seen_refs, connection):
+        self._bundler = bundler
         self._name = name
         self._seen_refs = seen_refs
         self._connection = connection
@@ -85,7 +85,7 @@ class SubprocessRoute:
 
     def send(self, parcel):
         parcel_ref = mosaic.put(parcel.piece)
-        refs_and_bundle = bundler([parcel_ref], self._seen_refs)
+        refs_and_bundle = self._bundler([parcel_ref], self._seen_refs)
         self._seen_refs |= refs_and_bundle.ref_set
         bundle_cdr = packet_coders.encode('cdr', refs_and_bundle.bundle)
         log.debug("Subprocess transport: send bundle to %r. Bundle size: %.2f KB", self._name, len(bundle_cdr)/1024)
@@ -95,7 +95,7 @@ class SubprocessRoute:
 
 class SubprocessTransport:
 
-    def __init__(self, parcel_registry, transport, route_table):
+    def __init__(self, bundler, parcel_registry, transport, route_table):
         self._parcel_registry = parcel_registry
         self._transport = transport
         self._route_table = route_table
@@ -104,7 +104,7 @@ class SubprocessTransport:
         self._signal_connection_in = in_c
         self._signal_connection_out = out_c
         self._server_thread = threading.Thread(target=self._server_thread_main, name='SubpServer')
-        _server_thread.start()
+        self._server_thread.start()
         on_stop.append(self._stop)
 
     def add_server_connection(self, name, connection, seen_refs, on_eof=None, on_reset=None):
@@ -177,6 +177,6 @@ class SubprocessTransport:
 
     def _process_parcel(self, connection, connection_rec, parcel):
         sender_ref = mosaic.put(parcel.sender.piece)
-        route = SubprocessRoute(connection_rec.name, connection_rec.seen_refs, connection)
+        route = SubprocessRoute(self._bundler, connection_rec.name, connection_rec.seen_refs, connection)
         self._route_table.add_route(sender_ref, route)
         self._transport.send_parcel(parcel)

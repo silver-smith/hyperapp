@@ -54,7 +54,7 @@ class ProcessPool:
 
 
 @contextmanager
-def process_pool_running(endpoint_registry, rpc_endpoint_factory, subprocess_rpc_server_running, process_count, timeout):
+def process_pool_running(endpoint_registry, rpc_endpoint_factory, subprocess_rpc_server_running, system_config, process_count, timeout):
     identity = generate_rsa_identity(fast=True)
     rpc_endpoint = rpc_endpoint_factory()
     endpoint_registry.register(identity, rpc_endpoint)
@@ -66,6 +66,7 @@ def process_pool_running(endpoint_registry, rpc_endpoint_factory, subprocess_rpc
             def start_process(idx):
                 return stack.enter_context(subprocess_rpc_server_running(
                     f'rc-driver-{idx:02}',
+                    system_config,
                     rpc_endpoint,
                     identity,
                     timeout_sec=timeout,

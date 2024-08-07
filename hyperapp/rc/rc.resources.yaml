@@ -45,6 +45,7 @@ definitions:
       name: compile_resources
       function: compile_resources
       free_params:
+      - system_config
       - targets
       - process_count
       - options
