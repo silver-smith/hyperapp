@@ -32,6 +32,6 @@ definitions:
       - timeout
       service_params:
       - endpoint_registry
-      - rpc_endpoint
+      - rpc_endpoint_factory
       - subprocess_rpc_server_running
       want_config: false
