@@ -10,8 +10,4 @@ definitions:
     value:
       services:
         system:
-          compile_resources: rc.rc:compile_resources.service
-
-  compile_resources:
-    type: legacy_type.builtin:string
-    value: compile_resources
+        - rc.rc:compile_resources.service

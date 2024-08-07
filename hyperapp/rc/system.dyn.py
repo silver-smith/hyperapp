@@ -1,8 +1,10 @@
+from collections import defaultdict
 from functools import partial
 
 from . import htypes
 from .services import (
     pyobj_creg,
+    code_registry_ctr2,
     )
 
 
@@ -53,10 +55,42 @@ class ServiceTemplate:
             return self.fn(*config_args, *service_args)
 
 
+class ServiceTemplateCfg:
+
+    @classmethod
+    def from_piece(cls, piece, system, service_name):
+        template = ServiceTemplate.from_piece(piece)
+        return cls(template)
+
+    def __init__(self, template):
+        self.key = template.service_name
+        self.value = template
+
+
 class System:
 
-    def __init__(self, configs):
-        self._configs = configs
+    def __init__(self):
+        self._configs = defaultdict(dict)
+
+    def update_config(self, service_name, config):
+        self._configs[service_name].update(config)
 
     def run(self, root_name, *args, **kw):
-        assert 0, root_name
+        assert 0, (root_name, self._configs)
+
+
+def load_config(system, config_piece):
+    cfg_item_creg_config = {
+        htypes.system.service_template: ServiceTemplateCfg.from_piece,
+        }
+    cfg_item_creg = code_registry_ctr2('cfg-item', cfg_item_creg_config)
+    for sc in config_piece.services:
+        for item_ref in sc.items:
+            item = cfg_item_creg.invite(item_ref, system, sc.service)
+            system.update_config(sc.service, {item.key: item.value})
+
+
+def run_system(config, root_name, *args, **kw):
+    system = System()
+    load_config(system, config)
+    system.run(root_name, *args, **kw)

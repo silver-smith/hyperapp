@@ -10,7 +10,6 @@ from .services import (
     web,
     )
 from .code.reconstructors import register_reconstructors
-from .code.process_pool import process_pool_running
 from .code.rc_constants import JobStatus
 from .code.build import load_build
 from .code.target_set import TargetSet

@@ -1,10 +1,6 @@
-config_item = record:
-  key: ref
-  value: ref
-
 service_config = record:
   service: string
-  items: config_item list
+  items: ref list
 
 system_config = record:
   services: service_config list
@@ -16,3 +12,6 @@ service_template = record:
   free_params: string list
   service_params: string list
   want_config: bool
+
+service_template_cfg_item = record:
+  template: service_template
