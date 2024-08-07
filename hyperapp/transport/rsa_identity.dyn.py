@@ -11,12 +11,8 @@ from hyperapp.common.htypes.packet_coders import packet_coders
 
 from . import htypes
 from .services import (
-    identity_registry,
     mark,
     mosaic,
-    parcel_registry,
-    peer_registry,
-    signature_registry,
     )
 
 
@@ -237,21 +233,17 @@ def generate_rsa_identity():
     return _generate_rsa_identity
 
 
-@identity_registry.actor(htypes.rsa_identity.rsa_identity)
 def rsa_identity_from_piece(piece):
     return RsaIdentity.from_piece(piece)
 
 
-@peer_registry.actor(htypes.rsa_identity.rsa_peer)
 def rsa_peer_from_piece(piece):
     return RsaPeer.from_piece(piece)
 
 
-@signature_registry.actor(htypes.rsa_identity.rsa_signature)
 def rsa_signature_from_piece(piece):
     return RsaSignature.from_piece(piece)
 
 
-@parcel_registry.actor(htypes.rsa_identity.rsa_parcel)
 def rsa_parcel_from_piece(piece):
     return RsaParcel.from_piece(piece)

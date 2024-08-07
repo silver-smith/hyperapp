@@ -8,43 +8,6 @@ import:
 - legacy_type.rsa_identity:rsa_parcel
 - legacy_type.rsa_identity:rsa_peer
 - legacy_type.rsa_identity:rsa_signature
-- transport.identity:identity_registry.service
-- transport.identity:parcel_registry.service
-- transport.identity:peer_registry.service
-- transport.identity:signature_registry.service
-
-associations:
-- bases:
-  - transport.identity:identity_registry.service
-  - legacy_type.rsa_identity:rsa_identity
-  key:
-  - transport.identity:identity_registry.service
-  - legacy_type.rsa_identity:rsa_identity
-  value: rsa_identity_from_piece
-
-- bases:
-  - transport.identity:parcel_registry.service
-  - legacy_type.rsa_identity:rsa_parcel
-  key:
-  - transport.identity:parcel_registry.service
-  - legacy_type.rsa_identity:rsa_parcel
-  value: rsa_parcel_from_piece
-
-- bases:
-  - transport.identity:peer_registry.service
-  - legacy_type.rsa_identity:rsa_peer
-  key:
-  - transport.identity:peer_registry.service
-  - legacy_type.rsa_identity:rsa_peer
-  value: rsa_peer_from_piece
-
-- bases:
-  - transport.identity:signature_registry.service
-  - legacy_type.rsa_identity:rsa_signature
-  key:
-  - transport.identity:signature_registry.service
-  - legacy_type.rsa_identity:rsa_signature
-  value: rsa_signature_from_piece
 
 definitions:
 
@@ -58,12 +21,8 @@ definitions:
         htypes.rsa_identity.rsa_parcel: legacy_type.rsa_identity:rsa_parcel
         htypes.rsa_identity.rsa_peer: legacy_type.rsa_identity:rsa_peer
         htypes.rsa_identity.rsa_signature: legacy_type.rsa_identity:rsa_signature
-        services.identity_registry: transport.identity:identity_registry.service
         services.mark: common.mark:mark.service
         services.mosaic: builtins:mosaic.service
-        services.parcel_registry: transport.identity:parcel_registry.service
-        services.peer_registry: transport.identity:peer_registry.service
-        services.signature_registry: transport.identity:signature_registry.service
 
   generate_rsa_identity:
     type: legacy_type.builtin:attribute
