@@ -2,6 +2,10 @@ import:
 - legacy_type.builtin:string
 - legacy_type.system:system_config
 - rc.rc:compile_resources.service
+- rc.process_pool:process_pool_running.service
+- transport.endpoint:endpoint_registry.service
+- transport.route_registry:route_registry.service
+- transport.sync_route_table:route_table.service
 
 definitions:
 
@@ -11,3 +15,7 @@ definitions:
       services:
         system:
         - rc.rc:compile_resources.service
+        - rc.process_pool:process_pool_running.service
+        - transport.endpoint:endpoint_registry.service
+        - transport.route_registry:route_registry.service
+        - transport.sync_route_table:route_table.service
