@@ -1,7 +1,7 @@
 from .services import (
-    code_registry_ctr,
+    code_registry_ctr2,
     )
 
 
-def route_registry():
-    return code_registry_ctr('sync_route')
+def route_registry(config):
+    return code_registry_ctr2('sync_route', config)
