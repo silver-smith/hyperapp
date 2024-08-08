@@ -13,5 +13,6 @@ service_template = record:
   service_params: string list
   want_config: bool
 
-service_template_cfg_item = record:
-  template: service_template
+actor_cfg_item = record:
+  t: ref
+  function: ref

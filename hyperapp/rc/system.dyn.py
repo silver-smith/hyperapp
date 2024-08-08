@@ -74,6 +74,19 @@ class ServiceTemplateCfg:
         self.value = template
 
 
+class ActorCfg:
+
+    @classmethod
+    def from_piece(cls, piece, system, service_name):
+        t = pyobj_creg.invite(piece.t)
+        fn = pyobj_creg.invite(piece.function)
+        return cls(t, fn)
+
+    def __init__(self, t, fn):
+        self.key = t
+        self.value = fn
+
+
 class System:
 
     def __init__(self):
@@ -111,6 +124,7 @@ class System:
 def load_config(system, config_piece):
     cfg_item_creg_config = {
         htypes.system.service_template: ServiceTemplateCfg.from_piece,
+        htypes.system.actor_cfg_item: ActorCfg.from_piece,
         }
     cfg_item_creg = code_registry_ctr2('cfg-item', cfg_item_creg_config)
     for sc in config_piece.services:
