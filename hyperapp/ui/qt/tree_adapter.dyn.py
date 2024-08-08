@@ -6,17 +6,8 @@ from functools import cached_property
 
 from hyperapp.common.htypes import tInt, TList, TOptional, TRecord
 
-from . import htypes
-from .services import (
-    feed_factory,
-    mark,
-    peer_registry,
-    pyobj_creg,
-    rpc_call_factory,
-    web,
-    )
 from .code.tree_diff import TreeDiff
-from .code.tree import VisualTreeDiffAppend, VisualTreeDiffInsert, VisualTreeDiffReplace
+from .code.tree_visual_diff import VisualTreeDiffAppend, VisualTreeDiffInsert, VisualTreeDiffReplace
 
 log = logging.getLogger(__name__)
 
@@ -153,7 +144,7 @@ class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
 
 class FnIndexTreeAdapterBase(IndexTreeAdapterBase, metaclass=abc.ABCMeta):
 
-    def __init__(self, model, item_t, params, ctx):
+    def __init__(self, feed_factory, model, item_t, params, ctx):
         super().__init__(model, item_t, ctx)
         self._params = params
         self._column_names = sorted(self._item_t.fields)
@@ -191,56 +182,3 @@ class FnIndexTreeAdapterBase(IndexTreeAdapterBase, metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def _call_fn(self, **kw):
         pass
-
-
-class FnIndexTreeAdapter(FnIndexTreeAdapterBase):
-
-    @mark.actor.ui_adapter_creg(htypes.tree_adapter.fn_index_tree_adapter)
-    @classmethod
-    def from_piece(cls, piece, model, ctx):
-        element_t = pyobj_creg.invite(piece.element_t)
-        fn = pyobj_creg.invite(piece.function)
-        return cls(model, element_t, piece.params, ctx, piece.function, fn)
-
-    def __init__(self, model, item_t, params, ctx, fn_res_ref, fn):
-        super().__init__(model, item_t, params, ctx)
-        self._fn_res_ref = fn_res_ref
-        self._fn = fn
-
-    def _call_fn(self, **kw):
-        try:
-            rpc_endpoint = self._ctx.rpc_endpoint
-            identity = self._ctx.identity
-            remote_peer = self._ctx.remote_peer
-        except KeyError:
-            pass
-        else:
-            rpc_call = rpc_call_factory(
-                rpc_endpoint=rpc_endpoint,
-                sender_identity=identity,
-                receiver_peer=remote_peer,
-                servant_ref=self._fn_res_ref,
-                )
-            return rpc_call(**kw)
-        return self._fn(**kw)
-
-
-class RemoteFnIndexTreeAdapter(FnIndexTreeAdapterBase):
-
-    @classmethod
-    def from_piece(cls, piece, model, ctx):
-        element_t = pyobj_creg.invite(piece.element_t)
-        remote_peer = peer_registry.invite(piece.remote_peer)
-        return cls(model, element_t, piece.params, ctx, piece.function, ctx.rpc_endpoint, ctx.identity, remote_peer)
-
-    def __init__(self, model, item_t, params, ctx, fn_res_ref, rpc_endpoint, identity, remote_peer):
-        super().__init__(model, item_t, params, ctx)
-        self._rpc_call = rpc_call_factory(
-            rpc_endpoint=rpc_endpoint,
-            receiver_peer=remote_peer,
-            servant_ref=fn_res_ref,
-            sender_identity=identity,
-            )
-
-    def _call_fn(self, **kw):
-        return self._rpc_call(**kw)

@@ -1,6 +1,5 @@
 import logging
 import time
-from collections import namedtuple
 from functools import partial
 
 from PySide6 import QtCore, QtWidgets
@@ -10,13 +9,10 @@ from .services import (
     mark,
     )
 from .code.view import View
+from .code.tree_visual_diff import VisualTreeDiffAppend, VisualTreeDiffInsert, VisualTreeDiffReplace
 
 log = logging.getLogger(__name__)
 
-
-VisualTreeDiffAppend = namedtuple('VisualTreeDiffAppend', 'parent_id')
-VisualTreeDiffInsert = namedtuple('VisualTreeDiffInsert', 'parent_id idx')
-VisualTreeDiffReplace = namedtuple('VisualTreeDiffReplace', 'parent_id idx')
 
 
 class _Model(QtCore.QAbstractItemModel):
