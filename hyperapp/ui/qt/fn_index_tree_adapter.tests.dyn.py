@@ -13,6 +13,7 @@ from .services import (
 from .code.context import Context
 from .code.tree_diff import TreeDiff
 from .code.tree_visual_diff import VisualTreeDiffAppend
+from .fixtures import feed_fixtures
 from .tested.code import fn_index_tree_adapter
 
 log = logging.getLogger(__name__)
