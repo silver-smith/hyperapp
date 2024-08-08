@@ -24,7 +24,8 @@ from .code.job_result import JobResult
 from .code.service_ctr import ServiceTemplateCtr
 from .code.service_resource import ServiceReq
 from .code.actor_resource import ActorReq
-from .code.system_probe import ConfigItemRequiredError, UnknownServiceError, FixtureProbeTemplate, SystemProbe
+from .code.system import UnknownServiceError
+from .code.system_probe import ConfigItemRequiredError, FixtureProbeTemplate, SystemProbe
 
 log  = logging.getLogger(__name__)
 

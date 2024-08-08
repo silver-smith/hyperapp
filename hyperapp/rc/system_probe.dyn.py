@@ -4,6 +4,8 @@ import logging
 from collections import defaultdict
 from dataclasses import dataclass
 
+from .code.system import System
+
 log = logging.getLogger(__name__)
 
 
@@ -57,7 +59,7 @@ class ActorProbeTemplate:
     def __repr__(self):
         return f"<ActorProbeTemplate {self._attr_qual_name}/{self._t}: {self._fn} {self._params}>"
 
-    def resolve(self, system):
+    def resolve(self, system, service_name):
         return ActorProbe(
             system_probe=system,
             attr_qual_name=self._attr_qual_name,
@@ -200,9 +202,6 @@ class Probe:
         self._resolved = True
         return service
 
-    def _run(self):
-        return self._apply(self._params)
-
     def _add_resolved_template(self, want_config, template):
         pass
 
@@ -235,25 +234,19 @@ class FixtureProbe(Probe):
         return f"<FixtureProbe {self._fn} {self._params}>"
 
 
-class SystemProbe:
+class SystemProbe(System):
 
-    def __init__(self, configs=None):
-        self._configs = defaultdict(dict, **(configs or {}))  # service_name -> key -> value
+    def __init__(self):
+        super().__init__()
         self._config_item_fixtures = defaultdict(list)  # service_name -> fixture list
-        self._name_to_template = self._configs['system']
-        self._name_to_service = {}
         self._resolved_templates = {}
         self._resolved_actors = {}
-
-    def update_config(self, service_name, config):
-        self._configs[service_name].update(config)
 
     def add_item_fixtures(self, service_name, fixture_list):
         self._config_item_fixtures[service_name] += fixture_list
 
     def run(self, root_name):
-        service = self.resolve_service(root_name)
-        value = service._run()
+        value = super().run(root_name)
         if inspect.iscoroutine(value):
             log.info("Running coroutine: %r", value)
             asyncio.run(value)
@@ -267,32 +260,14 @@ class SystemProbe:
         return self._resolved_actors
 
     def resolve_config(self, service_name):
-        config = {}
-        for key, template in self._configs.get(service_name, {}).items():
-            config[key] = template.resolve(self)
+        config = super().resolve_config(service_name)
         for fixture in self._config_item_fixtures.get(service_name, []):
             cfg = fixture.resolve(self)
             config.update(cfg)
         return ConfigProbe(service_name, config)
-
-    def resolve_service(self, name):
-        try:
-            return self._name_to_service[name]
-        except KeyError:
-            pass
-        try:
-            template = self._name_to_template[name]
-        except KeyError:
-            self._raise_missing_service(name)
-        service = template.resolve(self, name)
-        self._name_to_service[name] = service
-        return service
 
     def add_resolved_template(self, name, service):
         self._resolved_templates[name] = service
 
     def add_resolved_actor(self, service_name, t, rec):
         self._resolved_actors[service_name, t] = rec
-
-    def _raise_missing_service(self, service_name):
-        raise UnknownServiceError(service_name)

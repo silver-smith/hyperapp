@@ -1,5 +1,6 @@
 import:
 - legacy_type.builtin:python_module
+- rc.system:system.module
 
 definitions:
 
@@ -8,4 +9,5 @@ definitions:
     value:
       module_name: system_probe
       file_name: system_probe.dyn.py
-      import_list: {}
+      import_list:
+        code.system: rc.system:system.module

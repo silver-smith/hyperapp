@@ -24,6 +24,7 @@ import:
 - rc.rc_resource_creg:rc_resource_creg.service
 - rc.service_ctr:service_ctr.module
 - rc.service_resource:service_resource.module
+- rc.system:system.module
 - rc.system_probe:system_probe.module
 
 associations:
@@ -89,6 +90,7 @@ definitions:
         code.service_ctr: rc.service_ctr:service_ctr.module
         code.service_resource: rc.service_resource:service_resource.module
         code.actor_resource: rc.actor_resource:actor_resource.module
+        code.system: rc.system:system.module
         code.system_probe: rc.system_probe:system_probe.module
 
   SucceededTestResult:
