@@ -97,9 +97,14 @@ class ActorProbe:
         return self._fn(*args, **kw, **service_kw)
 
     def _add_resolved_actor(self, service_params):
+        service_params_count = len(service_params)
+        if service_params_count:
+            creg_params = self._params[:-service_params_count]
+        else:
+            creg_params = self._params
         rec = ActorRec(
             attr_qual_name=self._attr_qual_name,
-            creg_params=self._params[:-len(service_params)],
+            creg_params=creg_params,
             service_params=service_params,
             )
         self._system.add_resolved_actor(self._service_name, self._t, rec)
@@ -171,7 +176,10 @@ class Probe:
 
     def __call__(self, *args, **kw):
         free_param_count = len(args) + len(kw)
-        service_params = self._params[:-free_param_count]
+        if free_param_count:
+            service_params = self._params[:-free_param_count]
+        else:
+            service_params = self._params
         return self._apply(service_params, *args, **kw)
 
     def __getattr__(self, name):
