@@ -96,6 +96,7 @@ class SubprocessRoute:
 class SubprocessTransport:
 
     def __init__(self, bundler, parcel_registry, transport, route_table):
+        self._bundler = bundler
         self._parcel_registry = parcel_registry
         self._transport = transport
         self._route_table = route_table
