@@ -6,7 +6,7 @@ from .services import (
     pyobj_creg,
     )
 from .code.endpoint import Request
-from .tested.code import rpc_endpoint
+# from .tested.code import rpc_endpoint
 from .tested.services import rpc_endpoint_factory
 
 
@@ -53,7 +53,7 @@ def _raise_non_happ_error(phony_param):
 
 
 def _run_test_with_servant(servant_fn):
-    rpc_endpoint.pyobj_creg.set_phony_servant(servant_fn)
+    # rpc_endpoint.pyobj_creg.set_phony_servant(servant_fn)
     sender_identity = generate_rsa_identity(fast=True)
     rpc_request = htypes.rpc.request(
         request_id='phony request id',
