@@ -3,6 +3,7 @@ import:
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.system:actor_template
 - legacy_type.system:service_template
 - legacy_type.rsa_identity:rsa_identity
 - legacy_type.rsa_identity:rsa_parcel
@@ -24,42 +25,82 @@ definitions:
         services.mark: common.mark:mark.service
         services.mosaic: builtins:mosaic.service
 
-  generate_rsa_identity:
+  RsaIdentity:
     type: legacy_type.builtin:attribute
     value:
       object: rsa_identity.module
-      attr_name: generate_rsa_identity
+      attr_name: RsaIdentity
+
+  RsaIdentity.generate:
+    type: legacy_type.builtin:attribute
+    value:
+      object: RsaIdentity
+      attr_name: generate
 
   generate_rsa_identity.service:
     type: legacy_type.system:service_template
     value:
       name: generate_rsa_identity
-      function: generate_rsa_identity
+      function: RsaIdentity.generate
       free_params:
       - fast
       service_params: []
       want_config: false
 
-  rsa_identity_from_piece:
+  RsaPeer:
     type: legacy_type.builtin:attribute
     value:
       object: rsa_identity.module
-      attr_name: rsa_identity_from_piece
+      attr_name: RsaPeer
 
-  rsa_parcel_from_piece:
+  RsaPeer.from_piece:
     type: legacy_type.builtin:attribute
     value:
-      object: rsa_identity.module
-      attr_name: rsa_parcel_from_piece
+      object: RsaPeer
+      attr_name: from_piece
 
-  rsa_peer_from_piece:
-    type: legacy_type.builtin:attribute
+  rsa_peer.actor-template:
+    type: legacy_type.system:actor_template
     value:
-      object: rsa_identity.module
-      attr_name: rsa_peer_from_piece
+      t: legacy_type.rsa_identity:rsa_peer
+      function: RsaPeer.from_piece
+      service_params: []
 
-  rsa_signature_from_piece:
+  RsaSignature:
     type: legacy_type.builtin:attribute
     value:
       object: rsa_identity.module
-      attr_name: rsa_signature_from_piece
+      attr_name: RsaSignature
+
+  RsaSignature.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: RsaSignature
+      attr_name: from_piece
+
+  rsa_signature.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.rsa_identity:rsa_signature
+      function: RsaSignature.from_piece
+      service_params: []
+
+  RsaParcel:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rsa_identity.module
+      attr_name: RsaParcel
+
+  RsaParcel.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: RsaParcel
+      attr_name: from_piece
+
+  rsa_parcel.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.rsa_identity:rsa_parcel
+      function: RsaParcel.from_piece
+      service_params:
+      - signature_registry

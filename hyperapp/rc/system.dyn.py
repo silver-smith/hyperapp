@@ -29,39 +29,64 @@ class ServiceTemplate:
 
     def __init__(self, name, fn, free_params, service_params, want_config):
         self.service_name = name
-        self.fn = fn
-        self.free_params = free_params
-        self.service_params = service_params
-        self.want_config = want_config
+        self._fn = fn
+        self._free_params = free_params
+        self._service_params = service_params
+        self._want_config = want_config
 
     def __repr__(self):
-        return f"<ServiceTemplate {self.service_name}: {self.fn} {self.free_params} {self.service_params} {self.want_config}>"
+        return f"<ServiceTemplate {self.service_name}: {self._fn} {self._free_params} {self._service_params} {self._want_config}>"
 
     @property
     def piece(self):
         return htypes.system.service_template(
             name=self.service_name,
-            function=pyobj_creg.actor_to_ref(self.fn),
-            free_params=tuple(self.free_params),
-            service_params=tuple(self.service_params),
-            want_config=self.want_config,
+            function=pyobj_creg.actor_to_ref(self._fn),
+            free_params=tuple(self._free_params),
+            service_params=tuple(self._service_params),
+            want_config=self._want_config,
             )
 
     def resolve(self, system, service_name):
-        if self.want_config:
+        if self._want_config:
             config_args = [system.resolve_config(self.service_name)]
         else:
             config_args = []
         service_args = [
             system.resolve_service(name)
-            for name in self.service_params
+            for name in self._service_params
             ]
-        if self.free_params:
-            return partial(self.fn, *config_args, *service_args)
+        if self._free_params:
+            return partial(self._fn, *config_args, *service_args)
         else:
-            return self.fn(*config_args, *service_args)
+            return self._fn(*config_args, *service_args)
 
 
+class ActorTemplate:
+
+    @classmethod
+    def from_piece(cls, piece):
+        return cls(
+            t=pyobj_creg.invite(piece.t),
+            fn=pyobj_creg.invite(piece.function),
+            service_params=piece.service_params,
+            )
+
+    def __init__(self, t, fn, service_params):
+        self.t = t
+        self._fn = fn
+        self._service_params = service_params
+
+    def resolve(self, system, service_name):
+        if not self._service_params:
+            return self._fn
+        service_kw = {
+            name: system.resolve_service(name)
+            for name in self._service_params
+            }
+        return partial(self._fn, **service_kw)
+
+        
 class ServiceTemplateCfg:
 
     @classmethod
@@ -74,17 +99,16 @@ class ServiceTemplateCfg:
         self.value = template
 
 
-class ActorCfg:
+class ActorTemplateCfg:
 
     @classmethod
     def from_piece(cls, piece, system, service_name):
-        t = pyobj_creg.invite(piece.t)
-        fn = pyobj_creg.invite(piece.function)
-        return cls(t, fn)
+        template = ActorTemplate.from_piece(piece)
+        return cls(template)
 
-    def __init__(self, t, fn):
-        self.key = t
-        self.value = fn
+    def __init__(self, template):
+        self.key = template.t
+        self.value = template
 
 
 class System:
@@ -102,7 +126,10 @@ class System:
         return service(*args, **kw)
 
     def resolve_config(self, service_name):
-        return self._configs[service_name]
+        config = {}
+        for key, template in self._configs.get(service_name, {}).items():
+            config[key] = template.resolve(self, service_name)
+        return config
 
     def resolve_service(self, name):
         try:
@@ -124,7 +151,7 @@ class System:
 def load_config(system, config_piece):
     cfg_item_creg_config = {
         htypes.system.service_template: ServiceTemplateCfg.from_piece,
-        htypes.system.actor_cfg_item: ActorCfg.from_piece,
+        htypes.system.actor_template: ActorTemplateCfg.from_piece,
         }
     cfg_item_creg = code_registry_ctr2('cfg-item', cfg_item_creg_config)
     for sc in config_piece.services:

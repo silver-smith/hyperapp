@@ -182,7 +182,7 @@ class RsaSignature:
 class RsaParcel:
 
     @classmethod
-    def from_piece(cls, piece):
+    def from_piece(cls, piece, signature_registry):
         signature = signature_registry.invite(piece.sender_signature_ref)
         receiver = RsaPeer.from_public_key_pem(piece.receiver_public_key_pem)
         return cls(receiver, piece.encrypted_fernet_key, piece.encrypted_bundle, signature)
@@ -224,23 +224,3 @@ class RsaParcel:
     @property
     def encrypted_bundle(self):
         return self._encrypted_bundle
-
-
-def generate_rsa_identity(fast=False):
-    return RsaIdentity.generate(fast)
-
-
-def rsa_identity_from_piece(piece):
-    return RsaIdentity.from_piece(piece)
-
-
-def rsa_peer_from_piece(piece):
-    return RsaPeer.from_piece(piece)
-
-
-def rsa_signature_from_piece(piece):
-    return RsaSignature.from_piece(piece)
-
-
-def rsa_parcel_from_piece(piece):
-    return RsaParcel.from_piece(piece)

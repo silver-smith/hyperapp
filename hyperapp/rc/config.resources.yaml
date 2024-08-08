@@ -12,10 +12,15 @@ import:
 - subprocess.subprocess_rpc_server_main:rpc_server_main.service
 - subprocess.subprocess_transport:subprocess_transport.service
 - transport.endpoint:endpoint_registry.service
+- transport.identity:identity_registry.service
 - transport.identity:parcel_registry.service
 - transport.identity:peer_registry.service
+- transport.identity:signature_registry.service
 - transport.route_registry:route_registry.service
 - transport.rsa_identity:generate_rsa_identity.service
+- transport.rsa_identity:rsa_parcel.actor-template
+- transport.rsa_identity:rsa_peer.actor-template
+- transport.rsa_identity:rsa_signature.actor-template
 - transport.sync_route_table:route_table.service
 - transport.transport:transport.service
 
@@ -37,9 +42,17 @@ definitions:
         - subprocess.subprocess_rpc_server_main:rpc_server_main.service
         - subprocess.subprocess_transport:subprocess_transport.service
         - transport.endpoint:endpoint_registry.service
+        - transport.identity:identity_registry.service
         - transport.identity:parcel_registry.service
         - transport.identity:peer_registry.service
+        - transport.identity:signature_registry.service
         - transport.route_registry:route_registry.service
         - transport.rsa_identity:generate_rsa_identity.service
         - transport.sync_route_table:route_table.service
         - transport.transport:transport.service
+        peer_registry:
+        - transport.rsa_identity:rsa_peer.actor-template
+        parcel_registry:
+        - transport.rsa_identity:rsa_parcel.actor-template
+        signature_registry:
+        - transport.rsa_identity:rsa_signature.actor-template
