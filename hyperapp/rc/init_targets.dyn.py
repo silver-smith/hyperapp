@@ -11,7 +11,8 @@ from .code.import_target import (
     ImportTargetAlias,
     ImportTarget,
     )
-from .code.service_ctr import ServiceCtr
+from .code.service_ctr import ServiceCtr, CoreServiceTemplateCtr
+from .code.actor_ctr import CoreActorTemplateCtr
 
 
 def add_common_mark_services(resource_tgt, target_set):
@@ -29,14 +30,16 @@ def add_core_items(cfg_item_creg, system_config, target_set):
     for sc in system_config.services:
         for item_ref in sc.items:
             item_piece = web.summon(item_ref)
+            item = cfg_item_creg.animate(item_piece, sc.service)
             module_name, var_name = resource_registry.reverse_resolve(item_piece)
             resource_tgt = target_set.factory.python_module_resource_by_module_name(module_name)
             assert isinstance(resource_tgt, ManualPythonModuleResourceTarget)
-            item = cfg_item_creg.animate(item_piece, sc.service)
             ready_tgt = target_set.factory.config_item_ready(sc.service, item.key)
             resolved_tgt = target_set.factory.config_item_resolved(sc.service, item.key)
             complete_tgt = target_set.factory.config_item_complete(sc.service, item.key)
             ready_tgt.set_provider(resource_tgt, target_set)
+            resolved_tgt.resolve(CoreActorTemplateCtr(t=item.key))
+            complete_tgt.update_status()
 
 
 def init_targets(cfg_item_creg, system_config, root_dir, target_set, python_module_src_list, type_src_list):

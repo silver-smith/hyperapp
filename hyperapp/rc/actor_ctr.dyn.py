@@ -50,7 +50,25 @@ class ActorProbeCtr(Constructor):
         return f'{self._t.module_name}_{self._t.name}'
 
 
-class ActorTemplateCtr(Constructor):
+
+class ActorTemplateCtrBase(Constructor):
+
+    def __init__(self, t):
+        self._t = t
+
+    def get_component(self, name_to_res):
+        return name_to_res[f'{self._type_name}.actor-template']
+
+    @property
+    def _type_name(self):
+        return f'{self._t.module_name}_{self._t.name}'
+
+
+class CoreActorTemplateCtr(ActorTemplateCtrBase):
+    pass
+
+
+class ActorTemplateCtr(ActorTemplateCtrBase):
 
     @classmethod
     def from_rec(cls, service_name, t, rec):
@@ -73,9 +91,9 @@ class ActorTemplateCtr(Constructor):
             )
 
     def __init__(self, attr_qual_name, service_name, t, creg_params, service_params):
+        super().__init__(t)
         self._attr_qual_name = attr_qual_name
         self._service_name = service_name
-        self._t = t
         self._creg_params = creg_params
         self._service_params = service_params
 
@@ -113,10 +131,3 @@ class ActorTemplateCtr(Constructor):
         if name_to_res is not None:
             name_to_res[f'{self._type_name}.actor-template'] = template
         return service
-
-    def get_component(self, name_to_res):
-        return name_to_res[f'{self._type_name}.actor-template']
-
-    @property
-    def _type_name(self):
-        return f'{self._t.module_name}_{self._t.name}'

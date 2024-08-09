@@ -2,6 +2,7 @@ import:
 - builtins:resource_registry.service
 - builtins:web.service
 - legacy_type.builtin:python_module
+- rc.actor_ctr:actor_ctr.module
 - rc.custom_resource_registry:custom_resource_registry.module
 - rc.import_target:import_target.module
 - rc.python_module_resource_target:python_module_resource_target.module
@@ -21,3 +22,4 @@ definitions:
         code.import_target: rc.import_target:import_target.module
         code.python_module_resource_target: rc.python_module_resource_target:python_module_resource_target.module
         code.service_ctr: rc.service_ctr:service_ctr.module
+        code.actor_ctr: rc.actor_ctr:actor_ctr.module
