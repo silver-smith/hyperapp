@@ -90,7 +90,7 @@ class ActorTemplate:
 class ServiceTemplateCfg:
 
     @classmethod
-    def from_piece(cls, piece, system, service_name):
+    def from_piece(cls, piece, service_name):
         template = ServiceTemplate.from_piece(piece)
         return cls(template)
 
@@ -102,7 +102,7 @@ class ServiceTemplateCfg:
 class ActorTemplateCfg:
 
     @classmethod
-    def from_piece(cls, piece, system, service_name):
+    def from_piece(cls, piece, service_name):
         template = ActorTemplate.from_piece(piece)
         return cls(template)
 
@@ -117,6 +117,9 @@ class System:
         self._configs = defaultdict(dict)
         self._name_to_template = self._configs['system']
         self._name_to_service = {}
+
+    def add_core_service(self, name, service):
+        self._name_to_service[name] = service
 
     def update_config(self, service_name, config):
         self._configs[service_name].update(config)
@@ -154,9 +157,10 @@ def load_config(system, config_piece):
         htypes.system.actor_template: ActorTemplateCfg.from_piece,
         }
     cfg_item_creg = code_registry_ctr2('cfg-item', cfg_item_creg_config)
+    system.add_core_service('cfg_item_creg', cfg_item_creg)
     for sc in config_piece.services:
         for item_ref in sc.items:
-            item = cfg_item_creg.invite(item_ref, system, sc.service)
+            item = cfg_item_creg.invite(item_ref, sc.service)
             system.update_config(sc.service, {item.key: item.value})
 
 
