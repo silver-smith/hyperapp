@@ -50,6 +50,7 @@ definitions:
       - process_count
       - options
       service_params:
+      - cfg_item_creg
       - process_pool_running
       want_config: false
 

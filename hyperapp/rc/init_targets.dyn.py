@@ -1,5 +1,9 @@
 from hyperapp.resource.resource_module import AUTO_GEN_LINE
 
+from .services import (
+    resource_registry,
+    web,
+    )
 from .code.custom_resource_registry import create_custom_resource_registry
 from .code.python_module_resource_target import ManualPythonModuleResourceTarget
 from .code.import_target import (
@@ -21,7 +25,21 @@ def add_common_mark_services(resource_tgt, target_set):
     service_complete_tgt.update_status()
 
 
-def init_targets(root_dir, target_set, python_module_src_list, type_src_list):
+def add_core_items(cfg_item_creg, system_config, target_set):
+    for sc in system_config.services:
+        for item_ref in sc.items:
+            item_piece = web.summon(item_ref)
+            module_name, var_name = resource_registry.reverse_resolve(item_piece)
+            resource_tgt = target_set.factory.python_module_resource_by_module_name(module_name)
+            assert isinstance(resource_tgt, ManualPythonModuleResourceTarget)
+            item = cfg_item_creg.animate(item_piece, sc.service)
+            ready_tgt = target_set.factory.config_item_ready(sc.service, item.key)
+            resolved_tgt = target_set.factory.config_item_resolved(sc.service, item.key)
+            complete_tgt = target_set.factory.config_item_complete(sc.service, item.key)
+            ready_tgt.set_provider(resource_tgt, target_set)
+
+
+def init_targets(cfg_item_creg, system_config, root_dir, target_set, python_module_src_list, type_src_list):
     custom_resource_registry = create_custom_resource_registry(root_dir)
     all_imports_known_tgt = AllImportsKnownTarget()
     target_set.add(all_imports_known_tgt)
@@ -47,3 +65,4 @@ def init_targets(root_dir, target_set, python_module_src_list, type_src_list):
         target_set.add(alias_tgt)
     all_imports_known_tgt.init_completed()
     target_set.update_deps_for(all_imports_known_tgt)
+    add_core_items(cfg_item_creg, system_config, target_set)
