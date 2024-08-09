@@ -2,28 +2,25 @@ from hyperapp.common.htypes import bundle_t
 from hyperapp.common import cdr_coders  # self-registering
 
 from .services import (
-    identity_registry,
     mosaic,
-    parcel_registry,
-    peer_registry,
     )
 from .tested.services import generate_rsa_identity
 
 
-def test_rsa_identity():
+def test_rsa_identity(identity_registry, generate_rsa_identity):
     identity = generate_rsa_identity(fast=True)
     identity_2 = identity_registry.animate(identity.piece)
     assert identity.piece == identity_2.piece
 
 
-def test_rsa_peer():
+def test_rsa_peer(peer_registry, generate_rsa_identity):
     identity = generate_rsa_identity(fast=True)
     peer_1 = identity.peer
     peer_2 = peer_registry.animate(peer_1.piece)
     assert peer_1.piece == peer_2.piece
 
 
-def test_rsa_parcel():
+def test_rsa_parcel(parcel_registry, generate_rsa_identity):
     sender_identity = generate_rsa_identity(fast=True)
     receiver_identity = generate_rsa_identity(fast=True)
 
