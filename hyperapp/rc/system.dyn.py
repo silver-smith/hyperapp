@@ -157,6 +157,7 @@ def load_config(system, config_piece):
         htypes.system.actor_template: ActorTemplateCfg.from_piece,
         }
     cfg_item_creg = code_registry_ctr2('cfg-item', cfg_item_creg_config)
+    system.add_core_service('system_config', config_piece)
     system.add_core_service('cfg_item_creg', cfg_item_creg)
     for sc in config_piece.services:
         for item_ref in sc.items:

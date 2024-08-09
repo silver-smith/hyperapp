@@ -167,7 +167,7 @@ def _main(cfg_item_creg, ctr_from_template_creg, system_config, pool, targets, o
                     log.error("%s", line)
 
 
-def compile_resources(cfg_item_creg, process_pool_running, ctr_from_template_creg, system_config, targets, process_count, options):
+def compile_resources(system_config, cfg_item_creg, process_pool_running, ctr_from_template_creg, targets, process_count, options):
     rc_log.info("Compile resources: %s", ", ".join(targets) if targets else 'all')
 
     if options.verbose:
@@ -175,5 +175,5 @@ def compile_resources(cfg_item_creg, process_pool_running, ctr_from_template_cre
 
     register_reconstructors()
 
-    with process_pool_running(system_config, process_count, options.timeout) as pool:
+    with process_pool_running(process_count, options.timeout) as pool:
         _main(cfg_item_creg, ctr_from_template_creg, system_config, pool, targets, options)

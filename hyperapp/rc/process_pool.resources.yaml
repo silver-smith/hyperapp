@@ -26,7 +26,6 @@ definitions:
       name: process_pool_running
       function: process_pool_running
       free_params:
-      - system_config
       - process_count
       - timeout
       service_params:

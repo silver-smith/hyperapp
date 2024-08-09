@@ -45,14 +45,12 @@ definitions:
       name: compile_resources
       function: compile_resources
       free_params:
-      - system_config
       - targets
       - process_count
       - options
       service_params:
+      - system_config
       - cfg_item_creg
       - process_pool_running
       - ctr_from_template_creg
       want_config: false
-
-      

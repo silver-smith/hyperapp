@@ -36,6 +36,7 @@ definitions:
       function: subprocess_rpc_server_running
       free_params: []
       service_params:
+      - system_config
       - peer_registry
       - rpc_submit_factory
       - rpc_call_factory
