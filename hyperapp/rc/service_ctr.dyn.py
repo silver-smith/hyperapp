@@ -85,7 +85,7 @@ class ServiceProbeCtr(Constructor):
 
 class ServiceTemplateCtrBase(Constructor):
 
-    def __init__(self, name, free_params, service_params, want_config):
+    def __init__(self, name):
         self._name = name
 
     def get_component(self, name_to_res):
@@ -93,7 +93,10 @@ class ServiceTemplateCtrBase(Constructor):
 
 
 class CoreServiceTemplateCtr(ServiceTemplateCtrBase):
-    pass
+
+    @classmethod
+    def from_template_piece(cls, piece):
+        return cls(piece.name)
 
 
 class ServiceTemplateCtr(ServiceTemplateCtrBase):

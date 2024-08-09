@@ -5,6 +5,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.rc_constructors:actor_probe
 - legacy_type.rc_constructors:actor_template
+- legacy_type.system:actor_template
 - rc.actor_probe_resource:actor_probe_resource.module
 - rc.rc_constructor:rc_constructor.module
 - resource.rc_constructor_creg:rc_constructor_creg.service
@@ -53,6 +54,25 @@ definitions:
     value:
       object: ActorProbeCtr
       attr_name: from_piece
+
+  CoreActorTemplateCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: actor_ctr.module
+      attr_name: CoreActorTemplateCtr
+
+  CoreActorTemplateCtr.from_template_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: CoreActorTemplateCtr
+      attr_name: from_template_piece
+
+  core-actor-from-template.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.system:actor_template
+      function: CoreActorTemplateCtr.from_template_piece
+      service_params: []
 
   ActorTemplateCtr:
     type: legacy_type.builtin:attribute

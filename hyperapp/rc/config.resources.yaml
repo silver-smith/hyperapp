@@ -2,8 +2,11 @@ import:
 - legacy_type.builtin:string
 - legacy_type.system:system_config
 - common.bundler:bundler.service
+- rc.actor_ctr:core-actor-from-template.actor-template
+- rc.init_targets:ctr_from_template_creg.service
 - rc.rc:compile_resources.service
 - rc.process_pool:process_pool_running.service
+- rc.service_ctr:core-service-from-template.actor-template
 - rpc.rpc_endpoint:rpc_endpoint_factory.service
 - rpc.rpc_call:rpc_call_factory.service
 - rpc.rpc_call:rpc_submit_factory.service
@@ -32,6 +35,7 @@ definitions:
       services:
         system:
         - common.bundler:bundler.service
+        - rc.init_targets:ctr_from_template_creg.service
         - rc.rc:compile_resources.service
         - rc.process_pool:process_pool_running.service
         - rpc.rpc_endpoint:rpc_endpoint_factory.service
@@ -50,6 +54,9 @@ definitions:
         - transport.rsa_identity:generate_rsa_identity.service
         - transport.sync_route_table:route_table.service
         - transport.transport:transport.service
+        ctr_from_template_creg:
+        - rc.service_ctr:core-service-from-template.actor-template
+        - rc.actor_ctr:core-actor-from-template.actor-template
         peer_registry:
         - transport.rsa_identity:rsa_peer.actor-template
         parcel_registry:

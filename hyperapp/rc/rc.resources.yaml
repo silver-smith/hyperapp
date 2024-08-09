@@ -52,6 +52,7 @@ definitions:
       service_params:
       - cfg_item_creg
       - process_pool_running
+      - ctr_from_template_creg
       want_config: false
 
       

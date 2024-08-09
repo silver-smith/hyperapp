@@ -1,6 +1,7 @@
 from hyperapp.resource.resource_module import AUTO_GEN_LINE
 
 from .services import (
+    code_registry_ctr2,
     resource_registry,
     web,
     )
@@ -14,6 +15,10 @@ from .code.import_target import (
 from .code.service_ctr import ServiceCtr
 
 
+def ctr_from_template_creg(config):
+    return code_registry_ctr2('ctr-from-template', config)
+
+
 def add_common_mark_services(resource_tgt, target_set):
     service_found_tgt = target_set.factory.service_found('mark')
     service_resolved_tgt = target_set.factory.service_resolved('mark')
@@ -25,11 +30,12 @@ def add_common_mark_services(resource_tgt, target_set):
     service_complete_tgt.update_status()
 
 
-def add_core_items(cfg_item_creg, system_config, target_set):
+def add_core_items(cfg_item_creg, ctr_from_template_creg, system_config, target_set):
     for sc in system_config.services:
         for item_ref in sc.items:
             item_piece = web.summon(item_ref)
             item = cfg_item_creg.animate(item_piece, sc.service)
+            ctr = ctr_from_template_creg.animate(item_piece)
             module_name, var_name = resource_registry.reverse_resolve(item_piece)
             resource_tgt = target_set.factory.python_module_resource_by_module_name(module_name)
             assert isinstance(resource_tgt, ManualPythonModuleResourceTarget)
@@ -37,11 +43,11 @@ def add_core_items(cfg_item_creg, system_config, target_set):
             resolved_tgt = target_set.factory.config_item_resolved(sc.service, item.key)
             complete_tgt = target_set.factory.config_item_complete(sc.service, item.key)
             ready_tgt.set_provider(resource_tgt, target_set)
-            resolved_tgt.resolve(CoreActorTemplateCtr(t=item.key))
+            resolved_tgt.resolve(ctr)
             complete_tgt.update_status()
 
 
-def init_targets(cfg_item_creg, system_config, root_dir, target_set, python_module_src_list, type_src_list):
+def init_targets(cfg_item_creg, ctr_from_template_creg, system_config, root_dir, target_set, python_module_src_list, type_src_list):
     custom_resource_registry = create_custom_resource_registry(root_dir)
     all_imports_known_tgt = AllImportsKnownTarget()
     target_set.add(all_imports_known_tgt)
@@ -67,4 +73,4 @@ def init_targets(cfg_item_creg, system_config, root_dir, target_set, python_modu
         target_set.add(alias_tgt)
     all_imports_known_tgt.init_completed()
     target_set.update_deps_for(all_imports_known_tgt)
-    add_core_items(cfg_item_creg, system_config, target_set)
+    add_core_items(cfg_item_creg, ctr_from_template_creg, system_config, target_set)

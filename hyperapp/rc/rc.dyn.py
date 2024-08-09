@@ -149,13 +149,13 @@ def _run(pool, target_set, filter, options):
         )
 
 
-def _main(cfg_item_creg, system_config, pool, targets, options):
+def _main(cfg_item_creg, ctr_from_template_creg, system_config, pool, targets, options):
     build = load_build(hyperapp_dir)
     log.info("Loaded build:")
     build.report()
 
     target_set = TargetSet(hyperapp_dir, build.python_modules)
-    init_targets(cfg_item_creg, system_config, hyperapp_dir, target_set, build.python_modules, build.types)
+    init_targets(cfg_item_creg, ctr_from_template_creg, system_config, hyperapp_dir, target_set, build.python_modules, build.types)
     filter = Filter(target_set, targets)
     try:
         _run(pool, target_set, filter, options)
@@ -167,7 +167,7 @@ def _main(cfg_item_creg, system_config, pool, targets, options):
                     log.error("%s", line)
 
 
-def compile_resources(cfg_item_creg, process_pool_running, system_config, targets, process_count, options):
+def compile_resources(cfg_item_creg, process_pool_running, ctr_from_template_creg, system_config, targets, process_count, options):
     rc_log.info("Compile resources: %s", ", ".join(targets) if targets else 'all')
 
     if options.verbose:
@@ -176,4 +176,4 @@ def compile_resources(cfg_item_creg, process_pool_running, system_config, target
     register_reconstructors()
 
     with process_pool_running(system_config, process_count, options.timeout) as pool:
-        _main(cfg_item_creg, system_config, pool, targets, options)
+        _main(cfg_item_creg, ctr_from_template_creg, system_config, pool, targets, options)

@@ -8,6 +8,7 @@ import:
 - legacy_type.rc_constructors:service
 - legacy_type.rc_constructors:service_probe
 - legacy_type.rc_constructors:service_template
+- legacy_type.system:actor_template
 - legacy_type.system:service_template
 - rc.rc_constructor:rc_constructor.module
 - rc.service_probe_resource:service_probe_resource.module
@@ -94,6 +95,25 @@ definitions:
     value:
       object: ServiceProbeCtr
       attr_name: from_piece
+
+  CoreServiceTemplateCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: service_ctr.module
+      attr_name: CoreServiceTemplateCtr
+
+  CoreServiceTemplateCtr.from_template_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: CoreServiceTemplateCtr
+      attr_name: from_template_piece
+
+  core-service-from-template.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.system:service_template
+      function: CoreServiceTemplateCtr.from_template_piece
+      service_params: []
 
   ServiceTemplateCtr:
     type: legacy_type.builtin:attribute
