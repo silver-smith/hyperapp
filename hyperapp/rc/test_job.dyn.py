@@ -270,9 +270,9 @@ class TestJob:
                 )
 
     def _enum_constructor_refs(self, system, resource_list):
-        for name, template in system.resolved_templates.items():
-            log.info("Resolved service %s: %s", name, template)
-            ctr = ServiceTemplateCtr.from_template(name, template)
+        for name, rec in system.resolved_templates.items():
+            log.info("Resolved service %s: %s", name, rec)
+            ctr = ServiceTemplateCtr.from_rec(name, rec)
             yield mosaic.put(ctr.piece)
         for (service_name, t), rec in system.resolved_actors.items():
             log.info("Resolved actor %s.%s: %s", service_name, t, rec)

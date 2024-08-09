@@ -99,13 +99,13 @@ class CoreServiceTemplateCtr(ServiceTemplateCtrBase):
 class ServiceTemplateCtr(ServiceTemplateCtrBase):
 
     @classmethod
-    def from_template(cls, service_name, template):
+    def from_rec(cls, service_name, rec):
         return cls(
-            attr_name=template.attr_name,
+            attr_name=rec.attr_name,
             name=service_name,
-            free_params=template.free_params,
-            service_params=template.service_params,
-            want_config=template.want_config,
+            free_params=rec.free_params,
+            service_params=rec.service_params,
+            want_config=rec.want_config,
             )
 
     @classmethod

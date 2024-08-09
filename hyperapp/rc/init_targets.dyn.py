@@ -11,8 +11,7 @@ from .code.import_target import (
     ImportTargetAlias,
     ImportTarget,
     )
-from .code.service_ctr import ServiceCtr, CoreServiceTemplateCtr
-from .code.actor_ctr import CoreActorTemplateCtr
+from .code.service_ctr import ServiceCtr
 
 
 def add_common_mark_services(resource_tgt, target_set):
