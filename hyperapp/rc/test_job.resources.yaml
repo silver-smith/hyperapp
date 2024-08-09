@@ -11,6 +11,7 @@ import:
 - legacy_type.test_job:succeeded_result
 - legacy_type.test_job:used_imports
 - resource.rc_constructor_creg:rc_constructor_creg.service
+- rc.actor_ctr:actor_ctr.module
 - rc.actor_resource:actor_resource.module
 - rc.build:build.module
 - rc.builtin_resources:builtin_resources.module
@@ -88,6 +89,7 @@ definitions:
         code.requirement_factory: rc.requirement_factory:requirement_factory.module
         code.rc_constants: rc.rc_constants:rc_constants.module
         code.service_ctr: rc.service_ctr:service_ctr.module
+        code.actor_ctr: rc.actor_ctr:actor_ctr.module
         code.service_resource: rc.service_resource:service_resource.module
         code.actor_resource: rc.actor_resource:actor_resource.module
         code.system: rc.system:system.module

@@ -22,6 +22,7 @@ from .code.import_recorder import IncompleteImportedObjectError
 from .code.requirement_factory import RequirementFactory
 from .code.job_result import JobResult
 from .code.service_ctr import ServiceTemplateCtr
+from .code.actor_ctr import ActorTemplateCtr
 from .code.service_resource import ServiceReq
 from .code.actor_resource import ActorReq
 from .code.system import UnknownServiceError
@@ -275,7 +276,8 @@ class TestJob:
             yield mosaic.put(ctr.piece)
         for (service_name, t), rec in system.resolved_actors.items():
             log.info("Resolved actor %s.%s: %s", service_name, t, rec)
-            assert 0, f"todo: {service_name}.{t}: {rec}"
+            ctr = ActorTemplateCtr.from_rec(service_name, t, rec)
+            yield mosaic.put(ctr.piece)
         for resource in resource_list:
             for ctr_piece in resource.pick_constructors():
                 yield mosaic.put(ctr_piece)

@@ -22,6 +22,13 @@ actor_probe = record:
   t: ref
   params: string list
 
+actor_template = record:
+  attr_qual_name: string list
+  service_name: string
+  t: ref
+  creg_params: string list
+  service_params: string list
+
 
 fixture = record:
   attr_name: string
