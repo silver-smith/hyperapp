@@ -61,8 +61,8 @@ def on_rpc_request(request, transport_request, transport, peer_registry):
             p.name: mosaic.resolve_ref(p.value).value
             for p in request.params
             }
-        rpc_request = RpcRequest(receiver_identity, sender)
         if 'request' in inspect.signature(servant_fn).parameters:
+            rpc_request = RpcRequest(receiver_identity, sender)
             kw = {**kw, 'request': rpc_request}
         log.info("Call rpc servant: %s (%s)", servant_fn, kw)
         result = servant_fn(**kw)
