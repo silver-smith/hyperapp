@@ -1,6 +1,5 @@
 import:
 - builtins:mosaic.service
-- builtins:stop_signal.service
 - builtins:unbundler.service
 - common.failure:failed.service
 - legacy_type.builtin:attribute
@@ -17,7 +16,6 @@ definitions:
       import_list:
         services.failed: common.failure:failed.service
         services.mosaic: builtins:mosaic.service
-        services.stop_signal: builtins:stop_signal.service
         services.unbundler: builtins:unbundler.service
 
   subprocess_transport:

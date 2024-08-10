@@ -10,7 +10,6 @@ from hyperapp.common.htypes.packet_coders import packet_coders
 from .services import (
     failed,
     mosaic,
-    stop_signal,
     unbundler,
     )
 
@@ -100,6 +99,7 @@ class SubprocessTransport:
         self._transport = transport
         self._route_table = route_table
         self._server_connections = {}  # connection -> ConnectionRec
+        self._is_stopping = False
         out_c, in_c = multiprocessing.Pipe()
         self._signal_connection_in = in_c
         self._signal_connection_out = out_c
@@ -119,6 +119,7 @@ class SubprocessTransport:
     def stop(self):
         my_name = "Subprocess transport server thread"
         log.info("Stop %s", my_name)
+        self._is_stopping = True
         self._signal_connection_in.send(None)  # Wake up server main.
         self._server_thread.join()
         log.info("%s is stopped", my_name)
@@ -127,7 +128,7 @@ class SubprocessTransport:
         my_name = "Subprocess transport server thread"
         log.info("%s is started", my_name)
         try:
-            while not stop_signal.is_set():
+            while not self._is_stopping:
                 all_connections = [self._signal_connection_out, *self._server_connections]
                 ready_connections = multiprocessing.connection.wait(all_connections)
                 for connection in ready_connections:
