@@ -52,7 +52,7 @@ def rpc_request_futures():
 def on_rpc_request(request, transport_request, transport, peer_registry):
     log.info("Process rpc request: %s", request)
     receiver_identity = transport_request.receiver_identity
-    sender = peer_registry.invite(request.sender_peer_ref)
+    sender = transport_request.sender
     servant_fn = "<unknown servant>"
     try:
         log.debug("Resolve rpc servant: %s", request.servant_ref)

@@ -22,7 +22,6 @@ def _param_value_to_ref(value):
 
 
 def rpc_submit_factory(transport, rpc_request_futures, receiver_peer, servant_ref, sender_identity):
-    sender_peer_ref = mosaic.put(sender_identity.peer.piece)
 
     def submit(**kw):
         params = tuple(
@@ -37,7 +36,6 @@ def rpc_submit_factory(transport, rpc_request_futures, receiver_peer, servant_re
             request_id=request_id,
             servant_ref=servant_ref,
             params=params,
-            sender_peer_ref=sender_peer_ref,
             )
         request_ref = mosaic.put(request)
         future = Future()

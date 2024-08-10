@@ -7,7 +7,6 @@ request = record:
   request_id: string
   servant_ref: ref
   params: param list
-  sender_peer_ref: ref
 
 response = record:
   request_id: string

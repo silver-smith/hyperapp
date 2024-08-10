@@ -61,7 +61,6 @@ def _run_test_with_servant(servant_fn):
         params=(
             htypes.rpc.param('phony_param', mosaic.put('phony param')),
             ),
-        sender_peer_ref=mosaic.put(sender_identity.peer.piece),
         )
     request = Request(
         receiver_identity=None,
