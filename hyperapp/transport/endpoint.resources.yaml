@@ -1,11 +1,11 @@
 import:
 - builtins:mosaic.service
-- builtins:on_stop.service
 - builtins:unbundler.service
 - common.failure:failed.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.system:finalizer_gen_service_template
 - legacy_type.system:service_template
 
 definitions:
@@ -19,8 +19,22 @@ definitions:
         services.failed: common.failure:failed.service
         services.mark: common.mark:mark.service
         services.mosaic: builtins:mosaic.service
-        services.on_stop: builtins:on_stop.service
         services.unbundler: builtins:unbundler.service
+
+  endpoint_thread_pool:
+    type: legacy_type.builtin:attribute
+    value:
+      object: endpoint.module
+      attr_name: endpoint_thread_pool
+
+  endpoint_thread_pool.service:
+    type: legacy_type.system:finalizer_gen_service_template
+    value:
+      name: endpoint_thread_pool
+      function: endpoint_thread_pool
+      free_params: []
+      service_params: []
+      want_config: false
 
   endpoint_registry:
     type: legacy_type.builtin:attribute
@@ -36,4 +50,5 @@ definitions:
       free_params: []
       service_params:
       - route_table
+      - endpoint_thread_pool
       want_config: false

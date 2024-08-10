@@ -16,6 +16,7 @@ import:
 - subprocess.subprocess_rpc_server_main:rpc_server_main.service
 - subprocess.subprocess_transport:subprocess_transport.service
 - transport.endpoint:endpoint_registry.service
+- transport.endpoint:endpoint_thread_pool.service
 - transport.identity:identity_registry.service
 - transport.identity:parcel_registry.service
 - transport.identity:peer_registry.service
@@ -46,6 +47,7 @@ definitions:
         - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
         - subprocess.subprocess_rpc_server_main:rpc_server_main.service
         - subprocess.subprocess_transport:subprocess_transport.service
+        - transport.endpoint:endpoint_thread_pool.service
         - transport.endpoint:endpoint_registry.service
         - transport.identity:identity_registry.service
         - transport.identity:parcel_registry.service

@@ -8,7 +8,6 @@ from .services import (
     failed,
     mark,
     mosaic,
-    on_stop,
     unbundler,
     )
 
@@ -20,7 +19,8 @@ Request = namedtuple('Request', 'receiver_identity sender ref_list')
 
 class LocalRoute:
 
-    def __init__(self, identity, endpoint):
+    def __init__(self, endpoint_thread_pool, identity, endpoint):
+        self._endpoint_thread_pool = endpoint_thread_pool
         self._identity = identity
         self._endpoint = endpoint
 
@@ -40,7 +40,7 @@ class LocalRoute:
         bundle = self._identity.decrypt_parcel(parcel)
         unbundler.register_bundle(bundle)
         request = Request(self._identity, parcel.sender, bundle.roots)
-        _thread_pool.submit(self._process_endpoint, request)
+        self._endpoint_thread_pool.submit(self._process_endpoint, request)
 
     def _process_endpoint(self, request):
         try:
@@ -52,25 +52,24 @@ class LocalRoute:
 
 class EndpointRegistry:
 
-    def __init__(self, route_table):
+    def __init__(self, endpoint_thread_pool, route_table):
+        self._endpoint_thread_pool = endpoint_thread_pool
         self._route_table = route_table
 
     def register(self, identity, endpoint):
         peer_ref = mosaic.put(identity.peer.piece)
         log.info("Local peer %s: %s", ref_repr(peer_ref), endpoint)
-        route = LocalRoute(identity, endpoint)
+        route = LocalRoute(self._endpoint_thread_pool, identity, endpoint)
         self._route_table.add_route(peer_ref, route)
 
 
-def endpoint_registry(route_table):
-    return EndpointRegistry(route_table)
-
-
-def stop():
+def endpoint_thread_pool():
+    thread_pool = ThreadPoolExecutor(max_workers=5, thread_name_prefix='Endpoint')
+    yield thread_pool
     log.info("Shutdown endpoint thread pool")
-    _thread_pool.shutdown()
+    thread_pool.shutdown()
     log.info("Endpoint thread pool is shut down")
 
 
-_thread_pool = ThreadPoolExecutor(max_workers=5, thread_name_prefix='Endpoint')
-on_stop.append(stop)
+def endpoint_registry(route_table, endpoint_thread_pool):
+    return EndpointRegistry(endpoint_thread_pool, route_table)
