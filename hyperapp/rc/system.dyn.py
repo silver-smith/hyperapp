@@ -194,9 +194,11 @@ class System:
 
     def run(self, root_name, *args, **kw):
         service = self.resolve_service(root_name)
-        result = service(*args, **kw)
-        assert not inspect.iscoroutine(result), f"todo: {root_name}/{result}"
-        self._run_finalizers()
+        try:
+            result = service(*args, **kw)
+            assert not inspect.iscoroutine(result), f"todo: {root_name}/{result}"
+        finally:
+            self._run_finalizers()
 
     def resolve_config(self, service_name):
         config = {}
