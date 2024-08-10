@@ -13,6 +13,13 @@ service_template = record:
   service_params: string list
   want_config: bool
 
+finalizer_gen_service_template = record:
+  name: string
+  function: ref
+  service_params: string list
+  want_config: bool
+
+
 actor_template = record:
   t: ref
   function: ref

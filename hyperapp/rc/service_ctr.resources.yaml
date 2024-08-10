@@ -9,6 +9,7 @@ import:
 - legacy_type.rc_constructors:service_probe
 - legacy_type.rc_constructors:service_template
 - legacy_type.system:actor_template
+- legacy_type.system:finalizer_gen_service_template
 - legacy_type.system:service_template
 - rc.rc_constructor:rc_constructor.module
 - rc.service_probe_resource:service_probe_resource.module
@@ -112,6 +113,13 @@ definitions:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.system:service_template
+      function: CoreServiceTemplateCtr.from_template_piece
+      service_params: []
+
+  core-service-from-finalizer-gen-template.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.system:finalizer_gen_service_template
       function: CoreServiceTemplateCtr.from_template_piece
       service_params: []
 

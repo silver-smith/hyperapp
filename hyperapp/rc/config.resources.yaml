@@ -6,6 +6,7 @@ import:
 - rc.init_targets:ctr_from_template_creg.service
 - rc.rc:compile_resources.service
 - rc.process_pool:process_pool_running.service
+- rc.service_ctr:core-service-from-finalizer-gen-template.actor-template
 - rc.service_ctr:core-service-from-template.actor-template
 - rpc.rpc_endpoint:rpc_endpoint_factory.service
 - rpc.rpc_call:rpc_call_factory.service
@@ -56,6 +57,7 @@ definitions:
         - transport.transport:transport.service
         ctr_from_template_creg:
         - rc.service_ctr:core-service-from-template.actor-template
+        - rc.service_ctr:core-service-from-finalizer-gen-template.actor-template
         - rc.actor_ctr:core-actor-from-template.actor-template
         peer_registry:
         - transport.rsa_identity:rsa_peer.actor-template
