@@ -57,12 +57,11 @@ def on_rpc_request(request, transport_request, transport, peer_registry):
     try:
         log.debug("Resolve rpc servant: %s", request.servant_ref)
         servant_fn = pyobj_creg.invite(request.servant_ref)
-        params = {
+        kw = {
             p.name: mosaic.resolve_ref(p.value).value
             for p in request.params
             }
         rpc_request = RpcRequest(receiver_identity, sender)
-        kw = params
         if 'request' in inspect.signature(servant_fn).parameters:
             kw = {**kw, 'request': rpc_request}
         log.info("Call rpc servant: %s (%s)", servant_fn, kw)
