@@ -33,6 +33,5 @@ class Transport:
         self.send_parcel(parcel)
 
 
-
 def transport(bundler, route_table):
     return Transport(bundler, route_table)
