@@ -10,7 +10,6 @@ from hyperapp.common.htypes.packet_coders import packet_coders
 from .services import (
     failed,
     mosaic,
-    on_stop,
     stop_signal,
     unbundler,
     )
@@ -106,7 +105,6 @@ class SubprocessTransport:
         self._signal_connection_out = out_c
         self._server_thread = threading.Thread(target=self._server_thread_main, name='SubpServer')
         self._server_thread.start()
-        on_stop.append(self._stop)
 
     def add_server_connection(self, name, connection, seen_refs, on_eof=None, on_reset=None):
         rec = ConnectionRec(self, connection, name, seen_refs, on_eof, on_reset)
@@ -118,7 +116,7 @@ class SubprocessTransport:
         del self._server_connections[connection]
         self._signal_connection_in.send(None)  # Wake up server main.
 
-    def _stop(self):
+    def stop(self):
         my_name = "Subprocess transport server thread"
         log.info("Stop %s", my_name)
         self._signal_connection_in.send(None)  # Wake up server main.
@@ -181,3 +179,9 @@ class SubprocessTransport:
         route = SubprocessRoute(self._bundler, connection_rec.name, connection_rec.seen_refs, connection)
         self._route_table.add_route(sender_ref, route)
         self._transport.send_parcel(parcel)
+
+
+def subprocess_transport(bundler, parcel_registry, transport, route_table):
+    transport = SubprocessTransport(bundler, parcel_registry, transport, route_table)
+    yield transport
+    transport.stop()
