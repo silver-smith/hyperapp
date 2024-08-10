@@ -142,22 +142,20 @@ def get_fn_called_flag():
 
 def test_fn_adapter_with_remote_context(
         generate_rsa_identity,
-        rpc_endpoint_factory,
+        rpc_endpoint,
         endpoint_registry,
         subprocess_rpc_server_running,
         ui_adapter_creg,
         ):
 
     identity = generate_rsa_identity(fast=True)
-    rpc_endpoint = rpc_endpoint_factory()
     endpoint_registry.register(identity, rpc_endpoint)
 
     subprocess_name = 'test-remote-fn-tree-adapter-main'
-    with subprocess_rpc_server_running(subprocess_name, rpc_endpoint, identity) as process:
+    with subprocess_rpc_server_running(subprocess_name, identity) as process:
         log.info("Started: %r", process)
 
         ctx = Context(
-            rpc_endpoint=rpc_endpoint,
             identity=identity,
             remote_peer=process.peer,
             )
@@ -183,7 +181,6 @@ def test_fn_adapter_with_remote_context(
         assert adapter.cell_data(row_2_id, 0) == 23
 
         get_fn_called_flag_call = rpc_call_factory(
-            rpc_endpoint=rpc_endpoint,
             sender_identity=identity,
             receiver_peer=process.peer,
             servant_ref=fn_to_ref(get_fn_called_flag),

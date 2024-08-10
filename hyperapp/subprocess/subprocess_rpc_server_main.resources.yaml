@@ -44,7 +44,7 @@ definitions:
       - route_table
       - generate_rsa_identity
       - endpoint_registry
-      - rpc_endpoint_factory
+      - rpc_endpoint
       - rpc_call_factory
       - subprocess_transport
       want_config: false

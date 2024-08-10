@@ -1,8 +1,7 @@
 import:
-- builtins:code_registry_ctr.service
+- builtins:code_registry_ctr2.service
 - builtins:deduce_t.service
 - builtins:mosaic.service
-- builtins:on_stop.service
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
@@ -10,6 +9,8 @@ import:
 - legacy_type.rpc:request
 - legacy_type.rpc:response
 - legacy_type.rpc:server_error
+- legacy_type.system:actor_template
+- legacy_type.system:finalizer_gen_service_template
 - legacy_type.system:service_template
 
 definitions:
@@ -20,29 +21,99 @@ definitions:
       module_name: rpc_endpoint
       file_name: rpc_endpoint.dyn.py
       import_list:
-        htypes.rpc.error_response: legacy_type.rpc:error_response
-        htypes.rpc.request: legacy_type.rpc:request
         htypes.rpc.response: legacy_type.rpc:response
+        htypes.rpc.error_response: legacy_type.rpc:error_response
         htypes.rpc.server_error: legacy_type.rpc:server_error
-        services.code_registry_ctr: builtins:code_registry_ctr.service
+        services.code_registry_ctr2: builtins:code_registry_ctr2.service
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
-        services.on_stop: builtins:on_stop.service
         services.pyobj_creg: builtins:pyobj_creg.service
 
-  rpc_endpoint_factory:
+  rpc_message_creg:
     type: legacy_type.builtin:attribute
     value:
       object: rpc_endpoint.module
-      attr_name: rpc_endpoint_factory
+      attr_name: rpc_message_creg
 
-  rpc_endpoint_factory.service:
+  rpc_message_creg.service:
     type: legacy_type.system:service_template
     value:
-      name: rpc_endpoint_factory
-      function: rpc_endpoint_factory
+      name: rpc_message_creg
+      function: rpc_message_creg
       free_params: []
+      service_params: []
+      want_config: true
+
+  rpc_endpoint:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rpc_endpoint.module
+      attr_name: rpc_endpoint
+
+  rpc_endpoint.service:
+    type: legacy_type.system:service_template
+    value:
+      name: rpc_endpoint
+      function: rpc_endpoint
+      free_params: []
+      service_params:
+      - rpc_message_creg
+      want_config: false
+
+  rpc_request_futures:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rpc_endpoint.module
+      attr_name: rpc_request_futures
+
+  rpc_request_futures.service:
+    type: legacy_type.system:finalizer_gen_service_template
+    value:
+      name: rpc_request_futures
+      function: rpc_request_futures
+      free_params: []
+      service_params: []
+      want_config: false
+
+  on_rpc_request:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rpc_endpoint.module
+      attr_name: on_rpc_request
+
+  on_rpc_request.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.rpc:request
+      function: on_rpc_request
       service_params:
       - transport
       - peer_registry
-      want_config: false
+
+  on_rpc_response:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rpc_endpoint.module
+      attr_name: on_rpc_response
+
+  on_rpc_response.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.rpc:response
+      function: on_rpc_response
+      service_params:
+      - rpc_request_futures
+
+  on_rpc_error_response:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rpc_endpoint.module
+      attr_name: on_rpc_error_response
+
+  on_rpc_error_response.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.rpc:error_response
+      function: on_rpc_error_response
+      service_params:
+      - rpc_request_futures

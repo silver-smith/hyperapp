@@ -22,14 +22,12 @@ class FnIndexTreeAdapter(FnIndexTreeAdapterBase):
 
     def _call_fn(self, **kw):
         try:
-            rpc_endpoint = self._ctx.rpc_endpoint
             identity = self._ctx.identity
             remote_peer = self._ctx.remote_peer
         except KeyError:
             pass
         else:
             rpc_call = rpc_call_factory(
-                rpc_endpoint=rpc_endpoint,
                 sender_identity=identity,
                 receiver_peer=remote_peer,
                 servant_ref=self._fn_res_ref,

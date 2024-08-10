@@ -40,12 +40,12 @@ definitions:
       name: rpc_submit_factory
       function: rpc_submit_factory
       free_params:
-      - rpc_endpoint
       - receiver_peer
       - servant_ref
       - sender_identity
       service_params:
       - transport
+      - rpc_request_futures
       want_config: false
 
   rpc_call_factory.service:
@@ -54,7 +54,6 @@ definitions:
       name: rpc_call_factory
       function: rpc_call_factory
       free_params:
-      - rpc_endpoint
       - receiver_peer
       - servant_ref
       - sender_identity

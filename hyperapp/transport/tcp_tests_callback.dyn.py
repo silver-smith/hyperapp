@@ -5,7 +5,7 @@ from .services import (
     generate_rsa_identity,
     peer_registry,
     rpc_call_factory,
-    rpc_endpoint_factory,
+    # rpc_endpoint_factory,
     )
 
 log = logging.getLogger(__name__)

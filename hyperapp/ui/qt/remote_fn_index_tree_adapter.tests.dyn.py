@@ -33,14 +33,13 @@ def sample_tree_fn(piece, parent):
 
 def test_remote_fn_adapter(
         generate_rsa_identity,
-        rpc_endpoint_factory,
+        rpc_endpoint,
         endpoint_registry,
         subprocess_rpc_server_running,
         ui_adapter_creg,
         ):
 
     identity = generate_rsa_identity(fast=True)
-    rpc_endpoint = rpc_endpoint_factory()
     endpoint_registry.register(identity, rpc_endpoint)
 
     ctx = Context(
@@ -49,7 +48,7 @@ def test_remote_fn_adapter(
         )
 
     subprocess_name = 'test-remote-fn-tree-adapter-main'
-    with subprocess_rpc_server_running(subprocess_name, rpc_endpoint, identity) as process:
+    with subprocess_rpc_server_running(subprocess_name, identity) as process:
         log.info("Started: %r", process)
 
         model = htypes.tree_adapter_tests.sample_tree()

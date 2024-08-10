@@ -21,7 +21,7 @@ def _param_value_to_ref(value):
     return mosaic.put(value, t)
 
 
-def rpc_submit_factory(transport, rpc_endpoint, receiver_peer, servant_ref, sender_identity):
+def rpc_submit_factory(transport, rpc_request_futures, receiver_peer, servant_ref, sender_identity):
     sender_peer_ref = mosaic.put(sender_identity.peer.piece)
 
     def submit(**kw):
@@ -41,7 +41,7 @@ def rpc_submit_factory(transport, rpc_endpoint, receiver_peer, servant_ref, send
             )
         request_ref = mosaic.put(request)
         future = Future()
-        rpc_endpoint.assign_future_to_request_id(request_id, future)
+        rpc_request_futures[request_id] = future
         log.info("Rpc call: %s %s (%s): send rpc request %s: %s", receiver_peer, servant_ref, kw, request_ref, request)
         transport.send(receiver_peer, sender_identity, [request_ref])
         return future
@@ -49,8 +49,8 @@ def rpc_submit_factory(transport, rpc_endpoint, receiver_peer, servant_ref, send
     return submit
 
 
-def rpc_call_factory(rpc_submit_factory, rpc_endpoint, receiver_peer, servant_ref, sender_identity, timeout_sec=10):
-    submit_factory = rpc_submit_factory(rpc_endpoint, receiver_peer, servant_ref, sender_identity)
+def rpc_call_factory(rpc_submit_factory, receiver_peer, servant_ref, sender_identity, timeout_sec=10):
+    submit_factory = rpc_submit_factory(receiver_peer, servant_ref, sender_identity)
 
     def call(**kw):
         future = submit_factory(**kw)

@@ -30,7 +30,7 @@ definitions:
       - timeout
       service_params:
       - endpoint_registry
-      - rpc_endpoint_factory
+      - rpc_endpoint
       - generate_rsa_identity
       - subprocess_rpc_server_running
       want_config: false
