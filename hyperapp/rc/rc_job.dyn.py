@@ -19,3 +19,12 @@ def rc_job_submit_factory(rpc_submit_target_factory, receiver_peer, sender_ident
         return submit_factory(target)
 
     return submit
+
+
+def run_job_target(target, rpc_request, rc_job_creg):
+    log.debug("Resolve rc job: %s", target.job)
+    job = rc_job_creg.invite(target.job)
+    log.info("Run job: %s", job)
+    result = job.run()
+    log.info("Job completed: %r; result: %s", job, result)
+    return result

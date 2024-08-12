@@ -9,13 +9,13 @@ import:
 - legacy_type.import_job:job
 - legacy_type.import_job:incomplete_result
 - legacy_type.import_job:succeeded_result
+- legacy_type.system:actor_template
 - resource.rc_constructor_creg:rc_constructor_creg.service
 - rc.build:build.module
 - rc.builtin_resources:builtin_resources.module
 - rc.job_result:job_result.module
 - rc.import_recorder:import_recorder.module
 - rc.rc_constants:rc_constants.module
-- rc.rc_job_creg:rc_job_creg.service
 - rc.rc_job_result_creg:rc_job_result_creg.service
 - rc.rc_requirement_creg:rc_requirement_creg.service
 - rc.rc_resource_creg:rc_resource_creg.service
@@ -46,14 +46,6 @@ associations:
   - rc.rc_job_result_creg:rc_job_result_creg.service
   - legacy_type.import_job:failed_result
   value: FailedImportResult.from_piece
-
-- bases:
-  - rc.rc_job_creg:rc_job_creg.service
-  - legacy_type.import_job:job
-  key:
-  - rc.rc_job_creg:rc_job_creg.service
-  - legacy_type.import_job:job
-  value: ImportJob.from_piece
 
 definitions:
 
@@ -127,3 +119,10 @@ definitions:
     value:
       object: ImportJob
       attr_name: from_piece
+
+  import_job.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.import_job:job
+      function: ImportJob.from_piece
+      service_params: []

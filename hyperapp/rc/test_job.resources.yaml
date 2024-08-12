@@ -5,6 +5,7 @@ import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.system:actor_template
 - legacy_type.test_job:failed_result
 - legacy_type.test_job:job
 - legacy_type.test_job:incomplete_result
@@ -19,7 +20,6 @@ import:
 - rc.import_recorder:import_recorder.module
 - rc.requirement_factory:requirement_factory.module
 - rc.rc_constants:rc_constants.module
-- rc.rc_job_creg:rc_job_creg.service
 - rc.rc_job_result_creg:rc_job_result_creg.service
 - rc.rc_requirement_creg:rc_requirement_creg.service
 - rc.rc_resource_creg:rc_resource_creg.service
@@ -53,14 +53,6 @@ associations:
   - rc.rc_job_result_creg:rc_job_result_creg.service
   - legacy_type.test_job:failed_result
   value: FailedTestResult.from_piece
-
-- bases:
-  - rc.rc_job_creg:rc_job_creg.service
-  - legacy_type.test_job:job
-  key:
-  - rc.rc_job_creg:rc_job_creg.service
-  - legacy_type.test_job:job
-  value: TestJob.from_piece
 
 definitions:
 
@@ -142,3 +134,10 @@ definitions:
     value:
       object: TestJob
       attr_name: from_piece
+
+  test_job.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.test_job:job
+      function: TestJob.from_piece
+      service_params: []

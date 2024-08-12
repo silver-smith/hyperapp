@@ -3,13 +3,16 @@ import:
 - legacy_type.system:system_config
 - common.bundler:bundler.service
 - rc.actor_ctr:core-actor-from-template.actor-template
+- rc.import_job:import_job.actor-template
 - rc.init_targets:ctr_from_template_creg.service
 - rc.rc:compile_resources.service
 - rc.rc_job:rc_job_submit_factory.service
+- rc.rc_job:run_job_target.actor-template
 - rc.rc_job_creg:rc_job_creg.service
 - rc.process_pool:process_pool_running.service
 - rc.service_ctr:core-service-from-finalizer-gen-template.actor-template
 - rc.service_ctr:core-service-from-template.actor-template
+- rc.test_job:test_job.actor-template
 - rpc.rpc_endpoint:on_rpc_error_response.actor-template
 - rpc.rpc_endpoint:on_rpc_request.actor-template
 - rpc.rpc_endpoint:on_rpc_response.actor-template
@@ -91,3 +94,7 @@ definitions:
         - rpc.rpc_endpoint:on_rpc_error_response.actor-template
         rpc_target_creg:
         - rpc.rpc_endpoint:run_function_target.actor-template
+        - rc.rc_job:run_job_target.actor-template
+        rc_job_creg:
+        - rc.import_job:import_job.actor-template
+        - rc.test_job:test_job.actor-template

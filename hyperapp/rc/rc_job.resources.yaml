@@ -3,6 +3,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.rc_job:job_target
+- legacy_type.system:actor_template
 - legacy_type.system:service_template
 
 definitions:
@@ -34,3 +35,17 @@ definitions:
       service_params:
       - rpc_submit_target_factory
       want_config: false
+
+  run_job_target:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rc_job.module
+      attr_name: run_job_target
+
+  run_job_target.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.rc_job:job_target
+      function: run_job_target
+      service_params:
+      - rc_job_creg
