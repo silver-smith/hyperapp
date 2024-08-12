@@ -14,6 +14,8 @@ import:
 - rpc.rpc_endpoint:rpc_endpoint.service
 - rpc.rpc_endpoint:rpc_message_creg.service
 - rpc.rpc_endpoint:rpc_request_futures.service
+- rpc.rpc_endpoint:rpc_target_creg.service
+- rpc.rpc_endpoint:run_function_target.actor-template
 - rpc.rpc_call:rpc_call_factory.service
 - rpc.rpc_call:rpc_submit_factory.service
 - subprocess.subprocess:subprocess_running.service
@@ -45,6 +47,7 @@ definitions:
         - rc.init_targets:ctr_from_template_creg.service
         - rc.rc:compile_resources.service
         - rc.process_pool:process_pool_running.service
+        - rpc.rpc_endpoint:rpc_target_creg.service
         - rpc.rpc_endpoint:rpc_message_creg.service
         - rpc.rpc_endpoint:rpc_endpoint.service
         - rpc.rpc_endpoint:rpc_request_futures.service
@@ -78,3 +81,5 @@ definitions:
         - rpc.rpc_endpoint:on_rpc_request.actor-template
         - rpc.rpc_endpoint:on_rpc_response.actor-template
         - rpc.rpc_endpoint:on_rpc_error_response.actor-template
+        rpc_target_creg:
+        - rpc.rpc_endpoint:run_function_target.actor-template

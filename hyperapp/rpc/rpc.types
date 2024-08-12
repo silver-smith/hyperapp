@@ -5,8 +5,7 @@ param = record:
 
 request = record:
   request_id: string
-  servant_ref: ref
-  params: param list
+  target: ref
 
 response = record:
   request_id: string
@@ -19,3 +18,8 @@ error_response = record:
 server_error = exception:
   message: string
   traceback: string list
+
+
+function_target = record:
+  servant_ref: ref
+  params: param list

@@ -63,24 +63,17 @@ def on_rpc_error_response(response, transport_request, rpc_request_futures):
     future.set_exception(exception)
 
 
-def on_rpc_request(request, transport_request, transport, peer_registry):
+def rpc_target_creg(config):
+    return code_registry_ctr2('rpc-target', config)
+
+
+def on_rpc_request(request, transport_request, transport, peer_registry, rpc_target_creg):
     log.info("Process rpc request: %s", request)
     receiver_identity = transport_request.receiver_identity
     sender = transport_request.sender
-    servant_fn = "<unknown servant>"
+    rpc_request = RpcRequest(receiver_identity, sender)
     try:
-        log.debug("Resolve rpc servant: %s", request.servant_ref)
-        servant_fn = pyobj_creg.invite(request.servant_ref)
-        kw = {
-            p.name: mosaic.resolve_ref(p.value).value
-            for p in request.params
-            }
-        if 'request' in inspect.signature(servant_fn).parameters:
-            rpc_request = RpcRequest(receiver_identity, sender)
-            kw = {**kw, 'request': rpc_request}
-        log.info("Call rpc servant: %s (%s)", servant_fn, kw)
-        result = servant_fn(**kw)
-        log.info("Rpc servant %s call result: %s", servant_fn, result)
+        result = rpc_target_creg.invite(request.target, rpc_request)
         if type(result) is list:
             result = tuple(result)
         result_t = deduce_t(result)
@@ -90,7 +83,7 @@ def on_rpc_request(request, transport_request, transport, peer_registry):
             result_ref=result_ref,
             )
     except HException as x:
-        log.info("Rpc servant %s call h-typed error: %s", servant_fn, x)
+        log.info("Rpc target %s call h-typed error: %s", request.target, x)
         response = htypes.rpc.error_response(
             request_id=request.request_id,
             exception_ref=mosaic.put(x),
@@ -99,11 +92,26 @@ def on_rpc_request(request, transport_request, transport, peer_registry):
         traceback_entries = tuple(traceback.format_tb(x.__traceback__))
         exception = htypes.rpc.server_error(str(x), traceback_entries)
         log.info(
-            "Rpc servant %s server error: %s\n%s",
-            servant_fn, exception.message, "".join(exception.traceback))
+            "Rpc target %s server error: %s\n%s",
+            request.target, exception.message, "".join(exception.traceback))
         response = htypes.rpc.error_response(
             request_id=request.request_id,
             exception_ref=mosaic.put(exception),
             )
     response_ref = mosaic.put(response)
     transport.send(sender, receiver_identity, [response_ref])
+
+
+def run_function_target(target, rpc_request):
+    log.debug("Resolve rpc servant: %s", target.servant_ref)
+    servant_fn = pyobj_creg.invite(target.servant_ref)
+    kw = {
+        p.name: mosaic.resolve_ref(p.value).value
+        for p in target.params
+        }
+    if 'request' in inspect.signature(servant_fn).parameters:
+        kw = {**kw, 'request': rpc_request}
+    log.info("Call rpc servant: %s (%s)", servant_fn, kw)
+    result = servant_fn(**kw)
+    log.info("Rpc servant %s call result: %s", servant_fn, result)
+    return result

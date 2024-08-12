@@ -31,11 +31,14 @@ def rpc_submit_factory(transport, rpc_request_futures, receiver_peer, servant_re
                 )
             for name, value in kw.items()
             )
+        target = htypes.rpc.function_target(
+            servant_ref=servant_ref,
+            params=params,
+            )
         request_id = str(uuid.uuid4())
         request = htypes.rpc.request(
             request_id=request_id,
-            servant_ref=servant_ref,
-            params=params,
+            target=mosaic.put(target),
             )
         request_ref = mosaic.put(request)
         future = Future()
