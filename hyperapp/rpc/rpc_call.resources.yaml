@@ -24,6 +24,26 @@ definitions:
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
 
+  rpc_submit_target_factory:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rpc_call.module
+      attr_name: rpc_submit_target_factory
+
+  rpc_submit_target_factory.service:
+    type: legacy_type.system:service_template
+    value:
+      name: rpc_submit_target_factory
+      function: rpc_submit_target_factory
+      free_params:
+      - receiver_peer
+      - servant_ref
+      - sender_identity
+      service_params:
+      - transport
+      - rpc_request_futures
+      want_config: false
+
   rpc_submit_factory:
     type: legacy_type.builtin:attribute
     value:
@@ -40,8 +60,7 @@ definitions:
       - servant_ref
       - sender_identity
       service_params:
-      - transport
-      - rpc_request_futures
+      - rpc_submit_target_factory
       want_config: false
 
   rpc_call_factory:

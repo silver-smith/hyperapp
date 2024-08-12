@@ -21,7 +21,26 @@ def _param_value_to_ref(value):
     return mosaic.put(value, t)
 
 
-def rpc_submit_factory(transport, rpc_request_futures, receiver_peer, servant_ref, sender_identity):
+def rpc_submit_target_factory(transport, rpc_request_futures, receiver_peer, servant_ref, sender_identity):
+
+    def submit(target):
+        request_id = str(uuid.uuid4())
+        request = htypes.rpc.request(
+            request_id=request_id,
+            target=mosaic.put(target),
+            )
+        request_ref = mosaic.put(request)
+        future = Future()
+        rpc_request_futures[request_id] = future
+        log.info("Rpc call target: receiver=%s: send rpc request %s: %s", receiver_peer, request_ref, request)
+        transport.send(receiver_peer, sender_identity, [request_ref])
+        return future
+
+    return submit
+
+
+def rpc_submit_factory(rpc_submit_target_factory, receiver_peer, servant_ref, sender_identity):
+    submit_factory = rpc_submit_target_factory(receiver_peer, servant_ref, sender_identity)
 
     def submit(**kw):
         params = tuple(
@@ -35,17 +54,8 @@ def rpc_submit_factory(transport, rpc_request_futures, receiver_peer, servant_re
             servant_ref=servant_ref,
             params=params,
             )
-        request_id = str(uuid.uuid4())
-        request = htypes.rpc.request(
-            request_id=request_id,
-            target=mosaic.put(target),
-            )
-        request_ref = mosaic.put(request)
-        future = Future()
-        rpc_request_futures[request_id] = future
-        log.info("Rpc call: %s %s (%s): send rpc request %s: %s", receiver_peer, servant_ref, kw, request_ref, request)
-        transport.send(receiver_peer, sender_identity, [request_ref])
-        return future
+        log.info("Rpc call: receiver=%s servant=%s (%s): send rpc request: %s", receiver_peer, servant_ref, kw, target)
+        return submit_factory(target)
 
     return submit
 
