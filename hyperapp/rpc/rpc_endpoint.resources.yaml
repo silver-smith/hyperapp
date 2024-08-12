@@ -75,21 +75,6 @@ definitions:
       service_params: []
       want_config: false
 
-  on_rpc_request:
-    type: legacy_type.builtin:attribute
-    value:
-      object: rpc_endpoint.module
-      attr_name: on_rpc_request
-
-  on_rpc_request.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.rpc:request
-      function: on_rpc_request
-      service_params:
-      - transport
-      - peer_registry
-
   on_rpc_response:
     type: legacy_type.builtin:attribute
     value:
@@ -117,3 +102,18 @@ definitions:
       function: on_rpc_error_response
       service_params:
       - rpc_request_futures
+
+  on_rpc_request:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rpc_endpoint.module
+      attr_name: on_rpc_request
+
+  on_rpc_request.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.rpc:request
+      function: on_rpc_request
+      service_params:
+      - transport
+      - peer_registry

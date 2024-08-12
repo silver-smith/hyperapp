@@ -49,6 +49,20 @@ def rpc_request_futures():
         future.cancel()
 
 
+def on_rpc_response(response, transport_request, rpc_request_futures):
+    log.debug("Process rpc response: %s", response)
+    result = mosaic.resolve_ref(response.result_ref).value
+    future = rpc_request_futures.pop(response.request_id)
+    future.set_result(result)
+
+
+def on_rpc_error_response(response, transport_request, rpc_request_futures):
+    exception = mosaic.resolve_ref(response.exception_ref).value
+    log.info("Process rpc error response: %s", exception)
+    future = rpc_request_futures.pop(response.request_id)
+    future.set_exception(exception)
+
+
 def on_rpc_request(request, transport_request, transport, peer_registry):
     log.info("Process rpc request: %s", request)
     receiver_identity = transport_request.receiver_identity
@@ -93,17 +107,3 @@ def on_rpc_request(request, transport_request, transport, peer_registry):
             )
     response_ref = mosaic.put(response)
     transport.send(sender, receiver_identity, [response_ref])
-
-
-def on_rpc_response(response, transport_request, rpc_request_futures):
-    log.debug("Process rpc response: %s", response)
-    result = mosaic.resolve_ref(response.result_ref).value
-    future = rpc_request_futures.pop(response.request_id)
-    future.set_result(result)
-
-
-def on_rpc_error_response(response, transport_request, rpc_request_futures):
-    exception = mosaic.resolve_ref(response.exception_ref).value
-    log.info("Process rpc error response: %s", exception)
-    future = rpc_request_futures.pop(response.request_id)
-    future.set_exception(exception)
