@@ -18,7 +18,6 @@ import:
 - rc.rc_constants:rc_constants.module
 - rc.rc_job_result_creg:rc_job_result_creg.service
 - rc.rc_requirement_creg:rc_requirement_creg.service
-- rc.rc_resource_creg:rc_resource_creg.service
 - rc.requirement_factory:requirement_factory.module
 
 associations:
@@ -64,7 +63,6 @@ definitions:
         services.pyobj_creg: builtins:pyobj_creg.service
         services.rc_constructor_creg: resource.rc_constructor_creg:rc_constructor_creg.service
         services.rc_requirement_creg: rc.rc_requirement_creg:rc_requirement_creg.service
-        services.rc_resource_creg: rc.rc_resource_creg:rc_resource_creg.service
         code.build: rc.build:build.module
         code.builtin_resources: rc.builtin_resources:builtin_resources.module
         code.job_result: rc.job_result:job_result.module
@@ -125,4 +123,5 @@ definitions:
     value:
       t: legacy_type.import_job:job
       function: ImportJob.from_piece
-      service_params: []
+      service_params:
+      - rc_resource_creg

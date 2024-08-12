@@ -5,19 +5,9 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.service_resource:actor_probe_resource
+- legacy_type.system:actor_template
 - rc.rc_resource:rc_resource.module
-- rc.rc_resource_creg:rc_resource_creg.service
 - rc.system_probe:system_probe.module
-
-associations:
-
-- bases:
-  - rc.rc_resource_creg:rc_resource_creg.service
-  - legacy_type.service_resource:actor_probe_resource
-  key:
-  - rc.rc_resource_creg:rc_resource_creg.service
-  - legacy_type.service_resource:actor_probe_resource
-  value: ActorProbeResource.from_piece
 
 definitions:
 
@@ -45,3 +35,10 @@ definitions:
     value:
       object: ActorProbeResource
       attr_name: from_piece
+
+  actor_probe_resource.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.service_resource:actor_probe_resource
+      function: ActorProbeResource.from_piece
+      service_params: []

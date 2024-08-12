@@ -5,18 +5,8 @@ import:
 - legacy_type.builtin:import_rec
 - legacy_type.builtin:python_module
 - legacy_type.import_resource:import_resource
+- legacy_type.system:actor_template
 - rc.rc_resource:rc_resource.module
-- rc.rc_resource_creg:rc_resource_creg.service
-
-associations:
-
-- bases:
-  - rc.rc_resource_creg:rc_resource_creg.service
-  - legacy_type.import_resource:import_resource
-  key:
-  - rc.rc_resource_creg:rc_resource_creg.service
-  - legacy_type.import_resource:import_resource
-  value: ImportResource.from_piece
 
 definitions:
 
@@ -43,3 +33,10 @@ definitions:
     value:
       object: ImportResource
       attr_name: from_piece
+
+  import_resource.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.import_resource:import_resource
+      function: ImportResource.from_piece
+      service_params: []

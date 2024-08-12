@@ -8,7 +8,6 @@ import:
 - rc.rc_requirement_creg:rc_requirement_creg.service
 - rc.rc_requirement:rc_requirement.module
 - rc.rc_resource:rc_resource.module
-- rc.rc_resource_creg:rc_resource_creg.service
 
 associations:
 

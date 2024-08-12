@@ -13,7 +13,6 @@ from .services import (
     pyobj_creg,
     rc_constructor_creg,
     rc_requirement_creg,
-    rc_resource_creg,
     )
 from .code.rc_constants import JobStatus
 from .code.build import PythonModuleSrc
@@ -125,7 +124,7 @@ class FailedTestResult(JobResult):
 class TestJob:
 
     @classmethod
-    def from_piece(cls, piece):
+    def from_piece(cls, piece, rc_resource_creg):
         return cls(
             python_module_src=PythonModuleSrc.from_piece(piece.python_module),
             idx=piece.idx,

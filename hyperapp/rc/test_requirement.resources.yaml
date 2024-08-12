@@ -6,6 +6,7 @@ import:
 - legacy_type.builtin:import_rec
 - legacy_type.builtin:python_module
 - legacy_type.rc_constructors:module_wrapper
+- legacy_type.system:actor_template
 - legacy_type.test_target:constructors_picker_resource
 - legacy_type.test_target:recorder_resource
 - legacy_type.test_target:tested_code_req
@@ -16,7 +17,6 @@ import:
 - rc.rc_requirement:rc_requirement.module
 - rc.rc_requirement_creg:rc_requirement_creg.service
 - rc.rc_resource:rc_resource.module
-- rc.rc_resource_creg:rc_resource_creg.service
 
 associations:
 
@@ -43,38 +43,6 @@ associations:
   - rc.rc_requirement_creg:rc_requirement_creg.service
   - legacy_type.test_target:fixtures_module_req
   value: FixturesModuleReq.from_piece
-
-- bases:
-  - rc.rc_resource_creg:rc_resource_creg.service
-  - legacy_type.test_target:tested_service_resource
-  key:
-  - rc.rc_resource_creg:rc_resource_creg.service
-  - legacy_type.test_target:tested_service_resource
-  value: TestedServiceResource.from_piece
-
-- bases:
-  - rc.rc_resource_creg:rc_resource_creg.service
-  - legacy_type.test_target:tested_code_resource
-  key:
-  - rc.rc_resource_creg:rc_resource_creg.service
-  - legacy_type.test_target:tested_code_resource
-  value: TestedCodeResource.from_piece
-
-- bases:
-  - rc.rc_resource_creg:rc_resource_creg.service
-  - legacy_type.test_target:recorder_resource
-  key:
-  - rc.rc_resource_creg:rc_resource_creg.service
-  - legacy_type.test_target:recorder_resource
-  value: RecorderResource.from_piece
-
-- bases:
-  - rc.rc_resource_creg:rc_resource_creg.service
-  - legacy_type.test_target:constructors_picker_resource
-  key:
-  - rc.rc_resource_creg:rc_resource_creg.service
-  - legacy_type.test_target:constructors_picker_resource
-  value: ConstructorsPickerResource.from_piece
 
 definitions:
 
@@ -147,6 +115,13 @@ definitions:
       object: TestedServiceResource
       attr_name: from_piece
 
+  tested_service_resource.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.test_target:tested_service_resource
+      function: TestedServiceResource.from_piece
+      service_params: []
+
   TestedCodeResource:
     type: legacy_type.builtin:attribute
     value:
@@ -158,6 +133,13 @@ definitions:
     value:
       object: TestedCodeResource
       attr_name: from_piece
+
+  tested_code_resource.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.test_target:tested_code_resource
+      function: TestedCodeResource.from_piece
+      service_params: []
 
   RecorderResource:
     type: legacy_type.builtin:attribute
@@ -171,6 +153,13 @@ definitions:
       object: RecorderResource
       attr_name: from_piece
 
+  recorder_resource.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.test_target:recorder_resource
+      function: RecorderResource.from_piece
+      service_params: []
+
   ConstructorsPickerResource:
     type: legacy_type.builtin:attribute
     value:
@@ -182,3 +171,10 @@ definitions:
     value:
       object: ConstructorsPickerResource
       attr_name: from_piece
+
+  constructors_picker_resource.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.test_target:constructors_picker_resource
+      function: ConstructorsPickerResource.from_piece
+      service_params: []

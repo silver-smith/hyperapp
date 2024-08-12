@@ -7,35 +7,9 @@ import:
 - legacy_type.service_resource:config_item_fixture_resource
 - legacy_type.service_resource:fixture_probe_resource
 - legacy_type.service_resource:service_probe_resource
+- legacy_type.system:actor_template
 - rc.rc_resource:rc_resource.module
-- rc.rc_resource_creg:rc_resource_creg.service
 - rc.system_probe:system_probe.module
-
-associations:
-
-- bases:
-  - rc.rc_resource_creg:rc_resource_creg.service
-  - legacy_type.service_resource:service_probe_resource
-  key:
-  - rc.rc_resource_creg:rc_resource_creg.service
-  - legacy_type.service_resource:service_probe_resource
-  value: ServiceProbeResource.from_piece
-
-- bases:
-  - rc.rc_resource_creg:rc_resource_creg.service
-  - legacy_type.service_resource:fixture_probe_resource
-  key:
-  - rc.rc_resource_creg:rc_resource_creg.service
-  - legacy_type.service_resource:fixture_probe_resource
-  value: FixtureProbeResource.from_piece
-
-- bases:
-  - rc.rc_resource_creg:rc_resource_creg.service
-  - legacy_type.service_resource:config_item_fixture_resource
-  key:
-  - rc.rc_resource_creg:rc_resource_creg.service
-  - legacy_type.service_resource:config_item_fixture_resource
-  value: ConfigItemFixtureResource.from_piece
 
 definitions:
 
@@ -66,6 +40,13 @@ definitions:
       object: ServiceProbeResource
       attr_name: from_piece
 
+  service_probe_resource.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.service_resource:service_probe_resource
+      function: ServiceProbeResource.from_piece
+      service_params: []
+
   FixtureProbeResource:
     type: legacy_type.builtin:attribute
     value:
@@ -78,6 +59,13 @@ definitions:
       object: FixtureProbeResource
       attr_name: from_piece
 
+  fixture_probe_resource.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.service_resource:fixture_probe_resource
+      function: FixtureProbeResource.from_piece
+      service_params: []
+
   ConfigItemFixtureResource:
     type: legacy_type.builtin:attribute
     value:
@@ -89,3 +77,10 @@ definitions:
     value:
       object: ConfigItemFixtureResource
       attr_name: from_piece
+
+  config_item_fixture_resource.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.service_resource:config_item_fixture_resource
+      function: ConfigItemFixtureResource.from_piece
+      service_params: []

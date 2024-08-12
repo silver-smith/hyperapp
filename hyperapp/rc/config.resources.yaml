@@ -2,17 +2,28 @@ import:
 - legacy_type.builtin:string
 - legacy_type.system:system_config
 - common.bundler:bundler.service
+- rc.actor_probe_resource:actor_probe_resource.actor-template
 - rc.actor_ctr:core-actor-from-template.actor-template
 - rc.import_job:import_job.actor-template
+- rc.import_resource:import_resource.actor-template
 - rc.init_targets:ctr_from_template_creg.service
 - rc.rc:compile_resources.service
 - rc.rc_job:rc_job_submit_factory.service
 - rc.rc_job:run_job_target.actor-template
 - rc.rc_job_creg:rc_job_creg.service
+- rc.rc_resource_creg:rc_resource_creg.service
 - rc.process_pool:process_pool_running.service
 - rc.service_ctr:core-service-from-finalizer-gen-template.actor-template
 - rc.service_ctr:core-service-from-template.actor-template
+- rc.service_probe_resource:config_item_fixture_resource.actor-template
+- rc.service_probe_resource:fixture_probe_resource.actor-template
+- rc.service_probe_resource:service_probe_resource.actor-template
+- rc.service_resource:service_template_resource.actor-template
 - rc.test_job:test_job.actor-template
+- rc.test_requirement:tested_service_resource.actor-template
+- rc.test_requirement:tested_code_resource.actor-template
+- rc.test_requirement:recorder_resource.actor-template
+- rc.test_requirement:constructors_picker_resource.actor-template
 - rpc.rpc_endpoint:on_rpc_error_response.actor-template
 - rpc.rpc_endpoint:on_rpc_request.actor-template
 - rpc.rpc_endpoint:on_rpc_response.actor-template
@@ -55,6 +66,7 @@ definitions:
         - rc.rc:compile_resources.service
         - rc.rc_job:rc_job_submit_factory.service
         - rc.rc_job_creg:rc_job_creg.service
+        - rc.rc_resource_creg:rc_resource_creg.service
         - rc.process_pool:process_pool_running.service
         - rpc.rpc_endpoint:rpc_target_creg.service
         - rpc.rpc_endpoint:rpc_message_creg.service
@@ -98,3 +110,14 @@ definitions:
         rc_job_creg:
         - rc.import_job:import_job.actor-template
         - rc.test_job:test_job.actor-template
+        rc_resource_creg:
+        - rc.actor_probe_resource:actor_probe_resource.actor-template
+        - rc.import_resource:import_resource.actor-template
+        - rc.service_probe_resource:config_item_fixture_resource.actor-template
+        - rc.service_probe_resource:fixture_probe_resource.actor-template
+        - rc.service_probe_resource:service_probe_resource.actor-template
+        - rc.service_resource:service_template_resource.actor-template
+        - rc.test_requirement:tested_service_resource.actor-template
+        - rc.test_requirement:tested_code_resource.actor-template
+        - rc.test_requirement:recorder_resource.actor-template
+        - rc.test_requirement:constructors_picker_resource.actor-template
