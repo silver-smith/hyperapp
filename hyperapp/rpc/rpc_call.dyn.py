@@ -21,7 +21,7 @@ def _param_value_to_ref(value):
     return mosaic.put(value, t)
 
 
-def rpc_submit_target_factory(transport, rpc_request_futures, receiver_peer, servant_ref, sender_identity):
+def rpc_submit_target_factory(transport, rpc_request_futures, receiver_peer, sender_identity):
 
     def submit(target):
         request_id = str(uuid.uuid4())
@@ -39,8 +39,8 @@ def rpc_submit_target_factory(transport, rpc_request_futures, receiver_peer, ser
     return submit
 
 
-def rpc_submit_factory(rpc_submit_target_factory, receiver_peer, servant_ref, sender_identity):
-    submit_factory = rpc_submit_target_factory(receiver_peer, servant_ref, sender_identity)
+def rpc_submit_factory(rpc_submit_target_factory, receiver_peer, sender_identity, servant_ref):
+    submit_factory = rpc_submit_target_factory(receiver_peer, sender_identity)
 
     def submit(**kw):
         params = tuple(
@@ -60,18 +60,22 @@ def rpc_submit_factory(rpc_submit_target_factory, receiver_peer, servant_ref, se
     return submit
 
 
-def rpc_call_factory(rpc_submit_factory, receiver_peer, servant_ref, sender_identity, timeout_sec=10):
-    submit_factory = rpc_submit_factory(receiver_peer, servant_ref, sender_identity)
+def rpc_wait_for_future(future, timeout_sec):
+    try:
+        result = future.result(timeout_sec)
+    except HException as x:
+        if isinstance(x, htypes.rpc.server_error):
+            log.error("Rpc call: got server error: %s\n%s", x.message, "".join(x.traceback))
+        raise
+    log.info("Rpc call: got result: %s", result)
+    return result
+
+
+def rpc_call_factory(rpc_submit_factory, rpc_wait_for_future, receiver_peer, sender_identity, servant_ref, timeout_sec=10):
+    submit_factory = rpc_submit_factory(receiver_peer, sender_identity, servant_ref)
 
     def call(**kw):
         future = submit_factory(**kw)
-        try:
-            result = future.result(timeout_sec)
-        except HException as x:
-            if isinstance(x, htypes.rpc.server_error):
-                log.error("Rpc call: got server error: %s\n%s", x.message, "".join(x.traceback))
-            raise
-        log.info("Rpc call: got result: %s", result)
-        return result
+        return rpc_wait_for_future(future, timeout_sec)
 
     return call

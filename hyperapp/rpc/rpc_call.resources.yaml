@@ -37,7 +37,6 @@ definitions:
       function: rpc_submit_target_factory
       free_params:
       - receiver_peer
-      - servant_ref
       - sender_identity
       service_params:
       - transport
@@ -57,10 +56,27 @@ definitions:
       function: rpc_submit_factory
       free_params:
       - receiver_peer
-      - servant_ref
       - sender_identity
+      - servant_ref
       service_params:
       - rpc_submit_target_factory
+      want_config: false
+
+  rpc_wait_for_future:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rpc_call.module
+      attr_name: rpc_wait_for_future
+
+  rpc_wait_for_future.service:
+    type: legacy_type.system:service_template
+    value:
+      name: rpc_wait_for_future
+      function: rpc_wait_for_future
+      free_params:
+      - future
+      - timeout_sec
+      service_params: []
       want_config: false
 
   rpc_call_factory:
@@ -76,9 +92,10 @@ definitions:
       function: rpc_call_factory
       free_params:
       - receiver_peer
-      - servant_ref
       - sender_identity
+      - servant_ref
       - timeout_sec
       service_params:
       - rpc_submit_factory
+      - rpc_wait_for_future
       want_config: false

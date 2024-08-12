@@ -19,7 +19,7 @@ class RpcProxy:
             attr_name=name,
             )
         fn_ref = mosaic.put(fn_res)
-        rpc_call = rpc_call_factory(self._peer, fn_ref, self._identity, self._timeout_sec)
+        rpc_call = rpc_call_factory(self._peer, self._identity, fn_ref, self._timeout_sec)
 
         def method(*args, **kw):
             return rpc_call(*args, **kw)

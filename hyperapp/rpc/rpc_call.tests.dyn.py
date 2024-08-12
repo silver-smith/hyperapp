@@ -42,8 +42,8 @@ def test_rpc_call_factory_success():
     rpc_call = rpc_call_factory(
         rpc_endpoint=endpoint,
         receiver_peer='phony receiver peer',
-        servant_ref=mosaic.put('phony servant'),
         sender_identity=sender_identity,
+        servant_ref=mosaic.put('phony servant'),
         )
     rpc_call(sample_param=12345)
 
@@ -54,8 +54,8 @@ def test_rpc_call_factory_exception():
     rpc_call = rpc_call_factory(
         rpc_endpoint=endpoint,
         receiver_peer='phony receiver peer',
-        servant_ref=mosaic.put('phony servant'),
         sender_identity=sender_identity,
+        servant_ref=mosaic.put('phony servant'),
         )
     try:
         rpc_call(sample_param=12345)

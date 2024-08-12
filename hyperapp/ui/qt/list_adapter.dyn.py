@@ -199,8 +199,8 @@ class RemoteFnListAdapter(FnListAdapterBase):
         self._rpc_call = rpc_call_factory(
             rpc_endpoint=rpc_endpoint,
             receiver_peer=remote_peer,
-            servant_ref=fn_res_ref,
             sender_identity=identity,
+            servant_ref=fn_res_ref,
             )
 
     def _call_fn(self, **kw):

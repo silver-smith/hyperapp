@@ -31,11 +31,11 @@ class _RpcServerProcess:
 
     def rpc_submit(self, servant_fn):
         servant_fn_ref = fn_to_ref(servant_fn)
-        return self._rpc_submit_factory(self.peer, servant_fn_ref, self._identity)
+        return self._rpc_submit_factory(self.peer, self._identity, servant_fn_ref)
 
     def rpc_call(self, servant_fn):
         servant_fn_ref = fn_to_ref(servant_fn)
-        return self._rpc_call_factory(self.peer, servant_fn_ref, self._identity, self._timeout_sec)
+        return self._rpc_call_factory(self.peer, self._identity, servant_fn_ref, self._timeout_sec)
 
     def proxy(self, servant_ref):
         return RpcProxy(self._rpc_call_factory, self._identity, self.peer, servant_ref, self._timeout_sec)

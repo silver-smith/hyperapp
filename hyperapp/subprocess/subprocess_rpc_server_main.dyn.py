@@ -35,7 +35,7 @@ def rpc_server_main(
 
     subprocess_transport.add_server_connection('master', connection, received_refs, on_eof=_stop, on_reset=_stop)
 
-    rpc_call = rpc_call_factory(master_peer, master_servant_ref, my_identity, timeout_sec=None)
+    rpc_call = rpc_call_factory(master_peer, my_identity, master_servant_ref, timeout_sec=None)
 
     log.info("%s: Calling callback %s", my_name, rpc_call)
     rpc_call(subprocess_name=name, subprocess_id=subprocess_id, subprocess_peer=my_identity.peer.piece)

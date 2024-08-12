@@ -18,8 +18,8 @@ class RemoteFnIndexTreeAdapter(FnIndexTreeAdapterBase):
         super().__init__(feed_factory, model, item_t, params, ctx)
         self._rpc_call = rpc_call_factory(
             receiver_peer=remote_peer,
-            servant_ref=fn_res_ref,
             sender_identity=identity,
+            servant_ref=fn_res_ref,
             )
 
     def _call_fn(self, **kw):

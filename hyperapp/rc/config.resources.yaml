@@ -19,6 +19,7 @@ import:
 - rpc.rpc_call:rpc_call_factory.service
 - rpc.rpc_call:rpc_submit_factory.service
 - rpc.rpc_call:rpc_submit_target_factory.service
+- rpc.rpc_call:rpc_wait_for_future.service
 - subprocess.subprocess:subprocess_running.service
 - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
 - subprocess.subprocess_rpc_server_main:rpc_server_main.service
@@ -54,6 +55,7 @@ definitions:
         - rpc.rpc_endpoint:rpc_request_futures.service
         - rpc.rpc_call:rpc_submit_target_factory.service
         - rpc.rpc_call:rpc_submit_factory.service
+        - rpc.rpc_call:rpc_wait_for_future.service
         - rpc.rpc_call:rpc_call_factory.service
         - subprocess.subprocess:subprocess_running.service
         - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
