@@ -30,12 +30,6 @@ definitions:
       object: rpc_call.module
       attr_name: rpc_submit_factory
 
-  rpc_call_factory:
-    type: legacy_type.builtin:attribute
-    value:
-      object: rpc_call.module
-      attr_name: rpc_call_factory
-
   rpc_submit_factory.service:
     type: legacy_type.system:service_template
     value:
@@ -49,6 +43,12 @@ definitions:
       - transport
       - rpc_request_futures
       want_config: false
+
+  rpc_call_factory:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rpc_call.module
+      attr_name: rpc_call_factory
 
   rpc_call_factory.service:
     type: legacy_type.system:service_template
