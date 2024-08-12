@@ -3,8 +3,6 @@ from collections import namedtuple
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextlib import ExitStack, contextmanager
 
-from .code import rc_job_driver
-
 log = logging.getLogger(__name__)
 
 
@@ -12,7 +10,8 @@ class ProcessPool:
 
     _JobRec = namedtuple('JobRec', 'process job')
 
-    def __init__(self, process_list):
+    def __init__(self, rc_job_submit_factory, process_list):
+        self._rc_job_submit_factory = rc_job_submit_factory
         self._process_list = process_list
         self._free_processes = process_list[:]
         self._future_to_rec = {}
@@ -44,15 +43,14 @@ class ProcessPool:
 
     def _start_job(self, job, process):
         log.info("Start at #%d: %s", self._process_list.index(process), job)
-        future = process.rpc_submit(rc_job_driver.run_rc_job)(
-            job_piece=job.piece,
-            )
+        submit = self._rc_job_submit_factory(process.peer, process.identity)
+        future = submit(job)
         self._future_to_rec[future] = self._JobRec(process, job)
 
 
 @contextmanager
 def process_pool_running(
-        endpoint_registry, rpc_endpoint, generate_rsa_identity, subprocess_rpc_server_running,
+        endpoint_registry, rpc_endpoint, generate_rsa_identity, subprocess_rpc_server_running, rc_job_submit_factory,
         process_count, timeout):
     identity = generate_rsa_identity(fast=True)
     endpoint_registry.register(identity, rpc_endpoint)
@@ -70,4 +68,4 @@ def process_pool_running(
 
             process_list = list(executor.map(start_process, range(process_count)))
 
-        yield ProcessPool(process_list)
+        yield ProcessPool(rc_job_submit_factory, process_list)

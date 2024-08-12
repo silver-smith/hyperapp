@@ -2,7 +2,6 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.system:service_template
-- rc.rc_job_driver:rc_job_driver.module
 
 definitions:
 
@@ -11,8 +10,7 @@ definitions:
     value:
       module_name: process_pool
       file_name: process_pool.dyn.py
-      import_list:
-        code.rc_job_driver: rc.rc_job_driver:rc_job_driver.module
+      import_list: {}
 
   process_pool_running:
     type: legacy_type.builtin:attribute
@@ -33,4 +31,5 @@ definitions:
       - rpc_endpoint
       - generate_rsa_identity
       - subprocess_rpc_server_running
+      - rc_job_submit_factory
       want_config: false

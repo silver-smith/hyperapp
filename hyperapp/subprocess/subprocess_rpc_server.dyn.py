@@ -21,9 +21,9 @@ class _RpcServerProcess:
         self.name = name
         self.connection = connection
         self.peer = peer
+        self.identity = identity
         self._rpc_submit_factory = rpc_submit_factory
         self._rpc_call_factory = rpc_call_factory
-        self._identity = identity
         self._timeout_sec = timeout_sec
 
     def __repr__(self):
@@ -31,14 +31,14 @@ class _RpcServerProcess:
 
     def rpc_submit(self, servant_fn):
         servant_fn_ref = fn_to_ref(servant_fn)
-        return self._rpc_submit_factory(self.peer, self._identity, servant_fn_ref)
+        return self._rpc_submit_factory(self.peer, self.identity, servant_fn_ref)
 
     def rpc_call(self, servant_fn):
         servant_fn_ref = fn_to_ref(servant_fn)
-        return self._rpc_call_factory(self.peer, self._identity, servant_fn_ref, self._timeout_sec)
+        return self._rpc_call_factory(self.peer, self.identity, servant_fn_ref, self._timeout_sec)
 
     def proxy(self, servant_ref):
-        return RpcProxy(self._rpc_call_factory, self._identity, self.peer, servant_ref, self._timeout_sec)
+        return RpcProxy(self._rpc_call_factory, self.identity, self.peer, servant_ref, self._timeout_sec)
 
 
 _subprocess_id_counter = itertools.count()

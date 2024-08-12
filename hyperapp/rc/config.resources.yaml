@@ -5,6 +5,8 @@ import:
 - rc.actor_ctr:core-actor-from-template.actor-template
 - rc.init_targets:ctr_from_template_creg.service
 - rc.rc:compile_resources.service
+- rc.rc_job:rc_job_submit_factory.service
+- rc.rc_job_creg:rc_job_creg.service
 - rc.process_pool:process_pool_running.service
 - rc.service_ctr:core-service-from-finalizer-gen-template.actor-template
 - rc.service_ctr:core-service-from-template.actor-template
@@ -48,6 +50,8 @@ definitions:
         - common.bundler:bundler.service
         - rc.init_targets:ctr_from_template_creg.service
         - rc.rc:compile_resources.service
+        - rc.rc_job:rc_job_submit_factory.service
+        - rc.rc_job_creg:rc_job_creg.service
         - rc.process_pool:process_pool_running.service
         - rpc.rpc_endpoint:rpc_target_creg.service
         - rpc.rpc_endpoint:rpc_message_creg.service

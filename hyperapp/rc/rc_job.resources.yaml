@@ -1,0 +1,36 @@
+import:
+- builtins:mosaic.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.rc_job:job_target
+- legacy_type.system:service_template
+
+definitions:
+
+  rc_job.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: rc_job
+      file_name: rc_job.dyn.py
+      import_list:
+        htypes.rc_job.job_target: legacy_type.rc_job:job_target
+        services.mosaic: builtins:mosaic.service
+
+  rc_job_submit_factory:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rc_job.module
+      attr_name: rc_job_submit_factory
+
+  rc_job_submit_factory.service:
+    type: legacy_type.system:service_template
+    value:
+      name: rc_job_submit_factory
+      function: rc_job_submit_factory
+      free_params:
+      - receiver_peer
+      - servant_ref
+      - sender_identity
+      service_params:
+      - rpc_submit_target_factory
+      want_config: false

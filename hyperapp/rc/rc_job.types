@@ -1,0 +1,2 @@
+job_target = record:
+  job: ref
