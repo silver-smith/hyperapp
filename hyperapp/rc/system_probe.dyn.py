@@ -257,7 +257,7 @@ class SystemProbe(System):
         value = super().run(root_name)
         if inspect.iscoroutine(value):
             log.info("Running coroutine: %r", value)
-            asyncio.run(value)
+            return asyncio.run(value)
 
     @property
     def resolved_templates(self):

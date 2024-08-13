@@ -207,8 +207,7 @@ class System:
     def run(self, root_name, *args, **kw):
         service = self.resolve_service(root_name)
         try:
-            result = service(*args, **kw)
-            assert not inspect.iscoroutine(result), f"todo: {root_name}/{result}"
+            return service(*args, **kw)
         finally:
             self._run_finalizers()
 
