@@ -244,6 +244,8 @@ class FixtureProbe(Probe):
 
 class SystemProbe(System):
 
+    _system_name = "System probe"
+
     def __init__(self):
         super().__init__()
         self._config_item_fixtures = defaultdict(list)  # service_name -> fixture list

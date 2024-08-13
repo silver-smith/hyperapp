@@ -1,4 +1,5 @@
 import inspect
+import logging
 from collections import defaultdict
 from functools import partial
 
@@ -7,6 +8,8 @@ from .services import (
     pyobj_creg,
     code_registry_ctr2,
     )
+
+log = logging.getLogger(__name__)
 
 
 class UnknownServiceError(Exception):
@@ -105,7 +108,7 @@ class FinalizerGenServiceTemplate(ServiceTemplateBase):
         service_args = self._resolve_service_args(system)
         gen = self._fn(*service_args)
         service = next(gen)
-        system.add_finalizer(partial(self._finalize, gen))
+        system.add_finalizer(self.service_name, partial(self._finalize, gen))
         return service
 
     def _finalize(self, gen):
@@ -192,11 +195,13 @@ class ActorTemplateCfg:
 
 class System:
 
+    _system_name = "System"
+
     def __init__(self):
         self._configs = defaultdict(dict)
         self._name_to_template = self._configs['system']
         self._name_to_service = {}
-        self._finalizers = []
+        self._finalizers = {}  # service name -> fn
 
     def add_core_service(self, name, service):
         self._name_to_service[name] = service
@@ -220,10 +225,12 @@ class System:
 
     def run(self, root_name, *args, **kw):
         service = self.resolve_service(root_name)
+        log.info("%s: run root service %s: %s", self._system_name, root_name, service)
         try:
             return service(*args, **kw)
         finally:
             self._run_finalizers()
+            log.info("%s: stopped", self._system_name)
 
     def resolve_config(self, service_name):
         config = {}
@@ -244,11 +251,13 @@ class System:
         self._name_to_service[name] = service
         return service
 
-    def add_finalizer(self, finalizer):
-        self._finalizers.append(finalizer)
+    def add_finalizer(self, service_name, finalizer):
+        self._finalizers[service_name] = finalizer
 
     def _run_finalizers(self):
-        for fn in reversed(self._finalizers):
+        log.info("%s: run %d finalizers:", self._system_name, len(self._finalizers))
+        for name, fn in reversed(self._finalizers.items()):
+            log.info("%s: call finalizer for %r: %s", self._system_name, name, fn)
             fn()
 
     def _raise_missing_service(self, service_name):
