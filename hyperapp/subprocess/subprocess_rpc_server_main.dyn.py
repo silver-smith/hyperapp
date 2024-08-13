@@ -12,6 +12,7 @@ log = logging.getLogger(__name__)
 
 
 def _stop():
+    log.info("Master connection is closed; stopping server...")
     stop_signal.set()
 
 
