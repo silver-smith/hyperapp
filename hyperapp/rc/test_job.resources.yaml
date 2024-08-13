@@ -134,4 +134,5 @@ definitions:
       t: legacy_type.test_job:job
       function: TestJob.from_piece
       service_params:
+      - cfg_item_creg
       - rc_resource_creg

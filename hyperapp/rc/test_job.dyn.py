@@ -123,19 +123,21 @@ class FailedTestResult(JobResult):
 class TestJob:
 
     @classmethod
-    def from_piece(cls, piece, rc_resource_creg):
+    def from_piece(cls, piece, cfg_item_creg, rc_resource_creg):
         return cls(
             python_module_src=PythonModuleSrc.from_piece(piece.python_module),
             idx=piece.idx,
             resources=[rc_resource_creg.invite(d) for d in piece.resources],
             test_fn_name=piece.test_fn_name,
+            cfg_item_creg=cfg_item_creg,
             )
 
-    def __init__(self, python_module_src, idx, resources, test_fn_name):
+    def __init__(self, python_module_src, idx, resources, test_fn_name, cfg_item_creg=None):
         self._src = python_module_src
         self._idx = idx
         self._resources = resources
         self._test_fn_name = test_fn_name
+        self._cfg_item_creg = cfg_item_creg  # Used from 'run' method, inside job process.
 
     def __repr__(self):
         return f"<TestJob {self._src}/{self._test_fn_name}/{self._idx}>"
@@ -217,7 +219,7 @@ class TestJob:
             status = JobStatus.ok
             error_msg = traceback = None
         except UnknownServiceError as x:
-            req = ServiceReq(x.service_name)
+            req = ServiceReq(x.service_name, self._cfg_item_creg)
             error = f"{type(x).__name__}: {x}"
             return (JobStatus.incomplete, error, [], {req})
         except ConfigItemRequiredError as x:

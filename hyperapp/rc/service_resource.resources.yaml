@@ -8,7 +8,6 @@ import:
 - legacy_type.system:actor_template
 - rc.rc_requirement:rc_requirement.module
 - rc.rc_resource:rc_resource.module
-- rc.system:system.module
 
 definitions:
 
@@ -24,7 +23,6 @@ definitions:
         services.web: builtins:web.service
         code.rc_requirement: rc.rc_requirement:rc_requirement.module
         code.rc_resource: rc.rc_resource:rc_resource.module
-        code.system: rc.system:system.module
 
   ServiceReq:
     type: legacy_type.builtin:attribute
@@ -43,7 +41,8 @@ definitions:
     value:
       t: legacy_type.service_resource:service_req
       function: ServiceReq.from_piece
-      service_params: []
+      service_params:
+      - cfg_item_creg
 
   ServiceTemplateResource:
     type: legacy_type.builtin:attribute
@@ -62,4 +61,5 @@ definitions:
     value:
       t: legacy_type.service_resource:service_template_resource
       function: ServiceTemplateResource.from_piece
-      service_params: []
+      service_params:
+      - cfg_item_creg

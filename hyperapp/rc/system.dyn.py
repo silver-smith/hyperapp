@@ -153,6 +153,10 @@ class ServiceTemplateCfg:
         self.key = template.service_name
         self.value = template
 
+    @property
+    def piece(self):
+        return self.value.piece
+
 
 class FinalizerGenServiceTemplateCfg:
 
@@ -165,6 +169,10 @@ class FinalizerGenServiceTemplateCfg:
         self.key = template.service_name
         self.value = template
 
+    @property
+    def piece(self):
+        return self.value.piece
+
 
 class ActorTemplateCfg:
 
@@ -176,6 +184,10 @@ class ActorTemplateCfg:
     def __init__(self, template):
         self.key = template.t
         self.value = template
+
+    @property
+    def piece(self):
+        return self.value.piece
 
 
 class System:

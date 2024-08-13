@@ -31,4 +31,4 @@ config_item_fixture_resource = record:
 
 service_template_resource = record:
   service_name: string
-  template: service_template
+  template: ref
