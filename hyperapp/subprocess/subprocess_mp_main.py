@@ -67,9 +67,10 @@ def subprocess_main_safe(connection, main_fn_bundle_cdr):
     main_fn = pyobj_creg.invite(main_fn_ref)
 
     log.info("Subprocess: Run main function %s: %s", main_fn_ref, main_fn)
-    main_fn(connection, received_refs)
-
-    log.info("Subprocess: Stopping services.")
-    stop_signal.set()
-    services.stop()
-    log.info("Subprocess: Services are stopped. Exiting.")
+    try:
+        main_fn(connection, received_refs)
+    finally:
+        log.info("Subprocess: Stopping services.")
+        stop_signal.set()
+        services.stop()
+        log.info("Subprocess: Services are stopped. Exiting.")
