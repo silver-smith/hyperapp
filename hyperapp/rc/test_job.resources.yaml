@@ -136,3 +136,4 @@ definitions:
       service_params:
       - cfg_item_creg
       - rc_resource_creg
+      - system_config

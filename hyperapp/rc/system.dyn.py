@@ -204,6 +204,20 @@ class System:
     def update_config(self, service_name, config):
         self._configs[service_name].update(config)
 
+    def load_config(self, config_piece):
+        cfg_item_creg_config = {
+            htypes.system.service_template: ServiceTemplateCfg.from_piece,
+            htypes.system.finalizer_gen_service_template: FinalizerGenServiceTemplateCfg.from_piece,
+            htypes.system.actor_template: ActorTemplateCfg.from_piece,
+            }
+        cfg_item_creg = code_registry_ctr2('cfg-item', cfg_item_creg_config)
+        self.add_core_service('system_config', config_piece)
+        self.add_core_service('cfg_item_creg', cfg_item_creg)
+        for sc in config_piece.services:
+            for item_ref in sc.items:
+                item = cfg_item_creg.invite(item_ref, sc.service)
+                self.update_config(sc.service, {item.key: item.value})
+
     def run(self, root_name, *args, **kw):
         service = self.resolve_service(root_name)
         try:
@@ -241,22 +255,7 @@ class System:
         raise UnknownServiceError(service_name)
 
 
-def load_config(system, config_piece):
-    cfg_item_creg_config = {
-        htypes.system.service_template: ServiceTemplateCfg.from_piece,
-        htypes.system.finalizer_gen_service_template: FinalizerGenServiceTemplateCfg.from_piece,
-        htypes.system.actor_template: ActorTemplateCfg.from_piece,
-        }
-    cfg_item_creg = code_registry_ctr2('cfg-item', cfg_item_creg_config)
-    system.add_core_service('system_config', config_piece)
-    system.add_core_service('cfg_item_creg', cfg_item_creg)
-    for sc in config_piece.services:
-        for item_ref in sc.items:
-            item = cfg_item_creg.invite(item_ref, sc.service)
-            system.update_config(sc.service, {item.key: item.value})
-
-
 def run_system(config, root_name, *args, **kw):
     system = System()
-    load_config(system, config)
+    system.load_config(config)
     system.run(root_name, *args, **kw)

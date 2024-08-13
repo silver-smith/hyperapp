@@ -123,21 +123,23 @@ class FailedTestResult(JobResult):
 class TestJob:
 
     @classmethod
-    def from_piece(cls, piece, cfg_item_creg, rc_resource_creg):
+    def from_piece(cls, piece, cfg_item_creg, rc_resource_creg, system_config):
         return cls(
             python_module_src=PythonModuleSrc.from_piece(piece.python_module),
             idx=piece.idx,
             resources=[rc_resource_creg.invite(d) for d in piece.resources],
             test_fn_name=piece.test_fn_name,
             cfg_item_creg=cfg_item_creg,
+            system_config=system_config,
             )
 
-    def __init__(self, python_module_src, idx, resources, test_fn_name, cfg_item_creg=None):
+    def __init__(self, python_module_src, idx, resources, test_fn_name, cfg_item_creg=None, system_config=None):
         self._src = python_module_src
         self._idx = idx
         self._resources = resources
         self._test_fn_name = test_fn_name
         self._cfg_item_creg = cfg_item_creg  # Used from 'run' method, inside job process.
+        self._system_config = system_config  # --//--
 
     def __repr__(self):
         return f"<TestJob {self._src}/{self._test_fn_name}/{self._idx}>"
@@ -208,6 +210,7 @@ class TestJob:
 
     def _prepare_system(self, module, resources):
         system = SystemProbe()
+        system.load_config(self._system_config)
         self._configure_system(resources, system)
         root_probe = self._make_root_fixture(module)
         system.update_config('system', {self._root_name: root_probe})
