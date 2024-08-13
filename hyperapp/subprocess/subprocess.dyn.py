@@ -47,8 +47,8 @@ def subprocess_running(bundler):
             yield _Subprocess(parent_connection, refs_and_bundle.ref_set)
         finally:
             parent_connection.close()  # Signal child to stop.
-            log.info("Joining process.")
+            log.info("Joining process %s...", name)
             process.join()
-            log.info("Joining process: done")
+            log.info("Joining process %s: done", name)
 
     return _subprocess_running
