@@ -40,6 +40,7 @@ import:
 - rc.test_requirement:tested_code_resource.actor-template
 - rc.test_requirement:tested_service_req.actor-template
 - rc.test_requirement:tested_service_resource.actor-template
+- rpc.rpc_endpoint:cancel_rpc_request_futures.service
 - rpc.rpc_endpoint:on_rpc_error_response.actor-template
 - rpc.rpc_endpoint:on_rpc_request.actor-template
 - rpc.rpc_endpoint:on_rpc_response.actor-template
@@ -86,6 +87,7 @@ definitions:
         - rc.rc_requirement_creg:rc_requirement_creg.service
         - rc.rc_resource_creg:rc_resource_creg.service
         - rc.process_pool:process_pool_running.service
+        - rpc.rpc_endpoint:cancel_rpc_request_futures.service
         - rpc.rpc_endpoint:rpc_target_creg.service
         - rpc.rpc_endpoint:rpc_message_creg.service
         - rpc.rpc_endpoint:rpc_endpoint.service

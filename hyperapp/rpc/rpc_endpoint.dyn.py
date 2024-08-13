@@ -50,6 +50,15 @@ def rpc_request_futures():
         future.cancel()
 
 
+def cancel_rpc_request_futures(rpc_request_futures):
+    def _cancel_rpc_request_futures():
+        log.info("Rpc endpoint: Cancelling futures: %s", rpc_request_futures)
+        for future in rpc_request_futures.values():
+            future.cancel()
+        rpc_request_futures.clear()
+    return _cancel_rpc_request_futures
+
+
 def on_rpc_response(response, transport_request, rpc_request_futures):
     log.debug("Process rpc response: %s", response)
     result = mosaic.resolve_ref(response.result_ref).value

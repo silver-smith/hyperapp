@@ -76,6 +76,22 @@ definitions:
       service_params: []
       want_config: false
 
+  cancel_rpc_request_futures:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rpc_endpoint.module
+      attr_name: cancel_rpc_request_futures
+
+  cancel_rpc_request_futures.service:
+    type: legacy_type.system:service_template
+    value:
+      name: cancel_rpc_request_futures
+      function: cancel_rpc_request_futures
+      free_params: []
+      service_params:
+      - rpc_request_futures
+      want_config: false
+
   on_rpc_response:
     type: legacy_type.builtin:attribute
     value:
