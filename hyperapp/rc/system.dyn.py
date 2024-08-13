@@ -227,10 +227,13 @@ class System:
         service = self.resolve_service(root_name)
         log.info("%s: run root service %s: %s", self._system_name, root_name, service)
         try:
-            return service(*args, **kw)
+            return self._run_service(service, args, kw)
         finally:
             self._run_finalizers()
             log.info("%s: stopped", self._system_name)
+
+    def _run_service(self, service, args, kw):
+        return service(*args, **kw)
 
     def resolve_config(self, service_name):
         config = {}

@@ -255,8 +255,8 @@ class SystemProbe(System):
     def add_item_fixtures(self, service_name, fixture_list):
         self._config_item_fixtures[service_name] += fixture_list
 
-    def run(self, root_name):
-        value = super().run(root_name)
+    def _run_service(self, service, args, kw):
+        value = super()._run_service(service, args, kw)
         if inspect.iscoroutine(value):
             log.info("Running coroutine: %r", value)
             return asyncio.run(value)
