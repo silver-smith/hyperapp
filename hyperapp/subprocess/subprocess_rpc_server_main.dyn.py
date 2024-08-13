@@ -1,4 +1,5 @@
 import logging
+from concurrent.futures import CancelledError
 from functools import partial
 
 from .services import (
@@ -42,8 +43,11 @@ def rpc_server_main(
     rpc_call = rpc_call_factory(master_peer, my_identity, master_servant_ref, timeout_sec=None)
 
     log.info("%s: Calling callback %s", my_name, rpc_call)
-    rpc_call(subprocess_name=name, subprocess_id=subprocess_id, subprocess_peer=my_identity.peer.piece)
-
-    log.info("%s: Started", my_name)
-    stop_signal.wait()
-    log.info("%s: Stopping", my_name)
+    try:
+        rpc_call(subprocess_name=name, subprocess_id=subprocess_id, subprocess_peer=my_identity.peer.piece)
+    except CancelledError:
+        log.info("%s: Failed to start: Master call back was cancelled", my_name)
+    else:
+        log.info("%s: Started", my_name)
+        stop_signal.wait()
+        log.info("%s: Stopping", my_name)
