@@ -43,10 +43,12 @@ class LocalRoute:
         self._endpoint_thread_pool.submit(self._process_endpoint, request)
 
     def _process_endpoint(self, request):
+        log.info("Endpoint %s: process request: %s", self._endpoint, request)
         try:
             self._endpoint.process(request)
+            log.info("Endpoint %s: done processing request: %s", self._endpoint, request)
         except Exception as x:
-            log.exception("Error processing endpoint %s:", self._endpoint)
+            log.exception("Endpoint %s: Error processing request: %s", self._endpoint, request)
             failed(f"Error in endpoint {self._endpoint} process", x)
 
 
