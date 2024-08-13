@@ -1,9 +1,7 @@
 from .services import (
-    code_registry_ctr,
-    mark,
+    code_registry_ctr2,
     )
 
 
-@mark.service
-def rc_job_result_creg():
-    return code_registry_ctr('rc-job-result')
+def rc_job_result_creg(config):
+    return code_registry_ctr2('rc-job-result', config)

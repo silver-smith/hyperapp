@@ -16,35 +16,7 @@ import:
 - rc.job_result:job_result.module
 - rc.import_recorder:import_recorder.module
 - rc.rc_constants:rc_constants.module
-- rc.rc_job_result_creg:rc_job_result_creg.service
-- rc.rc_requirement_creg:rc_requirement_creg.service
 - rc.requirement_factory:requirement_factory.module
-
-associations:
-
-- bases:
-  - rc.rc_job_result_creg:rc_job_result_creg.service
-  - legacy_type.import_job:succeeded_result
-  key:
-  - rc.rc_job_result_creg:rc_job_result_creg.service
-  - legacy_type.import_job:succeeded_result
-  value: SucceededImportResult.from_piece
-
-- bases:
-  - rc.rc_job_result_creg:rc_job_result_creg.service
-  - legacy_type.import_job:incomplete_result
-  key:
-  - rc.rc_job_result_creg:rc_job_result_creg.service
-  - legacy_type.import_job:incomplete_result
-  value: IncompleteImportResult.from_piece
-
-- bases:
-  - rc.rc_job_result_creg:rc_job_result_creg.service
-  - legacy_type.import_job:failed_result
-  key:
-  - rc.rc_job_result_creg:rc_job_result_creg.service
-  - legacy_type.import_job:failed_result
-  value: FailedImportResult.from_piece
 
 definitions:
 
@@ -62,7 +34,6 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.rc_constructor_creg: resource.rc_constructor_creg:rc_constructor_creg.service
-        services.rc_requirement_creg: rc.rc_requirement_creg:rc_requirement_creg.service
         code.build: rc.build:build.module
         code.builtin_resources: rc.builtin_resources:builtin_resources.module
         code.job_result: rc.job_result:job_result.module
@@ -82,6 +53,14 @@ definitions:
       object: SucceededImportResult
       attr_name: from_piece
 
+  succeeded_result.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.import_job:succeeded_result
+      function: SucceededImportResult.from_piece
+      service_params:
+      - rc_requirement_creg
+
   IncompleteImportResult:
     type: legacy_type.builtin:attribute
     value:
@@ -94,6 +73,14 @@ definitions:
       object: IncompleteImportResult
       attr_name: from_piece
 
+  incomplete_result.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.import_job:incomplete_result
+      function: IncompleteImportResult.from_piece
+      service_params:
+      - rc_requirement_creg
+
   FailedImportResult:
     type: legacy_type.builtin:attribute
     value:
@@ -105,6 +92,13 @@ definitions:
     value:
       object: FailedImportResult
       attr_name: from_piece
+
+  failed_result.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.import_job:failed_result
+      function: FailedImportResult.from_piece
+      service_params: []
 
   ImportJob:
     type: legacy_type.builtin:attribute

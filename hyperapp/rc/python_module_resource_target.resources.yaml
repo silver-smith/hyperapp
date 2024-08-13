@@ -3,20 +3,10 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.python_module_resource_target:python_module_req
+- legacy_type.system:actor_template
 - rc.import_resource:import_resource.module
 - rc.rc_requirement:rc_requirement.module
-- rc.rc_requirement_creg:rc_requirement_creg.service
 - rc.rc_target:rc_target.module
-
-associations:
-
-- bases:
-  - rc.rc_requirement_creg:rc_requirement_creg.service
-  - legacy_type.python_module_resource_target:python_module_req
-  key:
-  - rc.rc_requirement_creg:rc_requirement_creg.service
-  - legacy_type.python_module_resource_target:python_module_req
-  value: PythonModuleReq.from_piece
 
 definitions:
 
@@ -43,3 +33,10 @@ definitions:
     value:
       object: PythonModuleReq
       attr_name: from_piece
+
+  python_module_req.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.python_module_resource_target:python_module_req
+      function: PythonModuleReq.from_piece
+      service_params: []

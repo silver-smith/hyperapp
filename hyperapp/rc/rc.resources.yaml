@@ -9,7 +9,6 @@ import:
 - rc.build:build.module
 - rc.rc_constants:rc_constants.module
 - rc.rc_filter:rc_filter.module
-- rc.rc_job_result_creg:rc_job_result_creg.service
 - rc.init_targets:init_targets.module
 - rc.process_pool:process_pool.module
 - rc.target_set:target_set.module
@@ -25,7 +24,6 @@ definitions:
         htypes.rpc.server_error: legacy_type.rpc:server_error
         services.hyperapp_dir: builtins:hyperapp_dir.service
         services.web: builtins:web.service
-        services.rc_job_result_creg: rc.rc_job_result_creg:rc_job_result_creg.service
         code.build: rc.build:build.module
         code.init_targets: rc.init_targets:init_targets.module
         code.reconstructors: common.reconstructors:reconstructors.module
@@ -52,5 +50,6 @@ definitions:
       - system_config
       - cfg_item_creg
       - process_pool_running
+      - rc_job_result_creg
       - ctr_from_template_creg
       want_config: false

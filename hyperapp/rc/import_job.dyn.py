@@ -10,7 +10,6 @@ from .services import (
     mosaic,
     pyobj_creg,
     rc_constructor_creg,
-    rc_requirement_creg,
     )
 from .code.rc_constants import JobStatus
 from .code.build import PythonModuleSrc
@@ -34,7 +33,7 @@ class Function:
 class ImportResultBase(JobResult):
 
     @staticmethod
-    def _resolve_reqirement_refs(requirement_refs):
+    def _resolve_reqirement_refs(rc_requirement_creg, requirement_refs):
         return [
             rc_requirement_creg.invite(ref)
             for ref in requirement_refs
@@ -55,8 +54,8 @@ class ImportResultBase(JobResult):
 class SucceededImportResult(ImportResultBase):
 
     @classmethod
-    def from_piece(cls, piece):
-        requirements = cls._resolve_reqirement_refs(piece.requirements)
+    def from_piece(cls, piece, rc_requirement_creg):
+        requirements = cls._resolve_reqirement_refs(rc_requirement_creg, piece.requirements)
         functions = [
             Function.from_piece(fn)
             for fn in piece.functions
@@ -124,8 +123,8 @@ class SucceededImportResult(ImportResultBase):
 class IncompleteImportResult(ImportResultBase):
 
     @classmethod
-    def from_piece(cls, piece):
-        requirements = cls._resolve_reqirement_refs(piece.requirements)
+    def from_piece(cls, piece, rc_requirement_creg):
+        requirements = cls._resolve_reqirement_refs(rc_requirement_creg, piece.requirements)
         return cls(requirements, piece.error, piece.traceback)
 
     def __init__(self, requirements, error, traceback):

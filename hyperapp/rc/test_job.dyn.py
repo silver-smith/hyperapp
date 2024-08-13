@@ -12,7 +12,6 @@ from .services import (
     hyperapp_dir,
     pyobj_creg,
     rc_constructor_creg,
-    rc_requirement_creg,
     )
 from .code.rc_constants import JobStatus
 from .code.build import PythonModuleSrc
@@ -33,7 +32,7 @@ log  = logging.getLogger(__name__)
 class TestResultBase(JobResult):
 
     @staticmethod
-    def _resolve_reqirement_refs(requirement_refs):
+    def _resolve_reqirement_refs(rc_requirement_creg, requirement_refs):
         return [
             rc_requirement_creg.invite(ref)
             for ref in requirement_refs
@@ -67,9 +66,9 @@ class TestResultBase(JobResult):
 class SucceededTestResult(TestResultBase):
 
     @classmethod
-    def from_piece(cls, piece):
+    def from_piece(cls, piece, rc_requirement_creg):
         used_imports = cls._used_imports_to_dict(piece.used_imports)
-        requirements = cls._resolve_reqirement_refs(piece.requirements)
+        requirements = cls._resolve_reqirement_refs(rc_requirement_creg, piece.requirements)
         constructors = [
             rc_constructor_creg.invite(ref)
             for ref in piece.constructors
@@ -94,9 +93,9 @@ class SucceededTestResult(TestResultBase):
 class IncompleteTestResult(TestResultBase):
 
     @classmethod
-    def from_piece(cls, piece):
+    def from_piece(cls, piece, rc_requirement_creg):
         used_imports = cls._used_imports_to_dict(piece.used_imports)
-        requirements = cls._resolve_reqirement_refs(piece.requirements)
+        requirements = cls._resolve_reqirement_refs(rc_requirement_creg, piece.requirements)
         return cls(used_imports, requirements, piece.error, piece.traceback)
 
     def __init__(self, used_imports, requirements, error, traceback):

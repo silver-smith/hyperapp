@@ -1,25 +1,30 @@
 import:
-- builtins:code_registry_ctr.service
-- common.mark:mark.service
+- builtins:code_registry_ctr2.service
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
-associations: []
+- legacy_type.system:service_template
+
 definitions:
-  rc_job_result_creg:
-    type: legacy_type.builtin:attribute
-    value:
-      object: rc_job_result_creg.module
-      attr_name: rc_job_result_creg
+
   rc_job_result_creg.module:
     type: legacy_type.builtin:python_module
     value:
       module_name: rc_job_result_creg
       file_name: rc_job_result_creg.dyn.py
       import_list:
-        services.code_registry_ctr: builtins:code_registry_ctr.service
-        services.mark: common.mark:mark.service
-  rc_job_result_creg.service:
-    type: legacy_type.builtin:call
+        services.code_registry_ctr2: builtins:code_registry_ctr2.service
+
+  rc_job_result_creg:
+    type: legacy_type.builtin:attribute
     value:
+      object: rc_job_result_creg.module
+      attr_name: rc_job_result_creg
+
+  rc_job_result_creg.service:
+    type: legacy_type.system:service_template
+    value:
+      name: rc_job_result_creg
       function: rc_job_result_creg
+      free_params: []
+      service_params: []
+      want_config: true

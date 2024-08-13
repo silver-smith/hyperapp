@@ -6,20 +6,9 @@ import:
 - legacy_type.service_resource:service_req
 - legacy_type.service_resource:service_template_resource
 - legacy_type.system:actor_template
-- rc.rc_requirement_creg:rc_requirement_creg.service
 - rc.rc_requirement:rc_requirement.module
 - rc.rc_resource:rc_resource.module
 - rc.system:system.module
-
-associations:
-
-- bases:
-  - rc.rc_requirement_creg:rc_requirement_creg.service
-  - legacy_type.service_resource:service_req
-  key:
-  - rc.rc_requirement_creg:rc_requirement_creg.service
-  - legacy_type.service_resource:service_req
-  value: ServiceReq.from_piece
 
 definitions:
 
@@ -48,6 +37,13 @@ definitions:
     value:
       object: ServiceReq
       attr_name: from_piece
+
+  service_req.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.service_resource:service_req
+      function: ServiceReq.from_piece
+      service_params: []
 
   ServiceTemplateResource:
     type: legacy_type.builtin:attribute

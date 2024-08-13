@@ -21,37 +21,10 @@ import:
 - rc.requirement_factory:requirement_factory.module
 - rc.rc_constants:rc_constants.module
 - rc.rc_job_result_creg:rc_job_result_creg.service
-- rc.rc_requirement_creg:rc_requirement_creg.service
 - rc.service_ctr:service_ctr.module
 - rc.service_resource:service_resource.module
 - rc.system:system.module
 - rc.system_probe:system_probe.module
-
-associations:
-
-- bases:
-  - rc.rc_job_result_creg:rc_job_result_creg.service
-  - legacy_type.test_job:succeeded_result
-  key:
-  - rc.rc_job_result_creg:rc_job_result_creg.service
-  - legacy_type.test_job:succeeded_result
-  value: SucceededTestResult.from_piece
-
-- bases:
-  - rc.rc_job_result_creg:rc_job_result_creg.service
-  - legacy_type.test_job:incomplete_result
-  key:
-  - rc.rc_job_result_creg:rc_job_result_creg.service
-  - legacy_type.test_job:incomplete_result
-  value: IncompleteTestResult.from_piece
-
-- bases:
-  - rc.rc_job_result_creg:rc_job_result_creg.service
-  - legacy_type.test_job:failed_result
-  key:
-  - rc.rc_job_result_creg:rc_job_result_creg.service
-  - legacy_type.test_job:failed_result
-  value: FailedTestResult.from_piece
 
 definitions:
 
@@ -71,7 +44,6 @@ definitions:
         services.hyperapp_dir: builtins:hyperapp_dir.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.rc_constructor_creg: resource.rc_constructor_creg:rc_constructor_creg.service
-        services.rc_requirement_creg: rc.rc_requirement_creg:rc_requirement_creg.service
         code.build: rc.build:build.module
         code.builtin_resources: rc.builtin_resources:builtin_resources.module
         code.job_result: rc.job_result:job_result.module
@@ -97,6 +69,14 @@ definitions:
       object: SucceededTestResult
       attr_name: from_piece
 
+  succeeded_result.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.test_job:succeeded_result
+      function: SucceededTestResult.from_piece
+      service_params:
+      - rc_requirement_creg
+
   IncompleteTestResult:
     type: legacy_type.builtin:attribute
     value:
@@ -109,6 +89,14 @@ definitions:
       object: IncompleteTestResult
       attr_name: from_piece
 
+  incomplete_result.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.test_job:incomplete_result
+      function: IncompleteTestResult.from_piece
+      service_params:
+      - rc_requirement_creg
+
   FailedTestResult:
     type: legacy_type.builtin:attribute
     value:
@@ -120,6 +108,13 @@ definitions:
     value:
       object: FailedTestResult
       attr_name: from_piece
+
+  failed_result.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.test_job:failed_result
+      function: FailedTestResult.from_piece
+      service_params: []
 
   TestJob:
     type: legacy_type.builtin:attribute

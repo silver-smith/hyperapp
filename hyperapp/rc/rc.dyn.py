@@ -6,7 +6,6 @@ from hyperapp.common.htypes import HException
 from . import htypes
 from .services import (
     hyperapp_dir,
-    rc_job_result_creg,
     web,
     )
 from .code.reconstructors import register_reconstructors
@@ -82,7 +81,7 @@ def _submit_jobs(pool, target_set, target_to_job, job_id_to_target, filter):
         job_id_to_target[id(job)] = target
 
 
-def _run(pool, target_set, filter, options):
+def _run(rc_job_result_creg, pool, target_set, filter, options):
     rc_log.info("%d targets", target_set.count)
     target_to_job = {}  # Jobs are never removed.
     job_id_to_target = {}
@@ -149,7 +148,7 @@ def _run(pool, target_set, filter, options):
         )
 
 
-def _main(cfg_item_creg, ctr_from_template_creg, system_config, pool, targets, options):
+def _main(cfg_item_creg, ctr_from_template_creg, rc_job_result_creg, system_config, pool, targets, options):
     build = load_build(hyperapp_dir)
     log.info("Loaded build:")
     build.report()
@@ -158,7 +157,7 @@ def _main(cfg_item_creg, ctr_from_template_creg, system_config, pool, targets, o
     init_targets(cfg_item_creg, ctr_from_template_creg, system_config, hyperapp_dir, target_set, build.python_modules, build.types)
     filter = Filter(target_set, targets)
     try:
-        _run(pool, target_set, filter, options)
+        _run(rc_job_result_creg, pool, target_set, filter, options)
     except HException as x:
         if isinstance(x, htypes.rpc.server_error):
             log.error("Server error: %s", x.message)
@@ -167,7 +166,7 @@ def _main(cfg_item_creg, ctr_from_template_creg, system_config, pool, targets, o
                     log.error("%s", line)
 
 
-def compile_resources(system_config, cfg_item_creg, process_pool_running, ctr_from_template_creg, targets, process_count, options):
+def compile_resources(system_config, cfg_item_creg, process_pool_running, rc_job_result_creg, ctr_from_template_creg, targets, process_count, options):
     rc_log.info("Compile resources: %s", ", ".join(targets) if targets else 'all')
 
     if options.verbose:
@@ -176,4 +175,4 @@ def compile_resources(system_config, cfg_item_creg, process_pool_running, ctr_fr
     register_reconstructors()
 
     with process_pool_running(process_count, options.timeout) as pool:
-        _main(cfg_item_creg, ctr_from_template_creg, system_config, pool, targets, options)
+        _main(cfg_item_creg, ctr_from_template_creg, rc_job_result_creg, system_config, pool, targets, options)

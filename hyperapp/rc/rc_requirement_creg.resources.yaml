@@ -1,8 +1,8 @@
 import:
-- builtins:code_registry_ctr.service
+- builtins:code_registry_ctr2.service
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.system:service_template
 
 definitions:
 
@@ -12,7 +12,7 @@ definitions:
       module_name: rc_requirement_creg
       file_name: rc_requirement_creg.dyn.py
       import_list:
-        services.code_registry_ctr: builtins:code_registry_ctr.service
+        services.code_registry_ctr2: builtins:code_registry_ctr2.service
 
   rc_requirement_creg:
     type: legacy_type.builtin:attribute
@@ -21,6 +21,10 @@ definitions:
       attr_name: rc_requirement_creg
 
   rc_requirement_creg.service:
-    type: legacy_type.builtin:call
+    type: legacy_type.system:service_template
     value:
+      name: rc_requirement_creg
       function: rc_requirement_creg
+      free_params: []
+      service_params: []
+      want_config: true

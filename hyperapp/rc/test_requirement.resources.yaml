@@ -15,34 +15,7 @@ import:
 - legacy_type.test_target:tested_service_req
 - legacy_type.test_target:tested_service_resource
 - rc.rc_requirement:rc_requirement.module
-- rc.rc_requirement_creg:rc_requirement_creg.service
 - rc.rc_resource:rc_resource.module
-
-associations:
-
-- bases:
-  - rc.rc_requirement_creg:rc_requirement_creg.service
-  - legacy_type.test_target:tested_service_req
-  key:
-  - rc.rc_requirement_creg:rc_requirement_creg.service
-  - legacy_type.test_target:tested_service_req
-  value: TestedServiceReq.from_piece
-
-- bases:
-  - rc.rc_requirement_creg:rc_requirement_creg.service
-  - legacy_type.test_target:tested_code_req
-  key:
-  - rc.rc_requirement_creg:rc_requirement_creg.service
-  - legacy_type.test_target:tested_code_req
-  value: TestedCodeReq.from_piece
-
-- bases:
-  - rc.rc_requirement_creg:rc_requirement_creg.service
-  - legacy_type.test_target:fixtures_module_req
-  key:
-  - rc.rc_requirement_creg:rc_requirement_creg.service
-  - legacy_type.test_target:fixtures_module_req
-  value: FixturesModuleReq.from_piece
 
 definitions:
 
@@ -79,6 +52,13 @@ definitions:
       object: TestedServiceReq
       attr_name: from_piece
 
+  tested_service_req.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.test_target:tested_service_req
+      function: TestedServiceReq.from_piece
+      service_params: []
+
   TestedCodeReq:
     type: legacy_type.builtin:attribute
     value:
@@ -91,6 +71,13 @@ definitions:
       object: TestedCodeReq
       attr_name: from_piece
 
+  tested_code_req.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.test_target:tested_code_req
+      function: TestedCodeReq.from_piece
+      service_params: []
+
   FixturesModuleReq:
     type: legacy_type.builtin:attribute
     value:
@@ -102,6 +89,13 @@ definitions:
     value:
       object: FixturesModuleReq
       attr_name: from_piece
+
+  fixtures_module_req.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.test_target:fixtures_module_req
+      function: FixturesModuleReq.from_piece
+      service_params: []
 
   TestedServiceResource:
     type: legacy_type.builtin:attribute
