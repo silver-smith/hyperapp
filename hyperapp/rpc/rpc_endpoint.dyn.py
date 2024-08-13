@@ -45,6 +45,7 @@ def rpc_endpoint(rpc_message_creg):
 def rpc_request_futures():
     request_id_to_future = {}
     yield request_id_to_future
+    log.info("Rpc endpoint: Shutting down: Cancelling futures: %s", request_id_to_future)
     for future in request_id_to_future.values():
         future.cancel()
 
