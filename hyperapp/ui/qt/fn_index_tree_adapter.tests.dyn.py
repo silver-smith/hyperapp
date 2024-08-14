@@ -142,8 +142,9 @@ def get_fn_called_flag():
 
 def test_fn_adapter_with_remote_context(
         generate_rsa_identity,
-        rpc_endpoint,
         endpoint_registry,
+        rpc_endpoint,
+        rpc_call_factory,
         subprocess_rpc_server_running,
         ui_adapter_creg,
         ):
