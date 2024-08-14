@@ -7,6 +7,7 @@ import:
 - rc.actor_probe_resource:actor_probe_resource.actor-template
 - rc.actor_ctr:core-actor-from-template.actor-template
 - rc.actor_resource:actor_req.actor-template
+- rc.config_item_resource:config_item_resource.actor-template
 - rc.import_job:failed_result.actor-template
 - rc.import_job:incomplete_result.actor-template
 - rc.import_job:import_job.actor-template
@@ -28,7 +29,6 @@ import:
 - rc.service_probe_resource:fixture_probe_resource.actor-template
 - rc.service_probe_resource:service_probe_resource.actor-template
 - rc.service_resource:service_req.actor-template
-- rc.service_resource:service_template_resource.actor-template
 - rc.service_target:service_found_req.actor-template
 - rc.service_target:service_complete_req.actor-template
 - rc.test_job:failed_result.actor-template
@@ -149,7 +149,7 @@ definitions:
         - rc.service_probe_resource:config_item_fixture_resource.actor-template
         - rc.service_probe_resource:fixture_probe_resource.actor-template
         - rc.service_probe_resource:service_probe_resource.actor-template
-        - rc.service_resource:service_template_resource.actor-template
+        - rc.config_item_resource:config_item_resource.actor-template
         - rc.test_requirement:tested_service_resource.actor-template
         - rc.test_requirement:tested_code_resource.actor-template
         - rc.test_requirement:recorder_resource.actor-template

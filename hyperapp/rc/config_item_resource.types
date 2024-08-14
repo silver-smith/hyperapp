@@ -1,0 +1,3 @@
+config_item_resource = record:
+  service_name: string
+  config_item: ref

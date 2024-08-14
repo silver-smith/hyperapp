@@ -1,0 +1,39 @@
+import:
+- builtins:mosaic.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.config_item_resource:config_item_resource
+- legacy_type.system:actor_template
+- rc.rc_resource:rc_resource.module
+
+definitions:
+
+  config_item_resource.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: config_item_resource
+      file_name: config_item_resource.dyn.py
+      import_list:
+        htypes.config_item_resource.config_item_resource: legacy_type.config_item_resource:config_item_resource
+        services.mosaic: builtins:mosaic.service
+        code.rc_resource: rc.rc_resource:rc_resource.module
+
+  ConfigItemResource:
+    type: legacy_type.builtin:attribute
+    value:
+      object: config_item_resource.module
+      attr_name: ConfigItemResource
+
+  ConfigItemResource.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ConfigItemResource
+      attr_name: from_piece
+
+  config_item_resource.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.config_item_resource:config_item_resource
+      function: ConfigItemResource.from_piece
+      service_params:
+      - cfg_item_creg

@@ -4,10 +4,9 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.service_resource:service_req
-- legacy_type.service_resource:service_template_resource
 - legacy_type.system:actor_template
+- rc.config_item_resource:config_item_resource.module
 - rc.rc_requirement:rc_requirement.module
-- rc.rc_resource:rc_resource.module
 
 definitions:
 
@@ -18,11 +17,8 @@ definitions:
       file_name: service_resource.dyn.py
       import_list:
         htypes.service_resource.service_req: legacy_type.service_resource:service_req
-        htypes.service_resource.service_template_resource: legacy_type.service_resource:service_template_resource
-        services.mosaic: builtins:mosaic.service
-        services.web: builtins:web.service
         code.rc_requirement: rc.rc_requirement:rc_requirement.module
-        code.rc_resource: rc.rc_resource:rc_resource.module
+        code.config_item_resource: rc.config_item_resource:config_item_resource.module
 
   ServiceReq:
     type: legacy_type.builtin:attribute
@@ -41,25 +37,5 @@ definitions:
     value:
       t: legacy_type.service_resource:service_req
       function: ServiceReq.from_piece
-      service_params:
-      - cfg_item_creg
-
-  ServiceTemplateResource:
-    type: legacy_type.builtin:attribute
-    value:
-      object: service_resource.module
-      attr_name: ServiceTemplateResource
-
-  ServiceTemplateResource.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: ServiceTemplateResource
-      attr_name: from_piece
-
-  service_template_resource.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.service_resource:service_template_resource
-      function: ServiceTemplateResource.from_piece
       service_params:
       - cfg_item_creg
