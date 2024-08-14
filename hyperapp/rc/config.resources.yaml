@@ -2,6 +2,8 @@ import:
 - legacy_type.builtin:string
 - legacy_type.system:system_config
 - common.bundler:bundler.service
+- common.system_stop:stop_signal.service
+- common.system_stop:system_failed.service
 - rc.actor_probe_resource:actor_probe_resource.actor-template
 - rc.actor_ctr:core-actor-from-template.actor-template
 - rc.actor_resource:actor_req.actor-template
@@ -79,6 +81,8 @@ definitions:
       services:
         system:
         - common.bundler:bundler.service
+        - common.system_stop:stop_signal.service
+        - common.system_stop:system_failed.service
         - rc.init_targets:ctr_from_template_creg.service
         - rc.rc:compile_resources.service
         - rc.rc_job:rc_job_submit_factory.service

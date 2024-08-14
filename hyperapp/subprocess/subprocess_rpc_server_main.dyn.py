@@ -4,7 +4,6 @@ from functools import partial
 
 from .services import (
     mosaic,
-    stop_signal,
     )
 from .code.subprocess_transport import SubprocessRoute
 from .code.reconstructors import register_reconstructors
@@ -12,14 +11,14 @@ from .code.reconstructors import register_reconstructors
 log = logging.getLogger(__name__)
 
 
-def _stop(cancel_rpc_request_futures):
+def _stop(stop_signal, cancel_rpc_request_futures):
     log.info("Master connection is closed; stopping server...")
     stop_signal.set()
     cancel_rpc_request_futures()
 
 
 def rpc_server_main(
-        bundler, peer_registry, route_table, generate_rsa_identity, endpoint_registry,
+        stop_signal, bundler, peer_registry, route_table, generate_rsa_identity, endpoint_registry,
         cancel_rpc_request_futures, rpc_endpoint, rpc_call_factory, subprocess_transport,
         connection, received_refs, name, master_peer_piece, master_servant_ref, subprocess_id):
     my_name = f"Subprocess rpc server {name}"
@@ -37,7 +36,7 @@ def rpc_server_main(
 
     endpoint_registry.register(my_identity, rpc_endpoint)
 
-    on_stop = partial(_stop, cancel_rpc_request_futures)
+    on_stop = partial(_stop, stop_signal, cancel_rpc_request_futures)
     subprocess_transport.add_server_connection('master', connection, received_refs, on_eof=on_stop, on_reset=on_stop)
 
     rpc_call = rpc_call_factory(master_peer, my_identity, master_servant_ref, timeout_sec=None)

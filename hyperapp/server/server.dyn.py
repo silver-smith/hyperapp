@@ -13,7 +13,6 @@ from .services import (
     route_table,
     rpc_call_factory,
     rpc_endpoint_factory,
-    stop_signal,
     tcp_server_factory,
     )
 from .code.reconstructors import register_reconstructors

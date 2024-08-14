@@ -64,7 +64,6 @@ def main():
         exit_code = server_module._main()
     finally:
         log.info("Stopping.")
-        services.stop_signal.set()
         services.stop()
     if exit_code != 0:
         log.error("Application returned non-zero exit code: %d", exit_code)

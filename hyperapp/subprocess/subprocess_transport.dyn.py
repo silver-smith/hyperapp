@@ -8,7 +8,6 @@ from hyperapp.common.htypes import bundle_t
 from hyperapp.common.htypes.packet_coders import packet_coders
 
 from .services import (
-    failed,
     mosaic,
     unbundler,
     )
@@ -99,7 +98,8 @@ class SubprocessRoute:
 
 class SubprocessTransport:
 
-    def __init__(self, bundler, parcel_registry, transport, route_table):
+    def __init__(self, system_failed, bundler, parcel_registry, transport, route_table):
+        self._system_failed = system_failed
         self._bundler = bundler
         self._parcel_registry = parcel_registry
         self._transport = transport
@@ -146,7 +146,7 @@ class SubprocessTransport:
                         connection.recv()  # Clear signal connection
         except Exception as x:
             log.exception("%s is failed:", my_name)
-            failed(f"{my_name} is failed: {x}", x)
+            self._system_failed(f"{my_name} is failed: {x}", x)
         log.info("%s is finished", my_name)
 
     def _process_ready_connection(self, connection):
@@ -168,7 +168,7 @@ class SubprocessTransport:
             except Exception as x:
                 my_name = f"Processing bundle from {rec.name}"
                 log.exception("%s is failed:", my_name)
-                failed(f"{my_name} is failed: {x}", x)
+                self._system_failed(f"{my_name} is failed: {x}", x)
         del self._server_connections[connection]
         self._signal_connection_in.send(None)
 
@@ -188,7 +188,7 @@ class SubprocessTransport:
         self._transport.send_parcel(parcel)
 
 
-def subprocess_transport(bundler, parcel_registry, transport, route_table):
-    transport = SubprocessTransport(bundler, parcel_registry, transport, route_table)
+def subprocess_transport(system_failed, bundler, parcel_registry, transport, route_table):
+    transport = SubprocessTransport(system_failed, bundler, parcel_registry, transport, route_table)
     yield transport
     transport.stop()

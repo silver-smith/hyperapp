@@ -3,10 +3,8 @@
 import:
 - builtins:mosaic.service
 - builtins:on_stop.service
-- builtins:stop_signal.service
 - builtins:unbundler.service
 - common.bundler:bundler.service
-- common.failure:failed.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -49,13 +47,11 @@ definitions:
         code.tcp_utils: transport.tcp_utils:tcp_utils.module
         htypes.tcp_transport.route: legacy_type.tcp_transport:route
         services.bundler: common.bundler:bundler.service
-        services.failed: common.failure:failed.service
         services.mark: common.mark:mark.service
         services.mosaic: builtins:mosaic.service
         services.on_stop: builtins:on_stop.service
         services.parcel_registry: transport.identity:parcel_registry.service
         services.route_registry: transport.route_registry:route_registry.service
         services.route_table: transport.sync_route_table:route_table.service
-        services.stop_signal: builtins:stop_signal.service
         services.transport: transport.transport:transport.service
         services.unbundler: builtins:unbundler.service

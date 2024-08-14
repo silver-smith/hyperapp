@@ -83,7 +83,6 @@ def main():
         module.run_system(config, 'compile_resources', args.targets, args.workers, options)
     finally:
         log.info("Stopping.")
-        services.stop_signal.set()
         services.stop()
 
 

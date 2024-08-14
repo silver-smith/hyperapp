@@ -1,7 +1,6 @@
 import:
 - builtins:mosaic.service
 - builtins:unbundler.service
-- common.failure:failed.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.system:finalizer_gen_service_template
@@ -14,7 +13,6 @@ definitions:
       module_name: subprocess_transport
       file_name: subprocess_transport.dyn.py
       import_list:
-        services.failed: common.failure:failed.service
         services.mosaic: builtins:mosaic.service
         services.unbundler: builtins:unbundler.service
 
@@ -31,6 +29,7 @@ definitions:
       function: subprocess_transport
       free_params: []
       service_params:
+      - system_failed
       - bundler
       - parcel_registry
       - transport

@@ -1,6 +1,5 @@
 import:
 - builtins:mosaic.service
-- builtins:stop_signal.service
 - common.reconstructors:reconstructors.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
@@ -18,7 +17,6 @@ definitions:
         code.reconstructors: common.reconstructors:reconstructors.module
         code.subprocess_transport: subprocess.subprocess_transport:subprocess_transport.module
         services.mosaic: builtins:mosaic.service
-        services.stop_signal: builtins:stop_signal.service
 
   rpc_server_main:
     type: legacy_type.builtin:attribute
@@ -39,6 +37,7 @@ definitions:
       - master_servant_ref
       - subprocess_id
       service_params:
+      - stop_signal
       - bundler
       - peer_registry
       - route_table

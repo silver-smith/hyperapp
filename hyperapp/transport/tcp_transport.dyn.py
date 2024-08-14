@@ -8,7 +8,6 @@ from functools import partial
 from . import htypes
 from .services import (
     bundler,
-    failed,
     mark,
     mosaic,
     on_stop,
@@ -16,7 +15,6 @@ from .services import (
     route_registry,
     route_table,
     transport,
-    stop_signal,
     unbundler,
     )
 from .code.tcp_utils import address_to_str, has_full_tcp_packet, decode_tcp_packet, encode_tcp_packet
@@ -197,7 +195,7 @@ def _selector_thread_main():
                     del _address_to_client[address]
     except Exception as x:
         log.exception("TCP selector thread is failed:")
-        failed(f"TCP selector thread is failed: {x}", x)
+        system_failed(f"TCP selector thread is failed: {x}", x)
     log.info("TCP selector thread is finished.")
 
 

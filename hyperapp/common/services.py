@@ -1,6 +1,5 @@
 import logging
 import sys
-import threading
 from collections import namedtuple
 from functools import partial
 from pathlib import Path
@@ -65,7 +64,6 @@ class Services(object):
         'local_types',
         'type_module_loader',
         'on_stop',
-        'stop_signal',
         'unbundler',
         'resource_type_factory',
         'resource_type_reg',
@@ -90,7 +88,6 @@ class Services(object):
             ]
         self.module_dir_list = module_dir_list
         self.on_stop = []
-        self.stop_signal = threading.Event()
         self._is_stopped = False
 
     def init_services(self):

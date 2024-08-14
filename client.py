@@ -57,7 +57,6 @@ def main():
         client_module._main(load_state=not args.clean)
     finally:
         log.info("Stopping.")
-        services.stop_signal.set()
         services.stop()
 
 

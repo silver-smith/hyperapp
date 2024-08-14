@@ -1,0 +1,45 @@
+import:
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.system:finalizer_gen_service_template
+- legacy_type.system:service_template
+
+definitions:
+
+  system_stop.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: system_stop
+      file_name: system_stop.dyn.py
+      import_list: {}
+
+  stop_signal:
+    type: legacy_type.builtin:attribute
+    value:
+      object: system_stop.module
+      attr_name: stop_signal
+
+  stop_signal.service:
+    type: legacy_type.system:service_template
+    value:
+      name: stop_signal
+      function: stop_signal
+      free_params: []
+      service_params: []
+      want_config: false
+
+  system_failed:
+    type: legacy_type.builtin:attribute
+    value:
+      object: system_stop.module
+      attr_name: system_failed
+
+  system_failed.service:
+    type: legacy_type.system:finalizer_gen_service_template
+    value:
+      name: system_failed
+      function: system_failed
+      free_params: []
+      service_params:
+      - stop_signal
+      want_config: false

@@ -57,7 +57,6 @@ def subprocess_main_safe(connection, main_fn_bundle_cdr):
 
     pyobj_creg = services.pyobj_creg
     unbundler = services.unbundler
-    stop_signal = services.stop_signal
 
     log.info("Subprocess: Unpack main function. Bundle size: %.2f KB", len(main_fn_bundle_cdr)/1024)
 
@@ -71,6 +70,5 @@ def subprocess_main_safe(connection, main_fn_bundle_cdr):
         main_fn(connection, received_refs)
     finally:
         log.info("Subprocess: Stopping services.")
-        stop_signal.set()
         services.stop()
         log.info("Subprocess: Services are stopped. Exiting.")
