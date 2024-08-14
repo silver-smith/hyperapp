@@ -23,6 +23,9 @@ class ActorReq(Requirement):
         self._service_name = service_name
         self._t = t
 
+    def __str__(self):
+        return f"ActorReq(service_name={self._service_name}, t={self._t})"
+
     def __eq__(self, rhs):
         return (type(rhs) == ActorReq
                 and rhs._service_name == self._service_name

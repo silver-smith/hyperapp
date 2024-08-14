@@ -13,6 +13,9 @@ class ServiceReq(Requirement):
         self._service_name = service_name
         self._cfg_item_creg = cfg_item_creg
 
+    def __str__(self):
+        return f"ServiceReq(service_name={self._service_name})"
+
     def __eq__(self, rhs):
         return type(rhs) == ServiceReq and rhs._service_name == self._service_name
 
