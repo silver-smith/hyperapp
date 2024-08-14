@@ -24,4 +24,4 @@ class ConfigItemResource(Resource):
             )
 
     def configure_system(self, system):
-        system.update_config('system', {self._cfg_item.key: self._cfg_item.value})
+        system.update_config(self._service_name, {self._cfg_item.key: self._cfg_item.value})

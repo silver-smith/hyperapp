@@ -34,6 +34,6 @@ class ServiceReq(Requirement):
         template_piece = resource_tgt.get_resource(target.constructor)
         cfg_item = self._cfg_item_creg.animate(template_piece, self._service_name)
         return ConfigItemResource(
-            service_name=self._service_name,
+            service_name='system',
             cfg_item=cfg_item,
             )
