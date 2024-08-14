@@ -38,6 +38,7 @@ definitions:
       import_list:
         htypes.builtin.attribute: legacy_type.builtin:attribute
         htypes.rc_constructors.actor_template: legacy_type.rc_constructors:actor_template
+        htypes.system.actor_template: legacy_type.system:actor_template
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         code.rc_constructor: rc.rc_constructor:rc_constructor.module

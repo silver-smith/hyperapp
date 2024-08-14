@@ -126,7 +126,7 @@ class ActorTemplateCtr(ActorTemplateCtrBase):
                 attr_name=name,
                 )
             if name_to_res is not None:
-                name_to_res['.'.join(*prefix, name)] = object
+                name_to_res['.'.join([*prefix, name])] = object
             prefix.append(name)
         template = htypes.system.actor_template(
             t=pyobj_creg.actor_to_ref(self._t),
@@ -135,4 +135,4 @@ class ActorTemplateCtr(ActorTemplateCtrBase):
             )
         if name_to_res is not None:
             name_to_res[f'{self._type_name}.actor-template'] = template
-        return service
+        return template
