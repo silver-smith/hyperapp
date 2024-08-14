@@ -1,4 +1,5 @@
 import logging
+import sys
 import threading
 from collections import namedtuple
 
@@ -25,6 +26,8 @@ def system_failed(stop_signal):
 
     for reason in _failure_reason_list:
         log.error("System failure reason: %s", reason)
+    if sys.exception() is not None:
+        return  # Do not hide main exception if we have one.
     for reason in _failure_reason_list:
         if reason.exception:
             raise reason.exception
