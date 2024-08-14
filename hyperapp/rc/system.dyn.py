@@ -135,6 +135,14 @@ class ActorTemplate:
         self._fn = fn
         self._service_params = service_params
 
+    @property
+    def piece(self):
+        return htypes.system.actor_template(
+            t=pyobj_creg.actor_to_ref(self.t),
+            function=pyobj_creg.actor_to_ref(self._fn),
+            service_params=tuple(self._service_params),
+            )
+
     def resolve(self, system, service_name):
         if not self._service_params:
             return self._fn

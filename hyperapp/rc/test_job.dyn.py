@@ -226,7 +226,7 @@ class TestJob:
             error = f"{type(x).__name__}: {x}"
             return (JobStatus.incomplete, error, [], {req})
         except ConfigItemRequiredError as x:
-            req = ActorReq(x.service_name, x.key)
+            req = ActorReq(self._cfg_item_creg, x.service_name, x.key)
             error = f"{type(x).__name__}: {x}"
             return (JobStatus.incomplete, error, [], {req})
         except Exception as x:
