@@ -87,7 +87,13 @@ class SubprocessRoute:
         self._seen_refs |= refs_and_bundle.ref_set
         bundle_cdr = packet_coders.encode('cdr', refs_and_bundle.bundle)
         log.debug("Subprocess transport: send bundle to %r. Bundle size: %.2f KB", self._name, len(bundle_cdr)/1024)
-        self._connection.send(encode_packet(bundle_cdr))
+        try:
+            self._connection.send(encode_packet(bundle_cdr))
+        except OSError as x:
+            if str(x) == 'handle is closed':
+                raise RuntimeError(f"Error sending message to subprocess {self._name!r}: subprocess is gone") from x
+            else:
+                raise
         log.debug("Subprocess %s: parcel is sent: %s", self._name, parcel_ref)
 
 
