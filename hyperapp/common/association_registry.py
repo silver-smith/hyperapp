@@ -69,7 +69,7 @@ class AssociationRegistry:
         added_list = []
         overridden_list = []
         for ass in ass_list:
-            log.info("Register association: %r", ass)
+            log.debug("Register association: %r", ass)
             is_registered, overridden = self.register_association(ass, override)
             if is_registered:
                 added_list.append(ass)
