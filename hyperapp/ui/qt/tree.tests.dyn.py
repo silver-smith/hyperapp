@@ -11,6 +11,7 @@ from .services import (
     pyobj_creg,
     )
 from .code.context import Context
+from .fixtures import feed_fixtures
 from .tested.code import tree
 
 
