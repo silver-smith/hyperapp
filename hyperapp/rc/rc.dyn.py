@@ -31,6 +31,12 @@ def _update_completed(target_set, prev_completed):
 
 
 def _collect_output(target_set, failures, options):
+
+    def write(path, text):
+        if options.write:
+            rc_log.info("Write: %s", path)
+            path.write_text(text)
+
     total = 0
     changed = 0
     for target in target_set:
@@ -53,12 +59,14 @@ def _collect_output(target_set, failures, options):
                     rc_log.info("%s: Diff %d lines\n%s", target.name, line_count, diffs)
                 else:
                     rc_log.info("%s: Diff %d lines", target.name, line_count)
+                write(path, text)
                 changed += 1
         else:
             if options.show_diffs:
                 rc_log.info("%s: New file, %d lines\n%s", target.name, len(text.splitlines()), text)
             else:
                 rc_log.info("%s: New file, %d lines", target.name, len(text.splitlines()))
+            write(path, text)
             changed += 1
         total += 1
     return (total, changed)
