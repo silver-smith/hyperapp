@@ -1,43 +1,19 @@
 import asyncio
 import logging
 import threading
-from functools import partial
 
 from . import htypes
 from .services import (
-    endpoint_registry,
     fn_to_ref,
-    generate_rsa_identity,
     mosaic,
     pyobj_creg,
-    rpc_call_factory,
-    rpc_endpoint_factory,
-    subprocess_rpc_server_running,
     )
 from .code.context import Context
 from .code.list_diff import ListDiff
-from .tested.code import list_adapter
+from .fixtures import feed_fixtures
+from .tested.code import fn_list_adapter
 
 log = logging.getLogger(__name__)
-
-
-def test_static_adapter():
-    ctx = Context()
-    model = (
-        htypes.list_tests.item(1, "First"),
-        htypes.list_tests.item(2, "Second"),
-        htypes.list_tests.item(3, "Third"),
-        )
-    piece = htypes.list_adapter.static_list_adapter()
-    adapter = list_adapter.StaticListAdapter.from_piece(piece, model, ctx)
-
-    assert adapter.column_count() == 2
-    assert adapter.column_title(0) == 'id'
-    assert adapter.column_title(1) == 'title'
-
-    assert adapter.row_count() == 3
-    assert adapter.cell_data(1, 0) == 2
-    assert adapter.cell_data(2, 1) == "Third"
 
 
 def sample_list_fn(piece):
@@ -50,7 +26,7 @@ def sample_list_fn(piece):
         ]
 
 
-def test_fn_adapter():
+def test_fn_adapter(ui_adapter_creg):
     ctx = Context()
     model = htypes.list_adapter_tests.sample_list()
     adapter_piece = htypes.list_adapter.fn_list_adapter(
@@ -58,7 +34,7 @@ def test_fn_adapter():
         function=fn_to_ref(sample_list_fn),
         params=('piece',),
         )
-    adapter = list_adapter.FnListAdapter.from_piece(adapter_piece, model, ctx)
+    adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
     assert adapter.column_count() == 2
     assert adapter.column_title(0) == 'id'
     assert adapter.column_title(1) == 'text'
@@ -92,7 +68,7 @@ def sample_feed_list_fn(piece, feed):
         ]
 
 
-async def test_feed_fn_adapter():
+async def test_feed_fn_adapter(ui_adapter_creg):
     ctx = Context()
     model = htypes.list_adapter_tests.sample_list()
     adapter_piece = htypes.list_adapter.fn_list_adapter(
@@ -101,7 +77,7 @@ async def test_feed_fn_adapter():
         params=('piece', 'feed'),
         )
 
-    adapter = list_adapter.FnListAdapter.from_piece(adapter_piece, model, ctx)
+    adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
     queue = asyncio.Queue()
     subscriber = Subscriber(queue)
     adapter.subscribe(subscriber)
@@ -133,18 +109,23 @@ def get_fn_called_flag():
     return _sample_fn_is_called.is_set()
 
 
-def test_fn_adapter_with_remote_context():
+def test_fn_adapter_with_remote_context(
+        generate_rsa_identity,
+        endpoint_registry,
+        rpc_endpoint,
+        rpc_call_factory,
+        subprocess_rpc_server_running,
+        ui_adapter_creg,
+        ):
 
     identity = generate_rsa_identity(fast=True)
-    rpc_endpoint = rpc_endpoint_factory()
     endpoint_registry.register(identity, rpc_endpoint)
 
     subprocess_name = 'test-remote-fn-list-adapter-main'
-    with subprocess_rpc_server_running(subprocess_name, rpc_endpoint, identity) as process:
+    with subprocess_rpc_server_running(subprocess_name, identity) as process:
         log.info("Started: %r", process)
 
         ctx = Context(
-            rpc_endpoint=rpc_endpoint,
             identity=identity,
             remote_peer=process.peer,
             )
@@ -155,7 +136,7 @@ def test_fn_adapter_with_remote_context():
             function=fn_to_ref(sample_remote_list_fn),
             params=('piece',),
             )
-        adapter = list_adapter.FnListAdapter.from_piece(adapter_piece, model, ctx)
+        adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
 
         assert adapter.column_count() == 2
         assert adapter.column_title(0) == 'id'
@@ -166,42 +147,8 @@ def test_fn_adapter_with_remote_context():
         assert adapter.cell_data(2, 1) == "Third item"
 
         get_fn_called_flag_call = rpc_call_factory(
-            rpc_endpoint=rpc_endpoint,
             sender_identity=identity,
             receiver_peer=process.peer,
             servant_ref=fn_to_ref(get_fn_called_flag),
             )
         assert get_fn_called_flag_call()
-
-
-def test_remote_fn_adapter():
-
-    identity = generate_rsa_identity(fast=True)
-    rpc_endpoint = rpc_endpoint_factory()
-    endpoint_registry.register(identity, rpc_endpoint)
-
-    ctx = Context(
-        identity=identity,
-        rpc_endpoint=rpc_endpoint,
-        )
-
-    subprocess_name = 'test-remote-fn-list-adapter-main'
-    with subprocess_rpc_server_running(subprocess_name, rpc_endpoint, identity) as process:
-        log.info("Started: %r", process)
-
-        model = htypes.list_adapter_tests.sample_list()
-        adapter_piece = htypes.list_adapter.remote_fn_list_adapter(
-            element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
-            function=fn_to_ref(sample_list_fn),
-            remote_peer=mosaic.put(process.peer.piece),
-            params=('piece',),
-            )
-        adapter = list_adapter.RemoteFnListAdapter.from_piece(adapter_piece, model, ctx)
-
-        assert adapter.column_count() == 2
-        assert adapter.column_title(0) == 'id'
-        assert adapter.column_title(1) == 'text'
-
-        assert adapter.row_count() == 3
-        assert adapter.cell_data(1, 0) == 22
-        assert adapter.cell_data(2, 1) == "Third item"

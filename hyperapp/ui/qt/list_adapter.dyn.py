@@ -3,16 +3,8 @@ import logging
 import weakref
 from functools import cached_property
 
-from hyperapp.common.htypes import tInt, TList, TOptional, TRecord
+from hyperapp.common.htypes import tInt, TOptional, TRecord
 
-from .services import (
-    deduce_t,
-    feed_factory,
-    peer_registry,
-    pyobj_creg,
-    rpc_call_factory,
-    web,
-    )
 from .code.list_diff import ListDiff
 
 log = logging.getLogger(__name__)
@@ -29,45 +21,9 @@ class ListAdapterBase:
             })
 
 
-class StaticListAdapter(ListAdapterBase):
-
-    @classmethod
-    def from_piece(cls, piece, model, ctx):
-        list_t = deduce_t(model)
-        assert isinstance(list_t, TList), repr(list_t)
-        return cls(list_t.element_t, model)
-
-    def __init__(self, item_t, value):
-        self._item_t = item_t
-        self._value = value  # record list.
-        self._column_names = sorted(self._item_t.fields)
-
-    def subscribe(self, model):
-        pass
-
-    @property
-    def model(self):
-        return self._value
-
-    def column_count(self):
-        return len(self._item_t.fields)
-
-    def column_title(self, column):
-        return self._column_names[column]
-
-    def row_count(self):
-        return len(self._value)
-
-    def cell_data(self, row, column):
-        return getattr(self._value[row], self._column_names[column])
-
-    def get_item(self, idx):
-        return self._value[idx]
-
-
 class FnListAdapterBase(ListAdapterBase, metaclass=abc.ABCMeta):
 
-    def __init__(self, model, item_t, params, ctx):
+    def __init__(self, feed_factory, model, item_t, params, ctx):
         self._model = model
         self._item_t = item_t
         self._params = params
@@ -149,59 +105,3 @@ class FnListAdapterBase(ListAdapterBase, metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def _call_fn(self, **kw):
         pass
-
-
-class FnListAdapter(FnListAdapterBase):
-
-    @classmethod
-    def from_piece(cls, piece, model, ctx):
-        element_t = pyobj_creg.invite(piece.element_t)
-        fn = pyobj_creg.invite(piece.function)
-        return cls(model, element_t, piece.params, ctx, piece.function, fn)
-
-    def __init__(self, model, item_t, params, ctx, fn_res_ref, fn):
-        super().__init__(model, item_t, params, ctx)
-        self._fn_res_ref = fn_res_ref
-        self._fn = fn
-
-    @property
-    def function(self):
-        return self._fn
-
-    def _call_fn(self, **kw):
-        try:
-            rpc_endpoint = self._ctx.rpc_endpoint
-            identity = self._ctx.identity
-            remote_peer = self._ctx.remote_peer
-        except KeyError:
-            pass
-        else:
-            rpc_call = rpc_call_factory(
-                rpc_endpoint=rpc_endpoint,
-                sender_identity=identity,
-                receiver_peer=remote_peer,
-                servant_ref=self._fn_res_ref,
-                )
-            return rpc_call(**kw)
-        return self._fn(**kw)
-
-
-class RemoteFnListAdapter(FnListAdapterBase):
-
-    @classmethod
-    def from_piece(cls, piece, model, ctx):
-        element_t = pyobj_creg.invite(piece.element_t)
-        remote_peer = peer_registry.invite(piece.remote_peer)
-        return cls(model, element_t, piece.params, ctx, piece.function, ctx.rpc_endpoint, ctx.identity, remote_peer)
-
-    def __init__(self, model, item_t, params, ctx, fn_res_ref, rpc_endpoint, identity, remote_peer):
-        super().__init__(model, item_t, params, ctx)
-        self._rpc_call = rpc_call_factory(
-            rpc_endpoint=rpc_endpoint,
-            receiver_peer=remote_peer,
-            sender_identity=identity,
-            servant_ref=fn_res_ref,
-            )
-
-    def _call_fn(self, **kw):
-        return self._rpc_call(**kw)
