@@ -204,17 +204,19 @@ class ResourceModule:
 
     @property
     def as_dict(self):
-        return {
-            'import': sorted(self._import_set),
-            'associations': [
-                self._association_as_dict(ass)
-                for ass in sorted(self._association_list)
-                ],
-            'definitions': {
-                name: self._definition_as_dict(d)
-                for name, d in sorted(self._definition_dict.items())
-                },
+        d = {}
+        d['import'] = sorted(self._import_set)
+        associations = [
+            self._association_as_dict(ass)
+            for ass in sorted(self._association_list)
+            ]
+        if associations:
+            d['associations'] = associations
+        d['definitions'] = {
+            name: self._definition_as_dict(d)
+            for name, d in sorted(self._definition_dict.items())
             }
+        return d
 
     @property
     def as_text(self):
