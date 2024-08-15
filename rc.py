@@ -45,10 +45,6 @@ def main():
     parser.add_argument('targets', type=str, nargs='*', help="Select only those targets to build")
     args = parser.parse_args()
 
-    config = {
-        'command_line.rc': {'args': args},
-    }
-
     services = Services(module_dir_list)
     services.init_services()
     services.load_type_modules()
