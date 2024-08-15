@@ -1,29 +1,8 @@
 # Automatically generated file. Do not edit.
 
 import:
-- legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.int_adapter:int_adapter
-- ui.ui_adapter_creg:ui_adapter_creg.service
-associations:
-- bases:
-  - ui.ui_adapter_creg:ui_adapter_creg.service
-  - legacy_type.int_adapter:int_adapter
-  key:
-  - ui.ui_adapter_creg:ui_adapter_creg.service
-  - legacy_type.int_adapter:int_adapter
-  value: IntAdapter.from_piece
 definitions:
-  IntAdapter:
-    type: legacy_type.builtin:attribute
-    value:
-      object: int_adapter.module
-      attr_name: IntAdapter
-  IntAdapter.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: IntAdapter
-      attr_name: from_piece
   int_adapter.module:
     type: legacy_type.builtin:python_module
     value:

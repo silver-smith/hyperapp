@@ -9,7 +9,6 @@ import:
 - legacy_type.command_groups:remotable_d
 - legacy_type.command_groups:view_d
 - ui.command:command.module
-associations: []
 definitions:
   command_groups.module:
     type: legacy_type.builtin:python_module

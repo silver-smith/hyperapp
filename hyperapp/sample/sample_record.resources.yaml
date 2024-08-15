@@ -2,93 +2,9 @@
 
 import:
 - common.mark:mark.service
-- legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.sample_record:item
-- legacy_type.sample_record:open_sample_fn_record_d
-- legacy_type.sample_record:sample_record
-- legacy_type.ui:command_properties
-- legacy_type.ui:command_properties_d
-- legacy_type.ui:fn_impl
-- legacy_type.ui:global_model_command_d
-- legacy_type.ui:model
-- legacy_type.ui:model_command
-- legacy_type.ui:model_command_impl
-- legacy_type.ui:model_d
-- legacy_type.ui:record_ui_t
-associations:
-- bases:
-  - command_properties_d
-  - open_sample_fn_record.command_impl
-  key:
-  - command_properties_d
-  - open_sample_fn_record.command_impl
-  value: open_sample_fn_record.command_properties
-- bases:
-  - global_model_command_d
-  key: global_model_command_d
-  value: open_sample_fn_record.command
-- bases:
-  - legacy_type.sample_record:sample_record
-  key:
-  - model_d
-  - legacy_type.sample_record:sample_record
-  value: sample_record.model
 definitions:
-  command_properties_d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.ui:command_properties_d
-  global_model_command_d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.ui:global_model_command_d
-  model_d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.ui:model_d
-  open_sample_fn_record:
-    type: legacy_type.builtin:attribute
-    value:
-      object: sample_record.module
-      attr_name: open_sample_fn_record
-  open_sample_fn_record.command:
-    type: legacy_type.ui:model_command
-    value:
-      d: open_sample_fn_record.d
-      impl: open_sample_fn_record.command_impl
-  open_sample_fn_record.command_impl:
-    type: legacy_type.ui:model_command_impl
-    value:
-      function: open_sample_fn_record
-      params: []
-  open_sample_fn_record.command_properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: true
-      uses_state: false
-      remotable: true
-  open_sample_fn_record.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.sample_record:open_sample_fn_record_d
-  sample_record:
-    type: legacy_type.builtin:attribute
-    value:
-      object: sample_record.module
-      attr_name: sample_record
-  sample_record.impl:
-    type: legacy_type.ui:fn_impl
-    value:
-      function: sample_record
-      params:
-      - piece
-  sample_record.model:
-    type: legacy_type.ui:model
-    value:
-      ui_t: sample_record.ui_t
-      impl: sample_record.impl
   sample_record.module:
     type: legacy_type.builtin:python_module
     value:
@@ -96,9 +12,4 @@ definitions:
       file_name: sample_record.dyn.py
       import_list:
         htypes.sample_record.item: legacy_type.sample_record:item
-        htypes.sample_record.sample_record: legacy_type.sample_record:sample_record
         services.mark: common.mark:mark.service
-  sample_record.ui_t:
-    type: legacy_type.ui:record_ui_t
-    value:
-      record_t: legacy_type.sample_record:item

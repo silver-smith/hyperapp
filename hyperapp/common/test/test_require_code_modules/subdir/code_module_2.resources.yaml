@@ -3,9 +3,9 @@
 import:
 - legacy_type.builtin:python_module
 definitions:
-  subprocess_rpc_server_tests_aux.module:
+  code_module_2.module:
     type: legacy_type.builtin:python_module
     value:
-      module_name: subprocess_rpc_server_tests_aux
-      file_name: subprocess_rpc_server_tests_aux.dyn.py
+      module_name: code_module_2
+      file_name: code_module_2.dyn.py
       import_list: {}

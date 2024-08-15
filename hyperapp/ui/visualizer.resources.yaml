@@ -27,7 +27,6 @@ import:
 - legacy_type.ui:record_ui_t
 - legacy_type.ui:tree_ui_t
 - resource.data_to_res:data_to_res.service
-associations: []
 definitions:
   get_model_layout:
     type: legacy_type.builtin:attribute

@@ -1,31 +1,11 @@
 # Automatically generated file. Do not edit.
 
 import:
-- legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.label:state
 - legacy_type.label:view
 - ui.view:view.module
-- ui.view_registry:view_creg.service
-associations:
-- bases:
-  - ui.view_registry:view_creg.service
-  - legacy_type.label:view
-  key:
-  - ui.view_registry:view_creg.service
-  - legacy_type.label:view
-  value: LabelView.from_piece
 definitions:
-  LabelView:
-    type: legacy_type.builtin:attribute
-    value:
-      object: label.module
-      attr_name: LabelView
-  LabelView.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: LabelView
-      attr_name: from_piece
   label.module:
     type: legacy_type.builtin:python_module
     value:

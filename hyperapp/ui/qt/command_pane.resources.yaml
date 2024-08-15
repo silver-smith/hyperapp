@@ -1,33 +1,13 @@
 # Automatically generated file. Do not edit.
 
 import:
-- legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command_groups:pane_1_d
 - legacy_type.command_groups:pane_2_d
 - legacy_type.command_pane:state
 - legacy_type.command_pane:view
 - ui.view:view.module
-- ui.view_registry:view_creg.service
-associations:
-- bases:
-  - ui.view_registry:view_creg.service
-  - legacy_type.command_pane:view
-  key:
-  - ui.view_registry:view_creg.service
-  - legacy_type.command_pane:view
-  value: CommandPaneView.from_piece
 definitions:
-  CommandPaneView:
-    type: legacy_type.builtin:attribute
-    value:
-      object: command_pane.module
-      attr_name: CommandPaneView
-  CommandPaneView.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: CommandPaneView
-      attr_name: from_piece
   command_pane.module:
     type: legacy_type.builtin:python_module
     value:

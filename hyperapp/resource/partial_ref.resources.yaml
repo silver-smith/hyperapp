@@ -10,7 +10,6 @@ import:
 - legacy_type.partial:partial
 - legacy_type.raw:raw
 - resource.fn_to_res:fn_to_ref.service
-associations: []
 definitions:
   partial_ref:
     type: legacy_type.builtin:attribute

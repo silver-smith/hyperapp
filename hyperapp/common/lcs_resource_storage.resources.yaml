@@ -12,7 +12,6 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.lcs_resource_storage:element
 - legacy_type.lcs_resource_storage:mapping
-associations: []
 definitions:
   lcs_resource_storage.module:
     type: legacy_type.builtin:python_module

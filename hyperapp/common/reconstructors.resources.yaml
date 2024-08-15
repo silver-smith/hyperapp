@@ -4,7 +4,6 @@ import:
 - builtins:reconstructors.service
 - legacy_type.builtin:python_module
 - resource.type_reconstructor:type_reconstructor.module
-associations: []
 definitions:
   reconstructors.module:
     type: legacy_type.builtin:python_module

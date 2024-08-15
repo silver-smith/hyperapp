@@ -1,0 +1,44 @@
+# Automatically generated file. Do not edit.
+
+import:
+- common.mark:mark.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.system:service_template
+definitions:
+  sample_fn_service_1:
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_service_1.module
+      attr_name: sample_fn_service_1
+  sample_fn_service_1.service:
+    type: legacy_type.system:service_template
+    value:
+      name: sample_fn_service_1
+      function: sample_fn_service_1
+      free_params:
+      - param_1
+      - param_2
+      service_params:
+      - sample_value_service_1
+      want_config: false
+  sample_service_1.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: sample_service_1
+      file_name: sample_service_1.dyn.py
+      import_list:
+        services.mark: common.mark:mark.service
+  sample_value_service_1:
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_service_1.module
+      attr_name: sample_value_service_1
+  sample_value_service_1.service:
+    type: legacy_type.system:service_template
+    value:
+      name: sample_value_service_1
+      function: sample_value_service_1
+      free_params: []
+      service_params: []
+      want_config: false

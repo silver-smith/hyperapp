@@ -2,7 +2,6 @@
 
 import:
 - legacy_type.builtin:python_module
-associations: []
 definitions:
   utils.module:
     type: legacy_type.builtin:python_module

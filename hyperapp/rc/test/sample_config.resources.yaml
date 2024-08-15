@@ -1,0 +1,30 @@
+# Automatically generated file. Do not edit.
+
+import:
+- common.mark:mark.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.sample_config:sample_key
+- legacy_type.system:service_template
+definitions:
+  sample_config.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: sample_config
+      file_name: sample_config.dyn.py
+      import_list:
+        htypes.sample_config.sample_key: legacy_type.sample_config:sample_key
+        services.mark: common.mark:mark.service
+  sample_config_service:
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_config.module
+      attr_name: sample_config_service
+  sample_config_service.service:
+    type: legacy_type.system:service_template
+    value:
+      name: sample_config_service
+      function: sample_config_service
+      free_params: []
+      service_params: []
+      want_config: true

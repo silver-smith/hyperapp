@@ -5,28 +5,12 @@ import:
 - builtins:pyobj_creg.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
-- legacy_type.ui:feed_d
+- legacy_type.system:service_template
 - legacy_type.ui:index_tree_feed
 - legacy_type.ui:list_feed
 - resource.data_to_res:data_to_res.service
 - ui.feed_creg:feed_creg.service
-associations:
-- bases:
-  - ui.feed_creg:feed_creg.service
-  - legacy_type.ui:index_tree_feed
-  key:
-  - ui.feed_creg:feed_creg.service
-  - legacy_type.ui:index_tree_feed
-  value: index_tree_feed_from_piece
-- bases:
-  - ui.feed_creg:feed_creg.service
-  - legacy_type.ui:list_feed
-  key:
-  - ui.feed_creg:feed_creg.service
-  - legacy_type.ui:list_feed
-  value: list_feed_from_piece
 definitions:
   feed.module:
     type: legacy_type.builtin:python_module
@@ -34,7 +18,6 @@ definitions:
       module_name: feed
       file_name: feed.dyn.py
       import_list:
-        htypes.ui.feed_d: legacy_type.ui:feed_d
         htypes.ui.index_tree_feed: legacy_type.ui:index_tree_feed
         htypes.ui.list_feed: legacy_type.ui:list_feed
         services.association_reg: builtins:association_reg.service
@@ -48,16 +31,11 @@ definitions:
       object: feed.module
       attr_name: feed_factory
   feed_factory.service:
-    type: legacy_type.builtin:call
+    type: legacy_type.system:service_template
     value:
+      name: feed_factory
       function: feed_factory
-  index_tree_feed_from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: feed.module
-      attr_name: index_tree_feed_from_piece
-  list_feed_from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: feed.module
-      attr_name: list_feed_from_piece
+      free_params:
+      - piece
+      service_params: []
+      want_config: true

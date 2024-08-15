@@ -1,12 +1,11 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtins:code_registry_ctr.service
+- builtins:code_registry_ctr2.service
 - common.mark:mark.service
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
-associations: []
+- legacy_type.system:service_template
 definitions:
   model_view_creg:
     type: legacy_type.builtin:attribute
@@ -14,23 +13,31 @@ definitions:
       object: view_registry.module
       attr_name: model_view_creg
   model_view_creg.service:
-    type: legacy_type.builtin:call
+    type: legacy_type.system:service_template
     value:
+      name: model_view_creg
       function: model_view_creg
+      free_params: []
+      service_params: []
+      want_config: true
   view_creg:
     type: legacy_type.builtin:attribute
     value:
       object: view_registry.module
       attr_name: view_creg
   view_creg.service:
-    type: legacy_type.builtin:call
+    type: legacy_type.system:service_template
     value:
+      name: view_creg
       function: view_creg
+      free_params: []
+      service_params: []
+      want_config: true
   view_registry.module:
     type: legacy_type.builtin:python_module
     value:
       module_name: view_registry
       file_name: view_registry.dyn.py
       import_list:
-        services.code_registry_ctr: builtins:code_registry_ctr.service
+        services.code_registry_ctr2: builtins:code_registry_ctr2.service
         services.mark: common.mark:mark.service

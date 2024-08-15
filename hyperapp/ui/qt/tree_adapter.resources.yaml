@@ -1,64 +1,15 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtins:pyobj_creg.service
-- builtins:web.service
 - common.tree_diff:tree_diff.module
-- legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.tree_adapter:fn_index_tree_adapter
-- legacy_type.tree_adapter:remote_fn_index_tree_adapter
-- rpc.rpc_call:rpc_call_factory.service
-- transport.identity:peer_registry.service
-- ui.feed:feed_factory.service
-- ui.qt.tree:tree.module
-- ui.ui_adapter_creg:ui_adapter_creg.service
-associations:
-- bases:
-  - ui.ui_adapter_creg:ui_adapter_creg.service
-  - legacy_type.tree_adapter:fn_index_tree_adapter
-  key:
-  - ui.ui_adapter_creg:ui_adapter_creg.service
-  - legacy_type.tree_adapter:fn_index_tree_adapter
-  value: FnIndexTreeAdapter.from_piece
-- bases:
-  - ui.ui_adapter_creg:ui_adapter_creg.service
-  - legacy_type.tree_adapter:remote_fn_index_tree_adapter
-  key:
-  - ui.ui_adapter_creg:ui_adapter_creg.service
-  - legacy_type.tree_adapter:remote_fn_index_tree_adapter
-  value: RemoteFnIndexTreeAdapter.from_piece
+- ui.qt.tree_visual_diff:tree_visual_diff.module
 definitions:
-  FnIndexTreeAdapter:
-    type: legacy_type.builtin:attribute
-    value:
-      object: tree_adapter.module
-      attr_name: FnIndexTreeAdapter
-  FnIndexTreeAdapter.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: FnIndexTreeAdapter
-      attr_name: from_piece
-  RemoteFnIndexTreeAdapter:
-    type: legacy_type.builtin:attribute
-    value:
-      object: tree_adapter.module
-      attr_name: RemoteFnIndexTreeAdapter
-  RemoteFnIndexTreeAdapter.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: RemoteFnIndexTreeAdapter
-      attr_name: from_piece
   tree_adapter.module:
     type: legacy_type.builtin:python_module
     value:
       module_name: tree_adapter
       file_name: tree_adapter.dyn.py
       import_list:
-        code.tree: ui.qt.tree:tree.module
         code.tree_diff: common.tree_diff:tree_diff.module
-        services.feed_factory: ui.feed:feed_factory.service
-        services.peer_registry: transport.identity:peer_registry.service
-        services.pyobj_creg: builtins:pyobj_creg.service
-        services.rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
-        services.web: builtins:web.service
+        code.tree_visual_diff: ui.qt.tree_visual_diff:tree_visual_diff.module
