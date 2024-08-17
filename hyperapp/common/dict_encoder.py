@@ -105,8 +105,9 @@ class NamedPairsDictEncoder(DictEncoder):
 
     def _encode_named_pair_list(self, element_t, list_value):
         name_attr, value_attr = element_t.fields
+        value_t = element_t.fields[value_attr]
         return {
-            getattr(element, name_attr): getattr(element, value_attr)
+            getattr(element, name_attr): self.dispatch(value_t, getattr(element, value_attr))
             for element in list_value
             }
 
