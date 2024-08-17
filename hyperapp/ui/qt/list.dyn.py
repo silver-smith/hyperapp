@@ -4,9 +4,7 @@ from functools import partial
 from PySide6 import QtCore, QtWidgets
 
 from . import htypes
-from .services import (
-    ui_adapter_creg,
-    )
+from .services import mark
 from .code.list_diff import ListDiff
 from .code.view import View
 
@@ -77,8 +75,9 @@ class _TableView(QtWidgets.QTableView):
 
 class ListView(View):
 
+    @mark.actor.model_view_creg(htypes.list.view)
     @classmethod
-    def from_piece(cls, piece, model, ctx):
+    def from_piece(cls, piece, model, ctx, ui_adapter_creg):
         adapter = ui_adapter_creg.invite(piece.adapter, model, ctx)
         return cls(piece.adapter, adapter)
 
