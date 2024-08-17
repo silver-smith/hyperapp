@@ -141,3 +141,8 @@ class ConfigItemCompleteTarget(Target):
     def constructor(self):
         assert self._completed
         return self._ctr
+
+    @property
+    def resource(self):
+        assert self._completed
+        return self._provider_resource_tgt.get_resource(self._ctr)

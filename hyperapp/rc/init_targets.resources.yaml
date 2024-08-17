@@ -5,6 +5,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.system:service_template
+- rc.config_resource_target:config_resource_target.module
 - rc.custom_resource_registry:custom_resource_registry.module
 - rc.import_target:import_target.module
 - rc.python_module_resource_target:python_module_resource_target.module
@@ -21,6 +22,7 @@ definitions:
         services.code_registry_ctr2: builtins:code_registry_ctr2.service
         services.resource_registry: builtins:resource_registry.service
         services.web: builtins:web.service
+        code.config_resource_target: rc.config_resource_target:config_resource_target.module
         code.custom_resource_registry: rc.custom_resource_registry:custom_resource_registry.module
         code.import_target: rc.import_target:import_target.module
         code.python_module_resource_target: rc.python_module_resource_target:python_module_resource_target.module

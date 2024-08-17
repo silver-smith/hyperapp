@@ -13,6 +13,7 @@ from .code.import_target import (
     ImportTarget,
     )
 from .code.service_ctr import ServiceCtr
+from .code.config_resource_target import ConfigResourceTarget
 
 
 def ctr_from_template_creg(config):
@@ -51,6 +52,8 @@ def init_targets(cfg_item_creg, ctr_from_template_creg, system_config, root_dir,
     custom_resource_registry = create_custom_resource_registry(root_dir)
     all_imports_known_tgt = AllImportsKnownTarget()
     target_set.add(all_imports_known_tgt)
+    config_tgt = ConfigResourceTarget(custom_resource_registry, resource_dir=root_dir, module_name='config', path='config.resources.yaml')
+    target_set.add(config_tgt)
     for src in python_module_src_list:
         try:
             resource_text = root_dir.joinpath(src.resource_path).read_text()
