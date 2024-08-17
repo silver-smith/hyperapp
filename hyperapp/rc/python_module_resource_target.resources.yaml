@@ -34,7 +34,7 @@ definitions:
       object: PythonModuleReq
       attr_name: from_piece
 
-  python_module_req.actor-template:
+  python_module_resource_target_python_module_req.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.python_module_resource_target:python_module_req

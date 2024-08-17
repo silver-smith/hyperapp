@@ -69,7 +69,7 @@ definitions:
       object: SucceededTestResult
       attr_name: from_piece
 
-  succeeded_result.actor-template:
+  test_job_succeeded_result.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.test_job:succeeded_result
@@ -89,7 +89,7 @@ definitions:
       object: IncompleteTestResult
       attr_name: from_piece
 
-  incomplete_result.actor-template:
+  test_job_incomplete_result.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.test_job:incomplete_result
@@ -109,7 +109,7 @@ definitions:
       object: FailedTestResult
       attr_name: from_piece
 
-  failed_result.actor-template:
+  test_job_failed_result.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.test_job:failed_result
@@ -128,7 +128,7 @@ definitions:
       object: TestJob
       attr_name: from_piece
 
-  test_job.actor-template:
+  test_job_job.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.test_job:job

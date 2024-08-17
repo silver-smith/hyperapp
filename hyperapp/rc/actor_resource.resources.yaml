@@ -32,7 +32,7 @@ definitions:
       object: ActorReq
       attr_name: from_piece
 
-  actor_req.actor-template:
+  actor_resource_actor_req.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.actor_resource:actor_req

@@ -30,7 +30,7 @@ definitions:
       object: ConfigItemResource
       attr_name: from_piece
 
-  config_item_resource.actor-template:
+  config_item_resource_config_item_resource.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.config_item_resource:config_item_resource

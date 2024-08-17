@@ -59,7 +59,7 @@ definitions:
       object: RsaPeer
       attr_name: from_piece
 
-  rsa_peer.actor-template:
+  rsa_identity_rsa_peer.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.rsa_identity:rsa_peer
@@ -78,7 +78,7 @@ definitions:
       object: RsaSignature
       attr_name: from_piece
 
-  rsa_signature.actor-template:
+  rsa_identity_rsa_signature.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.rsa_identity:rsa_signature
@@ -97,7 +97,7 @@ definitions:
       object: RsaParcel
       attr_name: from_piece
 
-  rsa_parcel.actor-template:
+  rsa_identity_rsa_parcel.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.rsa_identity:rsa_parcel

@@ -4,53 +4,53 @@ import:
 - common.bundler:bundler.service
 - common.system_stop:stop_signal.service
 - common.system_stop:system_failed.service
-- rc.actor_probe_resource:actor_probe_resource.actor-template
-- rc.actor_ctr:core-actor-from-template.actor-template
-- rc.actor_resource:actor_req.actor-template
-- rc.config_item_resource:config_item_resource.actor-template
-- rc.import_job:failed_result.actor-template
-- rc.import_job:incomplete_result.actor-template
-- rc.import_job:import_job.actor-template
-- rc.import_job:succeeded_result.actor-template
-- rc.import_resource:import_resource.actor-template
+- rc.actor_probe_resource:service_resource_actor_probe_resource.actor-template
+- rc.actor_ctr:system_actor_template.actor-template
+- rc.actor_resource:actor_resource_actor_req.actor-template
+- rc.config_item_resource:config_item_resource_config_item_resource.actor-template
+- rc.import_job:import_job_failed_result.actor-template
+- rc.import_job:import_job_incomplete_result.actor-template
+- rc.import_job:import_job_job.actor-template
+- rc.import_job:import_job_succeeded_result.actor-template
+- rc.import_resource:import_resource_import_resource.actor-template
 - rc.init_targets:ctr_from_template_creg.service
 - rc.rc:compile_resources.service
 - rc.rc_job:rc_job_submit_factory.service
-- rc.rc_job:run_job_target.actor-template
+- rc.rc_job:rc_job_job_target.actor-template
 - rc.rc_job_creg:rc_job_creg.service
 - rc.rc_job_result_creg:rc_job_result_creg.service
 - rc.rc_requirement_creg:rc_requirement_creg.service
 - rc.rc_resource_creg:rc_resource_creg.service
 - rc.process_pool:process_pool_running.service
-- rc.python_module_resource_target:python_module_req.actor-template
-- rc.service_ctr:core-service-from-finalizer-gen-template.actor-template
-- rc.service_ctr:core-service-from-template.actor-template
-- rc.service_probe_resource:config_item_fixture_resource.actor-template
-- rc.service_probe_resource:fixture_probe_resource.actor-template
-- rc.service_probe_resource:service_probe_resource.actor-template
-- rc.service_resource:service_req.actor-template
-- rc.service_target:service_found_req.actor-template
-- rc.service_target:service_complete_req.actor-template
-- rc.test_job:failed_result.actor-template
-- rc.test_job:incomplete_result.actor-template
-- rc.test_job:succeeded_result.actor-template
-- rc.test_job:test_job.actor-template
-- rc.test_requirement:constructors_picker_resource.actor-template
-- rc.test_requirement:fixtures_module_req.actor-template
-- rc.test_requirement:recorder_resource.actor-template
-- rc.test_requirement:tested_code_req.actor-template
-- rc.test_requirement:tested_code_resource.actor-template
-- rc.test_requirement:tested_service_req.actor-template
-- rc.test_requirement:tested_service_resource.actor-template
+- rc.python_module_resource_target:python_module_resource_target_python_module_req.actor-template
+- rc.service_ctr:system_finalizer_gen_service_template.actor-template
+- rc.service_ctr:system_service_template.actor-template
+- rc.service_probe_resource:service_resource_config_item_fixture_resource.actor-template
+- rc.service_probe_resource:service_resource_fixture_probe_resource.actor-template
+- rc.service_probe_resource:service_resource_service_probe_resource.actor-template
+- rc.service_resource:service_resource_service_req.actor-template
+- rc.service_target:service_service_found_req.actor-template
+- rc.service_target:service_service_complete_req.actor-template
+- rc.test_job:test_job_failed_result.actor-template
+- rc.test_job:test_job_incomplete_result.actor-template
+- rc.test_job:test_job_succeeded_result.actor-template
+- rc.test_job:test_job_job.actor-template
+- rc.test_requirement:test_target_constructors_picker_resource.actor-template
+- rc.test_requirement:test_target_fixtures_module_req.actor-template
+- rc.test_requirement:test_target_recorder_resource.actor-template
+- rc.test_requirement:test_target_tested_code_req.actor-template
+- rc.test_requirement:test_target_tested_code_resource.actor-template
+- rc.test_requirement:test_target_tested_service_req.actor-template
+- rc.test_requirement:test_target_tested_service_resource.actor-template
 - rpc.rpc_endpoint:cancel_rpc_request_futures.service
-- rpc.rpc_endpoint:on_rpc_error_response.actor-template
-- rpc.rpc_endpoint:on_rpc_request.actor-template
-- rpc.rpc_endpoint:on_rpc_response.actor-template
+- rpc.rpc_endpoint:rpc_error_response.actor-template
+- rpc.rpc_endpoint:rpc_request.actor-template
+- rpc.rpc_endpoint:rpc_response.actor-template
 - rpc.rpc_endpoint:rpc_endpoint.service
 - rpc.rpc_endpoint:rpc_message_creg.service
 - rpc.rpc_endpoint:rpc_request_futures.service
 - rpc.rpc_endpoint:rpc_target_creg.service
-- rpc.rpc_endpoint:run_function_target.actor-template
+- rpc.rpc_endpoint:rpc_function_target.actor-template
 - rpc.rpc_call:rpc_call_factory.service
 - rpc.rpc_call:rpc_submit_factory.service
 - rpc.rpc_call:rpc_submit_target_factory.service
@@ -67,9 +67,9 @@ import:
 - transport.identity:signature_registry.service
 - transport.route_registry:route_registry.service
 - transport.rsa_identity:generate_rsa_identity.service
-- transport.rsa_identity:rsa_parcel.actor-template
-- transport.rsa_identity:rsa_peer.actor-template
-- transport.rsa_identity:rsa_signature.actor-template
+- transport.rsa_identity:rsa_identity_rsa_parcel.actor-template
+- transport.rsa_identity:rsa_identity_rsa_peer.actor-template
+- transport.rsa_identity:rsa_identity_rsa_signature.actor-template
 - transport.sync_route_table:route_table.service
 - transport.transport:transport.service
 
@@ -115,49 +115,49 @@ definitions:
         - transport.sync_route_table:route_table.service
         - transport.transport:transport.service
         ctr_from_template_creg:
-        - rc.service_ctr:core-service-from-template.actor-template
-        - rc.service_ctr:core-service-from-finalizer-gen-template.actor-template
-        - rc.actor_ctr:core-actor-from-template.actor-template
+        - rc.service_ctr:system_service_template.actor-template
+        - rc.service_ctr:system_finalizer_gen_service_template.actor-template
+        - rc.actor_ctr:system_actor_template.actor-template
         peer_registry:
-        - transport.rsa_identity:rsa_peer.actor-template
+        - transport.rsa_identity:rsa_identity_rsa_peer.actor-template
         parcel_registry:
-        - transport.rsa_identity:rsa_parcel.actor-template
+        - transport.rsa_identity:rsa_identity_rsa_parcel.actor-template
         signature_registry:
-        - transport.rsa_identity:rsa_signature.actor-template
+        - transport.rsa_identity:rsa_identity_rsa_signature.actor-template
         rpc_message_creg:
-        - rpc.rpc_endpoint:on_rpc_request.actor-template
-        - rpc.rpc_endpoint:on_rpc_response.actor-template
-        - rpc.rpc_endpoint:on_rpc_error_response.actor-template
+        - rpc.rpc_endpoint:rpc_request.actor-template
+        - rpc.rpc_endpoint:rpc_response.actor-template
+        - rpc.rpc_endpoint:rpc_error_response.actor-template
         rpc_target_creg:
-        - rpc.rpc_endpoint:run_function_target.actor-template
-        - rc.rc_job:run_job_target.actor-template
+        - rpc.rpc_endpoint:rpc_function_target.actor-template
+        - rc.rc_job:rc_job_job_target.actor-template
         rc_job_creg:
-        - rc.import_job:import_job.actor-template
-        - rc.test_job:test_job.actor-template
+        - rc.import_job:import_job_job.actor-template
+        - rc.test_job:test_job_job.actor-template
         rc_requirement_creg:
-        - rc.actor_resource:actor_req.actor-template
-        - rc.python_module_resource_target:python_module_req.actor-template
-        - rc.service_resource:service_req.actor-template
-        - rc.service_target:service_found_req.actor-template
-        - rc.service_target:service_complete_req.actor-template
-        - rc.test_requirement:tested_service_req.actor-template
-        - rc.test_requirement:tested_code_req.actor-template
-        - rc.test_requirement:fixtures_module_req.actor-template
+        - rc.actor_resource:actor_resource_actor_req.actor-template
+        - rc.python_module_resource_target:python_module_resource_target_python_module_req.actor-template
+        - rc.service_resource:service_resource_service_req.actor-template
+        - rc.service_target:service_service_found_req.actor-template
+        - rc.service_target:service_service_complete_req.actor-template
+        - rc.test_requirement:test_target_tested_service_req.actor-template
+        - rc.test_requirement:test_target_tested_code_req.actor-template
+        - rc.test_requirement:test_target_fixtures_module_req.actor-template
         rc_resource_creg:
-        - rc.actor_probe_resource:actor_probe_resource.actor-template
-        - rc.import_resource:import_resource.actor-template
-        - rc.service_probe_resource:config_item_fixture_resource.actor-template
-        - rc.service_probe_resource:fixture_probe_resource.actor-template
-        - rc.service_probe_resource:service_probe_resource.actor-template
-        - rc.config_item_resource:config_item_resource.actor-template
-        - rc.test_requirement:tested_service_resource.actor-template
-        - rc.test_requirement:tested_code_resource.actor-template
-        - rc.test_requirement:recorder_resource.actor-template
-        - rc.test_requirement:constructors_picker_resource.actor-template
+        - rc.actor_probe_resource:service_resource_actor_probe_resource.actor-template
+        - rc.import_resource:import_resource_import_resource.actor-template
+        - rc.service_probe_resource:service_resource_config_item_fixture_resource.actor-template
+        - rc.service_probe_resource:service_resource_fixture_probe_resource.actor-template
+        - rc.service_probe_resource:service_resource_service_probe_resource.actor-template
+        - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
+        - rc.test_requirement:test_target_tested_service_resource.actor-template
+        - rc.test_requirement:test_target_tested_code_resource.actor-template
+        - rc.test_requirement:test_target_recorder_resource.actor-template
+        - rc.test_requirement:test_target_constructors_picker_resource.actor-template
         rc_job_result_creg:
-        - rc.import_job:succeeded_result.actor-template
-        - rc.import_job:incomplete_result.actor-template
-        - rc.import_job:failed_result.actor-template
-        - rc.test_job:succeeded_result.actor-template
-        - rc.test_job:incomplete_result.actor-template
-        - rc.test_job:failed_result.actor-template
+        - rc.import_job:import_job_succeeded_result.actor-template
+        - rc.import_job:import_job_incomplete_result.actor-template
+        - rc.import_job:import_job_failed_result.actor-template
+        - rc.test_job:test_job_succeeded_result.actor-template
+        - rc.test_job:test_job_incomplete_result.actor-template
+        - rc.test_job:test_job_failed_result.actor-template

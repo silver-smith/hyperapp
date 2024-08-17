@@ -52,7 +52,7 @@ definitions:
       object: TestedServiceReq
       attr_name: from_piece
 
-  tested_service_req.actor-template:
+  test_target_tested_service_req.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.test_target:tested_service_req
@@ -71,7 +71,7 @@ definitions:
       object: TestedCodeReq
       attr_name: from_piece
 
-  tested_code_req.actor-template:
+  test_target_tested_code_req.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.test_target:tested_code_req
@@ -90,7 +90,7 @@ definitions:
       object: FixturesModuleReq
       attr_name: from_piece
 
-  fixtures_module_req.actor-template:
+  test_target_fixtures_module_req.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.test_target:fixtures_module_req
@@ -109,7 +109,7 @@ definitions:
       object: TestedServiceResource
       attr_name: from_piece
 
-  tested_service_resource.actor-template:
+  test_target_tested_service_resource.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.test_target:tested_service_resource
@@ -128,7 +128,7 @@ definitions:
       object: TestedCodeResource
       attr_name: from_piece
 
-  tested_code_resource.actor-template:
+  test_target_tested_code_resource.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.test_target:tested_code_resource
@@ -147,7 +147,7 @@ definitions:
       object: RecorderResource
       attr_name: from_piece
 
-  recorder_resource.actor-template:
+  test_target_recorder_resource.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.test_target:recorder_resource
@@ -166,7 +166,7 @@ definitions:
       object: ConstructorsPickerResource
       attr_name: from_piece
 
-  constructors_picker_resource.actor-template:
+  test_target_constructors_picker_resource.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.test_target:constructors_picker_resource

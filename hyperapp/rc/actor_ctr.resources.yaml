@@ -68,7 +68,7 @@ definitions:
       object: CoreActorTemplateCtr
       attr_name: from_template_piece
 
-  core-actor-from-template.actor-template:
+  system_actor_template.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.system:actor_template

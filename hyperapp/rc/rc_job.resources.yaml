@@ -42,7 +42,7 @@ definitions:
       object: rc_job.module
       attr_name: run_job_target
 
-  run_job_target.actor-template:
+  rc_job_job_target.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.rc_job:job_target

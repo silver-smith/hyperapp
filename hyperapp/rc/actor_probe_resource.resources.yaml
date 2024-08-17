@@ -36,7 +36,7 @@ definitions:
       object: ActorProbeResource
       attr_name: from_piece
 
-  actor_probe_resource.actor-template:
+  service_resource_actor_probe_resource.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.service_resource:actor_probe_resource

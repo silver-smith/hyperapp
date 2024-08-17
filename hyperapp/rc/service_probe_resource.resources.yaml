@@ -40,7 +40,7 @@ definitions:
       object: ServiceProbeResource
       attr_name: from_piece
 
-  service_probe_resource.actor-template:
+  service_resource_service_probe_resource.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.service_resource:service_probe_resource
@@ -59,7 +59,7 @@ definitions:
       object: FixtureProbeResource
       attr_name: from_piece
 
-  fixture_probe_resource.actor-template:
+  service_resource_fixture_probe_resource.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.service_resource:fixture_probe_resource
@@ -78,7 +78,7 @@ definitions:
       object: ConfigItemFixtureResource
       attr_name: from_piece
 
-  config_item_fixture_resource.actor-template:
+  service_resource_config_item_fixture_resource.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.service_resource:config_item_fixture_resource

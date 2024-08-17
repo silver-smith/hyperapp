@@ -38,7 +38,7 @@ definitions:
       object: ServiceFoundReq
       attr_name: from_piece
 
-  service_found_req.actor-template:
+  service_service_found_req.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.service:service_found_req
@@ -57,7 +57,7 @@ definitions:
       object: ServiceCompleteReq
       attr_name: from_piece
 
-  service_complete_req.actor-template:
+  service_service_complete_req.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.service:service_complete_req

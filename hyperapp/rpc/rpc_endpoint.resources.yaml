@@ -98,7 +98,7 @@ definitions:
       object: rpc_endpoint.module
       attr_name: on_rpc_response
 
-  on_rpc_response.actor-template:
+  rpc_response.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.rpc:response
@@ -112,7 +112,7 @@ definitions:
       object: rpc_endpoint.module
       attr_name: on_rpc_error_response
 
-  on_rpc_error_response.actor-template:
+  rpc_error_response.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.rpc:error_response
@@ -141,7 +141,7 @@ definitions:
       object: rpc_endpoint.module
       attr_name: on_rpc_request
 
-  on_rpc_request.actor-template:
+  rpc_request.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.rpc:request
@@ -157,7 +157,7 @@ definitions:
       object: rpc_endpoint.module
       attr_name: run_function_target
 
-  run_function_target.actor-template:
+  rpc_function_target.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.rpc:function_target

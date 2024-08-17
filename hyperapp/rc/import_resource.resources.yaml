@@ -34,7 +34,7 @@ definitions:
       object: ImportResource
       attr_name: from_piece
 
-  import_resource.actor-template:
+  import_resource_import_resource.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.import_resource:import_resource

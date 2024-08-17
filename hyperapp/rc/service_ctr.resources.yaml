@@ -109,14 +109,14 @@ definitions:
       object: CoreServiceTemplateCtr
       attr_name: from_template_piece
 
-  core-service-from-template.actor-template:
+  system_service_template.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.system:service_template
       function: CoreServiceTemplateCtr.from_template_piece
       service_params: []
 
-  core-service-from-finalizer-gen-template.actor-template:
+  system_finalizer_gen_service_template.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.system:finalizer_gen_service_template
