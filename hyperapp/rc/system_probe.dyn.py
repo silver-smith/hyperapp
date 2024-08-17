@@ -3,6 +3,7 @@ import inspect
 import logging
 from collections import defaultdict
 from dataclasses import dataclass
+from functools import partial
 
 from .code.system import System
 
@@ -44,7 +45,9 @@ class ServiceProbeTemplate:
         return f"<ServiceProbeTemplate {self.attr_name} {self.fn} {self.params}>"
 
     def resolve(self, system, service_name):
-        return ServiceProbe(system, self.attr_name, service_name, self.fn, self.params)
+        probe = ServiceProbe(system, self.attr_name, service_name, self.fn, self.params)
+        probe.apply_if_no_params()
+        return probe
 
 
 class ActorProbeTemplate:
@@ -120,7 +123,9 @@ class FixtureProbeTemplate:
         return f"<FixtureProbeTemplate {self.fn} {self.params}>"
 
     def resolve(self, system, service_name):
-        return FixtureProbe(system, service_name, self.fn, self.params)
+        probe = FixtureProbe(system, service_name, self.fn, self.params)
+        probe.apply_if_no_params()
+        return probe
 
 
 class ConfigItemRequiredError(Exception):
@@ -174,6 +179,11 @@ class Probe:
         self._resolved = False
         self._service = None
 
+    def apply_if_no_params(self):
+        if self._params:
+            return
+        self._apply(service_params=[])
+
     def __call__(self, *args, **kw):
         free_param_count = len(args) + len(kw)
         if free_param_count:
@@ -205,10 +215,22 @@ class Probe:
             for name in service_params
             ]
         service = self._fn(*config_args, *service_args, *args, **kw)
+        if inspect.isgeneratorfunction(self._fn):
+            gen = service
+            service = next(gen)
+            self._system.add_finalizer(self._name, partial(self._finalize, gen))
         self._service = service
         self._add_resolved_template(want_config, service_params)
         self._resolved = True
         return service
+
+    def _finalize(self, gen):
+        try:
+            next(gen)
+        except StopIteration:
+            pass
+        else:
+            raise RuntimeError(f"Generator function {self._fn!r} should have only one 'yield' statement")
 
     def _add_resolved_template(self, want_config, template):
         pass
