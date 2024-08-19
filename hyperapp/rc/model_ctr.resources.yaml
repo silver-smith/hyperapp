@@ -2,18 +2,8 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.rc_constructors:model
+- legacy_type.system:actor_template
 - rc.rc_constructor:rc_constructor.module
-- resource.rc_constructor_creg:rc_constructor_creg.service
-
-associations:
-
-- bases:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.rc_constructors:model
-  key:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.rc_constructors:model
-  value: ModelCtr.from_piece
 
 definitions:
 
@@ -36,3 +26,10 @@ definitions:
     value:
       object: ModelCtr
       attr_name: from_piece
+
+  rc_constructors_model.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.rc_constructors:model
+      function: ModelCtr.from_piece
+      service_params: []

@@ -10,7 +10,6 @@ import:
 - legacy_type.import_job:incomplete_result
 - legacy_type.import_job:succeeded_result
 - legacy_type.system:actor_template
-- resource.rc_constructor_creg:rc_constructor_creg.service
 - rc.build:build.module
 - rc.builtin_resources:builtin_resources.module
 - rc.job_result:job_result.module
@@ -33,7 +32,6 @@ definitions:
         htypes.import_job.succeeded_result: legacy_type.import_job:succeeded_result
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
-        services.rc_constructor_creg: resource.rc_constructor_creg:rc_constructor_creg.service
         code.build: rc.build:build.module
         code.builtin_resources: rc.builtin_resources:builtin_resources.module
         code.job_result: rc.job_result:job_result.module
@@ -60,6 +58,7 @@ definitions:
       function: SucceededImportResult.from_piece
       service_params:
       - rc_requirement_creg
+      - rc_constructor_creg
 
   IncompleteImportResult:
     type: legacy_type.builtin:attribute

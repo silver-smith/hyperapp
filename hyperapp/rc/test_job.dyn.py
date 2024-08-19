@@ -11,7 +11,6 @@ from .services import (
     mosaic,
     hyperapp_dir,
     pyobj_creg,
-    rc_constructor_creg,
     )
 from .code.rc_constants import JobStatus
 from .code.build import PythonModuleSrc
@@ -66,7 +65,7 @@ class TestResultBase(JobResult):
 class SucceededTestResult(TestResultBase):
 
     @classmethod
-    def from_piece(cls, piece, rc_requirement_creg):
+    def from_piece(cls, piece, rc_requirement_creg, rc_constructor_creg):
         used_imports = cls._used_imports_to_dict(piece.used_imports)
         requirements = cls._resolve_reqirement_refs(rc_requirement_creg, piece.requirements)
         constructors = [

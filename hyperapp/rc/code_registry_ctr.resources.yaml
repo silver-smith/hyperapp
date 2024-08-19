@@ -2,18 +2,8 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:code_registry_ctr
+- legacy_type.system:actor_template
 - rc.rc_constructor:rc_constructor.module
-- resource.rc_constructor_creg:rc_constructor_creg.service
-
-associations:
-
-- bases:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.builtin:code_registry_ctr
-  key:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.builtin:code_registry_ctr
-  value: CodeRegistryCtr.from_piece
 
 definitions:
 
@@ -36,3 +26,10 @@ definitions:
     value:
       object: CodeRegistryCtr
       attr_name: from_piece
+
+  builtin_code_registry_ctr.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.builtin:code_registry_ctr
+      function: CodeRegistryCtr.from_piece
+      service_params: []

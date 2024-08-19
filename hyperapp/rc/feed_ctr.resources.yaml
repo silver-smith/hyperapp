@@ -4,28 +4,10 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.rc_constructors:index_tree_feed
 - legacy_type.rc_constructors:list_feed
+- legacy_type.system:actor_template
 - legacy_type.ui:index_tree_feed
 - legacy_type.ui:list_feed
 - rc.rc_constructor:rc_constructor.module
-- resource.rc_constructor_creg:rc_constructor_creg.service
-
-associations:
-
-- bases:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.rc_constructors:list_feed
-  key:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.rc_constructors:list_feed
-  value: ListFeedCtr.from_piece
-
-- bases:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.rc_constructors:index_tree_feed
-  key:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.rc_constructors:index_tree_feed
-  value: IndexTreeFeedCtr.from_piece
 
 definitions:
 
@@ -54,6 +36,13 @@ definitions:
       object: ListFeedCtr
       attr_name: from_piece
 
+  rc_constructors_list_feed.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.rc_constructors:list_feed
+      function: ListFeedCtr.from_piece
+      service_params: []
+
   IndexTreeFeedCtr:
     type: legacy_type.builtin:attribute
     value:
@@ -65,3 +54,10 @@ definitions:
     value:
       object: IndexTreeFeedCtr
       attr_name: from_piece
+
+  rc_constructors_index_tree_feed.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.rc_constructors:index_tree_feed
+      function: IndexTreeFeedCtr.from_piece
+      service_params: []

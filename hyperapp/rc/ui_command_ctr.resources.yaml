@@ -5,42 +5,8 @@ import:
 - legacy_type.rc_constructors:ui_model_command
 - legacy_type.rc_constructors:universal_ui_command
 - legacy_type.rc_constructors:universal_ui_model_command
+- legacy_type.system:actor_template
 - rc.rc_constructor:rc_constructor.module
-- resource.rc_constructor_creg:rc_constructor_creg.service
-
-associations:
-
-- bases:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.rc_constructors:ui_command
-  key:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.rc_constructors:ui_command
-  value: UiCommandCtr.from_piece
-
-- bases:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.rc_constructors:universal_ui_command
-  key:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.rc_constructors:universal_ui_command
-  value: UniversalUiCommandCtr.from_piece
-
-- bases:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.rc_constructors:ui_model_command
-  key:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.rc_constructors:ui_model_command
-  value: UiModelCommandCtr.from_piece
-
-- bases:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.rc_constructors:universal_ui_model_command
-  key:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.rc_constructors:universal_ui_model_command
-  value: UniversalUiModelCommandCtr.from_piece
 
 definitions:
 
@@ -64,6 +30,13 @@ definitions:
       object: UiCommandCtr
       attr_name: from_piece
 
+  rc_constructors_ui_command.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.rc_constructors:ui_command
+      function: UiCommandCtr.from_piece
+      service_params: []
+
   UiModelCommandCtr:
     type: legacy_type.builtin:attribute
     value:
@@ -75,6 +48,13 @@ definitions:
     value:
       object: UiModelCommandCtr
       attr_name: from_piece
+
+  rc_constructors_ui_model_command.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.rc_constructors:ui_model_command
+      function: UiModelCommandCtr.from_piece
+      service_params: []
 
   UniversalUiCommandCtr:
     type: legacy_type.builtin:attribute
@@ -88,6 +68,13 @@ definitions:
       object: UniversalUiCommandCtr
       attr_name: from_piece
 
+  rc_constructors_universal_ui_command.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.rc_constructors:universal_ui_command
+      function: UniversalUiCommandCtr.from_piece
+      service_params: []
+
   UniversalUiModelCommandCtr:
     type: legacy_type.builtin:attribute
     value:
@@ -99,3 +86,10 @@ definitions:
     value:
       object: UniversalUiModelCommandCtr
       attr_name: from_piece
+
+  rc_constructors_universal_ui_model_command.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.rc_constructors:universal_ui_model_command
+      function: UniversalUiModelCommandCtr.from_piece
+      service_params: []

@@ -1,7 +1,6 @@
 from . import htypes
 from .services import (
     mosaic,
-    rc_constructor_creg,
     web,
     )
 
@@ -34,7 +33,7 @@ class Constructor:
 class ModuleWrapperCtr(Constructor):
 
     @classmethod
-    def from_piece(cls, piece):
+    def from_piece(cls, piece, rc_constructor_creg):
         return cls(
             module_name=piece.module_name,
             constructor=rc_constructor_creg.invite(piece.constructor),

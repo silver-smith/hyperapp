@@ -9,7 +9,6 @@ from . import htypes
 from .services import (
     mosaic,
     pyobj_creg,
-    rc_constructor_creg,
     )
 from .code.rc_constants import JobStatus
 from .code.build import PythonModuleSrc
@@ -54,7 +53,7 @@ class ImportResultBase(JobResult):
 class SucceededImportResult(ImportResultBase):
 
     @classmethod
-    def from_piece(cls, piece, rc_requirement_creg):
+    def from_piece(cls, piece, rc_requirement_creg, rc_constructor_creg):
         requirements = cls._resolve_reqirement_refs(rc_requirement_creg, piece.requirements)
         functions = [
             Function.from_piece(fn)

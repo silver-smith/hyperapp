@@ -5,16 +5,23 @@ import:
 - common.system_stop:stop_signal.service
 - common.system_stop:system_failed.service
 - rc.actor_probe_resource:service_resource_actor_probe_resource.actor-template
+- rc.actor_ctr:rc_constructors_actor_probe.actor-template
+- rc.actor_ctr:rc_constructors_actor_template.actor-template
 - rc.actor_ctr:system_actor_template.actor-template
 - rc.actor_resource:actor_resource_actor_req.actor-template
+- rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
 - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
+- rc.feed_ctr:rc_constructors_list_feed.actor-template
+- rc.feed_ctr:rc_constructors_index_tree_feed.actor-template
 - rc.import_job:import_job_failed_result.actor-template
 - rc.import_job:import_job_incomplete_result.actor-template
 - rc.import_job:import_job_job.actor-template
 - rc.import_job:import_job_succeeded_result.actor-template
 - rc.import_resource:import_resource_import_resource.actor-template
 - rc.init_targets:ctr_from_template_creg.service
+- rc.model_ctr:rc_constructors_model.actor-template
 - rc.rc:compile_resources.service
+- rc.rc_constructor:rc_constructors_module_wrapper.actor-template
 - rc.rc_job:rc_job_submit_factory.service
 - rc.rc_job:rc_job_job_target.actor-template
 - rc.rc_job_creg:rc_job_creg.service
@@ -23,6 +30,11 @@ import:
 - rc.rc_resource_creg:rc_resource_creg.service
 - rc.process_pool:process_pool_running.service
 - rc.python_module_resource_target:python_module_resource_target_python_module_req.actor-template
+- rc.service_ctr:rc_constructors_config_item_fixture.actor-template
+- rc.service_ctr:rc_constructors_fixture.actor-template
+- rc.service_ctr:rc_constructors_service.actor-template
+- rc.service_ctr:rc_constructors_service_probe.actor-template
+- rc.service_ctr:rc_constructors_service_template.actor-template
 - rc.service_ctr:system_finalizer_gen_service_template.actor-template
 - rc.service_ctr:system_service_template.actor-template
 - rc.service_probe_resource:service_resource_config_item_fixture_resource.actor-template
@@ -42,7 +54,12 @@ import:
 - rc.test_requirement:test_target_tested_code_resource.actor-template
 - rc.test_requirement:test_target_tested_service_req.actor-template
 - rc.test_requirement:test_target_tested_service_resource.actor-template
+- rc.ui_command_ctr:rc_constructors_ui_command.actor-template
+- rc.ui_command_ctr:rc_constructors_ui_model_command.actor-template
+- rc.ui_command_ctr:rc_constructors_universal_ui_command.actor-template
+- rc.ui_command_ctr:rc_constructors_universal_ui_model_command.actor-template
 - resource.partial_ref:partial_ref.service
+- resource.rc_constructor_creg:rc_constructor_creg.service
 - rpc.rpc_endpoint:cancel_rpc_request_futures.service
 - rpc.rpc_endpoint:rpc_error_response.actor-template
 - rpc.rpc_endpoint:rpc_request.actor-template
@@ -93,6 +110,7 @@ definitions:
         - rc.rc_resource_creg:rc_resource_creg.service
         - rc.process_pool:process_pool_running.service
         - resource.partial_ref:partial_ref.service
+        - resource.rc_constructor_creg:rc_constructor_creg.service
         - rpc.rpc_endpoint:cancel_rpc_request_futures.service
         - rpc.rpc_endpoint:rpc_target_creg.service
         - rpc.rpc_endpoint:rpc_message_creg.service
@@ -133,6 +151,23 @@ definitions:
         rpc_target_creg:
         - rpc.rpc_endpoint:rpc_function_target.actor-template
         - rc.rc_job:rc_job_job_target.actor-template
+        rc_constructor_creg:
+        - rc.actor_ctr:rc_constructors_actor_probe.actor-template
+        - rc.actor_ctr:rc_constructors_actor_template.actor-template
+        - rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
+        - rc.feed_ctr:rc_constructors_list_feed.actor-template
+        - rc.feed_ctr:rc_constructors_index_tree_feed.actor-template
+        - rc.model_ctr:rc_constructors_model.actor-template
+        - rc.rc_constructor:rc_constructors_module_wrapper.actor-template
+        - rc.service_ctr:rc_constructors_service.actor-template
+        - rc.service_ctr:rc_constructors_service_probe.actor-template
+        - rc.service_ctr:rc_constructors_service_template.actor-template
+        - rc.service_ctr:rc_constructors_fixture.actor-template
+        - rc.service_ctr:rc_constructors_config_item_fixture.actor-template
+        - rc.ui_command_ctr:rc_constructors_ui_command.actor-template
+        - rc.ui_command_ctr:rc_constructors_ui_model_command.actor-template
+        - rc.ui_command_ctr:rc_constructors_universal_ui_command.actor-template
+        - rc.ui_command_ctr:rc_constructors_universal_ui_model_command.actor-template
         rc_job_creg:
         - rc.import_job:import_job_job.actor-template
         - rc.test_job:test_job_job.actor-template

@@ -13,49 +13,6 @@ import:
 - legacy_type.system:service_template
 - rc.rc_constructor:rc_constructor.module
 - rc.service_probe_resource:service_probe_resource.module
-- resource.rc_constructor_creg:rc_constructor_creg.service
-
-associations:
-
-- bases:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.rc_constructors:service
-  key:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.rc_constructors:service
-  value: ServiceCtr.from_piece
-
-- bases:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.rc_constructors:service_probe
-  key:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.rc_constructors:service_probe
-  value: ServiceProbeCtr.from_piece
-
-- bases:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.rc_constructors:service_template
-  key:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.rc_constructors:service_template
-  value: ServiceTemplateCtr.from_piece
-
-- bases:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.rc_constructors:fixture
-  key:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.rc_constructors:fixture
-  value: FixtureCtr.from_piece
-
-- bases:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.rc_constructors:config_item_fixture
-  key:
-  - resource.rc_constructor_creg:rc_constructor_creg.service
-  - legacy_type.rc_constructors:config_item_fixture
-  value: ConfigItemFixtureCtr.from_piece
 
 definitions:
 
@@ -85,6 +42,13 @@ definitions:
       object: ServiceCtr
       attr_name: from_piece
 
+  rc_constructors_service.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.rc_constructors:service
+      function: ServiceCtr.from_piece
+      service_params: []
+
   ServiceProbeCtr:
     type: legacy_type.builtin:attribute
     value:
@@ -96,6 +60,13 @@ definitions:
     value:
       object: ServiceProbeCtr
       attr_name: from_piece
+
+  rc_constructors_service_probe.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.rc_constructors:service_probe
+      function: ServiceProbeCtr.from_piece
+      service_params: []
 
   CoreServiceTemplateCtr:
     type: legacy_type.builtin:attribute
@@ -135,6 +106,13 @@ definitions:
       object: ServiceTemplateCtr
       attr_name: from_piece
 
+  rc_constructors_service_template.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.rc_constructors:service_template
+      function: ServiceTemplateCtr.from_piece
+      service_params: []
+
   FixtureCtr:
     type: legacy_type.builtin:attribute
     value:
@@ -147,6 +125,13 @@ definitions:
       object: FixtureCtr
       attr_name: from_piece
 
+  rc_constructors_fixture.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.rc_constructors:fixture
+      function: FixtureCtr.from_piece
+      service_params: []
+
   ConfigItemFixtureCtr:
     type: legacy_type.builtin:attribute
     value:
@@ -158,3 +143,10 @@ definitions:
     value:
       object: ConfigItemFixtureCtr
       attr_name: from_piece
+
+  rc_constructors_config_item_fixture.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.rc_constructors:config_item_fixture
+      function: ConfigItemFixtureCtr.from_piece
+      service_params: []
