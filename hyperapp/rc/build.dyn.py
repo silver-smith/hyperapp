@@ -105,6 +105,8 @@ class Build:
 def _load_pyhon_modules(root_dir):
     for path in root_dir.rglob('*.dyn.py'):
         rel_path = path.relative_to(root_dir)
+        if 'test' in rel_path.parts:
+            continue
         stem = path.name[:-len('.dyn.py')]
         dir = path.parent.relative_to(root_dir)
         dir_name = str(dir).replace('/', '.')
