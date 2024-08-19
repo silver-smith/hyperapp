@@ -4,8 +4,7 @@ import threading
 from contextlib import contextmanager
 
 from .services import (
-    fn_to_ref,
-    partial_ref,
+    pyobj_creg,
     )
 from .code.subprocess_system_main import system_main
 from .code.subprocess_rpc_server_main import rpc_server_main
@@ -30,11 +29,11 @@ class _RpcServerProcess:
         return f"<RpcServerProcess: {self.name}>"
 
     def rpc_submit(self, servant_fn):
-        servant_fn_ref = fn_to_ref(servant_fn)
+        servant_fn_ref = pyobj_creg.actor_to_ref(servant_fn)
         return self._rpc_submit_factory(self.peer, self.identity, servant_fn_ref)
 
     def rpc_call(self, servant_fn):
-        servant_fn_ref = fn_to_ref(servant_fn)
+        servant_fn_ref = pyobj_creg.actor_to_ref(servant_fn)
         return self._rpc_call_factory(self.peer, self.identity, servant_fn_ref, self._timeout_sec)
 
     def proxy(self, servant_ref):
@@ -52,7 +51,8 @@ def _rpc_subprocess_callback(request, subprocess_name, subprocess_id, subprocess
     _callback_signals[subprocess_id].set()
 
 
-def subprocess_rpc_server_running(system_config, peer_registry, rpc_submit_factory, rpc_call_factory, subprocess_running, subprocess_transport):
+def subprocess_rpc_server_running(
+        system_config, partial_ref, peer_registry, rpc_submit_factory, rpc_call_factory, subprocess_running, subprocess_transport):
 
     @contextmanager
     def _subprocess_rpc_server(name, identity, timeout_sec=10):
@@ -64,7 +64,7 @@ def subprocess_rpc_server_running(system_config, peer_registry, rpc_submit_facto
             root_name='rpc_server_main',
             name=name,
             master_peer_piece=identity.peer.piece,
-            master_servant_ref=fn_to_ref(_rpc_subprocess_callback),
+            master_servant_ref=pyobj_creg.actor_to_ref(_rpc_subprocess_callback),
             subprocess_id=subprocess_id,
         )
         with subprocess_running(name, main_ref) as process:

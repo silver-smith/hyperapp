@@ -1,12 +1,12 @@
 import:
 - builtins:mosaic.service
+- builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.partial:param
 - legacy_type.partial:partial
 - legacy_type.raw:raw
-- resource.fn_to_res:fn_to_ref.service
+- legacy_type.system:service_template
 
 definitions:
 
@@ -19,8 +19,8 @@ definitions:
         htypes.partial.param: legacy_type.partial:param
         htypes.partial.partial: legacy_type.partial:partial
         htypes.raw.raw: legacy_type.raw:raw
-        services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
         services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
 
   partial_ref:
     type: legacy_type.builtin:attribute
@@ -29,6 +29,11 @@ definitions:
       attr_name: partial_ref
 
   partial_ref.service:
-    type: legacy_type.builtin:call
+    type: legacy_type.system:service_template
     value:
+      name: partial_ref
       function: partial_ref
+      free_params:
+      - fn
+      service_params: []
+      want_config: false

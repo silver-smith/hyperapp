@@ -35,7 +35,6 @@ import:
 - legacy_type.ui:ui_command_d
 - legacy_type.ui:ui_command_impl
 - legacy_type.ui:ui_model_command_impl
-- resource.fn_to_res:fn_to_ref.service
 - ui.command:command.module
 - ui.feed:feed_factory.service
 - ui.model_command:model_commands.service
@@ -139,7 +138,6 @@ definitions:
         htypes.tree.view: legacy_type.tree:view
         services.deduce_t: builtins:deduce_t.service
         services.feed_factory: ui.feed:feed_factory.service
-        services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
         services.get_model_layout: ui.visualizer:get_model_layout.service
         services.mark: common.mark:mark.service
         services.model_commands: ui.model_command:model_commands.service

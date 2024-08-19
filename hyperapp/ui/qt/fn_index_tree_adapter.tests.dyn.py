@@ -6,7 +6,6 @@ from hyperapp.common.htypes import tInt
 
 from . import htypes
 from .services import (
-    fn_to_ref,
     mosaic,
     pyobj_creg,
     )
@@ -39,7 +38,7 @@ def test_fn_adapter(ui_adapter_creg):
     adapter_piece = htypes.tree_adapter.fn_index_tree_adapter(
         element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
         key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
-        function=fn_to_ref(sample_tree_fn),
+        function=pyobj_creg.actor_to_ref(sample_tree_fn),
         params=('piece', 'parent'),
         )
     adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
@@ -101,7 +100,7 @@ async def test_feed_fn_adapter(ui_adapter_creg):
     adapter_piece = htypes.tree_adapter.fn_index_tree_adapter(
         element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
         key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
-        function=fn_to_ref(sample_feed_tree_fn),
+        function=pyobj_creg.actor_to_ref(sample_feed_tree_fn),
         params=('piece', 'parent', 'feed'),
         )
 
@@ -165,7 +164,7 @@ def test_fn_adapter_with_remote_context(
         adapter_piece = htypes.tree_adapter.fn_index_tree_adapter(
             element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
             key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
-            function=fn_to_ref(sample_remote_tree_fn),
+            function=pyobj_creg.actor_to_ref(sample_remote_tree_fn),
             params=('piece', 'parent'),
             )
         adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
@@ -184,6 +183,6 @@ def test_fn_adapter_with_remote_context(
         get_fn_called_flag_call = rpc_call_factory(
             sender_identity=identity,
             receiver_peer=process.peer,
-            servant_ref=fn_to_ref(get_fn_called_flag),
+            servant_ref=pyobj_creg.actor_to_ref(get_fn_called_flag),
             )
         assert get_fn_called_flag_call()

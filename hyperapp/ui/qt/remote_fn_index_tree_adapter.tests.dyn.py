@@ -6,7 +6,6 @@ from hyperapp.common.htypes import tInt
 
 from . import htypes
 from .services import (
-    fn_to_ref,
     mosaic,
     pyobj_creg,
     )
@@ -55,7 +54,7 @@ def test_remote_fn_adapter(
         adapter_piece = htypes.tree_adapter.remote_fn_index_tree_adapter(
             element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
             key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
-            function=fn_to_ref(sample_tree_fn),
+            function=pyobj_creg.actor_to_ref(sample_tree_fn),
             remote_peer=mosaic.put(process.peer.piece),
             params=('piece', 'parent'),
             )

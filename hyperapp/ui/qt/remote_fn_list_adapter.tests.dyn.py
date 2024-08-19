@@ -2,7 +2,6 @@ import logging
 
 from . import htypes
 from .services import (
-    fn_to_ref,
     mosaic,
     pyobj_creg,
     )
@@ -47,7 +46,7 @@ def test_remote_fn_adapter(
         model = htypes.list_adapter_tests.sample_list()
         adapter_piece = htypes.list_adapter.remote_fn_list_adapter(
             element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
-            function=fn_to_ref(sample_list_fn),
+            function=pyobj_creg.actor_to_ref(sample_list_fn),
             remote_peer=mosaic.put(process.peer.piece),
             params=('piece',),
             )

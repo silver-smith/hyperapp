@@ -4,7 +4,6 @@ from . import htypes
 from .services import (
     deduce_t,
     feed_factory,
-    fn_to_ref,
     get_model_layout,
     set_model_layout,
     mark,

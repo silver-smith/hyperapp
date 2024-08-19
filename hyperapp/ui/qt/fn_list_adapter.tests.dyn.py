@@ -4,7 +4,6 @@ import threading
 
 from . import htypes
 from .services import (
-    fn_to_ref,
     mosaic,
     pyobj_creg,
     )
@@ -31,7 +30,7 @@ def test_fn_adapter(ui_adapter_creg):
     model = htypes.list_adapter_tests.sample_list()
     adapter_piece = htypes.list_adapter.fn_list_adapter(
         element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
-        function=fn_to_ref(sample_list_fn),
+        function=pyobj_creg.actor_to_ref(sample_list_fn),
         params=('piece',),
         )
     adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
@@ -73,7 +72,7 @@ async def test_feed_fn_adapter(ui_adapter_creg):
     model = htypes.list_adapter_tests.sample_list()
     adapter_piece = htypes.list_adapter.fn_list_adapter(
         element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
-        function=fn_to_ref(sample_feed_list_fn),
+        function=pyobj_creg.actor_to_ref(sample_feed_list_fn),
         params=('piece', 'feed'),
         )
 
@@ -133,7 +132,7 @@ def test_fn_adapter_with_remote_context(
         model = htypes.list_adapter_tests.sample_list()
         adapter_piece = htypes.list_adapter.fn_list_adapter(
             element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
-            function=fn_to_ref(sample_remote_list_fn),
+            function=pyobj_creg.actor_to_ref(sample_remote_list_fn),
             params=('piece',),
             )
         adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
@@ -149,6 +148,6 @@ def test_fn_adapter_with_remote_context(
         get_fn_called_flag_call = rpc_call_factory(
             sender_identity=identity,
             receiver_peer=process.peer,
-            servant_ref=fn_to_ref(get_fn_called_flag),
+            servant_ref=pyobj_creg.actor_to_ref(get_fn_called_flag),
             )
         assert get_fn_called_flag_call()
