@@ -116,6 +116,8 @@ class ActorTemplateCtr(ActorTemplateCtrBase):
         resolved_tgt = target_set.factory.config_item_resolved(self._service_name, self._type_name)
         resolved_tgt.resolve(self)
         target_set.update_deps_for(resolved_tgt)
+        # Should be created to be added to config resource.
+        _ = target_set.factory.config_item_complete(self._service_name, self._type_name)
 
     def make_component(self, python_module, name_to_res=None):
         object = python_module
