@@ -40,11 +40,14 @@ class ConfigResourceTarget(Target):
     def get_output(self):
         service_list = []
         for service_name, target_set in sorted(self._service_to_targets.items()):
-            items = tuple(
-                mosaic.put(target.resource)
-                for target
-                in sorted(target_set, key=attrgetter('name'))
+            resource_list = [
+                target.resource
+                for target in target_set
                 if target.completed
+                ]
+            items = tuple(
+                mosaic.put(resource)
+                for resource in sorted(resource_list, key=self._sort_key)
                 )
             service_list.append(htypes.system.service_config(service_name, items))
         config = htypes.system.system_config(tuple(service_list))
@@ -52,3 +55,6 @@ class ConfigResourceTarget(Target):
             self._custom_resource_registry, self._module_name, resource_dir=self._resource_dir)
         resource_module['config'] = config
         return (self._path, resource_module.as_text)
+
+    def _sort_key(self, resource):
+        return self._custom_resource_registry.reverse_resolve(resource)
