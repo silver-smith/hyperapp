@@ -2,21 +2,13 @@
 
 import:
 - common.list_diff:list_diff.module
+- common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.list:state
 - legacy_type.list:view
-- ui.ui_adapter_creg:ui_adapter_creg.service
+- legacy_type.system:actor_template
 - ui.view:view.module
-- ui.view_registry:model_view_creg.service
-associations:
-- bases:
-  - ui.view_registry:model_view_creg.service
-  - legacy_type.list:view
-  key:
-  - ui.view_registry:model_view_creg.service
-  - legacy_type.list:view
-  value: ListView.from_piece
 definitions:
   ListView:
     type: legacy_type.builtin:attribute
@@ -38,4 +30,11 @@ definitions:
         code.view: ui.view:view.module
         htypes.list.state: legacy_type.list:state
         htypes.list.view: legacy_type.list:view
-        services.ui_adapter_creg: ui.ui_adapter_creg:ui_adapter_creg.service
+        services.mark: common.mark:mark.service
+  list_view.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.list:view
+      function: ListView.from_piece
+      service_params:
+      - ui_adapter_creg
