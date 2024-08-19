@@ -141,14 +141,17 @@ class UiModelCommand(UiCommandBase):
     command_ctr = htypes.rc_constructors.ui_model_command
 
 
-def mark():
-    return SimpleNamespace(
-        service=ServiceMarker(),
-        service2=service_probe_marker,
-        actor=ActorMarker(),
-        fixture=fixture_marker,
-        config_item_fixture=config_item_fixture,
-        model=model,
-        ui_command=UiCommand(),
-        ui_model_command=UiModelCommand(),
-        )
+mark = SimpleNamespace(
+    service=ServiceMarker(),
+    service2=service_probe_marker,
+    actor=ActorMarker(),
+    fixture=fixture_marker,
+    config_item_fixture=config_item_fixture,
+    model=model,
+    ui_command=UiCommand(),
+    ui_model_command=UiModelCommand(),
+    )
+
+
+def mark_service():
+    return mark

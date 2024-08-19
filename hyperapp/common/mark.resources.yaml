@@ -36,13 +36,13 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
 
-  mark:
+  mark_service:
     type: legacy_type.builtin:attribute
     value:
       object: mark.module
-      attr_name: mark
+      attr_name: mark_service
 
   mark.service:
     type: legacy_type.builtin:call
     value:
-      function: mark
+      function: mark_service
