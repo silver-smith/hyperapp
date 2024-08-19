@@ -1,8 +1,5 @@
-# Automatically generated file. Do not edit.
-
 import:
 - builtins:mosaic.service
-- common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
@@ -10,12 +7,9 @@ import:
 - legacy_type.partial:partial
 - legacy_type.raw:raw
 - resource.fn_to_res:fn_to_ref.service
+
 definitions:
-  partial_ref:
-    type: legacy_type.builtin:attribute
-    value:
-      object: partial_ref.module
-      attr_name: partial_ref
+
   partial_ref.module:
     type: legacy_type.builtin:python_module
     value:
@@ -26,8 +20,14 @@ definitions:
         htypes.partial.partial: legacy_type.partial:partial
         htypes.raw.raw: legacy_type.raw:raw
         services.fn_to_ref: resource.fn_to_res:fn_to_ref.service
-        services.mark: common.mark:mark.service
         services.mosaic: builtins:mosaic.service
+
+  partial_ref:
+    type: legacy_type.builtin:attribute
+    value:
+      object: partial_ref.module
+      attr_name: partial_ref
+
   partial_ref.service:
     type: legacy_type.builtin:call
     value:

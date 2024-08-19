@@ -1,12 +1,10 @@
 from . import htypes
 from .services import (
     fn_to_ref,
-    mark,
     mosaic,
     )
 
 
-@mark.service
 def partial_ref():
     def _partial_ref(fn, **kw):
         partial = htypes.partial.partial(

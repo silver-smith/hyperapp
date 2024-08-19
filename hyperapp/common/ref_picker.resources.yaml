@@ -1,5 +1,3 @@
-# Automatically generated file. Do not edit.
-
 import:
 - builtins:deduce_t.service
 - builtins:mosaic.service
@@ -8,16 +6,9 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
+
 definitions:
-  pick_refs:
-    type: legacy_type.builtin:attribute
-    value:
-      object: ref_picker.module
-      attr_name: pick_refs
-  pick_refs.service:
-    type: legacy_type.builtin:call
-    value:
-      function: pick_refs
+
   ref_picker.module:
     type: legacy_type.builtin:python_module
     value:
@@ -28,3 +19,14 @@ definitions:
         services.mark: common.mark:mark.service
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
+
+  pick_refs:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ref_picker.module
+      attr_name: pick_refs
+
+  pick_refs.service:
+    type: legacy_type.builtin:call
+    value:
+      function: pick_refs

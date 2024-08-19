@@ -2,7 +2,6 @@ import inspect
 
 from . import htypes
 from .services import (
-    mark,
     mosaic,
     pyobj_creg,
     )
@@ -17,12 +16,10 @@ def _fn_to_res(fn):
         )
 
 
-@mark.service
 def fn_to_res():
     return _fn_to_res
 
 
-@mark.service
 def fn_to_ref():
     def _fn_to_ref(fn):
         return mosaic.put(_fn_to_res(fn))

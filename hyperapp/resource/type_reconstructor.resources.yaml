@@ -1,5 +1,3 @@
-# Automatically generated file. Do not edit.
-
 import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:exception_mt
@@ -8,7 +6,9 @@ import:
 - legacy_type.builtin:optional_mt
 - legacy_type.builtin:python_module
 - legacy_type.builtin:record_mt
+
 definitions:
+
   type_reconstructor.module:
     type: legacy_type.builtin:python_module
     value:
