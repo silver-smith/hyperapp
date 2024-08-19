@@ -3,6 +3,8 @@ import yaml
 from collections import namedtuple
 from functools import cached_property
 
+from yaml.scanner import ScannerError
+
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.resource.resource_registry import UnknownResourceName
 from hyperapp.common.association_registry import Association
@@ -350,7 +352,12 @@ class ResourceModule:
             text = self._text
         else:
             text = self._path.read_text()
-        return yaml.safe_load(text)
+        try:
+            return yaml.safe_load(text)
+        except ScannerError as x:
+            if self._text:
+                raise
+            raise RuntimeError(f"In {self._path}: {x}") from x
 
     def _read_definition(self, name, data):
         log.debug("%s: Load definition %r: %s", self._name, name, data)
