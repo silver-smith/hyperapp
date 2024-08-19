@@ -11,7 +11,6 @@ from hyperapp.common.htypes.packet_coders import packet_coders
 
 from . import htypes
 from .services import (
-    mark,
     mosaic,
     )
 
