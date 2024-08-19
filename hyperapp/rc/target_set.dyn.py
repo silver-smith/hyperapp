@@ -82,6 +82,13 @@ class TargetSet:
         return all(t.completed for t in self._name_to_target.values())
 
     @property
+    def completed_python_module_resources(self):
+        return [
+            tgt for tgt in self._name_to_target.values()
+            if isinstance(tgt, PythonModuleResourceTarget) and tgt.completed
+            ]
+
+    @property
     def count(self):
         return len(self._name_to_target)
 

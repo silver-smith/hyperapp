@@ -69,7 +69,7 @@ def init_targets(cfg_item_creg, ctr_from_template_creg, system_config, root_dir,
                     add_common_mark_services(resource_tgt, target_set)
                 continue
         alias_tgt = ImportTargetAlias(src, custom_resource_registry, type_src_list)
-        import_tgt = ImportTarget(src, type_src_list, alias_tgt)
+        import_tgt = ImportTarget(target_set, src, type_src_list, alias_tgt)
         alias_tgt.set_import_target(import_tgt)
         all_imports_known_tgt.add_import_target(import_tgt)
         target_set.add(import_tgt)

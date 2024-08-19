@@ -59,6 +59,10 @@ class PythonModuleResourceTarget(Target):
     def module_name(self):
         return self._src.name
 
+    @property
+    def code_name(self):
+        return self._src.stem
+
 
 class ManualPythonModuleResourceTarget(PythonModuleResourceTarget):
 

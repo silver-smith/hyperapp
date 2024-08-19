@@ -118,7 +118,8 @@ class ImportTargetAlias(Target):
 
 class ImportTarget(Target):
 
-    def __init__(self, python_module_src, type_src_list, alias, idx=1, req_to_target=None):
+    def __init__(self, target_set, python_module_src, type_src_list, alias, idx=1, req_to_target=None):
+        self._target_set = target_set
         self._src = python_module_src
         self._type_src_list = type_src_list
         self._alias = alias
@@ -155,6 +156,9 @@ class ImportTarget(Target):
             yield ImportResource.from_type_src(src)
         for req, target in self._req_to_target.items():
             yield from req.make_resource_list(target)
+        # Some modules, like common.mark, are used before all imports are stated.
+        for target in self._target_set.completed_python_module_resources:
+            yield ImportResource(['code', target.code_name], target.python_module_piece)
 
     def handle_job_result(self, target_set, result):
         self._completed = True
@@ -168,7 +172,7 @@ class ImportTarget(Target):
         self._alias.set_requirements(req_to_target)
 
     def create_next_target(self, req_to_target):
-        target = ImportTarget(self._src, self._type_src_list, self._alias, self._idx + 1, req_to_target)
+        target = ImportTarget(self._target_set, self._src, self._type_src_list, self._alias, self._idx + 1, req_to_target)
         self._alias.set_import_target(target)
         return target
 
