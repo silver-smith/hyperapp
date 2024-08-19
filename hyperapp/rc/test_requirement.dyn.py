@@ -10,6 +10,7 @@ from .services import (
     )
 from .code.rc_requirement import Requirement
 from .code.rc_resource import Resource
+from .code.python_module_resource_target import PythonModuleResourceTarget
 
 
 @dataclass(frozen=True, unsafe_hash=True)
@@ -76,7 +77,12 @@ class TestedCodeReq(Requirement):
         return htypes.test_target.tested_code_req(self.import_path, self.code_name)
 
     def get_target(self, target_factory):
-        return target_factory.python_module_imported_by_code_name(self.code_name)
+        try:
+            return target_factory.python_module_imported_by_code_name(self.code_name)
+        except KeyError:
+            target = target_factory.python_module_resource_by_code_name(self.code_name)
+            assert target.is_manual
+            return target
 
     @property
     def is_test_requirement(self):
@@ -84,23 +90,29 @@ class TestedCodeReq(Requirement):
 
     def update_tested_target(self, import_target, test_target, target_set):
         tested_resource_tgt = target_set.factory.python_module_resource_by_code_name(self.code_name)
-        tested_resource_tgt.add_test(test_target, target_set)
+        if not tested_resource_tgt.is_manual:
+            tested_resource_tgt.add_test(test_target, target_set)
 
     def make_resource_list(self, target):
-        module_name, recorder_piece, module_piece = target.recorded_python_module
-        recorder_res = RecorderResource(
-            recorder_module_name=module_name,
-            recorder_piece=recorder_piece,
-            )
-        constructors_picker = ConstructorsPickerResource(
-            module_name=module_name,
-            module_piece=module_piece,
-            )
+        if isinstance(target, PythonModuleResourceTarget):
+            module_piece = target.python_module_piece
+            resources = []
+        else:
+            module_name, recorder_piece, module_piece = target.recorded_python_module
+            recorder_res = RecorderResource(
+                recorder_module_name=module_name,
+                recorder_piece=recorder_piece,
+                )
+            constructors_picker = ConstructorsPickerResource(
+                module_name=module_name,
+                module_piece=module_piece,
+                )
+            resources = [*target.test_resources, recorder_res, constructors_picker]
         tested_code_res = TestedCodeResource(
             import_name=self.import_path,
             module_piece=module_piece,
             )
-        return [*target.test_resources, recorder_res, constructors_picker, tested_code_res]
+        return [*resources, tested_code_res]
 
 
 @dataclass(frozen=True, unsafe_hash=True)

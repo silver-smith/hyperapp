@@ -55,6 +55,10 @@ class PythonModuleResourceTarget(Target):
     def get_resource(self, ctr):
         return ctr.get_component(self._resource_module)
 
+    @property
+    def module_name(self):
+        return self._src.name
+
 
 class ManualPythonModuleResourceTarget(PythonModuleResourceTarget):
 
@@ -66,6 +70,10 @@ class ManualPythonModuleResourceTarget(PythonModuleResourceTarget):
 
     @property
     def completed(self):
+        return True
+
+    @property
+    def is_manual(self):
         return True
 
     @property
@@ -121,12 +129,12 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
             self._completed = True
 
     @property
-    def module_name(self):
-        return self._src.name
-
-    @property
     def has_output(self):
         return True
+
+    @property
+    def is_manual(self):
+        return False
 
     @property
     def import_alias_tgt(self):

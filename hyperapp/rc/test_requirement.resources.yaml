@@ -14,6 +14,7 @@ import:
 - legacy_type.test_target:tested_code_resource
 - legacy_type.test_target:tested_service_req
 - legacy_type.test_target:tested_service_resource
+- rc.python_module_resource_target:python_module_resource_target.module
 - rc.rc_requirement:rc_requirement.module
 - rc.rc_resource:rc_resource.module
 
@@ -39,6 +40,7 @@ definitions:
         services.web: builtins:web.service
         code.rc_requirement: rc.rc_requirement:rc_requirement.module
         code.rc_resource: rc.rc_resource:rc_resource.module
+        code.python_module_resource_target: rc.python_module_resource_target:python_module_resource_target.module
 
   TestedServiceReq:
     type: legacy_type.builtin:attribute
