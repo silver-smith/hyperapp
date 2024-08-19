@@ -9,6 +9,8 @@ import:
 - rc.actor_probe_resource:service_resource_actor_probe_resource.actor-template
 - rc.actor_resource:actor_resource_actor_req.actor-template
 - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
+- rc.htest.sample_service_1:sample_fn_service_1.service
+- rc.htest.sample_service_1:sample_value_service_1.service
 - rc.import_job:import_job_failed_result.actor-template
 - rc.import_job:import_job_incomplete_result.actor-template
 - rc.import_job:import_job_job.actor-template
@@ -32,8 +34,6 @@ import:
 - rc.service_resource:service_resource_service_req.actor-template
 - rc.service_target:service_service_complete_req.actor-template
 - rc.service_target:service_service_found_req.actor-template
-- rc.test.sample_service_1:sample_fn_service_1.service
-- rc.test.sample_service_1:sample_value_service_1.service
 - rc.test_job:test_job_failed_result.actor-template
 - rc.test_job:test_job_incomplete_result.actor-template
 - rc.test_job:test_job_job.actor-template
@@ -142,6 +142,8 @@ definitions:
         - common.bundler:bundler.service
         - common.system_stop:stop_signal.service
         - common.system_stop:system_failed.service
+        - rc.htest.sample_service_1:sample_fn_service_1.service
+        - rc.htest.sample_service_1:sample_value_service_1.service
         - rc.init_targets:ctr_from_template_creg.service
         - rc.process_pool:process_pool_running.service
         - rc.rc:compile_resources.service
@@ -150,8 +152,6 @@ definitions:
         - rc.rc_job_result_creg:rc_job_result_creg.service
         - rc.rc_requirement_creg:rc_requirement_creg.service
         - rc.rc_resource_creg:rc_resource_creg.service
-        - rc.test.sample_service_1:sample_fn_service_1.service
-        - rc.test.sample_service_1:sample_value_service_1.service
         - rpc.rpc_call:rpc_call_factory.service
         - rpc.rpc_call:rpc_submit_factory.service
         - rpc.rpc_call:rpc_submit_target_factory.service
