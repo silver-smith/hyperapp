@@ -120,7 +120,7 @@ async def test_feed_fn_adapter(ui_adapter_creg):
     row_2_id = adapter.row_id(row_1_id, 2)
     assert adapter.cell_data(row_2_id, 0) == 23
 
-    diff = await queue.get()
+    diff = await asyncio.wait_for(queue.get(), timeout=5)
     assert isinstance(diff, VisualTreeDiffAppend), repr(diff)
     assert diff.parent_id == 0
 

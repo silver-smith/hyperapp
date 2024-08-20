@@ -89,7 +89,7 @@ async def test_feed_fn_adapter(ui_adapter_creg):
     assert adapter.cell_data(1, 0) == 22
     assert adapter.cell_data(2, 1) == "Third item"
 
-    diff = await queue.get()
+    diff = await asyncio.wait_for(queue.get(), timeout=5)
     assert isinstance(diff, ListDiff.Append), repr(diff)
     assert diff.item.id == 44
 
