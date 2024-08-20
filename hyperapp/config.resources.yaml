@@ -5,10 +5,16 @@ import:
 - common.system_stop:stop_signal.service
 - common.system_stop:system_failed.service
 - legacy_type.system:system_config
+- rc.actor_ctr:rc_constructors_actor_probe.actor-template
+- rc.actor_ctr:rc_constructors_actor_template.actor-template
 - rc.actor_ctr:system_actor_template.actor-template
 - rc.actor_probe_resource:service_resource_actor_probe_resource.actor-template
 - rc.actor_resource:actor_resource_actor_req.actor-template
+- rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
 - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
+- rc.ctr_collector:ctr_collector.service
+- rc.feed_ctr:rc_constructors_index_tree_feed.actor-template
+- rc.feed_ctr:rc_constructors_list_feed.actor-template
 - rc.htest.sample_service_1:sample_fn_service_1.service
 - rc.htest.sample_service_1:sample_value_service_1.service
 - rc.import_job:import_job_failed_result.actor-template
@@ -17,6 +23,7 @@ import:
 - rc.import_job:import_job_succeeded_result.actor-template
 - rc.import_resource:import_resource_import_resource.actor-template
 - rc.init_targets:ctr_from_template_creg.service
+- rc.model_ctr:rc_constructors_model.actor-template
 - rc.process_pool:process_pool_running.service
 - rc.python_module_resource_target:python_module_resource_target_python_module_req.actor-template
 - rc.rc:compile_resources.service
@@ -26,6 +33,11 @@ import:
 - rc.rc_job_result_creg:rc_job_result_creg.service
 - rc.rc_requirement_creg:rc_requirement_creg.service
 - rc.rc_resource_creg:rc_resource_creg.service
+- rc.service_ctr:rc_constructors_config_item_fixture.actor-template
+- rc.service_ctr:rc_constructors_fixture.actor-template
+- rc.service_ctr:rc_constructors_service.actor-template
+- rc.service_ctr:rc_constructors_service_probe.actor-template
+- rc.service_ctr:rc_constructors_service_template.actor-template
 - rc.service_ctr:system_finalizer_gen_service_template.actor-template
 - rc.service_ctr:system_service_template.actor-template
 - rc.service_probe_resource:service_resource_config_item_fixture_resource.actor-template
@@ -45,7 +57,12 @@ import:
 - rc.test_requirement:test_target_tested_code_resource.actor-template
 - rc.test_requirement:test_target_tested_service_req.actor-template
 - rc.test_requirement:test_target_tested_service_resource.actor-template
+- rc.ui_command_ctr:rc_constructors_ui_command.actor-template
+- rc.ui_command_ctr:rc_constructors_ui_model_command.actor-template
+- rc.ui_command_ctr:rc_constructors_universal_ui_command.actor-template
+- rc.ui_command_ctr:rc_constructors_universal_ui_model_command.actor-template
 - resource.partial_ref:partial_ref.service
+- resource.rc_constructor_creg:rc_constructor_creg.service
 - rpc.rpc_call:rpc_call_factory.service
 - rpc.rpc_call:rpc_submit_factory.service
 - rpc.rpc_call:rpc_submit_target_factory.service
@@ -100,6 +117,22 @@ definitions:
         - transport.rsa_identity:rsa_identity_rsa_parcel.actor-template
         peer_registry:
         - transport.rsa_identity:rsa_identity_rsa_peer.actor-template
+        rc_constructor_creg:
+        - rc.actor_ctr:rc_constructors_actor_probe.actor-template
+        - rc.actor_ctr:rc_constructors_actor_template.actor-template
+        - rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
+        - rc.feed_ctr:rc_constructors_index_tree_feed.actor-template
+        - rc.feed_ctr:rc_constructors_list_feed.actor-template
+        - rc.model_ctr:rc_constructors_model.actor-template
+        - rc.service_ctr:rc_constructors_config_item_fixture.actor-template
+        - rc.service_ctr:rc_constructors_fixture.actor-template
+        - rc.service_ctr:rc_constructors_service.actor-template
+        - rc.service_ctr:rc_constructors_service_probe.actor-template
+        - rc.service_ctr:rc_constructors_service_template.actor-template
+        - rc.ui_command_ctr:rc_constructors_ui_command.actor-template
+        - rc.ui_command_ctr:rc_constructors_ui_model_command.actor-template
+        - rc.ui_command_ctr:rc_constructors_universal_ui_command.actor-template
+        - rc.ui_command_ctr:rc_constructors_universal_ui_model_command.actor-template
         rc_job_creg:
         - rc.import_job:import_job_job.actor-template
         - rc.test_job:test_job_job.actor-template
@@ -143,6 +176,7 @@ definitions:
         - common.bundler:bundler.service
         - common.system_stop:stop_signal.service
         - common.system_stop:system_failed.service
+        - rc.ctr_collector:ctr_collector.service
         - rc.htest.sample_service_1:sample_fn_service_1.service
         - rc.htest.sample_service_1:sample_value_service_1.service
         - rc.init_targets:ctr_from_template_creg.service
@@ -154,6 +188,7 @@ definitions:
         - rc.rc_requirement_creg:rc_requirement_creg.service
         - rc.rc_resource_creg:rc_resource_creg.service
         - resource.partial_ref:partial_ref.service
+        - resource.rc_constructor_creg:rc_constructor_creg.service
         - rpc.rpc_call:rpc_call_factory.service
         - rpc.rpc_call:rpc_submit_factory.service
         - rpc.rpc_call:rpc_submit_target_factory.service
