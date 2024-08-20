@@ -1,8 +1,7 @@
 import asyncio
+import inspect
 import logging
 import weakref
-
-from hyperapp.common.resource_ctr import add_caller_module_constructor
 
 from . import htypes
 from .services import (
@@ -19,7 +18,8 @@ log = logging.getLogger(__name__)
 
 class FeedDiscoverer:
 
-    def __init__(self, piece_t):
+    def __init__(self, ctr_collector, piece_t):
+        self._ctr_collector = ctr_collector
         self._piece_t = piece_t
         self.ctr = None
         self._constructor_added = False
@@ -33,10 +33,13 @@ class FeedDiscoverer:
 
     async def send(self, diff):
         log.info("Feed discoverer: send: %s", diff)
-        await self._deduce_and_store_ctr(diff)
+        frame = inspect.stack()[1].frame
+        python_module_name = frame.f_globals['__name__']
+        module_name = self._ctr_collector.get_module_name(python_module_name)
+        assert module_name
+        await self._deduce_and_store_ctr(module_name, diff)
         if self.ctr and not self._constructor_added:
-            add_caller_module_constructor(2, mosaic.put(self.ctr))
-            self._constructor_added = True
+            self._add_constructor()
         for subscriber in self._subscribers:
             subscriber.process_diff(diff)
 
@@ -46,7 +49,7 @@ class FeedDiscoverer:
                 async with asyncio.timeout(5):
                     await self._got_diff.wait()
 
-    async def _deduce_and_store_ctr(self, diff):
+    async def _deduce_and_store_ctr(self, module_name, diff):
         if isinstance(diff, (
                 ListDiff.Insert,
                 ListDiff.Append,
@@ -55,6 +58,7 @@ class FeedDiscoverer:
             element_t = deduce_t(diff.item)
             element_t_ref = pyobj_creg.actor_to_ref(element_t)
             ctr = htypes.rc_constructors.list_feed(
+                module_name=module_name,
                 t=mosaic.put(self._piece_t_res),
                 element_t=element_t_ref,
                 )
@@ -78,6 +82,7 @@ class FeedDiscoverer:
             element_t = deduce_t(diff.item)
             element_t_ref = pyobj_creg.actor_to_ref(element_t)
             ctr = htypes.rc_constructors.index_tree_feed(
+                module_name=module_name,
                 t=mosaic.put(self._piece_t_res),
                 element_t=element_t_ref,
                 )
@@ -99,18 +104,22 @@ class FeedDiscoverer:
             self._got_diff_count += 1
             self._got_diff.notify_all()
 
+    def _add_constructor(self):
+        self._ctr_collector.add_constructor(self.ctr)
+        self._constructor_added = True
+
 
 _piece_to_feed = {}
 
 
 @mark.fixture
-def feed_factory(config, piece):
+def feed_factory(config, ctr_collector, piece):
     log.info("Discovered feed piece: %s", piece)
     try:
         return _piece_to_feed[piece]
     except KeyError:
         pass
     piece_t = deduce_t(piece)
-    feed = FeedDiscoverer(piece_t)
+    feed = FeedDiscoverer(ctr_collector, piece_t)
     _piece_to_feed[piece] = feed
     return feed

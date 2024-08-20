@@ -62,14 +62,11 @@ universal_ui_model_command = record(universal_ui_command)
 
 
 list_feed = record:
+  module_name: string
   t: ref
   element_t: ref
 
 index_tree_feed = record:
+  module_name: string
   t: ref
   element_t: ref
-
-
-module_wrapper = record:
-  module_name: string
-  constructor: ref

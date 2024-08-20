@@ -182,7 +182,7 @@ class TestJob:
         return htypes.test_job.succeeded_result(
             used_imports=used_imports,
             requirements=req_refs,
-            constructors=tuple(self._enum_constructor_refs(system))
+            constructors=tuple(self._enum_constructor_refs(system, ctr_collector))
             )
 
     def _import_module(self, module_piece):
@@ -280,7 +280,7 @@ class TestJob:
                 imports=tuple(recorder.used_imports),
                 )
 
-    def _enum_constructor_refs(self, system):
+    def _enum_constructor_refs(self, system, ctr_collector):
         for name, rec in system.resolved_templates.items():
             log.info("Resolved service %s: %s", name, rec)
             ctr = ServiceTemplateCtr.from_rec(name, rec)
@@ -289,3 +289,5 @@ class TestJob:
             log.info("Resolved actor %s.%s: %s", service_name, t, rec)
             ctr = ActorTemplateCtr.from_rec(service_name, t, rec)
             yield mosaic.put(ctr.piece)
+        for ctr in ctr_collector.constructors:
+            yield mosaic.put(ctr)
