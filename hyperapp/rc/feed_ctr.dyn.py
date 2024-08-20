@@ -2,19 +2,21 @@ from . import htypes
 from .services import (
     pyobj_creg,
     )
-from .code.rc_constructor import Constructor
+from .code.rc_constructor import ModuleCtr
 
 
-class FeedCtr(Constructor):
+class FeedCtr(ModuleCtr):
 
     @classmethod
     def from_piece(cls, piece):
         return cls(
+            module_name=piece.module_name,
             t=pyobj_creg.invite(piece.t),
             element_t=pyobj_creg.invite(piece.element_t),
             )
 
-    def __init__(self, t, element_t):
+    def __init__(self, module_name, t, element_t):
+        super().__init__(module_name)
         self._t = t
         self._element_t = element_t
 
