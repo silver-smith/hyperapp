@@ -181,7 +181,7 @@ class TestJob:
         return htypes.test_job.succeeded_result(
             used_imports=used_imports,
             requirements=req_refs,
-            constructors=tuple(self._enum_constructor_refs(system, all_resources))
+            constructors=tuple(self._enum_constructor_refs(system))
             )
 
     def _import_module(self, module_piece):
@@ -207,12 +207,19 @@ class TestJob:
         params = tuple(inspect.signature(test_fn).parameters)
         return FixtureProbeTemplate(test_fn, params)
 
+    def _ctr_collector_config(self, resource_list):
+        config = {}
+        for resource in resource_list:
+            config.update(resource.ctr_collector_config())
+        return config
+
     def _prepare_system(self, module, resources):
         system = SystemProbe()
         system.load_config(self._system_config)
         self._configure_system(resources, system)
         root_probe = self._make_root_fixture(module)
         system.update_config('system', {self._root_name: root_probe})
+        system.update_config('ctr_collector', self._ctr_collector_config(resources))
         return system
 
     def _run_system(self, system):
@@ -271,7 +278,7 @@ class TestJob:
                 imports=tuple(recorder.used_imports),
                 )
 
-    def _enum_constructor_refs(self, system, resource_list):
+    def _enum_constructor_refs(self, system):
         for name, rec in system.resolved_templates.items():
             log.info("Resolved service %s: %s", name, rec)
             ctr = ServiceTemplateCtr.from_rec(name, rec)
@@ -280,6 +287,3 @@ class TestJob:
             log.info("Resolved actor %s.%s: %s", service_name, t, rec)
             ctr = ActorTemplateCtr.from_rec(service_name, t, rec)
             yield mosaic.put(ctr.piece)
-        for resource in resource_list:
-            for ctr_piece in resource.pick_constructors():
-                yield mosaic.put(ctr_piece)

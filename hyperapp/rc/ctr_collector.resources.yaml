@@ -1,0 +1,28 @@
+import:
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.system:service_template
+
+definitions:
+
+  ctr_collector.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: ctr_collector
+      file_name: ctr_collector.dyn.py
+      import_list: {}
+
+  ctr_collector:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ctr_collector.module
+      attr_name: ctr_collector
+
+  ctr_collector.service:
+    type: legacy_type.system:service_template
+    value:
+      name: ctr_collector
+      function: ctr_collector
+      free_params: []
+      service_params: []
+      want_config: true

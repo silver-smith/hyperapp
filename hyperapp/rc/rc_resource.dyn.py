@@ -11,5 +11,5 @@ class Resource:
     def configure_system(self, system):
         pass
 
-    def pick_constructors(self):
-        return []
+    def ctr_collector_config(self):
+        return {}

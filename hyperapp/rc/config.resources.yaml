@@ -9,6 +9,7 @@ import:
 - rc.actor_ctr:rc_constructors_actor_template.actor-template
 - rc.actor_ctr:system_actor_template.actor-template
 - rc.actor_resource:actor_resource_actor_req.actor-template
+- rc.ctr_collector:ctr_collector.service
 - rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
 - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
 - rc.feed_ctr:rc_constructors_list_feed.actor-template
@@ -21,7 +22,6 @@ import:
 - rc.init_targets:ctr_from_template_creg.service
 - rc.model_ctr:rc_constructors_model.actor-template
 - rc.rc:compile_resources.service
-- rc.rc_constructor:rc_constructors_module_wrapper.actor-template
 - rc.rc_job:rc_job_submit_factory.service
 - rc.rc_job:rc_job_job_target.actor-template
 - rc.rc_job_creg:rc_job_creg.service
@@ -101,6 +101,7 @@ definitions:
         - common.bundler:bundler.service
         - common.system_stop:stop_signal.service
         - common.system_stop:system_failed.service
+        - rc.ctr_collector:ctr_collector.service
         - rc.init_targets:ctr_from_template_creg.service
         - rc.rc:compile_resources.service
         - rc.rc_job:rc_job_submit_factory.service
@@ -158,7 +159,6 @@ definitions:
         - rc.feed_ctr:rc_constructors_list_feed.actor-template
         - rc.feed_ctr:rc_constructors_index_tree_feed.actor-template
         - rc.model_ctr:rc_constructors_model.actor-template
-        - rc.rc_constructor:rc_constructors_module_wrapper.actor-template
         - rc.service_ctr:rc_constructors_service.actor-template
         - rc.service_ctr:rc_constructors_service_probe.actor-template
         - rc.service_ctr:rc_constructors_service_template.actor-template

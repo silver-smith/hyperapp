@@ -1,7 +1,5 @@
 from dataclasses import dataclass
 
-from hyperapp.common.resource_ctr import RESOURCE_MODULE_CTR_NAME
-
 from . import htypes
 from .services import (
     mosaic,
@@ -247,10 +245,6 @@ class ConstructorsPickerResource(Resource):
             module=mosaic.put(self._module_piece),
             )
 
-    def pick_constructors(self):
+    def ctr_collector_config(self):
         module = pyobj_creg.animate(self._module_piece)
-        constructors = getattr(module, RESOURCE_MODULE_CTR_NAME, [])
-        return [
-            htypes.rc_constructors.module_wrapper(self._module_name, ctr)
-            for ctr in constructors
-            ]
+        return {self._module_name: module}
