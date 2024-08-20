@@ -8,4 +8,4 @@ cd "$( dirname "$0" )"
 
 set -x
 
-time ./rc.py --timeout=5 "$@"
+time ./rc.py --timeout=7 "$@"
