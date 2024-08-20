@@ -9,9 +9,6 @@ class CtrCollector:
             }
         self._constructors = []
 
-    def add_module(self, module_name, module):
-        self._module_to_name[module] = module_name
-
     def get_module_name(self, module):
         return self._module_to_name.get(module)
 

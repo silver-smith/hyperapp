@@ -22,7 +22,7 @@ from .code.service_ctr import ServiceTemplateCtr
 from .code.actor_ctr import ActorTemplateCtr
 from .code.service_resource import ServiceReq
 from .code.actor_resource import ActorReq
-from .code.system import UnknownServiceError
+from .code.system import UnknownServiceError, NotATemplate
 from .code.system_probe import ConfigItemRequiredError, FixtureProbeTemplate, SystemProbe
 
 log  = logging.getLogger(__name__)
@@ -160,6 +160,7 @@ class TestJob:
         status, error_msg, traceback, module = self._import_module(module_piece)
         if status == JobStatus.ok:
             system = self._prepare_system(module, all_resources)
+            ctr_collector = system.resolve_service('ctr_collector')
             status, error_msg, traceback, req_set = self._run_system(system)
         else:
             req_set = set()
@@ -210,7 +211,8 @@ class TestJob:
     def _ctr_collector_config(self, resource_list):
         config = {}
         for resource in resource_list:
-            config.update(resource.ctr_collector_config())
+            for key, value in resource.ctr_collector_config().items():
+                config.update({key: NotATemplate(value)})
         return config
 
     def _prepare_system(self, module, resources):
