@@ -35,11 +35,12 @@ class FeedDiscoverer:
         log.info("Feed discoverer: send: %s", diff)
         frame = inspect.stack()[1].frame
         python_module_name = frame.f_globals['__name__']
-        module_name = self._ctr_collector.get_module_name(python_module_name)
-        assert module_name
-        await self._deduce_and_store_ctr(module_name, diff)
-        if self.ctr and not self._constructor_added:
-            self._add_constructor()
+        module_info = self._ctr_collector.get_module_name(python_module_name)
+        assert module_info != self._ctr_collector.NotSet
+        if module_info != self._ctr_collector.Ignore:
+            await self._deduce_and_store_ctr(module_info.module_name, diff)
+            if self.ctr and not self._constructor_added:
+                self._add_constructor()
         for subscriber in self._subscribers:
             subscriber.process_diff(diff)
 
