@@ -8,7 +8,7 @@ class NoOpMarker:
 
     def __call__(self, *args, **kw):
         if not kw and len(args) == 1:
-            if not isinstance(args[0], Type):
+            if not isinstance(args[0], (Type, str)):
                 return args[0]
         return NoOpMarker()
 
