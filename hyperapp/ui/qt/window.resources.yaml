@@ -4,7 +4,6 @@ import:
 - builtins:mosaic.service
 - builtins:web.service
 - common.list_diff:list_diff.module
-- common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
@@ -21,42 +20,6 @@ import:
 - legacy_type.window:view
 - ui.view:view.module
 - ui.view_registry:view_creg.service
-associations:
-- bases:
-  - command_properties_d
-  - duplicate_window.impl
-  key:
-  - command_properties_d
-  - duplicate_window.impl
-  value: duplicate_window.command_properties
-- bases:
-  - command_properties_d
-  - quit.impl
-  key:
-  - command_properties_d
-  - quit.impl
-  value: quit.command_properties
-- bases:
-  - ui.view_registry:view_creg.service
-  - legacy_type.window:view
-  key:
-  - ui.view_registry:view_creg.service
-  - legacy_type.window:view
-  value: WindowView.from_piece
-- bases:
-  - ui_command_d
-  - legacy_type.window:view
-  key:
-  - ui_command_d
-  - legacy_type.window:view
-  value: duplicate_window.command
-- bases:
-  - ui_command_d
-  - legacy_type.window:view
-  key:
-  - ui_command_d
-  - legacy_type.window:view
-  value: quit.command
 definitions:
   WindowView:
     type: legacy_type.builtin:attribute
@@ -141,7 +104,6 @@ definitions:
         htypes.window.size: legacy_type.window:size
         htypes.window.state: legacy_type.window:state
         htypes.window.view: legacy_type.window:view
-        services.mark: common.mark:mark.service
         services.mosaic: builtins:mosaic.service
         services.view_creg: ui.view_registry:view_creg.service
         services.web: builtins:web.service

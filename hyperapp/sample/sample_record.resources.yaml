@@ -1,7 +1,6 @@
 # Automatically generated file. Do not edit.
 
 import:
-- common.mark:mark.service
 - legacy_type.builtin:python_module
 - legacy_type.sample_record:item
 definitions:
@@ -12,4 +11,3 @@ definitions:
       file_name: sample_record.dyn.py
       import_list:
         htypes.sample_record.item: legacy_type.sample_record:item
-        services.mark: common.mark:mark.service

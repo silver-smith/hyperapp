@@ -14,14 +14,6 @@ import:
 - ui.qt.tree_adapter:tree_adapter.module
 - ui.ui_adapter_creg:ui_adapter_creg.service
 - ui.visualizer:pick_visualizer_info.service
-associations:
-- bases:
-  - ui.ui_adapter_creg:ui_adapter_creg.service
-  - legacy_type.list_to_tree_adapter:adapter
-  key:
-  - ui.ui_adapter_creg:ui_adapter_creg.service
-  - legacy_type.list_to_tree_adapter:adapter
-  value: ListToTreeAdapter.from_piece
 definitions:
   ListToTreeAdapter:
     type: legacy_type.builtin:attribute

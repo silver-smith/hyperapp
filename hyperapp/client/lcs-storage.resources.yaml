@@ -25,7 +25,6 @@ import:
 - models.data_browser:record_open.command
 - sample.sample_commands:details.command
 - sample.sample_list:sample_list
-associations: []
 definitions:
   command_1:
     type: legacy_type.ui:command

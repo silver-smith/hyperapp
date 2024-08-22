@@ -21,14 +21,6 @@ import:
 - ui.ui_model_command:list_ui_model_commands.service
 - ui.view:view.module
 - ui.view_registry:view_creg.service
-associations:
-- bases:
-  - feed_d
-  - legacy_type.layout:view
-  key:
-  - feed_d
-  - legacy_type.layout:view
-  value: layout_view.index_tree_feed
 definitions:
   controller.module:
     type: legacy_type.builtin:python_module

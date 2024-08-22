@@ -7,8 +7,9 @@ import:
 - builtins:type_module_loader.service
 - legacy_type.builtin:python_module
 - legacy_type.import_recorder:resource
-associations: []
+
 definitions:
+
   custom_resource_registry.module:
     type: legacy_type.builtin:python_module
     value:

@@ -1,7 +1,8 @@
 import:
 - legacy_type.builtin:python_module
-associations: []
+
 definitions:
+
   visitor.module:
     type: legacy_type.builtin:python_module
     value:

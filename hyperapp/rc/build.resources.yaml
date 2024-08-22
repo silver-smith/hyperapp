@@ -12,8 +12,9 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.import_recorder:import_recorder
 - legacy_type.import_recorder:resource
-associations: []
+
 definitions:
+
   build.module:
     type: legacy_type.builtin:python_module
     value:

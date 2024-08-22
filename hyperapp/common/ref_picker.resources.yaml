@@ -2,7 +2,6 @@ import:
 - builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:web.service
-- common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
@@ -16,7 +15,6 @@ definitions:
       file_name: ref_picker.dyn.py
       import_list:
         services.deduce_t: builtins:deduce_t.service
-        services.mark: common.mark:mark.service
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
 

@@ -2,6 +2,7 @@ import:
 - legacy_type.builtin:string
 - legacy_type.system:system_config
 - common.bundler:bundler.service
+- common.mark:marker_ctl.service
 - common.system_stop:stop_signal.service
 - common.system_stop:system_failed.service
 - rc.actor_probe_resource:service_resource_actor_probe_resource.actor-template
@@ -103,6 +104,7 @@ definitions:
       services:
         system:
         - common.bundler:bundler.service
+        - common.mark:marker_ctl.service
         - common.system_stop:stop_signal.service
         - common.system_stop:system_failed.service
         - rc.ctr_collector:ctr_collector.service

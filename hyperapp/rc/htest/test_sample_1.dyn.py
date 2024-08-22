@@ -1,8 +1,6 @@
 import logging
 
-from .services import (
-    mark,
-    )
+from .code.mark import mark
 from .tested.code import sample_service_1 as sample_service_module_1
 
 log = logging.getLogger(__name__)

@@ -8,9 +8,9 @@ from .services import (
     association_reg,
     data_to_res,
     feed_creg,
-    mark,
     pyobj_creg,
     )
+from .code.mark import mark
 
 log = logging.getLogger(__name__)
 

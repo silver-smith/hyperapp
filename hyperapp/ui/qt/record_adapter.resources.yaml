@@ -7,14 +7,6 @@ import:
 - legacy_type.record_adapter:fn_record_adapter
 - ui.feed:feed_factory.service
 - ui.ui_adapter_creg:ui_adapter_creg.service
-associations:
-- bases:
-  - ui.ui_adapter_creg:ui_adapter_creg.service
-  - legacy_type.record_adapter:fn_record_adapter
-  key:
-  - ui.ui_adapter_creg:ui_adapter_creg.service
-  - legacy_type.record_adapter:fn_record_adapter
-  value: FnRecordAdapter.from_piece
 definitions:
   FnRecordAdapter:
     type: legacy_type.builtin:attribute

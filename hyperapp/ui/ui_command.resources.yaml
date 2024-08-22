@@ -6,7 +6,6 @@ import:
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
-- common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
@@ -18,14 +17,6 @@ import:
 - ui.command:command.module
 - ui.command_groups:command_groups.module
 - ui.ui_command_impl_creg:ui_command_impl_creg.service
-associations:
-- bases:
-  - ui.ui_command_impl_creg:ui_command_impl_creg.service
-  - legacy_type.ui:ui_command_impl
-  key:
-  - ui.ui_command_impl_creg:ui_command_impl_creg.service
-  - legacy_type.ui:ui_command_impl
-  value: ui_command_impl_from_piece
 definitions:
   list_view_commands:
     type: legacy_type.builtin:attribute
@@ -51,7 +42,6 @@ definitions:
         services.association_reg: builtins:association_reg.service
         services.data_to_res: resource.data_to_res:data_to_res.service
         services.deduce_t: builtins:deduce_t.service
-        services.mark: common.mark:mark.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.ui_command_impl_creg: ui.ui_command_impl_creg:ui_command_impl_creg.service

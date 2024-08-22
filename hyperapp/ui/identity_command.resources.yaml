@@ -26,34 +26,6 @@ import:
 - ui.model_command_impl_creg:model_command_impl_creg.service
 - ui.ui_model_command:get_ui_model_commands.service
 - ui.ui_model_command:set_ui_model_commands.service
-associations:
-- bases:
-  - command_properties_d
-  - add_identity_command.command_impl
-  key:
-  - command_properties_d
-  - add_identity_command.command_impl
-  value: add_identity_command.command_properties
-- bases:
-  - feed_d
-  - legacy_type.model_commands:model_commands
-  key:
-  - feed_d
-  - legacy_type.model_commands:model_commands
-  value: model_commands_model_commands.list_feed
-- bases:
-  - legacy_type.model_commands:model_commands
-  key:
-  - model_command_d
-  - legacy_type.model_commands:model_commands
-  value: add_identity_command.command
-- bases:
-  - ui.model_command_impl_creg:model_command_impl_creg.service
-  - legacy_type.identity_command:identity_model_command_impl
-  key:
-  - ui.model_command_impl_creg:model_command_impl_creg.service
-  - legacy_type.identity_command:identity_model_command_impl
-  value: identity_model_command_impl_from_piece
 definitions:
   add_identity_command:
     type: legacy_type.builtin:attribute

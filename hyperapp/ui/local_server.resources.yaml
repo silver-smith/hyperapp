@@ -4,7 +4,6 @@ import:
 - common.file_bundle:file_bundle.service
 - legacy_type.builtin:python_module
 - transport.identity:peer_registry.service
-associations: []
 definitions:
   local_server.module:
     type: legacy_type.builtin:python_module

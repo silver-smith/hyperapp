@@ -2,11 +2,11 @@ from hyperapp.common.cached_code_registry import CachedCodeRegistry
 
 from .services import (
     association_reg,
-    mark,
     mosaic,
     pyobj_creg,
     web,
     )
+from .code.mark import mark
 
 
 @mark.service

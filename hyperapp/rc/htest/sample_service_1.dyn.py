@@ -1,9 +1,7 @@
 import logging
 from dataclasses import dataclass
 
-from .services import (
-    mark,
-    )
+from .code.mark import mark
 
 log = logging.getLogger(__name__)
 

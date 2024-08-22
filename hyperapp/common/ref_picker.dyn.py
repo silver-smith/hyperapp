@@ -9,7 +9,6 @@ from hyperapp.common.htypes import (
 
 from .services import (
     deduce_t,
-    mark,
     mosaic,
     web,
     )
@@ -74,7 +73,6 @@ def _t_to_picker(t):
             })
 
 
-@mark.service
 def pick_refs():
     t_to_picker = {}
     value_to_refs = {}

@@ -2,7 +2,6 @@
 
 import:
 - builtins:code_registry_ctr2.service
-- common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.system:service_template
@@ -19,7 +18,6 @@ definitions:
       file_name: ui_adapter_creg.dyn.py
       import_list:
         services.code_registry_ctr2: builtins:code_registry_ctr2.service
-        services.mark: common.mark:mark.service
   ui_adapter_creg.service:
     type: legacy_type.system:service_template
     value:

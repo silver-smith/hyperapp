@@ -3,7 +3,6 @@
 import:
 - builtins:web.service
 - common.list_diff:list_diff.module
-- common.mark:mark.service
 - legacy_type.auto_tabs:close_tab_d
 - legacy_type.auto_tabs:duplicate_tab_d
 - legacy_type.auto_tabs:tab_piece_label_d
@@ -22,55 +21,6 @@ import:
 - legacy_type.ui:ui_command_impl
 - ui.qt.tabs:tabs.module
 - ui.view_registry:view_creg.service
-associations:
-- bases:
-  - command_properties_d
-  - close_tab.impl
-  key:
-  - command_properties_d
-  - close_tab.impl
-  value: close_tab.command_properties
-- bases:
-  - command_properties_d
-  - duplicate_tab.impl
-  key:
-  - command_properties_d
-  - duplicate_tab.impl
-  value: duplicate_tab.command_properties
-- bases:
-  - command_properties_d
-  - tab_piece_label.command_impl
-  key:
-  - command_properties_d
-  - tab_piece_label.command_impl
-  value: tab_piece_label.command_properties
-- bases:
-  - legacy_type.label:view
-  key:
-  - model_command_d
-  - legacy_type.label:view
-  value: tab_piece_label.command
-- bases:
-  - ui.view_registry:view_creg.service
-  - legacy_type.auto_tabs:view
-  key:
-  - ui.view_registry:view_creg.service
-  - legacy_type.auto_tabs:view
-  value: AutoTabsView.from_piece
-- bases:
-  - ui_command_d
-  - legacy_type.auto_tabs:view
-  key:
-  - ui_command_d
-  - legacy_type.auto_tabs:view
-  value: close_tab.command
-- bases:
-  - ui_command_d
-  - legacy_type.auto_tabs:view
-  key:
-  - ui_command_d
-  - legacy_type.auto_tabs:view
-  value: duplicate_tab.command
 definitions:
   AutoTabsView:
     type: legacy_type.builtin:attribute
@@ -91,7 +41,6 @@ definitions:
         code.list_diff: common.list_diff:list_diff.module
         code.tabs: ui.qt.tabs:tabs.module
         htypes.auto_tabs.view: legacy_type.auto_tabs:view
-        services.mark: common.mark:mark.service
         services.view_creg: ui.view_registry:view_creg.service
         services.web: builtins:web.service
   close_tab:

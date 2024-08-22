@@ -4,7 +4,6 @@ import:
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
-- common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
@@ -27,27 +26,6 @@ import:
 - ui.view:view.module
 - ui.view_registry:view_creg.service
 - views.context_view:context_view.module
-associations:
-- bases:
-  - command_properties_d
-  - open_command_layout_context.command_impl
-  key:
-  - command_properties_d
-  - open_command_layout_context.command_impl
-  value: open_command_layout_context.command_properties
-- bases:
-  - legacy_type.model_commands:model_commands
-  key:
-  - model_command_d
-  - legacy_type.model_commands:model_commands
-  value: open_command_layout_context.command
-- bases:
-  - ui.view_registry:view_creg.service
-  - legacy_type.command_layout_context:view
-  key:
-  - ui.view_registry:view_creg.service
-  - legacy_type.command_layout_context:view
-  value: CommandLayoutContextView.from_piece
 definitions:
   CommandLayoutContextView:
     type: legacy_type.builtin:attribute
@@ -74,7 +52,6 @@ definitions:
         htypes.ui.external_ui_model_command_impl: legacy_type.ui:external_ui_model_command_impl
         htypes.ui.ui_model_command_impl: legacy_type.ui:ui_model_command_impl
         services.get_ui_model_commands: ui.ui_model_command:get_ui_model_commands.service
-        services.mark: common.mark:mark.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.set_ui_model_command_layout: ui.ui_model_command:set_ui_model_command_layout.service

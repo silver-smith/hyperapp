@@ -3,10 +3,10 @@ from hyperapp.common.htypes import TPrimitive, TList, TOptional, TRecord, ref_t
 from . import htypes
 from .services import (
     deduce_t,
-    mark,
     mosaic,
     web,
     )
+from .code.mark import mark
 
 
 def _data_browser(data, t):

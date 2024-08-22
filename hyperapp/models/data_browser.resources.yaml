@@ -4,7 +4,6 @@ import:
 - builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:web.service
-- common.mark:mark.service
 - legacy_type.builtin:python_module
 - legacy_type.data_browser:list_item
 - legacy_type.data_browser:list_view
@@ -30,6 +29,5 @@ definitions:
         htypes.data_browser.ref_list_item: legacy_type.data_browser:ref_list_item
         htypes.data_browser.ref_list_view: legacy_type.data_browser:ref_list_view
         services.deduce_t: builtins:deduce_t.service
-        services.mark: common.mark:mark.service
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service

@@ -4,7 +4,6 @@ import:
 - builtins:mosaic.service
 - builtins:web.service
 - common.list_diff:list_diff.module
-- common.mark:mark.service
 - legacy_type.box_layout:element
 - legacy_type.box_layout:state
 - legacy_type.box_layout:view
@@ -12,14 +11,6 @@ import:
 - legacy_type.builtin:python_module
 - ui.view:view.module
 - ui.view_registry:view_creg.service
-associations:
-- bases:
-  - ui.view_registry:view_creg.service
-  - legacy_type.box_layout:view
-  key:
-  - ui.view_registry:view_creg.service
-  - legacy_type.box_layout:view
-  value: BoxLayoutView.from_piece
 definitions:
   BoxLayoutView:
     type: legacy_type.builtin:attribute
@@ -42,7 +33,6 @@ definitions:
         htypes.box_layout.element: legacy_type.box_layout:element
         htypes.box_layout.state: legacy_type.box_layout:state
         htypes.box_layout.view: legacy_type.box_layout:view
-        services.mark: common.mark:mark.service
         services.mosaic: builtins:mosaic.service
         services.view_creg: ui.view_registry:view_creg.service
         services.web: builtins:web.service

@@ -1,7 +1,7 @@
 from .services import (
     code_registry_ctr2,
-    mark,
     )
+from .code.mark import mark
 
 
 @mark.service2

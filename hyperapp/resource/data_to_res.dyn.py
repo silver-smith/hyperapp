@@ -3,10 +3,10 @@ from hyperapp.common.htypes import TRecord
 from . import htypes
 from .services import (
     deduce_t,
-    mark,
     mosaic,
     pyobj_creg,
     )
+from .code.mark import mark
 
 
 def _data_to_res(piece, t=None):

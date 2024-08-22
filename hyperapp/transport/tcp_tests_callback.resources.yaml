@@ -6,7 +6,6 @@ import:
 - transport.endpoint:endpoint_registry.service
 - transport.identity:peer_registry.service
 - transport.rsa_identity:generate_rsa_identity.service
-associations: []
 definitions:
   tcp_tests_callback.module:
     type: legacy_type.builtin:python_module

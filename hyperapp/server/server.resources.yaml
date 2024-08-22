@@ -13,7 +13,6 @@ import:
 - transport.rsa_identity:generate_rsa_identity.service
 - transport.sync_route_table:route_table.service
 - transport.tcp_transport:tcp_server_factory.service
-associations: []
 definitions:
   server.module:
     type: legacy_type.builtin:python_module

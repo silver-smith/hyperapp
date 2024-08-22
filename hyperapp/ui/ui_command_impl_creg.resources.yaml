@@ -2,7 +2,6 @@
 
 import:
 - builtins:code_registry_ctr.service
-- common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
@@ -19,7 +18,6 @@ definitions:
       file_name: ui_command_impl_creg.dyn.py
       import_list:
         services.code_registry_ctr: builtins:code_registry_ctr.service
-        services.mark: common.mark:mark.service
   ui_command_impl_creg.service:
     type: legacy_type.builtin:call
     value:

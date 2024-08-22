@@ -1,7 +1,6 @@
 # Automatically generated file. Do not edit.
 
 import:
-- common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
@@ -14,18 +13,6 @@ import:
 - legacy_type.ui:ui_command_impl
 - legacy_type.ui:universal_ui_command_d
 - ui.view_registry:model_view_creg.service
-associations:
-- bases:
-  - command_properties_d
-  - toggle_editable.impl
-  key:
-  - command_properties_d
-  - toggle_editable.impl
-  value: toggle_editable.command_properties
-- bases:
-  - universal_ui_command_d
-  key: universal_ui_command_d
-  value: toggle_editable.command
 definitions:
   command_properties_d:
     type: legacy_type.builtin:call
@@ -39,7 +26,6 @@ definitions:
       import_list:
         htypes.text.edit_view: legacy_type.text:edit_view
         htypes.text.readonly_view: legacy_type.text:readonly_view
-        services.mark: common.mark:mark.service
         services.model_view_creg: ui.view_registry:model_view_creg.service
   toggle_editable:
     type: legacy_type.builtin:attribute

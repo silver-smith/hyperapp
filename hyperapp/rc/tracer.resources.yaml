@@ -10,7 +10,6 @@ import:
 - legacy_type.inspect:coroutine_t
 - legacy_type.inspect:data_t
 - legacy_type.builtin:python_module
-associations: []
 definitions:
   tracer.module:
     type: legacy_type.builtin:python_module

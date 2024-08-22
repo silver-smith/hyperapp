@@ -6,7 +6,6 @@ import:
 - builtins:pyobj_creg.service
 - builtins:web.service
 - common.list_diff:list_diff.module
-- common.mark:mark.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
@@ -43,74 +42,6 @@ import:
 - ui.view_registry:model_view_creg.service
 - ui.visualizer:get_model_layout.service
 - ui.visualizer:set_model_layout.service
-associations:
-- bases:
-  - command_properties_d
-  - open_opener_commands.model_command_impl
-  key:
-  - command_properties_d
-  - open_opener_commands.model_command_impl
-  value: open_opener_commands.command_properties
-- bases:
-  - command_properties_d
-  - opener_command_list.command_impl
-  key:
-  - command_properties_d
-  - opener_command_list.command_impl
-  value: opener_command_list.command_properties
-- bases:
-  - command_properties_d
-  - switch_list_to_tree.impl
-  key:
-  - command_properties_d
-  - switch_list_to_tree.impl
-  value: opener_command_list.command_properties
-- bases:
-  - command_properties_d
-  - toggle_open_command.command_impl
-  key:
-  - command_properties_d
-  - toggle_open_command.command_impl
-  value: toggle_open_command.command_properties
-- bases:
-  - feed_d
-  - legacy_type.list_as_tree:opener_commands
-  key:
-  - feed_d
-  - legacy_type.list_as_tree:opener_commands
-  value: list_as_tree_opener_commands.list_feed
-- bases:
-  - legacy_type.list_as_tree:opener_commands
-  key:
-  - model_command_d
-  - legacy_type.list_as_tree:opener_commands
-  value: opener_command_list.command
-- bases:
-  - legacy_type.list_as_tree:opener_commands
-  key:
-  - model_command_d
-  - legacy_type.list_as_tree:opener_commands
-  value: toggle_open_command.command
-- bases:
-  - legacy_type.list_as_tree:opener_commands
-  key:
-  - model_d
-  - legacy_type.list_as_tree:opener_commands
-  value: opener_command_list.model
-- bases:
-  - ui_command_d
-  - legacy_type.list:view
-  key:
-  - ui_command_d
-  - legacy_type.list:view
-  value: switch_list_to_tree.command
-- bases:
-  - ui_command_d
-  - legacy_type.tree:view
-  key:
-  - ui_command_d
-  - legacy_type.tree:view
-  value: open_opener_commands.command
 definitions:
   command_properties_d:
     type: legacy_type.builtin:call
@@ -139,7 +70,6 @@ definitions:
         services.deduce_t: builtins:deduce_t.service
         services.feed_factory: ui.feed:feed_factory.service
         services.get_model_layout: ui.visualizer:get_model_layout.service
-        services.mark: common.mark:mark.service
         services.model_commands: ui.model_command:model_commands.service
         services.model_view_creg: ui.view_registry:model_view_creg.service
         services.mosaic: builtins:mosaic.service
