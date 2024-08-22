@@ -1,0 +1,35 @@
+import:
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.marker:marker_template
+- legacy_type.system:actor_template
+- rc.rc_constructor:rc_constructor.module
+
+definitions:
+
+  marker_ctr.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: marker_ctr
+      file_name: marker_ctr.dyn.py
+      import_list:
+        code.rc_constructor: rc.rc_constructor:rc_constructor.module
+
+  MarkerCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: marker_ctr.module
+      attr_name: MarkerCtr
+
+  MarkerCtr.from_template_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: MarkerCtr
+      attr_name: from_template_piece
+
+  marker_marker_template.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.marker:marker_template
+      function: MarkerCtr.from_template_piece
+      service_params: []

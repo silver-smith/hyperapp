@@ -161,6 +161,7 @@ class TestJob:
         if status == JobStatus.ok:
             system = self._prepare_system(module, all_resources)
             ctr_collector = system.resolve_service('ctr_collector')
+            marker_reg = system.resolve_service('marker_registry')
             ctr_collector.ignore_module(module.__name__)
             status, error_msg, traceback, req_set = self._run_system(system)
         else:

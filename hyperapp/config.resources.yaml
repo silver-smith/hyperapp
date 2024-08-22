@@ -23,6 +23,9 @@ import:
 - rc.import_job:import_job_succeeded_result.actor-template
 - rc.import_resource:import_resource_import_resource.actor-template
 - rc.init_targets:ctr_from_template_creg.service
+- rc.marker_ctr:marker_marker_template.actor-template
+- rc.marker_registry:marker_marker_template.actor-template
+- rc.marker_registry:marker_registry.service
 - rc.model_ctr:rc_constructors_model.actor-template
 - rc.process_pool:process_pool_running.service
 - rc.python_module_resource_target:python_module_resource_target_python_module_req.actor-template
@@ -40,6 +43,7 @@ import:
 - rc.service_ctr:rc_constructors_service_template.actor-template
 - rc.service_ctr:system_finalizer_gen_service_template.actor-template
 - rc.service_ctr:system_service_template.actor-template
+- rc.service_marker:service2.marker-template
 - rc.service_probe_resource:service_resource_config_item_fixture_resource.actor-template
 - rc.service_probe_resource:service_resource_fixture_probe_resource.actor-template
 - rc.service_probe_resource:service_resource_service_probe_resource.actor-template
@@ -106,10 +110,15 @@ definitions:
     type: legacy_type.system:system_config
     value:
       services:
+        cfg_item_creg:
+        - rc.marker_registry:marker_marker_template.actor-template
         ctr_from_template_creg:
         - rc.actor_ctr:system_actor_template.actor-template
+        - rc.marker_ctr:marker_marker_template.actor-template
         - rc.service_ctr:system_finalizer_gen_service_template.actor-template
         - rc.service_ctr:system_service_template.actor-template
+        marker_registry:
+        - rc.service_marker:service2.marker-template
         model_view_creg:
         - ui.qt.list:list_view.actor-template
         - ui.qt.tree:tree_view.actor-template
@@ -180,6 +189,7 @@ definitions:
         - rc.htest.sample_service_1:sample_fn_service_1.service
         - rc.htest.sample_service_1:sample_value_service_1.service
         - rc.init_targets:ctr_from_template_creg.service
+        - rc.marker_registry:marker_registry.service
         - rc.process_pool:process_pool_running.service
         - rc.rc:compile_resources.service
         - rc.rc_job:rc_job_submit_factory.service

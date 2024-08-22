@@ -1,0 +1,54 @@
+import:
+- builtins:pyobj_creg.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.marker:marker_template
+- legacy_type.system:actor_template
+- legacy_type.system:service_template
+- rc.system:system.module
+
+definitions:
+
+  marker_registry.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: marker_registry
+      file_name: marker_registry.dyn.py
+      import_list:
+        services.pyobj_creg: builtins:pyobj_creg.service
+        code.system: rc.system:system.module
+
+  MarkerCfg:
+    type: legacy_type.builtin:attribute
+    value:
+      object: marker_registry.module
+      attr_name: MarkerCfg
+
+  MarkerCfg.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: MarkerCfg
+      attr_name: from_piece
+
+  marker_marker_template.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.marker:marker_template
+      function: MarkerCfg.from_piece
+      service_params: []
+
+  marker_registry:
+    type: legacy_type.builtin:attribute
+    value:
+      object: marker_registry.module
+      attr_name: marker_registry
+
+  marker_registry.service:
+    type: legacy_type.system:service_template
+    value:
+      name: marker_registry
+      function: marker_registry
+      free_params: []
+      service_params:
+      - ctr_collector
+      want_config: true
