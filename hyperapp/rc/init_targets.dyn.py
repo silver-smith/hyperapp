@@ -20,17 +20,6 @@ def ctr_from_template_creg(config):
     return code_registry_ctr2('ctr-from-template', config)
 
 
-def add_common_mark_services(resource_tgt, target_set):
-    service_found_tgt = target_set.factory.service_found('mark')
-    service_resolved_tgt = target_set.factory.service_resolved('mark')
-    service_complete_tgt = target_set.factory.service_complete('mark')
-    ctr = ServiceCtr('mark', 'mark')
-    service_found_tgt.set_provider(resource_tgt, ctr, target_set)
-    service_resolved_tgt.resolve(ctr)
-    service_resolved_tgt.update_status()
-    service_complete_tgt.update_status()
-
-
 def add_core_items(cfg_item_creg, ctr_from_template_creg, system_config, target_set):
     for sc in system_config.services:
         for item_ref in sc.items:
@@ -65,8 +54,6 @@ def init_targets(cfg_item_creg, ctr_from_template_creg, system_config, root_dir,
                 resource_tgt = ManualPythonModuleResourceTarget(
                     src, custom_resource_registry, resource_dir, resource_text)
                 target_set.add(resource_tgt)
-                if src.name == 'common.mark':
-                    add_common_mark_services(resource_tgt, target_set)
                 continue
         alias_tgt = ImportTargetAlias(src, custom_resource_registry, type_src_list)
         import_tgt = ImportTarget(target_set, src, type_src_list, alias_tgt)
