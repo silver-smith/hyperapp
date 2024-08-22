@@ -235,10 +235,20 @@ class System:
         cfg_item_creg = code_registry_ctr2('cfg-item', cfg_item_creg_config)
         self.add_core_service('system_config', config_piece)
         self.add_core_service('cfg_item_creg', cfg_item_creg)
-        for sc in config_piece.services:
-            for item_ref in sc.items:
-                item = cfg_item_creg.invite(item_ref, sc.service)
-                self.update_config(sc.service, {item.key: item.value})
+        service_to_items = {
+            sc.service: sc.items
+            for sc in config_piece.services
+            }
+        for item_ref in service_to_items['cfg_item_creg']:
+            cfg = cfg_item_creg.invite(item_ref, 'cfg_item_creg')
+            value = cfg.value.resolve(self, 'cfg_item_creg')
+            cfg_item_creg.update_config({cfg.key: value})
+        for service_name, items in service_to_items.items():
+            if service_name == 'cfg_item_creg':
+                continue
+            for item_ref in items:
+                item = cfg_item_creg.invite(item_ref, service_name)
+                self.update_config(service_name, {item.key: item.value})
 
     def run(self, root_name, *args, **kw):
         service = self.resolve_service(root_name)

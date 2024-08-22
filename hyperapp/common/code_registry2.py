@@ -14,6 +14,9 @@ class CodeRegistry2:
         self._produce_name = produce_name
         self._config = config  # t -> fn
 
+    def update_config(self, config):
+        self._config.update(config)
+
     def invite(self, ref, *args, **kw):
         assert isinstance(ref, ref_t), repr(ref)
         value, t = self._web.summon_with_t(ref)
