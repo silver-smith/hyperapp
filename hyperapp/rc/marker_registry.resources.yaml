@@ -4,7 +4,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.marker:marker_template
 - legacy_type.system:actor_template
-- legacy_type.system:service_template
+- legacy_type.system:finalizer_gen_service_template
 - rc.system:system.module
 
 definitions:
@@ -44,11 +44,12 @@ definitions:
       attr_name: marker_registry
 
   marker_registry.service:
-    type: legacy_type.system:service_template
+    type: legacy_type.system:finalizer_gen_service_template
     value:
       name: marker_registry
       function: marker_registry
       free_params: []
       service_params:
       - ctr_collector
+      - marker_ctl
       want_config: true

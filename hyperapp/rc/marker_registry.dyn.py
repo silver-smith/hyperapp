@@ -35,7 +35,8 @@ class MarkerCfg:
         return self._marker.piece
 
 
-def marker_registry(config, ctr_collector):
-    assert 0, config
+def marker_registry(config, ctr_collector, marker_ctl):
     for name, marker in config.items():
-        pass
+        marker_ctl.set(name, marker)
+    yield
+    marker_ctl.clear()
