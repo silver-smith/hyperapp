@@ -1,19 +1,8 @@
 import:
-- builtins:mosaic.service
-- builtins:pyobj_creg.service
-- legacy_type.rc_constructors:actor_probe
-- legacy_type.rc_constructors:config_item_fixture
-- legacy_type.rc_constructors:fixture
-- legacy_type.rc_constructors:model
-- legacy_type.rc_constructors:service
-- legacy_type.rc_constructors:service_probe
-- legacy_type.rc_constructors:ui_command
-- legacy_type.rc_constructors:ui_model_command
-- legacy_type.rc_constructors:universal_ui_command
-- legacy_type.rc_constructors:universal_ui_model_command
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.system:service_template
 
 definitions:
 
@@ -22,27 +11,19 @@ definitions:
     value:
       module_name: mark
       file_name: mark.dyn.py
-      import_list:
-        htypes.rc_constructors.actor_probe: legacy_type.rc_constructors:actor_probe
-        htypes.rc_constructors.config_item_fixture: legacy_type.rc_constructors:config_item_fixture
-        htypes.rc_constructors.fixture: legacy_type.rc_constructors:fixture
-        htypes.rc_constructors.model: legacy_type.rc_constructors:model
-        htypes.rc_constructors.service: legacy_type.rc_constructors:service
-        htypes.rc_constructors.service_probe: legacy_type.rc_constructors:service_probe
-        htypes.rc_constructors.ui_command: legacy_type.rc_constructors:ui_command
-        htypes.rc_constructors.ui_model_command: legacy_type.rc_constructors:ui_model_command
-        htypes.rc_constructors.universal_ui_command: legacy_type.rc_constructors:universal_ui_command
-        htypes.rc_constructors.universal_ui_model_command: legacy_type.rc_constructors:universal_ui_model_command
-        services.mosaic: builtins:mosaic.service
-        services.pyobj_creg: builtins:pyobj_creg.service
+      import_list: {}
 
-  mark_service:
+  marker_ctl:
     type: legacy_type.builtin:attribute
     value:
       object: mark.module
-      attr_name: mark_service
+      attr_name: marker_ctl
 
-  mark.service:
-    type: legacy_type.builtin:call
+  marker_ctl.service:
+    type: legacy_type.system:service_template
     value:
-      function: mark_service
+      name: marker_ctl
+      function: marker_ctl
+      free_params: []
+      service_params: []
+      want_config: false

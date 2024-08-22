@@ -1,157 +1,48 @@
-import inspect
-from functools import partial
-from types import SimpleNamespace
-
 from hyperapp.common.htypes import Type
-from hyperapp.common.resource_ctr import (
-    add_fn_module_constructor,
-    )
-
-from . import htypes
-from .services import (
-    mosaic,
-    pyobj_creg,
-    )
 
 
-class ServiceMarker:
+class NoOpMarker:
 
-    def __call__(self, fn):
-        ctr = htypes.rc_constructors.service(
-            attr_name=fn.__name__,
-            name=fn.__name__,
-            )
-        add_fn_module_constructor(fn, mosaic.put(ctr))
-        return fn
+    def __getattr__(self, name):
+        return NoOpMarker()
+
+    def __call__(self, *args, **kw):
+        if not kw and len(args) == 1:
+            if not isinstance(args[0], Type):
+                return args[0]
+        return NoOpMarker()
 
 
-class ServiceActorWrapper:
+class MarkerCtl:
 
-    def __init__(self, service_name, t):
-        self._service_name = service_name
-        self._t = t
+    def __init__(self):
+        self._markers = {}
 
-    def __call__(self, fn):
-        qual_name = fn.__qualname__.split('.')
-        if type(fn) in {classmethod, staticmethod}:
-            actual_fn = inspect.unwrap(fn)
+    def set(self, name, marker):
+        self._markers[name] = marker
+
+    def clear(self):
+        self._markers.clear()
+
+    def get(self, name):
+        if self._markers:
+            return self._markers[name]
         else:
-            if not inspect.isfunction(fn):
-                raise RuntimeError(
-                    f"Unknown object attempted to be marked as an actor: {fn!r};"
-                    " Expected function, classmethod or staticmethod"
-                    )
-            actual_fn = fn
-        params = tuple(inspect.signature(actual_fn).parameters)
-        if type(fn) is classmethod:
-            params = params[1:]
-        ctr = htypes.rc_constructors.actor_probe(
-            attr_qual_name=tuple(qual_name),
-            service_name=self._service_name,
-            t=pyobj_creg.actor_to_ref(self._t),
-            params=params,
-            )
-        add_fn_module_constructor(fn, mosaic.put(ctr))
-        return fn
+            return NoOpMarker()
 
 
-class ServiceActorMarker:
+class Markers:
 
-    def __init__(self, service_name):
-        self._service_name = service_name
+    def __init__(self, ctl):
+        self._ctl = ctl
 
-    def __call__(self, t):
-        return ServiceActorWrapper(self._service_name, t)
-
-
-class ActorMarker:
-
-    def __getattr__(self, service_name):
-        return ServiceActorMarker(service_name)
+    def __getattr__(self, name):
+        return self._ctl.get(name)
 
 
-def service_probe_marker(fn):
-    ctr = htypes.rc_constructors.service_probe(
-        attr_name=fn.__name__,
-        name=fn.__name__,
-        params=tuple(inspect.signature(fn).parameters),
-        )
-    add_fn_module_constructor(fn, mosaic.put(ctr))
-    return fn
+_marker_ctl = MarkerCtl()
+mark = Markers(_marker_ctl)
 
 
-def fixture_marker(fn):
-    ctr = htypes.rc_constructors.fixture(
-        attr_name=fn.__name__,
-        name=fn.__name__,
-        params=tuple(inspect.signature(fn).parameters),
-        )
-    add_fn_module_constructor(fn, mosaic.put(ctr))
-    return fn
-
-
-def config_item_fixture(service_name):
-    def _config_item_fixture_wrapper(fn):
-        ctr = htypes.rc_constructors.config_item_fixture(
-            attr_name=fn.__name__,
-            service_name=service_name,
-            service_params=tuple(inspect.signature(fn).parameters),
-            )
-        add_fn_module_constructor(fn, mosaic.put(ctr))
-        return fn
-    return _config_item_fixture_wrapper
-
-
-def model(fn):
-    ctr = htypes.rc_constructors.model(
-        attr_name=fn.__name__,
-        )
-    add_fn_module_constructor(fn, mosaic.put(ctr))
-    return fn
-
-
-class UiCommandBase:
-
-    def __call__(self, fn_or_t):
-        if isinstance(fn_or_t, Type):  # Parameterized version.
-            t_ref = pyobj_creg.actor_to_ref(fn_or_t)
-            return partial(self._ui_command_wrapper, t_ref)
-        else:  # Non-parameterized version.
-            name = fn_or_t.__name__
-            params = tuple(inspect.signature(fn_or_t).parameters)
-            ctr = self.universal_command_ctr(name, name, params)
-            add_fn_module_constructor(fn_or_t, mosaic.put(ctr))
-            return fn_or_t
-
-    def _ui_command_wrapper(self, t_ref, fn):
-        name = fn.__name__
-        params = tuple(inspect.signature(fn).parameters)
-        ctr = self.command_ctr(name, t_ref, name, params)
-        add_fn_module_constructor(fn, mosaic.put(ctr))
-        return fn
-
-
-class UiCommand(UiCommandBase):
-    universal_command_ctr = htypes.rc_constructors.universal_ui_command    
-    command_ctr = htypes.rc_constructors.ui_command
-
-
-class UiModelCommand(UiCommandBase):
-    universal_command_ctr = htypes.rc_constructors.universal_ui_model_command    
-    command_ctr = htypes.rc_constructors.ui_model_command
-
-
-mark = SimpleNamespace(
-    service=ServiceMarker(),
-    service2=service_probe_marker,
-    actor=ActorMarker(),
-    fixture=fixture_marker,
-    config_item_fixture=config_item_fixture,
-    model=model,
-    ui_command=UiCommand(),
-    ui_model_command=UiModelCommand(),
-    )
-
-
-def mark_service():
-    return mark
+def marker_ctl():
+    return _marker_ctl
