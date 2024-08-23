@@ -37,13 +37,11 @@ def _data_to_res(piece, t=None):
         )
 
 
-@mark.service
+@mark.service2
 def data_to_res():
     return _data_to_res
 
 
-@mark.service
-def data_to_ref():
-    def _data_to_ref(piece, t=None):
-        return mosaic.put(_data_to_res(piece, t))
-    return _data_to_ref
+@mark.service2
+def data_to_ref(piece, t=None):
+    return mosaic.put(_data_to_res(piece, t))
