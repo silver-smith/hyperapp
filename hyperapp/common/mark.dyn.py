@@ -1,3 +1,6 @@
+import inspect
+from functools import partial
+
 from hyperapp.common.htypes import Type
 
 
@@ -37,7 +40,10 @@ class Markers:
         self._ctl = ctl
 
     def __getattr__(self, name):
-        return self._ctl.get(name)
+        frame = inspect.stack()[1].frame
+        python_module_name = frame.f_globals['__name__']
+        marker_fn = self._ctl.get(name)
+        return partial(marker_fn, python_module_name=python_module_name)
 
 
 _marker_ctl = MarkerCtl()
