@@ -16,6 +16,7 @@ import:
 - rc.import_recorder:import_recorder.module
 - rc.rc_constants:rc_constants.module
 - rc.requirement_factory:requirement_factory.module
+- rc.system_job:system_job.module
 
 definitions:
 
@@ -38,6 +39,7 @@ definitions:
         code.import_recorder: rc.import_recorder:import_recorder.module
         code.rc_constants: rc.rc_constants:rc_constants.module
         code.requirement_factory: rc.requirement_factory:requirement_factory.module
+        code.system_job: rc.system_job:system_job.module
 
   SucceededImportResult:
     type: legacy_type.builtin:attribute
@@ -117,4 +119,6 @@ definitions:
       t: legacy_type.import_job:job
       function: ImportJob.from_piece
       service_params:
+      - cfg_item_creg
       - rc_resource_creg
+      - system_config

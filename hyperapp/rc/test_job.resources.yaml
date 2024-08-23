@@ -11,7 +11,6 @@ import:
 - legacy_type.test_job:incomplete_result
 - legacy_type.test_job:succeeded_result
 - legacy_type.test_job:used_imports
-- rc.actor_ctr:actor_ctr.module
 - rc.actor_resource:actor_resource.module
 - rc.build:build.module
 - rc.builtin_resources:builtin_resources.module
@@ -20,7 +19,6 @@ import:
 - rc.requirement_factory:requirement_factory.module
 - rc.rc_constants:rc_constants.module
 - rc.rc_job_result_creg:rc_job_result_creg.service
-- rc.service_ctr:service_ctr.module
 - rc.service_resource:service_resource.module
 - rc.system:system.module
 - rc.system_job:system_job.module
@@ -49,8 +47,6 @@ definitions:
         code.import_recorder: rc.import_recorder:import_recorder.module
         code.requirement_factory: rc.requirement_factory:requirement_factory.module
         code.rc_constants: rc.rc_constants:rc_constants.module
-        code.service_ctr: rc.service_ctr:service_ctr.module
-        code.actor_ctr: rc.actor_ctr:actor_ctr.module
         code.service_resource: rc.service_resource:service_resource.module
         code.actor_resource: rc.actor_resource:actor_resource.module
         code.system: rc.system:system.module

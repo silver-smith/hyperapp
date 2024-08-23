@@ -18,8 +18,6 @@ from .code.builtin_resources import enum_builtin_resources
 from .code.import_recorder import IncompleteImportedObjectError
 from .code.requirement_factory import RequirementFactory
 from .code.job_result import JobResult
-from .code.service_ctr import ServiceTemplateCtr
-from .code.actor_ctr import ActorTemplateCtr
 from .code.service_resource import ServiceReq
 from .code.actor_resource import ActorReq
 from .code.system import UnknownServiceError, NotATemplate
@@ -182,10 +180,11 @@ class TestJob(SystemJob):
                 error=error_msg,
                 traceback=tuple(traceback),
                 )
+        constructors = tuple(self._enum_constructor_refs(system, ctr_collector))
         return htypes.test_job.succeeded_result(
             used_imports=used_imports,
             requirements=req_refs,
-            constructors=tuple(self._enum_constructor_refs(system, ctr_collector))
+            constructors=constructors,
             )
 
     def _import_module(self, module_piece):
@@ -262,15 +261,3 @@ class TestJob(SystemJob):
                 module_name=module_name,
                 imports=tuple(recorder.used_imports),
                 )
-
-    def _enum_constructor_refs(self, system, ctr_collector):
-        for name, rec in system.resolved_templates.items():
-            log.info("Resolved service %s: %s", name, rec)
-            ctr = ServiceTemplateCtr.from_rec(name, rec)
-            yield mosaic.put(ctr.piece)
-        for (service_name, t), rec in system.resolved_actors.items():
-            log.info("Resolved actor %s.%s: %s", service_name, t, rec)
-            ctr = ActorTemplateCtr.from_rec(service_name, t, rec)
-            yield mosaic.put(ctr.piece)
-        for ctr in ctr_collector.constructors:
-            yield mosaic.put(ctr)

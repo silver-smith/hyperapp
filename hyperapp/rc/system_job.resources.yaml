@@ -1,6 +1,8 @@
 import:
-
+- builtins:mosaic.service
 - legacy_type.builtin:python_module
+- rc.actor_ctr:actor_ctr.module
+- rc.service_ctr:service_ctr.module
 - rc.system:system.module
 - rc.system_probe:system_probe.module
 
@@ -12,5 +14,8 @@ definitions:
       module_name: system_job
       file_name: system_job.dyn.py
       import_list:
+        services.mosaic: builtins:mosaic.service
+        code.service_ctr: rc.service_ctr:service_ctr.module
+        code.actor_ctr: rc.actor_ctr:actor_ctr.module
         code.system: rc.system:system.module
         code.system_probe: rc.system_probe:system_probe.module

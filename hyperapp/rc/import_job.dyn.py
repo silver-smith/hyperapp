@@ -2,7 +2,6 @@ import inspect
 import traceback
 
 from hyperapp.common.util import flatten
-from hyperapp.common.resource_ctr import RESOURCE_MODULE_CTR_NAME
 from hyperapp.resource.python_module import PythonModuleResourceImportError
 
 from . import htypes
@@ -16,6 +15,7 @@ from .code.builtin_resources import enum_builtin_resources
 from .code.import_recorder import IncompleteImportedObjectError
 from .code.requirement_factory import RequirementFactory
 from .code.job_result import JobResult
+from .code.system_job import SystemJob
 
 
 class Function:
@@ -147,17 +147,20 @@ class FailedImportResult(JobResult):
         pass
 
 
-class ImportJob:
+class ImportJob(SystemJob):
 
     @classmethod
-    def from_piece(cls, piece, rc_resource_creg):
+    def from_piece(cls, piece, cfg_item_creg, rc_resource_creg, system_config):
         return cls(
             python_module_src=PythonModuleSrc.from_piece(piece.python_module),
             idx=piece.idx,
             resources=[rc_resource_creg.invite(d) for d in piece.resources],
+            cfg_item_creg=cfg_item_creg,
+            system_config=system_config,
             )
 
-    def __init__(self, python_module_src, idx, resources):
+    def __init__(self, python_module_src, idx, resources, cfg_item_creg=None, system_config=None):
+        super().__init__(cfg_item_creg, system_config)
         self._src = python_module_src
         self._idx = idx
         self._resources = resources
@@ -178,9 +181,10 @@ class ImportJob:
         import_list = flatten(d.import_records for d in all_resources)
         recorder_piece, module_piece = self._src.recorded_python_module(import_list)
         recorder = pyobj_creg.animate(recorder_piece)
+        system = self._prepare_system(all_resources)
+        ctr_collector = system.resolve_service('ctr_collector')
         try:
             module = pyobj_creg.animate(module_piece)
-            constructors = getattr(module, RESOURCE_MODULE_CTR_NAME, [])
             status = JobStatus.ok
         except PythonModuleResourceImportError as x:
             status, error_msg, traceback = self._prepare_error(x)
@@ -197,11 +201,12 @@ class ImportJob:
                 error=error_msg,
                 traceback=tuple(traceback),
                 )
+        constructors = tuple(self._enum_constructor_refs(system, ctr_collector))
         if status == JobStatus.ok:
             return htypes.import_job.succeeded_result(
                 requirements=req_refs,
                 functions=tuple(self._enum_functions(module)),
-                constructors=tuple(constructors),
+                constructors=constructors,
                 )
 
     def _enum_functions(self, module):
