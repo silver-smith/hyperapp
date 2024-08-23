@@ -1,8 +1,9 @@
+from functools import partial
+
 from .services import pyobj_creg
-from .code.system import NotATemplate
 
 
-class Marker:
+class MarkerTemplate:
 
     @classmethod
     def from_piece(cls, piece):
@@ -17,22 +18,33 @@ class Marker:
         self._fn = fn
         self._service_params = service_params
 
+    def __repr__(self):
+        return f"<MarkerTemplate {self._name}: {self._fn} {self._service_params}>"
+
+    def resolve(self, system, service_name):
+        if not self._service_params:
+            return self._fn
+        kw = {
+            name: system.resolve_service(name)
+            for name in self._service_params
+            }
+        return partial(self._fn, **kw)
+
 
 class MarkerCfg:
 
     @classmethod
     def from_piece(cls, piece, service_name):
-        marker = Marker.from_piece(piece)
-        return cls(marker)
+        template = MarkerTemplate.from_piece(piece)
+        return cls(template)
 
-    def __init__(self, marker):
-        self.key = marker.name
-        self._marker = marker
-        self.value = NotATemplate(marker)
+    def __init__(self, template):
+        self.key = template.name
+        self.value = template
 
     @property
     def piece(self):
-        return self._marker.piece
+        return self.value.piece
 
 
 def marker_registry(config, ctr_collector, marker_ctl):

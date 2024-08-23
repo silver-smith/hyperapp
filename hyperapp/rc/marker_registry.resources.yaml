@@ -5,7 +5,6 @@ import:
 - legacy_type.marker:marker_template
 - legacy_type.system:actor_template
 - legacy_type.system:finalizer_gen_service_template
-- rc.system:system.module
 
 definitions:
 
@@ -16,7 +15,6 @@ definitions:
       file_name: marker_registry.dyn.py
       import_list:
         services.pyobj_creg: builtins:pyobj_creg.service
-        code.system: rc.system:system.module
 
   MarkerCfg:
     type: legacy_type.builtin:attribute
