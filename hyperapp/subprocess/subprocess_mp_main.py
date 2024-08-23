@@ -12,18 +12,6 @@ from hyperapp.common.services import HYPERAPP_DIR, Services
 log = logging.getLogger(__name__)
 
 
-module_dir_list = [
-    HYPERAPP_DIR / 'common',
-    HYPERAPP_DIR / 'resource',
-    HYPERAPP_DIR / 'system',
-    HYPERAPP_DIR / 'sync',
-    HYPERAPP_DIR / 'rpc',
-    HYPERAPP_DIR / 'transport',
-    HYPERAPP_DIR / 'subprocess',
-    HYPERAPP_DIR / 'rc',
-    ]
-
-
 @contextmanager
 def logging_inited(process_name):
     format = '%(asctime)s.%(msecs)03d %(name)-46s %(lineno)4d %(threadName)10s %(levelname)-8s  %(message)s'
@@ -52,9 +40,8 @@ def subprocess_main(process_name, connection, main_fn_bundle_cdr):
 
 def subprocess_main_safe(connection, main_fn_bundle_cdr):
     log.info("Subprocess: Init services.")
-    services = Services(module_dir_list)
+    services = Services(module_dir_list=[])
     services.init_services()
-    services.load_type_modules()
 
     pyobj_creg = services.pyobj_creg
     unbundler = services.unbundler
