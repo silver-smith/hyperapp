@@ -3,8 +3,8 @@ import:
 - legacy_type.system:system_config
 - common.bundler:bundler.service
 - common.mark:marker_ctl.service
-- common.system_stop:stop_signal.service
-- common.system_stop:system_failed.service
+- system.system_stop:stop_signal.service
+- system.system_stop:system_failed.service
 - rc.actor_probe_resource:service_resource_actor_probe_resource.actor-template
 - rc.actor_ctr:rc_constructors_actor_probe.actor-template
 - rc.actor_ctr:rc_constructors_actor_template.actor-template
@@ -105,8 +105,8 @@ definitions:
         system:
         - common.bundler:bundler.service
         - common.mark:marker_ctl.service
-        - common.system_stop:stop_signal.service
-        - common.system_stop:system_failed.service
+        - system.system_stop:stop_signal.service
+        - system.system_stop:system_failed.service
         - rc.ctr_collector:ctr_collector.service
         - rc.init_targets:ctr_from_template_creg.service
         - rc.marker_registry:marker_registry.service

@@ -20,7 +20,7 @@ import:
 - rc.rc_constants:rc_constants.module
 - rc.rc_job_result_creg:rc_job_result_creg.service
 - rc.service_resource:service_resource.module
-- rc.system:system.module
+- system.system:system.module
 - rc.system_job:system_job.module
 - rc.system_probe:system_probe.module
 
@@ -49,7 +49,7 @@ definitions:
         code.rc_constants: rc.rc_constants:rc_constants.module
         code.service_resource: rc.service_resource:service_resource.module
         code.actor_resource: rc.actor_resource:actor_resource.module
-        code.system: rc.system:system.module
+        code.system: system.system:system.module
         code.system_probe: rc.system_probe:system_probe.module
         code.system_job: rc.system_job:system_job.module
 

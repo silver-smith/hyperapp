@@ -18,6 +18,7 @@ Options = namedtuple('Options', 'timeout verbose fail_fast write show_diffs show
 module_dir_list = [
     HYPERAPP_DIR / 'common',
     HYPERAPP_DIR / 'resource',
+    HYPERAPP_DIR / 'system',
     HYPERAPP_DIR / 'transport',
     HYPERAPP_DIR / 'rpc',
     HYPERAPP_DIR / 'subprocess',
@@ -75,7 +76,7 @@ def main():
             show_incomplete_traces=args.show_incomplete_traces,
             )
         config = resource_registry['rc.config', 'config']
-        module_res = resource_registry['rc.system', 'system.module']
+        module_res = resource_registry['system.system', 'system.module']
         module = pyobj_creg.animate(module_res)
         module.run_system(config, 'compile_resources', args.targets, args.workers, options)
     finally:
