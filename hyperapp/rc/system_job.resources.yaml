@@ -1,0 +1,16 @@
+import:
+
+- legacy_type.builtin:python_module
+- rc.system:system.module
+- rc.system_probe:system_probe.module
+
+definitions:
+
+  system_job.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: system_job
+      file_name: system_job.dyn.py
+      import_list:
+        code.system: rc.system:system.module
+        code.system_probe: rc.system_probe:system_probe.module

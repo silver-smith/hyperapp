@@ -256,7 +256,7 @@ class System:
         try:
             return self._run_service(service, args, kw)
         finally:
-            self._run_finalizers()
+            self.close()
             log.info("%s: stopped", self._system_name)
 
     def _run_service(self, service, args, kw):
@@ -284,7 +284,7 @@ class System:
     def add_finalizer(self, service_name, finalizer):
         self._finalizers[service_name] = finalizer
 
-    def _run_finalizers(self):
+    def close(self):
         log.info("%s: run %d finalizers:", self._system_name, len(self._finalizers))
         for name, fn in reversed(self._finalizers.items()):
             log.info("%s: call finalizer for %r: %s", self._system_name, name, fn)

@@ -23,7 +23,8 @@ from .code.actor_ctr import ActorTemplateCtr
 from .code.service_resource import ServiceReq
 from .code.actor_resource import ActorReq
 from .code.system import UnknownServiceError, NotATemplate
-from .code.system_probe import ConfigItemRequiredError, FixtureProbeTemplate, SystemProbe
+from .code.system_probe import ConfigItemRequiredError, FixtureProbeTemplate
+from .code.system_job import SystemJob
 
 log  = logging.getLogger(__name__)
 
@@ -119,7 +120,7 @@ class FailedTestResult(JobResult):
         pass
 
 
-class TestJob:
+class TestJob(SystemJob):
 
     @classmethod
     def from_piece(cls, piece, cfg_item_creg, rc_resource_creg, system_config):
@@ -133,12 +134,11 @@ class TestJob:
             )
 
     def __init__(self, python_module_src, idx, resources, test_fn_name, cfg_item_creg=None, system_config=None):
+        super().__init__(cfg_item_creg, system_config)
         self._src = python_module_src
         self._idx = idx
         self._resources = resources
         self._test_fn_name = test_fn_name
-        self._cfg_item_creg = cfg_item_creg  # Used from 'run' method, inside job process.
-        self._system_config = system_config  # --//--
 
     def __repr__(self):
         return f"<TestJob {self._src}/{self._test_fn_name}/{self._idx}>"
@@ -159,9 +159,10 @@ class TestJob:
         recorder = pyobj_creg.animate(recorder_piece)
         status, error_msg, traceback, module = self._import_module(module_piece)
         if status == JobStatus.ok:
-            system = self._prepare_system(module, all_resources)
+            system = self._prepare_system(all_resources)
+            root_probe = self._make_root_fixture(module)
+            system.update_config('system', {self._root_name: root_probe})
             ctr_collector = system.resolve_service('ctr_collector')
-            marker_reg = system.resolve_service('marker_registry')
             ctr_collector.ignore_module(module.__name__)
             status, error_msg, traceback, req_set = self._run_system(system)
         else:
@@ -201,30 +202,10 @@ class TestJob:
     def _root_name(self):
         return self._test_fn_name
 
-    def _configure_system(self, resource_list, system):
-        for resource in resource_list:
-            resource.configure_system(system)
-
     def _make_root_fixture(self, module):
         test_fn = getattr(module, self._test_fn_name)
         params = tuple(inspect.signature(test_fn).parameters)
         return FixtureProbeTemplate(test_fn, params)
-
-    def _ctr_collector_config(self, resource_list):
-        config = {}
-        for resource in resource_list:
-            for key, value in resource.ctr_collector_config().items():
-                config.update({key: NotATemplate(value)})
-        return config
-
-    def _prepare_system(self, module, resources):
-        system = SystemProbe()
-        system.load_config(self._system_config)
-        self._configure_system(resources, system)
-        root_probe = self._make_root_fixture(module)
-        system.update_config('system', {self._root_name: root_probe})
-        system.update_config('ctr_collector', self._ctr_collector_config(resources))
-        return system
 
     def _run_system(self, system):
         try:
