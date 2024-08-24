@@ -38,8 +38,8 @@ def _data_to_res(piece, t=None):
 
 
 @mark.service2
-def data_to_res():
-    return _data_to_res
+def data_to_res(piece, t=None):
+    return _data_to_res(piece, t)
 
 
 @mark.service2
