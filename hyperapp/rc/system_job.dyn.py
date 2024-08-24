@@ -31,7 +31,6 @@ class SystemJob:
         system.update_config('ctr_collector', self._ctr_collector_config(resources))
         _ = system.resolve_service('marker_registry')
         return system
-        return ctr_collector
 
     def _enum_constructor_refs(self, system, ctr_collector):
         for name, rec in system.resolved_templates.items():

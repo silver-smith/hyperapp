@@ -49,6 +49,6 @@ class MarkerCfg:
 
 def marker_registry(config, ctr_collector, marker_ctl):
     for name, marker in config.items():
-        marker_ctl.set(name, marker)
+        marker_ctl.set_marker(name, marker)
     yield
-    marker_ctl.clear()
+    marker_ctl.clear_markers()

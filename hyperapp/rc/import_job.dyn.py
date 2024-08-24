@@ -183,6 +183,8 @@ class ImportJob(SystemJob):
         recorder = pyobj_creg.animate(recorder_piece)
         system = self._prepare_system(all_resources)
         ctr_collector = system.resolve_service('ctr_collector')
+        ctr_collector.set_wanted_piece(self._src.name, module_piece)
+        ctr_collector.init_markers()
         try:
             module = pyobj_creg.animate(module_piece)
             status = JobStatus.ok

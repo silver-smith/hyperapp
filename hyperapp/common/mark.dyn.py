@@ -19,19 +19,28 @@ class NoOpMarker:
 class MarkerCtl:
 
     def __init__(self):
-        self._markers = {}
+        self._markers = {}  # Marker by name.
+        self._pyname_to_hname = {}  # Wanted modules.
 
-    def set(self, name, marker):
+    def add_wanted_module(self, pyname, hname):
+        self._pyname_to_hname[pyname] = hname
+
+    def clear_wanted_modules(self):
+        self._pyname_to_hname.clear()
+
+    def set_marker(self, name, marker):
         self._markers[name] = marker
 
-    def clear(self):
+    def clear_markers(self):
         self._markers.clear()
 
-    def get(self, name):
-        if self._markers:
-            return self._markers[name]
-        else:
+    def get(self, python_module_name, marker_name):
+        try:
+            module_name = self._pyname_to_hname[python_module_name]
+        except KeyError:
             return NoOpMarker()
+        marker_fn = self._markers[marker_name]
+        return partial(marker_fn, module_name=module_name)
 
 
 class Markers:
@@ -42,8 +51,7 @@ class Markers:
     def __getattr__(self, name):
         frame = inspect.stack()[1].frame
         python_module_name = frame.f_globals['__name__']
-        marker_fn = self._ctl.get(name)
-        return partial(marker_fn, python_module_name=python_module_name)
+        return self._ctl.get(python_module_name, name)
 
 
 _marker_ctl = MarkerCtl()

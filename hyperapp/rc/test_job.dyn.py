@@ -162,6 +162,7 @@ class TestJob(SystemJob):
             system.update_config('system', {self._root_name: root_probe})
             ctr_collector = system.resolve_service('ctr_collector')
             ctr_collector.ignore_module(module.__name__)
+            ctr_collector.init_markers()
             status, error_msg, traceback, req_set = self._run_system(system)
         else:
             req_set = set()

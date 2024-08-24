@@ -1,7 +1,8 @@
 import:
+- builtins:mosaic.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.system:service_template
+- legacy_type.system:finalizer_gen_service_template
 
 definitions:
 
@@ -10,7 +11,8 @@ definitions:
     value:
       module_name: ctr_collector
       file_name: ctr_collector.dyn.py
-      import_list: {}
+      import_list:
+        services.mosaic: builtins:mosaic.service
 
   ctr_collector:
     type: legacy_type.builtin:attribute
@@ -19,10 +21,11 @@ definitions:
       attr_name: ctr_collector
 
   ctr_collector.service:
-    type: legacy_type.system:service_template
+    type: legacy_type.system:finalizer_gen_service_template
     value:
       name: ctr_collector
       function: ctr_collector
       free_params: []
-      service_params: []
+      service_params:
+      - marker_ctl
       want_config: true
