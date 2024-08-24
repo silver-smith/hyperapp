@@ -5,6 +5,13 @@ service_req = record:
   service_name: string
 
 
+service_probe_ctr = record:
+  module_name: string
+  attr_name: string
+  name: string
+  params: string list
+
+
 service_probe_resource = record:
   attr_name: string
   service_name: string

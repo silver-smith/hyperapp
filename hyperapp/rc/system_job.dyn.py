@@ -1,3 +1,5 @@
+import logging
+
 from .services import (
     mosaic,
     )
@@ -5,6 +7,8 @@ from .code.actor_ctr import ActorTemplateCtr
 from .code.service_ctr import ServiceTemplateCtr
 from .code.system import NotATemplate
 from .code.system_probe import ConfigItemRequiredError, FixtureProbeTemplate, SystemProbe
+
+log = logging.getLogger(__name__)
 
 
 class SystemJob:
@@ -42,4 +46,4 @@ class SystemJob:
             ctr = ActorTemplateCtr.from_rec(service_name, t, rec)
             yield mosaic.put(ctr.piece)
         for ctr in ctr_collector.constructors:
-            yield mosaic.put(ctr)
+            yield mosaic.put(ctr.piece)

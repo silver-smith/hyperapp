@@ -1,16 +1,15 @@
 import inspect
 
-from hyperapp.common.resource_ctr import add_fn_module_constructor
-
-from . import htypes
-from .services import mosaic
+from .code.service_ctr import ServiceProbeCtr
 
 
-def service_marker(fn):
-    ctr = htypes.rc_constructors.service_probe(
+def service_marker(fn, module_name, ctr_collector):
+    if '.' in fn.__qualname__:
+        raise RuntimeError(f"Only free functions are suitable for services: {fn!r}")
+    ctr = ServiceProbeCtr(
+        module_name=module_name, 
         attr_name=fn.__name__,
         name=fn.__name__,
         params=tuple(inspect.signature(fn).parameters),
         )
-    add_fn_module_constructor(fn, mosaic.put(ctr))
-    return fn
+    ctr_collector.add_constructor(ctr)

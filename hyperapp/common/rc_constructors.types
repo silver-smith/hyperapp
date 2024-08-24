@@ -3,11 +3,6 @@ service = record:
   attr_name: string
   name: string
 
-service_probe = record:
-  attr_name: string
-  name: string
-  params: string list
-
 service_template = record:
   attr_name: string
   name: string

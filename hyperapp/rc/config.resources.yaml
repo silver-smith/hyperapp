@@ -37,8 +37,8 @@ import:
 - rc.service_ctr:rc_constructors_config_item_fixture.actor-template
 - rc.service_ctr:rc_constructors_fixture.actor-template
 - rc.service_ctr:rc_constructors_service.actor-template
-- rc.service_ctr:rc_constructors_service_probe.actor-template
 - rc.service_ctr:rc_constructors_service_template.actor-template
+- rc.service_ctr:service_resource_service_probe_ctr.actor-template
 - rc.service_ctr:system_finalizer_gen_service_template.actor-template
 - rc.service_ctr:system_service_template.actor-template
 - rc.service_marker:service2.marker-template
@@ -172,10 +172,10 @@ definitions:
         - rc.feed_ctr:rc_constructors_index_tree_feed.actor-template
         - rc.model_ctr:rc_constructors_model.actor-template
         - rc.service_ctr:rc_constructors_service.actor-template
-        - rc.service_ctr:rc_constructors_service_probe.actor-template
         - rc.service_ctr:rc_constructors_service_template.actor-template
         - rc.service_ctr:rc_constructors_fixture.actor-template
         - rc.service_ctr:rc_constructors_config_item_fixture.actor-template
+        - rc.service_ctr:service_resource_service_probe_ctr.actor-template
         - rc.ui_command_ctr:rc_constructors_ui_command.actor-template
         - rc.ui_command_ctr:rc_constructors_ui_model_command.actor-template
         - rc.ui_command_ctr:rc_constructors_universal_ui_command.actor-template

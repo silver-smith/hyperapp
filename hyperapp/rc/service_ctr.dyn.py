@@ -2,7 +2,7 @@ from . import htypes
 from .services import (
     mosaic,
     )
-from .code.rc_constructor import Constructor
+from .code.rc_constructor import Constructor, ModuleCtr
 from .code.service_probe_resource import ConfigItemFixtureResource, FixtureProbeResource, ServiceProbeResource
 
 
@@ -43,16 +43,26 @@ class ServiceCtr(Constructor):
         return name_to_res[f'{self._name}.service']
 
 
-class ServiceProbeCtr(Constructor):
+class ServiceProbeCtr(ModuleCtr):
 
     @classmethod
     def from_piece(cls, piece):
-        return cls(piece.attr_name, piece.name, piece.params)
+        return cls(piece.module_name, piece.attr_name, piece.name, piece.params)
 
-    def __init__(self, attr_name, name, params):
+    def __init__(self, module_name, attr_name, name, params):
+        super().__init__(module_name)
         self._attr_name = attr_name
         self._name = name
         self._params = params
+
+    @property
+    def piece(self):
+        return htypes.service_resource.service_probe_ctr(
+            module_name=self._module_name,
+            attr_name=self._attr_name,
+            name=self._name,
+            params=self._params,
+            )
 
     def update_resource_targets(self, resource_tgt, target_set):
         resource_tgt.import_alias_tgt.add_component(self)
