@@ -9,6 +9,6 @@ from .services import (
 from .code.mark import mark
 
 
-@mark.service
+@mark.service2
 def feed_creg():
     return CachedCodeRegistry(mosaic, web, association_reg, pyobj_creg, 'feed')
