@@ -171,13 +171,14 @@ class ServiceTemplateCtr(ServiceTemplateCtrBase):
         return service
 
 
-class FixtureCtr(Constructor):
+class FixtureCtr(ModuleCtr):
 
     @classmethod
     def from_piece(cls, piece):
-        return cls(piece.attr_name, piece.name, piece.params)
+        return cls(piece.module_name, piece.attr_name, piece.name, piece.params)
 
-    def __init__(self, attr_name, name, params):
+    def __init__(self, module_name, attr_name, name, params):
+        super().__init__(module_name)
         self._attr_name = attr_name
         self._name = name
         self._params = params
@@ -187,6 +188,7 @@ class FixtureCtr(Constructor):
         return True
 
     def update_fixtures_targets(self, import_alias_tgt, target_set):
+        assert import_alias_tgt.module_name == self._module_name
         import_alias_tgt.add_component(self)
 
     def make_component(self, python_module, name_to_res=None):

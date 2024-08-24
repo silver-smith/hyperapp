@@ -78,6 +78,10 @@ class ImportTargetAlias(Target):
         if self._got_requirements:
             self._completed = all(target.completed for target in self.deps)
 
+    @property
+    def module_name(self):
+        return self._src.name
+
     def set_import_target(self, import_target):
         self._import_target = import_target
 

@@ -4,9 +4,9 @@ import:
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.rc_constructors:config_item_fixture
-- legacy_type.rc_constructors:fixture
 - legacy_type.rc_constructors:service
 - legacy_type.rc_constructors:service_template
+- legacy_type.service_resource:fixture_ctr
 - legacy_type.service_resource:service_probe_ctr
 - legacy_type.system:actor_template
 - legacy_type.system:finalizer_gen_service_template
@@ -126,10 +126,10 @@ definitions:
       object: FixtureCtr
       attr_name: from_piece
 
-  rc_constructors_fixture.actor-template:
+  service_resource_fixture_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.rc_constructors:fixture
+      t: legacy_type.service_resource:fixture_ctr
       function: FixtureCtr.from_piece
       service_params: []
 
