@@ -5,10 +5,11 @@ import:
 - common.mark:marker_ctl.service
 - system.system_stop:stop_signal.service
 - system.system_stop:system_failed.service
-- rc.actor_probe_resource:service_resource_actor_probe_resource.actor-template
-- rc.actor_ctr:rc_constructors_actor_probe.actor-template
-- rc.actor_ctr:rc_constructors_actor_template.actor-template
+- rc.actor_ctr:actor_resource_actor_probe_ctr.actor-template
+- rc.actor_ctr:actor_resource_actor_template_ctr.actor-template
 - rc.actor_ctr:system_actor_template.actor-template
+- rc.actor_marker:actor.marker-template
+- rc.actor_probe_resource:service_resource_actor_probe_resource.actor-template
 - rc.actor_resource:actor_resource_actor_req.actor-template
 - rc.ctr_collector:ctr_collector.service
 - rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
@@ -153,6 +154,7 @@ definitions:
         - rc.actor_ctr:system_actor_template.actor-template
         - rc.marker_ctr:marker_marker_template.actor-template
         marker_registry:
+        - rc.actor_marker:actor.marker-template
         - rc.config_item_marker:config_item_fixture.marker-template
         - rc.model_marker:model.marker-template
         - rc.service_marker:service2.marker-template
@@ -171,8 +173,8 @@ definitions:
         - rpc.rpc_endpoint:rpc_function_target.actor-template
         - rc.rc_job:rc_job_job_target.actor-template
         rc_constructor_creg:
-        - rc.actor_ctr:rc_constructors_actor_probe.actor-template
-        - rc.actor_ctr:rc_constructors_actor_template.actor-template
+        - rc.actor_ctr:actor_resource_actor_probe_ctr.actor-template
+        - rc.actor_ctr:actor_resource_actor_template_ctr.actor-template
         - rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
         - rc.feed_ctr:rc_constructors_list_feed.actor-template
         - rc.feed_ctr:rc_constructors_index_tree_feed.actor-template

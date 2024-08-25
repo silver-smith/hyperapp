@@ -11,20 +11,6 @@ service_template = record:
   want_config: bool
 
 
-actor_probe = record:
-  attr_qual_name: string list
-  service_name: string
-  t: ref
-  params: string list
-
-actor_template = record:
-  attr_qual_name: string list
-  service_name: string
-  t: ref
-  creg_params: string list
-  service_params: string list
-
-
 model = record:
   attr_name: string
 

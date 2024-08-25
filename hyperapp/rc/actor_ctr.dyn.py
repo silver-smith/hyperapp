@@ -24,6 +24,15 @@ class ActorProbeCtr(Constructor):
         self._t = t
         self._params = params
 
+    @property
+    def piece(self):
+        return htypes.actor_resource.actor_probe_ctr(
+            attr_qual_name=tuple(self._attr_qual_name),
+            service_name=self._service_name,
+            t=pyobj_creg.actor_to_ref(self._t),
+            params=tuple(self._params),
+            )
+
     def update_resource_targets(self, resource_tgt, target_set):
         resource_tgt.import_alias_tgt.add_component(self)
         ready_tgt = target_set.factory.config_item_ready(self._service_name, self._type_name)
@@ -104,7 +113,7 @@ class ActorTemplateCtr(ActorTemplateCtrBase):
 
     @property
     def piece(self):
-        return htypes.rc_constructors.actor_template(
+        return htypes.actor_resource.actor_template_ctr(
             attr_qual_name=tuple(self._attr_qual_name),
             service_name=self._service_name,
             t=pyobj_creg.actor_to_ref(self._t),

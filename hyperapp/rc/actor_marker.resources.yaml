@@ -1,0 +1,29 @@
+import:
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.marker:marker_template
+- rc.actor_ctr:actor_ctr.module
+
+definitions:
+
+  actor_marker.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: actor_marker
+      file_name: actor_marker.dyn.py
+      import_list:
+        code.actor_ctr: rc.actor_ctr:actor_ctr.module
+
+  actor_marker:
+    type: legacy_type.builtin:attribute
+    value:
+      object: actor_marker.module
+      attr_name: actor_marker
+
+  actor.marker-template:
+    type: legacy_type.marker:marker_template
+    value:
+      name: actor
+      function: actor_marker
+      service_params:
+      - ctr_collector

@@ -1,3 +1,16 @@
 actor_req = record:
   service_name: string
   t: ref
+
+actor_probe_ctr = record:
+  attr_qual_name: string list
+  service_name: string
+  t: ref
+  params: string list
+
+actor_template_ctr = record:
+  attr_qual_name: string list
+  service_name: string
+  t: ref
+  creg_params: string list
+  service_params: string list
