@@ -13,6 +13,7 @@ def service_marker(fn, module_name, ctr_collector):
         params=tuple(inspect.signature(fn).parameters),
         )
     ctr_collector.add_constructor(ctr)
+    return fn
 
 
 def fixture_marker(fn, module_name, ctr_collector):
@@ -25,3 +26,4 @@ def fixture_marker(fn, module_name, ctr_collector):
         params=tuple(inspect.signature(fn).parameters),
         )
     ctr_collector.add_constructor(ctr)
+    return fn
