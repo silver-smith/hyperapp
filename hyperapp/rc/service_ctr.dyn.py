@@ -72,16 +72,19 @@ class ServiceProbeCtr(ModuleCtr):
         resource_tgt.add_cfg_item_target(resolved_tgt)
         target_set.update_deps_for(ready_tgt)
         target_set.update_deps_for(resource_tgt)
-        if tuple(self._params) in {(), ('config',)}:
-            template_ctr = ServiceTemplateCtr(
-                attr_name=self._attr_name,
-                name=self._name,
-                free_params=[],
-                service_params=[],
-                want_config='config' in self._params,
-                )
-            resolved_tgt.resolve(template_ctr)
-            target_set.update_deps_for(resolved_tgt)
+        if tuple(self._params) not in {(), ('config',)}:
+            return
+        template_ctr = ServiceTemplateCtr(
+            attr_name=self._attr_name,
+            name=self._name,
+            free_params=[],
+            service_params=[],
+            want_config='config' in self._params,
+            )
+        resolved_tgt.resolve(template_ctr)
+        target_set.update_deps_for(resolved_tgt)
+        # Should be created to be added to config resource.
+        _ = target_set.factory.config_item_complete('system', self._name)
 
     def make_component(self, python_module, name_to_res=None):
         return htypes.builtin.attribute(
