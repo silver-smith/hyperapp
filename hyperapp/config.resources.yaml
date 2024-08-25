@@ -67,6 +67,8 @@ import:
 - rc.ui_command_ctr:rc_constructors_ui_model_command.actor-template
 - rc.ui_command_ctr:rc_constructors_universal_ui_command.actor-template
 - rc.ui_command_ctr:rc_constructors_universal_ui_model_command.actor-template
+- resource.data_to_res:data_to_ref.service
+- resource.data_to_res:data_to_res.service
 - resource.partial_ref:partial_ref.service
 - resource.rc_constructor_creg:rc_constructor_creg.service
 - rpc.rpc_call:rpc_call_factory.service
@@ -203,6 +205,8 @@ definitions:
         - rc.rc_job_result_creg:rc_job_result_creg.service
         - rc.rc_requirement_creg:rc_requirement_creg.service
         - rc.rc_resource_creg:rc_resource_creg.service
+        - resource.data_to_res:data_to_ref.service
+        - resource.data_to_res:data_to_res.service
         - resource.partial_ref:partial_ref.service
         - resource.rc_constructor_creg:rc_constructor_creg.service
         - rpc.rpc_call:rpc_call_factory.service
