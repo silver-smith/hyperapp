@@ -152,6 +152,8 @@ class ServiceTemplateCtr(ServiceTemplateCtrBase):
         resolved_tgt = target_set.factory.config_item_resolved('system', self._name)
         resolved_tgt.resolve(self)
         target_set.update_deps_for(resolved_tgt)
+        # Should be created to be added to config resource.
+        _ = target_set.factory.config_item_complete('system', self._name)
 
     def make_component(self, python_module, name_to_res=None):
         attribute = htypes.builtin.attribute(
