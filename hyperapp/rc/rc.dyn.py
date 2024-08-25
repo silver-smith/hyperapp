@@ -132,9 +132,10 @@ def _run(rc_job_result_creg, pool, target_set, filter, options):
         for target, result in incomplete.items():
             rc_log.info("\n========== %s ==========\n%s%s\n", target.name, "".join(result.traceback), result.error)
     for target in target_set:
-        if not target.completed and target not in failures:
+        if options.verbose or not target.completed and target not in failures:
             rc_log.info(
-                "Not completed: %s, missing: %s, wants: %s",
+                "%s: %s, missing: %s, wants: %s",
+                "Failed" if target in failures else "Completed" if target.completed else "Not completed",
                 target.name,
                 ", ".join(dep.name for dep in target.deps if not dep.completed),
                 ", ".join(dep.name for dep in target.deps),
