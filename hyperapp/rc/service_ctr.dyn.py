@@ -201,29 +201,43 @@ class FixtureCtr(ModuleCtr):
         return FixtureProbeResource(self._name, self.make_component(python_module), self._params)
 
 
-class ConfigItemFixtureCtr(Constructor):
+class ConfigItemFixtureCtr(ModuleCtr):
 
     @classmethod
     def from_piece(cls, piece):
-        return cls(piece.attr_name, piece.service_name, piece.service_params)
+        return cls(piece.module_name, piece.attr_qual_name, piece.service_name, piece.service_params)
 
-    def __init__(self, attr_name, service_name, service_params):
-        self._attr_name = attr_name
+    def __init__(self, module_name, attr_qual_name, service_name, service_params):
+        super().__init__(module_name)
+        self._attr_qual_name = attr_qual_name
         self._service_name = service_name
         self._service_params = service_params
+
+    @property
+    def piece(self):
+        return htypes.service_resource.config_item_fixture_ctr(
+            module_name=self._module_name,
+            attr_qual_name=tuple(self._attr_qual_name),
+            service_name=self._service_name,
+            service_params=self._service_params,
+            )
 
     @property
     def is_fixture(self):
         return True
 
     def update_fixtures_targets(self, import_alias_tgt, target_set):
+        assert import_alias_tgt.module_name == self._module_name
         import_alias_tgt.add_component(self)
 
     def make_component(self, python_module, name_to_res=None):
-        return htypes.builtin.attribute(
-            object=mosaic.put(python_module),
-            attr_name=self._attr_name,
-            )
+        object = python_module
+        for name in self._attr_qual_name:
+            object = htypes.builtin.attribute(
+                object=mosaic.put(object),
+                attr_name=name,
+                )
+        return object
 
     def make_resource(self, module_name, python_module):
         return ConfigItemFixtureResource(self._service_name, self.make_component(python_module), self._service_params)

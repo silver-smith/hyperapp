@@ -12,6 +12,7 @@ import:
 - rc.actor_resource:actor_resource_actor_req.actor-template
 - rc.ctr_collector:ctr_collector.service
 - rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
+- rc.config_item_marker:config_item_fixture.marker-template
 - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
 - rc.feed_ctr:rc_constructors_list_feed.actor-template
 - rc.feed_ctr:rc_constructors_index_tree_feed.actor-template
@@ -34,7 +35,7 @@ import:
 - rc.rc_resource_creg:rc_resource_creg.service
 - rc.process_pool:process_pool_running.service
 - rc.python_module_resource_target:python_module_resource_target_python_module_req.actor-template
-- rc.service_ctr:rc_constructors_config_item_fixture.actor-template
+- rc.service_ctr:service_resource_config_item_fixture_ctr.actor-template
 - rc.service_ctr:service_resource_fixture_ctr.actor-template
 - rc.service_ctr:rc_constructors_service.actor-template
 - rc.service_ctr:rc_constructors_service_template.actor-template
@@ -151,6 +152,7 @@ definitions:
         - rc.actor_ctr:system_actor_template.actor-template
         - rc.marker_ctr:marker_marker_template.actor-template
         marker_registry:
+        - rc.config_item_marker:config_item_fixture.marker-template
         - rc.service_marker:service2.marker-template
         - rc.service_marker:fixture.marker-template
         peer_registry:
@@ -176,7 +178,7 @@ definitions:
         - rc.service_ctr:rc_constructors_service.actor-template
         - rc.service_ctr:rc_constructors_service_template.actor-template
         - rc.service_ctr:service_resource_fixture_ctr.actor-template
-        - rc.service_ctr:rc_constructors_config_item_fixture.actor-template
+        - rc.service_ctr:service_resource_config_item_fixture_ctr.actor-template
         - rc.service_ctr:service_resource_service_probe_ctr.actor-template
         - rc.ui_command_ctr:rc_constructors_ui_command.actor-template
         - rc.ui_command_ctr:rc_constructors_ui_model_command.actor-template

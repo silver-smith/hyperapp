@@ -25,12 +25,6 @@ actor_template = record:
   service_params: string list
 
 
-config_item_fixture = record:
-  attr_name: string
-  service_name: string
-  service_params: string list
-
-
 model = record:
   attr_name: string
 
