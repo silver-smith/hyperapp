@@ -1,5 +1,4 @@
 import inspect
-from functools import partial
 
 from hyperapp.common.htypes import Type
 
@@ -39,8 +38,8 @@ class MarkerCtl:
             module_name = self._pyname_to_hname[python_module_name]
         except KeyError:
             return NoOpMarker()
-        marker_fn = self._markers[marker_name]
-        return partial(marker_fn, module_name=module_name)
+        marker = self._markers[marker_name]
+        return marker.resolve(module_name)
 
 
 class Markers:

@@ -47,5 +47,11 @@ class ServiceActorMarker:
         return ServiceActorWrapper(self._ctr_collector, self._module_name, self._service_name, t)
 
 
-def actor_marker(service_name, module_name, ctr_collector):
-    return ServiceActorMarker(ctr_collector, module_name, service_name)
+class ActorMarker:
+
+    def __init__(self, module_name, ctr_collector):
+        self._module_name = module_name
+        self._ctr_collector = ctr_collector
+
+    def __getattr__(self, service_name):
+        return ServiceActorMarker(self._ctr_collector, self._module_name, service_name)

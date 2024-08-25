@@ -14,16 +14,16 @@ definitions:
       import_list:
         code.actor_ctr: rc.actor_ctr:actor_ctr.module
 
-  actor_marker:
+  ActorMarker:
     type: legacy_type.builtin:attribute
     value:
       object: actor_marker.module
-      attr_name: actor_marker
+      attr_name: ActorMarker
 
   actor.marker-template:
     type: legacy_type.marker:marker_template
     value:
       name: actor
-      function: actor_marker
+      function: ActorMarker
       service_params:
       - ctr_collector
