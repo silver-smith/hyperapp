@@ -1,6 +1,7 @@
 import logging
 
 from . import htypes
+from .code.feed_ctr import ListFeedCtr, IndexTreeFeedCtr
 from .fixtures import feed_fixtures
 from .tested.code import sample_feed
 
@@ -14,7 +15,7 @@ async def test_sample_list_feed(feed_factory):
     await sample_feed.schedule_sample_list_feed(feed_factory, piece)
     await feed.wait_for_diffs(count=1)
 
-    assert isinstance(feed.ctr, htypes.rc_constructors.list_feed)
+    assert isinstance(feed.ctr, ListFeedCtr)
 
 
 async def test_sample_tree_feed(feed_factory):
@@ -24,4 +25,4 @@ async def test_sample_tree_feed(feed_factory):
     await sample_feed.schedule_sample_tree_feed(feed_factory, piece)
     await feed.wait_for_diffs(count=1)
 
-    assert isinstance(feed.ctr, htypes.rc_constructors.index_tree_feed)
+    assert isinstance(feed.ctr, IndexTreeFeedCtr)

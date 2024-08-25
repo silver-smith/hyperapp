@@ -20,9 +20,21 @@ class FeedCtr(ModuleCtr):
         self._t = t
         self._element_t = element_t
 
+    def __eq__(self, rhs):
+        if type(self) is not type(rhs):
+            return False
+        if self._module_name != rhs._module_name:
+            return False
+        if self._t is not rhs._t:
+            return False
+        if self._element_t is not rhs._element_t:
+            return False
+        return True
+
     @property
     def piece(self):
         return self._constructor_t(
+            module_name=self._module_name,
             t=pyobj_creg.actor_to_ref(self._t),
             element_t=pyobj_creg.actor_to_ref(self._element_t),
             )
@@ -53,7 +65,7 @@ class FeedCtr(ModuleCtr):
 
 class ListFeedCtr(FeedCtr):
 
-    constructor_t = htypes.rc_constructors.list_feed
+    _constructor_t = htypes.rc_constructors.list_feed
 
     def _make_feed(self):
         return htypes.ui.list_feed(
@@ -67,7 +79,7 @@ class ListFeedCtr(FeedCtr):
 
 class IndexTreeFeedCtr(FeedCtr):
 
-    constructor_t = htypes.rc_constructors.index_tree_feed
+    _constructor_t = htypes.rc_constructors.index_tree_feed
 
     def _make_feed(self):
         return htypes.ui.index_tree_feed(

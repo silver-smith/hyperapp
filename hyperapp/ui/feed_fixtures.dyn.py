@@ -6,12 +6,11 @@ import weakref
 from . import htypes
 from .services import (
     deduce_t,
-    mosaic,
-    pyobj_creg,
     )
 from .code.mark import mark
 from .code.list_diff import ListDiff
 from .code.tree_diff import TreeDiff
+from .code.feed_ctr import ListFeedCtr, IndexTreeFeedCtr
 
 log = logging.getLogger(__name__)
 
@@ -26,7 +25,6 @@ class FeedDiscoverer:
         self._subscribers = weakref.WeakSet()
         self._got_diff = asyncio.Condition()
         self._got_diff_count = 0
-        self._piece_t_res = pyobj_creg.actor_to_piece(self._piece_t)
 
     def subscribe(self, subscriber):
         self._subscribers.add(subscriber)
@@ -57,11 +55,10 @@ class FeedDiscoverer:
                 ListDiff.Replace,
                 )):
             element_t = deduce_t(diff.item)
-            element_t_ref = pyobj_creg.actor_to_ref(element_t)
-            ctr = htypes.rc_constructors.list_feed(
+            ctr = ListFeedCtr(
                 module_name=module_name,
-                t=mosaic.put(self._piece_t_res),
-                element_t=element_t_ref,
+                t=self._piece_t,
+                element_t=element_t,
                 )
             if self.ctr:
                 if ctr != self.ctr:
@@ -81,11 +78,10 @@ class FeedDiscoverer:
                 TreeDiff.Replace,
                 )):
             element_t = deduce_t(diff.item)
-            element_t_ref = pyobj_creg.actor_to_ref(element_t)
-            ctr = htypes.rc_constructors.index_tree_feed(
+            ctr = IndexTreeFeedCtr(
                 module_name=module_name,
-                t=mosaic.put(self._piece_t_res),
-                element_t=element_t_ref,
+                t=self._piece_t,
+                element_t=element_t,
                 )
             if self.ctr:
                 if ctr != self.ctr:
