@@ -2,6 +2,7 @@
 
 import:
 - builtins:pyobj_creg.service
+- common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.list_adapter:remote_fn_list_adapter
@@ -34,5 +35,6 @@ definitions:
       file_name: remote_fn_list_adapter.dyn.py
       import_list:
         code.list_adapter: ui.qt.list_adapter:list_adapter.module
+        code.mark: common.mark:mark.module
         htypes.list_adapter.remote_fn_list_adapter: legacy_type.list_adapter:remote_fn_list_adapter
         services.pyobj_creg: builtins:pyobj_creg.service

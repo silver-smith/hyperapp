@@ -4,9 +4,10 @@ import:
 - common.bundler:bundler.service
 - common.mark:marker_ctl.service
 - legacy_type.system:system_config
-- rc.actor_ctr:rc_constructors_actor_probe.actor-template
-- rc.actor_ctr:rc_constructors_actor_template.actor-template
+- rc.actor_ctr:actor_resource_actor_probe_ctr.actor-template
+- rc.actor_ctr:actor_resource_actor_template_ctr.actor-template
 - rc.actor_ctr:system_actor_template.actor-template
+- rc.actor_marker:actor.marker-template
 - rc.actor_probe_resource:service_resource_actor_probe_resource.actor-template
 - rc.actor_resource:actor_resource_actor_req.actor-template
 - rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
@@ -103,6 +104,8 @@ import:
 - transport.rsa_identity:rsa_identity_rsa_signature.actor-template
 - transport.sync_route_table:route_table.service
 - transport.transport:transport.service
+- ui.feed_creg:feed_creg.service
+- ui.model_command_impl_creg:model_command_impl_creg.service
 - ui.qt.fn_index_tree_adapter:tree_adapter_fn_index_tree_adapter.actor-template
 - ui.qt.fn_list_adapter:list_adapter_fn_list_adapter.actor-template
 - ui.qt.list:list_view.actor-template
@@ -110,7 +113,9 @@ import:
 - ui.qt.static_list_adapter:list_adapter_static_list_adapter.actor-template
 - ui.qt.tree:tree_view.actor-template
 - ui.ui_adapter_creg:ui_adapter_creg.service
+- ui.ui_command_impl_creg:ui_command_impl_creg.service
 - ui.view_registry:model_view_creg.service
+- ui.view_registry:view_creg.service
 definitions:
   config:
     type: legacy_type.system:system_config
@@ -124,6 +129,7 @@ definitions:
         - rc.service_ctr:system_finalizer_gen_service_template.actor-template
         - rc.service_ctr:system_service_template.actor-template
         marker_registry:
+        - rc.actor_marker:actor.marker-template
         - rc.config_item_marker:config_item_fixture.marker-template
         - rc.model_marker:model.marker-template
         - rc.service_marker:fixture.marker-template
@@ -136,8 +142,8 @@ definitions:
         peer_registry:
         - transport.rsa_identity:rsa_identity_rsa_peer.actor-template
         rc_constructor_creg:
-        - rc.actor_ctr:rc_constructors_actor_probe.actor-template
-        - rc.actor_ctr:rc_constructors_actor_template.actor-template
+        - rc.actor_ctr:actor_resource_actor_probe_ctr.actor-template
+        - rc.actor_ctr:actor_resource_actor_template_ctr.actor-template
         - rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
         - rc.feed_ctr:rc_constructors_index_tree_feed.actor-template
         - rc.feed_ctr:rc_constructors_list_feed.actor-template
@@ -234,8 +240,12 @@ definitions:
         - transport.rsa_identity:generate_rsa_identity.service
         - transport.sync_route_table:route_table.service
         - transport.transport:transport.service
+        - ui.feed_creg:feed_creg.service
+        - ui.model_command_impl_creg:model_command_impl_creg.service
         - ui.ui_adapter_creg:ui_adapter_creg.service
+        - ui.ui_command_impl_creg:ui_command_impl_creg.service
         - ui.view_registry:model_view_creg.service
+        - ui.view_registry:view_creg.service
         ui_adapter_creg:
         - ui.qt.fn_index_tree_adapter:tree_adapter_fn_index_tree_adapter.actor-template
         - ui.qt.fn_list_adapter:list_adapter_fn_list_adapter.actor-template
