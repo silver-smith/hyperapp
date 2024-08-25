@@ -5,9 +5,7 @@ from functools import partial
 from PySide6 import QtCore, QtWidgets
 
 from . import htypes
-from .services import (
-    mark,
-    )
+from .code.mark import mark
 from .code.view import View
 from .code.tree_visual_diff import VisualTreeDiffAppend, VisualTreeDiffInsert, VisualTreeDiffReplace
 

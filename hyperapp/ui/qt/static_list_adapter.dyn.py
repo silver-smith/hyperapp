@@ -5,8 +5,8 @@ from hyperapp.common.htypes import TList
 from . import htypes
 from .services import (
     deduce_t,
-    mark,
     )
+from .code.mark import mark
 from .code.list_adapter import ListAdapterBase
 
 log = logging.getLogger(__name__)

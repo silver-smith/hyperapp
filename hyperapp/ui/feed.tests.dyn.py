@@ -1,9 +1,9 @@
 from . import htypes
 from .services import (
-    mark,
     mosaic,
     pyobj_creg,
     )
+from .code.mark import mark
 from .tested.code import feed
 
 

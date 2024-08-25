@@ -6,10 +6,10 @@ import weakref
 from . import htypes
 from .services import (
     deduce_t,
-    mark,
     mosaic,
     pyobj_creg,
     )
+from .code.mark import mark
 from .code.list_diff import ListDiff
 from .code.tree_diff import TreeDiff
 

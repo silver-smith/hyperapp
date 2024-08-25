@@ -1,8 +1,8 @@
 from . import htypes
 from .services import (
-    mark,
     pyobj_creg,
     )
+from .code.mark import mark
 from .code.tree_adapter import FnIndexTreeAdapterBase
 
 

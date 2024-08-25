@@ -4,9 +4,9 @@ from PySide6 import QtWidgets
 
 from . import htypes
 from .services import (
-    mark,
     mosaic,
     )
+from .code.mark import mark
 from .code.context import Context
 from .tested.code import list
 

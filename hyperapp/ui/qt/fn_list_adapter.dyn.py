@@ -2,9 +2,9 @@ import logging
 
 from . import htypes
 from .services import (
-    mark,
     pyobj_creg,
     )
+from .code.mark import mark
 from .code.list_adapter import FnListAdapterBase
 
 log = logging.getLogger(__name__)
