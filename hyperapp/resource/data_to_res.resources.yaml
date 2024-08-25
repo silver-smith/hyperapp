@@ -4,12 +4,14 @@ import:
 - builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
+- common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.partial:param
 - legacy_type.partial:partial
 - legacy_type.raw:raw
+- legacy_type.system:service_template
 definitions:
   data_to_ref:
     type: legacy_type.builtin:attribute
@@ -17,9 +19,15 @@ definitions:
       object: data_to_res.module
       attr_name: data_to_ref
   data_to_ref.service:
-    type: legacy_type.builtin:call
+    type: legacy_type.system:service_template
     value:
+      name: data_to_ref
       function: data_to_ref
+      free_params:
+      - piece
+      - t
+      service_params: []
+      want_config: false
   data_to_res:
     type: legacy_type.builtin:attribute
     value:
@@ -31,6 +39,7 @@ definitions:
       module_name: data_to_res
       file_name: data_to_res.dyn.py
       import_list:
+        code.mark: common.mark:mark.module
         htypes.builtin.call: legacy_type.builtin:call
         htypes.partial.param: legacy_type.partial:param
         htypes.partial.partial: legacy_type.partial:partial
@@ -39,6 +48,12 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
   data_to_res.service:
-    type: legacy_type.builtin:call
+    type: legacy_type.system:service_template
     value:
+      name: data_to_res
       function: data_to_res
+      free_params:
+      - piece
+      - t
+      service_params: []
+      want_config: false

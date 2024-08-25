@@ -1,8 +1,10 @@
 # Automatically generated file. Do not edit.
 
 import:
+- common.mark:mark.module
 - legacy_type.builtin:python_module
 - legacy_type.sample_record:item
+- legacy_type.sample_record:sample_record
 definitions:
   sample_record.module:
     type: legacy_type.builtin:python_module
@@ -10,4 +12,6 @@ definitions:
       module_name: sample_record
       file_name: sample_record.dyn.py
       import_list:
+        code.mark: common.mark:mark.module
         htypes.sample_record.item: legacy_type.sample_record:item
+        htypes.sample_record.sample_record: legacy_type.sample_record:sample_record

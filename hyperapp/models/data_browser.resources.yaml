@@ -4,6 +4,7 @@ import:
 - builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:web.service
+- common.mark:mark.module
 - legacy_type.builtin:python_module
 - legacy_type.data_browser:list_item
 - legacy_type.data_browser:list_view
@@ -20,6 +21,7 @@ definitions:
       module_name: data_browser
       file_name: data_browser.dyn.py
       import_list:
+        code.mark: common.mark:mark.module
         htypes.data_browser.list_item: legacy_type.data_browser:list_item
         htypes.data_browser.list_view: legacy_type.data_browser:list_view
         htypes.data_browser.primitive_item: legacy_type.data_browser:primitive_item
