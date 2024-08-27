@@ -3,7 +3,6 @@ import:
 - legacy_type.builtin:python_module
 - rc.actor_ctr:actor_ctr.module
 - rc.service_ctr:service_ctr.module
-- system.system:system.module
 - rc.system_probe:system_probe.module
 
 definitions:
@@ -17,5 +16,4 @@ definitions:
         services.mosaic: builtins:mosaic.service
         code.service_ctr: rc.service_ctr:service_ctr.module
         code.actor_ctr: rc.actor_ctr:actor_ctr.module
-        code.system: system.system:system.module
         code.system_probe: rc.system_probe:system_probe.module

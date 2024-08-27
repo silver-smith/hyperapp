@@ -6,6 +6,7 @@ from .services import (
     pyobj_creg,
     web,
     )
+from .code.system import NotATemplate
 from .code.rc_requirement import Requirement
 from .code.rc_resource import Resource
 from .code.python_module_resource_target import PythonModuleResourceTarget
@@ -245,6 +246,6 @@ class ConstructorsPickerResource(Resource):
             module=mosaic.put(self._module_piece),
             )
 
-    def ctr_collector_config(self):
+    def configure_system(self, system):
         module = pyobj_creg.animate(self._module_piece)
-        return {self._module_name: module}
+        system.update_config('ctr_collector', {self._module_name: NotATemplate(module)})

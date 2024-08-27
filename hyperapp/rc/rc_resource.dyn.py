@@ -10,6 +10,3 @@ class Resource:
 
     def configure_system(self, system):
         pass
-
-    def ctr_collector_config(self):
-        return {}
