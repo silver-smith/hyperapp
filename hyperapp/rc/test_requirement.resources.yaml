@@ -2,6 +2,7 @@ import:
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
+- common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:import_rec
 - legacy_type.builtin:python_module
@@ -14,6 +15,7 @@ import:
 - legacy_type.test_target:tested_service_req
 - legacy_type.test_target:tested_service_resource
 - rc.python_module_resource_target:python_module_resource_target.module
+- rc.ctr_collector:ctr_collector.module
 - rc.rc_requirement:rc_requirement.module
 - rc.rc_resource:rc_resource.module
 - system.system:system.module
@@ -37,6 +39,7 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
+        code.mark: common.mark:mark.module
         code.rc_requirement: rc.rc_requirement:rc_requirement.module
         code.rc_resource: rc.rc_resource:rc_resource.module
         code.python_module_resource_target: rc.python_module_resource_target:python_module_resource_target.module

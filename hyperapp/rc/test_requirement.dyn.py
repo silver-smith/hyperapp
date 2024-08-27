@@ -6,6 +6,7 @@ from .services import (
     pyobj_creg,
     web,
     )
+from .code.mark import MarkMode
 from .code.system import NotATemplate
 from .code.rc_requirement import Requirement
 from .code.rc_resource import Resource
@@ -248,4 +249,7 @@ class ConstructorsPickerResource(Resource):
 
     def configure_system(self, system):
         module = pyobj_creg.animate(self._module_piece)
-        system.update_config('ctr_collector', {self._module_name: NotATemplate(module)})
+        system.update_config(
+            'ctr_collector',
+            {self._module_name: NotATemplate((module, MarkMode.test))},
+            )

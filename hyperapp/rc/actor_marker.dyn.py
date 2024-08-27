@@ -49,8 +49,9 @@ class ServiceActorMarker:
 
 class ActorMarker:
 
-    def __init__(self, module_name, ctr_collector):
+    def __init__(self, module_name, mode, ctr_collector):
         self._module_name = module_name
+        self._mode = mode
         self._ctr_collector = ctr_collector
 
     def __getattr__(self, service_name):

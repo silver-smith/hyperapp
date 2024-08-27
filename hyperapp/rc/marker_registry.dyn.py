@@ -35,10 +35,11 @@ class Marker:
         self._fn = fn
         self._service_kw = service_kw
 
-    def resolve(self, module_name):
+    def resolve(self, module_name, mode):
         kw = {
             **self._service_kw,
             'module_name': module_name,
+            'mode': mode,
             }
         if type(self._fn) is type:
             return self._fn(**kw)

@@ -3,7 +3,7 @@ import inspect
 from .code.service_ctr import FixtureCtr, ServiceProbeCtr
 
 
-def service_marker(fn, module_name, ctr_collector):
+def service_marker(fn, module_name, mode, ctr_collector):
     if '.' in fn.__qualname__:
         raise RuntimeError(f"Only free functions are suitable for services: {fn!r}")
     ctr = ServiceProbeCtr(
@@ -16,7 +16,7 @@ def service_marker(fn, module_name, ctr_collector):
     return fn
 
 
-def fixture_marker(fn, module_name, ctr_collector):
+def fixture_marker(fn, module_name, mode, ctr_collector):
     if '.' in fn.__qualname__:
         raise RuntimeError(f"Only free functions are suitable for fixtures: {fn!r}")
     ctr = FixtureCtr(

@@ -3,39 +3,41 @@ from collections import namedtuple
 from hyperapp.resource.python_module import make_module_name
 
 from .services import mosaic
+from .code.mark import MarkMode
 
 
 class CtrCollector:
 
-    NotSet = object()
-    Ignore = object()
-    Set = namedtuple('Set', 'module_name')
+    class Action:
+        NotSet = object()
+        Ignore = object()
+        Set = namedtuple('Set', 'module_name mode')
 
     def __init__(self, config, marker_ctl):
         self._marker_ctl = marker_ctl
         self._pyname_to_action = {
-            module.__name__: self.Set(name)
-            for name, module in config.items()
+            module.__name__: self.Action.Set(name, mode)
+            for name, (module, mode) in config.items()
             }
         self._constructors = []
 
     def ignore_module(self, python_module_name):
-        self._pyname_to_action[python_module_name] = self.Ignore
+        self._pyname_to_action[python_module_name] = self.Action.Ignore
 
-    def set_wanted_piece(self, module_name, module_piece):
+    def set_wanted_import_piece(self, module_name, module_piece):
         python_module_name = make_module_name(mosaic, module_piece)
-        self._pyname_to_action[python_module_name] = self.Set(module_name)
+        self._pyname_to_action[python_module_name] = self.Action.Set(module_name, mode=MarkMode.import_)
 
     def get_module_action(self, python_module_name):
         try:
             return self._pyname_to_action[python_module_name]
         except KeyError:
-            return self.NotSet
+            return self.Action.NotSet
 
     def init_markers(self):
         for pyname, action in self._pyname_to_action.items():
-            if type(action) is self.Set:
-                self._marker_ctl.add_wanted_module(pyname, action.module_name)
+            if type(action) is self.Action.Set:
+                self._marker_ctl.add_wanted_module(pyname, action.module_name, action.mode)
 
     def add_constructor(self, ctr):
         self._constructors.append(ctr)
