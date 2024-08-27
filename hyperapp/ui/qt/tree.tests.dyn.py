@@ -1,7 +1,5 @@
 from unittest.mock import Mock
 
-from PySide6 import QtWidgets
-
 from hyperapp.common.htypes import tInt
 
 from . import htypes
@@ -10,7 +8,7 @@ from .services import (
     pyobj_creg,
     )
 from .code.context import Context
-from .fixtures import feed_fixtures
+from .fixtures import qapp_fixtures, feed_fixtures
 from .tested.code import tree
 
 
@@ -41,20 +39,16 @@ def _make_piece():
     return htypes.tree.view(mosaic.put(adapter_piece))
 
 
-def test_tree(model_view_creg):
+def test_tree(qapp, model_view_creg):
     ctx = Context()
     piece = _make_piece()
     model = htypes.tree_tests.sample_tree()
     state = None
-    app = QtWidgets.QApplication()
-    try:
-        view = model_view_creg.animate(piece, model, ctx)
-        view.set_controller_hook(Mock())
-        widget = view.construct_widget(state, ctx)
-        assert view.piece
-        state = view.widget_state(widget)
-        assert isinstance(state, htypes.tree.state)
-        model_state = view._model_state(widget)
-        assert model_state
-    finally:
-        app.shutdown()
+    view = model_view_creg.animate(piece, model, ctx)
+    view.set_controller_hook(Mock())
+    widget = view.construct_widget(state, ctx)
+    assert view.piece
+    state = view.widget_state(widget)
+    assert isinstance(state, htypes.tree.state)
+    model_state = view._model_state(widget)
+    assert model_state

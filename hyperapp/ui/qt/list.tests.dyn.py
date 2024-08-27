@@ -1,13 +1,9 @@
 from unittest.mock import Mock
 
-from PySide6 import QtWidgets
-
 from . import htypes
-from .services import (
-    mosaic,
-    )
-from .code.mark import mark
+from .services import mosaic
 from .code.context import Context
+from .fixtures import qapp_fixtures
 from .tested.code import list
 
 
@@ -18,13 +14,6 @@ def make_adapter_piece():
 def make_piece():
     adapter_piece = make_adapter_piece()
     return htypes.list.view(mosaic.put(adapter_piece))
-
-
-@mark.fixture
-def qapp():
-    app = QtWidgets.QApplication()
-    yield app
-    app.shutdown()
 
 
 def test_list(qapp, model_view_creg):
