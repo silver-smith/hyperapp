@@ -26,6 +26,7 @@ definitions:
         htypes.builtin.call: legacy_type.builtin:call
         htypes.rc_constructors.service_template: legacy_type.rc_constructors:service_template
         htypes.service_resource.config_item_fixture_ctr: legacy_type.service_resource:config_item_fixture_ctr
+        htypes.service_resource.fixture_ctr: legacy_type.service_resource:fixture_ctr
         htypes.service_resource.service_probe_ctr: legacy_type.service_resource:service_probe_ctr
         htypes.system.service_template: legacy_type.system:service_template
         services.mosaic: builtins:mosaic.service

@@ -38,6 +38,6 @@ definitions:
     type: legacy_type.marker:marker_template
     value:
       name: fixture
-      function: service_marker
+      function: fixture_marker
       service_params:
       - ctr_collector

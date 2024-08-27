@@ -189,6 +189,15 @@ class FixtureCtr(ModuleCtr):
         self._params = params
 
     @property
+    def piece(self):
+        return htypes.service_resource.fixture_ctr(
+            module_name=self._module_name,
+            attr_name=self._attr_name,
+            name=self._name,
+            params=self._params,
+            )
+
+    @property
     def is_fixture(self):
         return True
 
