@@ -16,8 +16,11 @@ import:
 - rc.ctr_collector:ctr_collector.service
 - rc.feed_ctr:rc_constructors_index_tree_feed.actor-template
 - rc.feed_ctr:rc_constructors_list_feed.actor-template
+- rc.htest.sample_config:sample_config_service.service
 - rc.htest.sample_service_1:sample_fn_service_1.service
 - rc.htest.sample_service_1:sample_value_service_1.service
+- rc.htest.sample_service_2:sample_fn_service_2.service
+- rc.htest.sample_service_2:sample_value_service_2.service
 - rc.import_job:import_job_failed_result.actor-template
 - rc.import_job:import_job_incomplete_result.actor-template
 - rc.import_job:import_job_job.actor-template
@@ -200,8 +203,11 @@ definitions:
         - common.bundler:bundler.service
         - common.mark:marker_ctl.service
         - rc.ctr_collector:ctr_collector.service
+        - rc.htest.sample_config:sample_config_service.service
         - rc.htest.sample_service_1:sample_fn_service_1.service
         - rc.htest.sample_service_1:sample_value_service_1.service
+        - rc.htest.sample_service_2:sample_fn_service_2.service
+        - rc.htest.sample_service_2:sample_value_service_2.service
         - rc.init_targets:ctr_from_template_creg.service
         - rc.marker_registry:marker_registry.service
         - rc.process_pool:process_pool_running.service
