@@ -155,14 +155,14 @@ class TestJob(SystemJob):
         import_list = flatten(d.import_records for d in all_resources)
         recorder_piece, module_piece = self._src.recorded_python_module(import_list)
         recorder = pyobj_creg.animate(recorder_piece)
+        system = self._prepare_system(all_resources)
+        ctr_collector = system.resolve_service('ctr_collector')
+        ctr_collector.ignore_module(module_piece)
+        ctr_collector.init_markers()
         status, error_msg, traceback, module = self._import_module(module_piece)
         if status == JobStatus.ok:
-            system = self._prepare_system(all_resources)
             root_probe = self._make_root_fixture(module)
             system.update_config('system', {self._root_name: root_probe})
-            ctr_collector = system.resolve_service('ctr_collector')
-            ctr_collector.ignore_module(module.__name__)
-            ctr_collector.init_markers()
             status, error_msg, traceback, req_set = self._run_system(system)
         else:
             req_set = set()

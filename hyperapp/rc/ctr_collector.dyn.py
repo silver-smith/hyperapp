@@ -21,10 +21,11 @@ class CtrCollector:
             }
         self._constructors = []
 
-    def ignore_module(self, python_module_name):
+    def ignore_module(self, module_piece):
+        python_module_name = make_module_name(mosaic, module_piece)
         self._pyname_to_action[python_module_name] = self.Action.Ignore
 
-    def set_wanted_import_piece(self, module_name, module_piece):
+    def set_wanted_import(self, module_name, module_piece):
         python_module_name = make_module_name(mosaic, module_piece)
         self._pyname_to_action[python_module_name] = self.Action.Set(module_name, mode=MarkMode.import_)
 
