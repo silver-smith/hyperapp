@@ -229,6 +229,7 @@ class System:
             }
         self._cfg_item_creg = code_registry_ctr2('cfg-item', cfg_item_creg_config)
         self.add_core_service('cfg_item_creg', self._cfg_item_creg)
+        self.add_core_service('system', self)
 
     def add_core_service(self, name, service):
         self._name_to_service[name] = service
