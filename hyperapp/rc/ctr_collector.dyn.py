@@ -15,8 +15,8 @@ class CtrCollector:
     def __init__(self, config, marker_ctl):
         self._marker_ctl = marker_ctl
         self._pyname_to_action = {
-            module.__name__: self.Action.Set(name)
-            for name, module in config.items()
+            make_module_name(mosaic, module_piece): self.Action.Set(name)
+            for name, module_piece in config.items()
             }
         self._constructors = []
 

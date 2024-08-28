@@ -247,5 +247,4 @@ class ConstructorsPickerResource(Resource):
             )
 
     def configure_system(self, system):
-        module = pyobj_creg.animate(self._module_piece)
-        system.update_config('ctr_collector', {self._module_name: NotATemplate(module)})
+        system.update_config('ctr_collector', {self._module_name: NotATemplate(self._module_piece)})
