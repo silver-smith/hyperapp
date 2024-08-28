@@ -7,35 +7,36 @@ from .services import mosaic
 
 class CtrCollector:
 
-    NotSet = object()
-    Ignore = object()
-    Set = namedtuple('Set', 'module_name')
+    class Action:
+        NotSet = object()
+        Ignore = object()
+        Set = namedtuple('Set', 'module_name')
 
     def __init__(self, config, marker_ctl):
         self._marker_ctl = marker_ctl
         self._pyname_to_action = {
-            module.__name__: self.Set(name)
+            module.__name__: self.Action.Set(name)
             for name, module in config.items()
             }
         self._constructors = []
 
     def ignore_module(self, module_piece):
         python_module_name = make_module_name(mosaic, module_piece)
-        self._pyname_to_action[python_module_name] = self.Ignore
+        self._pyname_to_action[python_module_name] = self.Action.Ignore
 
     def set_wanted_import(self, module_name, module_piece):
         python_module_name = make_module_name(mosaic, module_piece)
-        self._pyname_to_action[python_module_name] = self.Set(module_name)
+        self._pyname_to_action[python_module_name] = self.Action.Set(module_name)
 
     def get_module_action(self, python_module_name):
         try:
             return self._pyname_to_action[python_module_name]
         except KeyError:
-            return self.NotSet
+            return self.Action.NotSet
 
     def init_markers(self):
         for pyname, action in self._pyname_to_action.items():
-            if type(action) is self.Set:
+            if type(action) is self.Action.Set:
                 self._marker_ctl.add_wanted_module(pyname, action.module_name)
 
     def add_constructor(self, ctr):
