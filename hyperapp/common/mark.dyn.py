@@ -1,13 +1,6 @@
-import enum
 import inspect
-from collections import namedtuple
 
 from hyperapp.common.htypes import Type
-
-
-class MarkMode(enum.Enum):
-    import_ = enum.auto()
-    test = enum.auto()
 
 
 class NoOpMarker:
@@ -24,14 +17,12 @@ class NoOpMarker:
 
 class MarkerCtl:
 
-    _ModuleRec = namedtuple('_ModuleRec', 'module_name mode')
-
     def __init__(self):
         self._markers = {}  # Marker by name.
         self._pyname_to_hname = {}  # Wanted modules.
 
-    def add_wanted_module(self, pyname, hname, mode):
-        self._pyname_to_hname[pyname] = self._ModuleRec(hname, mode)
+    def add_wanted_module(self, pyname, hname):
+        self._pyname_to_hname[pyname] = hname
 
     def clear_wanted_modules(self):
         self._pyname_to_hname.clear()
@@ -44,11 +35,11 @@ class MarkerCtl:
 
     def get(self, python_module_name, marker_name):
         try:
-            rec = self._pyname_to_hname[python_module_name]
+            module_name = self._pyname_to_hname[python_module_name]
         except KeyError:
             return NoOpMarker()
         marker = self._markers[marker_name]
-        return marker.resolve(rec.module_name, rec.mode)
+        return marker.resolve(module_name)
 
 
 class Markers:

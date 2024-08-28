@@ -34,8 +34,8 @@ class FeedDiscoverer:
         frame = inspect.stack()[1].frame
         python_module_name = frame.f_globals['__name__']
         module_action = self._ctr_collector.get_module_action(python_module_name)
-        assert module_action is not self._ctr_collector.Action.NotSet
-        if module_action is not self._ctr_collector.Action.Ignore:
+        assert module_action is not self._ctr_collector.NotSet
+        if module_action is not self._ctr_collector.Ignore:
             await self._deduce_and_store_ctr(module_action.module_name, diff)
             if self.ctr and not self._constructor_added:
                 self._add_constructor()
