@@ -115,6 +115,7 @@ import:
 - ui.qt.remote_fn_list_adapter:list_adapter_remote_fn_list_adapter.actor-template
 - ui.qt.static_list_adapter:list_adapter_static_list_adapter.actor-template
 - ui.qt.tree:tree_view.actor-template
+- ui.str_adapter:str_adapter_static_str_adapter.actor-template
 - ui.ui_adapter_creg:ui_adapter_creg.service
 - ui.ui_command_impl_creg:ui_command_impl_creg.service
 - ui.view_registry:model_view_creg.service
@@ -257,3 +258,4 @@ definitions:
         - ui.qt.fn_list_adapter:list_adapter_fn_list_adapter.actor-template
         - ui.qt.remote_fn_list_adapter:list_adapter_remote_fn_list_adapter.actor-template
         - ui.qt.static_list_adapter:list_adapter_static_list_adapter.actor-template
+        - ui.str_adapter:str_adapter_static_str_adapter.actor-template
