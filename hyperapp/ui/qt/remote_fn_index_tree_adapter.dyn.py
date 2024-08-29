@@ -8,13 +8,14 @@ from .code.tree_adapter import FnIndexTreeAdapterBase
 
 class RemoteFnIndexTreeAdapter(FnIndexTreeAdapterBase):
 
+    @mark.actor.ui_adapter_creg(htypes.tree_adapter.remote_fn_index_tree_adapter)
     @classmethod
-    def from_piece(cls, piece, model, ctx, feed_factory):
+    def from_piece(cls, piece, model, ctx, feed_factory, peer_registry, rpc_call_factory):
         element_t = pyobj_creg.invite(piece.element_t)
         remote_peer = peer_registry.invite(piece.remote_peer)
-        return cls(feed_factory, model, element_t, piece.params, ctx, piece.function, ctx.identity, remote_peer)
+        return cls(feed_factory, rpc_call_factory, model, element_t, piece.params, ctx, piece.function, ctx.identity, remote_peer)
 
-    def __init__(self, feed_factory, model, item_t, params, ctx, fn_res_ref, identity, remote_peer):
+    def __init__(self, feed_factory, rpc_call_factory, model, item_t, params, ctx, fn_res_ref, identity, remote_peer):
         super().__init__(feed_factory, model, item_t, params, ctx)
         self._rpc_call = rpc_call_factory(
             receiver_peer=remote_peer,

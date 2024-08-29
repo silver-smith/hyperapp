@@ -112,6 +112,7 @@ import:
 - ui.qt.fn_index_tree_adapter:tree_adapter_fn_index_tree_adapter.actor-template
 - ui.qt.fn_list_adapter:list_adapter_fn_list_adapter.actor-template
 - ui.qt.list:list_view.actor-template
+- ui.qt.remote_fn_index_tree_adapter:tree_adapter_remote_fn_index_tree_adapter.actor-template
 - ui.qt.remote_fn_list_adapter:list_adapter_remote_fn_list_adapter.actor-template
 - ui.qt.static_list_adapter:list_adapter_static_list_adapter.actor-template
 - ui.qt.text:text_edit_view.actor-template
@@ -260,6 +261,7 @@ definitions:
         ui_adapter_creg:
         - ui.qt.fn_index_tree_adapter:tree_adapter_fn_index_tree_adapter.actor-template
         - ui.qt.fn_list_adapter:list_adapter_fn_list_adapter.actor-template
+        - ui.qt.remote_fn_index_tree_adapter:tree_adapter_remote_fn_index_tree_adapter.actor-template
         - ui.qt.remote_fn_list_adapter:list_adapter_remote_fn_list_adapter.actor-template
         - ui.qt.static_list_adapter:list_adapter_static_list_adapter.actor-template
         - ui.str_adapter:str_adapter_static_str_adapter.actor-template
