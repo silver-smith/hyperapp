@@ -8,7 +8,7 @@ import:
 - rc.actor_ctr:actor_resource_actor_template_ctr.actor-template
 - rc.actor_ctr:system_actor_template.actor-template
 - rc.actor_marker:actor.marker-template
-- rc.actor_probe_resource:service_resource_actor_probe_resource.actor-template
+- rc.actor_probe_resource:actor_resource_actor_probe_resource.actor-template
 - rc.actor_resource:actor_resource_actor_req.actor-template
 - rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
 - rc.config_item_marker:config_item_fixture.marker-template
@@ -180,7 +180,7 @@ definitions:
         - rc.test_requirement:test_target_tested_code_req.actor-template
         - rc.test_requirement:test_target_tested_service_req.actor-template
         rc_resource_creg:
-        - rc.actor_probe_resource:service_resource_actor_probe_resource.actor-template
+        - rc.actor_probe_resource:actor_resource_actor_probe_resource.actor-template
         - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
         - rc.import_resource:import_resource_import_resource.actor-template
         - rc.service_probe_resource:service_resource_config_item_fixture_resource.actor-template

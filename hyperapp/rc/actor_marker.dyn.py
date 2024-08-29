@@ -84,6 +84,7 @@ class ServiceActorProbe:
 
     def _add_constructor(self, t, creg_params, service_params):
         ctr = ActorTemplateCtr(
+            module_name=self._module_name,
             attr_qual_name=self._fn.__qualname__.split('.'),
             service_name=self._service_name,
             t=t,

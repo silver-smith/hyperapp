@@ -18,14 +18,6 @@ service_probe_resource = record:
   params: string list
 
 
-actor_probe_resource = record:
-  attr_qual_name: string list
-  service_name: string
-  t: ref
-  function: ref
-  params: string list
-
-
 fixture_ctr = record:
   module_name: string
   attr_name: string

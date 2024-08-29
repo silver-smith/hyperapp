@@ -52,7 +52,8 @@ class ActorProbeCtr(Constructor):
         return object
 
     def make_resource(self, module_name, python_module):
-        return ActorProbeResource(self._attr_qual_name, self._service_name, self._t, self.make_component(python_module), self._params)
+        return ActorProbeResource(
+            module_name, self._attr_qual_name, self._service_name, self._t, self.make_component(python_module), self._params)
 
     @property
     def _type_name(self):
@@ -87,6 +88,7 @@ class ActorTemplateCtr(ActorTemplateCtrBase):
     @classmethod
     def from_rec(cls, service_name, t, rec):
         return cls(
+            module_name=rec.module_name,
             attr_qual_name=rec.attr_qual_name,
             service_name=service_name,
             t=t,
@@ -97,6 +99,7 @@ class ActorTemplateCtr(ActorTemplateCtrBase):
     @classmethod
     def from_piece(cls, piece):
         return cls(
+            module_name=piece.module_name,
             attr_qual_name=piece.attr_qual_name,
             service_name=piece.service_name,
             t=pyobj_creg.invite(piece.t),
@@ -104,8 +107,9 @@ class ActorTemplateCtr(ActorTemplateCtrBase):
             service_params=piece.service_params,
             )
 
-    def __init__(self, attr_qual_name, service_name, t, creg_params, service_params):
+    def __init__(self, module_name, attr_qual_name, service_name, t, creg_params, service_params):
         super().__init__(t)
+        self._module_name = module_name
         self._attr_qual_name = attr_qual_name
         self._service_name = service_name
         self._creg_params = creg_params
@@ -114,6 +118,7 @@ class ActorTemplateCtr(ActorTemplateCtrBase):
     @property
     def piece(self):
         return htypes.actor_resource.actor_template_ctr(
+            module_name=self._module_name,
             attr_qual_name=tuple(self._attr_qual_name),
             service_name=self._service_name,
             t=pyobj_creg.actor_to_ref(self._t),
@@ -124,9 +129,14 @@ class ActorTemplateCtr(ActorTemplateCtrBase):
     def update_targets(self, target_set):
         resolved_tgt = target_set.factory.config_item_resolved(self._service_name, self._type_name)
         resolved_tgt.resolve(self)
-        target_set.update_deps_for(resolved_tgt)
         # Should be created to be added to config resource.
         _ = target_set.factory.config_item_complete(self._service_name, self._type_name)
+        # resource target may already have resolved target, but in case of
+        # non-typed marker it have not.
+        resource_tgt = target_set.factory.python_module_resource_by_module_name(self._module_name)
+        resource_tgt.add_cfg_item_target(resolved_tgt)
+        target_set.update_deps_for(resolved_tgt)
+        target_set.update_deps_for(resource_tgt)
 
     def make_component(self, python_module, name_to_res=None):
         object = python_module

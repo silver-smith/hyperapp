@@ -13,6 +13,7 @@ class ActorProbeResource(Resource):
     @classmethod
     def from_piece(cls, piece):
         return cls(
+            module_name=piece.module_name,
             attr_qual_name=piece.attr_qual_name,
             service_name=piece.service_name,
             t=pyobj_creg.invite(piece.t),
@@ -21,7 +22,8 @@ class ActorProbeResource(Resource):
             )
 
 
-    def __init__(self, attr_qual_name, service_name, t, function, params):
+    def __init__(self, module_name, attr_qual_name, service_name, t, function, params):
+        self._module_name = module_name
         self._attr_qual_name = attr_qual_name
         self._service_name = service_name
         self._t = t
@@ -30,7 +32,8 @@ class ActorProbeResource(Resource):
 
     @property
     def piece(self):
-        return htypes.service_resource.actor_probe_resource(
+        return htypes.actor_resource.actor_probe_resource(
+            module_name=self._module_name,
             attr_qual_name=self._attr_qual_name,
             service_name=self._service_name,
             t=pyobj_creg.actor_to_ref(self._t),
@@ -40,5 +43,6 @@ class ActorProbeResource(Resource):
 
     def configure_system(self, system):
         fn = pyobj_creg.animate(self._function)
-        probe = ActorProbeTemplate(self._attr_qual_name, self._service_name, self._t, fn, self._params)
+        probe = ActorProbeTemplate(
+            self._module_name, self._attr_qual_name, self._service_name, self._t, fn, self._params)
         system.update_config(self._service_name, {self._t: probe})

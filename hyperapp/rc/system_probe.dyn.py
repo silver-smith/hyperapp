@@ -29,6 +29,7 @@ class ServiceTemplateRec:
 @dataclass
 class ActorRec:
 
+    module_name: str
     attr_qual_name: list[str]
     creg_params: list[str]
     service_params: list[str]
@@ -52,7 +53,8 @@ class ServiceProbeTemplate:
 
 class ActorProbeTemplate:
 
-    def __init__(self, attr_qual_name, service_name, t, fn, params):
+    def __init__(self, module_name, attr_qual_name, service_name, t, fn, params):
+        self._module_name = module_name
         self._attr_qual_name = attr_qual_name
         self._service_name = service_name
         self._t = t
@@ -60,10 +62,11 @@ class ActorProbeTemplate:
         self._params = params
 
     def __repr__(self):
-        return f"<ActorProbeTemplate {self._attr_qual_name}/{self._t}: {self._fn} {self._params}>"
+        return f"<ActorProbeTemplate {self._module_name}/{self._attr_qual_name}/{self._t}: {self._fn} {self._params}>"
 
     def resolve(self, system, service_name):
         return ActorProbe(
+            module_name=self._module_name,
             system_probe=system,
             attr_qual_name=self._attr_qual_name,
             service_name=self._service_name,
@@ -75,8 +78,9 @@ class ActorProbeTemplate:
 
 class ActorProbe:
 
-    def __init__(self, system_probe, attr_qual_name, service_name, t, fn, params):
+    def __init__(self, system_probe, module_name, attr_qual_name, service_name, t, fn, params):
         self._system = system_probe
+        self._module_name = module_name
         self._attr_qual_name = attr_qual_name
         self._service_name = service_name
         self._t = t
@@ -84,7 +88,7 @@ class ActorProbe:
         self._params = params
 
     def __repr__(self):
-        return f"<ActorProbe {self._attr_qual_name}/{self._t}: {self._fn} {self._params}>"
+        return f"<ActorProbe {self._module_name}/{self._attr_qual_name}/{self._t}: {self._fn} {self._params}>"
 
     def __call__(self, *args, **kw):
         creg_param_count = len(args) + len(kw)
@@ -106,6 +110,7 @@ class ActorProbe:
         else:
             creg_params = self._params
         rec = ActorRec(
+            module_name=self._module_name,
             attr_qual_name=self._attr_qual_name,
             creg_params=creg_params,
             service_params=service_params,
