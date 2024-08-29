@@ -24,6 +24,7 @@ class SystemJob:
         system = SystemProbe()
         system.load_config(self._system_config)
         self._configure_system(system, resources)
+        system.migrate_globals()
         _ = system.resolve_service('marker_registry')
         return system
 

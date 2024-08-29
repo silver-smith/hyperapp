@@ -53,6 +53,11 @@ class ServiceActorProbe:
         self._module_name = module_name
         self._service_name = service_name
         self._fn = fn
+        system_probe.add_global(self)
+
+    def migrate_to(self, system_probe):
+        self._system = system_probe
+        self._ctr_collector = system_probe.resolve_service('ctr_collector')
 
     def __call__(self, *args, **kw):
         params = list(inspect.signature(self._fn).parameters)

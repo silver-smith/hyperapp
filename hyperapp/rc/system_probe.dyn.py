@@ -1,6 +1,7 @@
 import asyncio
 import inspect
 import logging
+import weakref
 from collections import defaultdict
 from dataclasses import dataclass
 from functools import partial
@@ -275,6 +276,7 @@ class FixtureProbe(Probe):
 class SystemProbe(System):
 
     _system_name = "System probe"
+    _globals = weakref.WeakSet()
 
     def __init__(self):
         super().__init__()
@@ -284,6 +286,9 @@ class SystemProbe(System):
 
     def add_item_fixtures(self, service_name, fixture_list):
         self._config_item_fixtures[service_name] += fixture_list
+
+    def add_global(self, global_obj):
+        self._globals.add(global_obj)
 
     def _run_service(self, service, args, kw):
         value = super()._run_service(service, args, kw)
@@ -311,3 +316,7 @@ class SystemProbe(System):
 
     def add_resolved_actor(self, service_name, t, rec):
         self._resolved_actors[service_name, t] = rec
+
+    def migrate_globals(self):
+        for obj in self._globals:
+            obj.migrate_to(self)
