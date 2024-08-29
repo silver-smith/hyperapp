@@ -2,6 +2,7 @@
 
 import:
 - common.bundler:bundler.service
+- common.file_bundle:file_bundle.service
 - common.mark:marker_ctl.service
 - legacy_type.system:system_config
 - rc.actor_ctr:actor_resource_actor_probe_ctr.actor-template
@@ -207,6 +208,7 @@ definitions:
         - transport.rsa_identity:rsa_identity_rsa_signature.actor-template
         system:
         - common.bundler:bundler.service
+        - common.file_bundle:file_bundle.service
         - common.mark:marker_ctl.service
         - rc.ctr_collector:ctr_collector.service
         - rc.htest.sample_config:sample_config_service.service

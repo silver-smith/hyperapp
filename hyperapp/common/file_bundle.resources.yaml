@@ -3,10 +3,10 @@
 import:
 - builtins:mosaic.service
 - builtins:unbundler.service
-- common.bundler:bundler.service
+- common.mark:mark.module
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.system:service_template
 definitions:
   file_bundle:
     type: legacy_type.builtin:attribute
@@ -19,10 +19,17 @@ definitions:
       module_name: file_bundle
       file_name: file_bundle.dyn.py
       import_list:
-        services.bundler: common.bundler:bundler.service
+        code.mark: common.mark:mark.module
         services.mosaic: builtins:mosaic.service
         services.unbundler: builtins:unbundler.service
   file_bundle.service:
-    type: legacy_type.builtin:call
+    type: legacy_type.system:service_template
     value:
+      name: file_bundle
       function: file_bundle
+      free_params:
+      - path
+      - encoding
+      service_params:
+      - bundler
+      want_config: false

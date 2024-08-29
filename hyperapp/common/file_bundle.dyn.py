@@ -5,11 +5,10 @@ from hyperapp.common.htypes import bundle_t
 from hyperapp.common.htypes.packet_coders import packet_coders
 
 from .services import (
-    bundler,
-    mark,
     mosaic,
     unbundler,
     )
+from .code.mark import mark
 
 log = logging.getLogger(__name__)
 
@@ -19,7 +18,7 @@ DEFAULT_ENCODING = 'json'
 
 class FileBundle:
 
-    def __init__(self, path, encoding=DEFAULT_ENCODING):
+    def __init__(self, bundler, path, encoding):
         self.path = path
         self._encoding = encoding
 
@@ -48,6 +47,6 @@ class FileBundle:
         return mosaic.resolve_ref(ref).value
 
 
-@mark.service
-def file_bundle():
-    return FileBundle
+@mark.service2
+def file_bundle(bundler, path, encoding=DEFAULT_ENCODING):
+    return FileBundle(bundler, path, encoding)
