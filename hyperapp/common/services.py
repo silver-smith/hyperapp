@@ -46,6 +46,9 @@ log = logging.getLogger(__name__)
 TYPE_MODULE_EXT = '.types'
 HYPERAPP_DIR = Path(__file__).parent.parent.resolve()
 
+pyobj_config = {
+    }
+
 
 class Services(object):
 
@@ -96,7 +99,7 @@ class Services(object):
         self.builtin_types = BuiltinTypeRegistry()
         self.association_reg = AssociationRegistry()
         self.reconstructors = []
-        self.pyobj_creg = PyObjRegistry(self.association_reg, self.reconstructors)
+        self.pyobj_creg = PyObjRegistry(pyobj_config, self.reconstructors)
         self.mosaic = Mosaic(self.pyobj_creg)
         self.web = Web(self.mosaic, self.pyobj_creg)
         self.pyobj_creg.init(self.builtin_types, self.mosaic, self.web)
@@ -112,7 +115,11 @@ class Services(object):
         self.resource_type_producer = partial(resource_type_producer, self.resource_type_factory, self.resource_type_reg)
         self.resource_type_reg[python_module_t] = PythonModuleResourceType()
         self.pyobj_creg.register_actor(
-            python_module_t, python_module_pyobj, self.mosaic, self.python_importer, self.pyobj_creg)
+            python_module_t, python_module_pyobj,
+            mosaic=self.mosaic,
+            python_importer=self.python_importer,
+            pyobj_creg=self.pyobj_creg,
+            )
         self.resource_registry_factory = partial(ResourceRegistry, self.mosaic)
         self.resource_registry = self.resource_registry_factory()
         self.resource_module_factory = partial(
@@ -136,11 +143,11 @@ class Services(object):
             make_builtin_service_resource_module, self.mosaic, self.builtin_services)
         self.resource_registry.set_module(
             'builtins', self.builtin_service_resource_loader(self.resource_registry))
-        self.pyobj_creg.register_actor(builtin_service_t, builtin_service_pyobj, self)
+        self.pyobj_creg.register_actor(builtin_service_t, builtin_service_pyobj, services=self)
         self.resource_type_reg[attribute_t] = AttributeResourceType()
-        self.pyobj_creg.register_actor(attribute_t, attribute_pyobj, self.pyobj_creg)
+        self.pyobj_creg.register_actor(attribute_t, attribute_pyobj, pyobj_creg=self.pyobj_creg)
         self.resource_type_reg[call_t] = CallResourceType()
-        self.pyobj_creg.register_actor(call_t, call_pyobj, self.pyobj_creg)
+        self.pyobj_creg.register_actor(call_t, call_pyobj, pyobj_creg=self.pyobj_creg)
         self.code_registry_ctr = partial(
             CodeRegistry, self.mosaic, self.web, self.association_reg, self.pyobj_creg)
         self.code_registry_ctr2 = partial(CodeRegistry2, self.web)

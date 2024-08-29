@@ -1,12 +1,13 @@
 import threading
 
-from hyperapp.common.code_registry import CodeRegistry
+from hyperapp.common.code_registry2 import CodeRegistry2
 
 
-class CachedCodeRegistry(CodeRegistry):
+class CachedCodeRegistry(CodeRegistry2):
 
-    def __init__(self, mosaic, web, association_reg, pyobj_creg, produce_name):
-        super().__init__(mosaic, web, association_reg, pyobj_creg, produce_name)
+    def __init__(self, mosaic, web, produce_name, config):
+        super().__init__(web, produce_name, config)
+        self._mosaic = mosaic
         self._actor_keep = []
         self._cache = {}  # piece -> actor
         self._reverse_cache = {}  # actor id -> piece

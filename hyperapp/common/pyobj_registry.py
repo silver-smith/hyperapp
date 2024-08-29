@@ -1,4 +1,5 @@
 import logging
+from functools import partial
 
 from .htypes import register_builtin_meta_types, register_meta_types
 from .cached_code_registry import CachedCodeRegistry
@@ -8,8 +9,8 @@ log = logging.getLogger(__name__)
 
 class PyObjRegistry(CachedCodeRegistry):
 
-    def __init__(self, association_reg, reconstructors):
-        super().__init__(None, None, association_reg, self, 'pyobj')
+    def __init__(self, config, reconstructors):
+        super().__init__(None, None, 'pyobj', config)
         self._reconstructors = reconstructors
 
     def init(self, builtin_types, mosaic, web):
@@ -30,3 +31,6 @@ class PyObjRegistry(CachedCodeRegistry):
                     self.add_to_cache(piece, actor)
                     return piece
             raise
+
+    def register_actor(self, t, factory, **kw):
+        self.update_config({t: partial(factory, **kw)})

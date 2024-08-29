@@ -109,7 +109,7 @@ def register_builtin_meta_types(builtin_types, pyobj_creg):
 
 def register_meta_types(pyobj_creg):
     # name_mt does not produce a type, it is removed by type module loader.
-    pyobj_creg.register_actor(optional_mt, optional_from_piece, pyobj_creg)
-    pyobj_creg.register_actor(list_mt, list_from_piece, pyobj_creg)
-    pyobj_creg.register_actor(record_mt, record_from_piece, pyobj_creg)
-    pyobj_creg.register_actor(exception_mt, exception_from_piece, pyobj_creg)
+    pyobj_creg.register_actor(optional_mt, optional_from_piece, pyobj_creg=pyobj_creg)
+    pyobj_creg.register_actor(list_mt, list_from_piece, pyobj_creg=pyobj_creg)
+    pyobj_creg.register_actor(record_mt, record_from_piece, pyobj_creg=pyobj_creg)
+    pyobj_creg.register_actor(exception_mt, exception_from_piece, pyobj_creg=pyobj_creg)

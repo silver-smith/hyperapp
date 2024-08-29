@@ -1,9 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtins:association_reg.service
 - builtins:mosaic.service
-- builtins:pyobj_creg.service
 - builtins:web.service
 - common.mark:mark.module
 - legacy_type.builtin:attribute
@@ -22,9 +20,7 @@ definitions:
       file_name: feed_creg.dyn.py
       import_list:
         code.mark: common.mark:mark.module
-        services.association_reg: builtins:association_reg.service
         services.mosaic: builtins:mosaic.service
-        services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
   feed_creg.service:
     type: legacy_type.system:service_template
@@ -33,4 +29,4 @@ definitions:
       function: feed_creg
       free_params: []
       service_params: []
-      want_config: false
+      want_config: true
