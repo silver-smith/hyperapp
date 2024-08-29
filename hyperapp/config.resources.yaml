@@ -114,6 +114,8 @@ import:
 - ui.qt.list:list_view.actor-template
 - ui.qt.remote_fn_list_adapter:list_adapter_remote_fn_list_adapter.actor-template
 - ui.qt.static_list_adapter:list_adapter_static_list_adapter.actor-template
+- ui.qt.text:text_edit_view.actor-template
+- ui.qt.text:text_readonly_view.actor-template
 - ui.qt.tree:tree_view.actor-template
 - ui.str_adapter:str_adapter_static_str_adapter.actor-template
 - ui.ui_adapter_creg:ui_adapter_creg.service
@@ -140,6 +142,8 @@ definitions:
         - rc.service_marker:service2.marker-template
         model_view_creg:
         - ui.qt.list:list_view.actor-template
+        - ui.qt.text:text_edit_view.actor-template
+        - ui.qt.text:text_readonly_view.actor-template
         - ui.qt.tree:tree_view.actor-template
         parcel_registry:
         - transport.rsa_identity:rsa_identity_rsa_parcel.actor-template

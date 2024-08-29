@@ -1,10 +1,9 @@
-from PySide6 import QtWidgets
-
 from . import htypes
 from .tested.code import text
 from .services import (
     mosaic,
     )
+from .fixtures import qapp_fixtures
 from .code.context import Context
 
 
@@ -26,33 +25,25 @@ def make_state():
     return htypes.text.state()
 
 
-def test_view_text():
+def test_view_text(qapp):
     ctx = Context()
     piece = make_view_piece()
     state = make_state()
     model ="Sample text"
-    app = QtWidgets.QApplication()
-    try:
-        view = text.ViewTextView.from_piece(piece, model, ctx)
-        widget = view.construct_widget(state, ctx)
-        assert view.piece
-        state = view.widget_state(widget)
-        assert state
-    finally:
-        app.shutdown()
+    view = text.ViewTextView.from_piece(piece, model, ctx)
+    widget = view.construct_widget(state, ctx)
+    assert view.piece
+    state = view.widget_state(widget)
+    assert state
 
 
-def test_edit_text():
+def test_edit_text(qapp):
     ctx = Context()
     piece = make_edit_piece()
     state = make_state()
     model ="Sample text"
-    app = QtWidgets.QApplication()
-    try:
-        view = text.EditTextView.from_piece(piece, model, ctx)
-        widget = view.construct_widget(state, ctx)
-        assert view.piece
-        state = view.widget_state(widget)
-        assert state
-    finally:
-        app.shutdown()
+    view = text.EditTextView.from_piece(piece, model, ctx)
+    widget = view.construct_widget(state, ctx)
+    assert view.piece
+    state = view.widget_state(widget)
+    assert state

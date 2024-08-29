@@ -1,14 +1,14 @@
 # Automatically generated file. Do not edit.
 
 import:
+- common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.system:actor_template
 - legacy_type.text:edit_view
 - legacy_type.text:readonly_view
 - legacy_type.text:state
-- ui.ui_adapter_creg:ui_adapter_creg.service
 - ui.view:view.module
-- ui.view_registry:model_view_creg.service
 definitions:
   EditTextView:
     type: legacy_type.builtin:attribute
@@ -36,8 +36,22 @@ definitions:
       module_name: text
       file_name: text.dyn.py
       import_list:
+        code.mark: common.mark:mark.module
         code.view: ui.view:view.module
         htypes.text.edit_view: legacy_type.text:edit_view
         htypes.text.readonly_view: legacy_type.text:readonly_view
         htypes.text.state: legacy_type.text:state
-        services.ui_adapter_creg: ui.ui_adapter_creg:ui_adapter_creg.service
+  text_edit_view.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.text:edit_view
+      function: EditTextView.from_piece
+      service_params:
+      - ui_adapter_creg
+  text_readonly_view.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.text:readonly_view
+      function: ViewTextView.from_piece
+      service_params:
+      - ui_adapter_creg

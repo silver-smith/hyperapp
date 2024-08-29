@@ -3,9 +3,7 @@ import logging
 from PySide6 import QtWidgets
 
 from . import htypes
-from .services import (
-    ui_adapter_creg,
-    )
+from .code.mark import mark
 from .code.view import View
 
 log = logging.getLogger(__name__)
@@ -14,7 +12,8 @@ log = logging.getLogger(__name__)
 class ViewTextView(View):
 
     @classmethod
-    def from_piece(cls, piece, model, ctx):
+    @mark.actor.model_view_creg
+    def from_piece(cls, piece, model, ctx, ui_adapter_creg):
         adapter = ui_adapter_creg.invite(piece.adapter, model, ctx)
         return cls(piece.adapter, adapter)
 
@@ -50,7 +49,8 @@ class ViewTextView(View):
 class EditTextView(View):
 
     @classmethod
-    def from_piece(cls, piece, model, ctx):
+    @mark.actor.model_view_creg
+    def from_piece(cls, piece, model, ctx, ui_adapter_creg):
         adapter = ui_adapter_creg.invite(piece.adapter, model, ctx)
         return cls(piece.adapter, adapter)
 
