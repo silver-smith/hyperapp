@@ -20,10 +20,12 @@ class PyObjRegistry(CachedCodeRegistry):
         register_builtin_meta_types(builtin_types, self)
         register_meta_types(self)
 
-    def actor_to_piece(self, actor):
+    def actor_to_piece(self, actor, reconstruct=True):
         try:
             return super().actor_to_piece(actor)
         except KeyError:
+            if not reconstruct:
+                raise
             for rctr in self._reconstructors:
                 piece = rctr(actor)
                 if piece is not None:

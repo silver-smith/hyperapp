@@ -33,14 +33,14 @@ class CachedCodeRegistry(CodeRegistry2):
             self._actor_keep.append(actor)
             return actor
 
-    def actor_to_piece(self, actor):
+    def actor_to_piece(self, actor, reconstruct=True):
         try:
             return self._reverse_cache[id(actor)]
         except KeyError as x:
             raise KeyError(f"{x}: {actor!r}") from x
 
-    def actor_to_ref(self, actor):
-        piece = self.actor_to_piece(actor)
+    def actor_to_ref(self, actor, reconstruct=True):
+        piece = self.actor_to_piece(actor, reconstruct)
         return self._mosaic.put(piece)
 
     def add_to_cache(self, piece, actor):
