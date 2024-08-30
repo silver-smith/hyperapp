@@ -247,6 +247,7 @@ class System:
             cfg = self._cfg_item_creg.invite(item_ref, 'cfg_item_creg')
             value = cfg.value.resolve(self, 'cfg_item_creg')
             self._cfg_item_creg.update_config({cfg.key: value})
+        # TODO: Think how to load pyobj_creg config not by system. It is a global registry.
         for item_ref in service_to_items['pyobj_creg']:
             cfg = self._cfg_item_creg.invite(item_ref, 'pyobj_creg')
             value = cfg.value.resolve(self, 'pyobj_creg')
