@@ -7,7 +7,10 @@ from .services import (
 
 
 class IncompleteImportedObjectError(Exception):
-    pass
+
+    def __init__(self, path, msg):
+        super().__init__(msg)
+        self.path = path
 
 
 def _load_resource(resource_path, resource):
@@ -43,11 +46,11 @@ class RecorderObject:
 
     def __call__(self, *args, **kw):
         path = '.'.join(self._prefix)
-        raise IncompleteImportedObjectError(f"Attempt to use not-ready object {path} with: *{args}, **{kw}")
+        raise IncompleteImportedObjectError(self._prefix, f"Attempt to use not-ready object {path} with: *{args}, **{kw}")
 
     def __mro_entries__(self, base):
         path = '.'.join(self._prefix)
-        raise IncompleteImportedObjectError(f"Attempt to inherit from not-ready class {path}")
+        raise IncompleteImportedObjectError(self._prefix, f"Attempt to inherit from not-ready class {path}")
 
 
 class ImportRecorder(Finder):
