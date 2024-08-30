@@ -1,0 +1,12 @@
+sample_list = record
+sample_list_item = record
+
+sample_tree = record
+sample_tree_key = record
+sample_tree_item = record
+
+sample_record = record
+sample_record_item = record
+
+sample_piece = record
+sample_layout = record

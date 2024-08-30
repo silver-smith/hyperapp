@@ -1,13 +1,12 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtins:association_reg.service
 - builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
+- common.mark:mark.module
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.form:view
 - legacy_type.int_adapter:int_adapter
@@ -16,44 +15,47 @@ import:
 - legacy_type.list_adapter:static_list_adapter
 - legacy_type.record_adapter:fn_record_adapter
 - legacy_type.str_adapter:static_str_adapter
+- legacy_type.system:service_template
 - legacy_type.text:edit_view
 - legacy_type.tree:view
 - legacy_type.tree_adapter:fn_index_tree_adapter
 - legacy_type.ui:fn_impl
 - legacy_type.ui:list_ui_t
-- legacy_type.ui:model_d
 - legacy_type.ui:model_view_layout_d
 - legacy_type.ui:record_ui_t
 - legacy_type.ui:tree_ui_t
-- resource.data_to_res:data_to_res.service
 definitions:
-  get_model_layout:
+  get_custom_layout:
     type: legacy_type.builtin:attribute
     value:
       object: visualizer.module
-      attr_name: get_model_layout
-  get_model_layout.service:
-    type: legacy_type.builtin:call
+      attr_name: get_custom_layout
+  get_custom_layout.service:
+    type: legacy_type.system:service_template
     value:
-      function: get_model_layout
-  pick_visualizer_info:
+      name: get_custom_layout
+      function: get_custom_layout
+      free_params:
+      - lcs
+      - t
+      service_params: []
+      want_config: false
+  set_custom_layout:
     type: legacy_type.builtin:attribute
     value:
       object: visualizer.module
-      attr_name: pick_visualizer_info
-  pick_visualizer_info.service:
-    type: legacy_type.builtin:call
+      attr_name: set_custom_layout
+  set_custom_layout.service:
+    type: legacy_type.system:service_template
     value:
-      function: pick_visualizer_info
-  set_model_layout:
-    type: legacy_type.builtin:attribute
-    value:
-      object: visualizer.module
-      attr_name: set_model_layout
-  set_model_layout.service:
-    type: legacy_type.builtin:call
-    value:
-      function: set_model_layout
+      name: set_custom_layout
+      function: set_custom_layout
+      free_params:
+      - lcs
+      - t
+      - layout
+      service_params: []
+      want_config: false
   visualizer:
     type: legacy_type.builtin:attribute
     value:
@@ -65,6 +67,7 @@ definitions:
       module_name: visualizer
       file_name: visualizer.dyn.py
       import_list:
+        code.mark: common.mark:mark.module
         htypes.form.view: legacy_type.form:view
         htypes.int_adapter.int_adapter: legacy_type.int_adapter:int_adapter
         htypes.list.view: legacy_type.list:view
@@ -77,17 +80,36 @@ definitions:
         htypes.tree_adapter.fn_index_tree_adapter: legacy_type.tree_adapter:fn_index_tree_adapter
         htypes.ui.fn_impl: legacy_type.ui:fn_impl
         htypes.ui.list_ui_t: legacy_type.ui:list_ui_t
-        htypes.ui.model_d: legacy_type.ui:model_d
         htypes.ui.model_view_layout_d: legacy_type.ui:model_view_layout_d
         htypes.ui.record_ui_t: legacy_type.ui:record_ui_t
         htypes.ui.tree_ui_t: legacy_type.ui:tree_ui_t
-        services.association_reg: builtins:association_reg.service
-        services.data_to_res: resource.data_to_res:data_to_res.service
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
   visualizer.service:
-    type: legacy_type.builtin:call
+    type: legacy_type.system:service_template
     value:
+      name: visualizer
       function: visualizer
+      free_params:
+      - lcs
+      - value
+      service_params:
+      - visualizer_reg
+      - get_custom_layout
+      want_config: false
+  visualizer_reg:
+    type: legacy_type.builtin:attribute
+    value:
+      object: visualizer.module
+      attr_name: visualizer_reg
+  visualizer_reg.service:
+    type: legacy_type.system:service_template
+    value:
+      name: visualizer_reg
+      function: visualizer_reg
+      free_params:
+      - t
+      service_params: []
+      want_config: true

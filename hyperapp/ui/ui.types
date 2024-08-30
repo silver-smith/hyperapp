@@ -50,9 +50,6 @@ ui_model_command_list = record:
   commands: ref list
 
 
-# Model implementation association.
-model_d = record
-
 # Selector for model view layout lcs association.
 model_view_layout_d = record
 

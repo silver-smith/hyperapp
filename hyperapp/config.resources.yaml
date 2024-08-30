@@ -125,6 +125,10 @@ import:
 - ui.ui_command_impl_creg:ui_command_impl_creg.service
 - ui.view_registry:model_view_creg.service
 - ui.view_registry:view_creg.service
+- ui.visualizer:get_custom_layout.service
+- ui.visualizer:set_custom_layout.service
+- ui.visualizer:visualizer.service
+- ui.visualizer:visualizer_reg.service
 definitions:
   config:
     type: legacy_type.system:system_config
@@ -263,6 +267,10 @@ definitions:
         - ui.ui_command_impl_creg:ui_command_impl_creg.service
         - ui.view_registry:model_view_creg.service
         - ui.view_registry:view_creg.service
+        - ui.visualizer:get_custom_layout.service
+        - ui.visualizer:set_custom_layout.service
+        - ui.visualizer:visualizer.service
+        - ui.visualizer:visualizer_reg.service
         ui_adapter_creg:
         - ui.qt.fn_index_tree_adapter:tree_adapter_fn_index_tree_adapter.actor-template
         - ui.qt.fn_list_adapter:list_adapter_fn_list_adapter.actor-template

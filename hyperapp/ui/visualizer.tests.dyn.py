@@ -1,54 +1,100 @@
 from unittest.mock import Mock
 
 from . import htypes
-from .tested.services import visualizer
+from .services import (
+    mosaic,
+    pyobj_creg,
+    )
+from .code.mark import mark
+from .tested.code import visualizer as tested_module
 
 
-def make_lcs():
+@mark.fixture
+def lcs():
     lcs = Mock()
     # Fall thru to default layout.
     lcs.get.return_value = None
     return lcs
 
 
-def test_string():
-    lcs = make_lcs()
+def test_string(visualizer, lcs):
     layout = visualizer(lcs, "Sample text")
     assert layout
 
 
-def test_int():
-    lcs = make_lcs()
+def test_int(visualizer, lcs):
     layout = visualizer(lcs, 12345)
     assert layout
 
 
-def test_list():
+def test_list(visualizer, lcs):
     value = (
         htypes.list_tests.item(1, "First"),
         htypes.list_tests.item(2, "Second"),
         )
-    lcs = make_lcs()
     layout = visualizer(lcs, value)
     assert layout
 
 
-def test_sample_list():
-    piece = htypes.sample_list.sample_list()
-    lcs = make_lcs()
+def sample_fn():
+    pass
+
+
+@mark.config_item_fixture('visualizer_reg')
+def visualizer_config():
+    impl = htypes.ui.fn_impl(
+        function=pyobj_creg.actor_to_ref(sample_fn),
+        params=(),
+        )
+    return {
+        htypes.visualizer_tests.sample_list: htypes.ui.model(
+            ui_t=mosaic.put(
+                htypes.ui.list_ui_t(
+                    element_t=pyobj_creg.actor_to_ref(htypes.visualizer_tests.sample_list_item),
+                    ),
+                ),
+            impl=mosaic.put(impl),
+            ),
+        htypes.visualizer_tests.sample_tree: htypes.ui.model(
+            ui_t=mosaic.put(
+                htypes.ui.tree_ui_t(
+                    key_t=pyobj_creg.actor_to_ref(htypes.visualizer_tests.sample_tree_key),
+                    element_t=pyobj_creg.actor_to_ref(htypes.visualizer_tests.sample_tree_item),
+                    ),
+                ),
+            impl=mosaic.put(impl),
+            ),
+        htypes.visualizer_tests.sample_record: htypes.ui.model(
+            ui_t=mosaic.put(
+                htypes.ui.record_ui_t(
+                    record_t=pyobj_creg.actor_to_ref(htypes.visualizer_tests.sample_record_item),
+                    ),
+                ),
+            impl=mosaic.put(impl),
+            ),
+        }
+
+
+def test_sample_list(visualizer, lcs):
+    piece = htypes.visualizer_tests.sample_list()
     layout = visualizer(lcs, piece)
-    assert layout
+    assert isinstance(layout, htypes.list.view)
 
 
-def test_sample_tree():
-    piece = htypes.sample_tree.sample_tree()
-    lcs = make_lcs()
+def test_sample_tree(visualizer, lcs):
+    piece = htypes.visualizer_tests.sample_tree()
     layout = visualizer(lcs, piece)
-    assert layout
+    assert isinstance(layout, htypes.tree.view)
 
 
-def test_sample_record():
-    piece = htypes.sample_record.sample_record()
-    lcs = make_lcs()
+def test_sample_record(visualizer, lcs):
+    piece = htypes.visualizer_tests.sample_record()
     layout = visualizer(lcs, piece)
-    assert layout
+    assert isinstance(layout, htypes.form.view)
+
+
+def test_set_custom_layout(set_custom_layout, lcs):
+    piece = htypes.visualizer_tests.sample_piece
+    layout = htypes.visualizer_tests.sample_layout()
+    set_custom_layout(lcs, piece, layout)
+    lcs.set.assert_called_once()

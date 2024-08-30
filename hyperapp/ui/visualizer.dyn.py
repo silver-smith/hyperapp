@@ -4,14 +4,12 @@ from hyperapp.common.htypes import tInt, tString, TList
 
 from . import htypes
 from .services import (
-    association_reg,
-    data_to_res,
     deduce_t,
-    mark,
     mosaic,
     pyobj_creg,
     web,
     )
+from .code.mark import mark
 
 log = logging.getLogger(__name__)
 
@@ -29,39 +27,8 @@ def _primitive_value_layout(t):
     return None
 
 
-def _get_model_layout(lcs, t):
-    t_res = pyobj_creg.actor_to_piece(t)
-    d = {
-        htypes.ui.model_view_layout_d(),
-        t_res,
-        }
-    return lcs.get(d)
-
-
-def _set_model_layout(lcs, t, layout):
-    log.info("Save layout for %s: %s", t, layout)
-    t_res = pyobj_creg.actor_to_piece(t)
-    d = {
-        htypes.ui.model_view_layout_d(),
-        t_res,
-        }
-    lcs.set(d, layout)
-
-
-def _visualizer_info(t):
-    model_d_res = data_to_res(htypes.ui.model_d())
-    t_res = pyobj_creg.actor_to_piece(t)
-    try:
-        model = association_reg[model_d_res, t_res]
-    except KeyError:
-        raise KeyError(f"No implementation is registered for model: {t}")
-    ui_t = web.summon(model.ui_t)
-    impl = web.summon(model.impl)
-    return (ui_t, impl)
-
-
-def _default_layout(t):
-    ui_t, impl = _visualizer_info(t)
+def _model_layout(visualizer_reg, t):
+    ui_t, impl = visualizer_reg(t)
 
     if isinstance(ui_t, htypes.ui.list_ui_t) and isinstance(impl, htypes.ui.fn_impl):
         adapter = htypes.list_adapter.fn_list_adapter(
@@ -91,35 +58,49 @@ def _default_layout(t):
     raise NotImplementedError(f"Not supported model: {ui_t} / {impl}")
 
 
-@mark.service
-def pick_visualizer_info():
-    return _visualizer_info
+@mark.service2
+def visualizer_reg(config, t):
+    try:
+        model = config[t]
+    except KeyError:
+        raise KeyError(f"No implementation is registered for model: {t}")
+    ui_t = web.summon(model.ui_t)
+    impl = web.summon(model.impl)
+    return (ui_t, impl)
 
 
-@mark.service
-def get_model_layout():
-    return _get_model_layout
+@mark.service2
+def get_custom_layout(lcs, t):
+    t_res = pyobj_creg.actor_to_piece(t)
+    d = {
+        htypes.ui.model_view_layout_d(),
+        t_res,
+        }
+    return lcs.get(d)
 
 
-@mark.service
-def set_model_layout():
-    return _set_model_layout
+@mark.service2
+def set_custom_layout(lcs, t, layout):
+    log.info("Save layout for %s: %s", t, layout)
+    t_res = pyobj_creg.actor_to_piece(t)
+    d = {
+        htypes.ui.model_view_layout_d(),
+        t_res,
+        }
+    lcs.set(d, layout)
 
 
-@mark.service
-def visualizer():
-    def fn(lcs, value):
-        t = deduce_t(value)
+@mark.service2
+def visualizer(visualizer_reg, get_custom_layout, lcs, value):
+    t = deduce_t(value)
 
-        view = _primitive_value_layout(t)
-        if view is not None:
-            return view
+    view = _primitive_value_layout(t)
+    if view is not None:
+        return view
 
-        view = _get_model_layout(lcs, t)
-        if view is not None:
-            log.info("Using configured layout for %s: %s", t, view)
-            return view
+    view = get_custom_layout(lcs, t)
+    if view is not None:
+        log.info("Using configured layout for %s: %s", t, view)
+        return view
 
-        return _default_layout(t)
-
-    return fn
+    return _model_layout(visualizer_reg, t)
