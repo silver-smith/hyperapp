@@ -227,15 +227,15 @@ class TestJob(SystemJob):
                 error_msg = f"Unknown type: {path}" 
                 traceback = self._prepare_traceback(x)[:-1]
             else:
-                status, error_msg, traceback = self._prepare_error(x, skip_entries=1)
+                status, error_msg, traceback = self._prepare_error(x)
         except Exception as x:
-            status, error_msg, traceback = self._prepare_error(x, skip_entries=1)
+            status, error_msg, traceback = self._prepare_error(x)
         return (status, error_msg, traceback, set())
 
     def _prepare_import_error(self, x):
         return self._prepare_error(x.original_error)
 
-    def _prepare_traceback(self, x, skip_entries=0):
+    def _prepare_traceback(self, x):
         traceback_entries = []
         cause = x
         while cause:
@@ -245,12 +245,16 @@ class TestJob(SystemJob):
             if entry.name == 'exec_module':
                 del traceback_entries[:idx + 1]
                 break
-        else:
-            del traceback_entries[:skip_entries]
+        for idx, entry in enumerate(traceback_entries):
+            fpath = entry.filename.split('/')[-2:]
+            fname = '/'.join(fpath).replace('.dyn.py', '')
+            if fname not in {'rc/test_job', 'system/system', 'rc/system_probe'}:
+                del traceback_entries[:idx]
+                break
         return traceback.format_list(traceback_entries)
 
-    def _prepare_error(self, x, skip_entries=0):
-        traceback_lines = self._prepare_traceback(x, skip_entries)
+    def _prepare_error(self, x):
+        traceback_lines = self._prepare_traceback(x)
         error = f"{type(x).__name__}: {x}"
         if isinstance(x, IncompleteImportedObjectError):
             return (JobStatus.incomplete, error, traceback_lines[:-1])
