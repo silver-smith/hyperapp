@@ -21,6 +21,7 @@ import:
 - rc.import_job:import_job_incomplete_result.actor-template
 - rc.import_job:import_job_job.actor-template
 - rc.import_job:import_job_succeeded_result.actor-template
+- rc.import_recorder:import_recorder_import_recorder.actor-template
 - rc.import_resource:import_resource_import_resource.actor-template
 - rc.init_targets:ctr_from_template_creg.service
 - rc.marker_ctr:marker_marker_template.actor-template
@@ -163,6 +164,8 @@ definitions:
         - transport.rsa_identity:rsa_identity_rsa_peer.actor-template
         parcel_registry:
         - transport.rsa_identity:rsa_identity_rsa_parcel.actor-template
+        pyobj_creg:
+        - rc.import_recorder:import_recorder_import_recorder.actor-template
         signature_registry:
         - transport.rsa_identity:rsa_identity_rsa_signature.actor-template
         rpc_message_creg:

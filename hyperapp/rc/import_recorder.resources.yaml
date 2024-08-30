@@ -4,15 +4,7 @@ import:
 - legacy_type.import_recorder:import_recorder
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-
-associations:
-
-- bases:
-  - legacy_type.import_recorder:import_recorder
-  key:
-  - builtins:pyobj_creg.service
-  - legacy_type.import_recorder:import_recorder
-  value: ImportRecorder.from_piece
+- legacy_type.system:actor_template
 
 definitions:
 
@@ -36,3 +28,10 @@ definitions:
     value:
       object: ImportRecorder
       attr_name: from_piece
+
+  import_recorder_import_recorder.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.import_recorder:import_recorder
+      function: ImportRecorder.from_piece
+      service_params: []
