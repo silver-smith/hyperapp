@@ -8,6 +8,7 @@ from hyperapp.common.htypes import BuiltinTypeRegistry, register_builtin_types
 from hyperapp.common.htypes.python_module import python_module_t
 from hyperapp.common.htypes.attribute import attribute_t
 from hyperapp.common.htypes.call import call_t
+from hyperapp.common.htypes.partial import partial_t
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.common.mosaic import Mosaic
 from hyperapp.common.web import Web
@@ -27,6 +28,7 @@ from hyperapp.resource.resource_module import ResourceModule, load_resource_modu
 from hyperapp.resource.python_module import PythonModuleResourceType, python_module_pyobj
 from hyperapp.resource.attribute import AttributeResourceType, attribute_pyobj
 from hyperapp.resource.call import CallResourceType, call_pyobj
+from hyperapp.resource.partial import PartialResourceType, partial_pyobj
 from hyperapp.resource.legacy_type import convert_builtin_types_to_dict, load_legacy_type_resources
 from hyperapp.resource.builtin_service import builtin_service_pyobj, make_builtin_service_resource_module
 
@@ -77,6 +79,7 @@ def mosaic_and_web(pyobj_creg, builtin_types, python_importer):
     # pyobj_creg.register_actor(builtin_service_t, builtin_service_pyobj, self)
     pyobj_creg.register_actor(attribute_t, attribute_pyobj, pyobj_creg=pyobj_creg)
     pyobj_creg.register_actor(call_t, call_pyobj, pyobj_creg=pyobj_creg)
+    pyobj_creg.register_actor(partial_t, partial_pyobj, pyobj_creg=pyobj_creg)
     return (mosaic, web)
 
 
@@ -148,6 +151,7 @@ def resource_type_reg():
     reg[python_module_t] = PythonModuleResourceType()
     reg[attribute_t] = AttributeResourceType()
     reg[call_t] = CallResourceType()
+    reg[partial_t] = PartialResourceType()
     return reg
 
 

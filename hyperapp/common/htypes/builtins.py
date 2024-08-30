@@ -19,6 +19,7 @@ from .builtin_service import builtin_service_t
 from .code_registry import code_registry_ctr_t
 from .attribute import attribute_t, attribute_def_t
 from .call import call_t, call_def_t
+from .partial import partial_param_t, partial_param_def_t, partial_t, partial_def_t
 
 log = logging.getLogger(__name__)
 
@@ -45,6 +46,10 @@ _builtin_type_list = [
     attribute_def_t,
     call_t,
     call_def_t,
+    partial_param_t,
+    partial_param_def_t,
+    partial_t,
+    partial_def_t,
     ]
 
 

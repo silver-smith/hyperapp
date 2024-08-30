@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 from hyperapp.common.htypes import tString, TOptional, TList, TRecord
+from hyperapp.common.htypes.partial import partial_param_t, partial_t
 from hyperapp.common import cdr_coders  # self-registering
 
 log = logging.getLogger(__name__)
@@ -24,13 +25,13 @@ def module_dir_list(default_module_dir_list):
         ]
 
 
-def test_definition_type_partial(resource_type_factory, htypes):
-    resource_t = htypes.partial.partial
-    resource_type = resource_type_factory(resource_t)
+def test_definition_type_partial(resource_type_producer, htypes):
+    resource_t = partial_t
+    resource_type = resource_type_producer(resource_t)
     log.info("definition_t: %r", resource_type.definition_t)
-    assert resource_type.definition_t == TRecord('partial', 'partial_def', {
+    assert resource_type.definition_t == TRecord('builtin', 'partial_def', {
         'function': tString,
-        'params': TList(TRecord('partial', 'param_def', {
+        'params': TList(TRecord('builtin', 'partial_param_def', {
             'name': tString,
             'value': tString,
             })),
@@ -51,14 +52,14 @@ def test_definition_type_based(resource_type_factory, htypes):
 
 
 def test_mapper(resource_type_factory, htypes):
-    resource_t = htypes.partial.partial
+    resource_t = partial_t
     resource_type = resource_type_factory(resource_t)
     log.info("mapper: %r", resource_type._mapper)
 
 
-def test_from_dict_partial(resource_type_factory, htypes):
-    resource_t = htypes.partial.partial
-    resource_type = resource_type_factory(resource_t)
+def test_from_dict_partial(resource_type_producer, htypes):
+    resource_t = partial_t
+    resource_type = resource_type_producer(resource_t)
     log.info("definition_t: %r", resource_type.definition_t)
     definition_dict = {
         'function': 'some_function',
@@ -95,9 +96,9 @@ def test_from_dict_based(resource_type_factory, htypes):
         )
 
 
-def test_to_dict_partial(resource_type_factory, htypes):
-    resource_t = htypes.partial.partial
-    resource_type = resource_type_factory(resource_t)
+def test_to_dict_partial(resource_type_producer, htypes):
+    resource_t = partial_t
+    resource_type = resource_type_producer(resource_t)
     param_t = resource_type.definition_t.fields['params'].element_t
     definition = resource_type.definition_t(
         function='some_function',
@@ -132,9 +133,9 @@ def test_to_dict_based(resource_type_factory, htypes):
         }
 
 
-def test_resolve_definition_partial(mosaic, resource_type_factory, htypes):
-    resource_t = htypes.partial.partial
-    resource_type = resource_type_factory(resource_t)
+def test_resolve_definition_partial(mosaic, resource_type_producer, htypes):
+    resource_t = partial_t
+    resource_type = resource_type_producer(resource_t)
     param_t = resource_type.definition_t.fields['params'].element_t
     definition = resource_type.definition_t(
         function='some_function',
@@ -157,8 +158,8 @@ def test_resolve_definition_partial(mosaic, resource_type_factory, htypes):
     assert resource == resource_t(
         function=names['some_function'],
         params=(
-            htypes.partial.param('param_1', names['value_1']),
-            htypes.partial.param('param_2', names['value_2']),
+            partial_param_t('param_1', names['value_1']),
+            partial_param_t('param_2', names['value_2']),
         ),
     )
 
@@ -187,9 +188,9 @@ def test_resolve_definition_based(mosaic, resource_type_factory, htypes):
     )
 
 
-def test_reverse_resolve_definition_partial(mosaic, resource_type_factory, htypes):
-    resource_t = htypes.partial.partial
-    resource_type = resource_type_factory(resource_t)
+def test_reverse_resolve_definition_partial(mosaic, resource_type_producer, htypes):
+    resource_t = partial_t
+    resource_type = resource_type_producer(resource_t)
     names = {
         'some_function': mosaic.put('some_function'),
         'value_1': mosaic.put(111),
@@ -201,8 +202,8 @@ def test_reverse_resolve_definition_partial(mosaic, resource_type_factory, htype
     resource = resource_t(
         function=names['some_function'],
         params=(
-            htypes.partial.param('param_1', names['value_1']),
-            htypes.partial.param('param_2', names['value_2']),
+            partial_param_t('param_1', names['value_1']),
+            partial_param_t('param_2', names['value_2']),
             ),
         )
 

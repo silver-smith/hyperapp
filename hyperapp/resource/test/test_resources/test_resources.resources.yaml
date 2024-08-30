@@ -6,7 +6,7 @@ import:
 - rpc.rpc_call:rpc_call_factory.service
 - mock_identity:mock_identity.service
 - legacy_type.builtin:attribute
-- legacy_type.partial:partial
+- legacy_type.builtin:partial
 - legacy_type.builtin:call
 - legacy_type.resource_service:list_service
 - legacy_type.test_resources:test_d
@@ -18,7 +18,7 @@ definitions:
       object: sample_module:sample_module.module
       attr_name: sample_servant
   sample_servant_partial:
-    type: legacy_type.partial:partial
+    type: legacy_type.builtin:partial
     value:
       function: sample_servant_factory
       params:

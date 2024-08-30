@@ -16,7 +16,7 @@ def _data_to_res(piece, t=None):
     t_ref = pyobj_creg.actor_to_ref(t)
     if t.fields:
         params = tuple(
-            htypes.partial.param(
+            htypes.builtin.partial_param(
                 name=name,
                 value=mosaic.put(
                     htypes.raw.raw(
@@ -25,7 +25,7 @@ def _data_to_res(piece, t=None):
                 )
             for name in t.fields
             )
-        partial = htypes.partial.partial(
+        partial = htypes.builtin.partial(
             function=t_ref,
             params=params,
             )

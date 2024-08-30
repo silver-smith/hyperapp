@@ -2,7 +2,7 @@ import:
 - builtins:mosaic.service
 - builtins:web.service
 - legacy_type.builtin:attribute
-- legacy_type.partial:partial
+- legacy_type.builtin:partial
 - sample_module_2:sample_module_2.module
 associations: []
 definitions:
@@ -12,7 +12,7 @@ definitions:
       object: sample_module_2:sample_module_2.module
       attr_name: sample_servant_2
   sample_servant_2_partial:
-    type: legacy_type.partial:partial
+    type: legacy_type.builtin:partial
     value:
       function: sample_servant_2
       params:

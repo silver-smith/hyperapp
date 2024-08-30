@@ -1,8 +1,0 @@
-
-param = record:
-  name: string
-  value: ref
-
-partial = record:
-  function: ref
-  params: param list

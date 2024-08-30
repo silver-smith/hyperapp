@@ -6,10 +6,10 @@ from .services import (
 
 
 def partial_ref(fn, **kw):
-    partial = htypes.partial.partial(
+    partial = htypes.builtin.partial(
         function=pyobj_creg.actor_to_ref(fn),
         params=tuple(
-            htypes.partial.param(
+            htypes.builtin.partial_param(
                 name,
                 mosaic.put(htypes.raw.raw(
                     mosaic.put(value))))

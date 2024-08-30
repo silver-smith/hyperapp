@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 
 from hyperapp.common.htypes.attribute import attribute_t
+from hyperapp.common.htypes.partial import partial_param_t, partial_t
 from hyperapp.common.htypes.builtin_service import builtin_service_t
 from hyperapp.common.association_registry import Association
 from hyperapp.common import cdr_coders  # self-registering
@@ -72,11 +73,11 @@ def test_set_partial(htypes, mosaic, resource_registry, resource_module_factory,
         object=mosaic.put(sample_module_2),
         attr_name='sample_servant_2',
         )
-    partial = htypes.partial.partial(
+    partial = partial_t(
         function=mosaic.put(attr),
         params=tuple([
-            htypes.partial.param('mosaic', mosaic.put(builtin_service_t('mosaic'))),
-            htypes.partial.param('web', mosaic.put(builtin_service_t('web'))),
+            partial_param_t('mosaic', mosaic.put(builtin_service_t('mosaic'))),
+            partial_param_t('web', mosaic.put(builtin_service_t('web'))),
             ]),
         )
     res_module['sample_servant_2'] = attr
