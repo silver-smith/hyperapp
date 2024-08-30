@@ -11,7 +11,7 @@ def partial_ref(fn, **kw):
         params=tuple(
             htypes.builtin.partial_param(
                 name,
-                mosaic.put(htypes.raw.raw(
+                mosaic.put(htypes.builtin.raw(
                     mosaic.put(value))))
             for name, value in kw.items()
             ),

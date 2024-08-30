@@ -10,7 +10,7 @@ import:
 - legacy_type.builtin:partial
 - legacy_type.builtin:partial_param
 - legacy_type.builtin:python_module
-- legacy_type.raw:raw
+- legacy_type.builtin:raw
 - legacy_type.system:service_template
 definitions:
   data_to_ref:
@@ -43,7 +43,7 @@ definitions:
         htypes.builtin.call: legacy_type.builtin:call
         htypes.builtin.partial: legacy_type.builtin:partial
         htypes.builtin.partial_param: legacy_type.builtin:partial_param
-        htypes.raw.raw: legacy_type.raw:raw
+        htypes.builtin.raw: legacy_type.builtin:raw
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service

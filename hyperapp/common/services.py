@@ -41,6 +41,8 @@ from .htypes.call import call_t
 from ..resource.call import CallResourceType, call_pyobj
 from .htypes.partial import partial_t
 from ..resource.partial import PartialResourceType, partial_pyobj
+from .htypes.raw import raw_t
+from ..resource.raw import RawResourceType, raw_pyobj
 
 log = logging.getLogger(__name__)
 
@@ -152,6 +154,8 @@ class Services(object):
         self.pyobj_creg.register_actor(call_t, call_pyobj, pyobj_creg=self.pyobj_creg)
         self.resource_type_reg[partial_t] = PartialResourceType()
         self.pyobj_creg.register_actor(partial_t, partial_pyobj, pyobj_creg=self.pyobj_creg)
+        self.resource_type_reg[raw_t] = RawResourceType()
+        self.pyobj_creg.register_actor(raw_t, raw_pyobj, web=self.web)
         self.code_registry_ctr = partial(
             CodeRegistry, self.mosaic, self.web, self.association_reg, self.pyobj_creg)
         self.code_registry_ctr2 = partial(CodeRegistry2, self.web)

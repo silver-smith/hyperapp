@@ -19,7 +19,7 @@ def _data_to_res(piece, t=None):
             htypes.builtin.partial_param(
                 name=name,
                 value=mosaic.put(
-                    htypes.raw.raw(
+                    htypes.builtin.raw(
                         mosaic.put(
                             getattr(piece, name)))),
                 )
