@@ -1,7 +1,6 @@
 import:
 - legacy_type.builtin:attribute
 - sample_module_2:sample_module_2.module
-associations: []
 definitions:
   sample_servant_2:
     type: legacy_type.builtin:attribute

@@ -1,7 +1,6 @@
 import:
 - legacy_type.builtin:int
 - legacy_type.builtin:string
-associations: []
 definitions:
   sample_int:
     type: legacy_type.builtin:int
