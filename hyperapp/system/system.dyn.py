@@ -247,6 +247,10 @@ class System:
             cfg = self._cfg_item_creg.invite(item_ref, 'cfg_item_creg')
             value = cfg.value.resolve(self, 'cfg_item_creg')
             self._cfg_item_creg.update_config({cfg.key: value})
+        for item_ref in service_to_items['pyobj_creg']:
+            cfg = self._cfg_item_creg.invite(item_ref, 'pyobj_creg')
+            value = cfg.value.resolve(self, 'pyobj_creg')
+            pyobj_creg.update_config({cfg.key: value})
         for service_name, items in service_to_items.items():
             if service_name == 'cfg_item_creg':
                 continue
