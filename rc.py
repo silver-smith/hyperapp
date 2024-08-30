@@ -59,13 +59,10 @@ def main():
         legacy_type_resource_loader = services.legacy_type_resource_loader
         builtin_types_as_dict = services.builtin_types_as_dict
         local_types = services.local_types
-        association_reg = services.association_reg
         pyobj_creg = services.pyobj_creg
 
         resource_list_loader(resource_dir_list, resource_registry)
         resource_registry.update_modules(legacy_type_resource_loader({**builtin_types_as_dict(), **local_types}))
-
-        association_reg.register_association_list(resource_registry.associations)
 
         options = Options(
             timeout=args.timeout,
