@@ -1,12 +1,14 @@
 from PySide6 import QtWidgets
 
 from . import htypes
+from .code.mark import mark
 from .code.view import View
 
 
 class LabelView(View):
 
     @classmethod
+    @mark.actor.view_creg
     def from_piece(cls, piece, ctx):
         return cls(piece.text)
 
