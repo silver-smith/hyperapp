@@ -31,11 +31,11 @@ import:
 - rc.marker_registry:marker_registry.service
 - rc.model_ctr:rc_constructors_model.actor-template
 - rc.model_marker:model.marker-template
-- rc.rc:compile_resources.service
 - rc.rc_job:rc_job_submit_factory.service
 - rc.rc_job:rc_job_job_target.actor-template
 - rc.rc_job_creg:rc_job_creg.service
 - rc.rc_job_result_creg:rc_job_result_creg.service
+- rc.rc:rc_main.service
 - rc.rc_requirement_creg:rc_requirement_creg.service
 - rc.rc_resource_creg:rc_resource_creg.service
 - rc.process_pool:process_pool_running.service
@@ -119,10 +119,10 @@ definitions:
         - rc.ctr_collector:ctr_collector.service
         - rc.init_targets:ctr_from_template_creg.service
         - rc.marker_registry:marker_registry.service
-        - rc.rc:compile_resources.service
         - rc.rc_job:rc_job_submit_factory.service
         - rc.rc_job_creg:rc_job_creg.service
         - rc.rc_job_result_creg:rc_job_result_creg.service
+        - rc.rc:rc_main.service
         - rc.rc_requirement_creg:rc_requirement_creg.service
         - rc.rc_resource_creg:rc_resource_creg.service
         - rc.process_pool:process_pool_running.service

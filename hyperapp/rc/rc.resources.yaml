@@ -31,21 +31,19 @@ definitions:
         code.rc_filter: rc.rc_filter:rc_filter.module
         code.target_set: rc.target_set:target_set.module
 
-  compile_resources:
+  rc_main:
     type: legacy_type.builtin:attribute
     value:
       object: rc.module
-      attr_name: compile_resources
+      attr_name: rc_main
 
-  compile_resources.service:
+  rc_main.service:
     type: legacy_type.system:service_template
     value:
-      name: compile_resources
-      function: compile_resources
+      name: rc_main
+      function: rc_main
       free_params:
-      - targets
-      - process_count
-      - options
+      - sys_argv
       service_params:
       - system_config
       - cfg_item_creg

@@ -1,5 +1,8 @@
+import argparse
 import logging
 import subprocess
+from collections import namedtuple
+from pathlib import Path
 
 from hyperapp.common.htypes import HException
 
@@ -17,6 +20,10 @@ from .code.rc_filter import Filter
 
 log = logging.getLogger(__name__)
 rc_log = logging.getLogger('rc')
+
+
+Options = namedtuple('Options', 'timeout verbose fail_fast write show_diffs show_incomplete_traces')
+RcArgs = namedtuple('RcArgs', 'targets process_count options')
 
 
 def _update_completed(target_set, prev_completed):
@@ -157,7 +164,36 @@ def _run(rc_job_result_creg, pool, target_set, filter, options):
         )
 
 
-def _main(cfg_item_creg, ctr_from_template_creg, rc_job_result_creg, system_config, pool, targets, options):
+
+def _parse_args(sys_argv):
+    parser = argparse.ArgumentParser(description='Compile resources')
+    parser.add_argument('--root-dir', type=Path, nargs='*', help="Additional resource root dirs")
+    parser.add_argument('--workers', type=int, default=1, help="Worker process count to start and use")
+    parser.add_argument('--timeout', type=int, help="Base timeout for RPC calls and everything (seconds). Default is none")
+    parser.add_argument('--write', '-w', action='store_true', help="Write changed resources")
+    parser.add_argument('--show-diffs', '-d', action='store_true', help="Show diffs for constructed resources")
+    parser.add_argument('--show-incomplete-traces', '-i', action='store_true', help="Show tracebacks for incomplete jobs")
+    parser.add_argument('--fail-fast', '-x', action='store_true', help="Stop on first failure")
+    parser.add_argument('--verbose', '-v', action='store_true', help="Verbose output")
+    parser.add_argument('targets', type=str, nargs='*', help="Select only those targets to build")
+    args = parser.parse_args(sys_argv)
+
+    options = Options(
+        timeout=args.timeout,
+        verbose=args.verbose,
+        fail_fast=args.fail_fast,
+        write=args.write,
+        show_diffs=args.show_diffs,
+        show_incomplete_traces=args.show_incomplete_traces,
+        )
+    return RcArgs(
+        targets=args.targets,
+        process_count=args.workers,
+        options=options,
+    )
+
+
+def _compile_resources(cfg_item_creg, ctr_from_template_creg, rc_job_result_creg, system_config, pool, targets, options):
     build = load_build(hyperapp_dir)
     log.info("Loaded build:")
     build.report()
@@ -175,13 +211,14 @@ def _main(cfg_item_creg, ctr_from_template_creg, rc_job_result_creg, system_conf
                     log.error("%s", line)
 
 
-def compile_resources(system_config, cfg_item_creg, process_pool_running, rc_job_result_creg, ctr_from_template_creg, targets, process_count, options):
-    rc_log.info("Compile resources: %s", ", ".join(targets) if targets else 'all')
+def rc_main(system_config, cfg_item_creg, process_pool_running, rc_job_result_creg, ctr_from_template_creg, sys_argv):
+    args = _parse_args(sys_argv)
+    rc_log.info("Compile resources: %s", ", ".join(args.targets) if args.targets else 'all')
 
-    if options.verbose:
+    if args.options.verbose:
         rc_log.setLevel(logging.DEBUG)
 
     register_reconstructors()
 
-    with process_pool_running(process_count, options.timeout) as pool:
-        _main(cfg_item_creg, ctr_from_template_creg, rc_job_result_creg, system_config, pool, targets, options)
+    with process_pool_running(args.process_count, args.options.timeout) as pool:
+        _compile_resources(cfg_item_creg, ctr_from_template_creg, rc_job_result_creg, system_config, pool, args.targets, args.options)
