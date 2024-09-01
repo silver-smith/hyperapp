@@ -9,40 +9,53 @@ from .services import (
     pyobj_creg,
     resource_registry,
     )
+from .code.mark import mark
 from .tested.code import lcs_resource_storage
 
 
-def test_set():
-    # Subprocess does not add local types to resource registry.
-    resource_registry.update_modules(legacy_type_resource_loader({
-        **builtin_types_as_dict(), **local_types}))
-    # Test driver does not load types from resources.
-    # Manually add used type to cache.
-    _ = resource_registry['legacy_type.lcs_resource_storage_tests', 'sample_1_d']
-
+@mark.fixture
+def path():
     path = Path('/tmp/lcs-storage-test.yaml')
     try:
         path.unlink()
     except FileNotFoundError:
         pass
+    return path
 
+
+@mark.fixture
+def key():
     d_1_t = htypes.lcs_resource_storage_tests.sample_1_d
     d_1 = pyobj_creg.actor_to_piece(d_1_t)
     d_2 = htypes.lcs_resource_storage_tests.sample_2_d('some-path')
+    return {d_1, d_2}
+
+
+@mark.fixture
+def piece():
     inner = htypes.lcs_resource_storage_tests.inner_piece(
         value=(11, 22, 33),
         )
-    piece = htypes.lcs_resource_storage_tests.sample_piece(
+    return htypes.lcs_resource_storage_tests.sample_piece(
         direction='sample-direction',
         stretch=12345,
         inner=mosaic.put(inner),
         )
 
-    storage_1 = lcs_resource_storage.LcsResourceStorage('test.lcs_storage', path)
-    storage_1.set({d_1, d_2}, piece)
 
-    storage_2 = lcs_resource_storage.LcsResourceStorage('test.lcs_storage', path)
-    assert storage_2.get({d_1, d_2}) == piece
+def test_persistence(lcs_resource_storage_factory, path, key, piece):
+    storage_1 = lcs_resource_storage_factory('test.lcs_storage', path)
+    storage_1.set(key, piece)
+    storage_2 = lcs_resource_storage_factory('test.lcs_storage', path)
+    assert storage_2.get(key) == piece
 
-    # Test replacement and primitive value.
-    storage_2.set({d_1, d_2}, "Sample string")
+
+def test_primitive(lcs_resource_storage_factory, path, key):
+    storage = lcs_resource_storage_factory('test.lcs_storage', path)
+    storage.set(key, "Sample string")
+
+
+def test_replace(lcs_resource_storage_factory, path, key, piece):
+    storage = lcs_resource_storage_factory('test.lcs_storage', path)
+    storage.set(key, piece)
+    storage.set(key, "Sample string")

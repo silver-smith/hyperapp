@@ -8,18 +8,19 @@ from . import htypes
 from .services import (
     deduce_t,
     mosaic,
-    pick_refs,
     resource_module_factory,
     resource_registry,
     web,
     )
+from .code.mark import mark
 
 
 class LcsResourceStorage:
 
     _mapping_name = 'lcs_storage_mapping'
 
-    def __init__(self, name, path):
+    def __init__(self, pick_refs, name, path):
+        self._pick_refs = pick_refs
         self._path = path
         self._res_module = resource_module_factory(
             resource_registry, name, path, load_from_file=path.exists())
@@ -62,7 +63,7 @@ class LcsResourceStorage:
     def _store_if_missing(self, piece, t):
         if resource_registry.has_piece(piece):
             return
-        for ref in pick_refs(piece):
+        for ref in self._pick_refs(piece):
             elt_piece, elt_t = web.summon_with_t(ref)
             self._store_if_missing(elt_piece, elt_t)
         name = self._make_name(piece, t)
@@ -117,3 +118,8 @@ class LcsResourceStorage:
         for name in self._iter_names(piece, t):
             if name not in self._res_module:
                 return name
+
+
+@mark.service2
+def lcs_resource_storage_factory(pick_refs, name, path):
+    return LcsResourceStorage(pick_refs, name, path)
