@@ -4,6 +4,8 @@ import:
 - common.bundler:bundler.service
 - common.file_bundle:file_bundle.service
 - common.mark:marker_ctl.service
+- common.ref_picker:pick_refs.service
+- common.ref_picker:ref_picker_cache.service
 - legacy_type.system:system_config
 - rc.actor_ctr:actor_resource_actor_probe_ctr.actor-template
 - rc.actor_ctr:actor_resource_actor_template_ctr.actor-template
@@ -217,6 +219,8 @@ definitions:
         - common.bundler:bundler.service
         - common.file_bundle:file_bundle.service
         - common.mark:marker_ctl.service
+        - common.ref_picker:pick_refs.service
+        - common.ref_picker:ref_picker_cache.service
         - rc.ctr_collector:ctr_collector.service
         - rc.htest.sample_config:sample_config_service.service
         - rc.htest.sample_service_1:sample_fn_service_1.service

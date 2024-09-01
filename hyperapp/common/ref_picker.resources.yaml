@@ -1,10 +1,8 @@
 import:
 - builtins:deduce_t.service
-- builtins:mosaic.service
-- builtins:web.service
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.system:service_template
 
 definitions:
 
@@ -15,8 +13,21 @@ definitions:
       file_name: ref_picker.dyn.py
       import_list:
         services.deduce_t: builtins:deduce_t.service
-        services.mosaic: builtins:mosaic.service
-        services.web: builtins:web.service
+
+  ref_picker_cache:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ref_picker.module
+      attr_name: ref_picker_cache
+
+  ref_picker_cache.service:
+    type: legacy_type.system:service_template
+    value:
+      name: ref_picker_cache
+      function: ref_picker_cache
+      free_params: []
+      service_params: []
+      want_config: false
 
   pick_refs:
     type: legacy_type.builtin:attribute
@@ -25,6 +36,13 @@ definitions:
       attr_name: pick_refs
 
   pick_refs.service:
-    type: legacy_type.builtin:call
+    type: legacy_type.system:service_template
     value:
+      name: pick_refs
       function: pick_refs
+      free_params:
+      - value
+      - t
+      service_params:
+      - ref_picker_cache
+      want_config: false

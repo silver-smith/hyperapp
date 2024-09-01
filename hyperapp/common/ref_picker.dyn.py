@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 from hyperapp.common.htypes import (
     TPrimitive,
     TOptional,
@@ -7,11 +9,7 @@ from hyperapp.common.htypes import (
     ref_t,
     )
 
-from .services import (
-    deduce_t,
-    mosaic,
-    web,
-    )
+from .services import deduce_t
 
 
 class NoPicker:
@@ -56,40 +54,41 @@ class RefPicker:
         yield value
 
 
-def _t_to_picker(t):
+def _type_to_picker(t):
     if t is ref_t:
         return RefPicker()
     if isinstance(t, TPrimitive):
         return NoPicker()
     tt = type(t)
     if tt is TOptional:
-        return OptPicker(_t_to_picker(t.base_t))
+        return OptPicker(_type_to_picker(t.base_t))
     if tt is TList:
-        return ListPicker(_t_to_picker(t.element_t))
+        return ListPicker(_type_to_picker(t.element_t))
     if tt is TRecord or tt is TException:
         return RecordPicker({
-            name: _t_to_picker(field_t)
+            name: _type_to_picker(field_t)
             for name, field_t in t.fields.items()
             })
 
 
-def pick_refs():
-    t_to_picker = {}
-    value_to_refs = {}
+RefPickerCache = namedtuple('RefPickerCache', 't_to_picker value_to_refs')
 
-    def picker(value, t=None):
-        if t is None:
-            t = deduce_t(value)
-        try:
-            return value_to_refs[value]
-        except KeyError:
-            pass
-        try:
-            picker = t_to_picker[t]
-        except KeyError:
-            picker = t_to_picker[t] = _t_to_picker(t)
-        refs = set(picker.pick_refs(value))
-        value_to_refs[value] = refs
-        return refs
 
-    return picker
+def ref_picker_cache():
+    return RefPickerCache({}, {})
+
+
+def pick_refs(ref_picker_cache, value, t=None):
+    try:
+        return ref_picker_cache.value_to_refs[value]
+    except KeyError:
+        pass
+    if t is None:
+        t = deduce_t(value)
+    try:
+        picker = ref_picker_cache.t_to_picker[t]
+    except KeyError:
+        picker = ref_picker_cache.t_to_picker[t] = _type_to_picker(t)
+    refs = set(picker.pick_refs(value))
+    ref_picker_cache.value_to_refs[value] = refs
+    return refs

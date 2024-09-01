@@ -9,7 +9,6 @@ from hyperapp.common.ref import ref_repr
 from .services import (
     association_reg,
     mosaic,
-    pick_refs,
     pyobj_creg,
     )
 
@@ -54,8 +53,8 @@ def _sort_deps(ref_set, dep_set):
 
 class Bundler:
 
-    def __init__(self):
-        pass
+    def __init__(self, pick_refs):
+        self._pick_refs = pick_refs
 
     def bundle(self, ref_list, seen_refs=None):
         assert is_list_inst(ref_list, ref_t), repr(ref_list)
@@ -111,7 +110,7 @@ class Bundler:
 
     def _collect_refs_from_capsule(self, ref, rec):
         log.debug('Collecting refs from %r:', rec.value)
-        refs = pick_refs(rec.value, rec.t)
+        refs = self._pick_refs(rec.value, rec.t)
         asss = self._collect_associations(ref, rec.t, rec.value)
         log.debug('Collected %d refs from %s %s: %s', len(refs), rec.t, ref,
                  ', '.join(map(ref_repr, refs)))
@@ -129,5 +128,5 @@ class Bundler:
         return result
 
 
-def bundler(ref_list, seen_refs=None):
-    return Bundler().bundle(ref_list, seen_refs)
+def bundler(pick_refs, ref_list, seen_refs=None):
+    return Bundler(pick_refs).bundle(ref_list, seen_refs)

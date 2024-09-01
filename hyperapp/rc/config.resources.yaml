@@ -3,6 +3,8 @@ import:
 - legacy_type.system:system_config
 - common.bundler:bundler.service
 - common.mark:marker_ctl.service
+- common.ref_picker:pick_refs.service
+- common.ref_picker:ref_picker_cache.service
 - system.system_stop:stop_signal.service
 - system.system_stop:system_failed.service
 - rc.actor_ctr:actor_resource_actor_probe_ctr.actor-template
@@ -110,6 +112,8 @@ definitions:
         system:
         - common.bundler:bundler.service
         - common.mark:marker_ctl.service
+        - common.ref_picker:pick_refs.service
+        - common.ref_picker:ref_picker_cache.service
         - system.system_stop:stop_signal.service
         - system.system_stop:system_failed.service
         - rc.ctr_collector:ctr_collector.service
