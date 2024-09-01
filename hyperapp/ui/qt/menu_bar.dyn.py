@@ -5,6 +5,7 @@ from PySide6 import QtGui, QtWidgets
 log = logging.getLogger(__name__)
 
 from . import htypes
+from .code.mark import mark
 from .code.view import View
 
 
@@ -18,6 +19,7 @@ class MenuBar(QtWidgets.QMenuBar):
 class MenuBarView(View):
 
     @classmethod
+    @mark.actor.view_creg
     def from_piece(cls, piece, ctx):
         return cls()
 
