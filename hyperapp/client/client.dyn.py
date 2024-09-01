@@ -1,3 +1,4 @@
+import argparse
 import asyncio
 from pathlib import Path
 
@@ -6,26 +7,21 @@ from qasync import QEventLoop
 
 from . import htypes
 from .services import (
-    endpoint_registry,
-    file_bundle,
-    generate_rsa_identity,
     hyperapp_dir,
     mosaic,
-    rpc_endpoint_factory,
-    visualizer,
-    view_creg,
     )
+from .code.mark import mark
 from .code.context import Context
 from .code.lcs import LCSheet
 from .code.controller import Controller
 from .code.reconstructors import register_reconstructors
-from .code.lcs_resource_storage import LcsResourceStorage
 
 
-layout_path = Path.home() / '.local/share/hyperapp/client/layout.json'
+default_lcs_storage_path = 'client/lcs-storage.resources.yaml'
+default_layout_path = Path.home() / '.local/share/hyperapp/client/layout.json'
 
 
-def make_default_piece(lcs):
+def make_default_piece(visualizer, lcs):
     text = "Sample text"
     text_view = visualizer(lcs, text)
     navigator = htypes.navigator.view(
@@ -100,14 +96,33 @@ def make_default_state():
         )
 
 
-def make_default_layout(lcs):
+def make_default_layout(visualizer, lcs):
     return htypes.root.layout(
-        piece=make_default_piece(lcs),
+        piece=make_default_piece(visualizer, lcs),
         state=make_default_state(),
         )
 
 
-def _main(load_state):
+def _parse_args(hyperapp_dir, sys_argv):
+    parser = argparse.ArgumentParser(description='Hyperapp client')
+    parser.add_argument('--clean', '-c', action='store_true', help="Do not load stored layout state")
+    parser.add_argument('--lcs-storage-path', type=Path, default=hyperapp_dir / default_lcs_storage_path, help="Path to lcs storage")
+    parser.add_argument('--layout-path', type=Path, default=default_layout_path, help="Path to layout")
+    return parser.parse_args()
+
+
+@mark.service2
+def client_main(
+        hyperapp_dir,
+        endpoint_registry,
+        generate_rsa_identity,
+        rpc_endpoint,
+        file_bundle,
+        lcs_resource_storage_factory,
+        visualizer,
+        sys_argv,
+        ):
+    args = _parse_args(hyperapp_dir, sys_argv)
 
     register_reconstructors()
 
@@ -115,11 +130,10 @@ def _main(load_state):
     event_loop = QEventLoop(app)
     asyncio.set_event_loop(event_loop)  # Should be set before any asyncio objects created.
 
-    lcs_storage = LcsResourceStorage('client.lcs-storage', hyperapp_dir / 'client/lcs-storage.resources.yaml')
+    lcs_storage = lcs_resource_storage_factory('client.lcs-storage', args.lcs_storage_path)
     lcs = LCSheet(lcs_storage)
 
     identity = generate_rsa_identity()
-    rpc_endpoint = rpc_endpoint_factory()
     endpoint_registry.register(identity, rpc_endpoint)
 
     ctx = Context(
@@ -127,8 +141,8 @@ def _main(load_state):
         identity=identity,
         rpc_endpoint=rpc_endpoint,
         )
-    default_layout = make_default_layout(lcs)
-    layout_bundle = file_bundle(layout_path)
+    default_layout = make_default_layout(visualizer, lcs)
+    layout_bundle = file_bundle(args.layout_path)
 
-    with Controller.running(layout_bundle, default_layout, ctx, show=True, load_state=load_state) as ctl:
+    with Controller.running(layout_bundle, default_layout, ctx, show=True, load_state=args.load_state) as ctl:
         ctl.run(app, event_loop)
