@@ -26,6 +26,7 @@ import:
 - rc.import_recorder:import_recorder_import_recorder.actor-template
 - rc.import_resource:import_resource_import_resource.actor-template
 - rc.init_targets:ctr_from_template_creg.service
+- rc.fixture_marker:fixture.marker-template
 - rc.marker_ctr:marker_marker_template.actor-template
 - rc.marker_registry:marker_marker_template.actor-template
 - rc.marker_registry:marker_registry.service
@@ -47,7 +48,6 @@ import:
 - rc.service_ctr:service_resource_service_probe_ctr.actor-template
 - rc.service_ctr:system_finalizer_gen_service_template.actor-template
 - rc.service_ctr:system_service_template.actor-template
-- rc.service_marker:fixture.marker-template
 - rc.service_marker:service2.marker-template
 - rc.service_probe_resource:service_resource_config_item_fixture_resource.actor-template
 - rc.service_probe_resource:service_resource_fixture_probe_resource.actor-template
@@ -163,7 +163,7 @@ definitions:
         - rc.config_item_marker:config_item_fixture.marker-template
         - rc.model_marker:model.marker-template
         - rc.service_marker:service2.marker-template
-        - rc.service_marker:fixture.marker-template
+        - rc.fixture_marker:fixture.marker-template
         peer_registry:
         - transport.rsa_identity:rsa_identity_rsa_peer.actor-template
         parcel_registry:

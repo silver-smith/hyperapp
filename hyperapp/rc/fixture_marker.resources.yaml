@@ -6,24 +6,24 @@ import:
 
 definitions:
 
-  service_marker.module:
+  fixture_marker.module:
     type: legacy_type.builtin:python_module
     value:
-      module_name: service_marker
-      file_name: service_marker.dyn.py
+      module_name: fixture_marker
+      file_name: fixture_marker.dyn.py
       import_list:
         code.service_ctr: rc.service_ctr:service_ctr.module
 
-  service_marker:
+  fixture_marker:
     type: legacy_type.builtin:attribute
     value:
-      object: service_marker.module
-      attr_name: service_marker
+      object: fixture_marker.module
+      attr_name: fixture_marker
 
-  service2.marker-template:
+  fixture.marker-template:
     type: legacy_type.marker:marker_template
     value:
-      name: service2
-      function: service_marker
+      name: fixture
+      function: fixture_marker
       service_params:
       - ctr_collector

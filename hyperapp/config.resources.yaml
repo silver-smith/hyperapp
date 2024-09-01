@@ -19,6 +19,7 @@ import:
 - rc.ctr_collector:ctr_collector.service
 - rc.feed_ctr:rc_constructors_index_tree_feed.actor-template
 - rc.feed_ctr:rc_constructors_list_feed.actor-template
+- rc.fixture_marker:fixture.marker-template
 - rc.htest.sample_config:sample_config_service.service
 - rc.htest.sample_service_1:sample_fn_service_1.service
 - rc.htest.sample_service_1:sample_value_service_1.service
@@ -52,7 +53,6 @@ import:
 - rc.service_ctr:service_resource_service_probe_ctr.actor-template
 - rc.service_ctr:system_finalizer_gen_service_template.actor-template
 - rc.service_ctr:system_service_template.actor-template
-- rc.service_marker:fixture.marker-template
 - rc.service_marker:service2.marker-template
 - rc.service_probe_resource:service_resource_config_item_fixture_resource.actor-template
 - rc.service_probe_resource:service_resource_fixture_probe_resource.actor-template
@@ -146,8 +146,8 @@ definitions:
         marker_registry:
         - rc.actor_marker:actor.marker-template
         - rc.config_item_marker:config_item_fixture.marker-template
+        - rc.fixture_marker:fixture.marker-template
         - rc.model_marker:model.marker-template
-        - rc.service_marker:fixture.marker-template
         - rc.service_marker:service2.marker-template
         model_view_creg:
         - ui.qt.list:list_view.actor-template
