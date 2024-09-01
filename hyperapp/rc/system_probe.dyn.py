@@ -205,6 +205,10 @@ class Probe:
         service = self._apply(self._params)
         return getattr(service, name)
 
+    def __iter__(self):
+        service = self._apply(self._params)
+        return iter(service)
+
     def _apply(self, service_params, *args, **kw):
         if self._resolved:
             return self._service
