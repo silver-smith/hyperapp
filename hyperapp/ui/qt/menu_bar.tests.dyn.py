@@ -1,7 +1,5 @@
 from unittest.mock import Mock
 
-from PySide6 import QtWidgets
-
 from . import htypes
 from .code.context import Context
 from .fixtures import qapp_fixtures
