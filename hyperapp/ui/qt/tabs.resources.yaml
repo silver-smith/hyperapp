@@ -3,23 +3,15 @@
 import:
 - builtins:mosaic.service
 - builtins:web.service
-- common.list_diff:list_diff.module
+- common.mark:mark.module
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.system:actor_template
 - legacy_type.tabs:list_item
-- legacy_type.tabs:open_tab_list_d
 - legacy_type.tabs:state
 - legacy_type.tabs:tab
 - legacy_type.tabs:view
-- legacy_type.ui:command
-- legacy_type.ui:command_properties
-- legacy_type.ui:command_properties_d
-- legacy_type.ui:model_command_impl
-- legacy_type.ui:ui_command_d
-- legacy_type.ui:ui_model_command_impl
 - ui.view:view.module
-- ui.view_registry:view_creg.service
 definitions:
   TabsView:
     type: legacy_type.builtin:attribute
@@ -31,57 +23,24 @@ definitions:
     value:
       object: TabsView
       attr_name: from_piece
-  command_properties_d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.ui:command_properties_d
-  open_tab_list:
-    type: legacy_type.builtin:attribute
-    value:
-      object: tabs.module
-      attr_name: open_tab_list
-  open_tab_list.command:
-    type: legacy_type.ui:command
-    value:
-      d: open_tab_list.d
-      impl: open_tab_list.impl
-  open_tab_list.command_properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: false
-      uses_state: false
-      remotable: true
-  open_tab_list.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.tabs:open_tab_list_d
-  open_tab_list.impl:
-    type: legacy_type.ui:ui_model_command_impl
-    value:
-      model_command_impl: open_tab_list.model_command_impl
-      layout: null
-  open_tab_list.model_command_impl:
-    type: legacy_type.ui:model_command_impl
-    value:
-      function: open_tab_list
-      params:
-      - view
   tabs.module:
     type: legacy_type.builtin:python_module
     value:
       module_name: tabs
       file_name: tabs.dyn.py
       import_list:
-        code.list_diff: common.list_diff:list_diff.module
+        code.mark: common.mark:mark.module
         code.view: ui.view:view.module
         htypes.tabs.list_item: legacy_type.tabs:list_item
         htypes.tabs.state: legacy_type.tabs:state
         htypes.tabs.tab: legacy_type.tabs:tab
         htypes.tabs.view: legacy_type.tabs:view
         services.mosaic: builtins:mosaic.service
-        services.view_creg: ui.view_registry:view_creg.service
         services.web: builtins:web.service
-  ui_command_d:
-    type: legacy_type.builtin:call
+  tabs_view.actor-template:
+    type: legacy_type.system:actor_template
     value:
-      function: legacy_type.ui:ui_command_d
+      t: legacy_type.tabs:view
+      function: TabsView.from_piece
+      service_params:
+      - view_creg

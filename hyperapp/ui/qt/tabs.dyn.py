@@ -6,11 +6,10 @@ from PySide6 import QtWidgets
 
 from . import htypes
 from .services import (
-    mark,
     mosaic,
-    view_creg,
     web,
     )
+from .code.mark import mark
 from .code.view import Item, View
 
 log = logging.getLogger(__name__)
@@ -21,7 +20,8 @@ class TabsView(View):
     _Tab = namedtuple('_Tab', 'view label')
 
     @classmethod
-    def from_piece(cls, piece, ctx):
+    @mark.actor.view_creg
+    def from_piece(cls, piece, ctx, view_creg):
         tabs = [
             cls._Tab(view_creg.invite(rec.ctl, ctx), rec.label)
             for rec in piece.tabs

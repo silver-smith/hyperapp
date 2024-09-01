@@ -124,6 +124,7 @@ import:
 - ui.qt.remote_fn_index_tree_adapter:tree_adapter_remote_fn_index_tree_adapter.actor-template
 - ui.qt.remote_fn_list_adapter:list_adapter_remote_fn_list_adapter.actor-template
 - ui.qt.static_list_adapter:list_adapter_static_list_adapter.actor-template
+- ui.qt.tabs:tabs_view.actor-template
 - ui.qt.text:text_edit_view.actor-template
 - ui.qt.text:text_readonly_view.actor-template
 - ui.qt.tree:tree_view.actor-template
@@ -293,3 +294,4 @@ definitions:
         view_creg:
         - ui.qt.label:label_view.actor-template
         - ui.qt.menu_bar:menu_bar_view.actor-template
+        - ui.qt.tabs:tabs_view.actor-template
