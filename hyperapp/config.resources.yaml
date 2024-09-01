@@ -76,6 +76,7 @@ import:
 - rc.ui_command_ctr:rc_constructors_ui_model_command.actor-template
 - rc.ui_command_ctr:rc_constructors_universal_ui_command.actor-template
 - rc.ui_command_ctr:rc_constructors_universal_ui_model_command.actor-template
+- rc.ui_command_marker:ui_command.marker-template
 - resource.data_to_res:data_to_ref.service
 - resource.data_to_res:data_to_res.service
 - resource.partial_ref:partial_ref.service
@@ -151,6 +152,7 @@ definitions:
         - rc.fixture_marker:fixture.marker-template
         - rc.model_marker:model.marker-template
         - rc.service_marker:service2.marker-template
+        - rc.ui_command_marker:ui_command.marker-template
         model_view_creg:
         - ui.qt.list:list_view.actor-template
         - ui.qt.text:text_edit_view.actor-template
