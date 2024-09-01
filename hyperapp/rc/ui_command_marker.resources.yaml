@@ -24,3 +24,16 @@ definitions:
       name: ui_command
       function: ui_command_marker
       service_params: []
+
+  ui_model_command_marker:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ui_command_marker.module
+      attr_name: ui_model_command_marker
+
+  ui_model_command.marker-template:
+    type: legacy_type.marker:marker_template
+    value:
+      name: ui_model_command
+      function: ui_model_command_marker
+      service_params: []

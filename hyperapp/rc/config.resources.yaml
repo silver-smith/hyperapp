@@ -67,6 +67,7 @@ import:
 - rc.test_requirement:test_target_tested_service_req.actor-template
 - rc.test_requirement:test_target_tested_service_resource.actor-template
 - rc.ui_command_marker:ui_command.marker-template
+- rc.ui_command_marker:ui_model_command.marker-template
 - rc.ui_command_ctr:rc_constructors_ui_command.actor-template
 - rc.ui_command_ctr:rc_constructors_ui_model_command.actor-template
 - rc.ui_command_ctr:rc_constructors_universal_ui_command.actor-template
@@ -166,6 +167,7 @@ definitions:
         - rc.service_marker:service2.marker-template
         - rc.fixture_marker:fixture.marker-template
         - rc.ui_command_marker:ui_command.marker-template
+        - rc.ui_command_marker:ui_model_command.marker-template
         peer_registry:
         - transport.rsa_identity:rsa_identity_rsa_peer.actor-template
         parcel_registry:
