@@ -1,6 +1,6 @@
 import inspect
 
-from .code.service_ctr import FixtureCtr
+from .code.fixture_ctr import FixtureCtr
 
 
 def fixture_marker(fn, module_name, ctr_collector):

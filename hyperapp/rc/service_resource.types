@@ -1,5 +1,3 @@
-from system import service_template
-
 
 service_req = record:
   service_name: string
@@ -16,27 +14,3 @@ service_probe_resource = record:
   service_name: string
   function: ref
   params: string list
-
-
-fixture_ctr = record:
-  module_name: string
-  attr_name: string
-  name: string
-  params: string list
-
-fixture_probe_resource = record:
-  service_name: string
-  function: ref
-  params: string list
-
-
-config_item_fixture_ctr = record:
-  module_name: string
-  attr_qual_name: string list
-  service_name: string
-  service_params: string list
-
-config_item_fixture_resource = record:
-  service_name: string
-  function: ref
-  service_params: string list

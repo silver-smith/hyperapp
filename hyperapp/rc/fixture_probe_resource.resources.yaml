@@ -1,0 +1,65 @@
+import:
+- builtins:mosaic.service
+- builtins:pyobj_creg.service
+- builtins:web.service
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.fixture_resource:config_item_fixture_resource
+- legacy_type.fixture_resource:fixture_probe_resource
+- legacy_type.system:actor_template
+- rc.rc_resource:rc_resource.module
+- rc.system_probe:system_probe.module
+
+definitions:
+
+  fixture_probe_resource.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: fixture_probe_resource
+      file_name: fixture_probe_resource.dyn.py
+      import_list:
+        htypes.fixture_resource.fixture_probe_resource: legacy_type.fixture_resource:fixture_probe_resource
+        htypes.fixture_resource.config_item_fixture_resource: legacy_type.fixture_resource:config_item_fixture_resource
+        services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        services.web: builtins:web.service
+        code.rc_resource: rc.rc_resource:rc_resource.module
+        code.system_probe: rc.system_probe:system_probe.module
+
+  FixtureProbeResource:
+    type: legacy_type.builtin:attribute
+    value:
+      object: fixture_probe_resource.module
+      attr_name: FixtureProbeResource
+
+  FixtureProbeResource.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: FixtureProbeResource
+      attr_name: from_piece
+
+  fixture_resource_fixture_probe_resource.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.fixture_resource:fixture_probe_resource
+      function: FixtureProbeResource.from_piece
+      service_params: []
+
+  ConfigItemFixtureResource:
+    type: legacy_type.builtin:attribute
+    value:
+      object: fixture_probe_resource.module
+      attr_name: ConfigItemFixtureResource
+
+  ConfigItemFixtureResource.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ConfigItemFixtureResource
+      attr_name: from_piece
+
+  fixture_resource_config_item_fixture_resource.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.fixture_resource:config_item_fixture_resource
+      function: ConfigItemFixtureResource.from_piece
+      service_params: []

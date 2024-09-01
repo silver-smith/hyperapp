@@ -1,6 +1,6 @@
 import inspect
 
-from .code.service_ctr import ConfigItemFixtureCtr
+from .code.fixture_ctr import ConfigItemFixtureCtr
 
 
 def config_item_fixture_marker(service_name, module_name, ctr_collector):

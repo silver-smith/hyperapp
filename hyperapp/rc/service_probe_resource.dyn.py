@@ -5,7 +5,7 @@ from .services import (
     web,
     )
 from .code.rc_resource import Resource
-from .code.system_probe import ConfigItemFixture, FixtureProbeTemplate, ServiceProbeTemplate
+from .code.system_probe import ServiceProbeTemplate
 
 
 class ServiceProbeResource(Resource):
@@ -33,53 +33,3 @@ class ServiceProbeResource(Resource):
         fn = pyobj_creg.animate(self._function)
         probe = ServiceProbeTemplate(self._attr_name, fn, self._params)
         system.update_config('system', {self._service_name: probe})
-
-
-class FixtureProbeResource(Resource):
-
-    @classmethod
-    def from_piece(cls, piece):
-        return cls(piece.service_name, web.summon(piece.function), piece.params)
-
-    def __init__(self, service_name, function, params):
-        self._service_name = service_name
-        self._function = function  # piece
-        self._params = params
-
-    @property
-    def piece(self):
-        return htypes.service_resource.fixture_probe_resource(
-            service_name=self._service_name,
-            function=mosaic.put(self._function),
-            params=tuple(self._params),
-            )
-
-    def configure_system(self, system):
-        fn = pyobj_creg.animate(self._function)
-        probe = FixtureProbeTemplate(fn, self._params)
-        system.update_config('system', {self._service_name: probe})
-
-
-class ConfigItemFixtureResource(Resource):
-
-    @classmethod
-    def from_piece(cls, piece):
-        return cls(piece.service_name, web.summon(piece.function), piece.service_params)
-
-    def __init__(self, service_name, function, service_params):
-        self._service_name = service_name
-        self._function = function  # piece
-        self._service_params = service_params
-
-    @property
-    def piece(self):
-        return htypes.service_resource.config_item_fixture_resource(
-            service_name=self._service_name,
-            function=mosaic.put(self._function),
-            service_params=tuple(self._service_params),
-            )
-
-    def configure_system(self, system):
-        fn = pyobj_creg.animate(self._function)
-        fixture = ConfigItemFixture(fn, self._service_params)
-        system.add_item_fixtures(self._service_name, [fixture])

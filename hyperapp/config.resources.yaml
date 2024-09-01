@@ -20,7 +20,11 @@ import:
 - rc.ctr_collector:ctr_collector.service
 - rc.feed_ctr:rc_constructors_index_tree_feed.actor-template
 - rc.feed_ctr:rc_constructors_list_feed.actor-template
+- rc.fixture_ctr:fixture_resource_config_item_fixture_ctr.actor-template
+- rc.fixture_ctr:fixture_resource_fixture_ctr.actor-template
 - rc.fixture_marker:fixture.marker-template
+- rc.fixture_probe_resource:fixture_resource_config_item_fixture_resource.actor-template
+- rc.fixture_probe_resource:fixture_resource_fixture_probe_resource.actor-template
 - rc.htest.sample_config:sample_config_service.service
 - rc.htest.sample_service_1:sample_fn_service_1.service
 - rc.htest.sample_service_1:sample_value_service_1.service
@@ -49,14 +53,10 @@ import:
 - rc.rc_resource_creg:rc_resource_creg.service
 - rc.service_ctr:rc_constructors_service.actor-template
 - rc.service_ctr:rc_constructors_service_template.actor-template
-- rc.service_ctr:service_resource_config_item_fixture_ctr.actor-template
-- rc.service_ctr:service_resource_fixture_ctr.actor-template
 - rc.service_ctr:service_resource_service_probe_ctr.actor-template
 - rc.service_ctr:system_finalizer_gen_service_template.actor-template
 - rc.service_ctr:system_service_template.actor-template
 - rc.service_marker:service2.marker-template
-- rc.service_probe_resource:service_resource_config_item_fixture_resource.actor-template
-- rc.service_probe_resource:service_resource_fixture_probe_resource.actor-template
 - rc.service_probe_resource:service_resource_service_probe_resource.actor-template
 - rc.service_resource:service_resource_service_req.actor-template
 - rc.service_target:service_service_complete_req.actor-template
@@ -167,11 +167,11 @@ definitions:
         - rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
         - rc.feed_ctr:rc_constructors_index_tree_feed.actor-template
         - rc.feed_ctr:rc_constructors_list_feed.actor-template
+        - rc.fixture_ctr:fixture_resource_config_item_fixture_ctr.actor-template
+        - rc.fixture_ctr:fixture_resource_fixture_ctr.actor-template
         - rc.model_ctr:rc_constructors_model.actor-template
         - rc.service_ctr:rc_constructors_service.actor-template
         - rc.service_ctr:rc_constructors_service_template.actor-template
-        - rc.service_ctr:service_resource_config_item_fixture_ctr.actor-template
-        - rc.service_ctr:service_resource_fixture_ctr.actor-template
         - rc.service_ctr:service_resource_service_probe_ctr.actor-template
         - rc.ui_command_ctr:rc_constructors_ui_command.actor-template
         - rc.ui_command_ctr:rc_constructors_ui_model_command.actor-template
@@ -199,9 +199,9 @@ definitions:
         rc_resource_creg:
         - rc.actor_probe_resource:actor_resource_actor_probe_resource.actor-template
         - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
+        - rc.fixture_probe_resource:fixture_resource_config_item_fixture_resource.actor-template
+        - rc.fixture_probe_resource:fixture_resource_fixture_probe_resource.actor-template
         - rc.import_resource:import_resource_import_resource.actor-template
-        - rc.service_probe_resource:service_resource_config_item_fixture_resource.actor-template
-        - rc.service_probe_resource:service_resource_fixture_probe_resource.actor-template
         - rc.service_probe_resource:service_resource_service_probe_resource.actor-template
         - rc.test_requirement:test_target_constructors_picker_resource.actor-template
         - rc.test_requirement:test_target_recorder_resource.actor-template
