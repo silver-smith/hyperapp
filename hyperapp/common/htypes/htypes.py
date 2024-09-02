@@ -29,6 +29,10 @@ class Type:
     def name(self):
         return self._name
 
+    @property
+    def full_name(self):
+        return f'{self.module_name}.{self.name}'
+
     def __instancecheck__(self, value):
         raise NotImplementedError(self.__class__)
 
