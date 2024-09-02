@@ -106,17 +106,19 @@ class FeedDiscoverer:
         self._constructor_added = True
 
 
-_piece_to_feed = {}
+@mark.fixture
+def feed_factory_fixture_cache():
+    return {}
 
 
 @mark.fixture
-def feed_factory(config, ctr_collector, piece):
+def feed_factory(config, ctr_collector, feed_factory_fixture_cache, piece):
     log.info("Discovered feed piece: %s", piece)
     try:
-        return _piece_to_feed[piece]
+        return feed_factory_fixture_cache[piece]
     except KeyError:
         pass
     piece_t = deduce_t(piece)
     feed = FeedDiscoverer(ctr_collector, piece_t)
-    _piece_to_feed[piece] = feed
+    feed_factory_fixture_cache[piece] = feed
     return feed
