@@ -287,6 +287,7 @@ class SystemProbe(System):
         self._config_item_fixtures = defaultdict(list)  # service_name -> fixture list
         self._resolved_templates = {}
         self._resolved_actors = {}
+        self._async_error = None  # (error message, exception) tuple
 
     def add_item_fixtures(self, service_name, fixture_list):
         self._config_item_fixtures[service_name] += fixture_list
@@ -297,8 +298,7 @@ class SystemProbe(System):
     def _run_service(self, service, args, kw):
         value = super()._run_service(service, args, kw)
         if inspect.iscoroutine(value):
-            log.info("Running coroutine: %r", value)
-            return asyncio.run(value)
+            self._run_async_coroutine(value)
 
     @property
     def resolved_templates(self):
@@ -324,3 +324,26 @@ class SystemProbe(System):
     def migrate_globals(self):
         for obj in self._globals:
             obj.migrate_to(self)
+
+    def _run_async_coroutine(self, coroutine):
+        runner = asyncio.Runner()
+        loop = runner.get_loop()
+        prev_handler = loop.get_exception_handler()
+        loop.set_exception_handler(self._asyncio_exception_handler)
+        try:
+            log.info("Running coroutine: %r", coroutine)
+            return runner.run(coroutine)
+        except TimeoutError:
+            self._check_async_error()
+        finally:
+            loop.set_exception_handler(prev_handler)
+        self._check_async_error()
+
+    def _check_async_error(self):
+        if not self._async_error:
+            return
+        error, origin = self._async_error
+        raise RuntimeError(f"{error}: {origin.__class__.__name__}: {origin}") from origin
+
+    def _asyncio_exception_handler(self, loop, context):
+        self._async_error = (context['message'], context['exception'])
