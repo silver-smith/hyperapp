@@ -114,6 +114,9 @@ import:
 - transport.rsa_identity:rsa_identity_rsa_signature.actor-template
 - transport.sync_route_table:route_table.service
 - transport.transport:transport.service
+- ui.feed:feed_factory.service
+- ui.feed:ui_index_tree_feed.actor-template
+- ui.feed:ui_list_feed.actor-template
 - ui.feed_creg:feed_creg.service
 - ui.model_command_impl_creg:model_command_impl_creg.service
 - ui.qt.fn_index_tree_adapter:tree_adapter_fn_index_tree_adapter.actor-template
@@ -149,6 +152,10 @@ definitions:
         - rc.marker_ctr:marker_marker_template.actor-template
         - rc.service_ctr:system_finalizer_gen_service_template.actor-template
         - rc.service_ctr:system_service_template.actor-template
+        feed_creg:
+        - ui.feed:ui_index_tree_feed.actor-template
+        - ui.feed:ui_list_feed.actor-template
+        feed_factory: []
         marker_registry:
         - rc.actor_marker:actor.marker-template
         - rc.config_item_marker:config_item_fixture.marker-template
@@ -274,6 +281,7 @@ definitions:
         - transport.rsa_identity:generate_rsa_identity.service
         - transport.sync_route_table:route_table.service
         - transport.transport:transport.service
+        - ui.feed:feed_factory.service
         - ui.feed_creg:feed_creg.service
         - ui.model_command_impl_creg:model_command_impl_creg.service
         - ui.ui_adapter_creg:ui_adapter_creg.service

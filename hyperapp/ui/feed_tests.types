@@ -1,4 +1,5 @@
-sample_feed = record
+sample_list_feed = record
+sample_index_tree_feed = record
 
 sample_item = record:
   attr: string

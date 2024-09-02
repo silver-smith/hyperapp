@@ -4,22 +4,29 @@ from .services import (
     pyobj_creg,
     )
 from .code.mark import mark
-from .tested.code import feed
+from .tested.code import feed as feed_module
 
 
 @mark.config_item_fixture('feed_factory')
 def feed_factory_config():
-    key = htypes.feed_tests.sample_feed
     element_t = pyobj_creg.actor_to_piece(htypes.feed_tests.sample_item)
-    value = htypes.ui.list_feed(
-        element_t=mosaic.put(element_t),
-        )
-    return {key: value}
+    return {
+        htypes.feed_tests.sample_list_feed: htypes.ui.list_feed(
+            element_t=mosaic.put(element_t),
+            ),
+        htypes.feed_tests.sample_index_tree_feed: htypes.ui.index_tree_feed(
+            element_t=mosaic.put(element_t),
+            ),
+        }
 
 
-def test_feed_factory(feed_factory):
-    piece = htypes.feed_tests.sample_feed()
-    list_feed = feed_factory(piece)
-    # TODO: Uncomment when feed_creg actors moved to new services.
-    # assert isinstance(list_feed, feed.ListFeed), repr(list_feed)
-    list_feed.__class__.__name__ == 'ListFeed'
+def test_list_feed_factory(feed_factory):
+    piece = htypes.feed_tests.sample_list_feed()
+    feed = feed_factory(piece)
+    assert isinstance(feed, feed_module.ListFeed), repr(feed)
+
+
+def test_index_tree_feed_factory(feed_factory):
+    piece = htypes.feed_tests.sample_index_tree_feed()
+    feed = feed_factory(piece)
+    assert isinstance(feed, feed_module.IndexTreeFeed), repr(feed)

@@ -1,13 +1,9 @@
 import logging
 import weakref
 
-from hyperapp.common.htypes.deduce_value_type import deduce_value_type
-
 from . import htypes
 from .services import (
-    association_reg,
-    data_to_res,
-    feed_creg,
+    deduce_t,
     pyobj_creg,
     )
 from .code.mark import mark
@@ -41,18 +37,18 @@ class IndexTreeFeed(Feed):
     pass
 
 
-@feed_creg.actor(htypes.ui.list_feed)
+@mark.actor.feed_creg(htypes.ui.list_feed)
 def list_feed_from_piece(piece):
     return ListFeed.from_piece(piece)
 
 
-@feed_creg.actor(htypes.ui.index_tree_feed)
+@mark.actor.feed_creg(htypes.ui.index_tree_feed)
 def index_tree_feed_from_piece(piece):
     return IndexTreeFeed.from_piece(piece)
 
 
 @mark.service2
-def feed_factory(config, piece):
-    piece_t = deduce_value_type(piece)
+def feed_factory(config, feed_creg, piece):
+    piece_t = deduce_t(piece)
     feed_type = config[piece_t]
     return feed_creg.animate(feed_type)
