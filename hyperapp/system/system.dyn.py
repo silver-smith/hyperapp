@@ -1,7 +1,10 @@
 import inspect
 import logging
 from collections import defaultdict
+from dataclasses import dataclass
 from functools import partial
+
+from hyperapp.common.htypes import Type
 
 from . import htypes
 from .services import (
@@ -17,6 +20,15 @@ class UnknownServiceError(Exception):
     def __init__(self, service_name):
         super().__init__(f"Unknown service: {service_name!r}")
         self.service_name = service_name
+
+
+@dataclass
+class ActorRequester:
+
+    actor_t: Type
+
+    def __str__(self):
+        return f"Actor {self.actor_t.full_name}"
 
 
 class ServiceTemplateBase:
@@ -147,7 +159,7 @@ class ActorTemplate:
         if not self._service_params:
             return self._fn
         service_kw = {
-            name: system.resolve_service(name)
+            name: system.resolve_service(name, requester=ActorRequester(self.t))
             for name in self._service_params
             }
         return partial(self._fn, **service_kw)
@@ -218,6 +230,7 @@ class System:
         self._configs = defaultdict(dict)
         self._name_to_template = self._configs['system']
         self._name_to_service = {}
+        self._resolve_stack = {}  # service name -> requester
         self._finalizers = {}  # service name -> fn
         self._init()
 
@@ -277,7 +290,7 @@ class System:
             config[key] = template.resolve(self, service_name)
         return config
 
-    def resolve_service(self, name):
+    def resolve_service(self, name, requester=None):
         try:
             return self._name_to_service[name]
         except KeyError:
@@ -286,9 +299,27 @@ class System:
             template = self._name_to_template[name]
         except KeyError:
             self._raise_missing_service(name)
-        service = template.resolve(self, name)
+        if name in self._resolve_stack:
+            self._raise_service_loop(name, requester)
+        self._resolve_stack[name] = requester
+        try:
+            service = template.resolve(self, name)
+        finally:
+            self._resolve_stack.popitem()
         self._name_to_service[name] = service
         return service
+
+    def _raise_service_loop(self, name, requester):
+        stack = [
+            *self._resolve_stack.items(),
+            (name, requester),
+            ]
+        svc_list = [
+            f"{req} -> {name}" if req else name
+            for name, req in stack
+            ]
+        loop = " -> ".join(svc_list)
+        raise RuntimeError(f"Service dependency loop: {loop}")
 
     def add_finalizer(self, service_name, finalizer):
         self._finalizers[service_name] = finalizer
