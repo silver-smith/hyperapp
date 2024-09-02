@@ -22,6 +22,10 @@ class UnknownServiceError(Exception):
         self.service_name = service_name
 
 
+class ServiceDepLoopError(Exception):
+    pass
+
+
 @dataclass
 class ActorRequester:
 
@@ -222,6 +226,25 @@ class ActorTemplateCfg:
         return self.value.piece
 
 
+class LazyConfig:
+
+    def __init__(self, system, service_name, unresolved_config):
+        self._system = system
+        self._service_name = service_name
+        self._unresolved_config = unresolved_config  # key -> template
+        self._resolved_config = {}
+
+    def __getitem__(self, key):
+        try:
+            return self._resolved_config[key]
+        except KeyError:
+            pass
+        template = self._unresolved_config[key]
+        value = template.resolve(self._system, self._service_name)
+        self._resolved_config[key] = value
+        return value
+
+    
 class System:
 
     _system_name = "System"
@@ -285,9 +308,13 @@ class System:
         return service(*args, **kw)
 
     def resolve_config(self, service_name):
+        unresolved_config = self._configs.get(service_name, {})
         config = {}
-        for key, template in self._configs.get(service_name, {}).items():
-            config[key] = template.resolve(self, service_name)
+        for key, template in unresolved_config.items():
+            try:
+                config[key] = template.resolve(self, service_name)
+            except ServiceDepLoopError:
+                return LazyConfig(self, service_name, unresolved_config)
         return config
 
     def resolve_service(self, name, requester=None):
@@ -319,7 +346,7 @@ class System:
             for name, req in stack
             ]
         loop = " -> ".join(svc_list)
-        raise RuntimeError(f"Service dependency loop: {loop}")
+        raise ServiceDepLoopError(f"Service dependency loop: {loop}")
 
     def add_finalizer(self, service_name, finalizer):
         self._finalizers[service_name] = finalizer
