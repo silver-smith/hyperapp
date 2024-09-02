@@ -205,6 +205,14 @@ class Probe:
         service = self._apply(self._params)
         return getattr(service, name)
 
+    def __getitem__(self, key):
+        service = self._apply(self._params)
+        return service[key]
+
+    def __setitem__(self, key, value):
+        service = self._apply(self._params)
+        service[key] = value
+
     def __iter__(self):
         service = self._apply(self._params)
         return iter(service)
