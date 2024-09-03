@@ -6,6 +6,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from functools import partial
 
+from .services import pyobj_creg
 from .code.system import System
 
 log = logging.getLogger(__name__)
@@ -38,41 +39,43 @@ class ActorRec:
 
 class ServiceProbeTemplate:
 
-    def __init__(self, attr_name, fn, params):
-        self.attr_name = attr_name
-        self.fn = fn
-        self.params = params
+    def __init__(self, attr_name, fn_piece, params):
+        self._attr_name = attr_name
+        self._fn = fn_piece
+        self._params = params
 
     def __repr__(self):
-        return f"<ServiceProbeTemplate {self.attr_name} {self.fn} {self.params}>"
+        return f"<ServiceProbeTemplate {self._attr_name} {self._fn} {self._params}>"
 
     def resolve(self, system, service_name):
-        probe = ServiceProbe(system, self.attr_name, service_name, self.fn, self.params)
+        fn = pyobj_creg.animate(self._fn)
+        probe = ServiceProbe(system, self._attr_name, service_name, fn, self._params)
         probe.apply_if_no_params()
         return probe
 
 
 class ActorProbeTemplate:
 
-    def __init__(self, module_name, attr_qual_name, service_name, t, fn, params):
+    def __init__(self, module_name, attr_qual_name, service_name, t, fn_piece, params):
         self._module_name = module_name
         self._attr_qual_name = attr_qual_name
         self._service_name = service_name
         self._t = t
-        self._fn = fn
+        self._fn = fn_piece
         self._params = params
 
     def __repr__(self):
         return f"<ActorProbeTemplate {self._module_name}/{self._attr_qual_name}/{self._t}: {self._fn} {self._params}>"
 
     def resolve(self, system, service_name):
+        fn = pyobj_creg.animate(self._fn)
         return ActorProbe(
             module_name=self._module_name,
             system_probe=system,
             attr_qual_name=self._attr_qual_name,
             service_name=self._service_name,
             t=self._t,
-            fn=self._fn,
+            fn=fn,
             params=self._params,
             )
 
@@ -121,15 +124,16 @@ class ActorProbe:
 
 class FixtureProbeTemplate:
 
-    def __init__(self, fn, params):
-        self.fn = fn
-        self.params = params
+    def __init__(self, fn_piece, params):
+        self._fn = fn_piece
+        self._params = params
 
     def __repr__(self):
-        return f"<FixtureProbeTemplate {self.fn} {self.params}>"
+        return f"<FixtureProbeTemplate {self._fn} {self._params}>"
 
     def resolve(self, system, service_name):
-        probe = FixtureProbe(system, service_name, self.fn, self.params)
+        fn = pyobj_creg.animate(self._fn)
+        probe = FixtureProbe(system, service_name, fn, self._params)
         probe.apply_if_no_params()
         return probe
 
@@ -160,21 +164,22 @@ class ConfigProbe:
 
 class ConfigItemFixture:
 
-    def __init__(self, fn, service_params):
-        self._fn = fn
+    def __init__(self, fn_piece, service_params):
+        self._fn = fn_piece
         self._service_params = service_params
 
     def __repr__(self):
         return f"<ConfigItemFixture {self._fn} {self._service_params}>"
 
     def resolve(self, system):
+        fn = pyobj_creg.animate(self._fn)
         service_args = [
             system.resolve_service(name)
             for name in self._service_params
             ]
-        config = self._fn(*service_args)
+        config = fn(*service_args)
         if not isinstance(config, dict):
-            raise RuntimeError(f"Config item fixture should return a key->value dict ({self._fn}): {config!r}")
+            raise RuntimeError(f"Config item fixture should return a key->value dict ({fn}): {config!r}")
         return config
 
 

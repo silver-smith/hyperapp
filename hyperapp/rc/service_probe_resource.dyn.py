@@ -1,7 +1,6 @@
 from . import htypes
 from .services import (
     mosaic,
-    pyobj_creg,
     web,
     )
 from .code.rc_resource import Resource
@@ -30,6 +29,5 @@ class ServiceProbeResource(Resource):
             )
 
     def configure_system(self, system):
-        fn = pyobj_creg.animate(self._function)
-        probe = ServiceProbeTemplate(self._attr_name, fn, self._params)
+        probe = ServiceProbeTemplate(self._attr_name, self._function, self._params)
         system.update_config('system', {self._service_name: probe})

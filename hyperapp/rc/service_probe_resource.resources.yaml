@@ -1,6 +1,5 @@
 import:
 - builtins:mosaic.service
-- builtins:pyobj_creg.service
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
@@ -19,7 +18,6 @@ definitions:
       import_list:
         htypes.service_resource.service_probe_resource: legacy_type.service_resource:service_probe_resource
         services.mosaic: builtins:mosaic.service
-        services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
         code.rc_resource: rc.rc_resource:rc_resource.module
         code.system_probe: rc.system_probe:system_probe.module

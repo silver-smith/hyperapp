@@ -161,7 +161,7 @@ class TestJob(SystemJob):
         ctr_collector.init_markers()
         status, error_msg, traceback, module = self._import_module(module_piece)
         if status == JobStatus.ok:
-            root_probe = self._make_root_fixture(module)
+            root_probe = self._make_root_fixture(module_piece, module)
             system.update_config('system', {self._root_name: root_probe})
             status, error_msg, traceback, req_set = self._run_system(system)
         else:
@@ -202,10 +202,14 @@ class TestJob(SystemJob):
     def _root_name(self):
         return self._test_fn_name
 
-    def _make_root_fixture(self, module):
+    def _make_root_fixture(self, module_piece, module):
         test_fn = getattr(module, self._test_fn_name)
         params = tuple(inspect.signature(test_fn).parameters)
-        return FixtureProbeTemplate(test_fn, params)
+        test_fn_piece = htypes.builtin.attribute(
+            object=mosaic.put(module_piece),
+            attr_name=self._test_fn_name,
+            )
+        return FixtureProbeTemplate(test_fn_piece, params)
 
     def _run_system(self, system):
         try:

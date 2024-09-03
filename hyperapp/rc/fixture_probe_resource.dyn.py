@@ -1,7 +1,6 @@
 from . import htypes
 from .services import (
     mosaic,
-    pyobj_creg,
     web,
     )
 from .code.rc_resource import Resource
@@ -28,8 +27,7 @@ class FixtureProbeResource(Resource):
             )
 
     def configure_system(self, system):
-        fn = pyobj_creg.animate(self._function)
-        probe = FixtureProbeTemplate(fn, self._params)
+        probe = FixtureProbeTemplate(self._function, self._params)
         system.update_config('system', {self._service_name: probe})
 
 
@@ -53,6 +51,5 @@ class ConfigItemFixtureResource(Resource):
             )
 
     def configure_system(self, system):
-        fn = pyobj_creg.animate(self._function)
-        fixture = ConfigItemFixture(fn, self._service_params)
+        fixture = ConfigItemFixture(self._function, self._service_params)
         system.add_item_fixtures(self._service_name, [fixture])

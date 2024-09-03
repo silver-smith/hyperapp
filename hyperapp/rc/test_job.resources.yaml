@@ -32,6 +32,7 @@ definitions:
       module_name: test_job
       file_name: test_job.dyn.py
       import_list:
+        htypes.builtin.attribute: legacy_type.builtin:attribute
         htypes.builtin.python_module: legacy_type.builtin:python_module
         htypes.test_job.failed_result: legacy_type.test_job:failed_result
         htypes.test_job.job: legacy_type.test_job:job

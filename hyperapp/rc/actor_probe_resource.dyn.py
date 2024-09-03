@@ -42,7 +42,6 @@ class ActorProbeResource(Resource):
             )
 
     def configure_system(self, system):
-        fn = pyobj_creg.animate(self._function)
         probe = ActorProbeTemplate(
-            self._module_name, self._attr_qual_name, self._service_name, self._t, fn, self._params)
+            self._module_name, self._attr_qual_name, self._service_name, self._t, self._function, self._params)
         system.update_config(self._service_name, {self._t: probe})
