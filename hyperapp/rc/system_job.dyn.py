@@ -5,7 +5,7 @@ from .services import (
     )
 from .code.actor_ctr import ActorTemplateCtr
 from .code.service_ctr import ServiceTemplateCtr
-from .code.system_probe import ConfigItemRequiredError, FixtureProbeTemplate, SystemProbe
+from .code.system_probe import SystemProbe
 
 log = logging.getLogger(__name__)
 
