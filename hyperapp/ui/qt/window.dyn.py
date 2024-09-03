@@ -5,11 +5,10 @@ from PySide6 import QtWidgets
 
 from . import htypes
 from .services import (
-    mark,
     mosaic,
-    view_creg,
     web,
     )
+from .code.mark import mark
 from .code.view import Item, View
 
 log = logging.getLogger(__name__)
@@ -20,7 +19,8 @@ DUP_OFFSET = htypes.window.pos(150, 50)
 class WindowView(View):
 
     @classmethod
-    def from_piece(cls, piece, ctx):
+    @mark.actor.view_creg
+    def from_piece(cls, piece, ctx, view_creg):
         menu_bar_view = view_creg.invite(piece.menu_bar_ref, ctx)
         central_view = view_creg.invite(piece.central_view_ref, ctx)
         return cls(menu_bar_view, central_view)
