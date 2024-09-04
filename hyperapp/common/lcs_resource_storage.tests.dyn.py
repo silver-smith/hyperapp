@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from . import htypes
@@ -15,7 +16,8 @@ from .tested.code import lcs_resource_storage
 
 @mark.fixture
 def path():
-    path = Path('/tmp/lcs-storage-test.yaml')
+    pid = os.getpid()
+    path = Path(f'/tmp/lcs-storage-test-{pid}.yaml')
     try:
         path.unlink()
     except FileNotFoundError:
