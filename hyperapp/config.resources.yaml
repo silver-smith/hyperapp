@@ -131,6 +131,7 @@ import:
 - ui.qt.text:text_edit_view.actor-template
 - ui.qt.text:text_readonly_view.actor-template
 - ui.qt.tree:tree_view.actor-template
+- ui.qt.window:window_view.actor-template
 - ui.str_adapter:str_adapter_static_str_adapter.actor-template
 - ui.ui_adapter_creg:ui_adapter_creg.service
 - ui.ui_command_impl_creg:ui_command_impl_creg.service
@@ -155,7 +156,6 @@ definitions:
         feed_creg:
         - ui.feed:ui_index_tree_feed.actor-template
         - ui.feed:ui_list_feed.actor-template
-        feed_factory: []
         marker_registry:
         - rc.actor_marker:actor.marker-template
         - rc.config_item_marker:config_item_fixture.marker-template
@@ -303,3 +303,4 @@ definitions:
         - ui.qt.label:label_view.actor-template
         - ui.qt.menu_bar:menu_bar_view.actor-template
         - ui.qt.tabs:tabs_view.actor-template
+        - ui.qt.window:window_view.actor-template
