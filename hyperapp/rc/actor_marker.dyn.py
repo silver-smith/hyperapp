@@ -24,27 +24,6 @@ def _fn_params(fn):
         return params
 
 
-class ServiceActorWrapper:
-
-    def __init__(self, ctr_collector, module_name, service_name, t):
-        self._ctr_collector = ctr_collector
-        self._module_name = module_name
-        self._service_name = service_name
-        self._t = t
-
-    def __call__(self, fn):
-        qual_name = fn.__qualname__.split('.')
-        params = _fn_params(fn)
-        ctr = ActorProbeCtr(
-            attr_qual_name=qual_name,
-            service_name=self._service_name,
-            t=self._t,
-            params=params,
-            )
-        self._ctr_collector.add_constructor(ctr)
-        return fn
-
-
 class ServiceActorProbe:
 
     def __init__(self, system_probe, ctr_collector, module_name, service_name, fn):
@@ -97,6 +76,27 @@ class ServiceActorProbe:
             service_params=service_params,
             )
         self._ctr_collector.add_constructor(ctr)
+
+
+class ServiceActorWrapper:
+
+    def __init__(self, ctr_collector, module_name, service_name, t):
+        self._ctr_collector = ctr_collector
+        self._module_name = module_name
+        self._service_name = service_name
+        self._t = t
+
+    def __call__(self, fn):
+        qual_name = fn.__qualname__.split('.')
+        params = _fn_params(fn)
+        ctr = ActorProbeCtr(
+            attr_qual_name=qual_name,
+            service_name=self._service_name,
+            t=self._t,
+            params=params,
+            )
+        self._ctr_collector.add_constructor(ctr)
+        return fn
 
 
 class ServiceActorMarker:
