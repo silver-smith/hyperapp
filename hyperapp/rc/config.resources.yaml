@@ -15,6 +15,7 @@ import:
 - rc.actor_resource:actor_resource_actor_req.actor-template
 - rc.ctr_collector:ctr_collector.service
 - rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
+- rc.command_ctr:command_resource_command_template_ctr.actor-template
 - rc.config_item_marker:config_item_fixture.marker-template
 - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
 - rc.feed_ctr:rc_constructors_list_feed.actor-template
@@ -187,6 +188,7 @@ definitions:
         - rc.actor_ctr:actor_resource_actor_probe_ctr.actor-template
         - rc.actor_ctr:actor_resource_actor_template_ctr.actor-template
         - rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
+        - rc.command_ctr:command_resource_command_template_ctr.actor-template
         - rc.feed_ctr:rc_constructors_list_feed.actor-template
         - rc.feed_ctr:rc_constructors_index_tree_feed.actor-template
         - rc.fixture_ctr:fixture_resource_fixture_ctr.actor-template

@@ -1,0 +1,3 @@
+from actor_resource import actor_template_ctr
+
+command_template_ctr = record(actor_template_ctr)

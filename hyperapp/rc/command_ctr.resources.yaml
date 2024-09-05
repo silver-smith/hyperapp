@@ -1,0 +1,37 @@
+import:
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.command_resource:command_template_ctr
+- legacy_type.marker:marker_template
+- legacy_type.system:actor_template
+- rc.actor_ctr:actor_ctr.module
+
+definitions:
+
+  command_ctr.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: command_ctr
+      file_name: command_ctr.dyn.py
+      import_list:
+        htypes.command_resource.command_template_ctr: legacy_type.command_resource:command_template_ctr
+        code.actor_ctr: rc.actor_ctr:actor_ctr.module
+
+  CommandTemplateCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: command_ctr.module
+      attr_name: CommandTemplateCtr
+
+  CommandTemplateCtr.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: CommandTemplateCtr
+      attr_name: from_piece
+
+  command_resource_command_template_ctr.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command_resource:command_template_ctr
+      function: CommandTemplateCtr.from_piece
+      service_params: []

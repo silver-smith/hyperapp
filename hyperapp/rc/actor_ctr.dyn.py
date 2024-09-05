@@ -67,10 +67,10 @@ class ActorTemplateCtrBase(Constructor):
         self._t = t
 
     def get_component(self, name_to_res):
-        return name_to_res[f'{self._type_name}.actor-template']
+        return name_to_res[f'{self._resource_name}.actor-template']
 
     @property
-    def _type_name(self):
+    def _resource_name(self):
         return f'{self._t.module_name}_{self._t.name}'
 
 
@@ -85,16 +85,7 @@ class CoreActorTemplateCtr(ActorTemplateCtrBase):
 
 class ActorTemplateCtr(ActorTemplateCtrBase):
 
-    @classmethod
-    def from_rec(cls, service_name, t, rec):
-        return cls(
-            module_name=rec.module_name,
-            attr_qual_name=rec.attr_qual_name,
-            service_name=service_name,
-            t=t,
-            creg_params=rec.creg_params,
-            service_params=rec.service_params,
-            )
+    _piece_t = htypes.actor_resource.actor_template_ctr
 
     @classmethod
     def from_piece(cls, piece):
@@ -117,7 +108,7 @@ class ActorTemplateCtr(ActorTemplateCtrBase):
 
     @property
     def piece(self):
-        return htypes.actor_resource.actor_template_ctr(
+        return self._piece_t(
             module_name=self._module_name,
             attr_qual_name=tuple(self._attr_qual_name),
             service_name=self._service_name,
@@ -130,12 +121,12 @@ class ActorTemplateCtr(ActorTemplateCtrBase):
         resource_tgt = target_set.factory.python_module_resource_by_module_name(self._module_name)
         # ready target may already have provider set, but in case of
         # non-typed marker it have not.
-        ready_tgt = target_set.factory.config_item_ready(self._service_name, self._type_name)
+        ready_tgt = target_set.factory.config_item_ready(self._service_name, self._resource_name)
         ready_tgt.set_provider(resource_tgt, target_set)
-        resolved_tgt = target_set.factory.config_item_resolved(self._service_name, self._type_name)
+        resolved_tgt = target_set.factory.config_item_resolved(self._service_name, self._resource_name)
         resolved_tgt.resolve(self)
         # Should be created to be added to config resource.
-        _ = target_set.factory.config_item_complete(self._service_name, self._type_name)
+        _ = target_set.factory.config_item_complete(self._service_name, self._resource_name)
         # resource target may already have resolved target, but in case of
         # non-typed marker it have not.
         resource_tgt.add_cfg_item_target(resolved_tgt)
@@ -159,5 +150,5 @@ class ActorTemplateCtr(ActorTemplateCtrBase):
             service_params=tuple(self._service_params),
             )
         if name_to_res is not None:
-            name_to_res[f'{self._type_name}.actor-template'] = template
+            name_to_res[f'{self._resource_name}.actor-template'] = template
         return template
