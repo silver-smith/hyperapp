@@ -12,8 +12,8 @@ log = logging.getLogger(__name__)
 
 class RemoteFnListAdapter(FnListAdapterBase):
 
-    @mark.actor.ui_adapter_creg(htypes.list_adapter.remote_fn_list_adapter)
     @classmethod
+    @mark.actor.ui_adapter_creg(htypes.list_adapter.remote_fn_list_adapter)
     def from_piece(cls, piece, model, ctx, peer_registry, rpc_call_factory, feed_factory):
         element_t = pyobj_creg.invite(piece.element_t)
         remote_peer = peer_registry.invite(piece.remote_peer)

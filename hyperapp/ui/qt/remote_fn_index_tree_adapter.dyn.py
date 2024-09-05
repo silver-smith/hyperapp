@@ -8,8 +8,8 @@ from .code.tree_adapter import FnIndexTreeAdapterBase
 
 class RemoteFnIndexTreeAdapter(FnIndexTreeAdapterBase):
 
-    @mark.actor.ui_adapter_creg(htypes.tree_adapter.remote_fn_index_tree_adapter)
     @classmethod
+    @mark.actor.ui_adapter_creg(htypes.tree_adapter.remote_fn_index_tree_adapter)
     def from_piece(cls, piece, model, ctx, feed_factory, peer_registry, rpc_call_factory):
         element_t = pyobj_creg.invite(piece.element_t)
         remote_peer = peer_registry.invite(piece.remote_peer)

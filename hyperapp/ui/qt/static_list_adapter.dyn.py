@@ -14,8 +14,8 @@ log = logging.getLogger(__name__)
 
 class StaticListAdapter(ListAdapterBase):
 
-    @mark.actor.ui_adapter_creg(htypes.list_adapter.static_list_adapter)
     @classmethod
+    @mark.actor.ui_adapter_creg(htypes.list_adapter.static_list_adapter)
     def from_piece(cls, piece, model, ctx):
         list_t = deduce_t(model)
         assert isinstance(list_t, TList), repr(list_t)

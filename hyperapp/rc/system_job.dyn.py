@@ -3,7 +3,6 @@ import logging
 from .services import (
     mosaic,
     )
-from .code.actor_ctr import ActorTemplateCtr
 from .code.service_ctr import ServiceTemplateCtr
 from .code.system_probe import SystemProbe
 
@@ -32,10 +31,6 @@ class SystemJob:
         for name, rec in system.resolved_templates.items():
             log.info("Resolved service %s: %s", name, rec)
             ctr = ServiceTemplateCtr.from_rec(name, rec)
-            yield mosaic.put(ctr.piece)
-        for (service_name, t), rec in system.resolved_actors.items():
-            log.info("Resolved actor %s.%s: %s", service_name, t, rec)
-            ctr = ActorTemplateCtr.from_rec(service_name, t, rec)
             yield mosaic.put(ctr.piece)
         for ctr in ctr_collector.constructors:
             yield mosaic.put(ctr.piece)

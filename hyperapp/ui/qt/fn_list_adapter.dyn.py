@@ -12,8 +12,8 @@ log = logging.getLogger(__name__)
 
 class FnListAdapter(FnListAdapterBase):
 
-    @mark.actor.ui_adapter_creg(htypes.list_adapter.fn_list_adapter)
     @classmethod
+    @mark.actor.ui_adapter_creg(htypes.list_adapter.fn_list_adapter)
     def from_piece(cls, piece, model, ctx, rpc_call_factory, feed_factory):
         element_t = pyobj_creg.invite(piece.element_t)
         fn = pyobj_creg.invite(piece.function)

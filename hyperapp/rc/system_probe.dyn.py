@@ -68,58 +68,7 @@ class ActorProbeTemplate:
         return f"<ActorProbeTemplate {self._module_name}/{self._attr_qual_name}/{self._t}: {self._fn} {self._params}>"
 
     def resolve(self, system, service_name):
-        fn = pyobj_creg.animate(self._fn)
-        return ActorProbe(
-            module_name=self._module_name,
-            system_probe=system,
-            attr_qual_name=self._attr_qual_name,
-            service_name=self._service_name,
-            t=self._t,
-            fn=fn,
-            params=self._params,
-            )
-
-
-class ActorProbe:
-
-    def __init__(self, system_probe, module_name, attr_qual_name, service_name, t, fn, params):
-        self._system = system_probe
-        self._module_name = module_name
-        self._attr_qual_name = attr_qual_name
-        self._service_name = service_name
-        self._t = t
-        self._fn = fn
-        self._params = params
-
-    def __repr__(self):
-        return f"<ActorProbe {self._module_name}/{self._attr_qual_name}/{self._t}: {self._fn} {self._params}>"
-
-    def __call__(self, *args, **kw):
-        creg_param_count = len(args) + len(kw)
-        service_params = self._params[creg_param_count:]
-        return self._apply(service_params, *args, **kw)
-
-    def _apply(self, service_params, *args, **kw):
-        self._add_resolved_actor(service_params)
-        service_kw = {
-            name: self._system.resolve_service(name)
-            for name in service_params
-            }
-        return self._fn(*args, **kw, **service_kw)
-
-    def _add_resolved_actor(self, service_params):
-        service_params_count = len(service_params)
-        if service_params_count:
-            creg_params = self._params[:-service_params_count]
-        else:
-            creg_params = self._params
-        rec = ActorRec(
-            module_name=self._module_name,
-            attr_qual_name=self._attr_qual_name,
-            creg_params=creg_params,
-            service_params=service_params,
-            )
-        self._system.add_resolved_actor(self._service_name, self._t, rec)
+        return pyobj_creg.animate(self._fn)
 
 
 class FixtureProbeTemplate:
@@ -299,7 +248,6 @@ class SystemProbe(System):
         super().__init__()
         self._config_item_fixtures = defaultdict(list)  # service_name -> fixture list
         self._resolved_templates = {}
-        self._resolved_actors = {}
         self._async_error = None  # (error message, exception) tuple
 
     def add_item_fixtures(self, service_name, fixture_list):
@@ -317,10 +265,6 @@ class SystemProbe(System):
     def resolved_templates(self):
         return self._resolved_templates
 
-    @property
-    def resolved_actors(self):
-        return self._resolved_actors
-
     def resolve_config(self, service_name):
         config = super().resolve_config(service_name)
         for fixture in self._config_item_fixtures.get(service_name, []):
@@ -330,9 +274,6 @@ class SystemProbe(System):
 
     def add_resolved_template(self, name, service):
         self._resolved_templates[name] = service
-
-    def add_resolved_actor(self, service_name, t, rec):
-        self._resolved_actors[service_name, t] = rec
 
     def migrate_globals(self):
         for obj in self._globals:
