@@ -34,18 +34,18 @@ def _is_cls_arg(fn, arg):
 
 
 def _fn_params(fn):
-    params = list(inspect.signature(fn).parameters)
-    return params
+    return list(inspect.signature(fn).parameters)
 
 
 class ServiceActorProbe:
 
-    def __init__(self, system_probe, ctr_collector, module_name, service_name, fn):
+    def __init__(self, system_probe, ctr_collector, module_name, service_name, fn, t=None):
         self._system = system_probe
         self._ctr_collector = ctr_collector
         self._module_name = module_name
         self._service_name = service_name
         self._fn = fn
+        self._t = t
         system_probe.add_global(self)
 
     def migrate_to(self, system_probe):
@@ -53,7 +53,7 @@ class ServiceActorProbe:
         self._ctr_collector = system_probe.resolve_service('ctr_collector')
 
     def __call__(self, *args, **kw):
-        params = list(inspect.signature(self._fn).parameters)
+        params = _fn_params(self._fn)
         piece_param_ofs = 0
         if args and _is_cls_arg(self._fn, args[0]):
             # self._fn is a classmethod and args[0] is a 'cls' argument.
@@ -64,7 +64,10 @@ class ServiceActorProbe:
         creg_param_count = len(args) - piece_param_ofs - 1 + len(kw)
         creg_params = params[piece_param_ofs + 1:creg_param_count + piece_param_ofs + 1]
         service_params = params[creg_param_count + piece_param_ofs + 1:]
-        t = deduce_t(piece)
+        if self._t is None:
+            t = deduce_t(piece)
+        else:
+            t = self._t
         self._add_constructor(t, creg_params, service_params)
         service_kw = {
             name: self._system.resolve_service(name)
@@ -105,7 +108,7 @@ class ServiceActorWrapper:
             params=params,
             )
         self._ctr_collector.add_constructor(ctr)
-        return ServiceActorProbe(self._system, self._ctr_collector, self._module_name, self._service_name, fn)
+        return ServiceActorProbe(self._system, self._ctr_collector, self._module_name, self._service_name, fn, self._t)
 
 
 class ServiceActorMarker:
