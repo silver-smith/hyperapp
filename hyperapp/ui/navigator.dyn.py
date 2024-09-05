@@ -1,17 +1,14 @@
 import logging
 import weakref
 from collections import namedtuple
-from functools import partial
 
 from . import htypes
 from .services import (
     deduce_t,
-    mark,
     mosaic,
-    model_view_creg,
-    set_model_layout,
     web,
     )
+from .code.mark import mark
 from .code.view import Item, View
 
 log = logging.getLogger(__name__)
@@ -23,14 +20,16 @@ _NavigatorRec = namedtuple('_NavigatorRec', 'view state widget_wr hook')
 class NavigatorView(View):
 
     @classmethod
-    def from_piece(cls, piece, ctx):
+    @mark.actor.view_creg
+    def from_piece(cls, piece, ctx, model_view_creg, set_custom_layout):
         lcs = ctx.lcs
         model = web.summon(piece.current_model)
         current_view = model_view_creg.invite(piece.current_view, model, ctx)
-        return cls(lcs, current_view, model, piece.prev, piece.next)
+        return cls(set_custom_layout, lcs, current_view, model, piece.prev, piece.next)
 
-    def __init__(self, lcs, current_view, model, prev, next):
+    def __init__(self, set_custom_layout, lcs, current_view, model, prev, next):
         super().__init__()
+        self._set_custom_layout = set_custom_layout
         self._lcs = lcs
         self._current_view = current_view
         self._model = model  # piece
@@ -86,7 +85,7 @@ class NavigatorView(View):
         state = None  # TODO: Devise new state.
         self._replace_widget(ctx, state)
 
-    def go_back(self, ctx, widget):
+    def go_back(self, ctx, widget, model_view_creg):
         if not self._prev:
             return
         history_rec = self._history_rec(widget)
@@ -99,7 +98,7 @@ class NavigatorView(View):
         self._next = mosaic.put(history_rec)
         self._replace_widget(ctx, prev_state)
 
-    def go_forward(self, ctx, widget):
+    def go_forward(self, ctx, widget, model_view_creg):
         if not self._next:
             return
         history_rec = self._history_rec(widget)
@@ -114,7 +113,7 @@ class NavigatorView(View):
 
     def _set_layout(self, layout):
         t = deduce_t(self._model)
-        set_model_layout(self._lcs, t, layout)
+        self._set_custom_layout(self._lcs, t, layout)
 
     def replace_child(self, ctx, widget, idx, new_child_view, new_child_widget):
         assert idx == 0
@@ -133,10 +132,10 @@ class NavigatorView(View):
 
 
 @mark.ui_command(htypes.navigator.view)
-def go_back(view, widget, ctx):
-    view.go_back(ctx, widget)
+def go_back(view, widget, ctx, model_view_creg):
+    view.go_back(ctx, widget, model_view_creg)
 
 
 @mark.ui_command(htypes.navigator.view)
-def go_forward(view, widget, ctx):
-    view.go_forward(ctx, widget)
+def go_forward(view, widget, ctx, model_view_creg):
+    view.go_forward(ctx, widget, model_view_creg)

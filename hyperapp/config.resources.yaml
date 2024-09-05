@@ -120,6 +120,9 @@ import:
 - ui.feed:ui_list_feed.actor-template
 - ui.feed_creg:feed_creg.service
 - ui.model_command_impl_creg:model_command_impl_creg.service
+- ui.navigator:navigator_view.actor-template
+- ui.navigator:navigator_view_go_back.actor-template
+- ui.navigator:navigator_view_go_forward.actor-template
 - ui.qt.auto_tabs:auto_tabs_view.actor-template
 - ui.qt.auto_tabs:auto_tabs_view_close_tab.actor-template
 - ui.qt.auto_tabs:auto_tabs_view_duplicate_tab.actor-template
@@ -305,9 +308,12 @@ definitions:
         - ui.qt.static_list_adapter:list_adapter_static_list_adapter.actor-template
         - ui.str_adapter:str_adapter_static_str_adapter.actor-template
         ui_command:
+        - ui.navigator:navigator_view_go_back.actor-template
+        - ui.navigator:navigator_view_go_forward.actor-template
         - ui.qt.auto_tabs:auto_tabs_view_close_tab.actor-template
         - ui.qt.auto_tabs:auto_tabs_view_duplicate_tab.actor-template
         view_creg:
+        - ui.navigator:navigator_view.actor-template
         - ui.qt.auto_tabs:auto_tabs_view.actor-template
         - ui.qt.label:label_view.actor-template
         - ui.qt.menu_bar:menu_bar_view.actor-template

@@ -4,22 +4,13 @@ import:
 - builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:web.service
+- common.mark:mark.module
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
-- legacy_type.navigator:go_back_d
-- legacy_type.navigator:go_forward_d
 - legacy_type.navigator:history_rec
 - legacy_type.navigator:view
-- legacy_type.ui:command
-- legacy_type.ui:command_properties
-- legacy_type.ui:command_properties_d
-- legacy_type.ui:ui_command_d
-- legacy_type.ui:ui_command_impl
+- legacy_type.system:actor_template
 - ui.view:view.module
-- ui.view_registry:model_view_creg.service
-- ui.view_registry:view_creg.service
-- ui.visualizer:set_model_layout.service
 definitions:
   NavigatorView:
     type: legacy_type.builtin:attribute
@@ -31,81 +22,48 @@ definitions:
     value:
       object: NavigatorView
       attr_name: from_piece
-  command_properties_d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.ui:command_properties_d
   go_back:
     type: legacy_type.builtin:attribute
     value:
       object: navigator.module
       attr_name: go_back
-  go_back.command:
-    type: legacy_type.ui:command
-    value:
-      d: go_back.d
-      impl: go_back.impl
-  go_back.command_properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: false
-      uses_state: false
-      remotable: false
-  go_back.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.navigator:go_back_d
-  go_back.impl:
-    type: legacy_type.ui:ui_command_impl
-    value:
-      function: go_back
-      params:
-      - view
-      - widget
-      - ctx
   go_forward:
     type: legacy_type.builtin:attribute
     value:
       object: navigator.module
       attr_name: go_forward
-  go_forward.command:
-    type: legacy_type.ui:command
-    value:
-      d: go_forward.d
-      impl: go_forward.impl
-  go_forward.command_properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: false
-      uses_state: false
-      remotable: false
-  go_forward.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.navigator:go_forward_d
-  go_forward.impl:
-    type: legacy_type.ui:ui_command_impl
-    value:
-      function: go_forward
-      params:
-      - view
-      - widget
-      - ctx
   navigator.module:
     type: legacy_type.builtin:python_module
     value:
       module_name: navigator
       file_name: navigator.dyn.py
       import_list:
+        code.mark: common.mark:mark.module
         code.view: ui.view:view.module
         htypes.navigator.history_rec: legacy_type.navigator:history_rec
         htypes.navigator.view: legacy_type.navigator:view
         services.deduce_t: builtins:deduce_t.service
-        services.model_view_creg: ui.view_registry:model_view_creg.service
         services.mosaic: builtins:mosaic.service
-        services.set_model_layout: ui.visualizer:set_model_layout.service
         services.web: builtins:web.service
-  ui_command_d:
-    type: legacy_type.builtin:call
+  navigator_view.actor-template:
+    type: legacy_type.system:actor_template
     value:
-      function: legacy_type.ui:ui_command_d
+      t: legacy_type.navigator:view
+      function: NavigatorView.from_piece
+      service_params:
+      - model_view_creg
+      - set_custom_layout
+  navigator_view_go_back.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.navigator:view
+      function: go_back
+      service_params:
+      - model_view_creg
+  navigator_view_go_forward.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.navigator:view
+      function: go_forward
+      service_params:
+      - model_view_creg
