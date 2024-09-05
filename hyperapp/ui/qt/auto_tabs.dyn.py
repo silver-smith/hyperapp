@@ -2,10 +2,9 @@ import logging
 
 from . import htypes
 from .services import (
-    mark,
-    view_creg,
     web,
     )
+from .code.mark import mark
 from .code.list_diff import ListDiff
 from .code.tabs import TabsView
 
@@ -24,7 +23,8 @@ def tab_piece_ref_label(piece_ref):
 class AutoTabsView(TabsView):
 
     @classmethod
-    def from_piece(cls, piece, ctx):
+    @mark.actor.view_creg
+    def from_piece(cls, piece, ctx, view_creg):
         tabs = [
             cls._Tab(
                 view=view_creg.invite(view_ref, ctx),
@@ -54,7 +54,7 @@ class AutoTabsView(TabsView):
 
 
 @mark.ui_command(htypes.auto_tabs.view)
-def duplicate_tab(ctx, view, widget, state):
+def duplicate_tab(ctx, view, widget, state, view_creg):
     log.info("Duplicate tab: %s / %s", view, state)
     current_view = view.current_tab(widget).view
     current_widget = view.current_widget(widget)

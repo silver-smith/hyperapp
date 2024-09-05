@@ -3,24 +3,12 @@
 import:
 - builtins:web.service
 - common.list_diff:list_diff.module
-- legacy_type.auto_tabs:close_tab_d
-- legacy_type.auto_tabs:duplicate_tab_d
-- legacy_type.auto_tabs:tab_piece_label_d
+- common.mark:mark.module
 - legacy_type.auto_tabs:view
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
-- legacy_type.label:view
-- legacy_type.ui:command
-- legacy_type.ui:command_properties
-- legacy_type.ui:command_properties_d
-- legacy_type.ui:model_command
-- legacy_type.ui:model_command_d
-- legacy_type.ui:model_command_impl
-- legacy_type.ui:ui_command_d
-- legacy_type.ui:ui_command_impl
+- legacy_type.system:actor_template
 - ui.qt.tabs:tabs.module
-- ui.view_registry:view_creg.service
 definitions:
   AutoTabsView:
     type: legacy_type.builtin:attribute
@@ -39,102 +27,37 @@ definitions:
       file_name: auto_tabs.dyn.py
       import_list:
         code.list_diff: common.list_diff:list_diff.module
+        code.mark: common.mark:mark.module
         code.tabs: ui.qt.tabs:tabs.module
         htypes.auto_tabs.view: legacy_type.auto_tabs:view
-        services.view_creg: ui.view_registry:view_creg.service
         services.web: builtins:web.service
+  auto_tabs_view.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.auto_tabs:view
+      function: AutoTabsView.from_piece
+      service_params:
+      - view_creg
+  auto_tabs_view_close_tab.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.auto_tabs:view
+      function: close_tab
+      service_params: []
+  auto_tabs_view_duplicate_tab.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.auto_tabs:view
+      function: duplicate_tab
+      service_params:
+      - view_creg
   close_tab:
     type: legacy_type.builtin:attribute
     value:
       object: auto_tabs.module
       attr_name: close_tab
-  close_tab.command:
-    type: legacy_type.ui:command
-    value:
-      d: close_tab.d
-      impl: close_tab.impl
-  close_tab.command_properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: false
-      uses_state: true
-      remotable: true
-  close_tab.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.auto_tabs:close_tab_d
-  close_tab.impl:
-    type: legacy_type.ui:ui_command_impl
-    value:
-      function: close_tab
-      params:
-      - view
-      - widget
-      - state
-  command_properties_d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.ui:command_properties_d
   duplicate_tab:
     type: legacy_type.builtin:attribute
     value:
       object: auto_tabs.module
       attr_name: duplicate_tab
-  duplicate_tab.command:
-    type: legacy_type.ui:command
-    value:
-      d: duplicate_tab.d
-      impl: duplicate_tab.impl
-  duplicate_tab.command_properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: false
-      uses_state: true
-      remotable: false
-  duplicate_tab.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.auto_tabs:duplicate_tab_d
-  duplicate_tab.impl:
-    type: legacy_type.ui:ui_command_impl
-    value:
-      function: duplicate_tab
-      params:
-      - ctx
-      - view
-      - widget
-      - state
-  model_command_d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.ui:model_command_d
-  tab_piece_label:
-    type: legacy_type.builtin:attribute
-    value:
-      object: auto_tabs.module
-      attr_name: tab_piece_label
-  tab_piece_label.command:
-    type: legacy_type.ui:model_command
-    value:
-      d: tab_piece_label.d
-      impl: tab_piece_label.command_impl
-  tab_piece_label.command_impl:
-    type: legacy_type.ui:model_command_impl
-    value:
-      function: tab_piece_label
-      params:
-      - piece
-  tab_piece_label.command_properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: false
-      uses_state: false
-      remotable: true
-  tab_piece_label.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.auto_tabs:tab_piece_label_d
-  ui_command_d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.ui:ui_command_d
