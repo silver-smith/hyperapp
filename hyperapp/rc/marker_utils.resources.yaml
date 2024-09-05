@@ -1,0 +1,11 @@
+import:
+- legacy_type.builtin:python_module
+
+definitions:
+
+  marker_utils.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: marker_utils
+      file_name: marker_utils.dyn.py
+      import_list: {}
