@@ -38,7 +38,7 @@ def add_core_items(cfg_item_creg, ctr_from_template_creg, system_config, target_
 
 
 def init_targets(cfg_item_creg, ctr_from_template_creg, system_config, root_dir, target_set, python_module_src_list, type_src_list):
-    custom_resource_registry = create_custom_resource_registry(root_dir)
+    custom_resource_registry = create_custom_resource_registry(type_src_list)
     all_imports_known_tgt = AllImportsKnownTarget()
     target_set.add(all_imports_known_tgt)
     config_tgt = ConfigResourceTarget(custom_resource_registry, resource_dir=root_dir, module_name='config', path='config.resources.yaml')

@@ -9,12 +9,11 @@ from .services import (
     )
 
 
-def _load_legacy_type_resources(root_dir):
-    custom_types = {
-        **builtin_types_as_dict(),
-        **local_types,
-        }
-    type_module_loader.load_type_modules([root_dir], custom_types)
+def _type_sources_to_type_dict(type_src_list):
+    custom_types = {}
+    for src in type_src_list:
+        name_to_type = custom_types.setdefault(src.module_name, {})
+        name_to_type[src.name] = src.type_piece
     return custom_types
 
 
@@ -24,9 +23,9 @@ def _add_legacy_types_to_cache(res_reg, legacy_type_modules):
             res_reg.add_to_cache((module_name, var_name), module[var_name])
 
 
-def create_custom_resource_registry(root_dir):
+def create_custom_resource_registry(type_src_list):
     res_reg = resource_registry_factory()
-    custom_types = _load_legacy_type_resources(root_dir)
+    custom_types = _type_sources_to_type_dict(type_src_list)
     legacy_type_modules = legacy_type_resource_loader(custom_types)
     _add_legacy_types_to_cache(res_reg, legacy_type_modules)
     res_reg.update_modules(legacy_type_modules)
