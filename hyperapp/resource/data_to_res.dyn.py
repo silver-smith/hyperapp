@@ -6,7 +6,6 @@ from .services import (
     mosaic,
     pyobj_creg,
     )
-from .code.mark import mark
 
 
 def _data_to_res(piece, t=None):
@@ -37,11 +36,9 @@ def _data_to_res(piece, t=None):
         )
 
 
-@mark.service2
 def data_to_res(piece, t=None):
     return _data_to_res(piece, t)
 
 
-@mark.service2
 def data_to_ref(piece, t=None):
     return mosaic.put(_data_to_res(piece, t))
