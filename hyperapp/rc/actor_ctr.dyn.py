@@ -85,8 +85,6 @@ class CoreActorTemplateCtr(ActorTemplateCtrBase):
 
 class ActorTemplateCtr(ActorTemplateCtrBase):
 
-    _piece_t = htypes.actor_resource.actor_template_ctr
-
     @classmethod
     def from_piece(cls, piece):
         return cls(
@@ -108,7 +106,7 @@ class ActorTemplateCtr(ActorTemplateCtrBase):
 
     @property
     def piece(self):
-        return self._piece_t(
+        return htypes.actor_resource.actor_template_ctr(
             module_name=self._module_name,
             attr_qual_name=tuple(self._attr_qual_name),
             service_name=self._service_name,

@@ -1,10 +1,12 @@
 import:
+- builtins:mosaic.service
+- builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command_resource:command_template_ctr
 - legacy_type.marker:marker_template
 - legacy_type.system:actor_template
-- rc.actor_ctr:actor_ctr.module
+- rc.rc_constructor:rc_constructor.module
 
 definitions:
 
@@ -14,8 +16,12 @@ definitions:
       module_name: command_ctr
       file_name: command_ctr.dyn.py
       import_list:
+        htypes.builtin.attribute: legacy_type.builtin:attribute
         htypes.command_resource.command_template_ctr: legacy_type.command_resource:command_template_ctr
-        code.actor_ctr: rc.actor_ctr:actor_ctr.module
+        htypes.system.actor_template: legacy_type.system:actor_template
+        services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        code.rc_constructor: rc.rc_constructor:rc_constructor.module
 
   CommandTemplateCtr:
     type: legacy_type.builtin:attribute
