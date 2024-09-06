@@ -202,7 +202,7 @@ def build():
 
 def compile_resources(system_config, cfg_item_creg, ctr_from_template_creg, rc_job_result_creg, build, pool, targets, options):
     target_set = TargetSet(hyperapp_dir, build.python_modules)
-    init_targets(cfg_item_creg, ctr_from_template_creg, system_config, hyperapp_dir, target_set, build.python_modules, build.types)
+    init_targets(cfg_item_creg, ctr_from_template_creg, system_config, hyperapp_dir, target_set, build)
     filter = Filter(target_set, targets)
     try:
         _run(rc_job_result_creg, pool, target_set, filter, options)

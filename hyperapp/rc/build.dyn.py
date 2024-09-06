@@ -1,5 +1,6 @@
 import logging
 from dataclasses import dataclass
+from functools import cached_property
 from pathlib import Path
 from typing import Any
 
@@ -94,6 +95,14 @@ class Build:
             types=tuple(self.types),
             python_modules=tuple(self.python_modules),
             )
+
+    @cached_property
+    def type_dict(self):
+        custom_types = {}
+        for src in self.types:
+            name_to_type = custom_types.setdefault(src.module_name, {})
+            name_to_type[src.name] = src.type_piece
+        return custom_types
 
     def report(self):
         for t in self.types:

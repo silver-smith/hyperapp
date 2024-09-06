@@ -37,13 +37,13 @@ def add_core_items(cfg_item_creg, ctr_from_template_creg, system_config, target_
             complete_tgt.update_status()
 
 
-def init_targets(cfg_item_creg, ctr_from_template_creg, system_config, root_dir, target_set, python_module_src_list, type_src_list):
-    custom_resource_registry = create_custom_resource_registry(type_src_list)
+def init_targets(cfg_item_creg, ctr_from_template_creg, system_config, root_dir, target_set, build):
+    custom_resource_registry = create_custom_resource_registry(build)
     all_imports_known_tgt = AllImportsKnownTarget()
     target_set.add(all_imports_known_tgt)
     config_tgt = ConfigResourceTarget(custom_resource_registry, resource_dir=root_dir, module_name='config', path='config.resources.yaml')
     target_set.add(config_tgt)
-    for src in python_module_src_list:
+    for src in build.python_modules:
         try:
             resource_text = root_dir.joinpath(src.resource_path).read_text()
         except FileNotFoundError:
@@ -55,8 +55,8 @@ def init_targets(cfg_item_creg, ctr_from_template_creg, system_config, root_dir,
                     src, custom_resource_registry, resource_dir, resource_text)
                 target_set.add(resource_tgt)
                 continue
-        alias_tgt = ImportTargetAlias(src, custom_resource_registry, type_src_list)
-        import_tgt = ImportTarget(target_set, src, type_src_list, alias_tgt)
+        alias_tgt = ImportTargetAlias(src, custom_resource_registry, build.types)
+        import_tgt = ImportTarget(target_set, src, build.types, alias_tgt)
         alias_tgt.set_import_target(import_tgt)
         all_imports_known_tgt.add_import_target(import_tgt)
         target_set.add(import_tgt)
