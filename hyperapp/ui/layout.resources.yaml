@@ -17,7 +17,7 @@ import:
 - legacy_type.layout:open_view_item_commands_d
 - legacy_type.layout:view
 - legacy_type.layout:view_item_commands_d
-- legacy_type.ui:command
+- legacy_type.ui:ui_command
 - legacy_type.ui:command_properties
 - legacy_type.ui:command_properties_d
 - legacy_type.ui:fn_impl
@@ -120,7 +120,7 @@ definitions:
         htypes.layout.command_list: legacy_type.layout:command_list
         htypes.layout.layout_command_impl: legacy_type.layout:layout_command_impl
         htypes.layout.view: legacy_type.layout:view
-        htypes.ui.command: legacy_type.ui:command
+        htypes.ui.ui_command: legacy_type.ui:ui_command
         services.data_to_res: resource.data_to_res:data_to_res.service
         services.model_command_impl_creg: ui.model_command_impl_creg:model_command_impl_creg.service
         services.mosaic: builtins:mosaic.service

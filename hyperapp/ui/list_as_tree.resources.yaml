@@ -19,7 +19,7 @@ import:
 - legacy_type.list_to_tree_adapter:adapter
 - legacy_type.list_to_tree_adapter:layer
 - legacy_type.tree:view
-- legacy_type.ui:command
+- legacy_type.ui:ui_command
 - legacy_type.ui:command_properties
 - legacy_type.ui:command_properties_d
 - legacy_type.ui:feed_d
@@ -94,7 +94,7 @@ definitions:
       object: list_as_tree.module
       attr_name: open_opener_commands
   open_opener_commands.command:
-    type: legacy_type.ui:command
+    type: legacy_type.ui:ui_command
     value:
       d: open_opener_commands.d
       impl: open_opener_commands.impl
@@ -169,7 +169,7 @@ definitions:
       object: list_as_tree.module
       attr_name: switch_list_to_tree
   switch_list_to_tree.command:
-    type: legacy_type.ui:command
+    type: legacy_type.ui:ui_command
     value:
       d: switch_list_to_tree.d
       impl: switch_list_to_tree.impl

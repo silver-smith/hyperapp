@@ -16,7 +16,7 @@ import:
 - legacy_type.str_adapter:static_str_adapter
 - legacy_type.text:edit_view
 - legacy_type.text:state
-- legacy_type.ui:command
+- legacy_type.ui:ui_command
 - legacy_type.ui:command_properties
 - legacy_type.ui:command_properties_d
 - legacy_type.ui:model_command
@@ -92,7 +92,7 @@ definitions:
         htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
         htypes.text.edit_view: legacy_type.text:edit_view
         htypes.text.state: legacy_type.text:state
-        htypes.ui.command: legacy_type.ui:command
+        htypes.ui.ui_command: legacy_type.ui:ui_command
         services.data_to_ref: resource.data_to_res:data_to_ref.service
         services.deduce_t: builtins:deduce_t.service
         services.model_view_creg: ui.view_registry:model_view_creg.service
@@ -106,7 +106,7 @@ definitions:
       object: rename_command.module
       attr_name: set_command_name
   set_command_name.command:
-    type: legacy_type.ui:command
+    type: legacy_type.ui:ui_command
     value:
       d: set_command_name.d
       impl: set_command_name.impl

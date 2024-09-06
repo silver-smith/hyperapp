@@ -54,7 +54,7 @@ class CommandLayoutContextView(ContextView):
             model_command_impl=self._command_impl_piece.model_command_impl,
             layout=mosaic.put(layout),
             )
-        return htypes.ui.command(
+        return htypes.ui.ui_command(
             d=self._command_piece.d,
             impl=mosaic.put(new_impl),
             )

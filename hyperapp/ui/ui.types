@@ -16,7 +16,7 @@ command_properties = record:
   uses_state: bool
   remotable: bool
 
-command = record:
+ui_command = record:
   d: ref
   impl: ref
 

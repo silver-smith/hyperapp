@@ -7,7 +7,7 @@ import:
 - legacy_type.text:edit_view
 - legacy_type.text:readonly_view
 - legacy_type.text_toggle_editable:toggle_editable_d
-- legacy_type.ui:command
+- legacy_type.ui:ui_command
 - legacy_type.ui:command_properties
 - legacy_type.ui:command_properties_d
 - legacy_type.ui:ui_command_impl
@@ -33,7 +33,7 @@ definitions:
       object: text_toggle_editable.module
       attr_name: toggle_editable
   toggle_editable.command:
-    type: legacy_type.ui:command
+    type: legacy_type.ui:ui_command
     value:
       d: toggle_editable.d
       impl: toggle_editable.impl

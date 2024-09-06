@@ -97,7 +97,7 @@ def set_command_name(view, widget, lcs):
         d = pyobj_creg.invite(command.d)
         d_t = deduce_t(d)
         new_d_t = TRecord(d_t.module_name, f'{name}_d')
-        return htypes.ui.command(
+        return htypes.ui.ui_command(
             d=data_to_ref(new_d_t()),
             impl=command.impl,
             )

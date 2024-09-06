@@ -178,7 +178,7 @@ def wrap_model_command_to_ui_command(lcs, command):
         model_command_impl=command.impl,
         layout=mosaic.put_opt(layout),
         )
-    return htypes.ui.command(
+    return htypes.ui.ui_command(
         d=command.d,
         impl=mosaic.put(impl),
         )

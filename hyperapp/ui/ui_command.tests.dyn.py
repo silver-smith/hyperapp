@@ -31,7 +31,7 @@ class PhonyAssociationRegistry:
             function=fn_to_ref(_sample_fn),
             params=('view', 'state'),
             )
-        command = htypes.ui.command(
+        command = htypes.ui.ui_command(
             d=mosaic.put(command_d_res),
             impl=mosaic.put(impl),
             )

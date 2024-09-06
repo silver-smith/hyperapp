@@ -11,7 +11,7 @@ import:
 - legacy_type.identity_command:identity_model_command_impl
 - legacy_type.model_commands:item
 - legacy_type.model_commands:model_commands
-- legacy_type.ui:command
+- legacy_type.ui:ui_command
 - legacy_type.ui:command_properties
 - legacy_type.ui:command_properties_d
 - legacy_type.ui:feed_d
@@ -72,7 +72,7 @@ definitions:
         code.list_diff: common.list_diff:list_diff.module
         htypes.identity_command.identity_model_command_impl: legacy_type.identity_command:identity_model_command_impl
         htypes.model_commands.item: legacy_type.model_commands:item
-        htypes.ui.command: legacy_type.ui:command
+        htypes.ui.ui_command: legacy_type.ui:ui_command
         htypes.ui.command_properties: legacy_type.ui:command_properties
         htypes.ui.ui_model_command_impl: legacy_type.ui:ui_model_command_impl
         services.data_to_ref: resource.data_to_res:data_to_ref.service

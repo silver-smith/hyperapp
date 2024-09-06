@@ -11,7 +11,7 @@ import:
 - legacy_type.command_layout_context:state
 - legacy_type.command_layout_context:view
 - legacy_type.model_commands:model_commands
-- legacy_type.ui:command
+- legacy_type.ui:ui_command
 - legacy_type.ui:command_properties
 - legacy_type.ui:command_properties_d
 - legacy_type.ui:external_ui_model_command_impl
@@ -48,7 +48,7 @@ definitions:
         code.view: ui.view:view.module
         htypes.command_layout_context.state: legacy_type.command_layout_context:state
         htypes.command_layout_context.view: legacy_type.command_layout_context:view
-        htypes.ui.command: legacy_type.ui:command
+        htypes.ui.ui_command: legacy_type.ui:ui_command
         htypes.ui.external_ui_model_command_impl: legacy_type.ui:external_ui_model_command_impl
         htypes.ui.ui_model_command_impl: legacy_type.ui:ui_model_command_impl
         services.get_ui_model_commands: ui.ui_model_command:get_ui_model_commands.service

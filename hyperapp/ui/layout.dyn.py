@@ -64,7 +64,7 @@ def _wrap_ui_command(item_id, command):
         command_d=command.d,
         ui_command_impl=command.impl,
         )
-    return htypes.ui.command(
+    return htypes.ui.ui_command(
         d=command.d,
         impl=mosaic.put(impl),
         )

@@ -76,7 +76,7 @@ async def test_run_command():
         model_command_impl=sample_model_command.impl,
         layout=None,
         )
-    sample_ui_command = htypes.ui.command(
+    sample_ui_command = htypes.ui.ui_command(
         d=sample_model_command.d,
         impl=mosaic.put(ui_impl),
         )

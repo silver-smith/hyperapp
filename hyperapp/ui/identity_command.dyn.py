@@ -67,7 +67,7 @@ async def add_identity_command(piece, lcs):
         )
     name = 'identity'
     d_t = TRecord('identity_command', f'{name}_d')
-    command = htypes.ui.command(
+    command = htypes.ui.ui_command(
         d=data_to_ref(d_t()),
         impl=mosaic.put(ui_impl),
         )

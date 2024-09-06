@@ -37,7 +37,7 @@ def _make_sample_ui_command():
         model_command_impl=mosaic.put(model_impl),
         layout=None,
         )
-    return htypes.ui.command(
+    return htypes.ui.ui_command(
         d=mosaic.put(d_res),
         impl=mosaic.put(ui_impl),
         )
