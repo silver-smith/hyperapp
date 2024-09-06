@@ -31,6 +31,21 @@ definitions:
         code.rc_filter: rc.rc_filter:rc_filter.module
         code.target_set: rc.target_set:target_set.module
 
+  build:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rc.module
+      attr_name: build
+
+  build.service:
+    type: legacy_type.system:service_template
+    value:
+      name: build
+      function: build
+      free_params: []
+      service_params: []
+      want_config: false
+
   compile_resources:
     type: legacy_type.builtin:attribute
     value:
@@ -51,6 +66,7 @@ definitions:
       - cfg_item_creg
       - ctr_from_template_creg
       - rc_job_result_creg
+      - build
       want_config: false
 
   rc_main:
