@@ -45,6 +45,7 @@ import:
 - rc.model_marker:model.marker-template
 - rc.process_pool:process_pool_running.service
 - rc.python_module_resource_target:python_module_resource_target_python_module_req.actor-template
+- rc.rc:compile_resources.service
 - rc.rc:rc_main.service
 - rc.rc_job:rc_job_job_target.actor-template
 - rc.rc_job:rc_job_submit_factory.service
@@ -254,6 +255,7 @@ definitions:
         - rc.init_targets:ctr_from_template_creg.service
         - rc.marker_registry:marker_registry.service
         - rc.process_pool:process_pool_running.service
+        - rc.rc:compile_resources.service
         - rc.rc:rc_main.service
         - rc.rc_job:rc_job_submit_factory.service
         - rc.rc_job_creg:rc_job_creg.service

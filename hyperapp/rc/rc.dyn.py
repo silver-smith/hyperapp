@@ -193,7 +193,7 @@ def _parse_args(sys_argv):
     )
 
 
-def _compile_resources(cfg_item_creg, ctr_from_template_creg, rc_job_result_creg, system_config, pool, targets, options):
+def compile_resources(system_config, cfg_item_creg, ctr_from_template_creg, rc_job_result_creg, pool, targets, options):
     build = load_build(hyperapp_dir)
     log.info("Loaded build:")
     build.report()
@@ -211,7 +211,7 @@ def _compile_resources(cfg_item_creg, ctr_from_template_creg, rc_job_result_creg
                     log.error("%s", line)
 
 
-def rc_main(system_config, cfg_item_creg, process_pool_running, rc_job_result_creg, ctr_from_template_creg, sys_argv):
+def rc_main(process_pool_running, compile_resources, sys_argv):
     args = _parse_args(sys_argv)
     rc_log.info("Compile resources: %s", ", ".join(args.targets) if args.targets else 'all')
 
@@ -221,4 +221,4 @@ def rc_main(system_config, cfg_item_creg, process_pool_running, rc_job_result_cr
     register_reconstructors()
 
     with process_pool_running(args.process_count, args.options.timeout) as pool:
-        _compile_resources(cfg_item_creg, ctr_from_template_creg, rc_job_result_creg, system_config, pool, args.targets, args.options)
+        compile_resources(pool, args.targets, args.options)

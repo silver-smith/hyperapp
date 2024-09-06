@@ -31,6 +31,28 @@ definitions:
         code.rc_filter: rc.rc_filter:rc_filter.module
         code.target_set: rc.target_set:target_set.module
 
+  compile_resources:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rc.module
+      attr_name: compile_resources
+
+  compile_resources.service:
+    type: legacy_type.system:service_template
+    value:
+      name: compile_resources
+      function: compile_resources
+      free_params:
+      - pool
+      - targets
+      - options
+      service_params:
+      - system_config
+      - cfg_item_creg
+      - ctr_from_template_creg
+      - rc_job_result_creg
+      want_config: false
+
   rc_main:
     type: legacy_type.builtin:attribute
     value:
@@ -45,9 +67,6 @@ definitions:
       free_params:
       - sys_argv
       service_params:
-      - system_config
-      - cfg_item_creg
       - process_pool_running
-      - rc_job_result_creg
-      - ctr_from_template_creg
+      - compile_resources
       want_config: false
