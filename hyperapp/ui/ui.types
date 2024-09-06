@@ -18,6 +18,7 @@ command_properties = record:
 
 ui_command = record:
   d: ref
+  properties: command_properties
   impl: ref
 
 model_command = record:
@@ -26,7 +27,8 @@ model_command = record:
 
 ui_command_impl = record:
   function: ref
-  params: string list
+  ctx_params: string list
+  service_params: string list
 
 model_command_impl = record:
   function: ref

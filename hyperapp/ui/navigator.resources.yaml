@@ -6,10 +6,16 @@ import:
 - builtins:web.service
 - common.mark:mark.module
 - legacy_type.builtin:attribute
+- legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.navigator:go_back_d
+- legacy_type.navigator:go_forward_d
 - legacy_type.navigator:history_rec
 - legacy_type.navigator:view
 - legacy_type.system:actor_template
+- legacy_type.ui:command_properties
+- legacy_type.ui:ui_command
+- legacy_type.ui:ui_command_impl
 - ui.view:view.module
 definitions:
   NavigatorView:
@@ -53,17 +59,61 @@ definitions:
       service_params:
       - model_view_creg
       - set_custom_layout
-  navigator_view_go_back.actor-template:
-    type: legacy_type.system:actor_template
+  navigator_view_go_back.command-properties:
+    type: legacy_type.ui:command_properties
     value:
-      t: legacy_type.navigator:view
+      is_global: false
+      uses_state: false
+      remotable: false
+  navigator_view_go_back.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.navigator:go_back_d
+  navigator_view_go_back.ui-command:
+    type: legacy_type.ui:ui_command
+    value:
+      d: navigator_view_go_back.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: false
+      impl: navigator_view_go_back.ui-command-impl
+  navigator_view_go_back.ui-command-impl:
+    type: legacy_type.ui:ui_command_impl
+    value:
       function: go_back
+      ctx_params:
+      - view
+      - widget
+      - ctx
       service_params:
       - model_view_creg
-  navigator_view_go_forward.actor-template:
-    type: legacy_type.system:actor_template
+  navigator_view_go_forward.command-properties:
+    type: legacy_type.ui:command_properties
     value:
-      t: legacy_type.navigator:view
+      is_global: false
+      uses_state: false
+      remotable: false
+  navigator_view_go_forward.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.navigator:go_forward_d
+  navigator_view_go_forward.ui-command:
+    type: legacy_type.ui:ui_command
+    value:
+      d: navigator_view_go_forward.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: false
+      impl: navigator_view_go_forward.ui-command-impl
+  navigator_view_go_forward.ui-command-impl:
+    type: legacy_type.ui:ui_command_impl
+    value:
       function: go_forward
+      ctx_params:
+      - view
+      - widget
+      - ctx
       service_params:
       - model_view_creg

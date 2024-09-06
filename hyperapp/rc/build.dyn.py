@@ -104,6 +104,9 @@ class Build:
             name_to_type[src.name] = src.type_piece
         return custom_types
 
+    def get_type(self, module_name, name):
+        return self.type_dict.get(module_name, {}).get(name)
+
     def report(self):
         for t in self.types:
             log.info("\tType: %s", t)

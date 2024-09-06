@@ -30,6 +30,8 @@ definitions:
       service_params:
       - system
       - ctr_collector
+      - data_to_res
+      - build
 
   ui_model_command_marker:
     type: legacy_type.builtin:attribute

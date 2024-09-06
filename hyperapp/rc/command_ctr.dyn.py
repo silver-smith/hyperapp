@@ -6,11 +6,17 @@ from .services import (
 from .code.rc_constructor import Constructor
 
 
+STATE_PARAMS = {'state', 'model_state', 'current_item', 'current_idx', 'current_path'}
+LOCAL_PARAMS = {'controller', 'ctx', 'lcs', 'rpc_endpoint', 'identity', 'remote_peer'}
+
+
 class CommandTemplateCtr(Constructor):
 
     @classmethod
-    def from_piece(cls, piece):
+    def from_piece(cls, piece, data_to_res, build):
         return cls(
+            data_to_res=data_to_res,
+            build=build,
             module_name=piece.module_name,
             attr_qual_name=piece.attr_qual_name,
             service_name=piece.service_name,
@@ -19,7 +25,9 @@ class CommandTemplateCtr(Constructor):
             service_params=piece.service_params,
             )
 
-    def __init__(self, module_name, attr_qual_name, service_name, t, ctx_params, service_params):
+    def __init__(self, data_to_res, build, module_name, attr_qual_name, service_name, t, ctx_params, service_params):
+        self._data_to_res = data_to_res
+        self._build = build
         self._module_name = module_name
         self._attr_qual_name = attr_qual_name
         self._service_name = service_name
@@ -54,9 +62,8 @@ class CommandTemplateCtr(Constructor):
         target_set.update_deps_for(resolved_tgt)
         target_set.update_deps_for(resource_tgt)
 
-    # Ever used?
     def get_component(self, name_to_res):
-        return name_to_res[f'{self._resource_name}.actor-template']
+        return name_to_res[f'{self._resource_name}.ui-command']
 
     def make_component(self, python_module, name_to_res=None):
         object = python_module
@@ -69,14 +76,33 @@ class CommandTemplateCtr(Constructor):
             if name_to_res is not None:
                 name_to_res['.'.join([*prefix, name])] = object
             prefix.append(name)
-        template = htypes.system.actor_template(
-            t=pyobj_creg.actor_to_ref(self._t),
+        d_name = self._attr_qual_name[-1] + '_d'
+        type_module = self._module_name.split('.')[-1]
+        d_t_piece = self._build.get_type(type_module, d_name)
+        assert d_t_piece  # TODO: Make type if missing.
+        d_t = pyobj_creg.animate(d_t_piece)
+        d_piece = self._data_to_res(d_t())
+        impl = htypes.ui.ui_command_impl(
             function=mosaic.put(object),
+            ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
             )
+        properties = htypes.ui.command_properties(
+            is_global=False,
+            uses_state=bool(set(self._ctx_params) & STATE_PARAMS),
+            remotable=not set(self._ctx_params) & LOCAL_PARAMS,
+            )
+        command = htypes.ui.ui_command(
+            d=mosaic.put(d_piece),
+            properties=properties,
+            impl=mosaic.put(impl),
+            )
         if name_to_res is not None:
-            name_to_res[f'{self._resource_name}.actor-template'] = template
-        return template
+            name_to_res[f'{self._resource_name}.d'] = d_piece
+            name_to_res[f'{self._resource_name}.ui-command-impl'] = impl
+            name_to_res[f'{self._resource_name}.command-properties'] = properties
+            name_to_res[f'{self._resource_name}.ui-command'] = command
+        return command
 
     @property
     def _resource_name(self):

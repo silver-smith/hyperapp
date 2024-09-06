@@ -4,10 +4,16 @@ import:
 - builtins:web.service
 - common.list_diff:list_diff.module
 - common.mark:mark.module
+- legacy_type.auto_tabs:close_tab_d
+- legacy_type.auto_tabs:duplicate_tab_d
 - legacy_type.auto_tabs:view
 - legacy_type.builtin:attribute
+- legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.system:actor_template
+- legacy_type.ui:command_properties
+- legacy_type.ui:ui_command
+- legacy_type.ui:ui_command_impl
 - ui.qt.tabs:tabs.module
 definitions:
   AutoTabsView:
@@ -38,17 +44,62 @@ definitions:
       function: AutoTabsView.from_piece
       service_params:
       - view_creg
-  auto_tabs_view_close_tab.actor-template:
-    type: legacy_type.system:actor_template
+  auto_tabs_view_close_tab.command-properties:
+    type: legacy_type.ui:command_properties
     value:
-      t: legacy_type.auto_tabs:view
+      is_global: false
+      uses_state: true
+      remotable: true
+  auto_tabs_view_close_tab.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.auto_tabs:close_tab_d
+  auto_tabs_view_close_tab.ui-command:
+    type: legacy_type.ui:ui_command
+    value:
+      d: auto_tabs_view_close_tab.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      impl: auto_tabs_view_close_tab.ui-command-impl
+  auto_tabs_view_close_tab.ui-command-impl:
+    type: legacy_type.ui:ui_command_impl
+    value:
       function: close_tab
+      ctx_params:
+      - view
+      - widget
+      - state
       service_params: []
-  auto_tabs_view_duplicate_tab.actor-template:
-    type: legacy_type.system:actor_template
+  auto_tabs_view_duplicate_tab.command-properties:
+    type: legacy_type.ui:command_properties
     value:
-      t: legacy_type.auto_tabs:view
+      is_global: false
+      uses_state: true
+      remotable: false
+  auto_tabs_view_duplicate_tab.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.auto_tabs:duplicate_tab_d
+  auto_tabs_view_duplicate_tab.ui-command:
+    type: legacy_type.ui:ui_command
+    value:
+      d: auto_tabs_view_duplicate_tab.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      impl: auto_tabs_view_duplicate_tab.ui-command-impl
+  auto_tabs_view_duplicate_tab.ui-command-impl:
+    type: legacy_type.ui:ui_command_impl
+    value:
       function: duplicate_tab
+      ctx_params:
+      - ctx
+      - view
+      - widget
+      - state
       service_params:
       - view_creg
   close_tab:

@@ -6,6 +6,9 @@ import:
 - legacy_type.command_resource:command_template_ctr
 - legacy_type.marker:marker_template
 - legacy_type.system:actor_template
+- legacy_type.ui:command_properties
+- legacy_type.ui:ui_command
+- legacy_type.ui:ui_command_impl
 - rc.rc_constructor:rc_constructor.module
 
 definitions:
@@ -18,7 +21,9 @@ definitions:
       import_list:
         htypes.builtin.attribute: legacy_type.builtin:attribute
         htypes.command_resource.command_template_ctr: legacy_type.command_resource:command_template_ctr
-        htypes.system.actor_template: legacy_type.system:actor_template
+        htypes.ui.command_properties: legacy_type.ui:command_properties
+        htypes.ui.ui_command: legacy_type.ui:ui_command
+        htypes.ui.ui_command_impl: legacy_type.ui:ui_command_impl
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         code.rc_constructor: rc.rc_constructor:rc_constructor.module
@@ -40,4 +45,6 @@ definitions:
     value:
       t: legacy_type.command_resource:command_template_ctr
       function: CommandTemplateCtr.from_piece
-      service_params: []
+      service_params:
+      - data_to_res
+      - build
