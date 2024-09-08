@@ -12,14 +12,10 @@ from hyperapp.common import dict_coders  # register codec
 
 from . import htypes
 from .services import (
-    ui_command_factory,
-    feed_factory,
     mosaic,
-    list_view_commands,
-    list_ui_model_commands,
-    view_creg,
     web,
     )
+from .code.mark import mark
 from .code.context import Context
 from .code.tree_diff import TreeDiff
 from .code.view import View
@@ -277,7 +273,7 @@ class _WindowItem(_Item):
     _window_widget: Any = None
 
     @classmethod
-    def from_refs(cls, counter, id_to_item, feed, ctx, parent, view_ref, state_ref):
+    def from_refs(cls, counter, id_to_item, feed, ctx, parent, view_ref, state_ref, view_creg):
         view = view_creg.invite(view_ref, ctx)
         state = web.summon(state_ref)
         item_id = next(counter)
@@ -304,7 +300,7 @@ class _RootItem(_Item):
     _show: bool = True
 
     @classmethod
-    def from_piece(cls, counter, id_to_item, feed, show, ctx, layout_bundle, layout):
+    def from_piece(cls, counter, id_to_item, feed, show, ctx, layout_bundle, layout, view_creg):
         item_id = 0
         self = cls(counter, id_to_item, feed, item_id, None, ctx, None, "root",
                    view=None, focusable=False, _layout_bundle=layout_bundle, _show=show)
@@ -313,7 +309,7 @@ class _RootItem(_Item):
             )
         self._children = [
             _WindowItem.from_refs(
-                counter, id_to_item, feed, self.ctx, self, piece_ref, state_ref)
+                counter, id_to_item, feed, self.ctx, self, piece_ref, state_ref, view_creg)
             for piece_ref, state_ref
             in zip(layout.piece.window_list, layout.state.window_list)
             ]
@@ -417,15 +413,7 @@ class CtlHook:
 
 class Controller:
 
-    @classmethod
-    @contextmanager
-    def running(cls, layout_bundle, default_layout, ctx, show=False, load_state=False):
-        self = cls(layout_bundle, default_layout, ctx, show, load_state)
-        if show:
-            self.show()
-        yield self
-
-    def __init__(self, layout_bundle, default_layout, ctx, show, load_state):
+    def __init__(self, feed_factory, view_creg, layout_bundle, default_layout, ctx, show, load_state):
         self._root_ctx = ctx.clone_with(controller=self)
         self._id_to_item = {}
         self._counter = itertools.count(start=1)
@@ -438,7 +426,7 @@ class Controller:
             except FileNotFoundError:
                 pass
         self._root_item = _RootItem.from_piece(
-            self._counter, self._id_to_item, self._feed, show, self._root_ctx, layout_bundle, layout)
+            self._counter, self._id_to_item, self._feed, show, self._root_ctx, layout_bundle, layout, view_creg)
 
     def show(self):
         self._root_item.show()
@@ -481,3 +469,12 @@ class Controller:
     def item_command_context(self, item_id, command_d_ref):
         item = self._id_to_item[item_id]
         return item.view_commands_rec.command_context
+
+
+@mark.service2
+@contextmanager
+def controller_running(feed_factory, view_creg, layout_bundle, default_layout, ctx, show=False, load_state=False):
+    ctl = Controller(feed_factory, view_creg, layout_bundle, default_layout, ctx, show, load_state)
+    if show:
+        ctl.show()
+    yield ctl

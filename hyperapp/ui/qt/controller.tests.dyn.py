@@ -1,25 +1,22 @@
 from unittest.mock import Mock
 
-from PySide6 import QtWidgets
-
 from . import htypes
 from .services import (
-    feed_factory,
     mosaic,
     web,
     )
+from .code.mark import mark
 from .code.context import Context
+from .fixtures import feed_fixtures
+from .fixtures import qapp_fixtures
 from .tested.code import controller
-from .tested.code import window
+from .tested.code import window_commands
 
 
-def make_text_layout():
+@mark.fixture
+def default_piece():
     adapter = htypes.str_adapter.static_str_adapter()
-    return htypes.text.readonly_view(mosaic.put(adapter))
-
-
-def make_default_piece():
-    text = make_text_layout()
+    text = htypes.text.readonly_view(mosaic.put(adapter))
     navigator = htypes.navigator.view(
         current_view=mosaic.put(text),
         current_model=mosaic.put("Sample model"),
@@ -38,7 +35,8 @@ def make_default_piece():
         ))
 
 
-def make_default_state():
+@mark.fixture
+def default_state():
     text_state = htypes.text.state()
     navigator_state = text_state
     tabs_state = htypes.tabs.state(
@@ -57,10 +55,11 @@ def make_default_state():
         )
 
 
-def make_default_layout():
+@mark.fixture
+def default_layout(default_piece, default_state):
     return htypes.root.layout(
-        piece=make_default_piece(),
-        state=make_default_state(),
+        piece=default_piece,
+        state=default_state,
         )
 
 
@@ -73,22 +72,18 @@ class PhonyLayoutBundle:
         pass
 
 
-async def test_duplicate_window():
+async def test_duplicate_window(qapp, feed_factory, controller_running, default_layout):
     lcs=Mock()
     lcs.get.return_value = None  # command list - mock is not iterable.
     ctx = Context(lcs=lcs)
-    default_layout = make_default_layout()
     feed = feed_factory(htypes.layout.view())
-    app = QtWidgets.QApplication()
-    try:
-        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx, show=False) as ctl:
-            await ctl.async_init()
-            root_item = ctl._root_item
-            root = controller.Root(root_item)
-            view = root_item.children[0].view
-            state = web.summon(default_layout.state.window_list[0])
-            await window.duplicate_window(root, view, state)
-            assert len(root_item.children) == 2
-            await feed.wait_for_diffs(count=1)
-    finally:
-        app.shutdown()
+
+    with controller_running(PhonyLayoutBundle(), default_layout, ctx, show=False, load_state=False) as ctl:
+        await ctl.async_init()
+        root_item = ctl._root_item
+        root = controller.Root(root_item)
+        view = root_item.children[0].view
+        state = web.summon(default_layout.state.window_list[0])
+        await window_commands.duplicate_window(root, view, state)
+        assert len(root_item.children) == 2
+        await feed.wait_for_diffs(count=1)

@@ -7,6 +7,7 @@ from .services import (
     mosaic,
     )
 from .code.context import Context
+from .fixtures import qapp_fixtures
 from .tested.code import controller
 from .tested.code import layout
 
