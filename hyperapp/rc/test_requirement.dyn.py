@@ -42,23 +42,24 @@ class TestedServiceReq(Requirement):
             service_found_tgt.add_unresolved_in_test(test_target)
 
     def make_resource_list(self, target):
-        import_tgt = target.import_alias_tgt
-        ctr = target.constructor
-        module_name, recorder_piece, module_piece = import_tgt.recorded_python_module
-        service = ctr.make_component(module_piece)
-        recorder_res = RecorderResource(
-            recorder_module_name=module_name,
-            recorder_piece=recorder_piece,
-            )
-        constructors_picker = ConstructorsPickerResource(
-            module_name=module_name,
-            module_piece=module_piece,
-            )
-        tested_service_res = TestedServiceResource(
-            import_name=self.import_path,
-            service_piece=service,
-            )
-        return [*import_tgt.test_resources, recorder_res, constructors_picker, tested_service_res]
+        assert 0, 'Unused now'
+        # import_tgt = target.import_alias_tgt
+        # ctr = target.constructor
+        # module_name, recorder_piece, module_piece = import_tgt.recorded_python_module
+        # service = ctr.make_component(module_piece)
+        # recorder_res = RecorderResource(
+        #     recorder_module_name=module_name,
+        #     recorder_piece=recorder_piece,
+        #     )
+        # constructors_picker = ConstructorsPickerResource(
+        #     module_name=module_name,
+        #     module_piece=module_piece,
+        #     )
+        # tested_service_res = TestedServiceResource(
+        #     import_name=self.import_path,
+        #     service_piece=service,
+        #     )
+        # return [*import_tgt.test_resources, recorder_res, constructors_picker, tested_service_res]
 
 
 @dataclass(frozen=True, unsafe_hash=True)

@@ -13,10 +13,9 @@ LOCAL_PARAMS = {'controller', 'ctx', 'lcs', 'rpc_endpoint', 'identity', 'remote_
 class CommandTemplateCtr(Constructor):
 
     @classmethod
-    def from_piece(cls, piece, data_to_res, build):
+    def from_piece(cls, piece, data_to_res):
         return cls(
             data_to_res=data_to_res,
-            build=build,
             module_name=piece.module_name,
             attr_qual_name=piece.attr_qual_name,
             service_name=piece.service_name,
@@ -25,9 +24,8 @@ class CommandTemplateCtr(Constructor):
             service_params=piece.service_params,
             )
 
-    def __init__(self, data_to_res, build, module_name, attr_qual_name, service_name, t, ctx_params, service_params):
+    def __init__(self, data_to_res, module_name, attr_qual_name, service_name, t, ctx_params, service_params):
         self._data_to_res = data_to_res
-        self._build = build
         self._module_name = module_name
         self._attr_qual_name = attr_qual_name
         self._service_name = service_name
@@ -65,7 +63,7 @@ class CommandTemplateCtr(Constructor):
     def get_component(self, name_to_res):
         return name_to_res[f'{self._resource_name}.ui-command']
 
-    def make_component(self, python_module, name_to_res=None):
+    def make_component(self, types, python_module, name_to_res=None):
         object = python_module
         prefix = []
         for name in self._attr_qual_name:
@@ -78,7 +76,7 @@ class CommandTemplateCtr(Constructor):
             prefix.append(name)
         d_name = self._attr_qual_name[-1] + '_d'
         type_module = self._module_name.split('.')[-1]
-        d_t_piece = self._build.get_type(type_module, d_name)
+        d_t_piece = types.get(type_module, d_name)
         assert d_t_piece  # TODO: Make type if missing.
         d_t = pyobj_creg.animate(d_t_piece)
         d_piece = self._data_to_res(d_t())

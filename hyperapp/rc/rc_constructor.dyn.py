@@ -14,13 +14,13 @@ class Constructor:
     def update_resource_targets(self, resource_tgt, target_set):
         pass
 
-    def make_component(self, python_module, name_to_res=None):
+    def make_component(self, types, python_module, name_to_res=None):
         raise NotImplementedError(self)
 
     def get_component(self, name_to_res):
         raise NotImplementedError(self)
 
-    def make_resource(self, module_name, python_module):
+    def make_resource(self, types, module_name, python_module):
         pass
 
 

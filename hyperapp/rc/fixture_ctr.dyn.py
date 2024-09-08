@@ -35,14 +35,14 @@ class FixtureCtr(ModuleCtr):
         assert import_alias_tgt.module_name == self._module_name
         import_alias_tgt.add_component(self)
 
-    def make_component(self, python_module, name_to_res=None):
+    def make_component(self, types, python_module, name_to_res=None):
         return htypes.builtin.attribute(
             object=mosaic.put(python_module),
             attr_name=self._attr_name,
             )
 
-    def make_resource(self, module_name, python_module):
-        return FixtureProbeResource(self._name, self.make_component(python_module), self._params)
+    def make_resource(self, types, module_name, python_module):
+        return FixtureProbeResource(self._name, self.make_component(types, python_module), self._params)
 
 
 class ConfigItemFixtureCtr(ModuleCtr):
@@ -74,7 +74,7 @@ class ConfigItemFixtureCtr(ModuleCtr):
         assert import_alias_tgt.module_name == self._module_name
         import_alias_tgt.add_component(self)
 
-    def make_component(self, python_module, name_to_res=None):
+    def make_component(self, types, python_module, name_to_res=None):
         object = python_module
         for name in self._attr_qual_name:
             object = htypes.builtin.attribute(
@@ -83,5 +83,5 @@ class ConfigItemFixtureCtr(ModuleCtr):
                 )
         return object
 
-    def make_resource(self, module_name, python_module):
-        return ConfigItemFixtureResource(self._service_name, self.make_component(python_module), self._service_params)
+    def make_resource(self, types, module_name, python_module):
+        return ConfigItemFixtureResource(self._service_name, self.make_component(types, python_module), self._service_params)

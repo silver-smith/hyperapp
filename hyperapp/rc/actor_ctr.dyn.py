@@ -42,7 +42,7 @@ class ActorProbeCtr(Constructor):
         target_set.update_deps_for(ready_tgt)
         target_set.update_deps_for(resource_tgt)
 
-    def make_component(self, python_module, name_to_res=None):
+    def make_component(self, types, python_module, name_to_res=None):
         object = python_module
         for name in self._attr_qual_name:
             object = htypes.builtin.attribute(
@@ -51,9 +51,9 @@ class ActorProbeCtr(Constructor):
                 )
         return object
 
-    def make_resource(self, module_name, python_module):
+    def make_resource(self, types, module_name, python_module):
         return ActorProbeResource(
-            module_name, self._attr_qual_name, self._service_name, self._t, self.make_component(python_module), self._params)
+            module_name, self._attr_qual_name, self._service_name, self._t, self.make_component(types, python_module), self._params)
 
     @property
     def _type_name(self):
@@ -131,7 +131,7 @@ class ActorTemplateCtr(ActorTemplateCtrBase):
         target_set.update_deps_for(resolved_tgt)
         target_set.update_deps_for(resource_tgt)
 
-    def make_component(self, python_module, name_to_res=None):
+    def make_component(self, types, python_module, name_to_res=None):
         object = python_module
         prefix = []
         for name in self._attr_qual_name:

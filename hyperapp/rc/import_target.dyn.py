@@ -49,9 +49,9 @@ class ImportTargetAlias(Target):
     def name_for_src(python_module_src):
         return f'import/{python_module_src.name}'
 
-    def __init__(self, python_module_src, custom_resource_registry, type_src_list):
+    def __init__(self, python_module_src, custom_resource_registry, types):
         self._src = python_module_src
-        self._type_src_list = type_src_list
+        self._types = types
         self._custom_resource_registry = custom_resource_registry
         self._import_target = None
         self._completed = False
@@ -95,7 +95,7 @@ class ImportTargetAlias(Target):
 
     def create_resource_target(self, resource_dir, all_imports_known_tgt):
         return CompiledPythonModuleResourceTarget(
-            self._src, self._custom_resource_registry, resource_dir, self._type_src_list, all_imports_known_tgt, self)
+            self._src, self._custom_resource_registry, resource_dir, self._types, all_imports_known_tgt, self)
 
     @cached_property
     def recorded_python_module(self):
@@ -108,13 +108,13 @@ class ImportTargetAlias(Target):
     def test_resources(self):
         module_name, recorder_piece, python_module = self.recorded_python_module
         return [
-            ctr.make_resource(self._src.name, python_module)
+            ctr.make_resource(self._types, self._src.name, python_module)
             for ctr in self._components
             ]
 
     def _enum_resources(self):
         yield from enum_builtin_resources()
-        for src in self._type_src_list:
+        for src in self._types.as_list:
             yield ImportResource.from_type_src(src)
         for req, target in self._req_to_target.items():
             yield from req.make_resource_list(target)
@@ -122,10 +122,10 @@ class ImportTargetAlias(Target):
 
 class ImportTarget(Target):
 
-    def __init__(self, target_set, python_module_src, type_src_list, alias, idx=1, req_to_target=None):
+    def __init__(self, target_set, python_module_src, types, alias, idx=1, req_to_target=None):
         self._target_set = target_set
         self._src = python_module_src
-        self._type_src_list = type_src_list
+        self._types = types
         self._alias = alias
         self._idx = idx
         self._req_to_target = req_to_target or {}
@@ -156,7 +156,7 @@ class ImportTarget(Target):
         return ImportJob(self._src, self._idx, resources)
 
     def _enum_resources(self):
-        for src in self._type_src_list:
+        for src in self._types.as_list:
             yield ImportResource.from_type_src(src)
         for req, target in self._req_to_target.items():
             yield from req.make_resource_list(target)
@@ -176,7 +176,7 @@ class ImportTarget(Target):
         self._alias.set_requirements(req_to_target)
 
     def create_next_target(self, req_to_target):
-        target = ImportTarget(self._target_set, self._src, self._type_src_list, self._alias, self._idx + 1, req_to_target)
+        target = ImportTarget(self._target_set, self._src, self._types, self._alias, self._idx + 1, req_to_target)
         self._alias.set_import_target(target)
         return target
 
@@ -185,6 +185,6 @@ class ImportTarget(Target):
 
     def create_test_target(self, function, req_to_target):
         alias = TestTargetAlias(self._src, function)
-        target = TestTarget(self._src, self._type_src_list, self._alias, function, req_to_target, alias)
+        target = TestTarget(self._src, self._types, self._alias, function, req_to_target, alias)
         alias.set_test_target(target)
         return (alias, target)

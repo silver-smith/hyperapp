@@ -47,4 +47,3 @@ definitions:
       function: CommandTemplateCtr.from_piece
       service_params:
       - data_to_res
-      - build

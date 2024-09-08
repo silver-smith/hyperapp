@@ -67,6 +67,39 @@ class PythonModuleSrc:
         return (recorder, python_module)
 
 
+class TypeSources:
+
+    def __init__(self, type_src_list):
+        self._type_src_list = type_src_list
+
+    @property
+    def as_list(self):
+        return self._type_src_list
+
+    def get(self, module_name, name):
+        return self.as_dict.get(module_name, {}).get(name)
+
+    def get_src(self, module_name, name):
+        return self.as_src_dict.get(module_name, {}).get(name)
+
+    # Make same format as local_types service.
+    @cached_property
+    def as_dict(self):
+        custom_types = {}
+        for src in self._type_src_list:
+            name_to_type = custom_types.setdefault(src.module_name, {})
+            name_to_type[src.name] = src.type_piece
+        return custom_types
+
+    @cached_property
+    def as_src_dict(self):
+        custom_types = {}
+        for src in self._type_src_list:
+            name_to_type = custom_types.setdefault(src.module_name, {})
+            name_to_type[src.name] = src
+        return custom_types
+
+
 @dataclass
 class TypeSrc:
 
@@ -96,19 +129,8 @@ class Build:
             python_modules=tuple(self.python_modules),
             )
 
-    @cached_property
-    def type_dict(self):
-        custom_types = {}
-        for src in self.types:
-            name_to_type = custom_types.setdefault(src.module_name, {})
-            name_to_type[src.name] = src.type_piece
-        return custom_types
-
-    def get_type(self, module_name, name):
-        return self.type_dict.get(module_name, {}).get(name)
-
     def report(self):
-        for t in self.types:
+        for t in self.types.as_list:
             log.info("\tType: %s", t)
         for m in self.python_modules:
             log.info("\tPython module: %s", m)
@@ -140,6 +162,6 @@ def _load_types(root_dir):
 
 def load_build(root_dir):
     return Build(
-        types=list(_load_types(root_dir)),
+        types=TypeSources(list(_load_types(root_dir))),
         python_modules=list(_load_pyhon_modules(root_dir)),
         )

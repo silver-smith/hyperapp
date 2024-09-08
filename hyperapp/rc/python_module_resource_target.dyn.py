@@ -92,13 +92,9 @@ class ManualPythonModuleResourceTarget(PythonModuleResourceTarget):
 
 class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
 
-    def __init__(self, python_module_src, custom_resource_registry, resource_dir, type_src_list, all_imports_known_tgt, import_alias_tgt):
+    def __init__(self, python_module_src, custom_resource_registry, resource_dir, types, all_imports_known_tgt, import_alias_tgt):
         super().__init__(python_module_src)
-        self._type_src_list = type_src_list
-        self._name_to_src = {
-            (rec.module_name, rec.name): rec
-            for rec in type_src_list
-            }
+        self._types = types
         self._all_imports_known_tgt = all_imports_known_tgt
         self._import_alias_tgt = import_alias_tgt
         self._resource_module = resource_module_factory(
@@ -166,7 +162,7 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
                 continue
             if name[0] != 'htypes':
                 continue
-            type_src = self._name_to_src[name[1:]]
+            type_src = self._types.get_src(name[1], name[2])
             resource = ImportResource.from_type_src(type_src)
             self._type_resources.add(resource)
 
@@ -188,7 +184,7 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
         self._resource_module[f'{self._src.stem}.module'] = python_module
         self._python_module_piece = python_module
         for item_tgt in self._cfg_item_targets:
-            item_tgt.constructor.make_component(python_module, self._resource_module)
+            item_tgt.constructor.make_component(self._types, python_module, self._resource_module)
 
     def get_output(self):
         return (self._src.resource_path, self._resource_module.as_text)

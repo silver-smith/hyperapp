@@ -49,7 +49,7 @@ class FeedCtr(ModuleCtr):
         target_set.update_deps_for(resolved_tgt)
         target_set.update_deps_for(resource_tgt)
 
-    def make_component(self, python_module, name_to_res=None):
+    def make_component(self, types, python_module, name_to_res=None):
         feed = self._make_feed()
         if name_to_res is not None:
             name_to_res[self._component_name] = feed

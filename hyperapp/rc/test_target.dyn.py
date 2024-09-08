@@ -37,9 +37,9 @@ class TestTargetAlias(Target):
 
 class TestTarget(Target):
 
-    def __init__(self, python_module_src, type_src_list, import_alias_tgt, function, req_to_target, alias, fixtures_deps=None, idx=1):
+    def __init__(self, python_module_src, types, import_alias_tgt, function, req_to_target, alias, fixtures_deps=None, idx=1):
         self._src = python_module_src
-        self._type_src_list = type_src_list
+        self._types = types
         self._import_alias_tgt = import_alias_tgt
         self._function = function
         self._req_to_target = req_to_target or {}
@@ -78,7 +78,7 @@ class TestTarget(Target):
         return TestJob(self._src, self._idx, resources, self._function.name)
 
     def _enum_resources(self):
-        for src in self._type_src_list:
+        for src in self._types.as_list:
             yield ImportResource.from_type_src(src)
         for req, target in sorted(self._req_to_target.items(), key=req_key):
             yield from req.make_resource_list(target)
@@ -111,7 +111,7 @@ class TestTarget(Target):
             }
         target = TestTarget(
             python_module_src=self._src,
-            type_src_list=self._type_src_list,
+            types=self._types,
             import_alias_tgt=self._import_alias_tgt,
             function=self._function,
             req_to_target=full_req_to_target,

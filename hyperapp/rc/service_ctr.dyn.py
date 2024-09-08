@@ -26,7 +26,7 @@ class ServiceCtr(Constructor):
         target_set.update_deps_for(resolved_tgt)
         target_set.update_deps_for(resource_tgt)
 
-    def make_component(self, python_module, name_to_res=None):
+    def make_component(self, types, python_module, name_to_res=None):
         attribute = htypes.builtin.attribute(
             object=mosaic.put(python_module),
             attr_name=self._attr_name,
@@ -86,14 +86,14 @@ class ServiceProbeCtr(ModuleCtr):
         # Should be created to be added to config resource.
         _ = target_set.factory.config_item_complete('system', self._name)
 
-    def make_component(self, python_module, name_to_res=None):
+    def make_component(self, types, python_module, name_to_res=None):
         return htypes.builtin.attribute(
             object=mosaic.put(python_module),
             attr_name=self._attr_name,
             )
 
-    def make_resource(self, module_name, python_module):
-        return ServiceProbeResource(self._attr_name, self._name, self.make_component(python_module), self._params)
+    def make_resource(self, types, module_name, python_module):
+        return ServiceProbeResource(self._attr_name, self._name, self.make_component(types, python_module), self._params)
 
 
 class ServiceTemplateCtrBase(Constructor):
@@ -158,7 +158,7 @@ class ServiceTemplateCtr(ServiceTemplateCtrBase):
         # Should be created to be added to config resource.
         _ = target_set.factory.config_item_complete('system', self._name)
 
-    def make_component(self, python_module, name_to_res=None):
+    def make_component(self, types, python_module, name_to_res=None):
         attribute = htypes.builtin.attribute(
             object=mosaic.put(python_module),
             attr_name=self._attr_name,

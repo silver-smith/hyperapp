@@ -11,11 +11,10 @@ from .code.marker_utils import (
 
 class CommandProbe:
 
-    def __init__(self, system_probe, ctr_collector, data_to_res, build, module_name, service_name, fn, t):
+    def __init__(self, system_probe, ctr_collector, data_to_res, module_name, service_name, fn, t):
         self._system = system_probe
         self._ctr_collector = ctr_collector
         self._data_to_res = data_to_res
-        self._build = build
         self._module_name = module_name
         self._service_name = service_name
         self._fn = fn
@@ -26,7 +25,6 @@ class CommandProbe:
         self._system = system_probe
         self._ctr_collector = system_probe.resolve_service('ctr_collector')
         self._data_to_res = system_probe.resolve_service('data_to_res')
-        self._build = system_probe.resolve_service('build')
 
     def __call__(self, *args, **kw):
         params = fn_params(self._fn)
@@ -47,7 +45,6 @@ class CommandProbe:
     def _add_constructor(self, t, ctx_params, service_params):
         ctr = CommandTemplateCtr(
             self._data_to_res,
-            self._build,
             module_name=self._module_name,
             attr_qual_name=self._fn.__qualname__.split('.'),
             service_name=self._service_name,
@@ -60,10 +57,9 @@ class CommandProbe:
 
 class CommandWrapper:
 
-    def __init__(self, system, ctr_collector, data_to_res, build, module_name, service_name, t):
+    def __init__(self, system, ctr_collector, data_to_res, module_name, service_name, t):
         self._system = system
         self._ctr_collector = ctr_collector
-        self._build = build
         self._data_to_res = data_to_res
         self._module_name = module_name
         self._service_name = service_name
@@ -73,11 +69,11 @@ class CommandWrapper:
         qual_name = fn.__qualname__.split('.')
         check_not_classmethod(fn)
         check_is_function(fn)
-        return CommandProbe(self._system, self._ctr_collector, self._data_to_res, self._build, self._module_name, self._service_name, fn, self._t)
+        return CommandProbe(self._system, self._ctr_collector, self._data_to_res, self._module_name, self._service_name, fn, self._t)
 
 
-def ui_command_marker(t, module_name, system, ctr_collector, data_to_res, build):
-    return CommandWrapper(system, ctr_collector, data_to_res, build, module_name, 'ui_command', t)
+def ui_command_marker(t, module_name, system, ctr_collector, data_to_res):
+    return CommandWrapper(system, ctr_collector, data_to_res, module_name, 'ui_command', t)
 
 
 def ui_model_command_marker(t, module_name):
