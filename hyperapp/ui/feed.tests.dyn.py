@@ -7,7 +7,7 @@ from .code.mark import mark
 from .tested.code import feed as feed_module
 
 
-@mark.config_item_fixture('feed_factory')
+@mark.config_fixture('feed_factory')
 def feed_factory_config():
     element_t = pyobj_creg.actor_to_piece(htypes.feed_tests.sample_item)
     return {

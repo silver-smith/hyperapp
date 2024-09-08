@@ -3,7 +3,7 @@ from .services import (
     mosaic,
     )
 from .code.rc_constructor import ModuleCtr
-from .code.fixture_probe_resource import ConfigItemFixtureResource, FixtureProbeResource
+from .code.fixture_probe_resource import ConfigFixtureResource, FixtureProbeResource
 
 
 class FixtureCtr(ModuleCtr):
@@ -45,7 +45,7 @@ class FixtureCtr(ModuleCtr):
         return FixtureProbeResource(self._name, self.make_component(types, python_module), self._params)
 
 
-class ConfigItemFixtureCtr(ModuleCtr):
+class ConfigFixtureCtr(ModuleCtr):
 
     @classmethod
     def from_piece(cls, piece):
@@ -59,7 +59,7 @@ class ConfigItemFixtureCtr(ModuleCtr):
 
     @property
     def piece(self):
-        return htypes.fixture_resource.config_item_fixture_ctr(
+        return htypes.fixture_resource.config_fixture_ctr(
             module_name=self._module_name,
             attr_qual_name=tuple(self._attr_qual_name),
             service_name=self._service_name,
@@ -84,4 +84,4 @@ class ConfigItemFixtureCtr(ModuleCtr):
         return object
 
     def make_resource(self, types, module_name, python_module):
-        return ConfigItemFixtureResource(self._service_name, self.make_component(types, python_module), self._service_params)
+        return ConfigFixtureResource(self._service_name, self.make_component(types, python_module), self._service_params)

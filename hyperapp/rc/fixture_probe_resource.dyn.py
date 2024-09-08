@@ -4,7 +4,7 @@ from .services import (
     web,
     )
 from .code.rc_resource import Resource
-from .code.system_probe import ConfigItemFixture, FixtureProbeTemplate
+from .code.system_probe import ConfigFixture, FixtureProbeTemplate
 
 
 class FixtureProbeResource(Resource):
@@ -31,7 +31,7 @@ class FixtureProbeResource(Resource):
         system.update_config('system', {self._service_name: probe})
 
 
-class ConfigItemFixtureResource(Resource):
+class ConfigFixtureResource(Resource):
 
     @classmethod
     def from_piece(cls, piece):
@@ -44,12 +44,12 @@ class ConfigItemFixtureResource(Resource):
 
     @property
     def piece(self):
-        return htypes.fixture_resource.config_item_fixture_resource(
+        return htypes.fixture_resource.config_fixture_resource(
             service_name=self._service_name,
             function=mosaic.put(self._function),
             service_params=tuple(self._service_params),
             )
 
     def configure_system(self, system):
-        fixture = ConfigItemFixture(self._function, self._service_params)
+        fixture = ConfigFixture(self._function, self._service_params)
         system.add_item_fixtures(self._service_name, [fixture])

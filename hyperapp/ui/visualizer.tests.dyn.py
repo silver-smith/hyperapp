@@ -40,7 +40,7 @@ def sample_fn():
     pass
 
 
-@mark.config_item_fixture('visualizer_reg')
+@mark.config_fixture('visualizer_reg')
 def visualizer_config():
     impl = htypes.ui.fn_impl(
         function=pyobj_creg.actor_to_ref(sample_fn),

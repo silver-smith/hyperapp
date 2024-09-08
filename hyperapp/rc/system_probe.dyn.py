@@ -111,14 +111,14 @@ class ConfigProbe:
         return self._config.items()
 
 
-class ConfigItemFixture:
+class ConfigFixture:
 
     def __init__(self, fn_piece, service_params):
         self._fn = fn_piece
         self._service_params = service_params
 
     def __repr__(self):
-        return f"<ConfigItemFixture {self._fn} {self._service_params}>"
+        return f"<ConfigFixture {self._fn} {self._service_params}>"
 
     def resolve(self, system):
         fn = pyobj_creg.animate(self._fn)
@@ -246,12 +246,12 @@ class SystemProbe(System):
 
     def __init__(self):
         super().__init__()
-        self._config_item_fixtures = defaultdict(list)  # service_name -> fixture list
+        self._config_fixtures = defaultdict(list)  # service_name -> fixture list
         self._resolved_templates = {}
         self._async_error = None  # (error message, exception) tuple
 
     def add_item_fixtures(self, service_name, fixture_list):
-        self._config_item_fixtures[service_name] += fixture_list
+        self._config_fixtures[service_name] += fixture_list
 
     def add_global(self, global_obj):
         self._globals.add(global_obj)
@@ -267,7 +267,7 @@ class SystemProbe(System):
 
     def resolve_config(self, service_name):
         config = super().resolve_config(service_name)
-        for fixture in self._config_item_fixtures.get(service_name, []):
+        for fixture in self._config_fixtures.get(service_name, []):
             cfg = fixture.resolve(self)
             config.update(cfg)
         return ConfigProbe(service_name, config)

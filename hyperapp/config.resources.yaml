@@ -16,15 +16,15 @@ import:
 - rc.actor_resource:actor_resource_actor_req.actor-template
 - rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
 - rc.command_ctr:command_resource_command_template_ctr.actor-template
-- rc.config_item_marker:config_item_fixture.marker-template
+- rc.config_item_marker:config_fixture.marker-template
 - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
 - rc.ctr_collector:ctr_collector.service
 - rc.feed_ctr:rc_constructors_index_tree_feed.actor-template
 - rc.feed_ctr:rc_constructors_list_feed.actor-template
-- rc.fixture_ctr:fixture_resource_config_item_fixture_ctr.actor-template
+- rc.fixture_ctr:fixture_resource_config_fixture_ctr.actor-template
 - rc.fixture_ctr:fixture_resource_fixture_ctr.actor-template
 - rc.fixture_marker:fixture.marker-template
-- rc.fixture_probe_resource:fixture_resource_config_item_fixture_resource.actor-template
+- rc.fixture_probe_resource:fixture_resource_config_fixture_resource.actor-template
 - rc.fixture_probe_resource:fixture_resource_fixture_probe_resource.actor-template
 - rc.htest.sample_config:sample_config_service.service
 - rc.htest.sample_service_1:sample_fn_service_1.service
@@ -166,7 +166,7 @@ definitions:
         - ui.feed:ui_list_feed.actor-template
         marker_registry:
         - rc.actor_marker:actor.marker-template
-        - rc.config_item_marker:config_item_fixture.marker-template
+        - rc.config_item_marker:config_fixture.marker-template
         - rc.fixture_marker:fixture.marker-template
         - rc.model_marker:model.marker-template
         - rc.service_marker:service2.marker-template
@@ -190,7 +190,7 @@ definitions:
         - rc.command_ctr:command_resource_command_template_ctr.actor-template
         - rc.feed_ctr:rc_constructors_index_tree_feed.actor-template
         - rc.feed_ctr:rc_constructors_list_feed.actor-template
-        - rc.fixture_ctr:fixture_resource_config_item_fixture_ctr.actor-template
+        - rc.fixture_ctr:fixture_resource_config_fixture_ctr.actor-template
         - rc.fixture_ctr:fixture_resource_fixture_ctr.actor-template
         - rc.model_ctr:rc_constructors_model.actor-template
         - rc.service_ctr:rc_constructors_service.actor-template
@@ -222,7 +222,7 @@ definitions:
         rc_resource_creg:
         - rc.actor_probe_resource:actor_resource_actor_probe_resource.actor-template
         - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
-        - rc.fixture_probe_resource:fixture_resource_config_item_fixture_resource.actor-template
+        - rc.fixture_probe_resource:fixture_resource_config_fixture_resource.actor-template
         - rc.fixture_probe_resource:fixture_resource_fixture_probe_resource.actor-template
         - rc.import_resource:import_resource_import_resource.actor-template
         - rc.service_probe_resource:service_resource_service_probe_resource.actor-template

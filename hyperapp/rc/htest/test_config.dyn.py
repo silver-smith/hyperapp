@@ -19,7 +19,7 @@ def simple_fixture():
     return SampleFixture("simple")
 
 
-@mark.config_item_fixture('sample_config_service')
+@mark.config_fixture('sample_config_service')
 def config_item_1(simple_fixture):
     return {
         htypes.sample_config.sample_key: htypes.sample_config.sample_item(12345),

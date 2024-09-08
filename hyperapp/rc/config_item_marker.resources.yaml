@@ -14,16 +14,16 @@ definitions:
       import_list:
         code.fixture_ctr: rc.fixture_ctr:fixture_ctr.module
 
-  config_item_fixture_marker:
+  config_fixture_marker:
     type: legacy_type.builtin:attribute
     value:
       object: config_item_marker.module
-      attr_name: config_item_fixture_marker
+      attr_name: config_fixture_marker
 
-  config_item_fixture.marker-template:
+  config_fixture.marker-template:
     type: legacy_type.marker:marker_template
     value:
-      name: config_item_fixture
-      function: config_item_fixture_marker
+      name: config_fixture
+      function: config_fixture_marker
       service_params:
       - ctr_collector

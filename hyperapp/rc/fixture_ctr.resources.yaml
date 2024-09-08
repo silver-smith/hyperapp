@@ -2,7 +2,7 @@ import:
 - builtins:mosaic.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.fixture_resource:config_item_fixture_ctr
+- legacy_type.fixture_resource:config_fixture_ctr
 - legacy_type.fixture_resource:fixture_ctr
 - legacy_type.system:actor_template
 - legacy_type.system:finalizer_gen_service_template
@@ -19,7 +19,7 @@ definitions:
       file_name: fixture_ctr.dyn.py
       import_list:
         htypes.builtin.attribute: legacy_type.builtin:attribute
-        htypes.fixture_resource.config_item_fixture_ctr: legacy_type.fixture_resource:config_item_fixture_ctr
+        htypes.fixture_resource.config_fixture_ctr: legacy_type.fixture_resource:config_fixture_ctr
         htypes.fixture_resource.fixture_ctr: legacy_type.fixture_resource:fixture_ctr
         services.mosaic: builtins:mosaic.service
         code.rc_constructor: rc.rc_constructor:rc_constructor.module
@@ -44,21 +44,21 @@ definitions:
       function: FixtureCtr.from_piece
       service_params: []
 
-  ConfigItemFixtureCtr:
+  ConfigFixtureCtr:
     type: legacy_type.builtin:attribute
     value:
       object: fixture_ctr.module
-      attr_name: ConfigItemFixtureCtr
+      attr_name: ConfigFixtureCtr
 
-  ConfigItemFixtureCtr.from_piece:
+  ConfigFixtureCtr.from_piece:
     type: legacy_type.builtin:attribute
     value:
-      object: ConfigItemFixtureCtr
+      object: ConfigFixtureCtr
       attr_name: from_piece
 
-  fixture_resource_config_item_fixture_ctr.actor-template:
+  fixture_resource_config_fixture_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.fixture_resource:config_item_fixture_ctr
-      function: ConfigItemFixtureCtr.from_piece
+      t: legacy_type.fixture_resource:config_fixture_ctr
+      function: ConfigFixtureCtr.from_piece
       service_params: []

@@ -33,7 +33,7 @@ def sample_service():
     return 'a-service'
 
 
-@mark.config_item_fixture('view_ui_command_reg')
+@mark.config_fixture('view_ui_command_reg')
 def view_ui_command_reg_config(data_to_res):
     properties = htypes.ui.command_properties(
         is_global=False,
