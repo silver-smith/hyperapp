@@ -41,7 +41,6 @@ import:
 - rc.rc_job:rc_job_job_target.actor-template
 - rc.rc_job_creg:rc_job_creg.service
 - rc.rc_job_result_creg:rc_job_result_creg.service
-- rc.rc:build.service
 - rc.rc:compile_resources.service
 - rc.rc:rc_main.service
 - rc.rc_requirement_creg:rc_requirement_creg.service
@@ -129,7 +128,6 @@ definitions:
         - rc.rc_job:rc_job_submit_factory.service
         - rc.rc_job_creg:rc_job_creg.service
         - rc.rc_job_result_creg:rc_job_result_creg.service
-        - rc.rc:build.service
         - rc.rc:compile_resources.service
         - rc.rc:rc_main.service
         - rc.rc_requirement_creg:rc_requirement_creg.service

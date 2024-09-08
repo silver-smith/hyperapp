@@ -193,14 +193,11 @@ def _parse_args(sys_argv):
     )
 
 
-def build():
+def compile_resources(system_config, cfg_item_creg, ctr_from_template_creg, rc_job_result_creg, pool, targets, options):
     build = load_build(hyperapp_dir)
     log.info("Loaded build:")
     build.report()
-    return build
 
-
-def compile_resources(system_config, cfg_item_creg, ctr_from_template_creg, rc_job_result_creg, build, pool, targets, options):
     target_set = TargetSet(hyperapp_dir, build.python_modules)
     init_targets(cfg_item_creg, ctr_from_template_creg, system_config, hyperapp_dir, target_set, build)
     filter = Filter(target_set, targets)
