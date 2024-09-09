@@ -1,6 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:cached_code_registry_ctr.service
 - builtins:mosaic.service
 - builtins:web.service
 - common.mark:mark.module
@@ -20,6 +21,7 @@ definitions:
       file_name: feed_creg.dyn.py
       import_list:
         code.mark: common.mark:mark.module
+        services.cached_code_registry_ctr: builtins:cached_code_registry_ctr.service
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
   feed_creg.service:

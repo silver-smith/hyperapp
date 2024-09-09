@@ -13,6 +13,7 @@ from .web import Web
 from .type_module_loader import TypeModuleLoader
 from .code_registry import CodeRegistry
 from .code_registry2 import CodeRegistry2
+from .cached_code_registry import CachedCodeRegistry
 from .pyobj_registry import PyObjRegistry
 from .association_registry import AssociationRegistry
 from .python_importer import PythonImporter
@@ -62,6 +63,7 @@ class Services(object):
         'reconstructors',
         'builtin_services',
         'builtin_types',
+        'cached_code_registry_ctr',
         'code_registry_ctr',
         'code_registry_ctr2',
         'hyperapp_dir',
@@ -159,6 +161,7 @@ class Services(object):
         self.code_registry_ctr = partial(
             CodeRegistry, self.mosaic, self.web, self.association_reg, self.pyobj_creg)
         self.code_registry_ctr2 = partial(CodeRegistry2, self.web)
+        self.cached_code_registry_ctr = partial(CachedCodeRegistry, self.mosaic, self.web)
         add_builtin_services_to_pyobj_cache(self, self.builtin_services, self.pyobj_creg)
 
     def stop(self):
