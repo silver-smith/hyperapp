@@ -150,17 +150,17 @@ class FailedImportResult(JobResult):
 class ImportJob(SystemJob):
 
     @classmethod
-    def from_piece(cls, piece, cfg_item_creg, rc_resource_creg, system_config):
+    def from_piece(cls, piece, cfg_item_creg, rc_resource_creg, system_config_piece):
         return cls(
             python_module_src=PythonModuleSrc.from_piece(piece.python_module),
             idx=piece.idx,
             resources=[rc_resource_creg.invite(d) for d in piece.resources],
             cfg_item_creg=cfg_item_creg,
-            system_config=system_config,
+            system_config_piece=system_config_piece,
             )
 
-    def __init__(self, python_module_src, idx, resources, cfg_item_creg=None, system_config=None):
-        super().__init__(cfg_item_creg, system_config)
+    def __init__(self, python_module_src, idx, resources, cfg_item_creg=None, system_config_piece=None):
+        super().__init__(cfg_item_creg, system_config_piece)
         self._src = python_module_src
         self._idx = idx
         self._resources = resources

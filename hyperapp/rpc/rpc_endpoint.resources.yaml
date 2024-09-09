@@ -13,6 +13,7 @@ import:
 - legacy_type.system:actor_template
 - legacy_type.system:finalizer_gen_service_template
 - legacy_type.system:service_template
+- system.system:item_dict_config_ctl
 
 definitions:
 
@@ -40,6 +41,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: rpc_message_creg
+      ctl: system.system:item_dict_config_ctl
       function: rpc_message_creg
       free_params: []
       service_params: []
@@ -55,6 +57,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: rpc_endpoint
+      ctl: system.system:item_dict_config_ctl
       function: rpc_endpoint
       free_params: []
       service_params:
@@ -71,6 +74,7 @@ definitions:
     type: legacy_type.system:finalizer_gen_service_template
     value:
       name: rpc_request_futures
+      ctl: system.system:item_dict_config_ctl
       function: rpc_request_futures
       free_params: []
       service_params: []
@@ -86,6 +90,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: cancel_rpc_request_futures
+      ctl: system.system:item_dict_config_ctl
       function: cancel_rpc_request_futures
       free_params: []
       service_params:
@@ -130,6 +135,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: rpc_target_creg
+      ctl: system.system:item_dict_config_ctl
       function: rpc_target_creg
       free_params: []
       service_params: []

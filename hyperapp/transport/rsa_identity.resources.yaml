@@ -8,6 +8,7 @@ import:
 - legacy_type.rsa_identity:rsa_parcel
 - legacy_type.rsa_identity:rsa_peer
 - legacy_type.rsa_identity:rsa_signature
+- system.system:item_dict_config_ctl
 
 definitions:
 
@@ -39,6 +40,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: generate_rsa_identity
+      ctl: system.system:item_dict_config_ctl
       function: RsaIdentity.generate
       free_params:
       - fast

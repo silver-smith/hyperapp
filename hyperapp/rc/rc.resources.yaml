@@ -12,6 +12,7 @@ import:
 - rc.init_targets:init_targets.module
 - rc.process_pool:process_pool.module
 - rc.target_set:target_set.module
+- system.system:item_dict_config_ctl
 
 definitions:
 
@@ -41,14 +42,15 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: compile_resources
+      ctl: system.system:item_dict_config_ctl
       function: compile_resources
       free_params:
       - pool
       - targets
       - options
       service_params:
-      - system_config
-      - cfg_item_creg
+      - system_config_template
+      - config_ctl
       - ctr_from_template_creg
       - rc_job_result_creg
       want_config: false
@@ -63,6 +65,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: rc_main
+      ctl: system.system:item_dict_config_ctl
       function: rc_main
       free_params:
       - sys_argv

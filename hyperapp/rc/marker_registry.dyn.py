@@ -13,13 +13,18 @@ class MarkerTemplate:
             service_params=piece.service_params,
             )
 
+    @classmethod
+    def item_from_piece(cls, piece):
+        self = cls.from_piece(piece)
+        return (self.name, self)
+
     def __init__(self, name, fn, service_params):
         self.name = name
         self._fn = fn
         self._service_params = service_params
 
     def __repr__(self):
-        return f"<MarkerTemplate {self._name}: {self._fn} {self._service_params}>"
+        return f"<MarkerTemplate {self.name}: {self._fn} {self._service_params}>"
 
     def resolve(self, system, service_name):
         kw = {
@@ -45,22 +50,6 @@ class Marker:
         else:
             # A function.
             return partial(self._fn, **kw)
-
-
-class MarkerCfg:
-
-    @classmethod
-    def from_piece(cls, piece, service_name):
-        template = MarkerTemplate.from_piece(piece)
-        return cls(template)
-
-    def __init__(self, template):
-        self.key = template.name
-        self.value = template
-
-    @property
-    def piece(self):
-        return self.value.piece
 
 
 def marker_registry(config, ctr_collector, marker_ctl):

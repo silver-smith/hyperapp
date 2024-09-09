@@ -8,6 +8,7 @@ import:
 - legacy_type.rpc:request
 - legacy_type.rpc:server_error
 - legacy_type.system:service_template
+- system.system:item_dict_config_ctl
 
 definitions:
 
@@ -34,6 +35,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: rpc_submit_target_factory
+      ctl: system.system:item_dict_config_ctl
       function: rpc_submit_target_factory
       free_params:
       - receiver_peer
@@ -53,6 +55,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: rpc_submit_factory
+      ctl: system.system:item_dict_config_ctl
       function: rpc_submit_factory
       free_params:
       - receiver_peer
@@ -72,6 +75,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: rpc_wait_for_future
+      ctl: system.system:item_dict_config_ctl
       function: rpc_wait_for_future
       free_params:
       - future
@@ -89,6 +93,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: rpc_call_factory
+      ctl: system.system:item_dict_config_ctl
       function: rpc_call_factory
       free_params:
       - receiver_peer

@@ -8,9 +8,11 @@ from hyperapp.common.htypes import Type
 
 from . import htypes
 from .services import (
-    pyobj_creg,
     code_registry_ctr2,
+    pyobj_creg,
+    web,
     )
+from .code.config_ctl import ItemDictConfigCtl
 
 log = logging.getLogger(__name__)
 
@@ -37,11 +39,20 @@ class ActorRequester:
 
 class ServiceTemplateBase:
 
-    def __init__(self, name, fn, service_params, want_config):
+    @classmethod
+    def cfg_from_piece(cls, piece):
+        self = cls.from_piece(piece)
+        return (self.service_name, self)
+
+    def __init__(self, name, ctl_ref, fn, service_params, want_config):
         self.service_name = name
+        self._ctl_ref = ctl_ref
         self._fn = fn
         self._service_params = service_params
         self._want_config = want_config
+
+    def ctl(self, config_ctl_creg, cfg_item_creg):
+        return config_ctl_creg.invite(self._ctl_ref, cfg_item_creg)
 
     def _resolve_service_args(self, system):
         if self._want_config:
@@ -61,14 +72,15 @@ class ServiceTemplate(ServiceTemplateBase):
     def from_piece(cls, piece):
         return cls(
             name=piece.name,
+            ctl_ref=piece.ctl,
             fn=pyobj_creg.invite(piece.function),
             free_params=piece.free_params,
             service_params=piece.service_params,
             want_config=piece.want_config,
             )
 
-    def __init__(self, name, fn, free_params, service_params, want_config):
-        super().__init__(name, fn, service_params, want_config)
+    def __init__(self, name, ctl_ref, fn, free_params, service_params, want_config):
+        super().__init__(name, ctl_ref, fn, service_params, want_config)
         self._free_params = free_params
 
     def __repr__(self):
@@ -78,6 +90,7 @@ class ServiceTemplate(ServiceTemplateBase):
     def piece(self):
         return htypes.system.service_template(
             name=self.service_name,
+            ctl=self._ctl_ref,
             function=pyobj_creg.actor_to_ref(self._fn),
             free_params=tuple(self._free_params),
             service_params=tuple(self._service_params),
@@ -98,13 +111,14 @@ class FinalizerGenServiceTemplate(ServiceTemplateBase):
     def from_piece(cls, piece):
         return cls(
             name=piece.name,
+            ctl_ref=piece.ctl,
             fn=pyobj_creg.invite(piece.function),
             service_params=piece.service_params,
             want_config=piece.want_config,
             )
 
-    def __init__(self, name, fn, service_params, want_config):
-        super().__init__(name, fn, service_params, want_config)
+    def __init__(self, name, ctl_ref, fn, service_params, want_config):
+        super().__init__(name, ctl_ref, fn, service_params, want_config)
         if not inspect.isgeneratorfunction(fn):
             raise RuntimeError(f"Function {fn!r} expected to be a generator function")
 
@@ -115,6 +129,7 @@ class FinalizerGenServiceTemplate(ServiceTemplateBase):
     def piece(self):
         return htypes.system.finalizer_gen_service_template(
             name=self.service_name,
+            ctl=self._ctl_ref,
             function=pyobj_creg.actor_to_ref(self._fn),
             service_params=tuple(self._service_params),
             want_config=self._want_config,
@@ -145,6 +160,11 @@ class ActorTemplate:
             fn=pyobj_creg.invite(piece.function),
             service_params=piece.service_params,
             )
+
+    @classmethod
+    def cfg_from_piece(cls, piece):
+        self = cls.from_piece(piece)
+        return (self.t, self)
 
     def __init__(self, t, fn, service_params):
         self.t = t
@@ -178,54 +198,6 @@ class NotATemplate:
         return self._value
 
         
-class ServiceTemplateCfg:
-
-    @classmethod
-    def from_piece(cls, piece, service_name):
-        template = ServiceTemplate.from_piece(piece)
-        return cls(template)
-
-    def __init__(self, template):
-        self.key = template.service_name
-        self.value = template
-
-    @property
-    def piece(self):
-        return self.value.piece
-
-
-class FinalizerGenServiceTemplateCfg:
-
-    @classmethod
-    def from_piece(cls, piece, service_name):
-        template = FinalizerGenServiceTemplate.from_piece(piece)
-        return cls(template)
-
-    def __init__(self, template):
-        self.key = template.service_name
-        self.value = template
-
-    @property
-    def piece(self):
-        return self.value.piece
-
-
-class ActorTemplateCfg:
-
-    @classmethod
-    def from_piece(cls, piece, service_name):
-        template = ActorTemplate.from_piece(piece)
-        return cls(template)
-
-    def __init__(self, template):
-        self.key = template.t
-        self.value = template
-
-    @property
-    def piece(self):
-        return self.value.piece
-
-
 class LazyConfig:
 
     def __init__(self, system, service_name, unresolved_config):
@@ -250,50 +222,82 @@ class System:
     _system_name = "System"
 
     def __init__(self):
-        self._configs = defaultdict(dict)
-        self._name_to_template = self._configs['system']
+        self._name_to_template = {}
+        self._configs = {'system': self._name_to_template}  # service name -> service config
         self._name_to_service = {}
         self._resolve_stack = {}  # service name -> requester
         self._finalizers = {}  # service name -> fn
         self._init()
 
     def _init(self):
+        # cfg_item_creg is used by ItemDictConfigCtl.
         cfg_item_creg_config = {
-            htypes.system.service_template: ServiceTemplateCfg.from_piece,
-            htypes.system.finalizer_gen_service_template: FinalizerGenServiceTemplateCfg.from_piece,
-            htypes.system.actor_template: ActorTemplateCfg.from_piece,
+            htypes.system.service_template: ServiceTemplate.cfg_from_piece,
+            htypes.system.finalizer_gen_service_template: FinalizerGenServiceTemplate.cfg_from_piece,
+            htypes.system.actor_template: ActorTemplate.cfg_from_piece,
             }
         self._cfg_item_creg = code_registry_ctr2('cfg-item', cfg_item_creg_config)
+        config_ctl_creg_config = {
+            htypes.system.item_dict_config_ctl: ItemDictConfigCtl.from_piece,
+            }
+        self._config_ctl_creg = code_registry_ctr2('config-ctl', config_ctl_creg_config)
+        self._config_ctl = {
+            'system': ItemDictConfigCtl(self._cfg_item_creg),
+            'cfg_item_creg': ItemDictConfigCtl(self._cfg_item_creg),
+            }
         self.add_core_service('cfg_item_creg', self._cfg_item_creg)
+        self.add_core_service('contig_ctl_creg', self._config_ctl_creg)
+        self.add_core_service('config_ctl', self._config_ctl)
         self.add_core_service('system', self)
 
     def add_core_service(self, name, service):
         self._name_to_service[name] = service
 
     def update_config(self, service_name, config):
-        self._configs[service_name].update(config)
+        try:
+            dest = self._configs[service_name]
+        except KeyError:
+            self._configs[service_name] = config
+        else:
+            ctl = self._config_ctl[service_name]
+            ctl.merge(dest, config)
 
     def load_config(self, config_piece):
-        self.add_core_service('system_config', config_piece)
-        service_to_items = {
-            sc.service: sc.items
-            for sc in config_piece.services
+        self.add_core_service('system_config_piece', config_piece)
+        service_to_config = {
+            rec.service: web.summon(rec.config)
+            for rec in config_piece.services
             }
-        for item_ref in service_to_items['cfg_item_creg']:
-            cfg = self._cfg_item_creg.invite(item_ref, 'cfg_item_creg')
-            value = cfg.value.resolve(self, 'cfg_item_creg')
-            self._cfg_item_creg.update_config({cfg.key: value})
-        # TODO: Think how to load pyobj_creg config not by system. It is a global registry.
-        for item_ref in service_to_items['pyobj_creg']:
-            cfg = self._cfg_item_creg.invite(item_ref, 'pyobj_creg')
-            value = cfg.value.resolve(self, 'pyobj_creg')
-            pyobj_creg.update_config({cfg.key: value})
-        for service_name, items in service_to_items.items():
-            if service_name == 'cfg_item_creg':
+        # for item_ref in service_to_items['cfg_item_creg']:
+        #     cfg = self._cfg_item_creg.invite(item_ref, 'cfg_item_creg')
+        #     value = cfg.value.resolve(self, 'cfg_item_creg')
+        #     self._cfg_item_creg.update_config({cfg.key: value})
+        # # TODO: Think how to load pyobj_creg config not by system. It is a global registry.
+        # for item_ref in service_to_items['pyobj_creg']:
+        #     cfg = self._cfg_item_creg.invite(item_ref, 'pyobj_creg')
+        #     value = cfg.value.resolve(self, 'pyobj_creg')
+        #     pyobj_creg.update_config({cfg.key: value})
+
+        self._load_config_piece('system', service_to_config['system'])
+        for service_name, service_template in self._configs['system'].items():
+            self._config_ctl[service_name] = service_template.ctl(self._config_ctl_creg, self._cfg_item_creg)
+        self._load_cfg_item_creg(service_to_config['cfg_item_creg'])
+        for service_name, config_piece in service_to_config.items():
+            if service_name in {'system', 'cfg_item_creg', 'config_ctl', 'pyobj_creg'}:
                 continue
-            for item_ref in items:
-                item = self._cfg_item_creg.invite(item_ref, service_name)
-                self.update_config(service_name, {item.key: item.value})
+            self._load_config_piece(service_name, config_piece)
+        self.add_core_service('system_config_template', self._configs)
+
+    def _load_config_piece(self, service_name, config_piece):
+        ctl = self._config_ctl[service_name]
+        config = ctl.from_data(config_piece)
+        self.update_config(service_name, config)
+
+    def _load_cfg_item_creg(self, config_piece):
+        ctl = self._config_ctl['cfg_item_creg']
+        config_template = ctl.from_data(config_piece)
+        config = ctl.resolve(self, 'cfg_item_creg', config_template)
+        self._cfg_item_creg.update_config(config)
 
     def run(self, root_name, *args, **kw):
         service = self.resolve_service(root_name)

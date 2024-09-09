@@ -1,13 +1,21 @@
 service_config = record:
   service: string
-  items: ref list
+  config: ref
 
 system_config = record:
   services: service_config list
 
 
+item_list_config = record:
+  items: ref list
+
+
+item_dict_config_ctl = record
+
+
 service_template = record:
   name: string
+  ctl: ref
   function: ref
   free_params: string list
   service_params: string list
@@ -15,6 +23,7 @@ service_template = record:
 
 finalizer_gen_service_template = record:
   name: string
+  ctl: ref
   function: ref
   service_params: string list
   want_config: bool

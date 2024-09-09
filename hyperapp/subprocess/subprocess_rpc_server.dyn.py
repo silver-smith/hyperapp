@@ -52,7 +52,7 @@ def _rpc_subprocess_callback(request, subprocess_name, subprocess_id, subprocess
 
 
 def subprocess_rpc_server_running(
-        system_config, partial_ref, peer_registry, rpc_submit_factory, rpc_call_factory, subprocess_running, subprocess_transport):
+        system_config_piece, partial_ref, peer_registry, rpc_submit_factory, rpc_call_factory, subprocess_running, subprocess_transport):
 
     @contextmanager
     def _subprocess_rpc_server(name, identity, timeout_sec=10):
@@ -60,7 +60,7 @@ def subprocess_rpc_server_running(
         _callback_signals[subprocess_id] = event = threading.Event()
         main_ref = partial_ref(
             system_main,
-            system_config=system_config,
+            system_config_piece=system_config_piece,
             root_name='rpc_server_main',
             name=name,
             master_peer_piece=identity.peer.piece,

@@ -20,24 +20,24 @@ def ctr_from_template_creg(config):
     return code_registry_ctr2('ctr-from-template', config)
 
 
-def add_core_items(cfg_item_creg, ctr_from_template_creg, system_config, target_set):
-    for sc in system_config.services:
-        for item_ref in sc.items:
-            item_piece = web.summon(item_ref)
-            item = cfg_item_creg.animate(item_piece, sc.service)
+def add_core_items(config_ctl, ctr_from_template_creg, system_config_template, target_set):
+    for service_name, config in system_config_template.items():
+        ctl = config_ctl[service_name]
+        for key, value in config.items():
+            item_piece = ctl.item_piece(value)
             ctr = ctr_from_template_creg.animate(item_piece)
             module_name, var_name = resource_registry.reverse_resolve(item_piece)
             resource_tgt = target_set.factory.python_module_resource_by_module_name(module_name)
             assert isinstance(resource_tgt, ManualPythonModuleResourceTarget)
-            ready_tgt = target_set.factory.config_item_ready(sc.service, item.key)
-            resolved_tgt = target_set.factory.config_item_resolved(sc.service, item.key)
-            complete_tgt = target_set.factory.config_item_complete(sc.service, item.key)
+            ready_tgt = target_set.factory.config_item_ready(service_name, key)
+            resolved_tgt = target_set.factory.config_item_resolved(service_name, key)
+            complete_tgt = target_set.factory.config_item_complete(service_name, key)
             ready_tgt.set_provider(resource_tgt, target_set)
             resolved_tgt.resolve(ctr)
             complete_tgt.update_status()
 
 
-def init_targets(cfg_item_creg, ctr_from_template_creg, system_config, root_dir, target_set, build):
+def init_targets(config_ctl, ctr_from_template_creg, system_config_template, root_dir, target_set, build):
     custom_resource_registry = create_custom_resource_registry(build)
     all_imports_known_tgt = AllImportsKnownTarget()
     target_set.add(all_imports_known_tgt)
@@ -63,4 +63,4 @@ def init_targets(cfg_item_creg, ctr_from_template_creg, system_config, root_dir,
         target_set.add(alias_tgt)
     all_imports_known_tgt.init_completed()
     target_set.update_deps_for(all_imports_known_tgt)
-    add_core_items(cfg_item_creg, ctr_from_template_creg, system_config, target_set)
+    add_core_items(config_ctl, ctr_from_template_creg, system_config_template, target_set)
