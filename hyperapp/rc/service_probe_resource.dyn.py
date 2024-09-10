@@ -28,6 +28,10 @@ class ServiceProbeResource(Resource):
             params=tuple(self._params),
             )
 
+    @property
+    def is_system_resource(self):
+        return True
+
     def configure_system(self, system):
         probe = ServiceProbeTemplate(self._attr_name, self._function, self._params)
         system.update_config('system', {self._service_name: probe})

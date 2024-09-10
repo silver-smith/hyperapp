@@ -17,7 +17,11 @@ class SystemJob:
 
     def _configure_system(self, system, resource_list):
         for resource in resource_list:
-            resource.configure_system(system)
+            if resource.is_system_resource:
+                resource.configure_system(system)
+        for resource in resource_list:
+            if not resource.is_system_resource:
+                resource.configure_system(system)
 
     def _prepare_system(self, resources):
         system = SystemProbe()

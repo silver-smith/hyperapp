@@ -47,10 +47,10 @@ class ActorReq(Requirement):
     def make_resource(self, target):
         resource_tgt = target.provider_resource_tgt
         template_piece = resource_tgt.get_resource(target.constructor)
-        cfg_item = self._cfg_item_creg.animate(template_piece, self._service_name)
+        template = self._cfg_item_creg.animate(template_piece)
         return ConfigItemResource(
             service_name=self._service_name,
-            cfg_item=cfg_item,
+            template=template,
             )
 
     @property

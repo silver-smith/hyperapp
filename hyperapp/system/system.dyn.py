@@ -258,9 +258,19 @@ class System:
             dest = self._configs[service_name]
         except KeyError:
             self._configs[service_name] = config
-        else:
+            return
+        try:
             ctl = self._config_ctl[service_name]
-            ctl.merge(dest, config)
+        except KeyError:
+            self._raise_missing_service(service_name)
+        ctl.merge(dest, config)
+        if service_name == 'system':
+            # Subsequent update_config calls may already use it.
+            self._update_config_ctl(config)
+
+    def _update_config_ctl(self, config):
+        for service_name, template in config.items():
+            self._config_ctl[service_name] = template.ctl(self._config_ctl_creg, self._cfg_item_creg)
 
     def load_config(self, config_piece):
         self.add_core_service('system_config_piece', config_piece)

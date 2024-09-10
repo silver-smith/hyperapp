@@ -155,20 +155,27 @@ class TestJob(SystemJob):
         import_list = flatten(d.import_records for d in all_resources)
         recorder_piece, module_piece = self._src.recorded_python_module(import_list)
         recorder = pyobj_creg.animate(recorder_piece)
-        system = self._prepare_system(all_resources)
-        ctr_collector = system.resolve_service('ctr_collector')
-        ctr_collector.ignore_module(module_piece)
-        ctr_collector.init_markers()
-        status, error_msg, traceback, module = self._import_module(module_piece)
-        if status == JobStatus.ok:
-            root_probe = self._make_root_fixture(module_piece, module)
-            system.update_config('system', {self._root_name: root_probe})
-            status, error_msg, traceback, req_set = self._run_system(system)
+        try:
+            system = self._prepare_system(all_resources)
+        except UnknownServiceError as x:
+            status = JobStatus.incomplete
+            error_msg = f"{type(x).__name__}: {x}"
+            traceback = []
+            req_set = {ServiceReq(x.service_name, self._cfg_item_creg)}
         else:
-            req_set = set()
-        if status == JobStatus.failed:
-            return htypes.test_job.failed_result(error_msg, tuple(traceback))
-        req_set |= self._imports_to_requirements(recorder.used_imports)
+            ctr_collector = system.resolve_service('ctr_collector')
+            ctr_collector.ignore_module(module_piece)
+            ctr_collector.init_markers()
+            status, error_msg, traceback, module = self._import_module(module_piece)
+            if status == JobStatus.ok:
+                root_probe = self._make_root_fixture(module_piece, module)
+                system.update_config('system', {self._root_name: root_probe})
+                status, error_msg, traceback, req_set = self._run_system(system)
+            else:
+                req_set = set()
+            if status == JobStatus.failed:
+                return htypes.test_job.failed_result(error_msg, tuple(traceback))
+            req_set |= self._imports_to_requirements(recorder.used_imports)
         req_refs = tuple(
             mosaic.put(req.piece)
             for req in req_set

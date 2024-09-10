@@ -26,6 +26,10 @@ class FixtureProbeResource(Resource):
             params=tuple(self._params),
             )
 
+    @property
+    def is_system_resource(self):
+        return True
+
     def configure_system(self, system):
         probe = FixtureProbeTemplate(self._function, self._params)
         system.update_config('system', {self._service_name: probe})
