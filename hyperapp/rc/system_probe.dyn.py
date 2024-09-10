@@ -28,15 +28,6 @@ class ServiceTemplateRec:
     want_config: bool
 
 
-@dataclass
-class ActorRec:
-
-    module_name: str
-    attr_qual_name: list[str]
-    creg_params: list[str]
-    service_params: list[str]
-
-
 class ServiceProbeTemplate:
 
     def __init__(self, attr_name, fn_piece, params):
