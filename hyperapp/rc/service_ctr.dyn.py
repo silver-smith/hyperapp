@@ -163,8 +163,10 @@ class ServiceTemplateCtr(ServiceTemplateCtrBase):
             object=mosaic.put(python_module),
             attr_name=self._attr_name,
             )
+        ctl = htypes.system.item_dict_config_ctl()  # TODO: Add parameter to marker.
         service = htypes.system.service_template(
             name=self._name,
+            ctl=mosaic.put(ctl),
             function=mosaic.put(attribute),
             free_params=tuple(self._free_params),
             service_params=tuple(self._service_params),
@@ -172,5 +174,6 @@ class ServiceTemplateCtr(ServiceTemplateCtrBase):
             )
         if name_to_res is not None:
             name_to_res[self._attr_name] = attribute
+            name_to_res[f'item-dict-config.ctl'] = ctl
             name_to_res[f'{self._name}.service'] = service
         return service

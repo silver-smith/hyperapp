@@ -8,6 +8,7 @@ import:
 - legacy_type.service_resource:service_probe_ctr
 - legacy_type.system:actor_template
 - legacy_type.system:finalizer_gen_service_template
+- legacy_type.system:item_dict_config_ctl
 - legacy_type.system:service_template
 - rc.rc_constructor:rc_constructor.module
 - rc.service_probe_resource:service_probe_resource.module
@@ -24,6 +25,7 @@ definitions:
         htypes.builtin.call: legacy_type.builtin:call
         htypes.rc_constructors.service_template: legacy_type.rc_constructors:service_template
         htypes.service_resource.service_probe_ctr: legacy_type.service_resource:service_probe_ctr
+        htypes.system.item_dict_config_ctl: legacy_type.system:item_dict_config_ctl
         htypes.system.service_template: legacy_type.system:service_template
         services.mosaic: builtins:mosaic.service
         code.rc_constructor: rc.rc_constructor:rc_constructor.module
