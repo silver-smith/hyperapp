@@ -1,4 +1,5 @@
 import:
+- builtins:cached_code_registry_ctr.service
 - builtins:code_registry_ctr2.service
 - builtins:pyobj_creg.service
 - builtins:web.service
@@ -21,6 +22,7 @@ definitions:
         htypes.system.service_template: legacy_type.system:service_template
         htypes.system.finalizer_gen_service_template: legacy_type.system:finalizer_gen_service_template
         htypes.system.item_dict_config_ctl: legacy_type.system:item_dict_config_ctl
+        services.cached_code_registry_ctr: builtins:cached_code_registry_ctr.service
         services.code_registry_ctr2: builtins:code_registry_ctr2.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service

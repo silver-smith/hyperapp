@@ -23,17 +23,17 @@ definitions:
       object: marker_registry.module
       attr_name: MarkerTemplate
 
-  MarkerTemplate.item_from_piece:
+  MarkerTemplate.from_piece:
     type: legacy_type.builtin:attribute
     value:
       object: MarkerTemplate
-      attr_name: item_from_piece
+      attr_name: from_piece
 
   marker_marker_template.actor-template:
     type: legacy_type.system:actor_template
     value:
       t: legacy_type.marker:marker_template
-      function: MarkerTemplate.item_from_piece
+      function: MarkerTemplate.from_piece
       service_params: []
 
   marker_registry:

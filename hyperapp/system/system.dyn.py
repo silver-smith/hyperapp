@@ -8,6 +8,7 @@ from hyperapp.common.htypes import Type
 
 from . import htypes
 from .services import (
+    cached_code_registry_ctr,
     code_registry_ctr2,
     pyobj_creg,
     web,
@@ -39,17 +40,16 @@ class ActorRequester:
 
 class ServiceTemplateBase:
 
-    @classmethod
-    def cfg_from_piece(cls, piece):
-        self = cls.from_piece(piece)
-        return (self.service_name, self)
-
     def __init__(self, name, ctl_ref, fn, service_params, want_config):
         self.service_name = name
         self._ctl_ref = ctl_ref
         self._fn = fn
         self._service_params = service_params
         self._want_config = want_config
+
+    @property
+    def key(self):
+        return self.service_name
 
     def ctl(self, config_ctl_creg, cfg_item_creg):
         return config_ctl_creg.invite(self._ctl_ref, cfg_item_creg)
@@ -161,11 +161,6 @@ class ActorTemplate:
             service_params=piece.service_params,
             )
 
-    @classmethod
-    def cfg_from_piece(cls, piece):
-        self = cls.from_piece(piece)
-        return (self.t, self)
-
     def __init__(self, t, fn, service_params):
         self.t = t
         self._fn = fn
@@ -178,6 +173,9 @@ class ActorTemplate:
             function=pyobj_creg.actor_to_ref(self._fn),
             service_params=tuple(self._service_params),
             )
+    @property
+    def key(self):
+        return self.t
 
     def resolve(self, system, service_name):
         if not self._service_params:
@@ -232,11 +230,11 @@ class System:
     def _init(self):
         # cfg_item_creg is used by ItemDictConfigCtl.
         cfg_item_creg_config = {
-            htypes.system.service_template: ServiceTemplate.cfg_from_piece,
-            htypes.system.finalizer_gen_service_template: FinalizerGenServiceTemplate.cfg_from_piece,
-            htypes.system.actor_template: ActorTemplate.cfg_from_piece,
+            htypes.system.service_template: ServiceTemplate.from_piece,
+            htypes.system.finalizer_gen_service_template: FinalizerGenServiceTemplate.from_piece,
+            htypes.system.actor_template: ActorTemplate.from_piece,
             }
-        self._cfg_item_creg = code_registry_ctr2('cfg-item', cfg_item_creg_config)
+        self._cfg_item_creg = cached_code_registry_ctr('cfg-item', cfg_item_creg_config)
         config_ctl_creg_config = {
             htypes.system.item_dict_config_ctl: ItemDictConfigCtl.from_piece,
             }

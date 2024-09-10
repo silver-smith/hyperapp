@@ -44,12 +44,12 @@ class ItemDictConfigCtl(DictConfigCtl):
     def from_data(self, piece):
         config = {}
         for item_ref in piece.items:
-            key, value = self._cfg_item_creg.invite(item_ref)
-            config[key] = value
+            template = self._cfg_item_creg.invite(item_ref)
+            config[template.key] = template
         return config
 
-    def item_piece(self, value):
-        return self._cfg_item_creg.actor_to_piece(value)
+    def item_piece(self, template):
+        return self._cfg_item_creg.actor_to_piece(template)
 
 
 # class ServiceConfigCtl(ItemDictConfigCtl):

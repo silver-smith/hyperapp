@@ -13,15 +13,14 @@ class MarkerTemplate:
             service_params=piece.service_params,
             )
 
-    @classmethod
-    def item_from_piece(cls, piece):
-        self = cls.from_piece(piece)
-        return (self.name, self)
-
     def __init__(self, name, fn, service_params):
         self.name = name
         self._fn = fn
         self._service_params = service_params
+
+    @property
+    def key(self):
+        return self.name
 
     def __repr__(self):
         return f"<MarkerTemplate {self.name}: {self._fn} {self._service_params}>"
