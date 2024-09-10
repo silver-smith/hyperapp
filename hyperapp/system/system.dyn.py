@@ -239,9 +239,11 @@ class System:
             htypes.system.item_dict_config_ctl: ItemDictConfigCtl.from_piece,
             }
         self._config_ctl_creg = code_registry_ctr2('config-ctl', config_ctl_creg_config)
+        item_dict_config_ctl = ItemDictConfigCtl(self._cfg_item_creg)
         self._config_ctl = {
-            'system': ItemDictConfigCtl(self._cfg_item_creg),
-            'cfg_item_creg': ItemDictConfigCtl(self._cfg_item_creg),
+            'system': item_dict_config_ctl,
+            'cfg_item_creg': item_dict_config_ctl,
+            'pyobj_creg': item_dict_config_ctl,
             }
         self.add_core_service('cfg_item_creg', self._cfg_item_creg)
         self.add_core_service('contig_ctl_creg', self._config_ctl_creg)
@@ -266,20 +268,11 @@ class System:
             rec.service: web.summon(rec.config)
             for rec in config_piece.services
             }
-        # for item_ref in service_to_items['cfg_item_creg']:
-        #     cfg = self._cfg_item_creg.invite(item_ref, 'cfg_item_creg')
-        #     value = cfg.value.resolve(self, 'cfg_item_creg')
-        #     self._cfg_item_creg.update_config({cfg.key: value})
-        # # TODO: Think how to load pyobj_creg config not by system. It is a global registry.
-        # for item_ref in service_to_items['pyobj_creg']:
-        #     cfg = self._cfg_item_creg.invite(item_ref, 'pyobj_creg')
-        #     value = cfg.value.resolve(self, 'pyobj_creg')
-        #     pyobj_creg.update_config({cfg.key: value})
-
         self._load_config_piece('system', service_to_config['system'])
         for service_name, service_template in self._configs['system'].items():
             self._config_ctl[service_name] = service_template.ctl(self._config_ctl_creg, self._cfg_item_creg)
         self._load_cfg_item_creg(service_to_config['cfg_item_creg'])
+        self._load_pyobj_creg(service_to_config['pyobj_creg'])
         for service_name, config_piece in service_to_config.items():
             if service_name in {'system', 'cfg_item_creg', 'config_ctl', 'pyobj_creg'}:
                 continue
@@ -296,6 +289,13 @@ class System:
         config_template = ctl.from_data(config_piece)
         config = ctl.resolve(self, 'cfg_item_creg', config_template)
         self._cfg_item_creg.update_config(config)
+
+    # TODO: Think how to load pyobj_creg config not by system. It is a global registry.
+    def _load_pyobj_creg(self, config_piece):
+        ctl = self._config_ctl['pyobj_creg']
+        config_template = ctl.from_data(config_piece)
+        config = ctl.resolve(self, 'pyobj_creg', config_template)
+        pyobj_creg.update_config(config)
 
     def run(self, root_name, *args, **kw):
         service = self.resolve_service(root_name)
