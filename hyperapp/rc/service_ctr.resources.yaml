@@ -67,7 +67,8 @@ definitions:
     value:
       t: legacy_type.service_resource:service_probe_ctr
       function: ServiceProbeCtr.from_piece
-      service_params: []
+      service_params:
+      - config_ctl_creg
 
   CoreServiceTemplateCtr:
     type: legacy_type.builtin:attribute
@@ -112,4 +113,5 @@ definitions:
     value:
       t: legacy_type.rc_constructors:service_template
       function: ServiceTemplateCtr.from_piece
-      service_params: []
+      service_params:
+      - config_ctl_creg

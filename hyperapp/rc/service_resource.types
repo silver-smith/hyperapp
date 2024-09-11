@@ -7,10 +7,12 @@ service_probe_ctr = record:
   module_name: string
   attr_name: string
   name: string
+  ctl: ref
   params: string list
 
 service_probe_resource = record:
   attr_name: string
   service_name: string
+  ctl: ref
   function: ref
   params: string list

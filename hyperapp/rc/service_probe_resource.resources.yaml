@@ -39,4 +39,5 @@ definitions:
     value:
       t: legacy_type.service_resource:service_probe_resource
       function: ServiceProbeResource.from_piece
-      service_params: []
+      service_params:
+      - config_ctl_creg

@@ -5,6 +5,7 @@ import weakref
 from collections import defaultdict
 from dataclasses import dataclass
 from functools import partial
+from typing import Any
 
 from .services import pyobj_creg
 from .code.system import System
@@ -23,6 +24,7 @@ class UnknownServiceError(Exception):
 class ServiceTemplateRec:
 
     attr_name: str
+    ctl: Any
     free_params: list[str]
     service_params: list[str]
     want_config: bool
@@ -30,17 +32,22 @@ class ServiceTemplateRec:
 
 class ServiceProbeTemplate:
 
-    def __init__(self, attr_name, fn_piece, params):
+    def __init__(self, attr_name, ctl, fn_piece, params):
         self._attr_name = attr_name
+        self._ctl = ctl
         self._fn = fn_piece
         self._params = params
 
     def __repr__(self):
-        return f"<ServiceProbeTemplate {self._attr_name} {self._fn} {self._params}>"
+        return f"<ServiceProbeTemplate {self._attr_name} {self._fn} {self._params} {self._ctl}>"
+
+    @property
+    def ctl(self):
+        return self._ctl
 
     def resolve(self, system, service_name):
         fn = pyobj_creg.animate(self._fn)
-        probe = ServiceProbe(system, self._attr_name, service_name, fn, self._params)
+        probe = ServiceProbe(system, self._attr_name, service_name, self._ctl, fn, self._params)
         probe.apply_if_no_params()
         return probe
 
@@ -64,16 +71,21 @@ class ActorProbeTemplate:
 
 class FixtureProbeTemplate:
 
-    def __init__(self, fn_piece, params):
+    def __init__(self, ctl, fn_piece, params):
+        self._ctl = ctl
         self._fn = fn_piece
         self._params = params
 
     def __repr__(self):
         return f"<FixtureProbeTemplate {self._fn} {self._params}>"
 
+    @property
+    def ctl(self):
+        return self._ctl
+
     def resolve(self, system, service_name):
         fn = pyobj_creg.animate(self._fn)
-        probe = FixtureProbe(system, service_name, fn, self._params)
+        probe = FixtureProbe(system, service_name, self._ctl, fn, self._params)
         probe.apply_if_no_params()
         return probe
 
@@ -204,12 +216,13 @@ class Probe:
 
 class ServiceProbe(Probe):
 
-    def __init__(self, system_probe, attr_name, service_name, fn, params):
+    def __init__(self, system_probe, attr_name, service_name, ctl, fn, params):
         super().__init__(system_probe, service_name, fn, params)
         self._attr_name = attr_name
+        self._ctl = ctl
 
     def __repr__(self):
-        return f"<ServiceProbe {self._attr_name} {self._fn} {self._params}>"
+        return f"<ServiceProbe {self._attr_name} {self._fn} {self._params} {self._ctl}>"
 
     def _add_resolved_template(self, want_config, service_params):
         free_params_ofs = len(service_params)
@@ -217,6 +230,7 @@ class ServiceProbe(Probe):
             free_params_ofs += 1
         template = ServiceTemplateRec(
             attr_name=self._attr_name,
+            ctl=self._ctl,
             free_params=self._params[free_params_ofs:],
             service_params=service_params,
             want_config=want_config,
@@ -226,8 +240,12 @@ class ServiceProbe(Probe):
 
 class FixtureProbe(Probe):
 
+    def __init__(self, system_probe, service_name, ctl, fn, params):
+        super().__init__(system_probe, service_name, fn, params)
+        self._ctl = ctl
+
     def __repr__(self):
-        return f"<FixtureProbe {self._fn} {self._params}>"
+        return f"<FixtureProbe {self._fn} {self._params} {self._ctl}>"
 
 
 class SystemProbe(System):

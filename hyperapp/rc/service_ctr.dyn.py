@@ -46,13 +46,15 @@ class ServiceCtr(Constructor):
 class ServiceProbeCtr(ModuleCtr):
 
     @classmethod
-    def from_piece(cls, piece):
-        return cls(piece.module_name, piece.attr_name, piece.name, piece.params)
+    def from_piece(cls, piece, config_ctl_creg):
+        ctl = config_ctl_creg.invite(piece.ctl)
+        return cls(piece.module_name, piece.attr_name, piece.name, ctl, piece.params)
 
-    def __init__(self, module_name, attr_name, name, params):
+    def __init__(self, module_name, attr_name, name, ctl, params):
         super().__init__(module_name)
         self._attr_name = attr_name
         self._name = name
+        self._ctl = ctl
         self._params = params
 
     @property
@@ -61,6 +63,7 @@ class ServiceProbeCtr(ModuleCtr):
             module_name=self._module_name,
             attr_name=self._attr_name,
             name=self._name,
+            ctl=mosaic.put(self._ctl.piece),
             params=self._params,
             )
 
@@ -77,6 +80,7 @@ class ServiceProbeCtr(ModuleCtr):
         template_ctr = ServiceTemplateCtr(
             attr_name=self._attr_name,
             name=self._name,
+            ctl=self._ctl,
             free_params=[],
             service_params=[],
             want_config='config' in self._params,
@@ -93,7 +97,7 @@ class ServiceProbeCtr(ModuleCtr):
             )
 
     def make_resource(self, types, module_name, python_module):
-        return ServiceProbeResource(self._attr_name, self._name, self.make_component(types, python_module), self._params)
+        return ServiceProbeResource(self._attr_name, self._name, self._ctl, self.make_component(types, python_module), self._params)
 
 
 class ServiceTemplateCtrBase(Constructor):
@@ -119,24 +123,28 @@ class ServiceTemplateCtr(ServiceTemplateCtrBase):
         return cls(
             attr_name=rec.attr_name,
             name=service_name,
+            ctl=rec.ctl,
             free_params=rec.free_params,
             service_params=rec.service_params,
             want_config=rec.want_config,
             )
 
     @classmethod
-    def from_piece(cls, piece):
+    def from_piece(cls, piece, config_ctl_creg):
+        ctl = config_ctl_creg.invite(piece.ctl)
         return cls(
             attr_name=piece.attr_name,
             name=piece.name,
+            ctl=ctl,
             free_params=piece.free_params,
             service_params=piece.service_params,
             want_config=piece.want_config,
             )
 
-    def __init__(self, attr_name, name, free_params, service_params, want_config):
+    def __init__(self, attr_name, name, ctl, free_params, service_params, want_config):
         super().__init__(name)
         self._attr_name = attr_name
+        self._ctl = ctl
         self._free_params = free_params
         self._service_params = service_params
         self._want_config = want_config
@@ -146,6 +154,7 @@ class ServiceTemplateCtr(ServiceTemplateCtrBase):
         return htypes.rc_constructors.service_template(
             attr_name=self._attr_name,
             name=self._name,
+            ctl=mosaic.put(self._ctl.piece),
             free_params=tuple(self._free_params),
             service_params=tuple(self._service_params),
             want_config=self._want_config,
@@ -166,7 +175,7 @@ class ServiceTemplateCtr(ServiceTemplateCtrBase):
         ctl = htypes.system.item_dict_config_ctl()  # TODO: Add parameter to marker.
         service = htypes.system.service_template(
             name=self._name,
-            ctl=mosaic.put(ctl),
+            ctl=mosaic.put(self._ctl.piece),
             function=mosaic.put(attribute),
             free_params=tuple(self._free_params),
             service_params=tuple(self._service_params),

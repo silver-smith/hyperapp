@@ -3,6 +3,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.marker:marker_template
 - rc.service_ctr:service_ctr.module
+- system.config_ctl:config_ctl.module
 
 definitions:
 
@@ -12,18 +13,20 @@ definitions:
       module_name: service_marker
       file_name: service_marker.dyn.py
       import_list:
+        code.config_ctl: system.config_ctl:config_ctl.module
         code.service_ctr: rc.service_ctr:service_ctr.module
 
-  service_marker:
+  ServiceMarker:
     type: legacy_type.builtin:attribute
     value:
       object: service_marker.module
-      attr_name: service_marker
+      attr_name: ServiceMarker
 
   service2.marker-template:
     type: legacy_type.marker:marker_template
     value:
       name: service2
-      function: service_marker
+      function: ServiceMarker
       service_params:
+      - cfg_item_creg
       - ctr_collector

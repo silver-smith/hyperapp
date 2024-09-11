@@ -3,6 +3,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.marker:marker_template
 - rc.fixture_ctr:fixture_ctr.module
+- system.config_ctl:config_ctl.module
 
 definitions:
 
@@ -12,6 +13,7 @@ definitions:
       module_name: fixture_marker
       file_name: fixture_marker.dyn.py
       import_list:
+        code.config_ctl: system.config_ctl:config_ctl.module
         code.fixture_ctr: rc.fixture_ctr:fixture_ctr.module
 
   fixture_marker:
@@ -26,4 +28,5 @@ definitions:
       name: fixture
       function: fixture_marker
       service_params:
+      - cfg_item_creg
       - ctr_collector

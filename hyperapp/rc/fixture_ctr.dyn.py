@@ -9,13 +9,15 @@ from .code.fixture_probe_resource import ConfigFixtureResource, FixtureProbeReso
 class FixtureCtr(ModuleCtr):
 
     @classmethod
-    def from_piece(cls, piece):
-        return cls(piece.module_name, piece.attr_name, piece.name, piece.params)
+    def from_piece(cls, piece, config_ctl_creg):
+        ctl = config_ctl_creg.invite(piece.ctl)
+        return cls(piece.module_name, piece.attr_name, piece.name, ctl, piece.params)
 
-    def __init__(self, module_name, attr_name, name, params):
+    def __init__(self, module_name, attr_name, name, ctl, params):
         super().__init__(module_name)
         self._attr_name = attr_name
         self._name = name
+        self._ctl = ctl
         self._params = params
 
     @property
@@ -24,6 +26,7 @@ class FixtureCtr(ModuleCtr):
             module_name=self._module_name,
             attr_name=self._attr_name,
             name=self._name,
+            ctl=mosaic.put(self._ctl.piece),
             params=self._params,
             )
 
@@ -42,7 +45,7 @@ class FixtureCtr(ModuleCtr):
             )
 
     def make_resource(self, types, module_name, python_module):
-        return FixtureProbeResource(self._name, self.make_component(types, python_module), self._params)
+        return FixtureProbeResource(self._name, self._ctl, self.make_component(types, python_module), self._params)
 
 
 class ConfigFixtureCtr(ModuleCtr):

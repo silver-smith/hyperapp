@@ -10,11 +10,13 @@ from .code.system_probe import ConfigFixture, FixtureProbeTemplate
 class FixtureProbeResource(Resource):
 
     @classmethod
-    def from_piece(cls, piece):
-        return cls(piece.service_name, web.summon(piece.function), piece.params)
+    def from_piece(cls, piece, config_ctl_creg):
+        ctl = config_ctl_creg.invite(piece.ctl)
+        return cls(piece.service_name, ctl, web.summon(piece.function), piece.params)
 
-    def __init__(self, service_name, function, params):
+    def __init__(self, service_name, ctl, function, params):
         self._service_name = service_name
+        self._ctl = ctl
         self._function = function  # piece
         self._params = params
 
@@ -22,6 +24,7 @@ class FixtureProbeResource(Resource):
     def piece(self):
         return htypes.fixture_resource.fixture_probe_resource(
             service_name=self._service_name,
+            ctl=mosaic.put(self._ctl.piece),
             function=mosaic.put(self._function),
             params=tuple(self._params),
             )
@@ -31,7 +34,7 @@ class FixtureProbeResource(Resource):
         return True
 
     def configure_system(self, system):
-        probe = FixtureProbeTemplate(self._function, self._params)
+        probe = FixtureProbeTemplate(self._ctl, self._function, self._params)
         system.update_config('system', {self._service_name: probe})
 
 

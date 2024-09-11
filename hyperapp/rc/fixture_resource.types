@@ -3,10 +3,12 @@ fixture_ctr = record:
   module_name: string
   attr_name: string
   name: string
+  ctl: ref
   params: string list
 
 fixture_probe_resource = record:
   service_name: string
+  ctl: ref
   function: ref
   params: string list
 

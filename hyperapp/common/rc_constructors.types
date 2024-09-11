@@ -6,6 +6,7 @@ service = record:
 service_template = record:
   attr_name: string
   name: string
+  ctl: ref
   free_params: string list
   service_params: string list
   want_config: bool

@@ -41,7 +41,8 @@ definitions:
     value:
       t: legacy_type.fixture_resource:fixture_probe_resource
       function: FixtureProbeResource.from_piece
-      service_params: []
+      service_params:
+      - config_ctl_creg
 
   ConfigFixtureResource:
     type: legacy_type.builtin:attribute

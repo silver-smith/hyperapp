@@ -1,5 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
+from . import htypes
+
 
 class ConfigCtl(metaclass=ABCMeta):
 
@@ -40,6 +42,10 @@ class ItemDictConfigCtl(DictConfigCtl):
 
     def __init__(self, cfg_item_creg):
         self._cfg_item_creg = cfg_item_creg
+
+    @property
+    def piece(self):
+        return htypes.system.item_dict_config_ctl()
 
     def from_data(self, piece):
         config = {}
