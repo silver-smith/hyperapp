@@ -188,7 +188,7 @@ class TestJob(SystemJob):
                 error=error_msg,
                 traceback=tuple(traceback),
                 )
-        constructors = tuple(self._enum_constructor_refs(system, ctr_collector))
+        constructors = tuple(self._enum_constructor_refs(ctr_collector))
         return htypes.test_job.succeeded_result(
             used_imports=used_imports,
             requirements=req_refs,

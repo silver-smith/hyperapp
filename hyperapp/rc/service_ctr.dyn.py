@@ -3,7 +3,6 @@ from .services import (
     mosaic,
     )
 from .code.rc_constructor import Constructor, ModuleCtr
-from .code.service_probe_resource import ServiceProbeResource
 
 
 class ServiceCtr(Constructor):
@@ -43,63 +42,6 @@ class ServiceCtr(Constructor):
         return name_to_res[f'{self._name}.service']
 
 
-class ServiceProbeCtr(ModuleCtr):
-
-    @classmethod
-    def from_piece(cls, piece, config_ctl_creg):
-        ctl = config_ctl_creg.invite(piece.ctl)
-        return cls(piece.module_name, piece.attr_name, piece.name, ctl, piece.params)
-
-    def __init__(self, module_name, attr_name, name, ctl, params):
-        super().__init__(module_name)
-        self._attr_name = attr_name
-        self._name = name
-        self._ctl = ctl
-        self._params = params
-
-    @property
-    def piece(self):
-        return htypes.service_resource.service_probe_ctr(
-            module_name=self._module_name,
-            attr_name=self._attr_name,
-            name=self._name,
-            ctl=mosaic.put(self._ctl.piece),
-            params=self._params,
-            )
-
-    def update_resource_targets(self, resource_tgt, target_set):
-        resource_tgt.import_alias_tgt.add_component(self)
-        ready_tgt = target_set.factory.config_item_ready('system', self._name)
-        ready_tgt.set_provider(resource_tgt, target_set)
-        resolved_tgt = target_set.factory.config_item_resolved('system', self._name)
-        resource_tgt.add_cfg_item_target(resolved_tgt)
-        target_set.update_deps_for(ready_tgt)
-        target_set.update_deps_for(resource_tgt)
-        if tuple(self._params) not in {(), ('config',)}:
-            return
-        template_ctr = ServiceTemplateCtr(
-            attr_name=self._attr_name,
-            name=self._name,
-            ctl=self._ctl,
-            free_params=[],
-            service_params=[],
-            want_config='config' in self._params,
-            )
-        resolved_tgt.resolve(template_ctr)
-        target_set.update_deps_for(resolved_tgt)
-        # Should be created to be added to config resource.
-        _ = target_set.factory.config_item_complete('system', self._name)
-
-    def make_component(self, types, python_module, name_to_res=None):
-        return htypes.builtin.attribute(
-            object=mosaic.put(python_module),
-            attr_name=self._attr_name,
-            )
-
-    def make_resource(self, types, module_name, python_module):
-        return ServiceProbeResource(self._attr_name, self._name, self._ctl, self.make_component(types, python_module), self._params)
-
-
 class ServiceTemplateCtrBase(Constructor):
 
     def __init__(self, name):
@@ -117,17 +59,6 @@ class CoreServiceTemplateCtr(ServiceTemplateCtrBase):
 
 
 class ServiceTemplateCtr(ServiceTemplateCtrBase):
-
-    @classmethod
-    def from_rec(cls, service_name, rec):
-        return cls(
-            attr_name=rec.attr_name,
-            name=service_name,
-            ctl=rec.ctl,
-            free_params=rec.free_params,
-            service_params=rec.service_params,
-            want_config=rec.want_config,
-            )
 
     @classmethod
     def from_piece(cls, piece, config_ctl_creg):

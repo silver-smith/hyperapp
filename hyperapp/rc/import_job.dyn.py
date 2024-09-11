@@ -203,7 +203,7 @@ class ImportJob(SystemJob):
                 error=error_msg,
                 traceback=tuple(traceback),
                 )
-        constructors = tuple(self._enum_constructor_refs(system, ctr_collector))
+        constructors = tuple(self._enum_constructor_refs(ctr_collector))
         if status == JobStatus.ok:
             return htypes.import_job.succeeded_result(
                 requirements=req_refs,

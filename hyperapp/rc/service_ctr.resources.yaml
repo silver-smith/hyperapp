@@ -5,13 +5,11 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.rc_constructors:service
 - legacy_type.rc_constructors:service_template
-- legacy_type.service_resource:service_probe_ctr
 - legacy_type.system:actor_template
 - legacy_type.system:finalizer_gen_service_template
 - legacy_type.system:item_dict_config_ctl
 - legacy_type.system:service_template
 - rc.rc_constructor:rc_constructor.module
-- rc.service_probe_resource:service_probe_resource.module
 
 definitions:
 
@@ -24,12 +22,10 @@ definitions:
         htypes.builtin.attribute: legacy_type.builtin:attribute
         htypes.builtin.call: legacy_type.builtin:call
         htypes.rc_constructors.service_template: legacy_type.rc_constructors:service_template
-        htypes.service_resource.service_probe_ctr: legacy_type.service_resource:service_probe_ctr
         htypes.system.item_dict_config_ctl: legacy_type.system:item_dict_config_ctl
         htypes.system.service_template: legacy_type.system:service_template
         services.mosaic: builtins:mosaic.service
         code.rc_constructor: rc.rc_constructor:rc_constructor.module
-        code.service_probe_resource: rc.service_probe_resource:service_probe_resource.module
 
   ServiceCtr:
     type: legacy_type.builtin:attribute
@@ -49,26 +45,6 @@ definitions:
       t: legacy_type.rc_constructors:service
       function: ServiceCtr.from_piece
       service_params: []
-
-  ServiceProbeCtr:
-    type: legacy_type.builtin:attribute
-    value:
-      object: service_ctr.module
-      attr_name: ServiceProbeCtr
-
-  ServiceProbeCtr.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: ServiceProbeCtr
-      attr_name: from_piece
-
-  service_resource_service_probe_ctr.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.service_resource:service_probe_ctr
-      function: ServiceProbeCtr.from_piece
-      service_params:
-      - config_ctl_creg
 
   CoreServiceTemplateCtr:
     type: legacy_type.builtin:attribute

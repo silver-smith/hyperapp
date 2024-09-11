@@ -1,11 +1,15 @@
 import:
 - builtins:mosaic.service
+- builtins:pyobj_creg.service
 - builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.service_resource:service_probe_ctr
 - legacy_type.service_resource:service_probe_resource
 - legacy_type.system:actor_template
+- rc.rc_constructor:rc_constructor.module
 - rc.rc_resource:rc_resource.module
+- rc.service_ctr:service_ctr.module
 - rc.system_probe:system_probe.module
 
 definitions:
@@ -16,10 +20,15 @@ definitions:
       module_name: service_probe_resource
       file_name: service_probe_resource.dyn.py
       import_list:
+        htypes.builtin.attribute: legacy_type.builtin:attribute
+        htypes.service_resource.service_probe_ctr: legacy_type.service_resource:service_probe_ctr
         htypes.service_resource.service_probe_resource: legacy_type.service_resource:service_probe_resource
         services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
+        code.rc_constructor: rc.rc_constructor:rc_constructor.module
         code.rc_resource: rc.rc_resource:rc_resource.module
+        code.service_ctr: rc.service_ctr:service_ctr.module
         code.system_probe: rc.system_probe:system_probe.module
 
   ServiceProbeResource:
@@ -39,5 +48,25 @@ definitions:
     value:
       t: legacy_type.service_resource:service_probe_resource
       function: ServiceProbeResource.from_piece
+      service_params:
+      - config_ctl_creg
+
+  ServiceProbeCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: service_probe_resource.module
+      attr_name: ServiceProbeCtr
+
+  ServiceProbeCtr.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ServiceProbeCtr
+      attr_name: from_piece
+
+  service_resource_service_probe_ctr.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.service_resource:service_probe_ctr
+      function: ServiceProbeCtr.from_piece
       service_params:
       - config_ctl_creg

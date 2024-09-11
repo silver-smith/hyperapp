@@ -31,10 +31,6 @@ class SystemJob:
         _ = system.resolve_service('marker_registry')
         return system
 
-    def _enum_constructor_refs(self, system, ctr_collector):
-        for name, rec in system.resolved_templates.items():
-            log.info("Resolved service %s: %s", name, rec)
-            ctr = ServiceTemplateCtr.from_rec(name, rec)
-            yield mosaic.put(ctr.piece)
+    def _enum_constructor_refs(self, ctr_collector):
         for ctr in ctr_collector.constructors:
             yield mosaic.put(ctr.piece)

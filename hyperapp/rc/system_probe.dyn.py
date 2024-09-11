@@ -3,9 +3,7 @@ import inspect
 import logging
 import weakref
 from collections import defaultdict
-from dataclasses import dataclass
 from functools import partial
-from typing import Any
 
 from .services import pyobj_creg
 from .code.system import System
@@ -18,38 +16,6 @@ class UnknownServiceError(Exception):
     def __init__(self, service_name):
         super().__init__(f"Unknown service: {service_name!r}")
         self.service_name = service_name
-
-
-@dataclass
-class ServiceTemplateRec:
-
-    attr_name: str
-    ctl: Any
-    free_params: list[str]
-    service_params: list[str]
-    want_config: bool
-
-
-class ServiceProbeTemplate:
-
-    def __init__(self, attr_name, ctl, fn_piece, params):
-        self._attr_name = attr_name
-        self._ctl = ctl
-        self._fn = fn_piece
-        self._params = params
-
-    def __repr__(self):
-        return f"<ServiceProbeTemplate {self._attr_name} {self._fn} {self._params} {self._ctl}>"
-
-    @property
-    def ctl(self):
-        return self._ctl
-
-    def resolve(self, system, service_name):
-        fn = pyobj_creg.animate(self._fn)
-        probe = ServiceProbe(system, self._attr_name, service_name, self._ctl, fn, self._params)
-        probe.apply_if_no_params()
-        return probe
 
 
 class ActorProbeTemplate:
@@ -198,7 +164,7 @@ class Probe:
             service = next(gen)
             self._system.add_finalizer(self._name, partial(self._finalize, gen))
         self._service = service
-        self._add_resolved_template(want_config, service_params)
+        self._add_constructor(want_config, service_params)
         self._resolved = True
         return service
 
@@ -210,32 +176,8 @@ class Probe:
         else:
             raise RuntimeError(f"Generator function {self._fn!r} should have only one 'yield' statement")
 
-    def _add_resolved_template(self, want_config, template):
+    def _add_constructor(self, want_config, template):
         pass
-
-
-class ServiceProbe(Probe):
-
-    def __init__(self, system_probe, attr_name, service_name, ctl, fn, params):
-        super().__init__(system_probe, service_name, fn, params)
-        self._attr_name = attr_name
-        self._ctl = ctl
-
-    def __repr__(self):
-        return f"<ServiceProbe {self._attr_name} {self._fn} {self._params} {self._ctl}>"
-
-    def _add_resolved_template(self, want_config, service_params):
-        free_params_ofs = len(service_params)
-        if want_config:
-            free_params_ofs += 1
-        template = ServiceTemplateRec(
-            attr_name=self._attr_name,
-            ctl=self._ctl,
-            free_params=self._params[free_params_ofs:],
-            service_params=service_params,
-            want_config=want_config,
-            )
-        self._system.add_resolved_template(self._name, template)
 
 
 class FixtureProbe(Probe):
@@ -256,7 +198,6 @@ class SystemProbe(System):
     def __init__(self):
         super().__init__()
         self._config_fixtures = defaultdict(list)  # service_name -> fixture list
-        self._resolved_templates = {}
         self._async_error = None  # (error message, exception) tuple
 
     def add_item_fixtures(self, service_name, fixture_list):
@@ -270,10 +211,6 @@ class SystemProbe(System):
         if inspect.iscoroutine(value):
             self._run_async_coroutine(value)
 
-    @property
-    def resolved_templates(self):
-        return self._resolved_templates
-
     def resolve_config(self, service_name):
         config = super().resolve_config(service_name)
         for fixture in self._config_fixtures.get(service_name, []):
@@ -281,8 +218,9 @@ class SystemProbe(System):
             config.update(cfg)
         return ConfigProbe(service_name, config)
 
-    def add_resolved_template(self, name, service):
-        self._resolved_templates[name] = service
+    def add_constructor(self, ctr):
+        ctr_collector = self.resolve_service('ctr_collector')
+        ctr_collector.add_constructor(ctr)
 
     def migrate_globals(self):
         for obj in self._globals:

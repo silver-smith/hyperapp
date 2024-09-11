@@ -50,7 +50,7 @@ import:
 - rc.python_module_resource_target:python_module_resource_target_python_module_req.actor-template
 - rc.service_ctr:rc_constructors_service.actor-template
 - rc.service_ctr:rc_constructors_service_template.actor-template
-- rc.service_ctr:service_resource_service_probe_ctr.actor-template
+- rc.service_probe_resource:service_resource_service_probe_ctr.actor-template
 - rc.service_ctr:system_finalizer_gen_service_template.actor-template
 - rc.service_ctr:system_service_template.actor-template
 - rc.service_marker:service2.marker-template
@@ -236,7 +236,7 @@ definitions:
       - rc.model_ctr:rc_constructors_model.actor-template
       - rc.service_ctr:rc_constructors_service.actor-template
       - rc.service_ctr:rc_constructors_service_template.actor-template
-      - rc.service_ctr:service_resource_service_probe_ctr.actor-template
+      - rc.service_probe_resource:service_resource_service_probe_ctr.actor-template
       - rc.ui_command_ctr:rc_constructors_ui_command.actor-template
       - rc.ui_command_ctr:rc_constructors_ui_model_command.actor-template
       - rc.ui_command_ctr:rc_constructors_universal_ui_command.actor-template

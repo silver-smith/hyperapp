@@ -1,7 +1,7 @@
 import inspect
 
 from .code.config_ctl import ItemDictConfigCtl
-from .code.service_ctr import ServiceProbeCtr
+from .code.service_probe_resource import ServiceProbeCtr
         
 
 def add_service_ctr(module_name, ctr_collector, ctl, fn):
