@@ -60,7 +60,7 @@ class ServiceActorProbe:
         self._ctr_collector.add_constructor(ctr)
 
 
-class ServiceActorWrapper:
+class ServiceActorDecorator:
 
     def __init__(self, system, ctr_collector, module_name, service_name, t):
         self._system = system
@@ -95,7 +95,7 @@ class ServiceActorMarker:
     def __call__(self, fn_or_t):
         if isinstance(fn_or_t, Type):
             # Type-specialized variant (@mark.actor.my_registry(my_type)).
-            return ServiceActorWrapper(self._system, self._ctr_collector, self._module_name, self._service_name, fn_or_t)
+            return ServiceActorDecorator(self._system, self._ctr_collector, self._module_name, self._service_name, fn_or_t)
         check_not_classmethod(fn_or_t)
         check_is_function(fn_or_t)
         # Not type-specialized variant  (@mark.actor.my_registry).
