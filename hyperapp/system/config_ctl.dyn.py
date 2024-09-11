@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
 from . import htypes
+from .services import mosaic
 
 
 class ConfigCtl(metaclass=ABCMeta):
@@ -9,9 +10,9 @@ class ConfigCtl(metaclass=ABCMeta):
     def from_data(self, piece):
         pass
 
-    # @abstractmethod
-    # def to_data(self, config_template):
-    #     pass
+    @abstractmethod
+    def items_to_data(self, item_list):
+        pass
 
     @abstractmethod
     def merge(self, dest, src):
@@ -56,6 +57,12 @@ class ItemDictConfigCtl(DictConfigCtl):
 
     def item_piece(self, template):
         return self._cfg_item_creg.actor_to_piece(template)
+
+    def items_to_data(self, item_list):
+        return htypes.system.item_list_config(tuple(
+            mosaic.put(item)
+            for item in item_list
+            ))
 
 
 # class ServiceConfigCtl(ItemDictConfigCtl):

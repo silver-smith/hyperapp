@@ -15,7 +15,8 @@ class ConfigResourceTarget(Target):
     def target_name():
         return 'config'
 
-    def __init__(self, custom_resource_registry, resource_dir, module_name, path):
+    def __init__(self, config_ctl, custom_resource_registry, resource_dir, module_name, path):
+        self._config_ctl = config_ctl
         self._service_to_targets = defaultdict(set)
         self._custom_resource_registry = custom_resource_registry
         self._resource_dir = resource_dir
@@ -38,21 +39,25 @@ class ConfigResourceTarget(Target):
         self._service_to_targets[service].add(item_tgt)
 
     def get_output(self):
+        resource_module = resource_module_factory(
+            self._custom_resource_registry, self._module_name, resource_dir=self._resource_dir)
         service_list = []
         for service_name, target_set in sorted(self._service_to_targets.items()):
-            resource_list = [
+            ctl = self._config_ctl[service_name]
+            item_list = [
                 target.resource
                 for target in target_set
                 if target.completed
                 ]
-            items = tuple(
-                mosaic.put(resource)
-                for resource in sorted(resource_list, key=self._sort_key)
+            sorted_item_list = sorted(item_list, key=self._sort_key)
+            config = ctl.items_to_data(sorted_item_list)
+            resource_module[service_name] = config
+            service_config = htypes.system.service_config(
+                service=service_name,
+                config=mosaic.put(config),
                 )
-            service_list.append(htypes.system.service_config(service_name, items))
+            service_list.append(service_config)
         config = htypes.system.system_config(tuple(service_list))
-        resource_module = resource_module_factory(
-            self._custom_resource_registry, self._module_name, resource_dir=self._resource_dir)
         resource_module['config'] = config
         return (self._path, resource_module.as_text)
 
