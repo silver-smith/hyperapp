@@ -73,7 +73,8 @@ class CommandWrapper:
 
 
 def ui_command_marker(t, module_name, system, ctr_collector, data_to_res):
-    return CommandWrapper(system, ctr_collector, data_to_res, module_name, 'ui_command', t)
+    service_name = 'view_ui_command_reg'
+    return CommandWrapper(system, ctr_collector, data_to_res, module_name, service_name, t)
 
 
 def ui_model_command_marker(t, module_name):
