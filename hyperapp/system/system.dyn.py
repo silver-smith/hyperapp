@@ -245,6 +245,7 @@ class System:
         item_dict_config_ctl = ItemDictConfigCtl(self._cfg_item_creg)
         self._config_ctl = {
             'system': item_dict_config_ctl,
+            'config_ctl_creg': item_dict_config_ctl,
             'cfg_item_creg': item_dict_config_ctl,
             'pyobj_creg': item_dict_config_ctl,
             }
