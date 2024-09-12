@@ -93,17 +93,18 @@ class ConfigItemResolvedTarget(Target):
         self._completed = True
 
 
-# Ready for use.
+# Configuration item is ready to use.
 class ConfigItemCompleteTarget(Target):
 
     @staticmethod
     def target_name(service_name, key):
         return f'item-complete/{service_name}/{key}'
 
-    def __init__(self, service_name, key, resolved_tgt):
+    def __init__(self, service_name, key, resolved_tgt, service_cfg_item_complete_tgt):
         self._service_name = service_name
         self._key = key
         self._resolved_tgt = resolved_tgt
+        self._service_cfg_item_complete_tgt = service_cfg_item_complete_tgt
         self._completed = False
         self._provider_resource_tgt = None
         self._ctr = None
@@ -118,10 +119,12 @@ class ConfigItemCompleteTarget(Target):
 
     @property
     def deps(self):
+        deps = {self._resolved_tgt}
+        if self._service_cfg_item_complete_tgt:
+            deps.add(self._service_cfg_item_complete_tgt)
         if self._provider_resource_tgt:
-            return {self._resolved_tgt, self._provider_resource_tgt}
-        else:
-            return {self._resolved_tgt}
+            deps.add(self._provider_resource_tgt)
+        return deps
 
     def update_status(self):
         if self._completed:
@@ -129,8 +132,11 @@ class ConfigItemCompleteTarget(Target):
         if not self._provider_resource_tgt and self._resolved_tgt.completed:
             self._provider_resource_tgt = self._resolved_tgt.provider_resource_tgt
             self._ctr = self._resolved_tgt.constructor
-        if self._provider_resource_tgt and self._provider_resource_tgt.completed:
-            self._completed = True
+        if not self._provider_resource_tgt or not self._provider_resource_tgt.completed:
+            return
+        if self._service_cfg_item_complete_tgt and not self._service_cfg_item_complete_tgt.completed:
+            return
+        self._completed = True
 
     @property
     def provider_resource_tgt(self):

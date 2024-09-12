@@ -193,8 +193,13 @@ class TargetFactory:
             return self._target_set[target_name]
         except KeyError:
             pass
+        if service_name == 'system':
+            service_cfg_item_complete_tgt = None
+        else:
+            # Configuration item requires it's service to be complete because it uses it's config_ctl.
+            service_cfg_item_complete_tgt = self.config_item_complete('system', service_name)
         resolved_tgt = self.config_item_resolved(service_name, key)
-        target = ConfigItemCompleteTarget(service_name, key, resolved_tgt)
+        target = ConfigItemCompleteTarget(service_name, key, resolved_tgt, service_cfg_item_complete_tgt)
         self._target_set.add(target)
         config_tgt = self.config_resource()
         config_tgt.add_item(service_name, target)
