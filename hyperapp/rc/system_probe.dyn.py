@@ -95,10 +95,7 @@ class ConfigFixture:
             system.resolve_service(name)
             for name in self._service_params
             ]
-        config = fn(*service_args)
-        if not isinstance(config, dict):
-            raise RuntimeError(f"Config item fixture should return a key->value dict ({fn}): {config!r}")
-        return config
+        return fn(*service_args)
 
 
 class Probe:
@@ -212,10 +209,11 @@ class SystemProbe(System):
             self._run_async_coroutine(value)
 
     def resolve_config(self, service_name):
+        ctl = self._config_ctl[service_name]
         config = super().resolve_config(service_name)
         for fixture in self._config_fixtures.get(service_name, []):
-            cfg = fixture.resolve(self)
-            config.update(cfg)
+            fixture_cfg = fixture.resolve(self)
+            ctl.merge(config, fixture_cfg)
         return ConfigProbe(service_name, config)
 
     def add_constructor(self, ctr):
