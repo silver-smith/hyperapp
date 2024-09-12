@@ -6,6 +6,7 @@ import:
 - common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.system:item_dict_config_ctl
 - legacy_type.system:service_template
 definitions:
   file_bundle:
@@ -26,6 +27,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: file_bundle
+      ctl: item-dict-config.ctl
       function: file_bundle
       free_params:
       - path
@@ -33,3 +35,6 @@ definitions:
       service_params:
       - bundler
       want_config: false
+  item-dict-config.ctl:
+    type: legacy_type.system:item_dict_config_ctl
+    value: {}

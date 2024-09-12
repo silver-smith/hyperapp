@@ -7,6 +7,7 @@ import:
 - common.mark:marker_ctl.service
 - common.ref_picker:pick_refs.service
 - common.ref_picker:ref_picker_cache.service
+- legacy_type.system:item_list_config
 - legacy_type.system:system_config
 - rc.actor_ctr:actor_resource_actor_probe_ctr.actor-template
 - rc.actor_ctr:actor_resource_actor_template_ctr.actor-template
@@ -35,11 +36,9 @@ import:
 - rc.import_job:import_job_incomplete_result.actor-template
 - rc.import_job:import_job_job.actor-template
 - rc.import_job:import_job_succeeded_result.actor-template
-- rc.import_recorder:import_recorder_import_recorder.actor-template
 - rc.import_resource:import_resource_import_resource.actor-template
 - rc.init_targets:ctr_from_template_creg.service
 - rc.marker_ctr:marker_marker_template.actor-template
-- rc.marker_registry:marker_marker_template.actor-template
 - rc.marker_registry:marker_registry.service
 - rc.model_ctr:rc_constructors_model.actor-template
 - rc.model_marker:model.marker-template
@@ -55,10 +54,10 @@ import:
 - rc.rc_resource_creg:rc_resource_creg.service
 - rc.service_ctr:rc_constructors_service.actor-template
 - rc.service_ctr:rc_constructors_service_template.actor-template
-- rc.service_ctr:service_resource_service_probe_ctr.actor-template
 - rc.service_ctr:system_finalizer_gen_service_template.actor-template
 - rc.service_ctr:system_service_template.actor-template
 - rc.service_marker:service2.marker-template
+- rc.service_probe_resource:service_resource_service_probe_ctr.actor-template
 - rc.service_probe_resource:service_resource_service_probe_resource.actor-template
 - rc.service_resource:service_resource_service_req.actor-template
 - rc.service_target:service_service_complete_req.actor-template
@@ -122,11 +121,7 @@ import:
 - ui.feed_creg:feed_creg.service
 - ui.model_command_impl_creg:model_command_impl_creg.service
 - ui.navigator:navigator_view.actor-template
-- ui.navigator:navigator_view_go_back.ui-command
-- ui.navigator:navigator_view_go_forward.ui-command
 - ui.qt.auto_tabs:auto_tabs_view.actor-template
-- ui.qt.auto_tabs:auto_tabs_view_close_tab.ui-command
-- ui.qt.auto_tabs:auto_tabs_view_duplicate_tab.ui-command
 - ui.qt.fn_index_tree_adapter:tree_adapter_fn_index_tree_adapter.actor-template
 - ui.qt.fn_list_adapter:list_adapter_fn_list_adapter.actor-template
 - ui.qt.label:label_view.actor-template
@@ -154,170 +149,229 @@ definitions:
     type: legacy_type.system:system_config
     value:
       services:
-        cfg_item_creg:
-        - rc.marker_registry:marker_marker_template.actor-template
-        ctr_from_template_creg:
-        - rc.actor_ctr:system_actor_template.actor-template
-        - rc.marker_ctr:marker_marker_template.actor-template
-        - rc.service_ctr:system_finalizer_gen_service_template.actor-template
-        - rc.service_ctr:system_service_template.actor-template
-        feed_creg:
-        - ui.feed:ui_index_tree_feed.actor-template
-        - ui.feed:ui_list_feed.actor-template
-        marker_registry:
-        - rc.actor_marker:actor.marker-template
-        - rc.config_item_marker:config_fixture.marker-template
-        - rc.fixture_marker:fixture.marker-template
-        - rc.model_marker:model.marker-template
-        - rc.service_marker:service2.marker-template
-        - rc.ui_command_marker:ui_command.marker-template
-        - rc.ui_command_marker:ui_model_command.marker-template
-        model_view_creg:
-        - ui.qt.list:list_view.actor-template
-        - ui.qt.text:text_edit_view.actor-template
-        - ui.qt.text:text_readonly_view.actor-template
-        - ui.qt.tree:tree_view.actor-template
-        parcel_registry:
-        - transport.rsa_identity:rsa_identity_rsa_parcel.actor-template
-        peer_registry:
-        - transport.rsa_identity:rsa_identity_rsa_peer.actor-template
-        pyobj_creg:
-        - rc.import_recorder:import_recorder_import_recorder.actor-template
-        rc_constructor_creg:
-        - rc.actor_ctr:actor_resource_actor_probe_ctr.actor-template
-        - rc.actor_ctr:actor_resource_actor_template_ctr.actor-template
-        - rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
-        - rc.command_ctr:command_resource_command_template_ctr.actor-template
-        - rc.feed_ctr:rc_constructors_index_tree_feed.actor-template
-        - rc.feed_ctr:rc_constructors_list_feed.actor-template
-        - rc.fixture_ctr:fixture_resource_config_fixture_ctr.actor-template
-        - rc.fixture_ctr:fixture_resource_fixture_ctr.actor-template
-        - rc.model_ctr:rc_constructors_model.actor-template
-        - rc.service_ctr:rc_constructors_service.actor-template
-        - rc.service_ctr:rc_constructors_service_template.actor-template
-        - rc.service_ctr:service_resource_service_probe_ctr.actor-template
-        - rc.ui_command_ctr:rc_constructors_ui_command.actor-template
-        - rc.ui_command_ctr:rc_constructors_ui_model_command.actor-template
-        - rc.ui_command_ctr:rc_constructors_universal_ui_command.actor-template
-        - rc.ui_command_ctr:rc_constructors_universal_ui_model_command.actor-template
-        rc_job_creg:
-        - rc.import_job:import_job_job.actor-template
-        - rc.test_job:test_job_job.actor-template
-        rc_job_result_creg:
-        - rc.import_job:import_job_failed_result.actor-template
-        - rc.import_job:import_job_incomplete_result.actor-template
-        - rc.import_job:import_job_succeeded_result.actor-template
-        - rc.test_job:test_job_failed_result.actor-template
-        - rc.test_job:test_job_incomplete_result.actor-template
-        - rc.test_job:test_job_succeeded_result.actor-template
-        rc_requirement_creg:
-        - rc.actor_resource:actor_resource_actor_req.actor-template
-        - rc.python_module_resource_target:python_module_resource_target_python_module_req.actor-template
-        - rc.service_resource:service_resource_service_req.actor-template
-        - rc.service_target:service_service_complete_req.actor-template
-        - rc.service_target:service_service_found_req.actor-template
-        - rc.test_requirement:test_target_fixtures_module_req.actor-template
-        - rc.test_requirement:test_target_tested_code_req.actor-template
-        - rc.test_requirement:test_target_tested_service_req.actor-template
-        rc_resource_creg:
-        - rc.actor_probe_resource:actor_resource_actor_probe_resource.actor-template
-        - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
-        - rc.fixture_probe_resource:fixture_resource_config_fixture_resource.actor-template
-        - rc.fixture_probe_resource:fixture_resource_fixture_probe_resource.actor-template
-        - rc.import_resource:import_resource_import_resource.actor-template
-        - rc.service_probe_resource:service_resource_service_probe_resource.actor-template
-        - rc.test_requirement:test_target_constructors_picker_resource.actor-template
-        - rc.test_requirement:test_target_recorder_resource.actor-template
-        - rc.test_requirement:test_target_tested_code_resource.actor-template
-        - rc.test_requirement:test_target_tested_service_resource.actor-template
-        rpc_message_creg:
-        - rpc.rpc_endpoint:rpc_error_response.actor-template
-        - rpc.rpc_endpoint:rpc_request.actor-template
-        - rpc.rpc_endpoint:rpc_response.actor-template
-        rpc_target_creg:
-        - rc.rc_job:rc_job_job_target.actor-template
-        - rpc.rpc_endpoint:rpc_function_target.actor-template
-        signature_registry:
-        - transport.rsa_identity:rsa_identity_rsa_signature.actor-template
-        system:
-        - common.bundler:bundler.service
-        - common.file_bundle:file_bundle.service
-        - common.lcs_resource_storage:lcs_resource_storage_factory.service
-        - common.mark:marker_ctl.service
-        - common.ref_picker:pick_refs.service
-        - common.ref_picker:ref_picker_cache.service
-        - rc.ctr_collector:ctr_collector.service
-        - rc.htest.sample_config:sample_config_service.service
-        - rc.htest.sample_service_1:sample_fn_service_1.service
-        - rc.htest.sample_service_1:sample_value_service_1.service
-        - rc.htest.sample_service_2:sample_fn_service_2.service
-        - rc.htest.sample_service_2:sample_value_service_2.service
-        - rc.init_targets:ctr_from_template_creg.service
-        - rc.marker_registry:marker_registry.service
-        - rc.process_pool:process_pool_running.service
-        - rc.rc:compile_resources.service
-        - rc.rc:rc_main.service
-        - rc.rc_job:rc_job_submit_factory.service
-        - rc.rc_job_creg:rc_job_creg.service
-        - rc.rc_job_result_creg:rc_job_result_creg.service
-        - rc.rc_requirement_creg:rc_requirement_creg.service
-        - rc.rc_resource_creg:rc_resource_creg.service
-        - resource.data_to_res:data_to_ref.service
-        - resource.data_to_res:data_to_res.service
-        - resource.partial_ref:partial_ref.service
-        - resource.rc_constructor_creg:rc_constructor_creg.service
-        - rpc.rpc_call:rpc_call_factory.service
-        - rpc.rpc_call:rpc_submit_factory.service
-        - rpc.rpc_call:rpc_submit_target_factory.service
-        - rpc.rpc_call:rpc_wait_for_future.service
-        - rpc.rpc_endpoint:cancel_rpc_request_futures.service
-        - rpc.rpc_endpoint:rpc_endpoint.service
-        - rpc.rpc_endpoint:rpc_message_creg.service
-        - rpc.rpc_endpoint:rpc_request_futures.service
-        - rpc.rpc_endpoint:rpc_target_creg.service
-        - subprocess.subprocess:subprocess_running.service
-        - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
-        - subprocess.subprocess_rpc_server_main:rpc_server_main.service
-        - subprocess.subprocess_transport:subprocess_transport.service
-        - system.system_stop:stop_signal.service
-        - system.system_stop:system_failed.service
-        - transport.endpoint:endpoint_registry.service
-        - transport.endpoint:endpoint_thread_pool.service
-        - transport.identity:identity_registry.service
-        - transport.identity:parcel_registry.service
-        - transport.identity:peer_registry.service
-        - transport.identity:signature_registry.service
-        - transport.route_registry:route_registry.service
-        - transport.rsa_identity:generate_rsa_identity.service
-        - transport.sync_route_table:route_table.service
-        - transport.transport:transport.service
-        - ui.feed:feed_factory.service
-        - ui.feed_creg:feed_creg.service
-        - ui.model_command_impl_creg:model_command_impl_creg.service
-        - ui.ui_adapter_creg:ui_adapter_creg.service
-        - ui.ui_command_impl_creg:ui_command_impl_creg.service
-        - ui.view_registry:model_view_creg.service
-        - ui.view_registry:view_creg.service
-        - ui.visualizer:get_custom_layout.service
-        - ui.visualizer:set_custom_layout.service
-        - ui.visualizer:visualizer.service
-        - ui.visualizer:visualizer_reg.service
-        ui_adapter_creg:
-        - ui.qt.fn_index_tree_adapter:tree_adapter_fn_index_tree_adapter.actor-template
-        - ui.qt.fn_list_adapter:list_adapter_fn_list_adapter.actor-template
-        - ui.qt.remote_fn_index_tree_adapter:tree_adapter_remote_fn_index_tree_adapter.actor-template
-        - ui.qt.remote_fn_list_adapter:list_adapter_remote_fn_list_adapter.actor-template
-        - ui.qt.static_list_adapter:list_adapter_static_list_adapter.actor-template
-        - ui.str_adapter:str_adapter_static_str_adapter.actor-template
-        ui_command:
-        - ui.navigator:navigator_view_go_back.ui-command
-        - ui.navigator:navigator_view_go_forward.ui-command
-        - ui.qt.auto_tabs:auto_tabs_view_close_tab.ui-command
-        - ui.qt.auto_tabs:auto_tabs_view_duplicate_tab.ui-command
-        view_creg:
-        - ui.navigator:navigator_view.actor-template
-        - ui.qt.auto_tabs:auto_tabs_view.actor-template
-        - ui.qt.label:label_view.actor-template
-        - ui.qt.menu_bar:menu_bar_view.actor-template
-        - ui.qt.tabs:tabs_view.actor-template
-        - ui.qt.window:window_view.actor-template
+        ctr_from_template_creg: ctr_from_template_creg
+        feed_creg: feed_creg
+        marker_registry: marker_registry
+        model_view_creg: model_view_creg
+        parcel_registry: parcel_registry
+        peer_registry: peer_registry
+        rc_constructor_creg: rc_constructor_creg
+        rc_job_creg: rc_job_creg
+        rc_job_result_creg: rc_job_result_creg
+        rc_requirement_creg: rc_requirement_creg
+        rc_resource_creg: rc_resource_creg
+        rpc_message_creg: rpc_message_creg
+        rpc_target_creg: rpc_target_creg
+        signature_registry: signature_registry
+        system: system
+        ui_adapter_creg: ui_adapter_creg
+        view_creg: view_creg
+  ctr_from_template_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - rc.actor_ctr:system_actor_template.actor-template
+      - rc.marker_ctr:marker_marker_template.actor-template
+      - rc.service_ctr:system_finalizer_gen_service_template.actor-template
+      - rc.service_ctr:system_service_template.actor-template
+  feed_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.feed:ui_index_tree_feed.actor-template
+      - ui.feed:ui_list_feed.actor-template
+  marker_registry:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - rc.actor_marker:actor.marker-template
+      - rc.config_item_marker:config_fixture.marker-template
+      - rc.fixture_marker:fixture.marker-template
+      - rc.model_marker:model.marker-template
+      - rc.service_marker:service2.marker-template
+      - rc.ui_command_marker:ui_command.marker-template
+      - rc.ui_command_marker:ui_model_command.marker-template
+  model_view_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.qt.list:list_view.actor-template
+      - ui.qt.text:text_edit_view.actor-template
+      - ui.qt.text:text_readonly_view.actor-template
+      - ui.qt.tree:tree_view.actor-template
+  parcel_registry:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - transport.rsa_identity:rsa_identity_rsa_parcel.actor-template
+  peer_registry:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - transport.rsa_identity:rsa_identity_rsa_peer.actor-template
+  rc_constructor_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - rc.actor_ctr:actor_resource_actor_probe_ctr.actor-template
+      - rc.actor_ctr:actor_resource_actor_template_ctr.actor-template
+      - rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
+      - rc.command_ctr:command_resource_command_template_ctr.actor-template
+      - rc.feed_ctr:rc_constructors_index_tree_feed.actor-template
+      - rc.feed_ctr:rc_constructors_list_feed.actor-template
+      - rc.fixture_ctr:fixture_resource_config_fixture_ctr.actor-template
+      - rc.fixture_ctr:fixture_resource_fixture_ctr.actor-template
+      - rc.model_ctr:rc_constructors_model.actor-template
+      - rc.service_ctr:rc_constructors_service.actor-template
+      - rc.service_ctr:rc_constructors_service_template.actor-template
+      - rc.service_probe_resource:service_resource_service_probe_ctr.actor-template
+      - rc.ui_command_ctr:rc_constructors_ui_command.actor-template
+      - rc.ui_command_ctr:rc_constructors_ui_model_command.actor-template
+      - rc.ui_command_ctr:rc_constructors_universal_ui_command.actor-template
+      - rc.ui_command_ctr:rc_constructors_universal_ui_model_command.actor-template
+  rc_job_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - rc.import_job:import_job_job.actor-template
+      - rc.test_job:test_job_job.actor-template
+  rc_job_result_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - rc.import_job:import_job_failed_result.actor-template
+      - rc.import_job:import_job_incomplete_result.actor-template
+      - rc.import_job:import_job_succeeded_result.actor-template
+      - rc.test_job:test_job_failed_result.actor-template
+      - rc.test_job:test_job_incomplete_result.actor-template
+      - rc.test_job:test_job_succeeded_result.actor-template
+  rc_requirement_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - rc.actor_resource:actor_resource_actor_req.actor-template
+      - rc.python_module_resource_target:python_module_resource_target_python_module_req.actor-template
+      - rc.service_resource:service_resource_service_req.actor-template
+      - rc.service_target:service_service_complete_req.actor-template
+      - rc.service_target:service_service_found_req.actor-template
+      - rc.test_requirement:test_target_fixtures_module_req.actor-template
+      - rc.test_requirement:test_target_tested_code_req.actor-template
+      - rc.test_requirement:test_target_tested_service_req.actor-template
+  rc_resource_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - rc.actor_probe_resource:actor_resource_actor_probe_resource.actor-template
+      - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
+      - rc.fixture_probe_resource:fixture_resource_config_fixture_resource.actor-template
+      - rc.fixture_probe_resource:fixture_resource_fixture_probe_resource.actor-template
+      - rc.import_resource:import_resource_import_resource.actor-template
+      - rc.service_probe_resource:service_resource_service_probe_resource.actor-template
+      - rc.test_requirement:test_target_constructors_picker_resource.actor-template
+      - rc.test_requirement:test_target_recorder_resource.actor-template
+      - rc.test_requirement:test_target_tested_code_resource.actor-template
+      - rc.test_requirement:test_target_tested_service_resource.actor-template
+  rpc_message_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - rpc.rpc_endpoint:rpc_error_response.actor-template
+      - rpc.rpc_endpoint:rpc_request.actor-template
+      - rpc.rpc_endpoint:rpc_response.actor-template
+  rpc_target_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - rc.rc_job:rc_job_job_target.actor-template
+      - rpc.rpc_endpoint:rpc_function_target.actor-template
+  signature_registry:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - transport.rsa_identity:rsa_identity_rsa_signature.actor-template
+  system:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - common.bundler:bundler.service
+      - common.file_bundle:file_bundle.service
+      - common.lcs_resource_storage:lcs_resource_storage_factory.service
+      - common.mark:marker_ctl.service
+      - common.ref_picker:pick_refs.service
+      - common.ref_picker:ref_picker_cache.service
+      - rc.ctr_collector:ctr_collector.service
+      - rc.htest.sample_config:sample_config_service.service
+      - rc.htest.sample_service_1:sample_fn_service_1.service
+      - rc.htest.sample_service_1:sample_value_service_1.service
+      - rc.htest.sample_service_2:sample_fn_service_2.service
+      - rc.htest.sample_service_2:sample_value_service_2.service
+      - rc.init_targets:ctr_from_template_creg.service
+      - rc.marker_registry:marker_registry.service
+      - rc.process_pool:process_pool_running.service
+      - rc.rc:compile_resources.service
+      - rc.rc:rc_main.service
+      - rc.rc_job:rc_job_submit_factory.service
+      - rc.rc_job_creg:rc_job_creg.service
+      - rc.rc_job_result_creg:rc_job_result_creg.service
+      - rc.rc_requirement_creg:rc_requirement_creg.service
+      - rc.rc_resource_creg:rc_resource_creg.service
+      - resource.data_to_res:data_to_ref.service
+      - resource.data_to_res:data_to_res.service
+      - resource.partial_ref:partial_ref.service
+      - resource.rc_constructor_creg:rc_constructor_creg.service
+      - rpc.rpc_call:rpc_call_factory.service
+      - rpc.rpc_call:rpc_submit_factory.service
+      - rpc.rpc_call:rpc_submit_target_factory.service
+      - rpc.rpc_call:rpc_wait_for_future.service
+      - rpc.rpc_endpoint:cancel_rpc_request_futures.service
+      - rpc.rpc_endpoint:rpc_endpoint.service
+      - rpc.rpc_endpoint:rpc_message_creg.service
+      - rpc.rpc_endpoint:rpc_request_futures.service
+      - rpc.rpc_endpoint:rpc_target_creg.service
+      - subprocess.subprocess:subprocess_running.service
+      - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
+      - subprocess.subprocess_rpc_server_main:rpc_server_main.service
+      - subprocess.subprocess_transport:subprocess_transport.service
+      - system.system_stop:stop_signal.service
+      - system.system_stop:system_failed.service
+      - transport.endpoint:endpoint_registry.service
+      - transport.endpoint:endpoint_thread_pool.service
+      - transport.identity:identity_registry.service
+      - transport.identity:parcel_registry.service
+      - transport.identity:peer_registry.service
+      - transport.identity:signature_registry.service
+      - transport.route_registry:route_registry.service
+      - transport.rsa_identity:generate_rsa_identity.service
+      - transport.sync_route_table:route_table.service
+      - transport.transport:transport.service
+      - ui.feed:feed_factory.service
+      - ui.feed_creg:feed_creg.service
+      - ui.model_command_impl_creg:model_command_impl_creg.service
+      - ui.ui_adapter_creg:ui_adapter_creg.service
+      - ui.ui_command_impl_creg:ui_command_impl_creg.service
+      - ui.view_registry:model_view_creg.service
+      - ui.view_registry:view_creg.service
+      - ui.visualizer:get_custom_layout.service
+      - ui.visualizer:set_custom_layout.service
+      - ui.visualizer:visualizer.service
+      - ui.visualizer:visualizer_reg.service
+  ui_adapter_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.qt.fn_index_tree_adapter:tree_adapter_fn_index_tree_adapter.actor-template
+      - ui.qt.fn_list_adapter:list_adapter_fn_list_adapter.actor-template
+      - ui.qt.remote_fn_index_tree_adapter:tree_adapter_remote_fn_index_tree_adapter.actor-template
+      - ui.qt.remote_fn_list_adapter:list_adapter_remote_fn_list_adapter.actor-template
+      - ui.qt.static_list_adapter:list_adapter_static_list_adapter.actor-template
+      - ui.str_adapter:str_adapter_static_str_adapter.actor-template
+  view_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.navigator:navigator_view.actor-template
+      - ui.qt.auto_tabs:auto_tabs_view.actor-template
+      - ui.qt.label:label_view.actor-template
+      - ui.qt.menu_bar:menu_bar_view.actor-template
+      - ui.qt.tabs:tabs_view.actor-template
+      - ui.qt.window:window_view.actor-template

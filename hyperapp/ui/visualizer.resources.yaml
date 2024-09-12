@@ -15,6 +15,7 @@ import:
 - legacy_type.list_adapter:static_list_adapter
 - legacy_type.record_adapter:fn_record_adapter
 - legacy_type.str_adapter:static_str_adapter
+- legacy_type.system:item_dict_config_ctl
 - legacy_type.system:service_template
 - legacy_type.text:edit_view
 - legacy_type.tree:view
@@ -34,12 +35,16 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: get_custom_layout
+      ctl: item-dict-config.ctl
       function: get_custom_layout
       free_params:
       - lcs
       - t
       service_params: []
       want_config: false
+  item-dict-config.ctl:
+    type: legacy_type.system:item_dict_config_ctl
+    value: {}
   set_custom_layout:
     type: legacy_type.builtin:attribute
     value:
@@ -49,6 +54,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: set_custom_layout
+      ctl: item-dict-config.ctl
       function: set_custom_layout
       free_params:
       - lcs
@@ -91,6 +97,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: visualizer
+      ctl: item-dict-config.ctl
       function: visualizer
       free_params:
       - lcs
@@ -108,6 +115,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: visualizer_reg
+      ctl: item-dict-config.ctl
       function: visualizer_reg
       free_params:
       - t

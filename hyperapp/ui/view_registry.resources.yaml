@@ -5,8 +5,12 @@ import:
 - common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.system:item_dict_config_ctl
 - legacy_type.system:service_template
 definitions:
+  item-dict-config.ctl:
+    type: legacy_type.system:item_dict_config_ctl
+    value: {}
   model_view_creg:
     type: legacy_type.builtin:attribute
     value:
@@ -16,6 +20,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: model_view_creg
+      ctl: item-dict-config.ctl
       function: model_view_creg
       free_params: []
       service_params: []
@@ -29,6 +34,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: view_creg
+      ctl: item-dict-config.ctl
       function: view_creg
       free_params: []
       service_params: []
