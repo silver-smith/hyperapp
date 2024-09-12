@@ -90,4 +90,5 @@ definitions:
       t: legacy_type.rc_constructors:service_template
       function: ServiceTemplateCtr.from_piece
       service_params:
+      - config_ctl
       - config_ctl_creg

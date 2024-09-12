@@ -4,10 +4,11 @@ from .code.config_ctl import ItemDictConfigCtl
 from .code.service_probe_resource import ServiceProbeCtr
         
 
-def add_service_ctr(module_name, ctr_collector, ctl, fn):
+def add_service_ctr(module_name, config_ctl, ctr_collector, ctl, fn):
     if '.' in fn.__qualname__:
         raise RuntimeError(f"Only free functions are suitable for services: {fn!r}")
     ctr = ServiceProbeCtr(
+        config_ctl=config_ctl,
         module_name=module_name, 
         attr_name=fn.__name__,
         name=fn.__name__,
@@ -19,8 +20,9 @@ def add_service_ctr(module_name, ctr_collector, ctl, fn):
 
 class ServiceMarker:
 
-    def __init__(self, module_name, cfg_item_creg, ctr_collector):
+    def __init__(self, module_name, config_ctl, cfg_item_creg, ctr_collector):
         self._module_name = module_name
+        self._config_ctl = config_ctl
         self._cfg_item_creg = cfg_item_creg
         self._ctr_collector = ctr_collector
 
@@ -31,5 +33,5 @@ class ServiceMarker:
             # Parameterized decorator case.
             assert 0, 'TODO'
             return ServiceDecorator(self._module_name, self._self._ctr_collector, ctl)
-        add_service_ctr(self._module_name, self._ctr_collector, ctl, fn)
+        add_service_ctr(self._module_name, self._config_ctl, self._ctr_collector, ctl, fn)
         return fn

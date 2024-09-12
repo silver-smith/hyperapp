@@ -61,9 +61,10 @@ class CoreServiceTemplateCtr(ServiceTemplateCtrBase):
 class ServiceTemplateCtr(ServiceTemplateCtrBase):
 
     @classmethod
-    def from_piece(cls, piece, config_ctl_creg):
+    def from_piece(cls, piece, config_ctl_creg, config_ctl):
         ctl = config_ctl_creg.invite(piece.ctl)
         return cls(
+            config_ctl=config_ctl,
             attr_name=piece.attr_name,
             name=piece.name,
             ctl=ctl,
@@ -72,8 +73,9 @@ class ServiceTemplateCtr(ServiceTemplateCtrBase):
             want_config=piece.want_config,
             )
 
-    def __init__(self, attr_name, name, ctl, free_params, service_params, want_config):
+    def __init__(self, config_ctl, attr_name, name, ctl, free_params, service_params, want_config):
         super().__init__(name)
+        self._config_ctl = config_ctl
         self._attr_name = attr_name
         self._ctl = ctl
         self._free_params = free_params
@@ -97,6 +99,7 @@ class ServiceTemplateCtr(ServiceTemplateCtrBase):
         target_set.update_deps_for(resolved_tgt)
         # Should be created to be added to config resource.
         _ = target_set.factory.config_item_complete('system', self._name)
+        self._config_ctl[self._name] = self._ctl
 
     def make_component(self, types, python_module, name_to_res=None):
         attribute = htypes.builtin.attribute(

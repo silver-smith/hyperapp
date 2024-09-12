@@ -12,8 +12,9 @@ from .code.service_ctr import ServiceTemplateCtr
 
 class ServiceProbe(Probe):
 
-    def __init__(self, system_probe, attr_name, service_name, ctl, fn, params):
+    def __init__(self, system_probe, config_ctl, attr_name, service_name, ctl, fn, params):
         super().__init__(system_probe, service_name, fn, params)
+        self._config_ctl = config_ctl
         self._attr_name = attr_name
         self._ctl = ctl
 
@@ -25,6 +26,7 @@ class ServiceProbe(Probe):
         if want_config:
             free_params_ofs += 1
         ctr = ServiceTemplateCtr(
+            config_ctl=self._config_ctl,
             attr_name=self._attr_name,
             name=self._name,
             ctl=self._ctl,
@@ -51,8 +53,9 @@ class ServiceProbeTemplate:
         return self._ctl
 
     def resolve(self, system, service_name):
+        config_ctl = system.resolve_service('config_ctl')
         fn = pyobj_creg.animate(self._fn)
-        probe = ServiceProbe(system, self._attr_name, service_name, self._ctl, fn, self._params)
+        probe = ServiceProbe(system, config_ctl, self._attr_name, service_name, self._ctl, fn, self._params)
         probe.apply_if_no_params()
         return probe
 
@@ -93,12 +96,13 @@ class ServiceProbeResource(Resource):
 class ServiceProbeCtr(ModuleCtr):
 
     @classmethod
-    def from_piece(cls, piece, config_ctl_creg):
+    def from_piece(cls, piece, config_ctl_creg, config_ctl):
         ctl = config_ctl_creg.invite(piece.ctl)
-        return cls(piece.module_name, piece.attr_name, piece.name, ctl, piece.params)
+        return cls(config_ctl, piece.module_name, piece.attr_name, piece.name, ctl, piece.params)
 
-    def __init__(self, module_name, attr_name, name, ctl, params):
+    def __init__(self, config_ctl, module_name, attr_name, name, ctl, params):
         super().__init__(module_name)
+        self._config_ctl = config_ctl
         self._attr_name = attr_name
         self._name = name
         self._ctl = ctl
@@ -125,6 +129,7 @@ class ServiceProbeCtr(ModuleCtr):
         if tuple(self._params) not in {(), ('config',)}:
             return
         template_ctr = ServiceTemplateCtr(
+            config_ctl=self._config_ctl,
             attr_name=self._attr_name,
             name=self._name,
             ctl=self._ctl,
@@ -136,6 +141,7 @@ class ServiceProbeCtr(ModuleCtr):
         target_set.update_deps_for(resolved_tgt)
         # Should be created to be added to config resource.
         _ = target_set.factory.config_item_complete('system', self._name)
+        self._config_ctl[self._name] = self._ctl
 
     def make_component(self, types, python_module, name_to_res=None):
         return htypes.builtin.attribute(

@@ -28,5 +28,6 @@ definitions:
       name: service2
       function: ServiceMarker
       service_params:
+      - config_ctl
       - cfg_item_creg
       - ctr_collector

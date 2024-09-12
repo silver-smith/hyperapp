@@ -70,3 +70,4 @@ definitions:
       function: ServiceProbeCtr.from_piece
       service_params:
       - config_ctl_creg
+      - config_ctl
