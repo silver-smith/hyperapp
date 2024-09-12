@@ -43,13 +43,15 @@ class ConfigResourceTarget(Target):
             self._custom_resource_registry, self._module_name, resource_dir=self._resource_dir)
         service_list = []
         for service_name, target_set in sorted(self._service_to_targets.items()):
-            ctl = self._config_ctl[service_name]
             item_list = [
                 target.resource
                 for target in target_set
                 if target.completed
                 ]
+            if not item_list:
+                continue
             sorted_item_list = sorted(item_list, key=self._sort_key)
+            ctl = self._config_ctl[service_name]
             config = ctl.items_to_data(sorted_item_list)
             resource_module[service_name] = config
             service_config = htypes.system.service_config(
