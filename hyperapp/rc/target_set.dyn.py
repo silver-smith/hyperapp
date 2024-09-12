@@ -195,6 +195,9 @@ class TargetFactory:
             pass
         if service_name == 'system':
             service_cfg_item_complete_tgt = None
+        elif service_name in {'config_ctl_creg', 'cfg_item_creg'}:
+            # Builtin services do not have matching targets. They are ready by definition.
+            service_cfg_item_complete_tgt = None
         else:
             # Configuration item requires it's service to be complete because it uses it's config_ctl.
             service_cfg_item_complete_tgt = self.config_item_complete('system', service_name)
