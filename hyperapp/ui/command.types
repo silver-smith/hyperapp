@@ -1,0 +1,4 @@
+config_ctl = record
+
+item_list_config = record:
+  items: ref list

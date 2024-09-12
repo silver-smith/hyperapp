@@ -115,6 +115,7 @@ import:
 - transport.rsa_identity:rsa_identity_rsa_signature.actor-template
 - transport.sync_route_table:route_table.service
 - transport.transport:transport.service
+- ui.command_config_ctl:command_config_ctl.actor-template
 - ui.feed:feed_factory.service
 - ui.feed:ui_index_tree_feed.actor-template
 - ui.feed:ui_list_feed.actor-template
@@ -149,6 +150,7 @@ definitions:
     type: legacy_type.system:system_config
     value:
       services:
+        config_ctl_creg: config_ctl_creg
         ctr_from_template_creg: ctr_from_template_creg
         feed_creg: feed_creg
         marker_registry: marker_registry
@@ -166,6 +168,11 @@ definitions:
         system: system
         ui_adapter_creg: ui_adapter_creg
         view_creg: view_creg
+  config_ctl_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.command_config_ctl:command_config_ctl.actor-template
   ctr_from_template_creg:
     type: legacy_type.system:item_list_config
     value:
