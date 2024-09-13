@@ -79,7 +79,8 @@ def _collect_output(target_set, failures, options):
     return (total, changed)
 
 
-def _submit_jobs(pool, target_set, target_to_job, job_id_to_target, filter):
+def _submit_jobs(rc_job_result_creg, pool, job_cache, target_set, target_to_job, job_id_to_target, filter):
+    job_result_list = []
     for target in target_set.iter_ready():
         if target in target_to_job:
             continue  # Already submitted.
@@ -90,38 +91,52 @@ def _submit_jobs(pool, target_set, target_to_job, job_id_to_target, filter):
             job = target.make_job()
         except Exception as x:
             raise RuntimeError(f"For {target.name}: {x}") from x
-        rc_log.debug("Submit %s (in queue: %d)", target.name, pool.queue_size)
-        pool.submit(job)
         target_to_job[target] = job
         job_id_to_target[id(job)] = target
+        result_piece = job_cache.get(job)
+        if result_piece:
+            job_result_list.append((job, result_piece))
+            continue
+        rc_log.debug("Submit %s (in queue: %d)", target.name, pool.queue_size)
+        pool.submit(job)
+    return job_result_list
 
 
-def _run(rc_job_result_creg, pool, target_set, filter, options):
+def _run(rc_job_result_creg, pool, job_cache, target_set, filter, options):
     rc_log.info("%d targets", target_set.count)
     target_to_job = {}  # Jobs are never removed.
     job_id_to_target = {}
     failures = {}
     incomplete = {}
     should_run = True
+
+    def _handle_result(job, result_piece, is_cached):
+        result = rc_job_result_creg.animate(result_piece)
+        if not is_cached:
+            job_cache.put(job, result_piece)
+        target = job_id_to_target[id(job)]
+        rc_log.info("%s: %s%s", target.name, result.status.name, ' (cached)' if is_cached else '')
+        if result.status == JobStatus.failed:
+            failures[target] = result
+            if options.fail_fast:
+                should_run = False
+        else:
+            target.handle_job_result(target_set, result)
+        if result.status == JobStatus.incomplete:
+            incomplete[target] = result
+
     while should_run:
-        _submit_jobs(pool, target_set, target_to_job, job_id_to_target, filter)
-        if pool.job_count == 0:
+        cached_job_result_list = _submit_jobs(rc_job_result_creg, pool, job_cache, target_set, target_to_job, job_id_to_target, filter)
+        if not cached_job_result_list and pool.job_count == 0:
             rc_log.info("Not all targets are completed, but there are no jobs")
             break
         prev_completed = set(target_set.iter_completed())
+        for job, result_piece in cached_job_result_list:
+            _handle_result(job, result_piece, is_cached=True)
         for job, result_piece in pool.iter_completed(options.timeout):
-            result = rc_job_result_creg.animate(result_piece)
-            target = job_id_to_target[id(job)]
-            rc_log.info("%s: %s", target.name, result.status.name)
-            if result.status == JobStatus.failed:
-                failures[target] = result
-                if options.fail_fast:
-                    should_run = False
-                    break
-            else:
-                target.handle_job_result(target_set, result)
-            if result.status == JobStatus.incomplete:
-                incomplete[target] = result
+            _handle_result(job, result_piece, is_cached=False)
+            if not should_run:
+                break
         _update_completed(target_set, prev_completed)
         filter.update_deps()
         if target_set.all_completed:
@@ -193,8 +208,8 @@ def _parse_args(sys_argv):
     )
 
 
-def compile_resources(system_config_template, config_ctl, ctr_from_template_creg, rc_job_result_creg, pool, targets, options):
-    build = load_build(hyperapp_dir)
+def compile_resources(system_config_template, config_ctl, ctr_from_template_creg, file_bundle, rc_job_result_creg, pool, targets, options):
+    build = load_build(file_bundle, hyperapp_dir)
     log.info("Loaded build:")
     build.report()
 
@@ -202,7 +217,7 @@ def compile_resources(system_config_template, config_ctl, ctr_from_template_creg
     init_targets(config_ctl, ctr_from_template_creg, system_config_template, hyperapp_dir, target_set, build)
     filter = Filter(target_set, targets)
     try:
-        _run(rc_job_result_creg, pool, target_set, filter, options)
+        _run(rc_job_result_creg, pool, build.job_cache, target_set, filter, options)
     except HException as x:
         if isinstance(x, htypes.rpc.server_error):
             log.error("Server error: %s", x.message)
@@ -211,6 +226,8 @@ def compile_resources(system_config_template, config_ctl, ctr_from_template_creg
                     log.error("%s", line)
         else:
             raise
+    finally:
+        build.job_cache.save()
 
 
 def rc_main(process_pool_running, compile_resources, sys_argv):

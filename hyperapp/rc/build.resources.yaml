@@ -12,6 +12,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.import_recorder:import_recorder
 - legacy_type.import_recorder:resource
+- rc.job_cache:job_cache.module
 
 definitions:
 
@@ -34,3 +35,4 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.type_module_loader: builtins:type_module_loader.service
         services.pyobj_creg: builtins:pyobj_creg.service
+        code.job_cache: rc.job_cache:job_cache.module

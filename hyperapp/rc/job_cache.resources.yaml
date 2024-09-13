@@ -1,0 +1,19 @@
+import:
+- builtins:mosaic.service
+- builtins:web.service
+- legacy_type.builtin:python_module
+- legacy_type.job_cache:cache
+- legacy_type.job_cache:entry
+
+definitions:
+
+  job_cache.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: job_cache
+      file_name: job_cache.dyn.py
+      import_list:
+        htypes.job_cache.cache: legacy_type.job_cache:cache
+        htypes.job_cache.entry: legacy_type.job_cache:entry
+        services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service

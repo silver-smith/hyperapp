@@ -1,0 +1,6 @@
+entry = record:
+  job: ref
+  result: ref
+
+cache = record:
+  entries: entry list

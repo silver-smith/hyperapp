@@ -13,8 +13,12 @@ from .services import (
     pyobj_creg,
     type_module_loader,
     )
+from .code.job_cache import JobCache
 
 log = logging.getLogger(__name__)
+
+
+JOB_CACHE_PATH = Path.home() / '.local/share/hyperapp/rc-job-cache.cdr'
 
 
 @dataclass
@@ -118,9 +122,10 @@ class TypeSrc:
 
 class Build:
 
-    def __init__(self, types, python_modules):
+    def __init__(self, types, python_modules, job_cache):
         self.types = types
         self.python_modules = python_modules
+        self.job_cache = job_cache
 
     @property
     def piece(self):
@@ -160,8 +165,9 @@ def _load_types(root_dir):
             yield TypeSrc(module_name, name, type_piece)
 
 
-def load_build(root_dir):
+def load_build(file_bundle, root_dir):
     return Build(
         types=TypeSources(list(_load_types(root_dir))),
         python_modules=list(_load_pyhon_modules(root_dir)),
+        job_cache=JobCache(file_bundle, JOB_CACHE_PATH),
         )
