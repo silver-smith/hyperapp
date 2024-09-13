@@ -19,11 +19,12 @@ DEFAULT_ENCODING = 'json'
 class FileBundle:
 
     def __init__(self, bundler, path, encoding):
+        self._bundler = bundler
         self.path = path
         self._encoding = encoding
 
     def save_ref(self, ref):
-        bundle = bundler([ref]).bundle
+        bundle = self._bundler([ref]).bundle
         data = packet_coders.encode(self._encoding, bundle)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.path.write_bytes(data)
