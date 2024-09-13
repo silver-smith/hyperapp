@@ -93,7 +93,7 @@ def _submit_jobs(rc_job_result_creg, pool, job_cache, target_set, target_to_job,
             raise RuntimeError(f"For {target.name}: {x}") from x
         target_to_job[target] = job
         job_id_to_target[id(job)] = target
-        result_piece = job_cache.get(job)
+        result_piece = job_cache.get(target, job)
         if result_piece:
             job_result_list.append((job, result_piece))
             continue
@@ -111,10 +111,10 @@ def _run(rc_job_result_creg, pool, job_cache, target_set, filter, options):
     should_run = True
 
     def _handle_result(job, result_piece, is_cached):
+        target = job_id_to_target[id(job)]
         result = rc_job_result_creg.animate(result_piece)
         if not is_cached:
-            job_cache.put(job, result_piece)
-        target = job_id_to_target[id(job)]
+            job_cache.put(target, job, result_piece)
         rc_log.info("%s: %s%s", target.name, result.status.name, ' (cached)' if is_cached else '')
         if result.status == JobStatus.failed:
             failures[target] = result
