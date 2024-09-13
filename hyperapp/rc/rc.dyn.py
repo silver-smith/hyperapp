@@ -209,6 +209,8 @@ def compile_resources(system_config_template, config_ctl, ctr_from_template_creg
             for entry in x.traceback:
                 for line in entry.splitlines():
                     log.error("%s", line)
+        else:
+            raise
 
 
 def rc_main(process_pool_running, compile_resources, sys_argv):
