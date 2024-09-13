@@ -9,6 +9,7 @@ from .services import (
 from .code.mark import mark
 from .code.command import Command, CommandKind, FnCommandImpl
 from .code.command_groups import default_command_groups
+from .code.command_config_ctl import CommandConfigCtl
 
 log = logging.getLogger(__name__)
 
@@ -37,7 +38,7 @@ def ui_command_impl_from_piece(piece, ctx):
     return UiCommandImpl(ctx, fn, piece.ctx_params)
 
 
-@mark.service2
+@mark.service2(ctl=CommandConfigCtl())
 def view_ui_command_reg(config, view_t):
     return config[view_t]
 

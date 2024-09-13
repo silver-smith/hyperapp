@@ -10,7 +10,7 @@ class CommandConfigCtl(ConfigCtl):
     def from_piece(cls, piece, cfg_item_creg):
         return cls(cfg_item_creg)
 
-    def __init__(self, cfg_item_creg):
+    def __init__(self, cfg_item_creg=None):
         self._cfg_item_creg = cfg_item_creg
 
     @property
