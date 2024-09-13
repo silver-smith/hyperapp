@@ -139,7 +139,7 @@ class ServiceProbeCtr(ModuleCtr):
             )
         resolved_tgt.resolve(template_ctr)
         target_set.update_deps_for(resolved_tgt)
-        # Should be created to be added to config resource.
+        # Complete target should be created so it will be added to config resource.
         _ = target_set.factory.config_item_complete('system', self._name)
         self._config_ctl[self._name] = self._ctl
 
