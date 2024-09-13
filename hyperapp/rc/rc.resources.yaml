@@ -52,6 +52,7 @@ definitions:
       - system_config_template
       - config_ctl
       - ctr_from_template_creg
+      - file_bundle
       - rc_job_result_creg
       want_config: false
 

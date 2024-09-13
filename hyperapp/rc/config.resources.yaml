@@ -3,6 +3,7 @@ import:
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
 - common.bundler:bundler.service
+- common.file_bundle:file_bundle.service
 - common.mark:marker_ctl.service
 - common.ref_picker:pick_refs.service
 - common.ref_picker:ref_picker_cache.service
@@ -117,6 +118,7 @@ definitions:
     value:
       items:
       - common.bundler:bundler.service
+      - common.file_bundle:file_bundle.service
       - common.mark:marker_ctl.service
       - common.ref_picker:pick_refs.service
       - common.ref_picker:ref_picker_cache.service

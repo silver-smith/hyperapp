@@ -1,5 +1,3 @@
-# Automatically generated file. Do not edit.
-
 import:
 - builtins:mosaic.service
 - builtins:unbundler.service
@@ -8,12 +6,9 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.system:item_dict_config_ctl
 - legacy_type.system:service_template
+
 definitions:
-  file_bundle:
-    type: legacy_type.builtin:attribute
-    value:
-      object: file_bundle.module
-      attr_name: file_bundle
+
   file_bundle.module:
     type: legacy_type.builtin:python_module
     value:
@@ -23,6 +18,17 @@ definitions:
         code.mark: common.mark:mark.module
         services.mosaic: builtins:mosaic.service
         services.unbundler: builtins:unbundler.service
+
+  item-dict-config.ctl:
+    type: legacy_type.system:item_dict_config_ctl
+    value: {}
+
+  file_bundle:
+    type: legacy_type.builtin:attribute
+    value:
+      object: file_bundle.module
+      attr_name: file_bundle
+
   file_bundle.service:
     type: legacy_type.system:service_template
     value:
@@ -35,6 +41,3 @@ definitions:
       service_params:
       - bundler
       want_config: false
-  item-dict-config.ctl:
-    type: legacy_type.system:item_dict_config_ctl
-    value: {}
