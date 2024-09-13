@@ -82,7 +82,7 @@ def _collect_output(target_set, failures, options):
 def _submit_jobs(pool, target_set, target_to_job, job_id_to_target, filter):
     for target in target_set.iter_ready():
         if target in target_to_job:
-            continue
+            continue  # Already submitted.
         if not filter.included(target):
             rc_log.debug("%s: not requested", target.name)
             continue
