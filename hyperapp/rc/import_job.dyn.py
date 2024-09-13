@@ -170,10 +170,11 @@ class ImportJob(SystemJob):
 
     @property
     def piece(self):
+        resource_refs = sorted(mosaic.put(r.piece) for r in self._resources)
         return htypes.import_job.job(
             python_module=self._src.piece,
             idx=self._idx,
-            resources=tuple(mosaic.put(d.piece) for d in self._resources),
+            resources=tuple(resource_refs),
             )
 
     def run(self):
