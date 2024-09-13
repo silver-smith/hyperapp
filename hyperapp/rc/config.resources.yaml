@@ -38,6 +38,7 @@ import:
 - rc.marker_registry:marker_registry.service
 - rc.model_ctr:rc_constructors_model.actor-template
 - rc.model_marker:model.marker-template
+- rc.rc_constructor_creg:rc_constructor_creg.service
 - rc.rc_job:rc_job_submit_factory.service
 - rc.rc_job:rc_job_job_target.actor-template
 - rc.rc_job_creg:rc_job_creg.service
@@ -78,7 +79,6 @@ import:
 - resource.data_to_res:data_to_ref.service
 - resource.data_to_res:data_to_res.service
 - resource.partial_ref:partial_ref.service
-- resource.rc_constructor_creg:rc_constructor_creg.service
 - rpc.rpc_endpoint:cancel_rpc_request_futures.service
 - rpc.rpc_endpoint:rpc_error_response.actor-template
 - rpc.rpc_endpoint:rpc_request.actor-template
@@ -125,6 +125,7 @@ definitions:
       - rc.ctr_collector:ctr_collector.service
       - rc.init_targets:ctr_from_template_creg.service
       - rc.marker_registry:marker_registry.service
+      - rc.rc_constructor_creg:rc_constructor_creg.service
       - rc.rc_job:rc_job_submit_factory.service
       - rc.rc_job_creg:rc_job_creg.service
       - rc.rc_job_result_creg:rc_job_result_creg.service
@@ -136,7 +137,6 @@ definitions:
       - resource.data_to_res:data_to_ref.service
       - resource.data_to_res:data_to_res.service
       - resource.partial_ref:partial_ref.service
-      - resource.rc_constructor_creg:rc_constructor_creg.service
       - rpc.rpc_endpoint:cancel_rpc_request_futures.service
       - rpc.rpc_endpoint:rpc_target_creg.service
       - rpc.rpc_endpoint:rpc_message_creg.service
