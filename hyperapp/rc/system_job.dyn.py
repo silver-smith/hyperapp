@@ -17,10 +17,13 @@ class SystemJob:
 
     def _configure_system(self, system, resource_list):
         for resource in resource_list:
-            if resource.is_system_resource:
+            if resource.is_config_ctl_creg_item:
                 resource.configure_system(system)
         for resource in resource_list:
-            if not resource.is_system_resource:
+            if not resource.is_config_ctl_creg_item and resource.is_system_resource:
+                resource.configure_system(system)
+        for resource in resource_list:
+            if not resource.is_config_ctl_creg_item and not resource.is_system_resource:
                 resource.configure_system(system)
 
     def _prepare_system(self, resources):

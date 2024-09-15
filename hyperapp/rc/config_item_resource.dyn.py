@@ -24,6 +24,10 @@ class ConfigItemResource(Resource):
             )
 
     @property
+    def is_config_ctl_creg_item(self):
+        return self._service_name == 'config_ctl_creg'
+
+    @property
     def is_system_resource(self):
         return self._service_name == 'system'
 

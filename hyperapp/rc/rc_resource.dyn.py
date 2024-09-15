@@ -6,6 +6,10 @@ class Resource:
         return False
 
     @property
+    def is_config_ctl_creg_item(self):
+        return False
+
+    @property
     def import_records(self):
         return []
 
