@@ -229,7 +229,7 @@ class System:
         self._init()
 
     def _init(self):
-        config_ctl_creg_config = {}
+        config_ctl_creg_config = self._make_config_ctl_creg_config()
         self._config_ctl_creg = code_registry_ctr2('config-ctl', config_ctl_creg_config)
         # cfg_item_creg is used by ItemDictConfigCtl.
         cfg_item_creg_config = {
@@ -250,6 +250,9 @@ class System:
         self.add_core_service('config_ctl_creg', self._config_ctl_creg)
         self.add_core_service('config_ctl', self._config_ctl)
         self.add_core_service('system', self)
+
+    def _make_config_ctl_creg_config(self):
+        return {}
 
     def add_core_service(self, name, service):
         self._name_to_service[name] = service

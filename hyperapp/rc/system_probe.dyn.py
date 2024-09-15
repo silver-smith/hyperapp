@@ -197,6 +197,9 @@ class SystemProbe(System):
         self._config_fixtures = defaultdict(list)  # service_name -> fixture list
         self._async_error = None  # (error message, exception) tuple
 
+    def _make_config_ctl_creg_config(self):
+        return ConfigProbe('config_ctl_creg', {})
+
     def add_item_fixtures(self, service_name, fixture_list):
         self._config_fixtures[service_name] += fixture_list
 
