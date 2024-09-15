@@ -1,5 +1,6 @@
 import inspect
 
+from .services import mosaic
 from .code.config_ctl import ItemDictConfigCtl
 from .code.service_probe_resource import ServiceProbeCtr
         
@@ -12,7 +13,7 @@ def add_service_ctr(config_ctl_reg, ctr_collector, module_name, ctl, fn):
         module_name=module_name, 
         attr_name=fn.__name__,
         name=fn.__name__,
-        ctl=ctl,
+        ctl_ref=mosaic.put(ctl.piece),
         params=tuple(inspect.signature(fn).parameters),
         )
     ctr_collector.add_constructor(ctr)

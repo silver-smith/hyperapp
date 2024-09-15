@@ -37,8 +37,8 @@ class ActorProbeTemplate:
 
 class FixtureProbeTemplate:
 
-    def __init__(self, ctl, fn_piece, params):
-        self._ctl = ctl
+    def __init__(self, ctl_ref, fn_piece, params):
+        self._ctl_ref = ctl_ref
         self._fn = fn_piece
         self._params = params
 
@@ -46,12 +46,12 @@ class FixtureProbeTemplate:
         return f"<FixtureProbeTemplate {self._fn} {self._params}>"
 
     @property
-    def ctl(self):
-        return self._ctl
+    def ctl_ref(self):
+        return self._ctl_ref
 
     def resolve(self, system, service_name):
         fn = pyobj_creg.animate(self._fn)
-        probe = FixtureProbe(system, service_name, self._ctl, fn, self._params)
+        probe = FixtureProbe(system, service_name, self._ctl_ref, fn, self._params)
         probe.apply_if_no_params()
         return probe
 
@@ -179,12 +179,12 @@ class Probe:
 
 class FixtureProbe(Probe):
 
-    def __init__(self, system_probe, service_name, ctl, fn, params):
+    def __init__(self, system_probe, service_name, ctl_ref, fn, params):
         super().__init__(system_probe, service_name, fn, params)
-        self._ctl = ctl
+        self._ctl_ref = ctl_ref
 
     def __repr__(self):
-        return f"<FixtureProbe {self._fn} {self._params} {self._ctl}>"
+        return f"<FixtureProbe {self._fn} {self._params} {self._ctl_ref}>"
 
 
 class SystemProbe(System):

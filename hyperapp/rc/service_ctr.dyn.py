@@ -1,6 +1,7 @@
 from . import htypes
 from .services import (
     mosaic,
+    web,
     )
 from .code.rc_constructor import Constructor, ModuleCtr
 
@@ -61,23 +62,22 @@ class CoreServiceTemplateCtr(ServiceTemplateCtrBase):
 class ServiceTemplateCtr(ServiceTemplateCtrBase):
 
     @classmethod
-    def from_piece(cls, piece, config_ctl_creg, config_ctl):
-        ctl = config_ctl_creg.invite(piece.ctl)
+    def from_piece(cls, piece, config_ctl):
         return cls(
             config_ctl=config_ctl,
             attr_name=piece.attr_name,
             name=piece.name,
-            ctl=ctl,
+            ctl_ref=piece.ctl,
             free_params=piece.free_params,
             service_params=piece.service_params,
             want_config=piece.want_config,
             )
 
-    def __init__(self, config_ctl, attr_name, name, ctl, free_params, service_params, want_config):
+    def __init__(self, config_ctl, attr_name, name, ctl_ref, free_params, service_params, want_config):
         super().__init__(name)
         self._config_ctl = config_ctl
         self._attr_name = attr_name
-        self._ctl = ctl
+        self._ctl_ref = ctl_ref
         self._free_params = free_params
         self._service_params = service_params
         self._want_config = want_config
@@ -87,7 +87,7 @@ class ServiceTemplateCtr(ServiceTemplateCtrBase):
         return htypes.rc_constructors.service_template(
             attr_name=self._attr_name,
             name=self._name,
-            ctl=mosaic.put(self._ctl.piece),
+            ctl=self._ctl_ref,
             free_params=tuple(self._free_params),
             service_params=tuple(self._service_params),
             want_config=self._want_config,
@@ -99,17 +99,15 @@ class ServiceTemplateCtr(ServiceTemplateCtrBase):
         target_set.update_deps_for(resolved_tgt)
         # Complete target should be created so it will be added to config resource.
         _ = target_set.factory.config_item_complete('system', self._name)
-        self._config_ctl[self._name] = self._ctl
 
     def make_component(self, types, python_module, name_to_res=None):
         attribute = htypes.builtin.attribute(
             object=mosaic.put(python_module),
             attr_name=self._attr_name,
             )
-        ctl = htypes.system.item_dict_config_ctl()  # TODO: Add parameter to marker.
         service = htypes.system.service_template(
             name=self._name,
-            ctl=mosaic.put(self._ctl.piece),
+            ctl=self._ctl_ref,
             function=mosaic.put(attribute),
             free_params=tuple(self._free_params),
             service_params=tuple(self._service_params),
@@ -117,6 +115,6 @@ class ServiceTemplateCtr(ServiceTemplateCtrBase):
             )
         if name_to_res is not None:
             name_to_res[self._attr_name] = attribute
-            name_to_res[f'item-dict-config.ctl'] = ctl
+            name_to_res[f'item-dict-config.ctl'] = web.summon(self._ctl_ref)
             name_to_res[f'{self._name}.service'] = service
         return service

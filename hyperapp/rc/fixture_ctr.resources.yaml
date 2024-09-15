@@ -42,8 +42,7 @@ definitions:
     value:
       t: legacy_type.fixture_resource:fixture_ctr
       function: FixtureCtr.from_piece
-      service_params:
-      - config_ctl_creg
+      service_params: []
 
   ConfigFixtureCtr:
     type: legacy_type.builtin:attribute

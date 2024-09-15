@@ -12,14 +12,14 @@ from .code.service_ctr import ServiceTemplateCtr
 
 class ServiceProbe(Probe):
 
-    def __init__(self, system_probe, config_ctl, attr_name, service_name, ctl, fn, params):
+    def __init__(self, system_probe, config_ctl, attr_name, service_name, ctl_ref, fn, params):
         super().__init__(system_probe, service_name, fn, params)
         self._config_ctl = config_ctl
         self._attr_name = attr_name
-        self._ctl = ctl
+        self._ctl_ref = ctl_ref
 
     def __repr__(self):
-        return f"<ServiceProbe {self._attr_name} {self._fn} {self._params} {self._ctl}>"
+        return f"<ServiceProbe {self._attr_name} {self._fn} {self._params}>"
 
     def _add_constructor(self, want_config, service_params):
         free_params_ofs = len(service_params)
@@ -29,7 +29,7 @@ class ServiceProbe(Probe):
             config_ctl=self._config_ctl,
             attr_name=self._attr_name,
             name=self._name,
-            ctl=self._ctl,
+            ctl_ref=self._ctl_ref,
             free_params=self._params[free_params_ofs:],
             service_params=service_params,
             want_config=want_config,
@@ -39,23 +39,23 @@ class ServiceProbe(Probe):
 
 class ServiceProbeTemplate:
 
-    def __init__(self, attr_name, ctl, fn_piece, params):
+    def __init__(self, attr_name, ctl_ref, fn_piece, params):
         self._attr_name = attr_name
-        self._ctl = ctl
+        self._ctl_ref = ctl_ref
         self._fn = fn_piece
         self._params = params
 
     def __repr__(self):
-        return f"<ServiceProbeTemplate {self._attr_name} {self._fn} {self._params} {self._ctl}>"
+        return f"<ServiceProbeTemplate {self._attr_name} {self._fn} {self._params}>"
 
     @property
-    def ctl(self):
-        return self._ctl
+    def ctl_ref(self):
+        return self._ctl_ref
 
     def resolve(self, system, service_name):
         config_ctl = system.resolve_service('config_ctl')
         fn = pyobj_creg.animate(self._fn)
-        probe = ServiceProbe(system, config_ctl, self._attr_name, service_name, self._ctl, fn, self._params)
+        probe = ServiceProbe(system, config_ctl, self._attr_name, service_name, self._ctl_ref, fn, self._params)
         probe.apply_if_no_params()
         return probe
 
@@ -63,14 +63,13 @@ class ServiceProbeTemplate:
 class ServiceProbeResource(Resource):
 
     @classmethod
-    def from_piece(cls, piece, config_ctl_creg):
-        ctl = config_ctl_creg.invite(piece.ctl)
-        return cls(piece.attr_name, piece.service_name, ctl, web.summon(piece.function), piece.params)
+    def from_piece(cls, piece):
+        return cls(piece.attr_name, piece.service_name, piece.ctl, web.summon(piece.function), piece.params)
 
-    def __init__(self, attr_name, service_name, ctl, function, params):
+    def __init__(self, attr_name, service_name, ctl_ref, function, params):
         self._attr_name = attr_name
         self._service_name = service_name
-        self._ctl = ctl
+        self._ctl_ref = ctl_ref
         self._function = function  # piece
         self._params = params
 
@@ -79,7 +78,7 @@ class ServiceProbeResource(Resource):
         return htypes.service_resource.service_probe_resource(
             attr_name=self._attr_name,
             service_name=self._service_name,
-            ctl=mosaic.put(self._ctl.piece),
+            ctl=self._ctl_ref,
             function=mosaic.put(self._function),
             params=tuple(self._params),
             )
@@ -89,23 +88,22 @@ class ServiceProbeResource(Resource):
         return True
 
     def configure_system(self, system):
-        probe = ServiceProbeTemplate(self._attr_name, self._ctl, self._function, self._params)
+        probe = ServiceProbeTemplate(self._attr_name, self._ctl_ref, self._function, self._params)
         system.update_config('system', {self._service_name: probe})
 
 
 class ServiceProbeCtr(ModuleCtr):
 
     @classmethod
-    def from_piece(cls, piece, config_ctl_creg, config_ctl):
-        ctl = config_ctl_creg.invite(piece.ctl)
-        return cls(config_ctl, piece.module_name, piece.attr_name, piece.name, ctl, piece.params)
+    def from_piece(cls, piece, config_ctl):
+        return cls(config_ctl, piece.module_name, piece.attr_name, piece.name, piece.ctl, piece.params)
 
-    def __init__(self, config_ctl, module_name, attr_name, name, ctl, params):
+    def __init__(self, config_ctl, module_name, attr_name, name, ctl_ref, params):
         super().__init__(module_name)
         self._config_ctl = config_ctl
         self._attr_name = attr_name
         self._name = name
-        self._ctl = ctl
+        self._ctl_ref = ctl_ref
         self._params = params
 
     @property
@@ -114,7 +112,7 @@ class ServiceProbeCtr(ModuleCtr):
             module_name=self._module_name,
             attr_name=self._attr_name,
             name=self._name,
-            ctl=mosaic.put(self._ctl.piece),
+            ctl=self._ctl_ref,
             params=self._params,
             )
 
@@ -132,7 +130,7 @@ class ServiceProbeCtr(ModuleCtr):
             config_ctl=self._config_ctl,
             attr_name=self._attr_name,
             name=self._name,
-            ctl=self._ctl,
+            ctl_ref=self._ctl_ref,
             free_params=[],
             service_params=[],
             want_config='config' in self._params,
@@ -141,7 +139,6 @@ class ServiceProbeCtr(ModuleCtr):
         target_set.update_deps_for(resolved_tgt)
         # Complete target should be created so it will be added to config resource.
         _ = target_set.factory.config_item_complete('system', self._name)
-        self._config_ctl[self._name] = self._ctl
 
     def make_component(self, types, python_module, name_to_res=None):
         return htypes.builtin.attribute(
@@ -150,4 +147,4 @@ class ServiceProbeCtr(ModuleCtr):
             )
 
     def make_resource(self, types, module_name, python_module):
-        return ServiceProbeResource(self._attr_name, self._name, self._ctl, self.make_component(types, python_module), self._params)
+        return ServiceProbeResource(self._attr_name, self._name, self._ctl_ref, self.make_component(types, python_module), self._params)

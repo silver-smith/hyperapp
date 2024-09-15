@@ -12,6 +12,7 @@ from .services import (
     hyperapp_dir,
     pyobj_creg,
     )
+from .code.config_ctl import ItemDictConfigCtl
 from .code.rc_constants import JobStatus
 from .code.build import PythonModuleSrc
 from .code.builtin_resources import enum_builtin_resources
@@ -211,14 +212,15 @@ class TestJob(SystemJob):
         return self._test_fn_name
 
     def _make_root_fixture(self, module_piece, module):
-        ctl = None  # Probably is never used for root fixture.
+        ctl = ItemDictConfigCtl(self._cfg_item_creg)
+        ctl_ref = mosaic.put(ctl.piece)
         test_fn = getattr(module, self._test_fn_name)
         params = tuple(inspect.signature(test_fn).parameters)
         test_fn_piece = htypes.builtin.attribute(
             object=mosaic.put(module_piece),
             attr_name=self._test_fn_name,
             )
-        return FixtureProbeTemplate(ctl, test_fn_piece, params)
+        return FixtureProbeTemplate(ctl_ref, test_fn_piece, params)
 
     def _run_system(self, system):
         try:
