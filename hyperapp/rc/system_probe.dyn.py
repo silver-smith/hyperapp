@@ -76,8 +76,14 @@ class ConfigProbe:
         except KeyError:
             raise ConfigItemRequiredError(self._service_name, key)
 
+    def __setitem__(self, key, value):
+        self._config[key] = value
+
     def items(self):
         return self._config.items()
+
+    def update(self, config):
+        self._config.update(config)
 
 
 class ConfigFixture:
