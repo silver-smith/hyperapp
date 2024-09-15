@@ -18,14 +18,14 @@ class PhonyView:
 
     @property
     def piece(self):
-        return 'a-piece'
+        return htypes.ui_command_tests.view()
 
     def widget_state(self, widget):
         return 'a-state'
 
 
 def _sample_fn(view, state, sample_service):
-    return 'sample-fn: {view.piece}, {state}, {sample_service}'
+    return 'sample-fn: {state}, {sample_service}'
 
 
 @mark.fixture
@@ -51,7 +51,7 @@ def view_ui_command_reg_config(data_to_res):
         properties=properties,
         impl=mosaic.put(impl),
         )
-    return [command]
+    return {htypes.ui_command_tests.view: [command]}
 
 
 async def test_view_commands(get_view_commands, ui_command_factory):
@@ -65,7 +65,7 @@ async def test_view_commands(get_view_commands, ui_command_factory):
     assert command_piece_list
     command = ui_command_factory(command_piece_list[0], ctx)
     result = await command.run()
-    assert result == 'sample-fn: a-piece, a-state, a-service', repr(result)
+    assert result == 'sample-fn: a-state, a-service', repr(result)
 
 
 def test_command_impl_from_piece():
