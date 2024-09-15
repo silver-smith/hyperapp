@@ -164,6 +164,11 @@ class TestJob(SystemJob):
             error_msg = f"{type(x).__name__}: {x}"
             traceback = []
             req_set = {ServiceReq(x.service_name, self._cfg_item_creg)}
+        except ConfigItemRequiredError as x:
+            status = JobStatus.incomplete
+            error_msg = f"{type(x).__name__}: {x}"
+            traceback = []
+            req_set = {ActorReq(self._cfg_item_creg, x.service_name, x.key)}
         else:
             ctr_collector = system.resolve_service('ctr_collector')
             ctr_collector.ignore_module(module_piece)
