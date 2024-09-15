@@ -262,15 +262,23 @@ class System:
             dest = self._configs[service_name]
         except KeyError:
             self._configs[service_name] = config
-            return
-        try:
-            ctl = self._config_ctl[service_name]
-        except KeyError:
-            self._raise_missing_service(service_name)
-        ctl.merge(dest, config)
+        else:
+            try:
+                ctl = self._config_ctl[service_name]
+            except KeyError:
+                self._raise_missing_service(service_name)
+            ctl.merge(dest, config)
+        if service_name == 'config_ctl_creg':
+            # Subsequent update_config calls may already use it.
+            self._update_config_ctl_creg(config)
         if service_name == 'system':
             # Subsequent update_config calls may already use it.
             self._update_config_ctl(config)
+
+    def _update_config_ctl_creg(self, config):
+        for key, template in config.items():
+            value = template.resolve(self, 'config_ctl_creg')
+            self._config_ctl_creg.update_config({key: value})
 
     def _update_config_ctl(self, config):
         for service_name, template in config.items():
