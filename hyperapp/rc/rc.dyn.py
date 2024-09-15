@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 rc_log = logging.getLogger('rc')
 
 
-Options = namedtuple('Options', 'timeout verbose fail_fast write show_diffs show_incomplete_traces')
+Options = namedtuple('Options', 'clean timeout verbose fail_fast write show_diffs show_incomplete_traces')
 RcArgs = namedtuple('RcArgs', 'targets process_count options')
 
 
@@ -79,7 +79,7 @@ def _collect_output(target_set, failures, options):
     return (total, changed)
 
 
-def _submit_jobs(rc_job_result_creg, pool, job_cache, target_set, target_to_job, job_id_to_target, filter):
+def _submit_jobs(rc_job_result_creg, options, pool, job_cache, target_set, target_to_job, job_id_to_target, filter):
     job_result_list = []
     for target in target_set.iter_ready():
         if target in target_to_job:
@@ -93,10 +93,11 @@ def _submit_jobs(rc_job_result_creg, pool, job_cache, target_set, target_to_job,
             raise RuntimeError(f"For {target.name}: {x}") from x
         target_to_job[target] = job
         job_id_to_target[id(job)] = target
-        result_piece = job_cache.get(target, job)
-        if result_piece:
-            job_result_list.append((job, result_piece))
-            continue
+        if not options.clean:
+            result_piece = job_cache.get(target, job)
+            if result_piece:
+                job_result_list.append((job, result_piece))
+                continue
         rc_log.debug("Submit %s (in queue: %d)", target.name, pool.queue_size)
         pool.submit(job)
     return job_result_list
@@ -126,7 +127,7 @@ def _run(rc_job_result_creg, pool, job_cache, target_set, filter, options):
             incomplete[target] = result
 
     while should_run:
-        cached_job_result_list = _submit_jobs(rc_job_result_creg, pool, job_cache, target_set, target_to_job, job_id_to_target, filter)
+        cached_job_result_list = _submit_jobs(rc_job_result_creg, options, pool, job_cache, target_set, target_to_job, job_id_to_target, filter)
         if not cached_job_result_list and pool.job_count == 0:
             rc_log.info("Not all targets are completed, but there are no jobs")
             break
@@ -183,6 +184,7 @@ def _run(rc_job_result_creg, pool, job_cache, target_set, filter, options):
 def _parse_args(sys_argv):
     parser = argparse.ArgumentParser(description='Compile resources')
     parser.add_argument('--root-dir', type=Path, nargs='*', help="Additional resource root dirs")
+    parser.add_argument('--clean', '-c', action='store_true', help="Clean build: do not use cached job results")
     parser.add_argument('--workers', type=int, default=1, help="Worker process count to start and use")
     parser.add_argument('--timeout', type=int, help="Base timeout for RPC calls and everything (seconds). Default is none")
     parser.add_argument('--write', '-w', action='store_true', help="Write changed resources")
@@ -194,6 +196,7 @@ def _parse_args(sys_argv):
     args = parser.parse_args(sys_argv)
 
     options = Options(
+        clean=args.clean,
         timeout=args.timeout,
         verbose=args.verbose,
         fail_fast=args.fail_fast,
