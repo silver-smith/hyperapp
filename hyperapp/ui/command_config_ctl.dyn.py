@@ -6,7 +6,7 @@ from .code.config_ctl import ConfigCtl
 class CommandConfigCtl(ConfigCtl):
 
     @classmethod
-    @mark.actor.config_ctl_creg  #(htypes.command.config_ctl)
+    @mark.actor.config_ctl_creg
     def from_piece(cls, piece, cfg_item_creg):
         return cls(cfg_item_creg)
 
