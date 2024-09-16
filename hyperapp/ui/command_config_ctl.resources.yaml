@@ -5,7 +5,6 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command:config_ctl
-- legacy_type.command:item_list_config
 - legacy_type.system:actor_template
 - system.config_ctl:config_ctl.module
 definitions:
@@ -35,4 +34,3 @@ definitions:
         code.config_ctl: system.config_ctl:config_ctl.module
         code.mark: common.mark:mark.module
         htypes.command.config_ctl: legacy_type.command:config_ctl
-        htypes.command.item_list_config: legacy_type.command:item_list_config

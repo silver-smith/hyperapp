@@ -38,11 +38,3 @@ class CommandConfigCtl(ConfigCtl):
 
     def item_piece(self, template):
         return self._cfg_item_creg.actor_to_piece(template)
-
-    def items_to_data(self, item_list):
-        return htypes.command.item_list_config(
-            items=tuple(
-                mosaic.put(item)
-                for item in item_list
-                ),
-            )

@@ -2,6 +2,7 @@ import:
 - builtins:mosaic.service
 - builtins:resource_module_factory.service
 - legacy_type.builtin:python_module
+- legacy_type.system:item_list_config
 - legacy_type.system:service_config
 - legacy_type.system:system_config
 - rc.rc_target:rc_target.module
@@ -14,6 +15,7 @@ definitions:
       module_name: config_resource_target
       file_name: config_resource_target.dyn.py
       import_list:
+        htypes.system.item_list_config: legacy_type.system:item_list_config
         htypes.system.service_config: legacy_type.system:service_config
         htypes.system.system_config: legacy_type.system:system_config
         services.mosaic: builtins:mosaic.service

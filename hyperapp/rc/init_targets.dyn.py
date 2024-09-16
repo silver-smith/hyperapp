@@ -41,7 +41,7 @@ def init_targets(config_ctl, ctr_from_template_creg, system_config_template, roo
     custom_resource_registry = create_custom_resource_registry(build)
     all_imports_known_tgt = AllImportsKnownTarget()
     target_set.add(all_imports_known_tgt)
-    config_tgt = ConfigResourceTarget(config_ctl, custom_resource_registry, resource_dir=root_dir, module_name='config', path='config.resources.yaml')
+    config_tgt = ConfigResourceTarget(custom_resource_registry, resource_dir=root_dir, module_name='config', path='config.resources.yaml')
     target_set.add(config_tgt)
     for src in build.python_modules:
         try:

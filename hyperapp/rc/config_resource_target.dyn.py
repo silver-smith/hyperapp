@@ -15,8 +15,7 @@ class ConfigResourceTarget(Target):
     def target_name():
         return 'config'
 
-    def __init__(self, config_ctl, custom_resource_registry, resource_dir, module_name, path):
-        self._config_ctl = config_ctl
+    def __init__(self, custom_resource_registry, resource_dir, module_name, path):
         self._service_to_targets = defaultdict(set)
         self._custom_resource_registry = custom_resource_registry
         self._resource_dir = resource_dir
@@ -51,8 +50,7 @@ class ConfigResourceTarget(Target):
             if not item_list:
                 continue
             sorted_item_list = sorted(item_list, key=self._sort_key)
-            ctl = self._config_ctl[service_name]
-            config = ctl.items_to_data(sorted_item_list)
+            config = self._items_to_data(sorted_item_list)
             resource_module[service_name] = config
             service_config = htypes.system.service_config(
                 service=service_name,
@@ -62,6 +60,15 @@ class ConfigResourceTarget(Target):
         config = htypes.system.system_config(tuple(service_list))
         resource_module['config'] = config
         return (self._path, resource_module.as_text)
+
+    @staticmethod
+    def _items_to_data(item_list):
+        return htypes.system.item_list_config(
+            items=tuple(
+                mosaic.put(item)
+                for item in item_list
+                ),
+            )
 
     def _sort_key(self, resource):
         return self._custom_resource_registry.reverse_resolve(resource)
