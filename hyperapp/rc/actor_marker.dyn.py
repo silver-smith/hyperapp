@@ -95,6 +95,8 @@ class ServiceActorMarker:
     def __call__(self, fn_or_t):
         if isinstance(fn_or_t, Type):
             # Type-specialized variant (@mark.actor.my_registry(my_type)).
+            if self._service_name == 'config_ctl_creg':
+                raise RuntimeError("Type-specialized decorator for config_ctl_creg actors are not supported")
             return ServiceActorDecorator(self._system, self._ctr_collector, self._module_name, self._service_name, fn_or_t)
         check_not_classmethod(fn_or_t)
         check_is_function(fn_or_t)
