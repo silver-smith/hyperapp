@@ -76,6 +76,9 @@ class ConfigProbe:
         except KeyError:
             raise ConfigItemRequiredError(self._service_name, key)
 
+    def __iter__(self):
+        return iter(self._config)
+
     def __setitem__(self, key, value):
         self._config[key] = value
 
