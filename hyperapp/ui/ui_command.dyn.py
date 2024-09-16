@@ -58,7 +58,7 @@ def get_view_commands(view_ui_command_reg, universal_ui_command_reg, view):
 
 
 @mark.service2
-def ui_command_factory(piece, ctx):
+def ui_command_factory(ui_command_impl_creg, piece, ctx):
     command_d = pyobj_creg.invite(piece.d)
     impl = ui_command_impl_creg.invite(piece.impl, ctx)
     groups = default_command_groups(piece.properties, CommandKind.VIEW)
