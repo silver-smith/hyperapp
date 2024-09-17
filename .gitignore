@@ -8,3 +8,5 @@ parsetab.py
 .mypy_cache
 prof
 *.hash
+ipython-profile/history.sqlite
+ipython-profile/startup/README

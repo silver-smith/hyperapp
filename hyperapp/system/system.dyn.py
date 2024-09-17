@@ -254,6 +254,10 @@ class System:
     def _make_config_ctl_creg_config(self):
         return {}
 
+    @property
+    def service_names(self):
+        return {*self._name_to_template, *self._name_to_service}
+
     def add_core_service(self, name, service):
         self._name_to_service[name] = service
 
