@@ -1,3 +1,4 @@
+import io
 import struct
 from functools import singledispatchmethod
 
@@ -19,31 +20,34 @@ from .htypes import (
 
 class CdrEncoder(object):
 
+    _int_struct = struct.Struct('!q')
+    _bool_struct = struct.Struct('!?')
+
     def encode(self, value, t):
-        self.data = b''
+        self._buf = io.BytesIO()
         self.dispatch(t, value)
-        return self.data
+        return self._buf.getvalue()
 
     @singledispatchmethod
     def dispatch(self, t, value):
         assert False, repr((t, value))  # Unknown type
 
     def write_int(self, value):
-        self.data += struct.pack('!q', value)
+        self._buf.write(self._int_struct.pack(value))
 
     def write_bool(self, value):
-        self.data += struct.pack('!?', value)
+        self._buf.write(self._bool_struct.pack(value))
 
     def write_binary(self, value):
-        assert isinstance(value, bytes), repr(value)
+        # assert isinstance(value, bytes), repr(value)
         self.write_int(len(value))
-        self.data += value
+        self._buf.write(value)
 
     def write_unicode(self, value):
-        if isinstance(value, str):
+        if type(value) is not bytes:
             value = value.encode('utf-8')
         self.write_int(len(value))
-        self.data += value
+        self._buf.write(value)
 
     @dispatch.register(TNone)
     def encode_none(self, t, value):
