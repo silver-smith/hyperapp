@@ -25,7 +25,7 @@ class FileBundle:
 
     def save_ref(self, ref):
         bundle = self._bundler([ref]).bundle
-        data = packet_coders.encode(self._encoding, bundle)
+        data = packet_coders.encode(self._encoding, bundle, bundle_t)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.path.write_bytes(data)
         log.info("Saved %s to %s (%d bytes)", ref, self.path, len(data))
