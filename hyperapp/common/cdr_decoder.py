@@ -13,9 +13,10 @@ from .htypes import (
     TDateTime,
     tString,
     TOptional,
+    TList,
     TRecord,
     TException,
-    TList,
+    TRef,
     )
 from .htypes.packet_coders import DecodeError
 
@@ -23,111 +24,176 @@ from .htypes.packet_coders import DecodeError
 MAX_SANE_LIST_SIZE = 1 << 60
 
 
+class DecodeBuffer:
+
+    _int_struct = struct.Struct('!q')
+    _bool_struct = struct.Struct('!?')
+
+    def __init__(self, data):
+        self._data = data
+        self._ofs = 0
+
+    def read(self, size, path):
+        if self._ofs + size > len(self._data):
+            path_str = ".".join(path)
+            raise DecodeError(
+                f"{path_str}: Unexpected EOF while reading {size} bytes from ofs {self._ofs}."
+                f" Total size is {len(self._data)}"
+                )
+        result = self._data[self._ofs : self._ofs + size]
+        self._ofs += size
+        return result
+
+    def _unpack(self, st, path):
+        data = self.read(st.size, path)
+        return st.unpack(data)[0]
+
+    def read_int(self, path):
+        return self._unpack(self._int_struct, path)
+
+    def read_bool(self, path):
+        return self._unpack(self._bool_struct, path)
+
+    def read_binary(self, path):
+        size = self.read_int(path)
+        return self.read(size, path)
+
+    def read_unicode(self, path):
+        data = self.read_binary(path)
+        return data.decode('utf-8')
+
+
 def join_path(*args):
     return '.'.join([_f for _f in args if _f])
 
 
-class CdrDecoder(object):
+def _decode_none(buf, path):
+    return None
 
-    def decode(self, t, value, path='root'):
-        assert isinstance(value, bytes), repr(value)
-        self.data = value
-        self.ofs = 0
-        return self.dispatch(t, path)
 
-    def expect(self, path, expr, desc):
-        if not expr:
-            self.failure(path, desc)
+def _decode_binary(buf, path):
+    return buf.read_binary(path)
 
-    def failure(self, path, desc):
-        raise DecodeError('%s: %s' % (path, desc))
 
-    @singledispatchmethod
-    def dispatch(self, t, path):
-        assert False, repr((t, path))  # Unknown type
+def _decode_string(buf, path):
+    return buf.read_unicode(path)
 
-    def read(self, size, path):
-        if self.ofs + size > len(self.data):
-            raise DecodeError('%s: Unexpected EOF while reading %d bytes from ofs %d. Total size is %d'
-                              % (path, size, self.ofs, len(self.data)))
-        result = self.data[self.ofs : self.ofs + size]
-        self.ofs += size
-        return result
-    
-    def unpack(self, fmt, path):
-        fmt = '!' + fmt
-        size = struct.calcsize(fmt)
-        data = self.read(size, path)
-        return struct.unpack(fmt, data)[0]
 
-    def read_int(self, path):
-        return self.unpack('q', path)
+def _decode_int(buf, path):
+    return buf.read_int(path)
 
-    def read_bool(self, path):
-        return self.unpack('?', path)
 
-    def read_binary(self, path):
-        size = self.read_int(path)
-        data = self.read(size, path)
-        return data
+def _decode_bool(buf, path):
+    return buf.read_bool(path)
 
-    def read_unicode(self, path):
-        size = self.read_int(path)
-        data = self.read(size, path)
-        return data.decode('utf-8')
 
-    @dispatch.register(TNone)
-    def decode_none(self, t, path):
-        return None
+def _decode_datetime(buf, path):
+    return dateutil.parser.parse(buf.read_unicode(path))
 
-    @dispatch.register(TBinary)
-    def decode_binary(self, t, path):
-        return self.read_binary(path)
 
-    @dispatch.register(TString)
-    def decode_string(self, t, path):
-        return self.read_unicode(path)
+class OptionalDecoder:
 
-    @dispatch.register(TInt)
-    def decode_int(self, t, path):
-        return self.read_int(path)
+    @classmethod
+    def construct(cls, t):
+        base_decoder = _type_to_decoder(t.base_t)
+        return cls(base_decoder)
 
-    @dispatch.register(TBool)
-    def decode_bool(self, t, path):
-        return self.read_bool(path)
+    def __init__(self, base_decoder):
+        self._base_decoder = base_decoder
 
-    @dispatch.register(TDateTime)
-    def decode_datetime(self, t, path):
-        return dateutil.parser.parse(self.read_unicode(path))
-
-    @dispatch.register(TOptional)
-    def decode_optional(self, t, path):
-        value_present = self.read_bool(path)
+    def __call__(self, buf, path):
+        value_present = buf.read_bool(path)
         if value_present:
-            return self.dispatch(t.base_t, path)
+            return self._base_decoder(buf, path)
         else:
             return None
 
-    @dispatch.register(TRecord)
-    @dispatch.register(TException)
-    def decode_record(self, t, path):
-        fields = self.decode_record_fields(t.fields, path)
-        return t(**fields)
 
-    def decode_record_fields(self, fields, path):
-        decoded_fields = {}
-        for field_name, field_type in fields.items():
-            elt = self.dispatch(field_type, join_path(path, field_name))
-            decoded_fields[field_name] = elt
-        return decoded_fields
+class ListDecoder:
 
-    @dispatch.register(TList)
-    def decode_list(self, t, path):
-        size = self.read_int(path)
-        elements = []
+    @classmethod
+    def construct(cls, t):
+        elt_decoder = _type_to_decoder(t.element_t)
+        return cls(elt_decoder)
+
+    def __init__(self, elt_decoder):
+        self._elt_decoder = elt_decoder
+
+    def __call__(self, buf, path):
+        size = buf.read_int(path)
         if size > MAX_SANE_LIST_SIZE:
-            raise DecodeError('List size is too large: %d' % size)
-        for idx in range(size):
-            elt = self.dispatch(t.element_t, join_path(path, '#%d' % idx))
-            elements.append(elt)
-        return tuple(elements)
+            path_str = ".".join(path)
+            raise DecodeError(f"{path_str}: List size is too large: {size}")
+        return tuple(
+            self._elt_decoder(buf, [*path, f"#{idx}"])
+            for idx in range(size)
+            )
+
+
+class RecordDecoder:
+
+    @classmethod
+    def construct(cls, t):
+        field_to_decoder = {
+            name: _type_to_decoder(field_t)
+            for name, field_t in t.fields.items()
+            }
+        return cls(t, field_to_decoder)
+
+    def __init__(self, t, field_to_decoder):
+        self._t = t
+        self._field_to_decoder = field_to_decoder
+
+    def __call__(self, buf, path):
+        fields = {
+            name: decoder(buf, [*path, name])
+            for name, decoder in self._field_to_decoder.items()
+            }
+        return self._t(**fields)
+
+
+_type_to_primitive_decoder = {
+    TNone: _decode_none,
+    TBinary: _decode_binary,
+    TString: _decode_string,
+    TInt: _decode_int,
+    TBool: _decode_bool,
+    TDateTime: _decode_datetime,
+    }
+
+_type_to_decoder_ctr = {
+    TOptional: OptionalDecoder.construct,
+    TList: ListDecoder.construct,
+    TRecord: RecordDecoder.construct,
+    TException: RecordDecoder.construct,
+    TRef: RecordDecoder.construct,
+    }
+
+
+# Global cache, persists between systems, so elements are accumulated with time.
+# TODO: May be improve by using weak key dict or LRU eviction.
+_type_to_decoder_cache = {}
+
+
+def _type_to_decoder(t):
+    try:
+        return _type_to_decoder_cache[t]
+    except KeyError:
+        pass
+    tt = type(t)
+    try:
+        decoder = _type_to_primitive_decoder[tt]
+    except KeyError:
+        ctr = _type_to_decoder_ctr[tt]
+        decoder = ctr(t)
+    _type_to_decoder_cache[t] = decoder
+    return decoder
+
+
+class CdrDecoder:
+
+    @staticmethod
+    def decode(t, value):
+        decoder = _type_to_decoder(t)
+        buf = DecodeBuffer(value)
+        return decoder(buf, path=[])
