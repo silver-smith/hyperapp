@@ -1,3 +1,4 @@
+import io
 import struct
 from functools import singledispatchmethod
 
@@ -30,19 +31,17 @@ class DecodeBuffer:
     _bool_struct = struct.Struct('!?')
 
     def __init__(self, data):
-        self._data = data
-        self._ofs = 0
+        self._buf = io.BytesIO(data)
 
     def read(self, size, path):
-        if self._ofs + size > len(self._data):
+        data = self._buf.read(size)
+        if len(data) < size:
             path_str = ".".join(path)
             raise DecodeError(
-                f"{path_str}: Unexpected EOF while reading {size} bytes from ofs {self._ofs}."
+                f"{path_str}: Unexpected EOF while reading {size} bytes."
                 f" Total size is {len(self._data)}"
                 )
-        result = self._data[self._ofs : self._ofs + size]
-        self._ofs += size
-        return result
+        return data
 
     def _unpack(self, st, path):
         data = self.read(st.size, path)
