@@ -109,6 +109,7 @@ def _run(rc_job_result_creg, pool, job_cache, target_set, filter, options):
     job_id_to_target = {}
     failures = {}
     incomplete = {}
+    cached_count = 0
     should_run = True
 
     def _handle_result(job, result_piece, is_cached):
@@ -128,6 +129,7 @@ def _run(rc_job_result_creg, pool, job_cache, target_set, filter, options):
 
     while should_run:
         cached_job_result_list = _submit_jobs(rc_job_result_creg, options, pool, job_cache, target_set, target_to_job, job_id_to_target, filter)
+        cached_count += len(cached_job_result_list)
         if not cached_job_result_list and pool.job_count == 0:
             rc_log.info("Not all targets are completed, but there are no jobs")
             break
@@ -167,11 +169,12 @@ def _run(rc_job_result_creg, pool, job_cache, target_set, filter, options):
     job_count = len(job_id_to_target)
     completed_count = len(list(target_set.iter_completed()))
     rc_log.info(
-        "Total: %d, completed: %d; not completed: %d, jobs: %d, succeeded: %d; failed: %d; incomplete: %d, output: %d, changed: %d",
+        "Total: %d, completed: %d; not completed: %d, jobs: %d, cached: %d, succeeded: %d; failed: %d; incomplete: %d, output: %d, changed: %d",
         target_set.count,
         completed_count,
         target_set.count - completed_count,
         job_count,
+        cached_count,
         (job_count - len(failures)),
         len(failures),
         len(incomplete),
