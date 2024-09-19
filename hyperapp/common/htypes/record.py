@@ -182,6 +182,7 @@ class TRecord(Type):
             self.fields = {**base.fields, **self.fields}
         self.base = base
         self._eq_key = (self._module_name, self._name, *self.fields.items())
+        self._hash = hash(self._eq_key)
         self._verbose = verbose
 
     def __str__(self):
@@ -202,7 +203,7 @@ class TRecord(Type):
         return f'"{self.module_name}.{self.name}({fields_format})" % self[:-1]'
 
     def __hash__(self):
-        return hash(self._eq_key)
+        return self._hash
 
     def __eq__(self, rhs):
         return (rhs is self
