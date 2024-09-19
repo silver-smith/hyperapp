@@ -2,6 +2,7 @@ import inspect
 import logging
 import traceback
 from collections import defaultdict
+from functools import cached_property
 
 from hyperapp.common.util import flatten, merge_dicts
 from hyperapp.resource.python_module import PythonModuleResourceImportError
@@ -142,7 +143,7 @@ class TestJob(SystemJob):
     def __repr__(self):
         return f"<TestJob {self._src}/{self._test_fn_name}/{self._idx}>"
 
-    @property
+    @cached_property
     def piece(self):
         resource_refs = sorted(mosaic.put(r.piece) for r in self._resources)
         return htypes.test_job.job(

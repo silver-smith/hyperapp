@@ -1,5 +1,6 @@
 import inspect
 import traceback
+from functools import cached_property
 
 from hyperapp.common.util import flatten
 from hyperapp.resource.python_module import PythonModuleResourceImportError
@@ -168,7 +169,7 @@ class ImportJob(SystemJob):
     def __repr__(self):
         return f"<ImportJob {self._src}/{self._idx}>"
 
-    @property
+    @cached_property
     def piece(self):
         resource_refs = sorted(mosaic.put(r.piece) for r in self._resources)
         return htypes.import_job.job(
