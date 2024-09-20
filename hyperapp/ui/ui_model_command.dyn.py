@@ -3,16 +3,9 @@ import logging
 from . import htypes
 from .services import (
     deduce_t,
-    enum_model_commands,
-    global_commands,
     mark,
-    model_command_impl_creg,
-    model_commands,
     pyobj_creg,
-    ui_command_impl_creg,
-    model_view_creg,
     mosaic,
-    visualizer,
     web,
     )
 from .code.command import CommandKind, CommandImpl
@@ -70,8 +63,8 @@ class UiModelCommandImpl(CommandImpl):
         self._navigator_rec.view.open(self._ctx, piece, view, navigator_w)
 
 
-@ui_command_impl_creg.actor(htypes.ui.ui_model_command_impl)
-@ui_command_impl_creg.actor(htypes.ui.external_ui_model_command_impl)
+#@ui_command_impl_creg.actor(htypes.ui.ui_model_command_impl)
+#@ui_command_impl_creg.actor(htypes.ui.external_ui_model_command_impl)
 def ui_model_command_impl_from_piece(piece, ctx):
     model_impl = model_command_impl_creg.invite(piece.model_command_impl, ctx)
     layout = web.summon_opt(piece.layout)

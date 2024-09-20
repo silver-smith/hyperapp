@@ -3,19 +3,15 @@ from types import SimpleNamespace
 
 from . import htypes
 from .services import (
-    data_to_res,
-    model_command_impl_creg,
     mosaic,
     pyobj_creg,
-    ui_command_factory,
-    ui_command_impl_creg,
     )
-from .code.command import CommandImpl, d_to_name
+from .code.command import d_to_name, Command
 
 log = logging.getLogger(__name__)
 
 
-class LayoutCommandImpl(CommandImpl):
+class LayoutCommand(Command):
 
     def __init__(self, ui_command_impl):
         super().__init__()
@@ -43,7 +39,7 @@ class LayoutCommandImpl(CommandImpl):
         return await self._ui_command_impl.run()
 
 
-@ui_command_impl_creg.actor(htypes.layout.layout_command_impl)
+# @ui_command_impl_creg.actor(htypes.layout.layout_command_impl)
 def layout_command_impl_from_piece(piece, ctx):
     command_ctx = ctx.controller.item_command_context(piece.item_id, piece.command_d)
     ui_command_impl = ui_command_impl_creg.invite(piece.ui_command_impl, command_ctx)

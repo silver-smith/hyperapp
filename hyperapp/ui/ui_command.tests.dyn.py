@@ -1,4 +1,5 @@
 import weakref
+from functools import partial
 
 from . import htypes
 from .services import (
@@ -25,7 +26,7 @@ class PhonyView:
 
 
 def _sample_fn(view, state, sample_service):
-    return 'sample-fn: {state}, {sample_service}'
+    return f'sample-fn: {state}, {sample_service}'
 
 
 @mark.fixture
@@ -33,47 +34,36 @@ def sample_service():
     return 'a-service'
 
 
+@mark.fixture
+def view():
+    return PhonyView()
+
+
+# Should hold ref to it.
+@mark.fixture
+def widget():
+    return PhonyWidget()
+
+
 @mark.config_fixture('view_ui_command_reg')
-def view_ui_command_reg_config(data_to_res):
-    properties = htypes.ui.command_properties(
-        is_global=False,
-        uses_state=False,
-        remotable=False,
-        )
-    command_d_res = data_to_res(htypes.ui_command_tests.sample_command_d())
-    impl = htypes.ui.ui_command_impl(
-        function=pyobj_creg.actor_to_ref(_sample_fn),
-        ctx_params=('view', 'state'),
-        service_params=('sample_service',),
-        )
-    command = htypes.ui.ui_command(
-        d=mosaic.put(command_d_res),
-        properties=properties,
-        impl=mosaic.put(impl),
-        )
-    return {htypes.ui_command_tests.view: [command]}
-
-
-async def test_view_commands(get_view_commands, ui_command_factory):
-    view = PhonyView()
-    widget = PhonyWidget()  # Should hold ref to it.
+def view_ui_command_reg_config(view, widget):
     ctx = Context(
         view=view,
         widget=weakref.ref(widget),
         )
-    command_piece_list = get_view_commands(view)
-    assert command_piece_list
-    command = ui_command_factory(command_piece_list[0], ctx)
+    command = ui_command.UiCommand(
+        d=htypes.ui_command_tests.sample_command_d(),
+        fn=partial(_sample_fn, sample_service='a-service'),
+        ctx_params=('view', 'state'),
+        ctx=ctx,
+        system_kw={},
+        groups=set(),
+        )
+    return {htypes.ui_command_tests.view: [command]}
+
+
+async def test_view_commands(view, get_view_commands):
+    command_list = get_view_commands(view)
+    [command] = command_list
     result = await command.run()
     assert result == 'sample-fn: a-state, a-service', repr(result)
-
-
-def test_command_impl_from_piece():
-    ctx = Context()
-    piece = htypes.ui.ui_command_impl(
-        function=pyobj_creg.actor_to_ref(_sample_fn),
-        ctx_params=('view', 'state'),
-        service_params=('sample_service',),
-        )
-    impl = ui_command.ui_command_impl_from_piece(piece, ctx)
-    assert impl

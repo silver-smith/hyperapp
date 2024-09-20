@@ -1,32 +1,38 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtins:association_reg.service
 - builtins:deduce_t.service
-- builtins:mosaic.service
 - builtins:pyobj_creg.service
-- builtins:web.service
+- common.mark:mark.module
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
-- legacy_type.ui:command_properties_d
-- legacy_type.ui:ui_command_d
-- legacy_type.ui:ui_command_impl
-- legacy_type.ui:universal_ui_command_d
-- resource.data_to_res:data_to_res.service
+- legacy_type.command:config_ctl
+- legacy_type.system:item_dict_config_ctl
+- legacy_type.system:service_template
 - ui.command:command.module
+- ui.command_config_ctl:command_config_ctl.module
 - ui.command_groups:command_groups.module
-- ui.ui_command_impl_creg:ui_command_impl_creg.service
 definitions:
-  list_view_commands:
+  get_view_commands:
     type: legacy_type.builtin:attribute
     value:
       object: ui_command.module
-      attr_name: list_view_commands
-  list_view_commands.service:
-    type: legacy_type.builtin:call
+      attr_name: get_view_commands
+  get_view_commands.service:
+    type: legacy_type.system:service_template
     value:
-      function: list_view_commands
+      name: get_view_commands
+      ctl: item-dict-config.ctl
+      function: get_view_commands
+      free_params:
+      - view
+      service_params:
+      - view_ui_command_reg
+      - universal_ui_command_reg
+      want_config: false
+  item-dict-config.ctl:
+    type: legacy_type.system:item_dict_config_ctl
+    value: {}
   ui_command.module:
     type: legacy_type.builtin:python_module
     value:
@@ -34,29 +40,37 @@ definitions:
       file_name: ui_command.dyn.py
       import_list:
         code.command: ui.command:command.module
+        code.command_config_ctl: ui.command_config_ctl:command_config_ctl.module
         code.command_groups: ui.command_groups:command_groups.module
-        htypes.ui.command_properties_d: legacy_type.ui:command_properties_d
-        htypes.ui.ui_command_d: legacy_type.ui:ui_command_d
-        htypes.ui.ui_command_impl: legacy_type.ui:ui_command_impl
-        htypes.ui.universal_ui_command_d: legacy_type.ui:universal_ui_command_d
-        services.association_reg: builtins:association_reg.service
-        services.data_to_res: resource.data_to_res:data_to_res.service
+        code.mark: common.mark:mark.module
         services.deduce_t: builtins:deduce_t.service
-        services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
-        services.ui_command_impl_creg: ui.ui_command_impl_creg:ui_command_impl_creg.service
-        services.web: builtins:web.service
-  ui_command_factory:
+  universal_ui_command_reg:
     type: legacy_type.builtin:attribute
     value:
       object: ui_command.module
-      attr_name: ui_command_factory
-  ui_command_factory.service:
-    type: legacy_type.builtin:call
+      attr_name: universal_ui_command_reg
+  universal_ui_command_reg.service:
+    type: legacy_type.system:service_template
     value:
-      function: ui_command_factory
-  ui_command_impl_from_piece:
+      name: universal_ui_command_reg
+      ctl: item-dict-config.ctl
+      function: universal_ui_command_reg
+      free_params: []
+      service_params: []
+      want_config: true
+  view_ui_command_reg:
     type: legacy_type.builtin:attribute
     value:
       object: ui_command.module
-      attr_name: ui_command_impl_from_piece
+      attr_name: view_ui_command_reg
+  view_ui_command_reg.service:
+    type: legacy_type.system:service_template
+    value:
+      name: view_ui_command_reg
+      ctl: item-dict-config.ctl
+      function: view_ui_command_reg
+      free_params:
+      - view_t
+      service_params: []
+      want_config: true

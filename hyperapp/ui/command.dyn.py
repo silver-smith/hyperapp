@@ -74,9 +74,12 @@ def d_res_ref_to_name(d_ref):
 
 class Command:
 
-    def __init__(self, d, impl):
+    def __init__(self, d, fn, ctx_params, ctx, system_kw):
         self._d = d
-        self._impl = impl
+        self._fn = fn
+        self._ctx_params = set(ctx_params)
+        self._ctx = ctx
+        self._system_kw = system_kw
 
     @property
     def d(self):
@@ -88,11 +91,12 @@ class Command:
 
     @property
     def enabled(self):
-        return self._impl.enabled
+        return set(self._ctx_kw) >= self._ctx_params
 
     @property
     def disabled_reason(self):
-        return self._impl.disabled_reason
+        params = ", ".join(self._ctx_params - set(self._ctx_kw))
+        return f"Params not ready: {params}"
 
     @property
     def shortcut(self):
@@ -103,12 +107,6 @@ class Command:
         asyncio.create_task(self.run())
 
     async def run(self):
-        return await self._impl.run()
-
-
-class CommandImpl:
-
-    async def run(self):
         if not self.enabled:
             raise RuntimeError(f"{self!r}: Disabled: {self.disabled_reason}")
         result = await self._run()
@@ -116,39 +114,8 @@ class CommandImpl:
             result = tuple(result)
         return result
 
-
-class FnCommandImpl(CommandImpl):
-
-    def __init__(self, ctx, fn, params):
-        super().__init__()
-        self._ctx = ctx
-        self._fn = fn
-        self._params = set(params)
-
-    def __repr__(self):
-        return f"{self.__class__.__name__} #{hex(id(self))[-6:]}: {self._fn.__name__}"
-
-    @property
-    def name(self):
-        return self._fn.__name__
-
-    @property
-    def enabled(self):
-        return set(self.params) >= self._params
-
-    @property
-    def disabled_reason(self):
-        params = ", ".join(self._params - set(self.params))
-        return f"Params not ready: {params}"
-
     async def _run(self):
-        params = self.params
-        kw = {
-            name: value
-            for name, value
-            in params.items()
-            if name in self._params
-            }
+        kw = {**self._ctx_kw, **self._system_kw}
         log.info("Run command: %r (%s)", self, kw)
         result = self._fn(**kw)
         if inspect.iscoroutinefunction(self._fn):
@@ -157,21 +124,25 @@ class FnCommandImpl(CommandImpl):
         return result
 
     @property
-    def params(self):
-        params = {
+    def _ctx_kw(self):
+        kw = {
             **self._ctx.as_dict(),
             'ctx': self._ctx.pop(),
             }
         try:
             view = self._ctx.view
         except KeyError:
-            return params
+            return kw
         try:
             widget = self._ctx.widget()
         except KeyError:
-            return params
+            return kw
         if widget is None:
             raise RuntimeError(f"{self!r}: widget is gone")
-        params['widget'] = widget
-        params['state'] = view.widget_state(widget)
-        return params
+        kw['widget'] = widget
+        kw['state'] = view.widget_state(widget)
+        return {
+            name: value
+            for name, value in kw.items()
+            if name in self._ctx_params
+            }
