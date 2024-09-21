@@ -15,8 +15,8 @@ log = logging.getLogger(__name__)
 
 class UiCommand(Command):
 
-    def __init__(self, d, fn, ctx_params, ctx, system_kw, groups):
-        super().__init__(d, fn, ctx_params, ctx, system_kw)
+    def __init__(self, d, fn, ctx_params, ctx, groups):
+        super().__init__(d, fn, ctx_params, ctx)
         self._groups = groups
 
     @property

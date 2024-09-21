@@ -56,7 +56,6 @@ def view_ui_command_reg_config(view, widget):
         fn=partial(_sample_fn, sample_service='a-service'),
         ctx_params=('view', 'state'),
         ctx=ctx,
-        system_kw={},
         groups=set(),
         )
     return {htypes.ui_command_tests.view: [command]}

@@ -74,12 +74,11 @@ def d_res_ref_to_name(d_ref):
 
 class Command:
 
-    def __init__(self, d, fn, ctx_params, ctx, system_kw):
+    def __init__(self, d, fn, ctx_params, ctx):
         self._d = d
         self._fn = fn
         self._ctx_params = set(ctx_params)
         self._ctx = ctx
-        self._system_kw = system_kw
 
     @property
     def d(self):
@@ -115,7 +114,7 @@ class Command:
         return result
 
     async def _run(self):
-        kw = {**self._ctx_kw, **self._system_kw}
+        kw = self._ctx_kw
         log.info("Run command: %r (%s)", self, kw)
         result = self._fn(**kw)
         if inspect.iscoroutinefunction(self._fn):
