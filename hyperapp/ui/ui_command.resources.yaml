@@ -13,6 +13,9 @@ import:
 - ui.command_config_ctl:command_config_ctl.module
 - ui.command_groups:command_groups.module
 definitions:
+  command-config_ctl.ctl:
+    type: legacy_type.command:config_ctl
+    value: {}
   get_view_commands:
     type: legacy_type.builtin:attribute
     value:
@@ -22,7 +25,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: get_view_commands
-      ctl: item-dict-config.ctl
+      ctl: system-item_dict_config_ctl.ctl
       function: get_view_commands
       free_params:
       - view
@@ -30,7 +33,7 @@ definitions:
       - view_ui_command_reg
       - universal_ui_command_reg
       want_config: false
-  item-dict-config.ctl:
+  system-item_dict_config_ctl.ctl:
     type: legacy_type.system:item_dict_config_ctl
     value: {}
   ui_command.module:
@@ -54,7 +57,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: universal_ui_command_reg
-      ctl: item-dict-config.ctl
+      ctl: system-item_dict_config_ctl.ctl
       function: universal_ui_command_reg
       free_params: []
       service_params: []
@@ -68,7 +71,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: view_ui_command_reg
-      ctl: item-dict-config.ctl
+      ctl: command-config_ctl.ctl
       function: view_ui_command_reg
       free_params:
       - view_t

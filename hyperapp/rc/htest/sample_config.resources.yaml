@@ -8,9 +8,6 @@ import:
 - legacy_type.system:item_dict_config_ctl
 - legacy_type.system:service_template
 definitions:
-  item-dict-config.ctl:
-    type: legacy_type.system:item_dict_config_ctl
-    value: {}
   sample_config.module:
     type: legacy_type.builtin:python_module
     value:
@@ -28,8 +25,11 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: sample_config_service
-      ctl: item-dict-config.ctl
+      ctl: system-item_dict_config_ctl.ctl
       function: sample_config_service
       free_params: []
       service_params: []
       want_config: true
+  system-item_dict_config_ctl.ctl:
+    type: legacy_type.system:item_dict_config_ctl
+    value: {}

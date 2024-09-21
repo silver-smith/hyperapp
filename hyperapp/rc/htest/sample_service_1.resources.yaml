@@ -7,9 +7,6 @@ import:
 - legacy_type.system:item_dict_config_ctl
 - legacy_type.system:service_template
 definitions:
-  item-dict-config.ctl:
-    type: legacy_type.system:item_dict_config_ctl
-    value: {}
   sample_fn_service_1:
     type: legacy_type.builtin:attribute
     value:
@@ -19,7 +16,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: sample_fn_service_1
-      ctl: item-dict-config.ctl
+      ctl: system-item_dict_config_ctl.ctl
       function: sample_fn_service_1
       free_params:
       - param_1
@@ -43,8 +40,11 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: sample_value_service_1
-      ctl: item-dict-config.ctl
+      ctl: system-item_dict_config_ctl.ctl
       function: sample_value_service_1
       free_params: []
       service_params: []
       want_config: false
+  system-item_dict_config_ctl.ctl:
+    type: legacy_type.system:item_dict_config_ctl
+    value: {}

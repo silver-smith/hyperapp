@@ -29,11 +29,11 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: feed_creg
-      ctl: item-dict-config.ctl
+      ctl: system-item_dict_config_ctl.ctl
       function: feed_creg
       free_params: []
       service_params: []
       want_config: true
-  item-dict-config.ctl:
+  system-item_dict_config_ctl.ctl:
     type: legacy_type.system:item_dict_config_ctl
     value: {}

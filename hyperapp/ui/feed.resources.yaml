@@ -32,7 +32,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: feed_factory
-      ctl: item-dict-config.ctl
+      ctl: system-item_dict_config_ctl.ctl
       function: feed_factory
       free_params:
       - piece
@@ -44,14 +44,14 @@ definitions:
     value:
       object: feed.module
       attr_name: index_tree_feed_from_piece
-  item-dict-config.ctl:
-    type: legacy_type.system:item_dict_config_ctl
-    value: {}
   list_feed_from_piece:
     type: legacy_type.builtin:attribute
     value:
       object: feed.module
       attr_name: list_feed_from_piece
+  system-item_dict_config_ctl.ctl:
+    type: legacy_type.system:item_dict_config_ctl
+    value: {}
   ui_index_tree_feed.actor-template:
     type: legacy_type.system:actor_template
     value:
