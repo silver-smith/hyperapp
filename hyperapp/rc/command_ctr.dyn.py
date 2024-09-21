@@ -77,7 +77,7 @@ class CommandTemplateCtr(Constructor):
         d_name = self._attr_qual_name[-1] + '_d'
         type_module = self._module_name.split('.')[-1]
         d_t_piece = types.get(type_module, d_name)
-        assert d_t_piece  # TODO: Make type if missing.
+        assert d_t_piece, (type_module, d_name)  # TODO: Make type if missing.
         d_t = pyobj_creg.animate(d_t_piece)
         d_piece = self._data_to_res(d_t())
         impl = htypes.ui.ui_command_impl(
