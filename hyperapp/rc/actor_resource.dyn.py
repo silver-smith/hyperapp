@@ -2,6 +2,7 @@ from hyperapp.common.htypes import Type
 
 from . import htypes
 from .services import (
+    mosaic,
     pyobj_creg,
     )
 from .code.rc_requirement import Requirement
@@ -47,10 +48,10 @@ class ActorReq(Requirement):
     def make_resource(self, target):
         resource_tgt = target.provider_resource_tgt
         template_piece = resource_tgt.get_resource(target.constructor)
-        template = self._cfg_item_creg.animate(template_piece)
         return ConfigItemResource(
+            cfg_item_creg=self._cfg_item_creg,
             service_name=self._service_name,
-            template=template,
+            template_ref=mosaic.put(template_piece),
             )
 
     @property

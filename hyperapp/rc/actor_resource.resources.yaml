@@ -1,4 +1,5 @@
 import:
+- builtins:mosaic.service
 - builtins:pyobj_creg.service
 - legacy_type.actor_resource:actor_req
 - legacy_type.builtin:attribute
@@ -16,6 +17,7 @@ definitions:
       file_name: actor_resource.dyn.py
       import_list:
         htypes.actor_resource.actor_req: legacy_type.actor_resource:actor_req
+        services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         code.rc_requirement: rc.rc_requirement:rc_requirement.module
         code.config_item_resource: rc.config_item_resource:config_item_resource.module

@@ -1,4 +1,5 @@
 from . import htypes
+from .services import mosaic
 from .code.rc_requirement import Requirement
 from .code.config_item_resource import ConfigItemResource
 
@@ -32,8 +33,8 @@ class ServiceReq(Requirement):
     def make_resource(self, target):
         resource_tgt = target.provider_resource_tgt
         template_piece = resource_tgt.get_resource(target.constructor)
-        template = self._cfg_item_creg.animate(template_piece)
         return ConfigItemResource(
+            cfg_item_creg=self._cfg_item_creg,
             service_name='system',
-            template=template,
+            template_ref=mosaic.put(template_piece),
             )

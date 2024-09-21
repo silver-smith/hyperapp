@@ -9,18 +9,18 @@ class ConfigItemResource(Resource):
 
     @classmethod
     def from_piece(cls, piece, cfg_item_creg):
-        template = cfg_item_creg.invite(piece.config_item)
-        return cls(piece.service_name, template)
+        return cls(cfg_item_creg, piece.service_name, piece.config_item)
 
-    def __init__(self, service_name, template):
+    def __init__(self, cfg_item_creg, service_name, template_ref):
+        self._cfg_item_creg = cfg_item_creg
         self._service_name = service_name
-        self._template = template
+        self._template_ref = template_ref
 
     @property
     def piece(self):
         return htypes.config_item_resource.config_item_resource(
             service_name=self._service_name,
-            config_item=mosaic.put(self._template.piece),
+            config_item=self._template_ref,
             )
 
     @property
@@ -32,4 +32,5 @@ class ConfigItemResource(Resource):
         return self._service_name == 'system'
 
     def configure_system(self, system):
-        system.update_config(self._service_name, {self._template.key: self._template})
+        template = self._cfg_item_creg.invite(self._template_ref)
+        system.update_config(self._service_name, {template.key: template})
