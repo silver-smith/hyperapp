@@ -82,6 +82,9 @@ class ConfigProbe:
     def __setitem__(self, key, value):
         self._config[key] = value
 
+    def get(self, key, default=None):
+        return self._config.get(key, default)
+
     def items(self):
         return self._config.items()
 
