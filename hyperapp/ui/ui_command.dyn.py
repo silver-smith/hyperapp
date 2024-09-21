@@ -1,7 +1,6 @@
 import logging
 from functools import cached_property
 
-from . import htypes
 from .services import (
     deduce_t,
     pyobj_creg,
