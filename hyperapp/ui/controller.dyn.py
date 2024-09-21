@@ -127,14 +127,6 @@ class _Item:
         rctx = parent.view.primary_parent_context(rctx, parent.widget)
         return parent.navigator_rec(rctx)
 
-    def _make_view_commands(self, command_ctx):
-        commands = list_view_commands(self.view)
-        return [CommandRec(cmd, command_ctx) for cmd in commands]
-
-    def _make_model_commands(self, command_ctx):
-        commands = list_ui_model_commands(self.ctx.lcs, command_ctx.piece, command_ctx)
-        return [CommandRec(cmd, command_ctx) for cmd in commands]
-
     def _command_context(self, rctx):
         ctx = self.ctx.clone_with(
             navigator=self.navigator_rec(rctx),
@@ -183,6 +175,14 @@ class _Item:
         self.rctx = rctx
         if self.parent and self.parent.current_child is self:
             await self.parent.update_parents_context()
+
+    def _make_view_commands(self, command_ctx):
+        commands = list_view_commands(self.view)
+        return [CommandRec(cmd, command_ctx) for cmd in commands]
+
+    def _make_model_commands(self, command_ctx):
+        commands = list_ui_model_commands(self.ctx.lcs, command_ctx.piece, command_ctx)
+        return [CommandRec(cmd, command_ctx) for cmd in commands]
 
     def _reverse_context(self, rctx):
         my_rctx = self.view.primary_parent_context(rctx, self.widget)
