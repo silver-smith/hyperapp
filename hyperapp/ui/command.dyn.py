@@ -72,7 +72,15 @@ def d_res_ref_to_name(d_ref):
     return d_to_name(d)
 
 
-class Command:
+class UnboundCommand:
+
+    def __init__(self, d, fn, ctx_params):
+        self._d = d
+        self._fn = fn
+        self._ctx_params = set(ctx_params)
+
+
+class BoundCommand:
 
     def __init__(self, d, fn, ctx_params, ctx):
         self._d = d

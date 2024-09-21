@@ -6,12 +6,12 @@ from .services import (
     mosaic,
     pyobj_creg,
     )
-from .code.command import d_to_name, Command
+from .code.command import d_to_name, UnboundCommand, BoundCommand
 
 log = logging.getLogger(__name__)
 
 
-class LayoutCommand(Command):
+class LayoutCommand(BoundCommand):
 
     def __init__(self, ui_command_impl):
         super().__init__()

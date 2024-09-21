@@ -6,14 +6,24 @@ from .services import (
     pyobj_creg,
     )
 from .code.mark import mark
-from .code.command import Command, CommandKind
+from .code.command import UnboundCommand, BoundCommand, CommandKind
 from .code.command_groups import default_command_groups
 from .code.command_config_ctl import CommandConfigCtl
 
 log = logging.getLogger(__name__)
 
 
-class UiCommand(Command):
+class UnboundUiCommand(UnboundCommand):
+
+    def __init__(self, d, fn, ctx_params, groups):
+        super().__init__(d, fn, ctx_params)
+        self._groups = groups
+
+    def bind(self, ctx):
+        return BoundUiCommand(self._d, self._fn, self._ctx_params, ctx, self._groups)
+
+
+class BoundUiCommand(BoundCommand):
 
     def __init__(self, d, fn, ctx_params, ctx, groups):
         super().__init__(d, fn, ctx_params, ctx)

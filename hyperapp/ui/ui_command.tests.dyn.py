@@ -46,23 +46,23 @@ def widget():
 
 
 @mark.config_fixture('view_ui_command_reg')
-def view_ui_command_reg_config(view, widget):
-    ctx = Context(
-        view=view,
-        widget=weakref.ref(widget),
-        )
-    command = ui_command.UiCommand(
+def view_ui_command_reg_config():
+    command = ui_command.UnboundUiCommand(
         d=htypes.ui_command_tests.sample_command_d(),
         fn=partial(_sample_fn, sample_service='a-service'),
         ctx_params=('view', 'state'),
-        ctx=ctx,
         groups=set(),
         )
     return {htypes.ui_command_tests.view: [command]}
 
 
-async def test_view_commands(view, get_view_commands):
+async def test_view_commands(get_view_commands, view, widget):
+    ctx = Context(
+        view=view,
+        widget=weakref.ref(widget),
+        )
     command_list = get_view_commands(view)
-    [command] = command_list
-    result = await command.run()
+    [unbound_command] = command_list
+    bound_command = unbound_command.bind(ctx)
+    result = await bound_command.run()
     assert result == 'sample-fn: a-state, a-service', repr(result)
