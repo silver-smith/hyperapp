@@ -1,13 +1,12 @@
 from unittest.mock import Mock
 
-from PySide6 import QtWidgets
-
 from . import htypes
 from .services import (
     mosaic,
     )
 from .code.mark import mark
 from .code.context import Context
+from .code.ui_command import UnboundUiCommand
 from .fixtures import qapp_fixtures, feed_fixtures
 from .tested.code import controller
 from .tested.code import layout
@@ -72,6 +71,21 @@ class PhonyLayoutBundle:
 
     def save_piece(self, piece):
         pass
+
+
+def _sample_auto_tabs_command():
+    pass
+
+
+@mark.config_fixture('view_ui_command_reg')
+def view_ui_command_reg_config():
+    command = UnboundUiCommand(
+        d=htypes.layout_tests.sample_command_d(),
+        fn=_sample_auto_tabs_command,
+        ctx_params=(),
+        groups=set(),
+        )
+    return {htypes.auto_tabs.view: [command]}
 
 
 @mark.fixture

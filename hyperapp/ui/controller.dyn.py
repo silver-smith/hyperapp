@@ -31,19 +31,6 @@ ItemMeta = namedtuple('ItemMeta', 'svc counter id_to_item feed')
 
 
 @dataclass
-class CommandRec:
-    piece: Any
-    ctx: Any
-
-    @cached_property
-    def animated(self):
-        return ui_command_factory(self.piece, self.ctx)
-
-
-ViewCommandsRec = namedtuple('ViewCommandsRec', 'command_recs command_context')
-
-        
-@dataclass
 class _Item:
     _meta: ItemMeta
 
@@ -54,9 +41,7 @@ class _Item:
     name: str
     view: View
     focusable: bool
-    view_commands_rec: ViewCommandsRec = None
-    # view_commands: list = None  # [command]
-    # command_context: dict = None  # command_d -> Context
+    view_commands: list = None
     _current_child_idx: int | None = None
     _widget_wr: Any | None = None
     _children: list[Self] | None = None
@@ -169,7 +154,7 @@ class _Item:
         else:
             rctx = Context(command_recs=[], commands=[])
         await self.view.children_context_changed(self.ctx, rctx, self.widget)
-        self.view_commands_rec, rctx = self._reverse_context(rctx)
+        self.view_commands, rctx = self._reverse_context(rctx)
         for idx, item in enumerate(self.children):
             if item.focusable:
                 continue
@@ -180,31 +165,29 @@ class _Item:
         if self.parent and self.parent.current_child is self:
             await self.parent.update_parents_context()
 
-    def _make_view_commands(self, command_ctx):
-        commands = self._meta.svc.get_view_commands(self.view)
-        return [CommandRec(cmd, command_ctx) for cmd in commands]
+    def _make_view_commands(self):
+        return self._meta.svc.get_view_commands(self.view)
 
     def _make_model_commands(self, command_ctx):
         return []  # TODO.
-        commands = list_ui_model_commands(self.ctx.lcs, command_ctx.piece, command_ctx)
-        return [CommandRec(cmd, command_ctx) for cmd in commands]
+        return list_ui_model_commands(self.ctx.lcs, command_ctx.piece, command_ctx)
 
     def _reverse_context(self, rctx):
         my_rctx = self.view.primary_parent_context(rctx, self.widget)
         command_ctx = self._command_context(my_rctx)
-        commands = view_commands = self._make_view_commands(command_ctx)
+        unbound_view_commands = self._make_view_commands()
+        commands = view_commands = [cmd.bind(command_ctx) for cmd in unbound_view_commands]
         d_to_context = {}
         if 'model' in my_rctx.diffs(rctx):
             # model is added or one from a child is replaced.
-            model_commands = self._make_model_commands(command_ctx)
+            unbound_model_commands = self._make_model_commands(command_ctx)
+            model_commands = [cmd.bind(command_ctx) for cmd in unbound_model_commands]
             commands = commands + model_commands
-        view_commands_rec = ViewCommandsRec(view_commands, command_ctx)
-        animated_commands = [cmd.animated for cmd in commands]
         commands_rctx = my_rctx.clone_with(
             command_recs=rctx.command_recs + commands,
-            commands=rctx.commands + animated_commands,
+            commands=rctx.commands + commands,
             )
-        return (view_commands_rec, commands_rctx)
+        return (view_commands, commands_rctx)
 
     def parent_context_changed_hook(self):
         log.info("Controller: parent context changed from: %s", self)
@@ -464,9 +447,8 @@ class Controller:
         self._inside_commands_call = True
         try:
             item = self._id_to_item.get(item_id)
-            if item and item.view_commands_rec:
-                rec_list = item.view_commands_rec.command_recs
-                return [rec.piece for rec in rec_list]
+            if item and item.view_commands:
+                return item.view_commands
             else:
                 return []
         finally:
