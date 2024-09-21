@@ -6,8 +6,9 @@ from . import htypes
 from .services import (
     mosaic,
     )
+from .code.mark import mark
 from .code.context import Context
-from .fixtures import qapp_fixtures
+from .fixtures import qapp_fixtures, feed_fixtures
 from .tested.code import controller
 from .tested.code import layout
 
@@ -56,7 +57,8 @@ def make_default_state():
         )
 
 
-def make_default_layout():
+@mark.fixture
+def default_layout():
     return htypes.root.layout(
         piece=make_default_piece(),
         state=make_default_state(),
@@ -72,40 +74,35 @@ class PhonyLayoutBundle:
         pass
 
 
-async def test_layout_tree():
-    lcs=Mock()
+@mark.fixture
+def ctx():
+    lcs = Mock()
     lcs.get.return_value = None  # command list - mock is not iterable.
-    ctx = Context(lcs=lcs)
-    default_layout = make_default_layout()
-    app = QtWidgets.QApplication()
-    try:
-        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx) as ctl:
-            await ctl.async_init()
-            piece = htypes.layout.view()
-            items = layout.layout_tree(piece, None, ctl)
-            assert items
-            parent = htypes.layout.item(1, "Some item", True, "Item description")
-            layout.layout_tree(piece, parent, ctl)
-    finally:
-        app.shutdown()
+    return Context(lcs=lcs)
 
 
-async def test_enum_layout_tree_commands():
-    lcs=Mock()
-    lcs.get.return_value = None  # command list - mock is not iterable.
-    ctx = Context(lcs=lcs)
-    default_layout = make_default_layout()
-    app = QtWidgets.QApplication()
-    try:
-        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx) as ctl:
-            await ctl.async_init()
-            piece = htypes.layout.view()
-            windows = layout.layout_tree(piece, None, ctl)
-            window_items = layout.layout_tree(piece, windows[0], ctl)
-            commands = layout.enum_layout_tree_commands(piece, window_items[1], ctl)
-            assert commands
-    finally:
-        app.shutdown()
+@mark.fixture
+def ctl(controller_running, default_layout, ctx):
+    with controller_running(PhonyLayoutBundle(), default_layout, ctx, show=False, load_state=False) as ctl:
+        yield ctl
+
+
+async def test_layout_tree(qapp, ctl):
+    await ctl.async_init()
+    piece = htypes.layout.view()
+    items = layout.layout_tree(piece, None, ctl)
+    assert items
+    parent = htypes.layout.item(1, "Some item", True, "Item description")
+    layout.layout_tree(piece, parent, ctl)
+
+
+async def test_enum_layout_tree_commands(qapp, ctl):
+    await ctl.async_init()
+    piece = htypes.layout.view()
+    windows = layout.layout_tree(piece, None, ctl)
+    window_items = layout.layout_tree(piece, windows[0], ctl)
+    commands = layout.enum_layout_tree_commands(piece, window_items[1], ctl)
+    assert commands
 
 
 async def test_open_view_item_commands():
@@ -116,25 +113,16 @@ async def test_open_view_item_commands():
     assert result
 
 
-async def test_view_item_commands():
-    lcs=Mock()
-    lcs.get.return_value = None  # command list - mock is not iterable.
-    ctx = Context(lcs=lcs)
-    default_layout = make_default_layout()
-    app = QtWidgets.QApplication()
-    try:
-        with controller.Controller.running(PhonyLayoutBundle(), default_layout, ctx) as ctl:
-            await ctl.async_init()
-            ctx = ctx.clone_with(controller=ctl)
-            layout_piece = htypes.layout.view()
-            windows = layout.layout_tree(layout_piece, None, ctl)
-            window_items = layout.layout_tree(layout_piece, windows[0], ctl)
-            item_id = window_items[1].id
-            command_list_piece = htypes.layout.command_list(item_id)
-            commands = layout.view_item_commands(command_list_piece, ctl, ctx)
-            assert commands
-    finally:
-        app.shutdown()
+async def test_view_item_commands(qapp, ctx, ctl):
+    await ctl.async_init()
+    ctx = ctx.clone_with(controller=ctl)
+    layout_piece = htypes.layout.view()
+    windows = layout.layout_tree(layout_piece, None, ctl)
+    window_items = layout.layout_tree(layout_piece, windows[0], ctl)
+    item_id = window_items[1].id
+    command_list_piece = htypes.layout.command_list(item_id)
+    commands = layout.view_item_commands(command_list_piece, ctl, ctx)
+    assert commands
 
 
 async def test_add_view_command():
