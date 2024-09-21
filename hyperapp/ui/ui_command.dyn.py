@@ -26,7 +26,7 @@ class UiCommand(Command):
 
 @mark.service2(ctl=CommandConfigCtl())
 def view_ui_command_reg(config, view_t):
-    return config[view_t]
+    return config.get(view_t, [])
 
 
 @mark.service2
