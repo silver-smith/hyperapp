@@ -140,6 +140,8 @@ import:
 - ui.qt.text:text_readonly_view.actor-template
 - ui.qt.tree:tree_view.actor-template
 - ui.qt.window:window_view.actor-template
+- ui.qt.window_commands:window_view_duplicate_window.ui-command
+- ui.qt.window_commands:window_view_quit.ui-command
 - ui.str_adapter:str_adapter_static_str_adapter.actor-template
 - ui.ui_adapter_creg:ui_adapter_creg.service
 - ui.ui_command:get_view_commands.service
@@ -399,3 +401,5 @@ definitions:
       - ui.navigator:navigator_view_go_forward.ui-command
       - ui.qt.auto_tabs:auto_tabs_view_close_tab.ui-command
       - ui.qt.auto_tabs:auto_tabs_view_duplicate_tab.ui-command
+      - ui.qt.window_commands:window_view_duplicate_window.ui-command
+      - ui.qt.window_commands:window_view_quit.ui-command
