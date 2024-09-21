@@ -160,6 +160,8 @@ class TestJob(SystemJob):
         recorder = pyobj_creg.animate(recorder_piece)
         try:
             system = self._prepare_system(all_resources)
+        except PythonModuleResourceImportError as x:
+            status, error_msg, traceback = self._prepare_import_error(x)
         except UnknownServiceError as x:
             status = JobStatus.incomplete
             error_msg = f"{type(x).__name__}: {x}"
@@ -181,9 +183,9 @@ class TestJob(SystemJob):
                 status, error_msg, traceback, req_set = self._run_system(system)
             else:
                 req_set = set()
-            if status == JobStatus.failed:
-                return htypes.test_job.failed_result(error_msg, tuple(traceback))
-            req_set |= self._imports_to_requirements(recorder.used_imports)
+        if status == JobStatus.failed:
+            return htypes.test_job.failed_result(error_msg, tuple(traceback))
+        req_set |= self._imports_to_requirements(recorder.used_imports)
         req_refs = tuple(
             mosaic.put(req.piece)
             for req in req_set
