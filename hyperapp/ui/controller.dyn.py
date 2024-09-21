@@ -23,6 +23,13 @@ from .code.view import View
 log = logging.getLogger(__name__)
 
 
+# Services used by controller and it's items.
+CtlServices = namedtuple('CtlServices', 'feed_factory view_creg get_view_commands')
+
+# attributes shared by all items.
+ItemMeta = namedtuple('ItemMeta', 'svc counter id_to_item feed')
+
+
 @dataclass
 class CommandRec:
     piece: Any
@@ -38,9 +45,7 @@ ViewCommandsRec = namedtuple('ViewCommandsRec', 'command_recs command_context')
         
 @dataclass
 class _Item:
-    _counter: itertools.count
-    _id_to_item: dict[int, Self]
-    _feed: Any
+    _meta: ItemMeta
 
     id: int
     parent: Self | None
@@ -77,12 +82,11 @@ class _Item:
         return self._children
 
     def _make_child_item(self, rec):
-        item_id = next(self._counter)
+        item_id = next(self._meta.counter)
         ctx = rec.view.children_context(self.ctx)
-        item = _Item(self._counter, self._id_to_item, self._feed,
-                     item_id, self, ctx, None, rec.name, rec.view, rec.focusable)
+        item = _Item(self._meta, item_id, self, ctx, None, rec.name, rec.view, rec.focusable)
         item.view.set_controller_hook(item._hook)
-        self._id_to_item[item_id] = item
+        self._meta.id_to_item[item_id] = item
         return item
 
     @property
@@ -177,10 +181,11 @@ class _Item:
             await self.parent.update_parents_context()
 
     def _make_view_commands(self, command_ctx):
-        commands = list_view_commands(self.view)
+        commands = self._meta.svc.get_view_commands(self.view)
         return [CommandRec(cmd, command_ctx) for cmd in commands]
 
     def _make_model_commands(self, command_ctx):
+        return []  # TODO.
         commands = list_ui_model_commands(self.ctx.lcs, command_ctx.piece, command_ctx)
         return [CommandRec(cmd, command_ctx) for cmd in commands]
 
@@ -213,7 +218,7 @@ class _Item:
 
     # Should be on stack for proper module for feed constructor be picked up.
     async def _send_model_diff(self, model_diff):
-        await self._feed.send(model_diff)
+        await self._meta.feed.send(model_diff)
 
     def _replace_child_item(self, idx):
         view_items = self.view.items()
@@ -273,12 +278,11 @@ class _WindowItem(_Item):
     _window_widget: Any = None
 
     @classmethod
-    def from_refs(cls, counter, id_to_item, feed, ctx, parent, view_ref, state_ref, view_creg):
-        view = view_creg.invite(view_ref, ctx)
+    def from_refs(cls, meta, ctx, parent, view_ref, state_ref):
+        view = meta.svc.view_creg.invite(view_ref, ctx)
         state = web.summon(state_ref)
-        item_id = next(counter)
-        self = cls(counter, id_to_item, feed,
-                   item_id, parent, ctx, None, f"window#{item_id}", view, focusable=True)
+        item_id = next(meta.counter)
+        self = cls(meta, item_id, parent, ctx, None, f"window#{item_id}", view, focusable=True)
         self._init(state)
         return self
 
@@ -286,7 +290,7 @@ class _WindowItem(_Item):
         widget = self.view.construct_widget(state, self.ctx)
         self._widget_wr = weakref.ref(widget)
         self.view.set_controller_hook(self._hook)
-        self._id_to_item[self.id] = self
+        self._meta.id_to_item[self.id] = self
         self._window_widget = widget  # Prevent windows refs from be gone.
 
     def save_state(self):
@@ -300,20 +304,19 @@ class _RootItem(_Item):
     _show: bool = True
 
     @classmethod
-    def from_piece(cls, counter, id_to_item, feed, show, ctx, layout_bundle, layout, view_creg):
+    def from_piece(cls, meta, show, ctx, layout_bundle, layout):
         item_id = 0
-        self = cls(counter, id_to_item, feed, item_id, None, ctx, None, "root",
+        self = cls(meta, item_id, None, ctx, None, "root",
                    view=None, focusable=False, _layout_bundle=layout_bundle, _show=show)
         self.ctx = self.ctx.clone_with(
             root=Root(root_item=self),
             )
         self._children = [
-            _WindowItem.from_refs(
-                counter, id_to_item, feed, self.ctx, self, piece_ref, state_ref, view_creg)
+            _WindowItem.from_refs(meta, self.ctx, self, piece_ref, state_ref)
             for piece_ref, state_ref
             in zip(layout.piece.window_list, layout.state.window_list)
             ]
-        id_to_item[item_id] = self
+        meta.id_to_item[item_id] = self
         return self
 
     def show(self):
@@ -356,11 +359,10 @@ class _RootItem(_Item):
         return htypes.root.state(window_list, current_window.idx)
 
     async def create_window(self, piece, state):
-        view = view_creg.animate(piece, self.ctx)
-        item_id = next(self._counter)
+        view = self._meta.svc.view_creg.animate(piece, self.ctx)
+        item_id = next(self._meta.counter)
         ctx = view.children_context(self.ctx)
-        item = _WindowItem(self._counter, self._id_to_item, self._feed,
-                           item_id, self, ctx, None, f"window#{item_id}", view, focusable=True)
+        item = _WindowItem(self._meta, item_id, self, ctx, None, f"window#{item_id}", view, focusable=True)
         item._init(state)
         self._children.append(item)
         await item.init_children_reverse_context()
@@ -413,11 +415,9 @@ class CtlHook:
 
 class Controller:
 
-    def __init__(self, feed_factory, view_creg, layout_bundle, default_layout, ctx, show, load_state):
-        self._root_ctx = ctx.clone_with(controller=self)
+    def __init__(self, svc, layout_bundle, default_layout, ctx, show, load_state):
+        self._svc = svc
         self._id_to_item = {}
-        self._counter = itertools.count(start=1)
-        self._feed = feed_factory(htypes.layout.view())
         self._inside_commands_call = False
         layout = default_layout
         if load_state:
@@ -425,8 +425,14 @@ class Controller:
                 layout = layout_bundle.load_piece()
             except FileNotFoundError:
                 pass
-        self._root_item = _RootItem.from_piece(
-            self._counter, self._id_to_item, self._feed, show, self._root_ctx, layout_bundle, layout, view_creg)
+        meta = ItemMeta(
+            svc=svc,
+            counter=itertools.count(start=1),
+            id_to_item=self._id_to_item,
+            feed=svc.feed_factory(htypes.layout.view()),
+            )
+        root_ctx = ctx.clone_with(controller=self)
+        self._root_item = _RootItem.from_piece(meta, show, root_ctx, layout_bundle, layout)
 
     def show(self):
         self._root_item.show()
@@ -473,8 +479,13 @@ class Controller:
 
 @mark.service2
 @contextmanager
-def controller_running(feed_factory, view_creg, layout_bundle, default_layout, ctx, show=False, load_state=False):
-    ctl = Controller(feed_factory, view_creg, layout_bundle, default_layout, ctx, show, load_state)
+def controller_running(feed_factory, view_creg, get_view_commands, layout_bundle, default_layout, ctx, show=False, load_state=False):
+    svc = CtlServices(
+        feed_factory=feed_factory,
+        view_creg=view_creg,
+        get_view_commands=get_view_commands,
+        )
+    ctl = Controller(svc, layout_bundle, default_layout, ctx, show, load_state)
     if show:
         ctl.show()
     yield ctl
