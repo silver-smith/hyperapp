@@ -32,9 +32,14 @@ class CommandProbe:
         if args and is_cls_arg(self._fn, args[0]):
             # self._fn is a classmethod and args[0] is a 'cls' argument.
             param_ofs = 1
-        ctx_param_count = len(args) - param_ofs + len(kw)
-        ctx_params = params[param_ofs:ctx_param_count + param_ofs]
-        service_params = params[ctx_param_count + param_ofs:]
+        ctx_params = [
+            *params[param_ofs:len(args)],
+            *kw,
+            ]
+        service_params = [
+            name for name in params[param_ofs:]
+            if name not in ctx_params
+            ]
         self._add_constructor(self._t, ctx_params, service_params)
         service_kw = {
             name: self._system.resolve_service(name)
