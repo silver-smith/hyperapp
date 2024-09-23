@@ -16,22 +16,6 @@ model = record:
   attr_name: string
 
 
-ui_command = record:
-  attr_name: string
-  t: ref
-  name: string
-  params: string list
-
-ui_model_command = record(ui_command)
-
-universal_ui_command = record:
-  attr_name: string
-  name: string
-  params: string list
-
-universal_ui_model_command = record(universal_ui_command)
-
-
 list_feed = record:
   module_name: string
   t: ref
