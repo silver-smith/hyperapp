@@ -11,9 +11,7 @@ import:
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.system:actor_template
-- legacy_type.ui:command_properties
 - legacy_type.ui:ui_command
-- legacy_type.ui:ui_command_impl
 - ui.qt.tabs:tabs.module
 definitions:
   AutoTabsView:
@@ -44,12 +42,6 @@ definitions:
       function: AutoTabsView.from_piece
       service_params:
       - view_creg
-  auto_tabs_view_close_tab.command-properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: false
-      uses_state: true
-      remotable: true
   auto_tabs_view_close_tab.d:
     type: legacy_type.builtin:call
     value:
@@ -62,22 +54,12 @@ definitions:
         is_global: false
         uses_state: true
         remotable: true
-      impl: auto_tabs_view_close_tab.ui-command-impl
-  auto_tabs_view_close_tab.ui-command-impl:
-    type: legacy_type.ui:ui_command_impl
-    value:
       function: close_tab
       ctx_params:
       - view
       - widget
       - state
       service_params: []
-  auto_tabs_view_duplicate_tab.command-properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: false
-      uses_state: true
-      remotable: false
   auto_tabs_view_duplicate_tab.d:
     type: legacy_type.builtin:call
     value:
@@ -90,10 +72,6 @@ definitions:
         is_global: false
         uses_state: true
         remotable: false
-      impl: auto_tabs_view_duplicate_tab.ui-command-impl
-  auto_tabs_view_duplicate_tab.ui-command-impl:
-    type: legacy_type.ui:ui_command_impl
-    value:
       function: duplicate_tab
       ctx_params:
       - ctx

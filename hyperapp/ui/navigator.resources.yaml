@@ -13,9 +13,7 @@ import:
 - legacy_type.navigator:history_rec
 - legacy_type.navigator:view
 - legacy_type.system:actor_template
-- legacy_type.ui:command_properties
 - legacy_type.ui:ui_command
-- legacy_type.ui:ui_command_impl
 - ui.view:view.module
 definitions:
   NavigatorView:
@@ -59,12 +57,6 @@ definitions:
       service_params:
       - model_view_creg
       - set_custom_layout
-  navigator_view_go_back.command-properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: false
-      uses_state: false
-      remotable: false
   navigator_view_go_back.d:
     type: legacy_type.builtin:call
     value:
@@ -77,10 +69,6 @@ definitions:
         is_global: false
         uses_state: false
         remotable: false
-      impl: navigator_view_go_back.ui-command-impl
-  navigator_view_go_back.ui-command-impl:
-    type: legacy_type.ui:ui_command_impl
-    value:
       function: go_back
       ctx_params:
       - view
@@ -88,12 +76,6 @@ definitions:
       - ctx
       service_params:
       - model_view_creg
-  navigator_view_go_forward.command-properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: false
-      uses_state: false
-      remotable: false
   navigator_view_go_forward.d:
     type: legacy_type.builtin:call
     value:
@@ -106,10 +88,6 @@ definitions:
         is_global: false
         uses_state: false
         remotable: false
-      impl: navigator_view_go_forward.ui-command-impl
-  navigator_view_go_forward.ui-command-impl:
-    type: legacy_type.ui:ui_command_impl
-    value:
       function: go_forward
       ctx_params:
       - view

@@ -5,9 +5,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
-- legacy_type.ui:command_properties
 - legacy_type.ui:ui_command
-- legacy_type.ui:ui_command_impl
 - legacy_type.window:pos
 - legacy_type.window:state
 - legacy_type.window:view
@@ -34,12 +32,6 @@ definitions:
         htypes.window.pos: legacy_type.window:pos
         htypes.window.state: legacy_type.window:state
         htypes.window.view: legacy_type.window:view
-  window_view_duplicate_window.command-properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: false
-      uses_state: true
-      remotable: true
   window_view_duplicate_window.d:
     type: legacy_type.builtin:call
     value:
@@ -52,22 +44,12 @@ definitions:
         is_global: false
         uses_state: true
         remotable: true
-      impl: window_view_duplicate_window.ui-command-impl
-  window_view_duplicate_window.ui-command-impl:
-    type: legacy_type.ui:ui_command_impl
-    value:
       function: duplicate_window
       ctx_params:
       - root
       - view
       - state
       service_params: []
-  window_view_quit.command-properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: false
-      uses_state: false
-      remotable: true
   window_view_quit.d:
     type: legacy_type.builtin:call
     value:
@@ -80,10 +62,6 @@ definitions:
         is_global: false
         uses_state: false
         remotable: true
-      impl: window_view_quit.ui-command-impl
-  window_view_quit.ui-command-impl:
-    type: legacy_type.ui:ui_command_impl
-    value:
       function: quit
       ctx_params: []
       service_params: []
