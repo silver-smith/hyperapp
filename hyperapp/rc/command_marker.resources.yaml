@@ -7,11 +7,11 @@ import:
 
 definitions:
 
-  ui_command_marker.module:
+  command_marker.module:
     type: legacy_type.builtin:python_module
     value:
-      module_name: ui_command_marker
-      file_name: ui_command_marker.dyn.py
+      module_name: command_marker
+      file_name: command_marker.dyn.py
       import_list:
         code.command_ctr: rc.command_ctr:command_ctr.module
         code.marker_utils: rc.marker_utils:marker_utils.module
@@ -19,7 +19,7 @@ definitions:
   ui_command_marker:
     type: legacy_type.builtin:attribute
     value:
-      object: ui_command_marker.module
+      object: command_marker.module
       attr_name: ui_command_marker
 
   ui_command.marker-template:
@@ -35,7 +35,7 @@ definitions:
   ui_model_command_marker:
     type: legacy_type.builtin:attribute
     value:
-      object: ui_command_marker.module
+      object: command_marker.module
       attr_name: ui_model_command_marker
 
   ui_model_command.marker-template:
@@ -44,3 +44,19 @@ definitions:
       name: ui_model_command
       function: ui_model_command_marker
       service_params: []
+
+  model_command_marker:
+    type: legacy_type.builtin:attribute
+    value:
+      object: command_marker.module
+      attr_name: model_command_marker
+
+  command.marker-template:
+    type: legacy_type.marker:marker_template
+    value:
+      name: command
+      function: model_command_marker
+      service_params:
+      - system
+      - ctr_collector
+      - data_to_res

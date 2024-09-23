@@ -86,3 +86,8 @@ def ui_model_command_marker(t, module_name):
     def _ui_command_wrapper(fn):
         return fn
     return _ui_command_wrapper
+
+
+def model_command_marker(t, module_name, system, ctr_collector, data_to_res):
+    service_name = 'model_command_reg'
+    return CommandWrapper(system, ctr_collector, data_to_res, module_name, service_name, t)

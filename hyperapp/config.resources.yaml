@@ -17,6 +17,9 @@ import:
 - rc.actor_resource:actor_resource_actor_req.actor-template
 - rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
 - rc.command_ctr:command_resource_command_template_ctr.actor-template
+- rc.command_marker:command.marker-template
+- rc.command_marker:ui_command.marker-template
+- rc.command_marker:ui_model_command.marker-template
 - rc.config_item_marker:config_fixture.marker-template
 - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
 - rc.ctr_collector:ctr_collector.service
@@ -78,8 +81,6 @@ import:
 - rc.ui_command_ctr:rc_constructors_ui_model_command.actor-template
 - rc.ui_command_ctr:rc_constructors_universal_ui_command.actor-template
 - rc.ui_command_ctr:rc_constructors_universal_ui_model_command.actor-template
-- rc.ui_command_marker:ui_command.marker-template
-- rc.ui_command_marker:ui_model_command.marker-template
 - resource.data_to_res:data_to_ref.service
 - resource.data_to_res:data_to_res.service
 - resource.partial_ref:partial_ref.service
@@ -201,12 +202,13 @@ definitions:
     value:
       items:
       - rc.actor_marker:actor.marker-template
+      - rc.command_marker:command.marker-template
+      - rc.command_marker:ui_command.marker-template
+      - rc.command_marker:ui_model_command.marker-template
       - rc.config_item_marker:config_fixture.marker-template
       - rc.fixture_marker:fixture.marker-template
       - rc.model_marker:model.marker-template
       - rc.service_marker:service2.marker-template
-      - rc.ui_command_marker:ui_command.marker-template
-      - rc.ui_command_marker:ui_model_command.marker-template
   model_view_creg:
     type: legacy_type.system:item_list_config
     value:
