@@ -1,8 +1,22 @@
-
-command_template_ctr = record:
+ui_command_template_ctr = record:
   module_name: string
   attr_qual_name: string list
   service_name: string
   t: ref
+  ctx_params: string list
+  service_params: string list
+
+model_command_template_ctr = record:
+  module_name: string
+  attr_qual_name: string list
+  service_name: string
+  t: ref
+  ctx_params: string list
+  service_params: string list
+
+global_model_command_template_ctr = record:
+  module_name: string
+  attr_qual_name: string list
+  service_name: string
   ctx_params: string list
   service_params: string list

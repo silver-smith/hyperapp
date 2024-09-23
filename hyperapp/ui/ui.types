@@ -11,6 +11,7 @@ model_command_d = record
 model_command_enumerator_d = record
 global_model_command_d = record
 
+
 command_properties = record:
   is_global: bool
   uses_state: bool
@@ -19,32 +20,25 @@ command_properties = record:
 ui_command = record:
   d: ref
   properties: command_properties
-  impl: ref
-
-model_command = record:
-  d: ref
-  impl: ref
-
-ui_command_impl = record:
   function: ref
   ctx_params: string list
   service_params: string list
 
-model_command_impl = record:
+model_command = record:
+  d: ref
+  properties: command_properties
   function: ref
-  params: string list
-
-ui_model_command_impl = record:
-  model_command_impl: ref
-  layout: ref opt
-
-external_ui_model_command_impl = record:
-  model_command_impl: ref
-  layout: ref opt
+  ctx_params: string list
+  service_params: string list
 
 model_command_enumerator = record:
   function: ref
   params: string list
+
+
+external_ui_model_command_impl = record:
+  model_command_impl: ref
+  layout: ref opt
 
 
 # For storing command list in lcs.

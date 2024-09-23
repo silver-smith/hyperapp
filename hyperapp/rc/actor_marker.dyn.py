@@ -32,7 +32,7 @@ class ServiceActorProbe:
             # self._fn is a classmethod and args[0] is a 'cls' argument.
             piece_param_ofs = 1
         if len(args) < piece_param_ofs + 1:
-            raise RuntimeError(f"First parameter expected is a piece: {self._fn!r}")
+            raise RuntimeError(f"First parameter expected to be a piece: {self._fn!r}")
         piece = args[piece_param_ofs]
         creg_param_count = len(args) - piece_param_ofs - 1 + len(kw)
         creg_params = params[piece_param_ofs + 1:creg_param_count + piece_param_ofs + 1]

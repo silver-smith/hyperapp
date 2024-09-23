@@ -17,8 +17,11 @@ import:
 - rc.actor_resource:actor_resource_actor_req.actor-template
 - rc.ctr_collector:ctr_collector.service
 - rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
-- rc.command_ctr:command_resource_command_template_ctr.actor-template
+- rc.command_ctr:command_resource_global_model_command_template_ctr.actor-template
+- rc.command_ctr:command_resource_model_command_template_ctr.actor-template
+- rc.command_ctr:command_resource_ui_command_template_ctr.actor-template
 - rc.command_marker:command.marker-template
+- rc.command_marker:global_command.marker-template
 - rc.command_marker:ui_command.marker-template
 - rc.command_marker:ui_model_command.marker-template
 - rc.config_item_marker:config_fixture.marker-template
@@ -74,10 +77,6 @@ import:
 - rc.test_requirement:test_target_tested_code_resource.actor-template
 - rc.test_requirement:test_target_tested_service_req.actor-template
 - rc.test_requirement:test_target_tested_service_resource.actor-template
-- rc.ui_command_ctr:rc_constructors_ui_command.actor-template
-- rc.ui_command_ctr:rc_constructors_ui_model_command.actor-template
-- rc.ui_command_ctr:rc_constructors_universal_ui_command.actor-template
-- rc.ui_command_ctr:rc_constructors_universal_ui_model_command.actor-template
 - resource.data_to_res:data_to_ref.service
 - resource.data_to_res:data_to_res.service
 - resource.partial_ref:partial_ref.service
@@ -185,6 +184,7 @@ definitions:
       items:
       - rc.actor_marker:actor.marker-template
       - rc.command_marker:command.marker-template
+      - rc.command_marker:global_command.marker-template
       - rc.command_marker:ui_command.marker-template
       - rc.command_marker:ui_model_command.marker-template
       - rc.config_item_marker:config_fixture.marker-template
@@ -232,7 +232,9 @@ definitions:
       - rc.actor_ctr:actor_resource_actor_probe_ctr.actor-template
       - rc.actor_ctr:actor_resource_actor_template_ctr.actor-template
       - rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
-      - rc.command_ctr:command_resource_command_template_ctr.actor-template
+      - rc.command_ctr:command_resource_global_model_command_template_ctr.actor-template
+      - rc.command_ctr:command_resource_model_command_template_ctr.actor-template
+      - rc.command_ctr:command_resource_ui_command_template_ctr.actor-template
       - rc.feed_ctr:rc_constructors_list_feed.actor-template
       - rc.feed_ctr:rc_constructors_index_tree_feed.actor-template
       - rc.fixture_ctr:fixture_resource_fixture_ctr.actor-template
@@ -241,10 +243,6 @@ definitions:
       - rc.service_ctr:rc_constructors_service.actor-template
       - rc.service_ctr:rc_constructors_service_template.actor-template
       - rc.service_probe_resource:service_resource_service_probe_ctr.actor-template
-      - rc.ui_command_ctr:rc_constructors_ui_command.actor-template
-      - rc.ui_command_ctr:rc_constructors_ui_model_command.actor-template
-      - rc.ui_command_ctr:rc_constructors_universal_ui_command.actor-template
-      - rc.ui_command_ctr:rc_constructors_universal_ui_model_command.actor-template
 
   rc_job_creg:
     type: legacy_type.system:item_list_config

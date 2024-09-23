@@ -3,12 +3,14 @@ import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.command_resource:command_template_ctr
+- legacy_type.command_resource:global_model_command_template_ctr
+- legacy_type.command_resource:model_command_template_ctr
+- legacy_type.command_resource:ui_command_template_ctr
 - legacy_type.marker:marker_template
 - legacy_type.system:actor_template
 - legacy_type.ui:command_properties
+- legacy_type.ui:model_command
 - legacy_type.ui:ui_command
-- legacy_type.ui:ui_command_impl
 - rc.rc_constructor:rc_constructor.module
 
 definitions:
@@ -20,30 +22,72 @@ definitions:
       file_name: command_ctr.dyn.py
       import_list:
         htypes.builtin.attribute: legacy_type.builtin:attribute
-        htypes.command_resource.command_template_ctr: legacy_type.command_resource:command_template_ctr
+        htypes.command_resource.global_model_command_template_ctr: legacy_type.command_resource:global_model_command_template_ctr
+        htypes.command_resource.model_command_template_ctr: legacy_type.command_resource:model_command_template_ctr
+        htypes.command_resource.ui_command_template_ctr: legacy_type.command_resource:ui_command_template_ctr
         htypes.ui.command_properties: legacy_type.ui:command_properties
+        htypes.ui.model_command: legacy_type.ui:model_command
         htypes.ui.ui_command: legacy_type.ui:ui_command
-        htypes.ui.ui_command_impl: legacy_type.ui:ui_command_impl
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         code.rc_constructor: rc.rc_constructor:rc_constructor.module
 
-  CommandTemplateCtr:
+  UiCommandTemplateCtr:
     type: legacy_type.builtin:attribute
     value:
       object: command_ctr.module
-      attr_name: CommandTemplateCtr
+      attr_name: UiCommandTemplateCtr
 
-  CommandTemplateCtr.from_piece:
+  UiCommandTemplateCtr.from_piece:
     type: legacy_type.builtin:attribute
     value:
-      object: CommandTemplateCtr
+      object: UiCommandTemplateCtr
       attr_name: from_piece
 
-  command_resource_command_template_ctr.actor-template:
+  command_resource_ui_command_template_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.command_resource:command_template_ctr
-      function: CommandTemplateCtr.from_piece
+      t: legacy_type.command_resource:ui_command_template_ctr
+      function: UiCommandTemplateCtr.from_piece
+      service_params:
+      - data_to_res
+
+  ModelCommandTemplateCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: command_ctr.module
+      attr_name: ModelCommandTemplateCtr
+
+  ModelCommandTemplateCtr.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ModelCommandTemplateCtr
+      attr_name: from_piece
+
+  command_resource_model_command_template_ctr.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command_resource:model_command_template_ctr
+      function: ModelCommandTemplateCtr.from_piece
+      service_params:
+      - data_to_res
+
+  GlobalModelCommandTemplateCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: command_ctr.module
+      attr_name: GlobalModelCommandTemplateCtr
+
+  GlobalModelCommandTemplateCtr.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: GlobalModelCommandTemplateCtr
+      attr_name: from_piece
+
+  command_resource_global_model_command_template_ctr.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command_resource:global_model_command_template_ctr
+      function: GlobalModelCommandTemplateCtr.from_piece
       service_params:
       - data_to_res
