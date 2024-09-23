@@ -116,6 +116,7 @@ import:
 - transport.sync_route_table:route_table.service
 - transport.transport:transport.service
 - ui.command_config_ctl:command_config_ctl.actor-template
+- ui.controller:controller_running.service
 - ui.feed:feed_factory.service
 - ui.feed:ui_index_tree_feed.actor-template
 - ui.feed:ui_list_feed.actor-template
@@ -360,6 +361,7 @@ definitions:
       - transport.rsa_identity:generate_rsa_identity.service
       - transport.sync_route_table:route_table.service
       - transport.transport:transport.service
+      - ui.controller:controller_running.service
       - ui.feed:feed_factory.service
       - ui.feed_creg:feed_creg.service
       - ui.model_command_impl_creg:model_command_impl_creg.service

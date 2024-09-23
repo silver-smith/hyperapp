@@ -142,3 +142,7 @@ async def test_view_item_commands(qapp, ctx, ctl):
 async def test_add_view_command():
     piece = htypes.layout.command_list(item_id=123)
     result = await layout.add_view_command(piece, current_item=None)
+
+
+async def test_open_layout_tree():
+    result = await layout.open_layout_tree()

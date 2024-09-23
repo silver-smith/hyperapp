@@ -80,13 +80,10 @@ class UnboundCommand:
         self._ctx_params = set(ctx_params)
 
 
-class BoundCommand:
+class BoundCommandBase:
 
-    def __init__(self, d, fn, ctx_params, ctx):
+    def __init__(self, d):
         self._d = d
-        self._fn = fn
-        self._ctx_params = set(ctx_params)
-        self._ctx = ctx
 
     @property
     def d(self):
@@ -95,6 +92,15 @@ class BoundCommand:
     @cached_property
     def name(self):
         return d_to_name(self._d)
+
+
+class BoundCommand(BoundCommandBase):
+
+    def __init__(self, d, fn, ctx_params, ctx):
+        super().__init__(d)
+        self._fn = fn
+        self._ctx_params = set(ctx_params)
+        self._ctx = ctx
 
     @property
     def enabled(self):
