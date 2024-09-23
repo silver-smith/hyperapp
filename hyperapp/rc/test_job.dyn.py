@@ -251,7 +251,7 @@ class TestJob(SystemJob):
                 traceback = self._prepare_traceback(x)[:-1]
             else:
                 status, error_msg, traceback = self._prepare_error(x)
-        except Exception as x:
+        except BaseException as x:
             status, error_msg, traceback = self._prepare_error(x)
         return (status, error_msg, traceback, set())
 
