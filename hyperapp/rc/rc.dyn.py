@@ -117,7 +117,7 @@ def _run(rc_job_result_creg, pool, job_cache, target_set, filter, options):
         result = rc_job_result_creg.animate(result_piece)
         if not is_cached:
             job_cache.put(target, job, result_piece)
-        rc_log.info("%s: %s%s", target.name, result.status.name, ' (cached)' if is_cached else '')
+        rc_log.info("%s: %s%s", target.name, result.desc, ' (cached)' if is_cached else '')
         if result.status == JobStatus.failed:
             failures[target] = result
             if options.fail_fast:

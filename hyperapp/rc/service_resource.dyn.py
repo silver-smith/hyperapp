@@ -24,6 +24,10 @@ class ServiceReq(Requirement):
         return hash(('service_req', self._service_name))
 
     @property
+    def desc(self):
+        return f"{self._service_name} service"
+
+    @property
     def piece(self):
         return htypes.service_resource.service_req(self._service_name)
 

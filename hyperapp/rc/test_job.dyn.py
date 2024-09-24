@@ -101,6 +101,11 @@ class IncompleteTestResult(TestResultBase):
     def __init__(self, used_imports, requirements, error, traceback):
         super().__init__(JobStatus.incomplete, used_imports, requirements, error, traceback)
 
+    @property
+    def desc(self):
+        reqs = ', '.join(r.desc for r in self._requirements if r.desc)
+        return super().desc + f", needs {reqs}"
+
     def update_targets(self, my_target, target_set):
         self._update_tested_imports(target_set.factory)
         req_to_target = self._resolve_requirements(target_set.factory)

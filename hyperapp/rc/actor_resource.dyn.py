@@ -42,6 +42,10 @@ class ActorReq(Requirement):
             t=pyobj_creg.actor_to_ref(self._t),
             )
 
+    @property
+    def desc(self):
+        return f"{self._service_name}:{self._t.full_name} actor"
+
     def get_target(self, target_factory):
         return target_factory.config_item_complete(self._service_name, self._type_name)
 

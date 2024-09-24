@@ -2,6 +2,10 @@
 class Requirement:
 
     @property
+    def desc(self):
+        return None
+
+    @property
     def is_test_requirement(self):
         return False
 

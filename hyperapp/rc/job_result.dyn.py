@@ -5,3 +5,7 @@ class JobResult:
         self.status = status
         self.error = error
         self.traceback = traceback
+
+    @property
+    def desc(self):
+        return self.status.name
