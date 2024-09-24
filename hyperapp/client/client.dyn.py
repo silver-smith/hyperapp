@@ -103,26 +103,27 @@ def make_default_layout(visualizer, lcs):
         )
 
 
-def _parse_args(hyperapp_dir, sys_argv):
+def _parse_args(sys_argv):
     parser = argparse.ArgumentParser(description='Hyperapp client')
     parser.add_argument('--clean', '-c', action='store_true', help="Do not load stored layout state")
     parser.add_argument('--lcs-storage-path', type=Path, default=hyperapp_dir / default_lcs_storage_path, help="Path to lcs storage")
     parser.add_argument('--layout-path', type=Path, default=default_layout_path, help="Path to layout")
-    return parser.parse_args()
+    parser.add_argument('--test-init', action='store_true', help="Do not enter main loop, exit right after initing. Used for testing")
+    return parser.parse_args(sys_argv)
 
 
 @mark.service2
 def client_main(
-        hyperapp_dir,
         endpoint_registry,
         generate_rsa_identity,
         rpc_endpoint,
         file_bundle,
         lcs_resource_storage_factory,
         visualizer,
+        controller_running,
         sys_argv,
         ):
-    args = _parse_args(hyperapp_dir, sys_argv)
+    args = _parse_args(sys_argv)
 
     register_reconstructors()
 
@@ -144,5 +145,6 @@ def client_main(
     default_layout = make_default_layout(visualizer, lcs)
     layout_bundle = file_bundle(args.layout_path)
 
-    with Controller.running(layout_bundle, default_layout, ctx, show=True, load_state=args.load_state) as ctl:
-        ctl.run(app, event_loop)
+    with controller_running(layout_bundle, default_layout, ctx, show=True, load_state=not args.clean) as ctl:
+        if not args.test_init:
+            ctl.run(app, event_loop)
