@@ -174,6 +174,7 @@ class ActorTemplate:
             function=pyobj_creg.actor_to_ref(self._fn),
             service_params=tuple(self._service_params),
             )
+
     @property
     def key(self):
         return self.t
