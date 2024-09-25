@@ -1,5 +1,6 @@
 from . import htypes
 from .services import (
+    mosaic,
     pyobj_creg,
     )
 from .code.rc_constructor import ModuleCtr
@@ -52,13 +53,22 @@ class FeedCtr(ModuleCtr):
         target_set.update_deps_for(resource_tgt)
 
     def make_component(self, types, python_module, name_to_res=None):
-        feed = self._make_feed()
+        feed_type = self._make_feed_type()
+        template = htypes.feed.feed_template(
+            t=pyobj_creg.actor_to_ref(self._t),
+            feed_type=mosaic.put(feed_type),
+            )
         if name_to_res is not None:
-            name_to_res[self._component_name] = feed
-        return feed
+            name_to_res[f'{self._type_name}.feed-type'] = feed_type
+            name_to_res[self._component_name] = template
+        return template
 
     def get_component(self, name_to_res):
         return name_to_res[self._component_name]
+
+    @property
+    def _component_name(self):
+        return f'{self._type_name}.feed-template'
 
     @property
     def _type_name(self):
@@ -69,25 +79,17 @@ class ListFeedCtr(FeedCtr):
 
     _constructor_t = htypes.feed.list_feed_ctr
 
-    def _make_feed(self):
-        return htypes.feed.list_feed(
+    def _make_feed_type(self):
+        return htypes.feed.list_feed_type(
             element_t=pyobj_creg.actor_to_ref(self._element_t),
             )
-
-    @property
-    def _component_name(self):
-        return f'{self._type_name}.list_feed'
 
 
 class IndexTreeFeedCtr(FeedCtr):
 
     _constructor_t = htypes.feed.index_tree_feed_ctr
 
-    def _make_feed(self):
-        return htypes.feed.index_tree_feed(
+    def _make_feed_type(self):
+        return htypes.feed.index_tree_feed_type(
             element_t=pyobj_creg.actor_to_ref(self._element_t),
             )
-
-    @property
-    def _component_name(self):
-        return f'{self._type_name}.index_tree_feed'

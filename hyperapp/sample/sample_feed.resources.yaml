@@ -4,8 +4,11 @@ import:
 - common.list_diff:list_diff.module
 - common.tree_diff:tree_diff.module
 - legacy_type.builtin:python_module
-- legacy_type.feed:index_tree_feed
-- legacy_type.feed:list_feed
+- legacy_type.feed:feed_template
+- legacy_type.feed:index_tree_feed_type
+- legacy_type.feed:list_feed_type
+- legacy_type.sample_feed:sample_list_feed
+- legacy_type.sample_feed:sample_tree_feed
 - legacy_type.sample_list:item
 - legacy_type.sample_tree:item
 definitions:
@@ -19,11 +22,21 @@ definitions:
         code.tree_diff: common.tree_diff:tree_diff.module
         htypes.sample_list.item: legacy_type.sample_list:item
         htypes.sample_tree.item: legacy_type.sample_tree:item
-  sample_feed_sample_list_feed.list_feed:
-    type: legacy_type.feed:list_feed
+  sample_feed_sample_list_feed.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      t: legacy_type.sample_feed:sample_list_feed
+      feed_type: sample_feed_sample_list_feed.feed-type
+  sample_feed_sample_list_feed.feed-type:
+    type: legacy_type.feed:list_feed_type
     value:
       element_t: legacy_type.sample_list:item
-  sample_feed_sample_tree_feed.index_tree_feed:
-    type: legacy_type.feed:index_tree_feed
+  sample_feed_sample_tree_feed.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      t: legacy_type.sample_feed:sample_tree_feed
+      feed_type: sample_feed_sample_tree_feed.feed-type
+  sample_feed_sample_tree_feed.feed-type:
+    type: legacy_type.feed:index_tree_feed_type
     value:
       element_t: legacy_type.sample_tree:item

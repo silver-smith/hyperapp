@@ -6,8 +6,8 @@ import:
 - common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.feed:index_tree_feed
-- legacy_type.feed:list_feed
+- legacy_type.feed:index_tree_feed_type
+- legacy_type.feed:list_feed_type
 - legacy_type.system:actor_template
 - legacy_type.system:item_dict_config_ctl
 - legacy_type.system:service_template
@@ -19,8 +19,8 @@ definitions:
       file_name: feed.dyn.py
       import_list:
         code.mark: common.mark:mark.module
-        htypes.feed.index_tree_feed: legacy_type.feed:index_tree_feed
-        htypes.feed.list_feed: legacy_type.feed:list_feed
+        htypes.feed.index_tree_feed_type: legacy_type.feed:index_tree_feed_type
+        htypes.feed.list_feed_type: legacy_type.feed:list_feed_type
         services.deduce_t: builtins:deduce_t.service
         services.pyobj_creg: builtins:pyobj_creg.service
   feed_factory:
@@ -39,16 +39,16 @@ definitions:
       service_params:
       - feed_creg
       want_config: true
-  feed_index_tree_feed.actor-template:
+  feed_index_tree_feed_type.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.feed:index_tree_feed
+      t: legacy_type.feed:index_tree_feed_type
       function: index_tree_feed_from_piece
       service_params: []
-  feed_list_feed.actor-template:
+  feed_list_feed_type.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.feed:list_feed
+      t: legacy_type.feed:list_feed_type
       function: list_feed_from_piece
       service_params: []
   index_tree_feed_from_piece:

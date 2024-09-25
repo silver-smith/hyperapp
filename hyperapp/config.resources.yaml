@@ -96,8 +96,10 @@ import:
 - rpc.rpc_endpoint:rpc_request_futures.service
 - rpc.rpc_endpoint:rpc_response.actor-template
 - rpc.rpc_endpoint:rpc_target_creg.service
-- sample.sample_list:sample_list_feed_sample_list.list_feed
-- sample.sample_tree:sample_tree_feed_sample_tree.index_tree_feed
+- sample.sample_feed:sample_feed_sample_list_feed.feed-template
+- sample.sample_feed:sample_feed_sample_tree_feed.feed-template
+- sample.sample_list:sample_list_feed_sample_list.feed-template
+- sample.sample_tree:sample_tree_feed_sample_tree.feed-template
 - subprocess.subprocess:subprocess_running.service
 - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
 - subprocess.subprocess_rpc_server_main:rpc_server_main.service
@@ -119,10 +121,12 @@ import:
 - transport.transport:transport.service
 - ui.command_config_ctl:command_config_ctl.actor-template
 - ui.controller:controller_running.service
+- ui.controller:layout_view.feed-template
 - ui.feed:feed_factory.service
-- ui.feed:feed_index_tree_feed.actor-template
-- ui.feed:feed_list_feed.actor-template
+- ui.feed:feed_index_tree_feed_type.actor-template
+- ui.feed:feed_list_feed_type.actor-template
 - ui.feed_creg:feed_creg.service
+- ui.feed_type_template:feed_feed_template.actor-template
 - ui.model_command_impl_creg:model_command_impl_creg.service
 - ui.navigator:navigator_view.actor-template
 - ui.navigator:navigator_view_go_back.ui-command
@@ -157,13 +161,20 @@ import:
 - ui.visualizer:visualizer.service
 - ui.visualizer:visualizer_reg.service
 definitions:
+  cfg_item_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.feed_type_template:feed_feed_template.actor-template
   config:
     type: legacy_type.system:system_config
     value:
       services:
+        cfg_item_creg: cfg_item_creg
         config_ctl_creg: config_ctl_creg
         ctr_from_template_creg: ctr_from_template_creg
         feed_creg: feed_creg
+        feed_factory: feed_factory
         marker_registry: marker_registry
         model_view_creg: model_view_creg
         parcel_registry: parcel_registry
@@ -197,8 +208,17 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.feed:feed_index_tree_feed.actor-template
-      - ui.feed:feed_list_feed.actor-template
+      - ui.feed:feed_index_tree_feed_type.actor-template
+      - ui.feed:feed_list_feed_type.actor-template
+  feed_factory:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - sample.sample_feed:sample_feed_sample_list_feed.feed-template
+      - sample.sample_feed:sample_feed_sample_tree_feed.feed-template
+      - sample.sample_list:sample_list_feed_sample_list.feed-template
+      - sample.sample_tree:sample_tree_feed_sample_tree.feed-template
+      - ui.controller:layout_view.feed-template
   marker_registry:
     type: legacy_type.system:item_list_config
     value:

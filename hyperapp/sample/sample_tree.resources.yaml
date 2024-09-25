@@ -3,7 +3,9 @@
 import:
 - common.tree_diff:tree_diff.module
 - legacy_type.builtin:python_module
-- legacy_type.feed:index_tree_feed
+- legacy_type.feed:feed_template
+- legacy_type.feed:index_tree_feed_type
+- legacy_type.sample_tree:feed_sample_tree
 - legacy_type.sample_tree:item
 definitions:
   sample_tree.module:
@@ -14,7 +16,12 @@ definitions:
       import_list:
         code.tree_diff: common.tree_diff:tree_diff.module
         htypes.sample_tree.item: legacy_type.sample_tree:item
-  sample_tree_feed_sample_tree.index_tree_feed:
-    type: legacy_type.feed:index_tree_feed
+  sample_tree_feed_sample_tree.feed-template:
+    type: legacy_type.feed:feed_template
+    value:
+      t: legacy_type.sample_tree:feed_sample_tree
+      feed_type: sample_tree_feed_sample_tree.feed-type
+  sample_tree_feed_sample_tree.feed-type:
+    type: legacy_type.feed:index_tree_feed_type
     value:
       element_t: legacy_type.sample_tree:item

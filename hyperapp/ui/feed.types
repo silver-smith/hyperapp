@@ -9,8 +9,13 @@ index_tree_feed_ctr = record:
   element_t: ref
 
 
-list_feed = record:
+feed_template = record:
+  t: ref
+  feed_type: ref
+
+
+list_feed_type = record:
   element_t: ref
 
-index_tree_feed = record:
+index_tree_feed_type = record:
   element_t: ref

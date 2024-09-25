@@ -1,12 +1,14 @@
 import:
+- builtins:mosaic.service
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.feed:feed_template
 - legacy_type.feed:index_tree_feed_ctr
+- legacy_type.feed:index_tree_feed_type
 - legacy_type.feed:list_feed_ctr
+- legacy_type.feed:list_feed_type
 - legacy_type.system:actor_template
-- legacy_type.feed:index_tree_feed
-- legacy_type.feed:list_feed
 - rc.rc_constructor:rc_constructor.module
 
 definitions:
@@ -17,10 +19,12 @@ definitions:
       module_name: feed_ctr
       file_name: feed_ctr.dyn.py
       import_list:
+        htypes.feed.feed_template: legacy_type.feed:feed_template
         htypes.feed.list_feed_ctr: legacy_type.feed:list_feed_ctr
         htypes.feed.index_tree_feed_ctr: legacy_type.feed:index_tree_feed_ctr
-        htypes.feed.index_tree_feed: legacy_type.feed:index_tree_feed
-        htypes.feed.list_feed: legacy_type.feed:list_feed
+        htypes.feed.index_tree_feed_type: legacy_type.feed:index_tree_feed_type
+        htypes.feed.list_feed_type: legacy_type.feed:list_feed_type
+        services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         code.rc_constructor: rc.rc_constructor:rc_constructor.module
 

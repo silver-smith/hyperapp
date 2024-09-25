@@ -11,10 +11,10 @@ from .tested.code import feed as feed_module
 def feed_factory_config():
     element_t = pyobj_creg.actor_to_piece(htypes.feed_tests.sample_item)
     return {
-        htypes.feed_tests.sample_list_feed: htypes.feed.list_feed(
+        htypes.feed_tests.sample_list_feed: htypes.feed.list_feed_type(
             element_t=mosaic.put(element_t),
             ),
-        htypes.feed_tests.sample_index_tree_feed: htypes.feed.index_tree_feed(
+        htypes.feed_tests.sample_index_tree_feed: htypes.feed.index_tree_feed_type(
             element_t=mosaic.put(element_t),
             ),
         }
