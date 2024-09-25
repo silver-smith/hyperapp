@@ -12,15 +12,13 @@ from .code.config_item_resource import ConfigItemResource
 class ActorReq(Requirement):
 
     @classmethod
-    def from_piece(cls, piece, cfg_item_creg):
+    def from_piece(cls, piece):
         return cls(
-            cfg_item_creg=cfg_item_creg,
             service_name=piece.service_name,
             t=pyobj_creg.invite(piece.t),
             )
 
-    def __init__(self, cfg_item_creg, service_name, t):
-        self._cfg_item_creg = cfg_item_creg
+    def __init__(self, service_name, t):
         self._service_name = service_name
         self._t = t
 
@@ -53,7 +51,6 @@ class ActorReq(Requirement):
         resource_tgt = target.provider_resource_tgt
         template_piece = resource_tgt.get_resource(target.constructor)
         return ConfigItemResource(
-            cfg_item_creg=self._cfg_item_creg,
             service_name=self._service_name,
             template_ref=mosaic.put(template_piece),
             )

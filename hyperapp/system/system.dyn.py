@@ -233,12 +233,7 @@ class System:
         config_ctl_creg_config = self._make_config_ctl_creg_config()
         self._config_ctl_creg = code_registry_ctr2('config-ctl', config_ctl_creg_config)
         # cfg_item_creg is used by ItemDictConfigCtl.
-        cfg_item_creg_config = {
-            htypes.system.service_template: ServiceTemplate.from_piece,
-            htypes.system.finalizer_gen_service_template: FinalizerGenServiceTemplate.from_piece,
-            htypes.system.actor_template: ActorTemplate.from_piece,
-            }
-        self._cfg_item_creg = cached_code_registry_ctr('cfg-item', cfg_item_creg_config)
+        self._cfg_item_creg = cached_code_registry_ctr('cfg-item', self._make_cfg_item_creg_config())
         config_ctl_creg_config[htypes.system.item_dict_config_ctl] = partial(ItemDictConfigCtl.from_piece, cfg_item_creg=self._cfg_item_creg)
         item_dict_config_ctl = ItemDictConfigCtl(self._cfg_item_creg)
         self._config_ctl = {
@@ -254,6 +249,13 @@ class System:
 
     def _make_config_ctl_creg_config(self):
         return {}
+
+    def _make_cfg_item_creg_config(self):
+        return {
+            htypes.system.service_template: ServiceTemplate.from_piece,
+            htypes.system.finalizer_gen_service_template: FinalizerGenServiceTemplate.from_piece,
+            htypes.system.actor_template: ActorTemplate.from_piece,
+            }
 
     @property
     def service_names(self):

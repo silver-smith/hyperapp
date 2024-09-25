@@ -7,12 +7,11 @@ from .code.config_item_resource import ConfigItemResource
 class ServiceReq(Requirement):
 
     @classmethod
-    def from_piece(cls, piece, cfg_item_creg):
-        return cls(piece.service_name, cfg_item_creg)
+    def from_piece(cls, piece):
+        return cls(piece.service_name)
 
-    def __init__(self, service_name, cfg_item_creg):
+    def __init__(self, service_name):
         self._service_name = service_name
-        self._cfg_item_creg = cfg_item_creg
 
     def __str__(self):
         return f"ServiceReq(service_name={self._service_name})"
@@ -38,7 +37,6 @@ class ServiceReq(Requirement):
         resource_tgt = target.provider_resource_tgt
         template_piece = resource_tgt.get_resource(target.constructor)
         return ConfigItemResource(
-            cfg_item_creg=self._cfg_item_creg,
             service_name='system',
             template_ref=mosaic.put(template_piece),
             )

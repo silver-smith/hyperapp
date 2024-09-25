@@ -212,6 +212,9 @@ class SystemProbe(System):
     def _make_config_ctl_creg_config(self):
         return ConfigProbe('config_ctl_creg', {})
 
+    def _make_cfg_item_creg_config(self):
+        return ConfigProbe('cfg_item_creg', super()._make_cfg_item_creg_config())
+
     def add_item_fixtures(self, service_name, fixture_list):
         self._config_fixtures[service_name] += fixture_list
 

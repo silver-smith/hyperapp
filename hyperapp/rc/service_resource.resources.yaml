@@ -37,5 +37,4 @@ definitions:
     value:
       t: legacy_type.service_resource:service_req
       function: ServiceReq.from_piece
-      service_params:
-      - cfg_item_creg
+      service_params: []

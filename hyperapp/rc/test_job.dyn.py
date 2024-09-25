@@ -171,12 +171,12 @@ class TestJob(SystemJob):
             status = JobStatus.incomplete
             error_msg = f"{type(x).__name__}: {x}"
             traceback = []
-            req_set = {ServiceReq(x.service_name, self._cfg_item_creg)}
+            req_set = {ServiceReq(x.service_name)}
         except ConfigItemRequiredError as x:
             status = JobStatus.incomplete
             error_msg = f"{type(x).__name__}: {x}"
             traceback = []
-            req_set = {ActorReq(self._cfg_item_creg, x.service_name, x.key)}
+            req_set = {ActorReq(x.service_name, x.key)}
         else:
             ctr_collector = system.resolve_service('ctr_collector')
             ctr_collector.ignore_module(module_piece)
@@ -241,11 +241,11 @@ class TestJob(SystemJob):
             status = JobStatus.ok
             error_msg = traceback = None
         except UnknownServiceError as x:
-            req = ServiceReq(x.service_name, self._cfg_item_creg)
+            req = ServiceReq(x.service_name)
             error = f"{type(x).__name__}: {x}"
             return (JobStatus.incomplete, error, [], {req})
         except ConfigItemRequiredError as x:
-            req = ActorReq(self._cfg_item_creg, x.service_name, x.key)
+            req = ActorReq(x.service_name, x.key)
             error = f"{type(x).__name__}: {x}"
             return (JobStatus.incomplete, error, [], {req})
         except IncompleteImportedObjectError as x:

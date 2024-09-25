@@ -39,5 +39,4 @@ definitions:
     value:
       t: legacy_type.actor_resource:actor_req
       function: ActorReq.from_piece
-      service_params:
-      - cfg_item_creg
+      service_params: []

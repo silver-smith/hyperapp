@@ -8,11 +8,10 @@ from .code.rc_resource import Resource
 class ConfigItemResource(Resource):
 
     @classmethod
-    def from_piece(cls, piece, cfg_item_creg):
-        return cls(cfg_item_creg, piece.service_name, piece.config_item)
+    def from_piece(cls, piece):
+        return cls(piece.service_name, piece.config_item)
 
-    def __init__(self, cfg_item_creg, service_name, template_ref):
-        self._cfg_item_creg = cfg_item_creg
+    def __init__(self, service_name, template_ref):
         self._service_name = service_name
         self._template_ref = template_ref
 
@@ -32,5 +31,8 @@ class ConfigItemResource(Resource):
         return self._service_name == 'system'
 
     def configure_system(self, system):
-        template = self._cfg_item_creg.invite(self._template_ref)
+        # Should use cfg_item_creg from system probe
+        # so that missing actors from config probe can be caught.
+        cfg_item_creg = system.resolve_service('cfg_item_creg')
+        template = cfg_item_creg.invite(self._template_ref)
         system.update_config(self._service_name, {template.key: template})

@@ -35,5 +35,4 @@ definitions:
     value:
       t: legacy_type.config_item_resource:config_item_resource
       function: ConfigItemResource.from_piece
-      service_params:
-      - cfg_item_creg
+      service_params: []
