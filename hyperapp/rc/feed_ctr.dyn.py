@@ -44,6 +44,8 @@ class FeedCtr(ModuleCtr):
         ready_tgt.set_provider(resource_tgt, target_set)
         resolved_tgt = target_set.factory.config_item_resolved('feed_factory', self._type_name)
         resolved_tgt.resolve(self)
+        # Should be created to be added to config resource.
+        _ = target_set.factory.config_item_complete('feed_factory', self._type_name)
         resource_tgt.add_cfg_item_target(resolved_tgt)
         target_set.update_deps_for(ready_tgt)
         target_set.update_deps_for(resolved_tgt)
