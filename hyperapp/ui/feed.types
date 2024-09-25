@@ -1,0 +1,16 @@
+list_feed_ctr = record:
+  module_name: string
+  t: ref
+  element_t: ref
+
+index_tree_feed_ctr = record:
+  module_name: string
+  t: ref
+  element_t: ref
+
+
+list_feed = record:
+  element_t: ref
+
+index_tree_feed = record:
+  element_t: ref

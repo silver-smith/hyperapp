@@ -26,8 +26,8 @@ import:
 - rc.command_marker:ui_model_command.marker-template
 - rc.config_item_marker:config_fixture.marker-template
 - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
-- rc.feed_ctr:rc_constructors_list_feed.actor-template
-- rc.feed_ctr:rc_constructors_index_tree_feed.actor-template
+- rc.feed_ctr:feed_list_feed_ctr.actor-template
+- rc.feed_ctr:feed_index_tree_feed_ctr.actor-template
 - rc.import_job:import_job_failed_result.actor-template
 - rc.import_job:import_job_incomplete_result.actor-template
 - rc.import_job:import_job_job.actor-template
@@ -235,8 +235,8 @@ definitions:
       - rc.command_ctr:command_resource_global_model_command_template_ctr.actor-template
       - rc.command_ctr:command_resource_model_command_template_ctr.actor-template
       - rc.command_ctr:command_resource_ui_command_template_ctr.actor-template
-      - rc.feed_ctr:rc_constructors_list_feed.actor-template
-      - rc.feed_ctr:rc_constructors_index_tree_feed.actor-template
+      - rc.feed_ctr:feed_list_feed_ctr.actor-template
+      - rc.feed_ctr:feed_index_tree_feed_ctr.actor-template
       - rc.fixture_ctr:fixture_resource_fixture_ctr.actor-template
       - rc.fixture_ctr:fixture_resource_config_fixture_ctr.actor-template
       - rc.model_ctr:rc_constructors_model.actor-template

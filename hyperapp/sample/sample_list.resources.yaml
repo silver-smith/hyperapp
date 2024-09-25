@@ -3,8 +3,8 @@
 import:
 - common.list_diff:list_diff.module
 - legacy_type.builtin:python_module
+- legacy_type.feed:list_feed
 - legacy_type.sample_list:item
-- legacy_type.ui:list_feed
 definitions:
   sample_list.module:
     type: legacy_type.builtin:python_module
@@ -15,6 +15,6 @@ definitions:
         code.list_diff: common.list_diff:list_diff.module
         htypes.sample_list.item: legacy_type.sample_list:item
   sample_list_feed_sample_list.list_feed:
-    type: legacy_type.ui:list_feed
+    type: legacy_type.feed:list_feed
     value:
       element_t: legacy_type.sample_list:item

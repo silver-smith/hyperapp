@@ -37,12 +37,12 @@ class IndexTreeFeed(Feed):
     pass
 
 
-@mark.actor.feed_creg(htypes.ui.list_feed)
+@mark.actor.feed_creg(htypes.feed.list_feed)
 def list_feed_from_piece(piece):
     return ListFeed.from_piece(piece)
 
 
-@mark.actor.feed_creg(htypes.ui.index_tree_feed)
+@mark.actor.feed_creg(htypes.feed.index_tree_feed)
 def index_tree_feed_from_piece(piece):
     return IndexTreeFeed.from_piece(piece)
 

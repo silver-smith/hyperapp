@@ -26,8 +26,8 @@ import:
 - rc.config_item_marker:config_fixture.marker-template
 - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
 - rc.ctr_collector:ctr_collector.service
-- rc.feed_ctr:rc_constructors_index_tree_feed.actor-template
-- rc.feed_ctr:rc_constructors_list_feed.actor-template
+- rc.feed_ctr:feed_index_tree_feed_ctr.actor-template
+- rc.feed_ctr:feed_list_feed_ctr.actor-template
 - rc.fixture_ctr:fixture_resource_config_fixture_ctr.actor-template
 - rc.fixture_ctr:fixture_resource_fixture_ctr.actor-template
 - rc.fixture_marker:fixture.marker-template
@@ -96,6 +96,8 @@ import:
 - rpc.rpc_endpoint:rpc_request_futures.service
 - rpc.rpc_endpoint:rpc_response.actor-template
 - rpc.rpc_endpoint:rpc_target_creg.service
+- sample.sample_list:sample_list_feed_sample_list.list_feed
+- sample.sample_tree:sample_tree_feed_sample_tree.index_tree_feed
 - subprocess.subprocess:subprocess_running.service
 - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
 - subprocess.subprocess_rpc_server_main:rpc_server_main.service
@@ -118,8 +120,8 @@ import:
 - ui.command_config_ctl:command_config_ctl.actor-template
 - ui.controller:controller_running.service
 - ui.feed:feed_factory.service
-- ui.feed:ui_index_tree_feed.actor-template
-- ui.feed:ui_list_feed.actor-template
+- ui.feed:feed_index_tree_feed.actor-template
+- ui.feed:feed_list_feed.actor-template
 - ui.feed_creg:feed_creg.service
 - ui.model_command_impl_creg:model_command_impl_creg.service
 - ui.navigator:navigator_view.actor-template
@@ -195,8 +197,8 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.feed:ui_index_tree_feed.actor-template
-      - ui.feed:ui_list_feed.actor-template
+      - ui.feed:feed_index_tree_feed.actor-template
+      - ui.feed:feed_list_feed.actor-template
   marker_registry:
     type: legacy_type.system:item_list_config
     value:
@@ -238,8 +240,8 @@ definitions:
       - rc.command_ctr:command_resource_global_model_command_template_ctr.actor-template
       - rc.command_ctr:command_resource_model_command_template_ctr.actor-template
       - rc.command_ctr:command_resource_ui_command_template_ctr.actor-template
-      - rc.feed_ctr:rc_constructors_index_tree_feed.actor-template
-      - rc.feed_ctr:rc_constructors_list_feed.actor-template
+      - rc.feed_ctr:feed_index_tree_feed_ctr.actor-template
+      - rc.feed_ctr:feed_list_feed_ctr.actor-template
       - rc.fixture_ctr:fixture_resource_config_fixture_ctr.actor-template
       - rc.fixture_ctr:fixture_resource_fixture_ctr.actor-template
       - rc.model_ctr:rc_constructors_model.actor-template

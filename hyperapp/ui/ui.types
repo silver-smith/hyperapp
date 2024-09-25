@@ -52,12 +52,6 @@ model_view_layout_d = record
 
 feed_d = record
 
-list_feed = record:
-  element_t: ref
-
-index_tree_feed = record:
-  element_t: ref
-
 
 model = record:
   ui_t: ref

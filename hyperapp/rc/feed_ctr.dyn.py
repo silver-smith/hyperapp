@@ -67,10 +67,10 @@ class FeedCtr(ModuleCtr):
 
 class ListFeedCtr(FeedCtr):
 
-    _constructor_t = htypes.rc_constructors.list_feed
+    _constructor_t = htypes.feed.list_feed_ctr
 
     def _make_feed(self):
-        return htypes.ui.list_feed(
+        return htypes.feed.list_feed(
             element_t=pyobj_creg.actor_to_ref(self._element_t),
             )
 
@@ -81,10 +81,10 @@ class ListFeedCtr(FeedCtr):
 
 class IndexTreeFeedCtr(FeedCtr):
 
-    _constructor_t = htypes.rc_constructors.index_tree_feed
+    _constructor_t = htypes.feed.index_tree_feed_ctr
 
     def _make_feed(self):
-        return htypes.ui.index_tree_feed(
+        return htypes.feed.index_tree_feed(
             element_t=pyobj_creg.actor_to_ref(self._element_t),
             )
 

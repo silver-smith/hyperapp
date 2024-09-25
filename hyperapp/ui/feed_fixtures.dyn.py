@@ -70,7 +70,7 @@ class FeedDiscoverer:
                 ListDiff.Remove,
                 ListDiff.Modify,
                 )):
-            if not isinstance(self.ctr, htypes.rc_constructors.list_feed):
+            if not isinstance(self.ctr, htypes.feed.list_feed_ctr):
                 raise RuntimeError(f"Attempt to send different diff types to a feed: {self.ctr} and list diff ({diff})")
         elif isinstance(diff, (
                 TreeDiff.Insert,
@@ -93,7 +93,7 @@ class FeedDiscoverer:
                 TreeDiff.Remove,
                 TreeDiff.Modify,
                 )):
-            if not isinstance(self.ctr, htypes.rc_constructors.index_tree_feed):
+            if not isinstance(self.ctr, htypes.feed.index_tree_feed_ctr):
                 raise RuntimeError(f"Attempt to send different diff types to a feed: {self.ctr} and tree diff ({diff})")
         else:
             raise NotImplementedError(f"Not implemented: feed detection for diff: {diff}")

@@ -2,11 +2,11 @@ import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.rc_constructors:index_tree_feed
-- legacy_type.rc_constructors:list_feed
+- legacy_type.feed:index_tree_feed_ctr
+- legacy_type.feed:list_feed_ctr
 - legacy_type.system:actor_template
-- legacy_type.ui:index_tree_feed
-- legacy_type.ui:list_feed
+- legacy_type.feed:index_tree_feed
+- legacy_type.feed:list_feed
 - rc.rc_constructor:rc_constructor.module
 
 definitions:
@@ -17,10 +17,10 @@ definitions:
       module_name: feed_ctr
       file_name: feed_ctr.dyn.py
       import_list:
-        htypes.rc_constructors.list_feed: legacy_type.rc_constructors:list_feed
-        htypes.rc_constructors.index_tree_feed: legacy_type.rc_constructors:index_tree_feed
-        htypes.ui.index_tree_feed: legacy_type.ui:index_tree_feed
-        htypes.ui.list_feed: legacy_type.ui:list_feed
+        htypes.feed.list_feed_ctr: legacy_type.feed:list_feed_ctr
+        htypes.feed.index_tree_feed_ctr: legacy_type.feed:index_tree_feed_ctr
+        htypes.feed.index_tree_feed: legacy_type.feed:index_tree_feed
+        htypes.feed.list_feed: legacy_type.feed:list_feed
         services.pyobj_creg: builtins:pyobj_creg.service
         code.rc_constructor: rc.rc_constructor:rc_constructor.module
 
@@ -36,10 +36,10 @@ definitions:
       object: ListFeedCtr
       attr_name: from_piece
 
-  rc_constructors_list_feed.actor-template:
+  feed_list_feed_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.rc_constructors:list_feed
+      t: legacy_type.feed:list_feed_ctr
       function: ListFeedCtr.from_piece
       service_params: []
 
@@ -55,9 +55,9 @@ definitions:
       object: IndexTreeFeedCtr
       attr_name: from_piece
 
-  rc_constructors_index_tree_feed.actor-template:
+  feed_index_tree_feed_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.rc_constructors:index_tree_feed
+      t: legacy_type.feed:index_tree_feed_ctr
       function: IndexTreeFeedCtr.from_piece
       service_params: []

@@ -14,14 +14,3 @@ service_template = record:
 
 model = record:
   attr_name: string
-
-
-list_feed = record:
-  module_name: string
-  t: ref
-  element_t: ref
-
-index_tree_feed = record:
-  module_name: string
-  t: ref
-  element_t: ref

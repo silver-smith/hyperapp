@@ -3,8 +3,8 @@
 import:
 - common.tree_diff:tree_diff.module
 - legacy_type.builtin:python_module
+- legacy_type.feed:index_tree_feed
 - legacy_type.sample_tree:item
-- legacy_type.ui:index_tree_feed
 definitions:
   sample_tree.module:
     type: legacy_type.builtin:python_module
@@ -15,6 +15,6 @@ definitions:
         code.tree_diff: common.tree_diff:tree_diff.module
         htypes.sample_tree.item: legacy_type.sample_tree:item
   sample_tree_feed_sample_tree.index_tree_feed:
-    type: legacy_type.ui:index_tree_feed
+    type: legacy_type.feed:index_tree_feed
     value:
       element_t: legacy_type.sample_tree:item
