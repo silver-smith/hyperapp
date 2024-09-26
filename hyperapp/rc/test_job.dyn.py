@@ -27,6 +27,7 @@ from .code.system_probe import ConfigItemRequiredError, FixtureProbeTemplate
 from .code.system_job import SystemJob
 
 log  = logging.getLogger(__name__)
+rc_log = logging.getLogger('rc')
 
 
 class TestResultBase(JobResult):
@@ -102,14 +103,21 @@ class IncompleteTestResult(TestResultBase):
         super().__init__(JobStatus.incomplete, used_imports, requirements, error, traceback)
 
     @property
+    def _reqs_desc(self):
+        return ", ".join(r.desc for r in self._requirements if r.desc)
+
+    @property
     def desc(self):
-        reqs = ', '.join(r.desc for r in self._requirements if r.desc)
-        return super().desc + f", needs {reqs}"
+        return super().desc + f", needs {self._reqs_desc}"
 
     def update_targets(self, my_target, target_set):
         self._update_tested_imports(target_set.factory)
         req_to_target = self._resolve_requirements(target_set.factory)
-        target_set.add(my_target.create_next_target(req_to_target))
+        if set(req_to_target) <= my_target.req_set:
+            # No new requirements are discovered.
+            rc_log.error("%s: Invinite loop detected with: %s", my_target.name, self._reqs_desc)
+        else:
+            target_set.add(my_target.create_next_target(req_to_target))
 
 
 class FailedTestResult(JobResult):

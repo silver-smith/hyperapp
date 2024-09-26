@@ -103,6 +103,10 @@ class TestTarget(Target):
     def set_alias_completed(self, req_to_target):
         self._alias.set_completed(req_to_target)
 
+    @property
+    def req_set(self):
+        return set(self._req_to_target)
+
     def create_next_target(self, req_to_target):
         # Do not lose requirements from previous iterations.
         full_req_to_target = {
