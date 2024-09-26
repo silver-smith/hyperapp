@@ -5,8 +5,10 @@ class Resource:
     def is_system_resource(self):
         return False
 
+    # Service resources should be applied second.
+    # Regular resources should be applied last.
     @property
-    def is_config_ctl_creg_item(self):
+    def is_service_resource(self):
         return False
 
     @property

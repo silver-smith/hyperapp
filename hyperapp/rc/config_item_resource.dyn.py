@@ -23,11 +23,11 @@ class ConfigItemResource(Resource):
             )
 
     @property
-    def is_config_ctl_creg_item(self):
-        return self._service_name == 'config_ctl_creg'
+    def is_system_resource(self):
+        return self._service_name in {'config_ctl_creg', 'cfg_item_creg'}
 
     @property
-    def is_system_resource(self):
+    def is_service_resource(self):
         return self._service_name == 'system'
 
     def configure_system(self, system):

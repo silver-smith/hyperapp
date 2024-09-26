@@ -29,7 +29,7 @@ class FixtureProbeResource(Resource):
             )
 
     @property
-    def is_system_resource(self):
+    def is_service_resource(self):
         return True
 
     def configure_system(self, system):
