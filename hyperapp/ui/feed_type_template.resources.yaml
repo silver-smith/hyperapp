@@ -23,8 +23,7 @@ definitions:
     value:
       t: legacy_type.feed:feed_template
       function: FeedTypeTemplate.from_piece
-      service_params:
-      - feed_creg
+      service_params: []
   feed_type_template.module:
     type: legacy_type.builtin:python_module
     value:

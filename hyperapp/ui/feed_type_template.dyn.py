@@ -6,29 +6,32 @@ from .code.mark import mark
 class FeedTypeTemplate:
 
     @classmethod
-    @mark.actor.cfg_item_creg(htypes.feed.feed_template)
-    def from_piece(cls, piece, feed_creg):
+    @mark.actor.cfg_item_creg
+    def from_piece(cls, piece):
         return cls(
-            feed_creg=feed_creg,
             t=pyobj_creg.invite(piece.t),
-            feed_type=feed_creg.invite(piece.feed_type),
+            feed_type_ref=piece.feed_type,
             )
 
-    def __init__(self, feed_creg, t, feed_type):
-        self._feed_creg = feed_creg
+    def __init__(self, t, feed_type_ref):
         self._t = t
-        self._feed_type = feed_type
+        self._feed_type_ref = feed_type_ref
 
     @property
     def piece(self):
         return htypes.feed.feed_template(
             t=pyobj_creg.actor_to_ref(self._t),
-            feed_type=self._feed_creg.actor_to_ref(self._feed_type),
+            feed_type=self._feed_type_ref,
             )
 
     @property
     def key(self):
-        return self.t
+        return self._t
 
     def resolve(self, system, service_name):
-        return self._feed_type
+        # Should resolve it here manually.
+        # If added as dependency to from_piece, it fails resolving
+        # because cfg_item_creg is a system resource and resolved
+        # before regular resources such as feed_creg.
+        feed_creg = system.resolve_service('feed_creg')
+        return feed_creg.invite(self._feed_type_ref)
