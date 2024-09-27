@@ -95,7 +95,9 @@ class ServiceActorMarker:
     def __call__(self, fn_or_t):
         if isinstance(fn_or_t, Type):
             # Type-specialized variant (@mark.actor.my_registry(my_type)).
-            if self._service_name == 'config_ctl_creg':
+            if self._service_name in {'config_ctl_creg', 'cfg_item_creg'}:
+                # These actors have special handling in System.update_config causing referred modules be loaded
+                # before marker are inited by test job. As result, their functions/methods are left unwrapped.
                 raise RuntimeError("Type-specialized decorator for config_ctl_creg actors are not supported")
             return ServiceActorDecorator(self._system, self._ctr_collector, self._module_name, self._service_name, fn_or_t)
         check_not_classmethod(fn_or_t)
