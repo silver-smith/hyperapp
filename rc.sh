@@ -4,7 +4,7 @@ venv=${VENV:-$HOME/venv/hyperapp}
 
 export LOG_CFG="${LOG_CFG:-rc}"
 
-source $venv/bin/activate
+source "$venv/bin/activate"
 
 cd "$( dirname "$0" )"
 
