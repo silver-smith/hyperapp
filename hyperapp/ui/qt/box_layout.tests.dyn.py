@@ -1,13 +1,15 @@
-from PySide6 import QtWidgets
-
 from . import htypes
 from .services import (
     mosaic,
     )
+from .code.mark import mark
 from .code.context import Context
+from .fixtures import qapp_fixtures
 from .tested.code import box_layout
 
-def make_piece():
+
+@mark.fixture
+def piece():
     label_1 = htypes.label.view("Sample label 1")
     label_2 = htypes.label.view("Sample label 2")
     return htypes.box_layout.view(
@@ -27,7 +29,8 @@ def make_piece():
         )
 
 
-def make_state():
+@mark.fixture
+def state():
     label_state = htypes.label.state()
     return htypes.box_layout.state(
         current=0,
@@ -38,16 +41,10 @@ def make_state():
         )
 
 
-def test_box_layout():
+def test_box_layout(qapp, piece, state):
     ctx = Context()
-    piece = make_piece()
-    state = make_state()
-    app = QtWidgets.QApplication()
-    try:
-        view = box_layout.BoxLayoutView.from_piece(piece, ctx)
-        widget = view.construct_widget(state, ctx)
-        assert view.piece
-        state = view.widget_state(widget)
-        assert state
-    finally:
-        app.shutdown()
+    view = box_layout.BoxLayoutView.from_piece(piece, ctx)
+    widget = view.construct_widget(state, ctx)
+    assert view.piece
+    state = view.widget_state(widget)
+    assert state

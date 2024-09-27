@@ -4,13 +4,14 @@ import:
 - builtins:mosaic.service
 - builtins:web.service
 - common.list_diff:list_diff.module
+- common.mark:mark.module
 - legacy_type.box_layout:element
 - legacy_type.box_layout:state
 - legacy_type.box_layout:view
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.system:actor_template
 - ui.view:view.module
-- ui.view_registry:view_creg.service
 definitions:
   BoxLayoutView:
     type: legacy_type.builtin:attribute
@@ -29,10 +30,17 @@ definitions:
       file_name: box_layout.dyn.py
       import_list:
         code.list_diff: common.list_diff:list_diff.module
+        code.mark: common.mark:mark.module
         code.view: ui.view:view.module
         htypes.box_layout.element: legacy_type.box_layout:element
         htypes.box_layout.state: legacy_type.box_layout:state
         htypes.box_layout.view: legacy_type.box_layout:view
         services.mosaic: builtins:mosaic.service
-        services.view_creg: ui.view_registry:view_creg.service
         services.web: builtins:web.service
+  box_layout_view.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.box_layout:view
+      function: BoxLayoutView.from_piece
+      service_params:
+      - view_creg

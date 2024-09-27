@@ -5,11 +5,10 @@ from PySide6 import QtWidgets
 
 from . import htypes
 from .services import (
-    mark,
     mosaic,
-    view_creg,
     web,
     )
+from .code.mark import mark
 from .code.list_diff import ListDiff
 from .code.view import Item, View
 
@@ -21,7 +20,8 @@ class BoxLayoutView(View):
     _Element = namedtuple('_Element', 'view focusable stretch')
 
     @classmethod
-    def from_piece(cls, piece, ctx):
+    @mark.actor.view_creg
+    def from_piece(cls, piece, ctx, view_creg):
         elements = [
             cls._Element(
                 view=view_creg.invite(elt.view, ctx) if elt.view else None,
