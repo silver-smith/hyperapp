@@ -48,7 +48,7 @@ def index_tree_feed_from_piece(piece):
 
 
 @mark.service2
-def feed_factory(config, feed_creg, piece):
+def feed_factory(config, piece):
     piece_t = deduce_t(piece)
     feed_type = config[piece_t]
-    return feed_creg.animate(feed_type)
+    return feed_type

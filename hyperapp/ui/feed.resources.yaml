@@ -36,8 +36,7 @@ definitions:
       function: feed_factory
       free_params:
       - piece
-      service_params:
-      - feed_creg
+      service_params: []
       want_config: true
   feed_index_tree_feed_type.actor-template:
     type: legacy_type.system:actor_template
