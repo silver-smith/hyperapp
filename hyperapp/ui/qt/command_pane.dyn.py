@@ -4,6 +4,7 @@ from functools import partial
 from PySide6 import QtCore, QtWidgets
 
 from . import htypes
+from .code.mark import mark
 from .code.view import Item, View
 
 log = logging.getLogger(__name__)
@@ -20,6 +21,7 @@ class CommandPane(QtWidgets.QWidget):
 class CommandPaneView(View):
 
     @classmethod
+    @mark.actor.view_creg
     def from_piece(cls, piece, ctx):
         return cls()
 

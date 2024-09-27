@@ -135,6 +135,7 @@ import:
 - ui.qt.auto_tabs:auto_tabs_view_close_tab.ui-command
 - ui.qt.auto_tabs:auto_tabs_view_duplicate_tab.ui-command
 - ui.qt.box_layout:box_layout_view.actor-template
+- ui.qt.command_pane:command_pane_view.actor-template
 - ui.qt.fn_index_tree_adapter:tree_adapter_fn_index_tree_adapter.actor-template
 - ui.qt.fn_list_adapter:list_adapter_fn_list_adapter.actor-template
 - ui.qt.label:label_view.actor-template
@@ -415,6 +416,7 @@ definitions:
       - ui.navigator:navigator_view.actor-template
       - ui.qt.auto_tabs:auto_tabs_view.actor-template
       - ui.qt.box_layout:box_layout_view.actor-template
+      - ui.qt.command_pane:command_pane_view.actor-template
       - ui.qt.label:label_view.actor-template
       - ui.qt.menu_bar:menu_bar_view.actor-template
       - ui.qt.tabs:tabs_view.actor-template

@@ -1,21 +1,41 @@
 # Automatically generated file. Do not edit.
 
 import:
+- common.mark:mark.module
+- legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command_groups:pane_1_d
 - legacy_type.command_groups:pane_2_d
 - legacy_type.command_pane:state
 - legacy_type.command_pane:view
+- legacy_type.system:actor_template
 - ui.view:view.module
 definitions:
+  CommandPaneView:
+    type: legacy_type.builtin:attribute
+    value:
+      object: command_pane.module
+      attr_name: CommandPaneView
+  CommandPaneView.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: CommandPaneView
+      attr_name: from_piece
   command_pane.module:
     type: legacy_type.builtin:python_module
     value:
       module_name: command_pane
       file_name: command_pane.dyn.py
       import_list:
+        code.mark: common.mark:mark.module
         code.view: ui.view:view.module
         htypes.command_groups.pane_1_d: legacy_type.command_groups:pane_1_d
         htypes.command_groups.pane_2_d: legacy_type.command_groups:pane_2_d
         htypes.command_pane.state: legacy_type.command_pane:state
         htypes.command_pane.view: legacy_type.command_pane:view
+  command_pane_view.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command_pane:view
+      function: CommandPaneView.from_piece
+      service_params: []
