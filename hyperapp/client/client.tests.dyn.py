@@ -1,3 +1,5 @@
+from PySide6 import QtWidgets
+
 from .tested.code import client
 
 
@@ -8,4 +10,9 @@ def test_client(client_main):
         '--layout-path=/tmp/client-test-layout-path.jaon',
         '--test-init',
         ]
-    client_main(sys_argv)
+    try:
+        client_main(sys_argv)
+    finally:
+        app = QtWidgets.QApplication.instance()
+        if app:
+            app.shutdown()
