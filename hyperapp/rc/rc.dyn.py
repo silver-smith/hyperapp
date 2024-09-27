@@ -131,7 +131,7 @@ def _run(rc_job_result_creg, pool, job_cache, target_set, filter, options):
         cached_job_result_list = _submit_jobs(rc_job_result_creg, options, pool, job_cache, target_set, target_to_job, job_id_to_target, filter)
         cached_count += len(cached_job_result_list)
         if not cached_job_result_list and pool.job_count == 0:
-            rc_log.info("Not all targets are completed, but there are no jobs")
+            rc_log.info("Not all targets are completed, but there are no jobs\n")
             break
         prev_completed = set(target_set.iter_completed())
         for job, result_piece in cached_job_result_list:
