@@ -61,7 +61,7 @@ class CommandTemplateCtr(Constructor):
             uses_state=bool(set(self._ctx_params) & STATE_PARAMS),
             remotable=not set(self._ctx_params) & LOCAL_PARAMS,
             )
-        command = self._ui_command_t(
+        command = self._command_t(
             d=mosaic.put(d_piece),
             properties=properties,
             function=mosaic.put(object),
@@ -140,7 +140,7 @@ class TypedCommandTemplateCtr(CommandTemplateCtr):
 
 class UiCommandTemplateCtr(TypedCommandTemplateCtr):
 
-    _ui_command_t = htypes.ui.ui_command
+    _command_t = htypes.ui.ui_command
     _template_ctr_t = htypes.command_resource.ui_command_template_ctr
     _is_global = False
     _resource_suffix = 'ui-command'
@@ -148,7 +148,7 @@ class UiCommandTemplateCtr(TypedCommandTemplateCtr):
 
 class ModelCommandTemplateCtr(TypedCommandTemplateCtr):
 
-    _ui_command_t = htypes.ui.model_command
+    _command_t = htypes.ui.model_command
     _template_ctr_t = htypes.command_resource.model_command_template_ctr
     _is_global = False
     _resource_suffix = 'model-command'
@@ -156,7 +156,7 @@ class ModelCommandTemplateCtr(TypedCommandTemplateCtr):
 
 class GlobalModelCommandTemplateCtr(UntypedCommandTemplateCtr):
 
-    _ui_command_t = htypes.ui.model_command
+    _command_t = htypes.ui.model_command
     _template_ctr_t = htypes.command_resource.global_model_command_template_ctr
     _is_global = True
     _resource_suffix = 'global-model-command'
