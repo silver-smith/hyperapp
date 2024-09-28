@@ -1,15 +1,17 @@
-#!/bin/bash -xe
+#!/bin/bash -e
 
 venv=${VENV:-$HOME/venv/hyperapp}
 
-. $venv/bin/activate
+export LOG_CFG="${LOG_CFG:-client}"
 
-# export LOG_CFG="${LOG_CFG-client-file}"
+source "$venv/bin/activate"
 
 rm /tmp/client*.log || true
 
-cd $(dirname $0)
+cd "$( dirname "$0" )"
 
-./client.py "$@"
+set -x
+
+time ./boot.py config client_main "$@"
 
 # tail -n500 /tmp/client-info.log
