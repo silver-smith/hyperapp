@@ -11,6 +11,7 @@ log = logging.getLogger('rc.main')
 
 
 module_dir_list = [
+    HYPERAPP_DIR,
     HYPERAPP_DIR / 'common',
     HYPERAPP_DIR / 'resource',
     HYPERAPP_DIR / 'system',
@@ -43,13 +44,16 @@ def main():
         local_types = services.local_types
         pyobj_creg = services.pyobj_creg
 
+        config_file = sys.argv[1]
+        root_service = sys.argv[2]
+
         resource_list_loader(resource_dir_list, resource_registry)
         resource_registry.update_modules(legacy_type_resource_loader({**builtin_types_as_dict(), **local_types}))
-        config = resource_registry['rc.config', 'config']
+        config = resource_registry[config_file, 'config']
         module_res = resource_registry['system.system', 'system.module']
         module = pyobj_creg.animate(module_res)
 
-        module.run_system(config, sys.argv[1], sys.argv[2:])
+        module.run_system(config, root_service, sys.argv[3:])
 
     finally:
         log.info("Stopping.")
