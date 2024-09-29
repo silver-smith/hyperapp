@@ -339,14 +339,12 @@ class System:
         return service(*args, **kw)
 
     def resolve_config(self, service_name):
-        unresolved_config = self._configs.get(service_name, {})
-        config = {}
-        for key, template in unresolved_config.items():
-            try:
-                config[key] = template.resolve(self, service_name)
-            except ServiceDepLoopError:
-                return LazyConfig(self, service_name, unresolved_config)
-        return config
+        ctl = self._config_ctl[service_name]
+        config_template = self._configs.get(service_name, {})
+        try:
+            return ctl.resolve(self, service_name, config_template)
+        except ServiceDepLoopError:
+            return LazyConfig(self, service_name, config_template)
 
     def resolve_service(self, name, requester=None):
         try:
