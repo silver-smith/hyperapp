@@ -122,6 +122,7 @@ import:
 - transport.sync_route_table:route_table.service
 - transport.transport:transport.service
 - ui.command_config_ctl:command_config_ctl.actor-template
+- ui.command_creg:command_creg.service
 - ui.controller:controller_running.service
 - ui.controller:layout_view.feed-template
 - ui.feed:feed_factory.service
@@ -155,6 +156,7 @@ import:
 - ui.qt.window_commands:window_view_quit.ui-command
 - ui.str_adapter:str_adapter_static_str_adapter.actor-template
 - ui.ui_adapter_creg:ui_adapter_creg.service
+- ui.ui_command:command_ui_command.actor-template
 - ui.ui_command:get_view_commands.service
 - ui.ui_command:universal_ui_command_reg.service
 - ui.ui_command:view_ui_command_reg.service
@@ -171,11 +173,17 @@ definitions:
       items:
       - rc.marker_registry:marker_marker_template.actor-template
       - ui.feed_type_template:feed_feed_template.actor-template
+  command_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.ui_command:command_ui_command.actor-template
   config:
     type: legacy_type.system:system_config
     value:
       services:
         cfg_item_creg: cfg_item_creg
+        command_creg: command_creg
         config_ctl_creg: config_ctl_creg
         ctr_from_template_creg: ctr_from_template_creg
         feed_creg: feed_creg
@@ -389,6 +397,7 @@ definitions:
       - transport.rsa_identity:generate_rsa_identity.service
       - transport.sync_route_table:route_table.service
       - transport.transport:transport.service
+      - ui.command_creg:command_creg.service
       - ui.controller:controller_running.service
       - ui.feed:feed_factory.service
       - ui.feed_creg:feed_creg.service

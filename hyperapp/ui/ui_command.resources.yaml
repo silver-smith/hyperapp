@@ -7,6 +7,8 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command:config_ctl
+- legacy_type.command:ui_command
+- legacy_type.system:actor_template
 - legacy_type.system:item_dict_config_ctl
 - legacy_type.system:service_template
 - ui.command:command.module
@@ -16,6 +18,13 @@ definitions:
   command-config_ctl.ctl:
     type: legacy_type.command:config_ctl
     value: {}
+  command_ui_command.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command:ui_command
+      function: ui_command_from_piece
+      service_params:
+      - system
   get_view_commands:
     type: legacy_type.builtin:attribute
     value:
@@ -48,6 +57,11 @@ definitions:
         code.mark: common.mark:mark.module
         services.deduce_t: builtins:deduce_t.service
         services.pyobj_creg: builtins:pyobj_creg.service
+  ui_command_from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ui_command.module
+      attr_name: ui_command_from_piece
   universal_ui_command_reg:
     type: legacy_type.builtin:attribute
     value:

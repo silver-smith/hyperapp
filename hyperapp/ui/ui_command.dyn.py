@@ -1,5 +1,5 @@
 import logging
-from functools import cached_property
+from functools import partial
 
 from .services import (
     deduce_t,
@@ -32,6 +32,21 @@ class BoundUiCommand(BoundCommand):
     @property
     def groups(self):
         return self._groups
+
+
+@mark.actor.command_creg
+def ui_command_from_piece(piece, system):
+    kw = {
+        name: system.resolve_service(name)
+        for name in piece.service_params
+        }
+    fn = pyobj_creg.invite(piece.function)
+    return UnboundUiCommand(
+        d=pyobj_creg.invite(piece.d),
+        fn=partial(fn, **kw),
+        ctx_params=piece.ctx_params,
+        groups=default_command_groups(piece.properties, CommandKind.VIEW),
+        )
 
 
 @mark.service2(ctl=CommandConfigCtl())
