@@ -56,7 +56,7 @@ class CommandTemplateCtr(Constructor):
         assert d_t_piece, (type_module, d_name)  # TODO: Make type if missing.
         d_t = pyobj_creg.animate(d_t_piece)
         d_piece = self._data_to_res(d_t())
-        properties = htypes.command.command_properties(
+        properties = htypes.command.properties(
             is_global=self._is_global,
             uses_state=bool(set(self._ctx_params) & STATE_PARAMS),
             remotable=not set(self._ctx_params) & LOCAL_PARAMS,

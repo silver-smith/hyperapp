@@ -1,13 +1,13 @@
 config_ctl = record
 
-command_properties = record:
+properties = record:
   is_global: bool
   uses_state: bool
   remotable: bool
 
 fn_command = record:
   d: ref
-  properties: command_properties
+  properties: properties
   function: ref
   ctx_params: string list
   service_params: string list

@@ -4,7 +4,7 @@ from .tested.code import command_groups
 
 
 def test_default_command_groups():
-    properties = htypes.command.command_properties(
+    properties = htypes.command.properties(
         is_global=False,
         uses_state=False,
         remotable=False,
