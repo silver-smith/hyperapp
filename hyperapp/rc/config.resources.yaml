@@ -36,10 +36,12 @@ import:
 - rc.import_resource:import_resource_import_resource.actor-template
 - rc.init_targets:ctr_from_template_creg.service
 - rc.fixture_ctr:fixture_resource_config_fixture_ctr.actor-template
-- rc.fixture_ctr:fixture_resource_fixture_ctr.actor-template
+- rc.fixture_ctr:fixture_resource_fixture_obj_ctr.actor-template
+- rc.fixture_ctr:fixture_resource_fixture_probe_ctr.actor-template
 - rc.fixture_marker:fixture.marker-template
-- rc.fixture_probe_resource:fixture_resource_config_fixture_resource.actor-template
-- rc.fixture_probe_resource:fixture_resource_fixture_probe_resource.actor-template
+- rc.fixture_resource:fixture_resource_config_fixture_resource.actor-template
+- rc.fixture_resource:fixture_resource_fixture_obj_resource.actor-template
+- rc.fixture_resource:fixture_resource_fixture_probe_resource.actor-template
 - rc.marker_ctr:marker_marker_template.actor-template
 - rc.marker_registry:marker_marker_template.actor-template
 - rc.marker_registry:marker_registry.service
@@ -237,8 +239,9 @@ definitions:
       - rc.command_ctr:command_resource_ui_command_template_ctr.actor-template
       - rc.feed_ctr:feed_list_feed_ctr.actor-template
       - rc.feed_ctr:feed_index_tree_feed_ctr.actor-template
-      - rc.fixture_ctr:fixture_resource_fixture_ctr.actor-template
       - rc.fixture_ctr:fixture_resource_config_fixture_ctr.actor-template
+      - rc.fixture_ctr:fixture_resource_fixture_obj_ctr.actor-template
+      - rc.fixture_ctr:fixture_resource_fixture_probe_ctr.actor-template
       - rc.model_ctr:rc_constructors_model.actor-template
       - rc.service_ctr:rc_constructors_service.actor-template
       - rc.service_ctr:rc_constructors_service_template.actor-template
@@ -281,8 +284,9 @@ definitions:
       items:
       - rc.actor_probe_resource:actor_resource_actor_probe_resource.actor-template
       - rc.import_resource:import_resource_import_resource.actor-template
-      - rc.fixture_probe_resource:fixture_resource_config_fixture_resource.actor-template
-      - rc.fixture_probe_resource:fixture_resource_fixture_probe_resource.actor-template
+      - rc.fixture_resource:fixture_resource_config_fixture_resource.actor-template
+      - rc.fixture_resource:fixture_resource_fixture_obj_resource.actor-template
+      - rc.fixture_resource:fixture_resource_fixture_probe_resource.actor-template
       - rc.service_probe_resource:service_resource_service_probe_resource.actor-template
       - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
       - rc.test_requirement:test_target_tested_service_resource.actor-template

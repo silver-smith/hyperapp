@@ -35,6 +35,60 @@ class ActorProbeTemplate:
         return pyobj_creg.animate(self._fn)
 
 
+def service_finalize(fn, gen):
+    try:
+        next(gen)
+    except StopIteration:
+        pass
+    else:
+        raise RuntimeError(f"Generator function {fn!r} should have only one 'yield' statement")
+
+
+def resolve_service(system, service_name, fn, service_params, args, kw):
+    try:
+        idx = service_params.index('config')
+    except ValueError:
+        want_config = False
+        config_args = []
+    else:
+        if idx != 0:
+            raise RuntimeError("'config' should be first parameter")
+        service_params = service_params[1:]
+        want_config = True
+        config_args = [system.resolve_config(service_name)]
+    service_args = [
+        system.resolve_service(name)
+        for name in service_params
+        ]
+    service = fn(*config_args, *service_args, *args, **kw)
+    if inspect.isgeneratorfunction(fn):
+        gen = service
+        service = next(gen)
+        system.add_finalizer(service_name, partial(partial(service_finalize, fn), gen))
+    return (want_config, service_params, service)
+
+
+class FixtureObjTemplate:
+
+    def __init__(self, ctl_ref, fn_piece, params):
+        self._ctl_ref = ctl_ref
+        self._fn = fn_piece
+        self._params = params
+
+    def __repr__(self):
+        return f"<FixtureObjTemplate {self._fn} {self._params}>"
+
+    @property
+    def ctl_ref(self):
+        return self._ctl_ref
+
+    def resolve(self, system, service_name):
+        fn = pyobj_creg.animate(self._fn)
+        want_config, service_params, service = resolve_service(
+            system, service_name, fn, self._params, args=[], kw={})
+        return service
+
+
 class FixtureProbeTemplate:
 
     def __init__(self, ctl_ref, fn_piece, params):
@@ -152,38 +206,12 @@ class Probe:
     def _apply(self, service_params, *args, **kw):
         if self._resolved:
             return self._service
-        try:
-            idx = service_params.index('config')
-        except ValueError:
-            want_config = False
-            config_args = []
-        else:
-            if idx != 0:
-                raise RuntimeError("'config' should be first parameter")
-            service_params = service_params[1:]
-            want_config = True
-            config_args = [self._system.resolve_config(self._name)]
-        service_args = [
-            self._system.resolve_service(name)
-            for name in service_params
-            ]
-        service = self._fn(*config_args, *service_args, *args, **kw)
-        if inspect.isgeneratorfunction(self._fn):
-            gen = service
-            service = next(gen)
-            self._system.add_finalizer(self._name, partial(self._finalize, gen))
+        want_config, service_params, service = resolve_service(self._system, self._name, self._fn, service_params, args, kw)
         self._service = service
         self._add_constructor(want_config, service_params)
         self._resolved = True
         return service
 
-    def _finalize(self, gen):
-        try:
-            next(gen)
-        except StopIteration:
-            pass
-        else:
-            raise RuntimeError(f"Generator function {self._fn!r} should have only one 'yield' statement")
 
     def _add_constructor(self, want_config, template):
         pass

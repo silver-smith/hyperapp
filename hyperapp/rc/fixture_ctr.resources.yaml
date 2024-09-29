@@ -3,12 +3,13 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.fixture_resource:config_fixture_ctr
-- legacy_type.fixture_resource:fixture_ctr
+- legacy_type.fixture_resource:fixture_obj_ctr
+- legacy_type.fixture_resource:fixture_probe_ctr
 - legacy_type.system:actor_template
 - legacy_type.system:finalizer_gen_service_template
 - legacy_type.system:service_template
 - rc.rc_constructor:rc_constructor.module
-- rc.fixture_probe_resource:fixture_probe_resource.module
+- rc.fixture_resource:fixture_resource.module
 
 definitions:
 
@@ -20,28 +21,48 @@ definitions:
       import_list:
         htypes.builtin.attribute: legacy_type.builtin:attribute
         htypes.fixture_resource.config_fixture_ctr: legacy_type.fixture_resource:config_fixture_ctr
-        htypes.fixture_resource.fixture_ctr: legacy_type.fixture_resource:fixture_ctr
+        htypes.fixture_resource.fixture_obj_ctr: legacy_type.fixture_resource:fixture_obj_ctr
+        htypes.fixture_resource.fixture_probe_ctr: legacy_type.fixture_resource:fixture_probe_ctr
         services.mosaic: builtins:mosaic.service
         code.rc_constructor: rc.rc_constructor:rc_constructor.module
-        code.fixture_probe_resource: rc.fixture_probe_resource:fixture_probe_resource.module
+        code.fixture_resource: rc.fixture_resource:fixture_resource.module
 
-  FixtureCtr:
+  FixtureObjCtr:
     type: legacy_type.builtin:attribute
     value:
       object: fixture_ctr.module
-      attr_name: FixtureCtr
+      attr_name: FixtureObjCtr
 
-  FixtureCtr.from_piece:
+  FixtureObjCtr.from_piece:
     type: legacy_type.builtin:attribute
     value:
-      object: FixtureCtr
+      object: FixtureObjCtr
       attr_name: from_piece
 
-  fixture_resource_fixture_ctr.actor-template:
+  fixture_resource_fixture_obj_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.fixture_resource:fixture_ctr
-      function: FixtureCtr.from_piece
+      t: legacy_type.fixture_resource:fixture_obj_ctr
+      function: FixtureObjCtr.from_piece
+      service_params: []
+
+  FixtureProbeCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: fixture_ctr.module
+      attr_name: FixtureProbeCtr
+
+  FixtureProbeCtr.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: FixtureProbeCtr
+      attr_name: from_piece
+
+  fixture_resource_fixture_probe_ctr.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.fixture_resource:fixture_probe_ctr
+      function: FixtureProbeCtr.from_piece
       service_params: []
 
   ConfigFixtureCtr:
