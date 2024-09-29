@@ -12,30 +12,6 @@ model_command_enumerator_d = record
 global_model_command_d = record
 
 
-command_properties = record:
-  is_global: bool
-  uses_state: bool
-  remotable: bool
-
-ui_command = record:
-  d: ref
-  properties: command_properties
-  function: ref
-  ctx_params: string list
-  service_params: string list
-
-model_command = record:
-  d: ref
-  properties: command_properties
-  function: ref
-  ctx_params: string list
-  service_params: string list
-
-model_command_enumerator = record:
-  function: ref
-  params: string list
-
-
 external_ui_model_command_impl = record:
   model_command_impl: ref
   layout: ref opt

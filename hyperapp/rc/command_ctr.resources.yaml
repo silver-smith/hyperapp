@@ -8,9 +8,9 @@ import:
 - legacy_type.command_resource:ui_command_template_ctr
 - legacy_type.marker:marker_template
 - legacy_type.system:actor_template
-- legacy_type.ui:command_properties
-- legacy_type.ui:model_command
-- legacy_type.ui:ui_command
+- legacy_type.command:command_properties
+- legacy_type.command:model_command
+- legacy_type.command:ui_command
 - rc.rc_constructor:rc_constructor.module
 
 definitions:
@@ -25,9 +25,9 @@ definitions:
         htypes.command_resource.global_model_command_template_ctr: legacy_type.command_resource:global_model_command_template_ctr
         htypes.command_resource.model_command_template_ctr: legacy_type.command_resource:model_command_template_ctr
         htypes.command_resource.ui_command_template_ctr: legacy_type.command_resource:ui_command_template_ctr
-        htypes.ui.command_properties: legacy_type.ui:command_properties
-        htypes.ui.model_command: legacy_type.ui:model_command
-        htypes.ui.ui_command: legacy_type.ui:ui_command
+        htypes.command.command_properties: legacy_type.command:command_properties
+        htypes.command.model_command: legacy_type.command:model_command
+        htypes.command.ui_command: legacy_type.command:ui_command
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         code.rc_constructor: rc.rc_constructor:rc_constructor.module

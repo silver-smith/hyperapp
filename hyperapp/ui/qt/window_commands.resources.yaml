@@ -5,7 +5,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
-- legacy_type.ui:ui_command
+- legacy_type.command:ui_command
 - legacy_type.window:pos
 - legacy_type.window:state
 - legacy_type.window:view
@@ -37,7 +37,7 @@ definitions:
     value:
       function: legacy_type.window_commands:duplicate_window_d
   window_view_duplicate_window.ui-command:
-    type: legacy_type.ui:ui_command
+    type: legacy_type.command:ui_command
     value:
       d: window_view_duplicate_window.d
       properties:
@@ -55,7 +55,7 @@ definitions:
     value:
       function: legacy_type.window_commands:quit_d
   window_view_quit.ui-command:
-    type: legacy_type.ui:ui_command
+    type: legacy_type.command:ui_command
     value:
       d: window_view_quit.d
       properties:

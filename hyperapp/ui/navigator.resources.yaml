@@ -8,12 +8,12 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.command:ui_command
 - legacy_type.navigator:go_back_d
 - legacy_type.navigator:go_forward_d
 - legacy_type.navigator:history_rec
 - legacy_type.navigator:view
 - legacy_type.system:actor_template
-- legacy_type.ui:ui_command
 - ui.view:view.module
 definitions:
   NavigatorView:
@@ -62,7 +62,7 @@ definitions:
     value:
       function: legacy_type.navigator:go_back_d
   navigator_view_go_back.ui-command:
-    type: legacy_type.ui:ui_command
+    type: legacy_type.command:ui_command
     value:
       d: navigator_view_go_back.d
       properties:
@@ -81,7 +81,7 @@ definitions:
     value:
       function: legacy_type.navigator:go_forward_d
   navigator_view_go_forward.ui-command:
-    type: legacy_type.ui:ui_command
+    type: legacy_type.command:ui_command
     value:
       d: navigator_view_go_forward.d
       properties:
