@@ -5,6 +5,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.command_groups:pane_2_d
 - legacy_type.layout:add_view_command_d
@@ -33,6 +34,11 @@ definitions:
         htypes.layout.command_item: legacy_type.layout:command_item
         htypes.layout.command_list: legacy_type.layout:command_list
         htypes.layout.view: legacy_type.layout:view
+  layout_command_list_add_view_command.cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.layout:command_list
+      command: layout_command_list_add_view_command.model-command
   layout_command_list_add_view_command.d:
     type: legacy_type.builtin:call
     value:
@@ -50,6 +56,11 @@ definitions:
       - piece
       - current_item
       service_params: []
+  layout_command_list_view_item_commands.cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.layout:command_list
+      command: layout_command_list_view_item_commands.model-command
   layout_command_list_view_item_commands.d:
     type: legacy_type.builtin:call
     value:
@@ -69,6 +80,11 @@ definitions:
       - ctx
       service_params:
       - data_to_ref
+  layout_view_open_view_item_commands.cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.layout:view
+      command: layout_view_open_view_item_commands.model-command
   layout_view_open_view_item_commands.d:
     type: legacy_type.builtin:call
     value:

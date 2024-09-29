@@ -8,6 +8,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.command:cfg_item
 - legacy_type.command:ui_command
 - legacy_type.navigator:go_back_d
 - legacy_type.navigator:go_forward_d
@@ -57,6 +58,11 @@ definitions:
       service_params:
       - model_view_creg
       - set_custom_layout
+  navigator_view_go_back.cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.navigator:view
+      command: navigator_view_go_back.ui-command
   navigator_view_go_back.d:
     type: legacy_type.builtin:call
     value:
@@ -76,6 +82,11 @@ definitions:
       - ctx
       service_params:
       - model_view_creg
+  navigator_view_go_forward.cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.navigator:view
+      command: navigator_view_go_forward.ui-command
   navigator_view_go_forward.d:
     type: legacy_type.builtin:call
     value:

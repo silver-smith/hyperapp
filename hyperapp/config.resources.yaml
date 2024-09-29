@@ -135,11 +135,11 @@ import:
 - ui.feed_type_template:feed_feed_template.actor-template
 - ui.model_command_impl_creg:model_command_impl_creg.service
 - ui.navigator:navigator_view.actor-template
-- ui.navigator:navigator_view_go_back.ui-command
-- ui.navigator:navigator_view_go_forward.ui-command
+- ui.navigator:navigator_view_go_back.cfg-item
+- ui.navigator:navigator_view_go_forward.cfg-item
 - ui.qt.auto_tabs:auto_tabs_view.actor-template
-- ui.qt.auto_tabs:auto_tabs_view_close_tab.ui-command
-- ui.qt.auto_tabs:auto_tabs_view_duplicate_tab.ui-command
+- ui.qt.auto_tabs:auto_tabs_view_close_tab.cfg-item
+- ui.qt.auto_tabs:auto_tabs_view_duplicate_tab.cfg-item
 - ui.qt.box_layout:box_layout_view.actor-template
 - ui.qt.command_pane:command_pane_view.actor-template
 - ui.qt.fn_index_tree_adapter:tree_adapter_fn_index_tree_adapter.actor-template
@@ -155,8 +155,8 @@ import:
 - ui.qt.text:text_readonly_view.actor-template
 - ui.qt.tree:tree_view.actor-template
 - ui.qt.window:window_view.actor-template
-- ui.qt.window_commands:window_view_duplicate_window.ui-command
-- ui.qt.window_commands:window_view_quit.ui-command
+- ui.qt.window_commands:window_view_duplicate_window.cfg-item
+- ui.qt.window_commands:window_view_quit.cfg-item
 - ui.str_adapter:str_adapter_static_str_adapter.actor-template
 - ui.ui_adapter_creg:ui_adapter_creg.service
 - ui.ui_command:command_ui_command.actor-template
@@ -444,9 +444,9 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.navigator:navigator_view_go_back.ui-command
-      - ui.navigator:navigator_view_go_forward.ui-command
-      - ui.qt.auto_tabs:auto_tabs_view_close_tab.ui-command
-      - ui.qt.auto_tabs:auto_tabs_view_duplicate_tab.ui-command
-      - ui.qt.window_commands:window_view_duplicate_window.ui-command
-      - ui.qt.window_commands:window_view_quit.ui-command
+      - ui.navigator:navigator_view_go_back.cfg-item
+      - ui.navigator:navigator_view_go_forward.cfg-item
+      - ui.qt.auto_tabs:auto_tabs_view_close_tab.cfg-item
+      - ui.qt.auto_tabs:auto_tabs_view_duplicate_tab.cfg-item
+      - ui.qt.window_commands:window_view_duplicate_window.cfg-item
+      - ui.qt.window_commands:window_view_quit.cfg-item

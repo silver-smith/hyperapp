@@ -36,10 +36,7 @@ class CommandTemplateCtr(Constructor):
         target_set.update_deps_for(resolved_tgt)
         target_set.update_deps_for(resource_tgt)
 
-    def get_component(self, name_to_res):
-        return name_to_res[f'{self._resource_name}.{self._resource_suffix}']
-
-    def make_component(self, types, python_module, name_to_res=None):
+    def _make_command_component(self, types, python_module, name_to_res=None):
         object = python_module
         prefix = []
         for name in self._attr_qual_name:
@@ -70,7 +67,7 @@ class CommandTemplateCtr(Constructor):
             )
         if name_to_res is not None:
             name_to_res[f'{self._resource_name}.d'] = d_piece
-            name_to_res[f'{self._resource_name}.{self._resource_suffix}'] = command
+            name_to_res[f'{self._resource_name}.{self._command_resource_suffix}'] = command
         return command
 
 
@@ -96,6 +93,12 @@ class UntypedCommandTemplateCtr(CommandTemplateCtr):
             ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
             )
+
+    def get_component(self, name_to_res):
+        return name_to_res[f'{self._resource_name}.{self._command_resource_suffix}']
+
+    def make_component(self, types, python_module, name_to_res=None):
+        return self._make_command_component(types, python_module, name_to_res)
 
     @property
     def _resource_name(self):
@@ -132,6 +135,19 @@ class TypedCommandTemplateCtr(CommandTemplateCtr):
             service_params=tuple(self._service_params),
             )
 
+    def get_component(self, name_to_res):
+        return name_to_res[f'{self._resource_name}.cfg-item']
+
+    def make_component(self, types, python_module, name_to_res=None):
+        command = self._make_command_component(types, python_module, name_to_res)
+        cfg_item = htypes.command.cfg_item(
+            t=pyobj_creg.actor_to_ref(self._t),
+            command=mosaic.put(command),
+            )
+        if name_to_res is not None:
+            name_to_res[f'{self._resource_name}.cfg-item'] = cfg_item
+        return cfg_item
+
     @property
     def _resource_name(self):
         attr_name = '_'.join(self._attr_qual_name)
@@ -143,7 +159,7 @@ class UiCommandTemplateCtr(TypedCommandTemplateCtr):
     _command_t = htypes.command.ui_command
     _template_ctr_t = htypes.command_resource.ui_command_template_ctr
     _is_global = False
-    _resource_suffix = 'ui-command'
+    _command_resource_suffix = 'ui-command'
 
 
 class ModelCommandTemplateCtr(TypedCommandTemplateCtr):
@@ -151,7 +167,7 @@ class ModelCommandTemplateCtr(TypedCommandTemplateCtr):
     _command_t = htypes.command.model_command
     _template_ctr_t = htypes.command_resource.model_command_template_ctr
     _is_global = False
-    _resource_suffix = 'model-command'
+    _command_resource_suffix = 'model-command'
 
 
 class GlobalModelCommandTemplateCtr(UntypedCommandTemplateCtr):
@@ -159,4 +175,4 @@ class GlobalModelCommandTemplateCtr(UntypedCommandTemplateCtr):
     _command_t = htypes.command.model_command
     _template_ctr_t = htypes.command_resource.global_model_command_template_ctr
     _is_global = True
-    _resource_suffix = 'global-model-command'
+    _command_resource_suffix = 'global-model-command'

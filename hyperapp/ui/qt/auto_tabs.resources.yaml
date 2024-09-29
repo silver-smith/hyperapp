@@ -10,6 +10,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.command:cfg_item
 - legacy_type.command:ui_command
 - legacy_type.system:actor_template
 - ui.qt.tabs:tabs.module
@@ -42,6 +43,11 @@ definitions:
       function: AutoTabsView.from_piece
       service_params:
       - view_creg
+  auto_tabs_view_close_tab.cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.auto_tabs:view
+      command: auto_tabs_view_close_tab.ui-command
   auto_tabs_view_close_tab.d:
     type: legacy_type.builtin:call
     value:
@@ -60,6 +66,11 @@ definitions:
       - widget
       - state
       service_params: []
+  auto_tabs_view_duplicate_tab.cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.auto_tabs:view
+      command: auto_tabs_view_duplicate_tab.ui-command
   auto_tabs_view_duplicate_tab.d:
     type: legacy_type.builtin:call
     value:

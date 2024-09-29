@@ -5,6 +5,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.command:cfg_item
 - legacy_type.command:ui_command
 - legacy_type.window:pos
 - legacy_type.window:state
@@ -32,6 +33,11 @@ definitions:
         htypes.window.pos: legacy_type.window:pos
         htypes.window.state: legacy_type.window:state
         htypes.window.view: legacy_type.window:view
+  window_view_duplicate_window.cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.window:view
+      command: window_view_duplicate_window.ui-command
   window_view_duplicate_window.d:
     type: legacy_type.builtin:call
     value:
@@ -50,6 +56,11 @@ definitions:
       - view
       - state
       service_params: []
+  window_view_quit.cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.window:view
+      command: window_view_quit.ui-command
   window_view_quit.d:
     type: legacy_type.builtin:call
     value:
