@@ -1,5 +1,9 @@
 config_ctl = record
 
+cfg_item = record:
+  t: ref
+  command: ref
+
 properties = record:
   is_global: bool
   uses_state: bool
