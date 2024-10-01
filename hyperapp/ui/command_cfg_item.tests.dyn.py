@@ -4,6 +4,7 @@ from .services import (
     pyobj_creg,
     )
 from .code.mark import mark
+from .code import model_command as model_command_module
 from .code import ui_command
 from .tested.code import command_cfg_item
 
@@ -34,12 +35,35 @@ def cfg_item_piece(data_to_ref):
         )
 
 
-def test_construct(cfg_item_piece):
-    cfg_item = command_cfg_item.CommandCfgItem.from_piece(cfg_item_piece)
+@mark.fixture.obj
+def model_command(data_to_ref):
+    d = htypes.command_cfg_item_tests.sample_command_d()
+    return htypes.command.model_command(
+        d=data_to_ref(d),
+        properties=htypes.command.properties(False, False, False),
+        function=pyobj_creg.actor_to_ref(_sample_fn),
+        ctx_params=('view', 'state'),
+        service_params=('sample_service',),
+        )
+
+
+def test_construct_typed(cfg_item_piece):
+    cfg_item = command_cfg_item.TypedCommandCfgItem.from_piece(cfg_item_piece)
     assert cfg_item.piece == cfg_item_piece
 
 
-def test_resolve(system, cfg_item_piece):
-    cfg_item = command_cfg_item.CommandCfgItem.from_piece(cfg_item_piece)
+def test_construct_untyped(model_command):
+    cfg_item = command_cfg_item.UntypedCommandCfgItem.from_piece(model_command)
+    assert cfg_item.piece == model_command
+
+
+def test_resolve_typed(system, cfg_item_piece):
+    cfg_item = command_cfg_item.TypedCommandCfgItem.from_piece(cfg_item_piece)
     command = cfg_item.resolve(system, 'cfg_item_creg')
     assert isinstance(command, ui_command.UnboundUiCommand)
+
+
+def test_resolve_untyped(system, model_command):
+    cfg_item = command_cfg_item.UntypedCommandCfgItem.from_piece(model_command)
+    command = cfg_item.resolve(system, 'cfg_item_creg')
+    assert isinstance(command, model_command_module.UnboundModelCommand)

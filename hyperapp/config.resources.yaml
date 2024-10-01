@@ -124,6 +124,7 @@ import:
 - transport.sync_route_table:route_table.service
 - transport.transport:transport.service
 - ui.command_cfg_item:command_cfg_item.actor-template
+- ui.command_cfg_item:command_model_command.actor-template
 - ui.command_config_ctl:command_config_ctl.actor-template
 - ui.command_creg:command_creg.service
 - ui.controller:controller_running.service
@@ -179,6 +180,7 @@ definitions:
       items:
       - rc.marker_registry:marker_marker_template.actor-template
       - ui.command_cfg_item:command_cfg_item.actor-template
+      - ui.command_cfg_item:command_model_command.actor-template
       - ui.feed_type_template:feed_feed_template.actor-template
   command_creg:
     type: legacy_type.system:item_list_config

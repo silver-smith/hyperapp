@@ -17,9 +17,6 @@ class UnboundModelCommand(UnboundCommand):
         super().__init__(d, fn, ctx_params)
         self._properties = properties
 
-    def __repr__(self):
-        return f"<UnboundModelCommand: {self.name}>"
-
     def bind(self, ctx):
         return BoundModelCommand(self._d, self._fn, self._ctx_params, ctx, self._properties)
 
@@ -29,9 +26,6 @@ class BoundModelCommand(BoundCommand):
     def __init__(self, d, fn, ctx_params, ctx, properties):
         super().__init__(d, fn, ctx_params, ctx)
         self._properties = properties
-
-    def __repr__(self):
-        return f"<BoundModelCommand: {self.name}>"
 
     @property
     def properties(self):

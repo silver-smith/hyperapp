@@ -3,7 +3,7 @@ from .services import pyobj_creg
 from .code.mark import mark
 
 
-class CommandCfgItem:
+class TypedCommandCfgItem:
 
     @classmethod
     @mark.actor.cfg_item_creg
@@ -31,3 +31,24 @@ class CommandCfgItem:
     def resolve(self, system, service_name):
         command_creg = system.resolve_service('command_creg')
         return command_creg.invite(self._command_ref)
+
+
+class UntypedCommandCfgItem:
+
+    @classmethod
+    @mark.actor.cfg_item_creg
+    def from_piece(cls, piece):
+        return cls(
+            command=piece,
+            )
+
+    def __init__(self, command):
+        self._command = command
+
+    @property
+    def piece(self):
+        return self._command
+
+    def resolve(self, system, service_name):
+        command_creg = system.resolve_service('command_creg')
+        return command_creg.animate(self._command)

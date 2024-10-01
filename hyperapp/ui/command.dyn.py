@@ -85,6 +85,9 @@ class BoundCommandBase:
     def __init__(self, d):
         self._d = d
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__}: {self.name}>"
+
     @property
     def d(self):
         return self._d
