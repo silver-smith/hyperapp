@@ -24,7 +24,7 @@ log = logging.getLogger(__name__)
 
 
 # Services used by controller and it's items.
-CtlServices = namedtuple('CtlServices', 'feed_factory view_creg get_view_commands')
+CtlServices = namedtuple('CtlServices', 'feed_factory view_creg get_view_commands get_ui_model_commands')
 
 # attributes shared by all items.
 ItemMeta = namedtuple('ItemMeta', 'svc counter id_to_item feed')
@@ -169,8 +169,7 @@ class _Item:
         return self._meta.svc.get_view_commands(self.view)
 
     def _make_model_commands(self, command_ctx):
-        return []  # TODO.
-        return list_ui_model_commands(self.ctx.lcs, command_ctx.piece, command_ctx)
+        return self._meta.svc.get_ui_model_commands(self.ctx.lcs, command_ctx.piece, command_ctx)
 
     def _reverse_context(self, rctx):
         my_rctx = self.view.primary_parent_context(rctx, self.widget)
@@ -461,11 +460,12 @@ class Controller:
 
 @mark.service2
 @contextmanager
-def controller_running(feed_factory, view_creg, get_view_commands, layout_bundle, default_layout, ctx, show=False, load_state=False):
+def controller_running(feed_factory, view_creg, get_view_commands, get_ui_model_commands, layout_bundle, default_layout, ctx, show=False, load_state=False):
     svc = CtlServices(
         feed_factory=feed_factory,
         view_creg=view_creg,
         get_view_commands=get_view_commands,
+        get_ui_model_commands=get_ui_model_commands,
         )
     ctl = Controller(svc, layout_bundle, default_layout, ctx, show, load_state)
     if show:

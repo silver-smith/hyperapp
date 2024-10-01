@@ -57,6 +57,7 @@ definitions:
       - feed_factory
       - view_creg
       - get_view_commands
+      - get_ui_model_commands
       want_config: false
   layout_view.feed-template:
     type: legacy_type.feed:feed_template
