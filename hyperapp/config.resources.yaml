@@ -133,6 +133,9 @@ import:
 - ui.feed:feed_list_feed_type.actor-template
 - ui.feed_creg:feed_creg.service
 - ui.feed_type_template:feed_feed_template.actor-template
+- ui.layout:open_layout_tree.global-model-command
+- ui.model_command:command_model_command.actor-template
+- ui.model_command:global_model_command_reg.service
 - ui.model_command_impl_creg:model_command_impl_creg.service
 - ui.navigator:navigator_view.actor-template
 - ui.navigator:navigator_view_go_back.cfg-item
@@ -181,6 +184,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - ui.model_command:command_model_command.actor-template
       - ui.ui_command:command_ui_command.actor-template
   config:
     type: legacy_type.system:system_config
@@ -192,6 +196,7 @@ definitions:
         ctr_from_template_creg: ctr_from_template_creg
         feed_creg: feed_creg
         feed_factory: feed_factory
+        global_model_command_reg: global_model_command_reg
         marker_registry: marker_registry
         model_view_creg: model_view_creg
         parcel_registry: parcel_registry
@@ -236,6 +241,11 @@ definitions:
       - sample.sample_list:sample_list_feed_sample_list.feed-template
       - sample.sample_tree:sample_tree_feed_sample_tree.feed-template
       - ui.controller:layout_view.feed-template
+  global_model_command_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.layout:open_layout_tree.global-model-command
   marker_registry:
     type: legacy_type.system:item_list_config
     value:
@@ -407,6 +417,7 @@ definitions:
       - ui.controller:controller_running.service
       - ui.feed:feed_factory.service
       - ui.feed_creg:feed_creg.service
+      - ui.model_command:global_model_command_reg.service
       - ui.model_command_impl_creg:model_command_impl_creg.service
       - ui.ui_adapter_creg:ui_adapter_creg.service
       - ui.ui_command:get_view_commands.service

@@ -1,39 +1,37 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtins:association_reg.service
 - builtins:pyobj_creg.service
+- common.mark:mark.module
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
-- legacy_type.ui:command_properties_d
-- legacy_type.ui:global_model_command_d
-- legacy_type.ui:model_command_d
-- legacy_type.ui:model_command_enumerator_d
-- legacy_type.ui:model_command_impl
-- resource.data_to_res:data_to_res.service
+- legacy_type.command:model_command
+- legacy_type.system:actor_template
+- legacy_type.system:item_dict_config_ctl
+- legacy_type.system:service_template
 - ui.command:command.module
-- ui.model_command_impl_creg:model_command_impl_creg.service
-- ui.ui_command:ui_command.module
 definitions:
-  enum_model_commands:
+  command_model_command.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command:model_command
+      function: model_command_from_piece
+      service_params:
+      - system
+  global_model_command_reg:
     type: legacy_type.builtin:attribute
     value:
       object: model_command.module
-      attr_name: enum_model_commands
-  enum_model_commands.service:
-    type: legacy_type.builtin:call
+      attr_name: global_model_command_reg
+  global_model_command_reg.service:
+    type: legacy_type.system:service_template
     value:
-      function: enum_model_commands
-  global_commands:
-    type: legacy_type.builtin:attribute
-    value:
-      object: model_command.module
-      attr_name: global_commands
-  global_commands.service:
-    type: legacy_type.builtin:call
-    value:
-      function: global_commands
+      name: global_model_command_reg
+      ctl: system-item_dict_config_ctl.ctl
+      function: global_model_command_reg
+      free_params: []
+      service_params: []
+      want_config: true
   model_command.module:
     type: legacy_type.builtin:python_module
     value:
@@ -41,36 +39,13 @@ definitions:
       file_name: model_command.dyn.py
       import_list:
         code.command: ui.command:command.module
-        code.ui_command: ui.ui_command:ui_command.module
-        htypes.ui.command_properties_d: legacy_type.ui:command_properties_d
-        htypes.ui.global_model_command_d: legacy_type.ui:global_model_command_d
-        htypes.ui.model_command_d: legacy_type.ui:model_command_d
-        htypes.ui.model_command_enumerator_d: legacy_type.ui:model_command_enumerator_d
-        htypes.ui.model_command_impl: legacy_type.ui:model_command_impl
-        services.association_reg: builtins:association_reg.service
-        services.data_to_res: resource.data_to_res:data_to_res.service
-        services.model_command_impl_creg: ui.model_command_impl_creg:model_command_impl_creg.service
+        code.mark: common.mark:mark.module
         services.pyobj_creg: builtins:pyobj_creg.service
-  model_command_factory:
+  model_command_from_piece:
     type: legacy_type.builtin:attribute
     value:
       object: model_command.module
-      attr_name: model_command_factory
-  model_command_factory.service:
-    type: legacy_type.builtin:call
-    value:
-      function: model_command_factory
-  model_command_impl_from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: model_command.module
-      attr_name: model_command_impl_from_piece
-  model_commands:
-    type: legacy_type.builtin:attribute
-    value:
-      object: model_command.module
-      attr_name: model_commands
-  model_commands.service:
-    type: legacy_type.builtin:call
-    value:
-      function: model_commands
+      attr_name: model_command_from_piece
+  system-item_dict_config_ctl.ctl:
+    type: legacy_type.system:item_dict_config_ctl
+    value: {}
