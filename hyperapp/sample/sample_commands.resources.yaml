@@ -1,13 +1,161 @@
 # Automatically generated file. Do not edit.
 
 import:
+- common.mark:mark.module
+- legacy_type.builtin:attribute
+- legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.command:cfg_item
+- legacy_type.command:model_command
+- legacy_type.sample_commands:details_d
+- legacy_type.sample_commands:open_sample_static_list_d
+- legacy_type.sample_commands:open_sample_static_text_1_d
+- legacy_type.sample_commands:open_sample_static_text_2_d
+- legacy_type.sample_commands:sample_tree_info_d
+- legacy_type.sample_commands:show_state_d
 - legacy_type.sample_list:item
+- legacy_type.sample_list:sample_list
+- legacy_type.sample_tree:sample_tree
 definitions:
+  details:
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_commands.module
+      attr_name: details
+  open_sample_static_list:
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_commands.module
+      attr_name: open_sample_static_list
+  open_sample_static_list.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.sample_commands:open_sample_static_list_d
+  open_sample_static_list.global-model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_sample_static_list.d
+      properties:
+        is_global: true
+        uses_state: false
+        remotable: true
+      function: open_sample_static_list
+      ctx_params: []
+      service_params: []
+  open_sample_static_text_1:
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_commands.module
+      attr_name: open_sample_static_text_1
+  open_sample_static_text_1.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.sample_commands:open_sample_static_text_1_d
+  open_sample_static_text_1.global-model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_sample_static_text_1.d
+      properties:
+        is_global: true
+        uses_state: false
+        remotable: true
+      function: open_sample_static_text_1
+      ctx_params: []
+      service_params: []
+  open_sample_static_text_2:
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_commands.module
+      attr_name: open_sample_static_text_2
+  open_sample_static_text_2.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.sample_commands:open_sample_static_text_2_d
+  open_sample_static_text_2.global-model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_sample_static_text_2.d
+      properties:
+        is_global: true
+        uses_state: false
+        remotable: true
+      function: open_sample_static_text_2
+      ctx_params: []
+      service_params: []
   sample_commands.module:
     type: legacy_type.builtin:python_module
     value:
       module_name: sample_commands
       file_name: sample_commands.dyn.py
       import_list:
+        code.mark: common.mark:mark.module
         htypes.sample_list.item: legacy_type.sample_list:item
+  sample_list_sample_list_details.cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.sample_list:sample_list
+      command: sample_list_sample_list_details.model-command
+  sample_list_sample_list_details.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.sample_commands:details_d
+  sample_list_sample_list_details.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: sample_list_sample_list_details.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      function: details
+      ctx_params:
+      - piece
+      - current_idx
+      service_params: []
+  sample_tree_info:
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_commands.module
+      attr_name: sample_tree_info
+  sample_tree_sample_tree_sample_tree_info.cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.sample_tree:sample_tree
+      command: sample_tree_sample_tree_sample_tree_info.model-command
+  sample_tree_sample_tree_sample_tree_info.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.sample_commands:sample_tree_info_d
+  sample_tree_sample_tree_sample_tree_info.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: sample_tree_sample_tree_sample_tree_info.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: true
+      function: sample_tree_info
+      ctx_params:
+      - piece
+      service_params: []
+  show_state:
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_commands.module
+      attr_name: show_state
+  show_state.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.sample_commands:show_state_d
+  show_state.global-model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: show_state.d
+      properties:
+        is_global: true
+        uses_state: true
+        remotable: true
+      function: show_state
+      ctx_params:
+      - model_state
+      service_params: []
