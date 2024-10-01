@@ -38,6 +38,7 @@ class BoundUiModelCommand(BoundCommandBase):
         self._lcs = lcs
         self._model_command = model_command
         self._layout = layout
+        self._ctx = ctx
         self._navigator_rec = ctx.navigator
 
     @property
