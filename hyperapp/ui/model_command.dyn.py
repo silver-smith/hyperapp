@@ -6,6 +6,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.command import UnboundCommand, BoundCommand
+from .code.command_config_ctl import UntypedCommandConfigCtl
 
 log = logging.getLogger(__name__)
 
@@ -47,7 +48,7 @@ def model_command_from_piece(piece, system):
         )
 
 
-@mark.service2
+@mark.service2(ctl=UntypedCommandConfigCtl())
 def global_model_command_reg(config):
     return config
 

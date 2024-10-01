@@ -1,4 +1,5 @@
-config_ctl = record
+typed_config_ctl = record
+untyped_config_ctl = record
 
 cfg_item = record:
   t: ref
