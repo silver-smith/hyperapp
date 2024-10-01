@@ -72,7 +72,11 @@ def d_res_ref_to_name(d_ref):
     return d_to_name(d)
 
 
-class UnboundCommand:
+class UnboundCommandBase:
+    pass
+
+
+class UnboundCommand(UnboundCommandBase):
 
     def __init__(self, d, fn, ctx_params):
         self._d = d
@@ -96,6 +100,14 @@ class BoundCommandBase:
     def name(self):
         return d_to_name(self._d)
 
+    @property
+    def shortcut(self):
+        return _hardcoded_shortcuts.get(self.name)
+
+    def start(self):
+        log.info("Start command: %r", self.name)
+        asyncio.create_task(self.run())
+
 
 class BoundCommand(BoundCommandBase):
 
@@ -113,14 +125,6 @@ class BoundCommand(BoundCommandBase):
     def disabled_reason(self):
         params = ", ".join(self._ctx_params - set(self._ctx_kw))
         return f"Params not ready: {params}"
-
-    @property
-    def shortcut(self):
-        return _hardcoded_shortcuts.get(self.name)
-
-    def start(self):
-        log.info("Start command: %r", self.name)
-        asyncio.create_task(self.run())
 
     async def run(self):
         if not self.enabled:

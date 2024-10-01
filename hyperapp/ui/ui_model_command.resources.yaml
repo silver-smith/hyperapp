@@ -1,89 +1,42 @@
 # Automatically generated file. Do not edit.
 
 import:
-- builtins:association_reg.service
 - builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
+- common.mark:mark.module
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
-- legacy_type.ui:ui_command
-- legacy_type.ui:external_ui_model_command_impl
-- legacy_type.ui:model_command
-- legacy_type.ui:ui_model_command_d
-- legacy_type.ui:ui_model_command_impl
-- legacy_type.ui:ui_model_command_layout_d
-- legacy_type.ui:ui_model_command_list
-- resource.data_to_res:data_to_res.service
+- legacy_type.system:item_dict_config_ctl
+- legacy_type.system:service_template
 - ui.command:command.module
 - ui.command_groups:command_groups.module
-- ui.model_command:enum_model_commands.service
-- ui.model_command:global_commands.service
-- ui.model_command:model_command_factory.service
-- ui.model_command:model_commands.service
-- ui.model_command_impl_creg:model_command_impl_creg.service
-- ui.ui_command:ui_command.module
-- ui.ui_command_impl_creg:ui_command_impl_creg.service
-- ui.view_registry:model_view_creg.service
-- ui.view_registry:view_creg.service
-- ui.visualizer:visualizer.service
+- ui.model_command:model_command.module
 definitions:
-  get_ui_model_command_layout:
-    type: legacy_type.builtin:attribute
-    value:
-      object: ui_model_command.module
-      attr_name: get_ui_model_command_layout
-  get_ui_model_command_layout.service:
-    type: legacy_type.builtin:call
-    value:
-      function: get_ui_model_command_layout
   get_ui_model_commands:
     type: legacy_type.builtin:attribute
     value:
       object: ui_model_command.module
       attr_name: get_ui_model_commands
   get_ui_model_commands.service:
-    type: legacy_type.builtin:call
+    type: legacy_type.system:service_template
     value:
+      name: get_ui_model_commands
+      ctl: system-item_dict_config_ctl.ctl
       function: get_ui_model_commands
-  list_ui_model_commands:
-    type: legacy_type.builtin:attribute
-    value:
-      object: ui_model_command.module
-      attr_name: list_ui_model_commands
-  list_ui_model_commands.service:
-    type: legacy_type.builtin:call
-    value:
-      function: list_ui_model_commands
-  merge_command_lists:
-    type: legacy_type.builtin:attribute
-    value:
-      object: ui_model_command.module
-      attr_name: merge_command_lists
-  merge_command_lists.service:
-    type: legacy_type.builtin:call
-    value:
-      function: merge_command_lists
-  set_ui_model_command_layout:
-    type: legacy_type.builtin:attribute
-    value:
-      object: ui_model_command.module
-      attr_name: set_ui_model_command_layout
-  set_ui_model_command_layout.service:
-    type: legacy_type.builtin:call
-    value:
-      function: set_ui_model_command_layout
-  set_ui_model_commands:
-    type: legacy_type.builtin:attribute
-    value:
-      object: ui_model_command.module
-      attr_name: set_ui_model_commands
-  set_ui_model_commands.service:
-    type: legacy_type.builtin:call
-    value:
-      function: set_ui_model_commands
+      free_params:
+      - lcs
+      - model
+      - ctx
+      service_params:
+      - model_view_creg
+      - visualizer
+      - global_model_command_reg
+      want_config: false
+  system-item_dict_config_ctl.ctl:
+    type: legacy_type.system:item_dict_config_ctl
+    value: {}
   ui_model_command.module:
     type: legacy_type.builtin:python_module
     value:
@@ -92,31 +45,9 @@ definitions:
       import_list:
         code.command: ui.command:command.module
         code.command_groups: ui.command_groups:command_groups.module
-        code.ui_command: ui.ui_command:ui_command.module
-        htypes.ui.ui_command: legacy_type.ui:ui_command
-        htypes.ui.external_ui_model_command_impl: legacy_type.ui:external_ui_model_command_impl
-        htypes.ui.model_command: legacy_type.ui:model_command
-        htypes.ui.ui_model_command_d: legacy_type.ui:ui_model_command_d
-        htypes.ui.ui_model_command_impl: legacy_type.ui:ui_model_command_impl
-        htypes.ui.ui_model_command_layout_d: legacy_type.ui:ui_model_command_layout_d
-        htypes.ui.ui_model_command_list: legacy_type.ui:ui_model_command_list
-        services.association_reg: builtins:association_reg.service
-        services.data_to_res: resource.data_to_res:data_to_res.service
+        code.mark: common.mark:mark.module
+        code.model_command: ui.model_command:model_command.module
         services.deduce_t: builtins:deduce_t.service
-        services.enum_model_commands: ui.model_command:enum_model_commands.service
-        services.global_commands: ui.model_command:global_commands.service
-        services.model_command_factory: ui.model_command:model_command_factory.service
-        services.model_command_impl_creg: ui.model_command_impl_creg:model_command_impl_creg.service
-        services.model_commands: ui.model_command:model_commands.service
-        services.model_view_creg: ui.view_registry:model_view_creg.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
-        services.ui_command_impl_creg: ui.ui_command_impl_creg:ui_command_impl_creg.service
-        services.view_creg: ui.view_registry:view_creg.service
-        services.visualizer: ui.visualizer:visualizer.service
         services.web: builtins:web.service
-  ui_model_command_impl_from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: ui_model_command.module
-      attr_name: ui_model_command_impl_from_piece
