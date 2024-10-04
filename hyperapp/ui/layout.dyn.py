@@ -36,6 +36,7 @@ class LayoutCommand(BoundCommandBase):
         return await self._ui_command.run()
 
 
+@mark.model
 def layout_tree(piece, parent, controller):
     if parent is None:
         parent_id = 0

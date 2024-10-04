@@ -11,10 +11,14 @@ import:
 - legacy_type.layout:add_view_command_d
 - legacy_type.layout:command_item
 - legacy_type.layout:command_list
+- legacy_type.layout:item
 - legacy_type.layout:open_layout_tree_d
 - legacy_type.layout:open_view_item_commands_d
 - legacy_type.layout:view
 - legacy_type.layout:view_item_commands_d
+- legacy_type.model:fn_impl
+- legacy_type.model:model
+- legacy_type.model:tree_ui_t
 - ui.command:command.module
 definitions:
   add_view_command:
@@ -80,6 +84,29 @@ definitions:
       - ctx
       service_params:
       - data_to_ref
+  layout_tree:
+    type: legacy_type.builtin:attribute
+    value:
+      object: layout.module
+      attr_name: layout_tree
+  layout_view.impl:
+    type: legacy_type.model:fn_impl
+    value:
+      function: layout_tree
+      ctx_params:
+      - piece
+      - parent
+      - controller
+      service_params: []
+  layout_view.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: layout_view.tree-ui-t
+      impl: layout_view.impl
+  layout_view.tree-ui-t:
+    type: legacy_type.model:tree_ui_t
+    value:
+      element_t: legacy_type.layout:item
   layout_view_open_view_item_commands.cfg-item:
     type: legacy_type.command:cfg_item
     value:
