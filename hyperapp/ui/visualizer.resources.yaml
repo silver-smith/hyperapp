@@ -13,6 +13,10 @@ import:
 - legacy_type.list:view
 - legacy_type.list_adapter:fn_list_adapter
 - legacy_type.list_adapter:static_list_adapter
+- legacy_type.model:fn_impl
+- legacy_type.model:list_ui_t
+- legacy_type.model:record_ui_t
+- legacy_type.model:tree_ui_t
 - legacy_type.record_adapter:fn_record_adapter
 - legacy_type.str_adapter:static_str_adapter
 - legacy_type.system:item_dict_config_ctl
@@ -20,11 +24,7 @@ import:
 - legacy_type.text:edit_view
 - legacy_type.tree:view
 - legacy_type.tree_adapter:fn_index_tree_adapter
-- legacy_type.ui:fn_impl
-- legacy_type.ui:list_ui_t
 - legacy_type.ui:model_view_layout_d
-- legacy_type.ui:record_ui_t
-- legacy_type.ui:tree_ui_t
 definitions:
   get_custom_layout:
     type: legacy_type.builtin:attribute
@@ -79,16 +79,16 @@ definitions:
         htypes.list.view: legacy_type.list:view
         htypes.list_adapter.fn_list_adapter: legacy_type.list_adapter:fn_list_adapter
         htypes.list_adapter.static_list_adapter: legacy_type.list_adapter:static_list_adapter
+        htypes.model.fn_impl: legacy_type.model:fn_impl
+        htypes.model.list_ui_t: legacy_type.model:list_ui_t
+        htypes.model.record_ui_t: legacy_type.model:record_ui_t
+        htypes.model.tree_ui_t: legacy_type.model:tree_ui_t
         htypes.record_adapter.fn_record_adapter: legacy_type.record_adapter:fn_record_adapter
         htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
         htypes.text.edit_view: legacy_type.text:edit_view
         htypes.tree.view: legacy_type.tree:view
         htypes.tree_adapter.fn_index_tree_adapter: legacy_type.tree_adapter:fn_index_tree_adapter
-        htypes.ui.fn_impl: legacy_type.ui:fn_impl
-        htypes.ui.list_ui_t: legacy_type.ui:list_ui_t
         htypes.ui.model_view_layout_d: legacy_type.ui:model_view_layout_d
-        htypes.ui.record_ui_t: legacy_type.ui:record_ui_t
-        htypes.ui.tree_ui_t: legacy_type.ui:tree_ui_t
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service

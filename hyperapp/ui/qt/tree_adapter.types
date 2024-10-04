@@ -1,13 +1,11 @@
 
 fn_index_tree_adapter = record:
   element_t: ref
-  key_t: ref
   function: ref
   params: string list
 
 remote_fn_index_tree_adapter = record:
   element_t: ref
-  key_t: ref
   function: ref
   remote_peer: ref
   params: string list

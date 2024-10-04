@@ -27,22 +27,3 @@ model_view_layout_d = record
 
 
 feed_d = record
-
-
-model = record:
-  ui_t: ref
-  impl: ref
-
-list_ui_t = record:
-  element_t: ref
-
-tree_ui_t = record:
-  key_t: ref
-  element_t: ref
-
-record_ui_t = record:
-  record_t: ref
-
-fn_impl = record:
-  function: ref
-  params: string list

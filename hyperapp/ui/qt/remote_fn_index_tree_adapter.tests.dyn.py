@@ -53,7 +53,7 @@ def test_remote_fn_adapter(
         model = htypes.tree_adapter_tests.sample_tree()
         adapter_piece = htypes.tree_adapter.remote_fn_index_tree_adapter(
             element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
-            key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
+            # key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
             function=pyobj_creg.actor_to_ref(sample_tree_fn),
             remote_peer=mosaic.put(process.peer.piece),
             params=('piece', 'parent'),

@@ -30,28 +30,28 @@ def _primitive_value_layout(t):
 def _model_layout(visualizer_reg, t):
     ui_t, impl = visualizer_reg(t)
 
-    if isinstance(ui_t, htypes.ui.list_ui_t) and isinstance(impl, htypes.ui.fn_impl):
+    if isinstance(ui_t, htypes.model.list_ui_t) and isinstance(impl, htypes.model.fn_impl):
         adapter = htypes.list_adapter.fn_list_adapter(
             element_t=ui_t.element_t,
             function=impl.function,
-            params=impl.params,
+            params=impl.ctx_params,
             )
         return htypes.list.view(mosaic.put(adapter))
 
-    if isinstance(ui_t, htypes.ui.tree_ui_t) and isinstance(impl, htypes.ui.fn_impl):
+    if isinstance(ui_t, htypes.model.tree_ui_t) and isinstance(impl, htypes.model.fn_impl):
         adapter = htypes.tree_adapter.fn_index_tree_adapter(
             element_t=ui_t.element_t,
-            key_t=ui_t.key_t,
+            # key_t=ui_t.key_t,
             function=impl.function,
-            params=impl.params,
+            params=impl.ctx_params,
             )
         return htypes.tree.view(mosaic.put(adapter))
 
-    if isinstance(ui_t, htypes.ui.record_ui_t) and isinstance(impl, htypes.ui.fn_impl):
+    if isinstance(ui_t, htypes.model.record_ui_t) and isinstance(impl, htypes.model.fn_impl):
         adapter = htypes.record_adapter.fn_record_adapter(
             record_t=ui_t.record_t,
             function=impl.function,
-            params=impl.params,
+            params=impl.ctx_params,
             )
         return htypes.form.view(mosaic.put(adapter))
 

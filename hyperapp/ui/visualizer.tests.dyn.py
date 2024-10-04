@@ -42,31 +42,32 @@ def sample_fn():
 
 @mark.config_fixture('visualizer_reg')
 def visualizer_config():
-    impl = htypes.ui.fn_impl(
+    impl = htypes.model.fn_impl(
         function=pyobj_creg.actor_to_ref(sample_fn),
-        params=(),
+        ctx_params=(),
+        service_params=(),
         )
     return {
-        htypes.visualizer_tests.sample_list: htypes.ui.model(
+        htypes.visualizer_tests.sample_list: htypes.model.model(
             ui_t=mosaic.put(
-                htypes.ui.list_ui_t(
+                htypes.model.list_ui_t(
                     element_t=pyobj_creg.actor_to_ref(htypes.visualizer_tests.sample_list_item),
                     ),
                 ),
             impl=mosaic.put(impl),
             ),
-        htypes.visualizer_tests.sample_tree: htypes.ui.model(
+        htypes.visualizer_tests.sample_tree: htypes.model.model(
             ui_t=mosaic.put(
-                htypes.ui.tree_ui_t(
-                    key_t=pyobj_creg.actor_to_ref(htypes.visualizer_tests.sample_tree_key),
+                htypes.model.tree_ui_t(
+                    # key_t=pyobj_creg.actor_to_ref(htypes.visualizer_tests.sample_tree_key),
                     element_t=pyobj_creg.actor_to_ref(htypes.visualizer_tests.sample_tree_item),
                     ),
                 ),
             impl=mosaic.put(impl),
             ),
-        htypes.visualizer_tests.sample_record: htypes.ui.model(
+        htypes.visualizer_tests.sample_record: htypes.model.model(
             ui_t=mosaic.put(
-                htypes.ui.record_ui_t(
+                htypes.model.record_ui_t(
                     record_t=pyobj_creg.actor_to_ref(htypes.visualizer_tests.sample_record_item),
                     ),
                 ),
