@@ -1,0 +1,7 @@
+model_ctr = record:
+  module_name: string
+  attr_qual_name: string list
+  model_t: ref
+  ui_t: ref
+  ctx_params: string list
+  service_params: string list

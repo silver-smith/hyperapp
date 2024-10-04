@@ -1,7 +1,10 @@
 import:
+- builtins:mosaic.service
+- builtins:pyobj_creg.service
+- builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.rc_constructors:model
+- legacy_type.model_resource:model_ctr
 - legacy_type.system:actor_template
 - rc.rc_constructor:rc_constructor.module
 
@@ -13,6 +16,10 @@ definitions:
       module_name: model_ctr
       file_name: model_ctr.dyn.py
       import_list:
+        htypes.model_resource.model_ctr: legacy_type.model_resource:model_ctr
+        services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        services.web: builtins:web.service
         code.rc_constructor: rc.rc_constructor:rc_constructor.module
 
   ModelCtr:
@@ -27,9 +34,9 @@ definitions:
       object: ModelCtr
       attr_name: from_piece
 
-  rc_constructors_model.actor-template:
+  model_resource_model_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.rc_constructors:model
+      t: legacy_type.model_resource:model_ctr
       function: ModelCtr.from_piece
       service_params: []

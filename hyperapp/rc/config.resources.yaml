@@ -45,7 +45,7 @@ import:
 - rc.marker_ctr:marker_marker_template.actor-template
 - rc.marker_registry:marker_marker_template.actor-template
 - rc.marker_registry:marker_registry.service
-- rc.model_ctr:rc_constructors_model.actor-template
+- rc.model_ctr:model_resource_model_ctr.actor-template
 - rc.model_marker:model.marker-template
 - rc.rc_constructor_creg:rc_constructor_creg.service
 - rc.rc_job:rc_job_submit_factory.service
@@ -242,7 +242,7 @@ definitions:
       - rc.fixture_ctr:fixture_resource_config_fixture_ctr.actor-template
       - rc.fixture_ctr:fixture_resource_fixture_obj_ctr.actor-template
       - rc.fixture_ctr:fixture_resource_fixture_probe_ctr.actor-template
-      - rc.model_ctr:rc_constructors_model.actor-template
+      - rc.model_ctr:model_resource_model_ctr.actor-template
       - rc.service_ctr:rc_constructors_service.actor-template
       - rc.service_ctr:rc_constructors_service_template.actor-template
       - rc.service_probe_resource:service_resource_service_probe_ctr.actor-template

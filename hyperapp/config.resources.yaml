@@ -50,7 +50,7 @@ import:
 - rc.marker_ctr:marker_marker_template.actor-template
 - rc.marker_registry:marker_marker_template.actor-template
 - rc.marker_registry:marker_registry.service
-- rc.model_ctr:rc_constructors_model.actor-template
+- rc.model_ctr:model_resource_model_ctr.actor-template
 - rc.model_marker:model.marker-template
 - rc.process_pool:process_pool_running.service
 - rc.python_module_resource_target:python_module_resource_target_python_module_req.actor-template
@@ -305,7 +305,7 @@ definitions:
       - rc.fixture_ctr:fixture_resource_config_fixture_ctr.actor-template
       - rc.fixture_ctr:fixture_resource_fixture_obj_ctr.actor-template
       - rc.fixture_ctr:fixture_resource_fixture_probe_ctr.actor-template
-      - rc.model_ctr:rc_constructors_model.actor-template
+      - rc.model_ctr:model_resource_model_ctr.actor-template
       - rc.service_ctr:rc_constructors_service.actor-template
       - rc.service_ctr:rc_constructors_service_template.actor-template
       - rc.service_probe_resource:service_resource_service_probe_ctr.actor-template
