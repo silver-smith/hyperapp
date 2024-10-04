@@ -1,5 +1,3 @@
-import inspect
-
 from hyperapp.common.htypes import Type
 
 from .services import deduce_t
