@@ -1,0 +1,35 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:pyobj_creg.service
+- common.mark:mark.module
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.system:actor_template
+- legacy_type.system_fn:cfg_item
+definitions:
+  SystemFnCfgItem:
+    type: legacy_type.builtin:attribute
+    value:
+      object: system_fn_cfg_item.module
+      attr_name: SystemFnCfgItem
+  SystemFnCfgItem.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: SystemFnCfgItem
+      attr_name: from_piece
+  system_fn_cfg_item.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.system_fn:cfg_item
+      function: SystemFnCfgItem.from_piece
+      service_params: []
+  system_fn_cfg_item.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: system_fn_cfg_item
+      file_name: system_fn_cfg_item.dyn.py
+      import_list:
+        code.mark: common.mark:mark.module
+        htypes.system_fn.cfg_item: legacy_type.system_fn:cfg_item
+        services.pyobj_creg: builtins:pyobj_creg.service

@@ -167,6 +167,8 @@ import:
 - ui.qt.window_commands:window_view_duplicate_window.cfg-item
 - ui.qt.window_commands:window_view_quit.cfg-item
 - ui.str_adapter:str_adapter_static_str_adapter.actor-template
+- ui.system_fn:system_fn_ctx_fn.actor-template
+- ui.system_fn_cfg_item:system_fn_cfg_item.actor-template
 - ui.system_fn_creg:system_fn_creg.service
 - ui.ui_adapter_creg:ui_adapter_creg.service
 - ui.ui_command:command_ui_command.actor-template
@@ -189,6 +191,7 @@ definitions:
       - ui.command_cfg_item:command_cfg_item.actor-template
       - ui.command_cfg_item:command_model_command.actor-template
       - ui.feed_type_template:feed_feed_template.actor-template
+      - ui.system_fn_cfg_item:system_fn_cfg_item.actor-template
   command_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -219,6 +222,7 @@ definitions:
         rpc_target_creg: rpc_target_creg
         signature_registry: signature_registry
         system: system
+        system_fn_creg: system_fn_creg
         ui_adapter_creg: ui_adapter_creg
         view_creg: view_creg
         view_ui_command_reg: view_ui_command_reg
@@ -445,6 +449,11 @@ definitions:
       - ui.visualizer:set_custom_layout.service
       - ui.visualizer:visualizer.service
       - ui.visualizer:visualizer_reg.service
+  system_fn_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.system_fn:system_fn_ctx_fn.actor-template
   ui_adapter_creg:
     type: legacy_type.system:item_list_config
     value:
