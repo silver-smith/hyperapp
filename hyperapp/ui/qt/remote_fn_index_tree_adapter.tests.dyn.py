@@ -41,22 +41,26 @@ def test_remote_fn_adapter(
     identity = generate_rsa_identity(fast=True)
     endpoint_registry.register(identity, rpc_endpoint)
 
-    ctx = Context(
-        identity=identity,
-        rpc_endpoint=rpc_endpoint,
-        )
-
     subprocess_name = 'test-remote-fn-tree-adapter-main'
     with subprocess_rpc_server_running(subprocess_name, identity) as process:
         log.info("Started: %r", process)
 
         model = htypes.tree_adapter_tests.sample_tree()
+        ctx = Context(
+            piece=model,
+            identity=identity,
+            rpc_endpoint=rpc_endpoint,
+            )
+        system_fn = htypes.system_fn.ctx_fn(
+            function=pyobj_creg.actor_to_ref(sample_tree_fn),
+            ctx_params=('piece', 'parent'),
+            service_params=(),
+            )
         adapter_piece = htypes.tree_adapter.remote_fn_index_tree_adapter(
             element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
             # key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
-            function=pyobj_creg.actor_to_ref(sample_tree_fn),
+            system_fn=mosaic.put(system_fn),
             remote_peer=mosaic.put(process.peer.piece),
-            params=('piece', 'parent'),
             )
         adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
 

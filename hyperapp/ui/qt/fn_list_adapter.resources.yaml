@@ -35,5 +35,6 @@ definitions:
       t: legacy_type.list_adapter:fn_list_adapter
       function: FnListAdapter.from_piece
       service_params:
+      - system_fn_creg
       - rpc_call_factory
       - feed_factory

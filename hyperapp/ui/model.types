@@ -1,6 +1,6 @@
 model = record:
   ui_t: ref
-  impl: ref
+  system_fn: ref
 
 
 list_ui_t = record:
@@ -11,9 +11,3 @@ tree_ui_t = record:
 
 record_ui_t = record:
   record_t: ref
-
-
-fn_impl = record:
-  function: ref
-  ctx_params: string list
-  service_params: string list

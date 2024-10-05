@@ -35,5 +35,6 @@ definitions:
       t: legacy_type.tree_adapter:fn_index_tree_adapter
       function: FnIndexTreeAdapter.from_piece
       service_params:
+      - system_fn_creg
       - feed_factory
       - rpc_call_factory

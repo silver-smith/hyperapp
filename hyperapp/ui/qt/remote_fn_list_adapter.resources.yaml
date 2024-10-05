@@ -25,6 +25,7 @@ definitions:
       t: legacy_type.list_adapter:remote_fn_list_adapter
       function: RemoteFnListAdapter.from_piece
       service_params:
+      - system_fn_creg
       - peer_registry
       - rpc_call_factory
       - feed_factory

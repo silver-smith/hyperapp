@@ -1,4 +1,3 @@
 fn_record_adapter = record:
   record_t: ref
-  function: ref
-  params: string list
+  system_fn: ref

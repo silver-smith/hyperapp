@@ -23,11 +23,9 @@ class ListAdapterBase:
 
 class FnListAdapterBase(ListAdapterBase, metaclass=abc.ABCMeta):
 
-    def __init__(self, feed_factory, model, item_t, params, ctx):
+    def __init__(self, feed_factory, model, item_t):
         self._model = model
         self._item_t = item_t
-        self._params = params
-        self._ctx = ctx
         self._column_names = sorted(self._item_t.fields)
         self._item_list = None
         self._subscribers = weakref.WeakSet()
@@ -79,10 +77,6 @@ class FnListAdapterBase(ListAdapterBase, metaclass=abc.ABCMeta):
         return self._item_t
 
     @property
-    def function_params(self):
-        return self._params
-
-    @property
     def _items(self):
         if self._item_list is not None:
             return self._item_list
@@ -90,17 +84,10 @@ class FnListAdapterBase(ListAdapterBase, metaclass=abc.ABCMeta):
         return self._item_list
 
     def _populate(self):
-        available_params = {
-            **self._ctx.as_dict(),
-            'piece': self._model,
+        additional_kw = {
             'feed': self._feed,
-            'ctx': self._ctx,
             }
-        kw = {
-            name: available_params[name]
-            for name in self._params
-            }
-        self._item_list = self._call_fn(**kw)
+        self._item_list = self._call_fn(**additional_kw)
 
     @abc.abstractmethod
     def _call_fn(self, **kw):

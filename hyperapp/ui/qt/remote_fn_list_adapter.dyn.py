@@ -14,18 +14,24 @@ class RemoteFnListAdapter(FnListAdapterBase):
 
     @classmethod
     @mark.actor.ui_adapter_creg(htypes.list_adapter.remote_fn_list_adapter)
-    def from_piece(cls, piece, model, ctx, peer_registry, rpc_call_factory, feed_factory):
+    def from_piece(cls, piece, model, ctx, system_fn_creg, peer_registry, rpc_call_factory, feed_factory):
         element_t = pyobj_creg.invite(piece.element_t)
         remote_peer = peer_registry.invite(piece.remote_peer)
-        return cls(rpc_call_factory, feed_factory, model, element_t, piece.params, ctx, piece.function, ctx.identity, remote_peer)
+        fn = system_fn_creg.invite(piece.system_fn)
+        return cls(rpc_call_factory, feed_factory, model, element_t, ctx, fn, ctx.identity, remote_peer)
 
-    def __init__(self, rpc_call_factory, feed_factory, model, item_t, params, ctx, fn_res_ref, identity, remote_peer):
-        super().__init__(feed_factory, model, item_t, params, ctx)
-        self._rpc_call = rpc_call_factory(
-            receiver_peer=remote_peer,
-            sender_identity=identity,
-            servant_ref=fn_res_ref,
-            )
+    def __init__(self, rpc_call_factory, feed_factory, model, item_t, ctx, fn, identity, remote_peer):
+        super().__init__(feed_factory, model, item_t)
+        self._rpc_call_factory = rpc_call_factory
+        self._ctx = ctx
+        self._fn = fn
+        self._remote_peer = remote_peer
+        self._identity = identity
 
     def _call_fn(self, **kw):
-        return self._rpc_call(**kw)
+        rpc_call = self._rpc_call_factory(
+            receiver_peer=self._remote_peer,
+            sender_identity=self._identity,
+            servant_ref=self._fn.partial_ref(self._ctx, **kw),
+            )
+        return rpc_call()

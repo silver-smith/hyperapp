@@ -9,37 +9,52 @@ class ContextFn:
 
     @classmethod
     @mark.actor.system_fn_creg
-    def from_piece(cls, piece, system):
+    def from_piece(cls, piece, system, partial_ref):
         service_kw = {
             name: system.resolve_service(name)
             for name in piece.service_params
             }
         fn = pyobj_creg.invite(piece.function)
         bound_fn = partial(fn, **service_kw)
-        return cls(piece.ctx_params, piece.service_params, fn, bound_fn)
+        return cls(partial_ref, piece.ctx_params, piece.service_params, fn, bound_fn)
 
-    def __init__(self, ctx_params, service_params, fn, bound_fn):
+    def __init__(self, partial_ref, ctx_params, service_params, unbound_fn, bound_fn):
+        self._partial_ref = partial_ref
         self._ctx_params = ctx_params
         self._service_params = service_params
-        self._fn = fn
+        self._unbound_fn = unbound_fn
         self._bound_fn = bound_fn
 
     @property
     def piece(self):
         return htypes.system_fn.ctx_fn(
-            function=pyobj_creg.actor_to_ref(self._fn),
+            function=pyobj_creg.actor_to_ref(self._unbound_fn),
             ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
             )
 
-    def call(self, ctx):
-        kw = self._ctx_kw(ctx)
-        return self._bound_fn(**kw)
+    def call(self, ctx, **kw):
+        ctx_kw = self._fn_kw(ctx, kw)
+        return self._bound_fn(**ctx_kw)
+
+    def _fn_kw(self, ctx, additional_kw):
+        values = {
+            **self._ctx_kw(ctx),
+            **additional_kw,
+            'ctx': ctx,
+            }
+        missing_params = set(self._ctx_params) - values.keys()
+        if missing_params:
+            missing_str = ", ".join(missing_params)
+            raise RuntimeError(f"{self._unbound_fn}: Required parameters not provided: {missing_str}")
+        return {
+            name: values[name]
+            for name in self._ctx_params
+            }
 
     def _ctx_kw(self, ctx):
         kw = {
             **ctx.as_dict(),
-            'ctx': ctx,
             }
         try:
             view = ctx.view
@@ -53,9 +68,9 @@ class ContextFn:
             raise RuntimeError(f"{self!r}: widget is gone")
         kw['widget'] = widget
         kw['state'] = view.widget_state(widget)
-        return {
-            name: value
-            for name, value in kw.items()
-            if name in self._ctx_params
-            }
+        return kw
 
+    def partial_ref(self, ctx, **kw):
+        assert not self._service_params  # TODO: Remote call for system fn with service params.
+        ctx_kw = self._fn_kw(ctx, kw)
+        return self._partial_ref(self._unbound_fn, **ctx_kw)

@@ -16,9 +16,9 @@ import:
 - legacy_type.layout:open_view_item_commands_d
 - legacy_type.layout:view
 - legacy_type.layout:view_item_commands_d
-- legacy_type.model:fn_impl
 - legacy_type.model:model
 - legacy_type.model:tree_ui_t
+- legacy_type.system_fn:ctx_fn
 - ui.command:command.module
 definitions:
   add_view_command:
@@ -89,8 +89,13 @@ definitions:
     value:
       object: layout.module
       attr_name: layout_tree
-  layout_view.impl:
-    type: legacy_type.model:fn_impl
+  layout_view.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: layout_view.tree-ui-t
+      system_fn: layout_view.system-fn
+  layout_view.system-fn:
+    type: legacy_type.system_fn:ctx_fn
     value:
       function: layout_tree
       ctx_params:
@@ -98,11 +103,6 @@ definitions:
       - parent
       - controller
       service_params: []
-  layout_view.model:
-    type: legacy_type.model:model
-    value:
-      ui_t: layout_view.tree-ui-t
-      impl: layout_view.impl
   layout_view.tree-ui-t:
     type: legacy_type.model:tree_ui_t
     value:

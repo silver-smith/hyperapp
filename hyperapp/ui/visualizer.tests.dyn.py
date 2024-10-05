@@ -42,7 +42,7 @@ def sample_fn():
 
 @mark.config_fixture('visualizer_reg')
 def visualizer_config():
-    impl = htypes.model.fn_impl(
+    system_fn = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(sample_fn),
         ctx_params=(),
         service_params=(),
@@ -54,7 +54,7 @@ def visualizer_config():
                     element_t=pyobj_creg.actor_to_ref(htypes.visualizer_tests.sample_list_item),
                     ),
                 ),
-            impl=mosaic.put(impl),
+            system_fn=mosaic.put(system_fn),
             ),
         htypes.visualizer_tests.sample_tree: htypes.model.model(
             ui_t=mosaic.put(
@@ -63,7 +63,7 @@ def visualizer_config():
                     element_t=pyobj_creg.actor_to_ref(htypes.visualizer_tests.sample_tree_item),
                     ),
                 ),
-            impl=mosaic.put(impl),
+            system_fn=mosaic.put(system_fn),
             ),
         htypes.visualizer_tests.sample_record: htypes.model.model(
             ui_t=mosaic.put(
@@ -71,7 +71,7 @@ def visualizer_config():
                     record_t=pyobj_creg.actor_to_ref(htypes.visualizer_tests.sample_record_item),
                     ),
                 ),
-            impl=mosaic.put(impl),
+            system_fn=mosaic.put(system_fn),
             ),
         }
 

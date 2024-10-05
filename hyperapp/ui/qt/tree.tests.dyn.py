@@ -26,11 +26,15 @@ def _sample_tree_fn(piece, parent):
 
 
 def _make_adapter_piece():
+    system_fn = htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(_sample_tree_fn),
+        ctx_params=('piece', 'parent'),
+        service_params=(),
+        )
     return htypes.tree_adapter.fn_index_tree_adapter(
         element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_tests.item)),
         # key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
-        function=pyobj_creg.actor_to_ref(_sample_tree_fn),
-        params=('piece', 'parent'),
+        system_fn=mosaic.put(system_fn),
         )
 
 

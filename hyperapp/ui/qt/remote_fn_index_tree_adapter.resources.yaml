@@ -35,6 +35,7 @@ definitions:
       t: legacy_type.tree_adapter:remote_fn_index_tree_adapter
       function: RemoteFnIndexTreeAdapter.from_piece
       service_params:
+      - system_fn_creg
       - feed_factory
       - peer_registry
       - rpc_call_factory

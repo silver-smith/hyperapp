@@ -64,18 +64,18 @@ class ModelCtr(ModuleCtr):
             if name_to_res is not None:
                 name_to_res['.'.join([*prefix, name])] = object
             prefix.append(name)
-        impl = htypes.model.fn_impl(
+        system_fn = htypes.system_fn.ctx_fn(
             function=mosaic.put(object),
             ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
             )
         model = htypes.model.model(
             ui_t=mosaic.put(self._ui_t),
-            impl=mosaic.put(impl),
+            system_fn=mosaic.put(system_fn),
             )
         if name_to_res is not None:
             name_to_res[f'{self._resource_name}.{self._ui_t_name}'] = self._ui_t
-            name_to_res[f'{self._resource_name}.impl'] = impl
+            name_to_res[f'{self._resource_name}.system-fn'] = system_fn
             name_to_res[f'{self._resource_name}.model'] = model
         return model
 

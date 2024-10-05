@@ -34,21 +34,25 @@ def test_remote_fn_adapter(
     identity = generate_rsa_identity(fast=True)
     endpoint_registry.register(identity, rpc_endpoint)
 
-    ctx = Context(
-        identity=identity,
-        rpc_endpoint=rpc_endpoint,
-        )
-
     subprocess_name = 'test-remote-fn-list-adapter-main'
     with subprocess_rpc_server_running(subprocess_name, identity) as process:
         log.info("Started: %r", process)
 
         model = htypes.list_adapter_tests.sample_list()
+        ctx = Context(
+            piece=model,
+            identity=identity,
+            rpc_endpoint=rpc_endpoint,
+            )
+        system_fn = htypes.system_fn.ctx_fn(
+            function=pyobj_creg.actor_to_ref(sample_list_fn),
+            ctx_params=('piece',),
+            service_params=(),
+            )
         adapter_piece = htypes.list_adapter.remote_fn_list_adapter(
             element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
-            function=pyobj_creg.actor_to_ref(sample_list_fn),
+            system_fn=mosaic.put(system_fn),
             remote_peer=mosaic.put(process.peer.piece),
-            params=('piece',),
             )
         adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
 

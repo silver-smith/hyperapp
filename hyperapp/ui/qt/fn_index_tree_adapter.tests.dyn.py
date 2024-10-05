@@ -33,13 +33,17 @@ def sample_tree_fn(piece, parent):
 
 
 def test_fn_adapter(ui_adapter_creg):
-    ctx = Context()
     model = htypes.tree_adapter_tests.sample_tree()
+    ctx = Context(piece=model)
+    system_fn = htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(sample_tree_fn),
+        ctx_params=('piece', 'parent'),
+        service_params=(),
+        )
     adapter_piece = htypes.tree_adapter.fn_index_tree_adapter(
         element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
         # key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
-        function=pyobj_creg.actor_to_ref(sample_tree_fn),
-        params=('piece', 'parent'),
+        system_fn=mosaic.put(system_fn),
         )
     adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
 
@@ -95,13 +99,17 @@ def sample_feed_tree_fn(piece, parent, feed):
 
 
 async def test_feed_fn_adapter(ui_adapter_creg):
-    ctx = Context()
     model = htypes.tree_adapter_tests.sample_tree()
+    ctx = Context(piece=model)
+    system_fn = htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(sample_feed_tree_fn),
+        ctx_params=('piece', 'parent', 'feed'),
+        service_params=(),
+        )
     adapter_piece = htypes.tree_adapter.fn_index_tree_adapter(
         element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
         # key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
-        function=pyobj_creg.actor_to_ref(sample_feed_tree_fn),
-        params=('piece', 'parent', 'feed'),
+        system_fn=mosaic.put(system_fn),
         )
 
     adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
@@ -155,17 +163,21 @@ def test_fn_adapter_with_remote_context(
     with subprocess_rpc_server_running(subprocess_name, identity) as process:
         log.info("Started: %r", process)
 
+        model = htypes.tree_adapter_tests.sample_tree()
         ctx = Context(
+            piece=model,
             identity=identity,
             remote_peer=process.peer,
             )
-
-        model = htypes.tree_adapter_tests.sample_tree()
+        system_fn = htypes.system_fn.ctx_fn(
+            function=pyobj_creg.actor_to_ref(sample_remote_tree_fn),
+            ctx_params=('piece', 'parent'),
+            service_params=(),
+            )
         adapter_piece = htypes.tree_adapter.fn_index_tree_adapter(
             element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
             # key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
-            function=pyobj_creg.actor_to_ref(sample_remote_tree_fn),
-            params=('piece', 'parent'),
+            system_fn=mosaic.put(system_fn),
             )
         adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
 

@@ -14,10 +14,9 @@ log = logging.getLogger(__name__)
 
 class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
 
-    def __init__(self, model, item_t, ctx):
+    def __init__(self, model, item_t):
         self._model = model
         self._item_t = item_t
-        self._ctx = ctx
         self._id_to_item = {0: None}
         self._id_to_children_id_list = {}
         self._id_to_parent_id = {}
@@ -144,9 +143,8 @@ class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
 
 class FnIndexTreeAdapterBase(IndexTreeAdapterBase, metaclass=abc.ABCMeta):
 
-    def __init__(self, feed_factory, model, item_t, params, ctx):
-        super().__init__(model, item_t, ctx)
-        self._params = params
+    def __init__(self, feed_factory, model, item_t):
+        super().__init__(model, item_t)
         self._column_names = sorted(self._item_t.fields)
         try:
             self._feed = feed_factory(model)
@@ -166,18 +164,11 @@ class FnIndexTreeAdapterBase(IndexTreeAdapterBase, metaclass=abc.ABCMeta):
         return getattr(item, self._column_names[column])
 
     def _retrieve_item_list(self, parent_id):
-        available_params = {
-            **self._ctx.as_dict(),
-            'piece': self._model,
+        additional_kw = {
             'parent': self._id_to_item[parent_id],
             'feed': self._feed,
-            'ctx': self._ctx,
             }
-        kw = {
-            name: available_params[name]
-            for name in self._params
-            }
-        return self._call_fn(**kw)
+        return self._call_fn(**additional_kw)
 
     @abc.abstractmethod
     def _call_fn(self, **kw):

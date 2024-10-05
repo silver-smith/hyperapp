@@ -34,3 +34,4 @@ definitions:
       function: ContextFn.from_piece
       service_params:
       - system
+      - partial_ref

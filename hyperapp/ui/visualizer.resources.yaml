@@ -13,7 +13,6 @@ import:
 - legacy_type.list:view
 - legacy_type.list_adapter:fn_list_adapter
 - legacy_type.list_adapter:static_list_adapter
-- legacy_type.model:fn_impl
 - legacy_type.model:list_ui_t
 - legacy_type.model:record_ui_t
 - legacy_type.model:tree_ui_t
@@ -79,7 +78,6 @@ definitions:
         htypes.list.view: legacy_type.list:view
         htypes.list_adapter.fn_list_adapter: legacy_type.list_adapter:fn_list_adapter
         htypes.list_adapter.static_list_adapter: legacy_type.list_adapter:static_list_adapter
-        htypes.model.fn_impl: legacy_type.model:fn_impl
         htypes.model.list_ui_t: legacy_type.model:list_ui_t
         htypes.model.record_ui_t: legacy_type.model:record_ui_t
         htypes.model.tree_ui_t: legacy_type.model:tree_ui_t

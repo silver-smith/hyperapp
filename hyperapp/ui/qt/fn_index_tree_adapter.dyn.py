@@ -10,15 +10,15 @@ class FnIndexTreeAdapter(FnIndexTreeAdapterBase):
 
     @classmethod
     @mark.actor.ui_adapter_creg(htypes.tree_adapter.fn_index_tree_adapter)
-    def from_piece(cls, piece, model, ctx, feed_factory, rpc_call_factory):
+    def from_piece(cls, piece, model, ctx, system_fn_creg, feed_factory, rpc_call_factory):
         element_t = pyobj_creg.invite(piece.element_t)
-        fn = pyobj_creg.invite(piece.function)
-        return cls(feed_factory, rpc_call_factory, model, element_t, piece.params, ctx, piece.function, fn)
+        fn = system_fn_creg.invite(piece.system_fn)
+        return cls(feed_factory, rpc_call_factory, model, element_t, ctx, fn)
 
-    def __init__(self, feed_factory, rpc_call_factory, model, item_t, params, ctx, fn_res_ref, fn):
-        super().__init__(feed_factory, model, item_t, params, ctx)
+    def __init__(self, feed_factory, rpc_call_factory, model, item_t, ctx, fn):
+        super().__init__(feed_factory, model, item_t)
         self._rpc_call_factory = rpc_call_factory
-        self._fn_res_ref = fn_res_ref
+        self._ctx = ctx
         self._fn = fn
 
     def _call_fn(self, **kw):
@@ -31,7 +31,7 @@ class FnIndexTreeAdapter(FnIndexTreeAdapterBase):
             rpc_call = self._rpc_call_factory(
                 sender_identity=identity,
                 receiver_peer=remote_peer,
-                servant_ref=self._fn_res_ref,
+                servant_ref=self._fn.partial_ref(self._ctx, **kw),
                 )
-            return rpc_call(**kw)
-        return self._fn(**kw)
+            return rpc_call()
+        return self._fn.call(self._ctx, **kw)

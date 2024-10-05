@@ -26,12 +26,16 @@ def sample_list_fn(piece):
 
 
 def test_fn_adapter(ui_adapter_creg):
-    ctx = Context()
     model = htypes.list_adapter_tests.sample_list()
+    ctx = Context(piece=model)
+    system_fn = htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(sample_list_fn),
+        ctx_params=('piece',),
+        service_params=(),
+        )
     adapter_piece = htypes.list_adapter.fn_list_adapter(
         element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
-        function=pyobj_creg.actor_to_ref(sample_list_fn),
-        params=('piece',),
+        system_fn=mosaic.put(system_fn),
         )
     adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
     assert adapter.column_count() == 2
@@ -68,12 +72,16 @@ def sample_feed_list_fn(piece, feed):
 
 
 async def test_feed_fn_adapter(ui_adapter_creg):
-    ctx = Context()
     model = htypes.list_adapter_tests.sample_list()
+    ctx = Context(piece=model)
+    system_fn = htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(sample_feed_list_fn),
+        ctx_params=('piece', 'feed'),
+        service_params=(),
+        )
     adapter_piece = htypes.list_adapter.fn_list_adapter(
         element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
-        function=pyobj_creg.actor_to_ref(sample_feed_list_fn),
-        params=('piece', 'feed'),
+        system_fn=mosaic.put(system_fn),
         )
 
     adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
@@ -124,16 +132,20 @@ def test_fn_adapter_with_remote_context(
     with subprocess_rpc_server_running(subprocess_name, identity) as process:
         log.info("Started: %r", process)
 
+        model = htypes.list_adapter_tests.sample_list()
         ctx = Context(
+            piece=model,
             identity=identity,
             remote_peer=process.peer,
             )
-
-        model = htypes.list_adapter_tests.sample_list()
+        system_fn = htypes.system_fn.ctx_fn(
+            function=pyobj_creg.actor_to_ref(sample_remote_list_fn),
+            ctx_params=('piece',),
+            service_params=(),
+            )
         adapter_piece = htypes.list_adapter.fn_list_adapter(
             element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
-            function=pyobj_creg.actor_to_ref(sample_remote_list_fn),
-            params=('piece',),
+            system_fn=mosaic.put(system_fn),
             )
         adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
 
