@@ -167,6 +167,7 @@ import:
 - ui.qt.window_commands:window_view_duplicate_window.cfg-item
 - ui.qt.window_commands:window_view_quit.cfg-item
 - ui.str_adapter:str_adapter_static_str_adapter.actor-template
+- ui.system_fn_creg:system_fn_creg.service
 - ui.ui_adapter_creg:ui_adapter_creg.service
 - ui.ui_command:command_ui_command.actor-template
 - ui.ui_command:get_view_commands.service
@@ -432,6 +433,7 @@ definitions:
       - ui.feed_creg:feed_creg.service
       - ui.model_command:global_model_command_reg.service
       - ui.model_command_impl_creg:model_command_impl_creg.service
+      - ui.system_fn_creg:system_fn_creg.service
       - ui.ui_adapter_creg:ui_adapter_creg.service
       - ui.ui_command:get_view_commands.service
       - ui.ui_command:universal_ui_command_reg.service
