@@ -16,6 +16,7 @@ import:
 - legacy_type.layout:open_view_item_commands_d
 - legacy_type.layout:view
 - legacy_type.layout:view_item_commands_d
+- legacy_type.model:cfg_item
 - legacy_type.model:model
 - legacy_type.model:tree_ui_t
 - legacy_type.system_fn:ctx_fn
@@ -94,6 +95,11 @@ definitions:
     value:
       ui_t: layout_view.tree-ui-t
       system_fn: layout_view.system-fn
+  layout_view.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.layout:view
+      model: layout_view.model
   layout_view.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:

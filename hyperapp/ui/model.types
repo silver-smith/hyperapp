@@ -1,3 +1,7 @@
+cfg_item = record:
+  t: ref
+  model: ref
+
 model = record:
   ui_t: ref
   system_fn: ref

@@ -40,18 +40,18 @@ class ModelCtr(ModuleCtr):
             )
 
     def update_resource_targets(self, resource_tgt, target_set):
-        ready_tgt = target_set.factory.config_item_ready('model', self._resource_name)
+        ready_tgt = target_set.factory.config_item_ready('visualizer_reg', self._resource_name)
         ready_tgt.set_provider(resource_tgt, target_set)
-        resolved_tgt = target_set.factory.config_item_resolved('model', self._resource_name)
+        resolved_tgt = target_set.factory.config_item_resolved('visualizer_reg', self._resource_name)
         resolved_tgt.resolve(self)
         # Should be created to be added to config resource.
-        _ = target_set.factory.config_item_complete('model', self._resource_name)
+        _ = target_set.factory.config_item_complete('visualizer_reg', self._resource_name)
         resource_tgt.add_cfg_item_target(resolved_tgt)
         target_set.update_deps_for(resolved_tgt)
         target_set.update_deps_for(resource_tgt)
 
     def get_component(self, name_to_res):
-        return name_to_res[f'{self._resource_name}.model']
+        return name_to_res[f'{self._resource_name}.model-cfg-item']
 
     def make_component(self, types, python_module, name_to_res=None):
         object = python_module
@@ -73,11 +73,16 @@ class ModelCtr(ModuleCtr):
             ui_t=mosaic.put(self._ui_t),
             system_fn=mosaic.put(system_fn),
             )
+        cfg_item = htypes.model.cfg_item(
+            t=pyobj_creg.actor_to_ref(self._model_t),
+            model=mosaic.put(model),
+            )
         if name_to_res is not None:
             name_to_res[f'{self._resource_name}.{self._ui_t_name}'] = self._ui_t
             name_to_res[f'{self._resource_name}.system-fn'] = system_fn
             name_to_res[f'{self._resource_name}.model'] = model
-        return model
+            name_to_res[f'{self._resource_name}.model-cfg-item'] = cfg_item
+        return cfg_item
 
     @property
     def _resource_name(self):

@@ -139,7 +139,9 @@ import:
 - ui.feed:feed_list_feed_type.actor-template
 - ui.feed_creg:feed_creg.service
 - ui.feed_type_template:feed_feed_template.actor-template
+- ui.layout:layout_view.model-cfg-item
 - ui.layout:open_layout_tree.global-model-command
+- ui.model_cfg_item:model_cfg_item.actor-template
 - ui.model_command:command_model_command.actor-template
 - ui.model_command:global_model_command_reg.service
 - ui.model_command_impl_creg:model_command_impl_creg.service
@@ -191,6 +193,7 @@ definitions:
       - ui.command_cfg_item:command_cfg_item.actor-template
       - ui.command_cfg_item:command_model_command.actor-template
       - ui.feed_type_template:feed_feed_template.actor-template
+      - ui.model_cfg_item:model_cfg_item.actor-template
       - ui.system_fn_cfg_item:system_fn_cfg_item.actor-template
   command_creg:
     type: legacy_type.system:item_list_config
@@ -226,6 +229,7 @@ definitions:
         ui_adapter_creg: ui_adapter_creg
         view_creg: view_creg
         view_ui_command_reg: view_ui_command_reg
+        visualizer_reg: visualizer_reg
   config_ctl_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -486,3 +490,8 @@ definitions:
       - ui.qt.auto_tabs:auto_tabs_view_duplicate_tab.cfg-item
       - ui.qt.window_commands:window_view_duplicate_window.cfg-item
       - ui.qt.window_commands:window_view_quit.cfg-item
+  visualizer_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.layout:layout_view.model-cfg-item
