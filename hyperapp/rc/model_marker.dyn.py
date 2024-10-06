@@ -71,16 +71,12 @@ class ModelProbe:
         try:
             parent = param_values['parent']
         except KeyError:
-            assert 0, (result_t, model_t, ctx_params, service_params)  # not a tree model, TODO.
-        if not isinstance(result_t, TList):
-            self._raise_error(f"Tree model should return an item list: {result!r}")
-        if parent is not None:
-            parent_t = self._deduce_t(parent, f"{self._fn}: 'parent' parameter is not a deducible data type: {parent!r}")
-            if parent_t is not result_t.element_t:
-                self._raise_error(f"Parent type should match result list element type: parent: {parent_t}, result element: {result_t.element_t}")
-        ui_t = htypes.model.tree_ui_t(
-            element_t=pyobj_creg.actor_to_ref(result_t.element_t),
-            )
+            if isinstance(result_t, TList):
+                ui_t = self._make_list_ui_t(result_t)
+            else:
+                assert 0, (result_t, model_t, ctx_params, service_params)  # not a tree or list model, TODO.
+        else:
+            ui_t = self._make_tree_ui_t(result_t, parent)
         ctr = ModelCtr(
             module_name=self._module_name,
             attr_qual_name=self._fn.__qualname__.split('.'),
@@ -90,6 +86,22 @@ class ModelProbe:
             service_params=service_params,
             )
         self._ctr_collector.add_constructor(ctr)
+
+    def _make_tree_ui_t(self, result_t, parent):
+        if not isinstance(result_t, TList):
+            self._raise_error(f"Tree model should return an item list: {result!r}")
+        if parent is not None:
+            parent_t = self._deduce_t(parent, f"{self._fn}: 'parent' parameter is not a deducible data type: {parent!r}")
+            if parent_t is not result_t.element_t:
+                self._raise_error(f"Parent type should match result list element type: parent: {parent_t}, result element: {result_t.element_t}")
+        return htypes.model.tree_ui_t(
+            element_t=pyobj_creg.actor_to_ref(result_t.element_t),
+            )
+
+    def _make_list_ui_t(self, result_t):
+        return htypes.model.list_ui_t(
+            element_t=pyobj_creg.actor_to_ref(result_t.element_t),
+            )
 
     def _deduce_t(self, value, error_msg):
         try:
