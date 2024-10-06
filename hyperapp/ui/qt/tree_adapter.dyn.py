@@ -165,6 +165,8 @@ class FnIndexTreeAdapterBase(IndexTreeAdapterBase, metaclass=abc.ABCMeta):
 
     def _retrieve_item_list(self, parent_id):
         additional_kw = {
+            'model': self._model,
+            'piece': self._model,
             'parent': self._id_to_item[parent_id],
             'feed': self._feed,
             }
