@@ -1,4 +1,4 @@
-from hyperapp.common.htypes import TList
+from hyperapp.common.htypes import TList, TRecord
 from hyperapp.common.htypes.deduce_value_type import DeduceTypeError
 
 from . import htypes
@@ -73,8 +73,10 @@ class ModelProbe:
         except KeyError:
             if isinstance(result_t, TList):
                 ui_t = self._make_list_ui_t(result_t)
+            elif isinstance(result_t, TRecord):
+                ui_t = self._make_record_ui_t(result_t)
             else:
-                assert 0, (result_t, model_t, ctx_params, service_params)  # not a tree or list model, TODO.
+                raise RuntimeError(f"Unknown model {model_t} type: {result_t!r}")
         else:
             ui_t = self._make_tree_ui_t(result_t, parent)
         ctr = ModelCtr(
@@ -101,6 +103,11 @@ class ModelProbe:
     def _make_list_ui_t(self, result_t):
         return htypes.model.list_ui_t(
             element_t=pyobj_creg.actor_to_ref(result_t.element_t),
+            )
+
+    def _make_record_ui_t(self, result_t):
+        return htypes.model.record_ui_t(
+            record_t=pyobj_creg.actor_to_ref(result_t),
             )
 
     def _deduce_t(self, value, error_msg):

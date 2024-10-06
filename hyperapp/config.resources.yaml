@@ -10,6 +10,7 @@ import:
 - common.ref_picker:ref_picker_cache.service
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
+- models.data_browser:data_browser_primitive_view.model-cfg-item
 - rc.actor_ctr:actor_resource_actor_probe_ctr.actor-template
 - rc.actor_ctr:actor_resource_actor_template_ctr.actor-template
 - rc.actor_ctr:system_actor_template.actor-template
@@ -504,6 +505,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - models.data_browser:data_browser_primitive_view.model-cfg-item
       - sample.sample_list:sample_list_feed_sample_list.model-cfg-item
       - sample.sample_list:sample_list_sample_list.model-cfg-item
       - sample.sample_tree:sample_tree_feed_sample_tree.model-cfg-item

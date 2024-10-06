@@ -5,6 +5,7 @@ import:
 - builtins:mosaic.service
 - builtins:web.service
 - common.mark:mark.module
+- legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.data_browser:list_item
 - legacy_type.data_browser:list_view
@@ -14,7 +15,16 @@ import:
 - legacy_type.data_browser:record_view
 - legacy_type.data_browser:ref_list_item
 - legacy_type.data_browser:ref_list_view
+- legacy_type.model:cfg_item
+- legacy_type.model:model
+- legacy_type.model:record_ui_t
+- legacy_type.system_fn:ctx_fn
 definitions:
+  browse_primitive:
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_browser.module
+      attr_name: browse_primitive
   data_browser.module:
     type: legacy_type.builtin:python_module
     value:
@@ -33,3 +43,24 @@ definitions:
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
+  data_browser_primitive_view.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: data_browser_primitive_view.record-ui-t
+      system_fn: data_browser_primitive_view.system-fn
+  data_browser_primitive_view.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.data_browser:primitive_view
+      model: data_browser_primitive_view.model
+  data_browser_primitive_view.record-ui-t:
+    type: legacy_type.model:record_ui_t
+    value:
+      record_t: legacy_type.data_browser:primitive_item
+  data_browser_primitive_view.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: browse_primitive
+      ctx_params:
+      - piece
+      service_params: []
