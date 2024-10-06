@@ -65,9 +65,9 @@ def test_widget(qapp, state, ctx, view):
 
 def test_go_back_command(qapp, state, ctx, view):
     widget = view.construct_widget(state, ctx)
-    navigator.go_back(view, state, widget)
+    navigator.go_back(view, widget, ctx)
 
 
 def test_go_forward_command(qapp, state, ctx, view):
     widget = view.construct_widget(state, ctx)
-    navigator.go_forward(view, state, widget)
+    navigator.go_forward(view, widget, ctx)
