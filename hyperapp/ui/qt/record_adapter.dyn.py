@@ -2,9 +2,9 @@ import logging
 import weakref
 
 from .services import (
-    feed_factory,
     pyobj_creg,
     )
+from .code.mark import mark
 
 log = logging.getLogger(__name__)
 
@@ -12,17 +12,17 @@ log = logging.getLogger(__name__)
 class FnRecordAdapter:
 
     @classmethod
-    def from_piece(cls, piece, model, ctx):
+    @mark.actor.ui_adapter_creg
+    def from_piece(cls, piece, model, ctx, system_fn_creg, feed_factory):
         record_t = pyobj_creg.invite(piece.record_t)
-        fn = pyobj_creg.invite(piece.function)
-        return cls(model, record_t, piece.params, ctx, fn)
+        fn = system_fn_creg.invite(piece.system_fn)
+        return cls(feed_factory, model, record_t, ctx, fn)
 
-    def __init__(self, model, record_t, params, ctx, fn):
+    def __init__(self, feed_factory, model, record_t, ctx, ctx_fn):
         self._model = model
         self._record_t = record_t
-        self._params = params
         self._ctx = ctx
-        self._fn = fn
+        self._ctx_fn = ctx_fn
         self._subscribers = weakref.WeakSet()
         self._record = None
         try:
@@ -54,17 +54,13 @@ class FnRecordAdapter:
         return getattr(self._record, name)
 
     def _populate(self):
-        available_params = {
-            **self._ctx.as_dict(),
+        additional_kw = {
+            'model': self._model,
             'piece': self._model,
             'feed': self._feed,
-            'ctx': self._ctx,
             }
-        kw = {
-            name: available_params[name]
-            for name in self._params
-            }
-        self._record = self._call_fn(**kw)
+        self._record = self._call_fn(**additional_kw)
 
     def _call_fn(self, **kw):
-        return self._fn(**kw)
+        return self._ctx_fn.call(self._ctx, **kw)
+

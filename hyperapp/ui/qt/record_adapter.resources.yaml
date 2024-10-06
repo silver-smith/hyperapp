@@ -2,11 +2,11 @@
 
 import:
 - builtins:pyobj_creg.service
+- common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.record_adapter:fn_record_adapter
-- ui.feed:feed_factory.service
-- ui.ui_adapter_creg:ui_adapter_creg.service
+- legacy_type.system:actor_template
 definitions:
   FnRecordAdapter:
     type: legacy_type.builtin:attribute
@@ -24,5 +24,13 @@ definitions:
       module_name: record_adapter
       file_name: record_adapter.dyn.py
       import_list:
-        services.feed_factory: ui.feed:feed_factory.service
+        code.mark: common.mark:mark.module
         services.pyobj_creg: builtins:pyobj_creg.service
+  record_adapter_fn_record_adapter.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.record_adapter:fn_record_adapter
+      function: FnRecordAdapter.from_piece
+      service_params:
+      - system_fn_creg
+      - feed_factory
