@@ -112,6 +112,8 @@ import:
 - sample.sample_list:sample_list_feed_sample_list.feed-template
 - sample.sample_list:sample_list_feed_sample_list.model-cfg-item
 - sample.sample_list:sample_list_sample_list.model-cfg-item
+- sample.sample_record:open_sample_fn_record.global-model-command
+- sample.sample_record:sample_record_sample_record.model-cfg-item
 - sample.sample_tree:open_feed_sample_fn_tree.global-model-command
 - sample.sample_tree:open_sample_fn_tree.global-model-command
 - sample.sample_tree:sample_tree_feed_sample_tree.feed-template
@@ -276,6 +278,7 @@ definitions:
       - sample.sample_commands:show_state.global-model-command
       - sample.sample_list:open_feed_sample_fn_list.global-model-command
       - sample.sample_list:open_sample_fn_list.global-model-command
+      - sample.sample_record:open_sample_fn_record.global-model-command
       - sample.sample_tree:open_feed_sample_fn_tree.global-model-command
       - sample.sample_tree:open_sample_fn_tree.global-model-command
       - ui.layout:open_layout_tree.global-model-command
@@ -508,6 +511,7 @@ definitions:
       - models.data_browser:data_browser_primitive_view.model-cfg-item
       - sample.sample_list:sample_list_feed_sample_list.model-cfg-item
       - sample.sample_list:sample_list_sample_list.model-cfg-item
+      - sample.sample_record:sample_record_sample_record.model-cfg-item
       - sample.sample_tree:sample_tree_feed_sample_tree.model-cfg-item
       - sample.sample_tree:sample_tree_sample_tree.model-cfg-item
       - ui.layout:layout_view.model-cfg-item
