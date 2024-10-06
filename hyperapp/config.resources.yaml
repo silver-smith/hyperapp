@@ -107,7 +107,11 @@ import:
 - sample.sample_feed:sample_feed_sample_list_feed.feed-template
 - sample.sample_feed:sample_feed_sample_tree_feed.feed-template
 - sample.sample_list:sample_list_feed_sample_list.feed-template
+- sample.sample_tree:open_feed_sample_fn_tree.global-model-command
+- sample.sample_tree:open_sample_fn_tree.global-model-command
 - sample.sample_tree:sample_tree_feed_sample_tree.feed-template
+- sample.sample_tree:sample_tree_feed_sample_tree.model-cfg-item
+- sample.sample_tree:sample_tree_sample_tree.model-cfg-item
 - subprocess.subprocess:subprocess_running.service
 - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
 - subprocess.subprocess_rpc_server_main:rpc_server_main.service
@@ -265,6 +269,8 @@ definitions:
       - sample.sample_commands:open_sample_static_text_1.global-model-command
       - sample.sample_commands:open_sample_static_text_2.global-model-command
       - sample.sample_commands:show_state.global-model-command
+      - sample.sample_tree:open_feed_sample_fn_tree.global-model-command
+      - sample.sample_tree:open_sample_fn_tree.global-model-command
       - ui.layout:open_layout_tree.global-model-command
   marker_registry:
     type: legacy_type.system:item_list_config
@@ -492,4 +498,6 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - sample.sample_tree:sample_tree_feed_sample_tree.model-cfg-item
+      - sample.sample_tree:sample_tree_sample_tree.model-cfg-item
       - ui.layout:layout_view.model-cfg-item

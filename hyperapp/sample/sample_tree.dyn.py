@@ -2,9 +2,11 @@ import asyncio
 from functools import partial
 
 from . import htypes
+from .code.mark import mark
 from .code.tree_diff import TreeDiff
 
 
+@mark.model
 def sample_tree(piece, parent):
     if parent:
         base = parent.id
@@ -17,6 +19,7 @@ def sample_tree(piece, parent):
         ]
 
 
+@mark.global_command
 async def open_sample_fn_tree():
     return htypes.sample_tree.sample_tree()
 
@@ -29,6 +32,7 @@ async def _send_diff(path, base, feed, idx):
         asyncio.create_task(_send_diff(path, base, feed, idx + 1))
 
 
+@mark.model
 def feed_sample_tree(piece, parent, feed):
     loop = asyncio.get_running_loop()
     if parent:
@@ -48,5 +52,6 @@ def feed_sample_tree(piece, parent, feed):
         ]
 
 
+@mark.global_command
 async def open_feed_sample_fn_tree():
     return htypes.sample_tree.feed_sample_tree()

@@ -5,6 +5,14 @@ from .fixtures import feed_fixtures
 from .tested.code import sample_tree
 
 
+async def test_open_sample_fn_tree():
+    await sample_tree.open_sample_fn_tree()
+
+
+async def test_open_feed_sample_fn_tree():
+    await sample_tree.open_feed_sample_fn_tree()
+
+
 def test_sample_tree():
     piece = htypes.sample_tree.sample_tree()
     parent = htypes.sample_tree.item(100, "Some item")

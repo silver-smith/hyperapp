@@ -1,21 +1,93 @@
 # Automatically generated file. Do not edit.
 
 import:
+- common.mark:mark.module
 - common.tree_diff:tree_diff.module
+- legacy_type.builtin:attribute
+- legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.command:model_command
 - legacy_type.feed:feed_template
 - legacy_type.feed:index_tree_feed_type
+- legacy_type.model:cfg_item
+- legacy_type.model:model
+- legacy_type.model:tree_ui_t
 - legacy_type.sample_tree:feed_sample_tree
 - legacy_type.sample_tree:item
+- legacy_type.sample_tree:open_feed_sample_fn_tree_d
+- legacy_type.sample_tree:open_sample_fn_tree_d
+- legacy_type.sample_tree:sample_tree
+- legacy_type.system_fn:ctx_fn
 definitions:
+  feed_sample_tree:
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_tree.module
+      attr_name: feed_sample_tree
+  open_feed_sample_fn_tree:
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_tree.module
+      attr_name: open_feed_sample_fn_tree
+  open_feed_sample_fn_tree.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.sample_tree:open_feed_sample_fn_tree_d
+  open_feed_sample_fn_tree.global-model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_feed_sample_fn_tree.d
+      properties:
+        is_global: true
+        uses_state: false
+        remotable: true
+      system_fn: open_feed_sample_fn_tree.system-fn
+  open_feed_sample_fn_tree.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_feed_sample_fn_tree
+      ctx_params: []
+      service_params: []
+  open_sample_fn_tree:
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_tree.module
+      attr_name: open_sample_fn_tree
+  open_sample_fn_tree.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.sample_tree:open_sample_fn_tree_d
+  open_sample_fn_tree.global-model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_sample_fn_tree.d
+      properties:
+        is_global: true
+        uses_state: false
+        remotable: true
+      system_fn: open_sample_fn_tree.system-fn
+  open_sample_fn_tree.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_sample_fn_tree
+      ctx_params: []
+      service_params: []
+  sample_tree:
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_tree.module
+      attr_name: sample_tree
   sample_tree.module:
     type: legacy_type.builtin:python_module
     value:
       module_name: sample_tree
       file_name: sample_tree.dyn.py
       import_list:
+        code.mark: common.mark:mark.module
         code.tree_diff: common.tree_diff:tree_diff.module
+        htypes.sample_tree.feed_sample_tree: legacy_type.sample_tree:feed_sample_tree
         htypes.sample_tree.item: legacy_type.sample_tree:item
+        htypes.sample_tree.sample_tree: legacy_type.sample_tree:sample_tree
   sample_tree_feed_sample_tree.feed-template:
     type: legacy_type.feed:feed_template
     value:
@@ -23,5 +95,50 @@ definitions:
       feed_type: sample_tree_feed_sample_tree.feed-type
   sample_tree_feed_sample_tree.feed-type:
     type: legacy_type.feed:index_tree_feed_type
+    value:
+      element_t: legacy_type.sample_tree:item
+  sample_tree_feed_sample_tree.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: sample_tree_feed_sample_tree.tree-ui-t
+      system_fn: sample_tree_feed_sample_tree.system-fn
+  sample_tree_feed_sample_tree.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.sample_tree:feed_sample_tree
+      model: sample_tree_feed_sample_tree.model
+  sample_tree_feed_sample_tree.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: feed_sample_tree
+      ctx_params:
+      - piece
+      - parent
+      - feed
+      service_params: []
+  sample_tree_feed_sample_tree.tree-ui-t:
+    type: legacy_type.model:tree_ui_t
+    value:
+      element_t: legacy_type.sample_tree:item
+  sample_tree_sample_tree.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: sample_tree_sample_tree.tree-ui-t
+      system_fn: sample_tree_sample_tree.system-fn
+  sample_tree_sample_tree.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.sample_tree:sample_tree
+      model: sample_tree_sample_tree.model
+  sample_tree_sample_tree.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: sample_tree
+      ctx_params:
+      - piece
+      - parent
+      service_params: []
+  sample_tree_sample_tree.tree-ui-t:
+    type: legacy_type.model:tree_ui_t
     value:
       element_t: legacy_type.sample_tree:item
