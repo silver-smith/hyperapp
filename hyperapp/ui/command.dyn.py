@@ -78,10 +78,9 @@ class UnboundCommandBase:
 
 class UnboundCommand(UnboundCommandBase):
 
-    def __init__(self, d, fn, ctx_params):
+    def __init__(self, d, ctx_fn):
         self._d = d
-        self._fn = fn
-        self._ctx_params = set(ctx_params)
+        self._ctx_fn = ctx_fn
 
 
 class BoundCommandBase:
@@ -111,19 +110,18 @@ class BoundCommandBase:
 
 class BoundCommand(BoundCommandBase):
 
-    def __init__(self, d, fn, ctx_params, ctx):
+    def __init__(self, d, ctx_fn, ctx):
         super().__init__(d)
-        self._fn = fn
-        self._ctx_params = set(ctx_params)
+        self._ctx_fn = ctx_fn
         self._ctx = ctx
 
     @property
     def enabled(self):
-        return set(self._ctx_kw) >= self._ctx_params
+        return not self._missing_params
 
     @property
     def disabled_reason(self):
-        params = ", ".join(self._ctx_params - set(self._ctx_kw))
+        params = ", ".join(self._missing_params)
         return f"Params not ready: {params}"
 
     async def run(self):
@@ -135,34 +133,13 @@ class BoundCommand(BoundCommandBase):
         return result
 
     async def _run(self):
-        kw = self._ctx_kw
-        log.info("Run command: %r (%s)", self, kw)
-        result = self._fn(**kw)
-        if inspect.iscoroutinefunction(self._fn):
+        # log.info("Run command: %r (%s)", self, kw)
+        result = self._ctx_fn.call(self._ctx)
+        if inspect.iscoroutine(result):
             result = await result
         log.info("Run command %r result: [%s] %r", self, type(result), result)
         return result
 
-    @property
-    def _ctx_kw(self):
-        kw = {
-            **self._ctx.as_dict(),
-            'ctx': self._ctx.pop(),
-            }
-        try:
-            view = self._ctx.view
-        except KeyError:
-            return kw
-        try:
-            widget = self._ctx.widget()
-        except KeyError:
-            return kw
-        if widget is None:
-            raise RuntimeError(f"{self!r}: widget is gone")
-        kw['widget'] = widget
-        kw['state'] = view.widget_state(widget)
-        return {
-            name: value
-            for name, value in kw.items()
-            if name in self._ctx_params
-            }
+    @cached_property
+    def _missing_params(self):
+        return self._ctx_fn.missing_params(self._ctx)

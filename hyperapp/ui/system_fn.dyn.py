@@ -37,18 +37,25 @@ class ContextFn:
         ctx_kw = self._fn_kw(ctx, kw)
         return self._bound_fn(**ctx_kw)
 
-    def _fn_kw(self, ctx, additional_kw):
-        values = {
+    def fn_kw(self, ctx, **kw):
+        return {
             **self._ctx_kw(ctx),
-            **additional_kw,
+            **kw,
             'ctx': ctx,
             }
-        missing_params = set(self._ctx_params) - values.keys()
+
+    def missing_params(self, ctx, **kw):
+        fn_kw = self.fn_kw(ctx, **kw)
+        return set(self._ctx_params) - fn_kw.keys()
+
+    def _fn_kw(self, ctx, additional_kw):
+        fn_kw = self.fn_kw(ctx, **additional_kw)
+        missing_params = set(self._ctx_params) - fn_kw.keys()
         if missing_params:
             missing_str = ", ".join(missing_params)
             raise RuntimeError(f"{self._unbound_fn}: Required parameters not provided: {missing_str}")
         return {
-            name: values[name]
+            name: fn_kw[name]
             for name in self._ctx_params
             }
 

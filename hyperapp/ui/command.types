@@ -13,9 +13,7 @@ properties = record:
 fn_command = record:
   d: ref
   properties: properties
-  function: ref
-  ctx_params: string list
-  service_params: string list
+  system_fn: ref
 
 ui_command = record(fn_command)
 model_command = record(fn_command)

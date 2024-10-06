@@ -13,6 +13,7 @@ import:
 - legacy_type.command:cfg_item
 - legacy_type.command:ui_command
 - legacy_type.system:actor_template
+- legacy_type.system_fn:ctx_fn
 - ui.qt.tabs:tabs.module
 definitions:
   AutoTabsView:
@@ -52,6 +53,15 @@ definitions:
     type: legacy_type.builtin:call
     value:
       function: legacy_type.auto_tabs:close_tab_d
+  auto_tabs_view_close_tab.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: close_tab
+      ctx_params:
+      - view
+      - widget
+      - state
+      service_params: []
   auto_tabs_view_close_tab.ui-command:
     type: legacy_type.command:ui_command
     value:
@@ -60,12 +70,7 @@ definitions:
         is_global: false
         uses_state: true
         remotable: true
-      function: close_tab
-      ctx_params:
-      - view
-      - widget
-      - state
-      service_params: []
+      system_fn: auto_tabs_view_close_tab.system-fn
   auto_tabs_view_duplicate_tab.cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -75,14 +80,9 @@ definitions:
     type: legacy_type.builtin:call
     value:
       function: legacy_type.auto_tabs:duplicate_tab_d
-  auto_tabs_view_duplicate_tab.ui-command:
-    type: legacy_type.command:ui_command
+  auto_tabs_view_duplicate_tab.system-fn:
+    type: legacy_type.system_fn:ctx_fn
     value:
-      d: auto_tabs_view_duplicate_tab.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: false
       function: duplicate_tab
       ctx_params:
       - ctx
@@ -91,6 +91,15 @@ definitions:
       - state
       service_params:
       - view_creg
+  auto_tabs_view_duplicate_tab.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: auto_tabs_view_duplicate_tab.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: auto_tabs_view_duplicate_tab.system-fn
   close_tab:
     type: legacy_type.builtin:attribute
     value:

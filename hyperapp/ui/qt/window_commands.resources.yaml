@@ -7,6 +7,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
 - legacy_type.command:ui_command
+- legacy_type.system_fn:ctx_fn
 - legacy_type.window:pos
 - legacy_type.window:state
 - legacy_type.window:view
@@ -42,6 +43,15 @@ definitions:
     type: legacy_type.builtin:call
     value:
       function: legacy_type.window_commands:duplicate_window_d
+  window_view_duplicate_window.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: duplicate_window
+      ctx_params:
+      - root
+      - view
+      - state
+      service_params: []
   window_view_duplicate_window.ui-command:
     type: legacy_type.command:ui_command
     value:
@@ -50,12 +60,7 @@ definitions:
         is_global: false
         uses_state: true
         remotable: true
-      function: duplicate_window
-      ctx_params:
-      - root
-      - view
-      - state
-      service_params: []
+      system_fn: window_view_duplicate_window.system-fn
   window_view_quit.cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -65,6 +70,12 @@ definitions:
     type: legacy_type.builtin:call
     value:
       function: legacy_type.window_commands:quit_d
+  window_view_quit.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: quit
+      ctx_params: []
+      service_params: []
   window_view_quit.ui-command:
     type: legacy_type.command:ui_command
     value:
@@ -73,6 +84,4 @@ definitions:
         is_global: false
         uses_state: false
         remotable: true
-      function: quit
-      ctx_params: []
-      service_params: []
+      system_fn: window_view_quit.system-fn

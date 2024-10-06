@@ -7,6 +7,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.context import Context
+from .code.system_fn import ContextFn
 from .code.model_command import UnboundModelCommand
 from .tested.code import ui_model_command
 
@@ -16,15 +17,20 @@ def _sample_fn(model, state, sample_service):
 
 
 @mark.config_fixture('global_model_command_reg')
-def global_model_command_reg_config(data_to_ref):
-    return [
-        UnboundModelCommand(
-            d=data_to_ref(htypes.ui_model_command_tests.sample_command_d()),
-            fn=partial(_sample_fn, sample_service='a-service'),
-            ctx_params=('model', 'state'),
-            properties=htypes.command.properties(False, False, False),
-            ),
-        ]
+def global_model_command_reg_config(data_to_ref, partial_ref):
+    system_fn = ContextFn(
+        partial_ref=partial_ref, 
+        ctx_params=('view', 'state'),
+        service_params=('sample_service',),
+        unbound_fn=_sample_fn,
+        bound_fn=partial(_sample_fn, sample_service='a-service'),
+        )
+    command = UnboundModelCommand(
+        d=data_to_ref(htypes.ui_model_command_tests.sample_command_d()),
+        ctx_fn=system_fn,
+        properties=htypes.command.properties(False, False, False),
+        )
+    return [command]
 
 
 def test_get_ui_model_commands(get_ui_model_commands):

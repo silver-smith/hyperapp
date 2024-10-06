@@ -15,6 +15,7 @@ import:
 - legacy_type.navigator:history_rec
 - legacy_type.navigator:view
 - legacy_type.system:actor_template
+- legacy_type.system_fn:ctx_fn
 - ui.view:view.module
 definitions:
   NavigatorView:
@@ -67,6 +68,16 @@ definitions:
     type: legacy_type.builtin:call
     value:
       function: legacy_type.navigator:go_back_d
+  navigator_view_go_back.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: go_back
+      ctx_params:
+      - view
+      - widget
+      - ctx
+      service_params:
+      - model_view_creg
   navigator_view_go_back.ui-command:
     type: legacy_type.command:ui_command
     value:
@@ -75,13 +86,7 @@ definitions:
         is_global: false
         uses_state: false
         remotable: false
-      function: go_back
-      ctx_params:
-      - view
-      - widget
-      - ctx
-      service_params:
-      - model_view_creg
+      system_fn: navigator_view_go_back.system-fn
   navigator_view_go_forward.cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -91,6 +96,16 @@ definitions:
     type: legacy_type.builtin:call
     value:
       function: legacy_type.navigator:go_forward_d
+  navigator_view_go_forward.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: go_forward
+      ctx_params:
+      - view
+      - widget
+      - ctx
+      service_params:
+      - model_view_creg
   navigator_view_go_forward.ui-command:
     type: legacy_type.command:ui_command
     value:
@@ -99,10 +114,4 @@ definitions:
         is_global: false
         uses_state: false
         remotable: false
-      function: go_forward
-      ctx_params:
-      - view
-      - widget
-      - ctx
-      service_params:
-      - model_view_creg
+      system_fn: navigator_view_go_forward.system-fn

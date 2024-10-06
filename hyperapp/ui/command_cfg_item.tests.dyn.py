@@ -21,12 +21,15 @@ def sample_service():
 @mark.fixture.obj
 def cfg_item_piece(data_to_ref):
     d = htypes.command_cfg_item_tests.sample_command_d()
-    command = htypes.command.ui_command(
-        d=data_to_ref(d),
-        properties=htypes.command.properties(False, False, False),
+    system_fn = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(_sample_fn),
         ctx_params=('view', 'state'),
         service_params=('sample_service',),
+        )
+    command = htypes.command.ui_command(
+        d=data_to_ref(d),
+        properties=htypes.command.properties(False, False, False),
+        system_fn=mosaic.put(system_fn),
         )
     view_t = htypes.command_cfg_item_tests.view
     return htypes.command.cfg_item(
@@ -38,12 +41,15 @@ def cfg_item_piece(data_to_ref):
 @mark.fixture.obj
 def model_command(data_to_ref):
     d = htypes.command_cfg_item_tests.sample_command_d()
-    return htypes.command.model_command(
-        d=data_to_ref(d),
-        properties=htypes.command.properties(False, False, False),
+    system_fn = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(_sample_fn),
         ctx_params=('view', 'state'),
         service_params=('sample_service',),
+        )
+    return htypes.command.model_command(
+        d=data_to_ref(d),
+        properties=htypes.command.properties(False, False, False),
+        system_fn=mosaic.put(system_fn),
         )
 
 

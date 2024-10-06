@@ -21,7 +21,7 @@ definitions:
       t: legacy_type.command:model_command
       function: model_command_from_piece
       service_params:
-      - system
+      - system_fn_creg
   global_model_command_reg:
     type: legacy_type.builtin:attribute
     value:

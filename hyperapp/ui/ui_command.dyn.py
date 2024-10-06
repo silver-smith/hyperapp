@@ -15,18 +15,18 @@ log = logging.getLogger(__name__)
 
 class UnboundUiCommand(UnboundCommand):
 
-    def __init__(self, d, fn, ctx_params, groups):
-        super().__init__(d, fn, ctx_params)
+    def __init__(self, d, ctx_fn, groups):
+        super().__init__(d, ctx_fn)
         self._groups = groups
 
     def bind(self, ctx):
-        return BoundUiCommand(self._d, self._fn, self._ctx_params, ctx, self._groups)
+        return BoundUiCommand(self._d, self._ctx_fn, ctx, self._groups)
 
 
 class BoundUiCommand(BoundCommand):
 
-    def __init__(self, d, fn, ctx_params, ctx, groups):
-        super().__init__(d, fn, ctx_params, ctx)
+    def __init__(self, d, ctx_fn, ctx, groups):
+        super().__init__(d, ctx_fn, ctx)
         self._groups = groups
 
     @property
@@ -35,16 +35,11 @@ class BoundUiCommand(BoundCommand):
 
 
 @mark.actor.command_creg
-def ui_command_from_piece(piece, system):
-    kw = {
-        name: system.resolve_service(name)
-        for name in piece.service_params
-        }
-    fn = pyobj_creg.invite(piece.function)
+def ui_command_from_piece(piece, system_fn_creg):
+    ctx_fn = system_fn_creg.invite(piece.system_fn)
     return UnboundUiCommand(
         d=pyobj_creg.invite(piece.d),
-        fn=partial(fn, **kw),
-        ctx_params=piece.ctx_params,
+        ctx_fn=ctx_fn,
         groups=default_command_groups(piece.properties, CommandKind.VIEW),
         )
 

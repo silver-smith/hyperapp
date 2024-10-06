@@ -14,18 +14,18 @@ log = logging.getLogger(__name__)
 
 class UnboundModelCommand(UnboundCommand):
 
-    def __init__(self, d, fn, ctx_params, properties):
-        super().__init__(d, fn, ctx_params)
+    def __init__(self, d, ctx_fn, properties):
+        super().__init__(d, ctx_fn)
         self._properties = properties
 
     def bind(self, ctx):
-        return BoundModelCommand(self._d, self._fn, self._ctx_params, ctx, self._properties)
+        return BoundModelCommand(self._d, self._ctx_fn, ctx, self._properties)
 
 
 class BoundModelCommand(BoundCommand):
 
-    def __init__(self, d, fn, ctx_params, ctx, properties):
-        super().__init__(d, fn, ctx_params, ctx)
+    def __init__(self, d, ctx_fn, ctx, properties):
+        super().__init__(d, ctx_fn, ctx)
         self._properties = properties
 
     @property
@@ -34,16 +34,11 @@ class BoundModelCommand(BoundCommand):
 
 
 @mark.actor.command_creg
-def model_command_from_piece(piece, system):
-    kw = {
-        name: system.resolve_service(name)
-        for name in piece.service_params
-        }
-    fn = pyobj_creg.invite(piece.function)
+def model_command_from_piece(piece, system_fn_creg):
+    ctx_fn = system_fn_creg.invite(piece.system_fn)
     return UnboundModelCommand(
         d=pyobj_creg.invite(piece.d),
-        fn=partial(fn, **kw),
-        ctx_params=piece.ctx_params,
+        ctx_fn=ctx_fn,
         properties=piece.properties,
         )
 

@@ -56,6 +56,10 @@ definitions:
         is_global: false
         uses_state: true
         remotable: true
+      system_fn: layout_command_list_add_view_command.system-fn
+  layout_command_list_add_view_command.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
       function: add_view_command
       ctx_params:
       - piece
@@ -78,6 +82,10 @@ definitions:
         is_global: false
         uses_state: false
         remotable: false
+      system_fn: layout_command_list_view_item_commands.system-fn
+  layout_command_list_view_item_commands.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
       function: view_item_commands
       ctx_params:
       - piece
@@ -130,6 +138,10 @@ definitions:
         is_global: false
         uses_state: true
         remotable: true
+      system_fn: layout_view_open_view_item_commands.system-fn
+  layout_view_open_view_item_commands.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
       function: open_view_item_commands
       ctx_params:
       - piece
@@ -152,6 +164,10 @@ definitions:
         is_global: true
         uses_state: false
         remotable: true
+      system_fn: open_layout_tree.system-fn
+  open_layout_tree.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
       function: open_layout_tree
       ctx_params: []
       service_params: []

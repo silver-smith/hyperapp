@@ -12,6 +12,7 @@ import:
 - legacy_type.command:properties
 - legacy_type.command:model_command
 - legacy_type.command:ui_command
+- legacy_type.system_fn:ctx_fn
 - rc.rc_constructor:rc_constructor.module
 
 definitions:
@@ -30,6 +31,7 @@ definitions:
         htypes.command.properties: legacy_type.command:properties
         htypes.command.model_command: legacy_type.command:model_command
         htypes.command.ui_command: legacy_type.command:ui_command
+        htypes.system_fn.ctx_fn: legacy_type.system_fn:ctx_fn
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         code.rc_constructor: rc.rc_constructor:rc_constructor.module

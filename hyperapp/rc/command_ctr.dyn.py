@@ -58,15 +58,19 @@ class CommandTemplateCtr(Constructor):
             uses_state=bool(set(self._ctx_params) & STATE_PARAMS),
             remotable=not set(self._ctx_params) & LOCAL_PARAMS,
             )
-        command = self._command_t(
-            d=mosaic.put(d_piece),
-            properties=properties,
+        system_fn = htypes.system_fn.ctx_fn(
             function=mosaic.put(object),
             ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
             )
+        command = self._command_t(
+            d=mosaic.put(d_piece),
+            properties=properties,
+            system_fn=mosaic.put(system_fn),
+            )
         if name_to_res is not None:
             name_to_res[f'{self._resource_name}.d'] = d_piece
+            name_to_res[f'{self._resource_name}.system-fn'] = system_fn
             name_to_res[f'{self._resource_name}.{self._command_resource_suffix}'] = command
         return command
 

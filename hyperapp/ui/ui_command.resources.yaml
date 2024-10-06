@@ -24,7 +24,7 @@ definitions:
       t: legacy_type.command:ui_command
       function: ui_command_from_piece
       service_params:
-      - system
+      - system_fn_creg
   get_view_commands:
     type: legacy_type.builtin:attribute
     value:

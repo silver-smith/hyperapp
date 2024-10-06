@@ -6,6 +6,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.context import Context
+from .code.system_fn import ContextFn
 from .code.ui_command import UnboundUiCommand
 from .fixtures import qapp_fixtures, feed_fixtures
 from .tested.code import controller
@@ -78,11 +79,17 @@ def _sample_auto_tabs_command():
 
 
 @mark.config_fixture('view_ui_command_reg')
-def view_ui_command_reg_config():
+def view_ui_command_reg_config(partial_ref):
+    system_fn = ContextFn(
+        partial_ref=partial_ref, 
+        ctx_params=(),
+        service_params=(),
+        unbound_fn=_sample_auto_tabs_command,
+        bound_fn=_sample_auto_tabs_command,
+        )
     command = UnboundUiCommand(
         d=htypes.layout_tests.sample_command_d(),
-        fn=_sample_auto_tabs_command,
-        ctx_params=(),
+        ctx_fn=system_fn,
         groups=set(),
         )
     return {htypes.auto_tabs.view: [command]}

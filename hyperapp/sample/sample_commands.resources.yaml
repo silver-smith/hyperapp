@@ -16,6 +16,7 @@ import:
 - legacy_type.sample_list:item
 - legacy_type.sample_list:sample_list
 - legacy_type.sample_tree:sample_tree
+- legacy_type.system_fn:ctx_fn
 definitions:
   details:
     type: legacy_type.builtin:attribute
@@ -39,6 +40,10 @@ definitions:
         is_global: true
         uses_state: false
         remotable: true
+      system_fn: open_sample_static_list.system-fn
+  open_sample_static_list.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
       function: open_sample_static_list
       ctx_params: []
       service_params: []
@@ -59,6 +64,10 @@ definitions:
         is_global: true
         uses_state: false
         remotable: true
+      system_fn: open_sample_static_text_1.system-fn
+  open_sample_static_text_1.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
       function: open_sample_static_text_1
       ctx_params: []
       service_params: []
@@ -79,6 +88,10 @@ definitions:
         is_global: true
         uses_state: false
         remotable: true
+      system_fn: open_sample_static_text_2.system-fn
+  open_sample_static_text_2.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
       function: open_sample_static_text_2
       ctx_params: []
       service_params: []
@@ -107,6 +120,10 @@ definitions:
         is_global: false
         uses_state: true
         remotable: true
+      system_fn: sample_list_sample_list_details.system-fn
+  sample_list_sample_list_details.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
       function: details
       ctx_params:
       - piece
@@ -134,6 +151,10 @@ definitions:
         is_global: false
         uses_state: false
         remotable: true
+      system_fn: sample_tree_sample_tree_sample_tree_info.system-fn
+  sample_tree_sample_tree_sample_tree_info.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
       function: sample_tree_info
       ctx_params:
       - piece
@@ -155,6 +176,10 @@ definitions:
         is_global: true
         uses_state: true
         remotable: true
+      system_fn: show_state.system-fn
+  show_state.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
       function: show_state
       ctx_params:
       - model_state
