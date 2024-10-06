@@ -44,8 +44,12 @@ class _Model(QtCore.QAbstractItemModel):
         return self.createIndex(0, 0, parent_id)
 
     def hasChildren(self, index):
-        id = index.internalId() or 0
-        return self.adapter.has_children(id)
+        try:
+            id = index.internalId() or 0
+            return self.adapter.has_children(id)
+        except:
+            log.exception("Error in Tree model hasChildren:")
+            return False
 
     def rowCount(self, parent):
         parent_id = parent.internalId() or 0
