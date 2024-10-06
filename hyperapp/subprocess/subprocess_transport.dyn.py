@@ -169,8 +169,12 @@ class SubprocessTransport:
                 my_name = f"Processing bundle from {rec.name}"
                 log.exception("%s is failed:", my_name)
                 self._system_failed(f"{my_name} is failed: {x}", x)
-        del self._server_connections[connection]
-        self._signal_connection_in.send(None)
+        try:
+            del self._server_connections[connection]
+        except KeyError:
+            pass  # May already be removed by server_connection_closed method call.
+        else:
+            self._signal_connection_in.send(None)
 
     def _process_bundle(self, connection, connection_rec, data):
         log.debug("Subprocess transport: received bundle from %r. Bundle size: %.2f KB", connection_rec.name, len(data)/1024)
