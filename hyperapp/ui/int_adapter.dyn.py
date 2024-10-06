@@ -1,7 +1,10 @@
+from .code.mark import mark
+
 
 class IntAdapter:
 
     @classmethod
+    @mark.actor.ui_adapter_creg
     def from_piece(cls, piece, model, ctx):
         return cls(model)
 

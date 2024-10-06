@@ -150,6 +150,7 @@ import:
 - ui.feed:feed_list_feed_type.actor-template
 - ui.feed_creg:feed_creg.service
 - ui.feed_type_template:feed_feed_template.actor-template
+- ui.int_adapter:int_adapter_int_adapter.actor-template
 - ui.layout:layout_view.model-cfg-item
 - ui.layout:open_layout_tree.global-model-command
 - ui.model_cfg_item:model_cfg_item.actor-template
@@ -477,6 +478,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - ui.int_adapter:int_adapter_int_adapter.actor-template
       - ui.qt.fn_index_tree_adapter:tree_adapter_fn_index_tree_adapter.actor-template
       - ui.qt.fn_list_adapter:list_adapter_fn_list_adapter.actor-template
       - ui.qt.record_adapter:record_adapter_fn_record_adapter.actor-template
