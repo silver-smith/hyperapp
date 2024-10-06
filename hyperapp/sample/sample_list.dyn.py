@@ -1,9 +1,11 @@
 import asyncio
 
 from . import htypes
+from .code.mark import mark
 from .code.list_diff import ListDiff
 
 
+@mark.model
 def sample_list(piece):
     return [
         htypes.sample_list.item(1, "First sample"),
@@ -12,6 +14,7 @@ def sample_list(piece):
         ]
 
 
+@mark.global_command
 async def open_sample_fn_list():
     return htypes.sample_list.sample_list()
 
@@ -22,6 +25,7 @@ async def _send_diff(feed):
     await feed.send(ListDiff.Append(item))
 
 
+@mark.model
 def feed_sample_list(piece, feed):
     asyncio.create_task(_send_diff(feed))
     return [
@@ -31,5 +35,6 @@ def feed_sample_list(piece, feed):
         ]
 
 
+@mark.global_command
 async def open_feed_sample_fn_list():
     return htypes.sample_list.feed_sample_list()

@@ -5,6 +5,14 @@ from .fixtures import feed_fixtures
 from .tested.code import sample_list
 
 
+async def test_open_sample_fn_list():
+    await sample_list.open_sample_fn_list()
+
+
+async def test_open_feed_sample_fn_list():
+    await sample_list.open_feed_sample_fn_list()
+
+
 def test_sample_list():
     value = sample_list.sample_list(htypes.sample_list.sample_list())
     assert value
