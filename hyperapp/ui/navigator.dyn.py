@@ -92,7 +92,7 @@ class NavigatorView(View):
         prev = web.summon(self._prev)
         prev_model = web.summon(prev.model)
         prev_state = web.summon(prev.state)
-        self._current_view = model_view_creg.invite(prev.view, prev_model, ctx)
+        self._current_view = model_view_creg.invite(prev.view, prev_model, ctx.pop())
         self._model = web.summon(prev.model)
         self._prev = prev.prev
         self._next = mosaic.put(history_rec)
@@ -105,7 +105,7 @@ class NavigatorView(View):
         next = web.summon(self._next)
         next_model = web.summon(next.model)
         next_state = web.summon(next.state)
-        self._current_view = model_view_creg.invite(next.view, next_model, ctx)
+        self._current_view = model_view_creg.invite(next.view, next_model, ctx.pop())
         self._model = web.summon(next.model)
         self._prev = mosaic.put(history_rec)
         self._next = next.next
