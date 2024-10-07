@@ -9,8 +9,7 @@ from .code.command_ctr import (
 from .code.marker_utils import (
     check_is_function,
     check_not_classmethod,
-    is_cls_arg,
-    fn_params,
+    split_params,
     )
 
 
@@ -32,82 +31,79 @@ class CommandProbe:
         self._data_to_res = system_probe.resolve_service('data_to_res')
 
     def __call__(self, *args, **kw):
-        params = fn_params(self._fn)
-        param_ofs = 0
-        if args and is_cls_arg(self._fn, args[0]):
-            # self._fn is a classmethod and args[0] is a 'cls' argument.
-            param_ofs = 1
-        ctx_params = [
-            *params[param_ofs:len(args)],
-            *kw,
-            ]
-        service_params = [
-            name for name in params[param_ofs:]
-            if name not in ctx_params
-            ]
-        self._add_constructor(args, param_ofs, ctx_params, service_params)
+        params = split_params(self._fn, args, kw)
+        self._add_constructor(params)
         service_kw = {
             name: self._system.resolve_service(name)
-            for name in service_params
+            for name in params.service_names
             }
         return self._fn(*args, **kw, **service_kw)
 
-    def _deduce_piece_t(self, args, param_ofs):
-        if len(args) < param_ofs + 1:
-            raise RuntimeError(f"First parameter expected to be a piece: {self._fn!r}")
-        piece = args[param_ofs]
+    def _deduce_piece_t(self, params, name_list):
+        for name in name_list:
+            try:
+                piece = params.values[name]
+                break
+            except KeyError:
+                pass
+        else:
+            names_str = " or ".join(name_list)
+            self._raise_error(f"{names_str} argument is expected for command function: {list(params.values)}")
         return deduce_t(piece)
+
+    def _raise_error(self, error_msg):
+        raise RuntimeError(f"{self._fn}: {error_msg}")
 
 
 class UiCommandProbe(CommandProbe):
 
-    def _add_constructor(self, args, param_ofs, ctx_params, service_params):
+    def _add_constructor(self, params):
         if self._t:
             t = self._t
         else:
-            t = self._deduce_piece_t(args, param_ofs)
+            t = self._deduce_piece_t(params, ['piece'])
         ctr = UiCommandTemplateCtr(
             self._data_to_res,
             module_name=self._module_name,
             attr_qual_name=self._fn.__qualname__.split('.'),
             service_name=self._service_name,
             t=t,
-            ctx_params=ctx_params,
-            service_params=service_params,
+            ctx_params=params.ctx_names,
+            service_params=params.service_names,
             )
         self._ctr_collector.add_constructor(ctr)
 
 
 class ModelCommandProbe(CommandProbe):
 
-    def _add_constructor(self, args, param_ofs, ctx_params, service_params):
+    def _add_constructor(self, params):
         if self._t:
             t = self._t
         else:
-            t = self._deduce_piece_t(args, param_ofs)
+            t = self._deduce_piece_t(params, ['piece', 'model'])
         ctr = ModelCommandTemplateCtr(
             self._data_to_res,
             module_name=self._module_name,
             attr_qual_name=self._fn.__qualname__.split('.'),
             service_name=self._service_name,
             t=t,
-            ctx_params=ctx_params,
-            service_params=service_params,
+            ctx_params=params.ctx_names,
+            service_params=params.service_names,
             )
         self._ctr_collector.add_constructor(ctr)
 
 
 class GlobalModelCommandProbe(CommandProbe):
 
-    def _add_constructor(self, args, param_ofs, ctx_params, service_params):
+    def _add_constructor(self, params):
         assert not self._t
         ctr = GlobalModelCommandTemplateCtr(
             self._data_to_res,
             module_name=self._module_name,
             attr_qual_name=self._fn.__qualname__.split('.'),
             service_name=self._service_name,
-            ctx_params=ctx_params,
-            service_params=service_params,
+            ctx_params=params.ctx_names,
+            service_params=params.service_names,
             )
         self._ctr_collector.add_constructor(ctr)
 
