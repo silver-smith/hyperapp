@@ -21,7 +21,7 @@ def _sample_fn_2(model, state, sample_service):
 
 
 @mark.config_fixture('global_model_command_reg')
-def global_model_command_reg_config(data_to_ref, partial_ref):
+def global_model_command_reg_config(partial_ref):
     system_fn = ContextFn(
         partial_ref=partial_ref, 
         ctx_params=('view', 'state'),
@@ -30,7 +30,7 @@ def global_model_command_reg_config(data_to_ref, partial_ref):
         bound_fn=partial(_sample_fn_1, sample_service='a-service'),
         )
     command = UnboundModelCommand(
-        d=data_to_ref(htypes.ui_model_command_tests.sample_command_1_d()),
+        d=htypes.ui_model_command_tests.sample_command_1_d(),
         ctx_fn=system_fn,
         properties=htypes.command.properties(False, False, False),
         )
@@ -38,7 +38,7 @@ def global_model_command_reg_config(data_to_ref, partial_ref):
 
 
 @mark.config_fixture('model_command_reg')
-def model_command_reg_config(data_to_ref, partial_ref):
+def model_command_reg_config(partial_ref):
     system_fn = ContextFn(
         partial_ref=partial_ref, 
         ctx_params=('view', 'state'),
@@ -47,7 +47,7 @@ def model_command_reg_config(data_to_ref, partial_ref):
         bound_fn=partial(_sample_fn_2, sample_service='a-service'),
         )
     command = UnboundModelCommand(
-        d=data_to_ref(htypes.ui_model_command_tests.sample_command_2_d()),
+        d=htypes.ui_model_command_tests.sample_command_2_d(),
         ctx_fn=system_fn,
         properties=htypes.command.properties(False, False, False),
         )
