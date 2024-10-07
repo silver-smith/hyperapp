@@ -19,5 +19,4 @@ ui_command = record(fn_command)
 model_command = record(fn_command)
 
 model_command_enumerator = record:
-  function: ref
-  params: string list
+  system_fn: ref
