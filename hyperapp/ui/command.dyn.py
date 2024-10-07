@@ -73,14 +73,27 @@ def d_res_ref_to_name(d_ref):
 
 
 class UnboundCommandBase:
-    pass
+
+    def __init__(self, d):
+        self._d = d
+
+    @property
+    def d(self):
+        return self._d
+
+    @cached_property
+    def name(self):
+        return d_to_name(self._d)
 
 
 class UnboundCommand(UnboundCommandBase):
 
     def __init__(self, d, ctx_fn):
-        self._d = d
+        super().__init__(d)
         self._ctx_fn = ctx_fn
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} {self.name}: {self._ctx_fn}>"
 
 
 class BoundCommandBase:

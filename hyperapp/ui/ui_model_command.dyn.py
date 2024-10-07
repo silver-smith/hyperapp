@@ -17,12 +17,15 @@ log = logging.getLogger(__name__)
 class UnboundUiModelCommand(UnboundCommandBase):
 
     def __init__(self, model_view_creg, visualizer, lcs, model_command, layout):
-        super().__init__()
+        super().__init__(model_command.d)
         self._model_view_creg = model_view_creg
         self._visualizer = visualizer
         self._model_command = model_command
         self._layout = layout
         self._lcs = lcs
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__}: {self._model_command}>"
 
     def bind(self, ctx):
         return BoundUiModelCommand(
