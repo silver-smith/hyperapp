@@ -453,10 +453,6 @@ class Controller:
         finally:
             self._inside_commands_call = False
 
-    def item_command_context(self, item_id, command_d_ref):
-        item = self._id_to_item[item_id]
-        return item.view_commands_rec.command_context
-
 
 @mark.service2
 @contextmanager
