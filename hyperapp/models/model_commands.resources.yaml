@@ -4,165 +4,83 @@ import:
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
+- common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.command:model_command
+- legacy_type.model:cfg_item
+- legacy_type.model:list_ui_t
+- legacy_type.model:model
 - legacy_type.model_commands:item
-- legacy_type.model_commands:list_model_commands_d
 - legacy_type.model_commands:model_commands
 - legacy_type.model_commands:open_model_commands_d
-- legacy_type.model_commands:run_command_d
-- legacy_type.ui:command_properties
-- legacy_type.ui:command_properties_d
-- legacy_type.ui:fn_impl
-- legacy_type.ui:global_model_command_d
-- legacy_type.ui:list_ui_t
-- legacy_type.ui:model
-- legacy_type.ui:model_command
-- legacy_type.ui:model_command_d
-- legacy_type.ui:model_command_impl
-- legacy_type.ui:model_d
-- ui.command:command.module
-- ui.model_command:model_command_factory.service
-- ui.model_command:model_commands.service
-- ui.model_command_impl_creg:model_command_impl_creg.service
-- ui.ui_command:ui_command_factory.service
-- ui.ui_model_command:get_ui_model_commands.service
-- ui.ui_model_command:merge_command_lists.service
-- ui.ui_model_command:ui_model_command.module
+- legacy_type.system_fn:ctx_fn
 definitions:
-  command_properties_d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.ui:command_properties_d
-  global_model_command_d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.ui:global_model_command_d
   list_model_commands:
     type: legacy_type.builtin:attribute
     value:
       object: model_commands.module
       attr_name: list_model_commands
-  list_model_commands.command:
-    type: legacy_type.ui:model_command
-    value:
-      d: list_model_commands.d
-      impl: list_model_commands.command_impl
-  list_model_commands.command_impl:
-    type: legacy_type.ui:model_command_impl
-    value:
-      function: list_model_commands
-      params:
-      - piece
-      - ctx
-      - lcs
-  list_model_commands.command_properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: false
-      uses_state: false
-      remotable: false
-  list_model_commands.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.model_commands:list_model_commands_d
-  list_model_commands.impl:
-    type: legacy_type.ui:fn_impl
-    value:
-      function: list_model_commands
-      params:
-      - piece
-      - ctx
-      - lcs
-  list_model_commands.model:
-    type: legacy_type.ui:model
-    value:
-      ui_t: list_model_commands.ui_t
-      impl: list_model_commands.impl
-  list_model_commands.ui_t:
-    type: legacy_type.ui:list_ui_t
-    value:
-      element_t: legacy_type.model_commands:item
-  model_command_d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.ui:model_command_d
   model_commands.module:
     type: legacy_type.builtin:python_module
     value:
       module_name: model_commands
       file_name: model_commands.dyn.py
       import_list:
-        code.command: ui.command:command.module
-        code.ui_model_command: ui.ui_model_command:ui_model_command.module
+        code.mark: common.mark:mark.module
         htypes.model_commands.item: legacy_type.model_commands:item
         htypes.model_commands.model_commands: legacy_type.model_commands:model_commands
-        services.get_ui_model_commands: ui.ui_model_command:get_ui_model_commands.service
-        services.merge_command_lists: ui.ui_model_command:merge_command_lists.service
-        services.model_command_factory: ui.model_command:model_command_factory.service
-        services.model_command_impl_creg: ui.model_command_impl_creg:model_command_impl_creg.service
-        services.model_commands: ui.model_command:model_commands.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
-        services.ui_command_factory: ui.ui_command:ui_command_factory.service
         services.web: builtins:web.service
-  model_d:
-    type: legacy_type.builtin:call
+  model_commands_model_commands.list-ui-t:
+    type: legacy_type.model:list_ui_t
     value:
-      function: legacy_type.ui:model_d
+      element_t: legacy_type.model_commands:item
+  model_commands_model_commands.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: model_commands_model_commands.list-ui-t
+      system_fn: model_commands_model_commands.system-fn
+  model_commands_model_commands.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.model_commands:model_commands
+      model: model_commands_model_commands.model
+  model_commands_model_commands.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: list_model_commands
+      ctx_params:
+      - piece
+      - ctx
+      - lcs
+      service_params:
+      - get_ui_model_commands
   open_model_commands:
     type: legacy_type.builtin:attribute
     value:
       object: model_commands.module
       attr_name: open_model_commands
-  open_model_commands.command:
-    type: legacy_type.ui:model_command
-    value:
-      d: open_model_commands.d
-      impl: open_model_commands.command_impl
-  open_model_commands.command_impl:
-    type: legacy_type.ui:model_command_impl
-    value:
-      function: open_model_commands
-      params:
-      - piece
-      - model_state
-  open_model_commands.command_properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: true
-      uses_state: true
-      remotable: true
   open_model_commands.d:
     type: legacy_type.builtin:call
     value:
       function: legacy_type.model_commands:open_model_commands_d
-  run_command:
-    type: legacy_type.builtin:attribute
+  open_model_commands.global-model-command:
+    type: legacy_type.command:model_command
     value:
-      object: model_commands.module
-      attr_name: run_command
-  run_command.command:
-    type: legacy_type.ui:model_command
+      d: open_model_commands.d
+      properties:
+        is_global: true
+        uses_state: true
+        remotable: true
+      system_fn: open_model_commands.system-fn
+  open_model_commands.system-fn:
+    type: legacy_type.system_fn:ctx_fn
     value:
-      d: run_command.d
-      impl: run_command.command_impl
-  run_command.command_impl:
-    type: legacy_type.ui:model_command_impl
-    value:
-      function: run_command
-      params:
+      function: open_model_commands
+      ctx_params:
       - piece
-      - current_item
-      - ctx
-  run_command.command_properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: false
-      uses_state: true
-      remotable: false
-  run_command.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.model_commands:run_command_d
+      - model_state
+      service_params: []

@@ -3,9 +3,9 @@ model_commands = record:
   model_state: ref
 
 item = record:
-  command: ref
+  # command: ref
   name: string
-  impl: string
+  repr: string
 
 open_model_commands_d = record
 list_model_commands_d = record

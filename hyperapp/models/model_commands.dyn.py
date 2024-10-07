@@ -4,34 +4,24 @@ import logging
 
 from . import htypes
 from .services import (
-    get_ui_model_commands,
-    merge_command_lists,
-    ui_command_factory,
-    model_commands,
     mosaic,
     pyobj_creg,
     web,
     )
-from .code.command import d_res_ref_to_name
-from .code.ui_model_command import wrap_model_command_to_ui_command
+from .code.mark import mark
 
 log = logging.getLogger(__name__)
 
 
-def list_model_commands(piece, ctx, lcs):
+@mark.model
+def list_model_commands(piece, ctx, lcs, get_ui_model_commands):
     model = web.summon(piece.model)
-    model_command_list = model_commands(model)
-    ui_command_list = [
-        wrap_model_command_to_ui_command(lcs, cmd)
-        for cmd in model_command_list
-        ]
-    lcs_command_list = get_ui_model_commands(lcs, model)
-    command_list = merge_command_lists(ui_command_list, lcs_command_list)
+    command_list = get_ui_model_commands(lcs, model, ctx)
     return [
         htypes.model_commands.item(
-            command=mosaic.put(command),
-            name=d_res_ref_to_name(command.d),
-            impl=str(web.summon(command.impl)),
+            # command=mosaic.put(command),
+            name=command.name,
+            repr=repr(command),
             )
         for command in command_list
         ]
@@ -54,6 +44,7 @@ async def run_command(piece, current_item, ctx):
     return piece
 
 
+@mark.global_command
 def open_model_commands(piece, model_state):
     return htypes.model_commands.model_commands(
         model=mosaic.put(piece),
