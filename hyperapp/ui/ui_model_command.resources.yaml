@@ -33,6 +33,7 @@ definitions:
       - model_view_creg
       - visualizer
       - global_model_command_reg
+      - get_model_commands
       want_config: false
   system-item_dict_config_ctl.ctl:
     type: legacy_type.system:item_dict_config_ctl

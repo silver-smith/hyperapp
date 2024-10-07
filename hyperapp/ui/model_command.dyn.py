@@ -2,6 +2,7 @@ import logging
 from functools import partial
 
 from .services import (
+    deduce_t,
     pyobj_creg,
     )
 from .code.mark import mark
@@ -51,6 +52,12 @@ def global_model_command_reg(config):
 @mark.service2(ctl=TypedCommandConfigCtl())
 def model_command_reg(config, model_t):
     return config.get(model_t, [])
+
+
+@mark.service2
+def get_model_commands(model_command_reg, model):
+    model_t = deduce_t(model)
+    return model_command_reg(model_t)
 
 
 # @mark.service

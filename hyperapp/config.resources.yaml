@@ -160,6 +160,7 @@ import:
 - ui.layout:open_layout_tree.global-model-command
 - ui.model_cfg_item:model_cfg_item.actor-template
 - ui.model_command:command_model_command.actor-template
+- ui.model_command:get_model_commands.service
 - ui.model_command:global_model_command_reg.service
 - ui.model_command:model_command_reg.service
 - ui.model_command_impl_creg:model_command_impl_creg.service
@@ -473,6 +474,7 @@ definitions:
       - ui.controller:controller_running.service
       - ui.feed:feed_factory.service
       - ui.feed_creg:feed_creg.service
+      - ui.model_command:get_model_commands.service
       - ui.model_command:global_model_command_reg.service
       - ui.model_command:model_command_reg.service
       - ui.model_command_impl_creg:model_command_impl_creg.service

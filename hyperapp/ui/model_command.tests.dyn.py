@@ -43,9 +43,9 @@ def test_model_command_reg(model_command_reg):
     commands = model_command_reg(model_t)
 
 
-# def test_model_commands():
-#     piece = htypes.model_command_tests.sample_model()
-#     commands = model_commands(piece)
+def test_get_model_commands(get_model_commands):
+    model = htypes.model_command_tests.sample_model()
+    commands = get_model_commands(model)
 
 
 # def test_enum_model_commands():
