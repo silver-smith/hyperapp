@@ -33,9 +33,14 @@ def test_model_command_from_piece(data_to_ref):
     assert isinstance(command, model_command.UnboundModelCommand)
 
 
-def test_global_commands(global_model_command_reg):
+def test_global_command_reg(global_model_command_reg):
     commands = global_model_command_reg()
     # assert commands
+
+
+def test_model_command_reg(model_command_reg):
+    model_t = htypes.model_command_tests.sample_model
+    commands = model_command_reg(model_t)
 
 
 # def test_model_commands():

@@ -104,6 +104,8 @@ import:
 - sample.sample_commands:open_sample_static_list.global-model-command
 - sample.sample_commands:open_sample_static_text_1.global-model-command
 - sample.sample_commands:open_sample_static_text_2.global-model-command
+- sample.sample_commands:sample_list_sample_list_details.cfg-item
+- sample.sample_commands:sample_tree_sample_tree_sample_tree_info.cfg-item
 - sample.sample_commands:show_state.global-model-command
 - sample.sample_feed:sample_feed_sample_list_feed.feed-template
 - sample.sample_feed:sample_feed_sample_tree_feed.feed-template
@@ -151,11 +153,15 @@ import:
 - ui.feed_creg:feed_creg.service
 - ui.feed_type_template:feed_feed_template.actor-template
 - ui.int_adapter:int_adapter_int_adapter.actor-template
+- ui.layout:layout_command_list_add_view_command.cfg-item
+- ui.layout:layout_command_list_view_item_commands.cfg-item
 - ui.layout:layout_view.model-cfg-item
+- ui.layout:layout_view_open_view_item_commands.cfg-item
 - ui.layout:open_layout_tree.global-model-command
 - ui.model_cfg_item:model_cfg_item.actor-template
 - ui.model_command:command_model_command.actor-template
 - ui.model_command:global_model_command_reg.service
+- ui.model_command:model_command_reg.service
 - ui.model_command_impl_creg:model_command_impl_creg.service
 - ui.navigator:navigator_view.actor-template
 - ui.navigator:navigator_view_go_back.cfg-item
@@ -225,6 +231,7 @@ definitions:
         feed_factory: feed_factory
         global_model_command_reg: global_model_command_reg
         marker_registry: marker_registry
+        model_command_reg: model_command_reg
         model_view_creg: model_view_creg
         parcel_registry: parcel_registry
         peer_registry: peer_registry
@@ -298,6 +305,15 @@ definitions:
       - rc.fixture_marker:fixture.marker-template
       - rc.model_marker:model.marker-template
       - rc.service_marker:service2.marker-template
+  model_command_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - sample.sample_commands:sample_list_sample_list_details.cfg-item
+      - sample.sample_commands:sample_tree_sample_tree_sample_tree_info.cfg-item
+      - ui.layout:layout_command_list_add_view_command.cfg-item
+      - ui.layout:layout_command_list_view_item_commands.cfg-item
+      - ui.layout:layout_view_open_view_item_commands.cfg-item
   model_view_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -458,6 +474,7 @@ definitions:
       - ui.feed:feed_factory.service
       - ui.feed_creg:feed_creg.service
       - ui.model_command:global_model_command_reg.service
+      - ui.model_command:model_command_reg.service
       - ui.model_command_impl_creg:model_command_impl_creg.service
       - ui.system_fn_creg:system_fn_creg.service
       - ui.ui_adapter_creg:ui_adapter_creg.service

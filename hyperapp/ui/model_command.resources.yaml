@@ -6,12 +6,16 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command:model_command
+- legacy_type.command:typed_config_ctl
 - legacy_type.command:untyped_config_ctl
 - legacy_type.system:actor_template
 - legacy_type.system:service_template
 - ui.command:command.module
 - ui.command_config_ctl:command_config_ctl.module
 definitions:
+  command-typed_config_ctl.ctl:
+    type: legacy_type.command:typed_config_ctl
+    value: {}
   command-untyped_config_ctl.ctl:
     type: legacy_type.command:untyped_config_ctl
     value: {}
@@ -51,3 +55,18 @@ definitions:
     value:
       object: model_command.module
       attr_name: model_command_from_piece
+  model_command_reg:
+    type: legacy_type.builtin:attribute
+    value:
+      object: model_command.module
+      attr_name: model_command_reg
+  model_command_reg.service:
+    type: legacy_type.system:service_template
+    value:
+      name: model_command_reg
+      ctl: command-typed_config_ctl.ctl
+      function: model_command_reg
+      free_params:
+      - model_t
+      service_params: []
+      want_config: true
