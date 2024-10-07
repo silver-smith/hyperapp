@@ -4,6 +4,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command_resource:global_model_command_template_ctr
+- legacy_type.command_resource:model_command_enumerator_template_ctr
 - legacy_type.command_resource:model_command_template_ctr
 - legacy_type.command_resource:ui_command_template_ctr
 - legacy_type.marker:marker_template
@@ -11,6 +12,7 @@ import:
 - legacy_type.command:cfg_item
 - legacy_type.command:properties
 - legacy_type.command:model_command
+- legacy_type.command:model_command_enumerator
 - legacy_type.command:ui_command
 - legacy_type.system_fn:ctx_fn
 - rc.rc_constructor:rc_constructor.module
@@ -25,11 +27,13 @@ definitions:
       import_list:
         htypes.builtin.attribute: legacy_type.builtin:attribute
         htypes.command_resource.global_model_command_template_ctr: legacy_type.command_resource:global_model_command_template_ctr
+        htypes.command_resource.model_command_enumerator_template_ctr: legacy_type.command_resource:model_command_enumerator_template_ctr
         htypes.command_resource.model_command_template_ctr: legacy_type.command_resource:model_command_template_ctr
         htypes.command_resource.ui_command_template_ctr: legacy_type.command_resource:ui_command_template_ctr
         htypes.command.cfg_item: legacy_type.command:cfg_item
         htypes.command.properties: legacy_type.command:properties
         htypes.command.model_command: legacy_type.command:model_command
+        htypes.command.model_command_enumerator: legacy_type.command:model_command_enumerator
         htypes.command.ui_command: legacy_type.command:ui_command
         htypes.system_fn.ctx_fn: legacy_type.system_fn:ctx_fn
         services.mosaic: builtins:mosaic.service
@@ -73,6 +77,26 @@ definitions:
     value:
       t: legacy_type.command_resource:model_command_template_ctr
       function: ModelCommandTemplateCtr.from_piece
+      service_params:
+      - data_to_res
+
+  ModelCommandEnumeratorTemplateCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: command_ctr.module
+      attr_name: ModelCommandEnumeratorTemplateCtr
+
+  ModelCommandEnumeratorTemplateCtr.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ModelCommandEnumeratorTemplateCtr
+      attr_name: from_piece
+
+  command_resource_model_command_enumerator_template_ctr.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command_resource:model_command_enumerator_template_ctr
+      function: ModelCommandEnumeratorTemplateCtr.from_piece
       service_params:
       - data_to_res
 

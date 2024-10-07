@@ -36,17 +36,7 @@ class CommandTemplateCtr(Constructor):
         target_set.update_deps_for(resolved_tgt)
         target_set.update_deps_for(resource_tgt)
 
-    def _make_command_component(self, types, python_module, name_to_res=None):
-        object = python_module
-        prefix = []
-        for name in self._attr_qual_name:
-            object = htypes.builtin.attribute(
-                object=mosaic.put(object),
-                attr_name=name,
-                )
-            if name_to_res is not None:
-                name_to_res['.'.join([*prefix, name])] = object
-            prefix.append(name)
+    def _make_command(self, types, system_fn, name_to_res):
         d_name = self._attr_qual_name[-1] + '_d'
         type_module = self._module_name.split('.')[-1]
         d_t_piece = types.get(type_module, d_name)
@@ -58,18 +48,32 @@ class CommandTemplateCtr(Constructor):
             uses_state=bool(set(self._ctx_params) & STATE_PARAMS),
             remotable=not set(self._ctx_params) & LOCAL_PARAMS,
             )
+        if name_to_res is not None:
+            name_to_res[f'{self._resource_name}.d'] = d_piece
+        return self._command_t(
+            d=mosaic.put(d_piece),
+            properties=properties,
+            system_fn=mosaic.put(system_fn),
+            )
+
+    def _make_command_component(self, types, python_module, name_to_res=None):
+        object = python_module
+        prefix = []
+        for name in self._attr_qual_name:
+            object = htypes.builtin.attribute(
+                object=mosaic.put(object),
+                attr_name=name,
+                )
+            if name_to_res is not None:
+                name_to_res['.'.join([*prefix, name])] = object
+            prefix.append(name)
         system_fn = htypes.system_fn.ctx_fn(
             function=mosaic.put(object),
             ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
             )
-        command = self._command_t(
-            d=mosaic.put(d_piece),
-            properties=properties,
-            system_fn=mosaic.put(system_fn),
-            )
+        command = self._make_command(types, system_fn, name_to_res)
         if name_to_res is not None:
-            name_to_res[f'{self._resource_name}.d'] = d_piece
             name_to_res[f'{self._resource_name}.system-fn'] = system_fn
             name_to_res[f'{self._resource_name}.{self._command_resource_suffix}'] = command
         return command
@@ -172,6 +176,18 @@ class ModelCommandTemplateCtr(TypedCommandTemplateCtr):
     _template_ctr_t = htypes.command_resource.model_command_template_ctr
     _is_global = False
     _command_resource_suffix = 'model-command'
+
+
+class ModelCommandEnumeratorTemplateCtr(TypedCommandTemplateCtr):
+
+    _template_ctr_t = htypes.command_resource.model_command_enumerator_template_ctr
+    _is_global = False
+    _command_resource_suffix = 'model-command-enumerator'
+
+    def _make_command(self, types, system_fn, name_to_res):
+        return htypes.command.model_command_enumerator(
+            system_fn=mosaic.put(system_fn),
+            )
 
 
 class GlobalModelCommandTemplateCtr(UntypedCommandTemplateCtr):

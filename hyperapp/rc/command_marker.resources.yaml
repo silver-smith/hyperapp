@@ -63,6 +63,22 @@ definitions:
       - ctr_collector
       - data_to_res
 
+  model_command_enumerator_marker:
+    type: legacy_type.builtin:attribute
+    value:
+      object: command_marker.module
+      attr_name: model_command_enumerator_marker
+
+  command_enum.marker-template:
+    type: legacy_type.marker:marker_template
+    value:
+      name: command_enum
+      function: model_command_enumerator_marker
+      service_params:
+      - system
+      - ctr_collector
+      - data_to_res
+
   global_model_command_marker:
     type: legacy_type.builtin:attribute
     value:

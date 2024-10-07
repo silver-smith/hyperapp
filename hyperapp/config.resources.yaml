@@ -33,9 +33,11 @@ import:
 - rc.actor_resource:actor_resource_actor_req.actor-template
 - rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
 - rc.command_ctr:command_resource_global_model_command_template_ctr.actor-template
+- rc.command_ctr:command_resource_model_command_enumerator_template_ctr.actor-template
 - rc.command_ctr:command_resource_model_command_template_ctr.actor-template
 - rc.command_ctr:command_resource_ui_command_template_ctr.actor-template
 - rc.command_marker:command.marker-template
+- rc.command_marker:command_enum.marker-template
 - rc.command_marker:global_command.marker-template
 - rc.command_marker:ui_command.marker-template
 - rc.command_marker:ui_model_command.marker-template
@@ -318,6 +320,7 @@ definitions:
       items:
       - rc.actor_marker:actor.marker-template
       - rc.command_marker:command.marker-template
+      - rc.command_marker:command_enum.marker-template
       - rc.command_marker:global_command.marker-template
       - rc.command_marker:ui_command.marker-template
       - rc.command_marker:ui_model_command.marker-template
@@ -365,6 +368,7 @@ definitions:
       - rc.actor_ctr:actor_resource_actor_template_ctr.actor-template
       - rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
       - rc.command_ctr:command_resource_global_model_command_template_ctr.actor-template
+      - rc.command_ctr:command_resource_model_command_enumerator_template_ctr.actor-template
       - rc.command_ctr:command_resource_model_command_template_ctr.actor-template
       - rc.command_ctr:command_resource_ui_command_template_ctr.actor-template
       - rc.feed_ctr:feed_index_tree_feed_ctr.actor-template

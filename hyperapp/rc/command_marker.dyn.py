@@ -4,6 +4,7 @@ from .services import deduce_t
 from .code.command_ctr import (
     UiCommandTemplateCtr,
     ModelCommandTemplateCtr,
+    ModelCommandEnumeratorTemplateCtr,
     GlobalModelCommandTemplateCtr,
     )
 from .code.marker_utils import (
@@ -51,6 +52,16 @@ class CommandProbe:
             self._raise_error(f"{names_str} argument is expected for command function: {list(params.values)}")
         return deduce_t(piece)
 
+    def _common_ctr_kw(self, params):
+        return dict(
+            data_to_res=self._data_to_res,
+            module_name=self._module_name,
+            attr_qual_name=self._fn.__qualname__.split('.'),
+            service_name=self._service_name,
+            ctx_params=params.ctx_names,
+            service_params=params.service_names,
+            )
+
     def _raise_error(self, error_msg):
         raise RuntimeError(f"{self._fn}: {error_msg}")
 
@@ -63,13 +74,8 @@ class UiCommandProbe(CommandProbe):
         else:
             t = self._deduce_piece_t(params, ['piece'])
         ctr = UiCommandTemplateCtr(
-            self._data_to_res,
-            module_name=self._module_name,
-            attr_qual_name=self._fn.__qualname__.split('.'),
-            service_name=self._service_name,
             t=t,
-            ctx_params=params.ctx_names,
-            service_params=params.service_names,
+            **self._common_ctr_kw(params),
             )
         self._ctr_collector.add_constructor(ctr)
 
@@ -82,13 +88,22 @@ class ModelCommandProbe(CommandProbe):
         else:
             t = self._deduce_piece_t(params, ['piece', 'model'])
         ctr = ModelCommandTemplateCtr(
-            self._data_to_res,
-            module_name=self._module_name,
-            attr_qual_name=self._fn.__qualname__.split('.'),
-            service_name=self._service_name,
             t=t,
-            ctx_params=params.ctx_names,
-            service_params=params.service_names,
+            **self._common_ctr_kw(params),
+            )
+        self._ctr_collector.add_constructor(ctr)
+
+
+class ModelCommandEnumeratorProbe(CommandProbe):
+
+    def _add_constructor(self, params):
+        if self._t:
+            t = self._t
+        else:
+            t = self._deduce_piece_t(params, ['piece', 'model'])
+        ctr = ModelCommandEnumeratorTemplateCtr(
+            t=t,
+            **self._common_ctr_kw(params),
             )
         self._ctr_collector.add_constructor(ctr)
 
@@ -132,6 +147,10 @@ class ModelCommandWrapper(CommandWrapper):
     _probe_class = ModelCommandProbe
 
 
+class ModelCommandEnumeratorWrapper(CommandWrapper):
+    _probe_class = ModelCommandEnumeratorProbe
+
+
 def ui_command_marker(t, module_name, system, ctr_collector, data_to_res):
     if not isinstance(t, Type):
         raise RuntimeError(f"Use type specialized marker, like '@mark.ui_command(my_type)'")
@@ -156,6 +175,18 @@ def model_command_marker(fn_or_t, module_name, system, ctr_collector, data_to_re
         check_not_classmethod(fn_or_t)
         check_is_function(fn_or_t)
         return ModelCommandProbe(system, ctr_collector, data_to_res, module_name, service_name, fn=fn_or_t)
+
+
+def model_command_enumerator_marker(fn_or_t, module_name, system, ctr_collector, data_to_res):
+    service_name = 'model_command_enumerator_reg'
+    if isinstance(fn_or_t, Type):
+        # Type-specialized variant (@mark.command_enum(my_type)).
+        return ModelCommandEnumeratorWrapper(system, ctr_collector, data_to_res, module_name, service_name, t=fn_or_t)
+    else:
+        # Not type-specialized variant  (@mark.command_enum).
+        check_not_classmethod(fn_or_t)
+        check_is_function(fn_or_t)
+        return ModelCommandEnumeratorProbe(system, ctr_collector, data_to_res, module_name, service_name, fn=fn_or_t)
 
 
 def global_model_command_marker(fn_or_t, module_name, system, ctr_collector, data_to_res):
