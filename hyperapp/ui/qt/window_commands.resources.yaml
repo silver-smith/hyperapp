@@ -34,7 +34,7 @@ definitions:
         htypes.window.pos: legacy_type.window:pos
         htypes.window.state: legacy_type.window:state
         htypes.window.view: legacy_type.window:view
-  window_view_duplicate_window.cfg-item:
+  window_view_duplicate_window.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.window:view
@@ -61,7 +61,7 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: window_view_duplicate_window.system-fn
-  window_view_quit.cfg-item:
+  window_view_quit.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.window:view

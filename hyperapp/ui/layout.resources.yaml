@@ -39,7 +39,7 @@ definitions:
         htypes.layout.command_item: legacy_type.layout:command_item
         htypes.layout.command_list: legacy_type.layout:command_list
         htypes.layout.view: legacy_type.layout:view
-  layout_command_list_add_view_command.cfg-item:
+  layout_command_list_add_view_command.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.layout:command_list
@@ -65,7 +65,7 @@ definitions:
       - piece
       - current_item
       service_params: []
-  layout_command_list_view_item_commands.cfg-item:
+  layout_command_list_view_item_commands.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.layout:command_list
@@ -121,7 +121,7 @@ definitions:
     type: legacy_type.model:tree_ui_t
     value:
       element_t: legacy_type.layout:item
-  layout_view_open_view_item_commands.cfg-item:
+  layout_view_open_view_item_commands.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.layout:view

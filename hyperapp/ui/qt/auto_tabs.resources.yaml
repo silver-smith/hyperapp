@@ -44,7 +44,7 @@ definitions:
       function: AutoTabsView.from_piece
       service_params:
       - view_creg
-  auto_tabs_view_close_tab.cfg-item:
+  auto_tabs_view_close_tab.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.auto_tabs:view
@@ -71,7 +71,7 @@ definitions:
         uses_state: true
         remotable: true
       system_fn: auto_tabs_view_close_tab.system-fn
-  auto_tabs_view_duplicate_tab.cfg-item:
+  auto_tabs_view_duplicate_tab.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.auto_tabs:view

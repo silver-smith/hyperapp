@@ -59,7 +59,7 @@ definitions:
       service_params:
       - model_view_creg
       - set_custom_layout
-  navigator_view_go_back.cfg-item:
+  navigator_view_go_back.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.navigator:view
@@ -87,7 +87,7 @@ definitions:
         uses_state: false
         remotable: false
       system_fn: navigator_view_go_back.system-fn
-  navigator_view_go_forward.cfg-item:
+  navigator_view_go_forward.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.navigator:view

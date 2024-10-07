@@ -53,7 +53,7 @@ definitions:
       ctx_params:
       - piece
       service_params: []
-  file_bundles_view_open.cfg-item:
+  file_bundles_view_open.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.file_bundles:view

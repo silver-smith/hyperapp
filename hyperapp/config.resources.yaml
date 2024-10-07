@@ -12,14 +12,14 @@ import:
 - legacy_type.system:system_config
 - models.data_browser:browse_current_model.global-model-command
 - models.data_browser:data_browser_list_view.model-cfg-item
-- models.data_browser:data_browser_list_view_list_open.cfg-item
+- models.data_browser:data_browser_list_view_list_open.command-cfg-item
 - models.data_browser:data_browser_primitive_view.model-cfg-item
 - models.data_browser:data_browser_record_view.model-cfg-item
-- models.data_browser:data_browser_record_view_record_open.cfg-item
+- models.data_browser:data_browser_record_view_record_open.command-cfg-item
 - models.data_browser:data_browser_ref_list_view.model-cfg-item
-- models.data_browser:data_browser_ref_list_view_ref_list_open.cfg-item
+- models.data_browser:data_browser_ref_list_view_ref_list_open.command-cfg-item
 - models.file_bundles:file_bundles_view.model-cfg-item
-- models.file_bundles:file_bundles_view_open.cfg-item
+- models.file_bundles:file_bundles_view_open.command-cfg-item
 - models.file_bundles:open_file_bundle_list.global-model-command
 - models.model_commands:model_commands_model_commands.model-cfg-item
 - models.model_commands:open_model_commands.global-model-command
@@ -118,8 +118,8 @@ import:
 - sample.sample_commands:open_sample_static_list.global-model-command
 - sample.sample_commands:open_sample_static_text_1.global-model-command
 - sample.sample_commands:open_sample_static_text_2.global-model-command
-- sample.sample_commands:sample_list_sample_list_details.cfg-item
-- sample.sample_commands:sample_tree_sample_tree_sample_tree_info.cfg-item
+- sample.sample_commands:sample_list_sample_list_details.command-cfg-item
+- sample.sample_commands:sample_tree_sample_tree_sample_tree_info.command-cfg-item
 - sample.sample_commands:show_state.global-model-command
 - sample.sample_feed:sample_feed_sample_list_feed.feed-template
 - sample.sample_feed:sample_feed_sample_tree_feed.feed-template
@@ -167,10 +167,10 @@ import:
 - ui.feed_creg:feed_creg.service
 - ui.feed_type_template:feed_feed_template.actor-template
 - ui.int_adapter:int_adapter_int_adapter.actor-template
-- ui.layout:layout_command_list_add_view_command.cfg-item
-- ui.layout:layout_command_list_view_item_commands.cfg-item
+- ui.layout:layout_command_list_add_view_command.command-cfg-item
+- ui.layout:layout_command_list_view_item_commands.command-cfg-item
 - ui.layout:layout_view.model-cfg-item
-- ui.layout:layout_view_open_view_item_commands.cfg-item
+- ui.layout:layout_view_open_view_item_commands.command-cfg-item
 - ui.layout:open_layout_tree.global-model-command
 - ui.model_cfg_item:model_cfg_item.actor-template
 - ui.model_command:command_model_command.actor-template
@@ -179,11 +179,11 @@ import:
 - ui.model_command:model_command_reg.service
 - ui.model_command_impl_creg:model_command_impl_creg.service
 - ui.navigator:navigator_view.actor-template
-- ui.navigator:navigator_view_go_back.cfg-item
-- ui.navigator:navigator_view_go_forward.cfg-item
+- ui.navigator:navigator_view_go_back.command-cfg-item
+- ui.navigator:navigator_view_go_forward.command-cfg-item
 - ui.qt.auto_tabs:auto_tabs_view.actor-template
-- ui.qt.auto_tabs:auto_tabs_view_close_tab.cfg-item
-- ui.qt.auto_tabs:auto_tabs_view_duplicate_tab.cfg-item
+- ui.qt.auto_tabs:auto_tabs_view_close_tab.command-cfg-item
+- ui.qt.auto_tabs:auto_tabs_view_duplicate_tab.command-cfg-item
 - ui.qt.box_layout:box_layout_view.actor-template
 - ui.qt.command_pane:command_pane_view.actor-template
 - ui.qt.fn_index_tree_adapter:tree_adapter_fn_index_tree_adapter.actor-template
@@ -201,8 +201,8 @@ import:
 - ui.qt.text:text_readonly_view.actor-template
 - ui.qt.tree:tree_view.actor-template
 - ui.qt.window:window_view.actor-template
-- ui.qt.window_commands:window_view_duplicate_window.cfg-item
-- ui.qt.window_commands:window_view_quit.cfg-item
+- ui.qt.window_commands:window_view_duplicate_window.command-cfg-item
+- ui.qt.window_commands:window_view_quit.command-cfg-item
 - ui.str_adapter:str_adapter_static_str_adapter.actor-template
 - ui.system_fn:system_fn_ctx_fn.actor-template
 - ui.system_fn_creg:system_fn_creg.service
@@ -328,15 +328,15 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - models.data_browser:data_browser_list_view_list_open.cfg-item
-      - models.data_browser:data_browser_record_view_record_open.cfg-item
-      - models.data_browser:data_browser_ref_list_view_ref_list_open.cfg-item
-      - models.file_bundles:file_bundles_view_open.cfg-item
-      - sample.sample_commands:sample_list_sample_list_details.cfg-item
-      - sample.sample_commands:sample_tree_sample_tree_sample_tree_info.cfg-item
-      - ui.layout:layout_command_list_add_view_command.cfg-item
-      - ui.layout:layout_command_list_view_item_commands.cfg-item
-      - ui.layout:layout_view_open_view_item_commands.cfg-item
+      - models.data_browser:data_browser_list_view_list_open.command-cfg-item
+      - models.data_browser:data_browser_record_view_record_open.command-cfg-item
+      - models.data_browser:data_browser_ref_list_view_ref_list_open.command-cfg-item
+      - models.file_bundles:file_bundles_view_open.command-cfg-item
+      - sample.sample_commands:sample_list_sample_list_details.command-cfg-item
+      - sample.sample_commands:sample_tree_sample_tree_sample_tree_info.command-cfg-item
+      - ui.layout:layout_command_list_add_view_command.command-cfg-item
+      - ui.layout:layout_command_list_view_item_commands.command-cfg-item
+      - ui.layout:layout_view_open_view_item_commands.command-cfg-item
   model_view_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -545,12 +545,12 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.navigator:navigator_view_go_back.cfg-item
-      - ui.navigator:navigator_view_go_forward.cfg-item
-      - ui.qt.auto_tabs:auto_tabs_view_close_tab.cfg-item
-      - ui.qt.auto_tabs:auto_tabs_view_duplicate_tab.cfg-item
-      - ui.qt.window_commands:window_view_duplicate_window.cfg-item
-      - ui.qt.window_commands:window_view_quit.cfg-item
+      - ui.navigator:navigator_view_go_back.command-cfg-item
+      - ui.navigator:navigator_view_go_forward.command-cfg-item
+      - ui.qt.auto_tabs:auto_tabs_view_close_tab.command-cfg-item
+      - ui.qt.auto_tabs:auto_tabs_view_duplicate_tab.command-cfg-item
+      - ui.qt.window_commands:window_view_duplicate_window.command-cfg-item
+      - ui.qt.window_commands:window_view_quit.command-cfg-item
   visualizer_reg:
     type: legacy_type.system:item_list_config
     value:

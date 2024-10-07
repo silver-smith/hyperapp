@@ -140,7 +140,7 @@ class TypedCommandTemplateCtr(CommandTemplateCtr):
             )
 
     def get_component(self, name_to_res):
-        return name_to_res[f'{self._resource_name}.cfg-item']
+        return name_to_res[f'{self._resource_name}.command-cfg-item']
 
     def make_component(self, types, python_module, name_to_res=None):
         command = self._make_command_component(types, python_module, name_to_res)
@@ -149,7 +149,7 @@ class TypedCommandTemplateCtr(CommandTemplateCtr):
             command=mosaic.put(command),
             )
         if name_to_res is not None:
-            name_to_res[f'{self._resource_name}.cfg-item'] = cfg_item
+            name_to_res[f'{self._resource_name}.command-cfg-item'] = cfg_item
         return cfg_item
 
     @property

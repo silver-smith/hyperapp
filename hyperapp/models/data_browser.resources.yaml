@@ -112,7 +112,7 @@ definitions:
       ctx_params:
       - piece
       service_params: []
-  data_browser_list_view_list_open.cfg-item:
+  data_browser_list_view_list_open.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.data_browser:list_view
@@ -180,7 +180,7 @@ definitions:
       ctx_params:
       - piece
       service_params: []
-  data_browser_record_view_record_open.cfg-item:
+  data_browser_record_view_record_open.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.data_browser:record_view
@@ -227,7 +227,7 @@ definitions:
       ctx_params:
       - piece
       service_params: []
-  data_browser_ref_list_view_ref_list_open.cfg-item:
+  data_browser_ref_list_view_ref_list_open.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.data_browser:ref_list_view

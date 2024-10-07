@@ -103,7 +103,7 @@ definitions:
       import_list:
         code.mark: common.mark:mark.module
         htypes.sample_list.item: legacy_type.sample_list:item
-  sample_list_sample_list_details.cfg-item:
+  sample_list_sample_list_details.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.sample_list:sample_list
@@ -134,7 +134,7 @@ definitions:
     value:
       object: sample_commands.module
       attr_name: sample_tree_info
-  sample_tree_sample_tree_sample_tree_info.cfg-item:
+  sample_tree_sample_tree_sample_tree_info.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
       t: legacy_type.sample_tree:sample_tree
