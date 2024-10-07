@@ -45,6 +45,7 @@ def layout_tree(piece, parent, controller):
     return controller.view_items(parent_id)
 
 
+@mark.command_enum
 def enum_layout_tree_commands(piece, current_item, controller):
     if current_item:
         item_id = current_item.id

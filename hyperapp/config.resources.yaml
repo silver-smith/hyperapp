@@ -172,6 +172,7 @@ import:
 - ui.layout:layout_command_list_add_view_command.command-cfg-item
 - ui.layout:layout_command_list_view_item_commands.command-cfg-item
 - ui.layout:layout_view.model-cfg-item
+- ui.layout:layout_view_enum_layout_tree_commands.command-cfg-item
 - ui.layout:layout_view_open_view_item_commands.command-cfg-item
 - ui.layout:open_layout_tree.global-model-command
 - ui.model_cfg_item:model_cfg_item.actor-template
@@ -249,6 +250,7 @@ definitions:
         feed_factory: feed_factory
         global_model_command_reg: global_model_command_reg
         marker_registry: marker_registry
+        model_command_enumerator_reg: model_command_enumerator_reg
         model_command_reg: model_command_reg
         model_view_creg: model_view_creg
         parcel_registry: parcel_registry
@@ -328,6 +330,11 @@ definitions:
       - rc.fixture_marker:fixture.marker-template
       - rc.model_marker:model.marker-template
       - rc.service_marker:service2.marker-template
+  model_command_enumerator_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.layout:layout_view_enum_layout_tree_commands.command-cfg-item
   model_command_reg:
     type: legacy_type.system:item_list_config
     value:
