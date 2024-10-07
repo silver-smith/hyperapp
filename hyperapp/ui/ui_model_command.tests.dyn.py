@@ -12,8 +12,12 @@ from .code.model_command import UnboundModelCommand
 from .tested.code import ui_model_command
 
 
-def _sample_fn(model, state, sample_service):
-    return f'sample-fn: {state}, {sample_service}'
+def _sample_fn_1(model, state, sample_service):
+    return f'sample-fn-2: {state}, {sample_service}'
+
+
+def _sample_fn_2(model, state, sample_service):
+    return f'sample-fn-2: {state}, {sample_service}'
 
 
 @mark.config_fixture('global_model_command_reg')
@@ -22,15 +26,33 @@ def global_model_command_reg_config(data_to_ref, partial_ref):
         partial_ref=partial_ref, 
         ctx_params=('view', 'state'),
         service_params=('sample_service',),
-        unbound_fn=_sample_fn,
-        bound_fn=partial(_sample_fn, sample_service='a-service'),
+        unbound_fn=_sample_fn_1,
+        bound_fn=partial(_sample_fn_1, sample_service='a-service'),
         )
     command = UnboundModelCommand(
-        d=data_to_ref(htypes.ui_model_command_tests.sample_command_d()),
+        d=data_to_ref(htypes.ui_model_command_tests.sample_command_1_d()),
         ctx_fn=system_fn,
         properties=htypes.command.properties(False, False, False),
         )
     return [command]
+
+
+@mark.config_fixture('model_command_reg')
+def model_command_reg_config(data_to_ref, partial_ref):
+    system_fn = ContextFn(
+        partial_ref=partial_ref, 
+        ctx_params=('view', 'state'),
+        service_params=('sample_service',),
+        unbound_fn=_sample_fn_2,
+        bound_fn=partial(_sample_fn_2, sample_service='a-service'),
+        )
+    command = UnboundModelCommand(
+        d=data_to_ref(htypes.ui_model_command_tests.sample_command_2_d()),
+        ctx_fn=system_fn,
+        properties=htypes.command.properties(False, False, False),
+        )
+    model_t = htypes.ui_model_command_tests.sample_model
+    return {model_t: [command]}
 
 
 def test_get_ui_model_commands(get_ui_model_commands):
@@ -38,9 +60,10 @@ def test_get_ui_model_commands(get_ui_model_commands):
     lcs.get.return_value = None
     ctx = Context()
     model = htypes.ui_model_command_tests.sample_model()
-    commands = get_ui_model_commands(lcs, model, ctx)
-    assert commands
-    assert isinstance(commands[0], ui_model_command.UnboundUiModelCommand)
+    command_list = get_ui_model_commands(lcs, model, ctx)
+    len(command_list) == 2
+    for cmd in command_list:
+        assert isinstance(cmd, ui_model_command.UnboundUiModelCommand)
 
 
 # @mark.service
