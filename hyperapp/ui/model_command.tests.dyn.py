@@ -48,6 +48,11 @@ def test_get_model_commands(get_model_commands):
     commands = get_model_commands(model)
 
 
+def test_model_command_enumerator_reg(model_command_enumerator_reg):
+    model = htypes.model_command_tests.sample_model()
+    commands = model_command_enumerator_reg(model)
+
+
 # def test_enum_model_commands():
 #     ctx = Context()
 #     piece = htypes.model_command_tests.sample_model()

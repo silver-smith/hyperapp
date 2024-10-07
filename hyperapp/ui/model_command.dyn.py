@@ -54,6 +54,11 @@ def model_command_reg(config, model_t):
     return config.get(model_t, [])
 
 
+@mark.service2(ctl=TypedCommandConfigCtl())
+def model_command_enumerator_reg(config, model_t):
+    return config.get(model_t, [])
+
+
 @mark.service2
 def get_model_commands(model_command_reg, model):
     model_t = deduce_t(model)

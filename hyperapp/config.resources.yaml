@@ -176,6 +176,7 @@ import:
 - ui.model_command:command_model_command.actor-template
 - ui.model_command:get_model_commands.service
 - ui.model_command:global_model_command_reg.service
+- ui.model_command:model_command_enumerator_reg.service
 - ui.model_command:model_command_reg.service
 - ui.model_command_impl_creg:model_command_impl_creg.service
 - ui.navigator:navigator_view.actor-template
@@ -498,6 +499,7 @@ definitions:
       - ui.feed_creg:feed_creg.service
       - ui.model_command:get_model_commands.service
       - ui.model_command:global_model_command_reg.service
+      - ui.model_command:model_command_enumerator_reg.service
       - ui.model_command:model_command_reg.service
       - ui.model_command_impl_creg:model_command_impl_creg.service
       - ui.system_fn_creg:system_fn_creg.service

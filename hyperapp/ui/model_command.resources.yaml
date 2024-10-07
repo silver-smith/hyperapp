@@ -69,6 +69,21 @@ definitions:
         code.mark: common.mark:mark.module
         services.deduce_t: builtins:deduce_t.service
         services.pyobj_creg: builtins:pyobj_creg.service
+  model_command_enumerator_reg:
+    type: legacy_type.builtin:attribute
+    value:
+      object: model_command.module
+      attr_name: model_command_enumerator_reg
+  model_command_enumerator_reg.service:
+    type: legacy_type.system:service_template
+    value:
+      name: model_command_enumerator_reg
+      ctl: command-typed_config_ctl.ctl
+      function: model_command_enumerator_reg
+      free_params:
+      - model_t
+      service_params: []
+      want_config: true
   model_command_from_piece:
     type: legacy_type.builtin:attribute
     value:
