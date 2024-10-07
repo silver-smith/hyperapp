@@ -1,143 +1,111 @@
 # Automatically generated file. Do not edit.
 
 import:
-- common.file_bundle:file_bundle.service
+- common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.command:cfg_item
+- legacy_type.command:model_command
 - legacy_type.data_browser:record_view
-- legacy_type.file_bundles:bundle_item
-- legacy_type.file_bundles:bundle_list
-- legacy_type.file_bundles:file_bundle_list_d
+- legacy_type.file_bundles:item
 - legacy_type.file_bundles:open_d
 - legacy_type.file_bundles:open_file_bundle_list_d
-- legacy_type.ui:command_properties
-- legacy_type.ui:command_properties_d
-- legacy_type.ui:fn_impl
-- legacy_type.ui:global_model_command_d
-- legacy_type.ui:list_ui_t
-- legacy_type.ui:model
-- legacy_type.ui:model_command
-- legacy_type.ui:model_command_d
-- legacy_type.ui:model_command_impl
-- legacy_type.ui:model_d
+- legacy_type.file_bundles:view
+- legacy_type.model:cfg_item
+- legacy_type.model:list_ui_t
+- legacy_type.model:model
+- legacy_type.system_fn:ctx_fn
 definitions:
-  command_properties_d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.ui:command_properties_d
   file_bundle_list:
     type: legacy_type.builtin:attribute
     value:
       object: file_bundles.module
       attr_name: file_bundle_list
-  file_bundle_list.command:
-    type: legacy_type.ui:model_command
-    value:
-      d: file_bundle_list.d
-      impl: file_bundle_list.command_impl
-  file_bundle_list.command_impl:
-    type: legacy_type.ui:model_command_impl
-    value:
-      function: file_bundle_list
-      params:
-      - piece
-  file_bundle_list.command_properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: false
-      uses_state: false
-      remotable: true
-  file_bundle_list.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.file_bundles:file_bundle_list_d
-  file_bundle_list.impl:
-    type: legacy_type.ui:fn_impl
-    value:
-      function: file_bundle_list
-      params:
-      - piece
-  file_bundle_list.model:
-    type: legacy_type.ui:model
-    value:
-      ui_t: file_bundle_list.ui_t
-      impl: file_bundle_list.impl
-  file_bundle_list.ui_t:
-    type: legacy_type.ui:list_ui_t
-    value:
-      element_t: legacy_type.file_bundles:bundle_item
   file_bundles.module:
     type: legacy_type.builtin:python_module
     value:
       module_name: file_bundles
       file_name: file_bundles.dyn.py
       import_list:
+        code.mark: common.mark:mark.module
         htypes.data_browser.record_view: legacy_type.data_browser:record_view
-        htypes.file_bundles.bundle_item: legacy_type.file_bundles:bundle_item
-        htypes.file_bundles.bundle_list: legacy_type.file_bundles:bundle_list
-        services.file_bundle: common.file_bundle:file_bundle.service
-  global_model_command_d:
+        htypes.file_bundles.item: legacy_type.file_bundles:item
+        htypes.file_bundles.view: legacy_type.file_bundles:view
+  file_bundles_view.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      element_t: legacy_type.file_bundles:item
+  file_bundles_view.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: file_bundles_view.list-ui-t
+      system_fn: file_bundles_view.system-fn
+  file_bundles_view.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.file_bundles:view
+      model: file_bundles_view.model
+  file_bundles_view.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: file_bundle_list
+      ctx_params:
+      - piece
+      service_params: []
+  file_bundles_view_open.cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.file_bundles:view
+      command: file_bundles_view_open.model-command
+  file_bundles_view_open.d:
     type: legacy_type.builtin:call
     value:
-      function: legacy_type.ui:global_model_command_d
-  model_command_d:
-    type: legacy_type.builtin:call
+      function: legacy_type.file_bundles:open_d
+  file_bundles_view_open.model-command:
+    type: legacy_type.command:model_command
     value:
-      function: legacy_type.ui:model_command_d
-  model_d:
-    type: legacy_type.builtin:call
+      d: file_bundles_view_open.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: file_bundles_view_open.system-fn
+  file_bundles_view_open.system-fn:
+    type: legacy_type.system_fn:ctx_fn
     value:
-      function: legacy_type.ui:model_d
+      function: open
+      ctx_params:
+      - piece
+      - current_item
+      service_params:
+      - file_bundle
   open:
     type: legacy_type.builtin:attribute
     value:
       object: file_bundles.module
       attr_name: open
-  open.command:
-    type: legacy_type.ui:model_command
-    value:
-      d: open.d
-      impl: open.command_impl
-  open.command_impl:
-    type: legacy_type.ui:model_command_impl
-    value:
-      function: open
-      params:
-      - piece
-      - current_item
-  open.command_properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: false
-      uses_state: true
-      remotable: true
-  open.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.file_bundles:open_d
   open_file_bundle_list:
     type: legacy_type.builtin:attribute
     value:
       object: file_bundles.module
       attr_name: open_file_bundle_list
-  open_file_bundle_list.command:
-    type: legacy_type.ui:model_command
-    value:
-      d: open_file_bundle_list.d
-      impl: open_file_bundle_list.command_impl
-  open_file_bundle_list.command_impl:
-    type: legacy_type.ui:model_command_impl
-    value:
-      function: open_file_bundle_list
-      params: []
-  open_file_bundle_list.command_properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: true
-      uses_state: false
-      remotable: true
   open_file_bundle_list.d:
     type: legacy_type.builtin:call
     value:
       function: legacy_type.file_bundles:open_file_bundle_list_d
+  open_file_bundle_list.global-model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_file_bundle_list.d
+      properties:
+        is_global: true
+        uses_state: false
+        remotable: true
+      system_fn: open_file_bundle_list.system-fn
+  open_file_bundle_list.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_file_bundle_list
+      ctx_params: []
+      service_params: []

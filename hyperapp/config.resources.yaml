@@ -18,6 +18,9 @@ import:
 - models.data_browser:data_browser_record_view_record_open.cfg-item
 - models.data_browser:data_browser_ref_list_view.model-cfg-item
 - models.data_browser:data_browser_ref_list_view_ref_list_open.cfg-item
+- models.file_bundles:file_bundles_view.model-cfg-item
+- models.file_bundles:file_bundles_view_open.cfg-item
+- models.file_bundles:open_file_bundle_list.global-model-command
 - models.model_commands:model_commands_model_commands.model-cfg-item
 - models.model_commands:open_model_commands.global-model-command
 - models.show_current_context:show_current_context.global-model-command
@@ -295,6 +298,7 @@ definitions:
     value:
       items:
       - models.data_browser:browse_current_model.global-model-command
+      - models.file_bundles:open_file_bundle_list.global-model-command
       - models.model_commands:open_model_commands.global-model-command
       - models.show_current_context:show_current_context.global-model-command
       - sample.sample_commands:open_sample_static_list.global-model-command
@@ -327,6 +331,7 @@ definitions:
       - models.data_browser:data_browser_list_view_list_open.cfg-item
       - models.data_browser:data_browser_record_view_record_open.cfg-item
       - models.data_browser:data_browser_ref_list_view_ref_list_open.cfg-item
+      - models.file_bundles:file_bundles_view_open.cfg-item
       - sample.sample_commands:sample_list_sample_list_details.cfg-item
       - sample.sample_commands:sample_tree_sample_tree_sample_tree_info.cfg-item
       - ui.layout:layout_command_list_add_view_command.cfg-item
@@ -554,6 +559,7 @@ definitions:
       - models.data_browser:data_browser_primitive_view.model-cfg-item
       - models.data_browser:data_browser_record_view.model-cfg-item
       - models.data_browser:data_browser_ref_list_view.model-cfg-item
+      - models.file_bundles:file_bundles_view.model-cfg-item
       - models.model_commands:model_commands_model_commands.model-cfg-item
       - models.show_current_context:show_current_context_view.model-cfg-item
       - sample.sample_list:sample_list_feed_sample_list.model-cfg-item

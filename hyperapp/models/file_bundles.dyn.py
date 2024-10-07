@@ -3,23 +3,24 @@ from pathlib import Path
 from hyperapp.common import dict_coders  # register codec
 
 from . import htypes
-from .services import (
-    file_bundle,
-    )
+from .code.mark import mark
 
 
+@mark.global_command
 def open_file_bundle_list():
-    return htypes.file_bundles.bundle_list()
+    return htypes.file_bundles.view()
 
 
+@mark.model
 def file_bundle_list(piece):
     return [
-        htypes.file_bundles.bundle_item("lcs", "~/.local/share/hyperapp/client/lcs.cdr"),
-        htypes.file_bundles.bundle_item("client state", "~/.local/share/hyperapp/client/layout.json"),
+        htypes.file_bundles.item("client state", "~/.local/share/hyperapp/client/layout.json"),
+        htypes.file_bundles.item("lcs", "~/.local/share/hyperapp/client/lcs.cdr"),
         ]
 
 
-def open(piece, current_item):
+@mark.command
+def open(piece, current_item, file_bundle):
     path = Path(current_item.path).expanduser()
     if path.suffix == '.json':
         encoding = 'json'
