@@ -18,6 +18,8 @@ import:
 - models.data_browser:data_browser_record_view_record_open.cfg-item
 - models.data_browser:data_browser_ref_list_view.model-cfg-item
 - models.data_browser:data_browser_ref_list_view_ref_list_open.cfg-item
+- models.show_current_context:show_current_context.global-model-command
+- models.show_current_context:show_current_context_view.model-cfg-item
 - rc.actor_ctr:actor_resource_actor_probe_ctr.actor-template
 - rc.actor_ctr:actor_resource_actor_template_ctr.actor-template
 - rc.actor_ctr:system_actor_template.actor-template
@@ -291,6 +293,7 @@ definitions:
     value:
       items:
       - models.data_browser:browse_current_model.global-model-command
+      - models.show_current_context:show_current_context.global-model-command
       - sample.sample_commands:open_sample_static_list.global-model-command
       - sample.sample_commands:open_sample_static_text_1.global-model-command
       - sample.sample_commands:open_sample_static_text_2.global-model-command
@@ -548,6 +551,7 @@ definitions:
       - models.data_browser:data_browser_primitive_view.model-cfg-item
       - models.data_browser:data_browser_record_view.model-cfg-item
       - models.data_browser:data_browser_ref_list_view.model-cfg-item
+      - models.show_current_context:show_current_context_view.model-cfg-item
       - sample.sample_list:sample_list_feed_sample_list.model-cfg-item
       - sample.sample_list:sample_list_sample_list.model-cfg-item
       - sample.sample_record:sample_record_sample_record.model-cfg-item
