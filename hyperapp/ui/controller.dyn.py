@@ -41,7 +41,7 @@ class _Item:
     name: str
     view: View
     focusable: bool
-    view_commands: list = None
+    view_commands: list = None  # Bound commands.
     _current_child_idx: int | None = None
     _widget_wr: Any | None = None
     _children: list[Self] | None = None
