@@ -25,6 +25,9 @@ class ContextFn:
         self._unbound_fn = unbound_fn
         self._bound_fn = bound_fn
 
+    def __repr__(self):
+        return f"<ContextFn: {self._unbound_fn}({self._ctx_params}/{self._service_params})>"
+
     @property
     def piece(self):
         return htypes.system_fn.ctx_fn(
