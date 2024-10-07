@@ -36,6 +36,7 @@ def _data_browser(data, t):
     raise RuntimeError(f"Data browser: Unsupported type: {t}: {data}")
 
 
+@mark.model
 def browse_record(piece):
     data = web.summon(piece.data)
     data_t = deduce_t(data)
@@ -49,6 +50,7 @@ def browse_record(piece):
         ]
 
 
+@mark.command
 def record_open(piece, current_item):
     data = web.summon(piece.data)
     data_t = deduce_t(data)
@@ -61,6 +63,7 @@ def record_open(piece, current_item):
     return _data_browser(value, field_t)
 
 
+@mark.model
 def browse_list(piece):
     data = web.summon(piece.data)
     return [
@@ -72,6 +75,7 @@ def browse_list(piece):
         ]
 
 
+@mark.command
 def list_open(piece, current_item):
     data = web.summon(piece.data)
     value = data[current_item.idx]
@@ -79,6 +83,7 @@ def list_open(piece, current_item):
     return _data_browser(value, t)
 
 
+@mark.model
 def browse_ref_list(piece):
     data = web.summon(piece.data)
     result = []
@@ -93,6 +98,7 @@ def browse_ref_list(piece):
     return result
 
 
+@mark.command
 def ref_list_open(piece, current_item):
     data = web.summon(piece.data)
     value_ref = data[current_item.idx]
@@ -111,6 +117,7 @@ def browse_primitive(piece):
         )
 
 
+@mark.global_command
 def browse_current_model(piece):
     t = deduce_t(piece)
     return _data_browser(piece, t)

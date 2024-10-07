@@ -6,25 +6,73 @@ import:
 - builtins:web.service
 - common.mark:mark.module
 - legacy_type.builtin:attribute
+- legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.command:cfg_item
+- legacy_type.command:model_command
+- legacy_type.data_browser:browse_current_model_d
 - legacy_type.data_browser:list_item
+- legacy_type.data_browser:list_open_d
 - legacy_type.data_browser:list_view
 - legacy_type.data_browser:primitive_item
 - legacy_type.data_browser:primitive_view
 - legacy_type.data_browser:record_item
+- legacy_type.data_browser:record_open_d
 - legacy_type.data_browser:record_view
 - legacy_type.data_browser:ref_list_item
+- legacy_type.data_browser:ref_list_open_d
 - legacy_type.data_browser:ref_list_view
 - legacy_type.model:cfg_item
+- legacy_type.model:list_ui_t
 - legacy_type.model:model
 - legacy_type.model:record_ui_t
 - legacy_type.system_fn:ctx_fn
 definitions:
+  browse_current_model:
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_browser.module
+      attr_name: browse_current_model
+  browse_current_model.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.data_browser:browse_current_model_d
+  browse_current_model.global-model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: browse_current_model.d
+      properties:
+        is_global: true
+        uses_state: false
+        remotable: true
+      system_fn: browse_current_model.system-fn
+  browse_current_model.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: browse_current_model
+      ctx_params:
+      - piece
+      service_params: []
+  browse_list:
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_browser.module
+      attr_name: browse_list
   browse_primitive:
     type: legacy_type.builtin:attribute
     value:
       object: data_browser.module
       attr_name: browse_primitive
+  browse_record:
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_browser.module
+      attr_name: browse_record
+  browse_ref_list:
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_browser.module
+      attr_name: browse_ref_list
   data_browser.module:
     type: legacy_type.builtin:python_module
     value:
@@ -43,6 +91,53 @@ definitions:
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
+  data_browser_list_view.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      element_t: legacy_type.data_browser:list_item
+  data_browser_list_view.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: data_browser_list_view.list-ui-t
+      system_fn: data_browser_list_view.system-fn
+  data_browser_list_view.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.data_browser:list_view
+      model: data_browser_list_view.model
+  data_browser_list_view.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: browse_list
+      ctx_params:
+      - piece
+      service_params: []
+  data_browser_list_view_list_open.cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.data_browser:list_view
+      command: data_browser_list_view_list_open.model-command
+  data_browser_list_view_list_open.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.data_browser:list_open_d
+  data_browser_list_view_list_open.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: data_browser_list_view_list_open.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: data_browser_list_view_list_open.system-fn
+  data_browser_list_view_list_open.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: list_open
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
   data_browser_primitive_view.model:
     type: legacy_type.model:model
     value:
@@ -64,3 +159,112 @@ definitions:
       ctx_params:
       - piece
       service_params: []
+  data_browser_record_view.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      element_t: legacy_type.data_browser:record_item
+  data_browser_record_view.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: data_browser_record_view.list-ui-t
+      system_fn: data_browser_record_view.system-fn
+  data_browser_record_view.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.data_browser:record_view
+      model: data_browser_record_view.model
+  data_browser_record_view.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: browse_record
+      ctx_params:
+      - piece
+      service_params: []
+  data_browser_record_view_record_open.cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.data_browser:record_view
+      command: data_browser_record_view_record_open.model-command
+  data_browser_record_view_record_open.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.data_browser:record_open_d
+  data_browser_record_view_record_open.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: data_browser_record_view_record_open.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: data_browser_record_view_record_open.system-fn
+  data_browser_record_view_record_open.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: record_open
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
+  data_browser_ref_list_view.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      element_t: legacy_type.data_browser:ref_list_item
+  data_browser_ref_list_view.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: data_browser_ref_list_view.list-ui-t
+      system_fn: data_browser_ref_list_view.system-fn
+  data_browser_ref_list_view.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.data_browser:ref_list_view
+      model: data_browser_ref_list_view.model
+  data_browser_ref_list_view.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: browse_ref_list
+      ctx_params:
+      - piece
+      service_params: []
+  data_browser_ref_list_view_ref_list_open.cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.data_browser:ref_list_view
+      command: data_browser_ref_list_view_ref_list_open.model-command
+  data_browser_ref_list_view_ref_list_open.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.data_browser:ref_list_open_d
+  data_browser_ref_list_view_ref_list_open.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: data_browser_ref_list_view_ref_list_open.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: data_browser_ref_list_view_ref_list_open.system-fn
+  data_browser_ref_list_view_ref_list_open.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: ref_list_open
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
+  list_open:
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_browser.module
+      attr_name: list_open
+  record_open:
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_browser.module
+      attr_name: record_open
+  ref_list_open:
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_browser.module
+      attr_name: ref_list_open
