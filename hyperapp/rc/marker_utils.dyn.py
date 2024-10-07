@@ -1,4 +1,8 @@
 import inspect
+from collections import namedtuple
+
+
+Params = namedtuple('Params', 'ctx_names service_names values')
 
 
 def check_is_function(fn):
@@ -30,3 +34,29 @@ def is_cls_arg(fn, arg):
 
 def fn_params(fn):
     return list(inspect.signature(fn).parameters)
+
+
+def split_params(fn, args, kw):
+    all_names = fn_params(fn)
+    if args and is_cls_arg(fn, args[0]):
+        # fn is a classmethod and args[0] is a 'cls' argument.
+        param_ofs = 1
+    else:
+        param_ofs = 0
+    args_values = {
+        all_names[idx]: arg
+        for idx, arg in enumerate(args)
+        }
+    values = {
+        **args_values,
+        **kw,
+        }
+    ctx_names = [
+        *all_names[param_ofs:len(args)],
+        *kw,
+        ]
+    service_names = [
+        name for name in all_names[param_ofs:]
+        if name not in ctx_names
+        ]
+    return Params(ctx_names, service_names, values)

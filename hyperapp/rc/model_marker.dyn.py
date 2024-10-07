@@ -9,8 +9,7 @@ from .services import (
 from .code.marker_utils import (
     check_is_function,
     check_not_classmethod,
-    is_cls_arg,
-    fn_params,
+    split_params,
     )
 from .code.model_ctr import ModelCtr
 
@@ -29,47 +28,27 @@ class ModelProbe:
         self._ctr_collector = system_probe.resolve_service('ctr_collector')
 
     def __call__(self, *args, **kw):
-        params = fn_params(self._fn)
-        param_ofs = 0
-        if args and is_cls_arg(self._fn, args[0]):
-            # self._fn is a classmethod and args[0] is a 'cls' argument.
-            param_ofs = 1
-        param_values = {
-            params[idx]: arg
-            for idx, arg in enumerate(args)
-            }
-        param_values = {
-            **param_values,
-            **kw,
-            }
-        ctx_params = [
-            *params[param_ofs:len(args)],
-            *kw,
-            ]
-        service_params = [
-            name for name in params[param_ofs:]
-            if name not in ctx_params
-            ]
+        params = split_params(self._fn, args, kw)
         try:
-            model = param_values['model']
+            model = params.values['model']
         except KeyError:
             try:
-                model = param_values['piece']
+                model = params.values['piece']
             except KeyError:
-                self._raise_error(f"'model' or 'piece' argument is expected for model function: {list(param_values)}")
+                self._raise_error(f"'model' or 'piece' argument is expected for model function: {list(params.values)}")
         model_t = deduce_t(model)
         service_kw = {
             name: self._system.resolve_service(name)
-            for name in service_params
+            for name in params.service_names
             }
         result = self._fn(*args, **kw, **service_kw)
-        self._add_constructor(ctx_params, service_params, param_values, model_t, result)
+        self._add_constructor(params, model_t, result)
         return result
 
-    def _add_constructor(self, ctx_params, service_params, param_values, model_t, result):
+    def _add_constructor(self, params, model_t, result):
         result_t = self._deduce_t(result, f"{self._fn}: Returned not a deducible data type: {result!r}")
         try:
-            parent = param_values['parent']
+            parent = params.values['parent']
         except KeyError:
             if isinstance(result_t, TList):
                 ui_t = self._make_list_ui_t(result_t)
@@ -84,8 +63,8 @@ class ModelProbe:
             attr_qual_name=self._fn.__qualname__.split('.'),
             model_t=model_t,
             ui_t=ui_t,
-            ctx_params=ctx_params,
-            service_params=service_params,
+            ctx_params=params.ctx_names,
+            service_params=params.service_names,
             )
         self._ctr_collector.add_constructor(ctr)
 
