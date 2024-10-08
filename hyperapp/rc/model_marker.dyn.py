@@ -1,3 +1,5 @@
+import inspect
+
 from hyperapp.common.htypes import TList, TRecord
 from hyperapp.common.htypes.deduce_value_type import DeduceTypeError
 
@@ -42,6 +44,12 @@ class ModelProbe:
             for name in params.service_names
             }
         result = self._fn(*args, **kw, **service_kw)
+        if inspect.iscoroutine(result):
+            async def await_result():
+                real_result = await result
+                self._add_constructor(params, model_t, real_result)
+                return real_result
+            return await_result()
         self._add_constructor(params, model_t, result)
         return result
 
