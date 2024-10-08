@@ -154,7 +154,7 @@ class _Item:
         else:
             rctx = Context(command_recs=[], commands=[])
         await self.view.children_context_changed(self.ctx, rctx, self.widget)
-        self.view_commands, rctx = self._reverse_context(rctx)
+        self.view_commands, rctx = await self._reverse_context(rctx)
         for idx, item in enumerate(self.children):
             if item.focusable:
                 continue
@@ -168,10 +168,10 @@ class _Item:
     def _make_view_commands(self):
         return self._meta.svc.get_view_commands(self.view)
 
-    def _make_model_commands(self, command_ctx):
-        return self._meta.svc.get_ui_model_commands(self.ctx.lcs, command_ctx.piece, command_ctx)
+    async def _make_model_commands(self, command_ctx):
+        return await self._meta.svc.get_ui_model_commands(self.ctx.lcs, command_ctx.piece, command_ctx)
 
-    def _reverse_context(self, rctx):
+    async def _reverse_context(self, rctx):
         my_rctx = self.view.primary_parent_context(rctx, self.widget)
         command_ctx = self._command_context(my_rctx)
         unbound_view_commands = self._make_view_commands()
@@ -179,7 +179,7 @@ class _Item:
         d_to_context = {}
         if 'model' in my_rctx.diffs(rctx):
             # model is added or one from a child is replaced.
-            unbound_model_commands = self._make_model_commands(command_ctx)
+            unbound_model_commands = await self._make_model_commands(command_ctx)
             model_commands = [cmd.bind(command_ctx) for cmd in unbound_model_commands]
             commands = commands + model_commands
         commands_rctx = my_rctx.clone_with(

@@ -1,3 +1,4 @@
+import inspect
 import logging
 from functools import partial
 
@@ -44,6 +45,31 @@ def model_command_from_piece(piece, system_fn_creg):
         )
 
 
+class UnboundModelCommandEnumerator:
+
+    def __init__(self, ctx_fn):
+        self._ctx_fn = ctx_fn
+
+    def __repr__(self):
+        return f"<CommandEnum: {self._ctx_fn}>"
+
+    async def enum_commands(self, ctx):
+        # log.info("Run command enumerator: %r (%s)", self, kw)
+        result = self._ctx_fn.call(ctx)
+        if inspect.iscoroutine(result):
+            result = await result
+        log.info("Run command enumerator %r result: [%s] %r", self, type(result), result)
+        return result
+
+
+@mark.actor.command_creg
+def model_command_enumerator_from_piece(piece, system_fn_creg):
+    ctx_fn = system_fn_creg.invite(piece.system_fn)
+    return UnboundModelCommandEnumerator(
+        ctx_fn=ctx_fn,
+        )
+
+
 @mark.service2(ctl=UntypedCommandConfigCtl())
 def global_model_command_reg(config):
     return config
@@ -60,9 +86,12 @@ def model_command_enumerator_reg(config, model_t):
 
 
 @mark.service2
-def get_model_commands(model_command_reg, model):
+async def get_model_commands(model_command_reg, model_command_enumerator_reg, model, ctx):
     model_t = deduce_t(model)
-    return model_command_reg(model_t)
+    command_list = [*model_command_reg(model_t)]
+    for enumerator in model_command_enumerator_reg(model_t):
+        command_list += await enumerator.enum_commands(ctx)
+    return command_list
 
 
 # @mark.service

@@ -33,6 +33,19 @@ def test_model_command_from_piece(data_to_ref):
     assert isinstance(command, model_command.UnboundModelCommand)
 
 
+def test_model_command_enumerator_from_piece(data_to_ref):
+    system_fn = htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(_sample_fn),
+        ctx_params=('model', 'state'),
+        service_params=('sample_service',),
+        )
+    piece = htypes.command.model_command_enumerator(
+        system_fn=mosaic.put(system_fn),
+        )
+    command = model_command.model_command_enumerator_from_piece(piece)
+    assert isinstance(command, model_command.UnboundModelCommandEnumerator)
+
+
 def test_global_command_reg(global_model_command_reg):
     commands = global_model_command_reg()
     # assert commands
@@ -43,14 +56,15 @@ def test_model_command_reg(model_command_reg):
     commands = model_command_reg(model_t)
 
 
-def test_get_model_commands(get_model_commands):
-    model = htypes.model_command_tests.sample_model()
-    commands = get_model_commands(model)
-
-
 def test_model_command_enumerator_reg(model_command_enumerator_reg):
     model = htypes.model_command_tests.sample_model()
     commands = model_command_enumerator_reg(model)
+
+
+async def test_get_model_commands(get_model_commands):
+    ctx = Context()
+    model = htypes.model_command_tests.sample_model()
+    commands = await get_model_commands(model, ctx)
 
 
 # def test_enum_model_commands():

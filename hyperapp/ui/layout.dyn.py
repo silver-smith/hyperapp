@@ -3,16 +3,32 @@ from types import SimpleNamespace
 
 from . import htypes
 from .code.mark import mark
-from .code.command import d_to_name, BoundCommandBase
+from .code.command import d_to_name, BoundCommandBase, UnboundCommandBase
 
 log = logging.getLogger(__name__)
 
 
-class LayoutCommand(BoundCommandBase):
+class UnboundLayoutCommand(UnboundCommandBase):
 
     def __init__(self, ui_command):
         super().__init__(ui_command.d)
         self._ui_command = ui_command
+
+    @property
+    def groups(self):
+        pane_2_d = htypes.command_groups.pane_2_d()
+        return {pane_2_d}
+
+    def bind(self, ctx):
+        return BoundLayoutCommand(self._ui_command, self.groups)
+
+
+class BoundLayoutCommand(BoundCommandBase):
+
+    def __init__(self, ui_command, groups):
+        super().__init__(ui_command.d)
+        self._ui_command = ui_command
+        self._groups = groups
 
     @property
     def name(self):
@@ -28,8 +44,7 @@ class LayoutCommand(BoundCommandBase):
 
     @property
     def groups(self):
-        pane_2_d = htypes.command_groups.pane_2_d()
-        return {pane_2_d}
+        return self._groups
 
     async def run(self):
         log.info("Run layout command: %r", self.name)
@@ -50,7 +65,7 @@ def enum_layout_tree_commands(piece, current_item, controller):
     if current_item:
         item_id = current_item.id
         commands = [
-            LayoutCommand(cmd)
+            UnboundLayoutCommand(cmd)
             for cmd
             in controller.item_commands(item_id)
             ]
@@ -73,7 +88,7 @@ async def open_view_item_commands(piece, current_item):
 
 
 def _command_to_item(data_to_ref, controller, ctx, ui_command, item_id):
-    layout_command = LayoutCommand(ui_command)
+    layout_command = UnboundLayoutCommand(ui_command)
     return htypes.layout.command_item(
         name=layout_command.name,
         groups=', '.join(d_to_name(g) for g in ui_command.groups),

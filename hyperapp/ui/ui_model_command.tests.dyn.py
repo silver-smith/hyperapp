@@ -55,12 +55,12 @@ def model_command_reg_config(partial_ref):
     return {model_t: [command]}
 
 
-def test_get_ui_model_commands(get_ui_model_commands):
+async def test_get_ui_model_commands(get_ui_model_commands):
     lcs = Mock()
     lcs.get.return_value = None
     ctx = Context()
     model = htypes.ui_model_command_tests.sample_model()
-    command_list = get_ui_model_commands(lcs, model, ctx)
+    command_list = await get_ui_model_commands(lcs, model, ctx)
     len(command_list) == 2
     for cmd in command_list:
         assert isinstance(cmd, ui_model_command.UnboundUiModelCommand)

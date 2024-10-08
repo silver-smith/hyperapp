@@ -14,9 +14,9 @@ log = logging.getLogger(__name__)
 
 
 @mark.model
-def list_model_commands(piece, ctx, lcs, get_ui_model_commands):
+async def list_model_commands(piece, ctx, lcs, get_ui_model_commands):
     model = web.summon(piece.model)
-    command_list = get_ui_model_commands(lcs, model, ctx)
+    command_list = await get_ui_model_commands(lcs, model, ctx)
     return [
         htypes.model_commands.item(
             # command=mosaic.put(command),

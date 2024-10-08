@@ -7,6 +7,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command:model_command
+- legacy_type.command:model_command_enumerator
 - legacy_type.command:typed_config_ctl
 - legacy_type.command:untyped_config_ctl
 - legacy_type.system:actor_template
@@ -28,6 +29,13 @@ definitions:
       function: model_command_from_piece
       service_params:
       - system_fn_creg
+  command_model_command_enumerator.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command:model_command_enumerator
+      function: model_command_enumerator_from_piece
+      service_params:
+      - system_fn_creg
   get_model_commands:
     type: legacy_type.builtin:attribute
     value:
@@ -41,8 +49,10 @@ definitions:
       function: get_model_commands
       free_params:
       - model
+      - ctx
       service_params:
       - model_command_reg
+      - model_command_enumerator_reg
       want_config: false
   global_model_command_reg:
     type: legacy_type.builtin:attribute
@@ -69,6 +79,11 @@ definitions:
         code.mark: common.mark:mark.module
         services.deduce_t: builtins:deduce_t.service
         services.pyobj_creg: builtins:pyobj_creg.service
+  model_command_enumerator_from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: model_command.module
+      attr_name: model_command_enumerator_from_piece
   model_command_enumerator_reg:
     type: legacy_type.builtin:attribute
     value:

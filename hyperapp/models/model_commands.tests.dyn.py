@@ -66,7 +66,7 @@ def model_command_reg_config(partial_ref):
     return {model_t: [command]}
 
 
-def test_list_model_commands():
+async def test_list_model_commands():
     lcs = Mock()
     lcs.get.return_value = None  # Missint (empty) command list.
 
@@ -77,7 +77,7 @@ def test_list_model_commands():
         model_state=mosaic.put(model_state)
         )
     ctx = Context()
-    item_list = model_commands.list_model_commands(piece, ctx, lcs)
+    item_list = await model_commands.list_model_commands(piece, ctx, lcs)
     assert len(item_list) == 2
     assert sorted(item.name for item in item_list) == ['sample_command_1', 'sample_command_2']
 
