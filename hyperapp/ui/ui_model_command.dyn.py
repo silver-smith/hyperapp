@@ -191,9 +191,9 @@ def _model_command_to_ui_command(model_view_creg, visualizer, lcs, command):
 
 
 @mark.service2
-async def get_ui_model_commands(model_view_creg, visualizer, global_model_command_reg, get_model_commands, lcs, model, ctx):
+def get_ui_model_commands(model_view_creg, visualizer, global_model_command_reg, get_model_commands, lcs, model, ctx):
     command_list = [*global_model_command_reg]
-    command_list += await get_model_commands(model, ctx)
+    command_list += get_model_commands(model, ctx)
     ui_command_list = [
         _model_command_to_ui_command(model_view_creg, visualizer, lcs, cmd)
         for cmd in command_list

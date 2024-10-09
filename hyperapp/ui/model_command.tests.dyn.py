@@ -61,10 +61,10 @@ def test_model_command_enumerator_reg(model_command_enumerator_reg):
     commands = model_command_enumerator_reg(model)
 
 
-async def test_get_model_commands(get_model_commands):
+def test_get_model_commands(get_model_commands):
     ctx = Context()
     model = htypes.model_command_tests.sample_model()
-    commands = await get_model_commands(model, ctx)
+    commands = get_model_commands(model, ctx)
 
 
 # def test_enum_model_commands():

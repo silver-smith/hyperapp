@@ -53,11 +53,10 @@ class UnboundModelCommandEnumerator:
     def __repr__(self):
         return f"<CommandEnum: {self._ctx_fn}>"
 
-    async def enum_commands(self, ctx):
+    def enum_commands(self, ctx):
         # log.info("Run command enumerator: %r (%s)", self, kw)
         result = self._ctx_fn.call(ctx)
-        if inspect.iscoroutine(result):
-            result = await result
+        assert not inspect.iscoroutine(result), f"Async command enumerators are not supported: {self._ctx_fn}"
         log.info("Run command enumerator %r result: [%s] %r", self, type(result), result)
         return result
 
@@ -86,11 +85,11 @@ def model_command_enumerator_reg(config, model_t):
 
 
 @mark.service2
-async def get_model_commands(model_command_reg, model_command_enumerator_reg, model, ctx):
+def get_model_commands(model_command_reg, model_command_enumerator_reg, model, ctx):
     model_t = deduce_t(model)
     command_list = [*model_command_reg(model_t)]
     for enumerator in model_command_enumerator_reg(model_t):
-        command_list += await enumerator.enum_commands(ctx)
+        command_list += enumerator.enum_commands(ctx)
     return command_list
 
 
