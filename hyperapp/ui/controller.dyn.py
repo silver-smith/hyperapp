@@ -3,7 +3,7 @@ import itertools
 import logging
 import weakref
 from collections import namedtuple
-from contextlib import contextmanager
+from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from functools import cached_property, partial
 from typing import Any, Self
@@ -416,21 +416,11 @@ class Controller:
         root_ctx = ctx.clone_with(controller=self)
         self._root_item = _RootItem.from_piece(meta, show, root_ctx, layout_bundle, layout)
 
-    def show(self):
-        self._root_item.show()
-
-    def run(self, app, event_loop):
-        with event_loop:
-            stop_event = asyncio.Event()
-            app.aboutToQuit.connect(stop_event.set)
-            event_loop.run_until_complete(self._main(stop_event))
-
-    async def _main(self, stop_event):
-        await self.async_init()
-        await stop_event.wait()
-
     async def async_init(self):
         await self._root_item.init_children_reverse_context()
+
+    def show(self):
+        self._root_item.show()
 
     def view_items(self, item_id):
         item = self._id_to_item.get(item_id)
@@ -455,8 +445,8 @@ class Controller:
 
 
 @mark.service2
-@contextmanager
-def controller_running(feed_factory, view_creg, get_view_commands, get_ui_model_commands, layout_bundle, default_layout, ctx, show=False, load_state=False):
+@asynccontextmanager
+async def controller_running(feed_factory, view_creg, get_view_commands, get_ui_model_commands, layout_bundle, default_layout, ctx, show=False, load_state=False):
     svc = CtlServices(
         feed_factory=feed_factory,
         view_creg=view_creg,
@@ -464,6 +454,7 @@ def controller_running(feed_factory, view_creg, get_view_commands, get_ui_model_
         get_ui_model_commands=get_ui_model_commands,
         )
     ctl = Controller(svc, layout_bundle, default_layout, ctx, show, load_state)
+    await ctl.async_init()
     if show:
         ctl.show()
     yield ctl

@@ -102,14 +102,13 @@ def ctx():
     return Context(lcs=lcs)
 
 
-@mark.fixture
-def ctl(controller_running, default_layout, ctx):
-    with controller_running(PhonyLayoutBundle(), default_layout, ctx, show=False, load_state=False) as ctl:
+@mark.fixture.obj
+async def ctl(controller_running, default_layout, ctx):
+    async with controller_running(PhonyLayoutBundle(), default_layout, ctx, show=False, load_state=False) as ctl:
         yield ctl
 
 
 async def test_layout_tree(qapp, ctl):
-    await ctl.async_init()
     piece = htypes.layout.view()
     items = layout.layout_tree(piece, None, ctl)
     assert items
@@ -118,7 +117,6 @@ async def test_layout_tree(qapp, ctl):
 
 
 async def test_enum_layout_tree_commands(qapp, ctl):
-    await ctl.async_init()
     piece = htypes.layout.view()
     windows = layout.layout_tree(piece, None, ctl)
     window_items = layout.layout_tree(piece, windows[0], ctl)
@@ -135,7 +133,6 @@ async def test_open_view_item_commands():
 
 
 async def test_view_item_commands(qapp, ctx, ctl):
-    await ctl.async_init()
     ctx = ctx.clone_with(controller=ctl)
     layout_piece = htypes.layout.view()
     windows = layout.layout_tree(layout_piece, None, ctl)

@@ -78,8 +78,7 @@ async def test_duplicate_window(qapp, feed_factory, controller_running, default_
     ctx = Context(lcs=lcs)
     feed = feed_factory(htypes.layout.view())
 
-    with controller_running(PhonyLayoutBundle(), default_layout, ctx, show=False, load_state=False) as ctl:
-        await ctl.async_init()
+    async with controller_running(PhonyLayoutBundle(), default_layout, ctx, show=False, load_state=False) as ctl:
         root_item = ctl._root_item
         root = controller.Root(root_item)
         view = root_item.children[0].view

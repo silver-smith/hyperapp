@@ -113,7 +113,7 @@ def _parse_args(sys_argv):
 
 
 @mark.service2
-def client_main(
+async def client_async_main(
         endpoint_registry,
         generate_rsa_identity,
         rpc_endpoint,
@@ -121,16 +121,10 @@ def client_main(
         lcs_resource_storage_factory,
         visualizer,
         controller_running,
-        sys_argv,
+        args,
+        app,
+        stop_event,
         ):
-    args = _parse_args(sys_argv)
-
-    register_reconstructors()
-
-    app = QtWidgets.QApplication()
-    event_loop = QEventLoop(app)
-    asyncio.set_event_loop(event_loop)  # Should be set before any asyncio objects created.
-
     lcs_storage = lcs_resource_storage_factory('client.lcs-storage', args.lcs_storage_path)
     lcs = LCSheet(lcs_storage)
 
@@ -145,6 +139,22 @@ def client_main(
     default_layout = make_default_layout(visualizer, lcs)
     layout_bundle = file_bundle(args.layout_path)
 
-    with controller_running(layout_bundle, default_layout, ctx, show=True, load_state=not args.clean) as ctl:
+    async with controller_running(layout_bundle, default_layout, ctx, show=True, load_state=not args.clean) as ctl:
         if not args.test_init:
-            ctl.run(app, event_loop)
+            await stop_event.wait()
+
+
+@mark.service2
+def client_main(client_async_main, sys_argv):
+    args = _parse_args(sys_argv)
+
+    register_reconstructors()
+
+    app = QtWidgets.QApplication()
+    event_loop = QEventLoop(app)
+    asyncio.set_event_loop(event_loop)  # Should be set before any asyncio objects created.
+
+    with event_loop:
+        stop_event = asyncio.Event()
+        app.aboutToQuit.connect(stop_event.set)
+        event_loop.run_until_complete(client_async_main(args, app, stop_event))

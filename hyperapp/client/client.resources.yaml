@@ -66,6 +66,30 @@ definitions:
         htypes.window.view: legacy_type.window:view
         services.hyperapp_dir: builtins:hyperapp_dir.service
         services.mosaic: builtins:mosaic.service
+  client_async_main:
+    type: legacy_type.builtin:attribute
+    value:
+      object: client.module
+      attr_name: client_async_main
+  client_async_main.service:
+    type: legacy_type.system:service_template
+    value:
+      name: client_async_main
+      ctl: system-item_dict_config_ctl.ctl
+      function: client_async_main
+      free_params:
+      - args
+      - app
+      - stop_event
+      service_params:
+      - endpoint_registry
+      - generate_rsa_identity
+      - rpc_endpoint
+      - file_bundle
+      - lcs_resource_storage_factory
+      - visualizer
+      - controller_running
+      want_config: false
   client_main:
     type: legacy_type.builtin:attribute
     value:
@@ -80,13 +104,7 @@ definitions:
       free_params:
       - sys_argv
       service_params:
-      - endpoint_registry
-      - generate_rsa_identity
-      - rpc_endpoint
-      - file_bundle
-      - lcs_resource_storage_factory
-      - visualizer
-      - controller_running
+      - client_async_main
       want_config: false
   system-item_dict_config_ctl.ctl:
     type: legacy_type.system:item_dict_config_ctl

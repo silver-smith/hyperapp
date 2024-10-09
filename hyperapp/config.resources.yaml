@@ -1,6 +1,7 @@
 # Automatically generated file. Do not edit.
 
 import:
+- client.client:client_async_main.service
 - client.client:client_main.service
 - common.bundler:bundler.service
 - common.file_bundle:file_bundle.service
@@ -454,6 +455,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - client.client:client_async_main.service
       - client.client:client_main.service
       - common.bundler:bundler.service
       - common.file_bundle:file_bundle.service
