@@ -2,23 +2,24 @@ from unittest.mock import Mock
 
 from . import htypes
 from .services import mosaic
+from .code.mark import mark
 from .code.context import Context
 from .fixtures import qapp_fixtures
 from .tested.code import list
 
 
-def make_adapter_piece():
+@mark.fixture
+def adapter_piece():
     return htypes.list_adapter.static_list_adapter()
 
 
-def make_piece():
-    adapter_piece = make_adapter_piece()
+@mark.fixture
+def piece(adapter_piece):
     return htypes.list.view(mosaic.put(adapter_piece))
 
 
-def test_list(qapp, model_view_creg):
+def test_list(qapp, model_view_creg, piece):
     ctx = Context()
-    piece = make_piece()
     model = (
         htypes.list_tests.item(1, "First"),
         htypes.list_tests.item(2, "Second"),
