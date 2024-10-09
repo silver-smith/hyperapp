@@ -35,6 +35,14 @@ class ActorProbeTemplate:
         return pyobj_creg.animate(self._fn)
 
 
+def have_running_loop():
+    try:
+        asyncio.get_running_loop()
+        return True
+    except RuntimeError:
+        return False
+
+
 def service_finalize(fn, gen):
     try:
         next(gen)
@@ -42,6 +50,20 @@ def service_finalize(fn, gen):
         pass
     else:
         raise RuntimeError(f"Generator function {fn!r} should have only one 'yield' statement")
+
+
+def service_async_finalize(system, fn, gen):
+    try:
+        system.run_async_coroutine(anext(gen))
+    except StopAsyncIteration:
+        pass
+    else:
+        raise RuntimeError(f"Async generator function {fn!r} should have only one 'yield' statement")
+
+
+def check_no_running_loop(fn):
+    if have_running_loop():
+        raise RuntimeError(f"Use mark.fixture.obj for async fixtures used inside async tests or fixtures: {fn}")
 
 
 def resolve_service(system, service_name, fn, service_params, args, kw):
@@ -64,7 +86,12 @@ def resolve_service(system, service_name, fn, service_params, args, kw):
     if inspect.isgeneratorfunction(fn):
         gen = service
         service = next(gen)
-        system.add_finalizer(service_name, partial(partial(service_finalize, fn), gen))
+        system.add_finalizer(service_name, partial(service_finalize, fn, gen))
+    if inspect.isasyncgenfunction(fn):
+        gen = service
+        check_no_running_loop(fn)
+        service = system.run_async_coroutine(anext(gen))
+        system.add_finalizer(service_name, partial(service_async_finalize, system, fn, gen))
     return (want_config, service_params, service)
 
 
@@ -86,6 +113,8 @@ class FixtureObjTemplate:
         fn = pyobj_creg.animate(self._fn)
         want_config, service_params, service = resolve_service(
             system, service_name, fn, self._params, args=[], kw={})
+        if inspect.iscoroutine(service):
+            service = system.run_async_coroutine(service)
         return service
 
 
@@ -177,7 +206,7 @@ class Probe:
     def apply_if_no_params(self):
         if self._params:
             return
-        self._apply(service_params=[])
+        self._apply_obj(service_params=[])
 
     def __call__(self, *args, **kw):
         free_param_count = len(args) + len(kw)
@@ -188,19 +217,19 @@ class Probe:
         return self._apply(service_params, *args, **kw)
 
     def __getattr__(self, name):
-        service = self._apply(self._params)
+        service = self._apply_obj(self._params)
         return getattr(service, name)
 
     def __getitem__(self, key):
-        service = self._apply(self._params)
+        service = self._apply_obj(self._params)
         return service[key]
 
     def __setitem__(self, key, value):
-        service = self._apply(self._params)
+        service = self._apply_obj(self._params)
         service[key] = value
 
     def __iter__(self):
-        service = self._apply(self._params)
+        service = self._apply_obj(self._params)
         return iter(service)
 
     def _apply(self, service_params, *args, **kw):
@@ -212,6 +241,13 @@ class Probe:
         self._resolved = True
         return service
 
+    def _apply_obj(self, service_params, *args, **kw):
+        service = self._apply(service_params, *args, **kw)
+        if inspect.iscoroutine(service):
+            check_no_running_loop(self._fn)
+            service = self._system.run_async_coroutine(service)
+            self._service = service
+        return service
 
     def _add_constructor(self, want_config, template):
         pass
@@ -252,7 +288,8 @@ class SystemProbe(System):
     def _run_service(self, service, args, kw):
         value = super()._run_service(service, args, kw)
         if inspect.iscoroutine(value):
-            self._run_async_coroutine(value)
+            return self.run_async_coroutine(value)
+        return value
 
     def resolve_config(self, service_name):
         ctl = self._config_ctl[service_name]
@@ -270,7 +307,7 @@ class SystemProbe(System):
         for obj in self._globals:
             obj.migrate_to(self)
 
-    def _run_async_coroutine(self, coroutine):
+    def run_async_coroutine(self, coroutine):
         runner = asyncio.Runner()
         loop = runner.get_loop()
         prev_handler = loop.get_exception_handler()
