@@ -201,7 +201,7 @@ class TreeView(View):
         font_info = widget.fontInfo()
         # widget.setCurrentIndex(widget.model().createIndex(0, 0))
         # model.dataChanged.connect(partial(self._on_data_changed, widget))
-        model.rowsInserted.connect(partial(self._on_data_changed, widget))
+        model.rowsInserted.connect(partial(self._on_row_inserted, widget))
         return widget
 
     def init_widget(self, widget):
@@ -230,6 +230,6 @@ class TreeView(View):
     def adapter(self):
         return self._adapter
 
-    def _on_data_changed(self, widget, *args):
-        log.info("Tree: on_data_changed: %s: %s", widget, args)
+    def _on_row_inserted(self, widget, parent, first, last):
+        log.info("Tree: row inserted: %s: %s %s %s", widget, parent, first, last)
         widget.check_is_just_shown()
