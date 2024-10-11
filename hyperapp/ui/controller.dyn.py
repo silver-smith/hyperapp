@@ -116,22 +116,6 @@ class _Item:
         rctx = parent.view.primary_parent_context(rctx, parent.widget)
         return parent.navigator_rec(rctx)
 
-    def _command_context(self, rctx):
-        ctx = self.ctx.clone_with(
-            navigator=self.navigator_rec(rctx),
-            )
-        ctx = ctx.push(
-            view=self.view,
-            widget=weakref.ref(self.widget),
-            hook=self._hook,
-            )
-        ctx = ctx.copy_from(rctx)
-        if 'model' in ctx:
-            ctx = ctx.clone_with(piece=ctx.model)
-        if 'model_state' in ctx:
-            ctx = ctx.clone_with(**ctx.attributes(ctx.model_state))
-        return ctx
-
     def schedule_init_children_reverse_context(self):
         asyncio.create_task(self.init_children_reverse_context())
 
@@ -164,6 +148,22 @@ class _Item:
         self.rctx = rctx
         if self.parent and self.parent.current_child is self:
             await self.parent.update_parents_context()
+
+    def _command_context(self, rctx):
+        ctx = self.ctx.clone_with(
+            navigator=self.navigator_rec(rctx),
+            )
+        ctx = ctx.push(
+            view=self.view,
+            widget=weakref.ref(self.widget),
+            hook=self._hook,
+            )
+        ctx = ctx.copy_from(rctx)
+        if 'model' in ctx:
+            ctx = ctx.clone_with(piece=ctx.model)
+        if 'model_state' in ctx:
+            ctx = ctx.clone_with(**ctx.attributes(ctx.model_state))
+        return ctx
 
     def _make_view_commands(self):
         return self._meta.svc.get_view_commands(self.view)
