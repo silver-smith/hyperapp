@@ -16,6 +16,12 @@ log = logging.getLogger(__name__)
 @mark.model
 def list_model_commands(piece, ctx, lcs, get_ui_model_commands):
     model = web.summon(piece.model)
+    state = web.summon(piece.model_state)
+    ctx = ctx.push(
+        model=model,
+        piece=model,
+        **ctx.attributes(state),
+        )
     command_list = get_ui_model_commands(lcs, model, ctx)
     return [
         htypes.model_commands.item(
