@@ -37,7 +37,7 @@ class _Model(QtCore.QAbstractTableModel):
     def data(self, index, role):
         if role != QtCore.Qt.DisplayRole:
             return None
-        return self.adapter.cell_data(index.row(), index.column())
+        return str(self.adapter.cell_data(index.row(), index.column()))
 
     # subscription  ----------------------------------------------------------------------------------------------------
 

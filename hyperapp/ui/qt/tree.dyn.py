@@ -59,7 +59,7 @@ class _Model(QtCore.QAbstractItemModel):
         if role != QtCore.Qt.DisplayRole:
             return None
         id = index.internalId() or 0
-        return self.adapter.cell_data(id, index.column())
+        return str(self.adapter.cell_data(id, index.column()))
 
     # subscription  ----------------------------------------------------------------------------------------------------
 
