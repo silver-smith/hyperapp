@@ -197,26 +197,7 @@ class NotATemplate:
     def resolve(self, system, service_name):
         return self._value
 
-        
-class LazyConfig:
 
-    def __init__(self, system, service_name, unresolved_config):
-        self._system = system
-        self._service_name = service_name
-        self._unresolved_config = unresolved_config  # key -> template
-        self._resolved_config = {}
-
-    def __getitem__(self, key):
-        try:
-            return self._resolved_config[key]
-        except KeyError:
-            pass
-        template = self._unresolved_config[key]
-        value = template.resolve(self._system, self._service_name)
-        self._resolved_config[key] = value
-        return value
-
-    
 class System:
 
     _system_name = "System"
@@ -344,7 +325,7 @@ class System:
         try:
             return ctl.resolve(self, service_name, config_template)
         except ServiceDepLoopError:
-            return LazyConfig(self, service_name, config_template)
+            return ctl.lazy_config(self, service_name, config_template)
 
     def resolve_service(self, name, requester=None):
         try:

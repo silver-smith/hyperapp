@@ -14,8 +14,38 @@ class ConfigCtl(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def resolve(self, config_template):
+    def lazy_config(self, system, service_name, config_template):
         pass
+
+    @abstractmethod
+    def resolve(self, system, service_name, config_template):
+        pass
+
+
+class LazyDictConfig:
+
+    def __init__(self, ctl, system, service_name, config_template):
+        self._ctl = ctl
+        self._system = system
+        self._service_name = service_name
+        self._config_template = config_template  # key -> template
+        self._resolved_config = {}
+
+    def __getitem__(self, key):
+        try:
+            return self._resolved_config[key]
+        except KeyError:
+            pass
+        value_template = self._config_template[key]  # KeyError is raised from here.
+        value = self._ctl.resolve_item(self._system, self._service_name, value_template)
+        self._resolved_config[key] = value
+        return value
+
+    def get(self, key, default=None):
+        try:
+            return self[key]
+        except KeyError:
+            return default
 
 
 class DictConfigCtl(ConfigCtl):
@@ -23,11 +53,17 @@ class DictConfigCtl(ConfigCtl):
     def merge(self, dest, src):
         dest.update(src)
 
+    def lazy_config(self, system, service_name, config_template):
+        return LazyDictConfig(self, system, service_name, config_template)
+
     def resolve(self, system, service_name, config_template):
         config = {}
         for key, value_template in config_template.items():
-            config[key] = value_template.resolve(system, service_name)
+            config[key] = self.resolve_item(system, service_name, value_template)
         return config
+
+    def resolve_item(self, system, service_name, value_template):
+        return value_template.resolve(system, service_name)
 
 
 class ItemDictConfigCtl(DictConfigCtl):

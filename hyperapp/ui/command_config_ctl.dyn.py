@@ -1,9 +1,9 @@
 from . import htypes
 from .code.mark import mark
-from .code.config_ctl import ConfigCtl
+from .code.config_ctl import ConfigCtl, DictConfigCtl
 
 
-class TypedCommandConfigCtl(ConfigCtl):
+class TypedCommandConfigCtl(DictConfigCtl):
 
     @classmethod
     @mark.actor.config_ctl_creg
@@ -28,13 +28,11 @@ class TypedCommandConfigCtl(ConfigCtl):
             config.setdefault(template.key, []).append(template)
         return config
 
-    def resolve(self, system, service_name, config_template):
-        config = {}
-        for key, value_template_list in config_template.items():
-            for value_template in value_template_list:
-                value = value_template.resolve(system, service_name)
-                config.setdefault(key, []).append(value)
-        return config
+    def resolve_item(self, system, service_name, value_template):
+        return [
+            item_template.resolve(system, service_name)
+            for item_template in value_template
+            ]
 
     def item_piece(self, template):
         return self._cfg_item_creg.actor_to_piece(template)
@@ -63,6 +61,15 @@ class UntypedCommandConfigCtl(ConfigCtl):
             template = self._cfg_item_creg.invite(item_ref)
             config.append(template)
         return config
+
+    def lazy_config(self, system, service_name, config_template):
+        assert False, "TODO"
+
+    def resolve_item(self, system, service_name, value_template):
+        return [
+            item_template.resolve(system, service_name)
+            for item_template in value_template
+            ]
 
     def resolve(self, system, service_name, config_template):
         config = []  # command list.
