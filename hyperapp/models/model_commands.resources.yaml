@@ -8,6 +8,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.model:cfg_item
 - legacy_type.model:list_ui_t
@@ -15,6 +16,7 @@ import:
 - legacy_type.model_commands:item
 - legacy_type.model_commands:model_commands
 - legacy_type.model_commands:open_model_commands_d
+- legacy_type.model_commands:run_command_d
 - legacy_type.system_fn:ctx_fn
 definitions:
   list_model_commands:
@@ -57,6 +59,36 @@ definitions:
       - ctx
       - lcs
       service_params:
+      - data_to_ref
+      - get_ui_model_commands
+  model_commands_model_commands_run_command.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.model_commands:model_commands
+      command: model_commands_model_commands_run_command.model-command
+  model_commands_model_commands_run_command.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.model_commands:run_command_d
+  model_commands_model_commands_run_command.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: model_commands_model_commands_run_command.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: model_commands_model_commands_run_command.system-fn
+  model_commands_model_commands_run_command.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: run_command
+      ctx_params:
+      - piece
+      - current_item
+      - ctx
+      - lcs
+      service_params:
       - get_ui_model_commands
   open_model_commands:
     type: legacy_type.builtin:attribute
@@ -84,3 +116,8 @@ definitions:
       - piece
       - model_state
       service_params: []
+  run_command:
+    type: legacy_type.builtin:attribute
+    value:
+      object: model_commands.module
+      attr_name: run_command

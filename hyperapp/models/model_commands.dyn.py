@@ -13,19 +13,24 @@ from .code.mark import mark
 log = logging.getLogger(__name__)
 
 
-@mark.model
-def list_model_commands(piece, ctx, lcs, get_ui_model_commands):
-    model = web.summon(piece.model)
-    state = web.summon(piece.model_state)
-    ctx = ctx.push(
+def make_command_ctx(ctx, model, model_state):
+    return ctx.push(
         model=model,
         piece=model,
-        **ctx.attributes(state),
+        model_state=model_state,
+        **ctx.attributes(model_state),
         )
-    command_list = get_ui_model_commands(lcs, model, ctx)
+
+
+@mark.model
+def list_model_commands(piece, ctx, lcs, data_to_ref, get_ui_model_commands):
+    model = web.summon(piece.model)
+    model_state = web.summon(piece.model_state)
+    command_ctx = make_command_ctx(ctx, model, model_state)
+    command_list = get_ui_model_commands(lcs, model, command_ctx)
     return [
         htypes.model_commands.item(
-            # command=mosaic.put(command),
+            command_d=data_to_ref(command.d),
             name=command.name,
             repr=repr(command),
             )
@@ -33,19 +38,18 @@ def list_model_commands(piece, ctx, lcs, get_ui_model_commands):
         ]
 
 
-async def run_command(piece, current_item, ctx):
+@mark.command
+async def run_command(piece, current_item, ctx, lcs, get_ui_model_commands):
     if current_item is None:
         return None  # Empty command list - no item is selected.
     model = web.summon(piece.model)
     model_state = web.summon(piece.model_state)
-    command_ctx = ctx.push(
-        piece=model,
-        model_state=model_state,
-        **ctx.attributes(model_state),
-        )
-    command_piece = web.summon(current_item.command)
-    command = ui_command_factory(command_piece, command_ctx)
-    piece = await command.run()
+    command_ctx = make_command_ctx(ctx, model, model_state)
+    command_list = get_ui_model_commands(lcs, model, command_ctx)
+    command_d = pyobj_creg.invite(current_item.command_d)
+    unbound_command = next(cmd for cmd in command_list if cmd.d == command_d)
+    bound_command = unbound_command.bind(command_ctx)
+    piece = await bound_command.run()
     log.info("Run command: command result: %s", piece)
     return piece
 

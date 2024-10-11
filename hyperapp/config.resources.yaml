@@ -23,6 +23,7 @@ import:
 - models.file_bundles:file_bundles_view_open.command-cfg-item
 - models.file_bundles:open_file_bundle_list.global-model-command
 - models.model_commands:model_commands_model_commands.model-cfg-item
+- models.model_commands:model_commands_model_commands_run_command.command-cfg-item
 - models.model_commands:open_model_commands.global-model-command
 - models.show_current_context:show_current_context.global-model-command
 - models.show_current_context:show_current_context_view.model-cfg-item
@@ -346,6 +347,7 @@ definitions:
       - models.data_browser:data_browser_record_view_record_open.command-cfg-item
       - models.data_browser:data_browser_ref_list_view_ref_list_open.command-cfg-item
       - models.file_bundles:file_bundles_view_open.command-cfg-item
+      - models.model_commands:model_commands_model_commands_run_command.command-cfg-item
       - sample.sample_commands:sample_list_sample_list_details.command-cfg-item
       - sample.sample_commands:sample_tree_sample_tree_sample_tree_info.command-cfg-item
       - ui.layout:layout_command_list_add_view_command.command-cfg-item

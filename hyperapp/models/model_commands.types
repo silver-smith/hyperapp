@@ -3,7 +3,7 @@ model_commands = record:
   model_state: ref
 
 item = record:
-  # command: ref
+  command_d: ref
   name: string
   repr: string
 
