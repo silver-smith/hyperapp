@@ -1,4 +1,4 @@
-model_commands = record:
+view = record:
   model: ref
   model_state: ref
 

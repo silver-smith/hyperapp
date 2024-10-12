@@ -14,9 +14,9 @@ import:
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
 - legacy_type.model_commands:item
-- legacy_type.model_commands:model_commands
 - legacy_type.model_commands:open_model_commands_d
 - legacy_type.model_commands:run_command_d
+- legacy_type.model_commands:view
 - legacy_type.system_fn:ctx_fn
 - ui.command:command.module
 definitions:
@@ -34,25 +34,25 @@ definitions:
         code.command: ui.command:command.module
         code.mark: common.mark:mark.module
         htypes.model_commands.item: legacy_type.model_commands:item
-        htypes.model_commands.model_commands: legacy_type.model_commands:model_commands
+        htypes.model_commands.view: legacy_type.model_commands:view
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
-  model_commands_model_commands.list-ui-t:
+  model_commands_view.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
       element_t: legacy_type.model_commands:item
-  model_commands_model_commands.model:
+  model_commands_view.model:
     type: legacy_type.model:model
     value:
-      ui_t: model_commands_model_commands.list-ui-t
-      system_fn: model_commands_model_commands.system-fn
-  model_commands_model_commands.model-cfg-item:
+      ui_t: model_commands_view.list-ui-t
+      system_fn: model_commands_view.system-fn
+  model_commands_view.model-cfg-item:
     type: legacy_type.model:cfg_item
     value:
-      t: legacy_type.model_commands:model_commands
-      model: model_commands_model_commands.model
-  model_commands_model_commands.system-fn:
+      t: legacy_type.model_commands:view
+      model: model_commands_view.model
+  model_commands_view.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: list_model_commands
@@ -63,25 +63,25 @@ definitions:
       service_params:
       - data_to_ref
       - get_ui_model_commands
-  model_commands_model_commands_run_command.command-cfg-item:
+  model_commands_view_run_command.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
-      t: legacy_type.model_commands:model_commands
-      command: model_commands_model_commands_run_command.model-command
-  model_commands_model_commands_run_command.d:
+      t: legacy_type.model_commands:view
+      command: model_commands_view_run_command.model-command
+  model_commands_view_run_command.d:
     type: legacy_type.builtin:call
     value:
       function: legacy_type.model_commands:run_command_d
-  model_commands_model_commands_run_command.model-command:
+  model_commands_view_run_command.model-command:
     type: legacy_type.command:model_command
     value:
-      d: model_commands_model_commands_run_command.d
+      d: model_commands_view_run_command.d
       properties:
         is_global: false
         uses_state: true
         remotable: false
-      system_fn: model_commands_model_commands_run_command.system-fn
-  model_commands_model_commands_run_command.system-fn:
+      system_fn: model_commands_view_run_command.system-fn
+  model_commands_view_run_command.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: run_command

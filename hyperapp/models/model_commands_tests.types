@@ -1,6 +1,7 @@
-sample_d = record
-
 sample_model_1 = record
 sample_model_2 = record
+
+sample_command_1_d = record
+sample_command_2_d = record
 
 sample_model_state = record

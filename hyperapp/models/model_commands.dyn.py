@@ -59,7 +59,7 @@ async def run_command(piece, current_item, ctx, lcs, get_ui_model_commands):
 
 @mark.global_command
 def open_model_commands(piece, model_state):
-    return htypes.model_commands.model_commands(
+    return htypes.model_commands.view(
         model=mosaic.put(piece),
         model_state=mosaic.put(model_state),
         )

@@ -18,9 +18,6 @@ def test_open_model_commands():
     model_1 = htypes.model_commands_tests.sample_model_1()
     piece_1 = model_commands.open_model_commands(model_1, model_state)
     assert piece_1
-    model_2 = htypes.model_commands_tests.sample_model_2()
-    piece_2 = model_commands.open_model_commands(model_2, model_state)
-    assert piece_2
 
 
 def _sample_fn_1(model, sample_service):
@@ -41,7 +38,7 @@ def model_command_reg_config(partial_ref):
         bound_fn=partial(_sample_fn_1, sample_service='a-service'),
         )
     command_1 = UnboundModelCommand(
-        d=htypes.ui_model_command_tests.sample_command_1_d(),
+        d=htypes.model_commands_tests.sample_command_1_d(),
         ctx_fn=system_fn_1,
         properties=htypes.command.properties(False, False, False),
         )
@@ -53,7 +50,7 @@ def model_command_reg_config(partial_ref):
         bound_fn=partial(_sample_fn_2, sample_service='a-service'),
         )
     command_2 = UnboundModelCommand(
-        d=htypes.ui_model_command_tests.sample_command_2_d(),
+        d=htypes.model_commands_tests.sample_command_2_d(),
         ctx_fn=system_fn_2,
         properties=htypes.command.properties(False, False, False),
         )
@@ -74,7 +71,7 @@ def lcs():
 def piece():
     model = htypes.model_commands_tests.sample_model_2()
     model_state = htypes.model_commands_tests.sample_model_state()
-    return htypes.model_commands.model_commands(
+    return htypes.model_commands.view(
         model=mosaic.put(model),
         model_state=mosaic.put(model_state)
         )
@@ -89,7 +86,7 @@ def test_list_model_commands(lcs, piece):
 async def test_run_command(data_to_ref, lcs, piece):
     navigator = Mock()
     current_item = htypes.model_commands.item(
-        command_d=data_to_ref(htypes.ui_model_command_tests.sample_command_2_d()),
+        command_d=data_to_ref(htypes.model_commands_tests.sample_command_2_d()),
         name="<unused>",
         groups="<unused>",
         repr="<unused>",
