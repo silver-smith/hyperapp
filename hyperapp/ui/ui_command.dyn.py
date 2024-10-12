@@ -15,19 +15,29 @@ log = logging.getLogger(__name__)
 
 class UnboundUiCommand(UnboundCommand):
 
-    def __init__(self, d, ctx_fn, groups):
+    def __init__(self, d, ctx_fn, properties, groups):
         super().__init__(d, ctx_fn)
+        self._properties = properties
         self._groups = groups
 
+    @property
+    def properties(self):
+        return self._properties
+
     def bind(self, ctx):
-        return BoundUiCommand(self._d, self._ctx_fn, ctx, self._groups)
+        return BoundUiCommand(self._d, self._ctx_fn, ctx, self._properties, self._groups)
 
 
 class BoundUiCommand(BoundCommand):
 
-    def __init__(self, d, ctx_fn, ctx, groups):
+    def __init__(self, d, ctx_fn, ctx, properties, groups):
         super().__init__(d, ctx_fn, ctx)
+        self._properties = properties
         self._groups = groups
+
+    @property
+    def properties(self):
+        return self._properties
 
     @property
     def groups(self):
@@ -40,6 +50,7 @@ def ui_command_from_piece(piece, system_fn_creg):
     return UnboundUiCommand(
         d=pyobj_creg.invite(piece.d),
         ctx_fn=ctx_fn,
+        properties=piece.properties,
         groups=default_command_groups(piece.properties, CommandKind.VIEW),
         )
 

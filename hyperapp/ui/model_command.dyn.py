@@ -20,6 +20,10 @@ class UnboundModelCommand(UnboundCommand):
         super().__init__(d, ctx_fn)
         self._properties = properties
 
+    @property
+    def properties(self):
+        return self._properties
+
     def bind(self, ctx):
         return BoundModelCommand(self._d, self._ctx_fn, ctx, self._properties)
 

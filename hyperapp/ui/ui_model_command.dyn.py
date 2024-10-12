@@ -27,19 +27,28 @@ class UnboundUiModelCommand(UnboundCommandBase):
     def __repr__(self):
         return f"<{self.__class__.__name__}: {self._model_command}>"
 
+    @property
+    def properties(self):
+        return self._model_command.properties
+
+    @property
+    def groups(self):
+        return default_command_groups(self._model_command.properties, CommandKind.MODEL)
+
     def bind(self, ctx):
         return BoundUiModelCommand(
-            self._model_view_creg, self._visualizer, self._lcs, self._model_command.bind(ctx), self._layout, ctx)
+            self._model_view_creg, self._visualizer, self._lcs, self._model_command.bind(ctx), self.groups, self._layout, ctx)
 
 
 class BoundUiModelCommand(BoundCommandBase):
 
-    def __init__(self, model_view_creg, visualizer, lcs, model_command, layout, ctx):
+    def __init__(self, model_view_creg, visualizer, lcs, model_command, groups, layout, ctx):
         super().__init__(model_command.d)
         self._model_view_creg = model_view_creg
         self._visualizer = visualizer
         self._lcs = lcs
         self._model_command = model_command
+        self._groups = groups
         self._layout = layout
         self._ctx = ctx
         self._navigator_rec = ctx.navigator
@@ -55,10 +64,6 @@ class BoundUiModelCommand(BoundCommandBase):
     @property
     def disabled_reason(self):
         return self._model_command.disabled_reason
-
-    @property
-    def groups(self):
-        return default_command_groups(self._model_command.properties, CommandKind.MODEL)
 
     async def run(self):
         navigator_w = self._navigator_rec.widget_wr()
@@ -178,16 +183,11 @@ class BoundUiModelCommand(BoundCommandBase):
 
 
 def _wrap_model_command_to_ui_command(model_view_creg, visualizer, lcs, command):
-    # layout = _get_ui_model_command_layout(lcs, command_d)
-    return UnboundUiModelCommand(model_view_creg, visualizer, lcs, command, layout=None)
-
-
-def _model_command_to_ui_command(model_view_creg, visualizer, lcs, command):
-    if isinstance(command, UnboundModelCommand):
-        return _wrap_model_command_to_ui_command(model_view_creg, visualizer, lcs, command)
-    else:
+    if not isinstance(command, UnboundModelCommand):
         # Layout command enumerator returns UI commands. Do not wrap them.
         return command
+    # layout = _get_ui_model_command_layout(lcs, command_d)
+    return UnboundUiModelCommand(model_view_creg, visualizer, lcs, command, layout=None)
 
 
 @mark.service2
@@ -195,7 +195,7 @@ def get_ui_model_commands(model_view_creg, visualizer, global_model_command_reg,
     command_list = [*global_model_command_reg]
     command_list += get_model_commands(model, ctx)
     ui_command_list = [
-        _model_command_to_ui_command(model_view_creg, visualizer, lcs, cmd)
+        _wrap_model_command_to_ui_command(model_view_creg, visualizer, lcs, cmd)
         for cmd in command_list
         ]
     # lcs_command_list = _get_ui_model_commands(lcs, piece)

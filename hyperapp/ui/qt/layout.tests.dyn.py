@@ -90,6 +90,7 @@ def view_ui_command_reg_config(partial_ref):
     command = UnboundUiCommand(
         d=htypes.layout_tests.sample_command_d(),
         ctx_fn=system_fn,
+        properties=htypes.command.properties(False, False, False),
         groups=set(),
         )
     return {htypes.auto_tabs.view: [command]}

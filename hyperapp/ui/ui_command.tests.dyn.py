@@ -58,6 +58,7 @@ def view_ui_command_reg_config(partial_ref):
     command = ui_command.UnboundUiCommand(
         d=htypes.ui_command_tests.sample_command_d(),
         ctx_fn=system_fn,
+        properties=htypes.command.properties(False, False, False),
         groups=set(),
         )
     return {htypes.ui_command_tests.view: [command]}

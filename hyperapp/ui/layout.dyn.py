@@ -15,6 +15,10 @@ class UnboundLayoutCommand(UnboundCommandBase):
         self._ui_command = ui_command
 
     @property
+    def properties(self):
+        return self._ui_command.properties
+
+    @property
     def groups(self):
         pane_2_d = htypes.command_groups.pane_2_d()
         return {pane_2_d}
