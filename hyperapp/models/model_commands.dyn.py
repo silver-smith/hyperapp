@@ -9,6 +9,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
+from .code.command import d_to_name
 
 log = logging.getLogger(__name__)
 
@@ -32,9 +33,11 @@ def list_model_commands(piece, ctx, lcs, data_to_ref, get_ui_model_commands):
         htypes.model_commands.item(
             command_d=data_to_ref(command.d),
             name=command.name,
+            groups=", ".join(d_to_name(g) for g in command.groups),
             repr=repr(command),
             )
         for command in command_list
+        if not command.properties.is_global or command.properties.uses_state
         ]
 
 

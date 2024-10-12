@@ -5,6 +5,7 @@ model_commands = record:
 item = record:
   command_d: ref
   name: string
+  groups: string
   repr: string
 
 open_model_commands_d = record
