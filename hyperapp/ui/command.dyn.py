@@ -21,6 +21,7 @@ _hardcoded_shortcuts = {
     'go_forward': 'Alt+Right',
     'quit': 'Alt+Q',
     'open_model_commands': 'F1',
+    'open_global_commands': 'Alt+F1',
     'open': 'Return',
     'run_command': 'Return',
     'duplicate_tab': 'Shift+f4',

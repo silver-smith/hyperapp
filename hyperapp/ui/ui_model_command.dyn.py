@@ -182,7 +182,7 @@ class BoundUiModelCommand(BoundCommandBase):
 #     return _merge_command_lists
 
 
-def _wrap_model_command_to_ui_command(model_view_creg, visualizer, lcs, command):
+def wrap_model_command_to_ui_command(model_view_creg, visualizer, lcs, command):
     if not isinstance(command, UnboundModelCommand):
         # Layout command enumerator returns UI commands. Do not wrap them.
         return command
@@ -195,7 +195,7 @@ def get_ui_model_commands(model_view_creg, visualizer, global_model_command_reg,
     command_list = [*global_model_command_reg]
     command_list += get_model_commands(model, ctx)
     ui_command_list = [
-        _wrap_model_command_to_ui_command(model_view_creg, visualizer, lcs, cmd)
+        wrap_model_command_to_ui_command(model_view_creg, visualizer, lcs, cmd)
         for cmd in command_list
         ]
     # lcs_command_list = _get_ui_model_commands(lcs, piece)

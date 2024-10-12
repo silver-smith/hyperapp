@@ -1,0 +1,124 @@
+# Automatically generated file. Do not edit.
+
+import:
+- builtins:pyobj_creg.service
+- common.mark:mark.module
+- legacy_type.builtin:attribute
+- legacy_type.builtin:call
+- legacy_type.builtin:python_module
+- legacy_type.command:cfg_item
+- legacy_type.command:model_command
+- legacy_type.global_commands:open_global_commands_d
+- legacy_type.global_commands:run_command_d
+- legacy_type.global_commands:view
+- legacy_type.model:cfg_item
+- legacy_type.model:list_ui_t
+- legacy_type.model:model
+- legacy_type.model_commands:item
+- legacy_type.system_fn:ctx_fn
+- ui.command:command.module
+- ui.ui_model_command:ui_model_command.module
+definitions:
+  global_commands.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: global_commands
+      file_name: global_commands.dyn.py
+      import_list:
+        code.command: ui.command:command.module
+        code.mark: common.mark:mark.module
+        code.ui_model_command: ui.ui_model_command:ui_model_command.module
+        htypes.global_commands.view: legacy_type.global_commands:view
+        htypes.model_commands.item: legacy_type.model_commands:item
+        services.pyobj_creg: builtins:pyobj_creg.service
+  global_commands_view.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      element_t: legacy_type.model_commands:item
+  global_commands_view.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: global_commands_view.list-ui-t
+      system_fn: global_commands_view.system-fn
+  global_commands_view.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.global_commands:view
+      model: global_commands_view.model
+  global_commands_view.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: list_global_commands
+      ctx_params:
+      - piece
+      - lcs
+      service_params:
+      - data_to_ref
+      - global_model_command_reg
+      - model_view_creg
+      - visualizer
+  global_commands_view_run_command.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.global_commands:view
+      command: global_commands_view_run_command.model-command
+  global_commands_view_run_command.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.global_commands:run_command_d
+  global_commands_view_run_command.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: global_commands_view_run_command.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: global_commands_view_run_command.system-fn
+  global_commands_view_run_command.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: run_command
+      ctx_params:
+      - piece
+      - current_item
+      - lcs
+      - ctx
+      service_params:
+      - global_model_command_reg
+      - model_view_creg
+      - visualizer
+  list_global_commands:
+    type: legacy_type.builtin:attribute
+    value:
+      object: global_commands.module
+      attr_name: list_global_commands
+  open_global_commands:
+    type: legacy_type.builtin:attribute
+    value:
+      object: global_commands.module
+      attr_name: open_global_commands
+  open_global_commands.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.global_commands:open_global_commands_d
+  open_global_commands.global-model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_global_commands.d
+      properties:
+        is_global: true
+        uses_state: false
+        remotable: true
+      system_fn: open_global_commands.system-fn
+  open_global_commands.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_global_commands
+      ctx_params: []
+      service_params: []
+  run_command:
+    type: legacy_type.builtin:attribute
+    value:
+      object: global_commands.module
+      attr_name: run_command
