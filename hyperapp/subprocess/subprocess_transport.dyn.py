@@ -119,8 +119,12 @@ class SubprocessTransport:
         return rec
 
     def server_connection_closed(self, connection):
-        del self._server_connections[connection]
-        self._signal_connection_in.send(None)  # Wake up server main.
+        try:
+            del self._server_connections[connection]
+        except KeyError:
+            pass  # May already be removed by _process_ready_connection method.
+        else:
+            self._signal_connection_in.send(None)  # Wake up server main.
 
     def stop(self):
         my_name = "Subprocess transport server thread"
