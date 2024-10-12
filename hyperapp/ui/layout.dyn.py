@@ -101,7 +101,7 @@ def _command_to_item(data_to_ref, controller, ctx, ui_command, item_id):
         )
 
 
-@mark.command
+@mark.model
 def view_item_commands(piece, controller, ctx, data_to_ref):
     command_list = [
         _command_to_item(data_to_ref, controller, ctx, command, piece.item_id)

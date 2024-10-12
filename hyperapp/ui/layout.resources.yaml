@@ -16,8 +16,8 @@ import:
 - legacy_type.layout:open_layout_tree_d
 - legacy_type.layout:open_view_item_commands_d
 - legacy_type.layout:view
-- legacy_type.layout:view_item_commands_d
 - legacy_type.model:cfg_item
+- legacy_type.model:list_ui_t
 - legacy_type.model:model
 - legacy_type.model:tree_ui_t
 - legacy_type.system_fn:ctx_fn
@@ -45,6 +45,30 @@ definitions:
         htypes.layout.command_item: legacy_type.layout:command_item
         htypes.layout.command_list: legacy_type.layout:command_list
         htypes.layout.view: legacy_type.layout:view
+  layout_command_list.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      element_t: legacy_type.layout:command_item
+  layout_command_list.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: layout_command_list.list-ui-t
+      system_fn: layout_command_list.system-fn
+  layout_command_list.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.layout:command_list
+      model: layout_command_list.model
+  layout_command_list.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: view_item_commands
+      ctx_params:
+      - piece
+      - controller
+      - ctx
+      service_params:
+      - data_to_ref
   layout_command_list_add_view_command.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -71,34 +95,6 @@ definitions:
       - piece
       - current_item
       service_params: []
-  layout_command_list_view_item_commands.command-cfg-item:
-    type: legacy_type.command:cfg_item
-    value:
-      t: legacy_type.layout:command_list
-      command: layout_command_list_view_item_commands.model-command
-  layout_command_list_view_item_commands.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.layout:view_item_commands_d
-  layout_command_list_view_item_commands.model-command:
-    type: legacy_type.command:model_command
-    value:
-      d: layout_command_list_view_item_commands.d
-      properties:
-        is_global: false
-        uses_state: false
-        remotable: false
-      system_fn: layout_command_list_view_item_commands.system-fn
-  layout_command_list_view_item_commands.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: view_item_commands
-      ctx_params:
-      - piece
-      - controller
-      - ctx
-      service_params:
-      - data_to_ref
   layout_tree:
     type: legacy_type.builtin:attribute
     value:

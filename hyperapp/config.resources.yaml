@@ -174,8 +174,8 @@ import:
 - ui.feed_creg:feed_creg.service
 - ui.feed_type_template:feed_feed_template.actor-template
 - ui.int_adapter:int_adapter_int_adapter.actor-template
+- ui.layout:layout_command_list.model-cfg-item
 - ui.layout:layout_command_list_add_view_command.command-cfg-item
-- ui.layout:layout_command_list_view_item_commands.command-cfg-item
 - ui.layout:layout_view.model-cfg-item
 - ui.layout:layout_view_enum_layout_tree_commands.command-cfg-item
 - ui.layout:layout_view_open_view_item_commands.command-cfg-item
@@ -356,7 +356,6 @@ definitions:
       - sample.sample_commands:sample_list_sample_list_details.command-cfg-item
       - sample.sample_commands:sample_tree_sample_tree_sample_tree_info.command-cfg-item
       - ui.layout:layout_command_list_add_view_command.command-cfg-item
-      - ui.layout:layout_command_list_view_item_commands.command-cfg-item
       - ui.layout:layout_view_open_view_item_commands.command-cfg-item
   model_view_creg:
     type: legacy_type.system:item_list_config
@@ -592,4 +591,5 @@ definitions:
       - sample.sample_record:sample_record_sample_record.model-cfg-item
       - sample.sample_tree:sample_tree_feed_sample_tree.model-cfg-item
       - sample.sample_tree:sample_tree_sample_tree.model-cfg-item
+      - ui.layout:layout_command_list.model-cfg-item
       - ui.layout:layout_view.model-cfg-item
