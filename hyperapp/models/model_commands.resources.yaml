@@ -80,18 +80,7 @@ definitions:
         is_global: false
         uses_state: true
         remotable: false
-      system_fn: model_commands_view_run_command.system-fn
-  model_commands_view_run_command.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: run_command
-      ctx_params:
-      - piece
-      - current_item
-      - ctx
-      - lcs
-      service_params:
-      - get_ui_model_commands
+      system_fn: run_command.system-fn
   open_model_commands:
     type: legacy_type.builtin:attribute
     value:
@@ -123,3 +112,14 @@ definitions:
     value:
       object: model_commands.module
       attr_name: run_command
+  run_command.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: run_command
+      ctx_params:
+      - piece
+      - current_item
+      - ctx
+      - lcs
+      service_params:
+      - get_ui_model_commands

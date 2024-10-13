@@ -70,8 +70,13 @@ definitions:
         is_global: false
         uses_state: true
         remotable: true
-      system_fn: file_bundles_view_open.system-fn
-  file_bundles_view_open.system-fn:
+      system_fn: open.system-fn
+  open:
+    type: legacy_type.builtin:attribute
+    value:
+      object: file_bundles.module
+      attr_name: open
+  open.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: open
@@ -80,11 +85,6 @@ definitions:
       - current_item
       service_params:
       - file_bundle
-  open:
-    type: legacy_type.builtin:attribute
-    value:
-      object: file_bundles.module
-      attr_name: open
   open_file_bundle_list:
     type: legacy_type.builtin:attribute
     value:

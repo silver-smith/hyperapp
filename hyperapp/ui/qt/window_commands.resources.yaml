@@ -19,11 +19,26 @@ definitions:
     value:
       object: window_commands.module
       attr_name: duplicate_window
+  duplicate_window.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: duplicate_window
+      ctx_params:
+      - root
+      - view
+      - state
+      service_params: []
   quit:
     type: legacy_type.builtin:attribute
     value:
       object: window_commands.module
       attr_name: quit
+  quit.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: quit
+      ctx_params: []
+      service_params: []
   window_commands.module:
     type: legacy_type.builtin:python_module
     value:
@@ -43,15 +58,6 @@ definitions:
     type: legacy_type.builtin:call
     value:
       function: legacy_type.window_commands:duplicate_window_d
-  window_view_duplicate_window.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: duplicate_window
-      ctx_params:
-      - root
-      - view
-      - state
-      service_params: []
   window_view_duplicate_window.ui-command:
     type: legacy_type.command:ui_command
     value:
@@ -60,7 +66,7 @@ definitions:
         is_global: false
         uses_state: true
         remotable: true
-      system_fn: window_view_duplicate_window.system-fn
+      system_fn: duplicate_window.system-fn
   window_view_quit.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -70,12 +76,6 @@ definitions:
     type: legacy_type.builtin:call
     value:
       function: legacy_type.window_commands:quit_d
-  window_view_quit.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: quit
-      ctx_params: []
-      service_params: []
   window_view_quit.ui-command:
     type: legacy_type.command:ui_command
     value:
@@ -84,4 +84,4 @@ definitions:
         is_global: false
         uses_state: false
         remotable: true
-      system_fn: window_view_quit.system-fn
+      system_fn: quit.system-fn

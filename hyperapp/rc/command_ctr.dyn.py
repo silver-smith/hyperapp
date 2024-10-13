@@ -36,6 +36,11 @@ class CommandTemplateCtr(Constructor):
         target_set.update_deps_for(resolved_tgt)
         target_set.update_deps_for(resource_tgt)
 
+    @property
+    def _fn_name(self):
+        attr_name = '_'.join(self._attr_qual_name)
+        return attr_name
+
     def _make_command(self, types, system_fn, name_to_res):
         d_name = self._attr_qual_name[-1] + '_d'
         type_module = self._module_name.split('.')[-1]
@@ -74,7 +79,7 @@ class CommandTemplateCtr(Constructor):
             )
         command = self._make_command(types, system_fn, name_to_res)
         if name_to_res is not None:
-            name_to_res[f'{self._resource_name}.system-fn'] = system_fn
+            name_to_res[f'{self._fn_name}.system-fn'] = system_fn
             name_to_res[f'{self._resource_name}.{self._command_resource_suffix}'] = command
         return command
 
@@ -110,8 +115,7 @@ class UntypedCommandTemplateCtr(CommandTemplateCtr):
 
     @property
     def _resource_name(self):
-        attr_name = '_'.join(self._attr_qual_name)
-        return attr_name
+        return self._fn_name
 
 
 class TypedCommandTemplateCtr(CommandTemplateCtr):

@@ -129,15 +129,7 @@ definitions:
         is_global: false
         uses_state: true
         remotable: true
-      system_fn: data_browser_list_view_list_open.system-fn
-  data_browser_list_view_list_open.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: list_open
-      ctx_params:
-      - piece
-      - current_item
-      service_params: []
+      system_fn: list_open.system-fn
   data_browser_primitive_view.model:
     type: legacy_type.model:model
     value:
@@ -197,15 +189,7 @@ definitions:
         is_global: false
         uses_state: true
         remotable: true
-      system_fn: data_browser_record_view_record_open.system-fn
-  data_browser_record_view_record_open.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: record_open
-      ctx_params:
-      - piece
-      - current_item
-      service_params: []
+      system_fn: record_open.system-fn
   data_browser_ref_list_view.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
@@ -244,8 +228,39 @@ definitions:
         is_global: false
         uses_state: true
         remotable: true
-      system_fn: data_browser_ref_list_view_ref_list_open.system-fn
-  data_browser_ref_list_view_ref_list_open.system-fn:
+      system_fn: ref_list_open.system-fn
+  list_open:
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_browser.module
+      attr_name: list_open
+  list_open.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: list_open
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
+  record_open:
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_browser.module
+      attr_name: record_open
+  record_open.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: record_open
+      ctx_params:
+      - piece
+      - current_item
+      service_params: []
+  ref_list_open:
+    type: legacy_type.builtin:attribute
+    value:
+      object: data_browser.module
+      attr_name: ref_list_open
+  ref_list_open.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: ref_list_open
@@ -253,18 +268,3 @@ definitions:
       - piece
       - current_item
       service_params: []
-  list_open:
-    type: legacy_type.builtin:attribute
-    value:
-      object: data_browser.module
-      attr_name: list_open
-  record_open:
-    type: legacy_type.builtin:attribute
-    value:
-      object: data_browser.module
-      attr_name: record_open
-  ref_list_open:
-    type: legacy_type.builtin:attribute
-    value:
-      object: data_browser.module
-      attr_name: ref_list_open

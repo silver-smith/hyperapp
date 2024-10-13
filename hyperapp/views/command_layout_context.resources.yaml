@@ -68,8 +68,13 @@ definitions:
         is_global: false
         uses_state: true
         remotable: false
-      system_fn: model_commands_view_open_command_layout_context.system-fn
-  model_commands_view_open_command_layout_context.system-fn:
+      system_fn: open_command_layout_context.system-fn
+  open_command_layout_context:
+    type: legacy_type.builtin:attribute
+    value:
+      object: command_layout_context.module
+      attr_name: open_command_layout_context
+  open_command_layout_context.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: open_command_layout_context
@@ -80,8 +85,3 @@ definitions:
       - ctx
       service_params:
       - view_creg
-  open_command_layout_context:
-    type: legacy_type.builtin:attribute
-    value:
-      object: command_layout_context.module
-      attr_name: open_command_layout_context

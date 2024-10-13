@@ -33,11 +33,31 @@ definitions:
     value:
       object: navigator.module
       attr_name: go_back
+  go_back.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: go_back
+      ctx_params:
+      - view
+      - widget
+      - ctx
+      service_params:
+      - model_view_creg
   go_forward:
     type: legacy_type.builtin:attribute
     value:
       object: navigator.module
       attr_name: go_forward
+  go_forward.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: go_forward
+      ctx_params:
+      - view
+      - widget
+      - ctx
+      service_params:
+      - model_view_creg
   navigator.module:
     type: legacy_type.builtin:python_module
     value:
@@ -68,16 +88,6 @@ definitions:
     type: legacy_type.builtin:call
     value:
       function: legacy_type.navigator:go_back_d
-  navigator_view_go_back.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: go_back
-      ctx_params:
-      - view
-      - widget
-      - ctx
-      service_params:
-      - model_view_creg
   navigator_view_go_back.ui-command:
     type: legacy_type.command:ui_command
     value:
@@ -86,7 +96,7 @@ definitions:
         is_global: false
         uses_state: false
         remotable: false
-      system_fn: navigator_view_go_back.system-fn
+      system_fn: go_back.system-fn
   navigator_view_go_forward.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -96,16 +106,6 @@ definitions:
     type: legacy_type.builtin:call
     value:
       function: legacy_type.navigator:go_forward_d
-  navigator_view_go_forward.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: go_forward
-      ctx_params:
-      - view
-      - widget
-      - ctx
-      service_params:
-      - model_view_creg
   navigator_view_go_forward.ui-command:
     type: legacy_type.command:ui_command
     value:
@@ -114,4 +114,4 @@ definitions:
         is_global: false
         uses_state: false
         remotable: false
-      system_fn: navigator_view_go_forward.system-fn
+      system_fn: go_forward.system-fn

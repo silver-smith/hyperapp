@@ -53,15 +53,6 @@ definitions:
     type: legacy_type.builtin:call
     value:
       function: legacy_type.auto_tabs:close_tab_d
-  auto_tabs_view_close_tab.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: close_tab
-      ctx_params:
-      - view
-      - widget
-      - state
-      service_params: []
   auto_tabs_view_close_tab.ui-command:
     type: legacy_type.command:ui_command
     value:
@@ -70,7 +61,7 @@ definitions:
         is_global: false
         uses_state: true
         remotable: true
-      system_fn: auto_tabs_view_close_tab.system-fn
+      system_fn: close_tab.system-fn
   auto_tabs_view_duplicate_tab.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -80,7 +71,35 @@ definitions:
     type: legacy_type.builtin:call
     value:
       function: legacy_type.auto_tabs:duplicate_tab_d
-  auto_tabs_view_duplicate_tab.system-fn:
+  auto_tabs_view_duplicate_tab.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: auto_tabs_view_duplicate_tab.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: duplicate_tab.system-fn
+  close_tab:
+    type: legacy_type.builtin:attribute
+    value:
+      object: auto_tabs.module
+      attr_name: close_tab
+  close_tab.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: close_tab
+      ctx_params:
+      - view
+      - widget
+      - state
+      service_params: []
+  duplicate_tab:
+    type: legacy_type.builtin:attribute
+    value:
+      object: auto_tabs.module
+      attr_name: duplicate_tab
+  duplicate_tab.system-fn:
     type: legacy_type.system_fn:ctx_fn
     value:
       function: duplicate_tab
@@ -91,22 +110,3 @@ definitions:
       - state
       service_params:
       - view_creg
-  auto_tabs_view_duplicate_tab.ui-command:
-    type: legacy_type.command:ui_command
-    value:
-      d: auto_tabs_view_duplicate_tab.d
-      properties:
-        is_global: false
-        uses_state: true
-        remotable: false
-      system_fn: auto_tabs_view_duplicate_tab.system-fn
-  close_tab:
-    type: legacy_type.builtin:attribute
-    value:
-      object: auto_tabs.module
-      attr_name: close_tab
-  duplicate_tab:
-    type: legacy_type.builtin:attribute
-    value:
-      object: auto_tabs.module
-      attr_name: duplicate_tab

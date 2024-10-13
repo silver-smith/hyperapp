@@ -23,6 +23,14 @@ definitions:
     value:
       object: sample_commands.module
       attr_name: details
+  details.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: details
+      ctx_params:
+      - piece
+      - current_idx
+      service_params: []
   open_sample_static_list:
     type: legacy_type.builtin:attribute
     value:
@@ -120,20 +128,19 @@ definitions:
         is_global: false
         uses_state: true
         remotable: true
-      system_fn: sample_list_sample_list_details.system-fn
-  sample_list_sample_list_details.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: details
-      ctx_params:
-      - piece
-      - current_idx
-      service_params: []
+      system_fn: details.system-fn
   sample_tree_info:
     type: legacy_type.builtin:attribute
     value:
       object: sample_commands.module
       attr_name: sample_tree_info
+  sample_tree_info.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: sample_tree_info
+      ctx_params:
+      - piece
+      service_params: []
   sample_tree_sample_tree_sample_tree_info.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -151,14 +158,7 @@ definitions:
         is_global: false
         uses_state: false
         remotable: true
-      system_fn: sample_tree_sample_tree_sample_tree_info.system-fn
-  sample_tree_sample_tree_sample_tree_info.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: sample_tree_info
-      ctx_params:
-      - piece
-      service_params: []
+      system_fn: sample_tree_info.system-fn
   show_state:
     type: legacy_type.builtin:attribute
     value:

@@ -74,20 +74,7 @@ definitions:
         is_global: false
         uses_state: true
         remotable: false
-      system_fn: global_commands_view_run_command.system-fn
-  global_commands_view_run_command.system-fn:
-    type: legacy_type.system_fn:ctx_fn
-    value:
-      function: run_command
-      ctx_params:
-      - piece
-      - current_item
-      - lcs
-      - ctx
-      service_params:
-      - global_model_command_reg
-      - model_view_creg
-      - visualizer
+      system_fn: run_command.system-fn
   list_global_commands:
     type: legacy_type.builtin:attribute
     value:
@@ -122,3 +109,16 @@ definitions:
     value:
       object: global_commands.module
       attr_name: run_command
+  run_command.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: run_command
+      ctx_params:
+      - piece
+      - current_item
+      - lcs
+      - ctx
+      service_params:
+      - global_model_command_reg
+      - model_view_creg
+      - visualizer
