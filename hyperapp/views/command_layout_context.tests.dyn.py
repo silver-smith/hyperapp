@@ -51,16 +51,24 @@ def test_open_global_command_layout_context(open_command_layout_context):
     open_command_layout_context(piece)
 
 
-def test_view(data_to_ref, qapp, view_creg):
+@mark.fixture
+def base_piece():
+    return htypes.label.view("Sample label")
+
+
+@mark.fixture
+def piece(data_to_ref, base_piece):
     model = htypes.command_layout_context_tests.sample_model()
     model_state = htypes.command_layout_context_tests.sample_model_state()
     command_d = htypes.command_layout_context_tests.sample_command_d()
-    base_piece = htypes.label.view("Sample label")
-    piece = htypes.command_layout_context.view(
+    return htypes.command_layout_context.view(
         base=mosaic.put(base_piece),
         model=mosaic.put(model),
         ui_command_d=data_to_ref(command_d),
         )
+
+
+def test_view(qapp, view_creg, base_piece, piece):
     base_state = htypes.label.state()
     state = htypes.command_layout_context.state(
         base=mosaic.put(base_state),
