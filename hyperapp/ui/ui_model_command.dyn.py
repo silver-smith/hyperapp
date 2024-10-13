@@ -152,7 +152,8 @@ class BoundUiModelCommand(BoundCommandBase):
 #     return _get_ui_model_commands
 
 
-# def change_command(lcs, model, command_d_ref, change_fn):
+def change_command(lcs, model, command_d_ref, change_fn):
+    assert False, "TODO"
 
 #     def find_command(command_list):
 #         for idx, command in enumerate(command_list):

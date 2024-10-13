@@ -4,27 +4,19 @@ import:
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
+- common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.command:cfg_item
+- legacy_type.command:model_command
 - legacy_type.command_layout_context:open_command_layout_context_d
 - legacy_type.command_layout_context:state
 - legacy_type.command_layout_context:view
-- legacy_type.model_commands:model_commands
-- legacy_type.ui:ui_command
-- legacy_type.ui:command_properties
-- legacy_type.ui:command_properties_d
-- legacy_type.ui:external_ui_model_command_impl
-- legacy_type.ui:model_command
-- legacy_type.ui:model_command_d
-- legacy_type.ui:model_command_impl
-- legacy_type.ui:ui_model_command_impl
-- ui.ui_model_command:get_ui_model_commands.service
-- ui.ui_model_command:set_ui_model_command_layout.service
-- ui.ui_model_command:set_ui_model_commands.service
+- legacy_type.model_commands:view
+- legacy_type.system:actor_template
+- legacy_type.system_fn:ctx_fn
 - ui.ui_model_command:ui_model_command.module
-- ui.view:view.module
-- ui.view_registry:view_creg.service
 - views.context_view:context_view.module
 definitions:
   CommandLayoutContextView:
@@ -44,54 +36,52 @@ definitions:
       file_name: command_layout_context.dyn.py
       import_list:
         code.context_view: views.context_view:context_view.module
+        code.mark: common.mark:mark.module
         code.ui_model_command: ui.ui_model_command:ui_model_command.module
-        code.view: ui.view:view.module
         htypes.command_layout_context.state: legacy_type.command_layout_context:state
         htypes.command_layout_context.view: legacy_type.command_layout_context:view
-        htypes.ui.ui_command: legacy_type.ui:ui_command
-        htypes.ui.external_ui_model_command_impl: legacy_type.ui:external_ui_model_command_impl
-        htypes.ui.ui_model_command_impl: legacy_type.ui:ui_model_command_impl
-        services.get_ui_model_commands: ui.ui_model_command:get_ui_model_commands.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
-        services.set_ui_model_command_layout: ui.ui_model_command:set_ui_model_command_layout.service
-        services.set_ui_model_commands: ui.ui_model_command:set_ui_model_commands.service
-        services.view_creg: ui.view_registry:view_creg.service
         services.web: builtins:web.service
-  command_properties_d:
+  command_layout_context_view.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command_layout_context:view
+      function: CommandLayoutContextView.from_piece
+      service_params:
+      - data_to_ref
+      - view_creg
+  model_commands_view_open_command_layout_context.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.model_commands:view
+      command: model_commands_view_open_command_layout_context.model-command
+  model_commands_view_open_command_layout_context.d:
     type: legacy_type.builtin:call
     value:
-      function: legacy_type.ui:command_properties_d
-  model_command_d:
-    type: legacy_type.builtin:call
+      function: legacy_type.command_layout_context:open_command_layout_context_d
+  model_commands_view_open_command_layout_context.model-command:
+    type: legacy_type.command:model_command
     value:
-      function: legacy_type.ui:model_command_d
+      d: model_commands_view_open_command_layout_context.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: model_commands_view_open_command_layout_context.system-fn
+  model_commands_view_open_command_layout_context.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_command_layout_context
+      ctx_params:
+      - piece
+      - current_item
+      - navigator
+      - ctx
+      service_params:
+      - view_creg
   open_command_layout_context:
     type: legacy_type.builtin:attribute
     value:
       object: command_layout_context.module
       attr_name: open_command_layout_context
-  open_command_layout_context.command:
-    type: legacy_type.ui:model_command
-    value:
-      d: open_command_layout_context.d
-      impl: open_command_layout_context.command_impl
-  open_command_layout_context.command_impl:
-    type: legacy_type.ui:model_command_impl
-    value:
-      function: open_command_layout_context
-      params:
-      - piece
-      - current_item
-      - navigator
-      - ctx
-  open_command_layout_context.command_properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: false
-      uses_state: true
-      remotable: false
-  open_command_layout_context.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.command_layout_context:open_command_layout_context_d
