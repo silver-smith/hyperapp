@@ -1,62 +1,75 @@
 # Automatically generated file. Do not edit.
 
 import:
+- common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.command:cfg_item
+- legacy_type.command:ui_command
+- legacy_type.system_fn:ctx_fn
 - legacy_type.text:edit_view
 - legacy_type.text:readonly_view
 - legacy_type.text_toggle_editable:toggle_editable_d
-- legacy_type.ui:ui_command
-- legacy_type.ui:command_properties
-- legacy_type.ui:command_properties_d
-- legacy_type.ui:ui_command_impl
-- legacy_type.ui:universal_ui_command_d
-- ui.view_registry:model_view_creg.service
 definitions:
-  command_properties_d:
+  text_edit_view_toggle_editable.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.text:edit_view
+      command: text_edit_view_toggle_editable.ui-command
+  text_edit_view_toggle_editable.d:
     type: legacy_type.builtin:call
     value:
-      function: legacy_type.ui:command_properties_d
+      function: legacy_type.text_toggle_editable:toggle_editable_d
+  text_edit_view_toggle_editable.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: text_edit_view_toggle_editable.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: false
+      system_fn: toggle_editable.system-fn
+  text_readonly_view_toggle_editable.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.text:readonly_view
+      command: text_readonly_view_toggle_editable.ui-command
+  text_readonly_view_toggle_editable.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.text_toggle_editable:toggle_editable_d
+  text_readonly_view_toggle_editable.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: text_readonly_view_toggle_editable.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: false
+      system_fn: toggle_editable.system-fn
   text_toggle_editable.module:
     type: legacy_type.builtin:python_module
     value:
       module_name: text_toggle_editable
       file_name: text_toggle_editable.dyn.py
       import_list:
+        code.mark: common.mark:mark.module
         htypes.text.edit_view: legacy_type.text:edit_view
         htypes.text.readonly_view: legacy_type.text:readonly_view
-        services.model_view_creg: ui.view_registry:model_view_creg.service
   toggle_editable:
     type: legacy_type.builtin:attribute
     value:
       object: text_toggle_editable.module
       attr_name: toggle_editable
-  toggle_editable.command:
-    type: legacy_type.ui:ui_command
-    value:
-      d: toggle_editable.d
-      impl: toggle_editable.impl
-  toggle_editable.command_properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: true
-      uses_state: false
-      remotable: false
-  toggle_editable.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.text_toggle_editable:toggle_editable_d
-  toggle_editable.impl:
-    type: legacy_type.ui:ui_command_impl
+  toggle_editable.system-fn:
+    type: legacy_type.system_fn:ctx_fn
     value:
       function: toggle_editable
-      params:
+      ctx_params:
       - piece
       - view
       - hook
       - ctx
-  universal_ui_command_d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.ui:universal_ui_command_d
+      service_params:
+      - model_view_creg

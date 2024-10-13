@@ -4,52 +4,55 @@ from PySide6 import QtWidgets
 
 from . import htypes
 from .services import (
-    model_view_creg,
     mosaic,
     )
+from .code.mark import mark
 from .code.context import Context
+from .fixtures import qapp_fixtures
 from .tested.code import text_toggle_editable
 
 
-def readonly_view():
-    adapter = htypes.str_adapter.static_str_adapter()
+@mark.fixture
+def adapter():
+    return htypes.str_adapter.static_str_adapter()
+
+
+@mark.fixture
+def readonly_piece(adapter):
     return htypes.text.readonly_view(mosaic.put(adapter))
 
 
-def edit_view():
-    adapter = htypes.str_adapter.static_str_adapter()
+@mark.fixture
+def edit_piece(adapter):
     return htypes.text.edit_view(mosaic.put(adapter))
 
 
-def make_state():
+@mark.fixture
+def state():
     return htypes.text.state()
 
 
-def test_readonly_to_edit():
-    ctx = Context()
-    view_piece = readonly_view()
-    state = make_state()
-    model = "Sample text"
-    app = QtWidgets.QApplication()
-    try:
-        view = model_view_creg.animate(view_piece, model, ctx)
-        hook = Mock()
-        text_toggle_editable.toggle_editable(model, view, hook, ctx)
-        hook.replace_view.assert_called_once()
-    finally:
-        app.shutdown()
+@mark.fixture
+def model():
+    return "Sample text"
 
 
-def test_edit_to_readonly():
-    ctx = Context()
-    view_piece = edit_view()
-    state = make_state()
-    model = "Sample text"
-    app = QtWidgets.QApplication()
-    try:
-        view = model_view_creg.animate(view_piece, model, ctx)
-        hook = Mock()
-        text_toggle_editable.toggle_editable(model, view, hook, ctx)
-        hook.replace_view.assert_called_once()
-    finally:
-        app.shutdown()
+@mark.fixture
+def ctx():
+    return Context()
+
+@mark.fixture
+def hook():
+    return Mock()
+
+
+def test_readonly_to_edit(qapp, model_view_creg, readonly_piece, state, model, ctx, hook):
+    view = model_view_creg.animate(readonly_piece, model, ctx)
+    text_toggle_editable.toggle_editable(model, view, hook, ctx)
+    hook.replace_view.assert_called_once()
+
+
+def test_edit_to_readonly(qapp, model_view_creg, edit_piece, model, ctx, hook):
+    view = model_view_creg.animate(edit_piece, model, ctx)
+    text_toggle_editable.toggle_editable(model, view, hook, ctx)
+    hook.replace_view.assert_called_once()

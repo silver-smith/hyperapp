@@ -216,6 +216,8 @@ import:
 - ui.str_adapter:str_adapter_static_str_adapter.actor-template
 - ui.system_fn:system_fn_ctx_fn.actor-template
 - ui.system_fn_creg:system_fn_creg.service
+- ui.text_toggle_editable:text_edit_view_toggle_editable.command-cfg-item
+- ui.text_toggle_editable:text_readonly_view_toggle_editable.command-cfg-item
 - ui.ui_adapter_creg:ui_adapter_creg.service
 - ui.ui_command:command_ui_command.actor-template
 - ui.ui_command:get_view_commands.service
@@ -578,6 +580,8 @@ definitions:
       - ui.qt.auto_tabs:auto_tabs_view_duplicate_tab.command-cfg-item
       - ui.qt.window_commands:window_view_duplicate_window.command-cfg-item
       - ui.qt.window_commands:window_view_quit.command-cfg-item
+      - ui.text_toggle_editable:text_edit_view_toggle_editable.command-cfg-item
+      - ui.text_toggle_editable:text_readonly_view_toggle_editable.command-cfg-item
   visualizer_reg:
     type: legacy_type.system:item_list_config
     value:
