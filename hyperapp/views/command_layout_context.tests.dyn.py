@@ -18,14 +18,8 @@ def view_creg():
     return Mock()
 
 
-def test_open_command_layout_context(data_to_ref, view_creg):
-    model = htypes.command_layout_context_tests.sample_model()
-    model_state = htypes.command_layout_context_tests.sample_model_state()
+def open_command_layout_context(data_to_ref, view_creg, piece):
     ctx = Context()
-    piece = htypes.model_commands.view(
-        model=mosaic.put(model),
-        model_state=mosaic.put(model_state)
-        )
     command_d = htypes.command_layout_context_tests.sample_command_d()
     current_item = htypes.model_commands.item(
         command_d=data_to_ref(command_d),
@@ -39,6 +33,21 @@ def test_open_command_layout_context(data_to_ref, view_creg):
     command_layout_context.open_command_layout_context(piece, current_item, navigator, ctx)
     view_creg.animate.assert_called_once()
     navigator.hook.replace_view.assert_called_once()
+
+
+def test_open_model_command_layout_context(data_to_ref, view_creg):
+    model = htypes.command_layout_context_tests.sample_model()
+    model_state = htypes.command_layout_context_tests.sample_model_state()
+    piece = htypes.model_commands.view(
+        model=mosaic.put(model),
+        model_state=mosaic.put(model_state)
+        )
+    open_command_layout_context(data_to_ref, view_creg, piece)
+
+
+def test_open_global_command_layout_context(data_to_ref, view_creg):
+    piece = htypes.global_commands.view()
+    open_command_layout_context(data_to_ref, view_creg, piece)
 
 
 def test_view(data_to_ref, qapp, view_creg):

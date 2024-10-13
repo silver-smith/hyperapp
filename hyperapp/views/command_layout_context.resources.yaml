@@ -13,6 +13,7 @@ import:
 - legacy_type.command_layout_context:open_command_layout_context_d
 - legacy_type.command_layout_context:state
 - legacy_type.command_layout_context:view
+- legacy_type.global_commands:view
 - legacy_type.model_commands:view
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
@@ -40,6 +41,8 @@ definitions:
         code.ui_model_command: ui.ui_model_command:ui_model_command.module
         htypes.command_layout_context.state: legacy_type.command_layout_context:state
         htypes.command_layout_context.view: legacy_type.command_layout_context:view
+        htypes.global_commands.view: legacy_type.global_commands:view
+        htypes.model_commands.view: legacy_type.model_commands:view
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
@@ -51,6 +54,24 @@ definitions:
       service_params:
       - data_to_ref
       - view_creg
+  global_commands_view_open_command_layout_context.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.global_commands:view
+      command: global_commands_view_open_command_layout_context.model-command
+  global_commands_view_open_command_layout_context.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.command_layout_context:open_command_layout_context_d
+  global_commands_view_open_command_layout_context.model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: global_commands_view_open_command_layout_context.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: open_command_layout_context.system-fn
   model_commands_view_open_command_layout_context.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

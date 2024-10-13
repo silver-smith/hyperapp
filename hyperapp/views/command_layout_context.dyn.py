@@ -17,7 +17,7 @@ class CommandLayoutContextView(ContextView):
     @mark.actor.view_creg
     def from_piece(cls, piece, ctx, data_to_ref, view_creg):
         base_view = view_creg.invite(piece.base, ctx)
-        model = web.summon(piece.model)
+        model = web.summon_opt(piece.model)
         command_d = pyobj_creg.invite(piece.ui_command_d)
         return cls(data_to_ref, base_view, ctx.lcs, model, command_d)
 
@@ -32,7 +32,7 @@ class CommandLayoutContextView(ContextView):
     def piece(self):
         return htypes.command_layout_context.view(
             base=mosaic.put(self._base_view.piece),
-            model=mosaic.put(self._model),
+            model=mosaic.put_opt(self._model),
             ui_command_d=self._data_to_ref(self._command_d),
             )
 
@@ -68,9 +68,14 @@ class CommandLayoutContextView(ContextView):
 
 @mark.command
 def open_command_layout_context(piece, current_item, navigator, ctx, view_creg):
+    if isinstance(piece, htypes.model_commands.view):
+        model = piece.model
+    else:
+        assert isinstance(piece, htypes.global_commands.view)
+        model = None
     new_view_piece = htypes.command_layout_context.view(
         base=mosaic.put(navigator.view.piece),
-        model=piece.model,
+        model=model,
         ui_command_d=current_item.command_d,
         )
     new_state = htypes.command_layout_context.state(

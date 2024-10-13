@@ -231,6 +231,7 @@ import:
 - ui.visualizer:visualizer.service
 - ui.visualizer:visualizer_reg.service
 - views.command_layout_context:command_layout_context_view.actor-template
+- views.command_layout_context:global_commands_view_open_command_layout_context.command-cfg-item
 - views.command_layout_context:model_commands_view_open_command_layout_context.command-cfg-item
 definitions:
   cfg_item_creg:
@@ -361,6 +362,7 @@ definitions:
       - sample.sample_commands:sample_tree_sample_tree_sample_tree_info.command-cfg-item
       - ui.layout:layout_command_list_add_view_command.command-cfg-item
       - ui.layout:layout_view_open_view_item_commands.command-cfg-item
+      - views.command_layout_context:global_commands_view_open_command_layout_context.command-cfg-item
       - views.command_layout_context:model_commands_view_open_command_layout_context.command-cfg-item
   model_view_creg:
     type: legacy_type.system:item_list_config
