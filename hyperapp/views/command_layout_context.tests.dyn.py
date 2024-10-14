@@ -5,6 +5,7 @@ from PySide6 import QtWidgets
 from . import htypes
 from .services import (
     mosaic,
+    pyobj_creg,
     web,
     )
 from .code.mark import mark
@@ -21,9 +22,9 @@ def view_creg():
 @mark.fixture
 def open_command_layout_context(data_to_ref, view_creg, piece):
     ctx = Context()
-    command_d = htypes.command_layout_context_tests.sample_command_d()
     current_item = htypes.model_commands.item(
-        command_d=data_to_ref(command_d),
+        ui_command_d=data_to_ref(htypes.command_layout_context_tests.sample_command_d()),
+        model_command_d=data_to_ref(htypes.command_layout_context_tests.sample_model_command_d()),
         name="<unused>",
         groups="<unused>",
         repr="<unused>",
@@ -58,23 +59,26 @@ def base_piece():
 
 @mark.fixture
 def piece(data_to_ref, base_piece):
-    model = htypes.command_layout_context_tests.sample_model()
-    model_state = htypes.command_layout_context_tests.sample_model_state()
-    command_d = htypes.command_layout_context_tests.sample_command_d()
+    model_t = htypes.command_layout_context_tests.sample_model
     return htypes.command_layout_context.view(
         base=mosaic.put(base_piece),
-        model=mosaic.put(model),
-        ui_command_d=data_to_ref(command_d),
+        model_t=pyobj_creg.actor_to_ref(model_t),
+        ui_command_d=data_to_ref(htypes.command_layout_context_tests.sample_command_d()),
+        model_command_d=data_to_ref(htypes.command_layout_context_tests.sample_model_command_d()),
         )
 
 
-def test_view(qapp, view_creg, base_piece, piece):
+@mark.fixture
+def ctx():
+    return Context(
+        lcs=Mock(),
+        )
+
+
+def test_view(qapp, view_creg, base_piece, piece, ctx):
     base_state = htypes.label.state()
     state = htypes.command_layout_context.state(
         base=mosaic.put(base_state),
-        )
-    ctx = Context(
-        lcs=Mock(),
         )
 
     base_view = Mock()
@@ -90,42 +94,8 @@ def test_view(qapp, view_creg, base_piece, piece):
     assert isinstance(state, htypes.command_layout_context.state)
 
 
-def _test_set_external_layout():
-    _view_creg_mock.invite = real_view_creg.invite  # Used to resolve base view.
-    sample_ui_command = _make_sample_external_ui_command()
-    lcs = Mock()
-    ctx = Context(
-        lcs=lcs,
-        )
-    model = htypes.command_layout_context_tests.sample_model()
-    base_piece = htypes.label.view("Sample label")
-    piece = htypes.command_layout_context.view(
-        base=mosaic.put(base_piece),
-        model=mosaic.put(model),
-        ui_command=mosaic.put(sample_ui_command),
-        )
+def test_set_layout(piece, ctx):
     view = command_layout_context.CommandLayoutContextView.from_piece(piece, ctx)
-    view._set_layout(htypes.label.view("Sample label layout"))
-    lcs.set.assert_called_once()
-
-
-def _test_set_usual_layout():
-    _view_creg_mock.invite = real_view_creg.invite  # Used to resolve base view.
-    sample_ui_command = _make_sample_ui_command()
-    lcs = Mock()
-    ctx = Context(
-        lcs=lcs,
-        )
-    model = htypes.command_layout_context_tests.sample_model()
-    base_piece = htypes.label.view("Sample label")
-    piece = htypes.command_layout_context.view(
-        base=mosaic.put(base_piece),
-        model=mosaic.put(model),
-        ui_command=mosaic.put(sample_ui_command),
-        )
-    view = command_layout_context.CommandLayoutContextView.from_piece(piece, ctx)
-    lcs.get.return_value = htypes.ui.ui_model_command_list([
-        mosaic.put(sample_ui_command),
-        ])
-    view._set_layout(htypes.label.view("Sample label layout"))
-    lcs.set.assert_called_once()
+    children_ctx = view.children_context(ctx)
+    children_ctx.set_layout(htypes.label.view("Sample label layout"))
+    ctx.lcs.set.assert_called_once()

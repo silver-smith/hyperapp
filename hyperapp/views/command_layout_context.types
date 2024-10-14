@@ -2,8 +2,9 @@ open_command_layout_context_d = record
 
 view = record:
   base: ref
-  model: ref opt
+  model_t: ref opt
   ui_command_d: ref
+  model_command_d: ref
 
 state = record:
   base: ref

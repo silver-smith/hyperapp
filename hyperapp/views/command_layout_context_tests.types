@@ -1,3 +1,4 @@
 sample_command_d = record
+sample_model_command_d = record
 sample_model = record
 sample_model_state = record
