@@ -31,7 +31,8 @@ def list_model_commands(piece, ctx, lcs, data_to_ref, get_ui_model_commands):
     command_list = get_ui_model_commands(lcs, model, command_ctx)
     return [
         htypes.model_commands.item(
-            command_d=data_to_ref(command.d),
+            ui_command_d=data_to_ref(command.d),
+            model_command_d=data_to_ref(command.model_command_d),
             name=command.name,
             groups=", ".join(d_to_name(g) for g in command.groups),
             repr=repr(command),
@@ -49,7 +50,7 @@ async def run_command(piece, current_item, ctx, lcs, get_ui_model_commands):
     model_state = web.summon(piece.model_state)
     command_ctx = make_command_ctx(ctx, model, model_state)
     command_list = get_ui_model_commands(lcs, model, command_ctx)
-    command_d = pyobj_creg.invite(current_item.command_d)
+    command_d = pyobj_creg.invite(current_item.ui_command_d)
     unbound_command = next(cmd for cmd in command_list if cmd.d == command_d)
     bound_command = unbound_command.bind(command_ctx)
     piece = await bound_command.run()

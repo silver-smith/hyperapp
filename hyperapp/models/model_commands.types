@@ -3,7 +3,8 @@ view = record:
   model_state: ref
 
 item = record:
-  command_d: ref
+  ui_command_d: ref
+  model_command_d: ref
   name: string
   groups: string
   repr: string
