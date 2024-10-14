@@ -160,6 +160,7 @@ import:
 - transport.rsa_identity:rsa_identity_rsa_peer.actor-template
 - transport.rsa_identity:rsa_identity_rsa_signature.actor-template
 - transport.sync_route_table:route_table.service
+- transport.tcp_tests_callback:tcp_test_callback.service
 - transport.transport:transport.service
 - ui.command_cfg_item:command_cfg_item.actor-template
 - ui.command_cfg_item:command_model_command.actor-template
@@ -521,6 +522,7 @@ definitions:
       - transport.route_registry:route_registry.service
       - transport.rsa_identity:generate_rsa_identity.service
       - transport.sync_route_table:route_table.service
+      - transport.tcp_tests_callback:tcp_test_callback.service
       - transport.transport:transport.service
       - ui.command_creg:command_creg.service
       - ui.controller:controller_running.service

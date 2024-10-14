@@ -1,23 +1,30 @@
 import logging
 
-from .services import (
-    endpoint_registry,
-    generate_rsa_identity,
-    peer_registry,
-    rpc_call_factory,
-    # rpc_endpoint_factory,
-    )
+from .code.mark import mark
+from .code.system import run_system
 
 log = logging.getLogger(__name__)
 
 
-def tcp_callback(tcp_master_peer_piece, master_fn_ref):
-    log.info("tcp_callback: entered")
+@mark.service2
+def tcp_test_callback(
+        peer_registry,
+        generate_rsa_identity,
+        endpoint_registry,
+        rpc_endpoint,
+        rpc_call_factory,
+        tcp_master_peer_piece,
+        master_fn_ref,
+        ):
+    log.info("tcp_test_callback: entered")
     tcp_master_peer = peer_registry.animate(tcp_master_peer_piece)
-    rpc_endpoint = rpc_endpoint_factory()
     my_identity = generate_rsa_identity(fast=True)
     endpoint_registry.register(my_identity, rpc_endpoint)
     rpc_call = rpc_call_factory(rpc_endpoint, tcp_master_peer, my_identity, master_fn_ref)
-    log.info("tcp_callback: Calling master:")
+    log.info("tcp_test_callback: Calling master:")
     rpc_call(message='hello')
-    log.info("tcp_callback: Calling master: done")
+    log.info("tcp_test_callback: Calling master: done")
+
+
+def tcp_callback_main(system_config_piece, tcp_master_peer_piece, master_fn_ref):
+    run_system(system_config_piece, 'tcp_test_callback', tcp_master_peer_piece, master_fn_ref)
