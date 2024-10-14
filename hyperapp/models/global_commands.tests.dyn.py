@@ -60,7 +60,8 @@ def test_list_global_commands(lcs, piece):
 async def test_run_command(data_to_ref, lcs, piece):
     navigator = Mock()
     current_item = htypes.global_commands.item(
-        command_d=data_to_ref(htypes.global_commands_tests.sample_command_d()),
+        ui_command_d=data_to_ref(htypes.global_commands_tests.sample_command_d()),
+        model_command_d=data_to_ref(htypes.global_commands_tests.sample_model_command_d()),
         name="<unused>",
         groups="<unused>",
         repr="<unused>",

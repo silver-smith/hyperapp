@@ -20,8 +20,9 @@ def list_global_commands(piece, lcs, data_to_ref, global_model_command_reg, mode
         for cmd in global_model_command_reg
         ]
     return [
-        htypes.model_commands.item(
-            command_d=data_to_ref(command.d),
+        htypes.global_commands.item(
+            ui_command_d=data_to_ref(command.d),
+            model_command_d=data_to_ref(command.model_command_d),
             name=command.name,
             groups=", ".join(d_to_name(g) for g in command.groups),
             repr=repr(command),
@@ -39,7 +40,7 @@ async def run_command(piece, current_item, lcs, ctx, global_model_command_reg, m
         wrap_model_command_to_ui_command(model_view_creg, visualizer, lcs, cmd)
         for cmd in global_model_command_reg
         ]
-    command_d = pyobj_creg.invite(current_item.command_d)
+    command_d = pyobj_creg.invite(current_item.ui_command_d)
     unbound_command = next(cmd for cmd in command_list if cmd.d == command_d)
     bound_command = unbound_command.bind(ctx)
     piece = await bound_command.run()
