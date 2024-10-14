@@ -1,5 +1,6 @@
 import logging
 
+from . import htypes
 from .services import (
     deduce_t,
     pyobj_creg,
@@ -34,6 +35,10 @@ class UnboundUiModelCommand(UnboundCommandBase):
     @property
     def groups(self):
         return default_command_groups(self._model_command.properties, CommandKind.MODEL)
+
+    @property
+    def model_command_d(self):
+        return self._model_command.d
 
     def bind(self, ctx):
         return BoundUiModelCommand(
@@ -113,17 +118,14 @@ class BoundUiModelCommand(BoundCommandBase):
 #     return _get_ui_model_command_layout
 
 
-# def _set_ui_model_commands(lcs, model, commands):
-#     t = deduce_t(model)
-#     t_res = pyobj_creg.actor_to_piece(t)
-#     d = {
-#         htypes.ui.ui_model_command_d(),
-#         t_res,
-#         }
-#     value = htypes.ui.ui_model_command_list(
-#         commands=tuple(mosaic.put(cmd) for cmd in commands),
-#         )
-#     lcs.set(d, value)
+@mark.service2
+def set_ui_model_command(lcs, model_t, command):
+    model_t_res = pyobj_creg.actor_to_piece(model_t)
+    d = {
+        htypes.command.ui_model_command_d(),
+        model_t_res,
+        }
+    lcs.set(d, command)
 
 
 # @mark.service
@@ -152,8 +154,8 @@ class BoundUiModelCommand(BoundCommandBase):
 #     return _get_ui_model_commands
 
 
-def change_command(lcs, model, command_d_ref, change_fn):
-    assert False, "TODO"
+# def change_command(lcs, model, command_d_ref, change_fn):
+#     assert False, "TODO"
 
 #     def find_command(command_list):
 #         for idx, command in enumerate(command_list):

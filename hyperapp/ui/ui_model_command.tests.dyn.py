@@ -55,6 +55,18 @@ def model_command_reg_config(partial_ref):
     return {model_t: [command]}
 
 
+def test_set_ui_model_command(data_to_ref, set_ui_model_command):
+    lcs = Mock()
+    model_t = htypes.ui_model_command_tests.sample_model
+    command = htypes.command.ui_model_command(
+        ui_command_d=data_to_ref(htypes.ui_model_command_tests.sample_command_2_d()),
+        model_command_d=data_to_ref(htypes.ui_model_command_tests.sample_model_command_2_d()),
+        layout=None,
+        )
+    set_ui_model_command(lcs, model_t, command)
+    lcs.set.assert_called_once()
+
+
 def test_get_ui_model_commands(get_ui_model_commands):
     lcs = Mock()
     lcs.get.return_value = None

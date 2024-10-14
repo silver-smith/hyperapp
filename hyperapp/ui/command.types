@@ -20,3 +20,12 @@ model_command = record(fn_command)
 
 model_command_enumerator = record:
   system_fn: ref
+
+
+# LCS selector for model to ui_model_command set mappint.
+ui_model_command_d = record
+
+ui_model_command = record:
+  ui_command_d: ref
+  model_command_d: ref
+  layout: ref opt
