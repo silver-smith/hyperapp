@@ -18,9 +18,23 @@ def _stop(stop_signal, cancel_rpc_request_futures):
 
 
 def rpc_server_main(
-        stop_signal, bundler, peer_registry, route_table, generate_rsa_identity, endpoint_registry,
-        cancel_rpc_request_futures, rpc_endpoint, rpc_call_factory, subprocess_transport,
-        connection, received_refs, name, master_peer_piece, master_servant_ref, subprocess_id):
+        stop_signal,
+        bundler,
+        peer_registry,
+        route_table,
+        generate_rsa_identity,
+        endpoint_registry,
+        cancel_rpc_request_futures,
+        rpc_endpoint,
+        rpc_call_factory,
+        subprocess_transport,
+        connection,
+        received_refs,
+        name,
+        master_peer_piece,
+        master_servant_ref,
+        subprocess_id,
+        ):
     my_name = f"Subprocess rpc server {name}"
     log.info("%s: Init", my_name)
 
