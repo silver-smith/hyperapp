@@ -2,18 +2,17 @@ import logging
 
 from . import htypes
 from .services import (
-    mark,
     mosaic,
-    view_creg,
     web,
     )
+from .code.mark import mark
 from .code.auto_tabs import AutoTabsView
 
 log = logging.getLogger(__name__)
 
 
 @mark.ui_command(htypes.tabs.view)
-def move_tab_to_new_group(view, widget, state, ctx):
+def move_tab_to_new_group(view, widget, state, ctx, view_creg):
     group_idx = state.current_tab
     group_widget = view.item_widget(widget, group_idx)
     group_state = web.summon(state.tabs[group_idx])

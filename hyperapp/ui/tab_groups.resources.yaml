@@ -3,56 +3,35 @@
 import:
 - builtins:mosaic.service
 - builtins:web.service
-- common.list_diff:list_diff.module
+- common.mark:mark.module
 - legacy_type.auto_tabs:view
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.command:cfg_item
+- legacy_type.command:ui_command
+- legacy_type.system_fn:ctx_fn
 - legacy_type.tab_groups:move_tab_to_new_group_d
 - legacy_type.tabs:state
 - legacy_type.tabs:view
-- legacy_type.ui:ui_command
-- legacy_type.ui:command_properties
-- legacy_type.ui:command_properties_d
-- legacy_type.ui:ui_command_d
-- legacy_type.ui:ui_command_impl
 - ui.qt.auto_tabs:auto_tabs.module
-- ui.view:view.module
-- ui.view_registry:view_creg.service
 definitions:
-  command_properties_d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.ui:command_properties_d
   move_tab_to_new_group:
     type: legacy_type.builtin:attribute
     value:
       object: tab_groups.module
       attr_name: move_tab_to_new_group
-  move_tab_to_new_group.command:
-    type: legacy_type.ui:ui_command
-    value:
-      d: move_tab_to_new_group.d
-      impl: move_tab_to_new_group.impl
-  move_tab_to_new_group.command_properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: false
-      uses_state: true
-      remotable: false
-  move_tab_to_new_group.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.tab_groups:move_tab_to_new_group_d
-  move_tab_to_new_group.impl:
-    type: legacy_type.ui:ui_command_impl
+  move_tab_to_new_group.system-fn:
+    type: legacy_type.system_fn:ctx_fn
     value:
       function: move_tab_to_new_group
-      params:
+      ctx_params:
       - view
       - widget
       - state
       - ctx
+      service_params:
+      - view_creg
   tab_groups.module:
     type: legacy_type.builtin:python_module
     value:
@@ -60,15 +39,27 @@ definitions:
       file_name: tab_groups.dyn.py
       import_list:
         code.auto_tabs: ui.qt.auto_tabs:auto_tabs.module
-        code.list_diff: common.list_diff:list_diff.module
-        code.view: ui.view:view.module
+        code.mark: common.mark:mark.module
         htypes.auto_tabs.view: legacy_type.auto_tabs:view
         htypes.tabs.state: legacy_type.tabs:state
         htypes.tabs.view: legacy_type.tabs:view
         services.mosaic: builtins:mosaic.service
-        services.view_creg: ui.view_registry:view_creg.service
         services.web: builtins:web.service
-  ui_command_d:
+  tabs_view_move_tab_to_new_group.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.tabs:view
+      command: tabs_view_move_tab_to_new_group.ui-command
+  tabs_view_move_tab_to_new_group.d:
     type: legacy_type.builtin:call
     value:
-      function: legacy_type.ui:ui_command_d
+      function: legacy_type.tab_groups:move_tab_to_new_group_d
+  tabs_view_move_tab_to_new_group.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: tabs_view_move_tab_to_new_group.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: move_tab_to_new_group.system-fn
