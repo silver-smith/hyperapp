@@ -3,7 +3,7 @@ wrap_master_details_d = record
 
 view = record:
   master_view: ref
-  details_command: ref
+  details_command_d: ref
   direction: string  # Same as in box_layout.
   master_stretch: int
   details_stretch: int

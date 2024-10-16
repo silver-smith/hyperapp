@@ -3,29 +3,22 @@
 import:
 - builtins:mosaic.service
 - builtins:web.service
-- common.list_diff:list_diff.module
+- common.mark:mark.module
 - legacy_type.box_layout:state
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.command:cfg_item
+- legacy_type.command:ui_command
 - legacy_type.label:view
 - legacy_type.master_details:state
 - legacy_type.master_details:unwrap_master_details_d
 - legacy_type.master_details:view
 - legacy_type.master_details:wrap_master_details_d
-- legacy_type.ui:ui_command
-- legacy_type.ui:command_properties
-- legacy_type.ui:command_properties_d
-- legacy_type.ui:ui_command_d
-- legacy_type.ui:ui_command_impl
-- legacy_type.ui:universal_ui_command_d
+- legacy_type.system:actor_template
+- legacy_type.system_fn:ctx_fn
 - ui.command:command.module
-- ui.model_command:model_command_factory.service
-- ui.model_command:model_commands.service
 - ui.qt.box_layout:box_layout.module
-- ui.view_registry:model_view_creg.service
-- ui.view_registry:view_creg.service
-- ui.visualizer:visualizer.service
 definitions:
   MasterDetailsView:
     type: legacy_type.builtin:attribute
@@ -37,10 +30,6 @@ definitions:
     value:
       object: MasterDetailsView
       attr_name: from_piece
-  command_properties_d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.ui:command_properties_d
   master_details.module:
     type: legacy_type.builtin:python_module
     value:
@@ -49,82 +38,88 @@ definitions:
       import_list:
         code.box_layout: ui.qt.box_layout:box_layout.module
         code.command: ui.command:command.module
-        code.list_diff: common.list_diff:list_diff.module
+        code.mark: common.mark:mark.module
         htypes.box_layout.state: legacy_type.box_layout:state
         htypes.label.view: legacy_type.label:view
         htypes.master_details.state: legacy_type.master_details:state
         htypes.master_details.view: legacy_type.master_details:view
-        services.model_command_factory: ui.model_command:model_command_factory.service
-        services.model_commands: ui.model_command:model_commands.service
-        services.model_view_creg: ui.view_registry:model_view_creg.service
         services.mosaic: builtins:mosaic.service
-        services.view_creg: ui.view_registry:view_creg.service
-        services.visualizer: ui.visualizer:visualizer.service
         services.web: builtins:web.service
-  ui_command_d:
+  master_details_view.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.master_details:view
+      function: MasterDetailsView.from_piece
+      service_params:
+      - data_to_ref
+      - view_creg
+      - model_view_creg
+      - visualizer
+  master_details_view_unwrap_master_details.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.master_details:view
+      command: master_details_view_unwrap_master_details.ui-command
+  master_details_view_unwrap_master_details.d:
     type: legacy_type.builtin:call
     value:
-      function: legacy_type.ui:ui_command_d
-  universal_ui_command_d:
-    type: legacy_type.builtin:call
+      function: legacy_type.master_details:unwrap_master_details_d
+  master_details_view_unwrap_master_details.ui-command:
+    type: legacy_type.command:ui_command
     value:
-      function: legacy_type.ui:universal_ui_command_d
+      d: master_details_view_unwrap_master_details.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: unwrap_master_details.system-fn
   unwrap_master_details:
     type: legacy_type.builtin:attribute
     value:
       object: master_details.module
       attr_name: unwrap_master_details
-  unwrap_master_details.command:
-    type: legacy_type.ui:ui_command
-    value:
-      d: unwrap_master_details.d
-      impl: unwrap_master_details.impl
-  unwrap_master_details.command_properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: false
-      uses_state: true
-      remotable: false
-  unwrap_master_details.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.master_details:unwrap_master_details_d
-  unwrap_master_details.impl:
-    type: legacy_type.ui:ui_command_impl
+  unwrap_master_details.system-fn:
+    type: legacy_type.system_fn:ctx_fn
     value:
       function: unwrap_master_details
-      params:
+      ctx_params:
       - model
       - view
       - state
       - hook
       - ctx
+      service_params:
+      - model_view_creg
   wrap_master_details:
     type: legacy_type.builtin:attribute
     value:
       object: master_details.module
       attr_name: wrap_master_details
-  wrap_master_details.command:
-    type: legacy_type.ui:ui_command
-    value:
-      d: wrap_master_details.d
-      impl: wrap_master_details.impl
-  wrap_master_details.command_properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: true
-      uses_state: false
-      remotable: false
   wrap_master_details.d:
     type: legacy_type.builtin:call
     value:
       function: legacy_type.master_details:wrap_master_details_d
-  wrap_master_details.impl:
-    type: legacy_type.ui:ui_command_impl
+  wrap_master_details.system-fn:
+    type: legacy_type.system_fn:ctx_fn
     value:
       function: wrap_master_details
-      params:
-      - piece
+      ctx_params:
+      - model
+      - model_state
       - view
       - hook
+      - lcs
       - ctx
+      service_params:
+      - data_to_ref
+      - model_view_creg
+      - get_ui_model_commands
+  wrap_master_details.universal-ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: wrap_master_details.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: wrap_master_details.system-fn

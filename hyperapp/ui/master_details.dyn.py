@@ -2,26 +2,30 @@ import logging
 
 from . import htypes
 from .services import (
-    mark,
-    model_command_factory,
-    model_commands,
     mosaic,
-    view_creg,
-    model_view_creg,
-    visualizer,
     web,
     )
-from .code.command import d_res_ref_to_name
-from .code.list_diff import ListDiff
+from .code.mark import mark
+from .code.command import d_to_name
 from .code.box_layout import BoxLayoutView
 
 log = logging.getLogger(__name__)
 
 
+def _make_command_ctx(ctx, model, model_state):
+    return ctx.push(
+        model=model,
+        piece=model,
+        model_state=model_state,
+        **ctx.attributes(model_state),
+        )
+
+
 class MasterDetailsView(BoxLayoutView):
     
     @classmethod
-    def from_piece(cls, piece, model, ctx):
+    @mark.actor.model_view_creg
+    def from_piece(cls, piece, model, ctx, data_to_ref, view_creg, model_view_creg, visualizer):
         master_view = model_view_creg.invite(piece.master_view, model, ctx)
         details_view = view_creg.animate(htypes.label.view("Placeholder"), ctx)
         elements = [
@@ -29,20 +33,23 @@ class MasterDetailsView(BoxLayoutView):
             cls._Element(details_view, focusable=False, stretch=piece.details_stretch),
             ]
         direction = cls._direction_to_qt(piece.direction)
-        details_command = web.summon(piece.details_command)
-        return cls(direction, elements, model, details_command)
+        details_command_d = web.summon(piece.details_command_d)
+        return cls(data_to_ref, model_view_creg, visualizer, direction, elements, model, details_command_d)
 
-    def __init__(self, direction, elements, model, details_command):
+    def __init__(self, data_to_ref, model_view_creg, visualizer, direction, elements, model, details_command_d):
         super().__init__(direction, elements)
+        self._data_to_ref = data_to_ref
+        self._model_view_creg = model_view_creg
+        self._visualizer = visualizer
         self._model = model
-        self._details_command = details_command
+        self._details_command_d = details_command_d
 
     @property
     def piece(self):
         base = super().piece
         return htypes.master_details.view(
             master_view=mosaic.put(self.master_view.piece),
-            details_command=mosaic.put(self._details_command),
+            details_command_d=self._data_to_ref(self._details_command_d),
             direction=self._direction.name,
             master_stretch=self._elements[0].stretch,
             details_stretch=self._elements[1].stretch,
@@ -72,26 +79,24 @@ class MasterDetailsView(BoxLayoutView):
         except KeyError:
             piece = "No item is selected"
         else:
-            piece = await self.run_details_command(ctx, self._model, model_state, self._details_command)
+            piece = await self.run_details_command(ctx, self._model, model_state, self._details_command_d)
         details_view = self.model_to_view(ctx, piece)
         self.replace_element(ctx, widget, 1, details_view)
 
     @staticmethod
-    async def run_details_command(ctx, model, model_state, command_piece):
-        command_ctx = ctx.clone_with(
-            piece=model,
-            model_state=model_state,
-            **ctx.attributes(model_state),
-            )
-        command = model_command_factory(command_piece, command_ctx)
-        piece = await command.run()
+    async def run_details_command(ctx, model, model_state, command_d):
+        command_ctx = _make_command_ctx(ctx, model, model_state)
+        command_list = get_ui_model_commands(lcs, model, command_ctx)
+        unbound_command = next(cmd for cmd in command_list if cmd.d == command_d)
+        bound_command = unbound_command.bind(command_ctx)
+        piece = await bound_command.run()
         log.info("Master-details: command result: %s", piece)
         return piece
 
     @staticmethod
     def model_to_view(ctx, piece):
-        details_view_piece = visualizer(ctx.lcs, piece)
-        return model_view_creg.animate(details_view_piece, piece, ctx)
+        details_view_piece = self._visualizer(ctx.lcs, piece)
+        return self._model_view_creg.animate(details_view_piece, piece, ctx)
 
     def widget_state(self, widget):
         base = super().widget_state(widget)
@@ -110,17 +115,17 @@ class MasterDetailsView(BoxLayoutView):
 
 
 @mark.ui_command(htypes.master_details.view)
-def unwrap_master_details(model, view, state, hook, ctx):
+def unwrap_master_details(model, view, state, hook, ctx, model_view_creg):
     log.info("Unwrap master-details: %s / %s", view, state)
     master_view = model_view_creg.invite(view.piece.master_view, model, ctx)
     master_state = web.summon(state.master_state)
     hook.replace_view(master_view, master_state)
 
 
-def _pick_command(model):
-    command_list = model_commands(model)
+def _pick_command(get_ui_model_commands, lcs, model, command_ctx):
+    command_list = get_ui_model_commands(lcs, model, command_ctx)
     name_to_cmd = {
-        d_res_ref_to_name(cmd.d): cmd for cmd in command_list
+        d_to_name(cmd.d): cmd for cmd in command_list
         }
     preffered_names = ['open', 'details']
     for name in preffered_names:
@@ -128,19 +133,20 @@ def _pick_command(model):
             return name_to_cmd[name]
         except KeyError:
             pass
-    return command_list[0]
+    return command_list[0]  # Pick any.
 
 
-@mark.ui_command
-async def wrap_master_details(piece, view, hook, ctx):
-    log.info("Wrap master-details: %s / %s", piece, view)
-    command = _pick_command(piece)
+@mark.universal_ui_command
+def wrap_master_details(model, model_state, view, hook, lcs, ctx, data_to_ref, model_view_creg, get_ui_model_commands):
+    log.info("Wrap master-details: %s / %s", model, view)
+    command_ctx = _make_command_ctx(ctx, model, model_state)
+    command = _pick_command(get_ui_model_commands, lcs, model, command_ctx)
     view_piece = htypes.master_details.view(
         master_view=mosaic.put(view.piece),
-        details_command=mosaic.put(command),
+        details_command_d=data_to_ref(command.d),
         direction='LeftToRight',
         master_stretch=1,
         details_stretch=1,
         )
-    new_view = model_view_creg.animate(view_piece, piece, ctx)
+    new_view = model_view_creg.animate(view_piece, model, ctx)
     hook.replace_view(new_view)

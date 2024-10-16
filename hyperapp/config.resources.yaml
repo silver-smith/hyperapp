@@ -184,6 +184,9 @@ import:
 - ui.layout:layout_view_enum_layout_tree_commands.command-cfg-item
 - ui.layout:layout_view_open_view_item_commands.command-cfg-item
 - ui.layout:open_layout_tree.global-model-command
+- ui.master_details:master_details_view.actor-template
+- ui.master_details:master_details_view_unwrap_master_details.command-cfg-item
+- ui.master_details:wrap_master_details.universal-ui-command
 - ui.model_cfg_item:model_cfg_item.actor-template
 - ui.model_command:command_model_command.actor-template
 - ui.model_command:command_model_command_enumerator.actor-template
@@ -285,6 +288,7 @@ definitions:
         system: system
         system_fn_creg: system_fn_creg
         ui_adapter_creg: ui_adapter_creg
+        universal_ui_command_reg: universal_ui_command_reg
         view_creg: view_creg
         view_ui_command_reg: view_ui_command_reg
         visualizer_reg: visualizer_reg
@@ -376,6 +380,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - ui.master_details:master_details_view.actor-template
       - ui.qt.form:form_view.actor-template
       - ui.qt.list:list_view.actor-template
       - ui.qt.text:text_edit_view.actor-template
@@ -570,6 +575,11 @@ definitions:
       - ui.qt.remote_fn_list_adapter:list_adapter_remote_fn_list_adapter.actor-template
       - ui.qt.static_list_adapter:list_adapter_static_list_adapter.actor-template
       - ui.str_adapter:str_adapter_static_str_adapter.actor-template
+  universal_ui_command_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.master_details:wrap_master_details.universal-ui-command
   view_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -587,6 +597,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - ui.master_details:master_details_view_unwrap_master_details.command-cfg-item
       - ui.navigator:navigator_view_go_back.command-cfg-item
       - ui.navigator:navigator_view_go_forward.command-cfg-item
       - ui.qt.auto_tabs:auto_tabs_view_close_tab.command-cfg-item
