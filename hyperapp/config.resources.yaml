@@ -164,6 +164,7 @@ import:
 - transport.transport:transport.service
 - ui.command_cfg_item:command_cfg_item.actor-template
 - ui.command_cfg_item:command_model_command.actor-template
+- ui.command_cfg_item:command_ui_command.actor-template
 - ui.command_config_ctl:command_typed_config_ctl.actor-template
 - ui.command_config_ctl:command_untyped_config_ctl.actor-template
 - ui.command_creg:command_creg.service
@@ -244,6 +245,7 @@ definitions:
       - rc.marker_registry:marker_marker_template.actor-template
       - ui.command_cfg_item:command_cfg_item.actor-template
       - ui.command_cfg_item:command_model_command.actor-template
+      - ui.command_cfg_item:command_ui_command.actor-template
       - ui.feed_type_template:feed_feed_template.actor-template
       - ui.model_cfg_item:model_cfg_item.actor-template
   command_creg:

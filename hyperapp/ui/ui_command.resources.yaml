@@ -8,6 +8,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.command:typed_config_ctl
 - legacy_type.command:ui_command
+- legacy_type.command:untyped_config_ctl
 - legacy_type.system:actor_template
 - legacy_type.system:item_dict_config_ctl
 - legacy_type.system:service_template
@@ -17,6 +18,9 @@ import:
 definitions:
   command-typed_config_ctl.ctl:
     type: legacy_type.command:typed_config_ctl
+    value: {}
+  command-untyped_config_ctl.ctl:
+    type: legacy_type.command:untyped_config_ctl
     value: {}
   command_ui_command.actor-template:
     type: legacy_type.system:actor_template
@@ -71,7 +75,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: universal_ui_command_reg
-      ctl: system-item_dict_config_ctl.ctl
+      ctl: command-untyped_config_ctl.ctl
       function: universal_ui_command_reg
       free_params: []
       service_params: []

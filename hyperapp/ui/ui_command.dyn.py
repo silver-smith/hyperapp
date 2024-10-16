@@ -8,7 +8,7 @@ from .services import (
 from .code.mark import mark
 from .code.command import UnboundCommand, BoundCommand, CommandKind
 from .code.command_groups import default_command_groups
-from .code.command_config_ctl import TypedCommandConfigCtl
+from .code.command_config_ctl import TypedCommandConfigCtl, UntypedCommandConfigCtl
 
 log = logging.getLogger(__name__)
 
@@ -60,7 +60,7 @@ def view_ui_command_reg(config, view_t):
     return config.get(view_t, [])
 
 
-@mark.service2
+@mark.service2(ctl=UntypedCommandConfigCtl())
 def universal_ui_command_reg(config):
     return config
 
