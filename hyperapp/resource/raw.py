@@ -33,7 +33,5 @@ class RawResourceType:
             )
 
 
-
-
 def raw_pyobj(piece, web):
     return web.summon(piece.resource)
