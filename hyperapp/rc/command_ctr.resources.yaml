@@ -7,6 +7,7 @@ import:
 - legacy_type.command_resource:model_command_enumerator_template_ctr
 - legacy_type.command_resource:model_command_template_ctr
 - legacy_type.command_resource:ui_command_template_ctr
+- legacy_type.command_resource:universal_ui_command_template_ctr
 - legacy_type.marker:marker_template
 - legacy_type.system:actor_template
 - legacy_type.command:cfg_item
@@ -30,6 +31,7 @@ definitions:
         htypes.command_resource.model_command_enumerator_template_ctr: legacy_type.command_resource:model_command_enumerator_template_ctr
         htypes.command_resource.model_command_template_ctr: legacy_type.command_resource:model_command_template_ctr
         htypes.command_resource.ui_command_template_ctr: legacy_type.command_resource:ui_command_template_ctr
+        htypes.command_resource.universal_ui_command_template_ctr: legacy_type.command_resource:universal_ui_command_template_ctr
         htypes.command.cfg_item: legacy_type.command:cfg_item
         htypes.command.properties: legacy_type.command:properties
         htypes.command.model_command: legacy_type.command:model_command
@@ -57,6 +59,26 @@ definitions:
     value:
       t: legacy_type.command_resource:ui_command_template_ctr
       function: UiCommandTemplateCtr.from_piece
+      service_params:
+      - data_to_res
+
+  UniversalUiCommandTemplateCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: command_ctr.module
+      attr_name: UniversalUiCommandTemplateCtr
+
+  UniversalUiCommandTemplateCtr.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: UniversalUiCommandTemplateCtr
+      attr_name: from_piece
+
+  command_resource_universal_ui_command_template_ctr.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.command_resource:universal_ui_command_template_ctr
+      function: UniversalUiCommandTemplateCtr.from_piece
       service_params:
       - data_to_res
 

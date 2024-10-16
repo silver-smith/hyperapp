@@ -34,6 +34,22 @@ definitions:
       - ctr_collector
       - data_to_res
 
+  universal_ui_command_marker:
+    type: legacy_type.builtin:attribute
+    value:
+      object: command_marker.module
+      attr_name: universal_ui_command_marker
+
+  universal_ui_command.marker-template:
+    type: legacy_type.marker:marker_template
+    value:
+      name: universal_ui_command
+      function: universal_ui_command_marker
+      service_params:
+      - system
+      - ctr_collector
+      - data_to_res
+
   ui_model_command_marker:
     type: legacy_type.builtin:attribute
     value:

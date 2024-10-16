@@ -3,6 +3,7 @@ from hyperapp.common.htypes import Type
 from .services import deduce_t
 from .code.command_ctr import (
     UiCommandTemplateCtr,
+    UniversalUiCommandTemplateCtr,
     ModelCommandTemplateCtr,
     ModelCommandEnumeratorTemplateCtr,
     GlobalModelCommandTemplateCtr,
@@ -94,6 +95,15 @@ class UiCommandProbe(CommandProbe):
         self._ctr_collector.add_constructor(ctr)
 
 
+class UniversalUiCommandProbe(CommandProbe):
+
+    def _add_constructor(self, params):
+        ctr = UniversalUiCommandTemplateCtr(
+            **self._common_ctr_kw(params),
+            )
+        self._ctr_collector.add_constructor(ctr)
+
+
 class ModelCommandProbe(CommandProbe):
 
     def _add_constructor(self, params):
@@ -127,12 +137,7 @@ class GlobalModelCommandProbe(CommandProbe):
     def _add_constructor(self, params):
         assert not self._t
         ctr = GlobalModelCommandTemplateCtr(
-            self._data_to_res,
-            module_name=self._module_name,
-            attr_qual_name=self.real_fn.__qualname__.split('.'),
-            service_name=self._service_name,
-            ctx_params=params.ctx_names,
-            service_params=params.service_names,
+            **self._common_ctr_kw(params),
             )
         self._ctr_collector.add_constructor(ctr)
 
@@ -170,6 +175,14 @@ def ui_command_marker(t, module_name, system, ctr_collector, data_to_res):
         raise RuntimeError(f"Use type specialized marker, like '@mark.ui_command(my_type)'")
     service_name = 'view_ui_command_reg'
     return UiCommandWrapper(system, ctr_collector, data_to_res, module_name, service_name, t)
+
+
+def universal_ui_command_marker(fn, module_name, system, ctr_collector, data_to_res):
+    if isinstance(fn, Type):
+        raise RuntimeError(f"Use non-type specialized marker, like '@mark.universal_ui_command'")
+    check_is_function(real_fn(fn))
+    service_name = 'universal_ui_command_reg'
+    return UniversalUiCommandProbe(system, ctr_collector, data_to_res, module_name, service_name, fn)
 
 
 # TODO or remove.

@@ -1,4 +1,4 @@
-ui_command_template_ctr = record:
+typed_command_ctr = record:
   module_name: string
   attr_qual_name: string list
   service_name: string
@@ -6,25 +6,15 @@ ui_command_template_ctr = record:
   ctx_params: string list
   service_params: string list
 
-model_command_template_ctr = record:
+untyped_command_ctr = record:
   module_name: string
   attr_qual_name: string list
   service_name: string
-  t: ref
   ctx_params: string list
   service_params: string list
 
-model_command_enumerator_template_ctr = record:
-  module_name: string
-  attr_qual_name: string list
-  service_name: string
-  t: ref
-  ctx_params: string list
-  service_params: string list
-
-global_model_command_template_ctr = record:
-  module_name: string
-  attr_qual_name: string list
-  service_name: string
-  ctx_params: string list
-  service_params: string list
+ui_command_template_ctr = record(typed_command_ctr)
+universal_ui_command_template_ctr = record(untyped_command_ctr)
+model_command_template_ctr = record(typed_command_ctr)
+model_command_enumerator_template_ctr = record(typed_command_ctr)
+global_model_command_template_ctr = record(untyped_command_ctr)

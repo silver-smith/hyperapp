@@ -174,6 +174,14 @@ class UiCommandTemplateCtr(TypedCommandTemplateCtr):
     _command_resource_suffix = 'ui-command'
 
 
+class UniversalUiCommandTemplateCtr(UntypedCommandTemplateCtr):
+
+    _command_t = htypes.command.ui_command
+    _template_ctr_t = htypes.command_resource.universal_ui_command_template_ctr
+    _is_global = False
+    _command_resource_suffix = 'universal-ui-command'
+
+
 class ModelCommandTemplateCtr(TypedCommandTemplateCtr):
 
     _command_t = htypes.command.model_command
