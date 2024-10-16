@@ -24,12 +24,12 @@ class RawResourceType:
 
     def resolve(self, definition, resolver, resource_dir):
         return raw_t(
-            resource=resolver(definition.function),
+            resource=resolver(definition.resource),
             )
 
     def reverse_resolve(self, resource, resolver, resource_dir):
         return raw_def_t(
-            resource=resolver(resource.function),
+            resource=resolver(resource.resource),
             )
 
 
