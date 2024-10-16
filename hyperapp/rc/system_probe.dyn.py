@@ -217,7 +217,11 @@ class Probe:
         return self._apply(service_params, *args, **kw)
 
     def __getattr__(self, name):
-        service = self._apply_obj(self._params)
+        try:
+            service = self._apply_obj(self._params)
+        except AttributeError as x:
+            # Do not let it out - caller will treat this as just a missing attribute.
+            raise RuntimeError(f"Error resolving service or fixture: {x}") from x
         return getattr(service, name)
 
     def __getitem__(self, key):
