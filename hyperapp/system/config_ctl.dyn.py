@@ -89,7 +89,7 @@ class DictConfigCtl(MultiItemConfigCtl):
 
     @property
     def piece(self):
-        return htypes.system.item_dict_config_ctl()
+        return htypes.system.dict_config_ctl()
 
     def merge(self, dest, src):
         dest.update(src)

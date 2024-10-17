@@ -13,7 +13,7 @@ import:
 - legacy_type.builtin:record_mt
 - legacy_type.lcs_resource_storage:element
 - legacy_type.lcs_resource_storage:mapping
-- legacy_type.system:item_dict_config_ctl
+- legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 definitions:
   lcs_resource_storage.module:
@@ -41,7 +41,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: lcs_resource_storage_factory
-      ctl: system-item_dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.ctl
       function: lcs_resource_storage_factory
       free_params:
       - name
@@ -49,6 +49,6 @@ definitions:
       service_params:
       - pick_refs
       want_config: false
-  system-item_dict_config_ctl.ctl:
-    type: legacy_type.system:item_dict_config_ctl
+  system-dict_config_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
     value: {}

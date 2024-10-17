@@ -10,7 +10,7 @@ item_list_config = record:
   items: ref list
 
 
-item_dict_config_ctl = record
+dict_config_ctl = record
 
 
 service_template = record:

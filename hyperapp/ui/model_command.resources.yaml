@@ -11,7 +11,7 @@ import:
 - legacy_type.command:typed_config_ctl
 - legacy_type.command:untyped_config_ctl
 - legacy_type.system:actor_template
-- legacy_type.system:item_dict_config_ctl
+- legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - ui.command:command.module
 - ui.command_config_ctl:command_config_ctl.module
@@ -45,7 +45,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: get_model_commands
-      ctl: system-item_dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.ctl
       function: get_model_commands
       free_params:
       - model
@@ -119,6 +119,6 @@ definitions:
       - model_t
       service_params: []
       want_config: true
-  system-item_dict_config_ctl.ctl:
-    type: legacy_type.system:item_dict_config_ctl
+  system-dict_config_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
     value: {}

@@ -15,7 +15,7 @@ import:
 - legacy_type.root:layout
 - legacy_type.root:state
 - legacy_type.root:view
-- legacy_type.system:item_dict_config_ctl
+- legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - ui.view:view.module
 definitions:
@@ -45,7 +45,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: controller_running
-      ctl: system-item_dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.ctl
       function: controller_running
       free_params:
       - layout_bundle
@@ -68,6 +68,6 @@ definitions:
     type: legacy_type.feed:index_tree_feed_type
     value:
       element_t: legacy_type.layout:item
-  system-item_dict_config_ctl.ctl:
-    type: legacy_type.system:item_dict_config_ctl
+  system-dict_config_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
     value: {}

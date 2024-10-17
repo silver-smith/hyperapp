@@ -21,7 +21,7 @@ import:
 - legacy_type.root:layout
 - legacy_type.root:state
 - legacy_type.root:view
-- legacy_type.system:item_dict_config_ctl
+- legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - legacy_type.tabs:state
 - legacy_type.tabs:tab
@@ -75,7 +75,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: client_async_main
-      ctl: system-item_dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.ctl
       function: client_async_main
       free_params:
       - args
@@ -99,13 +99,13 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: client_main
-      ctl: system-item_dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.ctl
       function: client_main
       free_params:
       - sys_argv
       service_params:
       - client_async_main
       want_config: false
-  system-item_dict_config_ctl.ctl:
-    type: legacy_type.system:item_dict_config_ctl
+  system-dict_config_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
     value: {}

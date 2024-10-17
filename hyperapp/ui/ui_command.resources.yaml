@@ -10,7 +10,7 @@ import:
 - legacy_type.command:ui_command
 - legacy_type.command:untyped_config_ctl
 - legacy_type.system:actor_template
-- legacy_type.system:item_dict_config_ctl
+- legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - ui.command:command.module
 - ui.command_config_ctl:command_config_ctl.module
@@ -38,7 +38,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: get_view_commands
-      ctl: system-item_dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.ctl
       function: get_view_commands
       free_params:
       - view
@@ -46,8 +46,8 @@ definitions:
       - view_ui_command_reg
       - universal_ui_command_reg
       want_config: false
-  system-item_dict_config_ctl.ctl:
-    type: legacy_type.system:item_dict_config_ctl
+  system-dict_config_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
     value: {}
   ui_command.module:
     type: legacy_type.builtin:python_module

@@ -7,7 +7,7 @@ import:
 - legacy_type.builtin:partial
 - legacy_type.builtin:raw
 - legacy_type.system:service_template
-- system.system:item_dict_config_ctl
+- system.system:dict_config_ctl
 
 definitions:
 
@@ -33,7 +33,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: partial_ref
-      ctl: system.system:item_dict_config_ctl
+      ctl: system.system:dict_config_ctl
       function: partial_ref
       free_params:
       - fn

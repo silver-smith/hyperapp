@@ -9,7 +9,7 @@ import:
 - legacy_type.feed:index_tree_feed_type
 - legacy_type.feed:list_feed_type
 - legacy_type.system:actor_template
-- legacy_type.system:item_dict_config_ctl
+- legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 definitions:
   feed.module:
@@ -32,7 +32,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: feed_factory
-      ctl: system-item_dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.ctl
       function: feed_factory
       free_params:
       - piece
@@ -60,6 +60,6 @@ definitions:
     value:
       object: feed.module
       attr_name: list_feed_from_piece
-  system-item_dict_config_ctl.ctl:
-    type: legacy_type.system:item_dict_config_ctl
+  system-dict_config_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
     value: {}

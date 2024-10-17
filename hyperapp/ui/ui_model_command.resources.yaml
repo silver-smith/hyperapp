@@ -9,7 +9,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.command:ui_model_command_d
-- legacy_type.system:item_dict_config_ctl
+- legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - ui.command:command.module
 - ui.command_groups:command_groups.module
@@ -24,7 +24,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: get_ui_model_commands
-      ctl: system-item_dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.ctl
       function: get_ui_model_commands
       free_params:
       - lcs
@@ -45,7 +45,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: set_ui_model_command
-      ctl: system-item_dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.ctl
       function: set_ui_model_command
       free_params:
       - lcs
@@ -53,8 +53,8 @@ definitions:
       - command
       service_params: []
       want_config: false
-  system-item_dict_config_ctl.ctl:
-    type: legacy_type.system:item_dict_config_ctl
+  system-dict_config_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
     value: {}
   ui_model_command.module:
     type: legacy_type.builtin:python_module

@@ -4,7 +4,7 @@ import:
 - common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.system:item_dict_config_ctl
+- legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 definitions:
   sample_fn_service_1:
@@ -16,7 +16,7 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: sample_fn_service_1
-      ctl: system-item_dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.ctl
       function: sample_fn_service_1
       free_params:
       - param_1
@@ -40,11 +40,11 @@ definitions:
     type: legacy_type.system:service_template
     value:
       name: sample_value_service_1
-      ctl: system-item_dict_config_ctl.ctl
+      ctl: system-dict_config_ctl.ctl
       function: sample_value_service_1
       free_params: []
       service_params: []
       want_config: false
-  system-item_dict_config_ctl.ctl:
-    type: legacy_type.system:item_dict_config_ctl
+  system-dict_config_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
     value: {}
