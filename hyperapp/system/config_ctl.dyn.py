@@ -88,11 +88,3 @@ class ItemDictConfigCtl(DictConfigCtl):
 
     def item_piece(self, template):
         return self._cfg_item_creg.actor_to_piece(template)
-
-
-# class ServiceConfigCtl(ItemDictConfigCtl):
-#     pass
-
-
-# class ActorConfigCtl(ItemDictConfigCtl):
-#     pass
