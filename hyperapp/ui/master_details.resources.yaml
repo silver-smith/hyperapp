@@ -2,6 +2,7 @@
 
 import:
 - builtins:mosaic.service
+- builtins:pyobj_creg.service
 - builtins:web.service
 - common.mark:mark.module
 - legacy_type.box_layout:state
@@ -44,6 +45,7 @@ definitions:
         htypes.master_details.state: legacy_type.master_details:state
         htypes.master_details.view: legacy_type.master_details:view
         services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
   master_details_view.actor-template:
     type: legacy_type.system:actor_template
@@ -55,6 +57,8 @@ definitions:
       - view_creg
       - model_view_creg
       - visualizer
+      - global_model_command_reg
+      - get_model_commands
   master_details_view_unwrap_master_details.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:
@@ -108,12 +112,12 @@ definitions:
       - model_state
       - view
       - hook
-      - lcs
       - ctx
       service_params:
       - data_to_ref
       - model_view_creg
-      - get_ui_model_commands
+      - global_model_command_reg
+      - get_model_commands
   wrap_master_details.universal-ui-command:
     type: legacy_type.command:ui_command
     value:

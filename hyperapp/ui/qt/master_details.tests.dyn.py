@@ -17,11 +17,6 @@ def _sample_fn(model, sample_service):
     return f'sample-fn: {sample_service}'
 
 
-# @mark.fixture
-# def model_t():
-#     return htypes.master_details_tests.sample_model
-
-
 @mark.fixture
 def command_d():
     return htypes.master_details_tests.sample_command_d()
@@ -72,7 +67,9 @@ def state():
 
 @mark.fixture
 def ctx():
-    return Context()
+    return Context(
+        lcs=Mock(),
+        )
 
 
 @mark.fixture.obj
@@ -94,15 +91,26 @@ def test_view(qapp, piece, state, model, ctx):
     assert isinstance(state, htypes.master_details.state)
 
 
+async def test_run_details_command(qapp, piece, state, model, ctx):
+    view = master_details.MasterDetailsView.from_piece(piece, model, ctx)
+    rctx = Context(
+        model_state=model_state,
+        )
+    widget = Mock()
+    ctl_hook = Mock()
+    view.set_controller_hook(ctl_hook)
+    await view.children_context_changed(ctx, rctx, widget)
+    ctl_hook.element_replaced.assert_called_once()
+
+
 def test_wrap_master_details(qapp, model_view_creg, master_piece, model, model_state, ctx):
     model_view_creg.update_config({
         htypes.master_details.view: master_details.MasterDetailsView.from_piece,
         })
-    lcs = Mock()
     hook = Mock()
     view = Mock()
     view.piece = master_piece
-    master_details.wrap_master_details(model, model_state, view, hook, lcs, ctx)
+    master_details.wrap_master_details(model, model_state, view, hook, ctx)
     hook.replace_view.assert_called_once()
 
 
