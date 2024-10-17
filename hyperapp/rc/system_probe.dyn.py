@@ -208,6 +208,14 @@ class Probe:
             return
         self._apply_obj(service_params=[])
 
+    def __eq__(self, rhs):
+        service = self._apply_obj(self._params)
+        return service == rhs
+
+    def __hash__(self):
+        service = self._apply_obj(self._params)
+        return hash(service)
+
     def __call__(self, *args, **kw):
         free_param_count = len(args) + len(kw)
         if free_param_count:
