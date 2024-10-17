@@ -32,7 +32,7 @@ class ConfigItemResource(Resource):
 
     def configure_system(self, system):
         # Should use cfg_item_creg from system probe
-        # so that missing actors from config probe can be caught.
+        # so that missing cfg_item_creg actors raised from config probe can be caught.
         cfg_item_creg = system.resolve_service('cfg_item_creg')
         template = cfg_item_creg.invite(self._template_ref)
         system.update_config(self._service_name, {template.key: template})
