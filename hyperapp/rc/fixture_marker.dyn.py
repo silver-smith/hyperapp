@@ -1,7 +1,7 @@
 import inspect
 
 from .services import mosaic
-from .code.config_ctl import ItemDictConfigCtl
+from .code.config_ctl import DictConfigCtl
 from .code.fixture_ctr import FixtureObjCtr, FixtureProbeCtr
 
 
@@ -15,7 +15,7 @@ class FixtureObjMarker:
     def __call__(self, fn):
         if '.' in fn.__qualname__:
             raise RuntimeError(f"Only free functions are suitable for fixtures: {fn!r}")
-        ctl = ItemDictConfigCtl(self._cfg_item_creg)
+        ctl = DictConfigCtl(self._cfg_item_creg)
         ctr = FixtureObjCtr(
             module_name=self._module_name, 
             attr_name=fn.__name__,
@@ -39,7 +39,7 @@ class FixtureMarker:
             raise RuntimeError(f"Only free functions are suitable for fixtures: {fn!r}")
         # TODO: Add parameterized case for fixture marker, with ability to specify custom ctl,
         # like for service marker.
-        ctl = ItemDictConfigCtl(self._cfg_item_creg)
+        ctl = DictConfigCtl(self._cfg_item_creg)
         ctr = FixtureProbeCtr(
             module_name=self._module_name, 
             attr_name=fn.__name__,

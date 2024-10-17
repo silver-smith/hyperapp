@@ -13,7 +13,7 @@ from .services import (
     pyobj_creg,
     web,
     )
-from .code.config_ctl import ItemDictConfigCtl
+from .code.config_ctl import DictConfigCtl
 
 log = logging.getLogger(__name__)
 
@@ -213,10 +213,10 @@ class System:
     def _init(self):
         config_ctl_creg_config = self._make_config_ctl_creg_config()
         self._config_ctl_creg = code_registry_ctr2('config-ctl', config_ctl_creg_config)
-        # cfg_item_creg is used by ItemDictConfigCtl.
+        # cfg_item_creg is used by DictConfigCtl.
         self._cfg_item_creg = cached_code_registry_ctr('cfg-item', self._make_cfg_item_creg_config())
-        config_ctl_creg_config[htypes.system.item_dict_config_ctl] = partial(ItemDictConfigCtl.from_piece, cfg_item_creg=self._cfg_item_creg)
-        item_dict_config_ctl = ItemDictConfigCtl(self._cfg_item_creg)
+        config_ctl_creg_config[htypes.system.item_dict_config_ctl] = partial(DictConfigCtl.from_piece, cfg_item_creg=self._cfg_item_creg)
+        item_dict_config_ctl = DictConfigCtl(self._cfg_item_creg)
         self._config_ctl = {
             'system': item_dict_config_ctl,
             'config_ctl_creg': item_dict_config_ctl,

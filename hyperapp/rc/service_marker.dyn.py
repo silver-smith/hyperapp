@@ -1,7 +1,7 @@
 import inspect
 
 from .services import mosaic
-from .code.config_ctl import ItemDictConfigCtl
+from .code.config_ctl import DictConfigCtl
 from .code.service_probe_resource import ServiceProbeCtr
         
 
@@ -42,7 +42,7 @@ class ServiceMarker:
 
     def __call__(self, fn=None, *, ctl=None):
         if ctl is None:
-            ctl = ItemDictConfigCtl(self._cfg_item_creg)
+            ctl = DictConfigCtl(self._cfg_item_creg)
         if fn is None:
             # Parameterized decorator case (@mark.service(ctl=xx)).
             return ServiceDecorator(self._config_ctl_reg, self._ctr_collector, self._module_name, ctl)
