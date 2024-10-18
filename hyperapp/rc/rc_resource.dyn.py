@@ -19,5 +19,10 @@ class Resource:
     def recorders(self):
         return {}
 
+    # Service -> item list.
+    @property
+    def system_config_items(self):
+        return {}
+
     def configure_system(self, system):
         pass

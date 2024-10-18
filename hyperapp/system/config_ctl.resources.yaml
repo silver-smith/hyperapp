@@ -1,5 +1,6 @@
 import:
 - builtins:mosaic.service
+- builtins:web.service
 - legacy_type.builtin:python_module
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:item_list_config
@@ -19,3 +20,4 @@ definitions:
         htypes.system.service_config: legacy_type.system:service_config
         htypes.system.system_config: legacy_type.system:system_config
         services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service

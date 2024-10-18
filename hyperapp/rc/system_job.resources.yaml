@@ -3,6 +3,7 @@ import:
 - legacy_type.builtin:python_module
 - rc.service_ctr:service_ctr.module
 - rc.system_probe:system_probe.module
+- system.config_ctl:config_ctl.module
 
 definitions:
 
@@ -13,5 +14,6 @@ definitions:
       file_name: system_job.dyn.py
       import_list:
         services.mosaic: builtins:mosaic.service
+        code.config_ctl: system.config_ctl:config_ctl.module
         code.service_ctr: rc.service_ctr:service_ctr.module
         code.system_probe: rc.system_probe:system_probe.module

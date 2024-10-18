@@ -1,6 +1,7 @@
 from . import htypes
 from .services import (
     mosaic,
+    web,
     )
 from .code.rc_resource import Resource
 
@@ -30,9 +31,7 @@ class ConfigItemResource(Resource):
     def is_service_resource(self):
         return self._service_name == 'system'
 
-    def configure_system(self, system):
-        # Should use cfg_item_creg from system probe
-        # so that missing cfg_item_creg actors raised from config probe can be caught.
-        cfg_item_creg = system.resolve_service('cfg_item_creg')
-        template = cfg_item_creg.invite(self._template_ref)
-        system.update_config(self._service_name, {template.key: template})
+    @property
+    def system_config_items(self):
+        item = web.summon(self._template_ref)
+        return {self._service_name: [item]}

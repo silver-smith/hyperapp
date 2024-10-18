@@ -1,7 +1,10 @@
 from abc import ABCMeta, abstractmethod
 
 from . import htypes
-from .services import mosaic
+from .services import (
+    mosaic,
+    web,
+    )
 
 
 class ConfigCtl(metaclass=ABCMeta):
@@ -120,4 +123,41 @@ def service_pieces_to_config(service_to_config_piece):
             config=mosaic.put(piece),
             )
         for service_name, piece in service_to_config_piece.items()
+        ))
+
+
+# Only MultiItemConfigCtl services are expected.
+def merge_system_config_pieces(x, y):
+    x_map = {
+        rec.service: rec.config
+        for rec in x.services
+        }
+    y_map = {
+        rec.service: rec.config
+        for rec in y.services
+        }
+    service_to_config_ref = {}
+    for service_name in set([*x_map, *y_map]):
+        x_config_ref = x_map.get(service_name)
+        y_config_ref = y_map.get(service_name)
+        if x_config_ref is not None and y_config_ref is not None:
+            x_config = web.summon(x_config_ref)
+            y_config = web.summon(y_config_ref)
+            assert isinstance(x_config, htypes.system.item_list_config)
+            assert isinstance(y_config, htypes.system.item_list_config)
+            config = htypes.system.item_list_config(
+                items=tuple(set([*x_config.items, *y_config.items])),
+                )
+            config_ref = mosaic.put(config)
+        elif x_config_ref is not None:
+            config_ref = x_config_ref
+        else:
+            config_ref = y_config_ref
+        service_to_config_ref[service_name] = config_ref
+    return htypes.system.system_config(tuple(
+        htypes.system.service_config(
+            service=service_name,
+            config=config_ref,
+            )
+        for service_name, config_ref in service_to_config_ref.items()
         ))
