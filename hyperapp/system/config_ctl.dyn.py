@@ -111,3 +111,13 @@ class DictConfigCtl(MultiItemConfigCtl):
 
     def update_config(self, config_template, item):
         config_template[item.key] = item
+
+
+def service_pieces_to_config(service_to_config_piece):
+    return htypes.system.system_config(tuple(
+        htypes.system.service_config(
+            service=service_name,
+            config=mosaic.put(piece),
+            )
+        for service_name, piece in service_to_config_piece.items()
+        ))

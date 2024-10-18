@@ -6,6 +6,7 @@ from .services import (
     mosaic,
     resource_module_factory,
     )
+from .code.config_ctl import service_pieces_to_config
 from .code.rc_target import Target
 
 
@@ -40,7 +41,7 @@ class ConfigResourceTarget(Target):
     def get_output(self):
         resource_module = resource_module_factory(
             self._custom_resource_registry, self._module_name, resource_dir=self._resource_dir)
-        service_list = []
+        service_to_config_piece = {}
         for service_name, target_set in sorted(self._service_to_targets.items()):
             item_list = [
                 target.resource
@@ -50,14 +51,10 @@ class ConfigResourceTarget(Target):
             if not item_list:
                 continue
             sorted_item_list = sorted(item_list, key=self._sort_key)
-            config = self._items_to_data(sorted_item_list)
-            resource_module[service_name] = config
-            service_config = htypes.system.service_config(
-                service=service_name,
-                config=mosaic.put(config),
-                )
-            service_list.append(service_config)
-        config = htypes.system.system_config(tuple(service_list))
+            service_config = self._items_to_data(sorted_item_list)
+            resource_module[service_name] = service_config
+            service_to_config_piece[service_name] = service_config
+        config = service_pieces_to_config(service_to_config_piece)
         resource_module['config'] = config
         return (self._path, resource_module.as_text)
 
