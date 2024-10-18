@@ -276,6 +276,7 @@ class TestJob(SystemJob):
         cause = x
         while cause:
             traceback_entries += traceback.extract_tb(cause.__traceback__)
+            last_cause = cause
             cause = cause.__cause__
         for idx, entry in enumerate(traceback_entries):
             if entry.name == 'exec_module':
@@ -287,11 +288,19 @@ class TestJob(SystemJob):
             if fname not in {'rc/test_job', 'system/system', 'rc/system_probe'}:
                 del traceback_entries[:idx]
                 break
-        return traceback.format_list(traceback_entries)
+        line_list = traceback.format_list(traceback_entries)
+        if isinstance(last_cause, htypes.rpc.server_error):
+            for entry in last_cause.traceback:
+                line_list += [line + '\n' for line in entry.splitlines()]
+        return line_list
 
     def _prepare_error(self, x):
         traceback_lines = self._prepare_traceback(x)
-        error = f"{type(x).__name__}: {x}"
+        if isinstance(x, htypes.rpc.server_error):
+            message = x.message
+        else:
+            message = str(x)
+        error = f"{type(x).__name__}: {message}"
         if isinstance(x, IncompleteImportedObjectError):
             return (JobStatus.incomplete, error, traceback_lines[:-1])
         else:
