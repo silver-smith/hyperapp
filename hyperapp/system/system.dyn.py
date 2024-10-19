@@ -13,7 +13,7 @@ from .services import (
     pyobj_creg,
     web,
     )
-from .code.config_ctl import DictConfigCtl, merge_system_config_pieces
+from .code.config_ctl import DictConfigCtl
 
 log = logging.getLogger(__name__)
 
@@ -274,9 +274,6 @@ class System:
             self._config_ctl[service_name] = self._config_ctl_creg.invite(template.ctl_ref)
 
     def load_config(self, config_piece):
-        if 'system_config_piece' in self._name_to_service:
-            current_config = self._name_to_service['system_config_piece']
-            config_piece = merge_system_config_pieces(current_config, config_piece)
         self.add_core_service('system_config_piece', config_piece)
         service_to_config = {
             rec.service: web.summon(rec.config)
@@ -284,7 +281,7 @@ class System:
             }
         self._load_config_piece('cfg_item_creg', service_to_config.get('cfg_item_creg'))
         self._load_config_piece('config_ctl_creg', service_to_config.get('config_ctl_creg'))
-        self._load_config_piece('system', service_to_config.get('system', []))
+        self._load_config_piece('system', service_to_config['system'])
         for service_name, service_template in self._configs['system'].items():
             self._config_ctl[service_name] = self._config_ctl_creg.invite(service_template.ctl_ref)
         self._load_pyobj_creg(service_to_config.get('pyobj_creg'))
@@ -292,8 +289,7 @@ class System:
             if service_name in {'system', 'cfg_item_creg', 'config_ctl_creg', 'pyobj_creg'}:
                 continue
             self._load_config_piece(service_name, config_piece)
-        if 'system_config_template' not in self._name_to_service:
-            self.add_core_service('system_config_template', self._configs)
+        self.add_core_service('system_config_template', self._configs)
 
     def _load_config_piece(self, service_name, config_piece):
         if not config_piece:

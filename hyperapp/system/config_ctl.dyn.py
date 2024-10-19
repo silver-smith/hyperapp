@@ -50,12 +50,7 @@ class MultiItemConfigCtl(ConfigCtl, metaclass=ABCMeta):
         return self._cfg_item_creg.actor_to_piece(item)
 
     def item_pieces_to_data(self, item_list):
-        return htypes.system.item_list_config(
-            items=tuple(
-                mosaic.put(item)
-                for item in item_list
-                ),
-            )
+        return item_pieces_to_data(item_list)
 
 
 class LazyDictConfig:
@@ -124,6 +119,15 @@ def service_pieces_to_config(service_to_config_piece):
             )
         for service_name, piece in service_to_config_piece.items()
         ))
+
+
+def item_pieces_to_data(item_list):
+    return htypes.system.item_list_config(
+        items=tuple(
+            mosaic.put(item)
+            for item in item_list
+            ),
+        )
 
 
 # Only MultiItemConfigCtl services are expected.
