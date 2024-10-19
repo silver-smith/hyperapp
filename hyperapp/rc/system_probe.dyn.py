@@ -6,16 +6,9 @@ from collections import defaultdict
 from functools import partial
 
 from .services import pyobj_creg
-from .code.system import System
+from .code.system import UnknownServiceError, System
 
 log = logging.getLogger(__name__)
-
-
-class UnknownServiceError(Exception):
-
-    def __init__(self, service_name):
-        super().__init__(f"Unknown service: {service_name!r}")
-        self.service_name = service_name
 
 
 class ActorProbeTemplate:
@@ -145,6 +138,21 @@ class ConfigItemRequiredError(Exception):
         super().__init__(f"Configuration item is required for {service_name}: {key}")
         self.service_name = service_name
         self.key = key
+
+
+class ServiceConfigProbe:
+
+    def __init__(self, config):
+        self._config = config
+
+    def __getitem__(self, service_name):
+        try:
+            return self._config[service_name]
+        except KeyError:
+            raise UnknownServiceError(service_name)
+
+    def __setitem__(self, key, value):
+        self._config[key] = value
 
 
 class ConfigProbe:
@@ -287,6 +295,9 @@ class SystemProbe(System):
 
     def _make_config_ctl_creg_config(self):
         return ConfigProbe('config_ctl_creg', {})
+
+    def _make_config_ctl(self, config):
+        return ServiceConfigProbe(config)
 
     def _make_cfg_item_creg_config(self):
         return ConfigProbe('cfg_item_creg', super()._make_cfg_item_creg_config())
