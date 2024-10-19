@@ -45,6 +45,22 @@ definitions:
       - rpc_request_futures
       want_config: false
 
+  rpc_servant_wrapper:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rpc_call.module
+      attr_name: rpc_servant_wrapper
+
+  rpc_servant_wrapper.service:
+    type: legacy_type.system:service_template
+    value:
+      name: rpc_servant_wrapper
+      ctl: system.system:dict_config_ctl
+      function: rpc_servant_wrapper
+      free_params: []
+      service_params: []
+      want_config: false
+
   rpc_submit_factory:
     type: legacy_type.builtin:attribute
     value:
@@ -63,6 +79,7 @@ definitions:
       - servant_ref
       service_params:
       - rpc_submit_target_factory
+      - rpc_servant_wrapper
       want_config: false
 
   rpc_wait_for_future:

@@ -39,22 +39,42 @@ def rpc_submit_target_factory(transport, rpc_request_futures, receiver_peer, sen
     return submit
 
 
-def rpc_submit_factory(rpc_submit_target_factory, receiver_peer, sender_identity, servant_ref):
+class _RpcServantWrapper:
+
+    def __init__(self):
+        self._wrapper = None
+
+    def set(self, wrapper):
+        self._wrapper = wrapper
+
+    def wrap(self, servant_ref, kw):
+        if self._wrapper is None:
+            return (servant_ref, kw)
+        return self._wrapper(servant_ref, kw)
+
+
+def rpc_servant_wrapper():
+    return _RpcServantWrapper()
+
+
+def rpc_submit_factory(rpc_submit_target_factory, rpc_servant_wrapper, receiver_peer, sender_identity, servant_ref):
     submit_factory = rpc_submit_target_factory(receiver_peer, sender_identity)
 
     def submit(**kw):
+        wrapped_servant_ref, wrapped_kw = rpc_servant_wrapper.wrap(servant_ref, kw)
         params = tuple(
             htypes.rpc.param(
                 name=name,
                 value=_param_value_to_ref(value),
                 )
-            for name, value in kw.items()
+            for name, value in wrapped_kw.items()
             )
         target = htypes.rpc.function_target(
-            servant_ref=servant_ref,
+            servant_ref=wrapped_servant_ref,
             params=params,
             )
-        log.info("Rpc call: receiver=%s servant=%s (%s): send rpc request: %s", receiver_peer, servant_ref, kw, target)
+        log.info("Rpc call: receiver=%s servant=%s (%s): send rpc request: %s",
+                 receiver_peer, wrapped_servant_ref, wrapped_kw, target)
         return submit_factory(target)
 
     return submit
