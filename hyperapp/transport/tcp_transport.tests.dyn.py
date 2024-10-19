@@ -8,7 +8,8 @@ from .services import (
     mosaic,
     pyobj_creg,
     )
-from .code.tcp_tests_callback import tcp_callback_main
+from .code.system import run_system
+from .code import tcp_tests_callback  # Just mark it as a requirement.
 from .tested.code import tcp_transport
 
 log = logging.getLogger(__name__)
@@ -52,8 +53,9 @@ def test_tcp_call(
 
     with subprocess_rpc_server_running('test-tcp-send', master_identity) as process:
         log.info("Started: %r", process)
-        process.rpc_call(tcp_callback_main)(
-            system_config_piece=system_config_piece,
+        process.rpc_call(run_system)(
+            config=system_config_piece,
+            root_name='tcp_test_callback',
             tcp_master_peer_piece=tcp_master_identity.peer.piece,
             master_fn_ref=pyobj_creg.actor_to_ref(my_callback),
         )

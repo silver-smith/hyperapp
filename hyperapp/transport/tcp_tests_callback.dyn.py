@@ -24,7 +24,3 @@ def tcp_test_callback(
     log.info("tcp_test_callback: Calling master:")
     rpc_call(message='hello')
     log.info("tcp_test_callback: Calling master: done")
-
-
-def tcp_callback_main(system_config_piece, tcp_master_peer_piece, master_fn_ref):
-    run_system(system_config_piece, 'tcp_test_callback', tcp_master_peer_piece, master_fn_ref)
