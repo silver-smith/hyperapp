@@ -4,6 +4,7 @@ import traceback
 from collections import defaultdict
 from functools import cached_property
 
+from hyperapp.common.htypes import HException
 from hyperapp.common.util import flatten, merge_dicts
 from hyperapp.resource.python_module import PythonModuleResourceImportError
 
@@ -133,6 +134,16 @@ class FailedTestResult(JobResult):
         pass
 
 
+def handle_servant_errors(_real_servant_ref, **kw):
+    servant = pyobj_creg.invite(_real_servant_ref)
+    try:
+        return servant(**kw)
+    except UnknownServiceError as x:
+        raise htypes.test_job.unknown_service_error(x.service_name) from x
+    except Exception as x:
+        raise RuntimeError(f"In test servant {servant}: {x}") from x
+
+        
 class TestJob(SystemJob):
 
     @classmethod
@@ -244,10 +255,19 @@ class TestJob(SystemJob):
         return FixtureProbeTemplate(ctl_ref, test_fn_piece, params)
 
     def _run_system(self, system):
+        rpc_servant_wrapper = system.resolve_service('rpc_servant_wrapper')
+        rpc_servant_wrapper.set(self._wrap_rpc_servant)
         try:
             system.run(self._root_name)
             status = JobStatus.ok
             error_msg = traceback = None
+        except HException as x:
+            if isinstance(x, htypes.test_job.unknown_service_error):
+                req = ServiceReq(x.service_name)
+                error = f"{type(x).__name__}: {x}"
+                return (JobStatus.incomplete, error, [], {req})
+            else:
+                raise
         except UnknownServiceError as x:
             req = ServiceReq(x.service_name)
             error = f"{type(x).__name__}: {x}"
@@ -266,6 +286,8 @@ class TestJob(SystemJob):
                 status, error_msg, traceback = self._prepare_error(x)
         except BaseException as x:
             status, error_msg, traceback = self._prepare_error(x)
+        finally:
+            rpc_servant_wrapper.set(None)
         return (status, error_msg, traceback, set())
 
     def _prepare_import_error(self, x):
@@ -322,3 +344,8 @@ class TestJob(SystemJob):
                 module_name=module_name,
                 imports=tuple(recorder.used_imports),
                 )
+
+    def _wrap_rpc_servant(self, servant_ref, kw):
+        wrapped_servant_ref = pyobj_creg.actor_to_ref(handle_servant_errors)
+        wrapped_kw = {'_real_servant_ref': servant_ref, **kw}
+        return (wrapped_servant_ref, wrapped_kw)

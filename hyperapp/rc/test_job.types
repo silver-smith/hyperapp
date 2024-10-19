@@ -25,3 +25,7 @@ incomplete_result = record:
 failed_result = record:
   error: string
   traceback: string list
+
+
+unknown_service_error = exception:
+  service_name: string
