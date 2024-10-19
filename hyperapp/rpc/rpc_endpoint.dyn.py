@@ -99,8 +99,12 @@ def on_rpc_request(request, transport_request, transport, peer_registry, rpc_tar
             exception_ref=mosaic.put(x),
             )
     except Exception as x:
-        traceback_entries = tuple(traceback.format_tb(x.__traceback__))
-        exception = htypes.rpc.server_error(str(x), traceback_entries)
+        traceback_entries = []
+        cause = x
+        while cause:
+            traceback_entries += traceback.format_tb(cause.__traceback__)
+            cause = cause.__cause__
+        exception = htypes.rpc.server_error(str(x), tuple(traceback_entries))
         log.info(
             "Rpc target %s server error: %s\n%s",
             request.target, exception.message, "".join(exception.traceback))
