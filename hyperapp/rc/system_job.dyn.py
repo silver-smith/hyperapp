@@ -1,4 +1,5 @@
 import logging
+from collections import defaultdict
 from itertools import groupby
 
 from .services import (
@@ -29,11 +30,14 @@ class SystemJob:
         return 2
 
     def _compose_resources_config(self, system, resource_list):
-        service_to_config_piece = {}
+        service_to_items = defaultdict(list)
         for resource in resource_list:
             for service_name, item_list in resource.system_config_items.items():
-                config_piece = item_pieces_to_data(item_list)
-                service_to_config_piece[service_name] = config_piece
+                service_to_items[service_name] += item_list
+        service_to_config_piece = {
+            service_name: item_pieces_to_data(item_list)
+            for service_name, item_list in service_to_items.items()
+            }
         return service_pieces_to_config(service_to_config_piece)
 
     def _configure_system(self, system, resource_list):
