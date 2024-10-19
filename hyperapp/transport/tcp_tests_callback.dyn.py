@@ -20,7 +20,7 @@ def tcp_test_callback(
     tcp_master_peer = peer_registry.animate(tcp_master_peer_piece)
     my_identity = generate_rsa_identity(fast=True)
     endpoint_registry.register(my_identity, rpc_endpoint)
-    rpc_call = rpc_call_factory(rpc_endpoint, tcp_master_peer, my_identity, master_fn_ref)
+    rpc_call = rpc_call_factory(tcp_master_peer, my_identity, master_fn_ref)
     log.info("tcp_test_callback: Calling master:")
     rpc_call(message='hello')
     log.info("tcp_test_callback: Calling master: done")
