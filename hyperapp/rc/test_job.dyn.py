@@ -115,7 +115,7 @@ class IncompleteTestResult(TestResultBase):
         req_to_target = self._resolve_requirements(target_set.factory)
         if set(req_to_target) <= my_target.req_set:
             # No new requirements are discovered.
-            rc_log.error("%s: Invinite loop detected with: %s", my_target.name, self._reqs_desc)
+            rc_log.error("%s: Infinite loop detected with: %s", my_target.name, self._reqs_desc)
         else:
             target_set.add(my_target.create_next_target(req_to_target))
 
