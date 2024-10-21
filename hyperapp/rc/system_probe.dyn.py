@@ -7,27 +7,12 @@ from functools import partial
 
 from hyperapp.common.config_item_missing import ConfigItemMissingError
 
-from .services import pyobj_creg
+from .services import (
+    pyobj_creg,
+    )
 from .code.system import UnknownServiceError, System
 
 log = logging.getLogger(__name__)
-
-
-class ActorProbeTemplate:
-
-    def __init__(self, module_name, attr_qual_name, service_name, t, fn_piece, params):
-        self._module_name = module_name
-        self._attr_qual_name = attr_qual_name
-        self._service_name = service_name
-        self._t = t
-        self._fn = fn_piece
-        self._params = params
-
-    def __repr__(self):
-        return f"<ActorProbeTemplate {self._module_name}/{self._attr_qual_name}/{self._t}: {self._fn} {self._params}>"
-
-    def resolve(self, system, service_name):
-        return pyobj_creg.animate(self._fn)
 
 
 def have_running_loop():

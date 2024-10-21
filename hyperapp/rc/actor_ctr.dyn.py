@@ -4,7 +4,7 @@ from .services import (
     pyobj_creg,
     )
 from .code.rc_constructor import Constructor
-from .code.actor_probe_resource import ActorProbeResource
+from .code.config_item_resource import ConfigItemResource
 
 
 class ActorProbeCtr(Constructor):
@@ -15,14 +15,12 @@ class ActorProbeCtr(Constructor):
             attr_qual_name=piece.attr_qual_name,
             service_name=piece.service_name,
             t=pyobj_creg.invite(piece.t),
-            params=piece.params,
             )
 
-    def __init__(self, attr_qual_name, service_name, t, params):
+    def __init__(self, attr_qual_name, service_name, t):
         self._attr_qual_name = attr_qual_name
         self._service_name = service_name
         self._t = t
-        self._params = params
 
     @property
     def piece(self):
@@ -30,7 +28,6 @@ class ActorProbeCtr(Constructor):
             attr_qual_name=tuple(self._attr_qual_name),
             service_name=self._service_name,
             t=pyobj_creg.actor_to_ref(self._t),
-            params=tuple(self._params),
             )
 
     def update_resource_targets(self, resource_tgt, target_set):
@@ -49,11 +46,17 @@ class ActorProbeCtr(Constructor):
                 object=mosaic.put(object),
                 attr_name=name,
                 )
-        return object
+        return htypes.actor_resource.actor_probe_template(
+            t=pyobj_creg.actor_to_ref(self._t),
+            function=mosaic.put(object),
+            )
 
     def make_resource(self, types, module_name, python_module):
-        return ActorProbeResource(
-            module_name, self._attr_qual_name, self._service_name, self._t, self.make_component(types, python_module), self._params)
+        item = self.make_component(types, python_module)
+        return ConfigItemResource(
+            service_name=self._service_name,
+            template_ref=mosaic.put(item),
+            )
 
     @property
     def _type_name(self):

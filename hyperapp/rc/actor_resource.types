@@ -6,7 +6,6 @@ actor_probe_ctr = record:
   attr_qual_name: string list
   service_name: string
   t: ref
-  params: string list
 
 actor_template_ctr = record:
   module_name: string
@@ -16,10 +15,6 @@ actor_template_ctr = record:
   creg_params: string list
   service_params: string list
 
-actor_probe_resource = record:
-  module_name: string
-  attr_qual_name: string list
-  service_name: string
+actor_probe_template = record:
   t: ref
   function: ref
-  params: string list

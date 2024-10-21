@@ -1,0 +1,43 @@
+import:
+- builtins:deduce_t.service
+- builtins:pyobj_creg.service
+- builtins:web.service
+- legacy_type.actor_resource:actor_probe_template
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.system:actor_template
+- rc.actor_ctr:actor_ctr.module
+- rc.marker_utils:marker_utils.module
+
+definitions:
+
+  actor_probe.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: actor_probe
+      file_name: actor_probe.dyn.py
+      import_list:
+        services.deduce_t: builtins:deduce_t.service
+        services.pyobj_creg: builtins:pyobj_creg.service
+        services.web: builtins:web.service
+        code.actor_ctr: rc.actor_ctr:actor_ctr.module
+        code.marker_utils: rc.marker_utils:marker_utils.module
+
+  ActorProbeTemplate:
+    type: legacy_type.builtin:attribute
+    value:
+      object: actor_probe.module
+      attr_name: ActorProbeTemplate
+
+  ActorProbeTemplate.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ActorProbeTemplate
+      attr_name: from_piece
+
+  actor_resource_actor_probe_template.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.actor_resource:actor_probe_template
+      function: ActorProbeTemplate.from_piece
+      service_params: []

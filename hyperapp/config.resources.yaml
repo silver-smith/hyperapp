@@ -34,7 +34,7 @@ import:
 - rc.actor_ctr:actor_resource_actor_template_ctr.actor-template
 - rc.actor_ctr:system_actor_template.actor-template
 - rc.actor_marker:actor.marker-template
-- rc.actor_probe_resource:actor_resource_actor_probe_resource.actor-template
+- rc.actor_probe:actor_resource_actor_probe_template.actor-template
 - rc.actor_resource:actor_resource_actor_req.actor-template
 - rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
 - rc.command_ctr:command_resource_global_model_command_template_ctr.actor-template
@@ -248,6 +248,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - rc.actor_probe:actor_resource_actor_probe_template.actor-template
       - rc.marker_registry:marker_marker_template.actor-template
       - ui.command_cfg_item:command_cfg_item.actor-template
       - ui.command_cfg_item:command_model_command.actor-template
@@ -450,7 +451,6 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - rc.actor_probe_resource:actor_resource_actor_probe_resource.actor-template
       - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
       - rc.fixture_resource:fixture_resource_config_fixture_resource.actor-template
       - rc.fixture_resource:fixture_resource_fixture_obj_resource.actor-template
