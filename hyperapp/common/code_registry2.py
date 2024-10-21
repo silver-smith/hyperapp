@@ -2,16 +2,17 @@ import logging
 
 from .htypes import ref_t
 from .htypes.deduce_value_type import deduce_value_type
+from .config_item_missing import ConfigItemMissingError
 
 _log = logging.getLogger(__name__)
 
 
 class CodeRegistry2:
 
-    def __init__(self, web, produce_name, config):
+    def __init__(self, web, service_name, config):
         super().__init__()
         self._web = web
-        self._produce_name = produce_name
+        self._service_name = service_name
         self._config = config  # t -> fn
 
     def update_config(self, config):
@@ -30,9 +31,9 @@ class CodeRegistry2:
         try:
             fn = self._config[t]
         except KeyError:
-            raise RuntimeError(f"No code is registered for {self._produce_name}: {t!r}; piece: {piece}")
-        _log.debug('Producing %s for %s of type %s using %s(%s, %s)',
-                   self._produce_name, piece, t, fn, args, kw)
+            raise ConfigItemMissingError(self._service_name, t)
+        _log.debug('Producing %s actor for %s of type %s using %s(%s, %s)',
+                   self._service_name, piece, t, fn, args, kw)
         result = fn(piece, *args, **kw)
-        _log.debug('Animated %s: %s to %s', self._produce_name, piece, str(result))
+        _log.debug('Animated %s actor: %s to %s', self._service_name, piece, str(result))
         return result

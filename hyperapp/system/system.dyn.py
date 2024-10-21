@@ -212,9 +212,9 @@ class System:
 
     def _init(self):
         config_ctl_creg_config = self._make_config_ctl_creg_config()
-        self._config_ctl_creg = code_registry_ctr2('config-ctl', config_ctl_creg_config)
+        self._config_ctl_creg = code_registry_ctr2('config_ctl_creg', config_ctl_creg_config)
         # cfg_item_creg is used by DictConfigCtl.
-        self._cfg_item_creg = cached_code_registry_ctr('cfg-item', self._make_cfg_item_creg_config())
+        self._cfg_item_creg = cached_code_registry_ctr('cfg_item_creg', self._make_cfg_item_creg_config())
         config_ctl_creg_config[htypes.system.dict_config_ctl] = partial(DictConfigCtl.from_piece, cfg_item_creg=self._cfg_item_creg)
         dict_config_ctl = DictConfigCtl(self._cfg_item_creg)
         self._config_ctl = self._make_config_ctl({

@@ -8,4 +8,4 @@ from .code.mark import mark
 
 @mark.service2
 def command_creg(config):
-    return code_registry_ctr2('command', config)
+    return code_registry_ctr2('command_creg', config)

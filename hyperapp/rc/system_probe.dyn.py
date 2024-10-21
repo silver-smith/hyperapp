@@ -5,6 +5,8 @@ import weakref
 from collections import defaultdict
 from functools import partial
 
+from hyperapp.common.config_item_missing import ConfigItemMissingError
+
 from .services import pyobj_creg
 from .code.system import UnknownServiceError, System
 
@@ -132,14 +134,6 @@ class FixtureProbeTemplate:
         return probe
 
 
-class ConfigItemRequiredError(Exception):
-
-    def __init__(self, service_name, key):
-        super().__init__(f"Configuration item is required for {service_name}: {key}")
-        self.service_name = service_name
-        self.key = key
-
-
 class ServiceConfigProbe:
 
     def __init__(self, config):
@@ -165,7 +159,7 @@ class ConfigProbe:
         try:
             return self._config[key]
         except KeyError:
-            raise ConfigItemRequiredError(self._service_name, key)
+            raise ConfigItemMissingError(self._service_name, key)
 
     def __iter__(self):
         return iter(self._config)

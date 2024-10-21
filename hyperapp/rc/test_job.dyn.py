@@ -6,6 +6,7 @@ from functools import cached_property
 
 from hyperapp.common.htypes import HException
 from hyperapp.common.util import flatten, merge_dicts
+from hyperapp.common.config_item_missing import ConfigItemMissingError
 from hyperapp.resource.python_module import PythonModuleResourceImportError
 
 from . import htypes
@@ -24,7 +25,7 @@ from .code.job_result import JobResult
 from .code.service_resource import ServiceReq
 from .code.actor_resource import ActorReq
 from .code.system import UnknownServiceError, NotATemplate
-from .code.system_probe import ConfigItemRequiredError, FixtureProbeTemplate
+from .code.system_probe import FixtureProbeTemplate
 from .code.system_job import SystemJob
 
 log  = logging.getLogger(__name__)
@@ -191,7 +192,7 @@ class TestJob(SystemJob):
             error_msg = f"{type(x).__name__}: {x}"
             traceback = []
             req_set = {ServiceReq(x.service_name)}
-        except ConfigItemRequiredError as x:
+        except ConfigItemMissingError as x:
             status = JobStatus.incomplete
             error_msg = f"{type(x).__name__}: {x}"
             traceback = []
@@ -272,7 +273,7 @@ class TestJob(SystemJob):
             req = ServiceReq(x.service_name)
             error = f"{type(x).__name__}: {x}"
             return (JobStatus.incomplete, error, [], {req})
-        except ConfigItemRequiredError as x:
+        except ConfigItemMissingError as x:
             req = ActorReq(x.service_name, x.key)
             error = f"{type(x).__name__}: {x}"
             return (JobStatus.incomplete, error, [], {req})

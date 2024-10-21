@@ -4,4 +4,4 @@ from .services import (
 
 
 def rc_job_result_creg(config):
-    return code_registry_ctr2('rc-job-result', config)
+    return code_registry_ctr2('rc_job_result_creg', config)

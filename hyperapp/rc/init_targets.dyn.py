@@ -17,7 +17,7 @@ from .code.config_resource_target import ConfigResourceTarget
 
 
 def ctr_from_template_creg(config):
-    return code_registry_ctr2('ctr-from-template', config)
+    return code_registry_ctr2('ctr_from_template_creg', config)
 
 
 def add_core_items(config_ctl, ctr_from_template_creg, system_config_template, target_set):

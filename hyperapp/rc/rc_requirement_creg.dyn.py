@@ -4,4 +4,4 @@ from .services import (
 
 
 def rc_requirement_creg(config):
-    return code_registry_ctr2('rc-requirement', config)
+    return code_registry_ctr2('rc_requirement_creg', config)

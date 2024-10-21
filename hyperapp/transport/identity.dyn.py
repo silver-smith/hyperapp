@@ -4,16 +4,16 @@ from .services import (
 
 
 def identity_registry(config):
-    return code_registry_ctr2('identity', config)
+    return code_registry_ctr2('identity_registry', config)
 
 
 def peer_registry(config):
-    return code_registry_ctr2('peer', config)
+    return code_registry_ctr2('peer_registry', config)
 
 
 def signature_registry(config):
-    return code_registry_ctr2('signature', config)
+    return code_registry_ctr2('signature_registry', config)
 
 
 def parcel_registry(config):
-    return code_registry_ctr2('parcel', config)
+    return code_registry_ctr2('parcel_registry', config)

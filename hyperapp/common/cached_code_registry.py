@@ -5,8 +5,8 @@ from hyperapp.common.code_registry2 import CodeRegistry2
 
 class CachedCodeRegistry(CodeRegistry2):
 
-    def __init__(self, mosaic, web, produce_name, config):
-        super().__init__(web, produce_name, config)
+    def __init__(self, mosaic, web, service_name, config):
+        super().__init__(web, service_name, config)
         self._mosaic = mosaic
         self._actor_keep = []
         self._cache = {}  # piece -> actor

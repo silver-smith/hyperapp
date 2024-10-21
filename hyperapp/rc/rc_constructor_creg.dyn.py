@@ -4,4 +4,4 @@ from .services import (
 
 
 def rc_constructor_creg(config):
-    return code_registry_ctr2('rc_constructor', config)
+    return code_registry_ctr2('rc_constructor_creg', config)
