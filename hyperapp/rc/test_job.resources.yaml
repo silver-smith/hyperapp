@@ -7,6 +7,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.rpc:server_error
 - legacy_type.system:actor_template
+- legacy_type.test_job:config_item_missing_error
 - legacy_type.test_job:failed_result
 - legacy_type.test_job:job
 - legacy_type.test_job:incomplete_result
@@ -38,6 +39,7 @@ definitions:
         htypes.builtin.attribute: legacy_type.builtin:attribute
         htypes.builtin.python_module: legacy_type.builtin:python_module
         htypes.rpc.server_error: legacy_type.rpc:server_error
+        htypes.test_job.config_item_missing_error: legacy_type.test_job:config_item_missing_error
         htypes.test_job.failed_result: legacy_type.test_job:failed_result
         htypes.test_job.job: legacy_type.test_job:job
         htypes.test_job.incomplete_result: legacy_type.test_job:incomplete_result

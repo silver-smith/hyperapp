@@ -141,6 +141,11 @@ def handle_servant_errors(_real_servant_ref, **kw):
         return servant(**kw)
     except UnknownServiceError as x:
         raise htypes.test_job.unknown_service_error(x.service_name) from x
+    except ConfigItemMissingError as x:
+        # Assume we get only type-keyed errors.
+        # If not, we may add special checks for primitive types like str.
+        t_ref = pyobj_creg.actor_to_ref(x.key)
+        raise htypes.test_job.config_item_missing_error(x.service_name, t_ref) from x
     except Exception as x:
         raise RuntimeError(f"In test servant {servant}: {x}") from x
 
@@ -267,8 +272,12 @@ class TestJob(SystemJob):
                 req = ServiceReq(x.service_name)
                 error = f"{type(x).__name__}: {x}"
                 return (JobStatus.incomplete, error, [], {req})
-            else:
-                raise
+            if isinstance(x, htypes.test_job.config_item_missing_error):
+                key = pyobj_creg.invite(x.t)
+                req = ActorReq(x.service_name, key)
+                error = f"{type(x).__name__}: {x}"
+                return (JobStatus.incomplete, error, [], {req})
+            raise
         except UnknownServiceError as x:
             req = ServiceReq(x.service_name)
             error = f"{type(x).__name__}: {x}"
