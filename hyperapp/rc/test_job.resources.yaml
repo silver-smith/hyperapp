@@ -17,6 +17,7 @@ import:
 - rc.actor_resource:actor_resource.module
 - rc.build:build.module
 - rc.builtin_resources:builtin_resources.module
+- rc.fixture_probe:fixture_probe.module
 - rc.job_result:job_result.module
 - rc.import_recorder:import_recorder.module
 - rc.requirement_factory:requirement_factory.module
@@ -24,7 +25,6 @@ import:
 - rc.rc_job_result_creg:rc_job_result_creg.service
 - rc.service_resource:service_resource.module
 - rc.system_job:system_job.module
-- rc.system_probe:system_probe.module
 - system.config_ctl:config_ctl.module
 - system.system:system.module
 
@@ -59,7 +59,7 @@ definitions:
         code.service_resource: rc.service_resource:service_resource.module
         code.actor_resource: rc.actor_resource:actor_resource.module
         code.system: system.system:system.module
-        code.system_probe: rc.system_probe:system_probe.module
+        code.fixture_probe: rc.fixture_probe:fixture_probe.module
         code.system_job: rc.system_job:system_job.module
 
   SucceededTestResult:

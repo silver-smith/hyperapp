@@ -14,13 +14,13 @@ fixture_probe_ctr = record:
   params: string list
 
 
-fixture_obj_resource = record:
+fixture_obj_template = record:
   service_name: string
   ctl: ref
   function: ref
   params: string list
 
-fixture_probe_resource = record:
+fixture_probe_template = record:
   service_name: string
   ctl: ref
   function: ref

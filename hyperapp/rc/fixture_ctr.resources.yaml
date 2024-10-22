@@ -4,10 +4,13 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.fixture_resource:config_fixture_ctr
 - legacy_type.fixture_resource:fixture_obj_ctr
+- legacy_type.fixture_resource:fixture_obj_template
 - legacy_type.fixture_resource:fixture_probe_ctr
+- legacy_type.fixture_resource:fixture_probe_template
 - legacy_type.system:actor_template
 - legacy_type.system:finalizer_gen_service_template
 - legacy_type.system:service_template
+- rc.config_item_resource:config_item_resource.module
 - rc.rc_constructor:rc_constructor.module
 - rc.fixture_resource:fixture_resource.module
 
@@ -22,8 +25,11 @@ definitions:
         htypes.builtin.attribute: legacy_type.builtin:attribute
         htypes.fixture_resource.config_fixture_ctr: legacy_type.fixture_resource:config_fixture_ctr
         htypes.fixture_resource.fixture_obj_ctr: legacy_type.fixture_resource:fixture_obj_ctr
+        htypes.fixture_resource.fixture_obj_template: legacy_type.fixture_resource:fixture_obj_template
         htypes.fixture_resource.fixture_probe_ctr: legacy_type.fixture_resource:fixture_probe_ctr
+        htypes.fixture_resource.fixture_probe_template: legacy_type.fixture_resource:fixture_probe_template
         services.mosaic: builtins:mosaic.service
+        code.config_item_resource: rc.config_item_resource:config_item_resource.module
         code.rc_constructor: rc.rc_constructor:rc_constructor.module
         code.fixture_resource: rc.fixture_resource:fixture_resource.module
 

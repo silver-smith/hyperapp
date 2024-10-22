@@ -1,0 +1,60 @@
+import:
+- builtins:pyobj_creg.service
+- builtins:web.service
+- legacy_type.actor_resource:actor_probe_template
+- legacy_type.builtin:attribute
+- legacy_type.builtin:python_module
+- legacy_type.fixture_resource:fixture_obj_template
+- legacy_type.fixture_resource:fixture_probe_template
+- legacy_type.system:actor_template
+- rc.system_probe:system_probe.module
+
+definitions:
+
+  fixture_probe.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: fixture_probe
+      file_name: fixture_probe.dyn.py
+      import_list:
+        services.pyobj_creg: builtins:pyobj_creg.service
+        services.web: builtins:web.service
+        code.system_probe: rc.system_probe:system_probe.module
+
+  FixtureObjTemplate:
+    type: legacy_type.builtin:attribute
+    value:
+      object: fixture_probe.module
+      attr_name: FixtureObjTemplate
+
+  FixtureObjTemplate.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: FixtureObjTemplate
+      attr_name: from_piece
+
+  fixture_resource_fixture_obj_template.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.fixture_resource:fixture_obj_template
+      function: FixtureObjTemplate.from_piece
+      service_params: []
+
+  FixtureProbeTemplate:
+    type: legacy_type.builtin:attribute
+    value:
+      object: fixture_probe.module
+      attr_name: FixtureProbeTemplate
+
+  FixtureProbeTemplate.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: FixtureProbeTemplate
+      attr_name: from_piece
+
+  fixture_resource_fixture_probe_template.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.fixture_resource:fixture_probe_template
+      function: FixtureProbeTemplate.from_piece
+      service_params: []

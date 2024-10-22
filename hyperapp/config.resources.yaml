@@ -57,9 +57,9 @@ import:
 - rc.fixture_ctr:fixture_resource_fixture_obj_ctr.actor-template
 - rc.fixture_ctr:fixture_resource_fixture_probe_ctr.actor-template
 - rc.fixture_marker:fixture.marker-template
+- rc.fixture_probe:fixture_resource_fixture_obj_template.actor-template
+- rc.fixture_probe:fixture_resource_fixture_probe_template.actor-template
 - rc.fixture_resource:fixture_resource_config_fixture_resource.actor-template
-- rc.fixture_resource:fixture_resource_fixture_obj_resource.actor-template
-- rc.fixture_resource:fixture_resource_fixture_probe_resource.actor-template
 - rc.htest.sample_config:sample_config_service.service
 - rc.htest.sample_service_1:sample_fn_service_1.service
 - rc.htest.sample_service_1:sample_value_service_1.service
@@ -249,6 +249,8 @@ definitions:
     value:
       items:
       - rc.actor_probe:actor_resource_actor_probe_template.actor-template
+      - rc.fixture_probe:fixture_resource_fixture_obj_template.actor-template
+      - rc.fixture_probe:fixture_resource_fixture_probe_template.actor-template
       - rc.marker_registry:marker_marker_template.actor-template
       - ui.command_cfg_item:command_cfg_item.actor-template
       - ui.command_cfg_item:command_model_command.actor-template
@@ -453,8 +455,6 @@ definitions:
       items:
       - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
       - rc.fixture_resource:fixture_resource_config_fixture_resource.actor-template
-      - rc.fixture_resource:fixture_resource_fixture_obj_resource.actor-template
-      - rc.fixture_resource:fixture_resource_fixture_probe_resource.actor-template
       - rc.import_resource:import_resource_import_resource.actor-template
       - rc.service_probe_resource:service_resource_service_probe_resource.actor-template
       - rc.test_requirement:test_target_constructors_picker_resource.actor-template
