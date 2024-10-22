@@ -55,7 +55,7 @@ def subprocess_rpc_server_running(
         system_config_piece, partial_ref, peer_registry, rpc_submit_factory, rpc_call_factory, subprocess_running, subprocess_transport):
 
     @contextmanager
-    def _subprocess_rpc_server(name, identity, timeout_sec=10):
+    def _subprocess_rpc_server(name, identity, timeout_sec=10, start_timeout_sec=3):
         subprocess_id = next(_subprocess_id_counter)
         _callback_signals[subprocess_id] = event = threading.Event()
         main_ref = partial_ref(
@@ -70,8 +70,8 @@ def subprocess_rpc_server_running(
         with subprocess_running(name, main_ref) as process:
             connection_rec = subprocess_transport.add_server_connection(name, process.connection, process.sent_refs)
             try:
-                if not event.wait(timeout=timeout_sec):
-                    raise RuntimeError(f"Timed out waiting for subprocess #{subprocess_id} {name!r} ({timeout_sec} sec)")
+                if not event.wait(timeout=start_timeout_sec):
+                    raise RuntimeError(f"Timed out waiting for subprocess #{subprocess_id} {name!r} ({start_timeout_sec} sec)")
                 peer = peer_registry.animate(_subprocess_peer[subprocess_id])
                 log.info("Rpc server #%d %r is started with peer %s", subprocess_id, name, peer)
                 yield _RpcServerProcess(
