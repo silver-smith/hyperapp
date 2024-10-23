@@ -1,7 +1,11 @@
 import:
 - builtins:mosaic.service
+- builtins:web.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.ctr_collector:ignore_module_cfg_item
+- legacy_type.ctr_collector:mark_module_cfg_item
+- legacy_type.system:actor_template
 - legacy_type.system:finalizer_gen_service_template
 - system.system:dict_config_ctl
 
@@ -14,6 +18,7 @@ definitions:
       file_name: ctr_collector.dyn.py
       import_list:
         services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service
 
   ctr_collector:
     type: legacy_type.builtin:attribute
@@ -31,3 +36,41 @@ definitions:
       service_params:
       - marker_ctl
       want_config: true
+
+  MarkModuleCfgItem:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ctr_collector.module
+      attr_name: MarkModuleCfgItem
+
+  MarkModuleCfgItem.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: MarkModuleCfgItem
+      attr_name: from_piece
+
+  ctr_collector_mark_module_cfg_item.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.ctr_collector:mark_module_cfg_item
+      function: MarkModuleCfgItem.from_piece
+      service_params: []
+
+  IgnoreModuleCfgItem:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ctr_collector.module
+      attr_name: IgnoreModuleCfgItem
+
+  IgnoreModuleCfgItem.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: IgnoreModuleCfgItem
+      attr_name: from_piece
+
+  ctr_collector_ignore_module_cfg_item.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.ctr_collector:ignore_module_cfg_item
+      function: IgnoreModuleCfgItem.from_piece
+      service_params: []

@@ -5,6 +5,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:import_rec
 - legacy_type.builtin:python_module
+- legacy_type.ctr_collector:mark_module_cfg_item
 - legacy_type.system:actor_template
 - legacy_type.test_target:constructors_picker_resource
 - legacy_type.test_target:recorder_resource
@@ -13,10 +14,10 @@ import:
 - legacy_type.test_target:tested_code_resource
 - legacy_type.test_target:tested_service_req
 - legacy_type.test_target:tested_service_resource
+- rc.config_item_resource:config_item_resource.module
 - rc.python_module_resource_target:python_module_resource_target.module
 - rc.rc_requirement:rc_requirement.module
 - rc.rc_resource:rc_resource.module
-- system.system:system.module
 
 definitions:
 
@@ -27,6 +28,7 @@ definitions:
       file_name: test_requirement.dyn.py
       import_list:
         htypes.builtin.import_rec: legacy_type.builtin:import_rec
+        htypes.ctr_collector.mark_module_cfg_item: legacy_type.ctr_collector:mark_module_cfg_item
         htypes.test_target.constructors_picker_resource: legacy_type.test_target:constructors_picker_resource
         htypes.test_target.tested_code_req: legacy_type.test_target:tested_code_req
         htypes.test_target.fixtures_module_req: legacy_type.test_target:fixtures_module_req
@@ -37,10 +39,10 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
+        code.config_item_resource: rc.config_item_resource:config_item_resource.module
         code.rc_requirement: rc.rc_requirement:rc_requirement.module
         code.rc_resource: rc.rc_resource:rc_resource.module
         code.python_module_resource_target: rc.python_module_resource_target:python_module_resource_target.module
-        code.system: system.system:system.module
 
   TestedServiceReq:
     type: legacy_type.builtin:attribute
@@ -154,23 +156,4 @@ definitions:
     value:
       t: legacy_type.test_target:recorder_resource
       function: RecorderResource.from_piece
-      service_params: []
-
-  ConstructorsPickerResource:
-    type: legacy_type.builtin:attribute
-    value:
-      object: test_requirement.module
-      attr_name: ConstructorsPickerResource
-
-  ConstructorsPickerResource.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: ConstructorsPickerResource
-      attr_name: from_piece
-
-  test_target_constructors_picker_resource.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.test_target:constructors_picker_resource
-      function: ConstructorsPickerResource.from_piece
       service_params: []

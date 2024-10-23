@@ -6,9 +6,9 @@ from .services import (
     pyobj_creg,
     web,
     )
-from .code.system import NotATemplate
 from .code.rc_requirement import Requirement
 from .code.rc_resource import Resource
+from .code.config_item_resource import ConfigItemResource
 from .code.python_module_resource_target import PythonModuleResourceTarget
 
 
@@ -103,11 +103,15 @@ class TestedCodeReq(Requirement):
                 recorder_module_name=module_name,
                 recorder_piece=recorder_piece,
                 )
-            constructors_picker = ConstructorsPickerResource(
-                module_name=module_name,
-                module_piece=module_piece,
+            mark_module_item = htypes.ctr_collector.mark_module_cfg_item(
+                module=mosaic.put(module_piece),
+                name=module_name,
                 )
-            resources = [*target.test_resources, recorder_res, constructors_picker]
+            module_marker = ConfigItemResource(
+                service_name='ctr_collector',
+                template_ref=mosaic.put(mark_module_item),
+                )
+            resources = [*target.test_resources, recorder_res, module_marker]
         tested_code_res = TestedCodeResource(
             import_name=self.import_path,
             module_piece=module_piece,
@@ -225,27 +229,3 @@ class RecorderResource(Resource):
         return {
             self._recorder_module_name: pyobj_creg.animate(self._recorder_piece),
             }
-
-
-class ConstructorsPickerResource(Resource):
-
-    @classmethod
-    def from_piece(cls, piece):
-        return cls(
-            module_name=piece.module_name,
-            module_piece=web.summon(piece.module),
-            )
-
-    def __init__(self, module_name, module_piece):
-        self._module_name = module_name
-        self._module_piece = module_piece
-
-    @property
-    def piece(self):
-        return htypes.test_target.constructors_picker_resource(
-            module_name=self._module_name,
-            module=mosaic.put(self._module_piece),
-            )
-
-    def configure_system(self, system):
-        system.update_config('ctr_collector', {self._module_name: NotATemplate(self._module_piece)})

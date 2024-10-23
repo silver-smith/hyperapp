@@ -14,6 +14,8 @@ import:
 - rc.actor_ctr:system_actor_template.actor-template
 - rc.actor_marker:actor.marker-template
 - rc.actor_resource:actor_resource_actor_req.actor-template
+- rc.ctr_collector:ctr_collector_ignore_module_cfg_item.actor-template
+- rc.ctr_collector:ctr_collector_mark_module_cfg_item.actor-template
 - rc.ctr_collector:ctr_collector.service
 - rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
 - rc.command_ctr:command_resource_global_model_command_template_ctr.actor-template
@@ -77,7 +79,6 @@ import:
 - rc.test_job:test_job_incomplete_result.actor-template
 - rc.test_job:test_job_succeeded_result.actor-template
 - rc.test_job:test_job_job.actor-template
-- rc.test_requirement:test_target_constructors_picker_resource.actor-template
 - rc.test_requirement:test_target_fixtures_module_req.actor-template
 - rc.test_requirement:test_target_recorder_resource.actor-template
 - rc.test_requirement:test_target_tested_code_req.actor-template
@@ -178,6 +179,8 @@ definitions:
       items:
       - rc.marker_registry:marker_marker_template.actor-template
       - rc.actor_probe:actor_resource_actor_probe_template.actor-template
+      - rc.ctr_collector:ctr_collector_mark_module_cfg_item.actor-template
+      - rc.ctr_collector:ctr_collector_ignore_module_cfg_item.actor-template
       - rc.fixture_probe:fixture_resource_fixture_obj_template.actor-template
       - rc.fixture_probe:fixture_resource_fixture_probe_template.actor-template
 
@@ -304,7 +307,6 @@ definitions:
       - rc.test_requirement:test_target_tested_service_resource.actor-template
       - rc.test_requirement:test_target_tested_code_resource.actor-template
       - rc.test_requirement:test_target_recorder_resource.actor-template
-      - rc.test_requirement:test_target_constructors_picker_resource.actor-template
 
   signature_registry:
     type: legacy_type.system:item_list_config
