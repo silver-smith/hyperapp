@@ -91,5 +91,6 @@ class IgnoreModuleCfgItem(CfgItemBase):
 
 def ctr_collector(config, marker_ctl):
     collector =  CtrCollector(config, marker_ctl)
+    collector.init_markers()
     yield collector
     marker_ctl.clear_wanted_modules()

@@ -205,7 +205,6 @@ class TestJob(SystemJob):
         else:
             ctr_collector = system.resolve_service('ctr_collector')
             ctr_collector.ignore_module(module_piece)
-            ctr_collector.init_markers()
             status, error_msg, traceback, module = self._import_module(module_piece)
             if status == JobStatus.ok:
                 root_probe = self._make_root_fixture(module_piece, module)
