@@ -31,7 +31,7 @@ class CodeRegistry2:
         try:
             fn = self._config[t]
         except KeyError:
-            raise ConfigItemMissingError(self._service_name, t)
+            raise ConfigItemMissingError(self._service_name, t, f"{self._service_name} actor is missing for: {t}")
         _log.debug('Producing %s actor for %s of type %s using %s(%s, %s)',
                    self._service_name, piece, t, fn, args, kw)
         result = fn(piece, *args, **kw)
