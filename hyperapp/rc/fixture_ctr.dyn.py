@@ -3,7 +3,7 @@ from .services import (
     mosaic,
     )
 from .code.rc_constructor import ModuleCtr
-from .code.config_item_resource import ConfigItemResource
+from .code.config_item_resource import ConfigItemResourceOverride
 from .code.fixture_resource import ConfigFixtureResource
 
 
@@ -36,7 +36,7 @@ class FixtureCtrBase(ModuleCtr):
 
     def make_resource(self, types, module_name, python_module):
         item = self.make_component(types, python_module)
-        return ConfigItemResource(
+        return ConfigItemResourceOverride(
             service_name='system',
             template_ref=mosaic.put(item),
             )

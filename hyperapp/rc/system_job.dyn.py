@@ -34,6 +34,10 @@ class SystemJob:
         for resource in resource_list:
             for service_name, item_list in resource.system_config_items.items():
                 service_to_items[service_name] += item_list
+        # We expect that later resource items will override former ones.
+        for resource in resource_list:
+            for service_name, item_list in resource.system_config_items_override.items():
+                service_to_items[service_name] += item_list
         service_to_config_piece = {
             service_name: item_pieces_to_data(item_list)
             for service_name, item_list in service_to_items.items()

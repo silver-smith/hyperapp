@@ -29,6 +29,7 @@ import:
 - rc.command_marker:ui_model_command.marker-template
 - rc.config_item_marker:config_fixture.marker-template
 - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
+- rc.config_item_resource:config_item_resource_config_item_resource_override.actor-template
 - rc.feed_ctr:feed_list_feed_ctr.actor-template
 - rc.feed_ctr:feed_index_tree_feed_ctr.actor-template
 - rc.import_job:import_job_failed_result.actor-template
@@ -299,6 +300,7 @@ definitions:
       - rc.fixture_resource:fixture_resource_config_fixture_resource.actor-template
       - rc.service_probe_resource:service_resource_service_probe_resource.actor-template
       - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
+      - rc.config_item_resource:config_item_resource_config_item_resource_override.actor-template
       - rc.test_requirement:test_target_tested_service_resource.actor-template
       - rc.test_requirement:test_target_tested_code_resource.actor-template
       - rc.test_requirement:test_target_recorder_resource.actor-template

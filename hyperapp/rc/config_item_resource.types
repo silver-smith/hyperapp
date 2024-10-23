@@ -1,3 +1,7 @@
 config_item_resource = record:
   service_name: string
   config_item: ref
+
+config_item_resource_override = record:
+  service_name: string
+  config_item: ref

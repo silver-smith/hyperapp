@@ -6,7 +6,7 @@ from .services import (
 from .code.rc_resource import Resource
 
 
-class ConfigItemResource(Resource):
+class ConfigItemResourceBase(Resource):
 
     @classmethod
     def from_piece(cls, piece):
@@ -17,13 +17,6 @@ class ConfigItemResource(Resource):
         self._template_ref = template_ref
 
     @property
-    def piece(self):
-        return htypes.config_item_resource.config_item_resource(
-            service_name=self._service_name,
-            config_item=self._template_ref,
-            )
-
-    @property
     def is_system_resource(self):
         return self._service_name in {'config_ctl_creg', 'cfg_item_creg'}
 
@@ -31,7 +24,32 @@ class ConfigItemResource(Resource):
     def is_service_resource(self):
         return self._service_name == 'system'
 
+
+class ConfigItemResource(ConfigItemResourceBase):
+
+    @property
+    def piece(self):
+        return htypes.config_item_resource.config_item_resource(
+            service_name=self._service_name,
+            config_item=self._template_ref,
+            )
+
     @property
     def system_config_items(self):
+        item = web.summon(self._template_ref)
+        return {self._service_name: [item]}
+
+
+class ConfigItemResourceOverride(ConfigItemResourceBase):
+
+    @property
+    def piece(self):
+        return htypes.config_item_resource.config_item_resource_override(
+            service_name=self._service_name,
+            config_item=self._template_ref,
+            )
+
+    @property
+    def system_config_items_override(self):
         item = web.summon(self._template_ref)
         return {self._service_name: [item]}

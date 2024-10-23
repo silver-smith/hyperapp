@@ -24,5 +24,10 @@ class Resource:
     def system_config_items(self):
         return {}
 
+    # Service -> item list.
+    @property
+    def system_config_items_override(self):
+        return {}
+
     def configure_system(self, system):
         pass

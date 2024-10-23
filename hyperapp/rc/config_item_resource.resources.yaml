@@ -4,6 +4,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.config_item_resource:config_item_resource
+- legacy_type.config_item_resource:config_item_resource_override
 - legacy_type.system:actor_template
 - rc.rc_resource:rc_resource.module
 
@@ -16,6 +17,7 @@ definitions:
       file_name: config_item_resource.dyn.py
       import_list:
         htypes.config_item_resource.config_item_resource: legacy_type.config_item_resource:config_item_resource
+        htypes.config_item_resource.config_item_resource_override: legacy_type.config_item_resource:config_item_resource_override
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
         code.rc_resource: rc.rc_resource:rc_resource.module
@@ -37,4 +39,23 @@ definitions:
     value:
       t: legacy_type.config_item_resource:config_item_resource
       function: ConfigItemResource.from_piece
+      service_params: []
+
+  ConfigItemResourceOverride:
+    type: legacy_type.builtin:attribute
+    value:
+      object: config_item_resource.module
+      attr_name: ConfigItemResourceOverride
+
+  ConfigItemResourceOverride.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ConfigItemResourceOverride
+      attr_name: from_piece
+
+  config_item_resource_config_item_resource_override.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.config_item_resource:config_item_resource_override
+      function: ConfigItemResourceOverride.from_piece
       service_params: []

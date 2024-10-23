@@ -50,6 +50,7 @@ import:
 - rc.command_marker:universal_ui_command.marker-template
 - rc.config_item_marker:config_fixture.marker-template
 - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
+- rc.config_item_resource:config_item_resource_config_item_resource_override.actor-template
 - rc.ctr_collector:ctr_collector.service
 - rc.feed_ctr:feed_index_tree_feed_ctr.actor-template
 - rc.feed_ctr:feed_list_feed_ctr.actor-template
@@ -454,6 +455,7 @@ definitions:
     value:
       items:
       - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
+      - rc.config_item_resource:config_item_resource_config_item_resource_override.actor-template
       - rc.fixture_resource:fixture_resource_config_fixture_resource.actor-template
       - rc.import_resource:import_resource_import_resource.actor-template
       - rc.service_probe_resource:service_resource_service_probe_resource.actor-template
