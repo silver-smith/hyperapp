@@ -4,6 +4,7 @@ import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.ctr_collector:mark_module_cfg_item
 - legacy_type.import_job:failed_result
 - legacy_type.import_job:function
 - legacy_type.import_job:job
@@ -12,6 +13,7 @@ import:
 - legacy_type.system:actor_template
 - rc.build:build.module
 - rc.builtin_resources:builtin_resources.module
+- rc.config_item_resource:config_item_resource.module
 - rc.job_result:job_result.module
 - rc.import_recorder:import_recorder.module
 - rc.rc_constants:rc_constants.module
@@ -26,6 +28,7 @@ definitions:
       module_name: import_job
       file_name: import_job.dyn.py
       import_list:
+        htypes.ctr_collector.mark_module_cfg_item: legacy_type.ctr_collector:mark_module_cfg_item
         htypes.import_job.failed_result: legacy_type.import_job:failed_result
         htypes.import_job.function: legacy_type.import_job:function
         htypes.import_job.job: legacy_type.import_job:job
@@ -35,6 +38,7 @@ definitions:
         services.pyobj_creg: builtins:pyobj_creg.service
         code.build: rc.build:build.module
         code.builtin_resources: rc.builtin_resources:builtin_resources.module
+        code.config_item_resource: rc.config_item_resource:config_item_resource.module
         code.job_result: rc.job_result:job_result.module
         code.import_recorder: rc.import_recorder:import_recorder.module
         code.rc_constants: rc.rc_constants:rc_constants.module

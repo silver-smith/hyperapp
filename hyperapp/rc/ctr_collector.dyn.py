@@ -27,10 +27,6 @@ class CtrCollector:
         python_module_name = make_module_name(mosaic, module_piece)
         self._pyname_to_action[python_module_name] = self.Action.Ignore
 
-    def set_wanted_import(self, module_name, module_piece):
-        python_module_name = make_module_name(mosaic, module_piece)
-        self._pyname_to_action[python_module_name] = self.Action.Mark(module_name)
-
     def get_module_action(self, python_module_name):
         try:
             return self._pyname_to_action[python_module_name]

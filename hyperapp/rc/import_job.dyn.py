@@ -13,6 +13,7 @@ from .services import (
 from .code.rc_constants import JobStatus
 from .code.build import PythonModuleSrc
 from .code.builtin_resources import enum_builtin_resources
+from .code.config_item_resource import ConfigItemResource
 from .code.import_recorder import IncompleteImportedObjectError
 from .code.requirement_factory import RequirementFactory
 from .code.job_result import JobResult
@@ -179,13 +180,13 @@ class ImportJob(SystemJob):
             )
 
     def run(self):
-        all_resources = [*enum_builtin_resources(), *self._resources]
-        import_list = flatten(d.import_records for d in all_resources)
+        importable_resources = [*enum_builtin_resources(), *self._resources]
+        import_list = flatten(d.import_records for d in importable_resources)
         recorder_piece, module_piece = self._src.recorded_python_module(import_list)
         recorder = pyobj_creg.animate(recorder_piece)
-        system = self._prepare_system(all_resources)
+        system_resources = [*enum_builtin_resources(), *self._resources, *self._job_resources(module_piece)]
+        system = self._prepare_system(system_resources)
         ctr_collector = system.resolve_service('ctr_collector')
-        ctr_collector.set_wanted_import(self._src.name, module_piece)
         try:
             module = pyobj_creg.animate(module_piece)
             status = JobStatus.ok
@@ -211,6 +212,16 @@ class ImportJob(SystemJob):
                 functions=tuple(self._enum_functions(module)),
                 constructors=constructors,
                 )
+
+    def _job_resources(self, module_piece):
+        mark_module_item = htypes.ctr_collector.mark_module_cfg_item(
+            module=mosaic.put(module_piece),
+            name=self._src.name,
+            )
+        yield ConfigItemResource(
+            service_name='ctr_collector',
+            template_ref=mosaic.put(mark_module_item),
+            )
 
     def _enum_functions(self, module):
         for name in dir(module):
