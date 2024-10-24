@@ -70,7 +70,7 @@ import:
 - rc.service_ctr:system_finalizer_gen_service_template.actor-template
 - rc.service_ctr:system_service_template.actor-template
 - rc.service_marker:service2.marker-template
-- rc.service_probe_resource:service_resource_service_probe_resource.actor-template
+- rc.service_probe_resource:service_resource_service_probe_template.actor-template
 - rc.service_resource:service_resource_service_req.actor-template
 - rc.service_target:service_service_found_req.actor-template
 - rc.service_target:service_service_complete_req.actor-template
@@ -185,6 +185,7 @@ definitions:
       - rc.ctr_collector:ctr_collector_ignore_module_cfg_item.actor-template
       - rc.fixture_probe:fixture_resource_fixture_obj_template.actor-template
       - rc.fixture_probe:fixture_resource_fixture_probe_template.actor-template
+      - rc.service_probe_resource:service_resource_service_probe_template.actor-template
 
   ctr_from_template_creg:
     type: legacy_type.system:item_list_config
@@ -303,7 +304,6 @@ definitions:
       items:
       - rc.import_resource:import_resource_import_resource.actor-template
       - rc.fixture_resource:fixture_resource_config_fixture_resource.actor-template
-      - rc.service_probe_resource:service_resource_service_probe_resource.actor-template
       - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
       - rc.config_item_resource:config_item_resource_config_item_resource_override.actor-template
       - rc.test_requirement:test_target_tested_service_resource.actor-template

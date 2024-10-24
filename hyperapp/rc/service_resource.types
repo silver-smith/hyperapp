@@ -10,7 +10,7 @@ service_probe_ctr = record:
   ctl: ref
   params: string list
 
-service_probe_resource = record:
+service_probe_template = record:
   attr_name: string
   service_name: string
   ctl: ref

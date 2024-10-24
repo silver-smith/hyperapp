@@ -7,6 +7,7 @@ from .services import (
 from .code.rc_constructor import ModuleCtr
 from .code.rc_resource import Resource
 from .code.system_probe import Probe
+from .code.config_item_resource import ConfigItemResource
 from .code.service_ctr import ServiceTemplateCtr
 
 
@@ -39,8 +40,19 @@ class ServiceProbe(Probe):
 
 class ServiceProbeTemplate:
 
-    def __init__(self, attr_name, ctl_ref, fn_piece, params):
+    @classmethod
+    def from_piece(cls, piece):
+        return cls(
+            attr_name=piece.attr_name,
+            service_name=piece.service_name,
+            ctl_ref=piece.ctl,
+            fn_piece=web.summon(piece.function),
+            params=piece.params,
+            )
+
+    def __init__(self, attr_name, service_name, ctl_ref, fn_piece, params):
         self._attr_name = attr_name
+        self._service_name = service_name
         self._ctl_ref = ctl_ref
         self._fn = fn_piece
         self._params = params
@@ -52,44 +64,16 @@ class ServiceProbeTemplate:
     def ctl_ref(self):
         return self._ctl_ref
 
+    @property
+    def key(self):
+        return self._service_name
+
     def resolve(self, system, service_name):
         config_ctl = system.resolve_service('config_ctl')
         fn = pyobj_creg.animate(self._fn)
         probe = ServiceProbe(system, config_ctl, self._attr_name, service_name, self._ctl_ref, fn, self._params)
         probe.apply_if_no_params()
         return probe
-
-
-class ServiceProbeResource(Resource):
-
-    @classmethod
-    def from_piece(cls, piece):
-        return cls(piece.attr_name, piece.service_name, piece.ctl, web.summon(piece.function), piece.params)
-
-    def __init__(self, attr_name, service_name, ctl_ref, function, params):
-        self._attr_name = attr_name
-        self._service_name = service_name
-        self._ctl_ref = ctl_ref
-        self._function = function  # piece
-        self._params = params
-
-    @property
-    def piece(self):
-        return htypes.service_resource.service_probe_resource(
-            attr_name=self._attr_name,
-            service_name=self._service_name,
-            ctl=self._ctl_ref,
-            function=mosaic.put(self._function),
-            params=tuple(self._params),
-            )
-
-    @property
-    def is_service_resource(self):
-        return True
-
-    def configure_system(self, system):
-        probe = ServiceProbeTemplate(self._attr_name, self._ctl_ref, self._function, self._params)
-        system.update_config('system', {self._service_name: probe})
 
 
 class ServiceProbeCtr(ModuleCtr):
@@ -141,10 +125,21 @@ class ServiceProbeCtr(ModuleCtr):
         _ = target_set.factory.config_item_complete('system', self._name)
 
     def make_component(self, types, python_module, name_to_res=None):
-        return htypes.builtin.attribute(
+        function = htypes.builtin.attribute(
             object=mosaic.put(python_module),
             attr_name=self._attr_name,
             )
+        return htypes.service_resource.service_probe_template(
+            attr_name=self._attr_name,
+            service_name=self._name,
+            ctl=self._ctl_ref,
+            function=mosaic.put(function),
+            params=self._params,
+            )
 
     def make_resource(self, types, module_name, python_module):
-        return ServiceProbeResource(self._attr_name, self._name, self._ctl_ref, self.make_component(types, python_module), self._params)
+        item = self.make_component(types, python_module)
+        return ConfigItemResource(
+            service_name='system',
+            template_ref=mosaic.put(item),
+            )

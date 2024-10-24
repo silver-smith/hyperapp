@@ -5,8 +5,9 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.service_resource:service_probe_ctr
-- legacy_type.service_resource:service_probe_resource
+- legacy_type.service_resource:service_probe_template
 - legacy_type.system:actor_template
+- rc.config_item_resource:config_item_resource.module
 - rc.rc_constructor:rc_constructor.module
 - rc.rc_resource:rc_resource.module
 - rc.service_ctr:service_ctr.module
@@ -22,32 +23,33 @@ definitions:
       import_list:
         htypes.builtin.attribute: legacy_type.builtin:attribute
         htypes.service_resource.service_probe_ctr: legacy_type.service_resource:service_probe_ctr
-        htypes.service_resource.service_probe_resource: legacy_type.service_resource:service_probe_resource
+        htypes.service_resource.service_probe_template: legacy_type.service_resource:service_probe_template
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
+        code.config_item_resource: rc.config_item_resource:config_item_resource.module
         code.rc_constructor: rc.rc_constructor:rc_constructor.module
         code.rc_resource: rc.rc_resource:rc_resource.module
         code.service_ctr: rc.service_ctr:service_ctr.module
         code.system_probe: rc.system_probe:system_probe.module
 
-  ServiceProbeResource:
+  ServiceProbeTemplate:
     type: legacy_type.builtin:attribute
     value:
       object: service_probe_resource.module
-      attr_name: ServiceProbeResource
+      attr_name: ServiceProbeTemplate
 
-  ServiceProbeResource.from_piece:
+  ServiceProbeTemplate.from_piece:
     type: legacy_type.builtin:attribute
     value:
-      object: ServiceProbeResource
+      object: ServiceProbeTemplate
       attr_name: from_piece
 
-  service_resource_service_probe_resource.actor-template:
+  service_resource_service_probe_template.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.service_resource:service_probe_resource
-      function: ServiceProbeResource.from_piece
+      t: legacy_type.service_resource:service_probe_template
+      function: ServiceProbeTemplate.from_piece
       service_params: []
 
   ServiceProbeCtr:
