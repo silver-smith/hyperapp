@@ -328,7 +328,7 @@ class TestJob(SystemJob):
         for idx, entry in enumerate(traceback_entries):
             fpath = entry.filename.split('/')[-2:]
             fname = '/'.join(fpath).replace('.dyn.py', '')
-            if fname not in {'rc/test_job', 'system/system', 'rc/system_probe'}:
+            if fname not in {'rc/test_job', 'system/system', 'rc/system_probe', 'rc/fixture_probe'}:
                 del traceback_entries[:idx]
                 break
         line_list = traceback.format_list(traceback_entries)
