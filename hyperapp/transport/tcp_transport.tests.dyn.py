@@ -29,6 +29,12 @@ def my_callback(message):
     _callback_message.append(message)
 
 
+def test_client_factory(tcp_client_factory):
+    address = ('127.0.0.1', 8888)
+    connection = tcp_client_factory(address)
+    connection._socket.close()
+
+
 def test_tcp_call(
         system_config_piece,
         route_table,
