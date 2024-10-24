@@ -136,7 +136,7 @@ class FailedTestResult(JobResult):
         pass
 
 
-def handle_servant_errors(_real_servant_ref, **kw):
+def rpc_servant_wrapper(_real_servant_ref, **kw):
     servant = pyobj_creg.invite(_real_servant_ref)
     try:
         return servant(**kw)
@@ -367,6 +367,6 @@ class TestJob(SystemJob):
                 )
 
     def _wrap_rpc_servant(self, servant_ref, kw):
-        wrapped_servant_ref = pyobj_creg.actor_to_ref(handle_servant_errors)
+        wrapped_servant_ref = pyobj_creg.actor_to_ref(rpc_servant_wrapper)
         wrapped_kw = {'_real_servant_ref': servant_ref, **kw}
         return (wrapped_servant_ref, wrapped_kw)
