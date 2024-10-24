@@ -150,7 +150,8 @@ def merge_system_config_pieces(x, y):
             assert isinstance(x_config, htypes.system.item_list_config)
             assert isinstance(y_config, htypes.system.item_list_config)
             config = htypes.system.item_list_config(
-                items=tuple([*x_config.items, *y_config.items]),  # Duplicates are ok.
+                # Preserve sorting order. Duplicates are ok.
+                items=tuple([*x_config.items, *y_config.items]),
                 )
             config_ref = mosaic.put(config)
         elif x_config_ref is not None:
