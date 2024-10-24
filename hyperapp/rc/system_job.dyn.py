@@ -56,7 +56,7 @@ class SystemJob:
         system.load_config(config)
         self._configure_system(system, resources)
         system.migrate_globals()
-        _ = system.resolve_service('marker_registry')
+        _ = system.resolve_service('marker_registry')  # Init markers.
         return system
 
     def _enum_constructor_refs(self, ctr_collector):
