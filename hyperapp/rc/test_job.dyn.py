@@ -24,7 +24,8 @@ from .code.requirement_factory import RequirementFactory
 from .code.job_result import JobResult
 from .code.service_resource import ServiceReq
 from .code.actor_resource import ActorReq
-from .code.system import UnknownServiceError, NotATemplate
+from .code.system import UnknownServiceError
+from .code.system_probe import SystemProbe
 from .code.fixture_probe import FixtureProbeTemplate
 from .code.system_job import SystemJob
 
@@ -149,6 +150,13 @@ def handle_servant_errors(_real_servant_ref, **kw):
     except Exception as x:
         raise RuntimeError(f"In test servant {servant}: {x}") from x
 
+
+def test_subprocess_rpc_main(connection, received_refs, system_config_piece, root_name, **kw):
+    system = SystemProbe()
+    system.load_config(system_config_piece)
+    _ = system.resolve_service('marker_registry')  # Init markers.
+    system.run(root_name, connection, received_refs, **kw)
+
         
 class TestJob(SystemJob):
 
@@ -262,6 +270,9 @@ class TestJob(SystemJob):
     def _run_system(self, system):
         rpc_servant_wrapper = system.resolve_service('rpc_servant_wrapper')
         rpc_servant_wrapper.set(self._wrap_rpc_servant)
+        subprocess_rpc_main = system.resolve_service('subprocess_rpc_main')
+        subprocess_rpc_main.set(test_subprocess_rpc_main)
+        
         try:
             system.run(self._root_name)
             status = JobStatus.ok
@@ -296,6 +307,7 @@ class TestJob(SystemJob):
         except BaseException as x:
             status, error_msg, traceback = self._prepare_error(x)
         finally:
+            subprocess_rpc_main.reset()
             rpc_servant_wrapper.set(None)
         return (status, error_msg, traceback, set())
 

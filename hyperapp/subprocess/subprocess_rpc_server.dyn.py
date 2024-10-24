@@ -13,6 +13,21 @@ from .code.rpc_proxy import RpcProxy
 log = logging.getLogger(__name__)
 
 
+class SubprocessRpcMain:
+
+    def __init__(self):
+        self.reset()
+
+    def set(self, fn):
+        self._fn = fn
+
+    def reset(self):
+        self._fn = system_main
+
+    def get(self):
+        return self._fn
+
+
 class _RpcServerProcess:
 
     def __init__(self, id, name, connection, peer, rpc_submit_factory, rpc_call_factory, identity, timeout_sec):
@@ -52,14 +67,22 @@ def _rpc_subprocess_callback(request, subprocess_name, subprocess_id, subprocess
 
 
 def subprocess_rpc_server_running(
-        system_config_piece, partial_ref, peer_registry, rpc_submit_factory, rpc_call_factory, subprocess_running, subprocess_transport):
+        system_config_piece,
+        partial_ref,
+        peer_registry,
+        rpc_submit_factory,
+        rpc_call_factory,
+        subprocess_running,
+        subprocess_transport,
+        subprocess_rpc_main,
+        ):
 
     @contextmanager
     def _subprocess_rpc_server(name, identity, timeout_sec=10, start_timeout_sec=3):
         subprocess_id = next(_subprocess_id_counter)
         _callback_signals[subprocess_id] = event = threading.Event()
         main_ref = partial_ref(
-            system_main,
+            subprocess_rpc_main.get(),
             system_config_piece=system_config_piece,
             root_name='rpc_server_main',
             name=name,

@@ -21,6 +21,22 @@ definitions:
         code.subprocess_system_main: subprocess.subprocess_system_main:subprocess_system_main.module
         code.subprocess_rpc_server_main: subprocess.subprocess_rpc_server_main:subprocess_rpc_server_main.module
 
+  SubprocessRpcMain:
+    type: legacy_type.builtin:attribute
+    value:
+      object: subprocess_rpc_server.module
+      attr_name: SubprocessRpcMain
+
+  subprocess_rpc_main.service:
+    type: legacy_type.system:service_template
+    value:
+      name: subprocess_rpc_main
+      ctl: system.system:dict_config_ctl
+      function: SubprocessRpcMain
+      free_params: []
+      service_params: []
+      want_config: false
+
   subprocess_rpc_server_running:
     type: legacy_type.builtin:attribute
     value:
@@ -42,4 +58,5 @@ definitions:
       - rpc_call_factory
       - subprocess_running
       - subprocess_transport
+      - subprocess_rpc_main
       want_config: false
