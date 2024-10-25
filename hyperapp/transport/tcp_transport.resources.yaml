@@ -2,46 +2,127 @@
 
 import:
 - builtins:mosaic.service
-- builtins:on_stop.service
 - builtins:unbundler.service
-- common.bundler:bundler.service
+- common.mark:mark.module
 - legacy_type.builtin:attribute
-- legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.system:actor_template
+- legacy_type.system:dict_config_ctl
+- legacy_type.system:service_template
 - legacy_type.tcp_transport:route
-- transport.identity:parcel_registry.service
-- transport.route_registry:route_registry.service
-- transport.sync_route_table:route_table.service
 - transport.tcp_utils:tcp_utils.module
-- transport.transport:transport.service
 definitions:
-  route_from_piece:
+  Route:
     type: legacy_type.builtin:attribute
     value:
       object: tcp_transport.module
-      attr_name: route_from_piece
+      attr_name: Route
+  Route.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: Route
+      attr_name: from_piece
+  _address_to_tcp_client:
+    type: legacy_type.builtin:attribute
+    value:
+      object: tcp_transport.module
+      attr_name: _address_to_tcp_client
+  _address_to_tcp_client.service:
+    type: legacy_type.system:service_template
+    value:
+      name: _address_to_tcp_client
+      ctl: system-dict_config_ctl.ctl
+      function: _address_to_tcp_client
+      free_params: []
+      service_params: []
+      want_config: false
+  _tcp_selector:
+    type: legacy_type.builtin:attribute
+    value:
+      object: tcp_transport.module
+      attr_name: _tcp_selector
+  _tcp_selector.service:
+    type: legacy_type.system:service_template
+    value:
+      name: _tcp_selector
+      ctl: system-dict_config_ctl.ctl
+      function: _tcp_selector
+      free_params: []
+      service_params:
+      - system_failed
+      - _address_to_tcp_client
+      want_config: false
+  _tcp_services:
+    type: legacy_type.builtin:attribute
+    value:
+      object: tcp_transport.module
+      attr_name: _tcp_services
+  _tcp_services.service:
+    type: legacy_type.system:service_template
+    value:
+      name: _tcp_services
+      ctl: system-dict_config_ctl.ctl
+      function: _tcp_services
+      free_params: []
+      service_params:
+      - bundler
+      - parcel_registry
+      - transport
+      - route_table
+      - _address_to_tcp_client
+      - _tcp_selector
+      want_config: false
+  system-dict_config_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value: {}
+  tcp_client_factory:
+    type: legacy_type.builtin:attribute
+    value:
+      object: tcp_transport.module
+      attr_name: tcp_client_factory
+  tcp_client_factory.service:
+    type: legacy_type.system:service_template
+    value:
+      name: tcp_client_factory
+      ctl: system-dict_config_ctl.ctl
+      function: tcp_client_factory
+      free_params:
+      - address
+      service_params:
+      - _tcp_services
+      want_config: false
   tcp_server_factory:
     type: legacy_type.builtin:attribute
     value:
       object: tcp_transport.module
       attr_name: tcp_server_factory
   tcp_server_factory.service:
-    type: legacy_type.builtin:call
+    type: legacy_type.system:service_template
     value:
+      name: tcp_server_factory
+      ctl: system-dict_config_ctl.ctl
       function: tcp_server_factory
+      free_params:
+      - bind_address
+      service_params:
+      - _tcp_services
+      - tcp_client_factory
+      want_config: false
   tcp_transport.module:
     type: legacy_type.builtin:python_module
     value:
       module_name: tcp_transport
       file_name: tcp_transport.dyn.py
       import_list:
+        code.mark: common.mark:mark.module
         code.tcp_utils: transport.tcp_utils:tcp_utils.module
         htypes.tcp_transport.route: legacy_type.tcp_transport:route
-        services.bundler: common.bundler:bundler.service
         services.mosaic: builtins:mosaic.service
-        services.on_stop: builtins:on_stop.service
-        services.parcel_registry: transport.identity:parcel_registry.service
-        services.route_registry: transport.route_registry:route_registry.service
-        services.route_table: transport.sync_route_table:route_table.service
-        services.transport: transport.transport:transport.service
         services.unbundler: builtins:unbundler.service
+  tcp_transport_route.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.tcp_transport:route
+      function: Route.from_piece
+      service_params:
+      - tcp_client_factory
