@@ -23,3 +23,7 @@ server_error = exception:
 function_target = record:
   servant_ref: ref
   params: param list
+
+service_target = record:
+  service_name: string
+  params: param list

@@ -97,11 +97,15 @@ import:
 - rpc.rpc_endpoint:rpc_request_futures.service
 - rpc.rpc_endpoint:rpc_target_creg.service
 - rpc.rpc_endpoint:rpc_function_target.actor-template
+- rpc.rpc_endpoint:rpc_service_target.actor-template
 - rpc.rpc_call:rpc_call_factory.service
 - rpc.rpc_call:rpc_servant_wrapper.service
+- rpc.rpc_call:rpc_service_wrapper.service
 - rpc.rpc_call:rpc_submit_factory.service
 - rpc.rpc_call:rpc_submit_target_factory.service
 - rpc.rpc_call:rpc_wait_for_future.service
+- rpc.rpc_call:service_call_factory.service
+- rpc.rpc_call:service_submit_factory.service
 - subprocess.subprocess:subprocess_running.service
 - subprocess.subprocess_rpc_server:subprocess_rpc_main.service
 - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
@@ -156,9 +160,12 @@ definitions:
       - rpc.rpc_endpoint:rpc_request_futures.service
       - rpc.rpc_call:rpc_submit_target_factory.service
       - rpc.rpc_call:rpc_servant_wrapper.service
+      - rpc.rpc_call:rpc_service_wrapper.service
       - rpc.rpc_call:rpc_submit_factory.service
+      - rpc.rpc_call:service_submit_factory.service
       - rpc.rpc_call:rpc_wait_for_future.service
       - rpc.rpc_call:rpc_call_factory.service
+      - rpc.rpc_call:service_call_factory.service
       - subprocess.subprocess:subprocess_running.service
       - subprocess.subprocess_rpc_server:subprocess_rpc_main.service
       - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
@@ -243,6 +250,7 @@ definitions:
     value:
       items:
       - rpc.rpc_endpoint:rpc_function_target.actor-template
+      - rpc.rpc_endpoint:rpc_service_target.actor-template
       - rc.rc_job:rc_job_job_target.actor-template
 
   rc_constructor_creg:

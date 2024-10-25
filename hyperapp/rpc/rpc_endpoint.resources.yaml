@@ -10,6 +10,7 @@ import:
 - legacy_type.rpc:request
 - legacy_type.rpc:response
 - legacy_type.rpc:server_error
+- legacy_type.rpc:service_target
 - legacy_type.system:actor_template
 - legacy_type.system:finalizer_gen_service_template
 - legacy_type.system:service_template
@@ -169,3 +170,17 @@ definitions:
       t: legacy_type.rpc:function_target
       function: run_function_target
       service_params: []
+
+  run_service_target:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rpc_endpoint.module
+      attr_name: run_service_target
+
+  rpc_service_target.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.rpc:service_target
+      function: run_service_target
+      service_params:
+      - system

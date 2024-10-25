@@ -114,9 +114,12 @@ import:
 - resource.partial_ref:partial_ref.service
 - rpc.rpc_call:rpc_call_factory.service
 - rpc.rpc_call:rpc_servant_wrapper.service
+- rpc.rpc_call:rpc_service_wrapper.service
 - rpc.rpc_call:rpc_submit_factory.service
 - rpc.rpc_call:rpc_submit_target_factory.service
 - rpc.rpc_call:rpc_wait_for_future.service
+- rpc.rpc_call:service_call_factory.service
+- rpc.rpc_call:service_submit_factory.service
 - rpc.rpc_endpoint:cancel_rpc_request_futures.service
 - rpc.rpc_endpoint:rpc_endpoint.service
 - rpc.rpc_endpoint:rpc_error_response.actor-template
@@ -125,6 +128,7 @@ import:
 - rpc.rpc_endpoint:rpc_request.actor-template
 - rpc.rpc_endpoint:rpc_request_futures.service
 - rpc.rpc_endpoint:rpc_response.actor-template
+- rpc.rpc_endpoint:rpc_service_target.actor-template
 - rpc.rpc_endpoint:rpc_target_creg.service
 - sample.sample_commands:open_sample_static_list.global-model-command
 - sample.sample_commands:open_sample_static_text_1.global-model-command
@@ -476,6 +480,7 @@ definitions:
       items:
       - rc.rc_job:rc_job_job_target.actor-template
       - rpc.rpc_endpoint:rpc_function_target.actor-template
+      - rpc.rpc_endpoint:rpc_service_target.actor-template
   signature_registry:
     type: legacy_type.system:item_list_config
     value:
@@ -515,9 +520,12 @@ definitions:
       - resource.partial_ref:partial_ref.service
       - rpc.rpc_call:rpc_call_factory.service
       - rpc.rpc_call:rpc_servant_wrapper.service
+      - rpc.rpc_call:rpc_service_wrapper.service
       - rpc.rpc_call:rpc_submit_factory.service
       - rpc.rpc_call:rpc_submit_target_factory.service
       - rpc.rpc_call:rpc_wait_for_future.service
+      - rpc.rpc_call:service_call_factory.service
+      - rpc.rpc_call:service_submit_factory.service
       - rpc.rpc_endpoint:cancel_rpc_request_futures.service
       - rpc.rpc_endpoint:rpc_endpoint.service
       - rpc.rpc_endpoint:rpc_message_creg.service

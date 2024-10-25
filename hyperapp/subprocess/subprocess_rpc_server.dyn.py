@@ -30,7 +30,7 @@ class SubprocessRpcMain:
 
 class _RpcServerProcess:
 
-    def __init__(self, id, name, connection, peer, rpc_submit_factory, rpc_call_factory, identity, timeout_sec):
+    def __init__(self, id, name, connection, peer, rpc_submit_factory, rpc_call_factory, service_call_factory, identity, timeout_sec):
         self.id = id
         self.name = name
         self.connection = connection
@@ -38,6 +38,7 @@ class _RpcServerProcess:
         self.identity = identity
         self._rpc_submit_factory = rpc_submit_factory
         self._rpc_call_factory = rpc_call_factory
+        self._service_call_factory = service_call_factory
         self._timeout_sec = timeout_sec
 
     def __repr__(self):
@@ -50,6 +51,9 @@ class _RpcServerProcess:
     def rpc_call(self, servant_fn):
         servant_fn_ref = pyobj_creg.actor_to_ref(servant_fn)
         return self._rpc_call_factory(self.peer, self.identity, servant_fn_ref, self._timeout_sec)
+
+    def service_call(self, service_name):
+        return self._service_call_factory(self.peer, self.identity, service_name, self._timeout_sec)
 
     def proxy(self, servant_ref):
         return RpcProxy(self._rpc_call_factory, self.identity, self.peer, servant_ref, self._timeout_sec)
@@ -72,6 +76,7 @@ def subprocess_rpc_server_running(
         peer_registry,
         rpc_submit_factory,
         rpc_call_factory,
+        service_call_factory,
         subprocess_running,
         subprocess_transport,
         subprocess_rpc_main,
@@ -98,8 +103,16 @@ def subprocess_rpc_server_running(
                 peer = peer_registry.animate(_subprocess_peer[subprocess_id])
                 log.info("Rpc server #%d %r is started with peer %s", subprocess_id, name, peer)
                 yield _RpcServerProcess(
-                    subprocess_id, name, process.connection, peer,
-                    rpc_submit_factory, rpc_call_factory, identity, timeout_sec)
+                    id=subprocess_id,
+                    name=name,
+                    connection=process.connection,
+                    peer=peer,
+                    rpc_submit_factory=rpc_submit_factory,
+                    rpc_call_factory=rpc_call_factory,
+                    service_call_factory=service_call_factory,
+                    identity=identity,
+                    timeout_sec=timeout_sec,
+                    )
             finally:
                 connection_rec.close()
     return _subprocess_rpc_server

@@ -7,6 +7,7 @@ import:
 - legacy_type.rpc:param
 - legacy_type.rpc:request
 - legacy_type.rpc:server_error
+- legacy_type.rpc:service_target
 - legacy_type.system:service_template
 - system.system:dict_config_ctl
 
@@ -19,6 +20,7 @@ definitions:
       file_name: rpc_call.dyn.py
       import_list:
         htypes.rpc.function_target: legacy_type.rpc:function_target
+        htypes.rpc.service_target: legacy_type.rpc:service_target
         htypes.rpc.param: legacy_type.rpc:param
         htypes.rpc.request: legacy_type.rpc:request
         htypes.rpc.server_error: legacy_type.rpc:server_error
@@ -45,18 +47,34 @@ definitions:
       - rpc_request_futures
       want_config: false
 
-  rpc_servant_wrapper:
+  RpcServantWrapper:
     type: legacy_type.builtin:attribute
     value:
       object: rpc_call.module
-      attr_name: rpc_servant_wrapper
+      attr_name: RpcServantWrapper
 
   rpc_servant_wrapper.service:
     type: legacy_type.system:service_template
     value:
       name: rpc_servant_wrapper
       ctl: system.system:dict_config_ctl
-      function: rpc_servant_wrapper
+      function: RpcServantWrapper
+      free_params: []
+      service_params: []
+      want_config: false
+
+  RpcServiceWrapper:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rpc_call.module
+      attr_name: RpcServiceWrapper
+
+  rpc_service_wrapper.service:
+    type: legacy_type.system:service_template
+    value:
+      name: rpc_service_wrapper
+      ctl: system.system:dict_config_ctl
+      function: RpcServiceWrapper
       free_params: []
       service_params: []
       want_config: false
@@ -80,6 +98,27 @@ definitions:
       service_params:
       - rpc_submit_target_factory
       - rpc_servant_wrapper
+      want_config: false
+
+  service_submit_factory:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rpc_call.module
+      attr_name: service_submit_factory
+
+  service_submit_factory.service:
+    type: legacy_type.system:service_template
+    value:
+      name: service_submit_factory
+      ctl: system.system:dict_config_ctl
+      function: service_submit_factory
+      free_params:
+      - receiver_peer
+      - sender_identity
+      - service_name
+      service_params:
+      - rpc_submit_target_factory
+      - rpc_service_wrapper
       want_config: false
 
   rpc_wait_for_future:
@@ -119,5 +158,27 @@ definitions:
       - timeout_sec
       service_params:
       - rpc_submit_factory
+      - rpc_wait_for_future
+      want_config: false
+
+  service_call_factory:
+    type: legacy_type.builtin:attribute
+    value:
+      object: rpc_call.module
+      attr_name: service_call_factory
+
+  service_call_factory.service:
+    type: legacy_type.system:service_template
+    value:
+      name: service_call_factory
+      ctl: system.system:dict_config_ctl
+      function: service_call_factory
+      free_params:
+      - receiver_peer
+      - sender_identity
+      - service_name
+      - timeout_sec
+      service_params:
+      - service_submit_factory
       - rpc_wait_for_future
       want_config: false

@@ -116,16 +116,30 @@ def on_rpc_request(request, transport_request, transport, peer_registry, rpc_tar
     transport.send(sender, receiver_identity, [response_ref])
 
 
+def _params_to_kw(params):
+    return {
+        p.name: mosaic.resolve_ref(p.value).value
+        for p in params
+        }
+
+        
 def run_function_target(target, rpc_request):
     log.debug("Resolve rpc servant: %s", target.servant_ref)
     servant_fn = pyobj_creg.invite(target.servant_ref)
-    kw = {
-        p.name: mosaic.resolve_ref(p.value).value
-        for p in target.params
-        }
+    kw = _params_to_kw(target.params)
     if 'request' in inspect.signature(servant_fn).parameters:
         kw = {**kw, 'request': rpc_request}
     log.info("Call rpc servant: %s (%s)", servant_fn, kw)
     result = servant_fn(**kw)
     log.info("Rpc servant %s call result: %s", servant_fn, result)
+    return result
+
+
+def run_service_target(target, rpc_request, system):
+    log.debug("Resolve rpc service: %r", target.service_name)
+    service = system.resolve_service(target.service_name)
+    kw = _params_to_kw(target.params)
+    log.info("Call rpc service: %s (%s)", service, kw)
+    result = service(**kw)
+    log.info("Rpc service %s call result: %s", service, result)
     return result
