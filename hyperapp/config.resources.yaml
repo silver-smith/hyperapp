@@ -52,6 +52,8 @@ import:
 - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
 - rc.config_item_resource:config_item_resource_config_item_resource_override.actor-template
 - rc.ctr_collector:ctr_collector.service
+- rc.ctr_collector:ctr_collector_ignore_module_cfg_item.actor-template
+- rc.ctr_collector:ctr_collector_mark_module_cfg_item.actor-template
 - rc.feed_ctr:feed_index_tree_feed_ctr.actor-template
 - rc.feed_ctr:feed_list_feed_ctr.actor-template
 - rc.fixture_ctr:fixture_resource_config_fixture_ctr.actor-template
@@ -94,15 +96,15 @@ import:
 - rc.service_ctr:system_service_template.actor-template
 - rc.service_marker:service2.marker-template
 - rc.service_probe_resource:service_resource_service_probe_ctr.actor-template
-- rc.service_probe_resource:service_resource_service_probe_resource.actor-template
+- rc.service_probe_resource:service_resource_service_probe_template.actor-template
 - rc.service_resource:service_resource_service_req.actor-template
 - rc.service_target:service_service_complete_req.actor-template
 - rc.service_target:service_service_found_req.actor-template
 - rc.test_job:test_job_failed_result.actor-template
 - rc.test_job:test_job_incomplete_result.actor-template
 - rc.test_job:test_job_job.actor-template
+- rc.test_job:test_job_rpc_service_wrapper.service
 - rc.test_job:test_job_succeeded_result.actor-template
-- rc.test_requirement:test_target_constructors_picker_resource.actor-template
 - rc.test_requirement:test_target_fixtures_module_req.actor-template
 - rc.test_requirement:test_target_recorder_resource.actor-template
 - rc.test_requirement:test_target_tested_code_req.actor-template
@@ -151,6 +153,7 @@ import:
 - sample.sample_tree:sample_tree_feed_sample_tree.model-cfg-item
 - sample.sample_tree:sample_tree_sample_tree.model-cfg-item
 - subprocess.subprocess:subprocess_running.service
+- subprocess.subprocess_rpc_server:subprocess_rpc_main.service
 - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
 - subprocess.subprocess_rpc_server_main:rpc_server_main.service
 - subprocess.subprocess_transport:subprocess_transport.service
@@ -169,6 +172,12 @@ import:
 - transport.rsa_identity:rsa_identity_rsa_signature.actor-template
 - transport.sync_route_table:route_table.service
 - transport.tcp_tests_callback:tcp_test_callback.service
+- transport.tcp_transport:_address_to_tcp_client.service
+- transport.tcp_transport:_tcp_selector.service
+- transport.tcp_transport:_tcp_services.service
+- transport.tcp_transport:tcp_client_factory.service
+- transport.tcp_transport:tcp_server_factory.service
+- transport.tcp_transport:tcp_transport_route.actor-template
 - transport.transport:transport.service
 - ui.command_cfg_item:command_cfg_item.actor-template
 - ui.command_cfg_item:command_model_command.actor-template
@@ -254,9 +263,12 @@ definitions:
     value:
       items:
       - rc.actor_probe:actor_resource_actor_probe_template.actor-template
+      - rc.ctr_collector:ctr_collector_ignore_module_cfg_item.actor-template
+      - rc.ctr_collector:ctr_collector_mark_module_cfg_item.actor-template
       - rc.fixture_probe:fixture_resource_fixture_obj_template.actor-template
       - rc.fixture_probe:fixture_resource_fixture_probe_template.actor-template
       - rc.marker_registry:marker_marker_template.actor-template
+      - rc.service_probe_resource:service_resource_service_probe_template.actor-template
       - ui.command_cfg_item:command_cfg_item.actor-template
       - ui.command_cfg_item:command_model_command.actor-template
       - ui.command_cfg_item:command_ui_command.actor-template
@@ -291,6 +303,7 @@ definitions:
         rc_job_result_creg: rc_job_result_creg
         rc_requirement_creg: rc_requirement_creg
         rc_resource_creg: rc_resource_creg
+        route_registry: route_registry
         rpc_message_creg: rpc_message_creg
         rpc_target_creg: rpc_target_creg
         signature_registry: signature_registry
@@ -462,11 +475,14 @@ definitions:
       - rc.config_item_resource:config_item_resource_config_item_resource_override.actor-template
       - rc.fixture_resource:fixture_resource_config_fixture_resource.actor-template
       - rc.import_resource:import_resource_import_resource.actor-template
-      - rc.service_probe_resource:service_resource_service_probe_resource.actor-template
-      - rc.test_requirement:test_target_constructors_picker_resource.actor-template
       - rc.test_requirement:test_target_recorder_resource.actor-template
       - rc.test_requirement:test_target_tested_code_resource.actor-template
       - rc.test_requirement:test_target_tested_service_resource.actor-template
+  route_registry:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - transport.tcp_transport:tcp_transport_route.actor-template
   rpc_message_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -515,6 +531,7 @@ definitions:
       - rc.rc_job_result_creg:rc_job_result_creg.service
       - rc.rc_requirement_creg:rc_requirement_creg.service
       - rc.rc_resource_creg:rc_resource_creg.service
+      - rc.test_job:test_job_rpc_service_wrapper.service
       - resource.data_to_res:data_to_ref.service
       - resource.data_to_res:data_to_res.service
       - resource.partial_ref:partial_ref.service
@@ -532,6 +549,7 @@ definitions:
       - rpc.rpc_endpoint:rpc_request_futures.service
       - rpc.rpc_endpoint:rpc_target_creg.service
       - subprocess.subprocess:subprocess_running.service
+      - subprocess.subprocess_rpc_server:subprocess_rpc_main.service
       - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
       - subprocess.subprocess_rpc_server_main:rpc_server_main.service
       - subprocess.subprocess_transport:subprocess_transport.service
@@ -547,6 +565,11 @@ definitions:
       - transport.rsa_identity:generate_rsa_identity.service
       - transport.sync_route_table:route_table.service
       - transport.tcp_tests_callback:tcp_test_callback.service
+      - transport.tcp_transport:_address_to_tcp_client.service
+      - transport.tcp_transport:_tcp_selector.service
+      - transport.tcp_transport:_tcp_services.service
+      - transport.tcp_transport:tcp_client_factory.service
+      - transport.tcp_transport:tcp_server_factory.service
       - transport.transport:transport.service
       - ui.command_creg:command_creg.service
       - ui.controller:controller_running.service
