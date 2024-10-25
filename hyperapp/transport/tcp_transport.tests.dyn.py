@@ -8,7 +8,7 @@ from .services import (
     mosaic,
     pyobj_creg,
     )
-from .code import tcp_tests_callback  # Just mark it as a requirement.
+from .code.mark import mark
 from .tested.code import tcp_transport
 
 log = logging.getLogger(__name__)
@@ -32,6 +32,26 @@ def test_client_factory(tcp_client_factory):
     address = ('127.0.0.1', 8888)
     connection = tcp_client_factory(address)
     connection._socket.close()
+
+
+@mark.fixture
+def tcp_test_callback(
+        peer_registry,
+        generate_rsa_identity,
+        endpoint_registry,
+        rpc_endpoint,
+        rpc_call_factory,
+        tcp_master_peer_piece,
+        master_fn_ref,
+        ):
+    log.info("tcp_test_callback: entered")
+    tcp_master_peer = peer_registry.animate(tcp_master_peer_piece)
+    my_identity = generate_rsa_identity(fast=True)
+    endpoint_registry.register(my_identity, rpc_endpoint)
+    rpc_call = rpc_call_factory(tcp_master_peer, my_identity, master_fn_ref)
+    log.info("tcp_test_callback: Calling master:")
+    rpc_call(message='hello')
+    log.info("tcp_test_callback: Calling master: done")
 
 
 def test_tcp_call(

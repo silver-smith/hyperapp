@@ -171,7 +171,6 @@ import:
 - transport.rsa_identity:rsa_identity_rsa_peer.actor-template
 - transport.rsa_identity:rsa_identity_rsa_signature.actor-template
 - transport.sync_route_table:route_table.service
-- transport.tcp_tests_callback:tcp_test_callback.service
 - transport.tcp_transport:_address_to_tcp_client.service
 - transport.tcp_transport:_tcp_selector.service
 - transport.tcp_transport:_tcp_services.service
@@ -564,7 +563,6 @@ definitions:
       - transport.route_registry:route_registry.service
       - transport.rsa_identity:generate_rsa_identity.service
       - transport.sync_route_table:route_table.service
-      - transport.tcp_tests_callback:tcp_test_callback.service
       - transport.tcp_transport:_address_to_tcp_client.service
       - transport.tcp_transport:_tcp_selector.service
       - transport.tcp_transport:_tcp_services.service
