@@ -330,6 +330,9 @@ class System:
         except ServiceDepLoopError:
             return ctl.lazy_config(self, service_name, config_template)
 
+    def __getitem__(self, service_name):
+        return self.resolve_service(service_name)
+
     def resolve_service(self, name, requester=None):
         try:
             return self._name_to_service[name]

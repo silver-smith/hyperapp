@@ -79,6 +79,7 @@ import:
 - rc.test_job:test_job_incomplete_result.actor-template
 - rc.test_job:test_job_succeeded_result.actor-template
 - rc.test_job:test_job_job.actor-template
+- rc.test_job:test_job_rpc_service_wrapper.service
 - rc.test_requirement:test_target_fixtures_module_req.actor-template
 - rc.test_requirement:test_target_recorder_resource.actor-template
 - rc.test_requirement:test_target_tested_code_req.actor-template
@@ -150,6 +151,7 @@ definitions:
       - rc.rc_requirement_creg:rc_requirement_creg.service
       - rc.rc_resource_creg:rc_resource_creg.service
       - rc.process_pool:process_pool_running.service
+      - rc.test_job:test_job_rpc_service_wrapper.service
       - resource.data_to_res:data_to_ref.service
       - resource.data_to_res:data_to_res.service
       - resource.partial_ref:partial_ref.service

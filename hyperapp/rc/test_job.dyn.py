@@ -136,10 +136,9 @@ class FailedTestResult(JobResult):
         pass
 
 
-def rpc_servant_wrapper(_real_servant_ref, **kw):
-    servant = pyobj_creg.invite(_real_servant_ref)
+def _catch_errors(fn, **kw):
     try:
-        return servant(**kw)
+        return fn(**kw)
     except UnknownServiceError as x:
         raise htypes.test_job.unknown_service_error(x.service_name) from x
     except ConfigItemMissingError as x:
@@ -149,6 +148,18 @@ def rpc_servant_wrapper(_real_servant_ref, **kw):
         raise htypes.test_job.config_item_missing_error(x.service_name, t_ref) from x
     except Exception as x:
         raise RuntimeError(f"In test servant {servant}: {x}") from x
+
+
+def rpc_servant_wrapper(_real_servant_ref, **kw):
+    servant = pyobj_creg.invite(_real_servant_ref)
+    return _catch_errors(servant, **kw)
+
+
+def rpc_service_wrapper(system, _real_service_name, **kw):
+    def run():
+        service = system.resolve_service(_real_service_name)
+        return service(**kw)
+    return _catch_errors(run)
 
 
 def test_subprocess_rpc_main(connection, received_refs, system_config_piece, root_name, **kw):
@@ -268,9 +279,11 @@ class TestJob(SystemJob):
         return FixtureProbeTemplate(self._test_fn_name, ctl_ref, test_fn_piece, params)
 
     def _run_system(self, system):
-        rpc_servant_wrapper = system.resolve_service('rpc_servant_wrapper')
+        rpc_servant_wrapper = system['rpc_servant_wrapper']
         rpc_servant_wrapper.set(self._wrap_rpc_servant)
-        subprocess_rpc_main = system.resolve_service('subprocess_rpc_main')
+        rpc_service_wrapper = system['rpc_service_wrapper']
+        rpc_service_wrapper.set(self._wrap_rpc_service)
+        subprocess_rpc_main = system['subprocess_rpc_main']
         subprocess_rpc_main.set(test_subprocess_rpc_main)
         
         try:
@@ -308,7 +321,8 @@ class TestJob(SystemJob):
             status, error_msg, traceback = self._prepare_error(x)
         finally:
             subprocess_rpc_main.reset()
-            rpc_servant_wrapper.set(None)
+            rpc_servant_wrapper.reset()
+            rpc_service_wrapper.reset()
         return (status, error_msg, traceback, set())
 
     def _prepare_import_error(self, x):
@@ -370,3 +384,7 @@ class TestJob(SystemJob):
         wrapped_servant_ref = pyobj_creg.actor_to_ref(rpc_servant_wrapper)
         wrapped_kw = {'_real_servant_ref': servant_ref, **kw}
         return (wrapped_servant_ref, wrapped_kw)
+
+    def _wrap_rpc_service(self, service_name, kw):
+        wrapped_kw = {'_real_service_name': service_name, **kw}
+        return ('test_job_rpc_service_wrapper', wrapped_kw)
