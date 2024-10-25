@@ -218,7 +218,7 @@ def _tcp_selector(system_failed, _address_to_tcp_client):
             system_failed(f"TCP selector thread is failed: {x}", x)
         log.info("TCP selector thread is finished.")
 
-    thread = threading.Thread(target=main)
+    thread = threading.Thread(target=main, name="TCP-selector")
     thread.start()
 
     yield selector
