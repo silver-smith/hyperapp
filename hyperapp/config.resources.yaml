@@ -167,6 +167,7 @@ import:
 - transport.identity:signature_registry.service
 - transport.route_registry:route_registry.service
 - transport.rsa_identity:generate_rsa_identity.service
+- transport.rsa_identity:rsa_identity_rsa_identity.actor-template
 - transport.rsa_identity:rsa_identity_rsa_parcel.actor-template
 - transport.rsa_identity:rsa_identity_rsa_peer.actor-template
 - transport.rsa_identity:rsa_identity_rsa_signature.actor-template
@@ -291,6 +292,7 @@ definitions:
         feed_creg: feed_creg
         feed_factory: feed_factory
         global_model_command_reg: global_model_command_reg
+        identity_registry: identity_registry
         marker_registry: marker_registry
         model_command_enumerator_reg: model_command_enumerator_reg
         model_command_reg: model_command_reg
@@ -361,6 +363,11 @@ definitions:
       - sample.sample_tree:open_feed_sample_fn_tree.global-model-command
       - sample.sample_tree:open_sample_fn_tree.global-model-command
       - ui.layout:open_layout_tree.global-model-command
+  identity_registry:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - transport.rsa_identity:rsa_identity_rsa_identity.actor-template
   marker_registry:
     type: legacy_type.system:item_list_config
     value:

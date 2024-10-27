@@ -120,6 +120,7 @@ import:
 - transport.identity:signature_registry.service
 - transport.route_registry:route_registry.service
 - transport.rsa_identity:generate_rsa_identity.service
+- transport.rsa_identity:rsa_identity_rsa_identity.actor-template
 - transport.rsa_identity:rsa_identity_rsa_parcel.actor-template
 - transport.rsa_identity:rsa_identity_rsa_peer.actor-template
 - transport.rsa_identity:rsa_identity_rsa_signature.actor-template
@@ -204,6 +205,12 @@ definitions:
       - rc.service_ctr:system_finalizer_gen_service_template.actor-template
       - rc.actor_ctr:system_actor_template.actor-template
       - rc.marker_ctr:marker_marker_template.actor-template
+
+  identity_registry:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - transport.rsa_identity:rsa_identity_rsa_identity.actor-template
 
   marker_registry:
     type: legacy_type.system:item_list_config
@@ -333,6 +340,7 @@ definitions:
         system: system
         cfg_item_creg: cfg_item_creg
         ctr_from_template_creg: ctr_from_template_creg
+        identity_registry: identity_registry
         marker_registry: marker_registry
         parcel_registry: parcel_registry
         peer_registry: peer_registry

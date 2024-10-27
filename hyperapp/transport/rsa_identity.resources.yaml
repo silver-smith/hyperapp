@@ -30,6 +30,19 @@ definitions:
       object: rsa_identity.module
       attr_name: RsaIdentity
 
+  RsaIdentity.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: RsaIdentity
+      attr_name: from_piece
+
+  rsa_identity_rsa_identity.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.rsa_identity:rsa_identity
+      function: RsaIdentity.from_piece
+      service_params: []
+
   RsaIdentity.generate:
     type: legacy_type.builtin:attribute
     value:
