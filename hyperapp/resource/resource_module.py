@@ -330,7 +330,7 @@ class ResourceModule:
         if self._text:
             log.info("Loading resource module %s (%d bytes)", self._name, len(self._text))
         elif self._path and self._load_from_file:
-            log.info("Loading resource module %s: %s", self._name, self._path)
+            log.debug("Loading resource module %s: %s", self._name, self._path)
         else:
             return
         module_contents = self._module_contents
