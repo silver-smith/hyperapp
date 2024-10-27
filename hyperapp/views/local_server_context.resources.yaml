@@ -2,22 +2,18 @@
 
 import:
 - builtins:mosaic.service
-- builtins:web.service
+- common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.command:cfg_item
+- legacy_type.command:ui_command
 - legacy_type.local_server_context:open_local_server_context_d
 - legacy_type.local_server_context:state
 - legacy_type.local_server_context:view
 - legacy_type.navigator:view
-- legacy_type.ui:ui_command
-- legacy_type.ui:command_properties
-- legacy_type.ui:command_properties_d
-- legacy_type.ui:ui_command_d
-- legacy_type.ui:ui_command_impl
-- ui.local_server:local_server.module
-- ui.view:view.module
-- ui.view_registry:view_creg.service
+- legacy_type.system:actor_template
+- legacy_type.system_fn:ctx_fn
 - views.context_view:context_view.module
 definitions:
   LocalServerContextView:
@@ -30,10 +26,6 @@ definitions:
     value:
       object: LocalServerContextView
       attr_name: from_piece
-  command_properties_d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.ui:command_properties_d
   local_server_context.module:
     type: legacy_type.builtin:python_module
     value:
@@ -41,44 +33,50 @@ definitions:
       file_name: local_server_context.dyn.py
       import_list:
         code.context_view: views.context_view:context_view.module
-        code.local_server: ui.local_server:local_server.module
-        code.view: ui.view:view.module
+        code.mark: common.mark:mark.module
         htypes.local_server_context.state: legacy_type.local_server_context:state
         htypes.local_server_context.view: legacy_type.local_server_context:view
         htypes.navigator.view: legacy_type.navigator:view
         services.mosaic: builtins:mosaic.service
-        services.view_creg: ui.view_registry:view_creg.service
-        services.web: builtins:web.service
+  local_server_context_view.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.local_server_context:view
+      function: LocalServerContextView.from_piece
+      service_params:
+      - view_creg
+      - local_server_peer
+  navigator_view_open_local_server_context.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.navigator:view
+      command: navigator_view_open_local_server_context.ui-command
+  navigator_view_open_local_server_context.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.local_server_context:open_local_server_context_d
+  navigator_view_open_local_server_context.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: navigator_view_open_local_server_context.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: open_local_server_context.system-fn
   open_local_server_context:
     type: legacy_type.builtin:attribute
     value:
       object: local_server_context.module
       attr_name: open_local_server_context
-  open_local_server_context.command:
-    type: legacy_type.ui:ui_command
-    value:
-      d: open_local_server_context.d
-      impl: open_local_server_context.impl
-  open_local_server_context.command_properties:
-    type: legacy_type.ui:command_properties
-    value:
-      is_global: false
-      uses_state: true
-      remotable: false
-  open_local_server_context.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.local_server_context:open_local_server_context_d
-  open_local_server_context.impl:
-    type: legacy_type.ui:ui_command_impl
+  open_local_server_context.system-fn:
+    type: legacy_type.system_fn:ctx_fn
     value:
       function: open_local_server_context
-      params:
+      ctx_params:
       - view
       - state
       - hook
       - ctx
-  ui_command_d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.ui:ui_command_d
+      service_params:
+      - view_creg

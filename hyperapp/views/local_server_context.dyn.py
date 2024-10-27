@@ -2,23 +2,23 @@ from functools import cached_property
 
 from . import htypes
 from .services import (
-    mark,
     mosaic,
-    view_creg,
     )
+from .code.mark import mark
 from .code.context_view import ContextView
-from .code.local_server import local_server_peer
 
 
 class LocalServerContextView(ContextView):
 
     @classmethod
-    def from_piece(cls, piece, ctx):
+    @mark.actor.view_creg
+    def from_piece(cls, piece, ctx, view_creg, local_server_peer):
         base_view = view_creg.invite(piece.base, ctx)
-        return cls(base_view)
+        return cls(local_server_peer, base_view)
 
-    def __init__(self, base_view):
+    def __init__(self, local_server_peer, base_view):
         super().__init__(base_view, label="Local server")
+        self._local_server_peer = local_server_peer
 
     @property
     def piece(self):
@@ -31,10 +31,6 @@ class LocalServerContextView(ContextView):
             remote_peer=self._local_server_peer
             )
 
-    @cached_property
-    def _local_server_peer(self):
-        return local_server_peer()
-
     def widget_state(self, widget):
         base_widget = self._base_widget(widget)
         base_state = self._base_view.widget_state(base_widget)
@@ -44,7 +40,7 @@ class LocalServerContextView(ContextView):
 
 
 @mark.ui_command(htypes.navigator.view)
-def open_local_server_context(view, state, hook, ctx):
+def open_local_server_context(view, state, hook, ctx, view_creg):
     new_view_piece = htypes.local_server_context.view(
         base=mosaic.put(view.piece),
         )

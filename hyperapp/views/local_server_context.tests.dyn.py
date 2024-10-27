@@ -1,17 +1,21 @@
 from unittest.mock import Mock
 
-from PySide6 import QtWidgets
-
 from . import htypes
 from .services import (
     mosaic,
-    view_creg,
     )
+from .code.mark import mark
 from .code.context import Context
+from .fixtures import qapp_fixtures
 from .tested.code import local_server_context
 
 
-def test_local_server_context_view():
+@mark.service2
+def local_server_peer():
+    return None
+
+
+def test_local_server_context_view(qapp):
     ctx = Context()
     base_piece = htypes.label.view("Sample label")
     piece = htypes.local_server_context.view(
@@ -21,18 +25,17 @@ def test_local_server_context_view():
     state = htypes.local_server_context.state(
         base=mosaic.put(base_state),
         )
-    app = QtWidgets.QApplication()
-    try:
-        view = local_server_context.LocalServerContextView.from_piece(piece, ctx)
-        widget = view.construct_widget(state, ctx)
-        assert view.piece
-        state = view.widget_state(widget)
-        assert state
-    finally:
-        app.shutdown()
+    view = local_server_context.LocalServerContextView.from_piece(piece, ctx)
+    widget = view.construct_widget(state, ctx)
+    assert view.piece == piece
+    state = view.widget_state(widget)
+    assert state
 
 
-def test_open_local_server_context():
+def test_open_local_server_context(view_creg):
+    view_creg.update_config({
+        htypes.local_server_context.view: local_server_context.LocalServerContextView.from_piece,
+        })
     ctx = Context()
     piece = htypes.label.view("Sample label")
     state = htypes.label.state()
