@@ -200,6 +200,8 @@ import:
 - ui.layout:layout_view_enum_layout_tree_commands.command-cfg-item
 - ui.layout:layout_view_open_view_item_commands.command-cfg-item
 - ui.layout:open_layout_tree.global-model-command
+- ui.local_server:local_server_peer.service
+- ui.local_server:local_server_peer_path.service
 - ui.master_details:master_details_view.actor-template
 - ui.master_details:master_details_view_unwrap_master_details.command-cfg-item
 - ui.master_details:wrap_master_details.universal-ui-command
@@ -582,6 +584,8 @@ definitions:
       - ui.controller:controller_running.service
       - ui.feed:feed_factory.service
       - ui.feed_creg:feed_creg.service
+      - ui.local_server:local_server_peer.service
+      - ui.local_server:local_server_peer_path.service
       - ui.model_command:get_model_commands.service
       - ui.model_command:global_model_command_reg.service
       - ui.model_command:model_command_enumerator_reg.service

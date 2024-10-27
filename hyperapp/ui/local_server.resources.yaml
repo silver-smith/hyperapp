@@ -1,9 +1,11 @@
 # Automatically generated file. Do not edit.
 
 import:
-- common.file_bundle:file_bundle.service
+- common.mark:mark.module
+- legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- transport.identity:peer_registry.service
+- legacy_type.system:dict_config_ctl
+- legacy_type.system:service_template
 definitions:
   local_server.module:
     type: legacy_type.builtin:python_module
@@ -11,5 +13,38 @@ definitions:
       module_name: local_server
       file_name: local_server.dyn.py
       import_list:
-        services.file_bundle: common.file_bundle:file_bundle.service
-        services.peer_registry: transport.identity:peer_registry.service
+        code.mark: common.mark:mark.module
+  local_server_peer:
+    type: legacy_type.builtin:attribute
+    value:
+      object: local_server.module
+      attr_name: local_server_peer
+  local_server_peer.service:
+    type: legacy_type.system:service_template
+    value:
+      name: local_server_peer
+      ctl: system-dict_config_ctl.ctl
+      function: local_server_peer
+      service_params:
+      - peer_registry
+      - file_bundle
+      - local_server_peer_path
+      want_config: false
+      free_params: []
+  local_server_peer_path:
+    type: legacy_type.builtin:attribute
+    value:
+      object: local_server.module
+      attr_name: local_server_peer_path
+  local_server_peer_path.service:
+    type: legacy_type.system:service_template
+    value:
+      name: local_server_peer_path
+      ctl: system-dict_config_ctl.ctl
+      function: local_server_peer_path
+      service_params: []
+      want_config: false
+      free_params: []
+  system-dict_config_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value: {}
