@@ -85,7 +85,7 @@ class ServiceTemplateCtr(ServiceTemplateCtrBase):
 
     @property
     def piece(self):
-        return htypes.rc_constructors.service_template(
+        return htypes.service_resource.service_template_ctr(
             attr_name=self._attr_name,
             name=self._name,
             ctl=self._ctl_ref,

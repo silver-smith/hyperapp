@@ -16,3 +16,12 @@ service_probe_template = record:
   ctl: ref
   function: ref
   params: string list
+
+
+service_template_ctr = record:
+  attr_name: string
+  name: string
+  ctl: ref
+  free_params: string list
+  service_params: string list
+  want_config: bool
