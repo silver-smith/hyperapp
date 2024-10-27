@@ -165,6 +165,10 @@ class Probe:
         service = self._apply_obj(self._params)
         return hash(service)
 
+    def __bool__(self):
+        service = self._apply_obj(self._params)
+        return bool(service)
+
     def __call__(self, *args, **kw):
         free_param_count = len(args) + len(kw)
         if free_param_count:
