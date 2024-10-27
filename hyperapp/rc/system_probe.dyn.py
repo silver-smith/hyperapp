@@ -46,7 +46,8 @@ def check_no_running_loop(fn):
         raise RuntimeError(f"Use mark.fixture.obj for async fixtures used inside async tests or fixtures: {fn}")
 
 
-def resolve_service_fn(system, service_name, fn, service_params, args, kw):
+def resolve_service_fn(system, service_name, fn, fn_params, service_params, args, kw):
+    free_params_ofs = len(service_params)
     try:
         idx = service_params.index('config')
     except ValueError:
@@ -58,21 +59,26 @@ def resolve_service_fn(system, service_name, fn, service_params, args, kw):
         service_params = service_params[1:]
         want_config = True
         config_args = [system.resolve_config(service_name)]
+        free_params_ofs += 1
+    free_params = fn_params[free_params_ofs:]
     service_args = [
         system.resolve_service(name)
         for name in service_params
         ]
     service = fn(*config_args, *service_args, *args, **kw)
-    if inspect.isgeneratorfunction(fn):
+    if inspect.isgeneratorfunction(fn) and not free_params:
         gen = service
         service = next(gen)
         system.add_finalizer(service_name, partial(service_finalize, fn, gen))
+        is_gen = True
+    else:
+        is_gen = False
     if inspect.isasyncgenfunction(fn):
         gen = service
         check_no_running_loop(fn)
         service = system.run_async_coroutine(anext(gen))
         system.add_finalizer(service_name, partial(service_async_finalize, system, fn, gen))
-    return (want_config, service_params, service)
+    return (want_config, service_params, free_params, is_gen, service)
 
 
 class ServiceConfigProbe:
@@ -190,9 +196,10 @@ class Probe:
     def _apply(self, service_params, *args, **kw):
         if self._resolved:
             return self._service
-        want_config, service_params, service = resolve_service_fn(self._system, self._name, self._fn, service_params, args, kw)
+        want_config, service_params, free_params, is_gen, service = resolve_service_fn(
+            self._system, self._name, self._fn, self._params, service_params, args, kw)
         self._service = service
-        self._add_constructor(want_config, service_params)
+        self._add_service_constructor(want_config, service_params, is_gen)
         self._resolved = True
         return service
 
@@ -204,7 +211,7 @@ class Probe:
             self._service = service
         return service
 
-    def _add_constructor(self, want_config, template):
+    def _add_service_constructor(self, want_config, template, is_gen):
         pass
 
 

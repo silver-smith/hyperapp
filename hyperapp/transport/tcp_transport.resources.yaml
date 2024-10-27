@@ -8,6 +8,7 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.system:actor_template
 - legacy_type.system:dict_config_ctl
+- legacy_type.system:finalizer_gen_service_template
 - legacy_type.system:service_template
 - legacy_type.tcp_transport:route
 - transport.tcp_utils:tcp_utils.module
@@ -42,7 +43,7 @@ definitions:
       object: tcp_transport.module
       attr_name: _tcp_selector
   _tcp_selector.service:
-    type: legacy_type.system:service_template
+    type: legacy_type.system:finalizer_gen_service_template
     value:
       name: _tcp_selector
       ctl: system-dict_config_ctl.ctl

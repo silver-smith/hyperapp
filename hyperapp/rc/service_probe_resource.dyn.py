@@ -8,7 +8,7 @@ from .code.rc_constructor import ModuleCtr
 from .code.rc_resource import Resource
 from .code.system_probe import Probe
 from .code.config_item_resource import ConfigItemResource
-from .code.service_ctr import ServiceTemplateCtr
+from .code.service_ctr import ServiceTemplateCtr, FinalizerGenServiceTemplateCtr
 
 
 class ServiceProbe(Probe):
@@ -22,18 +22,26 @@ class ServiceProbe(Probe):
     def __repr__(self):
         return f"<ServiceProbe {self._attr_name} {self._fn} {self._params}>"
 
-    def _add_constructor(self, want_config, service_params):
+    def _add_service_constructor(self, want_config, service_params, is_gen):
         free_params_ofs = len(service_params)
         if want_config:
             free_params_ofs += 1
-        ctr = ServiceTemplateCtr(
+        if is_gen:
+            ctr_cls = FinalizerGenServiceTemplateCtr
+            kw = {}
+        else:
+            ctr_cls = ServiceTemplateCtr
+            kw = dict(
+                free_params=self._params[free_params_ofs:],
+                )
+        ctr = ctr_cls(
             config_ctl=self._config_ctl,
             attr_name=self._attr_name,
             name=self._name,
             ctl_ref=self._ctl_ref,
-            free_params=self._params[free_params_ofs:],
             service_params=service_params,
             want_config=want_config,
+            **kw,
             )
         self._system.add_constructor(ctr)
 

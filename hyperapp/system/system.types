@@ -13,20 +13,17 @@ item_list_config = record:
 dict_config_ctl = record
 
 
-service_template = record:
+service_template_base = record:
   name: string
   ctl: ref
   function: ref
-  free_params: string list
   service_params: string list
   want_config: bool
 
-finalizer_gen_service_template = record:
-  name: string
-  ctl: ref
-  function: ref
-  service_params: string list
-  want_config: bool
+service_template = record(service_template_base):
+  free_params: string list
+
+finalizer_gen_service_template = record(service_template_base)
 
 
 actor_template = record:

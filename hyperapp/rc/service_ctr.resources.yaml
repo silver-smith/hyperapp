@@ -5,6 +5,7 @@ import:
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.service_resource:finalizer_gen_service_template_ctr
 - legacy_type.service_resource:service_template_ctr
 - legacy_type.system:actor_template
 - legacy_type.system:finalizer_gen_service_template
@@ -23,8 +24,10 @@ definitions:
         htypes.builtin.attribute: legacy_type.builtin:attribute
         htypes.builtin.call: legacy_type.builtin:call
         htypes.service_resource.service_template_ctr: legacy_type.service_resource:service_template_ctr
+        htypes.service_resource.finalizer_gen_service_template_ctr: legacy_type.service_resource:finalizer_gen_service_template_ctr
         htypes.system.dict_config_ctl: legacy_type.system:dict_config_ctl
         htypes.system.service_template: legacy_type.system:service_template
+        htypes.system.finalizer_gen_service_template: legacy_type.system:finalizer_gen_service_template
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
@@ -73,5 +76,25 @@ definitions:
     value:
       t: legacy_type.service_resource:service_template_ctr
       function: ServiceTemplateCtr.from_piece
+      service_params:
+      - config_ctl
+
+  FinalizerGenServiceTemplateCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: service_ctr.module
+      attr_name: FinalizerGenServiceTemplateCtr
+
+  FinalizerGenServiceTemplateCtr.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: FinalizerGenServiceTemplateCtr
+      attr_name: from_piece
+
+  service_resource_finalizer_gen_service_template_ctr.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.service_resource:finalizer_gen_service_template_ctr
+      function: FinalizerGenServiceTemplateCtr.from_piece
       service_params:
       - config_ctl

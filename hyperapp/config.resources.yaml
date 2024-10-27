@@ -90,6 +90,7 @@ import:
 - rc.rc_job_result_creg:rc_job_result_creg.service
 - rc.rc_requirement_creg:rc_requirement_creg.service
 - rc.rc_resource_creg:rc_resource_creg.service
+- rc.service_ctr:service_resource_finalizer_gen_service_template_ctr.actor-template
 - rc.service_ctr:service_resource_service_template_ctr.actor-template
 - rc.service_ctr:system_finalizer_gen_service_template.actor-template
 - rc.service_ctr:system_service_template.actor-template
@@ -441,6 +442,7 @@ definitions:
       - rc.fixture_ctr:fixture_resource_fixture_obj_ctr.actor-template
       - rc.fixture_ctr:fixture_resource_fixture_probe_ctr.actor-template
       - rc.model_ctr:model_resource_model_ctr.actor-template
+      - rc.service_ctr:service_resource_finalizer_gen_service_template_ctr.actor-template
       - rc.service_ctr:service_resource_service_template_ctr.actor-template
       - rc.service_probe_resource:service_resource_service_probe_ctr.actor-template
   rc_job_creg:

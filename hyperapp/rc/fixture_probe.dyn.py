@@ -50,8 +50,8 @@ class FixtureObjTemplate(FixtureTemplateBase):
 
     def resolve(self, system, service_name):
         fn = pyobj_creg.animate(self._fn)
-        want_config, service_params, service = resolve_service_fn(
-            system, service_name, fn, self._params, args=[], kw={})
+        want_config, service_params, free_params, is_gen, service = resolve_service_fn(
+            system, service_name, fn, self._params, self._params, args=[], kw={})
         if inspect.iscoroutine(service):
             service = system.run_async_coroutine(service)
         return service
