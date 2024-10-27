@@ -46,7 +46,7 @@ def check_no_running_loop(fn):
         raise RuntimeError(f"Use mark.fixture.obj for async fixtures used inside async tests or fixtures: {fn}")
 
 
-def resolve_service(system, service_name, fn, service_params, args, kw):
+def resolve_service_fn(system, service_name, fn, service_params, args, kw):
     try:
         idx = service_params.index('config')
     except ValueError:
@@ -190,7 +190,7 @@ class Probe:
     def _apply(self, service_params, *args, **kw):
         if self._resolved:
             return self._service
-        want_config, service_params, service = resolve_service(self._system, self._name, self._fn, service_params, args, kw)
+        want_config, service_params, service = resolve_service_fn(self._system, self._name, self._fn, service_params, args, kw)
         self._service = service
         self._add_constructor(want_config, service_params)
         self._resolved = True

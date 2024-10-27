@@ -4,7 +4,7 @@ from .services import (
     pyobj_creg,
     web,
     )
-from .code.system_probe import Probe, resolve_service
+from .code.system_probe import Probe, resolve_service_fn
 
 
 class FixtureProbe(Probe):
@@ -50,7 +50,7 @@ class FixtureObjTemplate(FixtureTemplateBase):
 
     def resolve(self, system, service_name):
         fn = pyobj_creg.animate(self._fn)
-        want_config, service_params, service = resolve_service(
+        want_config, service_params, service = resolve_service_fn(
             system, service_name, fn, self._params, args=[], kw={})
         if inspect.iscoroutine(service):
             service = system.run_async_coroutine(service)
