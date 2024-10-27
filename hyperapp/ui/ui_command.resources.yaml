@@ -40,12 +40,12 @@ definitions:
       name: get_view_commands
       ctl: system-dict_config_ctl.ctl
       function: get_view_commands
-      free_params:
-      - view
       service_params:
       - view_ui_command_reg
       - universal_ui_command_reg
       want_config: false
+      free_params:
+      - view
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}
@@ -77,9 +77,9 @@ definitions:
       name: universal_ui_command_reg
       ctl: command-untyped_config_ctl.ctl
       function: universal_ui_command_reg
-      free_params: []
       service_params: []
       want_config: true
+      free_params: []
   view_ui_command_reg:
     type: legacy_type.builtin:attribute
     value:
@@ -91,7 +91,7 @@ definitions:
       name: view_ui_command_reg
       ctl: command-typed_config_ctl.ctl
       function: view_ui_command_reg
-      free_params:
-      - view_t
       service_params: []
       want_config: true
+      free_params:
+      - view_t

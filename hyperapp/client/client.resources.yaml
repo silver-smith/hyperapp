@@ -77,10 +77,6 @@ definitions:
       name: client_async_main
       ctl: system-dict_config_ctl.ctl
       function: client_async_main
-      free_params:
-      - args
-      - app
-      - stop_event
       service_params:
       - endpoint_registry
       - generate_rsa_identity
@@ -90,6 +86,10 @@ definitions:
       - visualizer
       - controller_running
       want_config: false
+      free_params:
+      - args
+      - app
+      - stop_event
   client_main:
     type: legacy_type.builtin:attribute
     value:
@@ -101,11 +101,11 @@ definitions:
       name: client_main
       ctl: system-dict_config_ctl.ctl
       function: client_main
-      free_params:
-      - sys_argv
       service_params:
       - client_async_main
       want_config: false
+      free_params:
+      - sys_argv
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}

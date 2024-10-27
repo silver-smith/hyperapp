@@ -31,9 +31,9 @@ definitions:
       name: feed_creg
       ctl: system-dict_config_ctl.ctl
       function: feed_creg
-      free_params: []
       service_params: []
       want_config: true
+      free_params: []
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}

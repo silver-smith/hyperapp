@@ -27,9 +27,9 @@ definitions:
       name: sample_config_service
       ctl: system-dict_config_ctl.ctl
       function: sample_config_service
-      free_params: []
       service_params: []
       want_config: true
+      free_params: []
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}

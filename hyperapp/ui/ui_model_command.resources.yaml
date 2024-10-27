@@ -26,16 +26,16 @@ definitions:
       name: get_ui_model_commands
       ctl: system-dict_config_ctl.ctl
       function: get_ui_model_commands
-      free_params:
-      - lcs
-      - model
-      - ctx
       service_params:
       - model_view_creg
       - visualizer
       - global_model_command_reg
       - get_model_commands
       want_config: false
+      free_params:
+      - lcs
+      - model
+      - ctx
   set_ui_model_command:
     type: legacy_type.builtin:attribute
     value:
@@ -47,12 +47,12 @@ definitions:
       name: set_ui_model_command
       ctl: system-dict_config_ctl.ctl
       function: set_ui_model_command
+      service_params: []
+      want_config: false
       free_params:
       - lcs
       - model_t
       - command
-      service_params: []
-      want_config: false
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}

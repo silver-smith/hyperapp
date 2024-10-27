@@ -43,12 +43,12 @@ definitions:
       name: lcs_resource_storage_factory
       ctl: system-dict_config_ctl.ctl
       function: lcs_resource_storage_factory
-      free_params:
-      - name
-      - path
       service_params:
       - pick_refs
       want_config: false
+      free_params:
+      - name
+      - path
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}

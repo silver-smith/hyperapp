@@ -18,12 +18,12 @@ definitions:
       name: sample_fn_service_2
       ctl: system-dict_config_ctl.ctl
       function: sample_fn_service_2
-      free_params:
-      - param_1
-      - param_2
       service_params:
       - sample_value_service_2
       want_config: false
+      free_params:
+      - param_1
+      - param_2
   sample_service_2.module:
     type: legacy_type.builtin:python_module
     value:
@@ -42,10 +42,10 @@ definitions:
       name: sample_value_service_2
       ctl: system-dict_config_ctl.ctl
       function: sample_value_service_2
-      free_params: []
       service_params:
       - sample_fn_service_1
       want_config: false
+      free_params: []
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}

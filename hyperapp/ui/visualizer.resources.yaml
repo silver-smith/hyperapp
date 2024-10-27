@@ -36,11 +36,11 @@ definitions:
       name: get_custom_layout
       ctl: system-dict_config_ctl.ctl
       function: get_custom_layout
+      service_params: []
+      want_config: false
       free_params:
       - lcs
       - t
-      service_params: []
-      want_config: false
   set_custom_layout:
     type: legacy_type.builtin:attribute
     value:
@@ -52,12 +52,12 @@ definitions:
       name: set_custom_layout
       ctl: system-dict_config_ctl.ctl
       function: set_custom_layout
+      service_params: []
+      want_config: false
       free_params:
       - lcs
       - t
       - layout
-      service_params: []
-      want_config: false
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}
@@ -97,13 +97,13 @@ definitions:
       name: visualizer
       ctl: system-dict_config_ctl.ctl
       function: visualizer
-      free_params:
-      - lcs
-      - value
       service_params:
       - visualizer_reg
       - get_custom_layout
       want_config: false
+      free_params:
+      - lcs
+      - value
   visualizer_reg:
     type: legacy_type.builtin:attribute
     value:
@@ -115,7 +115,7 @@ definitions:
       name: visualizer_reg
       ctl: system-dict_config_ctl.ctl
       function: visualizer_reg
-      free_params:
-      - t
       service_params: []
       want_config: true
+      free_params:
+      - t

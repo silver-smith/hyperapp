@@ -34,9 +34,9 @@ definitions:
       name: _address_to_tcp_client
       ctl: system-dict_config_ctl.ctl
       function: _address_to_tcp_client
-      free_params: []
       service_params: []
       want_config: false
+      free_params: []
   _tcp_selector:
     type: legacy_type.builtin:attribute
     value:
@@ -48,7 +48,6 @@ definitions:
       name: _tcp_selector
       ctl: system-dict_config_ctl.ctl
       function: _tcp_selector
-      free_params: []
       service_params:
       - system_failed
       - _address_to_tcp_client
@@ -64,7 +63,6 @@ definitions:
       name: _tcp_services
       ctl: system-dict_config_ctl.ctl
       function: _tcp_services
-      free_params: []
       service_params:
       - bundler
       - parcel_registry
@@ -73,6 +71,7 @@ definitions:
       - _address_to_tcp_client
       - _tcp_selector
       want_config: false
+      free_params: []
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}
@@ -87,11 +86,11 @@ definitions:
       name: tcp_client_factory
       ctl: system-dict_config_ctl.ctl
       function: tcp_client_factory
-      free_params:
-      - address
       service_params:
       - _tcp_services
       want_config: false
+      free_params:
+      - address
   tcp_server_factory:
     type: legacy_type.builtin:attribute
     value:
@@ -103,12 +102,12 @@ definitions:
       name: tcp_server_factory
       ctl: system-dict_config_ctl.ctl
       function: tcp_server_factory
-      free_params:
-      - bind_address
       service_params:
       - _tcp_services
       - tcp_client_factory
       want_config: false
+      free_params:
+      - bind_address
   tcp_transport.module:
     type: legacy_type.builtin:python_module
     value:

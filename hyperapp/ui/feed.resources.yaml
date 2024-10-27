@@ -34,10 +34,10 @@ definitions:
       name: feed_factory
       ctl: system-dict_config_ctl.ctl
       function: feed_factory
-      free_params:
-      - piece
       service_params: []
       want_config: true
+      free_params:
+      - piece
   feed_index_tree_feed_type.actor-template:
     type: legacy_type.system:actor_template
     value:

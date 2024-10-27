@@ -47,18 +47,18 @@ definitions:
       name: controller_running
       ctl: system-dict_config_ctl.ctl
       function: controller_running
-      free_params:
-      - layout_bundle
-      - default_layout
-      - ctx
-      - show
-      - load_state
       service_params:
       - feed_factory
       - view_creg
       - get_view_commands
       - get_ui_model_commands
       want_config: false
+      free_params:
+      - layout_bundle
+      - default_layout
+      - ctx
+      - show
+      - load_state
   layout_view.feed-template:
     type: legacy_type.feed:feed_template
     value:
