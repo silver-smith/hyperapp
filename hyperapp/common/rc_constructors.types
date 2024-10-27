@@ -1,4 +1,0 @@
-
-service = record:
-  attr_name: string
-  name: string

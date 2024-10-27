@@ -12,7 +12,6 @@ from .code.import_target import (
     ImportTargetAlias,
     ImportTarget,
     )
-from .code.service_ctr import ServiceCtr
 from .code.config_resource_target import ConfigResourceTarget
 
 

@@ -9,7 +9,6 @@ import:
 - rc.custom_resource_registry:custom_resource_registry.module
 - rc.import_target:import_target.module
 - rc.python_module_resource_target:python_module_resource_target.module
-- rc.service_ctr:service_ctr.module
 - system.system:dict_config_ctl
 
 definitions:
@@ -27,7 +26,6 @@ definitions:
         code.custom_resource_registry: rc.custom_resource_registry:custom_resource_registry.module
         code.import_target: rc.import_target:import_target.module
         code.python_module_resource_target: rc.python_module_resource_target:python_module_resource_target.module
-        code.service_ctr: rc.service_ctr:service_ctr.module
 
   ctr_from_template_creg:
     type: legacy_type.builtin:attribute
