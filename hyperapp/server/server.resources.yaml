@@ -2,17 +2,12 @@
 
 import:
 - builtins:mosaic.service
-- common.file_bundle:file_bundle.service
+- common.mark:mark.module
 - common.reconstructors:reconstructors.module
+- legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- rpc.rpc_call:rpc_call_factory.service
-- rpc.rpc_endpoint:rpc_endpoint_factory.service
-- transport.endpoint:endpoint_registry.service
-- transport.identity:identity_registry.service
-- transport.identity:peer_registry.service
-- transport.rsa_identity:generate_rsa_identity.service
-- transport.sync_route_table:route_table.service
-- transport.tcp_transport:tcp_server_factory.service
+- legacy_type.system:dict_config_ctl
+- legacy_type.system:service_template
 definitions:
   server.module:
     type: legacy_type.builtin:python_module
@@ -20,14 +15,32 @@ definitions:
       module_name: server
       file_name: server.dyn.py
       import_list:
+        code.mark: common.mark:mark.module
         code.reconstructors: common.reconstructors:reconstructors.module
-        services.endpoint_registry: transport.endpoint:endpoint_registry.service
-        services.file_bundle: common.file_bundle:file_bundle.service
-        services.generate_rsa_identity: transport.rsa_identity:generate_rsa_identity.service
-        services.identity_registry: transport.identity:identity_registry.service
         services.mosaic: builtins:mosaic.service
-        services.peer_registry: transport.identity:peer_registry.service
-        services.route_table: transport.sync_route_table:route_table.service
-        services.rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
-        services.rpc_endpoint_factory: rpc.rpc_endpoint:rpc_endpoint_factory.service
-        services.tcp_server_factory: transport.tcp_transport:tcp_server_factory.service
+  server_main:
+    type: legacy_type.builtin:attribute
+    value:
+      object: server.module
+      attr_name: server_main
+  server_main.service:
+    type: legacy_type.system:service_template
+    value:
+      name: server_main
+      ctl: system-dict_config_ctl.ctl
+      function: server_main
+      service_params:
+      - stop_signal
+      - route_table
+      - identity_registry
+      - generate_rsa_identity
+      - endpoint_registry
+      - rpc_endpoint
+      - file_bundle
+      - tcp_server_factory
+      want_config: false
+      free_params:
+      - sys_argv
+  system-dict_config_ctl.ctl:
+    type: legacy_type.system:dict_config_ctl
+    value: {}

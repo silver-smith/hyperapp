@@ -152,6 +152,7 @@ import:
 - sample.sample_tree:sample_tree_feed_sample_tree.feed-template
 - sample.sample_tree:sample_tree_feed_sample_tree.model-cfg-item
 - sample.sample_tree:sample_tree_sample_tree.model-cfg-item
+- server.server:server_main.service
 - subprocess.subprocess:subprocess_running.service
 - subprocess.subprocess_rpc_server:subprocess_rpc_main.service
 - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
@@ -554,6 +555,7 @@ definitions:
       - rpc.rpc_endpoint:rpc_message_creg.service
       - rpc.rpc_endpoint:rpc_request_futures.service
       - rpc.rpc_endpoint:rpc_target_creg.service
+      - server.server:server_main.service
       - subprocess.subprocess:subprocess_running.service
       - subprocess.subprocess_rpc_server:subprocess_rpc_main.service
       - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
