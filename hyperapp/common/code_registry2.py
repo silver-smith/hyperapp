@@ -23,6 +23,11 @@ class CodeRegistry2:
         value, t = self._web.summon_with_t(ref)
         return self._animate(t, value, args, kw)
 
+    def invite_opt(self, ref, *args, **kw):
+        if ref is None:
+            return None
+        return self.invite(ref, *args, **kw)
+
     def animate(self, piece, *args, **kw):
         t = deduce_value_type(piece)
         return self._animate(t, piece, args, kw)
