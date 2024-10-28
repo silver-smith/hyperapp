@@ -3,13 +3,13 @@ import logging
 
 from . import htypes
 from .services import (
-    data_to_res,
-    fn_to_ref,
-    mark,
     mosaic,
     pyobj_creg,
     )
+from .code.mark import mark
 from .code.context import Context
+from .code.system_fn import ContextFn
+from .code.model_command import UnboundModelCommand
 from .tested.code import list_to_tree_adapter
 
 log = logging.getLogger(__name__)
@@ -59,31 +59,36 @@ def sample_fn_3(piece):
         ]
 
 
-@mark.service
-def pick_visualizer_info():
-    def _pick_visualizer_info(t):
-        if t is htypes.list_to_tree_adapter_tests.sample_list_2:
-            element_t = pyobj_creg.actor_to_piece(htypes.list_to_tree_adapter_tests.item_2)
-            ui_t = htypes.ui.list_ui_t(
-                element_t=mosaic.put(element_t),
-                )
-            impl = htypes.ui.fn_impl(
-                function=fn_to_ref(sample_fn_2),
-                params=('piece',),
-                )
-            return (ui_t, impl)
-        if t is htypes.list_to_tree_adapter_tests.sample_list_3:
-            element_t = pyobj_creg.actor_to_piece(htypes.list_to_tree_adapter_tests.item_3)
-            ui_t = htypes.ui.list_ui_t(
-                element_t=mosaic.put(element_t),
-                )
-            impl = htypes.ui.fn_impl(
-                function=fn_to_ref(sample_fn_3),
-                params=('piece',),
-                )
-            return (ui_t, impl)
-        assert False, repr(t)
-    return _pick_visualizer_info
+@mark.config_fixture('visualizer_reg')
+def visualizer_config():
+    fn_2 = htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(sample_fn_2),
+        ctx_params=('piece',),
+        service_params=(),
+        )
+    fn_3 = htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(sample_fn_3),
+        ctx_params=('piece',),
+        service_params=(),
+        )
+    element_t_2 = pyobj_creg.actor_to_piece(htypes.list_to_tree_adapter_tests.item_2)
+    element_t_3 = pyobj_creg.actor_to_piece(htypes.list_to_tree_adapter_tests.item_3)
+    ui_t_2 = htypes.model.list_ui_t(
+        element_t=mosaic.put(element_t_2),
+        )
+    ui_t_3 = htypes.model.list_ui_t(
+        element_t=mosaic.put(element_t_3),
+        )
+    return {
+        htypes.list_to_tree_adapter_tests.sample_list_2: htypes.model.model(
+            ui_t=mosaic.put(ui_t_2),
+            system_fn=mosaic.put(fn_2),
+            ),
+        htypes.list_to_tree_adapter_tests.sample_list_3: htypes.model.model(
+            ui_t=mosaic.put(ui_t_3),
+            system_fn=mosaic.put(fn_3),
+            ),
+        }
 
 
 class MockSubscriber:
@@ -103,43 +108,63 @@ class MockSubscriber:
             log.info("Mock subscriber: condition is met: %s", cond)
 
 
-async def test_three_layers():
+@mark.config_fixture('model_command_reg')
+def model_command_reg_config(partial_ref):
+    open_fn_1 = ContextFn(
+        partial_ref=partial_ref, 
+        ctx_params=('piece', 'current_item'),
+        service_params=(),
+        unbound_fn=sample_fn_1_open,
+        bound_fn=sample_fn_1_open,
+        )
+    open_fn_2 = ContextFn(
+        partial_ref=partial_ref, 
+        ctx_params=('piece', 'current_item'),
+        service_params=(),
+        unbound_fn=sample_fn_2_open,
+        bound_fn=sample_fn_2_open,
+        )
+    command_1 = UnboundModelCommand(
+        d=htypes.list_to_tree_adapter_tests.open_1_d(),
+        ctx_fn=open_fn_1,
+        properties=htypes.command.properties(False, False, False),
+        )
+    command_2 = UnboundModelCommand(
+        d=htypes.list_to_tree_adapter_tests.open_2_d(),
+        ctx_fn=open_fn_2,
+        properties=htypes.command.properties(False, False, False),
+        )
+    return {
+        htypes.list_to_tree_adapter_tests.sample_list_1: [command_1],
+        htypes.list_to_tree_adapter_tests.sample_list_2: [command_2],
+        }
+
+
+async def test_three_layers(data_to_ref):
     ctx = Context()
     model = htypes.list_to_tree_adapter_tests.sample_list_1()
     root_element_t = pyobj_creg.actor_to_piece(htypes.list_to_tree_adapter_tests.item_1)
-    open_command_1_d_res = data_to_res(htypes.list_to_tree_adapter_tests.open_1_d())
-    open_command_1_impl = htypes.ui.model_command_impl(
-        function=fn_to_ref(sample_fn_1_open),
-        params=('piece', 'current_item'),
-        )
-    open_command_1 = htypes.ui.model_command(
-        d=mosaic.put(open_command_1_d_res),
-        impl=mosaic.put(open_command_1_impl),
-        )
-    open_command_2_d_res = data_to_res(htypes.list_to_tree_adapter_tests.open_2_d())
-    open_command_2_impl = htypes.ui.model_command_impl(
-        function=fn_to_ref(sample_fn_2_open),
-        params=('piece', 'current_item'),
-        )
-    open_command_2 = htypes.ui.model_command(
-        d=mosaic.put(open_command_2_d_res),
-        impl=mosaic.put(open_command_2_impl),
-        )
+    open_command_1_d_ref = data_to_ref(htypes.list_to_tree_adapter_tests.open_1_d())
+    open_command_2_d_ref = data_to_ref(htypes.list_to_tree_adapter_tests.open_2_d())
     piece_2_t = pyobj_creg.actor_to_piece(htypes.list_to_tree_adapter_tests.sample_list_2)
     piece_3_t = pyobj_creg.actor_to_piece(htypes.list_to_tree_adapter_tests.sample_list_3)
+    fn_1 = htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(sample_fn_1),
+        ctx_params=('piece',),
+        service_params=(),
+        )
     adapter_piece = htypes.list_to_tree_adapter.adapter(
         root_element_t=mosaic.put(root_element_t),
-        root_function=fn_to_ref(sample_fn_1),
-        root_params=('piece',),
-        root_open_children_command=mosaic.put(open_command_1),
+        root_function=mosaic.put(fn_1),
+        root_open_children_command_d=open_command_1_d_ref,
         layers=(
             htypes.list_to_tree_adapter.layer(
                 piece_t=mosaic.put(piece_2_t),
-                open_children_command=mosaic.put(open_command_2),
+                open_children_command_d=open_command_2_d_ref,
                 ),
             htypes.list_to_tree_adapter.layer(
                 piece_t=mosaic.put(piece_3_t),
-                open_children_command=None,
+                open_children_command_d=None,
                 ),
             ),
         )
@@ -189,11 +214,15 @@ async def test_single_layer():
     ctx = Context()
     model = htypes.list_to_tree_adapter_tests.sample_list_1()
     root_element_t = pyobj_creg.actor_to_piece(htypes.list_to_tree_adapter_tests.item_1)
+    fn_1 = htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(sample_fn_1),
+        ctx_params=('piece',),
+        service_params=(),
+        )
     adapter_piece = htypes.list_to_tree_adapter.adapter(
         root_element_t=mosaic.put(root_element_t),
-        root_function=fn_to_ref(sample_fn_1),
-        root_params=('piece',),
-        root_open_children_command=None,
+        root_function=mosaic.put(fn_1),
+        root_open_children_command_d=None,
         layers=(),
         )
     adapter = list_to_tree_adapter.ListToTreeAdapter.from_piece(adapter_piece, model, ctx)

@@ -6,11 +6,11 @@ from typing import Any
 from . import htypes
 from .services import (
     deduce_t,
-    model_command_factory,
-    pick_visualizer_info,
     pyobj_creg,
     web,
     )
+from .code.mark import mark
+from .code.system_fn import ContextFn
 from .code.tree_adapter import IndexTreeAdapterBase
 
 log = logging.getLogger(__name__)
@@ -19,9 +19,8 @@ log = logging.getLogger(__name__)
 @dataclass
 class _Layer:
     element_t: Any|None = None
-    list_fn: Any|None = None
-    list_fn_params: list[str]|None = None
-    open_command: Any|None = None
+    list_fn: ContextFn|None = None
+    open_command_d: Any|None = None
 
 
 @dataclass
@@ -32,26 +31,30 @@ class _NonRootLayer(_Layer):
 class ListToTreeAdapter(IndexTreeAdapterBase):
 
     @classmethod
-    def from_piece(cls, piece, model, ctx):
+    @mark.actor.ui_adapter_creg(htypes.list_to_tree_adapter.adapter)
+    def from_piece(cls, piece, model, ctx, system_fn_creg, get_model_commands, visualizer_reg):
         layers = {}
         for rec in piece.layers:
             piece_t = pyobj_creg.invite(rec.piece_t)
             layer = _NonRootLayer(
                 piece_t=piece_t,
-                open_command=rec.open_children_command,
+                open_command_d=pyobj_creg.invite_opt(rec.open_children_command_d),
                 )
             layers[piece_t] = layer
         root_element_t = pyobj_creg.invite(piece.root_element_t)
         root_layer = _Layer(
             element_t=root_element_t,
-            list_fn=pyobj_creg.invite(piece.root_function),
-            list_fn_params=piece.root_params,
-            open_command=piece.root_open_children_command,
+            list_fn=system_fn_creg.invite(piece.root_function),
+            open_command_d=pyobj_creg.invite_opt(piece.root_open_children_command_d),
             )
-        return cls(model, root_element_t, ctx, root_layer, layers)
+        return cls(system_fn_creg, get_model_commands, visualizer_reg, model, root_element_t, ctx, root_layer, layers)
 
-    def __init__(self, model, item_t, ctx, root_layer, layers):
-        super().__init__(model, item_t, ctx)
+    def __init__(self, system_fn_creg, get_model_commands, visualizer_reg, model, item_t, ctx, root_layer, layers):
+        super().__init__(model, item_t)
+        self._system_fn_creg = system_fn_creg
+        self._get_model_commands = get_model_commands
+        self._visualizer_reg = visualizer_reg
+        self._ctx = ctx
         self._id_to_piece = {
             0: model,
             }
@@ -87,25 +90,22 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
         pp_id = self._id_to_parent_id[parent_id]
         pp_layer = self._parent_id_to_layer[pp_id]
         pp_piece = self._id_to_piece[pp_id]
-        if pp_layer.open_command is None:
+        if pp_layer.open_command_d is None:
             return None
         parent_item = self._id_to_item[parent_id]
         command_ctx = self._ctx.clone_with(
             piece=pp_piece,
             current_item=parent_item,
             )
-        command_piece = web.summon(pp_layer.open_command)
-        command = model_command_factory(command_piece, command_ctx)
-        piece = await command.run()
-        log.info("List-to-tree adapter: open command result: %s", piece)
+        piece = await self._run_open_command(pp_layer.open_command_d, pp_piece, current_item=parent_item)
         piece_t = deduce_t(piece)
         try:
-            ui_t, impl = pick_visualizer_info(piece_t)
+            ui_t, fn_ref = self._visualizer_reg(piece_t)
         except KeyError:
             log.info("List-to-tree: Model for %s is not available", piece_t)
             return None
-        if not isinstance(ui_t, htypes.ui.list_ui_t) or not isinstance(impl, htypes.ui.fn_impl):
-            log.info("List-to-tree: Model for %s is not a function list", piece_t)
+        if not isinstance(ui_t, htypes.model.list_ui_t):
+            log.info("List-to-tree: Model for %s is not a list", piece_t)
             return None
         try:
             layer = self._layers[piece_t]
@@ -114,8 +114,7 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
             layer = _NonRootLayer(piece_t=piece_t)
             self._layers[piece_t] = layer
         layer.element_t = pyobj_creg.invite(ui_t.element_t)
-        layer.list_fn = pyobj_creg.invite(impl.function)
-        layer.list_fn_params = impl.params
+        layer.list_fn = self._system_fn_creg.invite(fn_ref)
         self._parent_id_to_layer[parent_id] = layer  # Cache Nones also.
         self._id_to_piece[parent_id] = piece
         item_list = self._load_item_list(layer, piece)
@@ -123,17 +122,28 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
         for item in item_list:
             self._append_item(parent_id, item)
 
+    async def _run_open_command(self, command_d, model, current_item):
+        command_ctx = self._ctx.push(
+            piece=model,
+            model=model,
+            current_item=current_item,
+            )
+        command_list = self._get_model_commands(model, command_ctx)
+        try:
+            unbound_command = next(cmd for cmd in command_list if cmd.d == command_d)
+        except StopIteration:
+            raise RuntimeError(f"Command {command_d} is not available anymore")
+        bound_command = unbound_command.bind(command_ctx)
+        piece = await bound_command.run()
+        log.info("List-to-tree adapter: open command result: %s", piece)
+        return piece
+        
     def _load_item_list(self, layer, piece):
-        available_params = {
-            **self._ctx.as_dict(),
-            'piece': piece,
-            'ctx': self._ctx,
-            }
         kw = {
-            name: available_params[name]
-            for name in layer.list_fn_params
+            'piece': piece,
+            'model': piece,
             }
-        return layer.list_fn(**kw)
+        return layer.list_fn.call(self._ctx, **kw)
 
     def _get_layer(self, parent_id):
         try:
