@@ -52,6 +52,10 @@ class RecorderObject:
         path = '.'.join(self._prefix)
         raise IncompleteImportedObjectError(self._prefix, f"Attempt to inherit from not-ready class {path}")
 
+    # RecorderObject may be using in type declaration during import stage, like 'AType|None'.
+    def __or__(self, other_type):
+        return self
+
 
 class ImportRecorder(Finder):
 
