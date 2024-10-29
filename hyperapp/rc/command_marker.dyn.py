@@ -177,19 +177,19 @@ def ui_command_marker(t, module_name, system, ctr_collector, data_to_res):
     return UiCommandWrapper(system, ctr_collector, data_to_res, module_name, service_name, t)
 
 
+def ui_model_command_marker(t, module_name, system, ctr_collector, data_to_res):
+    if not isinstance(t, Type):
+        raise RuntimeError(f"Use type specialized marker, like '@mark.ui_model_command(my_type)'")
+    service_name = 'view_ui_model_command_reg'
+    return UiCommandWrapper(system, ctr_collector, data_to_res, module_name, service_name, t)
+
+
 def universal_ui_command_marker(fn, module_name, system, ctr_collector, data_to_res):
     if isinstance(fn, Type):
         raise RuntimeError(f"Use non-type specialized marker, like '@mark.universal_ui_command'")
     check_is_function(real_fn(fn))
     service_name = 'universal_ui_command_reg'
     return UniversalUiCommandProbe(system, ctr_collector, data_to_res, module_name, service_name, fn)
-
-
-# TODO or remove.
-def ui_model_command_marker(t, module_name):
-    def _ui_command_wrapper(fn):
-        return fn
-    return _ui_command_wrapper
 
 
 def model_command_marker(fn_or_t, module_name, system, ctr_collector, data_to_res):
