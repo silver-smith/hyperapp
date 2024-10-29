@@ -5,9 +5,14 @@ import:
 - builtins:web.service
 - common.mark:mark.module
 - legacy_type.builtin:attribute
+- legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.command:cfg_item
+- legacy_type.command:ui_command
 - legacy_type.system:actor_template
+- legacy_type.system_fn:ctx_fn
 - legacy_type.tabs:list_item
+- legacy_type.tabs:open_tab_list_d
 - legacy_type.tabs:state
 - legacy_type.tabs:tab
 - legacy_type.tabs:view
@@ -23,6 +28,18 @@ definitions:
     value:
       object: TabsView
       attr_name: from_piece
+  open_tab_list:
+    type: legacy_type.builtin:attribute
+    value:
+      object: tabs.module
+      attr_name: open_tab_list
+  open_tab_list.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_tab_list
+      ctx_params:
+      - view
+      service_params: []
   tabs.module:
     type: legacy_type.builtin:python_module
     value:
@@ -44,3 +61,21 @@ definitions:
       function: TabsView.from_piece
       service_params:
       - view_creg
+  tabs_view_open_tab_list.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.tabs:view
+      command: tabs_view_open_tab_list.ui-command
+  tabs_view_open_tab_list.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.tabs:open_tab_list_d
+  tabs_view_open_tab_list.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: tabs_view_open_tab_list.d
+      properties:
+        is_global: false
+        uses_state: false
+        remotable: true
+      system_fn: open_tab_list.system-fn

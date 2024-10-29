@@ -204,6 +204,7 @@ import:
 - ui.list_as_tree:list_as_tree_opener_commands.model-cfg-item
 - ui.list_as_tree:list_as_tree_opener_commands_toggle_open_command.command-cfg-item
 - ui.list_as_tree:list_view_switch_list_to_tree.command-cfg-item
+- ui.list_as_tree:tree_view_open_opener_commands.command-cfg-item
 - ui.local_server:local_server_peer.service
 - ui.local_server:local_server_peer_path.service
 - ui.master_details:master_details_view.actor-template
@@ -237,6 +238,7 @@ import:
 - ui.qt.remote_fn_list_adapter:list_adapter_remote_fn_list_adapter.actor-template
 - ui.qt.static_list_adapter:list_adapter_static_list_adapter.actor-template
 - ui.qt.tabs:tabs_view.actor-template
+- ui.qt.tabs:tabs_view_open_tab_list.command-cfg-item
 - ui.qt.text:text_edit_view.actor-template
 - ui.qt.text:text_readonly_view.actor-template
 - ui.qt.tree:tree_view.actor-template
@@ -325,6 +327,7 @@ definitions:
         universal_ui_command_reg: universal_ui_command_reg
         view_creg: view_creg
         view_ui_command_reg: view_ui_command_reg
+        view_ui_model_command_reg: view_ui_model_command_reg
         visualizer_reg: visualizer_reg
   config_ctl_creg:
     type: legacy_type.system:item_list_config
@@ -668,6 +671,12 @@ definitions:
       - ui.text_toggle_editable:text_edit_view_toggle_editable.command-cfg-item
       - ui.text_toggle_editable:text_readonly_view_toggle_editable.command-cfg-item
       - views.local_server_context:navigator_view_open_local_server_context.command-cfg-item
+  view_ui_model_command_reg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.list_as_tree:tree_view_open_opener_commands.command-cfg-item
+      - ui.qt.tabs:tabs_view_open_tab_list.command-cfg-item
   visualizer_reg:
     type: legacy_type.system:item_list_config
     value:

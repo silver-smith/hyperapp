@@ -16,6 +16,7 @@ import:
 - legacy_type.feed:feed_template
 - legacy_type.feed:list_feed_type
 - legacy_type.list:view
+- legacy_type.list_as_tree:open_opener_commands_d
 - legacy_type.list_as_tree:opener_command_item
 - legacy_type.list_as_tree:opener_commands
 - legacy_type.list_as_tree:switch_list_to_tree_d
@@ -123,6 +124,19 @@ definitions:
         uses_state: false
         remotable: false
       system_fn: switch_list_to_tree.system-fn
+  open_opener_commands:
+    type: legacy_type.builtin:attribute
+    value:
+      object: list_as_tree.module
+      attr_name: open_opener_commands
+  open_opener_commands.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_opener_commands
+      ctx_params:
+      - view
+      - current_path
+      service_params: []
   opener_command_list:
     type: legacy_type.builtin:attribute
     value:
@@ -165,3 +179,21 @@ definitions:
       - get_model_commands
       - get_custom_layout
       - set_custom_layout
+  tree_view_open_opener_commands.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.tree:view
+      command: tree_view_open_opener_commands.ui-command
+  tree_view_open_opener_commands.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.list_as_tree:open_opener_commands_d
+  tree_view_open_opener_commands.ui-command:
+    type: legacy_type.command:ui_command
+    value:
+      d: tree_view_open_opener_commands.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: true
+      system_fn: open_opener_commands.system-fn
