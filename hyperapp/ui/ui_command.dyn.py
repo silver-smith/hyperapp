@@ -9,6 +9,7 @@ from .code.mark import mark
 from .code.command import UnboundCommand, BoundCommand, CommandKind
 from .code.command_groups import default_command_groups
 from .code.command_config_ctl import TypedCommandConfigCtl, UntypedCommandConfigCtl
+from .code.ui_model_command import wrap_model_command_to_ui_command
 
 log = logging.getLogger(__name__)
 
@@ -60,15 +61,26 @@ def view_ui_command_reg(config, view_t):
     return config.get(view_t, [])
 
 
+# UI commands returning model.
+@mark.service2(ctl=TypedCommandConfigCtl())
+def view_ui_model_command_reg(config, view_t):
+    return config.get(view_t, [])
+
+
 @mark.service2(ctl=UntypedCommandConfigCtl())
 def universal_ui_command_reg(config):
     return config
 
 
 @mark.service2
-def get_view_commands(view_ui_command_reg, universal_ui_command_reg, view):
+def get_view_commands(model_view_creg, visualizer, view_ui_command_reg, view_ui_model_command_reg, universal_ui_command_reg, lcs, view):
     view_t = deduce_t(view.piece)
+    ui_model_command_list = [
+        wrap_model_command_to_ui_command(model_view_creg, visualizer, lcs, cmd)
+        for cmd in view_ui_model_command_reg(view_t)
+        ]
     return [
         *view_ui_command_reg(view_t),
+        *ui_model_command_list,
         *universal_ui_command_reg,
         ]

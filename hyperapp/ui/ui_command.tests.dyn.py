@@ -1,5 +1,6 @@
 import weakref
 from functools import partial
+from unittest.mock import Mock
 
 from . import htypes
 from .services import (
@@ -65,11 +66,13 @@ def view_ui_command_reg_config(partial_ref):
 
 
 async def test_view_commands(get_view_commands, view, widget):
+    lcs = Mock()
+    lcs.get.return_value = None
     ctx = Context(
         view=view,
         widget=weakref.ref(widget),
         )
-    command_list = get_view_commands(view)
+    command_list = get_view_commands(lcs, view)
     [unbound_command] = command_list
     bound_command = unbound_command.bind(ctx)
     result = await bound_command.run()

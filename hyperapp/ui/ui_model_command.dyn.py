@@ -1,4 +1,5 @@
 # Model commands wrapped to UI commands
+# or UI commands returning model wrapped to UI commands.
 
 import logging
 
@@ -23,7 +24,7 @@ class UnboundUiModelCommand(UnboundCommandBase):
         super().__init__(model_command.d)
         self._model_view_creg = model_view_creg
         self._visualizer = visualizer
-        self._model_command = model_command
+        self._model_command = model_command  # Model command or UI command returning a model.
         self._layout = layout
         self._lcs = lcs
 
@@ -54,7 +55,7 @@ class BoundUiModelCommand(BoundCommandBase):
         self._model_view_creg = model_view_creg
         self._visualizer = visualizer
         self._lcs = lcs
-        self._model_command = model_command
+        self._model_command = model_command  # Model command or UI command returning a model.
         self._groups = groups
         self._layout = layout
         self._ctx = ctx

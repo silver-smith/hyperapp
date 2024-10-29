@@ -15,6 +15,7 @@ import:
 - ui.command:command.module
 - ui.command_config_ctl:command_config_ctl.module
 - ui.command_groups:command_groups.module
+- ui.ui_model_command:ui_model_command.module
 definitions:
   command-typed_config_ctl.ctl:
     type: legacy_type.command:typed_config_ctl
@@ -41,10 +42,14 @@ definitions:
       ctl: system-dict_config_ctl.ctl
       function: get_view_commands
       service_params:
+      - model_view_creg
+      - visualizer
       - view_ui_command_reg
+      - view_ui_model_command_reg
       - universal_ui_command_reg
       want_config: false
       free_params:
+      - lcs
       - view
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
@@ -59,6 +64,7 @@ definitions:
         code.command_config_ctl: ui.command_config_ctl:command_config_ctl.module
         code.command_groups: ui.command_groups:command_groups.module
         code.mark: common.mark:mark.module
+        code.ui_model_command: ui.ui_model_command:ui_model_command.module
         services.deduce_t: builtins:deduce_t.service
         services.pyobj_creg: builtins:pyobj_creg.service
   ui_command_from_piece:
@@ -91,6 +97,21 @@ definitions:
       name: view_ui_command_reg
       ctl: command-typed_config_ctl.ctl
       function: view_ui_command_reg
+      service_params: []
+      want_config: true
+      free_params:
+      - view_t
+  view_ui_model_command_reg:
+    type: legacy_type.builtin:attribute
+    value:
+      object: ui_command.module
+      attr_name: view_ui_model_command_reg
+  view_ui_model_command_reg.service:
+    type: legacy_type.system:service_template
+    value:
+      name: view_ui_model_command_reg
+      ctl: command-typed_config_ctl.ctl
+      function: view_ui_model_command_reg
       service_params: []
       want_config: true
       free_params:
