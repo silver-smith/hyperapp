@@ -120,15 +120,15 @@ def opener_command_list(piece, lcs, ctx, data_to_ref, get_model_commands, get_cu
     root_piece, root_piece_t = web.summon_with_t(piece.root_piece)
     layer_piece, layer_piece_t = web.summon_with_t(piece.layer_piece)
     view = get_custom_layout(lcs, root_piece_t)
-    current_command = None
+    current_command_d = None
     if isinstance(view, htypes.tree.view):
         adapter = web.summon(view.adapter)
         if isinstance(adapter, htypes.list_to_tree_adapter.adapter):
-            current_command = _get_current_command(root_piece_t, layer_piece_t, adapter)
+            current_command_d = _get_current_command_d(root_piece_t, layer_piece_t, adapter)
     command_ctx = _make_command_ctx(ctx, layer_piece)
     command_list = get_model_commands(layer_piece, command_ctx)
     return [
-        _make_command_item(data_to_ref, command, is_opener=command == current_command)
+        _make_command_item(data_to_ref, command, is_opener=command.d == current_command_d)
         for command in command_list
         ]
 
