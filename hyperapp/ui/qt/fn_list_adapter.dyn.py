@@ -25,6 +25,10 @@ class FnListAdapter(FnListAdapterBase):
         self._ctx = ctx
         self._fn = fn
 
+    @property
+    def function(self):
+        return self._fn
+
     def _call_fn(self, **kw):
         try:
             identity = self._ctx.identity

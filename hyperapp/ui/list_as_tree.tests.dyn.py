@@ -3,18 +3,17 @@ from unittest.mock import Mock
 
 from . import htypes
 from .services import (
-    data_to_res,
-    fn_to_ref,
-    mark,
     mosaic,
     pyobj_creg,
-    ui_adapter_creg,
     web,
     )
+from .code.mark import mark
 from .code.context import Context
-from .code.list_adapter import FnListAdapter
+from .code.system_fn import ContextFn
+from .code.model_command import UnboundModelCommand
 from .code.list_to_tree_adapter import ListToTreeAdapter
 from .code.tree import TreeView
+from .fixtures import feed_fixtures
 from .tested.code import list_as_tree
 
 log = logging.getLogger(__name__)
@@ -30,20 +29,24 @@ def sample_fn_1(piece):
         ]
 
 
-def test_switch_list_to_tree():
+def test_switch_list_to_tree(ui_adapter_creg):
     ctx = Context()
-    piece = htypes.list_as_tree_tests.sample_list_1()
-    adapter_piece = htypes.list_adapter.fn_list_adapter(
-        element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_as_tree_tests.item_1)),
-        function=fn_to_ref(sample_fn_1),
-        params=('piece',),
+    model = htypes.list_as_tree_tests.sample_list_1()
+    fn_1 = htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(sample_fn_1),
+        ctx_params=('piece',),
+        service_params=(),
         )
-    adapter = FnListAdapter.from_piece(adapter_piece, piece, ctx)
+    piece = htypes.list_adapter.fn_list_adapter(
+        element_t=pyobj_creg.actor_to_ref(htypes.list_as_tree_tests.item_1),
+        system_fn=mosaic.put(fn_1),
+        )
+    adapter = ui_adapter_creg.animate(piece, model, ctx)
 
     view = Mock(adapter=adapter)
     hook = Mock()
 
-    list_as_tree.switch_list_to_tree(piece, view, hook, ctx)
+    list_as_tree.switch_list_to_tree(model, view, hook, ctx)
 
     hook.replace_view.assert_called_once()
     new_view = hook.replace_view.call_args.args[0]
@@ -57,24 +60,58 @@ def sample_fn_1_open(piece, current_item):
     return htypes.list_as_tree_tests.sample_list_2(base_id=current_item.id)
 
 
-def test_open_opener_commans():
+def sample_fn_2_open(piece, current_item):
+    log.info("Sample fn 2 open: %s", piece)
+    assert isinstance(piece, htypes.list_as_tree_tests.sample_list_2), repr(piece)
+    return htypes.list_as_tree_tests.sample_list_2(base_id=current_item.id)
+
+
+@mark.config_fixture('model_command_reg')
+def model_command_reg_config(partial_ref):
+    open_fn_1 = ContextFn(
+        partial_ref=partial_ref, 
+        ctx_params=('piece', 'current_item'),
+        service_params=(),
+        unbound_fn=sample_fn_1_open,
+        bound_fn=sample_fn_1_open,
+        )
+    open_fn_2 = ContextFn(
+        partial_ref=partial_ref, 
+        ctx_params=('piece', 'current_item'),
+        service_params=(),
+        unbound_fn=sample_fn_2_open,
+        bound_fn=sample_fn_2_open,
+        )
+    command_1 = UnboundModelCommand(
+        d=htypes.list_as_tree_tests.open_1_d(),
+        ctx_fn=open_fn_1,
+        properties=htypes.command.properties(False, False, False),
+        )
+    command_2 = UnboundModelCommand(
+        d=htypes.list_as_tree_tests.open_2_d(),
+        ctx_fn=open_fn_2,
+        properties=htypes.command.properties(False, False, False),
+        )
+    return {
+        htypes.list_as_tree_tests.sample_list_1: [command_1],
+        htypes.list_as_tree_tests.sample_list_2: [command_2],
+        }
+
+
+def test_open_opener_commands(data_to_ref, ui_adapter_creg):
     ctx = Context()
     model = htypes.list_as_tree_tests.sample_list_1()
     root_element_t = pyobj_creg.actor_to_piece(htypes.list_as_tree_tests.item_1)
-    open_command_1_d_res = data_to_res(htypes.list_as_tree_tests.open_1_d())
-    open_command_1_impl = htypes.ui.model_command_impl(
-        function=fn_to_ref(sample_fn_1_open),
-        params=('piece', 'current_item'),
-        )
-    open_command_1 = htypes.ui.model_command(
-        d=mosaic.put(open_command_1_d_res),
-        impl=mosaic.put(open_command_1_impl),
+    open_command_1_d_ref = data_to_ref(htypes.list_as_tree_tests.open_1_d())
+    fn_1 = htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(sample_fn_1),
+        ctx_params=('piece',),
+        service_params=(),
         )
     adapter_piece = htypes.list_to_tree_adapter.adapter(
         root_element_t=mosaic.put(root_element_t),
-        root_function=fn_to_ref(sample_fn_1),
-        root_params=('piece',),
-        root_open_children_command=mosaic.put(open_command_1),
+        root_function=mosaic.put(fn_1),
+        root_open_children_command_d=open_command_1_d_ref,
         layers=(),
         )
     adapter = ui_adapter_creg.animate(adapter_piece, model, ctx)
@@ -87,41 +124,25 @@ def test_open_opener_commans():
     assert web.summon(result.layer_piece) == model
 
 
-def _open_1_command():
-    open_command_1_d_res = data_to_res(htypes.list_as_tree_tests.open_1_d())
-    impl = htypes.ui.model_command_impl(
-        function=fn_to_ref(sample_fn_1_open),
-        params=('piece', 'current_item'),
-        )
-    return htypes.ui.model_command(
-        d=mosaic.put(open_command_1_d_res),
-        impl=mosaic.put(impl),
-        )
-
-
-@mark.service
-def model_commands():
-    def _factory(model):
-        return [_open_1_command()]
-    return _factory
-
-
 def test_opener_commands_list():
+    ctx = Context()
+    lcs = Mock()
     root_piece = htypes.list_as_tree_tests.sample_list_1()
     layer_piece = htypes.list_as_tree_tests.sample_list_2(base_id=0)
     piece = htypes.list_as_tree.opener_commands(
         root_piece=mosaic.put(root_piece),
         layer_piece=mosaic.put(layer_piece),
         )
-    lcs = Mock()
-    result = list_as_tree.opener_command_list(piece, lcs)
+    result = list_as_tree.opener_command_list(piece, lcs, ctx)
     assert type(result) is list
-    item = result[0]
-    assert item.name == 'open_1'
-    assert web.summon(item.command) == _open_1_command()
+    assert len(result) == 1
+    [item] = result
+    assert item.name == 'open_2'
+    assert pyobj_creg.invite_opt(item.command_d) == htypes.list_as_tree_tests.open_2_d()
 
 
-async def test_non_root_open_command():
+async def test_set_root_open_command(data_to_ref):
+    ctx = Context()
     root_piece = htypes.list_as_tree_tests.sample_list_1()
     layer_piece = root_piece
     piece = htypes.list_as_tree.opener_commands(
@@ -129,31 +150,33 @@ async def test_non_root_open_command():
         layer_piece=mosaic.put(layer_piece),
         )
     root_element_t = pyobj_creg.actor_to_piece(htypes.list_as_tree_tests.item_1)
+    fn_1 = htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(sample_fn_1),
+        ctx_params=('piece',),
+        service_params=(),
+        )
     adapter_piece = htypes.list_to_tree_adapter.adapter(
         root_element_t=mosaic.put(root_element_t),
-        root_function=fn_to_ref(sample_fn_1),
-        root_params=('piece',),
-        root_open_children_command=None,
+        root_function=mosaic.put(fn_1),
+        root_open_children_command_d=None,
         layers=(),
         )
     view = htypes.tree.view(
         adapter=mosaic.put(adapter_piece),
         )
-    command = _open_1_command()
     current_item = htypes.list_as_tree.opener_command_item(
-        command=mosaic.put(command),
-        name='open_1',
-        d=str(command.d),
-        impl="<unused>",
+        command_d=data_to_ref(htypes.list_as_tree_tests.open_1_d()),
+        name="<unused>",
         is_opener=False,
         )
     lcs = Mock()
     lcs.get.return_value = view
-    result = await list_as_tree.toggle_open_command(piece, 0, current_item, lcs)
+    result = await list_as_tree.toggle_open_command(piece, 0, current_item, ctx, lcs)
     lcs.set.assert_called_once()
 
 
-async def test_set_non_root_open_command():
+async def test_set_non_root_open_command(data_to_ref):
+    ctx = Context()
     root_piece = htypes.list_as_tree_tests.sample_list_1()
     layer_piece_t = htypes.list_as_tree_tests.sample_list_2
     layer_piece = layer_piece_t(base_id=0)
@@ -165,29 +188,30 @@ async def test_set_non_root_open_command():
     layers = (
         htypes.list_to_tree_adapter.layer(
             piece_t=mosaic.put(layer_piece_t_res),
-            open_children_command=None,
+            open_children_command_d=None,
             ),
         )
     root_element_t = pyobj_creg.actor_to_piece(htypes.list_as_tree_tests.item_1)
+    fn_1 = htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(sample_fn_1),
+        ctx_params=('piece',),
+        service_params=(),
+        )
     adapter_piece = htypes.list_to_tree_adapter.adapter(
         root_element_t=mosaic.put(root_element_t),
-        root_function=fn_to_ref(sample_fn_1),
-        root_params=('piece',),
-        root_open_children_command=None,
+        root_function=mosaic.put(fn_1),
+        root_open_children_command_d=None,
         layers=layers,
         )
     view = htypes.tree.view(
         adapter=mosaic.put(adapter_piece),
         )
-    command = _open_1_command()
     current_item = htypes.list_as_tree.opener_command_item(
-        command=mosaic.put(command),
+        command_d=data_to_ref(htypes.list_as_tree_tests.open_1_d()),
         name="<unused>",
-        d=str(command.d),
-        impl="<unused>",
         is_opener=False,
         )
     lcs = Mock()
     lcs.get.return_value = view
-    result = await list_as_tree.toggle_open_command(piece, 0, current_item, lcs)
+    result = await list_as_tree.toggle_open_command(piece, 0, current_item, ctx, lcs)
     lcs.set.assert_called_once()

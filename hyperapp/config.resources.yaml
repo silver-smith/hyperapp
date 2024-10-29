@@ -200,6 +200,10 @@ import:
 - ui.layout:layout_view_enum_layout_tree_commands.command-cfg-item
 - ui.layout:layout_view_open_view_item_commands.command-cfg-item
 - ui.layout:open_layout_tree.global-model-command
+- ui.list_as_tree:list_as_tree_opener_commands.feed-template
+- ui.list_as_tree:list_as_tree_opener_commands.model-cfg-item
+- ui.list_as_tree:list_as_tree_opener_commands_toggle_open_command.command-cfg-item
+- ui.list_as_tree:list_view_switch_list_to_tree.command-cfg-item
 - ui.local_server:local_server_peer.service
 - ui.local_server:local_server_peer_path.service
 - ui.master_details:master_details_view.actor-template
@@ -350,6 +354,7 @@ definitions:
       - sample.sample_list:sample_list_feed_sample_list.feed-template
       - sample.sample_tree:sample_tree_feed_sample_tree.feed-template
       - ui.controller:layout_view.feed-template
+      - ui.list_as_tree:list_as_tree_opener_commands.feed-template
   global_model_command_reg:
     type: legacy_type.system:item_list_config
     value:
@@ -408,6 +413,7 @@ definitions:
       - sample.sample_commands:sample_tree_sample_tree_sample_tree_info.command-cfg-item
       - ui.layout:layout_command_list_add_view_command.command-cfg-item
       - ui.layout:layout_view_open_view_item_commands.command-cfg-item
+      - ui.list_as_tree:list_as_tree_opener_commands_toggle_open_command.command-cfg-item
       - views.command_layout_context:global_commands_view_open_command_layout_context.command-cfg-item
       - views.command_layout_context:model_commands_view_open_command_layout_context.command-cfg-item
   model_view_creg:
@@ -648,6 +654,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - ui.list_as_tree:list_view_switch_list_to_tree.command-cfg-item
       - ui.master_details:master_details_view_unwrap_master_details.command-cfg-item
       - ui.navigator:navigator_view_go_back.command-cfg-item
       - ui.navigator:navigator_view_go_forward.command-cfg-item
@@ -678,3 +685,4 @@ definitions:
       - sample.sample_tree:sample_tree_sample_tree.model-cfg-item
       - ui.layout:layout_command_list.model-cfg-item
       - ui.layout:layout_view.model-cfg-item
+      - ui.list_as_tree:list_as_tree_opener_commands.model-cfg-item

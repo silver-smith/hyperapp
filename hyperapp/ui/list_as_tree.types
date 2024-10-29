@@ -8,8 +8,6 @@ opener_commands = record:
   layer_piece: ref
 
 opener_command_item = record:
-  command: ref
+  command_d: ref
   name: string
-  d: string
-  impl: string
   is_opener: bool

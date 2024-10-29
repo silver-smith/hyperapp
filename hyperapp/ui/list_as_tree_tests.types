@@ -1,12 +1,12 @@
 sample_list_1 = record
 
+sample_list_2 = record:
+  base_id: int
+
 item_1 = record:
   id: int
   name: string
   text: string
 
 open_1_d = record
-
-
-sample_list_2 = record:
-  base_id: int
+open_2_d = record
