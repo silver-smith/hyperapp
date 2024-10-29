@@ -189,9 +189,7 @@ def set_ui_model_command(lcs, model_t, command):
 
 
 def wrap_model_command_to_ui_command(model_view_creg, visualizer, lcs, command):
-    if not isinstance(command, UnboundModelCommand):
-        # Layout command enumerator returns UI commands. Do not wrap them.
-        return command
+    # Layout command enumerator returns UI commands. Wrapping it (hopefully) won't cause any problems
     # layout = _get_ui_model_command_layout(lcs, command_d)
     return UnboundUiModelCommand(model_view_creg, visualizer, lcs, command, layout=None)
 
