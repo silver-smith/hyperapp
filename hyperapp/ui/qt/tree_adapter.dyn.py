@@ -40,7 +40,7 @@ class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
 
     def row_id(self, parent_id, row):
         try:
-            return self._id_list(parent_id)[row]
+            return self._get_id_list(parent_id)[row]
         except IndexError as x:
             raise RuntimeError(f"{x}: {parent_id} / {row} : {self._id_to_children_id_list}")
 
@@ -54,7 +54,7 @@ class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
         return self.row_count(id) > 0
 
     def row_count(self, parent_id):
-        id_list = self._id_list(parent_id)
+        id_list = self._get_id_list(parent_id)
         return len(id_list)
 
     def process_diff(self, diff):
@@ -67,11 +67,11 @@ class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
             parent_path = diff.path[:-1]
         parent_id = 0
         for idx in parent_path:
-            parent_id = self._id_list(parent_id)[idx]
+            parent_id = self._get_id_list(parent_id)[idx]
         if isinstance(diff, TreeDiff.Append):
             self._append_item(parent_id, diff.item)
             return
-        item_id_list = self._id_list(parent_id)
+        item_id_list = self._get_id_list(parent_id)
         item_id = next(self._id_counter)
         self._id_to_parent_id[item_id] = parent_id
         self._id_to_item[item_id] = diff.item
@@ -85,7 +85,7 @@ class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
         self._send_view_diff(visual_diff)
 
     def _append_item(self, parent_id, item):
-        item_id_list = self._id_list(parent_id)
+        item_id_list = self._get_id_list(parent_id)
         item_id = next(self._id_counter)
         self._id_to_parent_id[item_id] = parent_id
         self._id_to_item[item_id] = item
@@ -113,12 +113,12 @@ class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
         item_id = 0
         idx = 0
         while idx < len(path):
-            id_list = self._id_list(item_id)
+            id_list = self._get_id_list(item_id)
             item_id = id_list[path[idx]]
             idx += 1
         return item_id
 
-    def _id_list(self, parent_id):
+    def _get_id_list(self, parent_id):
         try:
             return self._id_to_children_id_list[parent_id]
         except KeyError:
