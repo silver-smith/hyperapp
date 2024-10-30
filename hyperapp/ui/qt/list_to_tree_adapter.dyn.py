@@ -86,6 +86,22 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
         item_id = self.path_to_item_id(path)
         return self._id_to_piece[item_id]
 
+    async def _run_open_command(self, command_d, model, current_item):
+        command_ctx = self._ctx.push(
+            piece=model,
+            model=model,
+            current_item=current_item,
+            )
+        command_list = self._get_model_commands(model, command_ctx)
+        try:
+            unbound_command = next(cmd for cmd in command_list if cmd.d == command_d)
+        except StopIteration:
+            raise RuntimeError(f"Command {command_d} is not available anymore")
+        bound_command = unbound_command.bind(command_ctx)
+        piece = await bound_command.run()
+        log.info("List-to-tree adapter: open command result: %s", piece)
+        return piece
+
     async def _load_layer(self, parent_id):
         pp_id = self._id_to_parent_id[parent_id]
         pp_layer = self._parent_id_to_layer[pp_id]
@@ -121,22 +137,6 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
         log.info("List-to-tree: loaded layer for piece %r: %s", piece, item_list)
         for item in item_list:
             self._append_item(parent_id, item)
-
-    async def _run_open_command(self, command_d, model, current_item):
-        command_ctx = self._ctx.push(
-            piece=model,
-            model=model,
-            current_item=current_item,
-            )
-        command_list = self._get_model_commands(model, command_ctx)
-        try:
-            unbound_command = next(cmd for cmd in command_list if cmd.d == command_d)
-        except StopIteration:
-            raise RuntimeError(f"Command {command_d} is not available anymore")
-        bound_command = unbound_command.bind(command_ctx)
-        piece = await bound_command.run()
-        log.info("List-to-tree adapter: open command result: %s", piece)
-        return piece
         
     def _load_item_list(self, layer, piece):
         kw = {
