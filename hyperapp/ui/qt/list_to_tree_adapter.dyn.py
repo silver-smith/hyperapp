@@ -109,6 +109,7 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
         if pp_layer.open_command_d is None:
             return None
         parent_item = self._id_to_item[parent_id]
+        # TODO: Use model state instead of just current_item.
         command_ctx = self._ctx.clone_with(
             piece=pp_piece,
             current_item=parent_item,
