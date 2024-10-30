@@ -95,6 +95,13 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
         piece = await bound_command.run()
         log.info("List-to-tree adapter: open command result: %s", piece)
         return piece
+        
+    def _load_item_list(self, layer, piece):
+        kw = {
+            'piece': piece,
+            'model': piece,
+            }
+        return layer.list_fn.call(self._ctx, **kw)
 
     async def _load_layer(self, parent_id):
         pp_id = self._id_to_parent_id[parent_id]
@@ -128,13 +135,6 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
         log.info("List-to-tree: loaded layer for piece %r: %s", piece, item_list)
         for item in item_list:
             self._append_item(parent_id, item)
-        
-    def _load_item_list(self, layer, piece):
-        kw = {
-            'piece': piece,
-            'model': piece,
-            }
-        return layer.list_fn.call(self._ctx, **kw)
 
     def _get_layer(self, parent_id):
         try:
