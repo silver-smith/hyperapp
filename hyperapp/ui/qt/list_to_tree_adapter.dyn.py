@@ -87,6 +87,7 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
         return self._id_to_piece[item_id]
 
     async def _run_open_command(self, command_d, model, current_item):
+        # TODO: Use model state instead of just current_item.
         command_ctx = self._ctx.push(
             piece=model,
             model=model,
@@ -109,11 +110,6 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
         if pp_layer.open_command_d is None:
             return None
         parent_item = self._id_to_item[parent_id]
-        # TODO: Use model state instead of just current_item.
-        command_ctx = self._ctx.clone_with(
-            piece=pp_piece,
-            current_item=parent_item,
-            )
         piece = await self._run_open_command(pp_layer.open_command_d, pp_piece, current_item=parent_item)
         piece_t = deduce_t(piece)
         try:
