@@ -16,19 +16,13 @@ from .code.tree_adapter import IndexTreeAdapterBase
 log = logging.getLogger(__name__)
 
 
-@dataclass
-class _Layer:
-    element_t: Any|None = None
-    list_fn: ContextFn|None = None
-    open_command_d: Any|None = None
-
-
-@dataclass
-class _NonRootLayer(_Layer):
-    piece_t: Any = None
-
-
 class ListToTreeAdapter(IndexTreeAdapterBase):
+
+    @dataclass
+    class _Layer:
+        element_t: Any|None = None
+        list_fn: ContextFn|None = None
+        open_command_d: Any|None = None
 
     @classmethod
     @mark.actor.ui_adapter_creg(htypes.list_to_tree_adapter.adapter)
@@ -36,13 +30,12 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
         layers = {}
         for rec in piece.layers:
             piece_t = pyobj_creg.invite(rec.piece_t)
-            layer = _NonRootLayer(
-                piece_t=piece_t,
+            layer = cls._Layer(
                 open_command_d=pyobj_creg.invite_opt(rec.open_children_command_d),
                 )
             layers[piece_t] = layer
         root_element_t = pyobj_creg.invite(piece.root_element_t)
-        root_layer = _Layer(
+        root_layer = cls._Layer(
             element_t=root_element_t,
             list_fn=system_fn_creg.invite(piece.root_function),
             open_command_d=pyobj_creg.invite_opt(piece.root_open_children_command_d),
@@ -124,7 +117,7 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
             layer = self._layers[piece_t]
         except KeyError:
             # Not yet included, but parent layer has open command - show it anyway.
-            layer = _NonRootLayer(piece_t=piece_t)
+            layer = self._Layer()
             self._layers[piece_t] = layer
         layer.element_t = pyobj_creg.invite(ui_t.element_t)
         layer.list_fn = self._system_fn_creg.invite(fn_ref)
