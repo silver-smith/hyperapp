@@ -107,8 +107,10 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
         pp_id = self._id_to_parent_id[parent_id]
         pp_layer = self._parent_id_to_layer[pp_id]
         pp_piece = self._id_to_piece[pp_id]
+        log.info("List-to-tree adapter: loading layer for pp#%d parent#%d:", pp_id, parent_id)
         self._parent_id_to_layer[parent_id] = None  # Cache None if no layer is available.
         if pp_layer.open_command_d is None:
+            log.info("List-to-tree adapter: Open command for parent#%d is not specified", parent_id)
             return None
         parent_item = self._id_to_item[parent_id]
         piece = await self._run_open_command(pp_layer.open_command_d, pp_piece, current_item=parent_item)
@@ -116,10 +118,10 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
         try:
             ui_t, fn_ref = self._visualizer_reg(piece_t)
         except KeyError:
-            log.info("List-to-tree: Model for %s is not available", piece_t)
+            log.info("List-to-tree adapter: Model for %s is not available", piece_t)
             return None
         if not isinstance(ui_t, htypes.model.list_ui_t):
-            log.info("List-to-tree: Model for %s is not a list", piece_t)
+            log.info("List-to-tree adapter: Model for %s is not a list", piece_t)
             return None
         try:
             layer = self._layers[piece_t]
@@ -132,7 +134,7 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
         self._parent_id_to_layer[parent_id] = layer
         self._id_to_piece[parent_id] = piece
         item_list = self._load_item_list(layer, piece)
-        log.info("List-to-tree: loaded layer for piece %r: %s", piece, item_list)
+        log.info("List-to-tree adapter: loaded layer for parent#%d piece %r: %s", parent_id, piece, item_list)
         for item in item_list:
             self._append_item(parent_id, item)
 

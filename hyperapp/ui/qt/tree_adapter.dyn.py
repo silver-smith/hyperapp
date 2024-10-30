@@ -126,7 +126,7 @@ class IndexTreeAdapterBase(metaclass=abc.ABCMeta):
 
     def _populate(self, parent_id):
         item_list = self._retrieve_item_list(parent_id)
-        log.info("Tree adapter: retrieved item list for %s/%s -> %s", self._model, parent_id, item_list)
+        log.info("Tree adapter: retrieved item list for %s/%s: %s", self._model, parent_id, item_list)
         item_id_list = []
         for item in item_list:
             id = next(self._id_counter)
