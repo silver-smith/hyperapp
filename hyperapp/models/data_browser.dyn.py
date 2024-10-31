@@ -38,8 +38,7 @@ def _data_browser(data, t):
 
 @mark.model
 def browse_record(piece):
-    data = web.summon(piece.data)
-    data_t = deduce_t(data)
+    data, data_t = web.summon_with_t(piece.data)
     return [
         htypes.data_browser.record_item(
             name=name,
@@ -52,14 +51,12 @@ def browse_record(piece):
 
 @mark.command
 def record_open(piece, current_item):
-    data = web.summon(piece.data)
-    data_t = deduce_t(data)
+    data, data_t = web.summon_with_t(piece.data)
     name = current_item.name
     field_t = data_t.fields[name]
     value = getattr(data, name)
     if field_t is ref_t:
-        value = web.summon(value)
-        field_t = deduce_t(value)
+        value, field_t = web.summon_with_t(value)
     return _data_browser(value, field_t)
 
 
@@ -77,10 +74,9 @@ def browse_list(piece):
 
 @mark.command
 def list_open(piece, current_item):
-    data = web.summon(piece.data)
+    data, data_t = web.summon_with_t(piece.data)
     value = data[current_item.idx]
-    t = deduce_t(value)
-    return _data_browser(value, t)
+    return _data_browser(value, data_t.element_t)
 
 
 @mark.model
@@ -88,10 +84,10 @@ def browse_ref_list(piece):
     data = web.summon(piece.data)
     result = []
     for idx, elt_ref in enumerate(data):
-        elt = web.summon(elt_ref)
+        elt, t = web.summon_with_t(elt_ref)
         item = htypes.data_browser.ref_list_item(
             idx=idx,
-            type=str(deduce_t(elt)),
+            type=str(t),
             value=str(elt),
             )
         result.append(item)
@@ -102,15 +98,13 @@ def browse_ref_list(piece):
 def ref_list_open(piece, current_item):
     data = web.summon(piece.data)
     value_ref = data[current_item.idx]
-    value = web.summon(value_ref)
-    t = deduce_t(value)
+    value, t = web.summon_with_t(value_ref)
     return _data_browser(value, t)
 
 
 @mark.model
 def browse_primitive(piece):
-    data = web.summon(piece.data)
-    data_t = deduce_t(data)
+    data, data_t = web.summon_with_t(piece.data)
     return htypes.data_browser.primitive_item(
         type=str(data_t),
         value=str(data),
