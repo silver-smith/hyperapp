@@ -10,15 +10,18 @@ from .code.list_diff import ListDiff
 log = logging.getLogger(__name__)
 
 
+def list_model_state_t(item_t):
+    return TRecord('ui_list', f'list_model_state_{item_t.module_name}_{item_t.name}', {
+        'current_idx': tInt,
+        'current_item': TOptional(item_t),
+        })
+
+
 class ListAdapterBase:
 
     @cached_property
     def model_state_t(self):
-        item_t = self._item_t
-        return TRecord('ui_list', f'model_state_{item_t.module_name}_{item_t.name}', {
-            'current_idx': tInt,
-            'current_item': TOptional(item_t),
-            })
+        return list_model_state_t(self._item_t)
 
 
 class FnListAdapterBase(ListAdapterBase, metaclass=abc.ABCMeta):

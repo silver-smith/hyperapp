@@ -35,10 +35,10 @@ def sample_fn_2(piece):
     log.info("Sample fn 2: %s", piece)
     assert isinstance(piece, htypes.list_as_tree_adapter_tests.sample_list_2), repr(piece)
     return [
-        htypes.list_as_tree_adapter_tests.item_2(piece.base_id*10 + 0, "one"),
-        htypes.list_as_tree_adapter_tests.item_2(piece.base_id*10 + 1, "two"),
-        htypes.list_as_tree_adapter_tests.item_2(piece.base_id*10 + 2, "three"),
-        htypes.list_as_tree_adapter_tests.item_2(piece.base_id*10 + 3, "four"),
+        htypes.list_as_tree_adapter_tests.item_2(piece.base_id*10 + 0, 11, "one"),
+        htypes.list_as_tree_adapter_tests.item_2(piece.base_id*10 + 1, 22, "two"),
+        htypes.list_as_tree_adapter_tests.item_2(piece.base_id*10 + 2, 33, "three"),
+        htypes.list_as_tree_adapter_tests.item_2(piece.base_id*10 + 3, 44, "four"),
         ]
 
 
@@ -52,10 +52,10 @@ def sample_fn_3(piece):
     log.info("Sample fn 3: %s", piece)
     assert isinstance(piece, htypes.list_as_tree_adapter_tests.sample_list_3), repr(piece)
     return [
-        htypes.list_as_tree_adapter_tests.item_2(piece.base_id*10 + 0, "First item"),
-        htypes.list_as_tree_adapter_tests.item_2(piece.base_id*10 + 1, "Second item"),
-        htypes.list_as_tree_adapter_tests.item_2(piece.base_id*10 + 2, "Third item"),
-        htypes.list_as_tree_adapter_tests.item_2(piece.base_id*10 + 3, "Fourth item"),
+        htypes.list_as_tree_adapter_tests.item_3(piece.base_id*10 + 0, "First item"),
+        htypes.list_as_tree_adapter_tests.item_3(piece.base_id*10 + 1, "Second item"),
+        htypes.list_as_tree_adapter_tests.item_3(piece.base_id*10 + 2, "Third item"),
+        htypes.list_as_tree_adapter_tests.item_3(piece.base_id*10 + 3, "Fourth item"),
         ]
 
 
@@ -143,7 +143,8 @@ def model_command_reg_config(partial_ref):
 async def test_three_layers(data_to_ref):
     ctx = Context()
     model = htypes.list_as_tree_adapter_tests.sample_list_1()
-    root_item_t = pyobj_creg.actor_to_piece(htypes.list_as_tree_adapter_tests.item_1)
+    root_item_t = htypes.list_as_tree_adapter_tests.item_1
+    root_item_t_piece = pyobj_creg.actor_to_piece(root_item_t)
     open_command_1_d_ref = data_to_ref(htypes.list_as_tree_adapter_tests.open_1_d())
     open_command_2_d_ref = data_to_ref(htypes.list_as_tree_adapter_tests.open_2_d())
     piece_2_t = pyobj_creg.actor_to_piece(htypes.list_as_tree_adapter_tests.sample_list_2)
@@ -154,7 +155,7 @@ async def test_three_layers(data_to_ref):
         service_params=(),
         )
     adapter_piece = htypes.list_as_tree_adapter.adapter(
-        root_item_t=mosaic.put(root_item_t),
+        root_item_t=mosaic.put(root_item_t_piece),
         root_function=mosaic.put(fn_1),
         root_open_children_command_d=open_command_1_d_ref,
         layers=(
@@ -175,7 +176,7 @@ async def test_three_layers(data_to_ref):
 
     assert adapter.column_count() == 3
     assert adapter.column_title(0) == 'id'
-    assert adapter.column_title(1) == 'name'
+    assert adapter.column_title(1) == 'num'
     assert adapter.column_title(2) == 'text'
 
     assert adapter.row_count(0) == 3
@@ -183,27 +184,34 @@ async def test_three_layers(data_to_ref):
     assert adapter.cell_data(row_1_id, 0) == 1
     assert adapter.cell_data(row_1_id, 1) == "two"
     assert adapter.cell_data(row_1_id, 2) == "Second item"
+    assert adapter.get_item(row_1_id) == root_item_t(1, "two", "Second item")
 
     assert adapter.row_count(row_1_id) == 0
 
     await subscriber.wait(lambda: adapter.row_count(row_1_id) == 4)
     row_1_2_id = adapter.row_id(row_1_id, 2)
     assert adapter.cell_data(row_1_2_id, 0) == 12
-    assert adapter.cell_data(row_1_2_id, 1) == "three"
+    assert adapter.cell_data(row_1_2_id, 1) == 33
+    assert adapter.cell_data(row_1_2_id, 2) is None
+    assert adapter.get_item(row_1_2_id) == root_item_t(12, "33", "")
 
     row_2_id = adapter.row_id(0, 2)
     await subscriber.wait(lambda: adapter.row_count(row_2_id) == 4)
     row_2_3_id = adapter.row_id(row_2_id, 3)
     assert adapter.cell_data(row_2_3_id, 0) == 23
-    assert adapter.cell_data(row_2_3_id, 1) == "four"
+    assert adapter.cell_data(row_2_3_id, 1) == 44
+    assert adapter.cell_data(row_2_3_id, 2) is None
+    assert adapter.get_item(row_2_3_id) == root_item_t(23, "44", "")
 
     await subscriber.wait(lambda: adapter.has_children(row_2_3_id))
 
     await subscriber.wait(lambda: adapter.has_children(row_1_2_id))
     row_1_2_0_id = adapter.row_id(row_1_2_id, 0)
     assert adapter.cell_data(row_1_2_0_id, 0) == 120
-    assert adapter.cell_data(row_1_2_0_id, 1) == "First item"
+    assert adapter.cell_data(row_1_2_0_id, 1) is None
+    assert adapter.cell_data(row_1_2_0_id, 2) == "First item"
     assert not adapter.has_children(row_1_2_0_id)
+    assert adapter.get_item(row_1_2_0_id) == root_item_t(120, "", "First item")
 
     assert adapter.get_item_piece([]) == model
     assert adapter.get_item_piece([1]) == htypes.list_as_tree_adapter_tests.sample_list_2(1)
@@ -229,7 +237,7 @@ async def test_single_layer():
 
     assert adapter.column_count() == 3
     assert adapter.column_title(0) == 'id'
-    assert adapter.column_title(1) == 'name'
+    assert adapter.column_title(1) == 'num'
     assert adapter.column_title(2) == 'text'
 
     assert adapter.has_children(0)

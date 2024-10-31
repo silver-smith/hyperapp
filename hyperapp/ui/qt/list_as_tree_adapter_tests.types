@@ -2,7 +2,7 @@ sample_list_1 = record
 
 item_1 = record:
   id: int
-  name: string
+  num: string
   text: string
 
 open_1_d = record
@@ -13,7 +13,8 @@ sample_list_2 = record:
 
 item_2 = record:
   id: int
-  name: string
+  num: int
+  desc: string
 
 open_2_d = record
 

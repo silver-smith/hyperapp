@@ -3,6 +3,8 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
+from hyperapp.common.htypes import TPrimitive, TOptional, tString
+
 from . import htypes
 from .services import (
     deduce_t,
@@ -11,6 +13,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.system_fn import ContextFn
+from .code.list_adapter import list_model_state_t
 from .code.tree_adapter import IndexTreeAdapterBase
 
 log = logging.getLogger(__name__)
@@ -20,9 +23,10 @@ class ListAsTreeAdapter(IndexTreeAdapterBase):
 
     @dataclass
     class _Layer:
-        item_t: Any|None = None
-        list_fn: ContextFn|None = None
         open_command_d: Any|None = None
+        item_t: Any|None = None
+        model_state_t: Any|None = None
+        list_fn: ContextFn|None = None
 
     @classmethod
     @mark.actor.ui_adapter_creg(htypes.list_as_tree_adapter.adapter)
@@ -36,9 +40,10 @@ class ListAsTreeAdapter(IndexTreeAdapterBase):
             layers[piece_t] = layer
         root_item_t = pyobj_creg.invite(piece.root_item_t)
         root_layer = cls._Layer(
-            item_t=root_item_t,
-            list_fn=system_fn_creg.invite(piece.root_function),
             open_command_d=pyobj_creg.invite_opt(piece.root_open_children_command_d),
+            item_t=root_item_t,
+            model_state_t=list_model_state_t(root_item_t),
+            list_fn=system_fn_creg.invite(piece.root_function),
             )
         return cls(system_fn_creg, get_model_commands, visualizer_reg, model, root_item_t, ctx, root_layer, layers)
 
@@ -72,8 +77,35 @@ class ListAsTreeAdapter(IndexTreeAdapterBase):
         try:
             return getattr(item, name)
         except AttributeError:
-            # TODO: Implement column inserting visual diff.
+            # TODO: Implement column inserting visual diff. Add fields to self._item_t.
             return None
+
+    def get_item(self, id):
+        parent_id = self._id_to_parent_id[id]
+        item_t = self._parent_id_to_layer[parent_id].item_t
+        item = self._id_to_item.get(id)
+        return self._item_t(**{
+            name: self._convert_field(
+                name=name,
+                value=getattr(item, name, None),
+                t=item_t.fields.get(name),
+                target_t=target_t,
+                )
+            for name, target_t in self._item_t.fields.items()
+            })
+
+    def _convert_field(self, name, value, t, target_t):
+        if t is None:
+            if isinstance(target_t, TOptional):
+                return None
+            if isinstance(target_t, TPrimitive):
+                return target_t.type()
+            raise RuntimeError(f"Can not create default value for field {name} for type {target_t}")
+        if t is target_t:
+            return value
+        if target_t is tString:
+            return str(value)
+        raise RuntimeError(f"Can not convert field {name} to {target_t}: {value!r}")
 
     def get_item_piece(self, path):
         item_id = self.path_to_item_id(path)
@@ -130,6 +162,7 @@ class ListAsTreeAdapter(IndexTreeAdapterBase):
             layer = self._Layer()
             self._layers[piece_t] = layer
         layer.item_t = pyobj_creg.invite(ui_t.item_t)
+        layer.model_state_t = list_model_state_t(layer.item_t)
         layer.list_fn = self._system_fn_creg.invite(fn_ref)
         self._parent_id_to_layer[parent_id] = layer
         self._id_to_piece[parent_id] = piece
