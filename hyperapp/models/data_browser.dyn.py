@@ -62,10 +62,11 @@ def record_open(piece, current_item):
 
 @mark.model
 def browse_list(piece):
-    data = web.summon(piece.data)
+    data, data_t = web.summon_with_t(piece.data)
     return [
         htypes.data_browser.list_item(
             idx=idx,
+            type=str(data_t.element_t),
             value=str(elt),
             )
         for idx, elt in enumerate(data)
