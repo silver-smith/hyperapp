@@ -43,9 +43,11 @@ def open_opener_commands(view, current_path):
         log.info("Not a ListAsTreeAdapter: %r", adapter)
         return
     layer_piece = adapter.get_item_piece(current_path[:-1])
+    model_state = adapter.get_item_list_model_state(current_path)
     return htypes.list_as_tree.opener_commands(
         root_piece=mosaic.put(adapter.model),
         layer_piece=mosaic.put(layer_piece),
+        model_state=mosaic.put(model_state),
         )
 
 

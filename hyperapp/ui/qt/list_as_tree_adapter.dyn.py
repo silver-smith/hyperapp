@@ -111,6 +111,16 @@ class ListAsTreeAdapter(IndexTreeAdapterBase):
         item_id = self.path_to_item_id(path)
         return self._id_to_piece[item_id]
 
+    def get_item_list_model_state(self, path):
+        item_id = self.path_to_item_id(path)
+        parent_id = self._id_to_parent_id[item_id]
+        model_state_t = self._parent_id_to_layer[parent_id].model_state_t
+        item = self._id_to_item[item_id]
+        return model_state_t(
+            current_idx=path[-1],
+            current_item=item,
+            )
+
     async def _run_open_command(self, command_d, model, current_item):
         # TODO: Use model state instead of just current_item.
         command_ctx = self._ctx.push(

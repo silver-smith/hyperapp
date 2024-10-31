@@ -6,6 +6,7 @@ toggle_open_command_d = record
 opener_commands = record:
   root_piece: ref
   layer_piece: ref
+  model_state: ref
 
 opener_command_item = record:
   command_d: ref

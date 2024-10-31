@@ -213,6 +213,10 @@ async def test_three_layers(data_to_ref):
     assert not adapter.has_children(row_1_2_0_id)
     assert adapter.get_item(row_1_2_0_id) == root_item_t(120, "", "First item")
 
+    model_state = adapter.get_item_list_model_state([1, 2, 0])
+    assert model_state.current_idx == 0
+    assert model_state.current_item == htypes.list_as_tree_adapter_tests.item_3(120, "First item")
+
     assert adapter.get_item_piece([]) == model
     assert adapter.get_item_piece([1]) == htypes.list_as_tree_adapter_tests.sample_list_2(1)
     assert adapter.get_item_piece([1, 2]) == htypes.list_as_tree_adapter_tests.sample_list_3(12)
@@ -221,14 +225,15 @@ async def test_three_layers(data_to_ref):
 async def test_single_layer():
     ctx = Context()
     model = htypes.list_as_tree_adapter_tests.sample_list_1()
-    root_item_t = pyobj_creg.actor_to_piece(htypes.list_as_tree_adapter_tests.item_1)
+    root_item_t = htypes.list_as_tree_adapter_tests.item_1
+    root_item_t_piece = pyobj_creg.actor_to_piece(root_item_t)
     fn_1 = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(sample_fn_1),
         ctx_params=('piece',),
         service_params=(),
         )
     adapter_piece = htypes.list_as_tree_adapter.adapter(
-        root_item_t=mosaic.put(root_item_t),
+        root_item_t=mosaic.put(root_item_t_piece),
         root_function=mosaic.put(fn_1),
         root_open_children_command_d=None,
         layers=(),
@@ -246,6 +251,10 @@ async def test_single_layer():
     assert adapter.cell_data(row_1_id, 0) == 1
     assert adapter.cell_data(row_1_id, 1) == "two"
     assert adapter.cell_data(row_1_id, 2) == "Second item"
+    assert adapter.get_item(row_1_id) == root_item_t(1, "two", "Second item")
+    model_state = adapter.get_item_list_model_state([1])
+    assert model_state.current_idx == 1
+    assert model_state.current_item == root_item_t(1, "two", "Second item")
 
     assert not adapter.has_children(adapter.row_id(0, 0))
     assert not adapter.has_children(adapter.row_id(0, 1))
