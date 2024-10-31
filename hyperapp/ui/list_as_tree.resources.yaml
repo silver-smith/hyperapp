@@ -21,8 +21,8 @@ import:
 - legacy_type.list_as_tree:opener_commands
 - legacy_type.list_as_tree:switch_list_to_tree_d
 - legacy_type.list_as_tree:toggle_open_command_d
-- legacy_type.list_to_tree_adapter:adapter
-- legacy_type.list_to_tree_adapter:layer
+- legacy_type.list_as_tree_adapter:adapter
+- legacy_type.list_as_tree_adapter:layer
 - legacy_type.model:cfg_item
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
@@ -30,7 +30,7 @@ import:
 - legacy_type.tree:view
 - ui.command:command.module
 - ui.qt.fn_list_adapter:fn_list_adapter.module
-- ui.qt.list_to_tree_adapter:list_to_tree_adapter.module
+- ui.qt.list_as_tree_adapter:list_as_tree_adapter.module
 definitions:
   list_as_tree.module:
     type: legacy_type.builtin:python_module
@@ -40,14 +40,14 @@ definitions:
       import_list:
         code.command: ui.command:command.module
         code.fn_list_adapter: ui.qt.fn_list_adapter:fn_list_adapter.module
+        code.list_as_tree_adapter: ui.qt.list_as_tree_adapter:list_as_tree_adapter.module
         code.list_diff: common.list_diff:list_diff.module
-        code.list_to_tree_adapter: ui.qt.list_to_tree_adapter:list_to_tree_adapter.module
         code.mark: common.mark:mark.module
         htypes.list.view: legacy_type.list:view
         htypes.list_as_tree.opener_command_item: legacy_type.list_as_tree:opener_command_item
         htypes.list_as_tree.opener_commands: legacy_type.list_as_tree:opener_commands
-        htypes.list_to_tree_adapter.adapter: legacy_type.list_to_tree_adapter:adapter
-        htypes.list_to_tree_adapter.layer: legacy_type.list_to_tree_adapter:layer
+        htypes.list_as_tree_adapter.adapter: legacy_type.list_as_tree_adapter:adapter
+        htypes.list_as_tree_adapter.layer: legacy_type.list_as_tree_adapter:layer
         htypes.tree.view: legacy_type.tree:view
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service

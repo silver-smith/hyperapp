@@ -16,7 +16,7 @@ from .code.tree_adapter import IndexTreeAdapterBase
 log = logging.getLogger(__name__)
 
 
-class ListToTreeAdapter(IndexTreeAdapterBase):
+class ListAsTreeAdapter(IndexTreeAdapterBase):
 
     @dataclass
     class _Layer:
@@ -25,7 +25,7 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
         open_command_d: Any|None = None
 
     @classmethod
-    @mark.actor.ui_adapter_creg(htypes.list_to_tree_adapter.adapter)
+    @mark.actor.ui_adapter_creg(htypes.list_as_tree_adapter.adapter)
     def from_piece(cls, piece, model, ctx, system_fn_creg, get_model_commands, visualizer_reg):
         layers = {}
         for rec in piece.layers:

@@ -7,41 +7,41 @@ import:
 - common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.list_to_tree_adapter:adapter
+- legacy_type.list_as_tree_adapter:adapter
 - legacy_type.model:list_ui_t
 - legacy_type.system:actor_template
 - ui.qt.tree_adapter:tree_adapter.module
 - ui.system_fn:system_fn.module
 definitions:
-  ListToTreeAdapter:
+  ListAsTreeAdapter:
     type: legacy_type.builtin:attribute
     value:
-      object: list_to_tree_adapter.module
-      attr_name: ListToTreeAdapter
-  ListToTreeAdapter.from_piece:
+      object: list_as_tree_adapter.module
+      attr_name: ListAsTreeAdapter
+  ListAsTreeAdapter.from_piece:
     type: legacy_type.builtin:attribute
     value:
-      object: ListToTreeAdapter
+      object: ListAsTreeAdapter
       attr_name: from_piece
-  list_to_tree_adapter.module:
+  list_as_tree_adapter.module:
     type: legacy_type.builtin:python_module
     value:
-      module_name: list_to_tree_adapter
-      file_name: list_to_tree_adapter.dyn.py
+      module_name: list_as_tree_adapter
+      file_name: list_as_tree_adapter.dyn.py
       import_list:
         code.mark: common.mark:mark.module
         code.system_fn: ui.system_fn:system_fn.module
         code.tree_adapter: ui.qt.tree_adapter:tree_adapter.module
-        htypes.list_to_tree_adapter.adapter: legacy_type.list_to_tree_adapter:adapter
+        htypes.list_as_tree_adapter.adapter: legacy_type.list_as_tree_adapter:adapter
         htypes.model.list_ui_t: legacy_type.model:list_ui_t
         services.deduce_t: builtins:deduce_t.service
         services.pyobj_creg: builtins:pyobj_creg.service
         services.web: builtins:web.service
-  list_to_tree_adapter_adapter.actor-template:
+  list_as_tree_adapter_adapter.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.list_to_tree_adapter:adapter
-      function: ListToTreeAdapter.from_piece
+      t: legacy_type.list_as_tree_adapter:adapter
+      function: ListAsTreeAdapter.from_piece
       service_params:
       - system_fn_creg
       - get_model_commands

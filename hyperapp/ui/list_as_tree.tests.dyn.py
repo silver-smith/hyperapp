@@ -11,7 +11,7 @@ from .code.mark import mark
 from .code.context import Context
 from .code.system_fn import ContextFn
 from .code.model_command import UnboundModelCommand
-from .code.list_to_tree_adapter import ListToTreeAdapter
+from .code.list_as_tree_adapter import ListAsTreeAdapter
 from .code.tree import TreeView
 from .fixtures import feed_fixtures
 from .tested.code import list_as_tree
@@ -23,13 +23,13 @@ def sample_fn_1(piece):
     log.info("Sample fn 1: %s", piece)
     assert isinstance(piece, htypes.list_as_tree_tests.sample_list_1), repr(piece)
     return [
-        htypes.list_to_tree_adapter_tests.item_1(0, "one", "First item"),
-        htypes.list_to_tree_adapter_tests.item_1(1, "two", "Second item"),
-        htypes.list_to_tree_adapter_tests.item_1(2, "three", "Third item"),
+        htypes.list_as_tree_adapter_tests.item_1(0, "one", "First item"),
+        htypes.list_as_tree_adapter_tests.item_1(1, "two", "Second item"),
+        htypes.list_as_tree_adapter_tests.item_1(2, "three", "Third item"),
         ]
 
 
-def test_switch_list_to_tree(ui_adapter_creg):
+def test_switch_list_as_tree(ui_adapter_creg):
     ctx = Context()
     model = htypes.list_as_tree_tests.sample_list_1()
     fn_1 = htypes.system_fn.ctx_fn(
@@ -51,7 +51,7 @@ def test_switch_list_to_tree(ui_adapter_creg):
     hook.replace_view.assert_called_once()
     new_view = hook.replace_view.call_args.args[0]
     assert isinstance(new_view, TreeView)
-    assert isinstance(new_view.adapter, ListToTreeAdapter)
+    assert isinstance(new_view.adapter, ListAsTreeAdapter)
 
 
 def sample_fn_1_open(piece, current_item):
@@ -115,7 +115,7 @@ def fn_1():
 @mark.fixture
 def adapter_piece(data_to_ref, root_item_t, fn_1):
     open_command_1_d_ref = data_to_ref(htypes.list_as_tree_tests.open_1_d())
-    return htypes.list_to_tree_adapter.adapter(
+    return htypes.list_as_tree_adapter.adapter(
         root_item_t=mosaic.put(root_item_t),
         root_function=mosaic.put(fn_1),
         root_open_children_command_d=open_command_1_d_ref,
@@ -165,7 +165,7 @@ async def test_set_root_open_command(data_to_ref, root_item_t, fn_1):
         root_piece=mosaic.put(root_piece),
         layer_piece=mosaic.put(layer_piece),
         )
-    adapter_piece = htypes.list_to_tree_adapter.adapter(
+    adapter_piece = htypes.list_as_tree_adapter.adapter(
         root_item_t=mosaic.put(root_item_t),
         root_function=mosaic.put(fn_1),
         root_open_children_command_d=None,
@@ -196,12 +196,12 @@ async def test_set_non_root_open_command(data_to_ref, root_item_t, fn_1):
         layer_piece=mosaic.put(layer_piece),
         )
     layers = (
-        htypes.list_to_tree_adapter.layer(
+        htypes.list_as_tree_adapter.layer(
             piece_t=mosaic.put(layer_piece_t_res),
             open_children_command_d=None,
             ),
         )
-    adapter_piece = htypes.list_to_tree_adapter.adapter(
+    adapter_piece = htypes.list_as_tree_adapter.adapter(
         root_item_t=mosaic.put(root_item_t),
         root_function=mosaic.put(fn_1),
         root_open_children_command_d=None,

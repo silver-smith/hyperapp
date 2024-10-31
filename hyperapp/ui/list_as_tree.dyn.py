@@ -11,7 +11,7 @@ from .code.mark import mark
 from .code.command import d_to_name
 from .code.list_diff import ListDiff
 from .code.fn_list_adapter import FnListAdapter
-from .code.list_to_tree_adapter import ListToTreeAdapter
+from .code.list_as_tree_adapter import ListAsTreeAdapter
 
 log = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ def switch_list_to_tree(piece, view, hook, ctx, model_view_creg):
         log.info("Switch list to tree: Not an FnListAdapter: %r", list_adapter)
         return
     item_t_res = pyobj_creg.actor_to_piece(list_adapter.item_t)
-    adapter = htypes.list_to_tree_adapter.adapter(
+    adapter = htypes.list_as_tree_adapter.adapter(
         root_item_t=mosaic.put(item_t_res),
         root_function=mosaic.put(list_adapter.function.piece),
         root_open_children_command_d=None,
@@ -39,8 +39,8 @@ def switch_list_to_tree(piece, view, hook, ctx, model_view_creg):
 @mark.ui_model_command(htypes.tree.view)
 def open_opener_commands(view, current_path):
     adapter = view.adapter
-    if not isinstance(adapter, ListToTreeAdapter):
-        log.info("Not a ListToTreeAdapter: %r", adapter)
+    if not isinstance(adapter, ListAsTreeAdapter):
+        log.info("Not a ListAsTreeAdapter: %r", adapter)
         return
     layer_piece = adapter.get_item_piece(current_path[:-1])
     return htypes.list_as_tree.opener_commands(
@@ -81,7 +81,7 @@ def _amend_adapter(data_to_ref, root_piece_t, layer_piece_t, adapter, new_comman
         for idx, layer in enumerate(adapter.layers):
             t = pyobj_creg.invite(layer.piece_t)
             if t == layer_piece_t:
-                new_layer = htypes.list_to_tree_adapter.layer(
+                new_layer = htypes.list_as_tree_adapter.layer(
                     piece_t=layer.piece_t,
                     open_children_command_d=new_command_d_ref,
                     )
@@ -89,12 +89,12 @@ def _amend_adapter(data_to_ref, root_piece_t, layer_piece_t, adapter, new_comman
                 break
         else:
             piece_t_res = pyobj_creg.actor_to_piece(layer_piece_t)
-            new_layer = htypes.list_to_tree_adapter.layer(
+            new_layer = htypes.list_as_tree_adapter.layer(
                 piece_t=mosaic.put(piece_t_res),
                 open_children_command_d=new_command_d_ref,
                 )
             layers.append(new_layer)
-    return htypes.list_to_tree_adapter.adapter(
+    return htypes.list_as_tree_adapter.adapter(
         root_item_t=adapter.root_item_t,
         root_function=adapter.root_function,
         root_open_children_command_d=root_open_children_command_d,
@@ -123,7 +123,7 @@ def opener_command_list(piece, lcs, ctx, data_to_ref, get_model_commands, get_cu
     current_command_d = None
     if isinstance(view, htypes.tree.view):
         adapter = web.summon(view.adapter)
-        if isinstance(adapter, htypes.list_to_tree_adapter.adapter):
+        if isinstance(adapter, htypes.list_as_tree_adapter.adapter):
             current_command_d = _get_current_command_d(root_piece_t, layer_piece_t, adapter)
     command_ctx = _make_command_ctx(ctx, layer_piece)
     command_list = get_model_commands(layer_piece, command_ctx)
@@ -144,7 +144,7 @@ async def toggle_open_command(
         log.info("View for %s is not a tree: %s", model_t, view)
         return
     adapter = web.summon(view.adapter)
-    if not isinstance(adapter, htypes.list_to_tree_adapter.adapter):
+    if not isinstance(adapter, htypes.list_as_tree_adapter.adapter):
         log.info("Adapter for %s is not a list-to-tree: %s", model_t, adapter)
         return
     prev_command_d = _get_current_command_d(root_piece_t, layer_piece_t, adapter)

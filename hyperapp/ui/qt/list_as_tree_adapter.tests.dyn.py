@@ -10,52 +10,52 @@ from .code.mark import mark
 from .code.context import Context
 from .code.system_fn import ContextFn
 from .code.model_command import UnboundModelCommand
-from .tested.code import list_to_tree_adapter
+from .tested.code import list_as_tree_adapter
 
 log = logging.getLogger(__name__)
 
 
 def sample_fn_1(piece):
     log.info("Sample fn 1: %s", piece)
-    assert isinstance(piece, htypes.list_to_tree_adapter_tests.sample_list_1), repr(piece)
+    assert isinstance(piece, htypes.list_as_tree_adapter_tests.sample_list_1), repr(piece)
     return [
-        htypes.list_to_tree_adapter_tests.item_1(0, "one", "First item"),
-        htypes.list_to_tree_adapter_tests.item_1(1, "two", "Second item"),
-        htypes.list_to_tree_adapter_tests.item_1(2, "three", "Third item"),
+        htypes.list_as_tree_adapter_tests.item_1(0, "one", "First item"),
+        htypes.list_as_tree_adapter_tests.item_1(1, "two", "Second item"),
+        htypes.list_as_tree_adapter_tests.item_1(2, "three", "Third item"),
         ]
 
 
 def sample_fn_1_open(piece, current_item):
     log.info("Sample fn 1 open: %s", piece)
-    assert isinstance(piece, htypes.list_to_tree_adapter_tests.sample_list_1), repr(piece)
-    return htypes.list_to_tree_adapter_tests.sample_list_2(base_id=current_item.id)
+    assert isinstance(piece, htypes.list_as_tree_adapter_tests.sample_list_1), repr(piece)
+    return htypes.list_as_tree_adapter_tests.sample_list_2(base_id=current_item.id)
 
 
 def sample_fn_2(piece):
     log.info("Sample fn 2: %s", piece)
-    assert isinstance(piece, htypes.list_to_tree_adapter_tests.sample_list_2), repr(piece)
+    assert isinstance(piece, htypes.list_as_tree_adapter_tests.sample_list_2), repr(piece)
     return [
-        htypes.list_to_tree_adapter_tests.item_2(piece.base_id*10 + 0, "one"),
-        htypes.list_to_tree_adapter_tests.item_2(piece.base_id*10 + 1, "two"),
-        htypes.list_to_tree_adapter_tests.item_2(piece.base_id*10 + 2, "three"),
-        htypes.list_to_tree_adapter_tests.item_2(piece.base_id*10 + 3, "four"),
+        htypes.list_as_tree_adapter_tests.item_2(piece.base_id*10 + 0, "one"),
+        htypes.list_as_tree_adapter_tests.item_2(piece.base_id*10 + 1, "two"),
+        htypes.list_as_tree_adapter_tests.item_2(piece.base_id*10 + 2, "three"),
+        htypes.list_as_tree_adapter_tests.item_2(piece.base_id*10 + 3, "four"),
         ]
 
 
 def sample_fn_2_open(piece, current_item):
     log.info("Sample fn 2 open: %s", piece)
-    assert isinstance(piece, htypes.list_to_tree_adapter_tests.sample_list_2), repr(piece)
-    return htypes.list_to_tree_adapter_tests.sample_list_3(base_id=current_item.id)
+    assert isinstance(piece, htypes.list_as_tree_adapter_tests.sample_list_2), repr(piece)
+    return htypes.list_as_tree_adapter_tests.sample_list_3(base_id=current_item.id)
 
 
 def sample_fn_3(piece):
     log.info("Sample fn 3: %s", piece)
-    assert isinstance(piece, htypes.list_to_tree_adapter_tests.sample_list_3), repr(piece)
+    assert isinstance(piece, htypes.list_as_tree_adapter_tests.sample_list_3), repr(piece)
     return [
-        htypes.list_to_tree_adapter_tests.item_2(piece.base_id*10 + 0, "First item"),
-        htypes.list_to_tree_adapter_tests.item_2(piece.base_id*10 + 1, "Second item"),
-        htypes.list_to_tree_adapter_tests.item_2(piece.base_id*10 + 2, "Third item"),
-        htypes.list_to_tree_adapter_tests.item_2(piece.base_id*10 + 3, "Fourth item"),
+        htypes.list_as_tree_adapter_tests.item_2(piece.base_id*10 + 0, "First item"),
+        htypes.list_as_tree_adapter_tests.item_2(piece.base_id*10 + 1, "Second item"),
+        htypes.list_as_tree_adapter_tests.item_2(piece.base_id*10 + 2, "Third item"),
+        htypes.list_as_tree_adapter_tests.item_2(piece.base_id*10 + 3, "Fourth item"),
         ]
 
 
@@ -71,8 +71,8 @@ def visualizer_config():
         ctx_params=('piece',),
         service_params=(),
         )
-    item_t_2 = pyobj_creg.actor_to_piece(htypes.list_to_tree_adapter_tests.item_2)
-    item_t_3 = pyobj_creg.actor_to_piece(htypes.list_to_tree_adapter_tests.item_3)
+    item_t_2 = pyobj_creg.actor_to_piece(htypes.list_as_tree_adapter_tests.item_2)
+    item_t_3 = pyobj_creg.actor_to_piece(htypes.list_as_tree_adapter_tests.item_3)
     ui_t_2 = htypes.model.list_ui_t(
         item_t=mosaic.put(item_t_2),
         )
@@ -80,11 +80,11 @@ def visualizer_config():
         item_t=mosaic.put(item_t_3),
         )
     return {
-        htypes.list_to_tree_adapter_tests.sample_list_2: htypes.model.model(
+        htypes.list_as_tree_adapter_tests.sample_list_2: htypes.model.model(
             ui_t=mosaic.put(ui_t_2),
             system_fn=mosaic.put(fn_2),
             ),
-        htypes.list_to_tree_adapter_tests.sample_list_3: htypes.model.model(
+        htypes.list_as_tree_adapter_tests.sample_list_3: htypes.model.model(
             ui_t=mosaic.put(ui_t_3),
             system_fn=mosaic.put(fn_3),
             ),
@@ -125,51 +125,51 @@ def model_command_reg_config(partial_ref):
         bound_fn=sample_fn_2_open,
         )
     command_1 = UnboundModelCommand(
-        d=htypes.list_to_tree_adapter_tests.open_1_d(),
+        d=htypes.list_as_tree_adapter_tests.open_1_d(),
         ctx_fn=open_fn_1,
         properties=htypes.command.properties(False, False, False),
         )
     command_2 = UnboundModelCommand(
-        d=htypes.list_to_tree_adapter_tests.open_2_d(),
+        d=htypes.list_as_tree_adapter_tests.open_2_d(),
         ctx_fn=open_fn_2,
         properties=htypes.command.properties(False, False, False),
         )
     return {
-        htypes.list_to_tree_adapter_tests.sample_list_1: [command_1],
-        htypes.list_to_tree_adapter_tests.sample_list_2: [command_2],
+        htypes.list_as_tree_adapter_tests.sample_list_1: [command_1],
+        htypes.list_as_tree_adapter_tests.sample_list_2: [command_2],
         }
 
 
 async def test_three_layers(data_to_ref):
     ctx = Context()
-    model = htypes.list_to_tree_adapter_tests.sample_list_1()
-    root_item_t = pyobj_creg.actor_to_piece(htypes.list_to_tree_adapter_tests.item_1)
-    open_command_1_d_ref = data_to_ref(htypes.list_to_tree_adapter_tests.open_1_d())
-    open_command_2_d_ref = data_to_ref(htypes.list_to_tree_adapter_tests.open_2_d())
-    piece_2_t = pyobj_creg.actor_to_piece(htypes.list_to_tree_adapter_tests.sample_list_2)
-    piece_3_t = pyobj_creg.actor_to_piece(htypes.list_to_tree_adapter_tests.sample_list_3)
+    model = htypes.list_as_tree_adapter_tests.sample_list_1()
+    root_item_t = pyobj_creg.actor_to_piece(htypes.list_as_tree_adapter_tests.item_1)
+    open_command_1_d_ref = data_to_ref(htypes.list_as_tree_adapter_tests.open_1_d())
+    open_command_2_d_ref = data_to_ref(htypes.list_as_tree_adapter_tests.open_2_d())
+    piece_2_t = pyobj_creg.actor_to_piece(htypes.list_as_tree_adapter_tests.sample_list_2)
+    piece_3_t = pyobj_creg.actor_to_piece(htypes.list_as_tree_adapter_tests.sample_list_3)
     fn_1 = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(sample_fn_1),
         ctx_params=('piece',),
         service_params=(),
         )
-    adapter_piece = htypes.list_to_tree_adapter.adapter(
+    adapter_piece = htypes.list_as_tree_adapter.adapter(
         root_item_t=mosaic.put(root_item_t),
         root_function=mosaic.put(fn_1),
         root_open_children_command_d=open_command_1_d_ref,
         layers=(
-            htypes.list_to_tree_adapter.layer(
+            htypes.list_as_tree_adapter.layer(
                 piece_t=mosaic.put(piece_2_t),
                 open_children_command_d=open_command_2_d_ref,
                 ),
-            htypes.list_to_tree_adapter.layer(
+            htypes.list_as_tree_adapter.layer(
                 piece_t=mosaic.put(piece_3_t),
                 open_children_command_d=None,
                 ),
             ),
         )
 
-    adapter = list_to_tree_adapter.ListToTreeAdapter.from_piece(adapter_piece, model, ctx)
+    adapter = list_as_tree_adapter.ListAsTreeAdapter.from_piece(adapter_piece, model, ctx)
     subscriber = MockSubscriber()
     adapter.subscribe(subscriber)
 
@@ -206,26 +206,26 @@ async def test_three_layers(data_to_ref):
     assert not adapter.has_children(row_1_2_0_id)
 
     assert adapter.get_item_piece([]) == model
-    assert adapter.get_item_piece([1]) == htypes.list_to_tree_adapter_tests.sample_list_2(1)
-    assert adapter.get_item_piece([1, 2]) == htypes.list_to_tree_adapter_tests.sample_list_3(12)
+    assert adapter.get_item_piece([1]) == htypes.list_as_tree_adapter_tests.sample_list_2(1)
+    assert adapter.get_item_piece([1, 2]) == htypes.list_as_tree_adapter_tests.sample_list_3(12)
 
 
 async def test_single_layer():
     ctx = Context()
-    model = htypes.list_to_tree_adapter_tests.sample_list_1()
-    root_item_t = pyobj_creg.actor_to_piece(htypes.list_to_tree_adapter_tests.item_1)
+    model = htypes.list_as_tree_adapter_tests.sample_list_1()
+    root_item_t = pyobj_creg.actor_to_piece(htypes.list_as_tree_adapter_tests.item_1)
     fn_1 = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(sample_fn_1),
         ctx_params=('piece',),
         service_params=(),
         )
-    adapter_piece = htypes.list_to_tree_adapter.adapter(
+    adapter_piece = htypes.list_as_tree_adapter.adapter(
         root_item_t=mosaic.put(root_item_t),
         root_function=mosaic.put(fn_1),
         root_open_children_command_d=None,
         layers=(),
         )
-    adapter = list_to_tree_adapter.ListToTreeAdapter.from_piece(adapter_piece, model, ctx)
+    adapter = list_as_tree_adapter.ListAsTreeAdapter.from_piece(adapter_piece, model, ctx)
 
     assert adapter.column_count() == 3
     assert adapter.column_title(0) == 'id'
