@@ -50,7 +50,7 @@ def test_remote_fn_adapter(
             service_params=(),
             )
         adapter_piece = htypes.list_adapter.remote_fn_list_adapter(
-            element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
+            item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.list_adapter_tests.item)),
             system_fn=mosaic.put(system_fn),
             remote_peer=mosaic.put(process.peer.piece),
             )

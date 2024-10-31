@@ -96,7 +96,7 @@ definitions:
   sample_tree_feed_sample_tree.feed-type:
     type: legacy_type.feed:index_tree_feed_type
     value:
-      element_t: legacy_type.sample_tree:item
+      item_t: legacy_type.sample_tree:item
   sample_tree_feed_sample_tree.model:
     type: legacy_type.model:model
     value:
@@ -119,7 +119,7 @@ definitions:
   sample_tree_feed_sample_tree.tree-ui-t:
     type: legacy_type.model:tree_ui_t
     value:
-      element_t: legacy_type.sample_tree:item
+      item_t: legacy_type.sample_tree:item
   sample_tree_sample_tree.model:
     type: legacy_type.model:model
     value:
@@ -141,4 +141,4 @@ definitions:
   sample_tree_sample_tree.tree-ui-t:
     type: legacy_type.model:tree_ui_t
     value:
-      element_t: legacy_type.sample_tree:item
+      item_t: legacy_type.sample_tree:item

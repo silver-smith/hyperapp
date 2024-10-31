@@ -54,18 +54,18 @@ class FeedDiscoverer:
                 ListDiff.Append,
                 ListDiff.Replace,
                 )):
-            element_t = deduce_t(diff.item)
+            item_t = deduce_t(diff.item)
             ctr = ListFeedCtr(
                 module_name=module_name,
                 t=self._piece_t,
-                element_t=element_t,
+                item_t=item_t,
                 )
             if self.ctr:
                 if ctr != self.ctr:
                     raise RuntimeError(f"Attempt to send different diff types to a feed: {self.ctr} and {ctr}")
             else:
                 self.ctr = ctr
-                log.info("Feed: Deduced feed type: %s [%s]", self.ctr, element_t)
+                log.info("Feed: Deduced feed type: %s [%s]", self.ctr, item_t)
         elif self.ctr and isinstance(diff, (
                 ListDiff.Remove,
                 ListDiff.Modify,
@@ -77,18 +77,18 @@ class FeedDiscoverer:
                 TreeDiff.Append,
                 TreeDiff.Replace,
                 )):
-            element_t = deduce_t(diff.item)
+            item_t = deduce_t(diff.item)
             ctr = IndexTreeFeedCtr(
                 module_name=module_name,
                 t=self._piece_t,
-                element_t=element_t,
+                item_t=item_t,
                 )
             if self.ctr:
                 if ctr != self.ctr:
                     raise RuntimeError(f"Attempt to send different diff types to a feed: {self.ctr} and {feed}")
             else:
                 self.ctr = ctr
-                log.info("Feed: Deduced feed type: %s [%s]", self.ctr, element_t)
+                log.info("Feed: Deduced feed type: %s [%s]", self.ctr, item_t)
         elif self.ctr and isinstance(diff, (
                 TreeDiff.Remove,
                 TreeDiff.Modify,

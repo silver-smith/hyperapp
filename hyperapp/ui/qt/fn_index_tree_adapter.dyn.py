@@ -11,9 +11,9 @@ class FnIndexTreeAdapter(FnIndexTreeAdapterBase):
     @classmethod
     @mark.actor.ui_adapter_creg(htypes.tree_adapter.fn_index_tree_adapter)
     def from_piece(cls, piece, model, ctx, system_fn_creg, feed_factory, rpc_call_factory):
-        element_t = pyobj_creg.invite(piece.element_t)
+        item_t = pyobj_creg.invite(piece.item_t)
         fn = system_fn_creg.invite(piece.system_fn)
-        return cls(feed_factory, rpc_call_factory, model, element_t, ctx, fn)
+        return cls(feed_factory, rpc_call_factory, model, item_t, ctx, fn)
 
     def __init__(self, feed_factory, rpc_call_factory, model, item_t, ctx, fn):
         super().__init__(feed_factory, model, item_t)

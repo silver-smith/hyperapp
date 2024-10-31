@@ -41,7 +41,7 @@ def test_fn_adapter(ui_adapter_creg):
         service_params=(),
         )
     adapter_piece = htypes.tree_adapter.fn_index_tree_adapter(
-        element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
+        item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
         # key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
         system_fn=mosaic.put(system_fn),
         )
@@ -107,7 +107,7 @@ async def test_feed_fn_adapter(ui_adapter_creg):
         service_params=(),
         )
     adapter_piece = htypes.tree_adapter.fn_index_tree_adapter(
-        element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
+        item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
         # key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
         system_fn=mosaic.put(system_fn),
         )
@@ -175,7 +175,7 @@ def test_fn_adapter_with_remote_context(
             service_params=(),
             )
         adapter_piece = htypes.tree_adapter.fn_index_tree_adapter(
-            element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
+            item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
             # key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
             system_fn=mosaic.put(system_fn),
             )

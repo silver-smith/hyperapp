@@ -1,12 +1,12 @@
 list_feed_ctr = record:
   module_name: string
   t: ref
-  element_t: ref
+  item_t: ref
 
 index_tree_feed_ctr = record:
   module_name: string
   t: ref
-  element_t: ref
+  item_t: ref
 
 
 feed_template = record:
@@ -15,7 +15,7 @@ feed_template = record:
 
 
 list_feed_type = record:
-  element_t: ref
+  item_t: ref
 
 index_tree_feed_type = record:
-  element_t: ref
+  item_t: ref

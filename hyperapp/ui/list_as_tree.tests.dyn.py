@@ -38,7 +38,7 @@ def test_switch_list_to_tree(ui_adapter_creg):
         service_params=(),
         )
     piece = htypes.list_adapter.fn_list_adapter(
-        element_t=pyobj_creg.actor_to_ref(htypes.list_as_tree_tests.item_1),
+        item_t=pyobj_creg.actor_to_ref(htypes.list_as_tree_tests.item_1),
         system_fn=mosaic.put(fn_1),
         )
     adapter = ui_adapter_creg.animate(piece, model, ctx)
@@ -99,7 +99,7 @@ def model_command_reg_config(partial_ref):
 
 
 @mark.fixture
-def root_element_t():
+def root_item_t():
     return pyobj_creg.actor_to_piece(htypes.list_as_tree_tests.item_1)
 
 
@@ -113,10 +113,10 @@ def fn_1():
 
 
 @mark.fixture
-def adapter_piece(data_to_ref, root_element_t, fn_1):
+def adapter_piece(data_to_ref, root_item_t, fn_1):
     open_command_1_d_ref = data_to_ref(htypes.list_as_tree_tests.open_1_d())
     return htypes.list_to_tree_adapter.adapter(
-        root_element_t=mosaic.put(root_element_t),
+        root_item_t=mosaic.put(root_item_t),
         root_function=mosaic.put(fn_1),
         root_open_children_command_d=open_command_1_d_ref,
         layers=(),
@@ -157,7 +157,7 @@ def test_opener_commands_list(adapter_piece):
     assert pyobj_creg.invite_opt(item.command_d) == htypes.list_as_tree_tests.open_2_d()
 
 
-async def test_set_root_open_command(data_to_ref, root_element_t, fn_1):
+async def test_set_root_open_command(data_to_ref, root_item_t, fn_1):
     ctx = Context()
     root_piece = htypes.list_as_tree_tests.sample_list_1()
     layer_piece = root_piece
@@ -166,7 +166,7 @@ async def test_set_root_open_command(data_to_ref, root_element_t, fn_1):
         layer_piece=mosaic.put(layer_piece),
         )
     adapter_piece = htypes.list_to_tree_adapter.adapter(
-        root_element_t=mosaic.put(root_element_t),
+        root_item_t=mosaic.put(root_item_t),
         root_function=mosaic.put(fn_1),
         root_open_children_command_d=None,
         layers=(),
@@ -185,7 +185,7 @@ async def test_set_root_open_command(data_to_ref, root_element_t, fn_1):
     lcs.set.assert_called_once()
 
 
-async def test_set_non_root_open_command(data_to_ref, root_element_t, fn_1):
+async def test_set_non_root_open_command(data_to_ref, root_item_t, fn_1):
     ctx = Context()
     root_piece = htypes.list_as_tree_tests.sample_list_1()
     layer_piece_t = htypes.list_as_tree_tests.sample_list_2
@@ -202,7 +202,7 @@ async def test_set_non_root_open_command(data_to_ref, root_element_t, fn_1):
             ),
         )
     adapter_piece = htypes.list_to_tree_adapter.adapter(
-        root_element_t=mosaic.put(root_element_t),
+        root_item_t=mosaic.put(root_item_t),
         root_function=mosaic.put(fn_1),
         root_open_children_command_d=None,
         layers=layers,

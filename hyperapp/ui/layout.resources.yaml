@@ -65,7 +65,7 @@ definitions:
   layout_command_list.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
-      element_t: legacy_type.layout:command_item
+      item_t: legacy_type.layout:command_item
   layout_command_list.model:
     type: legacy_type.model:model
     value:
@@ -131,7 +131,7 @@ definitions:
   layout_view.tree-ui-t:
     type: legacy_type.model:tree_ui_t
     value:
-      element_t: legacy_type.layout:item
+      item_t: legacy_type.layout:item
   layout_view_enum_layout_tree_commands.command-cfg-item:
     type: legacy_type.command:cfg_item
     value:

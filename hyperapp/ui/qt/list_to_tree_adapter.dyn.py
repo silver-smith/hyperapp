@@ -20,7 +20,7 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
 
     @dataclass
     class _Layer:
-        element_t: Any|None = None
+        item_t: Any|None = None
         list_fn: ContextFn|None = None
         open_command_d: Any|None = None
 
@@ -34,13 +34,13 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
                 open_command_d=pyobj_creg.invite_opt(rec.open_children_command_d),
                 )
             layers[piece_t] = layer
-        root_element_t = pyobj_creg.invite(piece.root_element_t)
+        root_item_t = pyobj_creg.invite(piece.root_item_t)
         root_layer = cls._Layer(
-            element_t=root_element_t,
+            item_t=root_item_t,
             list_fn=system_fn_creg.invite(piece.root_function),
             open_command_d=pyobj_creg.invite_opt(piece.root_open_children_command_d),
             )
-        return cls(system_fn_creg, get_model_commands, visualizer_reg, model, root_element_t, ctx, root_layer, layers)
+        return cls(system_fn_creg, get_model_commands, visualizer_reg, model, root_item_t, ctx, root_layer, layers)
 
     def __init__(self, system_fn_creg, get_model_commands, visualizer_reg, model, item_t, ctx, root_layer, layers):
         super().__init__(model, item_t)
@@ -55,7 +55,7 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
             **layers,
             deduce_t(model): root_layer,
             }
-        self._column_names = sorted(root_layer.element_t.fields)
+        self._column_names = sorted(root_layer.item_t.fields)
         self._parent_id_to_layer = {
             0: root_layer,
             }
@@ -129,7 +129,7 @@ class ListToTreeAdapter(IndexTreeAdapterBase):
             # Not yet included, but parent layer has open command - show it anyway.
             layer = self._Layer()
             self._layers[piece_t] = layer
-        layer.element_t = pyobj_creg.invite(ui_t.element_t)
+        layer.item_t = pyobj_creg.invite(ui_t.item_t)
         layer.list_fn = self._system_fn_creg.invite(fn_ref)
         self._parent_id_to_layer[parent_id] = layer
         self._id_to_piece[parent_id] = piece

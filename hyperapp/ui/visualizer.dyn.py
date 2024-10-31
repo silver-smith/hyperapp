@@ -32,14 +32,14 @@ def _model_layout(visualizer_reg, t):
 
     if isinstance(ui_t, htypes.model.list_ui_t):
         adapter = htypes.list_adapter.fn_list_adapter(
-            element_t=ui_t.element_t,
+            item_t=ui_t.item_t,
             system_fn=system_fn_ref,
             )
         return htypes.list.view(mosaic.put(adapter))
 
     if isinstance(ui_t, htypes.model.tree_ui_t):
         adapter = htypes.tree_adapter.fn_index_tree_adapter(
-            element_t=ui_t.element_t,
+            item_t=ui_t.item_t,
             # key_t=ui_t.key_t,
             system_fn=system_fn_ref,
             )

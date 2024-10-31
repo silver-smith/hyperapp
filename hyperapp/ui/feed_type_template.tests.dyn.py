@@ -9,7 +9,7 @@ from .tested.code import feed_type_template
 def test_feed_type_template():
     piece_t = htypes.feed_type_template_tests.sample_view
     feed_type = htypes.feed.list_feed_type(
-        element_t=pyobj_creg.actor_to_ref(htypes.feed_type_template_tests.sample_item),
+        item_t=pyobj_creg.actor_to_ref(htypes.feed_type_template_tests.sample_item),
         )
     template_piece = htypes.feed.feed_template(
         t=pyobj_creg.actor_to_ref(piece_t),

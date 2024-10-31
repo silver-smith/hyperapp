@@ -73,7 +73,7 @@ class FnListAdapterBase(ListAdapterBase, metaclass=abc.ABCMeta):
             subscriber.process_diff(diff)
 
     @property
-    def element_t(self):
+    def item_t(self):
         return self._item_t
 
     @property

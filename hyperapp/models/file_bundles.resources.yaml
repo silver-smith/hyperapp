@@ -35,7 +35,7 @@ definitions:
   file_bundles_view.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
-      element_t: legacy_type.file_bundles:item
+      item_t: legacy_type.file_bundles:item
   file_bundles_view.model:
     type: legacy_type.model:model
     value:

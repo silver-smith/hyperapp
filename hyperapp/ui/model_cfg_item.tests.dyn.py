@@ -16,7 +16,7 @@ def _sample_fn(view, state, sample_service):
 @mark.fixture.obj
 def model():
     ui_t = htypes.model.list_ui_t(
-        element_t=pyobj_creg.actor_to_ref(htypes.model_cfg_item_tests.item),
+        item_t=pyobj_creg.actor_to_ref(htypes.model_cfg_item_tests.item),
         )
     system_fn = htypes.system_fn.ctx_fn(
         function=pyobj_creg.actor_to_ref(_sample_fn),

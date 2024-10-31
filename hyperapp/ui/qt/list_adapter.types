@@ -2,10 +2,10 @@
 static_list_adapter = record
 
 fn_list_adapter = record:
-  element_t: ref
+  item_t: ref
   system_fn: ref
 
 remote_fn_list_adapter = record:
-  element_t: ref
+  item_t: ref
   system_fn: ref
   remote_peer: ref

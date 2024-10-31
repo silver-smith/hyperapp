@@ -56,7 +56,7 @@ definitions:
   show_current_context_view.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
-      element_t: legacy_type.show_current_context:item
+      item_t: legacy_type.show_current_context:item
   show_current_context_view.model:
     type: legacy_type.model:model
     value:

@@ -51,7 +51,7 @@ def visualizer_config():
         htypes.visualizer_tests.sample_list: htypes.model.model(
             ui_t=mosaic.put(
                 htypes.model.list_ui_t(
-                    element_t=pyobj_creg.actor_to_ref(htypes.visualizer_tests.sample_list_item),
+                    item_t=pyobj_creg.actor_to_ref(htypes.visualizer_tests.sample_list_item),
                     ),
                 ),
             system_fn=mosaic.put(system_fn),
@@ -60,7 +60,7 @@ def visualizer_config():
             ui_t=mosaic.put(
                 htypes.model.tree_ui_t(
                     # key_t=pyobj_creg.actor_to_ref(htypes.visualizer_tests.sample_tree_key),
-                    element_t=pyobj_creg.actor_to_ref(htypes.visualizer_tests.sample_tree_item),
+                    item_t=pyobj_creg.actor_to_ref(htypes.visualizer_tests.sample_tree_item),
                     ),
                 ),
             system_fn=mosaic.put(system_fn),

@@ -41,7 +41,7 @@ definitions:
   model_commands_view.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
-      element_t: legacy_type.model_commands:item
+      item_t: legacy_type.model_commands:item
   model_commands_view.model:
     type: legacy_type.model:model
     value:

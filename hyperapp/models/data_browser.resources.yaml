@@ -94,7 +94,7 @@ definitions:
   data_browser_list_view.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
-      element_t: legacy_type.data_browser:list_item
+      item_t: legacy_type.data_browser:list_item
   data_browser_list_view.model:
     type: legacy_type.model:model
     value:
@@ -154,7 +154,7 @@ definitions:
   data_browser_record_view.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
-      element_t: legacy_type.data_browser:record_item
+      item_t: legacy_type.data_browser:record_item
   data_browser_record_view.model:
     type: legacy_type.model:model
     value:
@@ -193,7 +193,7 @@ definitions:
   data_browser_ref_list_view.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
-      element_t: legacy_type.data_browser:ref_list_item
+      item_t: legacy_type.data_browser:ref_list_item
   data_browser_ref_list_view.model:
     type: legacy_type.model:model
     value:

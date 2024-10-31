@@ -11,10 +11,10 @@ class RemoteFnIndexTreeAdapter(FnIndexTreeAdapterBase):
     @classmethod
     @mark.actor.ui_adapter_creg(htypes.tree_adapter.remote_fn_index_tree_adapter)
     def from_piece(cls, piece, model, ctx, system_fn_creg, feed_factory, peer_registry, rpc_call_factory):
-        element_t = pyobj_creg.invite(piece.element_t)
+        item_t = pyobj_creg.invite(piece.item_t)
         remote_peer = peer_registry.invite(piece.remote_peer)
         fn = system_fn_creg.invite(piece.system_fn)
-        return cls(feed_factory, rpc_call_factory, model, element_t, ctx, fn, ctx.identity, remote_peer)
+        return cls(feed_factory, rpc_call_factory, model, item_t, ctx, fn, ctx.identity, remote_peer)
 
     def __init__(self, feed_factory, rpc_call_factory, model, item_t, ctx, fn, identity, remote_peer):
         super().__init__(feed_factory, model, item_t)

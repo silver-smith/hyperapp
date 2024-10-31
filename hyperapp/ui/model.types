@@ -8,10 +8,10 @@ model = record:
 
 
 list_ui_t = record:
-  element_t: ref
+  item_t: ref
 
 tree_ui_t = record:
-  element_t: ref
+  item_t: ref
 
 record_ui_t = record:
   record_t: ref

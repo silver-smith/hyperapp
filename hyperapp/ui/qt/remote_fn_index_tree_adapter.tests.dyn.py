@@ -57,7 +57,7 @@ def test_remote_fn_adapter(
             service_params=(),
             )
         adapter_piece = htypes.tree_adapter.remote_fn_index_tree_adapter(
-            element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
+            item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_adapter_tests.item)),
             # key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
             system_fn=mosaic.put(system_fn),
             remote_peer=mosaic.put(process.peer.piece),

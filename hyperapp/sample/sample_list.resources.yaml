@@ -96,11 +96,11 @@ definitions:
   sample_list_feed_sample_list.feed-type:
     type: legacy_type.feed:list_feed_type
     value:
-      element_t: legacy_type.sample_list:item
+      item_t: legacy_type.sample_list:item
   sample_list_feed_sample_list.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
-      element_t: legacy_type.sample_list:item
+      item_t: legacy_type.sample_list:item
   sample_list_feed_sample_list.model:
     type: legacy_type.model:model
     value:
@@ -122,7 +122,7 @@ definitions:
   sample_list_sample_list.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
-      element_t: legacy_type.sample_list:item
+      item_t: legacy_type.sample_list:item
   sample_list_sample_list.model:
     type: legacy_type.model:model
     value:

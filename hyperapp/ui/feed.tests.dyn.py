@@ -26,18 +26,19 @@ def test_index_tree_feed_factory(feed_factory):
     feed = feed_factory(piece)
     assert isinstance(feed, feed_module.IndexTreeFeed), repr(feed)
 
+
 @mark.fixture
-def element_t():
+def item_t():
     return pyobj_creg.actor_to_piece(htypes.feed_tests.sample_item)
 
 
-def test_list_feed_actor(feed_creg, element_t):
-    piece = htypes.feed.list_feed_type(mosaic.put(element_t))
+def test_list_feed_actor(feed_creg, item_t):
+    piece = htypes.feed.list_feed_type(mosaic.put(item_t))
     feed = feed_creg.animate(piece)
     assert isinstance(feed, feed_module.ListFeed), repr(feed)
 
 
-def test_index_tree_feed_actor(feed_creg, element_t):
-    piece = htypes.feed.index_tree_feed_type(mosaic.put(element_t))
+def test_index_tree_feed_actor(feed_creg, item_t):
+    piece = htypes.feed.index_tree_feed_type(mosaic.put(item_t))
     feed = feed_creg.animate(piece)
     assert isinstance(feed, feed_module.IndexTreeFeed), repr(feed)

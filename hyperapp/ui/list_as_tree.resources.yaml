@@ -61,11 +61,11 @@ definitions:
   list_as_tree_opener_commands.feed-type:
     type: legacy_type.feed:list_feed_type
     value:
-      element_t: legacy_type.list_as_tree:opener_command_item
+      item_t: legacy_type.list_as_tree:opener_command_item
   list_as_tree_opener_commands.list-ui-t:
     type: legacy_type.model:list_ui_t
     value:
-      element_t: legacy_type.list_as_tree:opener_command_item
+      item_t: legacy_type.list_as_tree:opener_command_item
   list_as_tree_opener_commands.model:
     type: legacy_type.model:model
     value:

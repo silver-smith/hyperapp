@@ -84,12 +84,12 @@ class ModelProbe:
             if parent_t is not result_t.element_t:
                 self._raise_error(f"Parent type should match result list element type: parent: {parent_t}, result element: {result_t.element_t}")
         return htypes.model.tree_ui_t(
-            element_t=pyobj_creg.actor_to_ref(result_t.element_t),
+            item_t=pyobj_creg.actor_to_ref(result_t.element_t),
             )
 
     def _make_list_ui_t(self, result_t):
         return htypes.model.list_ui_t(
-            element_t=pyobj_creg.actor_to_ref(result_t.element_t),
+            item_t=pyobj_creg.actor_to_ref(result_t.element_t),
             )
 
     def _make_record_ui_t(self, result_t):

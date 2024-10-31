@@ -32,7 +32,7 @@ def _make_adapter_piece():
         service_params=(),
         )
     return htypes.tree_adapter.fn_index_tree_adapter(
-        element_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_tests.item)),
+        item_t=mosaic.put(pyobj_creg.actor_to_piece(htypes.tree_tests.item)),
         # key_t=mosaic.put(pyobj_creg.actor_to_piece(tInt)),
         system_fn=mosaic.put(system_fn),
         )

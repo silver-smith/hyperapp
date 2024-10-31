@@ -3,7 +3,7 @@ layer = record:
   open_children_command_d: ref opt
 
 adapter = record:
-  root_element_t: ref
+  root_item_t: ref
   root_function: ref
   root_open_children_command_d: ref opt
   layers: layer list

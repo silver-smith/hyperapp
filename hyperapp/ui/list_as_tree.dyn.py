@@ -22,9 +22,9 @@ def switch_list_to_tree(piece, view, hook, ctx, model_view_creg):
     if not isinstance(list_adapter, FnListAdapter):
         log.info("Switch list to tree: Not an FnListAdapter: %r", list_adapter)
         return
-    element_t_res = pyobj_creg.actor_to_piece(list_adapter.element_t)
+    item_t_res = pyobj_creg.actor_to_piece(list_adapter.item_t)
     adapter = htypes.list_to_tree_adapter.adapter(
-        root_element_t=mosaic.put(element_t_res),
+        root_item_t=mosaic.put(item_t_res),
         root_function=mosaic.put(list_adapter.function.piece),
         root_open_children_command_d=None,
         layers=(),
@@ -95,7 +95,7 @@ def _amend_adapter(data_to_ref, root_piece_t, layer_piece_t, adapter, new_comman
                 )
             layers.append(new_layer)
     return htypes.list_to_tree_adapter.adapter(
-        root_element_t=adapter.root_element_t,
+        root_item_t=adapter.root_item_t,
         root_function=adapter.root_function,
         root_open_children_command_d=root_open_children_command_d,
         layers=tuple(layers),
