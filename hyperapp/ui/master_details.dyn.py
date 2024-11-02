@@ -9,17 +9,9 @@ from .services import (
 from .code.mark import mark
 from .code.command import d_to_name
 from .code.box_layout import BoxLayoutView
+from .code.model_command import model_command_ctx
 
 log = logging.getLogger(__name__)
-
-
-def _make_command_ctx(ctx, model, model_state):
-    return ctx.push(
-        model=model,
-        piece=model,
-        model_state=model_state,
-        **ctx.attributes(model_state),
-        )
 
 
 class MasterDetailsView(BoxLayoutView):
@@ -108,7 +100,7 @@ class MasterDetailsView(BoxLayoutView):
         self.replace_element(ctx, widget, 1, details_view)
 
     async def _run_details_command(self, ctx, model, model_state, command_d):
-        command_ctx = _make_command_ctx(ctx, model, model_state)
+        command_ctx = model_command_ctx(ctx, model, model_state)
         command_list = _all_model_commands(self._global_model_command_reg, self._get_model_commands, model, command_ctx)
         unbound_command = next(cmd for cmd in command_list if cmd.d == command_d)
         bound_command = unbound_command.bind(command_ctx)
@@ -172,7 +164,7 @@ def _pick_command(global_model_command_reg, get_model_commands, model, command_c
 @mark.universal_ui_command
 def wrap_master_details(model, model_state, view, hook, ctx, data_to_ref, model_view_creg, global_model_command_reg, get_model_commands):
     log.info("Wrap master-details: %s / %s", model, view)
-    command_ctx = _make_command_ctx(ctx, model, model_state)
+    command_ctx = model_command_ctx(ctx, model, model_state)
     command = _pick_command(global_model_command_reg, get_model_commands, model, command_ctx)
     view_piece = htypes.master_details.view(
         master_view=mosaic.put(view.piece),

@@ -13,6 +13,14 @@ from .code.command_config_ctl import TypedCommandConfigCtl, UntypedCommandConfig
 log = logging.getLogger(__name__)
 
 
+def model_command_ctx(ctx, model, model_state):
+    return ctx.push(
+        model=model,
+        piece=model,
+        model_state=model_state,
+        **ctx.attributes(model_state),
+        )
+
 
 class UnboundModelCommand(UnboundCommand):
 

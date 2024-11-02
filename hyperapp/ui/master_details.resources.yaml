@@ -19,6 +19,7 @@ import:
 - legacy_type.system:actor_template
 - legacy_type.system_fn:ctx_fn
 - ui.command:command.module
+- ui.model_command:model_command.module
 - ui.qt.box_layout:box_layout.module
 definitions:
   MasterDetailsView:
@@ -40,6 +41,7 @@ definitions:
         code.box_layout: ui.qt.box_layout:box_layout.module
         code.command: ui.command:command.module
         code.mark: common.mark:mark.module
+        code.model_command: ui.model_command:model_command.module
         htypes.box_layout.state: legacy_type.box_layout:state
         htypes.label.view: legacy_type.label:view
         htypes.master_details.state: legacy_type.master_details:state

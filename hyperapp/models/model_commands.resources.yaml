@@ -19,6 +19,7 @@ import:
 - legacy_type.model_commands:view
 - legacy_type.system_fn:ctx_fn
 - ui.command:command.module
+- ui.model_command:model_command.module
 definitions:
   list_model_commands:
     type: legacy_type.builtin:attribute
@@ -33,6 +34,7 @@ definitions:
       import_list:
         code.command: ui.command:command.module
         code.mark: common.mark:mark.module
+        code.model_command: ui.model_command:model_command.module
         htypes.model_commands.item: legacy_type.model_commands:item
         htypes.model_commands.view: legacy_type.model_commands:view
         services.mosaic: builtins:mosaic.service
