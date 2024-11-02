@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import time
 from functools import partial
@@ -10,7 +11,6 @@ from .code.view import View
 from .code.tree_visual_diff import VisualTreeDiffAppend, VisualTreeDiffInsert, VisualTreeDiffReplace
 
 log = logging.getLogger(__name__)
-
 
 
 class _Model(QtCore.QAbstractItemModel):
@@ -116,7 +116,7 @@ class _TreeWidget(QtWidgets.QTreeView):
 
     def check_is_just_shown(self):
         # Heuristics to detect initial data population.
-        if time.time() - self._visible_time > 0.2:
+        if time.time() - self._visible_time > 1:
             self._want_current_path = None
             return
         self._setup()
@@ -157,19 +157,26 @@ class _TreeWidget(QtWidgets.QTreeView):
     def _set_current_path(self, path):
         model = self.model()
         index = self.rootIndex()
+        succeeded = True
         while path:
             if not model.hasChildren(index):
-                return False
+                succeeded = False
+                break
             if not self.isExpanded(index):
                 self.expand(index)
             row = path[0]
             if row >= model.rowCount(index):
-                return False
+                succeeded = False
+                break
+            parent = index
             index = model.index(row, 0, index)
+            path = path[1:]
+        # Call later otherwise only first cell is selected, not whole row.
+        def select():
             self.setCurrentIndex(index)
             self.scrollTo(index)
-            path = path[1:]
-        return True  # Now, we are fully expanded and selected.
+        asyncio.get_running_loop().call_soon(select)
+        return succeeded  # If true, we are fully expanded and selected.
 
 
 class TreeView(View):
