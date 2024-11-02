@@ -13,6 +13,7 @@ from .services import (
     )
 from .code.mark import mark
 from .code.system_fn import ContextFn
+from .code.model_command import model_command_ctx
 from .code.list_adapter import list_model_state_t
 from .code.tree_adapter import IndexTreeAdapterBase
 
@@ -114,23 +115,29 @@ class ListAsTreeAdapter(IndexTreeAdapterBase):
     def get_item_list_model_state(self, path):
         item_id = self.path_to_item_id(path)
         parent_id = self._id_to_parent_id[item_id]
-        model_state_t = self._parent_id_to_layer[parent_id].model_state_t
+        layer = self._parent_id_to_layer[parent_id]
         item = self._id_to_item[item_id]
-        return model_state_t(
-            current_idx=path[-1],
+        return self._make_model_state(layer, item, idx=path[-1])
+
+    def _make_model_state(self, layer, item, idx):
+        return layer.model_state_t(
+            current_idx=idx,
             current_item=item,
             )
 
-    async def _run_open_command(self, command_d, model, current_item):
-        # TODO: Use model state instead of just current_item.
-        command_ctx = self._ctx.push(
-            piece=model,
-            model=model,
-            current_item=current_item,
-            )
+    def _make_command_ctx(self, layer, ctx, model, item_id):
+        item = self._id_to_item[item_id]
+        parent_id = self._id_to_parent_id[item_id]
+        id_list = self._id_to_children_id_list[parent_id]
+        idx = id_list.index(item_id)
+        model_state = self._make_model_state(layer, item, idx)
+        return model_command_ctx(ctx, model, model_state)
+
+    async def _run_open_command(self, layer, model, current_item_id):
+        command_ctx = self._make_command_ctx(layer, self._ctx, model, current_item_id)
         command_list = self._get_model_commands(model, command_ctx)
         try:
-            unbound_command = next(cmd for cmd in command_list if cmd.d == command_d)
+            unbound_command = next(cmd for cmd in command_list if cmd.d == layer.open_command_d)
         except StopIteration:
             raise RuntimeError(f"Command {command_d} is not available anymore")
         bound_command = unbound_command.bind(command_ctx)
@@ -154,8 +161,7 @@ class ListAsTreeAdapter(IndexTreeAdapterBase):
         if pp_layer.open_command_d is None:
             log.info("List-to-tree adapter: Open command for parent#%d is not specified", parent_id)
             return None
-        parent_item = self._id_to_item[parent_id]
-        piece = await self._run_open_command(pp_layer.open_command_d, pp_piece, current_item=parent_item)
+        piece = await self._run_open_command(pp_layer, model=pp_piece, current_item_id=parent_id)
         piece_t = deduce_t(piece)
         try:
             ui_t, fn_ref = self._visualizer_reg(piece_t)
