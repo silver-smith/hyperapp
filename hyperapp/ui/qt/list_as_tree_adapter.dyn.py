@@ -82,6 +82,8 @@ class ListAsTreeAdapter(IndexTreeAdapterBase):
             return None
 
     def get_item(self, id):
+        if id == 0:
+            return None
         parent_id = self._id_to_parent_id[id]
         item_t = self._parent_id_to_layer[parent_id].item_t
         item = self._id_to_item.get(id)
