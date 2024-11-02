@@ -29,6 +29,7 @@ import:
 - legacy_type.system_fn:ctx_fn
 - legacy_type.tree:view
 - ui.command:command.module
+- ui.model_command:model_command.module
 - ui.qt.fn_list_adapter:fn_list_adapter.module
 - ui.qt.list_as_tree_adapter:list_as_tree_adapter.module
 definitions:
@@ -43,6 +44,7 @@ definitions:
         code.list_as_tree_adapter: ui.qt.list_as_tree_adapter:list_as_tree_adapter.module
         code.list_diff: common.list_diff:list_diff.module
         code.mark: common.mark:mark.module
+        code.model_command: ui.model_command:model_command.module
         htypes.list.view: legacy_type.list:view
         htypes.list_as_tree.opener_command_item: legacy_type.list_as_tree:opener_command_item
         htypes.list_as_tree.opener_commands: legacy_type.list_as_tree:opener_commands

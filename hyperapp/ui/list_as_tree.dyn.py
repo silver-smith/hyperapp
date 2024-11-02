@@ -12,6 +12,7 @@ from .code.command import d_to_name
 from .code.list_diff import ListDiff
 from .code.fn_list_adapter import FnListAdapter
 from .code.list_as_tree_adapter import ListAsTreeAdapter
+from .code.model_command import model_command_ctx
 
 log = logging.getLogger(__name__)
 
@@ -104,30 +105,18 @@ def _amend_adapter(data_to_ref, root_piece_t, layer_piece_t, adapter, new_comman
         )
 
 
-def _make_command_ctx(ctx, model):
-    return ctx.push(
-        model=model,
-        piece=model,
-        # TODO: Make list model state from tree model state. Add to list_as_tree.opener_commands record.
-        # Without it commands using state (except current_item) won't be shown in command list
-        # and couldn't be used as opener commands.
-        # model_state=model_state,
-        # **ctx.attributes(model_state),
-        current_item=None,
-        )
-
-
 @mark.model
 def opener_command_list(piece, lcs, ctx, data_to_ref, get_model_commands, get_custom_layout):
     root_piece, root_piece_t = web.summon_with_t(piece.root_piece)
     layer_piece, layer_piece_t = web.summon_with_t(piece.layer_piece)
+    model_state = web.summon(piece.model_state)
     view = get_custom_layout(lcs, root_piece_t)
     current_command_d = None
     if isinstance(view, htypes.tree.view):
         adapter = web.summon(view.adapter)
         if isinstance(adapter, htypes.list_as_tree_adapter.adapter):
             current_command_d = _get_current_command_d(root_piece_t, layer_piece_t, adapter)
-    command_ctx = _make_command_ctx(ctx, layer_piece)
+    command_ctx = model_command_ctx(ctx, layer_piece, model_state)
     command_list = get_model_commands(layer_piece, command_ctx)
     return [
         _make_command_item(data_to_ref, command, is_opener=command.d == current_command_d)
@@ -141,6 +130,7 @@ async def toggle_open_command(
         data_to_ref, feed_factory, get_model_commands, get_custom_layout, set_custom_layout):
     root_piece, root_piece_t = web.summon_with_t(piece.root_piece)
     layer_piece, layer_piece_t = web.summon_with_t(piece.layer_piece)
+    model_state = web.summon(piece.model_state)
     view = get_custom_layout(lcs, root_piece_t)
     if not isinstance(view, htypes.tree.view):
         log.info("View for %s is not a tree: %s", model_t, view)
@@ -150,7 +140,7 @@ async def toggle_open_command(
         log.info("Adapter for %s is not a list-to-tree: %s", model_t, adapter)
         return
     prev_command_d = _get_current_command_d(root_piece_t, layer_piece_t, adapter)
-    command_ctx = _make_command_ctx(ctx, layer_piece)
+    command_ctx = model_command_ctx(ctx, layer_piece, model_state)
     command_list = get_model_commands(layer_piece, command_ctx)
     idx_command_by_d = {
         cmd.d: (idx, cmd) for idx, cmd
