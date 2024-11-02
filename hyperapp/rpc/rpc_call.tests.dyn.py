@@ -1,11 +1,14 @@
+import logging
+
 from hyperapp.common.htypes import HException
 
 from .services import (
-    generate_rsa_identity,
-    mark,
     mosaic,
     )
-from .tested.services import rpc_call_factory
+from .code.mark import mark
+from .tested.code import rpc_call as rpc_call_module
+
+log = logging.getLogger(__name__)
 
 
 class TestException(HException):
@@ -15,44 +18,62 @@ class TestException(HException):
 class PhonyTransport:
 
     def send(self, receiver, sender_identity, ref_list):
-        pass
+        log.info("Phony transport: send %s <- %s: %s", receiver, sender_identity, ref_list)
 
 
-@mark.service
+@mark.fixture
 def transport():
     return PhonyTransport()
 
 
-class PhonyRpcEndpoint:
+class FutureResult:
 
-    def __init__(self, result=None, exception=None):
+    def __init__(self):
+        self._result = None
+        self._exception = None
+
+    def get_result(self):
+        if self._result is not None:
+            log.info("Future result: return %r", self._result)
+            return self._result
+        if self._exception is not None:
+            log.info("Future result: raise %r", self._exception)
+            raise self._exception
+
+    def set_result(self, result):
         self._result = result
+
+    def set_exception(self, exception):
         self._exception = exception
 
-    def assign_future_to_request_id(self, request_id, future):
-        if self._result is not None:
-            future.set_result(self._result)
-        if self._exception is not None:
-            future.set_exception(self._exception)
+
+@mark.fixture
+def future_result():
+    return FutureResult()
 
 
-def test_rpc_call_factory_success():
+@mark.fixture
+def rpc_wait_for_future(future_result, future, timeout_sec):
+    return future_result.get_result()
+
+
+def test_rpc_call_factory_success(generate_rsa_identity, rpc_call_factory, future_result):
     sender_identity = generate_rsa_identity(fast=True)
-    endpoint = PhonyRpcEndpoint(result="Phony rpc response")
+    call_result = "Sample call result"
+    future_result.set_result(call_result)
     rpc_call = rpc_call_factory(
-        rpc_endpoint=endpoint,
         receiver_peer='phony receiver peer',
         sender_identity=sender_identity,
         servant_ref=mosaic.put('phony servant'),
         )
-    rpc_call(sample_param=12345)
+    result = rpc_call(sample_param=12345)
+    assert result == call_result
 
 
-def test_rpc_call_factory_exception():
+def test_rpc_call_factory_exception(generate_rsa_identity, rpc_call_factory, future_result):
     sender_identity = generate_rsa_identity(fast=True)
-    endpoint = PhonyRpcEndpoint(exception=TestException("Phony rpc error"))
+    future_result.set_exception(TestException("Phony rpc error"))
     rpc_call = rpc_call_factory(
-        rpc_endpoint=endpoint,
         receiver_peer='phony receiver peer',
         sender_identity=sender_identity,
         servant_ref=mosaic.put('phony servant'),
