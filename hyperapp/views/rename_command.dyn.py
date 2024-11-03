@@ -4,16 +4,13 @@ from hyperapp.common.htypes import TRecord
 
 from . import htypes
 from .services import (
-    data_to_ref,
-    deduce_t,
-    mark,
     mosaic,
     pyobj_creg,
-    model_view_creg,
     web,
     )
+from .code.mark import mark
 from .code.command import d_res_ref_to_name
-from .code.ui_model_command import change_command
+# from .code.ui_model_command import change_command
 from .code.context_view import ContextView
 
 log = logging.getLogger(__name__)

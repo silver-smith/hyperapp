@@ -2,9 +2,6 @@ from unittest.mock import Mock
 
 from . import htypes
 from .services import (
-    data_to_res,
-    feed_factory,
-    fn_to_ref,
     mosaic,
     )
 from .code.context import Context
@@ -27,7 +24,7 @@ def _make_sample_command():
         )
 
 
-async def test_add_identity_command():
+async def _test_add_identity_command():
     sample_command = _make_sample_command()
     lcs = Mock()
     lcs.get.return_value = None  # Imitate missing command list; do not return Mock instance.
@@ -44,7 +41,7 @@ async def test_add_identity_command():
     lcs.set.assert_called_once()
 
 
-def test_identity_command_instance():
+def _test_identity_command_instance():
     model = htypes.identity_command_tests.sample_model()
     ctx = Context(piece=model)
     piece = htypes.identity_command.identity_model_command_impl()

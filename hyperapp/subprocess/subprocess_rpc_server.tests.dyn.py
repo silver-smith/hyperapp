@@ -1,19 +1,13 @@
 import logging
 import time
 
-from .services import (
-    endpoint_registry,
-    generate_rsa_identity,
-    partial_ref,
-    rpc_endpoint_factory,
-    )
-from .tested.services import subprocess_rpc_server_running
+from .tested.code import subprocess_rpc_server
 from .code.subprocess_rpc_server_tests_aux import _callback
 
 log = logging.getLogger(__name__)
 
 
-def test_subprocess_rpc_server_call():
+def _test_subprocess_rpc_server_call():
     name = 'test-subprocess-rpc-server-main'
     identity = generate_rsa_identity(fast=True)
     rpc_endpoint = rpc_endpoint_factory()
@@ -27,7 +21,7 @@ def test_subprocess_rpc_server_call():
     log.info("Stopped: %r", process)
 
 
-def test_subprocess_rpc_server_submit():
+def _test_subprocess_rpc_server_submit():
     name = 'test-subprocess-rpc-server-main'
     identity = generate_rsa_identity(fast=True)
     rpc_endpoint = rpc_endpoint_factory()

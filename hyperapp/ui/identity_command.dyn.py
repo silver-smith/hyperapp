@@ -2,19 +2,15 @@ from hyperapp.common.htypes import TRecord
 
 from . import htypes
 from .services import (
-    data_to_ref,
-    feed_factory,
-    model_command_impl_creg,
     mosaic,
-    get_ui_model_commands,
-    set_ui_model_commands,
     web,
     )
 from .code.list_diff import ListDiff
-from .code.command import CommandImpl
+# from .code.command import CommandImpl
 
 
-class IdentityModelCommandImpl(CommandImpl):
+# class IdentityModelCommandImpl(CommandImpl):
+class IdentityModelCommandImpl:
 
     def __init__(self, piece):
         super().__init__()
@@ -51,7 +47,7 @@ class IdentityModelCommandImpl(CommandImpl):
         return self._piece
 
 
-@model_command_impl_creg.actor(htypes.identity_command.identity_model_command_impl)
+# @model_command_impl_creg.actor(htypes.identity_command.identity_model_command_impl)
 def identity_model_command_impl_from_piece(piece, ctx):
     return IdentityModelCommandImpl(ctx.piece)
 

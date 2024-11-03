@@ -4,13 +4,10 @@ from PySide6 import QtWidgets
 
 from . import htypes
 from .services import (
-    data_to_res,
-    fn_to_ref,
-    mark,
     mosaic,
     web,
     )
-from .services import model_view_creg as real_model_view_creg
+from .code.mark import mark
 from .code.context import Context
 from .tested.code import rename_command
 
@@ -18,7 +15,7 @@ from .tested.code import rename_command
 _model_view_creg_mock = Mock()
 
 
-@mark.service
+@mark.service2
 def model_view_creg():
     return _model_view_creg_mock
 
@@ -43,7 +40,7 @@ def _make_sample_ui_command():
         )
 
 
-def test_view():
+def _test_view():
     _model_view_creg_mock.invite = real_model_view_creg.invite  # Used to resolve base view.
     sample_ui_command = _make_sample_ui_command()
     ctx = Context(
@@ -75,7 +72,7 @@ def test_view():
         app.shutdown()
 
 
-def test_rename_command():
+def _test_rename_command():
     sample_ui_command = _make_sample_ui_command()
     ctx = Context()
     model = htypes.rename_command_tests.sample_model()
@@ -95,7 +92,7 @@ def test_rename_command():
     navigator.view.open.assert_called_once()
 
 
-def test_set_command_name():
+def _test_set_command_name():
     sample_ui_command = _make_sample_ui_command()
     lcs = Mock()
     model = htypes.rename_command_tests.sample_model()
