@@ -12,8 +12,6 @@ import:
 - legacy_type.test_target:tested_code_req
 - legacy_type.test_target:fixtures_module_req
 - legacy_type.test_target:tested_code_resource
-- legacy_type.test_target:tested_service_req
-- legacy_type.test_target:tested_service_resource
 - rc.config_item_resource:config_item_resource.module
 - rc.python_module_resource_target:python_module_resource_target.module
 - rc.rc_requirement:rc_requirement.module
@@ -32,9 +30,7 @@ definitions:
         htypes.test_target.constructors_picker_resource: legacy_type.test_target:constructors_picker_resource
         htypes.test_target.tested_code_req: legacy_type.test_target:tested_code_req
         htypes.test_target.fixtures_module_req: legacy_type.test_target:fixtures_module_req
-        htypes.test_target.tested_service_req: legacy_type.test_target:tested_service_req
         htypes.test_target.tested_code_resource: legacy_type.test_target:tested_code_resource
-        htypes.test_target.tested_service_resource: legacy_type.test_target:tested_service_resource
         htypes.test_target.recorder_resource: legacy_type.test_target:recorder_resource
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
@@ -43,25 +39,6 @@ definitions:
         code.rc_requirement: rc.rc_requirement:rc_requirement.module
         code.rc_resource: rc.rc_resource:rc_resource.module
         code.python_module_resource_target: rc.python_module_resource_target:python_module_resource_target.module
-
-  TestedServiceReq:
-    type: legacy_type.builtin:attribute
-    value:
-      object: test_requirement.module
-      attr_name: TestedServiceReq
-
-  TestedServiceReq.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: TestedServiceReq
-      attr_name: from_piece
-
-  test_target_tested_service_req.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.test_target:tested_service_req
-      function: TestedServiceReq.from_piece
-      service_params: []
 
   TestedCodeReq:
     type: legacy_type.builtin:attribute

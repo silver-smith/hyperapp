@@ -13,56 +13,6 @@ from .code.python_module_resource_target import PythonModuleResourceTarget
 
 
 @dataclass(frozen=True, unsafe_hash=True)
-class TestedServiceReq(Requirement):
-
-    import_path: tuple[str]
-    service_name: str
-
-    @classmethod
-    def from_piece(cls, piece):
-        return cls(piece.import_path, piece.service_name)
-
-    @property
-    def piece(self):
-        return htypes.test_target.tested_service_req(self.import_path, self.service_name)
-
-    def get_target(self, target_factory):
-        return target_factory.service_found(self.service_name)
-
-    @property
-    def is_test_requirement(self):
-        return True
-
-    def update_tested_target(self, import_target, test_target, target_set):
-        service_found_tgt = self.get_target(target_set.factory)
-        tested_resource_tgt = service_found_tgt.provider_resource_tgt
-        if tested_resource_tgt:
-            tested_resource_tgt.add_test(test_target, target_set)
-        else:
-            service_found_tgt.add_unresolved_in_test(test_target)
-
-    def make_resource_list(self, target):
-        assert 0, 'Unused now'
-        # import_tgt = target.import_alias_tgt
-        # ctr = target.constructor
-        # module_name, recorder_piece, module_piece = import_tgt.recorded_python_module
-        # service = ctr.make_component(module_piece)
-        # recorder_res = RecorderResource(
-        #     recorder_module_name=module_name,
-        #     recorder_piece=recorder_piece,
-        #     )
-        # constructors_picker = ConstructorsPickerResource(
-        #     module_name=module_name,
-        #     module_piece=module_piece,
-        #     )
-        # tested_service_res = TestedServiceResource(
-        #     import_name=self.import_path,
-        #     service_piece=service,
-        #     )
-        # return [*import_tgt.test_resources, recorder_res, constructors_picker, tested_service_res]
-
-
-@dataclass(frozen=True, unsafe_hash=True)
 class TestedCodeReq(Requirement):
 
     import_path: tuple[str]
