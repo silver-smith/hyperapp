@@ -4,7 +4,7 @@ from hyperapp.common import cdr_coders  # self-registering
 from .services import (
     mosaic,
     )
-from .tested.services import generate_rsa_identity
+from .tested.code import rsa_identity
 
 
 def test_rsa_identity(identity_registry, generate_rsa_identity):
