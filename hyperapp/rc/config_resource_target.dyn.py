@@ -7,6 +7,7 @@ from .services import (
     resource_module_factory,
     )
 from .code.config_ctl import service_pieces_to_config
+from .code.config_item_resource import ConfigItemResource
 from .code.rc_target import Target
 
 
@@ -37,6 +38,16 @@ class ConfigResourceTarget(Target):
 
     def add_item(self, service, item_tgt):
         self._service_to_targets[service].add(item_tgt)
+
+    def enum_ready_resources(self):
+        for service_name, target_set in self._service_to_targets.items():
+            for target in target_set:
+                if not target.completed:
+                    continue
+                yield ConfigItemResource(
+                    service_name=service_name,
+                    template_ref=mosaic.put(target.resource),
+                    )
 
     def get_output(self):
         resource_module = resource_module_factory(
