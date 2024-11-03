@@ -35,7 +35,7 @@ class ServiceReq(Requirement):
 
     def make_resource(self, target):
         resource_tgt = target.provider_resource_tgt
-        template_piece = resource_tgt.get_resource(target.constructor)
+        template_piece = resource_tgt.get_resource_component(target.constructor)
         return ConfigItemResource(
             service_name='system',
             template_ref=mosaic.put(template_piece),

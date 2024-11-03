@@ -52,7 +52,7 @@ class PythonModuleResourceTarget(Target):
     def name(self):
         return self.target_name_for_src(self._src)
 
-    def get_resource(self, ctr):
+    def get_resource_component(self, ctr):
         return ctr.get_component(self._resource_module)
 
     @property

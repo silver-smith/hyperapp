@@ -151,4 +151,4 @@ class ConfigItemCompleteTarget(Target):
     @property
     def resource(self):
         assert self._completed
-        return self._provider_resource_tgt.get_resource(self._ctr)
+        return self._provider_resource_tgt.get_resource_component(self._ctr)
