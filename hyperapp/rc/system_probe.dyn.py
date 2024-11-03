@@ -85,15 +85,23 @@ class ServiceConfigProbe:
 
     def __init__(self, config):
         self._config = config
+        self._used_services = set()
 
     def __getitem__(self, service_name):
         try:
-            return self._config[service_name]
+            service = self._config[service_name]
         except KeyError:
             raise UnknownServiceError(service_name)
+        else:
+            self._used_services.add(service_name)
+            return service
 
     def __setitem__(self, key, value):
         self._config[key] = value
+
+    @property
+    def used_services(self):
+        return self._used_services
 
 
 class ConfigProbe:
@@ -101,12 +109,16 @@ class ConfigProbe:
     def __init__(self, service_name, config):
         self._service_name = service_name
         self._config = config
+        self._used_keys = set()
 
     def __getitem__(self, key):
         try:
-            return self._config[key]
+            value = self._config[key]
         except KeyError:
             raise ConfigItemMissingError(self._service_name, key)
+        else:
+            self._used_keys.add(key)
+            return value
 
     def __iter__(self):
         return iter(self._config)
@@ -115,13 +127,20 @@ class ConfigProbe:
         self._config[key] = value
 
     def get(self, key, default=None):
-        return self._config.get(key, default)
+        value = self._config.get(key, default)
+        if value is not default:
+            self._used_keys.add(key)
+        return value
 
     def items(self):
         return self._config.items()
 
     def update(self, config):
         self._config.update(config)
+
+    @property
+    def used_keys(self):
+        return self._used_keys
 
 
 class ConfigFixture:
@@ -228,15 +247,32 @@ class SystemProbe(System):
         super().__init__()
         self._config_fixtures = defaultdict(list)  # service_name -> fixture list
         self._async_error = None  # (error message, exception) tuple
+        self._service_probes = []
+        self._service_to_config_probe = {}
+        self._init_probe()
+
+    # Do not _init before our own attributes are initialized.
+    def _init(self):
+        pass
+
+    def _init_probe(self):
+        super()._init()
+
+    def _make_config_probe(self, service_name, config):
+        probe = ConfigProbe(service_name, config)
+        self._service_to_config_probe[service_name] = probe
+        return probe
 
     def _make_config_ctl_creg_config(self):
-        return ConfigProbe('config_ctl_creg', {})
+        return self._make_config_probe('config_ctl_creg', {})
 
     def _make_config_ctl(self, config):
-        return ServiceConfigProbe(config)
+        probe = ServiceConfigProbe(config)
+        self._service_probes.append(probe)
+        return probe
 
     def _make_cfg_item_creg_config(self):
-        return ConfigProbe('cfg_item_creg', super()._make_cfg_item_creg_config())
+        return self._make_config_probe('cfg_item_creg', super()._make_cfg_item_creg_config())
 
     def add_item_fixtures(self, service_name, fixture_list):
         self._config_fixtures[service_name] += fixture_list
@@ -256,7 +292,7 @@ class SystemProbe(System):
         for fixture in self._config_fixtures.get(service_name, []):
             fixture_cfg = fixture.resolve(self)
             ctl.merge(config, fixture_cfg)
-        return ConfigProbe(service_name, config)
+        return self._make_config_probe(service_name, config)
 
     def add_constructor(self, ctr):
         ctr_collector = self.resolve_service('ctr_collector')
