@@ -3,7 +3,7 @@ from operator import attrgetter
 
 from .code.import_target import AllImportsKnownTarget, ImportTargetAlias
 from .code.python_module_resource_target import PythonModuleResourceTarget
-from .code.service_target import ServiceFoundTarget, ServiceResolvedTarget, ServiceCompleteTarget
+from .code.builtin_service_target import BuiltinServiceTarget
 from .code.config_item_target import ConfigItemReadyTarget, ConfigItemResolvedTarget, ConfigItemCompleteTarget
 from .code.config_resource_target import ConfigResourceTarget
 
@@ -102,36 +102,13 @@ class TargetFactory:
     def __init__(self, target_set):
         self._target_set = target_set
 
-    def service_found(self, service_name):
-        target_name = ServiceFoundTarget.target_name(service_name)
+    def builtin_service(self, service_name):
+        target_name = BuiltinServiceTarget.target_name_for_service_name(service_name)
         try:
             return self._target_set[target_name]
         except KeyError:
             pass
-        all_imports_known_tgt = self.all_imports_known()
-        target = ServiceFoundTarget(service_name, all_imports_known_tgt)
-        self._target_set.add(target)
-        return target
-
-    def service_resolved(self, service_name):
-        target_name = ServiceResolvedTarget.target_name(service_name)
-        try:
-            return self._target_set[target_name]
-        except KeyError:
-            pass
-        service_found_tgt = self.service_found(service_name)
-        target = ServiceResolvedTarget(service_name, service_found_tgt)
-        self._target_set.add(target)
-        return target
-
-    def service_complete(self, service_name):
-        target_name = ServiceCompleteTarget.target_name_for_service_name(service_name)
-        try:
-            return self._target_set[target_name]
-        except KeyError:
-            pass
-        service_resolved_tgt = self.service_resolved(service_name)
-        target = ServiceCompleteTarget(service_name, service_resolved_tgt)
+        target = BuiltinServiceTarget(service_name)
         self._target_set.add(target)
         return target
 

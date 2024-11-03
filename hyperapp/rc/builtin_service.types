@@ -1,0 +1,2 @@
+builtin_service_req = record:
+  service_name: string

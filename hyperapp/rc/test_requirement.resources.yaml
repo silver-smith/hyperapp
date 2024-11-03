@@ -78,25 +78,6 @@ definitions:
       function: FixturesModuleReq.from_piece
       service_params: []
 
-  TestedServiceResource:
-    type: legacy_type.builtin:attribute
-    value:
-      object: test_requirement.module
-      attr_name: TestedServiceResource
-
-  TestedServiceResource.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: TestedServiceResource
-      attr_name: from_piece
-
-  test_target_tested_service_resource.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.test_target:tested_service_resource
-      function: TestedServiceResource.from_piece
-      service_params: []
-
   TestedCodeResource:
     type: legacy_type.builtin:attribute
     value:

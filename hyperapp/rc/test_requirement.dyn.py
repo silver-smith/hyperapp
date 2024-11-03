@@ -98,34 +98,6 @@ class FixturesModuleReq(Requirement):
         return target.test_resources
 
 
-class TestedServiceResource(Resource):
-
-    @classmethod
-    def from_piece(cls, piece):
-        return cls(
-            import_name=piece.import_name,
-            service_piece=web.summon(piece.service),
-            )
-
-    def __init__(self, import_name, service_piece):
-        self._import_name = import_name
-        self._service_piece = service_piece
-
-    @property
-    def piece(self):
-        return htypes.test_target.tested_service_resource(
-            import_name=tuple(self._import_name),
-            service=mosaic.put(self._service_piece),
-            )
-
-    @property
-    def import_records(self):
-        return [htypes.builtin.import_rec(
-            full_name='.'.join(self._import_name),
-            resource=mosaic.put(self._service_piece),
-            )]
-
-
 class TestedCodeResource(Resource):
 
     @classmethod

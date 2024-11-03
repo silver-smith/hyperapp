@@ -1,9 +1,8 @@
 import:
-- builtins:builtin_services.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.builtin:builtin_service
-- legacy_type.service:service_complete_req
+- legacy_type.builtin_service:builtin_service_req
 - legacy_type.system:actor_template
 - rc.import_resource:import_resource.module
 - rc.rc_requirement:rc_requirement.module
@@ -11,34 +10,33 @@ import:
 
 definitions:
 
-  service_target.module:
+  builtin_service_target.module:
     type: legacy_type.builtin:python_module
     value:
-      module_name: service_target
-      file_name: service_target.dyn.py
+      module_name: builtin_service_target
+      file_name: builtin_service_target.dyn.py
       import_list:
         htypes.builtin.builtin_service: legacy_type.builtin:builtin_service
-        htypes.service.service_complete_req: legacy_type.service:service_complete_req
-        services.builtin_services: builtins:builtin_services.service
+        htypes.builtin_service.builtin_service_req: legacy_type.builtin_service:builtin_service_req
         code.import_resource: rc.import_resource:import_resource.module
         code.rc_requirement: rc.rc_requirement:rc_requirement.module
         code.rc_target: rc.rc_target:rc_target.module
 
-  ServiceCompleteReq:
+  BuiltinServiceReq:
     type: legacy_type.builtin:attribute
     value:
-      object: service_target.module
-      attr_name: ServiceCompleteReq
+      object: builtin_service_target.module
+      attr_name: BuiltinServiceReq
 
-  ServiceCompleteReq.from_piece:
+  BuiltinServiceReq.from_piece:
     type: legacy_type.builtin:attribute
     value:
-      object: ServiceCompleteReq
+      object: BuiltinServiceReq
       attr_name: from_piece
 
-  service_service_complete_req.actor-template:
+  builtin_service_builtin_service_req.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.service:service_complete_req
-      function: ServiceCompleteReq.from_piece
+      t: legacy_type.builtin_service:builtin_service_req
+      function: BuiltinServiceReq.from_piece
       service_params: []

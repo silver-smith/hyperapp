@@ -1,7 +1,7 @@
 import:
 - legacy_type.builtin:python_module
 - rc.python_module_resource_target:python_module_resource_target.module
-- rc.service_target:service_target.module
+- rc.builtin_service_target:builtin_service_target.module
 - rc.test_requirement:test_requirement.module
 
 definitions:
@@ -13,5 +13,5 @@ definitions:
       file_name: requirement_factory.dyn.py
       import_list:
         code.python_module_resource_target: rc.python_module_resource_target:python_module_resource_target.module
-        code.service_target: rc.service_target:service_target.module
+        code.builtin_service_target: rc.builtin_service_target:builtin_service_target.module
         code.test_requirement: rc.test_requirement:test_requirement.module

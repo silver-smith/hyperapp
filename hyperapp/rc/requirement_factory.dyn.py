@@ -1,5 +1,5 @@
 from .code.python_module_resource_target import PythonModuleReq
-from .code.service_target import ServiceCompleteReq
+from .code.builtin_service_target import BuiltinServiceReq
 from .code.test_requirement import TestedCodeReq, FixturesModuleReq
 
 
@@ -10,7 +10,7 @@ class RequirementFactory:
 
     def import_to_service(self, import_path):
         service_name = import_path[1]
-        return ServiceCompleteReq(service_name)
+        return BuiltinServiceReq(service_name)
 
     def import_to_code(self, import_path):
         code_name = import_path[1]
