@@ -1,40 +1,42 @@
 import:
 - builtins:mosaic.service
+- builtins:pyobj_creg.service
+- legacy_type.actor_resource:actor_req
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.service_resource:service_req
 - legacy_type.system:actor_template
 - rc.config_item_resource:config_item_resource.module
 - rc.rc_requirement:rc_requirement.module
 
 definitions:
 
-  service_resource.module:
+  actor_req.module:
     type: legacy_type.builtin:python_module
     value:
-      module_name: service_resource
-      file_name: service_resource.dyn.py
+      module_name: actor_req
+      file_name: actor_req.dyn.py
       import_list:
-        htypes.service_resource.service_req: legacy_type.service_resource:service_req
+        htypes.actor_resource.actor_req: legacy_type.actor_resource:actor_req
         services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
         code.rc_requirement: rc.rc_requirement:rc_requirement.module
         code.config_item_resource: rc.config_item_resource:config_item_resource.module
 
-  ServiceReq:
+  ActorReq:
     type: legacy_type.builtin:attribute
     value:
-      object: service_resource.module
-      attr_name: ServiceReq
+      object: actor_req.module
+      attr_name: ActorReq
 
-  ServiceReq.from_piece:
+  ActorReq.from_piece:
     type: legacy_type.builtin:attribute
     value:
-      object: ServiceReq
+      object: ActorReq
       attr_name: from_piece
 
-  service_resource_service_req.actor-template:
+  actor_resource_actor_req.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.service_resource:service_req
-      function: ServiceReq.from_piece
+      t: legacy_type.actor_resource:actor_req
+      function: ActorReq.from_piece
       service_params: []

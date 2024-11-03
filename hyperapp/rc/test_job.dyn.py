@@ -22,8 +22,8 @@ from .code.builtin_resources import enum_builtin_resources
 from .code.import_recorder import IncompleteImportedObjectError
 from .code.requirement_factory import RequirementFactory
 from .code.job_result import JobResult
-from .code.service_resource import ServiceReq
-from .code.actor_resource import ActorReq
+from .code.service_req import ServiceReq
+from .code.actor_req import ActorReq
 from .code.system import UnknownServiceError
 from .code.system_probe import SystemProbe
 from .code.fixture_probe import FixtureProbeTemplate
