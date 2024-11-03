@@ -4,8 +4,6 @@ from .services import (
     pyobj_creg,
     )
 from .code.mark import mark
-from .code import model_command as model_command_module
-from .code import ui_command
 from .tested.code import model_cfg_item
 
 
