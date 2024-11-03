@@ -18,9 +18,8 @@ log = logging.getLogger(__name__)
 
 class SystemJob:
 
-    def __init__(self, cfg_item_creg, system_config_piece):
-        self._cfg_item_creg = cfg_item_creg  # Used only from 'run' method, inside job process.
-        self._system_config_piece = system_config_piece  # --//--
+    def __init__(self, system_config_piece):
+        self._system_config_piece = system_config_piece  # Used only from 'run' method, inside job process.
 
     def _resource_group(self, resource):
         if resource.is_system_resource:

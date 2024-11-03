@@ -172,18 +172,17 @@ def test_subprocess_rpc_main(connection, received_refs, system_config_piece, roo
 class TestJob(SystemJob):
 
     @classmethod
-    def from_piece(cls, piece, cfg_item_creg, rc_resource_creg, system_config_piece):
+    def from_piece(cls, piece, rc_resource_creg, system_config_piece):
         return cls(
             python_module_src=PythonModuleSrc.from_piece(piece.python_module),
             idx=piece.idx,
             resources=[rc_resource_creg.invite(d) for d in piece.resources],
             test_fn_name=piece.test_fn_name,
-            cfg_item_creg=cfg_item_creg,
             system_config_piece=system_config_piece,
             )
 
-    def __init__(self, python_module_src, idx, resources, test_fn_name, cfg_item_creg=None, system_config_piece=None):
-        super().__init__(cfg_item_creg, system_config_piece)
+    def __init__(self, python_module_src, idx, resources, test_fn_name, system_config_piece=None):
+        super().__init__(system_config_piece)
         self._src = python_module_src
         self._idx = idx
         self._resources = resources
@@ -226,7 +225,7 @@ class TestJob(SystemJob):
             ctr_collector.ignore_module(module_piece)
             status, error_msg, traceback, module = self._import_module(module_piece)
             if status == JobStatus.ok:
-                root_probe = self._make_root_fixture(module_piece, module)
+                root_probe = self._make_root_fixture(system, module_piece, module)
                 system.update_config('system', {self._root_name: root_probe})
                 status, error_msg, traceback, req_set = self._run_system(system)
             else:
@@ -267,8 +266,8 @@ class TestJob(SystemJob):
     def _root_name(self):
         return self._test_fn_name
 
-    def _make_root_fixture(self, module_piece, module):
-        ctl = DictConfigCtl(self._cfg_item_creg)
+    def _make_root_fixture(self, system, module_piece, module):
+        ctl = DictConfigCtl(system['cfg_item_creg'])
         ctl_ref = mosaic.put(ctl.piece)
         test_fn = getattr(module, self._test_fn_name)
         params = tuple(inspect.signature(test_fn).parameters)
