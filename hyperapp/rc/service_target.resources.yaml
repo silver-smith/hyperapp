@@ -4,7 +4,6 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.builtin:builtin_service
 - legacy_type.service:service_complete_req
-- legacy_type.service:service_found_req
 - legacy_type.system:actor_template
 - rc.import_resource:import_resource.module
 - rc.rc_requirement:rc_requirement.module
@@ -20,30 +19,10 @@ definitions:
       import_list:
         htypes.builtin.builtin_service: legacy_type.builtin:builtin_service
         htypes.service.service_complete_req: legacy_type.service:service_complete_req
-        htypes.service.service_found_req: legacy_type.service:service_found_req
         services.builtin_services: builtins:builtin_services.service
         code.import_resource: rc.import_resource:import_resource.module
         code.rc_requirement: rc.rc_requirement:rc_requirement.module
         code.rc_target: rc.rc_target:rc_target.module
-
-  ServiceFoundReq:
-    type: legacy_type.builtin:attribute
-    value:
-      object: service_target.module
-      attr_name: ServiceFoundReq
-
-  ServiceFoundReq.from_piece:
-    type: legacy_type.builtin:attribute
-    value:
-      object: ServiceFoundReq
-      attr_name: from_piece
-
-  service_service_found_req.actor-template:
-    type: legacy_type.system:actor_template
-    value:
-      t: legacy_type.service:service_found_req
-      function: ServiceFoundReq.from_piece
-      service_params: []
 
   ServiceCompleteReq:
     type: legacy_type.builtin:attribute

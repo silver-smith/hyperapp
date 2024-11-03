@@ -9,27 +9,6 @@ from .code.rc_requirement import Requirement
 from .code.import_resource import ImportResource
 
 
-# Unused. Is it really needed?`
-@dataclass(frozen=True, unsafe_hash=True)
-class ServiceFoundReq(Requirement):
-
-    service_name: str
-
-    @classmethod
-    def from_piece(cls, piece):
-        return cls(piece.service_name)
-
-    @property
-    def piece(self):
-        return htypes.service.service_found_req(self.service_name)
-
-    def get_target(self, target_factory):
-        return target_factory.service_found(self.service_name)
-
-    def make_resource(self, target):
-        raise NotImplementedError(f"ServiceFoundReq is never actually used: {self.service_name!r}")
-
-
 @dataclass(frozen=True, unsafe_hash=True)
 class ServiceCompleteReq(Requirement):
 
