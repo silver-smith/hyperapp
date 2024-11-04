@@ -168,7 +168,85 @@ def test_subprocess_rpc_main(connection, received_refs, system_config_piece, roo
     _ = system.resolve_service('marker_registry')  # Init markers.
     system.run(root_name, connection, received_refs, **kw)
 
-        
+
+class _Result:
+
+    def __init__(self, error_msg=None, traceback=None, missing_reqs=None):
+        self._error_msg = error_msg
+        self._traceback = traceback or []
+        self._missing_reqs = missing_reqs or set()
+
+    @staticmethod
+    def _reqs_to_refs(requirements):
+        return tuple(
+            mosaic.put(req.piece)
+            for req in requirements
+            )
+
+    @staticmethod
+    def _imports_to_requirements(import_set):
+        log.info("Used imports: %s", import_set)
+        req_set = set()
+        for import_path in import_set:
+            req = RequirementFactory().requirement_from_import(import_path)
+            if req:
+                req_set.add(req)
+        return req_set
+
+    @staticmethod
+    def _enum_used_imports(resources):
+        recorder_dict = merge_dicts(d.recorders for d in resources)
+        for module_name, recorder in recorder_dict.items():
+            yield htypes.test_job.used_imports(
+                module_name=module_name,
+                imports=tuple(recorder.used_imports),
+                )
+
+    def _requirement_refs(self, recorder):
+        import_reqs = self._imports_to_requirements(recorder.used_imports)
+        return self._reqs_to_refs(self._missing_reqs | import_reqs)
+
+    def _used_imports(self, resources):
+        return tuple(self._enum_used_imports(resources))
+
+
+class _Error(Exception, _Result):
+
+    def __init__(self, error_msg=None, traceback=None, missing_reqs=None):
+        Exception.__init__(self, error_msg)
+        _Result.__init__(self, error_msg, traceback, missing_reqs)
+
+
+class _FailedError(_Error):
+
+    def make_result_piece(self, resources, recorder, constructor_refs):
+        return htypes.test_job.failed_result(
+            error=self.error_msg,
+            traceback=tuple(self.traceback),
+            )
+
+
+class _IncompleteError(_Error):
+
+    def make_result_piece(self, resources, recorder, constructor_refs):
+        return htypes.test_job.incomplete_result(
+            used_imports=self._used_imports(resources),
+            requirements=self._requirement_refs(recorder),
+            error=self._error_msg,
+            traceback=tuple(self._traceback),
+            )
+
+
+class _Succeeded(_Result):
+
+    def make_result_piece(self, resources, recorder, constructor_refs):
+        return htypes.test_job.succeeded_result(
+            used_imports=self._used_imports(resources),
+            requirements=self._requirement_refs(recorder),
+            constructors=constructor_refs,
+            )
+
+
 class TestJob(SystemJob):
 
     @classmethod
@@ -206,60 +284,22 @@ class TestJob(SystemJob):
         import_list = flatten(d.import_records for d in all_resources)
         recorder_piece, module_piece = self._src.recorded_python_module(import_list)
         recorder = pyobj_creg.animate(recorder_piece)
-        req_set = set()
+        ctr_collector = None
         try:
-            system = self._prepare_system(all_resources)
-        except PythonModuleResourceImportError as x:
-            status, error_msg, traceback = self._prepare_import_error(x)
-        except UnknownServiceError as x:
-            status = JobStatus.incomplete
-            error_msg = f"{type(x).__name__}: {x}"
-            traceback = []
-            req_set = {ServiceReq(x.service_name)}
-        except ConfigItemMissingError as x:
-            status = JobStatus.incomplete
-            error_msg = f"{type(x).__name__}: {x}"
-            traceback = []
-            req_set = {ActorReq(x.service_name, x.key)}
-        else:
-            ctr_collector = system.resolve_service('ctr_collector')
+            system = self._convert_errors(self._prepare_system, all_resources)
+            ctr_collector = system['ctr_collector']
             ctr_collector.ignore_module(module_piece)
-            status, error_msg, traceback, module = self._import_module(module_piece)
-            if status == JobStatus.ok:
-                root_probe = self._make_root_fixture(system, module_piece, module)
-                system.update_config('system', {self._root_name: root_probe})
-                status, error_msg, traceback, req_set = self._run_system(system)
-        if status == JobStatus.failed:
-            return htypes.test_job.failed_result(error_msg, tuple(traceback))
-        req_set |= self._imports_to_requirements(recorder.used_imports)
-        req_refs = tuple(
-            mosaic.put(req.piece)
-            for req in req_set
-            )
-        used_imports = tuple(self._enum_used_imports(all_resources))
-        if status == JobStatus.incomplete:
-            return htypes.test_job.incomplete_result(
-                used_imports=used_imports,
-                requirements=req_refs,
-                error=error_msg,
-                traceback=tuple(traceback),
-                )
-        constructors = tuple(self._enum_constructor_refs(ctr_collector))
-        return htypes.test_job.succeeded_result(
-            used_imports=used_imports,
-            requirements=req_refs,
-            constructors=constructors,
-            )
-
-    def _import_module(self, module_piece):
-        try:
-            module = pyobj_creg.animate(module_piece)
-            status = JobStatus.ok
-            error_msg = traceback = None
-        except PythonModuleResourceImportError as x:
-            status, error_msg, traceback = self._prepare_import_error(x)
-            module = None
-        return (status, error_msg, traceback, module)
+            module = self._convert_errors(pyobj_creg.animate, module_piece)
+            root_probe = self._make_root_fixture(system, module_piece, module)
+            system.update_config('system', {self._root_name: root_probe})
+            self._convert_errors(self._run_system, system)
+        except _Error as x:
+            result = x
+            constructors = None
+        else:
+            result = _Succeeded()
+            constructors = tuple(self._enum_constructor_refs(ctr_collector))
+        return result.make_result_piece(all_resources, recorder, constructors)
 
     @property
     def _root_name(self):
@@ -278,50 +318,51 @@ class TestJob(SystemJob):
 
     def _run_system(self, system):
         rpc_servant_wrapper = system['rpc_servant_wrapper']
-        rpc_servant_wrapper.set(self._wrap_rpc_servant)
         rpc_service_wrapper = system['rpc_service_wrapper']
-        rpc_service_wrapper.set(self._wrap_rpc_service)
         subprocess_rpc_main = system['subprocess_rpc_main']
+        rpc_servant_wrapper.set(self._wrap_rpc_servant)
+        rpc_service_wrapper.set(self._wrap_rpc_service)
         subprocess_rpc_main.set(test_subprocess_rpc_main)
-        
         try:
-            system.run(self._root_name)
-            status = JobStatus.ok
-            error_msg = traceback = None
+            return system.run(self._root_name)
+        finally:
+            subprocess_rpc_main.reset()
+            rpc_service_wrapper.reset()
+            rpc_servant_wrapper.reset()
+
+    def _convert_errors(self, fn, *args, **kw):
+        try:
+            return fn(*args, **kw)
         except HException as x:
+            error_msg = f"{type(x).__name__}: {x}"
             if isinstance(x, htypes.test_job.unknown_service_error):
                 req = ServiceReq(x.service_name)
-                error = f"{type(x).__name__}: {x}"
-                return (JobStatus.incomplete, error, [], {req})
+                raise _IncompleteError(error_msg, missing_reqs={req})
             if isinstance(x, htypes.test_job.config_item_missing_error):
                 key = pyobj_creg.invite(x.t)
                 req = ActorReq(x.service_name, key)
-                error = f"{type(x).__name__}: {x}"
-                return (JobStatus.incomplete, error, [], {req})
+                raise _IncompleteError(error_msg, missing_reqs={req})
             raise
+        except PythonModuleResourceImportError as x:
+            raise self._prepare_import_error(x)
         except UnknownServiceError as x:
             req = ServiceReq(x.service_name)
-            error = f"{type(x).__name__}: {x}"
-            return (JobStatus.incomplete, error, [], {req})
+            error_msg = f"{type(x).__name__}: {x}"
+            raise _IncompleteError(error_msg, missing_reqs={req})
         except ConfigItemMissingError as x:
             req = ActorReq(x.service_name, x.key)
-            error = f"{type(x).__name__}: {x}"
-            return (JobStatus.incomplete, error, [], {req})
+            error_msg = f"{type(x).__name__}: {x}"
+            raise _IncompleteError(error_msg, missing_reqs={req})
         except IncompleteImportedObjectError as x:
             if list(x.path[:1]) == ['htypes']:
-                status = JobStatus.failed
                 path = '.'.join(x.path)
                 error_msg = f"Unknown type: {path}" 
                 traceback = self._prepare_traceback(x)[:-1]
+                raise _FailedError(error_msg, traceback)
             else:
-                status, error_msg, traceback = self._prepare_error(x)
+                raise self._prepare_error(x)
         except BaseException as x:
-            status, error_msg, traceback = self._prepare_error(x)
-        finally:
-            subprocess_rpc_main.reset()
-            rpc_servant_wrapper.reset()
-            rpc_service_wrapper.reset()
-        return (status, error_msg, traceback, set())
+            raise self._prepare_error(x)
 
     def _prepare_import_error(self, x):
         return self._prepare_error(x.original_error)
@@ -355,28 +396,11 @@ class TestJob(SystemJob):
             message = x.message
         else:
             message = str(x)
-        error = f"{type(x).__name__}: {message}"
+        error_msg = f"{type(x).__name__}: {message}"
         if isinstance(x, IncompleteImportedObjectError):
-            return (JobStatus.incomplete, error, traceback_lines[:-1])
+            return _IncompleteError(error_msg, traceback_lines[:-1])
         else:
-            return (JobStatus.failed, error, traceback_lines)
-
-    def _imports_to_requirements(self, import_set):
-        log.info("Used imports: %s", import_set)
-        req_set = set()
-        for import_path in import_set:
-            req = RequirementFactory().requirement_from_import(import_path)
-            if req:
-                req_set.add(req)
-        return req_set
-
-    def _enum_used_imports(self, resources):
-        recorder_dict = merge_dicts(d.recorders for d in resources)
-        for module_name, recorder in recorder_dict.items():
-            yield htypes.test_job.used_imports(
-                module_name=module_name,
-                imports=tuple(recorder.used_imports),
-                )
+            return _FailedError(error_msg, traceback_lines)
 
     def _wrap_rpc_servant(self, servant_ref, kw):
         wrapped_servant_ref = pyobj_creg.actor_to_ref(rpc_servant_wrapper)
