@@ -108,7 +108,7 @@ def _parse_args(sys_argv):
     parser.add_argument('--clean', '-c', action='store_true', help="Do not load stored layout state")
     parser.add_argument('--lcs-storage-path', type=Path, default=hyperapp_dir / default_lcs_storage_path, help="Path to lcs storage")
     parser.add_argument('--layout-path', type=Path, default=default_layout_path, help="Path to layout")
-    parser.add_argument('--test-init', action='store_true', help="Do not enter main loop, exit right after initing. Used for testing")
+    parser.add_argument('--test-mode', action='store_true', help="Do not enter main loop, exit right after initing. Do not show windows. Used for testing")
     return parser.parse_args(sys_argv)
 
 
@@ -139,8 +139,8 @@ async def client_async_main(
     default_layout = make_default_layout(visualizer, lcs)
     layout_bundle = file_bundle(args.layout_path)
 
-    async with controller_running(layout_bundle, default_layout, ctx, show=True, load_state=not args.clean) as ctl:
-        if not args.test_init:
+    async with controller_running(layout_bundle, default_layout, ctx, show=not args.test_mode, load_state=not args.clean) as ctl:
+        if not args.test_mode:
             await stop_event.wait()
 
 
