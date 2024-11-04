@@ -143,7 +143,7 @@ def _run(rc_job_result_creg, pool, job_cache, target_set, filter, options):
         _update_completed(target_set, prev_completed)
         filter.update_deps()
         if target_set.all_completed:
-            rc_log.info("All targets are completed")
+            rc_log.info("All targets are completed\n")
             break
     if failures:
         rc_log.info("%d failures:\n", len(failures))
