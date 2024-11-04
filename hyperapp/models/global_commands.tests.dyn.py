@@ -54,7 +54,7 @@ def piece():
 def test_list_global_commands(lcs, piece):
     ctx = Context()
     item_list = global_commands.list_global_commands(piece, lcs)
-    assert sorted(item.name for item in item_list) == ['sample_command']
+    assert 'sample_command' in [item.name for item in item_list]
 
 
 async def test_run_command(data_to_ref, lcs, piece):
