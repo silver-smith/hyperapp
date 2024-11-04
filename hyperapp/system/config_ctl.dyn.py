@@ -78,6 +78,9 @@ class LazyDictConfig:
         except KeyError:
             return default
 
+    def update(self, config):
+        self._resolved_config.update(config)
+
 
 class DictConfigCtl(MultiItemConfigCtl):
 
