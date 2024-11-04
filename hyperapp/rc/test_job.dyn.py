@@ -206,6 +206,7 @@ class TestJob(SystemJob):
         import_list = flatten(d.import_records for d in all_resources)
         recorder_piece, module_piece = self._src.recorded_python_module(import_list)
         recorder = pyobj_creg.animate(recorder_piece)
+        req_set = set()
         try:
             system = self._prepare_system(all_resources)
         except PythonModuleResourceImportError as x:
@@ -228,8 +229,6 @@ class TestJob(SystemJob):
                 root_probe = self._make_root_fixture(system, module_piece, module)
                 system.update_config('system', {self._root_name: root_probe})
                 status, error_msg, traceback, req_set = self._run_system(system)
-            else:
-                req_set = set()
         if status == JobStatus.failed:
             return htypes.test_job.failed_result(error_msg, tuple(traceback))
         req_set |= self._imports_to_requirements(recorder.used_imports)
