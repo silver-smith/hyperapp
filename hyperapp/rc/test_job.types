@@ -12,16 +12,18 @@ used_imports = record:
   imports: string list list
 
 succeeded_result = record:
+  used_requirements: ref list
   used_imports: used_imports list
-  requirements: ref list
   constructors: ref list
 
 incomplete_result = record:
+  missing_requirements: ref list
+  used_requirements: ref list
   used_imports: used_imports list
-  requirements: ref list
   error: string
   traceback: string list
 
 failed_result = record:
+  used_requirements: ref list
   error: string
   traceback: string list

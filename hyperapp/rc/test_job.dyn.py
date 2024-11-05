@@ -187,8 +187,9 @@ class _TestJobError(Exception, _TestJobResult):
 
 class _FailedError(_TestJobError):
 
-    def make_result_piece(self, resources, recorder, constructor_refs):
+    def make_result_piece(self, resources, recorder, system):
         return htypes.test_job.failed_result(
+            used_requirements=self._used_requirement_refs(system),
             error=self.error_msg,
             traceback=tuple(self.traceback),
             )
@@ -196,10 +197,11 @@ class _FailedError(_TestJobError):
 
 class _IncompleteError(_TestJobError):
 
-    def make_result_piece(self, resources, recorder, constructor_refs):
+    def make_result_piece(self, resources, recorder, system):
         return htypes.test_job.incomplete_result(
+            missing_requirements=self._missing_requirement_refs(recorder),
+            used_requirements=self._used_requirement_refs(system),
             used_imports=self._used_imports(resources),
-            requirements=self._requirement_refs(recorder),
             error=self._error_msg,
             traceback=tuple(self._traceback),
             )
@@ -207,11 +209,11 @@ class _IncompleteError(_TestJobError):
 
 class _Succeeded(_TestJobResult):
 
-    def make_result_piece(self, resources, recorder, constructor_refs):
+    def make_result_piece(self, resources, recorder, system):
         return htypes.test_job.succeeded_result(
+            used_requirements=self._used_requirement_refs(system),
             used_imports=self._used_imports(resources),
-            requirements=self._requirement_refs(recorder),
-            constructors=constructor_refs,
+            constructors=self._constructor_refs(system),
             )
 
 
@@ -254,14 +256,13 @@ class TestJob(SystemJob):
         recorder = pyobj_creg.animate(recorder_piece)
         ctr_collector = None
         try:
-            ctr_collector = self.convert_errors(self._unsafe_run, resources, module_piece)
+            system = self.convert_errors(self._unsafe_run, resources, module_piece)
         except _TestJobError as x:
             result = x
-            constructors = None
+            system = None
         else:
             result = _Succeeded()
-            constructors = tuple(self._enum_constructor_refs(ctr_collector))
-        return result.make_result_piece(resources, recorder, constructors)
+        return result.make_result_piece(resources, recorder, system)
 
     def _unsafe_run(self, resources, module_piece):
         system = self._prepare_system(resources)
@@ -271,7 +272,7 @@ class TestJob(SystemJob):
         root_probe = self._make_root_fixture(system, module_piece, module)
         system.update_config('system', {self._root_name: root_probe})
         self._run_system(system)
-        return ctr_collector
+        return system
 
     @property
     def _root_name(self):

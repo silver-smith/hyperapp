@@ -11,6 +11,8 @@ from .services import (
     pyobj_creg,
     )
 from .code.system import UnknownServiceError, System
+from .code.service_req import ServiceReq
+from .code.actor_req import ActorReq
 
 log = logging.getLogger(__name__)
 
@@ -324,3 +326,11 @@ class SystemProbe(System):
 
     def _asyncio_exception_handler(self, loop, context):
         self._async_error = (context['message'], context['exception'])
+
+    def enum_used_requirements(self):
+        for probe in self._service_probes:
+            for service_name in probe.used_services:
+                yield ServiceReq(service_name)
+        for service_name, probe in self._service_to_config_probe.items():
+            for key in probe.used_keys:
+                yield ActorReq(service_name, t=key)

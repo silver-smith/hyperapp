@@ -51,9 +51,19 @@ class Result:
                 req_set.add(req)
         return req_set
 
-    def _requirement_refs(self, recorder):
+    def _missing_requirement_refs(self, recorder):
         import_reqs = self._imports_to_requirements(recorder.used_imports)
         return self._reqs_to_refs(self._missing_reqs | import_reqs)
+
+    def _used_requirement_refs(self, system):
+        return self._reqs_to_refs(system.enum_used_requirements())
+
+    def _constructor_refs(self, system):
+        ctr_collector = system['ctr_collector']
+        return tuple(
+            mosaic.put(ctr.piece)
+            for ctr in ctr_collector.constructors
+            )
 
 
 class SystemJob:
@@ -97,10 +107,6 @@ class SystemJob:
         system.migrate_globals()
         _ = system.resolve_service('marker_registry')  # Init markers.
         return system
-
-    def _enum_constructor_refs(self, ctr_collector):
-        for ctr in ctr_collector.constructors:
-            yield mosaic.put(ctr.piece)
 
     def _prepare_traceback(self, x):
         traceback_entries = []

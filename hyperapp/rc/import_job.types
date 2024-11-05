@@ -10,15 +10,17 @@ function = record:
   params: string list
 
 succeeded_result = record:
-  requirements: ref list
+  used_requirements: ref list
   functions: function list
   constructors: ref list
 
 incomplete_result = record:
-  requirements: ref list
+  missing_requirements: ref list
+  used_requirements: ref list
   error: string
   traceback: string list
 
 failed_result = record:
+  used_requirements: ref list
   error: string
   traceback: string list

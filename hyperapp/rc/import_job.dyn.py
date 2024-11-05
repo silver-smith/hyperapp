@@ -159,8 +159,9 @@ class _ImportJobError(Exception, _ImportJobResult):
 
 class _FailedError(_ImportJobError):
 
-    def make_result_piece(self, resources, module, constructor_refs):
+    def make_result_piece(self, resources, module, system):
         return htypes.import_job.failed_result(
+            used_requirements=self._used_requirement_refs(system),
             error=self.error_msg,
             traceback=tuple(self.traceback),
             )
@@ -168,9 +169,10 @@ class _FailedError(_ImportJobError):
 
 class _IncompleteError(_ImportJobError):
 
-    def make_result_piece(self, recorder, module, constructor_refs):
+    def make_result_piece(self, recorder, module, system):
         return htypes.import_job.incomplete_result(
-            requirements=self._requirement_refs(recorder),
+            missing_requirements=self._missing_requirement_refs(recorder),
+            used_requirements=self._used_requirement_refs(system),
             error=self._error_msg,
             traceback=tuple(self._traceback),
             )
@@ -199,11 +201,11 @@ class _Succeeded(_ImportJobResult):
                 params=tuple(signature.parameters.keys()),
                 )
 
-    def make_result_piece(self, recorder, module, constructor_refs):
+    def make_result_piece(self, recorder, module, system):
         return htypes.import_job.succeeded_result(
-            requirements=self._requirement_refs(recorder),
+            used_requirements=self._used_requirement_refs(system),
             functions=tuple(self._enum_functions(module)),
-            constructors=constructor_refs,
+            constructors=self._constructor_refs(system),
             )
 
 
@@ -252,8 +254,7 @@ class ImportJob(SystemJob):
             constructors = None
         else:
             result = _Succeeded()
-            constructors = tuple(self._enum_constructor_refs(ctr_collector))
-        return result.make_result_piece(recorder, module, constructors)
+        return result.make_result_piece(recorder, module, system)
 
     def _job_resources(self, module_piece):
         mark_module_item = htypes.ctr_collector.mark_module_cfg_item(
