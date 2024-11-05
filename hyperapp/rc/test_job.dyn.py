@@ -248,26 +248,30 @@ class TestJob(SystemJob):
             )
 
     def run(self):
-        all_resources = [*enum_builtin_resources(), *self._resources]
-        import_list = flatten(d.import_records for d in all_resources)
+        resources = [*enum_builtin_resources(), *self._resources]
+        import_list = flatten(d.import_records for d in resources)
         recorder_piece, module_piece = self._src.recorded_python_module(import_list)
         recorder = pyobj_creg.animate(recorder_piece)
         ctr_collector = None
         try:
-            system = self.convert_errors(self._prepare_system, all_resources)
-            ctr_collector = system['ctr_collector']
-            ctr_collector.ignore_module(module_piece)
-            module = self.convert_errors(pyobj_creg.animate, module_piece)
-            root_probe = self._make_root_fixture(system, module_piece, module)
-            system.update_config('system', {self._root_name: root_probe})
-            self.convert_errors(self._run_system, system)
+            ctr_collector = self.convert_errors(self._unsafe_run, resources, module_piece)
         except _TestJobError as x:
             result = x
             constructors = None
         else:
             result = _Succeeded()
             constructors = tuple(self._enum_constructor_refs(ctr_collector))
-        return result.make_result_piece(all_resources, recorder, constructors)
+        return result.make_result_piece(resources, recorder, constructors)
+
+    def _unsafe_run(self, resources, module_piece):
+        system = self._prepare_system(resources)
+        ctr_collector = system['ctr_collector']
+        ctr_collector.ignore_module(module_piece)
+        module = pyobj_creg.animate(module_piece)
+        root_probe = self._make_root_fixture(system, module_piece, module)
+        system.update_config('system', {self._root_name: root_probe})
+        self._run_system(system)
+        return ctr_collector
 
     @property
     def _root_name(self):
