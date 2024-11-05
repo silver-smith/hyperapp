@@ -21,8 +21,38 @@ from .code.actor_req import ActorReq
 from .code.service_req import ServiceReq
 from .code.service_ctr import ServiceTemplateCtr
 from .code.system_probe import SystemProbe
+from .code.requirement_factory import RequirementFactory
 
 log = logging.getLogger(__name__)
+
+
+class Result:
+
+    def __init__(self, error_msg=None, traceback=None, missing_reqs=None):
+        self._error_msg = error_msg
+        self._traceback = traceback or []
+        self._missing_reqs = missing_reqs or set()
+
+    @staticmethod
+    def _reqs_to_refs(requirements):
+        return tuple(
+            mosaic.put(req.piece)
+            for req in requirements
+            )
+
+    @staticmethod
+    def _imports_to_requirements(import_set):
+        log.info("Used imports: %s", import_set)
+        req_set = set()
+        for import_path in import_set:
+            req = RequirementFactory().requirement_from_import(import_path)
+            if req:
+                req_set.add(req)
+        return req_set
+
+    def _requirement_refs(self, recorder):
+        import_reqs = self._imports_to_requirements(recorder.used_imports)
+        return self._reqs_to_refs(self._missing_reqs | import_reqs)
 
 
 class SystemJob:

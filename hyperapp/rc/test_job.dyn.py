@@ -17,12 +17,11 @@ from .code.rc_constants import JobStatus
 from .code.build import PythonModuleSrc
 from .code.builtin_resources import enum_builtin_resources
 from .code.import_recorder import IncompleteImportedObjectError
-from .code.requirement_factory import RequirementFactory
 from .code.job_result import JobResult
 from .code.system import UnknownServiceError
 from .code.system_probe import SystemProbe
 from .code.fixture_probe import FixtureProbeTemplate
-from .code.system_job import SystemJob
+from .code.system_job import Result, SystemJob
 
 log  = logging.getLogger(__name__)
 rc_log = logging.getLogger('rc')
@@ -164,29 +163,7 @@ def test_subprocess_rpc_main(connection, received_refs, system_config_piece, roo
     system.run(root_name, connection, received_refs, **kw)
 
 
-class _Result:
-
-    def __init__(self, error_msg=None, traceback=None, missing_reqs=None):
-        self._error_msg = error_msg
-        self._traceback = traceback or []
-        self._missing_reqs = missing_reqs or set()
-
-    @staticmethod
-    def _reqs_to_refs(requirements):
-        return tuple(
-            mosaic.put(req.piece)
-            for req in requirements
-            )
-
-    @staticmethod
-    def _imports_to_requirements(import_set):
-        log.info("Used imports: %s", import_set)
-        req_set = set()
-        for import_path in import_set:
-            req = RequirementFactory().requirement_from_import(import_path)
-            if req:
-                req_set.add(req)
-        return req_set
+class _TestJobResult(Result):
 
     @staticmethod
     def _enum_used_imports(resources):
@@ -197,22 +174,18 @@ class _Result:
                 imports=tuple(recorder.used_imports),
                 )
 
-    def _requirement_refs(self, recorder):
-        import_reqs = self._imports_to_requirements(recorder.used_imports)
-        return self._reqs_to_refs(self._missing_reqs | import_reqs)
-
     def _used_imports(self, resources):
         return tuple(self._enum_used_imports(resources))
 
 
-class _Error(Exception, _Result):
+class _TestJobError(Exception, _TestJobResult):
 
     def __init__(self, error_msg=None, traceback=None, missing_reqs=None):
         Exception.__init__(self, error_msg)
-        _Result.__init__(self, error_msg, traceback, missing_reqs)
+        _TestJobResult.__init__(self, error_msg, traceback, missing_reqs)
 
 
-class _FailedError(_Error):
+class _FailedError(_TestJobError):
 
     def make_result_piece(self, resources, recorder, constructor_refs):
         return htypes.test_job.failed_result(
@@ -221,7 +194,7 @@ class _FailedError(_Error):
             )
 
 
-class _IncompleteError(_Error):
+class _IncompleteError(_TestJobError):
 
     def make_result_piece(self, resources, recorder, constructor_refs):
         return htypes.test_job.incomplete_result(
@@ -232,7 +205,7 @@ class _IncompleteError(_Error):
             )
 
 
-class _Succeeded(_Result):
+class _Succeeded(_TestJobResult):
 
     def make_result_piece(self, resources, recorder, constructor_refs):
         return htypes.test_job.succeeded_result(
@@ -288,7 +261,7 @@ class TestJob(SystemJob):
             root_probe = self._make_root_fixture(system, module_piece, module)
             system.update_config('system', {self._root_name: root_probe})
             self.convert_errors(self._run_system, system)
-        except _Error as x:
+        except _TestJobError as x:
             result = x
             constructors = None
         else:
