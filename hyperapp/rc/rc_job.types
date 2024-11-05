@@ -1,2 +1,10 @@
 job_target = record:
   job: ref
+
+
+unknown_service_error = exception:
+  service_name: string
+
+config_item_missing_error = exception:
+  service_name: string
+  t: ref  # Assume we get only type-keyed errors.

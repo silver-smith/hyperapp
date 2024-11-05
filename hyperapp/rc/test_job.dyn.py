@@ -1,13 +1,10 @@
 import inspect
 import logging
-import traceback
 from collections import defaultdict
 from functools import cached_property
 
-from hyperapp.common.htypes import HException
 from hyperapp.common.util import flatten, merge_dicts
 from hyperapp.common.config_item_missing import ConfigItemMissingError
-from hyperapp.resource.python_module import PythonModuleResourceImportError
 
 from . import htypes
 from .services import (
@@ -22,8 +19,6 @@ from .code.builtin_resources import enum_builtin_resources
 from .code.import_recorder import IncompleteImportedObjectError
 from .code.requirement_factory import RequirementFactory
 from .code.job_result import JobResult
-from .code.service_req import ServiceReq
-from .code.actor_req import ActorReq
 from .code.system import UnknownServiceError
 from .code.system_probe import SystemProbe
 from .code.fixture_probe import FixtureProbeTemplate
@@ -140,12 +135,12 @@ def _catch_errors(fn, **kw):
     try:
         return fn(**kw)
     except UnknownServiceError as x:
-        raise htypes.test_job.unknown_service_error(x.service_name) from x
+        raise htypes.rc_job.unknown_service_error(x.service_name) from x
     except ConfigItemMissingError as x:
         # Assume we get only type-keyed errors.
         # If not, we may add special checks for primitive types like str.
         t_ref = pyobj_creg.actor_to_ref(x.key)
-        raise htypes.test_job.config_item_missing_error(x.service_name, t_ref) from x
+        raise htypes.rc_job.config_item_missing_error(x.service_name, t_ref) from x
     except Exception as x:
         raise RuntimeError(f"In test servant {servant}: {x}") from x
 
@@ -286,13 +281,13 @@ class TestJob(SystemJob):
         recorder = pyobj_creg.animate(recorder_piece)
         ctr_collector = None
         try:
-            system = self._convert_errors(self._prepare_system, all_resources)
+            system = self.convert_errors(self._prepare_system, all_resources)
             ctr_collector = system['ctr_collector']
             ctr_collector.ignore_module(module_piece)
-            module = self._convert_errors(pyobj_creg.animate, module_piece)
+            module = self.convert_errors(pyobj_creg.animate, module_piece)
             root_probe = self._make_root_fixture(system, module_piece, module)
             system.update_config('system', {self._root_name: root_probe})
-            self._convert_errors(self._run_system, system)
+            self.convert_errors(self._run_system, system)
         except _Error as x:
             result = x
             constructors = None
@@ -330,77 +325,11 @@ class TestJob(SystemJob):
             rpc_service_wrapper.reset()
             rpc_servant_wrapper.reset()
 
-    def _convert_errors(self, fn, *args, **kw):
-        try:
-            return fn(*args, **kw)
-        except HException as x:
-            error_msg = f"{type(x).__name__}: {x}"
-            if isinstance(x, htypes.test_job.unknown_service_error):
-                req = ServiceReq(x.service_name)
-                raise _IncompleteError(error_msg, missing_reqs={req})
-            if isinstance(x, htypes.test_job.config_item_missing_error):
-                key = pyobj_creg.invite(x.t)
-                req = ActorReq(x.service_name, key)
-                raise _IncompleteError(error_msg, missing_reqs={req})
-            raise
-        except PythonModuleResourceImportError as x:
-            raise self._prepare_import_error(x)
-        except UnknownServiceError as x:
-            req = ServiceReq(x.service_name)
-            error_msg = f"{type(x).__name__}: {x}"
-            raise _IncompleteError(error_msg, missing_reqs={req})
-        except ConfigItemMissingError as x:
-            req = ActorReq(x.service_name, x.key)
-            error_msg = f"{type(x).__name__}: {x}"
-            raise _IncompleteError(error_msg, missing_reqs={req})
-        except IncompleteImportedObjectError as x:
-            if list(x.path[:1]) == ['htypes']:
-                path = '.'.join(x.path)
-                error_msg = f"Unknown type: {path}" 
-                traceback = self._prepare_traceback(x)[:-1]
-                raise _FailedError(error_msg, traceback)
-            else:
-                raise self._prepare_error(x)
-        except BaseException as x:
-            raise self._prepare_error(x)
+    def incomplete_error(self, error_msg, traceback=None, missing_reqs=None):
+        raise _IncompleteError(error_msg, traceback[:-1] if traceback else None, missing_reqs)
 
-    def _prepare_import_error(self, x):
-        return self._prepare_error(x.original_error)
-
-    def _prepare_traceback(self, x):
-        traceback_entries = []
-        cause = x
-        while cause:
-            traceback_entries += traceback.extract_tb(cause.__traceback__)
-            last_cause = cause
-            cause = cause.__cause__
-        for idx, entry in enumerate(traceback_entries):
-            if entry.name == 'exec_module':
-                del traceback_entries[:idx + 1]
-                break
-        for idx, entry in enumerate(traceback_entries):
-            fpath = entry.filename.split('/')[-2:]
-            fname = '/'.join(fpath).replace('.dyn.py', '')
-            if fname not in {'rc/test_job', 'system/system', 'rc/system_probe', 'rc/fixture_probe'}:
-                del traceback_entries[:idx]
-                break
-        line_list = traceback.format_list(traceback_entries)
-        if isinstance(last_cause, htypes.rpc.server_error):
-            for entry in last_cause.traceback:
-                line_list += [line + '\n' for line in entry.splitlines()]
-        return line_list
-
-    def _prepare_error(self, x):
-        traceback_lines = self._prepare_traceback(x)
-        if isinstance(x, htypes.rpc.server_error):
-            message = x.message
-        else:
-            message = str(x)
-        error_msg = f"{type(x).__name__}: {message}"
-        if isinstance(x, IncompleteImportedObjectError):
-            return _IncompleteError(error_msg, traceback_lines[:-1])
-        else:
-            return _FailedError(error_msg, traceback_lines)
+    def failed_error(self, error_msg, traceback):
+        raise _FailedError(error_msg, traceback)
 
     def _wrap_rpc_servant(self, servant_ref, kw):
         wrapped_servant_ref = pyobj_creg.actor_to_ref(rpc_servant_wrapper)
