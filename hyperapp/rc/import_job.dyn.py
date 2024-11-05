@@ -3,7 +3,6 @@ import traceback
 from functools import cached_property
 
 from hyperapp.common.util import flatten
-from hyperapp.resource.python_module import PythonModuleResourceImportError
 
 from . import htypes
 from .services import (
@@ -14,10 +13,8 @@ from .code.rc_constants import JobStatus
 from .code.build import PythonModuleSrc
 from .code.builtin_resources import enum_builtin_resources
 from .code.config_item_resource import ConfigItemResource
-from .code.import_recorder import IncompleteImportedObjectError
-from .code.requirement_factory import RequirementFactory
 from .code.job_result import JobResult
-from .code.system_job import SystemJob
+from .code.system_job import Result, SystemJob
 
 
 class Function:
@@ -149,6 +146,67 @@ class FailedImportResult(JobResult):
         pass
 
 
+class _ImportJobResult(Result):
+    pass
+
+
+class _ImportJobError(Exception, _ImportJobResult):
+
+    def __init__(self, error_msg=None, traceback=None, missing_reqs=None):
+        Exception.__init__(self, error_msg)
+        _ImportJobResult.__init__(self, error_msg, traceback, missing_reqs)
+
+
+class _FailedError(_ImportJobError):
+
+    def make_result_piece(self, resources, module, constructor_refs):
+        return htypes.import_job.failed_result(
+            error=self.error_msg,
+            traceback=tuple(self.traceback),
+            )
+
+
+class _IncompleteError(_ImportJobError):
+
+    def make_result_piece(self, recorder, module, constructor_refs):
+        return htypes.import_job.incomplete_result(
+            requirements=self._requirement_refs(recorder),
+            error=self._error_msg,
+            traceback=tuple(self._traceback),
+            )
+
+
+class _Succeeded(_ImportJobResult):
+
+    @staticmethod
+    def _enum_functions(module):
+        for name in dir(module):
+            if name.startswith('_'):
+                continue
+            fn = getattr(module, name)
+            if not callable(fn):
+                continue
+            if getattr(fn, '__module__', None) != module.__name__:
+                continue  # Skip functions imported from other modules.
+            try:
+                signature = inspect.signature(fn)
+            except ValueError as x:
+                if 'no signature found for builtin type' in str(x):
+                    continue
+                raise
+            yield htypes.import_job.function(
+                name=name,
+                params=tuple(signature.parameters.keys()),
+                )
+
+    def make_result_piece(self, recorder, module, constructor_refs):
+        return htypes.import_job.succeeded_result(
+            requirements=self._requirement_refs(recorder),
+            functions=tuple(self._enum_functions(module)),
+            constructors=constructor_refs,
+            )
+
+
 class ImportJob(SystemJob):
 
     @classmethod
@@ -187,30 +245,15 @@ class ImportJob(SystemJob):
         system = self._prepare_system(system_resources)
         ctr_collector = system.resolve_service('ctr_collector')
         try:
-            module = pyobj_creg.animate(module_piece)
-            status = JobStatus.ok
-        except PythonModuleResourceImportError as x:
-            status, error_msg, traceback = self._prepare_error(x)
-        if status == JobStatus.failed:
-            return htypes.import_job.failed_result(error_msg, tuple(traceback))
-        req_set = self._imports_to_requirements(recorder.used_imports)
-        req_refs = tuple(
-            mosaic.put(req.piece)
-            for req in req_set
-            )
-        if status == JobStatus.incomplete:
-            return htypes.import_job.incomplete_result(
-                requirements=req_refs,
-                error=error_msg,
-                traceback=tuple(traceback),
-                )
-        constructors = tuple(self._enum_constructor_refs(ctr_collector))
-        if status == JobStatus.ok:
-            return htypes.import_job.succeeded_result(
-                requirements=req_refs,
-                functions=tuple(self._enum_functions(module)),
-                constructors=constructors,
-                )
+            module = self.convert_errors(pyobj_creg.animate, module_piece)
+        except _ImportJobError as x:
+            result = x
+            module = None
+            constructors = None
+        else:
+            result = _Succeeded()
+            constructors = tuple(self._enum_constructor_refs(ctr_collector))
+        return result.make_result_piece(recorder, module, constructors)
 
     def _job_resources(self, module_piece):
         mark_module_item = htypes.ctr_collector.mark_module_cfg_item(
@@ -222,48 +265,8 @@ class ImportJob(SystemJob):
             template_ref=mosaic.put(mark_module_item),
             )
 
-    def _enum_functions(self, module):
-        for name in dir(module):
-            if name.startswith('_'):
-                continue
-            fn = getattr(module, name)
-            if not callable(fn):
-                continue
-            if getattr(fn, '__module__', None) != module.__name__:
-                continue  # Skip functions imported from other modules.
-            try:
-                signature = inspect.signature(fn)
-            except ValueError as x:
-                if 'no signature found for builtin type' in str(x):
-                    continue
-                raise
-            yield htypes.import_job.function(
-                name=name,
-                params=tuple(signature.parameters.keys()),
-                )
+    def incomplete_error(self, error_msg, traceback=None, missing_reqs=None):
+        raise _IncompleteError(error_msg, traceback[:-1] if traceback else None, missing_reqs)
 
-    def _prepare_error(self, x):
-        traceback_entries = []
-        cause = x.original_error
-        while cause:
-            traceback_entries += traceback.extract_tb(cause.__traceback__)
-            cause = cause.__cause__
-        for idx, entry in enumerate(traceback_entries):
-            if entry.name == 'exec_module':
-                del traceback_entries[:idx + 1]
-                break
-        traceback_lines = traceback.format_list(traceback_entries)
-        error = f"{type(x).__name__}: {x}"
-        if isinstance(x.original_error, IncompleteImportedObjectError):
-            return (JobStatus.incomplete, error, traceback_lines[:-1])
-        else:
-            return (JobStatus.failed, error, traceback_lines)
-
-    def _imports_to_requirements(self, import_set):
-        # print("Used imports", import_set)
-        req_set = set()
-        for import_path in import_set:
-            req = RequirementFactory().requirement_from_import(import_path)
-            if req:
-                req_set.add(req)
-        return req_set
+    def failed_error(self, error_msg, traceback):
+        raise _FailedError(error_msg, traceback)

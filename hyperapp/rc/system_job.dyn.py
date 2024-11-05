@@ -7,6 +7,7 @@ from hyperapp.common.htypes import HException
 from hyperapp.common.config_item_missing import ConfigItemMissingError
 from hyperapp.resource.python_module import PythonModuleResourceImportError
 
+from . import htypes
 from .services import (
     mosaic,
     )
