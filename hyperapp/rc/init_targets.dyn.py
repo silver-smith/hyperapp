@@ -1,3 +1,4 @@
+from hyperapp.common.htypes import Type
 from hyperapp.resource.resource_module import AUTO_GEN_LINE
 
 from .services import (
@@ -23,6 +24,9 @@ def add_core_items(config_ctl, ctr_from_template_creg, system_config_template, t
     for service_name, config in system_config_template.items():
         ctl = config_ctl[service_name]
         for key, value in config.items():
+            if type(key) is not str:
+                assert isinstance(key, Type)
+                key = f'{key.module_name}_{key.name}'
             item_piece = ctl.item_piece(value)
             ctr = ctr_from_template_creg.animate(item_piece)
             module_name, var_name = resource_registry.reverse_resolve(item_piece)
