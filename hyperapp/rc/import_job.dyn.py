@@ -144,8 +144,8 @@ class _FailedError(_ImportJobError):
     def make_result_piece(self, recorder, module, system):
         return htypes.import_job.failed_result(
             used_requirements=self._used_requirement_refs(recorder, system),
-            error=self.error_msg,
-            traceback=tuple(self.traceback),
+            error=self._error_msg,
+            traceback=tuple(self._traceback),
             )
 
 
