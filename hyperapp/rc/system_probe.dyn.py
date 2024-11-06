@@ -144,6 +144,10 @@ class ConfigProbe:
     def update(self, config):
         self._config.update(config)
 
+    def update_builtin_config(self, key, value):
+        self._builtin_config[key] = value
+        self._config[key] = value
+
     @property
     def used_keys(self):
         return self._used_keys
@@ -281,6 +285,9 @@ class SystemProbe(System):
     def _make_cfg_item_creg_config(self):
         builtin_config = super()._make_cfg_item_creg_config()
         return self._make_config_probe('cfg_item_creg', builtin_config, config={})
+
+    def _update_builtin_config(self, config, key, value):
+        config.update_builtin_config(key, value)
 
     def add_item_fixtures(self, service_name, fixture_list):
         self._config_fixtures[service_name] += fixture_list
