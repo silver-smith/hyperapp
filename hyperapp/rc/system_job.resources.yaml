@@ -6,6 +6,7 @@ import:
 - legacy_type.rpc:server_error
 - rc.actor_req:actor_req.module
 - rc.import_recorder:import_recorder.module
+- rc.job_result:job_result.module
 - rc.requirement_factory:requirement_factory.module
 - rc.service_ctr:service_ctr.module
 - rc.service_req:service_req.module
@@ -28,6 +29,7 @@ definitions:
         code.actor_req: rc.actor_req:actor_req.module
         code.config_ctl: system.config_ctl:config_ctl.module
         code.import_recorder: rc.import_recorder:import_recorder.module
+        code.job_result: rc.job_result:job_result.module
         code.requirement_factory: rc.requirement_factory:requirement_factory.module
         code.service_ctr: rc.service_ctr:service_ctr.module
         code.service_req: rc.service_req:service_req.module

@@ -99,7 +99,8 @@ definitions:
     value:
       t: legacy_type.import_job:failed_result
       function: FailedImportResult.from_piece
-      service_params: []
+      service_params:
+      - rc_requirement_creg
 
   ImportJob:
     type: legacy_type.builtin:attribute

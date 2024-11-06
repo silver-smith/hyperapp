@@ -14,7 +14,7 @@ from .code.build import PythonModuleSrc
 from .code.builtin_resources import enum_builtin_resources
 from .code.config_item_resource import ConfigItemResource
 from .code.job_result import JobResult
-from .code.system_job import Result, SystemJob
+from .code.system_job import Result, SystemJob, SystemJobResult
 
 
 class Function:
@@ -28,32 +28,11 @@ class Function:
         self.params = params
 
 
-class ImportResultBase(JobResult):
-
-    @staticmethod
-    def _resolve_reqirement_refs(rc_requirement_creg, requirement_refs):
-        return [
-            rc_requirement_creg.invite(ref)
-            for ref in requirement_refs
-            ]
-
-    def __init__(self, status, requirements, error=None, traceback=None):
-        super().__init__(status, error, traceback)
-        self._requirements = requirements
-
-    def _resolve_requirements(self, target_factory):
-        req_to_target = {}
-        for req in self._requirements:
-            target = req.get_target(target_factory)
-            req_to_target[req] = target
-        return req_to_target
-
-
-class SucceededImportResult(ImportResultBase):
+class SucceededImportResult(SystemJobResult):
 
     @classmethod
     def from_piece(cls, piece, rc_requirement_creg, rc_constructor_creg):
-        requirements = cls._resolve_reqirement_refs(rc_requirement_creg, piece.requirements)
+        used_reqs = cls._resolve_reqirement_refs(rc_requirement_creg, piece.used_requirements)
         functions = [
             Function.from_piece(fn)
             for fn in piece.functions
@@ -62,15 +41,15 @@ class SucceededImportResult(ImportResultBase):
             rc_constructor_creg.invite(ref)
             for ref in piece.constructors
             ]
-        return cls(requirements, functions, constructors)
+        return cls(used_reqs, functions, constructors)
 
-    def __init__(self, requirements, functions, constructors):
-        super().__init__(JobStatus.ok, requirements)
+    def __init__(self, used_reqs, functions, constructors):
+        super().__init__(JobStatus.ok, used_reqs)
         self._functions = functions
         self._constructors = constructors
 
     def update_targets(self, my_target, target_set):
-        req_to_target = self._resolve_requirements(target_set.factory)
+        req_to_target = self._resolve_requirements(target_set.factory, self._used_reqs)
         if self._is_tests or self._is_fixtures:
             self._update_fixtures_targets(my_target, target_set)
         if self._is_tests:
@@ -92,7 +71,7 @@ class SucceededImportResult(ImportResultBase):
             test_alias, test_target = my_target.create_test_target(fn, req_to_target)
             target_set.add(test_alias)
             target_set.add(test_target)
-            for req in self._requirements:
+            for req in self._used_reqs:
                 req.update_tested_target(my_target, test_target, target_set)
 
     def _update_resource(self, my_target, target_set, req_to_target):
@@ -105,7 +84,7 @@ class SucceededImportResult(ImportResultBase):
 
     @property
     def _is_tests(self):
-        for req in self._requirements:
+        for req in self._used_reqs:
             if req.is_test_requirement:
                 return True
         return False
@@ -118,29 +97,32 @@ class SucceededImportResult(ImportResultBase):
         return False
 
 
-class IncompleteImportResult(ImportResultBase):
+class IncompleteImportResult(SystemJobResult):
 
     @classmethod
     def from_piece(cls, piece, rc_requirement_creg):
-        requirements = cls._resolve_reqirement_refs(rc_requirement_creg, piece.requirements)
-        return cls(requirements, piece.error, piece.traceback)
+        missing_reqs = cls._resolve_reqirement_refs(rc_requirement_creg, piece.missing_requirements)
+        used_reqs = cls._resolve_reqirement_refs(rc_requirement_creg, piece.used_requirements)
+        return cls(missing_reqs, used_reqs, piece.error, piece.traceback)
 
-    def __init__(self, requirements, error, traceback):
-        super().__init__(JobStatus.incomplete, requirements, error, traceback)
+    def __init__(self, missing_reqs, used_reqs, error, traceback):
+        super().__init__(JobStatus.incomplete, used_reqs, error, traceback)
+        self._missing_reqs = missing_reqs
 
     def update_targets(self, my_target, target_set):
-        req_to_target = self._resolve_requirements(target_set.factory)
+        req_to_target = self._resolve_requirements(target_set.factory, self._missing_reqs | self._used_reqs)
         target_set.add(my_target.create_next_target(req_to_target))
 
 
-class FailedImportResult(JobResult):
+class FailedImportResult(SystemJobResult):
 
     @classmethod
-    def from_piece(cls, piece):
-        return cls(piece.error, piece.traceback)
+    def from_piece(cls, piece, rc_requirement_creg):
+        used_reqs = cls._resolve_reqirement_refs(rc_requirement_creg, piece.used_requirements)
+        return cls(used_reqs, piece.error, piece.traceback)
 
-    def __init__(self, error, traceback):
-        super().__init__(JobStatus.failed, error, traceback)
+    def __init__(self, used_reqs, error, traceback):
+        super().__init__(JobStatus.failed, used_reqs, error, traceback)
 
     def update_targets(self, my_target, target_set):
         pass
@@ -159,9 +141,9 @@ class _ImportJobError(Exception, _ImportJobResult):
 
 class _FailedError(_ImportJobError):
 
-    def make_result_piece(self, resources, module, system):
+    def make_result_piece(self, recorder, module, system):
         return htypes.import_job.failed_result(
-            used_requirements=self._used_requirement_refs(system),
+            used_requirements=self._used_requirement_refs(recorder, system),
             error=self.error_msg,
             traceback=tuple(self.traceback),
             )
@@ -172,7 +154,7 @@ class _IncompleteError(_ImportJobError):
     def make_result_piece(self, recorder, module, system):
         return htypes.import_job.incomplete_result(
             missing_requirements=self._missing_requirement_refs(recorder),
-            used_requirements=self._used_requirement_refs(system),
+            used_requirements=self._used_requirement_refs(recorder, system),
             error=self._error_msg,
             traceback=tuple(self._traceback),
             )
@@ -203,7 +185,7 @@ class _Succeeded(_ImportJobResult):
 
     def make_result_piece(self, recorder, module, system):
         return htypes.import_job.succeeded_result(
-            used_requirements=self._used_requirement_refs(system),
+            used_requirements=self._used_requirement_refs(recorder, system),
             functions=tuple(self._enum_functions(module)),
             constructors=self._constructor_refs(system),
             )

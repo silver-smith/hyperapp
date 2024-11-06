@@ -17,24 +17,16 @@ from .code.rc_constants import JobStatus
 from .code.build import PythonModuleSrc
 from .code.builtin_resources import enum_builtin_resources
 from .code.import_recorder import IncompleteImportedObjectError
-from .code.job_result import JobResult
 from .code.system import UnknownServiceError
 from .code.system_probe import SystemProbe
 from .code.fixture_probe import FixtureProbeTemplate
-from .code.system_job import Result, SystemJob
+from .code.system_job import Result, SystemJob, SystemJobResult
 
 log  = logging.getLogger(__name__)
 rc_log = logging.getLogger('rc')
 
 
-class TestResultBase(JobResult):
-
-    @staticmethod
-    def _resolve_reqirement_refs(rc_requirement_creg, requirement_refs):
-        return [
-            rc_requirement_creg.invite(ref)
-            for ref in requirement_refs
-            ]
+class _SucceededTestResultBase(SystemJobResult):
 
     @staticmethod
     def _used_imports_to_dict(used_imports_list):
@@ -43,17 +35,9 @@ class TestResultBase(JobResult):
             result[rec.module_name] = rec.imports
         return result
 
-    def __init__(self, status, used_imports, requirements, error=None, traceback=None):
-        super().__init__(status, error, traceback)
+    def __init__(self, status, used_reqs, used_imports, error=None, traceback=None):
+        super().__init__(status, used_reqs, error, traceback)
         self._used_imports = used_imports
-        self._requirements = requirements
-
-    def _resolve_requirements(self, target_factory):
-        req_to_target = {}
-        for req in self._requirements:
-            target = req.get_target(target_factory)
-            req_to_target[req] = target
-        return req_to_target
 
     def _update_tested_imports(self, target_factory):
         for module_name, import_list in self._used_imports.items():
@@ -61,24 +45,24 @@ class TestResultBase(JobResult):
             resource_tgt.add_used_imports(import_list)
 
 
-class SucceededTestResult(TestResultBase):
+class SucceededTestResult(_SucceededTestResultBase):
 
     @classmethod
     def from_piece(cls, piece, rc_requirement_creg, rc_constructor_creg):
         used_imports = cls._used_imports_to_dict(piece.used_imports)
-        requirements = cls._resolve_reqirement_refs(rc_requirement_creg, piece.requirements)
+        used_reqs = cls._resolve_reqirement_refs(rc_requirement_creg, piece.used_requirements)
         constructors = [
             rc_constructor_creg.invite(ref)
             for ref in piece.constructors
             ]
-        return cls(used_imports, requirements, constructors)
+        return cls(used_reqs, used_imports, constructors)
 
-    def __init__(self, used_imports, requirements, constructors):
-        super().__init__(JobStatus.ok, used_imports, requirements)
+    def __init__(self, used_reqs, used_imports, constructors):
+        super().__init__(JobStatus.ok, used_reqs, used_imports)
         self._constructors = constructors
 
     def update_targets(self, my_target, target_set):
-        req_to_target = self._resolve_requirements(target_set.factory)
+        req_to_target = self._resolve_requirements(target_set.factory, self._used_reqs)
         self._update_tested_imports(target_set.factory)
         self._update_ctr_targets(target_set)
         my_target.set_alias_completed(req_to_target)
@@ -88,20 +72,22 @@ class SucceededTestResult(TestResultBase):
             ctr.update_targets(target_set)
 
 
-class IncompleteTestResult(TestResultBase):
+class IncompleteTestResult(_SucceededTestResultBase):
 
     @classmethod
     def from_piece(cls, piece, rc_requirement_creg):
+        missing_reqs = cls._resolve_reqirement_refs(rc_requirement_creg, piece.missing_requirements)
+        used_reqs = cls._resolve_reqirement_refs(rc_requirement_creg, piece.used_requirements)
         used_imports = cls._used_imports_to_dict(piece.used_imports)
-        requirements = cls._resolve_reqirement_refs(rc_requirement_creg, piece.requirements)
-        return cls(used_imports, requirements, piece.error, piece.traceback)
+        return cls(missing_reqs, used_reqs, used_imports, piece.error, piece.traceback)
 
-    def __init__(self, used_imports, requirements, error, traceback):
-        super().__init__(JobStatus.incomplete, used_imports, requirements, error, traceback)
+    def __init__(self, used_imports, missing_reqs, used_reqs, error, traceback):
+        super().__init__(JobStatus.incomplete, used_reqs, used_imports, error, traceback)
+        self._missing_reqs = missing_reqs
 
     @property
     def _reqs_desc(self):
-        return ", ".join(r.desc for r in self._requirements if r.desc)
+        return ", ".join(r.desc for r in self._missing_reqs if r.desc)
 
     @property
     def desc(self):
@@ -109,7 +95,7 @@ class IncompleteTestResult(TestResultBase):
 
     def update_targets(self, my_target, target_set):
         self._update_tested_imports(target_set.factory)
-        req_to_target = self._resolve_requirements(target_set.factory)
+        req_to_target = self._resolve_requirements(target_set.factory, self._missing_reqs | self._used_reqs)
         if set(req_to_target) <= my_target.req_set:
             # No new requirements are discovered.
             rc_log.error("%s: Infinite loop detected with: %s", my_target.name, self._reqs_desc)
@@ -117,14 +103,15 @@ class IncompleteTestResult(TestResultBase):
             target_set.add(my_target.create_next_target(req_to_target))
 
 
-class FailedTestResult(JobResult):
+class FailedTestResult(SystemJobResult):
 
     @classmethod
-    def from_piece(cls, piece):
-        return cls(piece.error, piece.traceback)
+    def from_piece(cls, piece, rc_requirement_creg):
+        used_reqs = cls._resolve_reqirement_refs(rc_requirement_creg, piece.used_requirements)
+        return cls(used_reqs, piece.error, piece.traceback)
 
-    def __init__(self, error, traceback):
-        super().__init__(JobStatus.failed, error, traceback)
+    def __init__(self, used_reqs, error, traceback):
+        super().__init__(JobStatus.failed, used_reqs, error, traceback)
 
     def update_targets(self, my_target, target_set):
         pass
@@ -189,7 +176,7 @@ class _FailedError(_TestJobError):
 
     def make_result_piece(self, resources, recorder, system):
         return htypes.test_job.failed_result(
-            used_requirements=self._used_requirement_refs(system),
+            used_requirements=self._used_requirement_refs(recorder, system),
             error=self.error_msg,
             traceback=tuple(self.traceback),
             )
@@ -200,7 +187,7 @@ class _IncompleteError(_TestJobError):
     def make_result_piece(self, resources, recorder, system):
         return htypes.test_job.incomplete_result(
             missing_requirements=self._missing_requirement_refs(recorder),
-            used_requirements=self._used_requirement_refs(system),
+            used_requirements=self._used_requirement_refs(recorder, system),
             used_imports=self._used_imports(resources),
             error=self._error_msg,
             traceback=tuple(self._traceback),
@@ -211,7 +198,7 @@ class _Succeeded(_TestJobResult):
 
     def make_result_piece(self, resources, recorder, system):
         return htypes.test_job.succeeded_result(
-            used_requirements=self._used_requirement_refs(system),
+            used_requirements=self._used_requirement_refs(recorder, system),
             used_imports=self._used_imports(resources),
             constructors=self._constructor_refs(system),
             )

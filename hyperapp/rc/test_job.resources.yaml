@@ -17,10 +17,8 @@ import:
 - rc.build:build.module
 - rc.builtin_resources:builtin_resources.module
 - rc.fixture_probe:fixture_probe.module
-- rc.job_result:job_result.module
 - rc.import_recorder:import_recorder.module
 - rc.rc_constants:rc_constants.module
-- rc.rc_job_result_creg:rc_job_result_creg.service
 - rc.system_job:system_job.module
 - rc.system_probe:system_probe.module
 - system.config_ctl:config_ctl.module
@@ -50,7 +48,6 @@ definitions:
         code.config_ctl: system.config_ctl:config_ctl.module
         code.build: rc.build:build.module
         code.builtin_resources: rc.builtin_resources:builtin_resources.module
-        code.job_result: rc.job_result:job_result.module
         code.import_recorder: rc.import_recorder:import_recorder.module
         code.rc_constants: rc.rc_constants:rc_constants.module
         code.system: system.system:system.module
@@ -116,7 +113,8 @@ definitions:
     value:
       t: legacy_type.test_job:failed_result
       function: FailedTestResult.from_piece
-      service_params: []
+      service_params:
+      - rc_requirement_creg
 
   TestJob:
     type: legacy_type.builtin:attribute

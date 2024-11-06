@@ -23,8 +23,30 @@ from .code.service_req import ServiceReq
 from .code.service_ctr import ServiceTemplateCtr
 from .code.system_probe import SystemProbe
 from .code.requirement_factory import RequirementFactory
+from .code.job_result import JobResult
 
 log = logging.getLogger(__name__)
+
+
+class SystemJobResult(JobResult):
+
+    @staticmethod
+    def _resolve_reqirement_refs(rc_requirement_creg, requirement_refs):
+        return set(
+            rc_requirement_creg.invite(ref)
+            for ref in requirement_refs
+            )
+
+    def __init__(self, status, used_reqs, error=None, traceback=None):
+        super().__init__(status, error, traceback)
+        self._used_reqs = used_reqs
+
+    def _resolve_requirements(self, target_factory, requirements):
+        req_to_target = {}
+        for req in requirements:
+            target = req.get_target(target_factory)
+            req_to_target[req] = target
+        return req_to_target
 
 
 class Result:
@@ -43,7 +65,6 @@ class Result:
 
     @staticmethod
     def _imports_to_requirements(import_set):
-        log.info("Used imports: %s", import_set)
         req_set = set()
         for import_path in import_set:
             req = RequirementFactory().requirement_from_import(import_path)
@@ -52,11 +73,13 @@ class Result:
         return req_set
 
     def _missing_requirement_refs(self, recorder):
-        import_reqs = self._imports_to_requirements(recorder.used_imports)
+        import_reqs = self._imports_to_requirements(recorder.missing_imports)
         return self._reqs_to_refs(self._missing_reqs | import_reqs)
 
-    def _used_requirement_refs(self, system):
-        return self._reqs_to_refs(system.enum_used_requirements())
+    def _used_requirement_refs(self, recorder, system):
+        system_reqs = set(system.enum_used_requirements())
+        import_reqs = self._imports_to_requirements(recorder.used_imports)
+        return self._reqs_to_refs(system_reqs | import_reqs)
 
     def _constructor_refs(self, system):
         ctr_collector = system['ctr_collector']
