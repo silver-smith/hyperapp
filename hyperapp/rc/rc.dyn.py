@@ -165,6 +165,7 @@ def _run(rc_job_result_creg, pool, job_cache, target_set, filter, options):
                 ", ".join(dep.name for dep in target.deps if not dep.completed),
                 ", ".join(dep.name for dep in target.deps),
                 )
+    rc_log.info("Diffs:\n")
     with_output, changed_count = _collect_output(target_set, failures, options)
     job_count = len(job_id_to_target)
     completed_count = len(list(target_set.iter_completed()))
