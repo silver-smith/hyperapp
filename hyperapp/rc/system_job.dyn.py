@@ -77,7 +77,11 @@ class Result:
         return self._reqs_to_refs(self._missing_reqs | import_reqs)
 
     def _used_requirement_refs(self, recorder, system):
-        system_reqs = set(system.enum_used_requirements())
+        if system:
+            system_reqs = set(system.enum_used_requirements())
+        else:
+            # May be not yet created.
+            system_reqs = set()
         import_reqs = self._imports_to_requirements(recorder.used_imports)
         return self._reqs_to_refs(system_reqs | import_reqs)
 
