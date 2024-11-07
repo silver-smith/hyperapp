@@ -110,10 +110,9 @@ class ServiceConfigProbe:
 
 class ConfigProbe:
 
-    def __init__(self, service_name, builtin_config, config):
+    def __init__(self, service_name, config):
         self._service_name = service_name
-        self._builtin_config = builtin_config
-        self._config = {**builtin_config, **config}
+        self._config = config
         self._used_keys = set()
 
     def __getitem__(self, key):
@@ -122,7 +121,7 @@ class ConfigProbe:
         except KeyError:
             raise ConfigItemMissingError(self._service_name, key)
         else:
-            if key not in self._builtin_config:
+            if not self._is_builtin_key(key):
                 self._used_keys.add(key)
             return value
 
@@ -134,7 +133,7 @@ class ConfigProbe:
 
     def get(self, key, default=None):
         value = self._config.get(key, default)
-        if value is not default and key not in self._builtin_config:
+        if value is not default and not self._is_builtin_key(key):
             self._used_keys.add(key)
         return value
 
@@ -144,13 +143,28 @@ class ConfigProbe:
     def update(self, config):
         self._config.update(config)
 
+    @property
+    def used_keys(self):
+        return self._used_keys
+
+    def _is_builtin_key(self, key):
+        return False
+
+
+# Config probe for services having builtin config elements.
+class SystemConfigProbe(ConfigProbe):
+
+    def __init__(self, service_name, builtin_config, config):
+        full_config = {**builtin_config, **config}
+        super().__init__(service_name, full_config)
+        self._builtin_config = builtin_config
+
     def update_builtin_config(self, key, value):
         self._builtin_config[key] = value
         self._config[key] = value
 
-    @property
-    def used_keys(self):
-        return self._used_keys
+    def _is_builtin_key(self, key):
+        return key in self._builtin_config
 
 
 class ConfigFixture:
@@ -268,13 +282,18 @@ class SystemProbe(System):
     def _init_probe(self):
         super()._init()
 
-    def _make_config_probe(self, service_name, builtin_config, config):
-        probe = ConfigProbe(service_name, builtin_config, config)
+    def _make_config_probe(self, service_name, config):
+        probe = ConfigProbe(service_name, config)
+        self._service_to_config_probe[service_name] = probe
+        return probe
+
+    def _make_system_config_probe(self, service_name, builtin_config, config):
+        probe = SystemConfigProbe(service_name, builtin_config, config)
         self._service_to_config_probe[service_name] = probe
         return probe
 
     def _make_config_ctl_creg_config(self):
-        return self._make_config_probe(
+        return self._make_system_config_probe(
             'config_ctl_creg', builtin_config={}, config={})
 
     def _make_config_ctl(self, config):
@@ -284,7 +303,7 @@ class SystemProbe(System):
 
     def _make_cfg_item_creg_config(self):
         builtin_config = super()._make_cfg_item_creg_config()
-        return self._make_config_probe('cfg_item_creg', builtin_config, config={})
+        return self._make_system_config_probe('cfg_item_creg', builtin_config, config={})
 
     def _update_builtin_config(self, config, key, value):
         config.update_builtin_config(key, value)
@@ -307,7 +326,7 @@ class SystemProbe(System):
         for fixture in self._config_fixtures.get(service_name, []):
             fixture_cfg = fixture.resolve(self)
             ctl.merge(config, fixture_cfg)
-        return self._make_config_probe(service_name, builtin_config={}, config=config)
+        return self._make_config_probe(service_name, config)
 
     def add_constructor(self, ctr):
         ctr_collector = self.resolve_service('ctr_collector')
