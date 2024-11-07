@@ -109,6 +109,14 @@ class IncompleteImportResult(SystemJobResult):
         super().__init__(JobStatus.incomplete, used_reqs, error, traceback)
         self._missing_reqs = missing_reqs
 
+    @property
+    def _reqs_desc(self):
+        return ", ".join(r.desc for r in self._missing_reqs if r.desc)
+
+    @property
+    def desc(self):
+        return super().desc + f", needs {self._reqs_desc}"
+
     def update_targets(self, my_target, target_set):
         req_to_target = self._resolve_requirements(target_set.factory, self._missing_reqs | self._used_reqs)
         target_set.add(my_target.create_next_target(req_to_target))

@@ -28,6 +28,10 @@ class PythonModuleReq(Requirement):
     def piece(self):
         return htypes.python_module_resource_target.python_module_req(self.code_name)
 
+    @property
+    def desc(self):
+        return f"{self.code_name} module"
+
     def get_target(self, target_factory):
         return target_factory.python_module_resource_by_code_name(self.code_name)
 
