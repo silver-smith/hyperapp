@@ -193,8 +193,11 @@ class _Succeeded(_ImportJobResult):
                 )
 
     def make_result_piece(self, recorder, module, system):
+        system_reqs = set(system.enum_used_requirements())
+        import_reqs = self._imports_to_requirements(recorder.missing_imports | recorder.used_imports)
+        used_requirement_refs = self._reqs_to_refs(system_reqs | import_reqs)
         return htypes.import_job.succeeded_result(
-            used_requirements=self._used_requirement_refs(recorder, system),
+            used_requirements=used_requirement_refs,
             functions=tuple(self._enum_functions(module)),
             constructors=self._constructor_refs(system),
             )
