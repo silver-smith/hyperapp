@@ -13,6 +13,7 @@ from .services import (
 from .code.system import UnknownServiceError, System
 from .code.service_req import ServiceReq
 from .code.actor_req import ActorReq
+from .code.actor_probe import ActorProbe
 
 log = logging.getLogger(__name__)
 
@@ -121,6 +122,9 @@ class ConfigProbe:
         except KeyError:
             raise ConfigItemMissingError(self._service_name, key)
         else:
+            if hasattr(value, '__self__') and isinstance(value.__func__, ActorProbe):
+                # Do not add probes to requirements.
+                return value
             if not self._is_builtin_key(key):
                 self._used_keys.add(key)
             return value
