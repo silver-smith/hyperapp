@@ -81,7 +81,7 @@ class IncompleteTestResult(_SucceededTestResultBase):
         used_imports = cls._used_imports_to_dict(piece.used_imports)
         return cls(missing_reqs, used_reqs, used_imports, piece.error, piece.traceback)
 
-    def __init__(self, used_imports, missing_reqs, used_reqs, error, traceback):
+    def __init__(self, missing_reqs, used_reqs, used_imports, error, traceback):
         super().__init__(JobStatus.incomplete, used_reqs, used_imports, error, traceback)
         self._missing_reqs = missing_reqs
 
