@@ -1,5 +1,0 @@
-
-association = record:
-  service: ref
-  type: ref
-  function: ref
