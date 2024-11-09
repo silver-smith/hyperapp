@@ -63,7 +63,6 @@ class ActorProbeCtr(Constructor):
         return f'{self._t.module_name}_{self._t.name}'
 
 
-
 class ActorTemplateCtrBase(Constructor):
 
     def __init__(self, t):
