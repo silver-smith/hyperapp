@@ -214,7 +214,6 @@ import:
 - ui.model_command:global_model_command_reg.service
 - ui.model_command:model_command_enumerator_reg.service
 - ui.model_command:model_command_reg.service
-- ui.model_command_impl_creg:model_command_impl_creg.service
 - ui.navigator:navigator_view.actor-template
 - ui.navigator:navigator_view_go_back.command-cfg-item
 - ui.navigator:navigator_view_go_forward.command-cfg-item
@@ -597,7 +596,6 @@ definitions:
       - ui.model_command:global_model_command_reg.service
       - ui.model_command:model_command_enumerator_reg.service
       - ui.model_command:model_command_reg.service
-      - ui.model_command_impl_creg:model_command_impl_creg.service
       - ui.system_fn_creg:system_fn_creg.service
       - ui.ui_adapter_creg:ui_adapter_creg.service
       - ui.ui_command:get_view_commands.service
