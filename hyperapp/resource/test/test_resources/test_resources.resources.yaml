@@ -2,13 +2,9 @@ import:
 - sample_module:sample_module.module
 - builtins:mosaic.service
 - builtins:web.service
-- transport.identity:peer_registry.service
-- rpc.rpc_call:rpc_call_factory.service
-- mock_identity:mock_identity.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:partial
 - legacy_type.builtin:call
-- legacy_type.resource_service:list_service
 - legacy_type.test_resources:test_d
 associations: []
 definitions:
@@ -24,8 +20,6 @@ definitions:
       params:
         mosaic: builtins:mosaic.service
         web: builtins:web.service
-        peer_registry: transport.identity:peer_registry.service
-        rpc_call_factory: rpc.rpc_call:rpc_call_factory.service
   sample_servant:
     type: legacy_type.builtin:call
     value:
@@ -38,11 +32,3 @@ definitions:
   test_d:
     type: legacy_type.test_resources:test_d
     value: {}
-  sample_list_service:
-    type: legacy_type.resource_service:list_service
-    value:
-      identity: mock_identity:mock_identity.service
-      function: servant_list
-      dir: test_d
-      commands: []
-      key_attribute: id

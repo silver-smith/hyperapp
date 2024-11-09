@@ -23,10 +23,7 @@ TEST_RESOURCES_DIR = Path(__file__).parent / 'test_resources'
 
 @pytest.fixture
 def module_dir_list(default_module_dir_list):
-    return [
-        *default_module_dir_list,
-        TEST_RESOURCES_DIR,
-        ]
+    return [TEST_RESOURCES_DIR]
 
 
 @pytest.fixture
@@ -48,8 +45,8 @@ def test_load(resource_registry):
     servant_list = resource_registry['test_resources', 'servant_list']
     log.info("Servant list: %r", servant_list)
 
-    list_service = resource_registry['test_resources', 'sample_list_service']
-    log.info("List service: %r", list_service)
+    sample_servant = resource_registry['test_resources', 'sample_servant']
+    log.info("Sample servant: %r", sample_servant)
 
 
 def test_set_attr(mosaic, resource_registry, resource_module_factory, compare):
