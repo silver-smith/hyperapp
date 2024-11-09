@@ -17,7 +17,6 @@ import:
 - rc.ctr_collector:ctr_collector_ignore_module_cfg_item.actor-template
 - rc.ctr_collector:ctr_collector_mark_module_cfg_item.actor-template
 - rc.ctr_collector:ctr_collector.service
-- rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
 - rc.command_ctr:command_resource_global_model_command_template_ctr.actor-template
 - rc.command_ctr:command_resource_model_command_template_ctr.actor-template
 - rc.command_ctr:command_resource_model_command_enumerator_template_ctr.actor-template
@@ -265,7 +264,6 @@ definitions:
       items:
       - rc.actor_ctr:actor_resource_actor_probe_ctr.actor-template
       - rc.actor_ctr:actor_resource_actor_template_ctr.actor-template
-      - rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
       - rc.command_ctr:command_resource_global_model_command_template_ctr.actor-template
       - rc.command_ctr:command_resource_model_command_template_ctr.actor-template
       - rc.command_ctr:command_resource_model_command_enumerator_template_ctr.actor-template

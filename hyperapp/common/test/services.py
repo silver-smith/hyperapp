@@ -13,7 +13,6 @@ from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.common.mosaic import Mosaic
 from hyperapp.common.web import Web
 from hyperapp.common.services import HYPERAPP_DIR, pyobj_config
-from hyperapp.common.code_registry import CodeRegistry
 from hyperapp.common.code_registry2 import CodeRegistry2
 from hyperapp.common.pyobj_registry import PyObjRegistry
 from hyperapp.common.association_registry import AssociationRegistry
@@ -191,11 +190,6 @@ def builtin_types_as_dict(pyobj_creg, builtin_types):
 
 
 @pytest.fixture
-def code_registry_ctr(mosaic, web, association_reg, pyobj_creg):
-    return partial(CodeRegistry, mosaic, web, association_reg, pyobj_creg)
-
-
-@pytest.fixture
 def code_registry_ctr2(web):
     return partial(CodeRegistry2, web)
 
@@ -204,7 +198,6 @@ def code_registry_ctr2(web):
 def builtin_services(
         association_reg,
         builtin_types,
-        code_registry_ctr,
         code_registry_ctr2,
         hyperapp_dir,
         module_dir_list,
@@ -231,7 +224,6 @@ def builtin_services(
     return {
         'association_reg': association_reg,
         'builtin_types': builtin_types,
-        'code_registry_ctr': code_registry_ctr,
         'code_registry_ctr2': code_registry_ctr2,
         'hyperapp_dir': hyperapp_dir,
         'module_dir_list': module_dir_list,

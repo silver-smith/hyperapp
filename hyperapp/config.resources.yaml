@@ -37,7 +37,6 @@ import:
 - rc.actor_probe:actor_resource_actor_probe_template.actor-template
 - rc.actor_req:actor_resource_actor_req.actor-template
 - rc.builtin_service_target:builtin_service_builtin_service_req.actor-template
-- rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
 - rc.command_ctr:command_resource_global_model_command_template_ctr.actor-template
 - rc.command_ctr:command_resource_model_command_enumerator_template_ctr.actor-template
 - rc.command_ctr:command_resource_model_command_template_ctr.actor-template
@@ -442,7 +441,6 @@ definitions:
       items:
       - rc.actor_ctr:actor_resource_actor_probe_ctr.actor-template
       - rc.actor_ctr:actor_resource_actor_template_ctr.actor-template
-      - rc.code_registry_ctr:builtin_code_registry_ctr.actor-template
       - rc.command_ctr:command_resource_global_model_command_template_ctr.actor-template
       - rc.command_ctr:command_resource_model_command_enumerator_template_ctr.actor-template
       - rc.command_ctr:command_resource_model_command_template_ctr.actor-template

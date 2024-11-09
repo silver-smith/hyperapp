@@ -6,4 +6,3 @@ from .phony_ref import phony_ref
 from .builtins import register_builtin_types
 from .hyper_ref import *
 from .meta_type import *
-from .code_registry import *
