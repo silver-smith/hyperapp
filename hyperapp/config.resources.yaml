@@ -49,7 +49,7 @@ import:
 - rc.command_marker:ui_command.marker-template
 - rc.command_marker:ui_model_command.marker-template
 - rc.command_marker:universal_ui_command.marker-template
-- rc.config_item_marker:config_fixture.marker-template
+- rc.config_fixture_marker:config_fixture.marker-template
 - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
 - rc.config_item_resource:config_item_resource_config_item_resource_override.actor-template
 - rc.ctr_collector:ctr_collector.service
@@ -391,7 +391,7 @@ definitions:
       - rc.command_marker:ui_command.marker-template
       - rc.command_marker:ui_model_command.marker-template
       - rc.command_marker:universal_ui_command.marker-template
-      - rc.config_item_marker:config_fixture.marker-template
+      - rc.config_fixture_marker:config_fixture.marker-template
       - rc.fixture_marker:fixture.marker-template
       - rc.model_marker:model.marker-template
       - rc.service_marker:service2.marker-template

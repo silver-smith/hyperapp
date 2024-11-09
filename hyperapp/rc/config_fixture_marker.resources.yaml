@@ -6,18 +6,18 @@ import:
 
 definitions:
 
-  config_item_marker.module:
+  config_fixture_marker.module:
     type: legacy_type.builtin:python_module
     value:
-      module_name: config_item_marker
-      file_name: config_item_marker.dyn.py
+      module_name: config_fixture_marker
+      file_name: config_fixture_marker.dyn.py
       import_list:
         code.fixture_ctr: rc.fixture_ctr:fixture_ctr.module
 
   config_fixture_marker:
     type: legacy_type.builtin:attribute
     value:
-      object: config_item_marker.module
+      object: config_fixture_marker.module
       attr_name: config_fixture_marker
 
   config_fixture.marker-template:
