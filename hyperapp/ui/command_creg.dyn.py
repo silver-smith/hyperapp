@@ -6,6 +6,6 @@ from .services import (
 from .code.mark import mark
 
 
-@mark.service2
+@mark.service
 def command_creg(config):
     return code_registry_ctr('command_creg', config)

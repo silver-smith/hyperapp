@@ -4,6 +4,6 @@ from .services import (
 from .code.mark import mark
 
 
-@mark.service2
+@mark.service
 def ui_adapter_creg(config):
     return code_registry_ctr('ui_adapter_creg', config)

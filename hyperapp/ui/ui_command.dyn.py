@@ -56,23 +56,23 @@ def ui_command_from_piece(piece, system_fn_creg):
         )
 
 
-@mark.service2(ctl=TypedCommandConfigCtl())
+@mark.service(ctl=TypedCommandConfigCtl())
 def view_ui_command_reg(config, view_t):
     return config.get(view_t, [])
 
 
 # UI commands returning model.
-@mark.service2(ctl=TypedCommandConfigCtl())
+@mark.service(ctl=TypedCommandConfigCtl())
 def view_ui_model_command_reg(config, view_t):
     return config.get(view_t, [])
 
 
-@mark.service2(ctl=UntypedCommandConfigCtl())
+@mark.service(ctl=UntypedCommandConfigCtl())
 def universal_ui_command_reg(config):
     return config
 
 
-@mark.service2
+@mark.service
 def get_view_commands(model_view_creg, visualizer, view_ui_command_reg, view_ui_model_command_reg, universal_ui_command_reg, lcs, view):
     view_t = deduce_t(view.piece)
     ui_model_command_list = [

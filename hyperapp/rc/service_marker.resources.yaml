@@ -24,10 +24,10 @@ definitions:
       object: service_marker.module
       attr_name: ServiceMarker
 
-  service2.marker-template:
+  service.marker-template:
     type: legacy_type.marker:marker_template
     value:
-      name: service2
+      name: service
       function: ServiceMarker
       service_params:
       - config_ctl

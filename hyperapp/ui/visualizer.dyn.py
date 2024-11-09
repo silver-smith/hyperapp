@@ -55,7 +55,7 @@ def _model_layout(visualizer_reg, t):
     raise NotImplementedError(f"Not supported model: {ui_t} / {impl}")
 
 
-@mark.service2
+@mark.service
 def visualizer_reg(config, t):
     try:
         model = config[t]
@@ -66,7 +66,7 @@ def visualizer_reg(config, t):
     return (ui_t, system_fn_ref)
 
 
-@mark.service2
+@mark.service
 def get_custom_layout(lcs, t):
     t_res = pyobj_creg.actor_to_piece(t)
     d = {
@@ -76,7 +76,7 @@ def get_custom_layout(lcs, t):
     return lcs.get(d)
 
 
-@mark.service2
+@mark.service
 def set_custom_layout(lcs, t, layout):
     log.info("Save layout for %s: %s", t, layout)
     t_res = pyobj_creg.actor_to_piece(t)
@@ -87,7 +87,7 @@ def set_custom_layout(lcs, t, layout):
     lcs.set(d, layout)
 
 
-@mark.service2
+@mark.service
 def visualizer(visualizer_reg, get_custom_layout, lcs, value):
     t = deduce_t(value)
 

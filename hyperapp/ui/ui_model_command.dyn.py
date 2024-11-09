@@ -121,7 +121,7 @@ class BoundUiModelCommand(BoundCommandBase):
 #     return _get_ui_model_command_layout
 
 
-@mark.service2
+@mark.service
 def set_ui_model_command(lcs, model_t, command):
     model_t_res = pyobj_creg.actor_to_piece(model_t)
     d = {
@@ -194,7 +194,7 @@ def wrap_model_command_to_ui_command(model_view_creg, visualizer, lcs, command):
     return UnboundUiModelCommand(model_view_creg, visualizer, lcs, command, layout=None)
 
 
-@mark.service2
+@mark.service
 def get_ui_model_commands(model_view_creg, visualizer, global_model_command_reg, get_model_commands, lcs, model, ctx):
     model_command_list = [
         *global_model_command_reg,

@@ -191,12 +191,12 @@ class IncomingConnectionRoute:
         self._connection.send(parcel)
 
 
-@mark.service2
+@mark.service
 def _address_to_tcp_client():
     return {}  # (host, port) -> Connection
 
 
-@mark.service2
+@mark.service
 def _tcp_selector(system_failed, _address_to_tcp_client):
     tcp_stop_signal = threading.Event()
     selector = selectors.DefaultSelector()
@@ -229,7 +229,7 @@ def _tcp_selector(system_failed, _address_to_tcp_client):
     log.info("TCP selector thread is stopped.")
 
 
-@mark.service2
+@mark.service
 def _tcp_services(
         bundler,
         parcel_registry,
@@ -248,7 +248,7 @@ def _tcp_services(
         )
 
 
-@mark.service2
+@mark.service
 def tcp_client_factory(_tcp_services, address):
     svc = _tcp_services
     connection = svc.address_to_tcp_client.get(address)
@@ -262,7 +262,7 @@ def tcp_client_factory(_tcp_services, address):
     return connection
 
 
-@mark.service2
+@mark.service
 def tcp_server_factory(_tcp_services, tcp_client_factory, bind_address=None):
     server = Server(_tcp_services, tcp_client_factory)
     server.start(bind_address)

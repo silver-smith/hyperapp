@@ -112,7 +112,7 @@ def _parse_args(sys_argv):
     return parser.parse_args(sys_argv)
 
 
-@mark.service2
+@mark.service
 async def client_async_main(
         endpoint_registry,
         generate_rsa_identity,
@@ -144,7 +144,7 @@ async def client_async_main(
             await stop_event.wait()
 
 
-@mark.service2
+@mark.service
 def client_main(client_async_main, sys_argv):
     args = _parse_args(sys_argv)
 

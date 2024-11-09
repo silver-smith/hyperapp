@@ -48,6 +48,6 @@ class FileBundle:
         return mosaic.resolve_ref(ref).value
 
 
-@mark.service2
+@mark.service
 def file_bundle(bundler, path, encoding=DEFAULT_ENCODING):
     return FileBundle(bundler, path, encoding)

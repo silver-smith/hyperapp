@@ -8,12 +8,12 @@ from .code.mark import mark
 log = logging.getLogger(__name__)
 
 
-@mark.service2
+@mark.service
 def local_server_peer_path():
     return Path.home() / '.local/share/hyperapp/server/peer.json'
 
 
-@mark.service2
+@mark.service
 def local_server_peer(peer_registry, file_bundle, local_server_peer_path):
     peer_bundle = file_bundle(local_server_peer_path)
     try:

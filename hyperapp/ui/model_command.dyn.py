@@ -81,22 +81,22 @@ def model_command_enumerator_from_piece(piece, system_fn_creg):
         )
 
 
-@mark.service2(ctl=UntypedCommandConfigCtl())
+@mark.service(ctl=UntypedCommandConfigCtl())
 def global_model_command_reg(config):
     return config
 
 
-@mark.service2(ctl=TypedCommandConfigCtl())
+@mark.service(ctl=TypedCommandConfigCtl())
 def model_command_reg(config, model_t):
     return config.get(model_t, [])
 
 
-@mark.service2(ctl=TypedCommandConfigCtl())
+@mark.service(ctl=TypedCommandConfigCtl())
 def model_command_enumerator_reg(config, model_t):
     return config.get(model_t, [])
 
 
-@mark.service2
+@mark.service
 def get_model_commands(model_command_reg, model_command_enumerator_reg, model, ctx):
     model_t = deduce_t(model)
     command_list = [*model_command_reg(model_t)]

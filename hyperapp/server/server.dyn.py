@@ -22,7 +22,7 @@ def _parse_args(sys_argv):
     return parser.parse_args(sys_argv)
 
 
-@mark.service2
+@mark.service
 def server_main(
         stop_signal,
         route_table,

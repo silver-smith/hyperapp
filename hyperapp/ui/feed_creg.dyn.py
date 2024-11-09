@@ -6,6 +6,6 @@ from .services import (
 from .code.mark import mark
 
 
-@mark.service2
+@mark.service
 def feed_creg(config):
     return cached_code_registry_ctr('feed_creg', config)

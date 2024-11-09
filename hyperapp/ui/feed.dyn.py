@@ -47,7 +47,7 @@ def index_tree_feed_from_piece(piece):
     return IndexTreeFeed.from_piece(piece)
 
 
-@mark.service2
+@mark.service
 def feed_factory(config, piece):
     piece_t = deduce_t(piece)
     feed_type = config[piece_t]

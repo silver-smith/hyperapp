@@ -15,7 +15,7 @@ from .tested.code import rename_command
 _model_view_creg_mock = Mock()
 
 
-@mark.service2
+@mark.service
 def model_view_creg():
     return _model_view_creg_mock
 

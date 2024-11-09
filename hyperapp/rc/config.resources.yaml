@@ -68,7 +68,7 @@ import:
 - rc.service_ctr:system_finalizer_gen_service_template.actor-template
 - rc.service_ctr:system_service_template.actor-template
 - rc.service_probe_resource:service_resource_service_probe_ctr.actor-template
-- rc.service_marker:service2.marker-template
+- rc.service_marker:service.marker-template
 - rc.service_probe_resource:service_resource_service_probe_template.actor-template
 - rc.service_req:service_resource_service_req.actor-template
 - rc.builtin_service_target:builtin_service_builtin_service_req.actor-template
@@ -222,7 +222,7 @@ definitions:
       - rc.config_fixture_marker:config_fixture.marker-template
       - rc.fixture_marker:fixture.marker-template
       - rc.model_marker:model.marker-template
-      - rc.service_marker:service2.marker-template
+      - rc.service_marker:service.marker-template
 
   parcel_registry:
     type: legacy_type.system:item_list_config

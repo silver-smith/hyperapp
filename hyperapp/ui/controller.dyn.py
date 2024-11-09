@@ -439,7 +439,7 @@ class Controller:
             self._inside_commands_call = False
 
 
-@mark.service2
+@mark.service
 @asynccontextmanager
 async def controller_running(feed_factory, view_creg, get_view_commands, get_ui_model_commands, layout_bundle, default_layout, ctx, show=False, load_state=False):
     svc = CtlServices(

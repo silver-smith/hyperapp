@@ -120,6 +120,6 @@ class LcsResourceStorage:
                 return name
 
 
-@mark.service2
+@mark.service
 def lcs_resource_storage_factory(pick_refs, name, path):
     return LcsResourceStorage(pick_refs, name, path)
