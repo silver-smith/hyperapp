@@ -38,8 +38,7 @@ class CommandTemplateCtr(Constructor):
 
     @property
     def _fn_name(self):
-        attr_name = '_'.join(self._attr_qual_name)
-        return attr_name
+        return '_'.join(self._attr_qual_name)
 
     def _make_command(self, types, system_fn, name_to_res):
         d_name = self._attr_qual_name[-1] + '_d'
@@ -162,8 +161,7 @@ class TypedCommandTemplateCtr(CommandTemplateCtr):
 
     @property
     def _resource_name(self):
-        attr_name = '_'.join(self._attr_qual_name)
-        return f'{self._t.module_name}_{self._t.name}_{attr_name}'
+        return f'{self._t.module_name}_{self._t.name}_{self._fn_name}'
 
 
 class UiCommandTemplateCtr(TypedCommandTemplateCtr):
