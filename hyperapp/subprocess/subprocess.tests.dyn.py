@@ -6,7 +6,7 @@ from .tested.code import subprocess
 log = logging.getLogger(__name__)
 
 
-def _test_subprocess():
+def test_subprocess(partial_ref, subprocess_running):
     main_ref = partial_ref(process_main, name='test-subprocess-main')
     with subprocess_running('test-subprocess', main_ref) as process:
         log.info("Started %r", process)
