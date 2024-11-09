@@ -45,6 +45,7 @@ class Marker:
             'module_name': module_name,
             }
         if type(self._fn) is type:
+            # A class.
             return self._fn(**kw)
         else:
             # A function.
