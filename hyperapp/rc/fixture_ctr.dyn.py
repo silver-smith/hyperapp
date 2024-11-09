@@ -32,7 +32,7 @@ class FixtureCtrBase(ModuleCtr):
 
     def update_fixtures_targets(self, import_alias_tgt, target_set):
         assert import_alias_tgt.module_name == self._module_name
-        import_alias_tgt.add_component(self)
+        import_alias_tgt.add_test_ctr(self)
 
     def make_resource(self, types, module_name, python_module):
         item = self.make_component(types, python_module)
@@ -119,7 +119,7 @@ class ConfigFixtureCtr(ModuleCtr):
 
     def update_fixtures_targets(self, import_alias_tgt, target_set):
         assert import_alias_tgt.module_name == self._module_name
-        import_alias_tgt.add_component(self)
+        import_alias_tgt.add_test_ctr(self)
 
     def make_component(self, types, python_module, name_to_res=None):
         object = python_module

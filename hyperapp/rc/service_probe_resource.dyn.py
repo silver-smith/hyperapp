@@ -109,7 +109,7 @@ class ServiceProbeCtr(ModuleCtr):
             )
 
     def update_resource_targets(self, resource_tgt, target_set):
-        resource_tgt.import_alias_tgt.add_component(self)
+        resource_tgt.import_alias_tgt.add_test_ctr(self)
         ready_tgt = target_set.factory.config_item_ready('system', self._name)
         ready_tgt.set_provider(resource_tgt, target_set)
         resolved_tgt = target_set.factory.config_item_resolved('system', self._name)

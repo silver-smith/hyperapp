@@ -57,7 +57,7 @@ class ImportTargetAlias(Target):
         self._completed = False
         self._got_requirements = False
         self._req_to_target = {}
-        self._components = set()
+        self._test_constructors = set()
 
     def __repr__(self):
         return f"<ImportAliasTarget {self.name}>"
@@ -85,8 +85,8 @@ class ImportTargetAlias(Target):
     def set_import_target(self, import_target):
         self._import_target = import_target
 
-    def add_component(self, ctr):
-        self._components.add(ctr)
+    def add_test_ctr(self, ctr):
+        self._test_constructors.add(ctr)
 
     def set_requirements(self, req_to_target):
         self._req_to_target = req_to_target
@@ -109,7 +109,7 @@ class ImportTargetAlias(Target):
         module_name, recorder_piece, python_module = self.recorded_python_module
         return [
             ctr.make_resource(self._types, self._src.name, python_module)
-            for ctr in self._components
+            for ctr in self._test_constructors
             ]
 
     def _enum_resources(self):
