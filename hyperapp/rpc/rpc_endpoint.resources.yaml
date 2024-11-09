@@ -1,5 +1,5 @@
 import:
-- builtins:code_registry_ctr2.service
+- builtins:code_registry_ctr.service
 - builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
@@ -27,7 +27,7 @@ definitions:
         htypes.rpc.response: legacy_type.rpc:response
         htypes.rpc.error_response: legacy_type.rpc:error_response
         htypes.rpc.server_error: legacy_type.rpc:server_error
-        services.code_registry_ctr2: builtins:code_registry_ctr2.service
+        services.code_registry_ctr: builtins:code_registry_ctr.service
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service

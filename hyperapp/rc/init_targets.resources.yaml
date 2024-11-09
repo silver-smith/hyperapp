@@ -1,5 +1,5 @@
 import:
-- builtins:code_registry_ctr2.service
+- builtins:code_registry_ctr.service
 - builtins:resource_registry.service
 - builtins:web.service
 - legacy_type.builtin:attribute
@@ -19,7 +19,7 @@ definitions:
       module_name: init_targets
       file_name: init_targets.dyn.py
       import_list:
-        services.code_registry_ctr2: builtins:code_registry_ctr2.service
+        services.code_registry_ctr: builtins:code_registry_ctr.service
         services.resource_registry: builtins:resource_registry.service
         services.web: builtins:web.service
         code.config_resource_target: rc.config_resource_target:config_resource_target.module

@@ -1,9 +1,9 @@
 import threading
 
-from hyperapp.common.code_registry2 import CodeRegistry2
+from hyperapp.common.code_registry import CodeRegistry
 
 
-class CachedCodeRegistry(CodeRegistry2):
+class CachedCodeRegistry(CodeRegistry):
 
     def __init__(self, mosaic, web, service_name, config):
         super().__init__(web, service_name, config)

@@ -9,7 +9,7 @@ from hyperapp.common.htypes import HException
 
 from . import htypes
 from .services import (
-    code_registry_ctr2,
+    code_registry_ctr,
     deduce_t,
     mosaic,
     pyobj_creg,
@@ -35,7 +35,7 @@ class RpcEndpoint:
 
 
 def rpc_message_creg(config):
-    return code_registry_ctr2('rpc_message_creg', config)
+    return code_registry_ctr('rpc_message_creg', config)
 
 
 def rpc_endpoint(rpc_message_creg):
@@ -74,7 +74,7 @@ def on_rpc_error_response(response, transport_request, rpc_request_futures):
 
 
 def rpc_target_creg(config):
-    return code_registry_ctr2('rpc_target_creg', config)
+    return code_registry_ctr('rpc_target_creg', config)
 
 
 def on_rpc_request(request, transport_request, transport, peer_registry, rpc_target_creg):

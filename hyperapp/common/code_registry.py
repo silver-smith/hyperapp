@@ -7,7 +7,7 @@ from .config_item_missing import ConfigItemMissingError
 _log = logging.getLogger(__name__)
 
 
-class CodeRegistry2:
+class CodeRegistry:
 
     def __init__(self, web, service_name, config):
         super().__init__()

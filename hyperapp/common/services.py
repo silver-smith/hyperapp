@@ -11,7 +11,7 @@ from .ref import ref_repr
 from .mosaic import Mosaic
 from .web import Web
 from .type_module_loader import TypeModuleLoader
-from .code_registry2 import CodeRegistry2
+from .code_registry import CodeRegistry
 from .cached_code_registry import CachedCodeRegistry
 from .pyobj_registry import PyObjRegistry
 from .association_registry import AssociationRegistry
@@ -63,7 +63,7 @@ class Services(object):
         'builtin_services',
         'builtin_types',
         'cached_code_registry_ctr',
-        'code_registry_ctr2',
+        'code_registry_ctr',
         'hyperapp_dir',
         'module_dir_list',
         'mosaic',
@@ -156,7 +156,7 @@ class Services(object):
         self.pyobj_creg.register_actor(partial_t, partial_pyobj, pyobj_creg=self.pyobj_creg)
         self.resource_type_reg[raw_t] = RawResourceType()
         self.pyobj_creg.register_actor(raw_t, raw_pyobj, web=self.web)
-        self.code_registry_ctr2 = partial(CodeRegistry2, self.web)
+        self.code_registry_ctr = partial(CodeRegistry, self.web)
         self.cached_code_registry_ctr = partial(CachedCodeRegistry, self.mosaic, self.web)
         add_builtin_services_to_pyobj_cache(self, self.builtin_services, self.pyobj_creg)
 

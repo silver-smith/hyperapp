@@ -2,7 +2,7 @@ from hyperapp.common.htypes import Type
 from hyperapp.resource.resource_module import AUTO_GEN_LINE
 
 from .services import (
-    code_registry_ctr2,
+    code_registry_ctr,
     resource_registry,
     web,
     )
@@ -17,7 +17,7 @@ from .code.config_resource_target import ConfigResourceTarget
 
 
 def ctr_from_template_creg(config):
-    return code_registry_ctr2('ctr_from_template_creg', config)
+    return code_registry_ctr('ctr_from_template_creg', config)
 
 
 def add_core_items(config_ctl, ctr_from_template_creg, system_config_template, target_set):

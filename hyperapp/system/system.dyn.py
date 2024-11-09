@@ -9,7 +9,7 @@ from hyperapp.common.htypes import Type
 from . import htypes
 from .services import (
     cached_code_registry_ctr,
-    code_registry_ctr2,
+    code_registry_ctr,
     pyobj_creg,
     web,
     )
@@ -212,7 +212,7 @@ class System:
 
     def _init(self):
         config_ctl_creg_config = self._make_config_ctl_creg_config()
-        self._config_ctl_creg = code_registry_ctr2('config_ctl_creg', config_ctl_creg_config)
+        self._config_ctl_creg = code_registry_ctr('config_ctl_creg', config_ctl_creg_config)
         # cfg_item_creg is used by DictConfigCtl.
         self._cfg_item_creg = cached_code_registry_ctr('cfg_item_creg', self._make_cfg_item_creg_config())
         self._update_builtin_config(
