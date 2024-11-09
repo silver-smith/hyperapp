@@ -8,7 +8,6 @@ import:
 - legacy_type.command_resource:model_command_template_ctr
 - legacy_type.command_resource:ui_command_template_ctr
 - legacy_type.command_resource:universal_ui_command_template_ctr
-- legacy_type.marker:marker_template
 - legacy_type.system:actor_template
 - legacy_type.command:cfg_item
 - legacy_type.command:properties
