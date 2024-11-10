@@ -161,8 +161,9 @@ class _FailedError(_ImportJobError):
 class _IncompleteError(_ImportJobError):
 
     def make_result_piece(self, recorder, module, system):
+        missing_requirement_refs = self._reqs_to_refs(self._missing_reqs)
         return htypes.import_job.incomplete_result(
-            missing_requirements=self._missing_requirement_refs(recorder),
+            missing_requirements=missing_requirement_refs,
             used_requirements=self._used_requirement_refs(recorder, system),
             error=self._error_msg,
             traceback=tuple(self._traceback),

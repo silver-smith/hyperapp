@@ -166,7 +166,8 @@ class SystemJob:
             message = str(x)
         error_msg = f"{type(x).__name__}: {message}"
         if isinstance(x, IncompleteImportedObjectError):
-            self.incomplete_error(error_msg, traceback_lines[:-1])
+            req = RequirementFactory().requirement_from_import(x.path)
+            self.incomplete_error(error_msg, traceback_lines[:-1], missing_reqs={req})
         else:
             self.failed_error(error_msg, traceback_lines)
 
