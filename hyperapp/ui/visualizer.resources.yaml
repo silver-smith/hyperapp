@@ -1,13 +1,16 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:code_registry_ctr.service
 - builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:pyobj_creg.service
 - builtins:web.service
 - common.mark:mark.module
 - legacy_type.builtin:attribute
+- legacy_type.builtin:int
 - legacy_type.builtin:python_module
+- legacy_type.builtin:string
 - legacy_type.form:view
 - legacy_type.int_adapter:int_adapter
 - legacy_type.list:view
@@ -18,6 +21,7 @@ import:
 - legacy_type.model:tree_ui_t
 - legacy_type.record_adapter:fn_record_adapter
 - legacy_type.str_adapter:static_str_adapter
+- legacy_type.system:actor_template
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - legacy_type.text:edit_view
@@ -25,6 +29,18 @@ import:
 - legacy_type.tree_adapter:fn_index_tree_adapter
 - legacy_type.ui:model_view_layout_d
 definitions:
+  builtin_int.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.builtin:int
+      function: int_layout
+      service_params: []
+  builtin_string.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.builtin:string
+      function: string_layout
+      service_params: []
   get_custom_layout:
     type: legacy_type.builtin:attribute
     value:
@@ -41,6 +57,25 @@ definitions:
       free_params:
       - lcs
       - t
+  int_layout:
+    type: legacy_type.builtin:attribute
+    value:
+      object: visualizer.module
+      attr_name: int_layout
+  model_layout_creg:
+    type: legacy_type.builtin:attribute
+    value:
+      object: visualizer.module
+      attr_name: model_layout_creg
+  model_layout_creg.service:
+    type: legacy_type.system:service_template
+    value:
+      name: model_layout_creg
+      ctl: system-dict_config_ctl.ctl
+      function: model_layout_creg
+      service_params: []
+      want_config: true
+      free_params: []
   set_custom_layout:
     type: legacy_type.builtin:attribute
     value:
@@ -58,6 +93,11 @@ definitions:
       - lcs
       - t
       - layout
+  string_layout:
+    type: legacy_type.builtin:attribute
+    value:
+      object: visualizer.module
+      attr_name: string_layout
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}
@@ -87,6 +127,7 @@ definitions:
         htypes.tree.view: legacy_type.tree:view
         htypes.tree_adapter.fn_index_tree_adapter: legacy_type.tree_adapter:fn_index_tree_adapter
         htypes.ui.model_view_layout_d: legacy_type.ui:model_view_layout_d
+        services.code_registry_ctr: builtins:code_registry_ctr.service
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
@@ -98,12 +139,13 @@ definitions:
       ctl: system-dict_config_ctl.ctl
       function: visualizer
       service_params:
+      - model_layout_creg
       - visualizer_reg
       - get_custom_layout
       want_config: false
       free_params:
       - lcs
-      - value
+      - model
   visualizer_reg:
     type: legacy_type.builtin:attribute
     value:

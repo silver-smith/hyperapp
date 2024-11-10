@@ -1,9 +1,10 @@
 import logging
 
-from hyperapp.common.htypes import tInt, tString, TList
+from hyperapp.common.htypes import TList
 
 from . import htypes
 from .services import (
+    code_registry_ctr,
     deduce_t,
     mosaic,
     pyobj_creg,
@@ -14,21 +15,46 @@ from .code.mark import mark
 log = logging.getLogger(__name__)
 
 
+@mark.service
+def model_layout_creg(config):
+    return code_registry_ctr('model_layout_creg', config)
+
+
+@mark.actor.model_layout_creg
+def string_layout(model):
+    adapter = htypes.str_adapter.static_str_adapter()
+    return htypes.text.edit_view(mosaic.put(adapter))
+
+
+@mark.actor.model_layout_creg
+def int_layout(model):
+    adapter = htypes.int_adapter.int_adapter()
+    return htypes.text.edit_view(mosaic.put(adapter))
+
+
 def _primitive_value_layout(t):
-    if t is tString:
-        adapter = htypes.str_adapter.static_str_adapter()
-        return htypes.text.edit_view(mosaic.put(adapter))
-    if t is tInt:
-        adapter = htypes.int_adapter.int_adapter()
-        return htypes.text.edit_view(mosaic.put(adapter))
     if isinstance(t, TList):
         adapter = htypes.list_adapter.static_list_adapter()
         return htypes.list.view(mosaic.put(adapter))
-    return None
+    raise KeyError(t)
+
+
+@mark.service
+def visualizer_reg(config, t):
+    try:
+        model = config[t]
+    except KeyError:
+        raise
+    ui_t = web.summon(model.ui_t)
+    system_fn_ref = model.system_fn
+    return (ui_t, system_fn_ref)
 
 
 def _model_layout(visualizer_reg, t):
-    ui_t, system_fn_ref = visualizer_reg(t)
+    try:
+        ui_t, system_fn_ref = visualizer_reg(t)
+    except KeyError:
+        raise
 
     if isinstance(ui_t, htypes.model.list_ui_t):
         adapter = htypes.list_adapter.fn_list_adapter(
@@ -56,17 +82,6 @@ def _model_layout(visualizer_reg, t):
 
 
 @mark.service
-def visualizer_reg(config, t):
-    try:
-        model = config[t]
-    except KeyError:
-        raise KeyError(f"No implementation is registered for model: {t}")
-    ui_t = web.summon(model.ui_t)
-    system_fn_ref = model.system_fn
-    return (ui_t, system_fn_ref)
-
-
-@mark.service
 def get_custom_layout(lcs, t):
     t_res = pyobj_creg.actor_to_piece(t)
     d = {
@@ -88,16 +103,22 @@ def set_custom_layout(lcs, t, layout):
 
 
 @mark.service
-def visualizer(visualizer_reg, get_custom_layout, lcs, value):
-    t = deduce_t(value)
+def visualizer(model_layout_creg, visualizer_reg, get_custom_layout, lcs, model):
+    try:
+        return model_layout_creg.animate(model)
+    except KeyError:
+        pass
 
-    view = _primitive_value_layout(t)
+    model_t = deduce_t(model)
+
+    try:
+        return _primitive_value_layout(model_t)
+    except KeyError:
+        pass
+
+    view = get_custom_layout(lcs, model_t)
     if view is not None:
+        log.info("Using configured layout for %s: %s", model_t, view)
         return view
 
-    view = get_custom_layout(lcs, t)
-    if view is not None:
-        log.info("Using configured layout for %s: %s", t, view)
-        return view
-
-    return _model_layout(visualizer_reg, t)
+    return _model_layout(visualizer_reg, model_t)

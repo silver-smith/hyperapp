@@ -256,7 +256,10 @@ import:
 - ui.ui_model_command:set_ui_model_command.service
 - ui.view_registry:model_view_creg.service
 - ui.view_registry:view_creg.service
+- ui.visualizer:builtin_int.actor-template
+- ui.visualizer:builtin_string.actor-template
 - ui.visualizer:get_custom_layout.service
+- ui.visualizer:model_layout_creg.service
 - ui.visualizer:set_custom_layout.service
 - ui.visualizer:visualizer.service
 - ui.visualizer:visualizer_reg.service
@@ -304,6 +307,7 @@ definitions:
         marker_registry: marker_registry
         model_command_enumerator_reg: model_command_enumerator_reg
         model_command_reg: model_command_reg
+        model_layout_creg: model_layout_creg
         model_view_creg: model_view_creg
         parcel_registry: parcel_registry
         peer_registry: peer_registry
@@ -415,6 +419,12 @@ definitions:
       - ui.list_as_tree:list_as_tree_opener_commands_toggle_open_command.command-cfg-item
       - views.command_layout_context:global_commands_view_open_command_layout_context.command-cfg-item
       - views.command_layout_context:model_commands_view_open_command_layout_context.command-cfg-item
+  model_layout_creg:
+    type: legacy_type.system:item_list_config
+    value:
+      items:
+      - ui.visualizer:builtin_int.actor-template
+      - ui.visualizer:builtin_string.actor-template
   model_view_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -605,6 +615,7 @@ definitions:
       - ui.view_registry:model_view_creg.service
       - ui.view_registry:view_creg.service
       - ui.visualizer:get_custom_layout.service
+      - ui.visualizer:model_layout_creg.service
       - ui.visualizer:set_custom_layout.service
       - ui.visualizer:visualizer.service
       - ui.visualizer:visualizer_reg.service

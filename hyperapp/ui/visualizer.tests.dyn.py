@@ -1,12 +1,14 @@
 from unittest.mock import Mock
 
+from hyperapp.common.htypes import tString, tInt
+
 from . import htypes
 from .services import (
     mosaic,
     pyobj_creg,
     )
 from .code.mark import mark
-from .tested.code import visualizer as tested_module
+from .tested.code import visualizer as visualizer_module
 
 
 @mark.fixture
@@ -15,6 +17,29 @@ def lcs():
     # Fall thru to default layout.
     lcs.get.return_value = None
     return lcs
+
+
+@mark.config_fixture('model_layout_creg')
+def model_layout_creg_config():
+    return {
+        tString: visualizer_module.string_layout,
+        tInt: visualizer_module.int_layout,
+        }
+
+
+def test_model_layout_creg(model_layout_creg):
+    layout = model_layout_creg.animate("Some string")
+    assert isinstance(layout, htypes.text.edit_view)
+
+
+def test_string_layout():
+    layout = visualizer_module.string_layout("<unused>")
+    assert isinstance(layout, htypes.text.edit_view)
+
+
+def test_int_layout():
+    layout = visualizer_module.int_layout(12345)
+    assert isinstance(layout, htypes.text.edit_view)
 
 
 def test_string(visualizer, lcs):
