@@ -60,7 +60,6 @@ def _model_layout(visualizer_reg, ui_type_creg, t):
         ui_t, system_fn_ref = visualizer_reg(t)
     except KeyError:
         raise
-
     return ui_type_creg.animate(ui_t, system_fn_ref)
 
 
@@ -91,17 +90,13 @@ def visualizer(model_layout_creg, visualizer_reg, ui_type_creg, get_custom_layou
         return model_layout_creg.animate(model)
     except KeyError:
         pass
-
     model_t = deduce_t(model)
-
     try:
         return _primitive_value_layout(model_t)
     except KeyError:
         pass
-
     view = get_custom_layout(lcs, model_t)
     if view is not None:
         log.info("Using configured layout for %s: %s", model_t, view)
         return view
-
     return _model_layout(visualizer_reg, ui_type_creg, model_t)
