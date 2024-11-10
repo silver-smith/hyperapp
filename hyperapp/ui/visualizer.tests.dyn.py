@@ -8,6 +8,7 @@ from .services import (
     pyobj_creg,
     )
 from .code.mark import mark
+from .code.fn_list_adapter import list_ui_type_layout
 from .tested.code import visualizer as visualizer_module
 
 
@@ -81,23 +82,13 @@ def visualizer_config():
                 ),
             system_fn=mosaic.put(system_fn),
             ),
-        htypes.visualizer_tests.sample_tree: htypes.model.model(
-            ui_t=mosaic.put(
-                htypes.model.tree_ui_t(
-                    # key_t=pyobj_creg.actor_to_ref(htypes.visualizer_tests.sample_tree_key),
-                    item_t=pyobj_creg.actor_to_ref(htypes.visualizer_tests.sample_tree_item),
-                    ),
-                ),
-            system_fn=mosaic.put(system_fn),
-            ),
-        htypes.visualizer_tests.sample_record: htypes.model.model(
-            ui_t=mosaic.put(
-                htypes.model.record_ui_t(
-                    record_t=pyobj_creg.actor_to_ref(htypes.visualizer_tests.sample_record_item),
-                    ),
-                ),
-            system_fn=mosaic.put(system_fn),
-            ),
+        }
+
+
+@mark.config_fixture('ui_type_creg')
+def ui_type_creg_config():
+    return {
+        htypes.model.list_ui_t: list_ui_type_layout,
         }
 
 
@@ -105,18 +96,6 @@ def test_sample_list(visualizer, lcs):
     piece = htypes.visualizer_tests.sample_list()
     layout = visualizer(lcs, piece)
     assert isinstance(layout, htypes.list.view)
-
-
-def test_sample_tree(visualizer, lcs):
-    piece = htypes.visualizer_tests.sample_tree()
-    layout = visualizer(lcs, piece)
-    assert isinstance(layout, htypes.tree.view)
-
-
-def test_sample_record(visualizer, lcs):
-    piece = htypes.visualizer_tests.sample_record()
-    layout = visualizer(lcs, piece)
-    assert isinstance(layout, htypes.form.view)
 
 
 def test_set_custom_layout(set_custom_layout, lcs):

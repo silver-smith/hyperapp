@@ -163,3 +163,17 @@ def test_fn_adapter_with_remote_context(
             servant_ref=pyobj_creg.actor_to_ref(get_fn_called_flag),
             )
         assert get_fn_called_flag_call()
+
+
+def test_list_ui_type_layout():
+    system_fn = htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(sample_list_fn),
+        ctx_params=(),
+        service_params=(),
+        )
+    system_fn_ref = mosaic.put(system_fn)
+    piece = htypes.model.list_ui_t(
+        item_t=pyobj_creg.actor_to_ref(htypes.fn_list_adapter_tests.sample_item),
+        )
+    layout = fn_list_adapter.list_ui_type_layout(piece, system_fn_ref)
+    assert isinstance(layout, htypes.list.view)

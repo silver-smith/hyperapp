@@ -11,22 +11,14 @@ import:
 - legacy_type.builtin:int
 - legacy_type.builtin:python_module
 - legacy_type.builtin:string
-- legacy_type.form:view
 - legacy_type.int_adapter:int_adapter
 - legacy_type.list:view
-- legacy_type.list_adapter:fn_list_adapter
 - legacy_type.list_adapter:static_list_adapter
-- legacy_type.model:list_ui_t
-- legacy_type.model:record_ui_t
-- legacy_type.model:tree_ui_t
-- legacy_type.record_adapter:fn_record_adapter
 - legacy_type.str_adapter:static_str_adapter
 - legacy_type.system:actor_template
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - legacy_type.text:edit_view
-- legacy_type.tree:view
-- legacy_type.tree_adapter:fn_index_tree_adapter
 - legacy_type.ui:model_view_layout_d
 definitions:
   builtin_int.actor-template:
@@ -101,6 +93,20 @@ definitions:
   system-dict_config_ctl.ctl:
     type: legacy_type.system:dict_config_ctl
     value: {}
+  ui_type_creg:
+    type: legacy_type.builtin:attribute
+    value:
+      object: visualizer.module
+      attr_name: ui_type_creg
+  ui_type_creg.service:
+    type: legacy_type.system:service_template
+    value:
+      name: ui_type_creg
+      ctl: system-dict_config_ctl.ctl
+      function: ui_type_creg
+      service_params: []
+      want_config: true
+      free_params: []
   visualizer:
     type: legacy_type.builtin:attribute
     value:
@@ -113,19 +119,11 @@ definitions:
       file_name: visualizer.dyn.py
       import_list:
         code.mark: common.mark:mark.module
-        htypes.form.view: legacy_type.form:view
         htypes.int_adapter.int_adapter: legacy_type.int_adapter:int_adapter
         htypes.list.view: legacy_type.list:view
-        htypes.list_adapter.fn_list_adapter: legacy_type.list_adapter:fn_list_adapter
         htypes.list_adapter.static_list_adapter: legacy_type.list_adapter:static_list_adapter
-        htypes.model.list_ui_t: legacy_type.model:list_ui_t
-        htypes.model.record_ui_t: legacy_type.model:record_ui_t
-        htypes.model.tree_ui_t: legacy_type.model:tree_ui_t
-        htypes.record_adapter.fn_record_adapter: legacy_type.record_adapter:fn_record_adapter
         htypes.str_adapter.static_str_adapter: legacy_type.str_adapter:static_str_adapter
         htypes.text.edit_view: legacy_type.text:edit_view
-        htypes.tree.view: legacy_type.tree:view
-        htypes.tree_adapter.fn_index_tree_adapter: legacy_type.tree_adapter:fn_index_tree_adapter
         htypes.ui.model_view_layout_d: legacy_type.ui:model_view_layout_d
         services.code_registry_ctr: builtins:code_registry_ctr.service
         services.deduce_t: builtins:deduce_t.service
@@ -141,6 +139,7 @@ definitions:
       service_params:
       - model_layout_creg
       - visualizer_reg
+      - ui_type_creg
       - get_custom_layout
       want_config: false
       free_params:

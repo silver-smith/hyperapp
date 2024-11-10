@@ -36,3 +36,17 @@ def test_fn_adapter():
     assert adapter.record_t == htypes.record_adapter_tests.item
     assert adapter.get_field('id') == 123
     assert adapter.get_field('text') == "Sample item"
+
+
+def test_record_ui_type_layout():
+    system_fn = htypes.system_fn.ctx_fn(
+        function=pyobj_creg.actor_to_ref(_sample_record_fn),
+        ctx_params=(),
+        service_params=(),
+        )
+    system_fn_ref = mosaic.put(system_fn)
+    piece = htypes.model.record_ui_t(
+        record_t=pyobj_creg.actor_to_ref(htypes.record_adapter_tests.item),
+        )
+    layout = record_adapter.record_ui_type_layout(piece, system_fn_ref)
+    assert isinstance(layout, htypes.form.view)

@@ -50,35 +50,18 @@ def visualizer_reg(config, t):
     return (ui_t, system_fn_ref)
 
 
-def _model_layout(visualizer_reg, t):
+@mark.service
+def ui_type_creg(config):
+    return code_registry_ctr('ui_type_creg', config)
+
+
+def _model_layout(visualizer_reg, ui_type_creg, t):
     try:
         ui_t, system_fn_ref = visualizer_reg(t)
     except KeyError:
         raise
 
-    if isinstance(ui_t, htypes.model.list_ui_t):
-        adapter = htypes.list_adapter.fn_list_adapter(
-            item_t=ui_t.item_t,
-            system_fn=system_fn_ref,
-            )
-        return htypes.list.view(mosaic.put(adapter))
-
-    if isinstance(ui_t, htypes.model.tree_ui_t):
-        adapter = htypes.tree_adapter.fn_index_tree_adapter(
-            item_t=ui_t.item_t,
-            # key_t=ui_t.key_t,
-            system_fn=system_fn_ref,
-            )
-        return htypes.tree.view(mosaic.put(adapter))
-
-    if isinstance(ui_t, htypes.model.record_ui_t):
-        adapter = htypes.record_adapter.fn_record_adapter(
-            record_t=ui_t.record_t,
-            system_fn=system_fn_ref,
-            )
-        return htypes.form.view(mosaic.put(adapter))
-
-    raise NotImplementedError(f"Not supported model: {ui_t} / {impl}")
+    return ui_type_creg.animate(ui_t, system_fn_ref)
 
 
 @mark.service
@@ -103,7 +86,7 @@ def set_custom_layout(lcs, t, layout):
 
 
 @mark.service
-def visualizer(model_layout_creg, visualizer_reg, get_custom_layout, lcs, model):
+def visualizer(model_layout_creg, visualizer_reg, ui_type_creg, get_custom_layout, lcs, model):
     try:
         return model_layout_creg.animate(model)
     except KeyError:
@@ -121,4 +104,4 @@ def visualizer(model_layout_creg, visualizer_reg, get_custom_layout, lcs, model)
         log.info("Using configured layout for %s: %s", model_t, view)
         return view
 
-    return _model_layout(visualizer_reg, model_t)
+    return _model_layout(visualizer_reg, ui_type_creg, model_t)

@@ -1,7 +1,9 @@
 import logging
 import weakref
 
+from . import htypes
 from .services import (
+    mosaic,
     pyobj_creg,
     )
 from .code.mark import mark
@@ -64,3 +66,11 @@ class FnRecordAdapter:
     def _call_fn(self, **kw):
         return self._ctx_fn.call(self._ctx, **kw)
 
+
+@mark.actor.ui_type_creg
+def record_ui_type_layout(piece, system_fn_ref):
+    adapter = htypes.record_adapter.fn_record_adapter(
+        record_t=piece.record_t,
+        system_fn=system_fn_ref,
+        )
+    return htypes.form.view(mosaic.put(adapter))

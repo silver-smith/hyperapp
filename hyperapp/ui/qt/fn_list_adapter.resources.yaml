@@ -1,11 +1,14 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:mosaic.service
 - builtins:pyobj_creg.service
 - common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
+- legacy_type.list:view
 - legacy_type.list_adapter:fn_list_adapter
+- legacy_type.model:list_ui_t
 - legacy_type.system:actor_template
 - ui.qt.list_adapter:list_adapter.module
 definitions:
@@ -27,7 +30,9 @@ definitions:
       import_list:
         code.list_adapter: ui.qt.list_adapter:list_adapter.module
         code.mark: common.mark:mark.module
+        htypes.list.view: legacy_type.list:view
         htypes.list_adapter.fn_list_adapter: legacy_type.list_adapter:fn_list_adapter
+        services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
   list_adapter_fn_list_adapter.actor-template:
     type: legacy_type.system:actor_template
@@ -38,3 +43,14 @@ definitions:
       - system_fn_creg
       - rpc_call_factory
       - feed_factory
+  list_ui_type_layout:
+    type: legacy_type.builtin:attribute
+    value:
+      object: fn_list_adapter.module
+      attr_name: list_ui_type_layout
+  model_list_ui_t.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.model:list_ui_t
+      function: list_ui_type_layout
+      service_params: []

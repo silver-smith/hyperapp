@@ -2,6 +2,7 @@ import logging
 
 from . import htypes
 from .services import (
+    mosaic,
     pyobj_creg,
     )
 from .code.mark import mark
@@ -43,3 +44,12 @@ class FnListAdapter(FnListAdapterBase):
                 )
             return rpc_call()
         return self._fn.call(self._ctx, **kw)
+
+
+@mark.actor.ui_type_creg
+def list_ui_type_layout(piece, system_fn_ref):
+    adapter = htypes.list_adapter.fn_list_adapter(
+        item_t=piece.item_t,
+        system_fn=system_fn_ref,
+        )
+    return htypes.list.view(mosaic.put(adapter))

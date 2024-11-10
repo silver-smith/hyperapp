@@ -1,5 +1,6 @@
 from . import htypes
 from .services import (
+    mosaic,
     pyobj_creg,
     )
 from .code.mark import mark
@@ -35,3 +36,13 @@ class FnIndexTreeAdapter(FnIndexTreeAdapterBase):
                 )
             return rpc_call()
         return self._fn.call(self._ctx, **kw)
+
+
+@mark.actor.ui_type_creg
+def tree_ui_type_layout(piece, system_fn_ref):
+    adapter = htypes.tree_adapter.fn_index_tree_adapter(
+        item_t=piece.item_t,
+        # key_t=ui_t.key_t,
+        system_fn=system_fn_ref,
+        )
+    return htypes.tree.view(mosaic.put(adapter))
