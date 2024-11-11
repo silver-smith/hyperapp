@@ -72,9 +72,9 @@ class JobCache:
             deps[req] = set(res_list)
         return deps
 
-    def put(self, target_factory, target, src, requirements, result):
+    def put(self, target_factory, target_name, src, requirements, result):
         deps = self._resolve_requirements(target_factory, requirements)
-        entry = CacheEntry(target.name, src, deps, result)
+        entry = CacheEntry(target_name, src, deps, result)
         self._target_to_entry[entry.target_name] = entry
 
     def save(self):

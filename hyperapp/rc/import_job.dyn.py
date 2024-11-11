@@ -63,9 +63,8 @@ class SucceededImportResult(SystemJobResult):
             constructors=tuple(mosaic.put(ctr.piece) for ctr in self._constructors),
             )
 
-    @property
-    def should_cache(self):
-        return True
+    def cache_target_name(self, my_target):
+        return my_target.import_tgt.name
 
     @property
     def used_reqs(self):

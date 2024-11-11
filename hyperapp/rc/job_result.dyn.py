@@ -10,9 +10,8 @@ class JobResult:
     def desc(self):
         return self.status.name
 
-    @property
-    def should_cache(self):
-        return False
+    def cache_target_name(self, my_target):
+        return None
 
     @property
     def used_reqs(self):

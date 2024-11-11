@@ -112,7 +112,6 @@ def _run(rc_job_result_creg, pool, job_cache, target_set, filter, options):
     def _handle_result(job, result_piece):
         target = job_id_to_target[id(job)]
         result = rc_job_result_creg.animate(result_piece)
-        # job_cache.put(target, job, result_piece)
         rc_log.info("%s: %s", target.name, result.desc)
         if result.status == JobStatus.failed:
             failures[target] = result
@@ -122,8 +121,9 @@ def _run(rc_job_result_creg, pool, job_cache, target_set, filter, options):
             target.handle_job_result(target_set, result)
         if result.status == JobStatus.incomplete:
             incomplete[target] = result
-        if result.should_cache:
-            job_cache.put(target_set.factory, target, target.src, result.used_reqs, result)
+        cache_target_name = result.cache_target_name(target)
+        if cache_target_name:
+            job_cache.put(target_set.factory, cache_target_name, target.src, result.used_reqs, result)
 
     while should_run:
         _submit_jobs(rc_job_result_creg, options, pool, target_set, target_to_job, job_id_to_target, filter)
