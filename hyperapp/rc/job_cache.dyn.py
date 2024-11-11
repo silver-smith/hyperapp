@@ -23,9 +23,9 @@ class CacheEntry:
 
     def __init__(self, target_name, src, deps, result):
         self.target_name = target_name
-        self._src = src
-        self._deps = deps
-        self._result = result
+        self.src = src
+        self.deps = deps
+        self.result = result
 
     @property
     def piece(self):
@@ -37,13 +37,13 @@ class CacheEntry:
                     for res in resource_set
                     )
                 )
-            for req, resource_set in self._deps.items()
+            for req, resource_set in self.deps.items()
             ]
         return htypes.job_cache.entry(
             target_name=self.target_name,
-            src=self._src.piece,
+            src=self.src.piece,
             deps=tuple(deps),
-            job_result=mosaic.put(self._result.piece),
+            job_result=mosaic.put(self.result.piece),
             )
 
             

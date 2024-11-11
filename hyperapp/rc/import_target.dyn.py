@@ -43,6 +43,61 @@ class AllImportsKnownTarget(Target):
         self._init_completed = True
 
 
+class ImportCachedTarget(Target):
+
+    def __init__(self, target_set, types, config_tgt, import_tgt, all_imports_known_tgt, src, deps, req_to_target):
+        self._target_set = target_set
+        self._types = types
+        self._config_tgt = config_tgt
+        self._import_tgt = import_tgt
+        self._all_imports_known_tgt = all_imports_known_tgt
+        self._src = src
+        self._deps = deps  # requirement -> resource set
+        self._req_to_target = req_to_target
+        self._completed = False
+        self._ready = False
+
+    @property
+    def name(self):
+        return f'import/{self._src.name}/cached'
+
+    @property
+    def completed(self):
+        return self._completed
+
+    @property
+    def deps(self):
+        return set(self._req_to_target.values())
+
+    def update_status(self):
+        if self._completed:
+            return
+        if all(target.completed for target in self._req_to_target.values()):
+            self._check_deps()
+            self._completed = True
+
+    def _check_deps(self):
+        for req, target in self._req_to_target.items():
+            dep_resources = self._deps[req]
+            actual_resources = set(req.make_resource_list(target))
+            if actual_resources != dep_resources:
+                self._create_job_target()
+                return
+        self._set_done()
+
+    def _create_job_target(self):
+        target = ImportJobTarget(self._target_set, self._types, self._config_tgt, self._import_tgt, self._src, req_to_target=self._req_to_target)
+        self._target_set.add(target)
+        self._import_tgt.set_job_target(target)
+        self._all_imports_known_tgt.add_import_target(target)
+        self._target_set.update_deps_for(self._import_tgt)
+        self._target_set.update_deps_for(self._all_imports_known_tgt)
+        return target
+
+    def _set_done(self):
+        assert 0, self
+
+
 class ImportJobTarget(Target):
 
     def __init__(self, target_set, types, config_tgt, import_tgt, src, idx=1, req_to_target=None):
@@ -124,12 +179,13 @@ class ImportTarget(Target):
     def name_for_src(python_module_src):
         return f'import/{python_module_src.name}'
 
-    def __init__(self, cache, target_set, custom_resource_registry, types, config_tgt, python_module_src):
+    def __init__(self, cache, target_set, custom_resource_registry, types, config_tgt, all_imports_known_tgt, python_module_src):
         self._cache = cache
         self._target_set = target_set
         self._custom_resource_registry = custom_resource_registry
         self._types = types
         self._config_tgt = config_tgt
+        self._all_imports_known_tgt = all_imports_known_tgt
         self._src = python_module_src
         self._current_job_target = None
         self._completed = False
@@ -153,20 +209,42 @@ class ImportTarget(Target):
         if self._got_requirements:
             self._completed = all(target.completed for target in self.deps)
 
-    def check_cache(self, all_imports_known_tgt):
+    def check_cache(self):
         try:
             entry = self._cache[self.name]
         except KeyError:
             pass
         else:
-            assert 0, entry
-        self._current_job_target = target = self._create_job_target()
-        self._target_set.add(target)
-        all_imports_known_tgt.add_import_target(target)
+            if entry.src == self._src:
+                self._create_cache_target(entry)
+                return
+        self._create_job_target()
 
     def _create_job_target(self):
-        return ImportJobTarget(self._target_set, self._types, self._config_tgt, self, self._src, idx=1)
-            
+        target = ImportJobTarget(self._target_set, self._types, self._config_tgt, self, self._src, idx=1)
+        self._init_current_job_target(target)
+
+    def _create_cache_target(self, entry):
+        req_to_target = self._resolve_requirements(entry.deps.keys())
+        target = ImportCachedTarget(
+            self._target_set, self._types, self._config_tgt, self._all_imports_known_tgt,
+            self, self._src, entry.deps, req_to_target)
+        self._init_current_job_target(target)
+
+    def _resolve_requirements(self, requirements):
+        req_to_target = {}
+        for req in requirements:
+            target = req.get_target(self._target_set.factory)
+            req_to_target[req] = target
+        return req_to_target
+
+    def _init_current_job_target(self, target):
+        self._current_job_target = target
+        self._target_set.add(target)
+        self._all_imports_known_tgt.add_import_target(target)
+        self._target_set.update_deps_for(self._all_imports_known_tgt)
+        target.update_status()
+
     @property
     def module_name(self):
         return self._src.name
@@ -182,9 +260,9 @@ class ImportTarget(Target):
         self._got_requirements = True
         self.update_status()
 
-    def create_resource_target(self, resource_dir, all_imports_known_tgt):
+    def create_resource_target(self, resource_dir):
         return CompiledPythonModuleResourceTarget(
-            self._src, self._custom_resource_registry, resource_dir, self._types, all_imports_known_tgt, self)
+            self._src, self._custom_resource_registry, resource_dir, self._types, self._all_imports_known_tgt, self)
 
     @cached_property
     def recorded_python_module(self):

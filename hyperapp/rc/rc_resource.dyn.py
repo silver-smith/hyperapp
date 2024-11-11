@@ -1,5 +1,8 @@
 class Resource:
 
+    def __eq__(self, rhs):
+        raise NotImplementedError()
+
     # System resources should be applied first.
     @property
     def is_system_resource(self):

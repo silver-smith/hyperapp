@@ -18,6 +18,13 @@ class ConfigFixtureResource(Resource):
         self._function = function  # piece
         self._service_params = service_params
 
+    def __eq__(self, rhs):
+        return (
+            self._service_name == rhs._service_name
+            and self._function == rhs._function
+            and self._service_params == rhs._service_params
+            )
+
     @property
     def piece(self):
         return htypes.fixture_resource.config_fixture_resource(

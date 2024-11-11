@@ -127,8 +127,7 @@ class TargetFactory:
         except KeyError:
             pass
         import_target = self.python_module_imported_by_src(src)
-        all_imports_known_tgt = self.all_imports_known()
-        target = import_target.create_resource_target(self._target_set._resource_dir, all_imports_known_tgt)
+        target = import_target.create_resource_target(self._target_set._resource_dir)
         return self._target_set.add_or_get(target)
 
     def all_imports_known(self):

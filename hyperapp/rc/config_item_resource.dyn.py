@@ -16,6 +16,15 @@ class ConfigItemResourceBase(Resource):
         self._service_name = service_name
         self._template_ref = template_ref
 
+    def __eq__(self, rhs):
+        return (
+            self._service_name == rhs._service_name
+            and self._template_ref == rhs._template_ref
+            )
+
+    def __hash__(self):
+        return hash(('config-item-resource', self._service_name, self._template_ref))
+
     @property
     def is_system_resource(self):
         return self._service_name in {'config_ctl_creg', 'cfg_item_creg'}

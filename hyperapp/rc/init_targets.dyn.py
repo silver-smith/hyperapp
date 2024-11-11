@@ -45,6 +45,7 @@ def init_targets(config_ctl, ctr_from_template_creg, system_config_template, roo
     target_set.add(all_imports_known_tgt)
     config_tgt = ConfigResourceTarget(custom_resource_registry, resource_dir=root_dir, module_name='config', path='config.resources.yaml')
     target_set.add(config_tgt)
+    import_target_list = []
     for src in build.python_modules:
         try:
             resource_text = root_dir.joinpath(src.resource_path).read_text()
@@ -57,9 +58,11 @@ def init_targets(config_ctl, ctr_from_template_creg, system_config_template, roo
                     src, custom_resource_registry, resource_dir, resource_text)
                 target_set.add(resource_tgt)
                 continue
-        import_tgt = ImportTarget(cache, target_set, custom_resource_registry, build.types, config_tgt, src)
-        import_tgt.check_cache(all_imports_known_tgt)
+        import_tgt = ImportTarget(cache, target_set, custom_resource_registry, build.types, config_tgt, all_imports_known_tgt, src)
         target_set.add(import_tgt)
+        import_target_list.append(import_tgt)
+    for import_tgt in import_target_list:
+        import_tgt.check_cache()
     all_imports_known_tgt.init_completed()
     target_set.update_deps_for(all_imports_known_tgt)
     add_core_items(config_ctl, ctr_from_template_creg, system_config_template, target_set)

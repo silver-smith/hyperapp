@@ -21,6 +21,15 @@ class ImportResource(Resource):
         self._import_name = import_name
         self._resource = resource
 
+    def __eq__(self, rhs):
+        return (
+            self._import_name == rhs._import_name
+            and self._resource == rhs._resource
+            )
+
+    def __hash__(self):
+        return hash(('import-resource', self._import_name, self._resource))
+
     @property
     def piece(self):
         return htypes.import_resource.import_resource(
