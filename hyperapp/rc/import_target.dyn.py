@@ -3,7 +3,6 @@ from functools import cached_property
 from hyperapp.common.util import flatten
 
 from .code.rc_target import Target
-from .code.rc_constants import JobStatus
 from .code.builtin_resources import enum_builtin_resources
 from .code.import_resource import ImportResource
 from .code.import_job import ImportJob
