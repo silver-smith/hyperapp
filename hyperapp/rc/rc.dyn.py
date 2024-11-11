@@ -14,12 +14,16 @@ from .services import (
 from .code.reconstructors import register_reconstructors
 from .code.rc_constants import JobStatus
 from .code.build import load_build
+from .code.job_cache import JobCache
 from .code.target_set import TargetSet
 from .code.init_targets import init_targets
 from .code.rc_filter import Filter
 
 log = logging.getLogger(__name__)
 rc_log = logging.getLogger('rc')
+
+
+JOB_CACHE_PATH = Path.home() / '.local/share/hyperapp/rc-job-cache.cdr'
 
 
 Options = namedtuple('Options', 'clean timeout verbose fail_fast write show_diffs show_incomplete_traces')
@@ -79,8 +83,7 @@ def _collect_output(target_set, failures, options):
     return (total, changed)
 
 
-def _submit_jobs(rc_job_result_creg, options, pool, job_cache, target_set, target_to_job, job_id_to_target, filter):
-    job_result_list = []
+def _submit_jobs(rc_job_result_creg, options, pool, target_set, target_to_job, job_id_to_target, filter):
     for target in target_set.iter_ready():
         if target in target_to_job:
             continue  # Already submitted.
@@ -93,14 +96,8 @@ def _submit_jobs(rc_job_result_creg, options, pool, job_cache, target_set, targe
             raise RuntimeError(f"For {target.name}: {x}") from x
         target_to_job[target] = job
         job_id_to_target[id(job)] = target
-        if not options.clean:
-            result_piece = job_cache.get(target, job)
-            if result_piece:
-                job_result_list.append((job, result_piece))
-                continue
         rc_log.debug("Submit %s (in queue: %d)", target.name, pool.queue_size)
         pool.submit(job)
-    return job_result_list
 
 
 def _run(rc_job_result_creg, pool, job_cache, target_set, filter, options):
@@ -112,12 +109,11 @@ def _run(rc_job_result_creg, pool, job_cache, target_set, filter, options):
     cached_count = 0
     should_run = True
 
-    def _handle_result(job, result_piece, is_cached):
+    def _handle_result(job, result_piece):
         target = job_id_to_target[id(job)]
         result = rc_job_result_creg.animate(result_piece)
-        if not is_cached:
-            job_cache.put(target, job, result_piece)
-        rc_log.info("%s: %s%s", target.name, result.desc, ' (cached)' if is_cached else '')
+        # job_cache.put(target, job, result_piece)
+        rc_log.info("%s: %s", target.name, result.desc)
         if result.status == JobStatus.failed:
             failures[target] = result
             if options.fail_fast:
@@ -128,16 +124,13 @@ def _run(rc_job_result_creg, pool, job_cache, target_set, filter, options):
             incomplete[target] = result
 
     while should_run:
-        cached_job_result_list = _submit_jobs(rc_job_result_creg, options, pool, job_cache, target_set, target_to_job, job_id_to_target, filter)
-        cached_count += len(cached_job_result_list)
-        if not cached_job_result_list and pool.job_count == 0:
+        _submit_jobs(rc_job_result_creg, options, pool, target_set, target_to_job, job_id_to_target, filter)
+        if pool.job_count == 0:
             rc_log.info("Not all targets are completed, but there are no jobs\n")
             break
         prev_completed = set(target_set.iter_completed())
-        for job, result_piece in cached_job_result_list:
-            _handle_result(job, result_piece, is_cached=True)
         for job, result_piece in pool.iter_completed(options.timeout):
-            _handle_result(job, result_piece, is_cached=False)
+            _handle_result(job, result_piece)
             if not should_run:
                 break
         _update_completed(target_set, prev_completed)
@@ -215,13 +208,14 @@ def _parse_args(sys_argv):
     )
 
 
-def compile_resources(system_config_template, config_ctl, ctr_from_template_creg, file_bundle, rc_job_result_creg, pool, targets, options):
-    build = load_build(file_bundle, hyperapp_dir)
+def compile_resources(system_config_template, config_ctl, ctr_from_template_creg, rc_job_result_creg, job_cache, pool, targets, options):
+    job_cache = job_cache(JOB_CACHE_PATH, load=not options.clean)
+    build = load_build(hyperapp_dir, job_cache)
     log.info("Loaded build:")
     build.report()
 
     target_set = TargetSet(hyperapp_dir, build.python_modules)
-    init_targets(config_ctl, ctr_from_template_creg, system_config_template, hyperapp_dir, target_set, build)
+    init_targets(config_ctl, ctr_from_template_creg, system_config_template, hyperapp_dir, job_cache, target_set, build)
     filter = Filter(target_set, targets)
     try:
         _run(rc_job_result_creg, pool, build.job_cache, target_set, filter, options)

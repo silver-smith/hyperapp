@@ -1,7 +1,7 @@
 from collections import defaultdict
 from operator import attrgetter
 
-from .code.import_target import AllImportsKnownTarget, ImportTargetAlias
+from .code.import_target import AllImportsKnownTarget, ImportTarget
 from .code.python_module_resource_target import PythonModuleResourceTarget
 from .code.builtin_service_target import BuiltinServiceTarget
 from .code.config_item_target import ConfigItemReadyTarget, ConfigItemResolvedTarget, ConfigItemCompleteTarget
@@ -135,7 +135,7 @@ class TargetFactory:
         return self._target_set[AllImportsKnownTarget.name]
 
     def python_module_imported_by_src(self, src):
-        target_name = ImportTargetAlias.name_for_src(src)
+        target_name = ImportTarget.name_for_src(src)
         return self._target_set[target_name]
 
     def python_module_imported_by_code_name(self, code_name):

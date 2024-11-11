@@ -90,8 +90,8 @@ class FixturesModuleReq(Requirement):
     def is_test_requirement(self):
         return True
 
-    def update_tested_target(self, import_target, test_target, target_set):
-        test_target.add_fixtures_import(import_target.alias)
+    def update_tested_target(self, import_job_target, test_target, target_set):
+        test_target.add_fixtures_import(import_job_target.import_tgt)
         target_set.update_deps_for(test_target)
 
     def make_resource_list(self, target):

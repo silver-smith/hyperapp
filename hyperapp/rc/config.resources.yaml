@@ -47,6 +47,7 @@ import:
 - rc.fixture_resource:fixture_resource_config_fixture_resource.actor-template
 - rc.fixture_probe:fixture_resource_fixture_obj_template.actor-template
 - rc.fixture_probe:fixture_resource_fixture_probe_template.actor-template
+- rc.job_cache:job_cache.service
 - rc.marker_ctr:marker_marker_template.actor-template
 - rc.marker_registry:marker_marker_template.actor-template
 - rc.marker_registry:marker_registry.service
@@ -138,6 +139,7 @@ definitions:
       - system.system_stop:system_failed.service
       - rc.ctr_collector:ctr_collector.service
       - rc.init_targets:ctr_from_template_creg.service
+      - rc.job_cache:job_cache.service
       - rc.marker_registry:marker_registry.service
       - rc.rc_constructor_creg:rc_constructor_creg.service
       - rc.rc_job:rc_job_submit_factory.service

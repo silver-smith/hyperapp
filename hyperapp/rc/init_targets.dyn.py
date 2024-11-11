@@ -10,7 +10,6 @@ from .code.custom_resource_registry import create_custom_resource_registry
 from .code.python_module_resource_target import ManualPythonModuleResourceTarget
 from .code.import_target import (
     AllImportsKnownTarget,
-    ImportTargetAlias,
     ImportTarget,
     )
 from .code.config_resource_target import ConfigResourceTarget
@@ -40,7 +39,7 @@ def add_core_items(config_ctl, ctr_from_template_creg, system_config_template, t
             complete_tgt.update_status()
 
 
-def init_targets(config_ctl, ctr_from_template_creg, system_config_template, root_dir, target_set, build):
+def init_targets(config_ctl, ctr_from_template_creg, system_config_template, root_dir, cache, target_set, build):
     custom_resource_registry = create_custom_resource_registry(build)
     all_imports_known_tgt = AllImportsKnownTarget()
     target_set.add(all_imports_known_tgt)
@@ -58,12 +57,9 @@ def init_targets(config_ctl, ctr_from_template_creg, system_config_template, roo
                     src, custom_resource_registry, resource_dir, resource_text)
                 target_set.add(resource_tgt)
                 continue
-        alias_tgt = ImportTargetAlias(src, custom_resource_registry, build.types)
-        import_tgt = ImportTarget(target_set, src, build.types, alias_tgt, config_tgt)
-        alias_tgt.set_import_target(import_tgt)
-        all_imports_known_tgt.add_import_target(import_tgt)
+        import_tgt = ImportTarget(cache, target_set, custom_resource_registry, build.types, config_tgt, src)
+        import_tgt.check_cache(all_imports_known_tgt)
         target_set.add(import_tgt)
-        target_set.add(alias_tgt)
     all_imports_known_tgt.init_completed()
     target_set.update_deps_for(all_imports_known_tgt)
     add_core_items(config_ctl, ctr_from_template_creg, system_config_template, target_set)

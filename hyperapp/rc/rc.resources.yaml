@@ -7,6 +7,7 @@ import:
 - legacy_type.system:service_template
 - common.reconstructors:reconstructors.module
 - rc.build:build.module
+- rc.job_cache:job_cache.module
 - rc.rc_constants:rc_constants.module
 - rc.rc_filter:rc_filter.module
 - rc.init_targets:init_targets.module
@@ -27,6 +28,7 @@ definitions:
         services.web: builtins:web.service
         code.build: rc.build:build.module
         code.init_targets: rc.init_targets:init_targets.module
+        code.job_cache: rc.job_cache:job_cache.module
         code.reconstructors: common.reconstructors:reconstructors.module
         code.rc_constants: rc.rc_constants:rc_constants.module
         code.rc_filter: rc.rc_filter:rc_filter.module
@@ -52,8 +54,8 @@ definitions:
       - system_config_template
       - config_ctl
       - ctr_from_template_creg
-      - file_bundle
       - rc_job_result_creg
+      - job_cache
       want_config: false
 
   rc_main:

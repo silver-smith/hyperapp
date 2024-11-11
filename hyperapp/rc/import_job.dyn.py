@@ -56,11 +56,11 @@ class SucceededImportResult(SystemJobResult):
             self._add_tests(my_target, target_set, req_to_target)
         elif not self._is_fixtures:
             self._update_resource(my_target, target_set, req_to_target)
-        my_target.set_alias_requirements(req_to_target)
-        target_set.update_deps_for(my_target.alias)
+        my_target.set_requirements(req_to_target)
+        target_set.update_deps_for(my_target.import_tgt)
 
     def _update_fixtures_targets(self, my_target, target_set):
-        import_alias_tgt = my_target.alias
+        import_alias_tgt = my_target.import_tgt
         for ctr in self._constructors:
             ctr.update_fixtures_targets(import_alias_tgt, target_set)
 
