@@ -18,7 +18,7 @@ class ImportResource(Resource):
         return cls(piece.import_name, web.summon(piece.resource))
 
     def __init__(self, import_name, resource):
-        self._import_name = import_name
+        self._import_name = tuple(import_name)
         self._resource = resource
 
     def __eq__(self, rhs):
@@ -28,12 +28,12 @@ class ImportResource(Resource):
             )
 
     def __hash__(self):
-        return hash(('import-resource', tuple(self._import_name), self._resource))
+        return hash(('import-resource', self._import_name, self._resource))
 
     @property
     def piece(self):
         return htypes.import_resource.import_resource(
-            import_name=tuple(self._import_name),
+            import_name=self._import_name,
             resource=mosaic.put(self._resource),
             )
 
