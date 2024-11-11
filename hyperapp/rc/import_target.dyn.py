@@ -158,6 +158,8 @@ class ImportTarget(Target):
             entry = self._cache[self.name]
         except KeyError:
             pass
+        else:
+            assert 0, entry
         self._current_job_target = target = self._create_job_target()
         self._target_set.add(target)
         all_imports_known_tgt.add_import_target(target)

@@ -42,7 +42,7 @@ class CacheEntry:
         return htypes.job_cache.entry(
             target_name=self.target_name,
             src=self._src.piece,
-            deps=tuple(mosaic.put(d) for d in deps),
+            deps=tuple(deps),
             job_result=mosaic.put(self._result.piece),
             )
 

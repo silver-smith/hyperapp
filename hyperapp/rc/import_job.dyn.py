@@ -27,6 +27,10 @@ class Function:
         self.name = name
         self.params = params
 
+    @property
+    def piece(self):
+        return htypes.import_job.function(self.name, tuple(self.params))
+
 
 class SucceededImportResult(SystemJobResult):
 
@@ -49,6 +53,15 @@ class SucceededImportResult(SystemJobResult):
         self._all_reqs = all_reqs
         self._functions = functions
         self._constructors = constructors
+
+    @property
+    def piece(self):
+        return htypes.import_job.succeeded_result(
+            used_requirements=tuple(mosaic.put(req.piece) for req in self._used_reqs),
+            all_requirements=tuple(mosaic.put(req.piece) for req in self._all_reqs),
+            functions=tuple(f.piece for f in self._functions),
+            constructors=tuple(mosaic.put(ctr.piece) for ctr in self._constructors),
+            )
 
     @property
     def should_cache(self):
@@ -198,22 +211,20 @@ class _Succeeded(_ImportJobResult):
                 if 'no signature found for builtin type' in str(x):
                     continue
                 raise
-            yield htypes.import_job.function(
-                name=name,
-                params=tuple(signature.parameters.keys()),
-                )
+            yield Function(name, params=list(signature.parameters.keys()),)
 
     def make_result_piece(self, recorder, module, system):
+        return self.make_result(recorder, module, system).piece
+
+    def make_result(self, recorder, module, system):
         system_reqs = set(system.enum_used_requirements())
         missing_import_reqs = self._imports_to_requirements(recorder.missing_imports)
         used_import_reqs = self._imports_to_requirements(recorder.used_imports)
-        used_requirement_refs = self._reqs_to_refs(system_reqs | used_import_reqs)
-        all_requirement_refs = self._reqs_to_refs(system_reqs | missing_import_reqs | used_import_reqs)
-        return htypes.import_job.succeeded_result(
-            used_requirements=used_requirement_refs,
-            all_requirements=all_requirement_refs,
-            functions=tuple(self._enum_functions(module)),
-            constructors=self._constructor_refs(system),
+        return SucceededImportResult(
+            used_reqs=system_reqs | used_import_reqs,
+            all_reqs=system_reqs | missing_import_reqs | used_import_reqs,
+            functions=list(self._enum_functions(module)),
+            constructors=self._constructors(system),
             )
 
 

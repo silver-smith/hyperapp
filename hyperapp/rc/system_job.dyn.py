@@ -85,11 +85,14 @@ class Result:
         import_reqs = self._imports_to_requirements(recorder.used_imports)
         return self._reqs_to_refs(system_reqs | import_reqs)
 
-    def _constructor_refs(self, system):
+    def _constructors(self, system):
         ctr_collector = system['ctr_collector']
+        return ctr_collector.constructors
+
+    def _constructor_refs(self, system):
         return tuple(
             mosaic.put(ctr.piece)
-            for ctr in ctr_collector.constructors
+            for ctr in self._constructors(system)
             )
 
 
