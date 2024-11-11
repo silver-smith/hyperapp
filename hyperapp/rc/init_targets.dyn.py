@@ -61,8 +61,8 @@ def init_targets(config_ctl, ctr_from_template_creg, system_config_template, roo
         import_tgt = ImportTarget(cache, target_set, custom_resource_registry, build.types, config_tgt, all_imports_known_tgt, src)
         target_set.add(import_tgt)
         import_target_list.append(import_tgt)
+    add_core_items(config_ctl, ctr_from_template_creg, system_config_template, target_set)
     for import_tgt in import_target_list:
         import_tgt.check_cache()
     all_imports_known_tgt.init_completed()
     target_set.update_deps_for(all_imports_known_tgt)
-    add_core_items(config_ctl, ctr_from_template_creg, system_config_template, target_set)

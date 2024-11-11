@@ -28,7 +28,7 @@ class ImportResource(Resource):
             )
 
     def __hash__(self):
-        return hash(('import-resource', self._import_name, self._resource))
+        return hash(('import-resource', tuple(self._import_name), self._resource))
 
     @property
     def piece(self):

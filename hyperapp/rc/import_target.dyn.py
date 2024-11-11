@@ -45,7 +45,7 @@ class AllImportsKnownTarget(Target):
 
 class ImportCachedTarget(Target):
 
-    def __init__(self, target_set, types, config_tgt, import_tgt, all_imports_known_tgt, src, deps, req_to_target):
+    def __init__(self, target_set, types, config_tgt, all_imports_known_tgt, import_tgt, src, deps, req_to_target):
         self._target_set = target_set
         self._types = types
         self._config_tgt = config_tgt
