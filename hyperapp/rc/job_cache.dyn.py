@@ -12,7 +12,10 @@ class CacheEntry:
     def from_piece(cls, piece, rc_requirement_creg, rc_resource_creg, rc_job_result_creg):
         src = PythonModuleSrc.from_piece(piece.src)
         deps = {
-            rc_requirement_creg.invite(rec.req): rc_resource_creg.invite(req.resource)
+            rc_requirement_creg.invite(rec.requirement): {
+                rc_resource_creg.invite(res)
+                for res in rec.resource_list
+                }
             for rec in piece.deps
             }
         result = rc_job_result_creg.invite(piece.job_result)
@@ -28,15 +31,18 @@ class CacheEntry:
     def piece(self):
         deps = [
             htypes.job_cache.dep(
-                req=mosaic.put(req.piece),
-                resource=mosaic.put(resource.piece),
+                requirement=mosaic.put(req.piece),
+                resource_list=tuple(
+                    mosaic.put(res.piece)
+                    for res in resource_set
+                    )
                 )
-            for req, resource in self._deps.items()
+            for req, resource_set in self._deps.items()
             ]
         return htypes.job_cache.entry(
             target_name=self.target_name,
             src=self._src.piece,
-            deps=deps,
+            deps=tuple(mosaic.put(d) for d in deps),
             job_result=mosaic.put(self._result.piece),
             )
 
@@ -56,7 +62,18 @@ class JobCache:
     def __getitem__(self, target_name):
         return self._target_to_entry[target_name]
 
-    def put(self, target, src, deps, result):
+    @staticmethod
+    def _resolve_requirements(target_factory, requirements):
+        deps = {}
+        for req in requirements:
+            target = req.get_target(target_factory)
+            assert target.completed, target
+            res_list = req.make_resource_list(target)
+            deps[req] = set(res_list)
+        return deps
+
+    def put(self, target_factory, target, src, requirements, result):
+        deps = self._resolve_requirements(target_factory, requirements)
         entry = CacheEntry(target.name, src, deps, result)
         self._target_to_entry[entry.target_name] = entry
 

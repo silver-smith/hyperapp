@@ -9,3 +9,11 @@ class JobResult:
     @property
     def desc(self):
         return self.status.name
+
+    @property
+    def should_cache(self):
+        return False
+
+    @property
+    def used_reqs(self):
+        raise NotImplementedError()

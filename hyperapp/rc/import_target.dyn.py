@@ -93,6 +93,10 @@ class ImportJobTarget(Target):
         result.update_targets(self, target_set)
 
     @property
+    def src(self):
+        return self._src
+
+    @property
     def import_tgt(self):
         return self._import_tgt
 
@@ -132,9 +136,6 @@ class ImportTarget(Target):
         self._got_requirements = False
         self._req_to_target = {}
         self._test_constructors = set()
-
-    def __repr__(self):
-        return f"<ImportAliasTarget {self.name}>"
 
     @property
     def name(self):

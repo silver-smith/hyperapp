@@ -33,6 +33,7 @@ class SucceededImportResult(SystemJobResult):
     @classmethod
     def from_piece(cls, piece, rc_requirement_creg, rc_constructor_creg):
         used_reqs = cls._resolve_reqirement_refs(rc_requirement_creg, piece.used_requirements)
+        all_reqs = cls._resolve_reqirement_refs(rc_requirement_creg, piece.all_requirements)
         functions = [
             Function.from_piece(fn)
             for fn in piece.functions
@@ -41,15 +42,24 @@ class SucceededImportResult(SystemJobResult):
             rc_constructor_creg.invite(ref)
             for ref in piece.constructors
             ]
-        return cls(used_reqs, functions, constructors)
+        return cls(used_reqs, all_reqs, functions, constructors)
 
-    def __init__(self, used_reqs, functions, constructors):
+    def __init__(self, used_reqs, all_reqs, functions, constructors):
         super().__init__(JobStatus.ok, used_reqs)
+        self._all_reqs = all_reqs
         self._functions = functions
         self._constructors = constructors
 
+    @property
+    def should_cache(self):
+        return True
+
+    @property
+    def used_reqs(self):
+        return self._used_reqs
+
     def update_targets(self, my_target, target_set):
-        req_to_target = self._resolve_requirements(target_set.factory, self._used_reqs)
+        req_to_target = self._resolve_requirements(target_set.factory, self._all_reqs)
         if self._is_tests or self._is_fixtures:
             self._update_fixtures_targets(my_target, target_set)
         if self._is_tests:
@@ -72,7 +82,7 @@ class SucceededImportResult(SystemJobResult):
             test_alias, test_target = my_target.create_test_target(fn, req_to_target)
             target_set.add(test_alias)
             target_set.add(test_target)
-            for req in self._used_reqs:
+            for req in self._all_reqs:
                 req.update_tested_target(my_target, test_target, target_set)
 
     def _update_resource(self, my_target, target_set, req_to_target):
@@ -85,7 +95,7 @@ class SucceededImportResult(SystemJobResult):
 
     @property
     def _is_tests(self):
-        for req in self._used_reqs:
+        for req in self._all_reqs:
             if req.is_test_requirement:
                 return True
         return False
@@ -195,10 +205,13 @@ class _Succeeded(_ImportJobResult):
 
     def make_result_piece(self, recorder, module, system):
         system_reqs = set(system.enum_used_requirements())
-        import_reqs = self._imports_to_requirements(recorder.missing_imports | recorder.used_imports)
-        used_requirement_refs = self._reqs_to_refs(system_reqs | import_reqs)
+        missing_import_reqs = self._imports_to_requirements(recorder.missing_imports)
+        used_import_reqs = self._imports_to_requirements(recorder.used_imports)
+        used_requirement_refs = self._reqs_to_refs(system_reqs | used_import_reqs)
+        all_requirement_refs = self._reqs_to_refs(system_reqs | missing_import_reqs | used_import_reqs)
         return htypes.import_job.succeeded_result(
             used_requirements=used_requirement_refs,
+            all_requirements=all_requirement_refs,
             functions=tuple(self._enum_functions(module)),
             constructors=self._constructor_refs(system),
             )

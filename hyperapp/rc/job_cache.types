@@ -2,8 +2,8 @@ from build import python_module_src
 
 
 dep = record:
-  req: ref
-  resource: ref
+  requirement: ref
+  resource_list: ref list
 
 entry = record:
   target_name: string

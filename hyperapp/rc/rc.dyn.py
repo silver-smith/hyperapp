@@ -122,6 +122,8 @@ def _run(rc_job_result_creg, pool, job_cache, target_set, filter, options):
             target.handle_job_result(target_set, result)
         if result.status == JobStatus.incomplete:
             incomplete[target] = result
+        if result.should_cache:
+            job_cache.put(target_set.factory, target, target.src, result.used_reqs, result)
 
     while should_run:
         _submit_jobs(rc_job_result_creg, options, pool, target_set, target_to_job, job_id_to_target, filter)

@@ -11,6 +11,7 @@ function = record:
 
 succeeded_result = record:
   used_requirements: ref list
+  all_requirements: ref list
   functions: function list
   constructors: ref list
 
