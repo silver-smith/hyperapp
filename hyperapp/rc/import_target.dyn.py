@@ -44,7 +44,7 @@ class AllImportsKnownTarget(Target):
 
 class ImportCachedTarget(Target):
 
-    def __init__(self, target_set, types, config_tgt, all_imports_known_tgt, import_tgt, src, deps, req_to_target):
+    def __init__(self, target_set, types, config_tgt, all_imports_known_tgt, import_tgt, src, deps, req_to_target, job_result):
         self._target_set = target_set
         self._types = types
         self._config_tgt = config_tgt
@@ -53,6 +53,7 @@ class ImportCachedTarget(Target):
         self._src = src
         self._deps = deps  # requirement -> resource set
         self._req_to_target = req_to_target
+        self._job_result = job_result
         self._completed = False
         self._ready = False
 
@@ -82,7 +83,7 @@ class ImportCachedTarget(Target):
             if actual_resources != dep_resources:
                 self._create_job_target()
                 return
-        self._set_done()
+        self._use_job_result()
 
     def _create_job_target(self):
         target = ImportJobTarget(self._target_set, self._types, self._config_tgt, self._import_tgt, self._src, req_to_target=self._req_to_target)
@@ -93,8 +94,8 @@ class ImportCachedTarget(Target):
         self._target_set.update_deps_for(self._all_imports_known_tgt)
         return target
 
-    def _set_done(self):
-        assert 0, self
+    def _use_job_result(self):
+        self._job_result.update_targets(self._import_tgt, self._target_set)
 
 
 class ImportJobTarget(Target):
@@ -210,7 +211,7 @@ class ImportTarget(Target):
         req_to_target = self._resolve_requirements(entry.deps.keys())
         target = ImportCachedTarget(
             self._target_set, self._types, self._config_tgt, self._all_imports_known_tgt,
-            self, self._src, entry.deps, req_to_target)
+            self, self._src, entry.deps, req_to_target, entry.result)
         self._init_current_job_target(target)
 
     def _resolve_requirements(self, requirements):
