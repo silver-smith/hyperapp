@@ -73,8 +73,8 @@ class ImportCachedTarget(Target):
         if self._completed:
             return
         if all(target.completed for target in self._req_to_target.values()):
+            self._completed = True  # Should be set before using job result for import target to become completed.
             self._check_deps()
-            self._completed = True
 
     def _check_deps(self):
         for req, target in self._req_to_target.items():
