@@ -287,7 +287,7 @@ class TestJob(SystemJob):
             result = x
         else:
             result = _Succeeded()
-        return result.make_result(resources, recorder, system).piece
+        return result.make_result(resources, recorder, system)
 
     @property
     def _root_name(self):

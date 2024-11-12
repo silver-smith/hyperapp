@@ -26,5 +26,6 @@ def run_job_target(target, rpc_request, rc_job_creg):
     job = rc_job_creg.invite(target.job)
     log.info("Run job: %s", job)
     result = job.run()
-    log.info("Job completed: %r; result: %s", job, result)
-    return result
+    result_piece = result.piece
+    log.info("Job completed: %r; result: %s", job, result_piece)
+    return result_piece

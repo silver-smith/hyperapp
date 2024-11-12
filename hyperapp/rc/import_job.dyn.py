@@ -284,7 +284,7 @@ class ImportJob(SystemJob):
             constructors = None
         else:
             result = _Succeeded()
-        return result.make_result(recorder, module, system).piece
+        return result.make_result(recorder, module, system)
 
     def _job_resources(self, module_piece):
         mark_module_item = htypes.ctr_collector.mark_module_cfg_item(
