@@ -132,6 +132,15 @@ class IncompleteImportResult(SystemJobResult):
         self._missing_reqs = missing_reqs
 
     @property
+    def piece(self):
+        return htypes.import_job.incomplete_result(
+            missing_requirements=tuple(mosaic.put(req.piece) for req in self._missing_reqs),
+            used_requirements=tuple(mosaic.put(req.piece) for req in self._used_reqs),
+            error=self.error,
+            traceback=tuple(self.traceback),
+            )
+
+    @property
     def _reqs_desc(self):
         return ", ".join(r.desc for r in self._missing_reqs if r.desc)
 
@@ -154,6 +163,14 @@ class FailedImportResult(SystemJobResult):
     def __init__(self, used_reqs, error, traceback):
         super().__init__(JobStatus.failed, used_reqs, error, traceback)
 
+    @property
+    def piece(self):
+        return htypes.import_job.failed_result(
+            used_requirements=tuple(mosaic.put(req.piece) for req in self._used_reqs),
+            error=self.error,
+            traceback=tuple(self.traceback),
+            )
+
     def update_targets(self, import_tgt, target_set):
         pass
 
@@ -171,23 +188,22 @@ class _ImportJobError(Exception, _ImportJobResult):
 
 class _FailedError(_ImportJobError):
 
-    def make_result_piece(self, recorder, module, system):
-        return htypes.import_job.failed_result(
-            used_requirements=self._used_requirement_refs(recorder, system),
+    def make_result(self, recorder, module, system):
+        return FailedImportResult(
+            used_reqs=self._used_requirements(recorder, system),
             error=self._error_msg,
-            traceback=tuple(self._traceback),
+            traceback=self._traceback,
             )
 
 
 class _IncompleteError(_ImportJobError):
 
-    def make_result_piece(self, recorder, module, system):
-        missing_requirement_refs = self._reqs_to_refs(self._missing_reqs)
-        return htypes.import_job.incomplete_result(
-            missing_requirements=missing_requirement_refs,
-            used_requirements=self._used_requirement_refs(recorder, system),
+    def make_result(self, recorder, module, system):
+        return IncompleteImportResult(
+            missing_reqs=self._missing_reqs,
+            used_reqs=self._used_requirements(recorder, system),
             error=self._error_msg,
-            traceback=tuple(self._traceback),
+            traceback=self._traceback,
             )
 
 
@@ -210,9 +226,6 @@ class _Succeeded(_ImportJobResult):
                     continue
                 raise
             yield Function(name, params=list(signature.parameters.keys()),)
-
-    def make_result_piece(self, recorder, module, system):
-        return self.make_result(recorder, module, system).piece
 
     def make_result(self, recorder, module, system):
         system_reqs = set(system.enum_used_requirements())
@@ -271,7 +284,7 @@ class ImportJob(SystemJob):
             constructors = None
         else:
             result = _Succeeded()
-        return result.make_result_piece(recorder, module, system)
+        return result.make_result(recorder, module, system).piece
 
     def _job_resources(self, module_piece):
         mark_module_item = htypes.ctr_collector.mark_module_cfg_item(
