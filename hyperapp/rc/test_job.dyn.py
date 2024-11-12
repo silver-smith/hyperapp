@@ -39,6 +39,16 @@ class _SucceededTestResultBase(SystemJobResult):
         super().__init__(status, used_reqs, error, traceback)
         self._used_imports = used_imports
 
+    @property
+    def _used_imports_pieces(self):
+        return tuple(
+            htypes.test_job.used_imports(
+                module_name=module_name,
+                imports=tuple(imports),
+                )
+            for module_name, imports in self._used_imports.items()
+            )
+
     def _update_tested_imports(self, target_factory):
         for module_name, import_list in self._used_imports.items():
             resource_tgt = target_factory.python_module_resource_by_module_name(module_name)
@@ -60,6 +70,14 @@ class SucceededTestResult(_SucceededTestResultBase):
     def __init__(self, used_reqs, used_imports, constructors):
         super().__init__(JobStatus.ok, used_reqs, used_imports)
         self._constructors = constructors
+
+    @property
+    def piece(self):
+        return htypes.test_job.succeeded_result(
+            used_requirements=tuple(mosaic.put(req.piece) for req in self._used_reqs),
+            used_imports=self._used_imports_pieces,
+            constructors=tuple(mosaic.put(ctr.piece) for ctr in self._constructors),
+            )
 
     def update_targets(self, my_target, target_set):
         req_to_target = self._resolve_requirements(target_set.factory, self._used_reqs)
@@ -84,6 +102,16 @@ class IncompleteTestResult(_SucceededTestResultBase):
     def __init__(self, missing_reqs, used_reqs, used_imports, error, traceback):
         super().__init__(JobStatus.incomplete, used_reqs, used_imports, error, traceback)
         self._missing_reqs = missing_reqs
+
+    @property
+    def piece(self):
+        return htypes.test_job.incomplete_result(
+            missing_requirements=tuple(mosaic.put(req.piece) for req in self._missing_reqs),
+            used_requirements=tuple(mosaic.put(req.piece) for req in self._used_reqs),
+            used_imports=self._used_imports_pieces,
+            error=self.error,
+            traceback=tuple(self.traceback),
+            )
 
     @property
     def _reqs_desc(self):
@@ -112,6 +140,14 @@ class FailedTestResult(SystemJobResult):
 
     def __init__(self, used_reqs, error, traceback):
         super().__init__(JobStatus.failed, used_reqs, error, traceback)
+
+    @property
+    def piece(self):
+        return htypes.test_job.failed_result(
+            used_requirements=tuple(mosaic.put(req.piece) for req in self._used_reqs),
+            error=self.error,
+            traceback=tuple(self.traceback),
+            )
 
     def update_targets(self, my_target, target_set):
         pass
@@ -153,16 +189,22 @@ def test_subprocess_rpc_main(connection, received_refs, system_config_piece, roo
 class _TestJobResult(Result):
 
     @staticmethod
-    def _enum_used_imports(resources):
+    def _used_imports(resources):
         recorder_dict = merge_dicts(d.recorders for d in resources)
-        for module_name, recorder in recorder_dict.items():
-            yield htypes.test_job.used_imports(
-                module_name=module_name,
-                imports=tuple(recorder.used_imports),
-                )
+        return {
+            module_name: recorder.used_imports
+            for module_name, recorder in recorder_dict.items()
+            }
 
-    def _used_imports(self, resources):
-        return tuple(self._enum_used_imports(resources))
+
+class _Succeeded(_TestJobResult):
+
+    def make_result(self, resources, recorder, system):
+        return SucceededTestResult(
+            used_reqs=self._used_requirements(recorder, system),
+            used_imports=self._used_imports(resources),
+            constructors=self._constructors(system),
+            )
 
 
 class _TestJobError(Exception, _TestJobResult):
@@ -172,35 +214,25 @@ class _TestJobError(Exception, _TestJobResult):
         _TestJobResult.__init__(self, error_msg, traceback, missing_reqs)
 
 
-class _FailedError(_TestJobError):
-
-    def make_result_piece(self, resources, recorder, system):
-        return htypes.test_job.failed_result(
-            used_requirements=self._used_requirement_refs(recorder, system),
-            error=self._error_msg,
-            traceback=tuple(self._traceback),
-            )
-
-
 class _IncompleteError(_TestJobError):
 
-    def make_result_piece(self, resources, recorder, system):
-        return htypes.test_job.incomplete_result(
-            missing_requirements=self._missing_requirement_refs(recorder),
-            used_requirements=self._used_requirement_refs(recorder, system),
+    def make_result(self, resources, recorder, system):
+        return IncompleteTestResult(
+            missing_reqs=self._missing_requirements(recorder),
+            used_reqs=self._used_requirements(recorder, system),
             used_imports=self._used_imports(resources),
             error=self._error_msg,
-            traceback=tuple(self._traceback),
+            traceback=self._traceback,
             )
 
 
-class _Succeeded(_TestJobResult):
+class _FailedError(_TestJobError):
 
-    def make_result_piece(self, resources, recorder, system):
-        return htypes.test_job.succeeded_result(
-            used_requirements=self._used_requirement_refs(recorder, system),
-            used_imports=self._used_imports(resources),
-            constructors=self._constructor_refs(system),
+    def make_result(self, resources, recorder, system):
+        return FailedTestResult(
+            used_reqs=self._used_requirements(recorder, system),
+            error=self._error_msg,
+            traceback=self._traceback,
             )
 
 
@@ -255,7 +287,7 @@ class TestJob(SystemJob):
             result = x
         else:
             result = _Succeeded()
-        return result.make_result_piece(resources, recorder, system)
+        return result.make_result(resources, recorder, system).piece
 
     @property
     def _root_name(self):

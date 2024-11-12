@@ -57,13 +57,6 @@ class Result:
         self._missing_reqs = missing_reqs or set()
 
     @staticmethod
-    def _reqs_to_refs(requirements):
-        return tuple(
-            mosaic.put(req.piece)
-            for req in requirements
-            )
-
-    @staticmethod
     def _imports_to_requirements(import_set):
         req_set = set()
         for import_path in import_set:
@@ -72,9 +65,9 @@ class Result:
                 req_set.add(req)
         return req_set
 
-    def _missing_requirement_refs(self, recorder):
+    def _missing_requirements(self, recorder):
         import_reqs = self._imports_to_requirements(recorder.missing_imports)
-        return self._reqs_to_refs(self._missing_reqs | import_reqs)
+        return self._missing_reqs | import_reqs
 
     def _used_requirements(self, recorder, system):
         if system:
@@ -85,18 +78,9 @@ class Result:
         import_reqs = self._imports_to_requirements(recorder.used_imports)
         return system_reqs | import_reqs
 
-    def _used_requirement_refs(self, recorder, system):
-        return self._reqs_to_refs(self._used_requirements(recorder, system))
-
     def _constructors(self, system):
         ctr_collector = system['ctr_collector']
         return ctr_collector.constructors
-
-    def _constructor_refs(self, system):
-        return tuple(
-            mosaic.put(ctr.piece)
-            for ctr in self._constructors(system)
-            )
 
 
 class SystemJob:
