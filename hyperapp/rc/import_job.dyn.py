@@ -179,34 +179,6 @@ class _ImportJobResult(Result):
     pass
 
 
-class _ImportJobError(Exception, _ImportJobResult):
-
-    def __init__(self, error_msg=None, traceback=None, missing_reqs=None):
-        Exception.__init__(self, error_msg)
-        _ImportJobResult.__init__(self, error_msg, traceback, missing_reqs)
-
-
-class _FailedError(_ImportJobError):
-
-    def make_result(self, recorder, module, system):
-        return FailedImportResult(
-            used_reqs=self._used_requirements(recorder, system),
-            error=self._error_msg,
-            traceback=self._traceback,
-            )
-
-
-class _IncompleteError(_ImportJobError):
-
-    def make_result(self, recorder, module, system):
-        return IncompleteImportResult(
-            missing_reqs=self._missing_reqs,
-            used_reqs=self._used_requirements(recorder, system),
-            error=self._error_msg,
-            traceback=self._traceback,
-            )
-
-
 class _Succeeded(_ImportJobResult):
 
     @staticmethod
@@ -236,6 +208,34 @@ class _Succeeded(_ImportJobResult):
             all_reqs=system_reqs | missing_import_reqs | used_import_reqs,
             functions=list(self._enum_functions(module)),
             constructors=self._constructors(system),
+            )
+
+
+class _ImportJobError(Exception, _ImportJobResult):
+
+    def __init__(self, error_msg=None, traceback=None, missing_reqs=None):
+        Exception.__init__(self, error_msg)
+        _ImportJobResult.__init__(self, error_msg, traceback, missing_reqs)
+
+
+class _IncompleteError(_ImportJobError):
+
+    def make_result(self, recorder, module, system):
+        return IncompleteImportResult(
+            missing_reqs=self._missing_reqs,
+            used_reqs=self._used_requirements(recorder, system),
+            error=self._error_msg,
+            traceback=self._traceback,
+            )
+
+
+class _FailedError(_ImportJobError):
+
+    def make_result(self, recorder, module, system):
+        return FailedImportResult(
+            used_reqs=self._used_requirements(recorder, system),
+            error=self._error_msg,
+            traceback=self._traceback,
             )
 
 
