@@ -70,35 +70,34 @@ class SucceededImportResult(SystemJobResult):
     def used_reqs(self):
         return self._used_reqs
 
-    def update_targets(self, my_target, target_set):
+    def update_targets(self, import_tgt, target_set):
         req_to_target = self._resolve_requirements(target_set.factory, self._all_reqs)
         if self._is_tests or self._is_fixtures:
-            self._update_fixtures_targets(my_target, target_set)
+            self._update_fixtures_targets(import_tgt, target_set)
         if self._is_tests:
-            self._add_tests(my_target, target_set, req_to_target)
+            self._add_tests(import_tgt, target_set, req_to_target)
         elif not self._is_fixtures:
-            self._update_resource(my_target, target_set, req_to_target)
-        my_target.set_requirements(req_to_target)
-        target_set.update_deps_for(my_target.import_tgt)
+            self._update_resource(import_tgt, target_set, req_to_target)
+        import_tgt.set_requirements(req_to_target)
+        target_set.update_deps_for(import_tgt)
 
-    def _update_fixtures_targets(self, my_target, target_set):
-        import_alias_tgt = my_target.import_tgt
+    def _update_fixtures_targets(self, import_tgt, target_set):
         for ctr in self._constructors:
-            ctr.update_fixtures_targets(import_alias_tgt, target_set)
+            ctr.update_fixtures_targets(import_tgt, target_set)
 
     # TODO: Add tests in incomplete import result also. This will fire when we get incomplete import in some test.
-    def _add_tests(self, my_target, target_set, req_to_target):
+    def _add_tests(self, import_tgt, target_set, req_to_target):
         for fn in self._functions:
             if not fn.name.startswith('test_'):
                 continue
-            test_alias, test_target = my_target.create_test_target(fn, req_to_target)
+            test_alias, test_target = import_tgt.create_test_target(fn, req_to_target)
             target_set.add(test_alias)
             target_set.add(test_target)
             for req in self._all_reqs:
-                req.update_tested_target(my_target, test_target, target_set)
+                req.update_tested_target(import_tgt, test_target, target_set)
 
-    def _update_resource(self, my_target, target_set, req_to_target):
-        resource_target = my_target.get_resource_target(target_set.factory)
+    def _update_resource(self, import_tgt, target_set, req_to_target):
+        resource_target = import_tgt.get_resource_target(target_set.factory)
         assert not resource_target.completed  # First tests import was incomplete? That is not yet supported.
         resource_target.add_import_requirements(req_to_target)
         target_set.update_deps_for(resource_target)
@@ -140,9 +139,9 @@ class IncompleteImportResult(SystemJobResult):
     def desc(self):
         return super().desc + f", needs {self._reqs_desc}"
 
-    def update_targets(self, my_target, target_set):
+    def update_targets(self, import_tgt, target_set):
         req_to_target = self._resolve_requirements(target_set.factory, self._missing_reqs)
-        target_set.add(my_target.create_next_target(req_to_target))
+        target_set.add(import_tgt.create_next_job_target(req_to_target))
 
 
 class FailedImportResult(SystemJobResult):
@@ -155,7 +154,7 @@ class FailedImportResult(SystemJobResult):
     def __init__(self, used_reqs, error, traceback):
         super().__init__(JobStatus.failed, used_reqs, error, traceback)
 
-    def update_targets(self, my_target, target_set):
+    def update_targets(self, import_tgt, target_set):
         pass
 
 

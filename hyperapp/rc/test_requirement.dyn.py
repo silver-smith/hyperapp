@@ -38,7 +38,7 @@ class TestedCodeReq(Requirement):
     def is_test_requirement(self):
         return True
 
-    def update_tested_target(self, import_target, test_target, target_set):
+    def update_tested_target(self, import_tgt, test_target, target_set):
         tested_resource_tgt = target_set.factory.python_module_resource_by_code_name(self.code_name)
         if not tested_resource_tgt.is_manual:
             tested_resource_tgt.add_test(test_target, target_set)
@@ -90,8 +90,8 @@ class FixturesModuleReq(Requirement):
     def is_test_requirement(self):
         return True
 
-    def update_tested_target(self, import_job_target, test_target, target_set):
-        test_target.add_fixtures_import(import_job_target.import_tgt)
+    def update_tested_target(self, import_tgt, test_target, target_set):
+        test_target.add_fixtures_import(import_tgt)
         target_set.update_deps_for(test_target)
 
     def make_resource_list(self, target):

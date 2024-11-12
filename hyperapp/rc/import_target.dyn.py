@@ -87,7 +87,7 @@ class ImportCachedTarget(Target):
     def _create_job_target(self):
         target = ImportJobTarget(self._target_set, self._types, self._config_tgt, self._import_tgt, self._src, req_to_target=self._req_to_target)
         self._target_set.add(target)
-        self._import_tgt.set_job_target(target)
+        self._import_tgt.set_current_job_target(target)
         self._all_imports_known_tgt.add_import_target(target)
         self._target_set.update_deps_for(self._import_tgt)
         self._target_set.update_deps_for(self._all_imports_known_tgt)
@@ -144,7 +144,7 @@ class ImportJobTarget(Target):
 
     def handle_job_result(self, target_set, result):
         self._completed = True
-        result.update_targets(self, target_set)
+        result.update_targets(self._import_tgt, target_set)
 
     @property
     def src(self):
@@ -153,23 +153,6 @@ class ImportJobTarget(Target):
     @property
     def import_tgt(self):
         return self._import_tgt
-
-    def set_requirements(self, req_to_target):
-        self._import_tgt.set_requirements(req_to_target)
-
-    def create_next_target(self, req_to_target):
-        target = ImportJobTarget(self._target_set, self._types, self._config_tgt, self._import_tgt, self._src, self._idx + 1, req_to_target)
-        self._import_tgt.set_job_target(target)
-        return target
-
-    def get_resource_target(self, target_factory):
-        return target_factory.python_module_resource_by_src(self._src)
-
-    def create_test_target(self, function, req_to_target):
-        alias = TestTargetAlias(self._src, function)
-        target = TestTarget(self._src, self._types, self._import_tgt, function, req_to_target, alias, self._config_tgt)
-        alias.set_test_target(target)
-        return (alias, target)
 
 
 class ImportTarget(Target):
@@ -248,7 +231,7 @@ class ImportTarget(Target):
     def module_name(self):
         return self._src.name
 
-    def set_job_target(self, target):
+    def set_current_job_target(self, target):
         self._current_job_target = target
 
     def add_test_ctr(self, ctr):
@@ -262,6 +245,22 @@ class ImportTarget(Target):
     def create_resource_target(self, resource_dir):
         return CompiledPythonModuleResourceTarget(
             self._src, self._custom_resource_registry, resource_dir, self._types, self._all_imports_known_tgt, self)
+
+    def get_resource_target(self, target_factory):
+        return target_factory.python_module_resource_by_src(self._src)
+
+    def create_next_job_target(self, req_to_target):
+        job_tgt = self._current_job_target
+        assert isinstance(job_tgt, ImportJobTarget)
+        target = ImportJobTarget(self._target_set, self._types, self._config_tgt, self, self._src, job_tgt._idx + 1, req_to_target)
+        self.set_current_job_target(target)
+        return target
+
+    def create_test_target(self, function, req_to_target):
+        alias = TestTargetAlias(self._src, function)
+        target = TestTarget(self._src, self._types, self, function, req_to_target, alias, self._config_tgt)
+        alias.set_test_target(target)
+        return (alias, target)
 
     @cached_property
     def recorded_python_module(self):
