@@ -14,7 +14,7 @@ class ConfigItemReadyTarget(Target):
         self._all_imports_known_tgt = all_imports_known_tgt
         self._completed = False
         self._provider_resource_tgt = None
-        self._import_alias_tgt = None
+        self._import_tgt = None
 
     @property
     def name(self):
@@ -26,8 +26,8 @@ class ConfigItemReadyTarget(Target):
 
     @property
     def deps(self):
-        if self._import_alias_tgt:
-            return {self._import_alias_tgt}
+        if self._import_tgt:
+            return {self._import_tgt}
         else:
             return {self._all_imports_known_tgt}
 
@@ -36,7 +36,7 @@ class ConfigItemReadyTarget(Target):
             return
         if self._provider_resource_tgt and self._provider_resource_tgt.completed:
             self._completed = True
-        elif self._import_alias_tgt and self._import_alias_tgt.completed:
+        elif self._import_tgt and self._import_tgt.completed:
             self._completed = True
 
     @property
@@ -45,7 +45,7 @@ class ConfigItemReadyTarget(Target):
 
     def set_provider(self, resource_tgt, target_set):
         self._provider_resource_tgt = resource_tgt
-        self._import_alias_tgt = resource_tgt.import_alias_tgt
+        self._import_tgt = resource_tgt.import_tgt
         # for test_target in self._unresolved_in_tests:
         #     resource_tgt.add_test(test_target, target_set)
         self.update_status()

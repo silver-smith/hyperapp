@@ -5,7 +5,7 @@ class Constructor:
     def is_fixture(self):
         return False
 
-    def update_fixtures_targets(self, import_alias_tgt, target_set):
+    def update_fixtures_targets(self, import_tgt, target_set):
         pass
 
     def update_targets(self, target_set):

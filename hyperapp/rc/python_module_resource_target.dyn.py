@@ -85,7 +85,7 @@ class ManualPythonModuleResourceTarget(PythonModuleResourceTarget):
         return True
 
     @property
-    def import_alias_tgt(self):
+    def import_tgt(self):
         return None
 
     @cached_property
@@ -96,11 +96,11 @@ class ManualPythonModuleResourceTarget(PythonModuleResourceTarget):
 
 class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
 
-    def __init__(self, python_module_src, custom_resource_registry, resource_dir, types, all_imports_known_tgt, import_alias_tgt):
+    def __init__(self, python_module_src, custom_resource_registry, resource_dir, types, all_imports_known_tgt, import_tgt):
         super().__init__(python_module_src)
         self._types = types
         self._all_imports_known_tgt = all_imports_known_tgt
-        self._import_alias_tgt = import_alias_tgt
+        self._import_tgt = import_tgt
         self._resource_module = resource_module_factory(
             custom_resource_registry, self._src.name, resource_dir=resource_dir)
         custom_resource_registry.set_module(self._src.name, self._resource_module)
@@ -119,7 +119,7 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
     def deps(self):
         return {
             self._all_imports_known_tgt,
-            self._import_alias_tgt,
+            self._import_tgt,
             *self._req_to_target.values(),
             *self._cfg_item_targets,
             *self._tests,
@@ -141,8 +141,8 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
         return False
 
     @property
-    def import_alias_tgt(self):
-        return self._import_alias_tgt
+    def import_tgt(self):
+        return self._import_tgt
 
     def add_import_requirements(self, req_to_target):
         assert not self._completed
@@ -155,7 +155,7 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
     def add_test(self, test_target, target_set):
         assert not self._completed
         self._tests.add(test_target.alias)
-        test_target.add_tested_import(self._import_alias_tgt)
+        test_target.add_tested_import(self._import_tgt)
         target_set.update_deps_for(test_target)
         target_set.update_deps_for(self)
 
