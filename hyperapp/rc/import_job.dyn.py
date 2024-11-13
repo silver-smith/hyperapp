@@ -87,6 +87,11 @@ class SucceededImportResult(_SucceededImportResultBase):
     def used_reqs(self):
         return self._used_reqs
 
+    # Called for cached result before used requirements are ready.
+    def non_ready_update_targets(self, import_tgt, target_set):
+        if self._is_tests:
+            self._add_tests_import(import_tgt, target_set)
+
     def update_targets(self, import_tgt, target_set):
         req_to_target = self._resolve_requirements(target_set.factory, self._all_reqs)
         if self._is_tests or self._is_fixtures:

@@ -40,6 +40,7 @@ class AllImportsKnownTarget(Target):
 
     def init_completed(self):
         self._init_completed = True
+        self.update_status()
 
 
 class ImportCachedTarget(Target):
@@ -206,8 +207,11 @@ class ImportTarget(Target):
     def _create_job_target(self):
         target = ImportJobTarget(self._target_set, self._types, self._config_tgt, self, self._src, idx=1)
         self._init_current_job_target(target)
+        self._all_imports_known_tgt.add_import_target(target)
+        self._target_set.update_deps_for(self._all_imports_known_tgt)
 
     def _create_cache_target(self, entry):
+        entry.result.non_ready_update_targets(self, self._target_set)
         req_to_target = self._resolve_requirements(entry.deps.keys())
         target = ImportCachedTarget(
             self._target_set, self._types, self._config_tgt, self._all_imports_known_tgt,
@@ -224,8 +228,6 @@ class ImportTarget(Target):
     def _init_current_job_target(self, target):
         self._current_job_target = target
         self._target_set.add(target)
-        self._all_imports_known_tgt.add_import_target(target)
-        self._target_set.update_deps_for(self._all_imports_known_tgt)
         target.update_status()
 
     @property
