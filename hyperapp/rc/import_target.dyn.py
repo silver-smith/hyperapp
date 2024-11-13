@@ -229,6 +229,7 @@ class ImportTarget(Target):
         self._current_job_target = target
         self._target_set.add(target)
         target.update_status()
+        self._target_set.update_deps_for(self)
 
     @property
     def module_name(self):
