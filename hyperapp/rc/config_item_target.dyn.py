@@ -8,7 +8,8 @@ class ConfigItemReadyTarget(Target):
     def target_name(service_name, key):
         return f'item-ready/{service_name}/{key}'
 
-    def __init__(self, service_name, key, all_imports_known_tgt):
+    def __init__(self, target_set, service_name, key, all_imports_known_tgt):
+        self._target_set = target_set
         self._service_name = service_name
         self._key = key
         self._all_imports_known_tgt = all_imports_known_tgt
@@ -46,6 +47,7 @@ class ConfigItemReadyTarget(Target):
     def set_provider(self, resource_tgt, target_set):
         self._provider_resource_tgt = resource_tgt
         self._import_tgt = resource_tgt.import_tgt
+        self._target_set.update_deps_for(self)
         # for test_target in self._unresolved_in_tests:
         #     resource_tgt.add_test(test_target, target_set)
         self.update_status()
@@ -58,7 +60,8 @@ class ConfigItemResolvedTarget(Target):
     def target_name(service_name, key):
         return f'item-resolved/{service_name}/{key}'
 
-    def __init__(self, service_name, key, ready_tgt):
+    def __init__(self, target_set, service_name, key, ready_tgt):
+        self._target_set = target_set
         self._service_name = service_name
         self._key = key
         self._ready_tgt = ready_tgt
@@ -90,6 +93,7 @@ class ConfigItemResolvedTarget(Target):
     def resolve(self, ctr):
         self._ctr = ctr
         self._provider_resource_tgt = self._ready_tgt.provider_resource_tgt
+        self._target_set.update_deps_for(self)
         self._completed = True
 
 

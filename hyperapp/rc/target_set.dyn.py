@@ -158,7 +158,7 @@ class TargetFactory:
         except KeyError:
             pass
         all_imports_known_tgt = self.all_imports_known()
-        target = ConfigItemReadyTarget(service_name, key, all_imports_known_tgt)
+        target = ConfigItemReadyTarget(self._target_set, service_name, key, all_imports_known_tgt)
         self._target_set.add(target)
         return target
 
@@ -169,7 +169,7 @@ class TargetFactory:
         except KeyError:
             pass
         ready_tgt = self.config_item_ready(service_name, key)
-        target = ConfigItemResolvedTarget(service_name, key, ready_tgt)
+        target = ConfigItemResolvedTarget(self._target_set, service_name, key, ready_tgt)
         self._target_set.add(target)
         return target
 
