@@ -107,6 +107,7 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
         self._completed = False
         self._req_to_target = {}
         self._type_resources = set()
+        self._tests_import_targets = set()
         self._tests = set()
         self._cfg_item_targets = set()
         self._python_module_piece = None
@@ -122,6 +123,7 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
             self._import_tgt,
             *self._req_to_target.values(),
             *self._cfg_item_targets,
+            *self._tests_import_targets,
             *self._tests,
             }
 
@@ -151,6 +153,10 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
     def add_cfg_item_target(self, target):
         assert not self._completed
         self._cfg_item_targets.add(target)
+
+    def add_tests_import(self, target, target_set):
+        self._tests_import_targets.add(target)
+        target_set.update_deps_for(self)
 
     def add_test(self, test_target, target_set):
         assert not self._completed

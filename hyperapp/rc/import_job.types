@@ -17,7 +17,7 @@ succeeded_result = record:
 
 incomplete_result = record:
   missing_requirements: ref list
-  used_requirements: ref list
+  all_requirements: ref list
   error: string
   traceback: string list
 

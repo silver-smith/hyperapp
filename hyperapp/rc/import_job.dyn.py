@@ -32,7 +32,25 @@ class Function:
         return htypes.import_job.function(self.name, tuple(self.params))
 
 
-class SucceededImportResult(SystemJobResult):
+class _SucceededImportResultBase(SystemJobResult):
+
+    def __init__(self, status, used_reqs, all_reqs, error=None, traceback=None):
+        super().__init__(JobStatus.ok, used_reqs, error, traceback)
+        self._all_reqs = all_reqs
+
+    def _add_tests_import(self, import_tgt, target_set):
+        for req in self._all_reqs:
+            req.apply_tests_import(import_tgt, target_set)
+
+    @property
+    def _is_tests(self):
+        for req in self._all_reqs:
+            if req.is_test_requirement:
+                return True
+        return False
+
+
+class SucceededImportResult(_SucceededImportResultBase):
 
     @classmethod
     def from_piece(cls, piece, rc_requirement_creg, rc_constructor_creg):
@@ -49,8 +67,7 @@ class SucceededImportResult(SystemJobResult):
         return cls(used_reqs, all_reqs, functions, constructors)
 
     def __init__(self, used_reqs, all_reqs, functions, constructors):
-        super().__init__(JobStatus.ok, used_reqs)
-        self._all_reqs = all_reqs
+        super().__init__(JobStatus.ok, used_reqs, all_reqs)
         self._functions = functions
         self._constructors = constructors
 
@@ -75,6 +92,7 @@ class SucceededImportResult(SystemJobResult):
         if self._is_tests or self._is_fixtures:
             self._update_fixtures_targets(import_tgt, target_set)
         if self._is_tests:
+            self._add_tests_import(import_tgt, target_set)
             self._add_tests(import_tgt, target_set, req_to_target)
         elif not self._is_fixtures:
             self._update_resource(import_tgt, target_set, req_to_target)
@@ -85,7 +103,6 @@ class SucceededImportResult(SystemJobResult):
         for ctr in self._constructors:
             ctr.update_fixtures_targets(import_tgt, target_set)
 
-    # TODO: Add tests in incomplete import result also. This will fire when we get incomplete import in some test.
     def _add_tests(self, import_tgt, target_set, req_to_target):
         for fn in self._functions:
             if not fn.name.startswith('test_'):
@@ -94,7 +111,7 @@ class SucceededImportResult(SystemJobResult):
             target_set.add(test_alias)
             target_set.add(test_target)
             for req in self._all_reqs:
-                req.update_tested_target(import_tgt, test_target, target_set)
+                req.apply_test_target(import_tgt, test_target, target_set)
 
     def _update_resource(self, import_tgt, target_set, req_to_target):
         resource_target = import_tgt.get_resource_target(target_set.factory)
@@ -105,13 +122,6 @@ class SucceededImportResult(SystemJobResult):
             ctr.update_resource_targets(resource_target, target_set)
 
     @property
-    def _is_tests(self):
-        for req in self._all_reqs:
-            if req.is_test_requirement:
-                return True
-        return False
-
-    @property
     def _is_fixtures(self):
         for ctr in self._constructors:
             if ctr.is_fixture:
@@ -119,23 +129,23 @@ class SucceededImportResult(SystemJobResult):
         return False
 
 
-class IncompleteImportResult(SystemJobResult):
+class IncompleteImportResult(_SucceededImportResultBase):
 
     @classmethod
     def from_piece(cls, piece, rc_requirement_creg):
         missing_reqs = cls._resolve_reqirement_refs(rc_requirement_creg, piece.missing_requirements)
-        used_reqs = cls._resolve_reqirement_refs(rc_requirement_creg, piece.used_requirements)
-        return cls(missing_reqs, used_reqs, piece.error, piece.traceback)
+        all_reqs = cls._resolve_reqirement_refs(rc_requirement_creg, piece.all_requirements)
+        return cls(missing_reqs, all_reqs, piece.error, piece.traceback)
 
-    def __init__(self, missing_reqs, used_reqs, error, traceback):
-        super().__init__(JobStatus.incomplete, used_reqs, error, traceback)
+    def __init__(self, missing_reqs, all_reqs, error, traceback):
+        super().__init__(JobStatus.incomplete, set(), all_reqs, error, traceback)
         self._missing_reqs = missing_reqs
 
     @property
     def piece(self):
         return htypes.import_job.incomplete_result(
             missing_requirements=tuple(mosaic.put(req.piece) for req in self._missing_reqs),
-            used_requirements=tuple(mosaic.put(req.piece) for req in self._used_reqs),
+            all_requirements=tuple(mosaic.put(req.piece) for req in self._all_reqs),
             error=self.error,
             traceback=tuple(self.traceback),
             )
@@ -149,6 +159,8 @@ class IncompleteImportResult(SystemJobResult):
         return super().desc + f", needs {self._reqs_desc}"
 
     def update_targets(self, import_tgt, target_set):
+        if self._is_tests:
+            self._add_tests_import(import_tgt, target_set)
         req_to_target = self._resolve_requirements(target_set.factory, self._missing_reqs)
         target_set.add(import_tgt.create_next_job_target(req_to_target))
 
@@ -221,9 +233,11 @@ class _ImportJobError(Exception, _ImportJobResult):
 class _IncompleteError(_ImportJobError):
 
     def make_result(self, recorder, module, system):
+        system_reqs = set(system.enum_used_requirements())
+        import_reqs = self._imports_to_requirements(recorder.missing_imports | recorder.used_imports)
         return IncompleteImportResult(
             missing_reqs=self._missing_reqs,
-            used_reqs=self._used_requirements(recorder, system),
+            all_reqs=system_reqs | import_reqs,
             error=self._error_msg,
             traceback=self._traceback,
             )
