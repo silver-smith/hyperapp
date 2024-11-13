@@ -26,7 +26,7 @@ rc_log = logging.getLogger('rc')
 JOB_CACHE_PATH = Path.home() / '.local/share/hyperapp/rc-job-cache.cdr'
 
 
-Options = namedtuple('Options', 'clean timeout verbose fail_fast write show_diffs show_incomplete_traces')
+Options = namedtuple('Options', 'clean timeout verbose fail_fast write show_diffs show_incomplete_traces check')
 RcArgs = namedtuple('RcArgs', 'targets process_count options')
 
 
@@ -136,6 +136,8 @@ def _run(rc_job_result_creg, pool, job_cache, target_set, filter, options):
             if not should_run:
                 break
         _update_completed(target_set, prev_completed)
+        if options.check:
+            target_set.check_statuses()
         filter.update_deps()
         if target_set.all_completed:
             rc_log.info("All targets are completed\n")
@@ -191,6 +193,7 @@ def _parse_args(sys_argv):
     parser.add_argument('--show-incomplete-traces', '-i', action='store_true', help="Show tracebacks for incomplete jobs")
     parser.add_argument('--fail-fast', '-x', action='store_true', help="Stop on first failure")
     parser.add_argument('--verbose', '-v', action='store_true', help="Verbose output")
+    parser.add_argument('--check', action='store_true', help="Perform internal checks")
     parser.add_argument('targets', type=str, nargs='*', help="Select only those targets to build")
     args = parser.parse_args(sys_argv)
 
@@ -202,6 +205,7 @@ def _parse_args(sys_argv):
         write=args.write,
         show_diffs=args.show_diffs,
         show_incomplete_traces=args.show_incomplete_traces,
+        check=args.check,
         )
     return RcArgs(
         targets=args.targets,

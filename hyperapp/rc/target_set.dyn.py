@@ -43,6 +43,16 @@ class TargetSet:
             if target.completed:
                 yield target
 
+    def check_statuses(self):
+        for target in self._name_to_target.values():
+            for dep in target.deps:
+                assert target in self._dep_to_target[dep], (target, dep)
+        for target in self._name_to_target.values():
+            if target.completed:
+                continue
+            target.update_status()
+            assert not target.completed, target
+
     def add(self, target):
         assert target.name not in self._name_to_target
         self._name_to_target[target.name] = target
