@@ -91,7 +91,6 @@ class ImportCachedTarget(Target):
         self._target_set.add(target)
         self._import_tgt.set_current_job_target(target)
         self._all_imports_known_tgt.add_import_target(target)
-        self._target_set.update_deps_for(self._import_tgt)
         self._target_set.update_deps_for(self._all_imports_known_tgt)
         return target
 
@@ -237,6 +236,7 @@ class ImportTarget(Target):
 
     def set_current_job_target(self, target):
         self._current_job_target = target
+        self._target_set.update_deps_for(self)
 
     def add_test_ctr(self, ctr):
         self._test_constructors.add(ctr)
