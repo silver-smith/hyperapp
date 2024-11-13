@@ -10,7 +10,8 @@ def req_key(req_item):
 
 class TestTargetAlias(Target):
 
-    def __init__(self, python_module_src, function):
+    def __init__(self, target_set, python_module_src, function):
+        self._target_set = target_set
         self._src = python_module_src
         self._function = function
         self._test_target = None
@@ -33,6 +34,7 @@ class TestTargetAlias(Target):
 
     def set_test_target(self, test_target):
         self._test_target = test_target
+        self._target_set.update_deps_for(self)
 
 
 class TestTarget(Target):
