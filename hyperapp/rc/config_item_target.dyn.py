@@ -100,7 +100,8 @@ class ConfigItemCompleteTarget(Target):
     def target_name(service_name, key):
         return f'item-complete/{service_name}/{key}'
 
-    def __init__(self, service_name, key, resolved_tgt, service_cfg_item_complete_tgt):
+    def __init__(self, target_set, service_name, key, resolved_tgt, service_cfg_item_complete_tgt):
+        self._target_set = target_set
         self._service_name = service_name
         self._key = key
         self._resolved_tgt = resolved_tgt
@@ -132,6 +133,7 @@ class ConfigItemCompleteTarget(Target):
         if not self._provider_resource_tgt and self._resolved_tgt.completed:
             self._provider_resource_tgt = self._resolved_tgt.provider_resource_tgt
             self._ctr = self._resolved_tgt.constructor
+            self._target_set.update_deps_for(self)
         if not self._provider_resource_tgt or not self._provider_resource_tgt.completed:
             return
         if self._service_cfg_item_complete_tgt and not self._service_cfg_item_complete_tgt.completed:
