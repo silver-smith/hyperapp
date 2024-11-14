@@ -49,7 +49,6 @@ class ConfigItemReadyTarget(Target):
         self._import_tgt = resource_tgt.import_tgt
         # for test_target in self._unresolved_in_tests:
         #     resource_tgt.add_test(test_target, target_set)
-        self.update_status()
 
 
 # Tests passed, have enough info for construction.

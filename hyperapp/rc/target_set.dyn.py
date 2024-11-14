@@ -45,7 +45,6 @@ class TargetSet:
     def add(self, target):
         assert target.name not in self._name_to_target
         self._name_to_target[target.name] = target
-        target.update_status()
 
     def add_or_get(self, target):
         try:

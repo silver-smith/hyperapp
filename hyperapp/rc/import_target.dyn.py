@@ -40,7 +40,6 @@ class AllImportsKnownTarget(Target):
 
     def init_completed(self):
         self._init_completed = True
-        self.update_status()
 
 
 class ImportCachedTarget(Target):
@@ -225,7 +224,6 @@ class ImportTarget(Target):
     def _init_current_job_target(self, target):
         self._current_job_target = target
         self._target_set.add(target)
-        target.update_status()
 
     @property
     def module_name(self):
@@ -240,7 +238,6 @@ class ImportTarget(Target):
     def set_requirements(self, req_to_target):
         self._req_to_target = req_to_target
         self._got_requirements = True
-        self.update_status()
 
     def create_resource_target(self, resource_dir):
         return CompiledPythonModuleResourceTarget(

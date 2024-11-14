@@ -36,7 +36,6 @@ def add_core_items(config_ctl, ctr_from_template_creg, system_config_template, t
             complete_tgt = target_set.factory.config_item_complete(service_name, key)
             ready_tgt.set_provider(resource_tgt)
             resolved_tgt.resolve(ctr)
-            complete_tgt.update_status()
 
 
 def init_targets(config_ctl, ctr_from_template_creg, system_config_template, root_dir, cache, target_set, build):
