@@ -83,12 +83,31 @@ class TargetSet:
                 add_target_deps(target, new_deps)
                 # Deps are changed, update_status may have different result now - try again.
 
-        while True:
-            try:
-                dep = completed_targets.pop()
-            except KeyError:
-                break
-            for target in dep_to_targets[dep]:
+        def update_completed():
+            while True:
+                try:
+                    dep = completed_targets.pop()
+                except KeyError:
+                    break
+                for target in dep_to_targets[dep]:
+                    update(target)
+
+        while completed_targets:
+            target_to_deps = {
+                target: target.deps
+                for target in self._name_to_target.values()
+                if not target.completed
+                }
+            update_completed()
+            for target in self._name_to_target.values():
+                if target.completed:
+                    continue
+                try:
+                    prev_deps = target_to_deps[target]
+                except KeyError:
+                    pass  # New target was added. Update it.
+                if target.deps == prev_deps:
+                    continue
                 update(target)
 
     def check_statuses(self):
