@@ -30,17 +30,6 @@ Options = namedtuple('Options', 'clean timeout verbose fail_fast write show_diff
 RcArgs = namedtuple('RcArgs', 'targets process_count options')
 
 
-def _update_completed(target_set, prev_completed):
-    while True:
-        completed = set(target_set.iter_completed())
-        new_completed = completed - prev_completed
-        if not new_completed:
-            break
-        for target in new_completed:
-            target_set.update_deps_statuses(target)
-        prev_completed = completed
-
-
 def _collect_output(target_set, failures, options):
 
     def write(path, text):
@@ -135,7 +124,7 @@ def _run(rc_job_result_creg, pool, job_cache, target_set, filter, options):
             _handle_result(job, result_piece)
             if not should_run:
                 break
-        _update_completed(target_set, prev_completed)
+        target_set.update_statuses(prev_completed)
         if options.check:
             target_set.check_statuses()
         filter.update_deps()
@@ -222,6 +211,9 @@ def compile_resources(system_config_template, config_ctl, ctr_from_template_creg
 
     target_set = TargetSet(hyperapp_dir, build.python_modules)
     init_targets(config_ctl, ctr_from_template_creg, system_config_template, hyperapp_dir, job_cache, target_set, build)
+    target_set.update_statuses()
+    if options.check:
+        target_set.check_statuses()
     filter = Filter(target_set, targets)
     try:
         _run(rc_job_result_creg, pool, build.job_cache, target_set, filter, options)

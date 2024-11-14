@@ -21,7 +21,6 @@ class TargetSet:
             for src in python_module_src_list
             }
         self._name_to_target = {}
-        self._dep_to_target = defaultdict(set)  # target -> target set
 
     def __iter__(self):
         return iter(sorted(self._name_to_target.values(), key=attrgetter('name')))
@@ -43,16 +42,6 @@ class TargetSet:
             if target.completed:
                 yield target
 
-    def check_statuses(self):
-        for target in self._name_to_target.values():
-            for dep in target.deps:
-                assert target in self._dep_to_target[dep], (target, dep)
-        for target in self._name_to_target.values():
-            if target.completed:
-                continue
-            target.update_status()
-            assert not target.completed, target
-
     def add(self, target):
         assert target.name not in self._name_to_target
         self._name_to_target[target.name] = target
@@ -60,8 +49,7 @@ class TargetSet:
         self.update_deps_for(target)
 
     def update_deps_for(self, target):
-        for dep_target in target.deps:
-            self._dep_to_target[dep_target].add(target)
+        pass
 
     def add_or_get(self, target):
         try:
@@ -70,22 +58,51 @@ class TargetSet:
             self.add(target)
             return target
 
-    def update_deps_statuses(self, completed_target):
-        while True:
-            changed_targets = set()
-            for target in self._dep_to_target[completed_target]:
-                prev_deps = set(target.deps)
+    def update_statuses(self, prev_completed=None):
+        completed_targets = set(self.iter_completed())
+        if prev_completed:
+            completed_targets = completed_targets - prev_completed
+        dep_to_targets = defaultdict(set)  # target -> target set
+
+        def add_target_deps(target, dep_set):
+            assert type(dep_set) is set, target
+            for dep in dep_set:
+                dep_to_targets[dep].add(target)
+
+        for target in self._name_to_target.values():
+            add_target_deps(target, target.deps)
+
+        def update(target):
+            while not target.completed:
+                prev_deps = target.deps
                 try:
                     target.update_status()
                 except Exception as x:
                     raise RuntimeError(f"For {target.name}: {x}") from x
-                new_deps = set(target.deps)
-                if new_deps != prev_deps:
-                    changed_targets.add(target)
-            if not changed_targets:
+                if target.completed:
+                    completed_targets.add(target)
+                new_deps = target.deps
+                if new_deps == prev_deps:
+                    break
+                add_target_deps(target, new_deps)
+                # Deps are changed, update_status may have different result now - try again.
+
+        while True:
+            try:
+                dep = completed_targets.pop()
+            except KeyError:
                 break
-            for target in changed_targets:
-                self.update_deps_for(target)
+            for target in dep_to_targets[dep]:
+                update(target)
+
+    def check_statuses(self):
+        for target in self._name_to_target.values():
+            if target.completed:
+                continue
+            deps = target.deps
+            target.update_status()
+            assert not target.completed, target
+            assert target.deps == deps
 
     @property
     def all_completed(self):
