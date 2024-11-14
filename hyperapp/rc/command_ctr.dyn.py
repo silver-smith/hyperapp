@@ -25,7 +25,7 @@ class CommandTemplateCtr(Constructor):
         # ready target may already have provider set, but in case of
         # non-typed marker it have not.
         ready_tgt = target_set.factory.config_item_ready(self._service_name, self._resource_name)
-        ready_tgt.set_provider(resource_tgt, target_set)
+        ready_tgt.set_provider(resource_tgt)
         resolved_tgt = target_set.factory.config_item_resolved(self._service_name, self._resource_name)
         resolved_tgt.resolve(self)
         # Should be created to be added to config resource.

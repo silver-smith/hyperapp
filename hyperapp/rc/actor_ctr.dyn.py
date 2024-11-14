@@ -33,7 +33,7 @@ class ActorProbeCtr(Constructor):
     def update_resource_targets(self, resource_tgt, target_set):
         resource_tgt.import_tgt.add_test_ctr(self)
         ready_tgt = target_set.factory.config_item_ready(self._service_name, self._type_name)
-        ready_tgt.set_provider(resource_tgt, target_set)
+        ready_tgt.set_provider(resource_tgt)
         resolved_tgt = target_set.factory.config_item_resolved(self._service_name, self._type_name)
         resource_tgt.add_cfg_item_target(resolved_tgt)
 
@@ -120,7 +120,7 @@ class ActorTemplateCtr(ActorTemplateCtrBase):
         # ready target may already have provider set, but in case of
         # non-typed marker it have not.
         ready_tgt = target_set.factory.config_item_ready(self._service_name, self._resource_name)
-        ready_tgt.set_provider(resource_tgt, target_set)
+        ready_tgt.set_provider(resource_tgt)
         resolved_tgt = target_set.factory.config_item_resolved(self._service_name, self._resource_name)
         resolved_tgt.resolve(self)
         # Should be created to be added to config resource.

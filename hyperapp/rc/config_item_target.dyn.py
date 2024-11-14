@@ -44,7 +44,7 @@ class ConfigItemReadyTarget(Target):
     def provider_resource_tgt(self):
         return self._provider_resource_tgt
 
-    def set_provider(self, resource_tgt, target_set):
+    def set_provider(self, resource_tgt):
         self._provider_resource_tgt = resource_tgt
         self._import_tgt = resource_tgt.import_tgt
         # for test_target in self._unresolved_in_tests:

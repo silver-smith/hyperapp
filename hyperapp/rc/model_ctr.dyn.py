@@ -41,7 +41,7 @@ class ModelCtr(ModuleCtr):
 
     def update_resource_targets(self, resource_tgt, target_set):
         ready_tgt = target_set.factory.config_item_ready('visualizer_reg', self._resource_name)
-        ready_tgt.set_provider(resource_tgt, target_set)
+        ready_tgt.set_provider(resource_tgt)
         resolved_tgt = target_set.factory.config_item_resolved('visualizer_reg', self._resource_name)
         resolved_tgt.resolve(self)
         # Should be created to be added to config resource.

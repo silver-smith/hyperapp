@@ -34,7 +34,7 @@ def add_core_items(config_ctl, ctr_from_template_creg, system_config_template, t
             ready_tgt = target_set.factory.config_item_ready(service_name, key)
             resolved_tgt = target_set.factory.config_item_resolved(service_name, key)
             complete_tgt = target_set.factory.config_item_complete(service_name, key)
-            ready_tgt.set_provider(resource_tgt, target_set)
+            ready_tgt.set_provider(resource_tgt)
             resolved_tgt.resolve(ctr)
             complete_tgt.update_status()
 
