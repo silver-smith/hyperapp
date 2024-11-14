@@ -102,7 +102,6 @@ class SucceededImportResult(_SucceededImportResultBase):
         elif not self._is_fixtures:
             self._update_resource(import_tgt, target_set, req_to_target)
         import_tgt.set_requirements(req_to_target)
-        target_set.update_deps_for(import_tgt)
 
     def _update_fixtures_targets(self, import_tgt, target_set):
         for ctr in self._constructors:
@@ -122,7 +121,6 @@ class SucceededImportResult(_SucceededImportResultBase):
         resource_target = import_tgt.get_resource_target(target_set.factory)
         assert not resource_target.completed  # First tests import was incomplete? That is not yet supported.
         resource_target.add_import_requirements(req_to_target)
-        target_set.update_deps_for(resource_target)
         for ctr in self._constructors:
             ctr.update_resource_targets(resource_target, target_set)
 

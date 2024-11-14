@@ -33,8 +33,6 @@ class CommandTemplateCtr(Constructor):
         # resource target may already have resolved target, but in case of
         # non-typed marker it have not.
         resource_tgt.add_cfg_item_target(resolved_tgt)
-        target_set.update_deps_for(resolved_tgt)
-        target_set.update_deps_for(resource_tgt)
 
     @property
     def _fn_name(self):

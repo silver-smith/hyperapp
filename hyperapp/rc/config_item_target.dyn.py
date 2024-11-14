@@ -47,7 +47,6 @@ class ConfigItemReadyTarget(Target):
     def set_provider(self, resource_tgt, target_set):
         self._provider_resource_tgt = resource_tgt
         self._import_tgt = resource_tgt.import_tgt
-        self._target_set.update_deps_for(self)
         # for test_target in self._unresolved_in_tests:
         #     resource_tgt.add_test(test_target, target_set)
         self.update_status()
@@ -93,7 +92,6 @@ class ConfigItemResolvedTarget(Target):
     def resolve(self, ctr):
         self._ctr = ctr
         self._provider_resource_tgt = self._ready_tgt.provider_resource_tgt
-        self._target_set.update_deps_for(self)
         self._completed = True
 
 
@@ -137,7 +135,6 @@ class ConfigItemCompleteTarget(Target):
         if not self._provider_resource_tgt and self._resolved_tgt.completed:
             self._provider_resource_tgt = self._resolved_tgt.provider_resource_tgt
             self._ctr = self._resolved_tgt.constructor
-            self._target_set.update_deps_for(self)
         if not self._provider_resource_tgt or not self._provider_resource_tgt.completed:
             return
         if self._service_cfg_item_complete_tgt and not self._service_cfg_item_complete_tgt.completed:

@@ -114,8 +114,6 @@ class ServiceProbeCtr(ModuleCtr):
         ready_tgt.set_provider(resource_tgt, target_set)
         resolved_tgt = target_set.factory.config_item_resolved('system', self._name)
         resource_tgt.add_cfg_item_target(resolved_tgt)
-        target_set.update_deps_for(ready_tgt)
-        target_set.update_deps_for(resource_tgt)
         if tuple(self._params) not in {(), ('config',)}:
             return
         template_ctr = ServiceTemplateCtr(
@@ -128,7 +126,6 @@ class ServiceProbeCtr(ModuleCtr):
             want_config='config' in self._params,
             )
         resolved_tgt.resolve(template_ctr)
-        target_set.update_deps_for(resolved_tgt)
         # Complete target should be created so it will be added to config resource.
         _ = target_set.factory.config_item_complete('system', self._name)
 

@@ -36,8 +36,6 @@ class ActorProbeCtr(Constructor):
         ready_tgt.set_provider(resource_tgt, target_set)
         resolved_tgt = target_set.factory.config_item_resolved(self._service_name, self._type_name)
         resource_tgt.add_cfg_item_target(resolved_tgt)
-        target_set.update_deps_for(ready_tgt)
-        target_set.update_deps_for(resource_tgt)
 
     def make_component(self, types, python_module, name_to_res=None):
         object = python_module
@@ -130,8 +128,6 @@ class ActorTemplateCtr(ActorTemplateCtrBase):
         # resource target may already have resolved target, but in case of
         # non-typed marker it have not.
         resource_tgt.add_cfg_item_target(resolved_tgt)
-        target_set.update_deps_for(resolved_tgt)
-        target_set.update_deps_for(resource_tgt)
 
     def make_component(self, types, python_module, name_to_res=None):
         object = python_module

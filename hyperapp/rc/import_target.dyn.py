@@ -91,7 +91,6 @@ class ImportCachedTarget(Target):
         self._target_set.add(target)
         self._import_tgt.set_current_job_target(target)
         self._all_imports_known_tgt.add_import_target(target)
-        self._target_set.update_deps_for(self._all_imports_known_tgt)
         return target
 
     def _use_job_result(self):
@@ -207,7 +206,6 @@ class ImportTarget(Target):
         target = ImportJobTarget(self._target_set, self._types, self._config_tgt, self, self._src, idx=1)
         self._init_current_job_target(target)
         self._all_imports_known_tgt.add_import_target(target)
-        self._target_set.update_deps_for(self._all_imports_known_tgt)
 
     def _create_cache_target(self, entry):
         entry.result.non_ready_update_targets(self, self._target_set)
@@ -228,7 +226,6 @@ class ImportTarget(Target):
         self._current_job_target = target
         self._target_set.add(target)
         target.update_status()
-        self._target_set.update_deps_for(self)
 
     @property
     def module_name(self):
@@ -236,7 +233,6 @@ class ImportTarget(Target):
 
     def set_current_job_target(self, target):
         self._current_job_target = target
-        self._target_set.update_deps_for(self)
 
     def add_test_ctr(self, ctr):
         self._test_constructors.add(ctr)

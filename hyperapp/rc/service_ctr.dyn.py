@@ -33,7 +33,6 @@ class ServiceTemplateCtrBase(CoreServiceTemplateCtr):
     def update_targets(self, target_set):
         resolved_tgt = target_set.factory.config_item_resolved('system', self._name)
         resolved_tgt.resolve(self)
-        target_set.update_deps_for(resolved_tgt)
         # Complete target should be created so it will be added to config resource.
         _ = target_set.factory.config_item_complete('system', self._name)
 

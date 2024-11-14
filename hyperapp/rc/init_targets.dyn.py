@@ -65,4 +65,3 @@ def init_targets(config_ctl, ctr_from_template_creg, system_config_template, roo
     for import_tgt in import_target_list:
         import_tgt.check_cache()
     all_imports_known_tgt.init_completed()
-    target_set.update_deps_for(all_imports_known_tgt)

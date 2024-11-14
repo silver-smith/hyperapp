@@ -47,8 +47,6 @@ class ModelCtr(ModuleCtr):
         # Should be created to be added to config resource.
         _ = target_set.factory.config_item_complete('visualizer_reg', self._resource_name)
         resource_tgt.add_cfg_item_target(resolved_tgt)
-        target_set.update_deps_for(resolved_tgt)
-        target_set.update_deps_for(resource_tgt)
 
     def get_component(self, name_to_res):
         return name_to_res[f'{self._resource_name}.model-cfg-item']

@@ -34,7 +34,6 @@ class TestTargetAlias(Target):
 
     def set_test_target(self, test_target):
         self._test_target = test_target
-        self._target_set.update_deps_for(self)
 
 
 class TestTarget(Target):

@@ -46,10 +46,6 @@ class TargetSet:
         assert target.name not in self._name_to_target
         self._name_to_target[target.name] = target
         target.update_status()
-        self.update_deps_for(target)
-
-    def update_deps_for(self, target):
-        pass
 
     def add_or_get(self, target):
         try:

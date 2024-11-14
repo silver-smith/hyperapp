@@ -48,9 +48,6 @@ class FeedCtr(ModuleCtr):
         # Should be created to be added to config resource.
         _ = target_set.factory.config_item_complete('feed_factory', self._type_name)
         resource_tgt.add_cfg_item_target(resolved_tgt)
-        target_set.update_deps_for(ready_tgt)
-        target_set.update_deps_for(resolved_tgt)
-        target_set.update_deps_for(resource_tgt)
 
     def make_component(self, types, python_module, name_to_res=None):
         feed_type = self._make_feed_type()

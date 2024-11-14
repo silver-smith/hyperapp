@@ -156,14 +156,11 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
 
     def add_tests_import(self, target, target_set):
         self._tests_import_targets.add(target)
-        target_set.update_deps_for(self)
 
     def add_test(self, test_target, target_set):
         assert not self._completed
         self._tests.add(test_target.alias)
         test_target.add_tested_import(self._import_tgt)
-        target_set.update_deps_for(test_target)
-        target_set.update_deps_for(self)
 
     def add_used_imports(self, import_list):
         assert not self._completed

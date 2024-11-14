@@ -97,7 +97,6 @@ class FixturesModuleReq(Requirement):
 
     def apply_test_target(self, import_tgt, test_target, target_set):
         test_target.add_fixtures_import(import_tgt)
-        target_set.update_deps_for(test_target)
 
     def make_resource_list(self, target):
         return target.test_resources
