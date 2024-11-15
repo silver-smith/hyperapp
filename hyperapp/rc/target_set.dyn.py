@@ -21,7 +21,7 @@ class TargetSet:
             for src in python_module_src_list
             }
         self._name_to_target = {}
-        self._completed_targets = set()
+        self._prev_completed = set()
 
     def __iter__(self):
         return iter(sorted(self._name_to_target.values(), key=attrgetter('name')))
@@ -54,63 +54,71 @@ class TargetSet:
             self.add(target)
             return target
 
-    def update_statuses(self):
-        new_completed = set(self.iter_completed()) - self._completed_targets
+    @property
+    def _completed_targets(self):
+        return set(self.iter_completed())
+
+    @property
+    @staticmethod
+    def _reverse_deps_map(self):
         dep_to_targets = defaultdict(set)  # target -> target set
-
-        def add_target_deps(target, dep_set):
-            assert type(dep_set) is set, target
-            for dep in dep_set:
-                dep_to_targets[dep].add(target)
-
         for target in self._name_to_target.values():
-            add_target_deps(target, target.deps)
+            for dep in target.deps:
+                dep_to_targets[dep].add(target)
+        return dict(dep_to_targets)
 
-        def update(target):
-            while not target.completed:
-                prev_deps = target.deps
-                try:
-                    target.update_status()
-                except Exception as x:
-                    raise RuntimeError(f"For {target.name}: {x}") from x
-                if target.completed:
-                    new_completed.add(target)
-                new_deps = target.deps
-                if new_deps == prev_deps:
-                    break
-                add_target_deps(target, new_deps)
-                # Deps are changed, update_status may have different result now - try again.
+    # Only for completed targets.
+    @property
+    @staticmethod
+    def _incomplete_deps_map(self):
+        return {
+            target: target.deps
+            for target in self._name_to_target.values()
+            if not target.completed
+            }
 
-        def update_completed():
-            while True:
-                try:
-                    dep = new_completed.pop()
-                except KeyError:
-                    break
-                for target in dep_to_targets[dep]:
-                    update(target)
+    @staticmethod
+    def _update_target(target):
+        try:
+            target.update_status()
+        except Exception as x:
+            raise RuntimeError(f"For {target.name}: {x}") from x
 
-        while new_completed:
-            target_to_deps = {
-                target: target.deps
-                for target in self._name_to_target.values()
-                if not target.completed
-                }
-            update_completed()
-            for target in self._name_to_target.values():
-                if target.completed:
-                    continue
-                try:
-                    prev_deps = target_to_deps[target]
-                except KeyError:
-                    pass  # New target was added. Update it.
+    def _update_dependent(self, target_set):
+        dep_to_targets = self._reverse_deps_map
+        for completed_target in target_set:
+            for dep_target in dep_to_targets.get(completed_target, []):
+                self._update_target(dep_target)
+
+    def _update_new_or_with_changed_deps(self, prev_target_to_deps):
+        for target in self._name_to_target.values():
+            if target.completed:
+                continue
+            try:
+                prev_deps = prev_target_to_deps[target]
+            except KeyError:
+                pass  # New target was added. Update it.
+            else:
                 if target.deps == prev_deps:
                     continue
-                update(target)
+            # It's deps were changed or it was just added.
+            self._update_target(target)
 
-        completed_targets = set(self.iter_completed())
-        assert completed_targets >= self._completed_targets  # Demotions not allowed.
-        self._completed_targets = completed_targets
+    # After updating a target:
+    # * Deps for it any other target may change;
+    # * It or any other target may become completed;
+    # * New targets may be added in completed or incomplete state.
+    def update_statuses(self):
+        while True:
+            completed_targets = self._completed_targets
+            assert completed_targets >= self._prev_completed  # Demotions are not allowed.
+            new_completed = completed_targets - self._prev_completed
+            if not new_completed:
+                break
+            target_to_deps = self._incomplete_deps_map
+            self._update_dependent(new_completed)
+            self._update_new_or_with_changed_deps(target_to_deps)
+            self._prev_completed = completed_targets
 
     def check_statuses(self):
         for target in self._name_to_target.values():
