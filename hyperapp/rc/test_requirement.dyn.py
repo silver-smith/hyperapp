@@ -115,6 +115,16 @@ class TestedCodeResource(Resource):
         self._import_name = import_name
         self._module_piece = module_piece
 
+    def __eq__(self, rhs):
+        return (
+            self.__class__ is rhs.__class__
+            and self._import_name == rhs._import_name
+            and self._module_piece == rhs._module_piece
+            )
+
+    def __hash__(self):
+        return hash(('tested-code-resource', self._import_name, self._module_piece))
+
     @property
     def piece(self):
         return htypes.test_target.tested_code_resource(
@@ -142,6 +152,16 @@ class RecorderResource(Resource):
     def __init__(self, recorder_module_name, recorder_piece):
         self._recorder_module_name = recorder_module_name
         self._recorder_piece = recorder_piece
+
+    def __eq__(self, rhs):
+        return (
+            self.__class__ is rhs.__class__
+            and self._recorder_module_name == rhs._recorder_module_name
+            and self._recorder_piece == rhs._recorder_piece
+            )
+
+    def __hash__(self):
+        return hash(('recorder-resource', self._recorder_module_name, self._recorder_piece))
 
     @property
     def piece(self):
