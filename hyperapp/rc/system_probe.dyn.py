@@ -111,10 +111,11 @@ class ServiceConfigProbe:
 
 class ConfigProbe:
 
-    def __init__(self, service_name, config):
+    def __init__(self, service_name, config, ignore_keys=None):
         self._service_name = service_name
         self._config = config
         self._used_keys = set()
+        self._ignore_keys = ignore_keys or set()
 
     def __getitem__(self, key):
         try:
@@ -125,7 +126,7 @@ class ConfigProbe:
             if hasattr(value, '__self__') and isinstance(value.__func__, ActorProbe):
                 # Do not add probes to requirements.
                 return value
-            if not self._is_builtin_key(key):
+            if self._record_key(key):
                 self._used_keys.add(key)
             return value
 
@@ -137,7 +138,7 @@ class ConfigProbe:
 
     def get(self, key, default=None):
         value = self._config.get(key, default)
-        if value is not default and not self._is_builtin_key(key):
+        if value is not default and self._record_key(key):
             self._used_keys.add(key)
         return value
 
@@ -151,8 +152,8 @@ class ConfigProbe:
     def used_keys(self):
         return self._used_keys
 
-    def _is_builtin_key(self, key):
-        return False
+    def _record_key(self, key):
+        return key not in self._ignore_keys
 
 
 # Config probe for services having builtin config elements.
@@ -167,8 +168,8 @@ class SystemConfigProbe(ConfigProbe):
         self._builtin_config[key] = value
         self._config[key] = value
 
-    def _is_builtin_key(self, key):
-        return key in self._builtin_config
+    def _record_key(self, key):
+        return key not in self._builtin_config
 
 
 class ConfigFixture:
@@ -286,8 +287,8 @@ class SystemProbe(System):
     def _init_probe(self):
         super()._init()
 
-    def _make_config_probe(self, service_name, config):
-        probe = ConfigProbe(service_name, config)
+    def _make_config_probe(self, service_name, config, ignore_keys=None):
+        probe = ConfigProbe(service_name, config, ignore_keys)
         self._service_to_config_probe[service_name] = probe
         return probe
 
@@ -327,10 +328,13 @@ class SystemProbe(System):
     def resolve_config(self, service_name):
         ctl = self._config_ctl[service_name]
         config = super().resolve_config(service_name)
+        ignore_keys = set()
         for fixture in self._config_fixtures.get(service_name, []):
             fixture_cfg = fixture.resolve(self)
+            if type(fixture_cfg) is dict:
+                ignore_keys |= fixture_cfg.keys()
             ctl.merge(config, fixture_cfg)
-        return self._make_config_probe(service_name, config)
+        return self._make_config_probe(service_name, config, ignore_keys)
 
     def add_constructor(self, ctr):
         ctr_collector = self.resolve_service('ctr_collector')
