@@ -8,7 +8,7 @@ def req_key(req_item):
     return (req.__class__.__name__, *req.__dict__.values())
 
 
-class TestTargetAlias(Target):
+class TestTarget(Target):
 
     def __init__(self, target_set, python_module_src, function):
         self._target_set = target_set
@@ -36,18 +36,18 @@ class TestTargetAlias(Target):
         self._test_target = test_target
 
 
-class TestTarget(Target):
+class TestJobTarget(Target):
 
-    def __init__(self, python_module_src, types, import_tgt, function, req_to_target, alias, config_tgt, fixtures_deps=None, idx=1):
+    def __init__(self, python_module_src, types, import_tgt, function, req_to_target, test_tgt, config_tgt, fixtures_deps=None, idx=1):
         self._src = python_module_src
         self._types = types
         self._import_tgt = import_tgt
         self._function = function
         self._req_to_target = req_to_target or {}
-        self._alias = alias
+        self._test_tgt = test_tgt
         self._config_tgt = config_tgt
         self._tested_imports = set()  # import targets being tested.
-        self._fixtures_deps = fixtures_deps or set()  # import alias targets with fixtures.
+        self._fixtures_deps = fixtures_deps or set()  # import targets with fixtures.
         self._tested_deps = set()  # targets required by tested code targets.
         self._idx = idx
         self._completed = False
@@ -92,8 +92,12 @@ class TestTarget(Target):
         result.update_targets(self, target_set)
 
     @property
-    def alias(self):
-        return self._alias
+    def src(self):
+        return self._src
+
+    @property
+    def test_tgt(self):
+        return self._test_tgt
 
     def add_fixtures_import(self, target):
         self._fixtures_deps.add(target)
@@ -104,7 +108,7 @@ class TestTarget(Target):
             self._tested_deps |= target.deps
 
     def set_alias_completed(self, req_to_target):
-        self._alias.set_completed(req_to_target)
+        self._test_tgt.set_completed(req_to_target)
 
     @property
     def req_set(self):
@@ -116,16 +120,16 @@ class TestTarget(Target):
             **self._req_to_target,
             **req_to_target,
             }
-        target = TestTarget(
+        target = TestJobTarget(
             python_module_src=self._src,
             types=self._types,
             import_tgt=self._import_tgt,
             function=self._function,
             req_to_target=full_req_to_target,
-            alias=self._alias,
+            test_tgt=self._test_tgt,
             config_tgt=self._config_tgt,
             fixtures_deps=self._fixtures_deps,
             idx=self._idx + 1,
             )
-        self._alias.set_test_target(target)
+        self._test_tgt.set_test_target(target)
         return target

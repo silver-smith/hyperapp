@@ -6,7 +6,7 @@ from .code.rc_target import Target
 from .code.builtin_resources import enum_builtin_resources
 from .code.import_resource import ImportResource
 from .code.import_job import ImportJob
-from .code.test_target import TestTargetAlias, TestTarget
+from .code.test_target import TestTarget, TestJobTarget
 from .code.python_module_resource_target import CompiledPythonModuleResourceTarget
 
 
@@ -254,10 +254,10 @@ class ImportTarget(Target):
         return target
 
     def create_test_target(self, function, req_to_target):
-        alias = TestTargetAlias(self._target_set, self._src, function)
-        target = TestTarget(self._src, self._types, self, function, req_to_target, alias, self._config_tgt)
-        alias.set_test_target(target)
-        return (alias, target)
+        test_tgt = TestTarget(self._target_set, self._src, function)
+        job_tgt = TestJobTarget(self._src, self._types, self, function, req_to_target, test_tgt, self._config_tgt)
+        test_tgt.set_test_target(job_tgt)
+        return (test_tgt, job_tgt)
 
     @cached_property
     def recorded_python_module(self):
