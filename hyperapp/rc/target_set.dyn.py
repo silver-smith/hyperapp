@@ -21,6 +21,7 @@ class TargetSet:
             for src in python_module_src_list
             }
         self._name_to_target = {}
+        self._completed_targets = set()
 
     def __iter__(self):
         return iter(sorted(self._name_to_target.values(), key=attrgetter('name')))
@@ -53,10 +54,8 @@ class TargetSet:
             self.add(target)
             return target
 
-    def update_statuses(self, prev_completed=None):
-        completed_targets = set(self.iter_completed())
-        if prev_completed:
-            completed_targets = completed_targets - prev_completed
+    def update_statuses(self):
+        new_completed = set(self.iter_completed()) - self._completed_targets
         dep_to_targets = defaultdict(set)  # target -> target set
 
         def add_target_deps(target, dep_set):
@@ -75,7 +74,7 @@ class TargetSet:
                 except Exception as x:
                     raise RuntimeError(f"For {target.name}: {x}") from x
                 if target.completed:
-                    completed_targets.add(target)
+                    new_completed.add(target)
                 new_deps = target.deps
                 if new_deps == prev_deps:
                     break
@@ -85,13 +84,13 @@ class TargetSet:
         def update_completed():
             while True:
                 try:
-                    dep = completed_targets.pop()
+                    dep = new_completed.pop()
                 except KeyError:
                     break
                 for target in dep_to_targets[dep]:
                     update(target)
 
-        while completed_targets:
+        while new_completed:
             target_to_deps = {
                 target: target.deps
                 for target in self._name_to_target.values()
@@ -108,6 +107,10 @@ class TargetSet:
                 if target.deps == prev_deps:
                     continue
                 update(target)
+
+        completed_targets = set(self.iter_completed())
+        assert completed_targets >= self._completed_targets  # Demotions not allowed.
+        self._completed_targets = completed_targets
 
     def check_statuses(self):
         for target in self._name_to_target.values():

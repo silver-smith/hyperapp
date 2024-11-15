@@ -119,12 +119,11 @@ def _run(rc_job_result_creg, pool, job_cache, target_set, filter, options):
         if pool.job_count == 0:
             rc_log.info("Not all targets are completed, but there are no jobs\n")
             break
-        prev_completed = set(target_set.iter_completed())
         for job, result_piece in pool.iter_completed(options.timeout):
             _handle_result(job, result_piece)
             if not should_run:
                 break
-        target_set.update_statuses(prev_completed)
+        target_set.update_statuses()
         if options.check:
             target_set.check_statuses()
         filter.update_deps()
