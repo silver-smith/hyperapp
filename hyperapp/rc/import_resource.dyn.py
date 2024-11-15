@@ -23,7 +23,8 @@ class ImportResource(Resource):
 
     def __eq__(self, rhs):
         return (
-            self._import_name == rhs._import_name
+            self.__class__ is rhs.__class__
+            and self._import_name == rhs._import_name
             and self._resource == rhs._resource
             )
 

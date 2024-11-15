@@ -18,7 +18,8 @@ class ConfigItemResourceBase(Resource):
 
     def __eq__(self, rhs):
         return (
-            self._service_name == rhs._service_name
+            self.__class__ is rhs.__class__
+            and self._service_name == rhs._service_name
             and self._template_ref == rhs._template_ref
             )
 
