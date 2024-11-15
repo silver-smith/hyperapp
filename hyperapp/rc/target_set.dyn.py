@@ -22,6 +22,7 @@ class TargetSet:
             }
         self._name_to_target = {}
         self._prev_completed = set()
+        self._prev_incomplete_deps_map = {}
 
     def __iter__(self):
         return iter(sorted(self._name_to_target.values(), key=attrgetter('name')))
@@ -90,12 +91,12 @@ class TargetSet:
             for dep_target in dep_to_targets.get(completed_target, []):
                 self._update_target(dep_target)
 
-    def _update_new_or_with_changed_deps(self, prev_target_to_deps):
-        for target in self._name_to_target.values():
+    def _update_new_or_with_changed_deps(self):
+        for target in [*self._name_to_target.values()]:
             if target.completed:
                 continue
             try:
-                prev_deps = prev_target_to_deps[target]
+                prev_deps = self._prev_incomplete_deps_map[target]
             except KeyError:
                 pass  # New target was added. Update it.
             else:
@@ -108,6 +109,9 @@ class TargetSet:
     # * Deps for it any other target may change;
     # * It or any other target may become completed;
     # * New targets may be added in completed or incomplete state.
+    # Outside of update_statuses call:
+    # * Any target may become completed.
+    # * Any target may have it's deps changed.
     def update_statuses(self):
         while True:
             completed_targets = self._completed_targets
@@ -115,13 +119,14 @@ class TargetSet:
             new_completed = completed_targets - self._prev_completed
             if not new_completed:
                 break
-            target_to_deps = self._incomplete_deps_map
             self._update_dependent(new_completed)
-            self._update_new_or_with_changed_deps(target_to_deps)
+            self._update_new_or_with_changed_deps()
             self._prev_completed = completed_targets
+            self._prev_incomplete_deps_map = self._incomplete_deps_map
 
-    def update_all_statuses(self):
-        for target in self._name_to_target.values():
+    def init_all_statuses(self):
+        self._prev_incomplete_deps_map = self._incomplete_deps_map
+        for target in [*self._name_to_target.values()]:
             self._update_target(target)
 
     def check_statuses(self):
