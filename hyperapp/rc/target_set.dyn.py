@@ -120,6 +120,10 @@ class TargetSet:
             self._update_new_or_with_changed_deps(target_to_deps)
             self._prev_completed = completed_targets
 
+    def update_all_statuses(self):
+        for target in self._name_to_target.values():
+            self._update_target(target)
+
     def check_statuses(self):
         for target in self._name_to_target.values():
             if target.completed:
