@@ -85,8 +85,28 @@ class Result:
 
 class SystemJob:
 
+    @staticmethod
+    def req_to_resources_from_pieces(rc_requirement_creg, rc_resource_creg, req_to_resource):
+        req_to_resources = defaultdict(set)
+        for rec in req_to_resource:
+            req = rc_requirement_creg.invite(rec.requirement)
+            resource = rc_resource_creg.invite(rec.resource)
+            req_to_resources[req].add(resource)
+        return dict(req_to_resources)
+
     def __init__(self, system_config_piece):
         self._system_config_piece = system_config_piece  # Used only from 'run' method, inside job process.
+
+    @property
+    def _req_to_resource_pieces(self):
+        return tuple(
+            htypes.system_job.req_to_resource(
+                requirement=mosaic.put(req.piece),
+                resource=mosaic.put(resource.piece),
+                )
+            for req, resource_set in self._req_to_resources.items()
+            for resource in resource_set
+            )
 
     def _resource_group(self, resource):
         if resource.is_system_resource:

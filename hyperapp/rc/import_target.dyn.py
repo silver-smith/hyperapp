@@ -1,13 +1,15 @@
+from collections import defaultdict
 from functools import cached_property
 
 from hyperapp.common.util import flatten
 
 from .code.rc_target import Target
+from .code.type_req import TypeReq
 from .code.builtin_resources import enum_builtin_resources
 from .code.import_resource import ImportResource
 from .code.import_job import ImportJob
 from .code.test_target import TestTarget, TestJobTarget
-from .code.python_module_resource_target import CompiledPythonModuleResourceTarget
+from .code.python_module_resource_target import PythonModuleReq, CompiledPythonModuleResourceTarget
 
 
 class AllImportsKnownTarget(Target):
@@ -129,17 +131,21 @@ class ImportJobTarget(Target):
         self._ready = all(target.completed for target in self._req_to_target.values())
 
     def make_job(self):
-        resources = list(self._enum_resources())
-        return ImportJob(self._src, self._idx, resources)
+        return ImportJob(self._src, self._idx, self._req_to_resources)
 
-    def _enum_resources(self):
+    @property
+    def _req_to_resources(self):
+        result = defaultdict(set)
         for src in self._types.as_list:
-            yield ImportResource.from_type_src(src)
+            req = TypeReq.from_type_src(src)
+            result[req] = {ImportResource.from_type_src(src)}
         for req, target in self._req_to_target.items():
-            yield from req.make_resource_list(target)
+            result[req] |= set(req.make_resource_list(target))
         # Some modules, like common.mark, are used before all imports are stated.
         for target in self._target_set.completed_python_module_resources:
-            yield ImportResource(['code', target.code_name], target.python_module_piece)
+            req = PythonModuleReq(target.code_name)
+            result[req] = {ImportResource(['code', target.code_name], target.python_module_piece)}
+        return dict(result)
 
     def handle_job_result(self, target_set, result):
         self._completed = True
@@ -275,6 +281,7 @@ class ImportTarget(Target):
             )
 
     def _enum_resources(self):
+        yield from enum_builtin_resources()
         for src in self._types.as_list:
             yield ImportResource.from_type_src(src)
         for req, target in self._req_to_target.items():

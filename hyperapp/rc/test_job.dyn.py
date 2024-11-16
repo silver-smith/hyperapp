@@ -240,15 +240,11 @@ class TestJob(SystemJob):
 
     @classmethod
     def from_piece(cls, piece, rc_requirement_creg, rc_resource_creg, system_config_piece):
-        req_to_resources = defaultdict(set)
-        for rec in piece.req_to_resource:
-            req = rc_requirement_creg.invite(rec.requirement)
-            resource = rc_resource_creg.invite(rec.resource)
-            req_to_resources[req].add(resource)
         return cls(
             python_module_src=PythonModuleSrc.from_piece(piece.python_module),
             idx=piece.idx,
-            req_to_resources=dict(req_to_resources),
+            req_to_resources=cls.req_to_resources_from_pieces(
+                rc_requirement_creg, rc_resource_creg, piece.req_to_resource),
             test_fn_name=piece.test_fn_name,
             system_config_piece=system_config_piece,
             )
@@ -265,18 +261,10 @@ class TestJob(SystemJob):
 
     @cached_property
     def piece(self):
-        req_to_resource = tuple(
-            htypes.test_job.req_to_resource(
-                requirement=mosaic.put(req.piece),
-                resource=mosaic.put(resource.piece),
-                )
-            for req, resource_set in self._req_to_resources.items()
-            for resource in resource_set
-            )
         return htypes.test_job.job(
             python_module=self._src.piece,
             idx=self._idx,
-            req_to_resource=req_to_resource,
+            req_to_resource=self._req_to_resource_pieces,
             test_fn_name=self._test_fn_name,
             )
 

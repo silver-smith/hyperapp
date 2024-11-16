@@ -120,5 +120,6 @@ definitions:
       t: legacy_type.import_job:job
       function: ImportJob.from_piece
       service_params:
+      - rc_requirement_creg
       - rc_resource_creg
       - system_config_piece

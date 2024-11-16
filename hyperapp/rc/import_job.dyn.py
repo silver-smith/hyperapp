@@ -259,38 +259,38 @@ class _FailedError(_ImportJobError):
 class ImportJob(SystemJob):
 
     @classmethod
-    def from_piece(cls, piece, rc_resource_creg, system_config_piece):
+    def from_piece(cls, piece, rc_requirement_creg, rc_resource_creg, system_config_piece):
         return cls(
             python_module_src=PythonModuleSrc.from_piece(piece.python_module),
             idx=piece.idx,
-            resources=[rc_resource_creg.invite(d) for d in piece.resources],
+            req_to_resources=cls.req_to_resources_from_pieces(
+                rc_requirement_creg, rc_resource_creg, piece.req_to_resource),
             system_config_piece=system_config_piece,
             )
 
-    def __init__(self, python_module_src, idx, resources, system_config_piece=None):
+    def __init__(self, python_module_src, idx, req_to_resources, system_config_piece=None):
         super().__init__(system_config_piece)
         self._src = python_module_src
         self._idx = idx
-        self._resources = resources
+        self._req_to_resources = req_to_resources
 
     def __repr__(self):
         return f"<ImportJob {self._src}/{self._idx}>"
 
     @cached_property
     def piece(self):
-        resource_refs = sorted(mosaic.put(r.piece) for r in self._resources)
         return htypes.import_job.job(
             python_module=self._src.piece,
             idx=self._idx,
-            resources=tuple(resource_refs),
+            req_to_resource=self._req_to_resource_pieces,
             )
 
     def run(self):
-        importable_resources = [*enum_builtin_resources(), *self._resources]
-        import_list = flatten(d.import_records for d in importable_resources)
+        resources = [*enum_builtin_resources(), *flatten(self._req_to_resources.values())]
+        import_list = flatten(d.import_records for d in resources)
         recorder_piece, module_piece = self._src.recorded_python_module(import_list)
         recorder = pyobj_creg.animate(recorder_piece)
-        system_resources = [*enum_builtin_resources(), *self._resources, *self._job_resources(module_piece)]
+        system_resources = [*resources, *self._job_resources(module_piece)]
         system = self._prepare_system(system_resources)
         ctr_collector = system.resolve_service('ctr_collector')
         try:

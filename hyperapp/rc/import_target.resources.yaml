@@ -6,6 +6,7 @@ import:
 - rc.python_module_resource_target:python_module_resource_target.module
 - rc.rc_target:rc_target.module
 - rc.test_target:test_target.module
+- rc.type_req:type_req.module
 
 definitions:
 
@@ -21,3 +22,4 @@ definitions:
         code.python_module_resource_target: rc.python_module_resource_target:python_module_resource_target.module
         code.rc_target: rc.rc_target:rc_target.module
         code.test_target: rc.test_target:test_target.module
+        code.type_req: rc.type_req:type_req.module

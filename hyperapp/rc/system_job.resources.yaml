@@ -4,6 +4,7 @@ import:
 - legacy_type.rc_job:config_item_missing_error
 - legacy_type.rc_job:unknown_service_error
 - legacy_type.rpc:server_error
+- legacy_type.system_job:req_to_resource
 - rc.actor_req:actor_req.module
 - rc.import_recorder:import_recorder.module
 - rc.job_result:job_result.module
@@ -35,3 +36,4 @@ definitions:
         code.service_req: rc.service_req:service_req.module
         code.system: system.system:system.module
         code.system_probe: rc.system_probe:system_probe.module
+        htypes.system_job.req_to_resource: legacy_type.system_job:req_to_resource

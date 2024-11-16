@@ -1,9 +1,11 @@
 from build import python_module_src
+from system_job import req_to_resource
+
 
 job = record:
   python_module: python_module_src
   idx: int
-  resources: ref list
+  req_to_resource: req_to_resource list
 
 function = record:
   name: string

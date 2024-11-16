@@ -12,7 +12,6 @@ import:
 - legacy_type.test_job:failed_result
 - legacy_type.test_job:job
 - legacy_type.test_job:incomplete_result
-- legacy_type.test_job:req_to_resource
 - legacy_type.test_job:succeeded_result
 - legacy_type.test_job:used_imports
 - rc.build:build.module
@@ -41,7 +40,6 @@ definitions:
         htypes.test_job.failed_result: legacy_type.test_job:failed_result
         htypes.test_job.job: legacy_type.test_job:job
         htypes.test_job.incomplete_result: legacy_type.test_job:incomplete_result
-        htypes.test_job.req_to_resource: legacy_type.test_job:req_to_resource
         htypes.test_job.succeeded_result: legacy_type.test_job:succeeded_result
         htypes.test_job.used_imports: legacy_type.test_job:used_imports
         services.mosaic: builtins:mosaic.service

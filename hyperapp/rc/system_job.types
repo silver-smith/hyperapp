@@ -1,0 +1,3 @@
+req_to_resource = record:
+  requirement: ref
+  resource: ref
