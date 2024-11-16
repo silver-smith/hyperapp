@@ -141,6 +141,8 @@ class ImportJobTarget(Target):
             result[req] = {ImportResource.from_type_src(src)}
         for req, target in self._req_to_target.items():
             result[req] |= set(req.make_resource_list(target))
+        for req, resource_set in self._config_tgt.ready_req_to_resources().items():
+            result[req] |= resource_set
         # Some modules, like common.mark, are used before all imports are stated.
         for target in self._target_set.completed_python_module_resources:
             req = PythonModuleReq(target.code_name)
