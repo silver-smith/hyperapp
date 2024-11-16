@@ -269,10 +269,10 @@ class ImportTarget(Target):
     @property
     def test_resources(self):
         module_name, recorder_piece, python_module = self.recorded_python_module
-        return [
+        return set(
             ctr.make_resource(self._types, self._src.name, python_module)
             for ctr in self._test_constructors
-            ]
+            )
 
     def _enum_resources(self):
         yield from enum_builtin_resources()

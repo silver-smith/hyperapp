@@ -239,20 +239,25 @@ class _FailedError(_TestJobError):
 class TestJob(SystemJob):
 
     @classmethod
-    def from_piece(cls, piece, rc_resource_creg, system_config_piece):
+    def from_piece(cls, piece, rc_requirement_creg, rc_resource_creg, system_config_piece):
+        req_to_resources = defaultdict(set)
+        for rec in piece.req_to_resource:
+            req = rc_requirement_creg.invite(rec.requirement)
+            resource = rc_resource_creg.invite(rec.resource)
+            req_to_resources[req].add(resource)
         return cls(
             python_module_src=PythonModuleSrc.from_piece(piece.python_module),
             idx=piece.idx,
-            resources=[rc_resource_creg.invite(d) for d in piece.resources],
+            req_to_resources=dict(req_to_resources),
             test_fn_name=piece.test_fn_name,
             system_config_piece=system_config_piece,
             )
 
-    def __init__(self, python_module_src, idx, resources, test_fn_name, system_config_piece=None):
+    def __init__(self, python_module_src, idx, req_to_resources, test_fn_name, system_config_piece=None):
         super().__init__(system_config_piece)
         self._src = python_module_src
         self._idx = idx
-        self._resources = resources
+        self._req_to_resources = req_to_resources
         self._test_fn_name = test_fn_name
 
     def __repr__(self):
@@ -260,16 +265,23 @@ class TestJob(SystemJob):
 
     @cached_property
     def piece(self):
-        resource_refs = sorted(mosaic.put(r.piece) for r in self._resources)
+        req_to_resource = tuple(
+            htypes.test_job.req_to_resource(
+                requirement=mosaic.put(req.piece),
+                resource=mosaic.put(resource.piece),
+                )
+            for req, resource_set in self._req_to_resources.items()
+            for resource in resource_set
+            )
         return htypes.test_job.job(
             python_module=self._src.piece,
             idx=self._idx,
-            resources=tuple(resource_refs),
+            req_to_resource=req_to_resource,
             test_fn_name=self._test_fn_name,
             )
 
     def run(self):
-        resources = [*enum_builtin_resources(), *self._resources]
+        resources = [*enum_builtin_resources(), *flatten(self._req_to_resources.values())]
         import_list = flatten(d.import_records for d in resources)
         recorder_piece, module_piece = self._src.recorded_python_module(import_list)
         recorder = pyobj_creg.animate(recorder_piece)

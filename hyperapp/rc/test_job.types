@@ -1,10 +1,14 @@
 from build import python_module_src
 
 
+req_to_resource = record:
+  requirement: ref
+  resource: ref
+
 job = record:
   python_module: python_module_src
   idx: int
-  resources: ref list
+  req_to_resource: req_to_resource list
   test_fn_name: string
 
 used_imports = record:

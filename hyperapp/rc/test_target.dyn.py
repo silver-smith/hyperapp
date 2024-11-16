@@ -1,11 +1,10 @@
+from collections import defaultdict
+
 from .code.rc_target import Target
+from .code.type_req import TypeReq
+from .code.import_resources_req import ImportResourcesReq
 from .code.import_resource import ImportResource
 from .code.test_job import TestJob
-
-
-def req_key(req_item):
-    req = req_item[0]
-    return (req.__class__.__name__, *req.__dict__.values())
 
 
 class TestJobTarget(Target):
@@ -48,17 +47,21 @@ class TestJobTarget(Target):
         self._ready = all(target.completed for target in self.deps)
 
     def make_job(self):
-        resources = list(self._enum_resources())
-        return TestJob(self._src, self._idx, resources, self._function.name)
+        return TestJob(self._src, self._idx, self._req_to_resources, self._function.name)
 
-    def _enum_resources(self):
+    @property
+    def _req_to_resources(self):
+        result = defaultdict(set)
         for src in self._types.as_list:
-            yield ImportResource.from_type_src(src)
-        for req, target in sorted(self._req_to_target.items(), key=req_key):
-            yield from req.make_resource_list(target)
-        for resource_set in self._config_tgt.ready_req_to_resources().values():
-            yield from resource_set
-        yield from self._import_tgt.test_resources
+            req = TypeReq.from_type_src(src)
+            result[req] = {ImportResource.from_type_src(src)}
+        for req, target in self._req_to_target.items():
+            result[req] |= set(req.make_resource_list(target))
+        for req, resource_set in self._config_tgt.ready_req_to_resources().items():
+            result[req] |= resource_set
+        import_req = ImportResourcesReq(self._src.name)
+        result[import_req] = self._import_tgt.test_resources
+        return dict(result)
 
     def handle_job_result(self, target_set, result):
         self._completed = True

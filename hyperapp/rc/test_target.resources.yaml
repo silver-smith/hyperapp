@@ -1,8 +1,10 @@
 import:
 - legacy_type.builtin:python_module
 - rc.import_resource:import_resource.module
+- rc.import_resources_req:import_resources_req.module
 - rc.rc_target:rc_target.module
 - rc.test_job:test_job.module
+- rc.type_req:type_req.module
 
 definitions:
 
@@ -13,5 +15,7 @@ definitions:
       file_name: test_target.dyn.py
       import_list:
         code.import_resource: rc.import_resource:import_resource.module
+        code.import_resources_req: rc.import_resources_req:import_resources_req.module
         code.rc_target: rc.rc_target:rc_target.module
         code.test_job: rc.test_job:test_job.module
+        code.type_req: rc.type_req:type_req.module
