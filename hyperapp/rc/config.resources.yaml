@@ -83,6 +83,7 @@ import:
 - rc.test_requirement:test_target_recorder_resource.actor-template
 - rc.test_requirement:test_target_tested_code_req.actor-template
 - rc.test_requirement:test_target_tested_code_resource.actor-template
+- rc.type_req:type_resource_type_req.actor-template
 - resource.data_to_res:data_to_ref.service
 - resource.data_to_res:data_to_res.service
 - resource.partial_ref:partial_ref.service
@@ -309,6 +310,7 @@ definitions:
       - rc.builtin_service_target:builtin_service_builtin_service_req.actor-template
       - rc.test_requirement:test_target_tested_code_req.actor-template
       - rc.test_requirement:test_target_fixtures_module_req.actor-template
+      - rc.type_req:type_resource_type_req.actor-template
 
   rc_resource_creg:
     type: legacy_type.system:item_list_config
