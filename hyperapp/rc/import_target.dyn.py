@@ -275,7 +275,6 @@ class ImportTarget(Target):
             )
 
     def _enum_resources(self):
-        yield from enum_builtin_resources()
         for src in self._types.as_list:
             yield ImportResource.from_type_src(src)
         for req, target in self._req_to_target.items():
