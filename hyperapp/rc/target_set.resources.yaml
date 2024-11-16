@@ -5,6 +5,7 @@ import:
 - rc.import_target:import_target.module
 - rc.python_module_resource_target:python_module_resource_target.module
 - rc.builtin_service_target:builtin_service_target.module
+- rc.service_req:service_req.module
 
 definitions:
 
@@ -19,3 +20,4 @@ definitions:
         code.builtin_service_target: rc.builtin_service_target:builtin_service_target.module
         code.config_item_target: rc.config_item_target:config_item_target.module
         code.config_resource_target: rc.config_resource_target:config_resource_target.module
+        code.service_req: rc.service_req:service_req.module

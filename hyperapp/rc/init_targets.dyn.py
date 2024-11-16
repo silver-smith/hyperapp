@@ -13,6 +13,8 @@ from .code.import_target import (
     ImportTarget,
     )
 from .code.config_resource_target import ConfigResourceTarget
+from .code.actor_req import ActorReq
+from .code.service_req import ServiceReq
 
 
 def ctr_from_template_creg(config):
@@ -23,6 +25,12 @@ def add_core_items(config_ctl, ctr_from_template_creg, system_config_template, t
     for service_name, config in system_config_template.items():
         ctl = config_ctl[service_name]
         for key, value in config.items():
+            if service_name == 'system':
+                req = ServiceReq(key)
+            elif isinstance(key, Type):
+                req = ActorReq(service_name, key)
+            else:
+                req = None
             if type(key) is not str:
                 assert isinstance(key, Type)
                 key = f'{key.module_name}_{key.name}'
@@ -33,7 +41,7 @@ def add_core_items(config_ctl, ctr_from_template_creg, system_config_template, t
             assert isinstance(resource_tgt, ManualPythonModuleResourceTarget)
             ready_tgt = target_set.factory.config_item_ready(service_name, key)
             resolved_tgt = target_set.factory.config_item_resolved(service_name, key)
-            complete_tgt = target_set.factory.config_item_complete(service_name, key)
+            complete_tgt = target_set.factory.config_item_complete(service_name, key, req)
             ready_tgt.set_provider(resource_tgt)
             resolved_tgt.resolve(ctr)
 

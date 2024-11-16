@@ -12,6 +12,7 @@ import:
 - legacy_type.system:dict_config_ctl
 - legacy_type.system:service_template
 - rc.rc_constructor:rc_constructor.module
+- rc.service_req:service_req.module
 
 definitions:
 
@@ -32,6 +33,7 @@ definitions:
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
         code.rc_constructor: rc.rc_constructor:rc_constructor.module
+        code.service_req: rc.service_req:service_req.module
 
   CoreServiceTemplateCtr:
     type: legacy_type.builtin:attribute

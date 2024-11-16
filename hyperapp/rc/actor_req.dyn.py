@@ -45,7 +45,7 @@ class ActorReq(Requirement):
         return f"{self._service_name}:{self._t.full_name} actor"
 
     def get_target(self, target_factory):
-        return target_factory.config_item_complete(self._service_name, self._type_name)
+        return target_factory.config_item_complete(self._service_name, self._type_name, self)
 
     def make_resource(self, target):
         resource_tgt = target.provider_resource_tgt

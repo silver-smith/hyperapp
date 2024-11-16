@@ -5,6 +5,7 @@ from .services import (
     )
 from .code.rc_constructor import Constructor
 from .code.config_item_resource import ConfigItemResource
+from .code.actor_req import ActorReq
 
 
 class ActorProbeCtr(Constructor):
@@ -124,7 +125,8 @@ class ActorTemplateCtr(ActorTemplateCtrBase):
         resolved_tgt = target_set.factory.config_item_resolved(self._service_name, self._resource_name)
         resolved_tgt.resolve(self)
         # Should be created to be added to config resource.
-        _ = target_set.factory.config_item_complete(self._service_name, self._resource_name)
+        req = ActorReq(self._service_name, self._t)
+        _ = target_set.factory.config_item_complete(self._service_name, self._resource_name, req)
         # resource target may already have resolved target, but in case of
         # non-typed marker it have not.
         resource_tgt.add_cfg_item_target(resolved_tgt)

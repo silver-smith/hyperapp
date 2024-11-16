@@ -31,7 +31,7 @@ class ServiceReq(Requirement):
         return htypes.service_resource.service_req(self._service_name)
 
     def get_target(self, target_factory):
-        return target_factory.config_item_complete('system', self._service_name)
+        return target_factory.config_item_complete('system', self._service_name, self)
 
     def make_resource(self, target):
         resource_tgt = target.provider_resource_tgt

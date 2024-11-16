@@ -6,6 +6,7 @@ from .code.python_module_resource_target import PythonModuleResourceTarget
 from .code.builtin_service_target import BuiltinServiceTarget
 from .code.config_item_target import ConfigItemReadyTarget, ConfigItemResolvedTarget, ConfigItemCompleteTarget
 from .code.config_resource_target import ConfigResourceTarget
+from .code.service_req import ServiceReq
 
 
 class TargetSet:
@@ -224,7 +225,7 @@ class TargetFactory:
         self._target_set.add(target)
         return target
 
-    def config_item_complete(self, service_name, key):
+    def config_item_complete(self, service_name, key, req=None):
         target_name = ConfigItemCompleteTarget.target_name(service_name, key)
         try:
             return self._target_set[target_name]
@@ -237,12 +238,12 @@ class TargetFactory:
             service_cfg_item_complete_tgt = None
         else:
             # Configuration item requires it's service to be complete because it uses it's config_ctl.
-            service_cfg_item_complete_tgt = self.config_item_complete('system', service_name)
+            service_cfg_item_complete_tgt = self.config_item_complete('system', service_name, ServiceReq(service_name))
         resolved_tgt = self.config_item_resolved(service_name, key)
         target = ConfigItemCompleteTarget(self._target_set, service_name, key, resolved_tgt, service_cfg_item_complete_tgt)
         self._target_set.add(target)
         config_tgt = self.config_resource()
-        config_tgt.add_item(service_name, target)
+        config_tgt.add_item(service_name, target, req)
         return target
 
     def config_resource(self):

@@ -4,6 +4,7 @@ from .services import (
     pyobj_creg,
     )
 from .code.rc_constructor import ModuleCtr
+from .code.actor_req import ActorReq
 
 
 class FeedCtr(ModuleCtr):
@@ -46,7 +47,8 @@ class FeedCtr(ModuleCtr):
         resolved_tgt = target_set.factory.config_item_resolved('feed_factory', self._type_name)
         resolved_tgt.resolve(self)
         # Should be created to be added to config resource.
-        _ = target_set.factory.config_item_complete('feed_factory', self._type_name)
+        req = ActorReq('feed_factory', self._t)
+        _ = target_set.factory.config_item_complete('feed_factory', self._type_name, req)
         resource_tgt.add_cfg_item_target(resolved_tgt)
 
     def make_component(self, types, python_module, name_to_res=None):

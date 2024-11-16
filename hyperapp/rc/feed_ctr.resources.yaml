@@ -9,6 +9,7 @@ import:
 - legacy_type.feed:list_feed_ctr
 - legacy_type.feed:list_feed_type
 - legacy_type.system:actor_template
+- rc.actor_req:actor_req.module
 - rc.rc_constructor:rc_constructor.module
 
 definitions:
@@ -26,6 +27,7 @@ definitions:
         htypes.feed.list_feed_type: legacy_type.feed:list_feed_type
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
+        code.actor_req: rc.actor_req:actor_req.module
         code.rc_constructor: rc.rc_constructor:rc_constructor.module
 
   ListFeedCtr:

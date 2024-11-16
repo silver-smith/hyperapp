@@ -56,7 +56,8 @@ class TestJobTarget(Target):
             yield ImportResource.from_type_src(src)
         for req, target in sorted(self._req_to_target.items(), key=req_key):
             yield from req.make_resource_list(target)
-        yield from self._config_tgt.enum_ready_resources()
+        for resource_set in self._config_tgt.ready_req_to_resources().values():
+            yield from resource_set
         yield from self._import_tgt.test_resources
 
     def handle_job_result(self, target_set, result):

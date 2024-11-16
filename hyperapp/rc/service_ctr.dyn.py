@@ -5,6 +5,7 @@ from .services import (
     web,
     )
 from .code.rc_constructor import Constructor, ModuleCtr
+from .code.service_req import ServiceReq
 
 
 class CoreServiceTemplateCtr(Constructor):
@@ -34,7 +35,8 @@ class ServiceTemplateCtrBase(CoreServiceTemplateCtr):
         resolved_tgt = target_set.factory.config_item_resolved('system', self._name)
         resolved_tgt.resolve(self)
         # Complete target should be created so it will be added to config resource.
-        _ = target_set.factory.config_item_complete('system', self._name)
+        req = ServiceReq(self._name)
+        _ = target_set.factory.config_item_complete('system', self._name, req)
 
     def make_component(self, types, python_module, name_to_res=None):
         attribute = htypes.builtin.attribute(

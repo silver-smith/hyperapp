@@ -19,6 +19,7 @@ class ConfigResourceTarget(Target):
 
     def __init__(self, custom_resource_registry, resource_dir, module_name, path):
         self._service_to_targets = defaultdict(set)
+        self._req_to_service_target = defaultdict(set)
         self._custom_resource_registry = custom_resource_registry
         self._resource_dir = resource_dir
         self._module_name = module_name
@@ -36,18 +37,22 @@ class ConfigResourceTarget(Target):
     def has_output(self):
         return True
 
-    def add_item(self, service, item_tgt):
+    def add_item(self, service, item_tgt, req):
         self._service_to_targets[service].add(item_tgt)
+        if req:
+            self._req_to_service_target[req] = (service, item_tgt)
 
-    def enum_ready_resources(self):
-        for service_name, target_set in self._service_to_targets.items():
-            for target in target_set:
-                if not target.completed:
-                    continue
-                yield ConfigItemResource(
-                    service_name=service_name,
-                    template_ref=mosaic.put(target.resource),
-                    )
+    def ready_req_to_resources(self):
+        req_to_resources = defaultdict(set)
+        for req, (service_name, target) in self._req_to_service_target.items():
+            if not target.completed:
+                continue
+            resource = ConfigItemResource(
+                service_name=service_name,
+                template_ref=mosaic.put(target.resource),
+                )
+            req_to_resources[req].add(resource)
+        return dict(req_to_resources)
 
     def get_output(self):
         resource_module = resource_module_factory(

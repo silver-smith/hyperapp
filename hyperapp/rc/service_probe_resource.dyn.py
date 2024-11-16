@@ -9,6 +9,7 @@ from .code.rc_resource import Resource
 from .code.system_probe import Probe
 from .code.config_item_resource import ConfigItemResource
 from .code.service_ctr import ServiceTemplateCtr, FinalizerGenServiceTemplateCtr
+from .code.service_req import ServiceReq
 
 
 class ServiceProbe(Probe):
@@ -127,7 +128,8 @@ class ServiceProbeCtr(ModuleCtr):
             )
         resolved_tgt.resolve(template_ctr)
         # Complete target should be created so it will be added to config resource.
-        _ = target_set.factory.config_item_complete('system', self._name)
+        req = ServiceReq(self._name)
+        _ = target_set.factory.config_item_complete('system', self._name, req)
 
     def make_component(self, types, python_module, name_to_res=None):
         function = htypes.builtin.attribute(
