@@ -26,6 +26,9 @@ class ConfigFixtureResource(Resource):
             and self._service_params == rhs._service_params
             )
 
+    def __hash__(self):
+        return hash(('config-fixture-resource', self._service_name, self._function, self._service_params))
+
     @property
     def piece(self):
         return htypes.fixture_resource.config_fixture_resource(
