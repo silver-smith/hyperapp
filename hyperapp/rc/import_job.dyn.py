@@ -214,8 +214,8 @@ class _Succeeded(_ImportJobResult):
                 raise
             yield Function(name, params=list(signature.parameters.keys()),)
 
-    def make_result(self, recorder, module, system):
-        system_reqs = set(system.enum_used_requirements())
+    def make_result(self, recorder, module, key_to_req, system):
+        system_reqs = self._used_system_reqs(key_to_req, system)
         missing_import_reqs = self._imports_to_requirements(recorder.missing_imports)
         used_import_reqs = self._imports_to_requirements(recorder.used_imports)
         return SucceededImportResult(
@@ -235,8 +235,8 @@ class _ImportJobError(Exception, _ImportJobResult):
 
 class _IncompleteError(_ImportJobError):
 
-    def make_result(self, recorder, module, system):
-        system_reqs = set(system.enum_used_requirements())
+    def make_result(self, recorder, module, key_to_req, system):
+        system_reqs = self._used_system_reqs(key_to_req, system)
         import_reqs = self._imports_to_requirements(recorder.missing_imports | recorder.used_imports)
         return IncompleteImportResult(
             missing_reqs=self._missing_reqs,
@@ -248,9 +248,9 @@ class _IncompleteError(_ImportJobError):
 
 class _FailedError(_ImportJobError):
 
-    def make_result(self, recorder, module, system):
+    def make_result(self, recorder, module, key_to_req, system):
         return FailedImportResult(
-            used_reqs=self._used_requirements(recorder, system),
+            used_reqs=self._used_requirements(recorder, key_to_req, system),
             error=self._error_msg,
             traceback=self._traceback,
             )
@@ -292,6 +292,7 @@ class ImportJob(SystemJob):
         recorder = pyobj_creg.animate(recorder_piece)
         system_resources = [*resources, *self._job_resources(module_piece)]
         system = self._prepare_system(system_resources)
+        key_to_req = self._key_to_req(system['cfg_item_creg'])
         ctr_collector = system.resolve_service('ctr_collector')
         try:
             module = self.convert_errors(pyobj_creg.animate, module_piece)
@@ -301,7 +302,7 @@ class ImportJob(SystemJob):
             constructors = None
         else:
             result = _Succeeded()
-        return result.make_result(recorder, module, system)
+        return result.make_result(recorder, module, key_to_req, system)
 
     def _job_resources(self, module_piece):
         mark_module_item = htypes.ctr_collector.mark_module_cfg_item(

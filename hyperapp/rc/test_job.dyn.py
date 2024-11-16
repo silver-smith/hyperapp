@@ -199,9 +199,9 @@ class _TestJobResult(Result):
 
 class _Succeeded(_TestJobResult):
 
-    def make_result(self, resources, recorder, system):
+    def make_result(self, resources, recorder, key_to_req, system):
         return SucceededTestResult(
-            used_reqs=self._used_requirements(recorder, system),
+            used_reqs=self._used_requirements(recorder, key_to_req, system),
             used_imports=self._used_imports(resources),
             constructors=self._constructors(system),
             )
@@ -216,10 +216,10 @@ class _TestJobError(Exception, _TestJobResult):
 
 class _IncompleteError(_TestJobError):
 
-    def make_result(self, resources, recorder, system):
+    def make_result(self, resources, recorder, key_to_req, system):
         return IncompleteTestResult(
             missing_reqs=self._missing_requirements(recorder),
-            used_reqs=self._used_requirements(recorder, system),
+            used_reqs=self._used_requirements(recorder, key_to_req, system),
             used_imports=self._used_imports(resources),
             error=self._error_msg,
             traceback=self._traceback,
@@ -228,9 +228,9 @@ class _IncompleteError(_TestJobError):
 
 class _FailedError(_TestJobError):
 
-    def make_result(self, resources, recorder, system):
+    def make_result(self, resources, recorder, key_to_req, system):
         return FailedTestResult(
-            used_reqs=self._used_requirements(recorder, system),
+            used_reqs=self._used_requirements(recorder, key_to_req, system),
             error=self._error_msg,
             traceback=self._traceback,
             )
@@ -274,9 +274,11 @@ class TestJob(SystemJob):
         recorder_piece, module_piece = self._src.recorded_python_module(import_list)
         recorder = pyobj_creg.animate(recorder_piece)
         system = None
+        key_to_req = {}
         ctr_collector = None
         try:
             system = self.convert_errors(self._prepare_system, resources)
+            key_to_req = self._key_to_req(system['cfg_item_creg'])
             ctr_collector = system['ctr_collector']
             ctr_collector.ignore_module(module_piece)
             module = self.convert_errors(pyobj_creg.animate, module_piece)
@@ -287,7 +289,7 @@ class TestJob(SystemJob):
             result = x
         else:
             result = _Succeeded()
-        return result.make_result(resources, recorder, system)
+        return result.make_result(resources, recorder, key_to_req, system)
 
     @property
     def _root_name(self):

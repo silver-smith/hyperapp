@@ -215,11 +215,7 @@ class System:
         self._config_ctl_creg = code_registry_ctr('config_ctl_creg', config_ctl_creg_config)
         # cfg_item_creg is used by DictConfigCtl.
         self._cfg_item_creg = cached_code_registry_ctr('cfg_item_creg', self._make_cfg_item_creg_config())
-        self._update_builtin_config(
-            config_ctl_creg_config,
-            htypes.system.dict_config_ctl,
-            partial(DictConfigCtl.from_piece, cfg_item_creg=self._cfg_item_creg),
-            )
+        config_ctl_creg_config[htypes.system.dict_config_ctl] = partial(DictConfigCtl.from_piece, cfg_item_creg=self._cfg_item_creg)
         dict_config_ctl = DictConfigCtl(self._cfg_item_creg)
         self._config_ctl = self._make_config_ctl({
             'system': dict_config_ctl,
@@ -244,9 +240,6 @@ class System:
             htypes.system.finalizer_gen_service_template: FinalizerGenServiceTemplate.from_piece,
             htypes.system.actor_template: ActorTemplate.from_piece,
             }
-
-    def _update_builtin_config(self, config, key, value):
-        config[key] = value
 
     @property
     def service_names(self):

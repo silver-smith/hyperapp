@@ -11,9 +11,6 @@ from .services import (
     pyobj_creg,
     )
 from .code.system import UnknownServiceError, System
-from .code.service_req import ServiceReq
-from .code.actor_req import ActorReq
-from .code.actor_probe import ActorProbe
 
 log = logging.getLogger(__name__)
 
@@ -86,49 +83,36 @@ def resolve_service_fn(system, service_name, fn, fn_params, service_params, args
 
 class ServiceConfigProbe:
 
-    def __init__(self, builtin_config):
-        self._builtin_config = builtin_config
-        self._config = {**builtin_config}
-        self._used_services = set()
+    def __init__(self, config, used_keys):
+        self._config = {**config}
+        self._used_keys = used_keys
 
     def __getitem__(self, service_name):
         try:
             service = self._config[service_name]
         except KeyError:
             raise UnknownServiceError(service_name)
-        else:
-            if service_name not in self._builtin_config:
-                self._used_services.add(service_name)
-            return service
+        self._used_keys.add(('system', service_name))
+        return service
 
     def __setitem__(self, key, value):
         self._config[key] = value
 
-    @property
-    def used_services(self):
-        return self._used_services
-
 
 class ConfigProbe:
 
-    def __init__(self, service_name, config, ignore_keys=None):
+    def __init__(self, service_name, config, used_keys):
         self._service_name = service_name
         self._config = config
-        self._used_keys = set()
-        self._ignore_keys = ignore_keys or set()
+        self._used_keys = used_keys
 
     def __getitem__(self, key):
         try:
             value = self._config[key]
         except KeyError:
             raise ConfigItemMissingError(self._service_name, key)
-        else:
-            if hasattr(value, '__self__') and isinstance(value.__func__, ActorProbe):
-                # Do not add probes to requirements.
-                return value
-            if self._record_key(key):
-                self._used_keys.add(key)
-            return value
+        self._used_keys.add((self._service_name, key))
+        return value
 
     def __iter__(self):
         return iter(self._config)
@@ -138,8 +122,7 @@ class ConfigProbe:
 
     def get(self, key, default=None):
         value = self._config.get(key, default)
-        if value is not default and self._record_key(key):
-            self._used_keys.add(key)
+        self._used_keys.add((self._service_name, key))
         return value
 
     def items(self):
@@ -147,29 +130,6 @@ class ConfigProbe:
 
     def update(self, config):
         self._config.update(config)
-
-    @property
-    def used_keys(self):
-        return self._used_keys
-
-    def _record_key(self, key):
-        return key not in self._ignore_keys
-
-
-# Config probe for services having builtin config elements.
-class SystemConfigProbe(ConfigProbe):
-
-    def __init__(self, service_name, builtin_config, config):
-        full_config = {**builtin_config, **config}
-        super().__init__(service_name, full_config)
-        self._builtin_config = builtin_config
-
-    def update_builtin_config(self, key, value):
-        self._builtin_config[key] = value
-        self._config[key] = value
-
-    def _record_key(self, key):
-        return key not in self._builtin_config
 
 
 class ConfigFixture:
@@ -276,8 +236,7 @@ class SystemProbe(System):
         super().__init__()
         self._config_fixtures = defaultdict(list)  # service_name -> fixture list
         self._async_error = None  # (error message, exception) tuple
-        self._service_probes = []
-        self._service_to_config_probe = {}
+        self._used_keys = set()  # (service, key) set
         self._init_probe()
 
     # Do not _init before our own attributes are initialized.
@@ -287,31 +246,18 @@ class SystemProbe(System):
     def _init_probe(self):
         super()._init()
 
-    def _make_config_probe(self, service_name, config, ignore_keys=None):
-        probe = ConfigProbe(service_name, config, ignore_keys)
-        self._service_to_config_probe[service_name] = probe
-        return probe
-
-    def _make_system_config_probe(self, service_name, builtin_config, config):
-        probe = SystemConfigProbe(service_name, builtin_config, config)
-        self._service_to_config_probe[service_name] = probe
-        return probe
+    def _make_config_probe(self, service_name, config):
+        return ConfigProbe(service_name, config, self._used_keys)
 
     def _make_config_ctl_creg_config(self):
-        return self._make_system_config_probe(
-            'config_ctl_creg', builtin_config={}, config={})
+        return self._make_config_probe('config_ctl_creg', config={})
 
     def _make_config_ctl(self, config):
-        probe = ServiceConfigProbe(config)
-        self._service_probes.append(probe)
-        return probe
+        return ServiceConfigProbe(config, self._used_keys)
 
     def _make_cfg_item_creg_config(self):
-        builtin_config = super()._make_cfg_item_creg_config()
-        return self._make_system_config_probe('cfg_item_creg', builtin_config, config={})
-
-    def _update_builtin_config(self, config, key, value):
-        config.update_builtin_config(key, value)
+        config = super()._make_cfg_item_creg_config()
+        return self._make_config_probe('cfg_item_creg', config)
 
     def add_item_fixtures(self, service_name, fixture_list):
         self._config_fixtures[service_name] += fixture_list
@@ -328,13 +274,10 @@ class SystemProbe(System):
     def resolve_config(self, service_name):
         ctl = self._config_ctl[service_name]
         config = super().resolve_config(service_name)
-        ignore_keys = set()
         for fixture in self._config_fixtures.get(service_name, []):
             fixture_cfg = fixture.resolve(self)
-            if type(fixture_cfg) is dict:
-                ignore_keys |= fixture_cfg.keys()
             ctl.merge(config, fixture_cfg)
-        return self._make_config_probe(service_name, config, ignore_keys)
+        return self._make_config_probe(service_name, config)
 
     def add_constructor(self, ctr):
         ctr_collector = self.resolve_service('ctr_collector')
@@ -367,10 +310,6 @@ class SystemProbe(System):
     def _asyncio_exception_handler(self, loop, context):
         self._async_error = (context['message'], context['exception'])
 
-    def enum_used_requirements(self):
-        for probe in self._service_probes:
-            for service_name in probe.used_services:
-                yield ServiceReq(service_name)
-        for service_name, probe in self._service_to_config_probe.items():
-            for key in probe.used_keys:
-                yield ActorReq(service_name, t=key)
+    @property
+    def used_keys(self):
+        return self._used_keys

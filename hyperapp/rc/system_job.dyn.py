@@ -69,13 +69,20 @@ class Result:
         import_reqs = self._imports_to_requirements(recorder.missing_imports)
         return self._missing_reqs | import_reqs
 
-    def _used_requirements(self, recorder, system):
-        if system:
-            system_reqs = set(system.enum_used_requirements())
-        else:
-            # May be not yet created.
-            system_reqs = set()
+    def _used_system_reqs(self, key_to_req, system):
+        if not system:
+            return set()
+        result = set()
+        for key in system.used_keys:
+            req = key_to_req.get(key)
+            # assert req, key
+            if req:
+                result.add(req)
+        return result
+
+    def _used_requirements(self, recorder, key_to_req, system):
         import_reqs = self._imports_to_requirements(recorder.used_imports)
+        system_reqs = self._used_system_reqs(key_to_req, system)
         return system_reqs | import_reqs
 
     def _constructors(self, system):
@@ -107,6 +114,20 @@ class SystemJob:
             for req, resource_set in self._req_to_resources.items()
             for resource in resource_set
             )
+
+    def _key_to_req(self, cfg_item_creg):
+        result = {}
+        for req, resource_set in self._req_to_resources.items():
+            for resource in resource_set:
+                for service_name, item_list in resource.system_config_items.items():
+                    for item_piece in item_list:
+                        item = cfg_item_creg.animate(item_piece)
+                        result[(service_name, item.key)] = req
+                for service_name, item_list in resource.system_config_items_override.items():
+                    for item_piece in item_list:
+                        item = cfg_item_creg.animate(item_piece)
+                        result[(service_name, item.key)] = req
+        return result
 
     def _resource_group(self, resource):
         if resource.is_system_resource:
