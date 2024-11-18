@@ -73,7 +73,6 @@ import:
 - rc.import_job:import_job_job.actor-template
 - rc.import_job:import_job_succeeded_result.actor-template
 - rc.import_resource:import_resource_import_resource.actor-template
-- rc.import_resources_req:import_resources_req_import_resources_req.actor-template
 - rc.init_targets:ctr_from_template_creg.service
 - rc.job_cache:job_cache.service
 - rc.marker_ctr:marker_marker_template.actor-template
@@ -105,6 +104,7 @@ import:
 - rc.test_job:test_job_job.actor-template
 - rc.test_job:test_job_rpc_service_wrapper.service
 - rc.test_job:test_job_succeeded_result.actor-template
+- rc.test_module_resources_req:test_module_resources_req_test_module_resources_req.actor-template
 - rc.test_requirement:test_target_fixtures_module_req.actor-template
 - rc.test_requirement:test_target_recorder_resource.actor-template
 - rc.test_requirement:test_target_tested_code_req.actor-template
@@ -495,9 +495,9 @@ definitions:
       items:
       - rc.actor_req:actor_resource_actor_req.actor-template
       - rc.builtin_service_target:builtin_service_builtin_service_req.actor-template
-      - rc.import_resources_req:import_resources_req_import_resources_req.actor-template
       - rc.python_module_resource_target:python_module_resource_target_python_module_req.actor-template
       - rc.service_req:service_resource_service_req.actor-template
+      - rc.test_module_resources_req:test_module_resources_req_test_module_resources_req.actor-template
       - rc.test_requirement:test_target_fixtures_module_req.actor-template
       - rc.test_requirement:test_target_tested_code_req.actor-template
       - rc.type_req:type_resource_type_req.actor-template

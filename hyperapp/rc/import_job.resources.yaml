@@ -15,7 +15,7 @@ import:
 - rc.builtin_resources:builtin_resources.module
 - rc.config_item_resource:config_item_resource.module
 - rc.job_result:job_result.module
-- rc.import_resources_req:import_resources_req.module
+- rc.test_module_resources_req:test_module_resources_req.module
 - rc.rc_constants:rc_constants.module
 - rc.system_job:system_job.module
 
@@ -39,7 +39,7 @@ definitions:
         code.builtin_resources: rc.builtin_resources:builtin_resources.module
         code.config_item_resource: rc.config_item_resource:config_item_resource.module
         code.job_result: rc.job_result:job_result.module
-        code.import_resources_req: rc.import_resources_req:import_resources_req.module
+        code.test_module_resources_req: rc.test_module_resources_req:test_module_resources_req.module
         code.rc_constants: rc.rc_constants:rc_constants.module
         code.system_job: rc.system_job:system_job.module
 

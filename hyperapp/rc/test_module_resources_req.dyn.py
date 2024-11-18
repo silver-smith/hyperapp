@@ -2,7 +2,7 @@ from . import htypes
 from .code.rc_requirement import Requirement
 
 
-class ImportResourcesReq(Requirement):
+class TestModuleResourcesReq(Requirement):
 
     @classmethod
     def from_piece(cls, piece):
@@ -14,18 +14,18 @@ class ImportResourcesReq(Requirement):
         self._module_name = module_name
 
     def __str__(self):
-        return f"ImportResReq({self._module_name})"
+        return f"TestModuleResourcesReq({self._module_name})"
 
     def __eq__(self, rhs):
-        return (type(rhs) == ImportResourcesReq
+        return (type(rhs) == TestModuleResourcesReq
                 and rhs._module_name == self._module_name)
 
     def __hash__(self):
-        return hash(('type_resources_req', self._module_name))
+        return hash(('test-module-resources-req', self._module_name))
 
     @property
     def piece(self):
-        return htypes.import_resources_req.import_resources_req(
+        return htypes.test_module_resources_req.test_module_resources_req(
             module_name=self._module_name,
             )
 

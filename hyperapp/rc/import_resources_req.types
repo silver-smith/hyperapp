@@ -1,2 +1,0 @@
-import_resources_req = record:
-  module_name: string
