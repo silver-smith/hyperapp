@@ -57,7 +57,6 @@ class ImportCachedTarget(Target):
         self._req_to_target = req_to_target
         self._job_result = job_result
         self._completed = False
-        self._ready = False
 
     @property
     def name(self):
