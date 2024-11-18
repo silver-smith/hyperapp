@@ -6,10 +6,60 @@ from .code.import_resource import ImportResource
 from .code.test_job import TestJob
 
 
+class TestCachedTarget(Target):
+
+    def __init__(self, target_set, test_target, src, function, deps, req_to_target, job_result):
+        self._target_set = target_set
+        self._test_target = test_target
+        self._src = src
+        self._function = function
+        self._deps = deps
+        self._req_to_target = req_to_target
+        self._job_result = job_result
+        self._completed = False
+
+    @property
+    def name(self):
+        return f'test/{self._src.name}/{self._function.name}/cached'
+
+    @property
+    def completed(self):
+        return self._completed
+
+    @property
+    def deps(self):
+        return set(self._req_to_target.values())
+
+    def update_status(self):
+        if self._completed:
+            return
+        if all(target.completed for target in self._req_to_target.values()):
+            self._check_deps()
+            self._completed = True
+
+    def set_completed(self):
+        pass  # Set in update_status.
+
+    def _check_deps(self):
+        for req, target in self._req_to_target.items():
+            dep_resources = self._deps[req]
+            actual_resources = set(req.make_resource_list(target))
+            if actual_resources != dep_resources:
+                self._create_job_target()
+                return
+        self._use_job_result()
+
+    def _create_job_target(self):
+        self._test_target.create_first_job_target()
+
+    def _use_job_result(self):
+        self._job_result.update_targets(self._test_target, self._target_set)
+
+
 class TestJobTarget(Target):
 
     def __init__(self, types, config_tgt, import_tgt, test_target, src, function, req_to_target,
-                 tested_imports, fixtures_deps, tested_deps, idx=1):
+                 tested_imports, fixtures_deps, tested_deps, idx):
         self._types = types
         self._config_tgt = config_tgt
         self._import_tgt = import_tgt
@@ -112,13 +162,14 @@ class TestTarget(Target):
         for target in self._tested_imports:
             if target.completed:
                 self._tested_deps |= target.deps
+        if all(dep.completed for dep in self.deps):
+            self._completed = True
 
     @property
     def req_set(self):
         return set(self._req_to_target)
 
     def set_completed(self):
-        self._completed = True
         self._current_job_target.set_completed()
 
     def set_test_target(self, test_target):
@@ -135,7 +186,9 @@ class TestTarget(Target):
                 return
         self._create_job_target()
 
-    def _create_job_target(self):
+    def _create_job_target(self, req_to_target=None, idx=1):
+        if req_to_target is None:
+            req_to_target = self._req_to_target
         target = TestJobTarget(
             types=self._types,
             config_tgt=self._config_tgt,
@@ -143,16 +196,27 @@ class TestTarget(Target):
             test_target=self,
             src=self._src,
             function=self._function,
-            req_to_target=self._req_to_target,
+            req_to_target=req_to_target,
             tested_imports=self._tested_imports,
             fixtures_deps=self._fixtures_deps,
             tested_deps=self._tested_deps,
+            idx=idx,
             )
         self._current_job_target = target
         self._target_set.add(target)
 
     def _create_cache_target(self, entry):
-        assert 0
+        req_to_target = self._resolve_requirements(entry.deps.keys())
+        target = TestCachedTarget(self._target_set, self, self._src, self._function, entry.deps, req_to_target, entry.result)
+        self._current_job_target = target
+        self._target_set.add(target)
+
+    def _resolve_requirements(self, requirements):
+        req_to_target = {}
+        for req in requirements:
+            target = req.get_target(self._target_set.factory)
+            req_to_target[req] = target
+        return req_to_target
 
     def add_fixtures_import(self, target):
         assert not self._current_job_target
@@ -164,27 +228,15 @@ class TestTarget(Target):
         if target.completed:
             self._tested_deps |= target.deps
 
+    def create_first_job_target(self):
+        self._create_job_target()
+
     def create_next_job_target(self, req_to_target):
-        job_target = self._current_job_target
-        assert isinstance(job_target, TestJobTarget)
+        assert isinstance(self._current_job_target, TestJobTarget)
+        current_idx = self._current_job_target._idx
         # Do not lose requirements from previous iterations.
         full_req_to_target = {
             **self._req_to_target,
             **req_to_target,
             }
-        target = TestJobTarget(
-            types=self._types,
-            config_tgt=self._config_tgt,
-            import_tgt=self._import_tgt,
-            test_target=self,
-            src=self._src,
-            function=self._function,
-            req_to_target=full_req_to_target,
-            tested_imports=self._tested_imports,
-            fixtures_deps=self._fixtures_deps,
-            tested_deps=self._tested_deps,
-            idx=job_target._idx + 1,
-            )
-        self._target_set.add(target)
-        self._current_job_target = target
-        return target
+        self._create_job_target(full_req_to_target, current_idx + 1)
