@@ -49,12 +49,13 @@ class PythonModuleSrc:
             )
 
     def recorded_python_module(self, import_list):
+        # Sort imports so that new recorder resources match to cached ones.
         recorder_resources = tuple(
             htypes.import_recorder.resource(
                 name=tuple(rec.full_name.split('.')),
                 resource=rec.resource,
                 )
-            for rec in import_list
+            for rec in sorted(import_list)
             )
         recorder = htypes.import_recorder.import_recorder(
             id=self.name,
