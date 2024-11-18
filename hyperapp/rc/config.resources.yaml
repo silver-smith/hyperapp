@@ -1,19 +1,21 @@
 import:
+
 - legacy_type.builtin:string
 - legacy_type.system:item_list_config
 - legacy_type.system:system_config
+
 - common.bundler:bundler.service
 - common.file_bundle:file_bundle.service
 - common.mark:marker_ctl.service
 - common.ref_picker:pick_refs.service
 - common.ref_picker:ref_picker_cache.service
-- system.system_stop:stop_signal.service
-- system.system_stop:system_failed.service
 - rc.actor_ctr:actor_resource_actor_probe_ctr.actor-template
 - rc.actor_ctr:actor_resource_actor_template_ctr.actor-template
 - rc.actor_ctr:system_actor_template.actor-template
 - rc.actor_marker:actor.marker-template
+- rc.actor_probe:actor_resource_actor_probe_template.actor-template
 - rc.actor_req:actor_resource_actor_req.actor-template
+- rc.builtin_service_target:builtin_service_builtin_service_req.actor-template
 - rc.ctr_collector:ctr_collector_ignore_module_cfg_item.actor-template
 - rc.ctr_collector:ctr_collector_mark_module_cfg_item.actor-template
 - rc.ctr_collector:ctr_collector.service
@@ -72,8 +74,6 @@ import:
 - rc.service_marker:service.marker-template
 - rc.service_probe_resource:service_resource_service_probe_template.actor-template
 - rc.service_req:service_resource_service_req.actor-template
-- rc.builtin_service_target:builtin_service_builtin_service_req.actor-template
-- rc.actor_probe:actor_resource_actor_probe_template.actor-template
 - rc.test_job:test_job_failed_result.actor-template
 - rc.test_job:test_job_incomplete_result.actor-template
 - rc.test_job:test_job_succeeded_result.actor-template
@@ -111,6 +111,8 @@ import:
 - subprocess.subprocess_rpc_server:subprocess_rpc_server_running.service
 - subprocess.subprocess_rpc_server_main:rpc_server_main.service
 - subprocess.subprocess_transport:subprocess_transport.service
+- system.system_stop:stop_signal.service
+- system.system_stop:system_failed.service
 - transport.endpoint:endpoint_registry.service
 - transport.endpoint:endpoint_thread_pool.service
 - transport.identity:identity_registry.service
