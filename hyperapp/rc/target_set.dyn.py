@@ -195,6 +195,10 @@ class TargetFactory:
     def all_imports_known(self):
         return self._target_set[AllImportsKnownTarget.name]
 
+    def python_module_imported_by_module_name(self, module_name):
+        target_name = ImportTarget.name_for_module_name(module_name)
+        return self._target_set[target_name]
+
     def python_module_imported_by_src(self, src):
         target_name = ImportTarget.name_for_src(src)
         return self._target_set[target_name]

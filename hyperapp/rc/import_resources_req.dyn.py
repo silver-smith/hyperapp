@@ -32,3 +32,9 @@ class ImportResourcesReq(Requirement):
     @property
     def desc(self):
         return f"{self._module_name} resources"
+
+    def get_target(self, target_factory):
+        return target_factory.python_module_imported_by_module_name(self._module_name)
+
+    def make_resource_list(self, target):
+        return target.test_resources

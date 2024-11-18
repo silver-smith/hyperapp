@@ -165,6 +165,10 @@ class ImportJobTarget(Target):
 class ImportTarget(Target):
 
     @staticmethod
+    def name_for_module_name(module_name):
+        return f'import/{module_name}'
+
+    @staticmethod
     def name_for_src(python_module_src):
         return f'import/{python_module_src.name}'
 
