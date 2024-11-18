@@ -79,6 +79,13 @@ class SucceededTestResult(_SucceededTestResultBase):
             constructors=tuple(mosaic.put(ctr.piece) for ctr in self._constructors),
             )
 
+    def cache_target_name(self, my_target):
+        return my_target.test_tgt.name
+
+    @property
+    def used_reqs(self):
+        return self._used_reqs
+
     def update_targets(self, my_target, target_set):
         self._update_tested_imports(target_set.factory)
         self._update_ctr_targets(target_set)
