@@ -8,7 +8,7 @@ from .code.type_req import TypeReq
 from .code.builtin_resources import enum_builtin_resources
 from .code.import_resource import ImportResource
 from .code.import_job import ImportJob
-from .code.test_target import TestTarget, TestJobTarget
+from .code.test_target import TestTarget
 from .code.python_module_resource_target import PythonModuleReq, CompiledPythonModuleResourceTarget
 
 
@@ -266,10 +266,12 @@ class ImportTarget(Target):
         return target
 
     def create_test_target(self, function, req_to_target):
-        test_tgt = TestTarget(self._target_set, self._src, function)
-        job_tgt = TestJobTarget(self._src, self._types, self, function, req_to_target, test_tgt, self._config_tgt)
-        test_tgt.set_test_target(job_tgt)
-        return (test_tgt, job_tgt)
+        test_target = TestTarget(
+            self._cache, self._target_set, self._types, self._config_tgt, self, self._src, function, req_to_target)
+        for req in req_to_target:
+            req.apply_test_target(self, test_target, self._target_set)
+        self._target_set.add(test_target)
+        test_target.check_cache()
 
     @cached_property
     def recorded_python_module(self):

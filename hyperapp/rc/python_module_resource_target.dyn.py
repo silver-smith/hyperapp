@@ -159,7 +159,7 @@ class CompiledPythonModuleResourceTarget(PythonModuleResourceTarget):
 
     def add_test(self, test_target, target_set):
         assert not self._completed
-        self._tests.add(test_target.test_tgt)
+        self._tests.add(test_target)
         test_target.add_tested_import(self._import_tgt)
 
     def add_used_imports(self, import_list):

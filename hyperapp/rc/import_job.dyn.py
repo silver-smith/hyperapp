@@ -117,11 +117,7 @@ class SucceededImportResult(_SucceededImportResultBase):
         for fn in self._functions:
             if not fn.name.startswith('test_'):
                 continue
-            test_alias, test_target = import_tgt.create_test_target(fn, req_to_target)
-            target_set.add(test_alias)
-            target_set.add(test_target)
-            for req in self._all_reqs:
-                req.apply_test_target(import_tgt, test_target, target_set)
+            import_tgt.create_test_target(fn, req_to_target)
 
     def _update_resource(self, import_tgt, target_set, req_to_target):
         resource_target = import_tgt.get_resource_target(target_set.factory)
