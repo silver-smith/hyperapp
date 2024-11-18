@@ -80,10 +80,9 @@ class SucceededTestResult(_SucceededTestResultBase):
             )
 
     def update_targets(self, my_target, target_set):
-        req_to_target = self._resolve_requirements(target_set.factory, self._used_reqs)
         self._update_tested_imports(target_set.factory)
         self._update_ctr_targets(target_set)
-        my_target.set_alias_completed(req_to_target)
+        my_target.set_alias_completed()
 
     def _update_ctr_targets(self, target_set):
         for ctr in self._constructors:

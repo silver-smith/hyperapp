@@ -83,8 +83,8 @@ class TestJobTarget(Target):
         if target.completed:
             self._tested_deps |= target.deps
 
-    def set_alias_completed(self, req_to_target):
-        self._test_tgt.set_completed(req_to_target)
+    def set_alias_completed(self):
+        self._test_tgt.set_completed()
 
     @property
     def req_set(self):
@@ -132,7 +132,7 @@ class TestTarget(Target):
     def deps(self):
         return {self._test_target}
 
-    def set_completed(self, req_to_target):
+    def set_completed(self):
         self._completed = True
 
     def set_test_target(self, test_target):
