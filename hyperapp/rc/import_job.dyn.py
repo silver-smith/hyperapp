@@ -15,6 +15,7 @@ from .code.builtin_resources import enum_builtin_resources
 from .code.config_item_resource import ConfigItemResource
 from .code.job_result import JobResult
 from .code.system_job import Result, SystemJob, SystemJobResult
+from .code.import_resources_req import ImportResourcesReq
 
 
 class Function:
@@ -108,6 +109,11 @@ class SucceededImportResult(_SucceededImportResultBase):
             ctr.update_fixtures_targets(import_tgt, target_set)
 
     def _add_tests(self, import_tgt, target_set, req_to_target):
+        import_req = ImportResourcesReq(import_tgt.module_name)
+        req_to_target = {
+            **req_to_target,
+            import_req: import_req.get_target(target_set.factory),
+            }
         for fn in self._functions:
             if not fn.name.startswith('test_'):
                 continue

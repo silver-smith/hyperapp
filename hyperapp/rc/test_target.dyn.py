@@ -2,7 +2,6 @@ from collections import defaultdict
 
 from .code.rc_target import Target
 from .code.type_req import TypeReq
-from .code.import_resources_req import ImportResourcesReq
 from .code.import_resource import ImportResource
 from .code.test_job import TestJob
 
@@ -59,8 +58,6 @@ class TestJobTarget(Target):
             result[req] |= set(req.make_resource_list(target))
         for req, resource_set in self._config_tgt.ready_req_to_resources().items():
             result[req] |= resource_set
-        import_req = ImportResourcesReq(self._src.name)
-        result[import_req] = self._import_tgt.test_resources
         return dict(result)
 
     def handle_job_result(self, target_set, result):
