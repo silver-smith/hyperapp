@@ -16,6 +16,7 @@ import:
 - rc.actor_probe:actor_resource_actor_probe_template.actor-template
 - rc.actor_req:actor_resource_actor_req.actor-template
 - rc.builtin_service_target:builtin_service_builtin_service_req.actor-template
+- rc.crud_marker:crud.marker-template
 - rc.ctr_collector:ctr_collector_ignore_module_cfg_item.actor-template
 - rc.ctr_collector:ctr_collector_mark_module_cfg_item.actor-template
 - rc.ctr_collector:ctr_collector.service
@@ -226,6 +227,7 @@ definitions:
       - rc.command_marker:universal_ui_command.marker-template
       - rc.command_marker:ui_model_command.marker-template
       - rc.config_fixture_marker:config_fixture.marker-template
+      - rc.crud_marker:crud.marker-template
       - rc.fixture_marker:fixture.marker-template
       - rc.model_marker:model.marker-template
       - rc.service_marker:service.marker-template

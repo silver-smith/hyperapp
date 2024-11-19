@@ -51,6 +51,7 @@ import:
 - rc.config_fixture_marker:config_fixture.marker-template
 - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
 - rc.config_item_resource:config_item_resource_config_item_resource_override.actor-template
+- rc.crud_marker:crud.marker-template
 - rc.ctr_collector:ctr_collector.service
 - rc.ctr_collector:ctr_collector_ignore_module_cfg_item.actor-template
 - rc.ctr_collector:ctr_collector_mark_module_cfg_item.actor-template
@@ -405,6 +406,7 @@ definitions:
       - rc.command_marker:ui_model_command.marker-template
       - rc.command_marker:universal_ui_command.marker-template
       - rc.config_fixture_marker:config_fixture.marker-template
+      - rc.crud_marker:crud.marker-template
       - rc.fixture_marker:fixture.marker-template
       - rc.model_marker:model.marker-template
       - rc.service_marker:service.marker-template
