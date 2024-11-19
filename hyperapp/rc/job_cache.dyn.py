@@ -56,6 +56,7 @@ class JobCache:
         self._rc_job_result_creg = rc_job_result_creg
         self._path = path
         self._target_to_entry = {}  # target name -> CacheEntry
+        self._changed = False
         if load:
             self._load()
 
@@ -76,8 +77,11 @@ class JobCache:
         deps = self._resolve_requirements(target_factory, requirements)
         entry = CacheEntry(target_name, src, deps, result)
         self._target_to_entry[entry.target_name] = entry
+        self._changed = True
 
     def save(self):
+        if not self._changed:
+            return
         entries = tuple(
             entry.piece for entry
             in self._target_to_entry.values()
