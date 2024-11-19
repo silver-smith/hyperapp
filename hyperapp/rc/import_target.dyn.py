@@ -38,6 +38,7 @@ class AllImportsKnownTarget(Target):
         self._completed = all(target.completed for target in self._import_targets)
 
     def add_import_target(self, target):
+        assert not self._completed
         self._import_targets.add(target)
 
     def init_completed(self):
