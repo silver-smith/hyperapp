@@ -124,6 +124,9 @@ def _run(rc_job_result_creg, pool, job_cache, cached_count, target_set, filter, 
 
     while should_run:
         _submit_jobs(rc_job_result_creg, options, pool, target_set, target_to_job, job_id_to_target, filter)
+        if target_set.all_completed:
+            rc_log.info("All targets are completed\n")
+            break
         if pool.job_count == 0:
             rc_log.info("Not all targets are completed, but there are no jobs\n")
             break
@@ -135,9 +138,6 @@ def _run(rc_job_result_creg, pool, job_cache, cached_count, target_set, filter, 
         if options.check:
             target_set.check_statuses()
         filter.update_deps()
-        if target_set.all_completed:
-            rc_log.info("All targets are completed\n")
-            break
     if failures:
         rc_log.info("%d failures:\n", len(failures))
         for target in failures:
