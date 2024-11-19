@@ -14,7 +14,7 @@ def open_crud_sample():
 @mark.model
 def list_crud_sample(piece):
     return [
-        htypes.sample_crud.item(idx, f"item#{idx}", "Crud sample item #{idx}")
+        htypes.sample_crud.item(idx, f"item#{idx}", f"Crud sample item #{idx}")
         for idx in range(10)
         ]
 

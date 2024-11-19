@@ -9,6 +9,7 @@ import:
 - legacy_type.model:cfg_item
 - legacy_type.model:list_ui_t
 - legacy_type.model:model
+- legacy_type.sample_crud:edit_item
 - legacy_type.sample_crud:item
 - legacy_type.sample_crud:model
 - legacy_type.sample_crud:open_crud_sample_d
@@ -50,6 +51,7 @@ definitions:
       file_name: sample_crud.dyn.py
       import_list:
         code.mark: common.mark:mark.module
+        htypes.sample_crud.edit_item: legacy_type.sample_crud:edit_item
         htypes.sample_crud.item: legacy_type.sample_crud:item
         htypes.sample_crud.model: legacy_type.sample_crud:model
   sample_crud_model.list-ui-t:
