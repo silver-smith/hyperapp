@@ -1,3 +1,4 @@
+import logging
 from collections import defaultdict
 from functools import cached_property
 
@@ -10,6 +11,8 @@ from .code.import_resource import ImportResource
 from .code.import_job import ImportJob
 from .code.test_target import TestTarget
 from .code.python_module_resource_target import PythonModuleReq, CompiledPythonModuleResourceTarget
+
+rc_log = logging.getLogger('rc')
 
 
 class AllImportsKnownTarget(Target):
@@ -96,6 +99,7 @@ class ImportCachedTarget(Target):
     def _use_job_result(self):
         self._job_result.update_targets(self._import_tgt, self._target_set)
         self._cached_count.incr()
+        rc_log.debug("%s: %s", self.name, self._job_result.desc)
 
 
 class ImportJobTarget(Target):

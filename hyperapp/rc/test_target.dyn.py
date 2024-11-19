@@ -1,9 +1,12 @@
+import logging
 from collections import defaultdict
 
 from .code.rc_target import Target
 from .code.type_req import TypeReq
 from .code.import_resource import ImportResource
 from .code.test_job import TestJob
+
+rc_log = logging.getLogger('rc')
 
 
 class TestCachedTarget(Target):
@@ -56,6 +59,7 @@ class TestCachedTarget(Target):
     def _use_job_result(self):
         self._job_result.update_targets(self._test_target, self._target_set)
         self._cached_count.incr()
+        rc_log.debug("%s: %s", self.name, self._job_result.desc)
 
 
 class TestJobTarget(Target):

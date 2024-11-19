@@ -60,7 +60,7 @@ def _collect_output(target_set, failures, options):
                 stdout=subprocess.PIPE,
                 )
             if p.returncode == 0:
-                rc_log.info("%s: No diffs", target.name)
+                rc_log.debug("%s: No diffs", target.name)
             else:
                 diffs = p.stdout.decode()
                 line_count = len(diffs.splitlines())
