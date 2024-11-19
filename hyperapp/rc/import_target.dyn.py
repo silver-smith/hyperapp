@@ -90,7 +90,6 @@ class ImportCachedTarget(Target):
         target = ImportJobTarget(self._target_set, self._types, self._config_tgt, self._import_tgt, self._src, req_to_target=self._req_to_target)
         self._target_set.add(target)
         self._import_tgt.set_current_job_target(target)
-        self._all_imports_known_tgt.add_import_target(target)
         return target
 
     def _use_job_result(self):
