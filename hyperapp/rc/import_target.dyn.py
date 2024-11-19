@@ -47,7 +47,8 @@ class AllImportsKnownTarget(Target):
 
 class ImportCachedTarget(Target):
 
-    def __init__(self, target_set, types, config_tgt, import_tgt, src, deps, req_to_target, job_result):
+    def __init__(self, cached_count, target_set, types, config_tgt, import_tgt, src, deps, req_to_target, job_result):
+        self._cached_count = cached_count
         self._target_set = target_set
         self._types = types
         self._config_tgt = config_tgt
@@ -94,6 +95,7 @@ class ImportCachedTarget(Target):
 
     def _use_job_result(self):
         self._job_result.update_targets(self._import_tgt, self._target_set)
+        self._cached_count.incr()
 
 
 class ImportJobTarget(Target):
@@ -170,8 +172,9 @@ class ImportTarget(Target):
     def name_for_src(python_module_src):
         return f'import/{python_module_src.name}'
 
-    def __init__(self, cache, target_set, custom_resource_registry, types, config_tgt, all_imports_known_tgt, python_module_src):
+    def __init__(self, cache, cached_count, target_set, custom_resource_registry, types, config_tgt, all_imports_known_tgt, python_module_src):
         self._cache = cache
+        self._cached_count = cached_count
         self._target_set = target_set
         self._custom_resource_registry = custom_resource_registry
         self._types = types
@@ -220,7 +223,7 @@ class ImportTarget(Target):
         entry.result.non_ready_update_targets(self, self._target_set)
         req_to_target = self._resolve_requirements(entry.deps.keys())
         target = ImportCachedTarget(
-            self._target_set, self._types, self._config_tgt,
+            self._cached_count, self._target_set, self._types, self._config_tgt,
             self, self._src, entry.deps, req_to_target, entry.result)
         self._init_current_job_target(target)
 
@@ -265,7 +268,8 @@ class ImportTarget(Target):
 
     def create_test_target(self, function, req_to_target):
         test_target = TestTarget(
-            self._cache, self._target_set, self._types, self._config_tgt, self, self._src, function, req_to_target)
+            self._cache, self._cached_count, self._target_set, self._types, self._config_tgt,
+            self, self._src, function, req_to_target)
         for req in req_to_target:
             req.apply_test_target(self, test_target, self._target_set)
         self._target_set.add(test_target)

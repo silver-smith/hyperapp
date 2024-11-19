@@ -46,7 +46,7 @@ def add_core_items(config_ctl, ctr_from_template_creg, system_config_template, t
             resolved_tgt.resolve(ctr)
 
 
-def init_targets(config_ctl, ctr_from_template_creg, system_config_template, root_dir, cache, target_set, build):
+def init_targets(config_ctl, ctr_from_template_creg, system_config_template, root_dir, cache, cached_count, target_set, build):
     custom_resource_registry = create_custom_resource_registry(build)
     all_imports_known_tgt = AllImportsKnownTarget()
     target_set.add(all_imports_known_tgt)
@@ -65,7 +65,7 @@ def init_targets(config_ctl, ctr_from_template_creg, system_config_template, roo
                     src, custom_resource_registry, resource_dir, resource_text)
                 target_set.add(resource_tgt)
                 continue
-        import_tgt = ImportTarget(cache, target_set, custom_resource_registry, build.types, config_tgt, all_imports_known_tgt, src)
+        import_tgt = ImportTarget(cache, cached_count, target_set, custom_resource_registry, build.types, config_tgt, all_imports_known_tgt, src)
         target_set.add(import_tgt)
         import_target_list.append(import_tgt)
     add_core_items(config_ctl, ctr_from_template_creg, system_config_template, target_set)

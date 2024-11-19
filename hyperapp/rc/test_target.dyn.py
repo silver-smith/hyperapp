@@ -8,7 +8,8 @@ from .code.test_job import TestJob
 
 class TestCachedTarget(Target):
 
-    def __init__(self, target_set, test_target, src, function, deps, req_to_target, job_result):
+    def __init__(self, cached_count, target_set, test_target, src, function, deps, req_to_target, job_result):
+        self._cached_count = cached_count
         self._target_set = target_set
         self._test_target = test_target
         self._src = src
@@ -54,6 +55,7 @@ class TestCachedTarget(Target):
 
     def _use_job_result(self):
         self._job_result.update_targets(self._test_target, self._target_set)
+        self._cached_count.incr()
 
 
 class TestJobTarget(Target):
@@ -130,8 +132,9 @@ class TestJobTarget(Target):
 
 class TestTarget(Target):
 
-    def __init__(self, cache, target_set, types, config_tgt, import_tgt, python_module_src, function, req_to_target):
+    def __init__(self, cache, cached_count, target_set, types, config_tgt, import_tgt, python_module_src, function, req_to_target):
         self._cache = cache
+        self._cached_count = cached_count
         self._target_set = target_set
         self._types = types
         self._config_tgt = config_tgt
@@ -207,7 +210,7 @@ class TestTarget(Target):
 
     def _create_cache_target(self, entry):
         req_to_target = self._resolve_requirements(entry.deps.keys())
-        target = TestCachedTarget(self._target_set, self, self._src, self._function, entry.deps, req_to_target, entry.result)
+        target = TestCachedTarget(self._cached_count, self._target_set, self, self._src, self._function, entry.deps, req_to_target, entry.result)
         self._current_job_target = target
         self._target_set.add(target)
 

@@ -2,6 +2,7 @@ import argparse
 import logging
 import subprocess
 from collections import namedtuple
+from dataclasses import dataclass
 from pathlib import Path
 
 from hyperapp.common.htypes import HException
@@ -28,6 +29,14 @@ JOB_CACHE_PATH = Path.home() / '.local/share/hyperapp/rc-job-cache.cdr'
 
 Options = namedtuple('Options', 'clean timeout verbose fail_fast write show_diffs show_incomplete_traces check')
 RcArgs = namedtuple('RcArgs', 'targets process_count options')
+
+
+@dataclass
+class Counter:
+    value: int = 0
+
+    def incr(self):
+        self.value += 1
 
 
 def _collect_output(target_set, failures, options):
@@ -89,13 +98,12 @@ def _submit_jobs(rc_job_result_creg, options, pool, target_set, target_to_job, j
         pool.submit(job)
 
 
-def _run(rc_job_result_creg, pool, job_cache, target_set, filter, options):
+def _run(rc_job_result_creg, pool, job_cache, cached_count, target_set, filter, options):
     rc_log.info("%d targets", target_set.count)
     target_to_job = {}  # Jobs are never removed.
     job_id_to_target = {}
     failures = {}
     incomplete = {}
-    cached_count = 0
     should_run = True
 
     def _handle_result(job, result_piece):
@@ -160,7 +168,7 @@ def _run(rc_job_result_creg, pool, job_cache, target_set, filter, options):
         completed_count,
         target_set.count - completed_count,
         job_count,
-        cached_count,
+        cached_count.value,
         (job_count - len(failures)),
         len(failures),
         len(incomplete),
@@ -204,18 +212,19 @@ def _parse_args(sys_argv):
 
 def compile_resources(system_config_template, config_ctl, ctr_from_template_creg, rc_job_result_creg, job_cache, pool, targets, options):
     job_cache = job_cache(JOB_CACHE_PATH, load=not options.clean)
+    cached_count = Counter()
     build = load_build(hyperapp_dir, job_cache)
     log.info("Loaded build:")
     build.report()
 
     target_set = TargetSet(hyperapp_dir, build.python_modules)
-    init_targets(config_ctl, ctr_from_template_creg, system_config_template, hyperapp_dir, job_cache, target_set, build)
+    init_targets(config_ctl, ctr_from_template_creg, system_config_template, hyperapp_dir, job_cache, cached_count, target_set, build)
     target_set.update_statuses()
     if options.check:
         target_set.check_statuses()
     filter = Filter(target_set, targets)
     try:
-        _run(rc_job_result_creg, pool, build.job_cache, target_set, filter, options)
+        _run(rc_job_result_creg, pool, build.job_cache, cached_count, target_set, filter, options)
     except HException as x:
         if isinstance(x, htypes.rpc.server_error):
             log.error("Server error: %s", x.message)
