@@ -5,5 +5,10 @@ item = record:
   name: string
   desc: string
 
+edit_item = record:
+  id: int
+  name: string
+  desc: string
+
 
 open_crud_sample_d = record
