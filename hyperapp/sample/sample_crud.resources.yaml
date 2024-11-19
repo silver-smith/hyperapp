@@ -1,0 +1,75 @@
+# Automatically generated file. Do not edit.
+
+import:
+- common.mark:mark.module
+- legacy_type.builtin:attribute
+- legacy_type.builtin:call
+- legacy_type.builtin:python_module
+- legacy_type.command:model_command
+- legacy_type.model:cfg_item
+- legacy_type.model:list_ui_t
+- legacy_type.model:model
+- legacy_type.sample_crud:item
+- legacy_type.sample_crud:model
+- legacy_type.sample_crud:open_crud_sample_d
+- legacy_type.system_fn:ctx_fn
+definitions:
+  list_crud_sample:
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_crud.module
+      attr_name: list_crud_sample
+  open_crud_sample:
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_crud.module
+      attr_name: open_crud_sample
+  open_crud_sample.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.sample_crud:open_crud_sample_d
+  open_crud_sample.global-model-command:
+    type: legacy_type.command:model_command
+    value:
+      d: open_crud_sample.d
+      properties:
+        is_global: true
+        uses_state: false
+        remotable: true
+      system_fn: open_crud_sample.system-fn
+  open_crud_sample.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: open_crud_sample
+      ctx_params: []
+      service_params: []
+  sample_crud.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: sample_crud
+      file_name: sample_crud.dyn.py
+      import_list:
+        code.mark: common.mark:mark.module
+        htypes.sample_crud.item: legacy_type.sample_crud:item
+        htypes.sample_crud.model: legacy_type.sample_crud:model
+  sample_crud_model.list-ui-t:
+    type: legacy_type.model:list_ui_t
+    value:
+      item_t: legacy_type.sample_crud:item
+  sample_crud_model.model:
+    type: legacy_type.model:model
+    value:
+      ui_t: sample_crud_model.list-ui-t
+      system_fn: sample_crud_model.system-fn
+  sample_crud_model.model-cfg-item:
+    type: legacy_type.model:cfg_item
+    value:
+      t: legacy_type.sample_crud:model
+      model: sample_crud_model.model
+  sample_crud_model.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: list_crud_sample
+      ctx_params:
+      - piece
+      service_params: []

@@ -137,6 +137,8 @@ import:
 - sample.sample_commands:sample_list_sample_list_details.command-cfg-item
 - sample.sample_commands:sample_tree_sample_tree_sample_tree_info.command-cfg-item
 - sample.sample_commands:show_state.global-model-command
+- sample.sample_crud:open_crud_sample.global-model-command
+- sample.sample_crud:sample_crud_model.model-cfg-item
 - sample.sample_feed:sample_feed_sample_list_feed.feed-template
 - sample.sample_feed:sample_feed_sample_tree_feed.feed-template
 - sample.sample_list:open_feed_sample_fn_list.global-model-command
@@ -379,6 +381,7 @@ definitions:
       - sample.sample_commands:open_sample_static_text_1.global-model-command
       - sample.sample_commands:open_sample_static_text_2.global-model-command
       - sample.sample_commands:show_state.global-model-command
+      - sample.sample_crud:open_crud_sample.global-model-command
       - sample.sample_list:open_feed_sample_fn_list.global-model-command
       - sample.sample_list:open_sample_fn_list.global-model-command
       - sample.sample_record:open_sample_fn_record.global-model-command
@@ -709,6 +712,7 @@ definitions:
       - models.global_commands:global_commands_view.model-cfg-item
       - models.model_commands:model_commands_view.model-cfg-item
       - models.show_current_context:show_current_context_view.model-cfg-item
+      - sample.sample_crud:sample_crud_model.model-cfg-item
       - sample.sample_list:sample_list_feed_sample_list.model-cfg-item
       - sample.sample_list:sample_list_sample_list.model-cfg-item
       - sample.sample_record:sample_record_sample_record.model-cfg-item

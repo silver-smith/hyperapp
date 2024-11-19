@@ -1,0 +1,9 @@
+model = record
+
+item = record:
+  id: int
+  name: string
+  desc: string
+
+
+open_crud_sample_d = record
