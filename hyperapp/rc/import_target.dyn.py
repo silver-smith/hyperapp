@@ -47,12 +47,11 @@ class AllImportsKnownTarget(Target):
 
 class ImportCachedTarget(Target):
 
-    def __init__(self, target_set, types, config_tgt, all_imports_known_tgt, import_tgt, src, deps, req_to_target, job_result):
+    def __init__(self, target_set, types, config_tgt, import_tgt, src, deps, req_to_target, job_result):
         self._target_set = target_set
         self._types = types
         self._config_tgt = config_tgt
         self._import_tgt = import_tgt
-        self._all_imports_known_tgt = all_imports_known_tgt
         self._src = src
         self._deps = deps  # requirement -> resource set
         self._req_to_target = req_to_target
@@ -221,7 +220,7 @@ class ImportTarget(Target):
         entry.result.non_ready_update_targets(self, self._target_set)
         req_to_target = self._resolve_requirements(entry.deps.keys())
         target = ImportCachedTarget(
-            self._target_set, self._types, self._config_tgt, self._all_imports_known_tgt,
+            self._target_set, self._types, self._config_tgt,
             self, self._src, entry.deps, req_to_target, entry.result)
         self._init_current_job_target(target)
 
