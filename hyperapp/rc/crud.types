@@ -1,0 +1,7 @@
+
+crud_template_ctr = record:
+  module_name: string
+  attr_qual_name: string list
+  action: string
+  crud_params: string list
+  service_params: string list
