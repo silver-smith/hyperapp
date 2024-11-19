@@ -76,7 +76,7 @@ class CommandProbe:
             module_name=self._module_name,
             attr_qual_name=self.real_fn.__qualname__.split('.'),
             service_name=self._service_name,
-            ctx_params=params.ctx_names,
+            ctx_params=params.other_names,
             service_params=params.service_names,
             )
 

@@ -2,7 +2,7 @@ import inspect
 from collections import namedtuple
 
 
-Params = namedtuple('Params', 'ctx_names service_names values')
+Params = namedtuple('Params', 'other_names service_names values')
 
 
 def check_is_function(fn):
@@ -51,12 +51,12 @@ def split_params(fn, args, kw):
         **args_values,
         **kw,
         }
-    ctx_names = [
+    other_names = [
         *all_names[param_ofs:len(args)],
         *kw,
         ]
     service_names = [
         name for name in all_names[param_ofs:]
-        if name not in ctx_names
+        if name not in other_names
         ]
-    return Params(ctx_names, service_names, values)
+    return Params(other_names, service_names, values)
