@@ -1,0 +1,5 @@
+form_item = record:
+  id: int
+  title: string
+
+open_crud_sample_d = record

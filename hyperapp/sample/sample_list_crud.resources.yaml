@@ -1,0 +1,17 @@
+# Automatically generated file. Do not edit.
+
+import:
+- common.mark:mark.module
+- legacy_type.builtin:python_module
+- legacy_type.sample_list_crud:form_item
+- sample.sample_list:sample_list.module
+definitions:
+  sample_list_crud.module:
+    type: legacy_type.builtin:python_module
+    value:
+      module_name: sample_list_crud
+      file_name: sample_list_crud.dyn.py
+      import_list:
+        code.mark: common.mark:mark.module
+        code.sample_list: sample.sample_list:sample_list.module
+        htypes.sample_list_crud.form_item: legacy_type.sample_list_crud:form_item

@@ -51,7 +51,7 @@ import:
 - rc.config_fixture_marker:config_fixture.marker-template
 - rc.config_item_resource:config_item_resource_config_item_resource.actor-template
 - rc.config_item_resource:config_item_resource_config_item_resource_override.actor-template
-- rc.crud_ctr:crud_crud_template_ctr.actor-template
+- rc.crud_ctr:crud_ctr_crud_ctr.actor-template
 - rc.crud_marker:crud.marker-template
 - rc.ctr_collector:ctr_collector.service
 - rc.ctr_collector:ctr_collector_ignore_module_cfg_item.actor-template
@@ -139,8 +139,6 @@ import:
 - sample.sample_commands:sample_list_sample_list_details.command-cfg-item
 - sample.sample_commands:sample_tree_sample_tree_sample_tree_info.command-cfg-item
 - sample.sample_commands:show_state.global-model-command
-- sample.sample_crud:open_crud_sample.global-model-command
-- sample.sample_crud:sample_crud_model.model-cfg-item
 - sample.sample_feed:sample_feed_sample_list_feed.feed-template
 - sample.sample_feed:sample_feed_sample_tree_feed.feed-template
 - sample.sample_list:open_feed_sample_fn_list.global-model-command
@@ -383,7 +381,6 @@ definitions:
       - sample.sample_commands:open_sample_static_text_1.global-model-command
       - sample.sample_commands:open_sample_static_text_2.global-model-command
       - sample.sample_commands:show_state.global-model-command
-      - sample.sample_crud:open_crud_sample.global-model-command
       - sample.sample_list:open_feed_sample_fn_list.global-model-command
       - sample.sample_list:open_sample_fn_list.global-model-command
       - sample.sample_record:open_sample_fn_record.global-model-command
@@ -470,7 +467,7 @@ definitions:
       - rc.command_ctr:command_resource_model_command_template_ctr.actor-template
       - rc.command_ctr:command_resource_ui_command_template_ctr.actor-template
       - rc.command_ctr:command_resource_universal_ui_command_template_ctr.actor-template
-      - rc.crud_ctr:crud_crud_template_ctr.actor-template
+      - rc.crud_ctr:crud_ctr_crud_ctr.actor-template
       - rc.feed_ctr:feed_index_tree_feed_ctr.actor-template
       - rc.feed_ctr:feed_list_feed_ctr.actor-template
       - rc.fixture_ctr:fixture_resource_config_fixture_ctr.actor-template
@@ -716,7 +713,6 @@ definitions:
       - models.global_commands:global_commands_view.model-cfg-item
       - models.model_commands:model_commands_view.model-cfg-item
       - models.show_current_context:show_current_context_view.model-cfg-item
-      - sample.sample_crud:sample_crud_model.model-cfg-item
       - sample.sample_list:sample_list_feed_sample_list.model-cfg-item
       - sample.sample_list:sample_list_sample_list.model-cfg-item
       - sample.sample_record:sample_record_sample_record.model-cfg-item

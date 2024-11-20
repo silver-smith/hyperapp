@@ -1,7 +1,8 @@
-
-crud_template_ctr = record:
+crud_ctr = record:
   module_name: string
   attr_qual_name: string list
+  model_t: ref
   action: string
+  key_field: string
   crud_params: string list
   service_params: string list

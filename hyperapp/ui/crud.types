@@ -1,0 +1,5 @@
+crud_open_command_fn = record:
+  name: string
+  key_field: string
+  init_action: string
+  commit_action: string

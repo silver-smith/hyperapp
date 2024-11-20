@@ -3,7 +3,8 @@ import:
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.crud:crud_template_ctr
+- legacy_type.crud:crud_open_command_fn
+- legacy_type.crud_ctr:crud_ctr
 - legacy_type.system:actor_template
 - rc.rc_constructor:rc_constructor.module
 
@@ -16,7 +17,8 @@ definitions:
       file_name: crud_ctr.dyn.py
       import_list:
         htypes.builtin.attribute: legacy_type.builtin:attribute
-        htypes.crud.crud_template_ctr: legacy_type.crud:crud_template_ctr
+        htypes.crud.crud_open_command_fn: legacy_type.crud:crud_open_command_fn
+        htypes.crud_ctr.crud_ctr: legacy_type.crud_ctr:crud_ctr
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         code.rc_constructor: rc.rc_constructor:rc_constructor.module
@@ -33,9 +35,9 @@ definitions:
       object: CrudTemplateCtr
       attr_name: from_piece
 
-  crud_crud_template_ctr.actor-template:
+  crud_ctr_crud_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.crud:crud_template_ctr
+      t: legacy_type.crud_ctr:crud_ctr
       function: CrudTemplateCtr.from_piece
       service_params: []

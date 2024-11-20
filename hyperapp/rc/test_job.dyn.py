@@ -281,7 +281,6 @@ class TestJob(SystemJob):
         recorder = pyobj_creg.animate(recorder_piece)
         system = None
         key_to_req = {}
-        ctr_collector = None
         try:
             system = self.convert_errors(self._prepare_system, resources)
             key_to_req = self._key_to_req(system['cfg_item_creg'])
