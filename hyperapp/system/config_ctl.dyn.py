@@ -68,7 +68,11 @@ class LazyDictConfig:
         except KeyError:
             pass
         value_template = self._config_template[key]  # KeyError is raised from here.
-        value = self._ctl.resolve_item(self._system, self._service_name, value_template)
+        try:
+            value = self._ctl.resolve_item(self._system, self._service_name, value_template)
+        except KeyError as x:
+            # This is not a key error for the caller.
+            raise RuntimeError(f"Error resolving {self._service_name} config tempate for {key!r}: {x}")
         self._resolved_config[key] = value
         return value
 
