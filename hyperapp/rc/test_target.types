@@ -7,6 +7,7 @@ fixtures_module_req = record:
   code_name: string
 
 tested_code_resource = record:
+  module_name: string
   import_name: string list
   module: ref
 

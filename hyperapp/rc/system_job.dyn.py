@@ -103,6 +103,7 @@ class SystemJob:
 
     def __init__(self, system_config_piece):
         self._system_config_piece = system_config_piece  # Used only from 'run' method, inside job process.
+        self._tested_modules = []
 
     @property
     def _req_to_resource_pieces(self):
@@ -157,6 +158,8 @@ class SystemJob:
             resource.configure_system(system)
 
     def _prepare_system(self, resources):
+        for res in resources:
+            self._tested_modules += res.tested_modules
         system = SystemProbe()
         resources_config = self._compose_resources_config(system, resources)
         config = merge_system_config_pieces(self._system_config_piece, resources_config)
@@ -215,7 +218,7 @@ class SystemJob:
                 self.incomplete_error(error_msg, missing_reqs={req})
             if isinstance(x, htypes.rc_job.config_item_missing_error):
                 key = pyobj_creg.invite(x.t)
-                req = ActorReq(x.service_name, key)
+                req = ActorReq(x.service_name, key, self._tested_modules)
                 self.incomplete_error(error_msg, missing_reqs={req})
             raise
         except PythonModuleResourceImportError as x:
@@ -225,7 +228,7 @@ class SystemJob:
             error_msg = f"{type(x).__name__}: {x}"
             self.incomplete_error(error_msg, missing_reqs={req})
         except ConfigItemMissingError as x:
-            req = ActorReq(x.service_name, x.key)
+            req = ActorReq(x.service_name, x.key, self._tested_modules)
             error_msg = f"{type(x).__name__}: {x}"
             self.incomplete_error(error_msg, missing_reqs={req})
         except IncompleteImportedObjectError as x:

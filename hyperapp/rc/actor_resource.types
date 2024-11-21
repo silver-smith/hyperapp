@@ -1,6 +1,7 @@
 actor_req = record:
   service_name: string
   t: ref
+  tested_modules: string list
 
 actor_probe_ctr = record:
   attr_qual_name: string list

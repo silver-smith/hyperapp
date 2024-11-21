@@ -34,3 +34,7 @@ class Resource:
 
     def configure_system(self, system):
         pass
+
+    @property
+    def tested_modules(self):
+        return []

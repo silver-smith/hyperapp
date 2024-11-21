@@ -50,6 +50,7 @@ class TestedCodeReq(Requirement):
 
     def make_resource_list(self, target):
         if isinstance(target, PythonModuleResourceTarget):
+            module_name = target.module_name
             module_piece = target.python_module_piece
             resources = []
         else:
@@ -68,6 +69,7 @@ class TestedCodeReq(Requirement):
                 )
             resources = [*target.test_resources, recorder_res, module_marker]
         tested_code_res = TestedCodeResource(
+            module_name=module_name,
             import_name=self.import_path,
             module_piece=module_piece,
             )
@@ -107,27 +109,31 @@ class TestedCodeResource(Resource):
     @classmethod
     def from_piece(cls, piece):
         return cls(
+            module_name=piece.module_name,
             import_name=piece.import_name,
             module_piece=web.summon(piece.module),
             )
 
-    def __init__(self, import_name, module_piece):
+    def __init__(self, module_name, import_name, module_piece):
+        self._module_name = module_name
         self._import_name = import_name
         self._module_piece = module_piece
 
     def __eq__(self, rhs):
         return (
             self.__class__ is rhs.__class__
+            and self._module_name == rhs._module_name
             and self._import_name == rhs._import_name
             and self._module_piece == rhs._module_piece
             )
 
     def __hash__(self):
-        return hash(('tested-code-resource', self._import_name, self._module_piece))
+        return hash(('tested-code-resource', self._module_name, self._import_name, self._module_piece))
 
     @property
     def piece(self):
         return htypes.test_target.tested_code_resource(
+            module_name=self._module_name,
             import_name=tuple(self._import_name),
             module=mosaic.put(self._module_piece),
             )
@@ -138,6 +144,10 @@ class TestedCodeResource(Resource):
             full_name='.'.join(self._import_name),
             resource=mosaic.put(self._module_piece),
             )]
+
+    @property
+    def tested_modules(self):
+        return [self._module_name]
 
 
 class RecorderResource(Resource):

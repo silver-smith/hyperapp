@@ -9,6 +9,14 @@ from .code.test_job import TestJob
 rc_log = logging.getLogger('rc')
 
 
+def _resolve_requirements(target_factory, requirements):
+    req_to_target = {}
+    for req in requirements:
+        target = req.get_target(target_factory)
+        req_to_target[req] = target
+    return req_to_target
+
+
 class TestCachedTarget(Target):
 
     def __init__(self, cached_count, target_set, test_target, src, function, deps, req_to_target, job_result):
@@ -37,6 +45,10 @@ class TestCachedTarget(Target):
     def update_status(self):
         if self._completed:
             return
+        if not all(target.completed for target in self._req_to_target.values()):
+            return
+        # if target is not one of our tested modules, second resolve shifts from resolved to complete target.
+        self._req_to_target = _resolve_requirements(self._target_set.factory, self._req_to_target)
         if all(target.completed for target in self._req_to_target.values()):
             self._check_deps()
             self._completed = True
@@ -64,8 +76,9 @@ class TestCachedTarget(Target):
 
 class TestJobTarget(Target):
 
-    def __init__(self, types, config_tgt, import_tgt, test_target, src, function, req_to_target,
+    def __init__(self, target_set, types, config_tgt, import_tgt, test_target, src, function, req_to_target,
                  tested_imports, fixtures_deps, tested_deps, idx):
+        self._target_set = target_set
         self._types = types
         self._config_tgt = config_tgt
         self._import_tgt = import_tgt
@@ -101,6 +114,10 @@ class TestJobTarget(Target):
         for target in self._tested_imports:
             if target.completed:
                 self._tested_deps |= target.deps
+        if not all(target.completed for target in self.deps):
+            return
+        # if target is not one of our tested modules, second resolve shifts from resolved to complete target.
+        self._req_to_target = _resolve_requirements(self._target_set.factory, self._req_to_target)
         self._ready = all(target.completed for target in self.deps)
 
     def make_job(self):
@@ -197,6 +214,7 @@ class TestTarget(Target):
         if req_to_target is None:
             req_to_target = self._req_to_target
         target = TestJobTarget(
+            target_set=self._target_set,
             types=self._types,
             config_tgt=self._config_tgt,
             import_tgt=self._import_tgt,
@@ -213,17 +231,10 @@ class TestTarget(Target):
         self._target_set.add(target)
 
     def _create_cache_target(self, entry):
-        req_to_target = self._resolve_requirements(entry.deps.keys())
+        req_to_target = _resolve_requirements(self._target_set.factory, entry.deps.keys())
         target = TestCachedTarget(self._cached_count, self._target_set, self, self._src, self._function, entry.deps, req_to_target, entry.result)
         self._current_job_target = target
         self._target_set.add(target)
-
-    def _resolve_requirements(self, requirements):
-        req_to_target = {}
-        for req in requirements:
-            target = req.get_target(self._target_set.factory)
-            req_to_target[req] = target
-        return req_to_target
 
     def add_fixtures_import(self, target):
         assert not self._current_job_target
