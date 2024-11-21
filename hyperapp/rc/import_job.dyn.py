@@ -36,7 +36,7 @@ class Function:
 class _SucceededImportResultBase(SystemJobResult):
 
     def __init__(self, status, used_reqs, all_reqs, error=None, traceback=None):
-        super().__init__(JobStatus.ok, used_reqs, error, traceback)
+        super().__init__(status, used_reqs, error, traceback)
         self._all_reqs = all_reqs
 
     def _add_tests_import(self, import_tgt, target_set):
