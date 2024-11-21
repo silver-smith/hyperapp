@@ -44,15 +44,17 @@ class CrudTemplateCtr(ModuleCtr):
             )
 
     def update_resource_targets(self, resource_tgt, target_set):
-        ready_tgt = target_set.factory.config_item_ready('crud', self._resource_name)
+        if self._action != 'update':
+            return
+        ready_tgt = target_set.factory.config_item_ready('model_command_reg', self._resource_name)
         ready_tgt.set_provider(resource_tgt)
-        resolved_tgt = target_set.factory.config_item_resolved('crud', self._resource_name)
+        resolved_tgt = target_set.factory.config_item_resolved('model_command_reg', self._resource_name)
         resolved_tgt.resolve(self)
-        _ = target_set.factory.config_item_complete('crud', self._resource_name)
+        _ = target_set.factory.config_item_complete('model_command_reg', self._resource_name)
         resource_tgt.add_cfg_item_target(resolved_tgt)
 
-    # def get_component(self, name_to_res):
-    #     return name_to_res[f'{self._resource_name}.actor-template']
+    def get_component(self, name_to_res):
+        return name_to_res[self._resource_name]
 
     def make_component(self, types, python_module, name_to_res):
         object = python_module
@@ -94,7 +96,7 @@ class CrudTemplateCtr(ModuleCtr):
         name_to_res[f'{self._type_name}.{name}.command.d'] = d_piece
         name_to_res[f'{self._type_name}.{name}.command.fn'] = system_fn
         name_to_res[f'{self._type_name}.{name}.command'] = command
-        name_to_res[f'{self._type_name}.{name}.command-cfg-item'] = cfg_item
+        name_to_res[self._resource_name] = cfg_item
 
     @property
     def _type_name(self):
@@ -102,4 +104,4 @@ class CrudTemplateCtr(ModuleCtr):
 
     @property
     def _resource_name(self):
-        return f'{self._type_name}-{self._action}'
+        return f'{self._type_name}.edit.command-cfg-item'
