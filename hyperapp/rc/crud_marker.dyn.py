@@ -15,9 +15,10 @@ from .code.crud_ctr import CrudTemplateCtr
 
 class CrudProbe:
 
-    def __init__(self, system_probe, ctr_collector, module_name, action, fn):
+    def __init__(self, system_probe, ctr_collector, data_to_res, module_name, action, fn):
         self._system = system_probe
         self._ctr_collector = ctr_collector
+        self._data_to_res = data_to_res
         self._module_name = module_name
         self._action = action
         self._fn = fn
@@ -26,6 +27,7 @@ class CrudProbe:
     def migrate_to(self, system_probe):
         self._system = system_probe
         self._ctr_collector = system_probe.resolve_service('ctr_collector')
+        self._data_to_res = system_probe.resolve_service('data_to_res')
 
     def __call__(self, *args, **kw):
         params = split_params(self._fn, args, kw)
@@ -87,6 +89,7 @@ class CrudProbe:
         item_t = self._get_item_t(ui_t)
         key_field = self._pick_key_field(item_t, params)
         ctr = CrudTemplateCtr(
+            data_to_res=self._data_to_res,
             module_name=self._module_name,
             attr_qual_name=self._fn.__qualname__.split('.'),
             model_t=model_t,
@@ -100,24 +103,26 @@ class CrudProbe:
 
 class CrudDecorator:
 
-    def __init__(self, system_probe, ctr_collector, module_name, action):
+    def __init__(self, system_probe, ctr_collector, data_to_res, module_name, action):
         self._system = system_probe
         self._ctr_collector = ctr_collector
+        self._data_to_res = data_to_res
         self._module_name = module_name
         self._action = action
 
     def __call__(self, fn):
         check_not_classmethod(fn)
         check_is_function(fn)
-        return CrudProbe(self._system, self._ctr_collector, self._module_name, self._action, fn)
+        return CrudProbe(self._system, self._ctr_collector, self._data_to_res, self._module_name, self._action, fn)
 
 
 class CrudMarker:
 
-    def __init__(self, module_name, system, ctr_collector):
+    def __init__(self, module_name, system, ctr_collector, data_to_res):
         self._module_name = module_name
         self._system = system
         self._ctr_collector = ctr_collector
+        self._data_to_res = data_to_res
 
     def __getattr__(self, action):
-        return CrudDecorator(self._system, self._ctr_collector, self._module_name, action)
+        return CrudDecorator(self._system, self._ctr_collector, self._data_to_res, self._module_name, action)

@@ -2,10 +2,41 @@
 
 import:
 - common.mark:mark.module
+- legacy_type.builtin:call
 - legacy_type.builtin:python_module
+- legacy_type.command:cfg_item
+- legacy_type.command:model_command
+- legacy_type.crud:crud_open_command_fn
+- legacy_type.crud:edit_d
+- legacy_type.sample_list:sample_list
 - legacy_type.sample_list_crud:form_item
 - sample.sample_list:sample_list.module
 definitions:
+  sample_list-sample_list.edit.command:
+    type: legacy_type.command:model_command
+    value:
+      d: sample_list-sample_list.edit.command.d
+      properties:
+        is_global: false
+        uses_state: true
+        remotable: false
+      system_fn: sample_list-sample_list.edit.command.fn
+  sample_list-sample_list.edit.command-cfg-item:
+    type: legacy_type.command:cfg_item
+    value:
+      t: legacy_type.sample_list:sample_list
+      command: sample_list-sample_list.edit.command
+  sample_list-sample_list.edit.command.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.crud:edit_d
+  sample_list-sample_list.edit.command.fn:
+    type: legacy_type.crud:crud_open_command_fn
+    value:
+      name: edit
+      key_field: id
+      init_action: get
+      commit_action: update
   sample_list_crud.module:
     type: legacy_type.builtin:python_module
     value:

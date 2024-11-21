@@ -38,3 +38,4 @@ definitions:
       service_params:
       - system
       - ctr_collector
+      - data_to_res

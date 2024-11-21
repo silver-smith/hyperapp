@@ -3,3 +3,5 @@ crud_open_command_fn = record:
   key_field: string
   init_action: string
   commit_action: string
+
+edit_d = record
