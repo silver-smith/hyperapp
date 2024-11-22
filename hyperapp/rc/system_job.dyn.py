@@ -10,6 +10,7 @@ from hyperapp.resource.python_module import PythonModuleResourceImportError
 from . import htypes
 from .services import (
     mosaic,
+    pyobj_creg,
     )
 from .code.config_ctl import (
     item_pieces_to_data,
@@ -18,11 +19,13 @@ from .code.config_ctl import (
     )
 from .code.import_recorder import IncompleteImportedObjectError
 from .code.system import UnknownServiceError
+from .code.config_item_resource import ConfigItemResource
 from .code.actor_req import ActorReq
 from .code.service_req import ServiceReq
 from .code.service_ctr import ServiceTemplateCtr
 from .code.system_probe import SystemProbe
 from .code.requirement_factory import RequirementFactory
+from .code.skip_probe_actor_template import SkipProbeActorTemplate
 from .code.job_result import JobResult
 
 log = logging.getLogger(__name__)
@@ -168,6 +171,17 @@ class SystemJob:
         system.migrate_globals()
         _ = system.resolve_service('marker_registry')  # Init markers.
         return system
+
+    def _job_resources(self, module_piece):
+        template = htypes.system.actor_template(
+            t=pyobj_creg.actor_to_ref(htypes.system.actor_template),
+            function=pyobj_creg.actor_to_ref(SkipProbeActorTemplate.from_piece),
+            service_params=(),
+            )
+        yield ConfigItemResource(
+            service_name='cfg_item_creg',
+            template_ref=mosaic.put(template),
+            )
 
     def _prepare_traceback(self, x):
         traceback_entries = []

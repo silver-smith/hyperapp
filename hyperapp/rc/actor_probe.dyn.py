@@ -25,6 +25,10 @@ class ActorProbe:
         self._system = system_probe
         self._ctr_collector = system_probe.resolve_service('ctr_collector')
 
+    @property
+    def real_fn(self):
+        return self._fn
+
     def __call__(self, *args, **kw):
         params = fn_params(self._fn)
         piece_param_ofs = 0

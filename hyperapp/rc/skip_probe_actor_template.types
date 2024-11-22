@@ -1,0 +1,3 @@
+from system import actor_template
+
+skip_probe_actor_template = record(actor_template)

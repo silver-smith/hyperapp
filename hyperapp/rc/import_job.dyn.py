@@ -309,6 +309,7 @@ class ImportJob(SystemJob):
         return result.make_result(recorder, module, key_to_req, system)
 
     def _job_resources(self, module_piece):
+        yield from super()._job_resources(module_piece)
         mark_module_item = htypes.ctr_collector.mark_module_cfg_item(
             module=mosaic.put(module_piece),
             name=self._src.name,

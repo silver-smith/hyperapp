@@ -1,16 +1,20 @@
 import:
 - builtins:mosaic.service
+- builtins:pyobj_creg.service
 - legacy_type.builtin:python_module
 - legacy_type.rc_job:config_item_missing_error
 - legacy_type.rc_job:unknown_service_error
 - legacy_type.rpc:server_error
+- legacy_type.system:actor_template
 - legacy_type.system_job:req_to_resource
 - rc.actor_req:actor_req.module
+- rc.config_item_resource:config_item_resource.module
 - rc.import_recorder:import_recorder.module
 - rc.job_result:job_result.module
 - rc.requirement_factory:requirement_factory.module
 - rc.service_ctr:service_ctr.module
 - rc.service_req:service_req.module
+- rc.skip_probe_actor_template:skip_probe_actor_template.module
 - rc.system_probe:system_probe.module
 - system.config_ctl:config_ctl.module
 - system.system:system.module
@@ -26,14 +30,18 @@ definitions:
         htypes.rc_job.config_item_missing_error: legacy_type.rc_job:config_item_missing_error
         htypes.rc_job.unknown_service_error: legacy_type.rc_job:unknown_service_error
         htypes.rpc.server_error: legacy_type.rpc:server_error
+        htypes.system.actor_template: legacy_type.system:actor_template
+        htypes.system_job.req_to_resource: legacy_type.system_job:req_to_resource
         services.mosaic: builtins:mosaic.service
+        services.pyobj_creg: builtins:pyobj_creg.service
         code.actor_req: rc.actor_req:actor_req.module
         code.config_ctl: system.config_ctl:config_ctl.module
+        code.config_item_resource: rc.config_item_resource:config_item_resource.module
         code.import_recorder: rc.import_recorder:import_recorder.module
         code.job_result: rc.job_result:job_result.module
         code.requirement_factory: rc.requirement_factory:requirement_factory.module
         code.service_ctr: rc.service_ctr:service_ctr.module
         code.service_req: rc.service_req:service_req.module
+        code.skip_probe_actor_template: rc.skip_probe_actor_template:skip_probe_actor_template.module
         code.system: system.system:system.module
         code.system_probe: rc.system_probe:system_probe.module
-        htypes.system_job.req_to_resource: legacy_type.system_job:req_to_resource

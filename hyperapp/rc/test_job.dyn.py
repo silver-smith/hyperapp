@@ -279,10 +279,11 @@ class TestJob(SystemJob):
         import_list = flatten(d.import_records for d in resources)
         recorder_piece, module_piece = self._src.recorded_python_module(import_list)
         recorder = pyobj_creg.animate(recorder_piece)
+        system_resources = [*resources, *self._job_resources(module_piece)]
         system = None
         key_to_req = {}
         try:
-            system = self.convert_errors(self._prepare_system, resources)
+            system = self.convert_errors(self._prepare_system, system_resources)
             key_to_req = self._key_to_req(system['cfg_item_creg'])
             ctr_collector = system['ctr_collector']
             ctr_collector.ignore_module(module_piece)
@@ -294,7 +295,7 @@ class TestJob(SystemJob):
             result = x
         else:
             result = _Succeeded()
-        return result.make_result(resources, recorder, key_to_req, system)
+        return result.make_result(system_resources, recorder, key_to_req, system)
 
     @property
     def _root_name(self):
