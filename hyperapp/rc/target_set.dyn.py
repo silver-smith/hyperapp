@@ -9,6 +9,10 @@ from .code.config_resource_target import ConfigResourceTarget
 from .code.service_req import ServiceReq
 
 
+def _sorted_targets(targets):
+    return sorted(targets, key=attrgetter('name'))
+
+
 class TargetSet:
 
     def __init__(self, resource_dir, python_module_src_list):
@@ -26,7 +30,7 @@ class TargetSet:
         self._prev_incomplete_deps_map = {}
 
     def __iter__(self):
-        return iter(sorted(self._name_to_target.values(), key=attrgetter('name')))
+        return iter(_sorted_targets(self._name_to_target.values()))
 
     def __getitem__(self, name):
         return self._name_to_target[name]
@@ -36,12 +40,12 @@ class TargetSet:
         return len(self._name_to_target)
 
     def iter_ready(self):
-        for target in self._name_to_target.values():
+        for target in self:
             if target.ready:
                 yield target
 
     def iter_completed(self):
-        for target in self._name_to_target.values():
+        for target in self:
             if target.completed:
                 yield target
 
@@ -88,12 +92,12 @@ class TargetSet:
 
     def _update_dependent(self, target_set):
         dep_to_targets = self._reverse_deps_map
-        for completed_target in target_set:
-            for dep_target in dep_to_targets.get(completed_target, []):
+        for completed_target in _sorted_targets(target_set):
+            for dep_target in _sorted_targets(dep_to_targets.get(completed_target, [])):
                 self._update_target(dep_target)
 
     def _update_new_or_with_changed_deps(self):
-        for target in [*self._name_to_target.values()]:
+        for target in _sorted_targets(self._name_to_target.values()):
             if target.completed:
                 continue
             try:
