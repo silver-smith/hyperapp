@@ -1,4 +1,5 @@
 import:
+- builtins:mosaic.service
 - builtins:pyobj_creg.service
 - legacy_type.builtin:attribute
 - legacy_type.builtin:call
@@ -13,4 +14,5 @@ definitions:
       file_name: fn_reconstructor.dyn.py
       import_list:
         htypes.builtin.attribute: legacy_type.builtin:attribute
+        services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
