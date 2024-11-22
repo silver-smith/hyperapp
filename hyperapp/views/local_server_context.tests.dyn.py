@@ -33,9 +33,6 @@ def test_local_server_context_view(qapp):
 
 
 def test_open_local_server_context(view_creg):
-    view_creg.update_config({
-        htypes.local_server_context.view: local_server_context.LocalServerContextView.from_piece,
-        })
     ctx = Context()
     piece = htypes.label.view("Sample label")
     state = htypes.label.state()
