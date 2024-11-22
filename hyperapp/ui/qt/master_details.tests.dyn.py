@@ -103,10 +103,7 @@ async def test_run_details_command(qapp, piece, state, model, ctx):
     ctl_hook.element_replaced.assert_called_once()
 
 
-def test_wrap_master_details(qapp, model_view_creg, master_piece, model, model_state, ctx):
-    model_view_creg.update_config({
-        htypes.master_details.view: master_details.MasterDetailsView.from_piece,
-        })
+def test_wrap_master_details(qapp, master_piece, model, model_state, ctx):
     hook = Mock()
     view = Mock()
     view.piece = master_piece
