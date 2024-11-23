@@ -53,7 +53,7 @@ def view_ui_command_reg_config(partial_ref):
         partial_ref=partial_ref, 
         ctx_params=('view', 'state'),
         service_params=('sample_service',),
-        unbound_fn=_sample_fn,
+        raw_fn=_sample_fn,
         bound_fn=partial(_sample_fn, sample_service='a-service'),
         )
     command = ui_command.UnboundUiCommand(

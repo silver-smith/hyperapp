@@ -84,7 +84,7 @@ def view_ui_command_reg_config(partial_ref):
         partial_ref=partial_ref, 
         ctx_params=(),
         service_params=(),
-        unbound_fn=_sample_auto_tabs_command,
+        raw_fn=_sample_auto_tabs_command,
         bound_fn=_sample_auto_tabs_command,
         )
     command = UnboundUiCommand(

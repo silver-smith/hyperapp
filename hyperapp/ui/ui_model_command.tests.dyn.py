@@ -26,7 +26,7 @@ def global_model_command_reg_config(partial_ref):
         partial_ref=partial_ref, 
         ctx_params=('view', 'state'),
         service_params=('sample_service',),
-        unbound_fn=_sample_fn_1,
+        raw_fn=_sample_fn_1,
         bound_fn=partial(_sample_fn_1, sample_service='a-service'),
         )
     command = UnboundModelCommand(
@@ -43,7 +43,7 @@ def model_command_reg_config(partial_ref):
         partial_ref=partial_ref, 
         ctx_params=('view', 'state'),
         service_params=('sample_service',),
-        unbound_fn=_sample_fn_2,
+        raw_fn=_sample_fn_2,
         bound_fn=partial(_sample_fn_2, sample_service='a-service'),
         )
     command = UnboundModelCommand(

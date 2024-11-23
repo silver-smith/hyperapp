@@ -114,14 +114,14 @@ def model_command_reg_config(partial_ref):
         partial_ref=partial_ref, 
         ctx_params=('piece', 'current_item'),
         service_params=(),
-        unbound_fn=sample_fn_1_open,
+        raw_fn=sample_fn_1_open,
         bound_fn=sample_fn_1_open,
         )
     open_fn_2 = ContextFn(
         partial_ref=partial_ref, 
         ctx_params=('piece', 'current_item'),
         service_params=(),
-        unbound_fn=sample_fn_2_open,
+        raw_fn=sample_fn_2_open,
         bound_fn=sample_fn_2_open,
         )
     command_1 = UnboundModelCommand(

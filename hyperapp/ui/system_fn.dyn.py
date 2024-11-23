@@ -18,20 +18,20 @@ class ContextFn:
         bound_fn = partial(fn, **service_kw)
         return cls(partial_ref, piece.ctx_params, piece.service_params, fn, bound_fn)
 
-    def __init__(self, partial_ref, ctx_params, service_params, unbound_fn, bound_fn):
+    def __init__(self, partial_ref, ctx_params, service_params, raw_fn, bound_fn):
         self._partial_ref = partial_ref
         self._ctx_params = ctx_params
         self._service_params = service_params
-        self._unbound_fn = unbound_fn
+        self._raw_fn = raw_fn
         self._bound_fn = bound_fn
 
     def __repr__(self):
-        return f"<ContextFn: {self._unbound_fn}({self._ctx_params}/{self._service_params})>"
+        return f"<ContextFn: {self._raw_fn}({self._ctx_params}/{self._service_params})>"
 
     @property
     def piece(self):
         return htypes.system_fn.ctx_fn(
-            function=pyobj_creg.actor_to_ref(self._unbound_fn),
+            function=pyobj_creg.actor_to_ref(self._raw_fn),
             ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
             )
@@ -56,7 +56,7 @@ class ContextFn:
         missing_params = set(self._ctx_params) - fn_kw.keys()
         if missing_params:
             missing_str = ", ".join(missing_params)
-            raise RuntimeError(f"{self._unbound_fn}: Required parameters not provided: {missing_str}")
+            raise RuntimeError(f"{self._raw_fn}: Required parameters not provided: {missing_str}")
         return {
             name: fn_kw[name]
             for name in self._ctx_params
@@ -83,4 +83,4 @@ class ContextFn:
     def partial_ref(self, ctx, **kw):
         assert not self._service_params  # TODO: Remote call for system fn with service params.
         ctx_kw = self._fn_kw(ctx, kw)
-        return self._partial_ref(self._unbound_fn, **ctx_kw)
+        return self._partial_ref(self._raw_fn, **ctx_kw)
