@@ -33,10 +33,20 @@ class CrudOpenFn:
 
     def _open(self, model, current_item):
         key = getattr(current_item, self._key_field)
-        return htypes.crud.form(
+        return htypes.crud.model(
             model=mosaic.put(model),
             key=mosaic.put(key),
             key_field=self._key_field,
             init_action=self._init_action,
             commit_action=self._commit_action,
             )
+
+
+@mark.service
+def crud_action_reg(config, model_t, action):
+    return config[model_t, action]
+
+
+@mark.actor.model_layout_creg
+def crud_model_layout(piece, crud_action_reg):
+    return ['sample']
