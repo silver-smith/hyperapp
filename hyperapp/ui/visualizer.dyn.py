@@ -99,4 +99,7 @@ def visualizer(model_layout_creg, visualizer_reg, ui_type_creg, get_custom_layou
     if view is not None:
         log.info("Using configured layout for %s: %s", model_t, view)
         return view
-    return _model_layout(visualizer_reg, ui_type_creg, model_t)
+    try:
+        return _model_layout(visualizer_reg, ui_type_creg, model_t)
+    except KeyError:
+        raise RuntimeError(f"No view for model is known: {model!r}")
