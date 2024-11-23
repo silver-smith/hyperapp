@@ -96,19 +96,15 @@ class TargetSet:
             for dep_target in _sorted_targets(dep_to_targets.get(completed_target, [])):
                 self._update_target(dep_target)
 
-    def _update_new_or_with_changed_deps(self):
-        for target in _sorted_targets(self._name_to_target.values()):
-            if target.completed:
-                continue
+    def _enum_new_and_with_changed_deps(self, prev_dep_map, new_dep_map):
+        for target, deps in new_dep_map.items():
             try:
-                prev_deps = self._prev_incomplete_deps_map[target]
+                prev_deps = prev_dep_map[target]
             except KeyError:
-                pass  # New target was added. Update it.
+                yield target  # New.
             else:
-                if target.deps == prev_deps:
-                    continue
-            # It's deps were changed or it was just added.
-            self._update_target(target)
+                if deps != prev_deps:
+                    yield target
 
     # After updating a target:
     # * Deps for it any other target may change;
@@ -122,12 +118,16 @@ class TargetSet:
             completed_targets = self._completed_targets
             assert completed_targets >= self._prev_completed  # Demotions are not allowed.
             new_completed = completed_targets - self._prev_completed
-            if not new_completed:
+            new_deps_map = self._incomplete_deps_map
+            changed_targets = _sorted_targets(
+                self._enum_new_and_with_changed_deps(self._prev_incomplete_deps_map, new_deps_map))
+            if not new_completed and not changed_targets:
                 break
             self._update_dependent(new_completed)
-            self._update_new_or_with_changed_deps()
+            for target in changed_targets:
+                self._update_target(target)
             self._prev_completed = completed_targets
-            self._prev_incomplete_deps_map = self._incomplete_deps_map
+            self._prev_incomplete_deps_map = new_deps_map
 
     def init_all_statuses(self):
         self._prev_incomplete_deps_map = self._incomplete_deps_map
