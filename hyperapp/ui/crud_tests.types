@@ -1,0 +1,4 @@
+sample_model = record
+
+sample_item = record:
+  id: int
