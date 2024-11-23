@@ -47,7 +47,7 @@ class TestCachedTarget(Target):
             return
         if not all(target.completed for target in self._req_to_target.values()):
             return
-        # if target is not one of our tested modules, second resolve shifts from resolved to complete target.
+        # If target is not one of our tested modules, second resolve shifts from resolved to complete target.
         self._req_to_target = _resolve_requirements(self._target_set.factory, self._req_to_target)
         if all(target.completed for target in self._req_to_target.values()):
             self._check_deps()
@@ -56,6 +56,7 @@ class TestCachedTarget(Target):
     def set_completed(self):
         pass  # Set in update_status.
 
+    # TODO: We may compare deps resources before all targets are completed. Thus, when they differ, job will be fired sooner.
     def _check_deps(self):
         for req, target in self._req_to_target.items():
             dep_resources = self._deps[req]
