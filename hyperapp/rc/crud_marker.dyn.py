@@ -10,7 +10,7 @@ from .code.marker_utils import (
     check_not_classmethod,
     split_params,
     )
-from .code.crud_ctr import CrudTemplateCtr
+from .code.crud_ctr import CrudInitTemplateCtr, CrudCommitTemplateCtr
 
 
 class CrudProbe:
@@ -36,7 +36,7 @@ class CrudProbe:
             for name in params.service_names
             }
         result = self._fn(*args, **kw, **service_kw)
-        self._add_constructor(params)
+        self._add_constructor(params, result)
         return result
 
     def _deduce_piece_t(self, params, name_list):
@@ -83,12 +83,12 @@ class CrudProbe:
             raise RuntimeError(f"Only one key parameter is expected, but got: {fields_str}")
         return fields[0]
 
-    def _add_constructor(self, params):
+    def _template_ctr_kw(self, params):
         model_field, model_t = self._deduce_piece_t(params, ['piece', 'model'])
         ui_t = self._pick_model_ui_t(model_t)
         item_t = self._get_item_t(ui_t)
         key_field = self._pick_key_field(item_t, params)
-        ctr = CrudTemplateCtr(
+        return dict(
             data_to_res=self._data_to_res,
             module_name=self._module_name,
             attr_qual_name=self._fn.__qualname__.split('.'),
@@ -98,7 +98,29 @@ class CrudProbe:
             crud_params=params.other_names,
             service_params=params.service_names,
             )
+
+    def _add_constructor(self, params, result):
+        if self._action == 'get':
+            ctr = self._init_constructor(params, result)
+        elif self._action == 'update':
+            ctr = self._commit_constructor(params)
+        else:
+            raise RuntimeError(f"Action {self._action!r} is not yet supported")
         self._ctr_collector.add_constructor(ctr)
+
+    def _init_constructor(self, params, result):
+        result_t = deduce_t(result)
+        if not isinstance(result_t, TRecord):
+            raise RuntimeError(f"Result of {self._action} action should be a record, but is: {result_t}")
+        return CrudInitTemplateCtr(
+            **self._template_ctr_kw(params),
+            record_t=result_t,
+            )
+
+    def _commit_constructor(self, params):
+        return CrudCommitTemplateCtr(
+            **self._template_ctr_kw(params),
+            )
 
 
 class CrudDecorator:

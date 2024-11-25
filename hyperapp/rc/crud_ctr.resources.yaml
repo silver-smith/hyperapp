@@ -7,7 +7,9 @@ import:
 - legacy_type.command:model_command
 - legacy_type.command:properties
 - legacy_type.crud:crud_open_command_fn
-- legacy_type.crud_ctr:crud_ctr
+- legacy_type.crud_ctr:commit_ctr
+- legacy_type.crud_ctr:init_ctr
+- legacy_type.crud_ctr:open_command_ctr
 - legacy_type.system:actor_template
 - rc.rc_constructor:rc_constructor.module
 
@@ -24,27 +26,69 @@ definitions:
         htypes.command.model_command: legacy_type.command:model_command
         htypes.command.properties: legacy_type.command:properties
         htypes.crud.crud_open_command_fn: legacy_type.crud:crud_open_command_fn
-        htypes.crud_ctr.crud_ctr: legacy_type.crud_ctr:crud_ctr
+        htypes.crud_ctr.init_ctr: legacy_type.crud_ctr:init_ctr
+        htypes.crud_ctr.commit_ctr: legacy_type.crud_ctr:commit_ctr
+        htypes.crud_ctr.open_command_ctr: legacy_type.crud_ctr:open_command_ctr
         services.mosaic: builtins:mosaic.service
         services.pyobj_creg: builtins:pyobj_creg.service
         code.rc_constructor: rc.rc_constructor:rc_constructor.module
 
-  CrudTemplateCtr:
+  CrudInitTemplateCtr:
     type: legacy_type.builtin:attribute
     value:
       object: crud_ctr.module
-      attr_name: CrudTemplateCtr
+      attr_name: CrudInitTemplateCtr
 
-  CrudTemplateCtr.from_piece:
+  CrudInitTemplateCtr.from_piece:
     type: legacy_type.builtin:attribute
     value:
-      object: CrudTemplateCtr
+      object: CrudInitTemplateCtr
       attr_name: from_piece
 
-  crud_ctr_crud_ctr.actor-template:
+  crud_ctr_init_ctr.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.crud_ctr:crud_ctr
-      function: CrudTemplateCtr.from_piece
+      t: legacy_type.crud_ctr:init_ctr
+      function: CrudInitTemplateCtr.from_piece
+      service_params:
+      - data_to_res
+
+  CrudCommitTemplateCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: crud_ctr.module
+      attr_name: CrudCommitTemplateCtr
+
+  CrudCommitTemplateCtr.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: CrudCommitTemplateCtr
+      attr_name: from_piece
+
+  crud_ctr_commit_ctr.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.crud_ctr:commit_ctr
+      function: CrudCommitTemplateCtr.from_piece
+      service_params:
+      - data_to_res
+
+  CrudOpenCommandCtr:
+    type: legacy_type.builtin:attribute
+    value:
+      object: crud_ctr.module
+      attr_name: CrudOpenCommandCtr
+
+  CrudOpenCommandCtr.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: CrudOpenCommandCtr
+      attr_name: from_piece
+
+  crud_ctr_open_command_ctr.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.crud_ctr:open_command_ctr
+      function: CrudOpenCommandCtr.from_piece
       service_params:
       - data_to_res

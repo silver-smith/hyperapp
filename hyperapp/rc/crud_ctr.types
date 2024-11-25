@@ -1,4 +1,4 @@
-crud_ctr = record:
+ctr = record:
   module_name: string
   attr_qual_name: string list
   model_t: ref
@@ -6,3 +6,16 @@ crud_ctr = record:
   key_field: string
   crud_params: string list
   service_params: string list
+
+init_ctr = record(ctr):
+  record_t: ref
+
+commit_ctr = record(ctr)
+
+open_command_ctr = record:
+  module_name: string
+  model_t: ref
+  name: string
+  key_field: string
+  init_action: string
+  commit_action: string
