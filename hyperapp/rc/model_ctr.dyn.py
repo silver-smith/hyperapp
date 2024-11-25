@@ -5,6 +5,7 @@ from .services import (
     web,
     )
 from .code.rc_constructor import ModuleCtr
+from .code.actor_req import ActorReq
 
 
 class ModelCtr(ModuleCtr):
@@ -40,8 +41,9 @@ class ModelCtr(ModuleCtr):
             )
 
     def update_resource_targets(self, resource_tgt, target_set):
+        req = ActorReq('visualizer_reg', self._model_t)
         ready_tgt, resolved_tgt, _ = target_set.factory.config_items(
-            'visualizer_reg', self._resource_name, provider=resource_tgt, ctr=self)
+            'visualizer_reg', self._resource_name, req, provider=resource_tgt, ctr=self)
         resource_tgt.add_cfg_item_target(resolved_tgt)
 
     def get_component(self, name_to_res):
