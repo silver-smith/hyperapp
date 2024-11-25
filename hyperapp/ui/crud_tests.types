@@ -2,3 +2,7 @@ sample_model = record
 
 sample_item = record:
   id: int
+
+sample_record = record:
+  id: int
+  text: string

@@ -1,6 +1,8 @@
 from . import htypes
 from .services import (
+    deduce_t,
     mosaic,
+    web,
     )
 from .code.mark import mark
 
@@ -43,10 +45,20 @@ class CrudOpenFn:
 
 
 @mark.service
-def crud_action_reg(config, model_t, action):
-    return config[model_t, action]
+def crud_action_reg(config, system_fn_creg, model_t, action):
+    fn = config[model_t, action]
+    return system_fn_creg.animate(fn)
 
 
 @mark.actor.model_layout_creg
-def crud_model_layout(piece, crud_action_reg):
-    return ['sample']
+def crud_model_layout(piece, ctx, crud_action_reg):
+    model = web.summon(piece.model)
+    key = web.summon(piece.key)
+    model_t = deduce_t(model)
+    fn = crud_action_reg(model_t, piece.init_action)
+    action_ctx = ctx.clone_with(
+        piece=model,
+        model=model,
+        **{piece.key_field: key},
+        )
+    return fn.call(action_ctx)

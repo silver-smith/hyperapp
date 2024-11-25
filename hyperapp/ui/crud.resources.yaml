@@ -1,7 +1,9 @@
 # Automatically generated file. Do not edit.
 
 import:
+- builtins:deduce_t.service
 - builtins:mosaic.service
+- builtins:web.service
 - common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
@@ -29,7 +31,9 @@ definitions:
       import_list:
         code.mark: common.mark:mark.module
         htypes.crud.model: legacy_type.crud:model
+        services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
+        services.web: builtins:web.service
   crud_action_reg:
     type: legacy_type.builtin:attribute
     value:
@@ -41,7 +45,8 @@ definitions:
       name: crud_action_reg
       ctl: system-dict_config_ctl.ctl
       function: crud_action_reg
-      service_params: []
+      service_params:
+      - system_fn_creg
       want_config: true
       free_params:
       - model_t

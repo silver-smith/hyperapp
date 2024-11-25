@@ -2,6 +2,7 @@
 
 import:
 - common.mark:mark.module
+- legacy_type.builtin:attribute
 - legacy_type.builtin:call
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
@@ -10,8 +11,17 @@ import:
 - legacy_type.crud:edit_d
 - legacy_type.sample_list:sample_list
 - legacy_type.sample_list_crud:form_item
+- legacy_type.system_fn:ctx_fn
 - sample.sample_list:sample_list.module
 definitions:
+  sample_list-sample_list.crud.get.system-fn:
+    type: legacy_type.system_fn:ctx_fn
+    value:
+      function: sample_list_get
+      ctx_params:
+      - piece
+      - id
+      service_params: []
   sample_list-sample_list.edit.command:
     type: legacy_type.command:model_command
     value:
@@ -46,3 +56,8 @@ definitions:
         code.mark: common.mark:mark.module
         code.sample_list: sample.sample_list:sample_list.module
         htypes.sample_list_crud.form_item: legacy_type.sample_list_crud:form_item
+  sample_list_get:
+    type: legacy_type.builtin:attribute
+    value:
+      object: sample_list_crud.module
+      attr_name: sample_list_get

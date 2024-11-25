@@ -95,7 +95,7 @@ class CrudProbe:
             model_t=model_t,
             action=self._action,
             key_field=key_field,
-            crud_params=params.other_names,
+            ctx_params=params.other_names,
             service_params=params.service_names,
             )
 

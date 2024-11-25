@@ -8,34 +8,15 @@ from .code.rc_constructor import ModuleCtr
 
 class CrudTemplateCtr(ModuleCtr):
 
-    def __init__(self, data_to_res, module_name, attr_qual_name, model_t, action, key_field, crud_params, service_params):
+    def __init__(self, data_to_res, module_name, attr_qual_name, model_t, action, key_field, ctx_params, service_params):
         super().__init__(module_name)
         self._data_to_res = data_to_res
         self._attr_qual_name = attr_qual_name
         self._model_t = model_t
         self._action = action
         self._key_field = key_field
-        self._crud_params = crud_params
+        self._ctx_params = ctx_params
         self._service_params = service_params
-
-    # def get_component(self, name_to_res):
-    #     return name_to_res[self._resource_name]
-
-    # def make_component(self, types, python_module, name_to_res):
-    #     object = python_module
-    #     for name in self._attr_qual_name:
-    #         object = htypes.builtin.attribute(
-    #             object=mosaic.put(object),
-    #             attr_name=name,
-    #             )
-
-    # @property
-    # def _type_name(self):
-    #     return f'{self._model_t.module_name}-{self._model_t.name}'
-
-    # @property
-    # def _resource_name(self):
-    #     return f'{self._type_name}.edit.command-cfg-item'
 
 
 class CrudInitTemplateCtr(CrudTemplateCtr):
@@ -49,13 +30,13 @@ class CrudInitTemplateCtr(CrudTemplateCtr):
             model_t=pyobj_creg.invite(piece.model_t),
             action=piece.action,
             key_field=piece.key_field,
-            crud_params=piece.crud_params,
+            ctx_params=piece.ctx_params,
             service_params=piece.service_params,
             record_t=pyobj_creg.invite(piece.record_t),
             )
 
-    def __init__(self, data_to_res, module_name, attr_qual_name, model_t, action, key_field, crud_params, service_params, record_t):
-        super().__init__(data_to_res, module_name, attr_qual_name, model_t, action, key_field, crud_params, service_params)
+    def __init__(self, data_to_res, module_name, attr_qual_name, model_t, action, key_field, ctx_params, service_params, record_t):
+        super().__init__(data_to_res, module_name, attr_qual_name, model_t, action, key_field, ctx_params, service_params)
         self._record_t = record_t
 
     @property
@@ -66,12 +47,18 @@ class CrudInitTemplateCtr(CrudTemplateCtr):
             model_t=pyobj_creg.actor_to_ref(self._model_t),
             action=self._action,
             key_field=self._key_field,
-            crud_params=tuple(self._crud_params),
+            ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
             record_t=pyobj_creg.actor_to_ref(self._record_t),
             )
 
     def update_resource_targets(self, resource_tgt, target_set):
+        _, resolved_tgt, _ = target_set.factory.config_items(
+            'crud_action_reg', self._resource_name, provider=resource_tgt, ctr=self)
+        resource_tgt.add_cfg_item_target(resolved_tgt)
+        self._add_open_command_targets(resource_tgt, target_set)
+
+    def _add_open_command_targets(self, resource_tgt, target_set):
         if self._action == 'get':
             open_command_name = 'edit'
             commit_action = 'update'
@@ -88,6 +75,34 @@ class CrudInitTemplateCtr(CrudTemplateCtr):
             )
         open_command_ctr.update_resource_targets(resource_tgt, target_set)
 
+    def get_component(self, name_to_res):
+        return name_to_res[self._resource_name]
+
+    def make_component(self, types, python_module, name_to_res):
+        object = python_module
+        prefix = []
+        for name in self._attr_qual_name:
+            object = htypes.builtin.attribute(
+                object=mosaic.put(object),
+                attr_name=name,
+                )
+            name_to_res['.'.join([*prefix, name])] = object
+            prefix.append(name)
+        system_fn = htypes.system_fn.ctx_fn(
+            function=mosaic.put(object),
+            ctx_params=tuple(self._ctx_params),
+            service_params=tuple(self._service_params),
+            )
+        name_to_res[f'{self._resource_name}'] = system_fn
+
+    @property
+    def _type_name(self):
+        return f'{self._model_t.module_name}-{self._model_t.name}'
+
+    @property
+    def _resource_name(self):
+        return f'{self._type_name}.crud.{self._action}.system-fn'
+
 
 class CrudCommitTemplateCtr(CrudTemplateCtr):
 
@@ -100,7 +115,7 @@ class CrudCommitTemplateCtr(CrudTemplateCtr):
             model_t=pyobj_creg.invite(piece.model_t),
             action=piece.action,
             key_field=piece.key_field,
-            crud_params=piece.crud_params,
+            ctx_params=piece.ctx_params,
             service_params=piece.service_params,
             )
 
@@ -112,15 +127,12 @@ class CrudCommitTemplateCtr(CrudTemplateCtr):
             model_t=pyobj_creg.actor_to_ref(self._model_t),
             action=self._action,
             key_field=self._key_field,
-            crud_params=tuple(self._crud_params),
+            ctx_params=tuple(self._ctx_params),
             service_params=tuple(self._service_params),
             )
 
     def update_resource_targets(self, resource_tgt, target_set):
         pass
-        # _, resolved_tgt, _ = target_set.factory.config_items(
-        #     'model_command_reg', self._resource_name, provider=resource_tgt, ctr=self)
-        # resource_tgt.add_cfg_item_target(resolved_tgt)
 
 
 class CrudOpenCommandCtr(ModuleCtr):
