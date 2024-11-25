@@ -254,6 +254,16 @@ class TargetFactory:
         config_tgt.add_item(service_name, target, req)
         return target
 
+    def config_items(self, service_name, key, req=None, provider=None, ctr=None):
+        ready_tgt = self.config_item_ready(service_name, key)
+        resolved_tgt = self.config_item_resolved(service_name, key)
+        complete_tgt = self.config_item_complete(service_name, key, req)
+        if provider is not None:
+            ready_tgt.set_provider(provider)
+        if ctr is not None:
+            resolved_tgt.resolve(ctr)
+        return (ready_tgt, resolved_tgt, complete_tgt)
+
     def config_resource(self):
         target_name = ConfigResourceTarget.target_name()
         return self._target_set[target_name]

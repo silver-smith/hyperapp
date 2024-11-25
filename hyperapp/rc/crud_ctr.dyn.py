@@ -46,11 +46,8 @@ class CrudTemplateCtr(ModuleCtr):
     def update_resource_targets(self, resource_tgt, target_set):
         if self._action != 'update':
             return
-        ready_tgt = target_set.factory.config_item_ready('model_command_reg', self._resource_name)
-        ready_tgt.set_provider(resource_tgt)
-        resolved_tgt = target_set.factory.config_item_resolved('model_command_reg', self._resource_name)
-        resolved_tgt.resolve(self)
-        _ = target_set.factory.config_item_complete('model_command_reg', self._resource_name)
+        ready_tgt, resolved_tgt, _ = target_set.factory.config_items(
+            'model_command_reg', self._resource_name, provider=resource_tgt, ctr=self)
         resource_tgt.add_cfg_item_target(resolved_tgt)
 
     def get_component(self, name_to_res):

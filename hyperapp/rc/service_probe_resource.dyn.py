@@ -111,25 +111,22 @@ class ServiceProbeCtr(ModuleCtr):
 
     def update_resource_targets(self, resource_tgt, target_set):
         resource_tgt.import_tgt.add_test_ctr(self)
-        ready_tgt = target_set.factory.config_item_ready('system', self._name)
-        ready_tgt.set_provider(resource_tgt)
-        resolved_tgt = target_set.factory.config_item_resolved('system', self._name)
-        resource_tgt.add_cfg_item_target(resolved_tgt)
-        if tuple(self._params) not in {(), ('config',)}:
-            return
-        template_ctr = ServiceTemplateCtr(
-            config_ctl=self._config_ctl,
-            attr_name=self._attr_name,
-            name=self._name,
-            ctl_ref=self._ctl_ref,
-            free_params=[],
-            service_params=[],
-            want_config='config' in self._params,
-            )
-        resolved_tgt.resolve(template_ctr)
-        # Complete target should be created so it will be added to config resource.
+        if tuple(self._params) in {(), ('config',)}:
+            template_ctr = ServiceTemplateCtr(
+                config_ctl=self._config_ctl,
+                attr_name=self._attr_name,
+                name=self._name,
+                ctl_ref=self._ctl_ref,
+                free_params=[],
+                service_params=[],
+                want_config='config' in self._params,
+                )
+        else:
+            template_ctr = None
         req = ServiceReq(self._name)
-        _ = target_set.factory.config_item_complete('system', self._name, req)
+        ready_tgt, resolved_tgt, _ = target_set.factory.config_items(
+            'system', self._name, req, provider=resource_tgt, ctr=template_ctr)
+        resource_tgt.add_cfg_item_target(resolved_tgt)
 
     def make_component(self, types, python_module, name_to_res=None):
         function = htypes.builtin.attribute(

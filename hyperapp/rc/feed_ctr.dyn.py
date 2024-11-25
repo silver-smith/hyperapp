@@ -42,13 +42,9 @@ class FeedCtr(ModuleCtr):
             )
 
     def update_resource_targets(self, resource_tgt, target_set):
-        ready_tgt = target_set.factory.config_item_ready('feed_factory', self._type_name)
-        ready_tgt.set_provider(resource_tgt)
-        resolved_tgt = target_set.factory.config_item_resolved('feed_factory', self._type_name)
-        resolved_tgt.resolve(self)
-        # Should be created to be added to config resource.
         req = ActorReq('feed_factory', self._t)
-        _ = target_set.factory.config_item_complete('feed_factory', self._type_name, req)
+        ready_tgt, resolved_tgt, _ = target_set.factory.config_items(
+            'feed_factory', self._type_name, req, provider=resource_tgt, ctr=self)
         resource_tgt.add_cfg_item_target(resolved_tgt)
 
     def make_component(self, types, python_module, name_to_res=None):

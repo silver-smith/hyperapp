@@ -39,11 +39,7 @@ def add_core_items(config_ctl, ctr_from_template_creg, system_config_template, t
             module_name, var_name = resource_registry.reverse_resolve(item_piece)
             resource_tgt = target_set.factory.python_module_resource_by_module_name(module_name)
             assert isinstance(resource_tgt, ManualPythonModuleResourceTarget)
-            ready_tgt = target_set.factory.config_item_ready(service_name, key)
-            resolved_tgt = target_set.factory.config_item_resolved(service_name, key)
-            complete_tgt = target_set.factory.config_item_complete(service_name, key, req)
-            ready_tgt.set_provider(resource_tgt)
-            resolved_tgt.resolve(ctr)
+            _ = target_set.factory.config_items(service_name, key, req, provider=resource_tgt, ctr=ctr)
 
 
 def init_targets(config_ctl, ctr_from_template_creg, system_config_template, root_dir, cache, cached_count, target_set, build):

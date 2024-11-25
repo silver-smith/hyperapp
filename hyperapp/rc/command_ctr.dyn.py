@@ -24,12 +24,11 @@ class CommandTemplateCtr(Constructor):
         resource_tgt = target_set.factory.python_module_resource_by_module_name(self._module_name)
         # ready target may already have provider set, but in case of
         # non-typed marker it have not.
-        ready_tgt = target_set.factory.config_item_ready(self._service_name, self._resource_name)
-        ready_tgt.set_provider(resource_tgt)
-        resolved_tgt = target_set.factory.config_item_resolved(self._service_name, self._resource_name)
-        resolved_tgt.resolve(self)
-        # Should be created to be added to config resource.
-        _ = target_set.factory.config_item_complete(self._service_name, self._resource_name)
+        ready_tgt, resolved_tgt, _ = target_set.factory.config_items(
+            self._service_name, self._resource_name,
+            provider=resource_tgt,
+            ctr=self,
+            )
         # resource target may already have resolved target, but in case of
         # non-typed marker it have not.
         resource_tgt.add_cfg_item_target(resolved_tgt)
