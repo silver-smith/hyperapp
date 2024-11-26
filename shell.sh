@@ -8,5 +8,5 @@ cd "$root_dir"
 
 set -x
 
-ipython --profile-dir=$root_dir/ipython-profile -i "$@"
+ipython --profile-dir=$root_dir/ipython-profile "$@"
 # ipython --profile=hyperapp -i ./ipython_init.py "$@"
