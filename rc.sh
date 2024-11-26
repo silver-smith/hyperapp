@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-venv=${VENV:-$HOME/venv/hyperapp}
+venv="${VENV:-$HOME/venv/hyperapp}"
 
 export LOG_CFG="${LOG_CFG:-rc}"
 
