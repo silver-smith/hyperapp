@@ -4,14 +4,13 @@ import:
 - builtins:deduce_t.service
 - builtins:mosaic.service
 - builtins:web.service
+- common.context:context.module
 - common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
 - legacy_type.crud:crud_open_command_fn
 - legacy_type.crud:model
 - legacy_type.system:actor_template
-- legacy_type.system:dict_config_ctl
-- legacy_type.system:service_template
 definitions:
   CrudOpenFn:
     type: legacy_type.builtin:attribute
@@ -29,28 +28,12 @@ definitions:
       module_name: crud
       file_name: crud.dyn.py
       import_list:
+        code.context: common.context:context.module
         code.mark: common.mark:mark.module
         htypes.crud.model: legacy_type.crud:model
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
-  crud_action_reg:
-    type: legacy_type.builtin:attribute
-    value:
-      object: crud.module
-      attr_name: crud_action_reg
-  crud_action_reg.service:
-    type: legacy_type.system:service_template
-    value:
-      name: crud_action_reg
-      ctl: system-dict_config_ctl.ctl
-      function: crud_action_reg
-      service_params:
-      - system_fn_creg
-      want_config: true
-      free_params:
-      - model_t
-      - action
   crud_crud_open_command_fn.actor-template:
     type: legacy_type.system:actor_template
     value:
@@ -63,12 +46,9 @@ definitions:
       t: legacy_type.crud:model
       function: crud_model_layout
       service_params:
-      - crud_action_reg
+      - system_fn_creg
   crud_model_layout:
     type: legacy_type.builtin:attribute
     value:
       object: crud.module
       attr_name: crud_model_layout
-  system-dict_config_ctl.ctl:
-    type: legacy_type.system:dict_config_ctl
-    value: {}

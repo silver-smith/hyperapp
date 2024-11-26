@@ -5,6 +5,7 @@ from .services import (
     web,
     )
 from .code.mark import mark
+from .code.context import Context
 
 
 class CrudOpenFn:
@@ -14,16 +15,16 @@ class CrudOpenFn:
     @classmethod
     @mark.actor.system_fn_creg
     def from_piece(cls, piece):
-        return cls(piece.name, piece.key_field, piece.init_action, piece.commit_action)
+        return cls(piece.name, piece.key_field, piece.init_action_fn, piece.commit_action)
 
-    def __init__(self, name, key_field, init_action, commit_action):
+    def __init__(self, name, key_field, init_action_fn, commit_action):
         self._name = name
         self._key_field = key_field
-        self._init_action = init_action
+        self._init_action_fn = init_action_fn
         self._commit_action = commit_action
 
     def __repr__(self):
-        return f"<CrudOpenFn {self._name}: {self._key_field}/{self._init_action}/{self._commit_action})>"
+        return f"<CrudOpenFn {self._name} key={self._key_field})>"
 
     def call(self, ctx, **kw):
         ctx_kw = {**ctx.as_dict(), **kw}
@@ -39,24 +40,18 @@ class CrudOpenFn:
             model=mosaic.put(model),
             key=mosaic.put(key),
             key_field=self._key_field,
-            init_action=self._init_action,
+            init_action_fn=self._init_action_fn,
             commit_action=self._commit_action,
             )
 
 
-@mark.service
-def crud_action_reg(config, system_fn_creg, model_t, action):
-    fn = config[model_t, action]
-    return system_fn_creg.animate(fn)
-
-
 @mark.actor.model_layout_creg
-def crud_model_layout(piece, ctx, crud_action_reg):
+def crud_model_layout(piece, system_fn_creg):
     model = web.summon(piece.model)
     key = web.summon(piece.key)
     model_t = deduce_t(model)
-    fn = crud_action_reg(model_t, piece.init_action)
-    action_ctx = ctx.clone_with(
+    fn = system_fn_creg.invite(piece.init_action_fn)
+    action_ctx = Context(
         piece=model,
         model=model,
         **{piece.key_field: key},

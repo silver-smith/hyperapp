@@ -17,5 +17,5 @@ open_command_ctr = record:
   model_t: ref
   name: string
   key_field: string
-  init_action: string
+  init_action_fn: ref
   commit_action: string

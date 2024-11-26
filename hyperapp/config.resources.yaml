@@ -148,7 +148,6 @@ import:
 - sample.sample_list:sample_list_feed_sample_list.feed-template
 - sample.sample_list:sample_list_feed_sample_list.model-cfg-item
 - sample.sample_list:sample_list_sample_list.model-cfg-item
-- sample.sample_list_crud:sample_list-sample_list.crud.get.system-fn
 - sample.sample_list_crud:sample_list-sample_list.edit.command-cfg-item
 - sample.sample_record:open_sample_fn_record.global-model-command
 - sample.sample_record:sample_record_sample_record.model-cfg-item
@@ -193,7 +192,6 @@ import:
 - ui.command_creg:command_creg.service
 - ui.controller:controller_running.service
 - ui.controller:layout_view.feed-template
-- ui.crud:crud_action_reg.service
 - ui.crud:crud_crud_open_command_fn.actor-template
 - ui.crud:crud_model.actor-template
 - ui.feed:feed_factory.service
@@ -315,7 +313,6 @@ definitions:
         cfg_item_creg: cfg_item_creg
         command_creg: command_creg
         config_ctl_creg: config_ctl_creg
-        crud_action_reg: crud_action_reg
         ctr_from_template_creg: ctr_from_template_creg
         feed_creg: feed_creg
         feed_factory: feed_factory
@@ -352,11 +349,6 @@ definitions:
       items:
       - ui.command_config_ctl:command_typed_config_ctl.actor-template
       - ui.command_config_ctl:command_untyped_config_ctl.actor-template
-  crud_action_reg:
-    type: legacy_type.system:item_list_config
-    value:
-      items:
-      - sample.sample_list_crud:sample_list-sample_list.crud.get.system-fn
   ctr_from_template_creg:
     type: legacy_type.system:item_list_config
     value:
@@ -628,7 +620,6 @@ definitions:
       - transport.transport:transport.service
       - ui.command_creg:command_creg.service
       - ui.controller:controller_running.service
-      - ui.crud:crud_action_reg.service
       - ui.feed:feed_factory.service
       - ui.feed_creg:feed_creg.service
       - ui.local_server:local_server_peer.service

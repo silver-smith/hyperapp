@@ -66,6 +66,7 @@ class ConfigItemResolvedTarget(Target):
         self._completed = False
         self._provider_resource_tgt = None
         self._ctr = None
+        self._custom_deps = set()
 
     @property
     def name(self):
@@ -77,7 +78,10 @@ class ConfigItemResolvedTarget(Target):
 
     @property
     def deps(self):
-        return {self._ready_tgt}
+        return {self._ready_tgt, *self._custom_deps}
+
+    def add_dep(self, target):
+        self._custom_deps.add(target)
 
     @property
     def provider_resource_tgt(self):

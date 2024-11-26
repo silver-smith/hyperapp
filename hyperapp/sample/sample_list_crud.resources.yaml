@@ -45,7 +45,7 @@ definitions:
     value:
       name: edit
       key_field: id
-      init_action: get
+      init_action_fn: sample_list-sample_list.crud.get.system-fn
       commit_action: update
   sample_list_crud.module:
     type: legacy_type.builtin:python_module
