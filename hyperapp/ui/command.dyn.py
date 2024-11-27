@@ -61,6 +61,7 @@ _hardcoded_shortcuts = {
     'set_command_name': 'Return',
     'open_crud_sample': 'Alt+R',
     'edit': 'E',
+    'save': 'Return',
     }
 
 

@@ -9,6 +9,7 @@ import:
 - legacy_type.command:model_command
 - legacy_type.crud:edit_d
 - legacy_type.crud:open_command_fn
+- legacy_type.crud:save_d
 - legacy_type.sample_list:sample_list
 - legacy_type.sample_list_crud:form_item
 - legacy_type.system_fn:ctx_fn
@@ -25,7 +26,7 @@ definitions:
   sample_list-sample_list.edit.command:
     type: legacy_type.command:model_command
     value:
-      d: sample_list-sample_list.edit.command.d
+      d: sample_list-sample_list.edit.open-command.d
       properties:
         is_global: false
         uses_state: true
@@ -36,10 +37,6 @@ definitions:
     value:
       t: legacy_type.sample_list:sample_list
       command: sample_list-sample_list.edit.command
-  sample_list-sample_list.edit.command.d:
-    type: legacy_type.builtin:call
-    value:
-      function: legacy_type.crud:edit_d
   sample_list-sample_list.edit.command.fn:
     type: legacy_type.crud:open_command_fn
     value:
@@ -47,7 +44,16 @@ definitions:
       record_t: legacy_type.sample_list_crud:form_item
       key_field: id
       init_action_fn: sample_list-sample_list.crud.get.system-fn
+      commit_command_d: sample_list-sample_list.edit.commit-command.d
       commit_action: update
+  sample_list-sample_list.edit.commit-command.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.crud:save_d
+  sample_list-sample_list.edit.open-command.d:
+    type: legacy_type.builtin:call
+    value:
+      function: legacy_type.crud:edit_d
   sample_list_crud.module:
     type: legacy_type.builtin:python_module
     value:

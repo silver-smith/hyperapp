@@ -1,11 +1,18 @@
+import logging
+from functools import cached_property
+
 from . import htypes
 from .services import (
     deduce_t,
     mosaic,
+    pyobj_creg,
     web,
     )
 from .code.mark import mark
 from .code.context import Context
+from .code.command import BoundCommandBase, UnboundCommandBase
+
+log = logging.getLogger(__name__)
 
 
 class CrudOpenFn:
@@ -20,14 +27,16 @@ class CrudOpenFn:
             record_t_ref=piece.record_t,
             key_field=piece.key_field,
             init_action_fn_ref=piece.init_action_fn,
+            commit_command_d_ref=piece.commit_command_d,
             commit_action=piece.commit_action,
             )
 
-    def __init__(self, name, record_t_ref, key_field, init_action_fn_ref, commit_action):
+    def __init__(self, name, record_t_ref, key_field, init_action_fn_ref, commit_command_d_ref, commit_action):
         self._name = name
         self._record_t_ref = record_t_ref
         self._key_field = key_field
         self._init_action_fn_ref = init_action_fn_ref
+        self._commit_command_d_ref = commit_command_d_ref
         self._commit_action = commit_action
 
     def __repr__(self):
@@ -49,6 +58,7 @@ class CrudOpenFn:
             key=mosaic.put(key),
             key_field=self._key_field,
             init_action_fn=self._init_action_fn_ref,
+            commit_command_d=self._commit_command_d_ref,
             commit_action=self._commit_action,
             )
 
@@ -96,3 +106,42 @@ def crud_model_layout(piece, system_fn_creg):
         system_fn=mosaic.put(crud_init_fn),
         )
     return htypes.form.view(mosaic.put(adapter))
+
+
+class UnboundCrudCommitCommand(UnboundCommandBase):
+
+    @property
+    def properties(self):
+        return htypes.command.properties(
+            is_global=False,
+            uses_state=False,
+            remotable=False,
+            )
+
+    def bind(self, ctx):
+        return BoundCrudCommitCommand(self._d)
+
+
+class BoundCrudCommitCommand(BoundCommandBase):
+
+    @property
+    def enabled(self):
+        return not self._missing_params
+
+    @property
+    def disabled_reason(self):
+        params = ", ".join(self._missing_params)
+        return f"Params not ready: {params}"
+
+    @cached_property
+    def _missing_params(self):
+        return set()
+
+    async def run(self):
+        log.info("Run CRUD commit command: %r", self.name)
+
+
+@mark.command_enum
+def crud_model_commands(piece):
+    command_d = pyobj_creg.invite(piece.commit_command_d)
+    return [UnboundCrudCommitCommand(command_d)]

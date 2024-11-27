@@ -194,6 +194,7 @@ import:
 - ui.controller:layout_view.feed-template
 - ui.crud:crud_init_fn.actor-template
 - ui.crud:crud_model.actor-template
+- ui.crud:crud_model_crud_model_commands.command-cfg-item
 - ui.crud:crud_open_command_fn.actor-template
 - ui.feed:feed_factory.service
 - ui.feed:feed_index_tree_feed_type.actor-template
@@ -418,6 +419,7 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
+      - ui.crud:crud_model_crud_model_commands.command-cfg-item
       - ui.layout:layout_view_enum_layout_tree_commands.command-cfg-item
   model_command_reg:
     type: legacy_type.system:item_list_config

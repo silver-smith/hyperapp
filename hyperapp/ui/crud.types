@@ -4,6 +4,7 @@ model = record:
   key: ref
   key_field: string
   init_action_fn: ref
+  commit_command_d: ref
   commit_action: string
 
 
@@ -12,8 +13,10 @@ open_command_fn = record:
   record_t: ref
   key_field: string
   init_action_fn: ref
+  commit_command_d: ref
   commit_action: string
 
 init_fn = record
 
 edit_d = record
+save_d = record

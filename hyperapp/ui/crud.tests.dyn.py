@@ -22,13 +22,14 @@ def _sample_get_fn():
         )
 
 
-def test_open_command_fn(_sample_get_fn):
+def test_open_command_fn(data_to_ref, _sample_get_fn):
     record_t = htypes.crud_tests.sample_record
     piece = htypes.crud.open_command_fn(
         name='edit',
         record_t=pyobj_creg.actor_to_ref(record_t),
         key_field='id',
         init_action_fn=mosaic.put(_sample_get_fn),
+        commit_command_d=data_to_ref(htypes.crud.save_d()),
         commit_action='update',
         )
     fn = crud.CrudOpenFn.from_piece(piece)
@@ -43,20 +44,25 @@ def test_open_command_fn(_sample_get_fn):
     assert isinstance(crud_model, htypes.crud.model)
 
 
-def test_init_fn(_sample_get_fn):
-    piece = htypes.crud.init_fn()
-    fn = crud.CrudInitFn.from_piece(piece)
-
+@mark.fixture
+def crud_model(data_to_ref, _sample_get_fn):
     record_t = htypes.crud_tests.sample_record
     model = htypes.crud_tests.sample_model()
-    crud_model = htypes.crud.model(
+    return htypes.crud.model(
         record_t=pyobj_creg.actor_to_ref(record_t),
         model=mosaic.put(model),
         key=mosaic.put(123),
         key_field='id',
         init_action_fn=mosaic.put(_sample_get_fn),
+        commit_command_d=data_to_ref(htypes.crud.save_d()),
         commit_action='update',
         )
+
+
+def test_init_fn(crud_model):
+    piece = htypes.crud.init_fn()
+    fn = crud.CrudInitFn.from_piece(piece)
+
     assert fn.missing_params(Context()) == {'model'}
     ctx = Context(
         model=crud_model,
@@ -66,16 +72,15 @@ def test_init_fn(_sample_get_fn):
     assert result == htypes.crud_tests.sample_record(123, 'item#123')
 
 
-def test_model_layout(_sample_get_fn):
-    model = htypes.crud_tests.sample_model()
-    record_t = htypes.crud_tests.sample_record
-    piece = htypes.crud.model(
-        record_t=pyobj_creg.actor_to_ref(record_t),
-        model=mosaic.put(model),
-        key=mosaic.put(123),
-        key_field='id',
-        init_action_fn=mosaic.put(_sample_get_fn),
-        commit_action='update',
-        )
-    result = crud.crud_model_layout(piece)
+def test_model_layout(crud_model):
+    result = crud.crud_model_layout(crud_model)
     assert isinstance(result, htypes.form.view)
+
+
+def test_model_commands(crud_model):
+    commands = crud.crud_model_commands(crud_model)
+    assert commands
+    [unbound_cmd] = commands
+    assert unbound_cmd.properties
+    ctx = Context()
+    bound_cmd = unbound_cmd.bind(ctx)

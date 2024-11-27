@@ -19,4 +19,5 @@ open_command_ctr = record:
   record_t: ref
   key_field: string
   init_action_fn: ref
+  commit_command_name: string
   commit_action: string
