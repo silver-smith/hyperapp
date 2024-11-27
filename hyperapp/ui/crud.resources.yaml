@@ -15,6 +15,7 @@ import:
 - legacy_type.crud:init_fn
 - legacy_type.crud:model
 - legacy_type.crud:open_command_fn
+- legacy_type.form:state
 - legacy_type.form:view
 - legacy_type.record_adapter:fn_record_adapter
 - legacy_type.system:actor_template
@@ -53,6 +54,7 @@ definitions:
         htypes.command.properties: legacy_type.command:properties
         htypes.crud.init_fn: legacy_type.crud:init_fn
         htypes.crud.model: legacy_type.crud:model
+        htypes.form.state: legacy_type.form:state
         htypes.form.view: legacy_type.form:view
         htypes.record_adapter.fn_record_adapter: legacy_type.record_adapter:fn_record_adapter
         services.deduce_t: builtins:deduce_t.service

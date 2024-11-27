@@ -142,7 +142,11 @@ class BoundCrudCommitCommand(BoundCommandBase):
         return set()
 
     async def run(self):
-        log.info("Run CRUD commit command %r: model_state=%s", self.name, self._ctx.model_state)
+        model_state = self._ctx.model_state
+        log.info("Run CRUD commit command %r: model_state=%s", self.name, model_state)
+        assert isinstance(model_state, htypes.form.state)
+        for name, value_ref in model_state.fields:
+            log.info("Model state: %s=%r", name, web.summon(value_ref))
 
 
 @mark.command_enum

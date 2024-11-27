@@ -77,10 +77,15 @@ def test_model_layout(crud_model):
     assert isinstance(result, htypes.form.view)
 
 
-def test_model_commands(crud_model):
+async def test_model_commands(crud_model):
     commands = crud.crud_model_commands(crud_model)
     assert commands
     [unbound_cmd] = commands
     assert unbound_cmd.properties
-    ctx = Context()
+    ctx = Context(
+        model_state=htypes.form.state((
+            htypes.form.field('text', mosaic.put("Some text")),
+            )),
+        )
     bound_cmd = unbound_cmd.bind(ctx)
+    await bound_cmd.run()
