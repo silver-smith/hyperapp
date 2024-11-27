@@ -119,10 +119,14 @@ class UnboundCrudCommitCommand(UnboundCommandBase):
             )
 
     def bind(self, ctx):
-        return BoundCrudCommitCommand(self._d)
+        return BoundCrudCommitCommand(self._d, ctx)
 
 
 class BoundCrudCommitCommand(BoundCommandBase):
+
+    def __init__(self, d, ctx):
+        super().__init__(d)
+        self._ctx = ctx
 
     @property
     def enabled(self):
@@ -138,7 +142,7 @@ class BoundCrudCommitCommand(BoundCommandBase):
         return set()
 
     async def run(self):
-        log.info("Run CRUD commit command: %r", self.name)
+        log.info("Run CRUD commit command %r: model_state=%s", self.name, self._ctx.model_state)
 
 
 @mark.command_enum
