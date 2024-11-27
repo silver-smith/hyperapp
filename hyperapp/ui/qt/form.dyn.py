@@ -66,6 +66,9 @@ class FormView(View):
         return 0
 
     def widget_state(self, widget):
+        return self._make_state(widget)
+
+    def _make_state(self, widget):
         field_list = []
         for idx, (name, view) in enumerate(self._fields.items()):
             w = self.item_widget(widget, idx)
@@ -81,7 +84,7 @@ class FormView(View):
             )
 
     def _model_state(self, widget):
-        return TRecord('ui_form', 'model_state', {})
+        return self._make_state(widget)
 
     def items(self):
         return [
