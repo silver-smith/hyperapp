@@ -29,7 +29,7 @@ def edit_piece(adapter):
 
 @mark.fixture
 def state():
-    return htypes.text.state()
+    return htypes.text.state('')
 
 
 @mark.fixture

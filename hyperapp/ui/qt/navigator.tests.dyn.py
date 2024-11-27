@@ -21,14 +21,14 @@ def piece():
     prev_rec = htypes.navigator.history_rec(
         view=mosaic.put(text_piece),
         model=mosaic.put("Sample piece"),
-        state=mosaic.put(htypes.text.state()),
+        state=mosaic.put(htypes.text.state('')),
         prev=None,
         next=None,
         )
     next_rec = htypes.navigator.history_rec(
         view=mosaic.put(text_piece),
         model=mosaic.put("Sample piece"),
-        state=mosaic.put(htypes.text.state()),
+        state=mosaic.put(htypes.text.state('')),
         prev=None,
         next=None,
         )
@@ -42,7 +42,7 @@ def piece():
 
 @mark.fixture
 def state():
-    return htypes.text.state()
+    return htypes.text.state('')
 
 
 @mark.fixture
@@ -60,7 +60,8 @@ def view(piece, ctx):
 def test_widget(qapp, state, ctx, view):
     widget = view.construct_widget(state, ctx)
     assert view.piece
-    assert view.widget_state(widget) == htypes.text.state()
+    state = view.widget_state(widget)
+    assert state == htypes.text.state("Sample piece")
 
 
 def test_go_back_command(qapp, state, ctx, view):

@@ -4,4 +4,5 @@ readonly_view = record:
 edit_view = record:
   adapter: ref
 
-state = record
+state = record:
+  text: string

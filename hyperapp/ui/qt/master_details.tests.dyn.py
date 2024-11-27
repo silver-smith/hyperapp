@@ -58,7 +58,7 @@ def piece(data_to_ref, master_piece, command_d):
 
 @mark.fixture
 def state():
-    master_state = htypes.text.state()
+    master_state = htypes.text.state('')
     return htypes.master_details.state(
         master_state=mosaic.put(master_state),
         details_state=mosaic.put(htypes.label.state()),

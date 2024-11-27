@@ -39,7 +39,7 @@ def make_default_piece():
 
 
 def make_default_state():
-    text_state = htypes.text.state()
+    text_state = htypes.text.state('')
     navigator_state = text_state
     tabs_state = htypes.tabs.state(
         current_tab=0,

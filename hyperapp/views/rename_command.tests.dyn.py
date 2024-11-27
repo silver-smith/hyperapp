@@ -57,7 +57,7 @@ def _test_view():
         model=mosaic.put(model),
         ui_command=mosaic.put(sample_ui_command),
         )
-    text_state = htypes.text.state()
+    text_state = htypes.text.state('')
     state = htypes.rename_command.state(
         base=mosaic.put(text_state),
         )

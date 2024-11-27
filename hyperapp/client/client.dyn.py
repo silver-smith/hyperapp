@@ -66,7 +66,7 @@ def make_default_piece(visualizer, lcs):
 
 
 def make_default_state():
-    text_state = htypes.text.state()
+    text_state = htypes.text.state('')
     navigator_state = text_state
     command_pane_state = htypes.command_pane.state()
     box_layout_state = htypes.box_layout.state(

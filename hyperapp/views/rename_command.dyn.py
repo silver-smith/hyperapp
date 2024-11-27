@@ -75,7 +75,7 @@ def rename_command(piece, current_item, navigator, ctx):
         model=piece.model,
         ui_command=current_item.command,
         )
-    text_state = htypes.text.state()
+    text_state = htypes.text.state('')
     new_state = htypes.rename_command.state(
         base=mosaic.put(text_state),
         )

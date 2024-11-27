@@ -32,8 +32,7 @@ class ViewTextView(View):
         return w
 
     def widget_state(self, widget):
-        # return htypes.text.state(text=widget.toPlainText())
-        return htypes.text.state()
+        return htypes.text.state(text=self.get_plain_text(widget))
 
     def primary_parent_context(self, rctx, widget):
         return rctx.clone_with(
@@ -42,8 +41,10 @@ class ViewTextView(View):
             )
 
     def _model_state(self, widget):
-        # return htypes.text.state(text=widget.toPlainText())
-        return htypes.text.state()
+        return htypes.text.state(text=self.get_plain_text(widget))
+
+    def get_plain_text(self, widget):
+        return widget.toPlainText()
 
 
 class EditTextView(View):
@@ -65,12 +66,15 @@ class EditTextView(View):
 
     def construct_widget(self, state, ctx):
         w = QtWidgets.QTextEdit()
-        w.setPlainText(self._adapter.get_text())
+        if state:
+            text = state.text
+        else:
+            text = self._adapter.get_text()
+        w.setPlainText(text)
         return w
 
     def widget_state(self, widget):
-        # return htypes.text.state(text=widget.toPlainText())
-        return htypes.text.state()
+        return htypes.text.state(text=self.get_text(widget))
 
     def primary_parent_context(self, rctx, widget):
         return rctx.clone_with(
@@ -79,8 +83,7 @@ class EditTextView(View):
             )
 
     def _model_state(self, widget):
-        # return htypes.text.state(text=widget.toPlainText())
-        return htypes.text.state()
+        return htypes.text.state(text=self.get_text(widget))
 
     def get_text(self, widget):
         return widget.toPlainText()

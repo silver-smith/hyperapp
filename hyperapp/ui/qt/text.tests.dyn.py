@@ -22,14 +22,14 @@ def make_edit_piece():
 
 
 def make_state():
-    return htypes.text.state()
+    return htypes.text.state('')
 
 
 def test_view_text(qapp):
     ctx = Context()
     piece = make_view_piece()
     state = make_state()
-    model ="Sample text"
+    model = "Sample text"
     view = text.ViewTextView.from_piece(piece, model, ctx)
     widget = view.construct_widget(state, ctx)
     assert view.piece
@@ -41,7 +41,7 @@ def test_edit_text(qapp):
     ctx = Context()
     piece = make_edit_piece()
     state = make_state()
-    model ="Sample text"
+    model = "Sample text"
     view = text.EditTextView.from_piece(piece, model, ctx)
     widget = view.construct_widget(state, ctx)
     assert view.piece
