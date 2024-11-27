@@ -36,7 +36,7 @@ _hardcoded_shortcuts = {
     'open_feed_sample_fn_list': 'f5',
     'open_feed_sample_fn_tree': 'Shift+f6',
     'open_sample_fn_record': 'F7',
-    'show_state': 'Ctrl+Return',
+    'show_state': 'Alt+Return',
     'details': 'Return',
     'open_view_item_commands': 'C',
     'add_view_command': 'Insert',
@@ -61,7 +61,7 @@ _hardcoded_shortcuts = {
     'set_command_name': 'Return',
     'open_crud_sample': 'Alt+R',
     'edit': 'E',
-    'save': 'Return',
+    'save': 'Ctrl+Return',
     }
 
 
