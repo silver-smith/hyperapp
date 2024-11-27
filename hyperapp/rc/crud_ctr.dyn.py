@@ -71,6 +71,7 @@ class CrudInitTemplateCtr(CrudTemplateCtr):
             module_name=self._module_name,
             model_t=self._model_t,
             name=open_command_name,
+            record_t=self._record_t,
             key_field=self._key_field,
             commit_action=commit_action,
             )
@@ -146,15 +147,17 @@ class CrudOpenCommandCtr(ModuleCtr):
             module_name=piece.module_name,
             model_t=pyobj_creg.invite(piece.model_t),
             name=piece.name,
+            record_t=piece.record_t,
             key_field=piece.key_field,
             commit_action=piece.commit_action,
             )
 
-    def __init__(self, data_to_res, module_name, model_t, name, key_field, commit_action):
+    def __init__(self, data_to_res, module_name, model_t, name, record_t, key_field, commit_action):
         super().__init__(module_name)
         self._data_to_res = data_to_res
         self._model_t = model_t
         self._name = name
+        self._record_t = record_t
         self._key_field = key_field
         self._commit_action = commit_action
         self._init_resolved_tgt = None
@@ -165,6 +168,7 @@ class CrudOpenCommandCtr(ModuleCtr):
             module_name=self._module_name,
             model_t=pyobj_creg.actor_to_ref(self._model_t),
             name=self._name,
+            record_t=self._record_t,
             key_field=self._key_field,
             commit_action=self._commit_action,
             )
@@ -182,8 +186,9 @@ class CrudOpenCommandCtr(ModuleCtr):
     def make_component(self, types, python_module, name_to_res):
         init_action_fn = self._init_resolved_tgt.constructor.make_component(
             types, python_module, name_to_res)
-        system_fn = htypes.crud.crud_open_command_fn(
+        system_fn = htypes.crud.open_command_fn(
             name=self._name,
+            record_t=pyobj_creg.actor_to_ref(self._record_t),
             key_field=self._key_field,
             init_action_fn=mosaic.put(init_action_fn),
             commit_action=self._commit_action,

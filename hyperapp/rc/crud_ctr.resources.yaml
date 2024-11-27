@@ -6,7 +6,7 @@ import:
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
 - legacy_type.command:properties
-- legacy_type.crud:crud_open_command_fn
+- legacy_type.crud:open_command_fn
 - legacy_type.crud_ctr:commit_ctr
 - legacy_type.crud_ctr:init_ctr
 - legacy_type.crud_ctr:open_command_ctr
@@ -26,7 +26,7 @@ definitions:
         htypes.command.cfg_item: legacy_type.command:cfg_item
         htypes.command.model_command: legacy_type.command:model_command
         htypes.command.properties: legacy_type.command:properties
-        htypes.crud.crud_open_command_fn: legacy_type.crud:crud_open_command_fn
+        htypes.crud.open_command_fn: legacy_type.crud:open_command_fn
         htypes.crud_ctr.init_ctr: legacy_type.crud_ctr:init_ctr
         htypes.crud_ctr.commit_ctr: legacy_type.crud_ctr:commit_ctr
         htypes.crud_ctr.open_command_ctr: legacy_type.crud_ctr:open_command_ctr

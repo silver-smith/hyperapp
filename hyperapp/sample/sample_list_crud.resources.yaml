@@ -7,8 +7,8 @@ import:
 - legacy_type.builtin:python_module
 - legacy_type.command:cfg_item
 - legacy_type.command:model_command
-- legacy_type.crud:crud_open_command_fn
 - legacy_type.crud:edit_d
+- legacy_type.crud:open_command_fn
 - legacy_type.sample_list:sample_list
 - legacy_type.sample_list_crud:form_item
 - legacy_type.system_fn:ctx_fn
@@ -41,9 +41,10 @@ definitions:
     value:
       function: legacy_type.crud:edit_d
   sample_list-sample_list.edit.command.fn:
-    type: legacy_type.crud:crud_open_command_fn
+    type: legacy_type.crud:open_command_fn
     value:
       name: edit
+      record_t: legacy_type.sample_list_crud:form_item
       key_field: id
       init_action_fn: sample_list-sample_list.crud.get.system-fn
       commit_action: update

@@ -1,4 +1,5 @@
 model = record:
+  record_t: ref
   model: ref
   key: ref
   key_field: string
@@ -6,11 +7,13 @@ model = record:
   commit_action: string
 
 
-crud_open_command_fn = record:
+open_command_fn = record:
   name: string
+  record_t: ref
   key_field: string
   init_action_fn: ref
   commit_action: string
 
+init_fn = record
 
 edit_d = record

@@ -192,8 +192,9 @@ import:
 - ui.command_creg:command_creg.service
 - ui.controller:controller_running.service
 - ui.controller:layout_view.feed-template
-- ui.crud:crud_crud_open_command_fn.actor-template
+- ui.crud:crud_init_fn.actor-template
 - ui.crud:crud_model.actor-template
+- ui.crud:crud_open_command_fn.actor-template
 - ui.feed:feed_factory.service
 - ui.feed:feed_index_tree_feed_type.actor-template
 - ui.feed:feed_list_feed_type.actor-template
@@ -648,7 +649,8 @@ definitions:
     type: legacy_type.system:item_list_config
     value:
       items:
-      - ui.crud:crud_crud_open_command_fn.actor-template
+      - ui.crud:crud_init_fn.actor-template
+      - ui.crud:crud_open_command_fn.actor-template
       - ui.system_fn:system_fn_ctx_fn.actor-template
   ui_adapter_creg:
     type: legacy_type.system:item_list_config

@@ -8,10 +8,23 @@ import:
 - common.mark:mark.module
 - legacy_type.builtin:attribute
 - legacy_type.builtin:python_module
-- legacy_type.crud:crud_open_command_fn
+- legacy_type.crud:init_fn
 - legacy_type.crud:model
+- legacy_type.crud:open_command_fn
+- legacy_type.form:view
+- legacy_type.record_adapter:fn_record_adapter
 - legacy_type.system:actor_template
 definitions:
+  CrudInitFn:
+    type: legacy_type.builtin:attribute
+    value:
+      object: crud.module
+      attr_name: CrudInitFn
+  CrudInitFn.from_piece:
+    type: legacy_type.builtin:attribute
+    value:
+      object: CrudInitFn
+      attr_name: from_piece
   CrudOpenFn:
     type: legacy_type.builtin:attribute
     value:
@@ -30,16 +43,20 @@ definitions:
       import_list:
         code.context: common.context:context.module
         code.mark: common.mark:mark.module
+        htypes.crud.init_fn: legacy_type.crud:init_fn
         htypes.crud.model: legacy_type.crud:model
+        htypes.form.view: legacy_type.form:view
+        htypes.record_adapter.fn_record_adapter: legacy_type.record_adapter:fn_record_adapter
         services.deduce_t: builtins:deduce_t.service
         services.mosaic: builtins:mosaic.service
         services.web: builtins:web.service
-  crud_crud_open_command_fn.actor-template:
+  crud_init_fn.actor-template:
     type: legacy_type.system:actor_template
     value:
-      t: legacy_type.crud:crud_open_command_fn
-      function: CrudOpenFn.from_piece
-      service_params: []
+      t: legacy_type.crud:init_fn
+      function: CrudInitFn.from_piece
+      service_params:
+      - system_fn_creg
   crud_model.actor-template:
     type: legacy_type.system:actor_template
     value:
@@ -52,3 +69,9 @@ definitions:
     value:
       object: crud.module
       attr_name: crud_model_layout
+  crud_open_command_fn.actor-template:
+    type: legacy_type.system:actor_template
+    value:
+      t: legacy_type.crud:open_command_fn
+      function: CrudOpenFn.from_piece
+      service_params: []
