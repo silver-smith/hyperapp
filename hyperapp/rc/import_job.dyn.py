@@ -271,10 +271,9 @@ class ImportJob(SystemJob):
             )
 
     def __init__(self, python_module_src, idx, req_to_resources, system_config_piece=None):
-        super().__init__(system_config_piece)
+        super().__init__(system_config_piece, req_to_resources)
         self._src = python_module_src
         self._idx = idx
-        self._req_to_resources = req_to_resources
 
     def __repr__(self):
         return f"<ImportJob {self._src}/{self._idx}>"

@@ -256,10 +256,9 @@ class TestJob(SystemJob):
             )
 
     def __init__(self, python_module_src, idx, req_to_resources, test_fn_name, system_config_piece=None):
-        super().__init__(system_config_piece)
+        super().__init__(system_config_piece, req_to_resources)
         self._src = python_module_src
         self._idx = idx
-        self._req_to_resources = req_to_resources
         self._test_fn_name = test_fn_name
 
     def __repr__(self):

@@ -104,8 +104,9 @@ class SystemJob:
             req_to_resources[req].add(resource)
         return dict(req_to_resources)
 
-    def __init__(self, system_config_piece):
+    def __init__(self, system_config_piece, req_to_resources):
         self._system_config_piece = system_config_piece  # Used only from 'run' method, inside job process.
+        self._req_to_resources = req_to_resources
         self._tested_modules = []
 
     @property
