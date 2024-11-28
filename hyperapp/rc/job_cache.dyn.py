@@ -63,18 +63,7 @@ class JobCache:
     def __getitem__(self, target_name):
         return self._target_to_entry[target_name]
 
-    @staticmethod
-    def _resolve_requirements(target_factory, requirements):
-        deps = {}
-        for req in requirements:
-            target = req.get_target(target_factory)
-            assert target.completed, target
-            res_list = req.make_resource_list(target)
-            deps[req] = set(res_list)
-        return deps
-
-    def put(self, target_factory, target_name, src, requirements, result):
-        deps = self._resolve_requirements(target_factory, requirements)
+    def put(self, target_name, src, deps, result):
         entry = CacheEntry(target_name, src, deps, result)
         self._target_to_entry[entry.target_name] = entry
         self._changed = True

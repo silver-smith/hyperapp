@@ -110,6 +110,10 @@ class SystemJob:
         self._tested_modules = []
 
     @property
+    def req_to_resources(self):
+        return self._req_to_resources
+
+    @property
     def _req_to_resource_pieces(self):
         return tuple(
             htypes.system_job.req_to_resource(

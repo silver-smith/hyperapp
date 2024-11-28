@@ -120,7 +120,12 @@ def _run(rc_job_result_creg, pool, job_cache, cached_count, target_set, filter, 
             incomplete[target] = result
         cache_target_name = result.cache_target_name(target)
         if cache_target_name:
-            job_cache.put(target_set.factory, cache_target_name, target.src, result.used_reqs, result)
+            req_to_resources = job.req_to_resources
+            deps = {
+                req: req_to_resources[req]
+                for req in result.used_reqs
+                }
+            job_cache.put(cache_target_name, target.src, deps, result)
 
     while should_run:
         _submit_jobs(rc_job_result_creg, options, pool, target_set, target_to_job, job_id_to_target, filter)
